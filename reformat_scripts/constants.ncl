@@ -589,6 +589,7 @@ function var_attrib(var:numeric, name:string)
 ;; References
 ;;
 ;; Modification history
+;;    20161202-A_laue_ax: preserve attribute "coordinates" if present
 ;;    20130528-A_righ_ma: written.
 ;;
 local funcname, verbosity, tmp, p1, p2, natt, in_units, out_units, tmp, att
@@ -603,6 +604,13 @@ begin
         var = where(var.eq.var@_FillValue, FILL, var)
     end if
     var@_FillValue = FILL
+
+; A_laue_ax+
+    ; if present, save variable attribute "coordinates"
+    if (isatt(var, "coordinates")) then
+        coordattr = var@coordinates
+    end if
+; A_laue_ax-
 
     ;; Remove attributes
     delete_VarAtts(var, -1)
@@ -622,6 +630,12 @@ begin
     do ii = 0, dimsizes(att) - 1
         out@$att(dimsizes(att) - 1 - ii)$ = tmp@$att(dimsizes(att) - 1 - ii)$
     end do
+
+; A_laue_ax+
+    if (isvar("coordattr")) then
+        out@coordinates = coordattr
+    end if
+; A_laue_ax-
 
     leave_msg(scriptname, funcname, 4)
     return(out)

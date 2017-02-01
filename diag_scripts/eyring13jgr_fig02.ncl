@@ -11,22 +11,35 @@
 ;#                                                                            #
 ;# Required diag_script_info attributes (diagnostics specific):               #
 ;#    * e13fig02_latrange: extremes of latitude band                          #
-;#    * e13fig02_season: ANN=Annual, DJF=December, January,February, ect      #
-;#    * e13fig02_lev: selction of level if original fiels is T3*, is          #
-;#      not required if variables already in T2*s fiels                       #
+;#    * e13fig02_season: ANN=Annual, DJF=December, January, February, etc     #
+;#    * e13fig02_lev: selection of level if original fiels is T3*, is         #
+;#      not required if variables already in T2*s fields                      #
 ;#                                                                            #
 ;# Optional diag_script_info attributes (diagnostics specific):               #
 ;#    * list_chem_mod: names of models to apply a MMM, "All" if not need      #
 ;#    * list_nochem_mod: names of models to apply a MMM, "None" if not need   #
 ;#    * e13fig02_legend: switch on or off the full legend.Opt "True","False"  # 
 ;#    * e13fig02_legend_MMM: switch on or off the legend of MMM groups        #
+;#    * apply_masking: mask missing values from all data sets before          #
+;#                     calculating averages(True/False) (T2Ms fields only)    #
+;#    * grid: if masking is selected, all data must be regridded to a common  #
+;#            grid (coarsest, finest, ref, 1x1; default = 1x1)                #
+;#    * refmodel: if masking is selected and grid = "ref", a reference model  #
+;#            has to be specified                                             #
 ;#                                                                            #
 ;# Required variable_info attributes (variable specific):                     #
 ;#                                                                            #
 ;# Caveats:                                                                   #
+;#     * optional missing value masking is only implemented for monthly mean  #
+;#       fields and will fail if other fields (e.g., daily means) are used    #
+;#     * masking missing values is only implemented for 2-dim fields          #
 ;#                                                                            #
 ;# Modification history:                                                      #
-;#    20151203-A-laue_ax: code clean-up, moved call to write_references to    #
+;#    20160929-A_laue_ax: added optional masking of missing values before     #
+;#                        calculating averages                                #
+;#    20160826-A_laue_ax: added ensemble member to model name in legend if    #
+;#                        ensemble is other than r1i1p1                       #
+;#    20151203-A_laue_ax: code clean-up, moved call to write_references to    #
 ;#                        beginning of code                                   #
 ;#    201510??-A-cion_ir: written                                             #
 ;#                                                                            #
@@ -45,6 +58,11 @@ load "./diag_scripts/lib/ncl/set_operators.ncl"
 load "./diag_scripts/lib/ncl/statistics.ncl"
 load "./diag_scripts/lib/ncl/latlon.ncl"
 load "./diag_scripts/lib/ncl/style.ncl"
+
+; A_laue_ax+
+load "$NCARG_ROOT/lib/ncarg/nclscripts/contrib/calendar_decode2.ncl"
+load "./diag_scripts/aux/perfmetrics/aux_perfmetrics.ncl"
+; A_laue_ax-
 
 ;************************************************
 ;************************************************
@@ -74,9 +92,12 @@ begin
         list_obs_mod = models@name(index_obs)
     end if
 
-    do idx_mod = 0, dim_MOD1 - 1
-        data0 = read_data(idx_mod,var0, field_type0)
-    end do
+; A_laue_ax+
+;    do idx_mod = 0, dim_MOD1 - 1
+;        data0 = read_data(idx_mod,var0, field_type0)
+;    end do
+; A_laue_ax-
+
 end
 
 begin
@@ -102,18 +123,18 @@ begin
     end if
     delete(plot_fields)
     delete(ind_f)
-    
+
     plot_dir = getenv("ESMValTool_plot_dir")
     diag_script_base = basename(diag_script)
     output_dir = get_output_dir(plot_dir, diag_script_base)
     file_type = getenv("ESMValTool_output_file_type")
-    
+
     if(ismissing(file_type)) then
         file_type = "ps"
     end if
     file_type = str_lower(file_type)
     color_type = "COLOR"
-    
+
      aux_title_info = ""
      output_filename = interface_get_figure_filename(diag_script_base,\
                 var0, field_type0, aux_title_info, -1)
@@ -214,6 +235,198 @@ begin
     plot_line = new(dimsizes(diag_script_info@e13fig02_season) * dim_EXP \
                     * (dimsizes(list_nochem_mod) + 1), "graphic")
 
+; A_laue_ax+
+    if ((isatt(diag_script_info, "apply_masking"))) then
+        apply_masking = diag_script_info@apply_masking
+    else
+        apply_masking = False
+    end if
+
+    if (apply_masking) then
+        ; missing value masking is currently only implemented for 2-dim fields
+        if (field_type0 .ne. "T2Ms") then
+            error_msg("f", diag_script, "", "missing value masking only implemented for T2Ms fields")
+        end if
+
+        if ((isatt(diag_script_info, "grid"))) then
+            selected_grid = diag_script_info@grid
+            if (selected_grid.eq."ref") then
+                if ((isatt(diag_script_info, "refmodel"))) then
+                    refmodel = diag_script_info@refmodel
+                    ref_ind = ind(models@name.eq.refmodel)
+                    if (ismissing(ref_ind)) then
+                        error_msg("f", diag_script, "", "no adequate reference model provided")
+                    end if
+                else
+                    error_msg("f", diag_script, "", "no reference model is selected")
+                end if
+            end if
+        else
+            selected_grid = "1x1"  ; default
+        end if
+
+        ; defined the target grid for regridding
+
+        models_ind = ispan(0, dim_MOD1 - 1, 1)
+        info_output("Setting target grid:", verbosity, 2)
+        if (selected_grid.eq."ref") then
+            grid = find_destination_grid(ref_ind, \
+                                         var0, field_type0, "coarsest")
+        else if (selected_grid.eq."1x1") then
+            grid     = new((/180, 360/), float)
+            grid!0   = "lat"
+            grid!1   = "lon"
+            grid&lat = flt2dble(fspan(-89.5,  89.5, 180))  ; CMOR standard
+            grid&lon = flt2dble(fspan(0.5, 359.5, 360))    ; CMOR standard
+            grid&lat@standard_name = "latitude"
+            grid&lon@standard_name = "longitude"
+            grid&lat@long_name     = "latitude"
+            grid&lon@long_name     = "longitude"
+            grid&lat@units         = "degrees_north"
+            grid&lon@units         = "degrees_east"
+            grid&lat@axis          = "Y"
+            grid&lon@axis          = "X"
+        else
+            grid = find_destination_grid(models_ind, \
+                                         var0, field_type0, selected_grid)
+        end if
+        end if
+        delete(models_ind)
+
+        dims = dimsizes(grid)
+        global_mask = new((/yearsize * 12, dims(0), dims(1)/), float)
+        global_mask!0 = "time"
+        global_mask!1 = "lat"
+        global_mask!2 = "lon"
+        global_mask&lat = grid&lat
+        global_mask&lon = grid&lon
+
+        global_mask = 0.0
+
+        global_mask@_FillValue = 1.0e20
+        global_mask@startyear = min(toint(models@start_year))
+        global_mask@endyear = max(toint(models@end_year))
+
+        delete(dims)
+
+        ; ========================================================================
+        ; ============================ regridding ================================
+        ; ========================================================================
+
+        opt = True
+        opt@plot_type = "regridded"
+        opt@time_avg = selected_grid
+
+        do imod = 0, dim_MOD1 - 1
+            info_output("Regridding " + models@name(imod), verbosity, 2)
+            regr_path = clim_diag_file_path(var0, field_type0, imod, \
+                                            diag_script, opt)
+
+            ; do not process data if already processed
+
+            if (isfilepresent(regr_path) .and. \
+                getenv("ESMValTool_force_calc").eq."False") then
+
+                info_output("Reading in file = " + regr_path, verbosity, 1)
+                pre_var = ncdf_read(regr_path, var0)
+                dnames = getVarDimNames(pre_var)
+
+            else
+
+                ; extract model corresponding data
+
+                data = read_data(imod, var0, field_type0)
+                var = extract_data(imod, data, -1, 0, 0)
+                delete(data)
+
+                ; determine dimensions to regrid
+
+                zregrid = False  ; plev
+                xregrid = False  ; lon
+                yregrid = False  ; lat
+                dnames = getVarDimNames(var)
+                if (any(dnames.eq."lon")) then
+                    xregrid = True
+                    if (dimsizes(var&lon).eq.dimsizes(grid&lon)) then
+                        if (max(abs(var&lon - grid&lon)).lt.1.0d-5) then
+                            xregrid = False
+                        end if
+                    end if
+                end if
+                if (any(dnames.eq."lat")) then
+                    yregrid = True
+                    if (dimsizes(var&lat).eq.dimsizes(grid&lat)) then
+                        if (max(abs(var&lat - grid&lat)).lt.1.0d-5) then
+                            yregrid = False
+                        end if
+                    end if
+                end if
+
+                ; regrid in the horizontal (if necessary)
+
+                if (xregrid.and.yregrid) then
+                    var_hreg = linint2_Wrap(var&lon, var&lat, var, True, \
+                                            grid&lon, grid&lat, 0)
+                else if (xregrid.and..not.yregrid) then
+                    dx = ind(dnames.eq."lon")
+                    var_hreg = linint1_n_Wrap(var&lon, var, True, grid&lon, 0, dx)
+                    info_output("Latitude regridding not required", verbosity, 4)
+                else if (.not.xregrid.and.yregrid) then
+                    dx = ind(dnames.eq."lat")
+                    var_hreg = linint1_n_Wrap(var&lat, var, False, grid&lat, 0, dx)
+                    info_output("Longitude regridding not required", verbosity, 4)
+                else if (.not.xregrid .and. .not.yregrid) then
+                    var_hreg = var
+                    info_output("Horizontal regridding not required", verbosity, 4)
+                end if
+                end if
+                end if
+                end if
+
+                delete(var)
+
+                pre_var = var_hreg
+                delete(var_hreg)
+
+                ; output to NetCDF
+                pre_var@var = var0
+                pre_var@diag_script = (/diag_script/)
+                pre_var@ncdf = regr_path
+                ncdf_outfile = ncdf_write(pre_var, regr_path)
+
+            end if
+
+            ; create a common missing value mask
+
+            timevar = calendar_decode2(pre_var&time, 0)
+            idx0 = toint(timevar(0, 0) - global_mask@startyear) * 12
+            idx1 = idx0 + dimsizes(pre_var&time) - 1
+            delete(timevar)
+
+            tmp = where(ismissing(pre_var), global_mask@_FillValue, 0.0)
+            if (all(ismissing(tmp))) then
+                error_msg("f", diag_script, "", models@name(imod) + \
+                          "contains only missing values, creating common " + \
+                          "missing value mask does not make sense.")
+            else
+                global_mask(idx0:idx1, :, :) = global_mask(idx0:idx1, :, :) + tmp
+            end if
+
+            delete(tmp)
+            delete(pre_var)
+
+        end do  ; imod
+
+        ; debug output
+
+;        system ("rm debug.nc")
+;        debugfile = addfile("debug.nc","c")
+;        debugfile->mask = global_mask
+
+    end if  ; if apply_masking
+
+; A_laue_ax-
+
     ;----------------------------------------------------------------------------
 
     ip = 0
@@ -295,7 +508,28 @@ begin
         nochem_t&time = time_c
 
         do imod = 0, dim_MOD1 - 1
-            A0 = extract_data(imod, data0, -1, 0, 0)
+; A_laue_ax+
+            if (apply_masking) then
+                new_path = clim_diag_file_path(var0, field_type0, imod, \
+                                               diag_script, opt)
+                if (isfilepresent_esmval(new_path)) then
+                    info_output("Read in: " + new_path, verbosity, 1)
+                    A0 = ncdf_read(new_path, var0)
+                    timevar = calendar_decode2(A0&time, 0)
+                    idx0 = toint(timevar(0, 0) - global_mask@startyear) * 12
+                    idx1 = idx0 + dimsizes(A0&time) - 1
+                    delete(timevar)
+
+                    A0 = A0 + global_mask(idx0:idx1, :, :)
+                else
+                    error_msg("f", diag_script, "", \
+                        "No data available for model:" + models@name(imod))
+                end if
+            else
+                data0 = read_data(imod, var0, field_type0)
+                A0 = extract_data(imod, data0, -1, 0, 0)
+            end if
+; A_laue_ax-
             if (isatt(diag_script_info, "e13fig02_lev")) then
                 if (max(A0&plev).ge.100000) then
                     A0&plev = A0&plev / 100
@@ -595,10 +829,42 @@ begin
     ;******************a second page********************
 
     if (diag_script_info@e13fig02_legend.eq."True") then
-        add_legenda(wks, list_chem_mod, colors_chem(0, :dimsizes(list_chem_mod) - 1), \
+
+; A-laue_ax+
+;       add ensemble member to model name in legend if ensemble is not r1i1p1
+
+        modelnames = list_chem_mod
+
+        do i = 0, dim_MOD1 - 1
+            if (isvar("idx")) then
+                delete(idx)
+            end if
+            idx = ind(modelnames.eq.models@name(i))
+            if (all(ismissing(idx))) then
+                continue
+            end if
+            do j = 0, dimsizes(idx) - 1
+                if (models@ensemble(idx(j)).ne."r1i1p1") then
+                    if (isStrSubset(models@ensemble(idx(j)), "r") .and. \
+                        isStrSubset(models@ensemble(idx(j)), "i") .and. \
+                        isStrSubset(models@ensemble(idx(j)), "p")) then
+                        modelnames(idx(j)) = modelnames(idx(j)) + " ("  \
+                                             + models@ensemble(idx(j)) + ")"
+                    end if
+                end if
+            end do
+        end do
+
+;        add_legenda(wks, list_chem_mod, colors_chem(0, :dimsizes(list_chem_mod) - 1), \
+;            dashes_chem(0, :dimsizes(list_chem_mod) - 1), \
+;            lines_chem(0, :dimsizes(list_chem_mod) - 1),  \
+;            thicks_chem(0, :dimsizes(list_chem_mod) - 1), "0.3")
+
+        add_legenda(wks, modelnames, colors_chem(0, :dimsizes(list_chem_mod) - 1), \
             dashes_chem(0, :dimsizes(list_chem_mod) - 1), \
             lines_chem(0, :dimsizes(list_chem_mod) - 1),  \
             thicks_chem(0, :dimsizes(list_chem_mod) - 1), "0.3")
+; A-laue_ax-
 
         if (nochem.gt.0) then
             add_legenda(wks, list_nochem_mod, colors_nochem(0, :dimsizes(list_nochem_mod) - 1), \

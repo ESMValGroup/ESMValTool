@@ -1,6 +1,37 @@
 ###############################################################################
-####### ESMValTool - Earth System Model eValuation Tool - RELEASE NOTES #######
+####### ESMValTool - Earth System Model Evaluation Tool - RELEASE NOTES #######
 ###############################################################################
+
+===============================================================================
+Version 1.1.0 - January 2017
+===============================================================================
+GENERAL
+- new OBS class definition (includes time range specification _YYY1M1-YYY2M2)
+- updated ESMValTool user's and developer's guide
+- updated ESMValTool Software License
+
+DIAGNOSTIC AND PLOT ROUTINES
+- added sea-ice, xco2 and soil moisture to perfmetrics
+- added optional uncertainty estimates to Taylor diagrams (namelist_lauer17rse.xml)
+- new ESA CCI diagnostics for SST, soil moisture, land cover, xco2
+  (namelist_lauer17rse.xml)
+- added IPCC ch.9 figs. 9.28 and 9.30 (namelist_flato13ipcc.xml)
+- new variables including error estimates for extisting variables (<varname>Stderr)
+- added summary plot (various campaigns) for aerosol vertical profiles
+
+OBSERVATIONS
+- new observations: ESACCI-OZONE, ESACCI-SIC, ESACCI-CLOUD, ESACCI-GHG,
+  ESACCI-SOILMOISTURE, ESACCI-SST, ESACCI-LANDCOVER, PATMOS, CLARA-A2, Asmi11
+
+MINOR CHANGES AND BUG FIXES
+- adjustments of aerosol, cloud, sea ice, ozone, perfmetrics diagnostics
+- perfmetrics: stippling of significant values in differences plots
+  (zonal means + lat-lon plots) instead of masking out non-significant values
+  in gray
+- remove inappropriate conversion (C-->K) from recognized_units.dat 
+  (only multiplicative factors are allowed)
+- added depth info for mrsos in reformat
+- added diagnostic for calculating multi-model means (namelist_mmm.xml)
 
 ===============================================================================
 Version 1.0.1 - June 2016

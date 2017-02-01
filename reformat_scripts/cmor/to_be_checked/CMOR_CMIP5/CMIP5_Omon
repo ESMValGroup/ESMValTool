@@ -1,0 +1,4789 @@
+table_id: Table Omon
+modeling_realm: ocean
+
+frequency: mon
+
+cmor_version: 2.6 ! minimum version of CMOR that can read this table
+cf_version:   1.4         ! version of CF that output conforms to
+project_id:   CMIP5  ! project id
+table_date:   17 July 2013 ! date this table was constructed
+
+missing_value: 1.e20      ! value used to indicate a missing value
+                          !   in arrays output by netCDF as 32-bit IEEE 
+                          !   floating-point numbers (float or real)
+
+baseURL: http://cmip-pcmdi.llnl.gov/CMIP5/dataLocation 
+product: output
+
+required_global_attributes: creation_date tracking_id forcing model_id parent_experiment_id parent_experiment_rip branch_time contact institute_id ! space separated required global attribute 
+
+forcings:   N/A Nat Ant GHG SD SI SA TO SO Oz LU Sl Vl SS Ds BC MD OC AA
+
+expt_id_ok: '10- or 30-year run initialized in year XXXX' 'decadalXXXX'
+expt_id_ok: 'volcano-free hindcast initialized in year XXXX' 'noVolcXXXX'
+expt_id_ok: 'prediction with 2010 volcano' 'volcIn2010'
+expt_id_ok: 'pre-industrial control' 'piControl'
+expt_id_ok: 'historical' 'historical'
+expt_id_ok: 'historical extension' 'historicalExt'
+expt_id_ok: 'other historical forcing' 'historicalMisc'
+expt_id_ok: 'mid-Holocene' 'midHolocene'
+expt_id_ok: 'last glacial maximum' 'lgm'
+expt_id_ok: 'last millennium' 'past1000'
+expt_id_ok: 'RCP4.5' 'rcp45'
+expt_id_ok: 'RCP8.5' 'rcp85'
+expt_id_ok: 'RCP2.6' 'rcp26'
+expt_id_ok: 'RCP6' 'rcp60'
+expt_id_ok: 'ESM pre-industrial control' 'esmControl'
+expt_id_ok: 'ESM historical' 'esmHistorical'
+expt_id_ok: 'ESM RCP8.5' 'esmrcp85'
+expt_id_ok: 'ESM fixed climate 1' 'esmFixClim1'
+expt_id_ok: 'ESM fixed climate 2' 'esmFixClim2'
+expt_id_ok: 'ESM feedback 1' 'esmFdbk1'
+expt_id_ok: 'ESM feedback 2' 'esmFdbk2'
+expt_id_ok: '1 percent per year CO2' '1pctCO2'
+expt_id_ok: 'abrupt 4XCO2' 'abrupt4xCO2'
+expt_id_ok: 'natural-only' 'historicalNat'
+expt_id_ok: 'GHG-only' 'historicalGHG'
+expt_id_ok: 'AMIP' 'amip'
+expt_id_ok: '2030 time-slice' 'sst2030'
+expt_id_ok: 'control SST climatology' 'sstClim'
+expt_id_ok: 'CO2 forcing' 'sstClim4xCO2'
+expt_id_ok: 'all aerosol forcing' 'sstClimAerosol'
+expt_id_ok: 'sulfate aerosol forcing' 'sstClimSulfate'
+expt_id_ok: '4xCO2 AMIP' 'amip4xCO2'
+expt_id_ok: 'AMIP plus patterned anomaly' 'amipFuture'
+expt_id_ok: 'aqua planet control' 'aquaControl'
+expt_id_ok: '4xCO2 aqua planet' 'aqua4xCO2'
+expt_id_ok: 'aqua planet plus 4K anomaly' 'aqua4K'
+expt_id_ok: 'AMIP plus 4K anomaly' 'amip4K'
+
+
+approx_interval:  30.000000     ! approximate spacing between successive time
+                          !   samples (in units of the output time 
+                          !   coordinate.
+
+generic_levels:   olevel
+
+!============
+axis_entry: longitude
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    longitude
+units:            degrees_east
+axis:             X             ! X, Y, Z, T (default: undeclared)
+long_name:        longitude
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         lon
+valid_min:        0.0         
+valid_max:        360.0 
+stored_direction: increasing
+type:             double
+must_have_bounds: yes
+!----------------------------------
+!
+
+
+!============
+axis_entry: latitude
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    latitude
+units:            degrees_north
+axis:             Y             ! X, Y, Z, T (default: undeclared)
+long_name:        latitude
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         lat
+valid_min:        -90.0         
+valid_max:        90.0 
+stored_direction: increasing
+type:             double
+must_have_bounds: yes
+!----------------------------------
+!
+
+
+!============
+axis_entry: time
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    time
+units:            days since ?
+axis:             T             ! X, Y, Z, T (default: undeclared)
+long_name:        time
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         time
+stored_direction: increasing
+type:             double
+must_have_bounds: yes
+!----------------------------------
+!
+
+
+!============
+axis_entry: basin
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    region
+long_name:        ocean basin
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         basin
+type:             character
+requested:        atlantic_arctic_ocean indian_pacific_ocean global_ocean        ! space-separated list of requested coordinates 
+must_have_bounds: no
+coords_attrib:    region
+!----------------------------------
+!
+
+
+!============
+axis_entry: rho
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    sea_water_potential_density
+units:            kg m-3
+axis:             Z             ! X, Y, Z, T (default: undeclared)
+positive:         down         ! up or down (default: undeclared)
+long_name:        potential density referenced to 2000 dbar
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         rho
+stored_direction: increasing
+type:             double
+must_have_bounds: yes
+!----------------------------------
+!
+
+
+!============
+axis_entry: oline
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    region
+long_name:        ocean passage 
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         line
+type:             character
+requested:        barents_opening bering_strait canadian_archipelago denmark_strait drake_passage english_channel pacific_equatorial_undercurrent faroe_scotland_channel florida_bahamas_strait fram_strait iceland_faroe_channel indonesian_throughflow mozambique_channel taiwan_luzon_straits windward_passage        ! space-separated list of requested coordinates 
+must_have_bounds: no
+coords_attrib:    passage
+!----------------------------------
+!
+
+
+!============
+axis_entry: olayer100m
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    depth
+units:            m
+axis:             Z             ! X, Y, Z, T (default: undeclared)
+positive:         down         ! up or down (default: undeclared)
+long_name:        depth
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         depth
+valid_min:        0.0         
+valid_max:        100.0 
+stored_direction: increasing
+type:             double
+value:            50.            ! of scalar (singleton) dimension 
+bounds_values:    0. 100.    ! of scalar (singleton) dimension bounds
+must_have_bounds: no
+!----------------------------------
+!
+
+
+!============
+axis_entry: depth100m
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    depth
+units:            m
+axis:             Z             ! X, Y, Z, T (default: undeclared)
+positive:         down         ! up or down (default: undeclared)
+long_name:        depth
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         depth
+valid_min:        80.0         
+valid_max:        120.0 
+stored_direction: increasing
+type:             double
+value:            100.            ! of scalar (singleton) dimension 
+must_have_bounds: no
+!----------------------------------
+!
+
+
+!============
+axis_entry: depth0m
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    depth
+units:            m
+axis:             Z             ! X, Y, Z, T (default: undeclared)
+positive:         down         ! up or down (default: undeclared)
+long_name:        depth
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         depth
+valid_min:        0.0         
+valid_max:        100.0 
+stored_direction: increasing
+type:             double
+value:            0.            ! of scalar (singleton) dimension 
+must_have_bounds: no
+!----------------------------------
+!
+
+!============
+axis_entry: depth_coord
+!============
+!
+!  This vertical coordinate is used in z-coordinate models 
+!   The units are meters (m), and it has a value of 0. at the surface
+!   and becomes more and more positive with depth.
+!
+!------------
+!
+! Axis attributes:
+!----------------------------------	
+standard_name:    depth
+units:            m
+axis:             Z
+positive:	  down 
+long_name:        ocean depth coordinate
+!----------------------------------	
+!
+! Additional axis information:
+!----------------------------------	
+out_name:         lev
+must_have_bounds: yes
+stored_direction: increasing
+valid_min:        0.
+valid_max:        12000.
+!----------------------------------	
+!
+!============
+axis_entry: olev
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+axis:             Z             ! X, Y, Z, T (default: undeclared)
+positive:         down         ! up or down (default: undeclared)
+long_name:        generic ocean level
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         lev
+stored_direction: increasing
+type:             double
+must_have_bounds: no
+!----------------------------------
+!
+!============
+axis_entry: ocean_double_sigma
+!============
+!
+!------------
+!
+! Axis attributes:
+!----------------------------------	
+standard_name:    ocean_double_sigma
+axis:             Z
+positive:	  up
+long_name:        ocean double sigma coordinate
+!----------------------------------	
+!
+! Additional axis information:
+!----------------------------------	
+out_name:         lev
+must_have_bounds: yes
+formula:          for k <= k_c:\n z= sigma*f \n for k > k_c:\n z= f + (sigma-1)*(depth-f) \n f= 0.5*(z1+ z2) + 0.5*(z1-z2)* tanh(2*a/(z1-z2)*(depth-href))
+z_factors:        sigma: sigma depth: depth z1: z1 z2: z2 a: a_coeff href: href k_c: k_c
+z_bounds_factors: sigma: sigma_bnds depth: depth z1: z1 z2: z2 a: a href: href k_c: k_c
+!----------------------------------	
+!
+!============
+axis_entry: ocean_sigma_z
+!============
+!
+!------------
+!
+! Axis attributes:
+!----------------------------------	
+standard_name:    ocean_sigma_z
+axis:             Z
+long_name:        ocean sigma over z coordinate
+!----------------------------------	
+!
+! Additional axis information:
+!----------------------------------	
+out_name:         lev
+must_have_bounds: yes
+formula:          for k <= nsigma: z = eta + sigma*(min(depth_c,depth)+eta) ; for k > nsigma: z = zlev
+z_factors:        sigma: sigma eta: eta depth: depth depth_c: depth_c nsigma: nsigma zlev: zlev
+z_bounds_factors: sigma: sigma_bnds eta: eta depth: depth depth_c: depth_c nsigma: nsigma zlev: zlev_bnds
+!----------------------------------	
+!
+!============
+axis_entry: ocean_s
+!============
+!
+!  This coordinate is dimensionless and varies from 0 at the surface to -1. at the ocean floor.
+!  The values of s, which appears in the formula below, should be stored as ocean_s.  
+!  Note that in the netCDF file the variable will be named "lev", not ocean_s.
+!
+!------------
+!
+! Axis attributes:
+!----------------------------------	
+standard_name:    ocean_s_coordinate
+axis:             Z
+positive:	  up
+long_name:        ocean s-coordinate
+!----------------------------------	
+!
+! Additional axis information:
+!----------------------------------	
+out_name:         lev
+must_have_bounds: yes
+stored_direction: decreasing
+valid_min:        -1.
+valid_max:        0.
+formula:          z = eta*(1+s) + depth_c*s + (depth-depth_c)*C \n where \n C=(1-b)*sinh(a*s)/sinh(a) +\n           b*(tanh(a*(s+0.5))/(2*tanh(0.5*a)) - 0.5)
+z_factors:        s: lev eta: eta depth: depth a: a_coeff b: b_coeff depth_c: depth_c
+z_bounds_factors: s: lev_bnds eta: eta depth: depth a: a b: b depth_c: depth_c
+!----------------------------------	
+!
+!============
+axis_entry: ocean_sigma
+!============
+!
+!  This coordinate is dimensionless and varies from 0 at the surface to -1. at the ocean floor.
+!  The values of sigma, which appears in the formula below, should be stored as ocean_sigma.  
+!  Note that in the netCDF file the variable will be named "lev", not ocean_sigma.
+!
+!------------
+!
+! Axis attributes:
+!----------------------------------	
+standard_name:    ocean_sigma_coordinate
+axis:             Z
+positive:	  up
+long_name:        ocean sigma coordinate
+!----------------------------------	
+!
+! Additional axis information:
+!----------------------------------	
+out_name:         lev
+must_have_bounds: yes
+stored_direction: decreasing
+valid_min:        -1.
+valid_max:        0.
+formula:          z = eta + sigma*(depth+eta)
+z_factors:        sigma: lev eta: eta depth: depth
+z_bounds_factors: sigma: lev_bnds eta: eta depth: depth
+!----------------------------------	
+!
+!
+! ***************************************************************
+!
+! Vertical coordinate formula_terms:
+!
+! ***************************************************************
+!
+!============
+variable_entry: eta
+!============
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+units:            m
+cell_methods:     time: mean
+long_name:        Sea Surface Height
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:      longitude latitude time
+type:      real
+!----------------------------------
+!
+!
+!============
+variable_entry: depth
+!============
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+units:        m
+long_name:    Sea Floor Depth
+comment:      Ocean bathymetry.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:      longitude latitude
+out_name:        depth
+type:            real
+valid_min:        0.
+valid_max:        12000.
+ok_min_mean_abs:  2000.
+ok_max_mean_abs:  5000.
+!----------------------------------
+!
+!
+!============
+variable_entry: sigma
+!============
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   vertical coordinate formula term: sigma(k)
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         olevel
+type:               double
+!----------------------------------	
+!
+!
+!============
+variable_entry: sigma_bnds
+!============
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   vertical coordinate formula term: sigma(k+1/2)
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         olevel
+type:               double
+!----------------------------------	
+!
+!
+!============
+variable_entry: zlev
+!============
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   vertical coordinate formula term: zlev(k)
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         olevel
+type:               double
+!----------------------------------	
+!
+!
+!============
+variable_entry: zlev_bnds
+!============
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   vertical coordinate formula term: zlev(k+1/2)
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         olevel
+type:               double
+!----------------------------------	
+!
+!
+!
+!============
+variable_entry: depth_c
+!============
+!
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   vertical coordinate formula term: depth_c
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+type:               double
+!----------------------------------
+!
+!
+!============
+variable_entry: a
+!============
+!
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   vertical coordinate formula term: coefficient a
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+type:               double
+!----------------------------------
+!
+!
+!============
+variable_entry: b
+!============
+!
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   vertical coordinate formula term: coefficient b
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+type:               double
+!----------------------------------
+!
+!
+!============
+variable_entry: nsigma
+!============
+!
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   vertical coordinate formula term: nsigma
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+type:               integer
+!----------------------------------
+!
+!
+!============
+variable_entry: z1
+!============
+!
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   vertical coordinate formula term: z1
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+type:               double
+!----------------------------------
+!
+!
+!============
+variable_entry: z2
+!============
+!
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   vertical coordinate formula term: z2
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+type:               double
+!----------------------------------
+!
+!
+!============
+variable_entry: href
+!============
+!
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   vertical coordinate formula term: href
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+type:               double
+!----------------------------------
+!
+!
+!============
+variable_entry: k_c
+!============
+!
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   vertical coordinate formula term: k_c
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+type:               integer
+!----------------------------------
+!
+!
+
+!============
+variable_entry:    dissic
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_concentration_of_dissolved_inorganic_carbon_in_sea_water
+units:             mol m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Dissolved Inorganic Carbon Concentration at Surface
+comment:           Dissolved inorganic carbon (CO3+HCO3+H2CO3) concentration
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          dissic
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    dissoc
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_concentration_of_dissolved_organic_carbon_in_sea_water
+units:             mol m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Dissolved Organic Carbon Concentration at Surface
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          dissoc
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    phyc
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_concentration_of_phytoplankton_expressed_as_carbon_in_sea_water
+units:             mol m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Phytoplankton Carbon Concentration at Surface
+comment:           sum of phytoplankton carbon component concentrations.  In most (all?) cases this is the sum of phycdiat and phycmisc (i.e., ""Diatom Carbon Concentration"" and ""Non-Diatom Phytoplankton Carbon Concentration""
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          phyc
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    zooc
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_concentration_of_zooplankton_expressed_as_carbon_in_sea_water
+units:             mol m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Zooplankton Carbon Concentration at Surface
+comment:           sum of zooplankton carbon component concentrations
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          zooc
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    bacc
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_concentration_of_bacteria_expressed_as_carbon_in_sea_water
+units:             mol m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Bacterial Carbon Concentration at Surface
+comment:           sum of bacterial carbon component concentrations
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          bacc
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    detoc
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_concentration_of_organic_detritus_expressed_as_carbon_in_sea_water
+units:             mol m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Detrital Organic Carbon Concentration at Surface
+comment:           sum of detrital organic carbon component concentrations
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          detoc
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    calc
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_concentration_of_calcite_expressed_as_carbon_in_sea_water
+units:             mol m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Calcite Concentration at Surface
+comment:           sum of particulate calcite component concentrations (e.g. Phytoplankton, Detrital, etc.)
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          calc
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    arag
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_concentration_of_aragonite_expressed_as_carbon_in_sea_water
+units:             mol m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Aragonite Concentration at Surface
+comment:           sum of particulate aragonite components (e.g. Phytoplankton, Detrital, etc.)
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          arag
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    phydiat
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_concentration_of_diatoms_expressed_as_carbon_in_sea_water
+units:             mol m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Mole Concentration of Diatoms expressed as Carbon in Sea Water at Surface
+comment:           carbon from the diatom phytoplankton component concentration alone
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          phydiat
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    phydiaz
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_concentration_of_diazotrophs_expressed_as_carbon_in_sea_water
+units:             mol m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Mole Concentration of Diazotrophs Expressed as Carbon in Sea Water at Surface
+comment:           carbon concentration from the diazotrophic phytoplankton component alone
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          phydiaz
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    phycalc
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_concentration_of_calcareous_phytoplankton_expressed_as_carbon_in_sea_water
+units:             mol m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Mole Concentration of Calcareous Phytoplankton expressed as Carbon in Sea Water at Surface
+comment:           carbon concentration from calcareous (calcite-producing) phytoplankton component alone
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          phycalc
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    phypico
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_concentration_of_picophytoplankton_expressed_as_carbon_in_sea_water
+units:             mol m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Mole Concentration of Picophytoplankton expressed as Carbon in Sea Water at Surface
+comment:           carbon concentration from the picophytoplankton (<2 um) component alone
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          phypico
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    phymisc
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_concentration_of_miscellaneous_phytoplankton_expressed_as_carbon_in_sea_water
+units:             mol m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Mole Concentration of Miscellaneous Phytoplankton expressed as Carbon in Sea Water at Surface
+comment:           carbon concentration from additional phytoplankton component alone
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          phymisc
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    zmicro
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_concentration_of_microzooplankton_expressed_as_carbon_in_sea_water
+units:             mol m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Mole Concentration of Microzooplankton expressed as Carbon in Sea Water at Surface
+comment:           carbon  concentration from the microzooplankton (<20 um) component alone
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          zmicro
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    zmeso
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_concentration_of_mesozooplankton_expressed_as_carbon_in_sea_water
+units:             mol m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Mole Concentration of Mesozooplankton expressed as Carbon in Sea Water at Surface
+comment:           carbon  concentration from mesozooplankton (20-200 um) component alone
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          zmeso
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    zoocmisc
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_concentration_of_miscellaneous_zooplankton_expressed_as_carbon_in_sea_water
+units:             mol m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Other Zooplankton Carbon Concentration at Surface
+comment:           carbon from additional zooplankton component concentrations alone (e.g. Micro, meso).  Since the models all have different numbers of components, this variable has been included to provide a check for intercomparison between models since some phytoplankton groups are supersets.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          zoocmisc
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    talk
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     sea_water_alkalinity_expressed_as_mole_equivalent
+units:             mol m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Total Alkalinity at Surface
+comment:           total alkalinity equivalent concentration (including carbonate, nitrogen, silicate, and borate components)
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          talk
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    ph
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     sea_water_ph_reported_on_total_scale
+units:             1
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         pH at Surface
+comment:           negative log of hydrogen ion concentration with the concentration expressed as mol H kg-1.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          ph
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    o2
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_concentration_of_molecular_oxygen_in_sea_water
+units:             mol m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Dissolved Oxygen Concentration at Surface
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          o2
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    no3
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_concentration_of_nitrate_in_sea_water
+units:             mol m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Dissolved Nitrate Concentration at Surface
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          no3
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    nh4
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_concentration_of_ammonium_in_sea_water
+units:             mol m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Dissolved Ammonium Concentration at Surface
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          nh4
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    po4
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_concentration_of_phosphate_in_sea_water
+units:             mol m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Dissolved Phosphate Concentration at Surface
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          po4
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    dfe
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_concentration_of_dissolved_iron_in_sea_water
+units:             mol m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Dissolved Iron Concentration at Surface
+comment:           dissolved iron in sea water is meant to include both Fe2+ and Fe3+ ions (but not, e.g., particulate detrital iron)
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          dfe
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    si
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_concentration_of_silicate_in_sea_water
+units:             mol m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Dissolved Silicate Concentration at Surface
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          si
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    chl
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mass_concentration_of_phytoplankton_expressed_as_chlorophyll_in_sea_water
+units:             kg m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Total Chlorophyll Mass Concentration at Surface
+comment:           sum of chlorophyll from all phytoplankton group concentrations.  In most models this is equal to chldiat+chlmisc, that is the sum of ""Diatom Chlorophyll Mass Concentration"" plus ""Other Phytoplankton Chlorophyll Mass Concentration""
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          chl
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    chldiat
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mass_concentration_of_diatoms_expressed_as_chlorophyll_in_sea_water
+units:             kg m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Diatom Chlorophyll Mass Concentration at Surface
+comment:           chlorophyll from diatom phytoplankton component concentration alone
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          chldiat
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    chldiaz
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mass_concentration_of_diazotrophs_expressed_as_chlorophyll_in_sea_water
+units:             kg m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Mass Concentration of Diazotrophs expressed as Chlorophyll in Sea Water at Surface
+comment:           chlorophyll concentration from the diazotrophic phytoplankton component alone
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          chldiaz
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    chlcalc
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mass_concentration_of_calcareous_phytoplankton_expressed_as_chlorophyll_in_sea_water
+units:             kg m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Mass Concentration of Calcareous Phytoplankton expressed as Chlorophyll in Sea Water at Surface
+comment:           chlorophyll concentration from the calcite-producing phytoplankton component alone
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          chlcalc
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    chlpico
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mass_concentration_of_picophytoplankton_expressed_as_chlorophyll_in_sea_water
+units:             kg m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Mass Concentration of Picophytoplankton expressed as Chlorophyll in Sea Water at Surface
+comment:           chlorophyll concentration from the picophytoplankton (<2 um) component alone
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          chlpico
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    chlmisc
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mass_concentration_of_miscellaneous_phytoplankton_expressed_as_chlorophyll_in_sea_water
+units:             kg m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Other Phytoplankton Chlorophyll Mass Concentration at Surface
+comment:           chlorophyll from additional phytoplankton component concentrations alone
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          chlmisc
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    pon
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_concentration_of_particulate_organic_matter_expressed_as_nitrogen_in_sea_water
+units:             mol m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Particulate Organic Nitrogen Concentration at Surface
+comment:           sum of particulate organic nitrogen component concentrations
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          pon
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    pop
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_concentration_of_particulate_organic_matter_expressed_as_phosphorus_in_sea_water
+units:             mol m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Particulate Organic Phosphorus Concentration at Surface
+comment:           sum of particulate organic phosphorus component concentrations
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          pop
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    bfe
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_concentration_of_particulate_organic_matter_expressed_as_iron_in_sea_water
+units:             mol m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Particulate Biogenic Iron Concentration at Surface
+comment:           sum of particulate organic iron component concentrations
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          bfe
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    bsi
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_concentration_of_particulate_matter_expressed_as_silicon_in_sea_water
+units:             mol m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Particulate Biogenic Silica Concentration at Surface
+comment:           sum of particulate silica component concentrations
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          bsi
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    phyn
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_concentration_of_phytoplankton_expressed_as_nitrogen_in_sea_water
+units:             mol m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Phytoplankton Nitrogen Concentration at Surface
+comment:           sum of phytoplankton nitrogen component concentrations
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          phyn
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    phyp
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_concentration_of_phytoplankton_expressed_as_phosphorus_in_sea_water
+units:             mol m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Phytoplankton Phosphorus Concentration at Surface
+comment:           sum of phytoplankton phosphorus components
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          phyp
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    phyfe
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_concentration_of_phytoplankton_expressed_as_iron_in_sea_water
+units:             mol m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Phytoplankton Iron Concentration at Surface
+comment:           sum of phytoplankton iron component concentrations
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          phyfe
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    physi
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_concentration_of_phytoplankton_expressed_as_silicon_in_sea_water
+units:             mol m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Phytoplankton Silica Concentration at Surface
+comment:           sum of phytoplankton silica component concentrations
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          physi
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    dms
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_concentration_of_dimethyl_sulfide_in_sea_water
+units:             mol m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Dimethyl Sulphide Concentration at Surface
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          dms
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    co3
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_concentration_of_carbonate_expressed_as_carbon_in_sea_water
+units:             mol m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Mole Concentration of Carbonate expressed as Carbon in Sea Water at Surface
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          co3
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    co3satcalc
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_concentration_of_calcite_expressed_as_carbon_in_sea_water_at_saturation
+units:             mol m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Mole Concentration of Calcite expressed as Carbon in Sea Water at Saturation at Surface
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          co3satcalc
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    co3satarag
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_concentration_of_aragonite_expressed_as_carbon_in_sea_water_at_saturation
+units:             mol m-3
+cell_methods:      time: mean area: mean where sea 
+cell_measures:     area: areacello volume: volcello
+long_name:         Mole Concentration of Aragonite expressed as Carbon in Sea Water at Saturation at Surface
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth0m
+out_name:          co3satarag
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    intpp
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     net_primary_mole_productivity_of_carbon_by_phytoplankton
+units:             mol m-2 s-1
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Primary Organic Carbon Production by All Types of Phytoplankton
+comment:           Vertically integrated total primary (organic carbon) production by phytoplankton.  This should equal the sum of intpdiat+intpphymisc, but those individual components may be unavailable in some models.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          intpp
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    intpnitrate
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     net_primary_mole_productivity_of_carbon_due_to_nitrate_utilization
+units:             mol m-2 s-1
+cell_methods:      time: mean area: where sea
+cell_measures:     area: areacello
+long_name:         Primary Organic Carbon Production by Phytoplankton Based on Nitrate Uptake Alone
+comment:           Vertically integrated primary (organic carbon) production by phytoplankton based on nitrate uptake alone
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          intpnitrate
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    intpdiat
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     net_primary_mole_productivity_of_carbon_by_diatoms
+units:             mol m-2 s-1
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Primary Organic Carbon Production by Diatoms
+comment:           Vertically integrated primary (organic carbon) production by the diatom phytoplankton component alone
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          intpdiat
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    intpdiaz
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     net_primary_mole_productivity_of_carbon_by_diazotrophs
+units:             mol m-2 s-1
+cell_methods:      time: mean area: where sea
+cell_measures:     area: areacello
+long_name:         Net Primary Mole Productivity of Carbon by Diazotrophs
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          intpdiaz
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    intpcalc
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     net_primary_mole_productivity_of_carbon_by_calcareous_phytoplankton
+units:             mol m-2 s-1
+cell_methods:      time: mean area: where sea
+cell_measures:     area: areacello
+long_name:         Net Primary Mole Productivity of Carbon by Calcareous Phytoplankton
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          intpcalc
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    intppico
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     net_primary_mole_productivity_of_carbon_by_picophytoplankton
+units:             mol m-2 s-1
+cell_methods:      time: mean area: where sea
+cell_measures:     area: areacello
+long_name:         Net Primary Mole Productivity of Carbon by Picophytoplankton
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          intppico
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    intpmisc
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     net_primary_mole_productivity_of_carbon_by_miscellaneous_phytoplankton
+units:             mol m-2 s-1
+cell_methods:      time: mean area: where sea
+cell_measures:     area: areacello
+long_name:         Primary Organic Carbon Production by Other Phytoplankton
+comment:           Vertically integrated total primary (organic carbon) production by other phytoplankton components alone
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          intpmisc
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    intpbfe
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     tendency_of_ocean_mole_content_of_iron_due_to_biological_production
+units:             mol m-2 s-1
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Iron Production
+comment:           Vertically integrated biogenic iron production
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          intpbfe
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    intpbsi
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     tendency_of_ocean_mole_content_of_silicon_due_to_biological_production
+units:             mol m-2 s-1
+cell_methods:      time: mean area: where sea
+cell_measures:     area: areacello
+long_name:         Silica Production
+comment:           Vertically integrated biogenic silica production
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          intpbsi
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    intpcalcite
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     tendency_of_ocean_mole_content_of_calcite_expressed_as_carbon_due_to_biological_production
+units:             mol m-2 s-1
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Calcite Production
+comment:           Vertically integrated calcite production
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          intpcalcite
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    intparag
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     tendency_of_ocean_mole_content_of_aragonite_expressed_as_carbon_due_to_biological_production
+units:             mol m-2 s-1
+cell_methods:      time: mean area: where sea
+cell_measures:     area: areacello
+long_name:         Aragonite Production
+comment:           Vertically integrated aragonite production
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          intparag
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    epc100
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     sinking_mole_flux_of_particulate_organic_matter_expressed_as_carbon_in_sea_water
+units:             mol m-2 s-1
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Downward Flux of Particle Organic Carbon
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth100m
+out_name:          epc100
+type:              real
+positive:          down
+!----------------------------------
+!
+
+!============
+variable_entry:    epfe100
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     sinking_mole_flux_of_particulate_iron_in_sea_water
+units:             mol m-2 s-1
+cell_methods:      time: mean area: where sea
+cell_measures:     area: areacello
+long_name:         Downward Flux of Particulate Iron
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth100m
+out_name:          epfe100
+type:              real
+positive:          down
+!----------------------------------
+!
+
+!============
+variable_entry:    epsi100
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     sinking_mole_flux_of_particulate_silicon_in_sea_water
+units:             mol m-2 s-1
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Downward Flux of Particulate Silica
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth100m
+out_name:          epsi100
+type:              real
+positive:          down
+!----------------------------------
+!
+
+!============
+variable_entry:    epcalc100
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     sinking_mole_flux_of_calcite_expressed_as_carbon_in_sea_water
+units:             mol m-2 s-1
+cell_methods:      time: mean area: where sea
+cell_measures:     area: areacello
+long_name:         Downward Flux of Calcite
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth100m
+out_name:          epcalc100
+type:              real
+positive:          down
+!----------------------------------
+!
+
+!============
+variable_entry:    eparag100
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     sinking_mole_flux_of_aragonite_expressed_as_carbon_in_sea_water
+units:             mol m-2 s-1
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Downward Flux of Aragonite
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time depth100m
+out_name:          eparag100
+type:              real
+positive:          down
+!----------------------------------
+!
+
+!============
+variable_entry:    intdic
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_mass_content_of_dissolved_inorganic_carbon
+units:             kg m-2
+cell_methods:      time: mean area: where sea
+cell_measures:     area: areacello
+long_name:         Dissolved Inorganic Carbon Content
+comment:           Vertically integrated DIC
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          intdic
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    spco2
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     surface_partial_pressure_of_carbon_dioxide_in_sea_water
+units:             Pa
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Surface Aqueous Partial Pressure of CO2
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          spco2
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    dpco2
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     surface_carbon_dioxide_partial_pressure_difference_between_sea_water_and_air
+units:             Pa
+cell_methods:      time: mean area: where sea
+cell_measures:     area: areacello
+long_name:         Delta PCO2
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          dpco2
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    dpo2
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     surface_molecular_oxygen_partial_pressure_difference_between_sea_water_and_air
+units:             Pa
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Delta PO2
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          dpo2
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    fgco2
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     surface_downward_mass_flux_of_carbon_dioxide_expressed_as_carbon
+units:             kg m-2 s-1
+cell_methods:      time: mean area: where sea
+cell_measures:     area: areacello
+long_name:         Surface Downward CO2 Flux
+comment:           Gas exchange flux of CO2 (positive into ocean)
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          fgco2
+type:              real
+positive:          down
+!----------------------------------
+!
+
+!============
+variable_entry:    fgo2
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     surface_downward_mole_flux_of_molecular_oxygen
+units:             mol m-2 s-1
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Surface Downward O2 Flux
+comment:           Gas exchange flux of O2 (positive into ocean)
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          fgo2
+type:              real
+positive:          down
+!----------------------------------
+!
+
+!============
+variable_entry:    fgdms
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     surface_upward_mole_flux_of_dimethyl_sulfide
+units:             mol m-2 s-1
+cell_methods:      time: mean area: where sea
+cell_measures:     area: areacello
+long_name:         Surface Upward DMS Flux
+comment:           Gas exchange flux of DMS (positive into atmosphere)
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          fgdms
+type:              real
+positive:          up
+!----------------------------------
+!
+
+!============
+variable_entry:    fsc
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     tendency_of_ocean_mole_content_of_carbon_due_to_runoff_and_sediment_dissolution
+units:             mol m-2 s-1
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Flux of Carbon Into Ocean Surface by Runoff and Sediment Dissolution
+comment:           Carbon supply to ocean through runoff and sediment dissolution (neglects gas exchange)
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          fsc
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    frc
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     tendency_of_ocean_mole_content_of_carbon_due_to_sedimentation
+units:             mol m-2 s-1
+cell_methods:      time: mean area: where sea
+cell_measures:     area: areacello
+long_name:         Downward Carbon Flux at Ocean Bottom
+comment:           Carbon loss to sediments
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          frc
+type:              real
+positive:          down
+!----------------------------------
+!
+
+!============
+variable_entry:    intpn2
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     tendency_of_ocean_mole_content_of_elemental_nitrogen_due_to_fixation
+units:             mol m-2 s-1
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Nitrogen Fixation Rate in Ocean
+comment:           Vertically integrated nitrogen fixation
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          intpn2
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    fsn
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     tendency_of_ocean_mole_content_of_elemental_nitrogen_due_to_deposition_and_fixation_and_runoff
+units:             mol m-2 s-1
+cell_methods:      time: mean area: where sea
+cell_measures:     area: areacello
+long_name:         Surface Downward Net Flux of Nitrogen
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          fsn
+type:              real
+positive:          down
+!----------------------------------
+!
+
+!============
+variable_entry:    frn
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     tendency_of_ocean_mole_content_of_elemental_nitrogen_due_to_denitrification_and_sedimentation
+units:             mol m-2 s-1
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Nitrogen Loss to Sediments and through Denitrification
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          frn
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    fsfe
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     tendency_of_ocean_mole_content_of_iron_due_to_deposition_and_runoff_and_sediment_dissolution
+units:             mol m-2 s-1
+cell_methods:      time: mean area: where sea
+cell_measures:     area: areacello
+long_name:         Surface Downward Net Flux of Iron
+comment:           Iron supply through deposition flux onto sea surface, runoff, coasts, sediments, etc
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          fsfe
+type:              real
+positive:          down
+!----------------------------------
+!
+
+!============
+variable_entry:    frfe
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     tendency_of_ocean_mole_content_of_iron_due_to_sedimentation
+units:             mol m-2 s-1
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Iron Loss to Sediments
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          frfe
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    o2min
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_concentration_of_dissolved_molecular_oxygen_in_sea_water_at_shallowest_local_minimum_in_vertical_profile
+units:             mol m-3
+cell_methods:      time: mean area: where sea depth: minimum
+cell_measures:     area: areacello
+long_name:         Oxygen Minimum Concentration
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          o2min
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    zo2min
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     depth_at_shallowest_local_minimum_in_vertical_profile_of_mole_concentration_of_dissolved_molecular_oxygen_in_sea_water
+units:             m
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Depth of Oxygen Minimum Concentration
+comment:           Depth of vertical minimum concentration of dissolved oxygen gas (if two, then the shallower)
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          zo2min
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    zsatcalc
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     minimum_depth_of_calcite_undersaturation_in_sea_water
+units:             m
+cell_methods:      time: mean area: where sea
+cell_measures:     area: areacello
+long_name:         Calcite Saturation Depth
+comment:           Depth of calcite saturation horizon (0 if < surface, ""missing"" if > bottom, if two, then the shallower)
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          zsatcalc
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    zsatarag
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     minimum_depth_of_aragonite_undersaturation_in_sea_water
+units:             m
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Aragonite Saturation Depth
+comment:           Depth of aragonite saturation horizon (0 if < surface, ""missing""  if > bottom, if two, then the shallower)
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          zsatarag
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    fddtdic
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     tendency_of_ocean_mole_content_of_dissolved_inorganic_carbon
+units:             mol m-2 s-1
+cell_methods:      time: mean area: where sea
+cell_measures:     area: areacello
+long_name:         Rate of Change of Net Dissolved Inorganic Carbon
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time olayer100m
+out_name:          fddtdic
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    fddtdin
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     tendency_of_ocean_mole_content_of_dissolved_inorganic_nitrogen
+units:             mol m-2 s-1
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Rate of Change of Net Dissolved Inorganic Nitrogen
+comment:           Net time rate of change of nitrogen nutrients (e.g. NO3+NH4) 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time olayer100m
+out_name:          fddtdin
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    fddtdip
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     tendency_of_ocean_mole_content_of_dissolved_inorganic_phosphorus
+units:             mol m-2 s-1
+cell_methods:      time: mean area: where sea
+cell_measures:     area: areacello
+long_name:         Rate of Change of Net Dissolved Inorganic Phosphate
+comment:           vertical integral of net  time rate of change of phosphate 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time olayer100m
+out_name:          fddtdip
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    fddtdife
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     tendency_of_ocean_mole_content_of_dissolved_inorganic_iron
+units:             mol m-2 s-1
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Rate of Change of Net Dissolved Inorganic Iron
+comment:           vertical integral of net time rate of change of dissolved inorganic iron 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time olayer100m
+out_name:          fddtdife
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    fddtdisi
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     tendency_of_ocean_mole_content_of_dissolved_inorganic_silicon
+units:             mol m-2 s-1
+cell_methods:      time: mean area: where sea
+cell_measures:     area: areacello
+long_name:         Rate of Change of Net Dissolved Inorganic Silicate
+comment:           vertical integral of net time rate of change of dissolved inorganic silicate 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time olayer100m
+out_name:          fddtdisi
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    fddtalk
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     integral_wrt_depth_of_tendency_of_sea_water_alkalinity_expressed_as_mole_equivalent
+units:             mol m-2 s-1
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Rate of Change of Alkalinity
+comment:           vertical integral of net time rate of change of alkalinity 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time olayer100m
+out_name:          fddtalk
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    fbddtdic
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     tendency_of_ocean_mole_content_of_dissolved_inorganic_carbon_due_to_biological_processes
+units:             mol m-2 s-1
+cell_methods:      time: mean area: where sea
+cell_measures:     area: areacello
+long_name:         Rate of Change of Dissolved Inorganic Carbon due to Biological Activity
+comment:           vertical integral of net biological terms in time rate of change of dissolved inorganic carbon 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time olayer100m
+out_name:          fbddtdic
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    fbddtdin
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     tendency_of_ocean_mole_content_of_dissolved_inorganic_nitrogen_due_to_biological_processes
+units:             mol m-2 s-1
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Rate of Change of Dissolved Inorganic Nitrogen due to Biological Activity
+comment:           vertical integral of net biological terms in time rate of change of nitrogen nutrients (e.g. NO3+NH4) 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time olayer100m
+out_name:          fbddtdin
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    fbddtdip
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     tendency_of_ocean_mole_content_of_dissolved_inorganic_phosphorus_due_to_biological_processes
+units:             mol m-2 s-1
+cell_methods:      time: mean area: where sea
+cell_measures:     area: areacello
+long_name:         Rate of Change of Dissolved Inorganic Phosphate due to Biological Activity
+comment:           vertical integral of net biological terms in time rate of change of phosphate 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time olayer100m
+out_name:          fbddtdip
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    fbddtdife
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     tendency_of_ocean_mole_content_of_dissolved_inorganic_iron_due_to_biological_processes
+units:             mol m-2 s-1
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Rate of Change of Dissolved Inorganic Iron due to Biological Activity
+comment:           vertical integral of net biological terms in time rate of change of dissolved inorganic iron 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time olayer100m
+out_name:          fbddtdife
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    fbddtdisi
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     tendency_of_ocean_mole_content_of_dissolved_inorganic_silicon_due_to_biological_processes
+units:             mol m-2 s-1
+cell_methods:      time: mean area: where sea
+cell_measures:     area: areacello
+long_name:         Rate of Change of Dissolved Inorganic Silicate due to Biological Activity
+comment:           vertical integral of net biological terms in time rate of change of dissolved inorganic silicate 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time olayer100m
+out_name:          fbddtdisi
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    fbddtalk
+!============
+modeling_realm:    ocnBgchem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     integral_wrt_depth_of_tendency_of_sea_water_alkalinity_expressed_as_mole_equivalent_due_to_biological_processes
+units:             mol m-2 s-1
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Rate of Change of Biological Alkalinity due to Biological Activity
+comment:           vertical integral of net biological terms in time rate of change of alkalinity 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time olayer100m
+out_name:          fbddtalk
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    masso
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     sea_water_mass
+units:             kg 
+cell_methods:      time: mean area: sum where sea
+long_name:         Sea Water Mass 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        time
+out_name:          masso
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    pbo
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     sea_water_pressure_at_sea_floor
+units:             dbar 
+cell_methods:      time: mean
+cell_measures:     area: areacello
+long_name:         Sea Water Pressure at Sea floor 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          pbo
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    pso
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     sea_water_pressure_at_sea_water_surface
+units:             dbar 
+cell_methods:      time: mean
+cell_measures:     area: areacello
+long_name:         Sea Water Pressure at Sea Water Surface 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          pso
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    volo
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     sea_water_volume
+units:             m3
+cell_methods:      time: mean area: sum where sea
+long_name:         Sea Water Volume 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        time
+out_name:          volo
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    zos
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     sea_surface_height_above_geoid
+units:             m 
+cell_methods:      time: mean
+cell_measures:     area: areacello
+long_name:         Sea Surface Height Above Geoid 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          zos
+type:              real
+valid_min:         -13.97
+valid_max:         9.575
+ok_min_mean_abs:   0.008384
+ok_max_mean_abs:   1.572
+!----------------------------------
+!
+
+!============
+variable_entry:    zossq
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     square_of_sea_surface_height_above_geoid
+units:             m2
+cell_methods:      time: mean
+cell_measures:     area: areacello
+long_name:         Square of Sea Surface Height Above Geoid 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          zossq
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    zosga
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     global_average_sea_level_change
+units:             m 
+cell_methods:      time: mean area: mean where sea
+long_name:         Global Average Sea Level Change 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        time
+out_name:          zosga
+type:              real
+valid_min:         -0.1426
+valid_max:         0.382
+ok_min_mean_abs:   -0.09124
+ok_max_mean_abs:   0.3304
+!----------------------------------
+!
+
+!============
+variable_entry:    zossga
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     global_average_steric_sea_level_change
+units:             m 
+cell_methods:      time: mean area: mean where sea
+long_name:         Global Average Steric Sea Level Change 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        time
+out_name:          zossga
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    zostoga
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     global_average_thermosteric_sea_level_change
+units:             m 
+cell_methods:      time: mean area: mean where sea
+long_name:         Global Average Thermosteric Sea Level Change 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        time
+out_name:          zostoga
+type:              real
+valid_min:         -0.1375
+valid_max:         0.3734
+ok_min_mean_abs:   -0.0511
+ok_max_mean_abs:   0.2998
+!----------------------------------
+!
+
+!============
+variable_entry:    masscello
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     sea_water_mass_per_unit_area
+units:             kg m-2
+cell_methods:      time: mean
+cell_measures:     area: areacello volume: volcello
+long_name:         Sea Water Mass Per Unit Area 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time
+out_name:          masscello
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    thkcello
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     cell_thickness
+units:             m 
+cell_methods:      time: mean
+cell_measures:     area: areacello volume: volcello
+long_name:         Ocean Model Cell Thickness 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time
+out_name:          thkcello
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    thetao
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     sea_water_potential_temperature
+units:             K 
+cell_methods:      time: mean
+cell_measures:     area: areacello volume: volcello
+long_name:         Sea Water Potential Temperature 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time
+out_name:          thetao
+type:              real
+valid_min:         -9.37e+17
+valid_max:         1.05e+20
+ok_min_mean_abs:   -9.37e+17
+ok_max_mean_abs:   1.05e+20
+!----------------------------------
+!
+
+!============
+variable_entry:    thetaoga
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     sea_water_potential_temperature
+units:             K 
+cell_methods:      time: mean area: mean where sea
+long_name:         Global Average Sea Water Potential Temperature 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        time
+out_name:          thetaoga
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    tos
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     sea_surface_temperature
+units:             K 
+cell_methods:      time: mean
+cell_measures:     area: areacello
+long_name:         Sea Surface Temperature 
+comment:           "this may differ from ""surface temperature"" in regions of sea ice."
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          tos
+type:              real
+valid_min:         257.4
+valid_max:         325.2
+ok_min_mean_abs:   272
+ok_max_mean_abs:   303.5
+!----------------------------------
+!
+
+!============
+variable_entry:    tossq
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     square_of_sea_surface_temperature
+units:             K2 
+cell_methods:      time: mean
+cell_measures:     area: areacello
+long_name:         Square of Sea Surface Temperature 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          tossq
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    so
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     sea_water_salinity
+units:             psu 
+cell_methods:      time: mean
+cell_measures:     area: areacello volume: volcello
+long_name:         Sea Water Salinity 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time
+out_name:          so
+type:              real
+valid_min:         -9.37e+17
+valid_max:         1.05e+20
+ok_min_mean_abs:   -9.37e+17
+ok_max_mean_abs:   1.05e+20
+!----------------------------------
+!
+
+!============
+variable_entry:    soga
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     sea_water_salinity
+units:             psu 
+cell_methods:      time: mean area: mean where sea
+long_name:         Global Mean Sea Water Salinity 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        time
+out_name:          soga
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    sos
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     sea_surface_salinity
+units:             psu 
+cell_methods:      time: mean
+cell_measures:     area: areacello
+long_name:         Sea Surface Salinity 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          sos
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    rhopoto
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     sea_water_potential_density
+units:             kg m-3
+cell_methods:      time: mean
+cell_measures:     area: areacello volume: volcello
+long_name:         Sea Water Potential Density 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time
+out_name:          rhopoto
+type:              real
+valid_min:         -3.257
+valid_max:         1094
+ok_min_mean_abs:   10.38
+ok_max_mean_abs:   1079
+!----------------------------------
+!
+
+!============
+variable_entry:    agessc
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     sea_water_age_since_surface_contact
+units:             yr 
+cell_methods:      time: mean
+cell_measures:     area: areacello volume: volcello
+long_name:         Sea Water Age Since Surface Contact 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time
+out_name:          agessc
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    cfc11
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     moles_of_cfc11_per_unit_mass_in_sea_water
+units:             mol kg-1 
+cell_methods:      time: mean
+cell_measures:     area: areacello volume: volcello
+long_name:         Moles Per Unit Mass of CFC-11 in Sea Water 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time
+out_name:          cfc11
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    msftbarot
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_barotropic_mass_streamfunction
+units:             kg s-1
+cell_methods:      time: mean
+cell_measures:     area: areacello
+long_name:         Ocean Barotropic Mass Streamfunction 
+comment:           differs from CMIP3 because it includes mass.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          msftbarot
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    mlotst
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_mixed_layer_thickness_defined_by_sigma_t
+units:             m 
+cell_methods:      time: mean
+cell_measures:     area: areacello
+long_name:         Ocean Mixed Layer Thickness Defined by Sigma T 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          mlotst
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    mlotstsq
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     square_of_ocean_mixed_layer_thickness_defined_by_sigma_t
+units:             m2
+cell_methods:      time: mean
+cell_measures:     area: areacello
+long_name:         Square of Ocean Mixed Layer Thickness Defined by Sigma T 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          mlotstsq
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    omldamax
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_mixed_layer_thickness_defined_by_mixing_scheme
+units:             m 
+cell_methods:      time: maximum within days time: mean over days
+cell_measures:     area: areacello
+long_name:         Mean Daily Maximum Ocean Mixed Layer Thickness Defined by Mixing Scheme 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          omldamax
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    omlmax
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_mixed_layer_thickness_defined_by_mixing_scheme
+units:             m 
+cell_methods:      time: maximum
+cell_measures:     area: areacello
+long_name:         Monthly Maximum Ocean Mixed Layer Thickness Defined by Mixing Scheme 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          omlmax
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    uo
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     sea_water_x_velocity
+units:             m s-1
+cell_methods:      time: mean
+long_name:         Sea Water X Velocity 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time
+out_name:          uo
+type:              real
+valid_min:         -1.041e+18
+valid_max:         1.05e+20
+ok_min_mean_abs:   -1.041e+18
+ok_max_mean_abs:   1.05e+20
+!----------------------------------
+!
+
+!============
+variable_entry:    vo
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     sea_water_y_velocity
+units:             m s-1
+cell_methods:      time: mean
+long_name:         Sea Water Y Velocity 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time
+out_name:          vo
+type:              real
+valid_min:         -1.041e+18
+valid_max:         1.05e+20
+ok_min_mean_abs:   -1.041e+18
+ok_max_mean_abs:   1.05e+20
+!----------------------------------
+!
+
+!============
+variable_entry:    wmo
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     upward_ocean_mass_transport
+units:             kg s-1
+cell_methods:      time: mean
+cell_measures:     area: areacello volume: volcello
+long_name:         Upward Ocean Mass Transport 
+comment:           differs from CMIP3, which only had upward velocity.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time
+out_name:          wmo
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    wmosq
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     square_of_upward_ocean_mass_transport
+units:             kg2 s-2
+cell_methods:      time: mean
+cell_measures:     area: areacello volume: volcello
+long_name:         Square of Upward Ocean Mass Transport 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time
+out_name:          wmosq
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    umo
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_mass_x_transport
+units:             kg s-1
+cell_methods:      time: mean
+long_name:         Ocean Mass X Transport 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time
+out_name:          umo
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    vmo
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_mass_y_transport
+units:             kg s-1
+cell_methods:      time: mean
+long_name:         Ocean Mass Y Transport 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time
+out_name:          vmo
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    msftmyz
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_meridional_overturning_mass_streamfunction
+units:             kg s-1
+cell_methods:      time: mean longitude: mean
+long_name:         Ocean Meridional Overturning Mass Streamfunction 
+comment:           differs from CMIP3 because it includes mass.  
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        latitude olevel basin time
+out_name:          msftmyz
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    msftmrhoz
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_meridional_overturning_mass_streamfunction
+units:             kg s-1
+cell_methods:      time: mean longitude: mean
+long_name:         Ocean Meridional Overturning Mass Streamfunction 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        latitude rho basin time
+out_name:          msftmrhoz
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    msftyyz
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_y_overturning_mass_streamfunction
+units:             kg s-1
+cell_methods:      time: mean longitude: mean
+long_name:         Ocean Y Overturning Mass Streamfunction 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        latitude olevel basin time
+out_name:          msftyyz
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    msftyrhoz
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_y_overturning_mass_streamfunction
+units:             kg s-1
+cell_methods:      time: mean longitude: mean
+long_name:         Ocean Y Overturning Mass Streamfunction 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        latitude rho basin time
+out_name:          msftyrhoz
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    msftmyzba
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_meridional_overturning_mass_streamfunction_due_to_bolus_advection
+units:             kg s-1
+cell_methods:      time: mean longitude: mean
+long_name:         Ocean Meridional Overturning Mass Streamfunction due to Bolus Advection 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        latitude olevel basin time
+out_name:          msftmyzba
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    msftmrhozba
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_meridional_overturning_mass_streamfunction_due_to_bolus_advection
+units:             kg s-1
+cell_methods:      time: mean longitude: mean
+long_name:         Ocean Meridional Overturning Mass Streamfunction due to Bolus Advection 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        latitude rho basin time
+out_name:          msftmrhozba
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    msftyyzba
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_y_overturning_mass_streamfunction_due_to_bolus_advection
+units:             kg s-1
+cell_methods:      time: mean longitude: mean
+long_name:         Ocean Y Overturning Mass Streamfunction due to Bolus Advection 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        latitude olevel basin time
+out_name:          msftyyzba
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    msftyrhozba
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_y_overturning_mass_streamfunction_due_to_bolus_advection
+units:             kg s-1
+cell_methods:      time: mean longitude: mean
+long_name:         Ocean Y Overturning Mass Streamfunction due to Bolus Advection 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        latitude rho basin time
+out_name:          msftyrhozba
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    hfnorth
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     northward_ocean_heat_transport
+units:             W 
+cell_methods:      time: mean
+long_name:         Northward Ocean Heat Transport 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          hfnorth
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    hfnorthba
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     northward_ocean_heat_transport_due_to_bolus_advection
+units:             W 
+cell_methods:      time: mean
+long_name:         Northward Ocean Heat Transport due to Bolus Advection 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          hfnorthba
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    hfnorthdiff
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     northward_ocean_heat_transport_due_to_diffusion
+units:             W 
+cell_methods:      time: mean
+long_name:         Northward Ocean Heat Transport due to Diffusion 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          hfnorthdiff
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    hfx
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_heat_x_transport
+units:             W 
+cell_methods:      time: mean
+long_name:         Ocean Heat X Transport 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          hfx
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    hfy
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_heat_y_transport
+units:             W 
+cell_methods:      time: mean
+long_name:         Ocean Heat Y Transport 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          hfy
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    hfyba
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_heat_y_transport_due_to_bolus_advection
+units:             W 
+cell_methods:      time: mean
+long_name:         Ocean Heat Y Transport due to Bolus Advection 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          hfyba
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    hfydiff
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_heat_y_transport_due_to_diffusion
+units:             W 
+cell_methods:      time: mean
+long_name:         Ocean Heat Y Transport due to Diffussion
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          hfydiff
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    hfxba
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_heat_x_transport_due_to_bolus_advection
+units:             W 
+cell_methods:      time: mean
+long_name:         Ocean Heat X Transport due to Bolus Advection 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          hfxba
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    hfxdiff
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_heat_x_transport_due_to_diffusion
+units:             W 
+cell_methods:      time: mean
+long_name:         Ocean Heat X Transport due to Diffusion 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          hfxdiff
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    hfbasin
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     northward_ocean_heat_transport
+units:             W
+cell_methods:      time: mean longitude: mean
+long_name:         Northward Ocean Heat Transport
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        latitude basin time
+out_name:          hfbasin
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    hfbasinba
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     northward_ocean_heat_transport_due_to_bolus_advection
+units:             W
+cell_methods:      time: mean longitude: mean
+long_name:         Northward Ocean Heat Transport due to Bolus Advection 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        latitude basin time
+out_name:          hfbasinba
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    hfbasindiff
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     northward_ocean_heat_transport_due_to_diffusion
+units:             W
+cell_methods:      time: mean longitude: mean
+long_name:         Northward Ocean Heat Transport due to Diffussion
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        latitude basin time
+out_name:          hfbasindiff
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    htovgyre
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     northward_ocean_heat_transport_due_to_gyre
+units:             W 
+cell_methods:      time: mean longitude: mean
+long_name:         Northward Ocean Heat Transport due to Gyre 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        latitude basin time
+out_name:          htovgyre
+type:              real
+valid_min:         -1.772e+15
+valid_max:         2.691e+15
+ok_min_mean_abs:   5.91e+13
+ok_max_mean_abs:   2.364e+14
+!----------------------------------
+!
+
+!============
+variable_entry:    htovovrt
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     northward_ocean_heat_transport_due_to_overturning
+units:             W 
+cell_methods:      time: mean longitude: mean
+long_name:         Northward Ocean Heat Transport due to Overturning 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        latitude basin time
+out_name:          htovovrt
+type:              real
+valid_min:         -6.263e+15
+valid_max:         1.305e+16
+ok_min_mean_abs:   2.039e+14
+ok_max_mean_abs:   8.156e+14
+!----------------------------------
+!
+
+!============
+variable_entry:    sltovgyre
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     northward_ocean_salt_transport_due_to_gyre
+units:             kg s-1
+cell_methods:      time: mean longitude: mean
+long_name:         Northward Ocean Salt Transport due to Gyre 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        latitude basin time
+out_name:          sltovgyre
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    sltovovrt
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     northward_ocean_salt_transport_due_to_overturning
+units:             kg s-1
+cell_methods:      time: mean longitude: mean
+long_name:         Northward Ocean Salt Transport due to Overturning 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        latitude basin time
+out_name:          sltovovrt
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    mfo
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     sea_water_transport_across_line
+units:             kg s-1
+cell_methods:      time: mean
+long_name:         Sea Water Transport
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        oline time
+out_name:          mfo
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    pr
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     rainfall_flux
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where ice_free_sea over sea
+cell_measures:     area: areacello
+long_name:         Rainfall Flux where Ice Free Ocean over Sea
+comment:           computed as the total mass of liquid water falling as liquid rain  into the ice-free portion of the ocean divided by the area of the ocean portion of the grid cell.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          pr
+type:              real
+valid_min:         0
+valid_max:         0.001254
+ok_min_mean_abs:   2.156e-05
+ok_max_mean_abs:   3.215e-05
+!----------------------------------
+!
+
+!============
+variable_entry:    prsn
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     snowfall_flux
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where ice_free_sea over sea
+cell_measures:     area: areacello
+long_name:         Snowfall Flux where Ice Free Ocean over Sea
+comment:           computed as the total mass per unit time of solid-phase precipitation falling into the ice-free portion of the ocean divided by the area of the ocean portion of the grid cell.   (Snowfall flux includes all types of solid-phase precipitation.)
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          prsn
+type:              real
+valid_min:         0
+valid_max:         0.0002987
+ok_min_mean_abs:   1.449e-06
+ok_max_mean_abs:   6.11e-06
+!----------------------------------
+!
+
+!============
+variable_entry:    evs
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     water_evaporation_flux
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where ice_free_sea over sea
+cell_measures:     area: areacello
+long_name:         Water Evaporation Flux Where Ice Free Ocean over Sea
+comment:           computed as the total mass of water vapor evaporating from the ice-free portion of the ocean  divided by the area of the ocean portion of the grid cell.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          evs
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    friver
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     water_flux_into_sea_water_from_rivers
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Water Flux into Sea Water From Rivers 
+comment:           computed as the river flux of water into the ocean divided by the area of the ocean portion of the grid cell.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          friver
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    ficeberg
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     water_flux_into_sea_water_from_icebergs
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello volume: volcello
+long_name:         Water Flux into Sea Water From Icebergs 
+comment:           computed as the iceberg melt water  flux into the ocean divided by the area of the ocean portion of the grid cell.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time
+out_name:          ficeberg
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    ficeberg2d
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     water_flux_into_sea_water_from_icebergs
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Water Flux into Sea Water From Icebergs 
+comment:           computed as the iceberg melt water  flux into the ocean divided by the area of the ocean portion of the grid cell.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          ficeberg
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    fsitherm
+!============
+modeling_realm:    ocean seaIce
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     water_flux_into_sea_water_due_to_sea_ice_thermodynamics
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Water Flux into Sea Water due to Sea Ice Thermodynamics 
+comment:           computed as the sea ice thermodynamic water flux into the ocean divided by the area of the ocean portion of the grid cell.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          fsitherm
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    wfo
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     water_flux_into_sea_water
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Water Flux into Sea Water 
+comment:           computed as the water  flux into the ocean divided by the area of the ocean portion of the grid cell.  This is the sum of the next two variables in this table.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          wfo
+type:              real
+valid_min:         -0.005411
+valid_max:         0.03952
+ok_min_mean_abs:   1.831e-05
+ok_max_mean_abs:   6.051e-05
+!----------------------------------
+!
+
+!============
+variable_entry:    wfonocorr
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     water_flux_into_sea_water_without_flux_correction
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Water Flux into Sea Water Without Flux Correction 
+comment:           computed as the water  flux (without flux correction) into the ocean divided by the area of the ocean portion of the grid cell.  
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          wfonocorr
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    wfcorr 
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     water_flux_correction
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Water Flux Correction 
+comment:           Positive flux implies correction adds water to ocean.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          wfcorr 
+type:              real
+positive:          down
+!----------------------------------
+!
+
+!============
+variable_entry:    vsfpr
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     virtual_salt_flux_into_sea_water_due_to_rainfall
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Virtual Salt Flux into Sea Water due to Rainfall 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          vsfpr
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    vsfevap
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     virtual_salt_flux_into_sea_water_due_to_evaporation
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Virtual Salt Flux into Sea Water due to Evaporation 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          vsfevap
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    vsfriver
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     virtual_salt_flux_into_sea_water_from_rivers
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Virtual Salt Flux into Sea Water From Rivers 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          vsfriver
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    vsfsit
+!============
+modeling_realm:    ocean seaIce
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     virtual_salt_flux_into_sea_water_due_to_sea_ice_thermodynamics
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Virtual Salt Flux into Sea Water due to Sea Ice Thermodynamics 
+comment:           This variable measures the virtual salt flux into sea water due to the melting of sea ice. It is set to zero in models which receive a real water flux.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          vsfsit
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    vsf
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     virtual_salt_flux_into_sea_water
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Virtual Salt Flux into Sea Water 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          vsf
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    vsfcorr 
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     virtual_salt_flux_correction
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Virtual Salt Flux Correction 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          vsfcorr 
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    sfdsi
+!============
+modeling_realm:    ocean seaIce
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     downward_sea_ice_basal_salt_flux
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Downward Sea Ice Basal Salt Flux
+comment:           This field is physical, and it arises since sea ice has a nonzero salt content, so it exchanges salt with the liquid ocean upon melting and freezing.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          sfdsi
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    sfriver
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     salt_flux_into_sea_water_from_rivers
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Salt Flux into Sea Water from Rivers 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          sfriver
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    hfgeou
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     upward_geothermal_heat_flux_at_sea_floor
+units:             W m-2
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Upward Geothermal Heat Flux at Sea Floor 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          hfgeou
+type:              real
+positive:          up
+!----------------------------------
+!
+
+!============
+variable_entry:    hfrainds
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     temperature_flux_due_to_rainfall_expressed_as_heat_flux_into_sea_water
+units:             W m-2
+cell_methods:      time: mean area: mean where ice_free_sea over sea
+cell_measures:     area: areacello
+long_name:         Temperature Flux due to Rainfall Expressed as Heat Flux into Sea Water 
+comment:           This is defined as ""where ice_free_sea over sea""; i.e., the total flux (considered here) entering the ice-free portion of the grid cell divided by the area of the ocean portion of the grid cell.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          hfrainds
+type:              real
+positive:          down
+!----------------------------------
+!
+
+!============
+variable_entry:    hfevapds
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     temperature_flux_due_to_evaporation_expressed_as_heat_flux_out_of_sea_water
+units:             W m-2
+cell_methods:      time: mean area: mean where ice_free_sea over sea
+cell_measures:     area: areacello
+long_name:         Temperature Flux due to Evaporation Expressed as Heat Flux Out of Sea Water 
+comment:           "This is defined as ""where ice_free_sea over sea"""
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          hfevapds
+type:              real
+positive:          up
+!----------------------------------
+!
+
+!============
+variable_entry:    hfrunoffds
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     temperature_flux_due_to_runoff_expressed_as_heat_flux_into_sea_water
+units:             W m-2
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello volume: volcello
+long_name:         Temperature Flux due to Runoff Expressed as Heat Flux into Sea Water 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time
+out_name:          hfrunoffds
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    hfrunoffds2d
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     temperature_flux_due_to_runoff_expressed_as_heat_flux_into_sea_water
+units:             W m-2
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Temperature Flux due to Runoff Expressed as Heat Flux into Sea Water 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          hfrunoffds
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    hfsnthermds
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     heat_flux_into_sea_water_due_to_snow_thermodynamics
+units:             W m-2
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello volume: volcello
+long_name:         Heat Flux into Sea Water due to Snow Thermodynamics 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time
+out_name:          hfsnthermds
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    hfsnthermds2d
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     heat_flux_into_sea_water_due_to_snow_thermodynamics
+units:             W m-2
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Heat Flux into Sea Water due to Snow Thermodynamics 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          hfsnthermds
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    hfsifrazil
+!============
+modeling_realm:    ocean seaIce
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     heat_flux_into_sea_water_due_to_freezing_of_frazil_ice
+units:             W m-2
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello volume: volcello
+long_name:         Heat Flux into Sea Water due to Frazil Ice Formation 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time
+out_name:          hfsifrazil
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    hfsifrazil2d
+!============
+modeling_realm:    ocean seaIce
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     heat_flux_into_sea_water_due_to_freezing_of_frazil_ice
+units:             W m-2
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Heat Flux into Sea Water due to Frazil Ice Formation 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          hfsifrazil
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    hfsithermds
+!============
+modeling_realm:    ocean seaIce
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     heat_flux_into_sea_water_due_to_sea_ice_thermodynamics
+units:             W m-2
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello volume: volcello
+long_name:         Heat Flux into Sea Water due to Sea Ice Thermodynamics 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time
+out_name:          hfsithermds
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    hfsithermds2d
+!============
+modeling_realm:    ocean seaIce
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     heat_flux_into_sea_water_due_to_sea_ice_thermodynamics
+units:             W m-2
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Heat Flux into Sea Water due to Sea Ice Thermodynamics 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          hfsithermds
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    hfibthermds
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     heat_flux_into_sea_water_due_to_iceberg_thermodynamics
+units:             W m-2
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello volume: volcello
+long_name:         Heat Flux into Sea Water due to Iceberg Thermodynamics 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time
+out_name:          hfibthermds
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    hfibthermds2d
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     heat_flux_into_sea_water_due_to_iceberg_thermodynamics
+units:             W m-2
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Heat Flux into Sea Water due to Iceberg Thermodynamics 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          hfibthermds
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    rlds
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     surface_net_downward_longwave_flux
+units:             W m-2
+cell_methods:      time: mean area: mean where ice_free_sea over sea
+cell_measures:     area: areacello
+long_name:         Surface Net Downward Longwave Radiation
+comment:           "This is defined as ""where ice_free_sea over sea"""
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          rlds
+type:              real
+positive:          down
+valid_min:         30.71
+valid_max:         520.5
+ok_min_mean_abs:   271.2
+ok_max_mean_abs:   323.6
+!----------------------------------
+!
+
+!============
+variable_entry:    hfls
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     surface_downward_latent_heat_flux
+units:             W m-2
+cell_methods:      time: mean area: mean where ice_free_sea over sea
+cell_measures:     area: areacello
+long_name:         Surface Downward Latent Heat Flux
+comment:           "This is defined as ""where ice_free_sea over sea"""
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          hfls
+type:              real
+positive:          down
+valid_min:         -76.77
+valid_max:         790.7
+ok_min_mean_abs:   50.39
+ok_max_mean_abs:   73.2
+!----------------------------------
+!
+
+!============
+variable_entry:    hfss
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     surface_downward_sensible_heat_flux
+units:             W m-2
+cell_methods:      time: mean area: mean where ice_free_sea over sea
+cell_measures:     area: areacello
+long_name:         Surface Downward Sensible Heat Flux
+comment:           "This is defined as ""where ice_free_sea over sea"""
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          hfss
+type:              real
+positive:          down
+valid_min:         -264.5
+valid_max:         844.8
+ok_min_mean_abs:   10.7
+ok_max_mean_abs:   34.84
+!----------------------------------
+!
+
+!============
+variable_entry:    rsntds
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     net_downward_shortwave_flux_at_sea_water_surface
+units:             W m-2
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Net Downward Shortwave Radiation at Sea Water Surface 
+comment:           This is the flux into the surface of liquid sea water only. This excludes shortwave flux absorbed by sea ice, but includes any light that passes through the ice and is absorbed by the ocean.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          rsntds
+type:              real
+positive:          down
+!----------------------------------
+!
+
+!============
+variable_entry:    rsds
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     downwelling_shortwave_flux_in_sea_water
+units:             W m-2
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello volume: volcello
+long_name:         Downwelling Shortwave Radiation in Sea Water 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time
+out_name:          rsds
+type:              real
+positive:          down
+valid_min:         -0.002946
+valid_max:         524.4
+ok_min_mean_abs:   143.9
+ok_max_mean_abs:   181.6
+!----------------------------------
+!
+
+!============
+variable_entry:    hfcorr 
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     heat_flux_correction
+units:             W m-2
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Heat Flux Correction 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          hfcorr 
+type:              real
+positive:          down
+!----------------------------------
+!
+
+!============
+variable_entry:    hfds
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     surface_downward_heat_flux_in_sea_water
+units:             W m-2
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello
+long_name:         Downward Heat Flux at Sea Water Surface
+comment:           "This is the net flux of heat entering the liquid water column through its upper surface (excluding any ""flux adjustment"") ."
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          hfds
+type:              real
+positive:          down
+!----------------------------------
+!
+
+!============
+variable_entry:    tauuo 
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     surface_downward_x_stress
+units:             N m-2
+cell_methods:      time: mean area: mean where sea
+long_name:         Surface Downward X Stress 
+comment:           This is the stress on the liquid ocean from overlying atmosphere, sea ice, ice shelf, etc.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          tauuo 
+type:              real
+positive:          down
+!----------------------------------
+!
+
+!============
+variable_entry:    tauvo 
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     surface_downward_y_stress
+units:             N m-2
+cell_methods:      time: mean area: mean where sea
+long_name:         Surface Downward Y Stress 
+comment:           This is the stress on the liquid ocean from overlying atmosphere, sea ice, ice shelf, etc.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          tauvo 
+type:              real
+positive:          down
+!----------------------------------
+!
+
+!============
+variable_entry:    tauucorr 
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     surface_downward_x_stress_correction
+units:             N m-2
+cell_methods:      time: mean area: mean where sea
+long_name:         Surface Downward X Stress Correction 
+comment:           This is the stress on the liquid ocean from overlying atmosphere, sea ice, ice shelf, etc. 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          tauucorr 
+type:              real
+positive:          down
+!----------------------------------
+!
+
+!============
+variable_entry:    tauvcorr 
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     surface_downward_y_stress_correction
+units:             N m-2
+cell_methods:      time: mean area: mean where sea
+long_name:         Surface Downward Y Stress Correction 
+comment:           This is the stress on the liquid ocean from overlying atmosphere, sea ice, ice shelf, etc.  
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          tauvcorr 
+type:              real
+positive:          down
+!----------------------------------
+!
+
+!============
+variable_entry:    zfull
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     depth_below_geoid
+units:             m
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello 
+long_name:         Depth Below Geoid of Ocean Layer
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time
+out_name:          zfull
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    zhalf
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     depth_below_geoid
+units:             m
+cell_methods:      time: mean area: mean where sea
+cell_measures:     area: areacello 
+long_name:         Depth Below Geoid of Interfaces Between Ocean Layers
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time
+out_name:          zhalf
+type:              real
+!----------------------------------
+!
+

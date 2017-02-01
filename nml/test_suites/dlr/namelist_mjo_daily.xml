@@ -1,5 +1,5 @@
 <namelist>
-<include href="./config_private.xml"/>
+<include href="./config_private_DLR-PA2.xml"/>
 <namelist_summary>
 ###############################################################################
 namelist_mjo_daily.xml
@@ -111,7 +111,7 @@ This namelist is part of the ESMValTool
     <diag_script_cfg_dir>          ./nml/cfg_mjo/          </diag_script_cfg_dir>
     <diag_script cfg="cfg_mjo_daily_propagation.ncl">  mjo_olr_u850-200_cross_spectra.ncl  </diag_script>
 
-    <model id="noaa"> OBS NOAA-PSD-Interp ground 1 1998 1999 @{OBSPATH}/Tier2/NOAA-interp/ </model>
+    <model id="noaa"> OBS NOAA-PSD-Interp ground 1 1998 1999 @{OBSPATH}/Tier2/NOAA-PSD-Interp/ </model>
     <model id="ncep"> OBS NCEP reanaly  1   1998 1999 @{OBSPATH}/Tier2/NCEP/ </model>
 </diag>
 
@@ -124,7 +124,7 @@ This namelist is part of the ESMValTool
     <diag_script_cfg_dir>          ./nml/cfg_mjo/           </diag_script_cfg_dir>
     <diag_script cfg="cfg_mjo_daily_propagation.ncl">  mjo_olr_u850_200_ceof.ncl  </diag_script>
 
-    <model id="noaa"> OBS NOAA-PSD-Interp ground 1 1998 1999 @{OBSPATH}/Tier2/NOAA-interp/ </model>
+    <model id="noaa"> OBS NOAA-PSD-Interp ground 1 1998 1999 @{OBSPATH}/Tier2/NOAA-PSD-Interp/ </model>
     <model id="ncep"> OBS NCEP reanaly  1   1998 1999 @{OBSPATH}/Tier2/NCEP/ </model>
 </diag>
 
@@ -138,7 +138,7 @@ This namelist is part of the ESMValTool
     <diag_script_cfg_dir>          ./nml/cfg_mjo/            </diag_script_cfg_dir>
     <diag_script cfg="cfg_mjo_daily_propagation.ncl">  mjo_olr_uv850_ceof_life_cycle.ncl  </diag_script>
 
-    <model id="noaa"> OBS NOAA-PSD-Interp ground 1 1998 1999 @{OBSPATH}/Tier2/NOAA-interp/ </model>
+    <model id="noaa"> OBS NOAA-PSD-Interp ground 1 1998 1999 @{OBSPATH}/Tier2/NOAA-PSD-Interp/ </model>
     <model id="ncep"> OBS NCEP reanaly  1   1998 1999 @{OBSPATH}/Tier2/NCEP/ </model>
 </diag>
 

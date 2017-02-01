@@ -10,22 +10,26 @@
 ;;    two scripts.
 ;;
 ;; Required diag_script_info attributes (diagnostics specific)
-;;    region: selected region
-;;    time_avg: type of time average
 ;;    metric: selected metric
 ;;    normalization: type of metric normalization
-;;    ref_model: reference model used for comparison (optionally two models can
-;;               be provided in an array, the second is used as alternative)
 ;;
 ;; Optional diag_script_info attributes (diagnostic specific)
+;;    region: selected region
+;;    MultiModelMedian: calcualte multi-model median
+;;    MultiModelMean: calcualte multi-model mean
 ;;
 ;; Required variable_info attributes (variable specific)
 ;;
 ;; Optional variable_info attributes (variable specific)
 ;;
 ;; Caveats
+;;    The reference model must be specified in the main namelsit in the 
+;;    <variable> tag as <variable ref_model="XX">. An alternative model
+;;    can be also given, separated by a comme <variable ref_model="XX,"YY">.
 ;;
 ;; Modification history
+;;    20160628_A_righ_ma: moving ref_model specification from cfg- files to
+;;                        main namelist, some code restructuring necessary
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;;                        of the code
 ;;    20150325-A_laue_ax: modified reference tags used for acknowledgements
@@ -47,17 +51,16 @@ load "./diag_scripts/lib/ncl/latlon.ncl"
 load "./diag_scripts/lib/ncl/style.ncl"
 load "./diag_scripts/aux/perfmetrics/aux_perfmetrics.ncl"
 
-
 begin
 
     verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
-    info_output("<<<<<<<< Entering " + diag_script, verbosity, 4)
+    enter_msg(diag_script, "", 4)
     info_output("++++++++++++++++++++++++++++++++++++++++++", verbosity, 1)
     info_output(diag_script + " (var: " + variables(0) + ")", verbosity, 1)
     info_output("++++++++++++++++++++++++++++++++++++++++++", verbosity, 1)
 
     dim_MOD = dimsizes(models@name)
-    dim_VAR = 1
+    dim_VAR = dimsizes(variables)
     var0 = variables(0)
     field_type0 = field_types(0)
 
@@ -65,14 +68,15 @@ begin
     write_references(diag_script, \
                      "A_fran_fr", \
                      (/"A_righ_ma", "A_eyri_ve", "A_gott_kl"/), \
-                     "D_righi15gmd", \
-                     (/"E_kalnay96bams", "E_erainterim", "E_airs", "E_ceresebaf", "E_srb"/), \
+                     (/"D_righi15gmd", "D_gleckler08jgr"/), \
+                     (/"E_ncep", "E_erainterim", "E_airs", \
+                       "E_ceresebaf", "E_srb"/), \
                      (/"P_embrace", "P_esmval"/))
 end
 
 begin
 
-    vardeffile = "interface_data/" + variables(0) + "_info.tmp"
+    vardeffile = "interface_data/" + var0 + "_info.tmp"
     loadscript(vardeffile)
 
 end
@@ -85,13 +89,6 @@ begin
         file_type = "PS"
     end if
 
-    ;; Check plot type
-    if (.not.isatt(diag_script_info, "plot_type")) then
-        error_msg("f", diag_script, "", "plot_type not specified")
-    else
-        ptype = diag_script_info@plot_type
-    end if
-
     ;; Check field type
     if (.not.any(field_type0.eq.(/"T3M", "T2Ms", "T1M", "T0M", "T0Ms"/))) then
         error_msg("f", diag_script, "", "field " + field_type0 + \
@@ -99,20 +96,12 @@ begin
     end if
 
     ;; Check required diag_script_info attributes
-    req_atts = (/"time_avg", "metric", "normalization", "ref_model"/)  ; region
-    if (.not.all(isatt(diag_script_info, req_atts))) then
-        error_msg("f", diag_script, "", "missing required " + \
-                  "diag_script_info attribute:" + \
-                  req_atts(ind(.not.isatt(diag_script_info, req_atts))))
-    end if
+    req_atts = (/"metric", "normalization"/)
+    exit_if_missing_atts(diag_script_info, req_atts)
 
-    ;; Check for reference model
-    ref_model = diag_script_info@ref_model(0)
-    if (dimsizes(diag_script_info@ref_model).gt.1) then
-        info_output("More than one reference model is selected" + \
-                    "Only the first one will be used.", verbosity, 2)
-        delete(diag_script_info@ref_model)
-        diag_script_info@ref_model = ref_model
+    ;; Check for reference model definition
+    if (var_attr_ref(0).eq."None") then
+        error_msg("f", diag_script, "", "no reference model is specified")
     end if
 
     ;; Diag_script basename
@@ -120,11 +109,6 @@ begin
 
     ;; Unique names for models
     modelnames = project_style(diag_script_info, "annots")
-
-    ;; Check time average method
-    if (.not.(isatt(diag_script_info, "time_avg"))) then
-        error_msg("f", diag_script, "", "no method for time average provided")
-    end if
 
     ;; Selected region
     if (isatt(diag_script_info, "region")) then
@@ -176,44 +160,6 @@ begin
     ncdf_dir = get_output_dir(work_dir, diag_script_base) + \
         name + "_taylor_" + var0_new + ".nc"
 
-    ;; Check for multimodel median
-    flag_median = False
-    if (isatt(diag_script_info, "MultiModelMedian")) then
-        if (diag_script_info@MultiModelMean) then
-            flag_median = True
-            dim_MOD = dim_MOD + 1
-            modelnames_new = array_append_record((/"Median-model"/),\
-                                                 modelnames, 0)
-            modelsatname = array_append_record((/"Median-model"/), \
-                                               models@name, 0)
-            delete(models@name)
-            delete(modelnames)
-            models@name = modelsatname
-            modelnames = modelnames_new
-            delete(modelnames_new)
-            delete(modelsatname)
-        end if
-    end if
-
-    ;; Check for multimodel mean
-    flag_mean = False
-    if (isatt(diag_script_info, "MultiModelMean")) then
-        if (diag_script_info@MultiModelMean) then
-            flag_mean = True
-            dim_MOD = dim_MOD + 1
-            modelnames_new = array_append_record((/"Mean-model"/), \
-                                                 modelnames, 0)
-            modelsatname = array_append_record((/"Mean-model"/), \
-                                               models@name, 0)
-            delete(models@name)
-            delete(modelnames)
-            models@name = modelsatname
-            modelnames = modelnames_new
-            delete(modelnames_new)
-            delete(modelsatname)
-        end if
-    end if
-
     ;; Start calculation (if necessary)
     if (isfilepresent_esmval(ncdf_dir) .and. \
         getenv("ESMValTool_force_taylorcalc").eq."False") then
@@ -223,180 +169,146 @@ begin
 
     else
 
-        ;; Read data
+        ;; Read data precalcualted in perfmetrics_main.ncl
         do imod = 0, dim_MOD - 1
+            new_path = clim_diag_file_path(var0, field_type0, imod, \
+                                           "perfmetrics_main", \
+                                           diag_script_info)
 
-            if (flag_mean.and.flag_median) then
-                if (any(imod.eq.(/0, 1/))) then
-                    new_path = "none"
-                else
-                    new_path = \
-                        clim_diag_file_path(var0, field_type0, imod - 2, \
-                                            "perfmetrics_main", \
-                                            diag_script_info)
-                end if
-            else if (flag_mean.or.flag_median) then
-                if (imod.eq.0) then
-                    new_path = "none"
-                else
-                    new_path = \
-                        clim_diag_file_path(var0, field_type0, imod - 1, \
-                                            "perfmetrics_main", \
-                                            diag_script_info)
-                end if
-            else
-                new_path = \
-                    clim_diag_file_path(var0, field_type0, imod, \
-                                        "perfmetrics_main", \
-                                        diag_script_info)
-            end if
-            end if
-
-            if (isfilepresent_esmval(new_path)) then
-                info_output("Read in: " + new_path, verbosity, 1)
-                data_temp = ncdf_read(new_path, var0)
-                if (.not.isdefined("data")) then
-                    dim_data = \
-                        array_append_record((/dim_MOD/), \
-                                            dimsizes(data_temp), 0)
-                    data = new(dim_data, float)
-                    data!0 = "model"
-                    data&model = modelnames
-                end if
-                rank = dimsizes(dim_data)
-
-                if (rank.eq.3) then
-                    data(imod, :, :) = data_temp
-                end if
-
-                if (rank.eq.4) then
-                    data(imod, :, :, :) = data_temp
-                end if
-
-                if (rank.eq.5) then
-                    data(imod, :, :, :, :) = data_temp
-                end if
-                delete(data_temp)
-
-            else
-
-                ;; Skip this model is no data are available
+            ;; Skip current model if no data available
+            if (.not.isfilepresent_esmval(new_path)) then
                 info_output("No data available for model:" + \
                             modelnames(imod), verbosity, 1)
                 info_output("Skipping", verbosity, 1)
-
+                continue
             end if
+
+            ;; Store into global array
+            info_output("Read in: " + new_path, verbosity, 1)
+            tmp = ncdf_read(new_path, var0)
+            if (.not.isdefined("super_array")) then
+                dim_super_array = \
+                    array_append_record(dim_MOD, dimsizes(tmp), 0)
+                super_array = new(dim_super_array, float)
+                super_array!0 = "model"
+                super_array&model = models@name
+            end if
+            rank = dimsizes(dim_super_array)
+            if (rank.eq.3) then
+                super_array(imod, :, :) = tmp
+            end if
+            if (rank.eq.4) then
+                super_array(imod, :, :, :) = tmp
+            end if
+            if (rank.eq.5) then
+                super_array(imod, :, :, :, :) = tmp
+            end if
+            delete(tmp)
         end do
 
-        ;; Get the index of the reference model
-        ref_ind = ind(data&model.eq.ref_model)
-        if (all(ismissing(ref_ind))) then
-            error_msg("f", diag_script, "", "no data available for the " + \
-                      "reference model")
+        ;; Get the index of the reference/alternative model
+        refs_ind = get_ref_model_idx(models, var_attr_ref(0))
+        l_altern = dimsizes(refs_ind).gt.1
+        if (l_altern) then
+            info_output("More than one reference model is selected," + \
+                        " only the first one will be used.", verbosity, 2)
         end if
 
-        ;; Number of used references
-        dim_REF = dimsizes(diag_script_info@ref_model)
+        ;; Calculate multi-model mean/median
+        models_only = remove_index(super_array, refs_ind(0))
+        if (isatt(diag_script_info, "MultiModelMedian")) then
+            if (diag_script_info@MultiModelMean) then
+                if (rank.eq.3) then
+                    median = models_only(0:0, :, :)
+                    median(0, :, :) = dim_median_n(models_only, 0)
+                end if
+                if (rank.eq.4) then
+                    median = models_only(0:0, :, :, :)
+                    median(0, :, :, :) = dim_median_n(models_only, 0)
+                end if
+                if (rank.eq.5) then
+                    median = models_only(0:0, :, :, :, :)
+                    median(0, :, :, :, :) = dim_median_n(models_only, 0)
+                end if
+                median&model = "Median-model"
+                super_array := array_append_record(median, super_array, 0)
+                delete(median)
+                refs_ind = refs_ind + 1  ; update ref model index
+            end if
+        end if
+        if (isatt(diag_script_info, "MultiModelMean")) then
+            if (diag_script_info@MultiModelMean) then
+                if (rank.eq.3) then
+                    mean = models_only(0:0, :, :)
+                    mean(0, :, :) = dim_avg_n(models_only, 0)
+                end if
+                if (rank.eq.4) then
+                    mean = models_only(0:0, :, :, :)
+                    mean(0, :, :, :) = dim_avg_n(models_only, 0)
+                end if
+                if (rank.eq.5) then
+                    mean = models_only(0:0, :, :, :, :)
+                    mean(0, :, :, :, :) = dim_avg_n(models_only, 0)
+                end if
+                mean&model = "Mean-model"
+                super_array := array_append_record(mean, super_array, 0)
+                delete(mean)
+                refs_ind = refs_ind + 1  ; update ref model index
+            end if
+        end if
+        delete(models_only)
+
+        ;; Create separate arrays for models and observations
+        models_only = remove_index(super_array, refs_ind(0))
+        nmodels = dimsizes(models_only&model)
+        if (rank.eq.3) then
+            obs_only = super_array(refs_ind(0), :, :)
+        end if
+        if (rank.eq.4) then
+            obs_only = super_array(refs_ind(0), :, :, :)
+        end if
+        if (rank.eq.5) then
+            obs_only = super_array(refs_ind(0), :, :, :, :)
+        end if
+        delete(super_array)
 
         ;; Define result variable
-        ;; FIXME: do not need for dim_VAR dimension here, as
-        ;;        we always use 1 variable
-        val = new((/dim_VAR, dim_MOD - dim_REF, 2/), float)
+        ;; A dummy coordinate "diagnostics" (size 1) is added to facilitate
+        ;; appending different variable in the _collect script
+        val = new((/dim_VAR, nmodels, 2/), float)
         val!0 = "diagnostics"
         val!1 = "models"
         val!2 = "statistic"
         val&diagnostics = var0_new
-        val&models = modelnames(ind((models@name.ne.ref_model)))
+        val&models = models_only&model
         val&statistic = (/"stddev_ratio", "correlation"/)
         val@ncdf_dir = ncdf_dir
 
-        ;; Extract data
-        if (ptype.eq."cycle") then
-            ref = data(ref_ind, :, 0)
+        ;; Loop over models, calculate Taylor metrics
+        if (rank.eq.3) then
+            obs = obs_only(:, 0)
         end if
-        if (any(ptype.eq.(/"latlon", "zonal"/))) then
-            ref = data(ref_ind, :, :)
+        if (rank.eq.4) then
+            obs = obs_only(:, :, 0)
         end if
-        if (ptype.eq."cycle_latlon") then
-            ref = data(ref_ind, :, :, :, 0)
+        if (rank.eq.5) then
+            obs = obs_only(:, :, :, 0)
         end if
-
-        ;; Loop over models
-        ;; (second model index, for models only, omit references)
-        mod_i = 0
-        do imod = 0, dim_MOD - 1
-
-            ;; Skip reference
-            if (imod.eq.ref_ind) then
-                print(" Refmodel = " + data&model(imod))
-                continue
+        do imod = 0, nmodels - 1
+            if (rank.eq.3) then
+                model = models_only(imod, :, 0)
             end if
-
-            ;; Extract data
-
-            ;; Multimodel mean
-            if (flag_mean.and.imod.eq.0) then
-                model_ind_woref = ind(ref_model.ne.data&model)
-
-                if (ptype.eq."cycle") then
-                    var = dim_avg_n_Wrap( \
-                        data(model_ind_woref, :, 0), 0)
-                end if
-                if (any(ptype.eq.(/"latlon", "zonal"/))) then
-                    var = dim_avg_n_Wrap( \
-                        data(model_ind_woref, :, :), 0)
-                end if
-                if (ptype.eq."cycle_latlon") then
-                    var = dim_avg_n_Wrap( \
-                        data(model_ind_woref, :, :, :, 0), 0)
-                end if
-
-            ;; Multimodel median
-            else if ((flag_mean.and.(flag_median.and.imod.eq.1)).or.\
-                     (.not.flag_mean.and.(flag_median.and.imod.eq.0))) then
-
-                model_ind_woref = ind(ref_model.ne.data&model)
-                if (ptype.eq."cycle") then
-                    var = dim_median_n( \
-                        data(model_ind_woref, :, 0), 0)
-                        copy_VarMeta(data(0, :, 0), var)
-                end if
-                if (any(ptype.eq.(/"latlon", "zonal"/))) then
-                    var = dim_median_n( \
-                        data(model_ind_woref, :, :), 0)
-                        copy_VarMeta(data(0, :, :), var)
-                end if
-                if (ptype.eq."cycle_latlon") then
-                    var = dim_median_n( \
-                        data(model_ind_woref, :, :, :, 0), 0)
-                        copy_VarMeta(data(0, :, :, :, 0), var)
-                end if
-
-            else  ; Given model
-                if (ptype.eq."cycle") then
-                    var = data(imod, :, 0)
-                end if
-                if (any(ptype.eq.(/"latlon", "zonal"/))) then
-                    var = data(imod, :, :)
-                end if
-                if (ptype.eq."cycle_latlon") then
-                    var = data(imod, :, :, :, 0)
-                end if
+            if (rank.eq.4) then
+                model = models_only(imod, :, :, 0)
             end if
+            if (rank.eq.5) then
+                model = models_only(imod, :, :, :, 0)
             end if
-
-            ;; Calculate rate of standard deviations
-            val(0, mod_i, 0) = calculate_metric(var, ref, \
-                                                "stddev_ratio")
-
-            ;; Calculate pattern correlation
-            val(0, mod_i, 1) = calculate_metric(var, ref, \
-                                                "correlation")
-
-            delete(var)
-            mod_i = mod_i + 1
-
-        end do  ; loop over models
+            val(0, imod, 0) = \
+                calculate_metric(model, obs, "stddev_ratio")
+            val(0, imod, 1) = \
+                calculate_metric(model, obs, "correlation")
+        end do
 
         ;; Attach attributes to the results
         val@title = "taylor metrics"
@@ -422,11 +334,11 @@ begin
         temp_list = temp_file->temp_list
         temp_list_string = tostring(temp_list)
         ; Add new entry
-        temp_list_new_string = array_append_record( \
-            temp_list_string, ncdf_dir, 0)
+        temp_list_new_string = array_append_record(temp_list_string, \
+                                                   ncdf_dir, 0)
         temp_list_new = tochar(temp_list_new_string)
         ; Remove previous file
-        system("rm " + temp_dir)
+        system("rm -f " + temp_dir)
     else
         ncdf_char = tochar(ncdf_dir)
         temp_list_new = new((/1, dimsizes(ncdf_char)/), character)
@@ -437,6 +349,6 @@ begin
     temp = addfile(temp_dir, "c")
     temp->temp_list = temp_list_new
 
-    info_output(">>>>>>>> Leaving " + diag_script, verbosity, 4)
+    leave_msg(diag_script, "", 4)
 
 end

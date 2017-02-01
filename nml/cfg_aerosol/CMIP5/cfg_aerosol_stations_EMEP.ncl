@@ -21,7 +21,7 @@ diag_script_info@scatter_log = True
 diag_script_info@legend_outside = True
 
 ; Lat-lon limits for aerosol_stations_map
-diag_script_info@minlon = -20
+diag_script_info@minlon = -30
 diag_script_info@maxlon =  50.
 diag_script_info@minlat =  30.
 diag_script_info@maxlat =  80.

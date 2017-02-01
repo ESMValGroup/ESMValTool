@@ -1,0 +1,59 @@
+<namelist>
+<namelist_summary>
+##################################################################################
+# './namelist_MyDiag.xml' is a test namelist for the EMBRACE NCL diagnostic      # 
+# part of the ESMValTool. It specifies models and input directories as well as   #
+# global variables                                                               #
+##################################################################################
+# Contact:                                                                       #
+# Klaus-Dirk.Gottschaldt@dlr.de 
+##################################################################################
+# The namelist is part of the ESMValTool                                         #
+# ESMValTool PIs EMBRACE:                                                        #
+#  Veronika Eyring (DLR, Germany) and Klaus Wyser (SMHI, Sweden)                 #
+##################################################################################
+# THIS NAMELIST IS CALLED BY main.py                                             #
+##################################################################################
+
+##################################################################################
+# Global variables / flags
+##################################################################################
+</namelist_summary>
+<GLOBAL>
+  <write_plots type="boolean">        True              </write_plots>
+  <write_netcdf type="boolean">       True              </write_netcdf>
+  <force_processing type="boolean">   False             </force_processing>
+  <wrk_dir type="path">               ./work/  		</wrk_dir>
+  <plot_dir type="path">              ./plots  		</plot_dir>
+  <climo_dir type="path">             ./climo  		</climo_dir>
+  <regridding_dir type="path">           ./work/regridding_tmp_cmip5  </regridding_dir> 
+  <write_plot_vars type="boolean">    True              </write_plot_vars>
+  <max_data_filesize type="integer">  100              	</max_data_filesize>
+  <max_data_blocksize type="integer"> 500              	</max_data_blocksize>
+  <verbosity  type="integer">           10              	</verbosity>    # >3 ... all output
+  <exit_on_warning  type="boolean">   False             </exit_on_warning>
+  <output_file_type>    ps                		</output_file_type>
+  <read_from_vault type="boolean">        False        </read_from_vault>
+</GLOBAL>
+
+<MODELS>
+ <model> GO ref  monthly seawifs  reg   1998 2010   /gpfs/data/greenocean//ESMValTool_input/map_basic use_GO_reformat  </model> 
+
+<model>  GO  PlankTOM5  monthly   HI04  reg  1998 2009   /gpfs/data/greenocean/ESMValTool_input/map_basic   use_GO_reformat </model> 
+
+ <model>  GO_gridfile  PlankTOM10   monthly   LIG9  orca2  1998 2010  /gpfs/data/greenocean/ESMValTool_input  /gpfs/data/greenocean/grid_files/area_NEMO-2deg.nc use_GO_reformat </model>
+</MODELS>
+
+<DIAGNOSTICS>
+<diag>
+<variable_def_dir>      ./variable_defs/    </variable_def_dir>
+<variable ref_model="ref">   chl  </variable>
+   <field_type> TO2Ms </field_type>
+ <diag_script_cfg_dir>                     ./nml/cfg_GO/      </diag_script_cfg_dir>
+<!--  <diag_script cfg="chlDiag.ncl"> GO_tsline.ncl </diag_script> -->
+ <diag_script cfg="chlcompmapDiag.ncl"> GO_comp_map.ncl </diag_script>
+</diag>
+</DIAGNOSTICS>
+
+
+</namelist>

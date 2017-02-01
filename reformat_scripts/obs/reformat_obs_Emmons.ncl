@@ -229,10 +229,14 @@ begin
             gAtt@conventions   = "CF/CMOR"
 
             ;; Outfile
+            d1 = str_get_field(timerange, 1, "-")
+            year1 = str_get_field(d1, 1, "/") + str_get_field(d1, 2, "/")
+            d2 = str_get_field(timerange, 2, "-")
+            year2 = str_get_field(d1, 1, "/") + str_get_field(d2, 2, "/")
             fout = OUTDIR + "OBS_" + OBSNAME + "_campaign_" + \
                 str_sub_str(campaign, "_", "-") + "-" + \
                 str_sub_str(location, "_", "-") + "_" + FIELD + \
-                "_" + NAMES(vID) + ".nc"
+                "_" + NAMES(vID) + "_" + year1 + "-" + year2 + ".nc"
 
             ;; Write variable
             write_nc_profile(fout, NAMES(vID), output, gAtt)

@@ -145,7 +145,7 @@ begin
 
         ;; Outfile
         fout = OUTDIR + "OBS_" + OBSNAME + "_campaign_" + \
-            CAMPAIGN(cpID) + "_" + FIELD + "_" + VARIABLE + ".nc"
+            CAMPAIGN(cpID) + "_" + FIELD + "_" + VARIABLE + "_199005-199903.nc"
 
         ;; Write variable
         write_nc_profile(fout, VARIABLE, output, gAtt)

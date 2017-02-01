@@ -1,0 +1,41 @@
+##################################################################################
+# 'diag_att/E06Diag.att' is a namelist that selects the E06 plots that are       #
+# produced by the tool. To control which plots are created, the variable name    #
+# (CF or derived type) is  linked to a data type (ta, ua, H2O, ect) and plot type#
+# (E06FIG01, E06FIG02, etc).                                                     #
+# For the standard output plots, see                                             #
+# Eyring et al., Assessment of temperature, trace species and ozone in           #
+# chemistry-climate model simulations of the recent past, J. Geophys. Res., 111, #
+# D22308, doi:10.1029/2006JD007327, 2006.                                        #
+# (hereinafter "E06")                                                            #
+##################################################################################
+# Authors and Contact:                                                           #
+#                                                                                #
+# Irene Cionni (irene.cionni@enea.it) & Veronika Eyring (veronika.eyring@dlr.de) #
+##################################################################################
+# The namelist is part of the CCMVal diagnostic tool                             #
+# (PIs: Andrew Gettelman & Veronika Eyring, co-I: Hisako Shiona)                 #
+##################################################################################
+# THIS NAMELIST IS CALLED BY main.py                                             #
+##################################################################################
+
+##################################################################################
+# Figures below that start with # are not produced; all others are               #
+##################################################################################
+
+#ta   T2Mz  E06FIG01  #Best with ERA40 as fig01 refmodel (ta_att.ncl)
+#ua   T2Mz  E06FIG02  #Best With ERA40 as fig02 refmodel (ua_att.ncl)
+#ta   T2Mz  E06FIG03  #vt100: only available from some models
+#ta   T2Mz  E06FIG04  #With ERA40
+#H2O  T2Mz  E06FIG05 
+#H2O  T2Mz  E06FIG05A 
+#HCl  T2Mz  E06FIG05A 
+#O3   T2Mz  E06FIG05   
+#ta   T2Mz  E06FIG07  #With ERA40
+#H2O  T2Mz  E06FIG07  
+#H2O  T2Mz  E06FIG08
+#H2O  T2Mz  E06FIG09 
+#Cly  T2Mz  E06FIG12
+#Cly  T2Mz  E06FIG12B
+#toz  T2Ms E06FIG14
+toz  T2Ms E06FIG15

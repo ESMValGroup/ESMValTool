@@ -1,0 +1,21 @@
+SOURCE: http://www.pa.op.dlr.de/CCMVal/DataRequests/CCMVal-2_DatarequestSensitivityRuns_WMO2010_FINAL.pdf
+!============
+variable_entry:    hcl
+!============
+modeling_realm:    atmos atmosChem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_hydrogen_chloride_in_air
+units:             mol mol-1
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         Mole Fraction of HCl
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude plevs time
+out_name:          hcl
+type:              real
+!----------------------------------
+!

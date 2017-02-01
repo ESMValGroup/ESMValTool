@@ -127,7 +127,7 @@ begin
             ang440870(mm) = tofloat(str_get_field(data(ii, 0), idc, ","))
         end do
 
-        output = aod440 * (550/440.)^(-1. * ang440870)
+        output = aod440 * (550/440.) ^ (-1. * ang440870)
         delete(aod440)
         delete(ang440870)
 
@@ -170,7 +170,7 @@ begin
             ;; Outfile
             fout = OUTDIR + "OBS_" + OBSNAME + "_ground_" + \
                 str_sub_str(st_name(ii), "_", "-") + "_" + FIELD + \
-                "_" + VAR + ".nc"
+                "_" + VAR + "_" + YEAR1 + "01-" + YEAR2 + "12.nc"
 
             ;; Write variable
             write_nc(fout, VAR, output, gAtt)

@@ -1,0 +1,4041 @@
+cmor_version: 2.5.0    ! minimum version of CMOR that can read this table
+cf_version:   1.4      ! version of CF that output conforms to
+project_id:   CCMI1    ! project id
+table_id:     daily    ! table id
+table_date:   6 August 2014 ! date this table was constructed
+modeling_realm: atmos
+frequency: day
+
+expt_id_ok:  'Hindcast' 'refC1'
+expt_id_ok:  'Hindcast - Specified Dynamics' 'refC1SD'
+expt_id_ok:  'Projection' 'refC2'
+expt_id_ok:  'Hindcast Scenario - altEmis' 'senC1Emis'
+expt_id_ok:  'HindcastSD Scenario - altEmis' 'senC1SDEmis'
+expt_id_ok:  'Hindcast Scenario - fxdEmis' 'senC1fEmis'
+expt_id_ok:  'HindcastSD Scenario - fxdEmis' 'senC1SDfEmis'
+expt_id_ok:  'Hindcast Scenario - altSSI' 'senC1SSI'
+expt_id_ok:  'Projection Scenario - RCP2.6' 'senC2rcp26'
+expt_id_ok:  'Projection Scenario - RCP4.5' 'senC2rcp45'
+expt_id_ok:  'Projection Scenario - RCP8.5' 'senC2rcp85'
+expt_id_ok:  'Projection Scenario - fxdODS' 'senC2fODS'
+expt_id_ok:  'Projection Scenario - fxdODS2000' 'senC2fODS2000'
+expt_id_ok:  'Projection Scenario - fxdGHG' 'senC2fGHG'
+expt_id_ok:  'Projection Scenario - fxdEmis' 'senC2fEmis'
+expt_id_ok:  'Projection Scenario - GeoMIP-G1' 'senC2GeoMIPG1'
+expt_id_ok:  'Projection Scenario - GeoMIP-G2' 'senC2GeoMIPG2'
+expt_id_ok:  'Projection Scenario - GeoMIP-G3' 'senC2GeoMIPG3'
+expt_id_ok:  'Projection Scenario - GeoMIP-G4' 'senC2GeoMIPG4'
+expt_id_ok:  'Projection Scenario - SolarTrend' 'senC2SlrTrend'
+
+approx_interval:  1.000   ! approximate spacing between successive time
+                          !   samples (in units of the output time 
+                          !   coordinate)
+
+missing_value: 1.e20      ! value used to indicate a missing value
+                          !   in arrays output by netCDF as 32-bit IEEE 
+                          !   floating-point numbers (float or real)
+
+baseURL: http://www.met.reading.ac.uk/ccmi/   
+product: output
+
+required_global_attributes: creation_date tracking_id forcing model_id parent_experiment_id parent_experiment_rip branch_time contact institute_id ! space separated required global attribute 
+
+generic_levels:   alevel alev1
+
+!============
+axis_entry: longitude
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    longitude
+units:            degrees_east
+axis:             X             ! X, Y, Z, T (default: undeclared)
+long_name:        longitude
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         lon
+valid_min:        0.0         
+valid_max:        360.0 
+stored_direction: increasing
+type:             double
+must_have_bounds: yes
+!----------------------------------
+!
+
+
+!============
+axis_entry: latitude
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    latitude
+units:            degrees_north
+axis:             Y             ! X, Y, Z, T (default: undeclared)
+long_name:        latitude
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         lat
+valid_min:        -90.0         
+valid_max:        90.0 
+stored_direction: increasing
+type:             double
+must_have_bounds: yes
+!----------------------------------
+!
+
+!============
+axis_entry: plevs
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    air_pressure
+units:            Pa
+axis:             Z             ! X, Y, Z, T (default: undeclared)
+positive:         down         ! up or down (default: undeclared)
+long_name:        pressure
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         plev
+stored_direction: decreasing
+tolerance:        0.001
+type:             double
+requested:        100000. 85000. 70000. 50000. 40000. 30000. 25000. 20000. 17000. 15000. 13000. 11500. 10000. 9000. 8000. 7000. 5000. 3000. 2000. 1500. 1000. 700. 500. 300. 200. 150. 100. 50. 30. 20. 10.       ! space-separated list of requested coordinates 
+must_have_bounds: no
+!----------------------------------
+!
+
+!============
+axis_entry: pr5
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    air_pressure
+units:            Pa
+axis:             Z             ! X, Y, Z, T (default: undeclared)
+positive:         down         ! up or down (default: undeclared)
+long_name:        pressure
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         plev
+stored_direction: decreasing
+tolerance:        0.001
+type:             double
+value:            500.           ! of scalar (singleton) dimension 
+must_have_bounds: no
+!----------------------------------
+!
+
+!============
+axis_entry: pr10
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    air_pressure
+units:            Pa
+axis:             Z             ! X, Y, Z, T (default: undeclared)
+positive:         down         ! up or down (default: undeclared)
+long_name:        pressure
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         plev
+stored_direction: decreasing
+tolerance:        0.001
+type:             double
+value:            1000.          ! of scalar (singleton) dimension 
+must_have_bounds: no
+!----------------------------------
+!
+
+!============
+axis_entry: pr30
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    air_pressure
+units:            Pa
+axis:             Z             ! X, Y, Z, T (default: undeclared)
+positive:         down         ! up or down (default: undeclared)
+long_name:        pressure
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         plev
+stored_direction: decreasing
+tolerance:        0.001
+type:             double
+value:            3000.          ! of scalar (singleton) dimension 
+must_have_bounds: no
+!----------------------------------
+!
+
+!============
+axis_entry: pr40
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    air_pressure
+units:            Pa
+axis:             Z             ! X, Y, Z, T (default: undeclared)
+positive:         down         ! up or down (default: undeclared)
+long_name:        pressure
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         plev
+stored_direction: decreasing
+tolerance:        0.001
+type:             double
+value:            4000.          ! of scalar (singleton) dimension 
+must_have_bounds: no
+!----------------------------------
+!
+
+!============
+axis_entry: pr50
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    air_pressure
+units:            Pa
+axis:             Z             ! X, Y, Z, T (default: undeclared)
+positive:         down         ! up or down (default: undeclared)
+long_name:        pressure
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         plev
+stored_direction: decreasing
+tolerance:        0.001
+type:             double
+value:            5000.          ! of scalar (singleton) dimension 
+must_have_bounds: no
+!----------------------------------
+!
+
+!============
+axis_entry: pr70
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    air_pressure
+units:            Pa
+axis:             Z             ! X, Y, Z, T (default: undeclared)
+positive:         down         ! up or down (default: undeclared)
+long_name:        pressure
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         plev
+stored_direction: decreasing
+tolerance:        0.001
+type:             double
+value:            7000.          ! of scalar (singleton) dimension 
+must_have_bounds: no
+!----------------------------------
+!
+
+!============
+axis_entry: pr100
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    air_pressure
+units:            Pa
+axis:             Z             ! X, Y, Z, T (default: undeclared)
+positive:         down         ! up or down (default: undeclared)
+long_name:        pressure
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         plev
+stored_direction: decreasing
+tolerance:        0.001
+type:             double
+value:            10000.         ! of scalar (singleton) dimension 
+must_have_bounds: no
+!----------------------------------
+!
+
+!============
+axis_entry: pr500
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    air_pressure
+units:            Pa
+axis:             Z             ! X, Y, Z, T (default: undeclared)
+positive:         down         ! up or down (default: undeclared)
+long_name:        pressure
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         plev
+stored_direction: decreasing
+tolerance:        0.001
+type:             double
+value:            50000.         ! of scalar (singleton) dimension 
+must_have_bounds: no
+!----------------------------------
+!
+
+!============
+axis_entry: pr700
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    air_pressure
+units:            Pa
+axis:             Z             ! X, Y, Z, T (default: undeclared)
+positive:         down         ! up or down (default: undeclared)
+long_name:        pressure
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         plev
+stored_direction: decreasing
+tolerance:        0.001
+type:             double
+value:            70000.          ! of scalar (singleton) dimension 
+must_have_bounds: no
+!----------------------------------
+!
+
+!============
+axis_entry: pr850
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    air_pressure
+units:            Pa
+axis:             Z             ! X, Y, Z, T (default: undeclared)
+positive:         down         ! up or down (default: undeclared)
+long_name:        pressure
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         plev
+stored_direction: decreasing
+tolerance:        0.001
+type:             double
+value:            85000.         ! of scalar (singleton) dimension 
+must_have_bounds: no
+!----------------------------------
+!
+
+!============
+axis_entry: pr1000
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    air_pressure
+units:            Pa
+axis:             Z             ! X, Y, Z, T (default: undeclared)
+positive:         down         ! up or down (default: undeclared)
+long_name:        pressure
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         plev
+stored_direction: decreasing
+tolerance:        0.001
+type:             double
+value:            100000.        ! of scalar (singleton) dimension 
+must_have_bounds: no
+!----------------------------------
+!
+
+!============
+axis_entry: height2m
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    height
+units:            m
+axis:             Z             ! X, Y, Z, T (default: undeclared)
+positive:         up         ! up or down (default: undeclared)
+long_name:        height
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         height
+valid_min:        1.0         
+valid_max:        10.0 
+stored_direction: increasing
+type:             double
+value:            2.            ! of scalar (singleton) dimension 
+must_have_bounds: no
+!----------------------------------
+!
+
+!============
+axis_entry: pot840
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    air_potential_temperature
+units:            K
+axis:             Z             ! X, Y, Z, T (default: undeclared)
+positive:         up         ! up or down (default: undeclared)
+long_name:        Potential Temperature
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         potemp
+valid_min:        800.0
+valid_max:        880.0
+stored_direction: increasing
+type:             double
+value:            840.0         ! of scalar (singleton) dimension 
+must_have_bounds: no
+!----------------------------------
+!
+
+!============
+axis_entry: pot480
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    air_potential_temperature
+units:            K
+axis:             Z             ! X, Y, Z, T (default: undeclared)
+positive:         up         ! up or down (default: undeclared)
+long_name:        Potential Temperature
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         potemp
+valid_min:        440.0
+valid_max:        520.0
+stored_direction: increasing
+type:             double
+value:            480.0         ! of scalar (singleton) dimension 
+must_have_bounds: no
+!----------------------------------
+!
+
+!============
+axis_entry: time
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    time
+units:            days since ?
+axis:             T             ! X, Y, Z, T (default: undeclared)
+long_name:        time
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         time
+stored_direction: increasing
+type:             double
+must_have_bounds: yes
+!----------------------------------
+!
+
+!============
+axis_entry: time1
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    time
+units:            days since ?
+axis:             T             ! X, Y, Z, T (default: undeclared)
+long_name:        time
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         time
+stored_direction: increasing
+type:             double
+must_have_bounds: no
+!----------------------------------
+!
+
+!============
+axis_entry: smooth_level
+!============
+!
+! This coordinate is a hybrid height coordinate with units of meters (m).
+!  It increases upward.
+!  The values of a(k)*ztop, which appear in the formula below, should be stored as smooth_level. 
+!  Note that in the netCDF file the variable will be named "lev", not smooth_level.
+!
+!------------
+!
+! Axis attributes:
+!----------------------------------	
+standard_name:    atmosphere_sleve_coordinate
+units:            m
+axis:             Z
+positive:	      up
+long_name:        atmosphere smooth level vertical (SLEVE) coordinate
+!----------------------------------	
+!
+! Additional axis information:
+!----------------------------------	
+out_name:         lev
+must_have_bounds: yes
+stored_direction: increasing
+valid_min:        -200.
+valid_max:        800000.
+formula:          z(n,k,j,i) = a(k)*ztop + b1(k)*zsurf1(n,j,i) + b2(k)*zsurf2(n,j,i)
+z_factors:        a: a b1: b1 b2: b2 ztop: ztop zsurf1: zsurf1 zsurf2: zsurf2
+z_bounds_factors: a: a_bnds b1: b1_bnds b2: b2_bnds ztop: ztop zsurf1: zsurf1 zsurf2: zsurf2
+!----------------------------------	
+!
+!============
+axis_entry: natural_log_pressure
+!============
+!
+!This coordinate is dimensionless and varies from near 0 at the surface and increases upward.
+!  The values of lev(k), which appears in the formula below, should be stored as natural_log_pressure.  
+!  Note that in the netCDF file the variable will be named "lev", not natural_log_pressure.
+!
+!------------
+!
+! Axis attributes:
+!----------------------------------	
+standard_name:    atmosphere_ln_pressure_coordinate
+axis:             Z
+long_name:        atmosphere natural log pressure coordinate
+positive:	      down
+!----------------------------------	
+!
+! Additional axis information:
+!----------------------------------	
+out_name:         lev
+must_have_bounds: yes
+stored_direction: decreasing
+valid_min:        -1.
+valid_max:        20.
+formula:          p(k) = p0 * exp(-lev(k))
+z_factors:        p0: p0 lev: lev
+z_bounds_factors: p0: p0 lev: lev_bnds
+!----------------------------------	
+!
+!============
+axis_entry: standard_sigma
+!============
+!
+! This coordinate is dimensionless and varies from 0 at the model top to 1.0 at the surface.
+!  The values of sigma(k), which appears in the formula below, should be stored as standard_sigma.  
+!  Note that in the netCDF file the variable will be named "lev", not standard_sigma.
+!
+!------------
+!
+! Axis attributes:
+!----------------------------------	
+standard_name:    atmosphere_sigma_coordinate
+axis:             Z
+positive:         down
+long_name:        sigma coordinate
+!----------------------------------	
+!
+! Additional axis information:
+!----------------------------------	
+out_name:         lev
+must_have_bounds: yes
+stored_direction: decreasing
+valid_min:        0.0
+valid_max:        1.0
+formula:          p(n,k,j,i) = ptop + sigma(k)*(ps(n,j,i) - ptop)
+z_factors:        ptop: ptop sigma: lev ps: ps
+z_bounds_factors: ptop: ptop sigma: lev_bnds ps: ps
+!----------------------------------	
+!
+!
+!============
+axis_entry:  standard_hybrid_sigma
+!============
+!
+! This coordinate is dimensionless and varies from a small value at the model top to 1.0 at the surface.
+!  The values of a(k)+ b(k), which appear in the formula below, should be stored as standard_hybrid_sigma.  
+!  Note that in the netCDF file the variable will be named "lev", not standard_hybrid_sigma.
+!
+!---------------------------------
+! Axis attributes:
+!----------------------------------	
+standard_name:    atmosphere_hybrid_sigma_pressure_coordinate
+units:            1
+axis:             Z 
+positive:         down
+long_name:        hybrid sigma pressure coordinate
+!----------------------------------
+! Additional axis information:
+!----------------------------------	
+out_name:         lev
+must_have_bounds: yes
+stored_direction: decreasing
+valid_min:        0.0
+valid_max:        1.0
+formula:          p(n,k,j,i) = a(k)*p0 + b(k)*ps(n,j,i)
+z_factors:        p0: p0 a: a b: b ps: ps
+z_bounds_factors: p0: p0 a: a_bnds b: b_bnds ps: ps
+!----------------------------------		
+!
+!
+!============
+axis_entry:  alternate_hybrid_sigma
+!============
+!
+! This coordinate is dimensionless and varies from a small value at the model top to 1.0 at the surface.
+!  The values of ap(k)/p0 + b(k), which appear in the formula below, should be stored as alternate_hybrid_sigma.  
+!  Note that in the netCDF file the variable will be named "lev", not alternate_hybrid_sigma.
+!
+!------------
+!
+! Axis attributes:
+!----------------------------------	
+standard_name:    atmosphere_hybrid_sigma_pressure_coordinate
+units:            1
+axis:             Z
+positive:         down
+long_name:        hybrid sigma pressure coordinate
+!----------------------------------	
+!
+! Additional axis information:
+!----------------------------------	
+out_name:         lev
+must_have_bounds: yes
+stored_direction: decreasing
+valid_min:        0.0
+valid_max:        1.0
+formula:          p(n,k,j,i) = ap(k) + b(k)*ps(n,j,i)
+z_factors:        ap: ap b: b ps: ps
+z_bounds_factors: ap: ap_bnds b: b_bnds ps: ps
+!----------------------------------		
+!
+!
+!============
+axis_entry:  hybrid_height
+!============
+!
+! This coordinate has dimension of meters (m) and increases upward.
+!  The values of a(k) which appear in the formula below, should be stored as hybrid_height.  
+!  Note that in the netCDF file the variable will be named "lev", not hybrid_height.
+!
+!------------
+!
+! Axis attributes:
+!----------------------------------	
+standard_name:    atmosphere_hybrid_height_coordinate
+units:            m
+axis:             Z 
+positive:         up
+long_name:        hybrid height coordinate
+!----------------------------------	
+!
+! Additional axis information:
+!----------------------------------	
+out_name:         lev
+must_have_bounds: yes
+stored_direction: increasing
+valid_min:        0.0
+formula:          z(k,j,i) = a(k) + b(k)*orog(j,i)
+z_factors:        a: lev b: b orog: orog
+z_bounds_factors: a: lev_bnds b: b_bnds orog: orog
+!----------------------------------		
+!
+! ***************************************************************
+!
+! Vertical coordinate formula terms:
+!
+! ***************************************************************
+!
+!
+!============
+variable_entry:    orog
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     surface_altitude
+units:             m
+long_name:         Surface Altitude
+comment:           height above the geoid; as defined here, ""the geoid"" is a surface of constant geopotential that, if the ocean were at rest, would coincide with mean sea level. Under this definition, the geoid changes as the mean volume of the ocean changes (e.g., due to glacial melt, or global warming of the ocean).  Report here the height above the present-day geoid.  Over ocean, report as 0.0
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude
+out_name:          orog
+type:              real
+valid_min:         -700
+valid_max:         1.00E+04
+!----------------------------------
+!
+!
+!============
+variable_entry: p0
+!============
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:       vertical coordinate formula term: reference pressure 
+units:           Pa
+!----------------------------------	
+!
+!
+!============
+variable_entry: ptop
+!============
+!
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:       pressure at top of model 
+units:           Pa
+!----------------------------------	
+!
+!
+!
+!============
+variable_entry: a
+!============
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   vertical coordinate formula term: a(k)
+units:        1
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         alevel
+type:               double
+!----------------------------------	
+!
+!
+!============
+variable_entry: b
+!============
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   vertical coordinate formula term: b(k)
+units:        1
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         alevel
+type:               double
+!----------------------------------	
+!
+!
+!============
+variable_entry: a_bnds
+!============
+!
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   vertical coordinate formula term: a(k+1/2)
+units:        1
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         alevel
+type:               double
+!----------------------------------	
+!
+!
+!============
+variable_entry: b_bnds
+!============
+!
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   vertical coordinate formula term: b(k+1/2)
+units:        1
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         alevel
+type:               double
+!----------------------------------
+!
+!
+!============
+variable_entry: ap
+!============
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   vertical coordinate formula term: ap(k)
+units:           Pa
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         alevel
+type:               double
+!----------------------------------	
+!
+!
+!============
+variable_entry: ap_bnds
+!============
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   vertical coordinate formula term: ap(k+1/2)
+units:           Pa
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         alevel
+type:               double
+!----------------------------------	
+!
+!
+!============
+variable_entry: ztop
+!============
+!
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:       height of top of model 
+units:           m
+!----------------------------------	
+!
+!
+! ------- Requested CCMI time variables
+!
+!
+!============
+variable_entry: ccmi_year
+!============
+!------------
+!
+! Variable attributes:
+!----------------------------------
+long_name:       CCMI Year
+comment:         These are what each model believes the date/time (Gregorian calendar) to be at the middle of each time interval in the output (GMT, not local time).
+units:           year
+dimensions:      time
+type:            integer
+!----------------------------------
+!
+!
+!============
+variable_entry: ccmi_month
+!============
+!------------
+!
+! Variable attributes:
+!----------------------------------
+long_name:       CCMI Month
+comment:         These are what each model believes the date/time (Gregorian calendar) to be at the middle of each time interval in the output (GMT, not local time).
+units:           month
+dimensions:      time
+type:            integer
+!----------------------------------
+!
+!
+!============
+variable_entry: ccmi_day
+!============
+!------------
+!
+! Variable attributes:
+!----------------------------------
+long_name:       CCMI Day
+comment:         These are what each model believes the date/time (Gregorian calendar) to be at the middle of each time interval in the output (GMT, not local time).
+units:           day
+dimensions:      time
+type:            integer
+!----------------------------------
+!
+!
+!============
+variable_entry: ccmi_hour
+!============
+!------------
+!
+! Variable attributes:
+!----------------------------------
+long_name:       CCMI Hour
+comment:         These are what each model believes the date/time (Gregorian calendar) to be at the middle of each time interval in the output (GMT, not local time).
+units:           hour
+dimensions:      time
+type:            integer
+!----------------------------------
+!
+!
+!============
+variable_entry: ccmi_minute
+!============
+!------------
+!
+! Variable attributes:
+!----------------------------------
+long_name:       CCMI Minute
+comment:         These are what each model believes the date/time (Gregorian calendar) to be at the middle of each time interval in the output (GMT, not local time).
+units:           minute
+dimensions:      time
+type:            integer
+!----------------------------------
+!
+!============
+variable_entry:    ps
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     surface_air_pressure
+units:             Pa
+cell_measures:     area: areacella
+long_name:         Surface Air Pressure
+comment:           surface pressure (not mean sea-level pressure), 2-D field to calculate the 3-D pressure field from hybrid coordinates
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1
+type:              real
+valid_min:         0.0
+valid_max:         1000000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    ua10
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     eastward_wind
+units:             m s-1
+cell_measures:     area: areacella
+long_name:         Eastward Wind at 10 hPa
+comment:           Zonal wind on the 10 hPa surface
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1 pr10
+type:              real
+valid_min:         -1000.0
+valid_max:         1000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    ua100
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     eastward_wind
+units:             m s-1
+cell_measures:     area: areacella
+long_name:         Eastward Wind at 100 hPa
+comment:           Zonal wind on the 100 hPa surface
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1 pr100
+type:              real
+valid_min:         -1000.0
+valid_max:         1000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    ua500
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     eastward_wind
+units:             m s-1
+cell_measures:     area: areacella
+long_name:         Eastward Wind at 500 hPa
+comment:           Zonal wind on the 500 hPa surface
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1 pr500
+type:              real
+valid_min:         -1000.0
+valid_max:         1000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    ua850
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     eastward_wind
+units:             m s-1
+cell_measures:     area: areacella
+long_name:         Eastward Wind at 850 hPa
+comment:           Zonal wind on the 850 hPa surface
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1 pr850
+type:              real
+valid_min:         -1000.0
+valid_max:         1000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    ua1000
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     eastward_wind
+units:             m s-1
+cell_measures:     area: areacella
+long_name:         Eastward Wind at 1000 hPa
+comment:           Zonal wind on the 1000 hPa surface
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1 pr1000
+type:              real
+valid_min:         -1000.0
+valid_max:         1000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    va10
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     northward_wind
+units:             m s-1
+cell_measures:     area: areacella
+long_name:         Northward Wind at 10 hPa
+comment:           Meridional wind on the 10 hPa surface
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1 pr10
+type:              real
+valid_min:         -1000.0
+valid_max:         1000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    va50
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     northward_wind
+units:             m s-1
+cell_measures:     area: areacella
+long_name:         Northward Wind at 50 hPa
+comment:           Meridional wind on the 50 hPa surface
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1 pr50
+type:              real
+valid_min:         -1000.0
+valid_max:         1000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    va100
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     northward_wind
+units:             m s-1
+cell_measures:     area: areacella
+long_name:         Northward Wind at 100 hPa
+comment:           Meridional wind on the 100 hPa surface
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1 pr100
+type:              real
+valid_min:         -1000.0
+valid_max:         1000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    va500
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     northward_wind
+units:             m s-1
+cell_measures:     area: areacella
+long_name:         Northward Wind at 500 hPa
+comment:           Meridional wind on the 500 hPa surface
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1 pr500
+type:              real
+valid_min:         -1000.0
+valid_max:         1000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    va1000
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     northward_wind
+units:             m s-1
+cell_measures:     area: areacella
+long_name:         Northward Wind at 1000 hPa
+comment:           Meridional wind on the 1000 hPa surface
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1 pr1000
+type:              real
+valid_min:         -1000.0
+valid_max:         1000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    wa50
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     upward_air_velocity
+units:             m s-1
+cell_measures:     area: areacella
+long_name:         Upward Wind at 50 hPa
+comment:           Upward wind on the 50 hPa surface
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1 pr50
+type:              real
+valid_min:         -1000.0
+valid_max:         1000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    ta5
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     air_temperature
+units:             K
+cell_measures:     area: areacella
+long_name:         Air Temperature at 5 hPa
+comment:           Temperature on the 5 hPa surface
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1 pr5
+type:              real
+valid_min:         0.0
+valid_max:         1000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    ta10
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     air_temperature
+units:             K
+cell_measures:     area: areacella
+long_name:         Air Temperature at 10 hPa
+comment:           Temperature on the 10 hPa surface
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1 pr10
+type:              real
+valid_min:         0.0
+valid_max:         1000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    ta30
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     air_temperature
+units:             K
+cell_measures:     area: areacella
+long_name:         Air Temperature at 30 hPa
+comment:           Temperature on the 30 hPa surface
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1 pr30
+type:              real
+valid_min:         0.0
+valid_max:         1000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    ta40
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     air_temperature
+units:             K
+cell_measures:     area: areacella
+long_name:         Air Temperature at 40 hPa
+comment:           Temperature on the 40 hPa surface
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1 pr40
+type:              real
+valid_min:         0.0
+valid_max:         1000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    ta50
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     air_temperature
+units:             K
+cell_measures:     area: areacella
+long_name:         Air Temperature at 50 hPa
+comment:           Temperature on the 50 hPa surface
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1 pr50
+type:              real
+valid_min:         0.0
+valid_max:         1000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    ta70
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     air_temperature
+units:             K
+cell_measures:     area: areacella
+long_name:         Air Temperature at 70 hPa
+comment:           Temperature on the 70 hPa surface
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1 pr70
+type:              real
+valid_min:         0.0
+valid_max:         1000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    ta100
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     air_temperature
+units:             K
+cell_measures:     area: areacella
+long_name:         Air Temperature at 100 hPa
+comment:           Temperature on the 100 hPa surface
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1 pr100
+type:              real
+valid_min:         0.0
+valid_max:         1000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    ta1000
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     air_temperature
+units:             K
+cell_measures:     area: areacella
+long_name:         Air Temperature at 1000 hPa
+comment:           Temperature on the 1000 hPa surface
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1 pr1000
+type:              real
+valid_min:         0.0
+valid_max:         1000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    tas
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     air_temperature
+units:             K
+cell_measures:     area: areacella
+long_name:         Near-Surface Air Temperature
+comment:           near-surface (usually, 2 meter) air temperature
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1 height2m
+type:              real
+valid_min:         0.0
+valid_max:         1000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    ts
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     surface_temperature
+units:             K
+cell_measures:     area: areacella
+long_name:         Surface Temperature
+comment:           skin temperature - i.e SST for open ocean
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1
+type:              real
+valid_min:         0.0
+valid_max:         1000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    zg10
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     geopotential_height
+units:             m
+cell_measures:     area: areacella
+long_name:         Geopotential Height at 10 hPa
+comment:           Geopotential height on the 10 hPa surface
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1 pr10
+type:              real
+valid_min:         10000.0
+valid_max:         50000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    zg100
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     geopotential_height
+units:             m
+cell_measures:     area: areacella
+long_name:         Geopotential Height at 100 hPa
+comment:           Geopotential height on the 100 hPa surface
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1 pr100
+type:              real
+valid_min:         0.0
+valid_max:         40000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    zg500
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     geopotential_height
+units:             m
+cell_measures:     area: areacella
+long_name:         Geopotential Height at 500 hPa
+comment:           geopotential height on the 500 hPa surface
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1 pr500
+type:              real
+valid_min:         0.0
+valid_max:         20000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    zg1000
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     geopotential_height
+units:             m
+cell_measures:     area: areacella
+long_name:         Geopotential Height at 1000 hPa
+comment:           Geopotential height on the 1000 hPa surface
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1 pr1000
+type:              real
+valid_min:         -1000.0
+valid_max:         10000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vorpot840
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ertel_potential_vorticity
+units:             K m2 kg-1 s-1
+cell_measures:     area: areacella
+long_name:         Potential Vorticity on 840K
+comment:           potential vorticity at 840 K
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1 pot840
+type:              real
+valid_min:         -1000.0
+valid_max:         1000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vorpot480
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ertel_potential_vorticity
+units:             K m2 kg-1 s-1
+cell_measures:     area: areacella
+long_name:         Potential Vorticity on 480K
+comment:           potential vorticity at 480 K
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1 pot480
+type:              real
+valid_min:         -1000.0
+valid_max:         1000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    dytoz
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     equivalent_thickness_at_stp_of_atmosphere_ozone_content
+units:             DU
+cell_measures:     area: areacella
+long_name:         Total Column Ozone
+comment:           total ozone column in DU
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1
+type:              real
+valid_min:         0.0
+valid_max:         5000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    dyrsds
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     surface_downwelling_shortwave_flux_in_air
+units:             W m-2
+cell_measures:     area: areacella
+long_name:         Surface Downwelling Shortwave Radiation
+comment:           surface solar irradiance for UV calculations
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1
+type:              real
+positive:          down
+valid_min:         -0.1
+valid_max:         10000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    dyrsdscs
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     surface_downwelling_shortwave_flux_in_air_assuming_clear_sky
+units:             W m-2
+cell_measures:     area: areacella
+long_name:         Surface Downwelling Clear-Sky Shortwave Radiation
+comment:           surface solar irradiance clear sky for UV calculations
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1
+type:              real
+positive:          down
+valid_min:         -0.1
+valid_max:         10000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    dyrlut
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     toa_outgoing_longwave_flux
+units:             W m-2
+cell_measures:     area: areacella
+long_name:         TOA Outgoing Longwave Radiation
+comment:           outgoing longwave irradiance
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1
+type:              real
+positive:          up
+valid_min:         -0.1
+valid_max:         10000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    snd
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     surface_snow_thickness
+units:             m
+cell_measures:     area: areacella
+long_name:         Snow Depth
+comment:           snow depth
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1
+type:              real
+valid_min:         0.0
+valid_max:         1000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    snw
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     surface_snow_amount
+units:             kg m-2
+cell_measures:     area: areacella
+long_name:         Surface Snow Amount
+comment:           Compute as the mass of surface snow on the land portion of the grid cell divided by the land area in the grid cell; report 0.0 where the land fraction is 0; exclude snow on vegetation canopy or on sea ice.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1
+type:              real
+valid_min:         0.0
+valid_max:         10000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    tasmin
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     air_temperature
+units:             K
+cell_methods:      time: minimum
+cell_measures:     area: areacella
+long_name:         Daily Minimum Near-Surface Air Temperature
+comment:           minimum near-surface (usually, 2 meter) air temperature (add cell_method attribute time: min)
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time height2m
+type:              real
+valid_min:         0.0
+valid_max:         1000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    tasmax
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     air_temperature
+units:             K
+cell_methods:      time: maximum
+cell_measures:     area: areacella
+long_name:         Daily Maximum Near-Surface Air Temperature
+comment:           maximum near-surface (usually, 2 meter) air temperature (add cell_method attribute time: max)
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time height2m
+type:              real
+valid_min:         0.0
+valid_max:         1000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    tpp
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+!FAILS CF25 standard_name:     tropopause_pressure
+units:             Pa
+cell_measures:     area: areacella
+long_name:         Tropopause Pressure
+comment:           Only required for the first day 00:00 UTC of each month. The tropopause follows the WMO definition and should be consistent with the the tropopause definition used for tpo3chm and lso3chm.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1
+type:              real
+valid_min:         100.0
+valid_max:         1000000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    sfvmrco25
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+!FAILS CF25 standard_name:     mass_fraction_of_co-25_tracer_in_air
+units:             kg kg-1
+cell_measures:     area: areacella
+long_name:         co_25 Mass Mixing Ratio in Surface Layer
+comment:           daily mean or instantaneous? emitted as anthropogenic CO (emission file available from HTAP, ftp://ftp.retro.enes.org/pub/emissions/aggregated/anthro/0.5x0.5/2000/RETRO_ANTHRO_V2_2000_CO_aggregated.nc but only use annual mean), uniform fixed 25-day exponential decay.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    sfmmrso2t
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+!FAILS CF25 standard_name:     mass_fraction_of_so2t_tracer_in_air
+units:             kg kg-1
+cell_measures:     area: areacella
+long_name:         so2t Mass Mixing Ratio in Surface Layer
+comment:           daily mean or instantaneous? emitted as anthropogenic year 2000 SO2 (as specified in REF-C1, wet removal as SO2.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    sfmmraerno3
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mass_fraction_of_nitrate_dry_aerosol_in_air
+units:             kg kg-1
+cell_measures:     area: areacella
+long_name:         Aerosol Nitrate Mass Mixing Ratio in the Lowest Model Layer
+comment:           NO3 aerosol
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    sfmmraerso4
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mass_fraction_of_sulfate_dry_aerosol_in_air
+units:             kg kg-1
+cell_measures:     area: areacella
+long_name:         Aerosol Sulfate Mass Mixing Ratio in the Lowest Model Layer
+comment:           SO4
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    sfmmraernh4
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mass_fraction_of_ammonium_dry_aerosol_in_air
+units:             kg kg-1
+cell_measures:     area: areacella
+long_name:         Aerosol Ammonium Mass Mixing Ratio in the Lowest Model Layer
+comment:           Aerosol NH4
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    sfmmrbc
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mass_fraction_of_black_carbon_dry_aerosol_in_air
+units:             kg kg-1
+cell_measures:     area: areacella
+long_name:         BC Mass Mixing Ratio in the Lowest Model Layer
+comment:           BC
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    sfmmrpom
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mass_fraction_of_particulate_organic_matter_dry_aerosol_in_air
+units:             kg kg-1
+cell_measures:     area: areacella
+long_name:         POM Mass Mixing Ratio in the Lowest Model Layer
+comment:           POM
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    sfmmrsoa
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mass_fraction_of_secondary_particulate_organic_matter_dry_aerosol_in_air
+units:             kg kg-1
+cell_measures:     area: areacella
+long_name:         SOA Mass Mixing Ratio in the Lowest Model Layer
+comment:           SOA
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    sfmmrss
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mass_fraction_of_seasalt_dry_aerosol_in_air
+units:             kg kg-1
+cell_measures:     area: areacella
+long_name:         Sea Salt Mass Mixing Ratio in Lowest Model Layer
+comment:           seasalt  
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    sfmmrdust
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mass_fraction_of_dust_dry_aerosol_in_air
+units:             kg kg-1
+cell_measures:     area: areacella
+long_name:         Dust Aerosol Mass Mixing Ratio in Lowest Model Layer
+comment:           dust  
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    sfmmraerh2o
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mass_fraction_of_water_in_ambient_aerosol_in_air
+units:             kg kg-1
+cell_measures:     area: areacella
+long_name:         Aerosol Water Mass Mixing Ratio in Lowest Model Layer
+comment:           aerosol water 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    sfvmro3
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_ozone_in_air
+units:             mole mole-1
+cell_measures:     area: areacella
+long_name:         Ozone Volume Mixing Ratio in Lowest Model Layer
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    pr
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     precipitation_flux
+units:             kg m-2 s-1
+cell_measures:     area: areacella
+long_name:         Precipitation
+comment:           at surface; includes both liquid and solid phases from all types of clouds (both large-scale and convective)
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1
+type:              real
+valid_min:         0.0
+valid_max:         1000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    maxpblz
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     atmosphere_boundary_layer_thickness
+units:             m
+cell_methods:      time: maximum
+cell_measures:     area: areacella
+long_name:         Daily Maximum PBL Height
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+type:              real
+valid_min:         0.0
+valid_max:         20000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    minpblz
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     atmosphere_boundary_layer_thickness
+units:             m
+cell_methods:      time: minimum
+cell_measures:     area: areacella
+long_name:         Daily Minimum PBL Height
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+type:              real
+valid_min:         0.0
+valid_max:         20000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    cod
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     atmosphere_optical_thickness_due_to_cloud
+units:             1
+cell_measures:     area: areacella
+long_name:         Cloud Optical Depth
+comment:           This is the in-cloud optical depth obtained by considering only the cloudy portion of the grid cell.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1
+type:              real
+valid_min:         0.0
+valid_max:         100000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    clt
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     cloud_area_fraction
+units:             %
+cell_measures:     area: areacella
+long_name:         Total Cloud Fraction
+comment:           For the whole atmospheric column, as seen from the surface or the top of the atmosphere.  Include both large-scale and convective cloud.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1
+type:              real
+valid_min:         0.0
+valid_max:         101.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrco50ea700
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+!FAILS CF25 standard_name:     mole_fraction_of_specified_co-50ea_tracer_in_air
+units:             mole mole-1
+cell_measures:     area: areacella
+long_name:         co_50_ea Volume Mixing Ratio at 700 hPa
+comment:           daily mean, emitted as anthropogenic CO over East Asia (15N-50N; 95E-160E),  (emission file available from HTAP), uniform fixed 50-day exponential decay.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1 pr700
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrco50na700
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+!FAILS CF25 standard_name:     mole_fraction_of_specified_co-50na_tracer_in_air
+units:             mole mole-1
+cell_measures:     area: areacella
+long_name:         co_50_na Volume Mixing Ratio at 700 hPa
+comment:           daily mean, emitted as anthropogenic CO over North America (15N-55N; 60W-125W) (emission file available from HTAP), uniform fixed 50-day exponential decay.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1 pr700
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrco50eu700
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+!FAILS CF25 standard_name:     mole_fraction_of_specified_co-50eu_tracer_in_air
+units:             mole mole-1
+cell_measures:     area: areacella
+long_name:         co_50_eu Volume Mixing Ratio at 700 hPa
+comment:           daily mean, emitted as anthropogenic CO over Europe (25N-65N; 10W-50E) (emission file available from HTAP), uniform fixed 50-day exponential decay.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1 pr700
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrco50sa700
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+!FAILS CF25 standard_name:     mole_fraction_of_specified_co-50sa_tracer_in_air
+units:             mole mole-1
+cell_measures:     area: areacella
+long_name:         co_50_sa Volume Mixing Ratio at 700 hPa
+comment:           daily mean, emitted as anthropogenic CO over South Asia (5N-35N; 50E-95E) (emission file available from HTAP), uniform fixed 50-day exponential decay.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1 pr700
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    sic
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     sea_ice_area_fraction
+units:             %
+cell_measures:     area: areacella
+long_name:         Sea Ice Area Fraction
+comment:           fraction of grid cell covered by sea ice.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time1
+type:              real
+valid_min:         0.0
+valid_max:         101.0
+!----------------------------------
+!
+
+!============
+variable_entry:    pmlev
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     air_pressure
+units:             Pa
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         Air Pressure
+comment:           The atmospheric pressure at the model layer midpoints for all times and levels in the associated output variables
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1000000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    pilev
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+!FAILS CF25 standard_name:     air_pressure_at_model_level_interface
+units:             Pa
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         Air Pressure at Interfaces
+comment:           The atmospheric pressure at the model layer interfaces for all times and levels in the associated output variables
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1000000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    ta
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     air_temperature
+units:             K
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         Air Temperature
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    ua
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     eastward_wind
+units:             m s-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         Eastward Wind
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         -1000.0
+valid_max:         1000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    va
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     northward_wind
+units:             m s-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         Northward Wind
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         -1000.0
+valid_max:         1000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    wap
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     lagrangian_tendency_of_air_pressure
+units:             Pa s-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         omega (=dp/dt)
+comment:           omega
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         -1000.0
+valid_max:         1000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    zg
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     geopotential_height
+units:             m
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         Geopotential Height
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         -1000.0
+valid_max:         500000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmro3
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_ozone_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         O3 Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrn2o
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_nitrous_oxide_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         N2O Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrch4
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_methane_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         CH4 Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrhcl
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_hydrogen_chloride_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         HCl Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrh2o
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_water_vapor_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         H2O Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmro3psv
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+!FAILS CF25 standard_name:     mole_fraction_of_passive_ozone_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         Passive O3 Volume Mixing Ratio
+comment:           Passive O3 (if available): The model runs should include a tracer to diagnose polar chemical ozone loss in winter and spring. As most models will advect (and integrate) O3 as part of the 'odd oxygen' (Ox=O3 + O(3P) + O(1D)) family we will call this the 'passive Ox tracer'. This will be a global tracer which is reset during each polar winter (i.e. twice per year). Given the relatively slow transport and long chemical lifetime (without PSC processing etc) of O3 in the polar regions this will provide a useful diagnostic over the timescale of a few months in the lower stratosphere. The model tracer should be set equal to your advected 'odd oxygen' tracer on December 1 and June 1 every year. Then, the tracer is simply advected without any further chemical change. If your advection scheme stores other variables for each tracer (e.g. higher order moments) remember to set sum of these species. The passive Ox tracer should be ouput according to the other instructions. The re-initialisation dates are selected so that we diagnose most of the chemical loss over the course of the winter, some of which would be missed by a later date.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    sadsulf
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+!FAILS CF25 standard_name:     particle_surface_area_density_of_sulfate_aerosol
+units:             m-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         Surface Area Density of Sulfate Aerosol
+comment:           sulfate aerosol surface area density used in heterogeneous activation of ClOx and BrOx. Defined as the area of aerosol per volume of atmosphere (i.e., m2 m-3 = m-1). This is the total sulfate SAD (i.e., sum of binary and ternary aerosol).
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    sadnat
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+!FAILS CF25 standard_name:     particle_surface_area_density_of_nitric_acid_trihydate
+units:             m-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         Surface Area Density of NAT PSC Particles
+comment:           nitric acid trihydrate (NAT) surface area density used in heterogeneous activation of ClOx and BrOx. Defined as the area of aerosol per volume of atmosphere (i.e., m2 m-3 = m-1).
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    sadice
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+!FAILS CF25 standard_name:     particle_surface_area_density_of_water_ice
+units:             m-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         Surface Area Density of Water Ice PSC Particles
+comment:           water-ice surface area density used in heterogeneous activation of ClOx and BrOx. Defined as the area of aerosol per volume of atmosphere (i.e., m2 m-3 = m-1).
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrcfcl3
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_cfc11_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         CFCl3 Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrcf2cl2
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_cfc12_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         CF2Cl2 Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrch3cl
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_methyl_chloride_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         CH3Cl Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrch3br
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_methyl_bromide_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         CH3Br Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrcl
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_atomic_chlorine_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         Atomic Cl Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrclo
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_chlorine_monoxide_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         ClO Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrcl2o2
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_dichlorine_peroxide_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         ClOOCl Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrhocl
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_hypochlorous_acid_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         HOCl Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrclono2
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_chlorine_nitrate_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         ClONO2 Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmroclo
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_chlorine_dioxide_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         OClO Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrcly
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_inorganic_chlorine_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         Total Inorganic Chlorine (Cly) Volume Mixing Ratio
+comment:           Total family (the sum of all appropriate species in the model) ; list the species in the netCDF header, e.g. Cly = HCl + ClONO2 + HOCl + ClO + Cl + 2*Cl2O2 +2Cl2 + OClO + BrCl.  Definition: Total inorganic stratospheric chlorine (e.g., HCl, ClO) resulting from degradation of chlorine-containing source gases (CFCs, HCFCs, VSLS), and natural inorganic chlorine sources (e.g., sea salt and other aerosols).
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmroh
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_hydroxyl_radical_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         OH Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrho2
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_hydroperoxyl_radical_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         HO2 Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrh2o2
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_hydrogen_peroxide_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         H2O2 Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrh2
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_molecular_hydrogen_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         H2 Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrn
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_atomic_nitrogen_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         Atomic N Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrno
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_nitrogen_monoxide_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         NO Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrno2
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_nitrogen_dioxide_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         NO2 Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrhno3
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_nitric_acid_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         HNO3 Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrn2o5
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_dinitrogen_pentoxide_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         N2O5 Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrhno4
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_peroxynitric_acid_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         HNO4 Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrnoy
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_total_reactive_nitrogen_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         Total Reactive Nitrogen (NOy) Volume Mixing Ratio
+comment:           Total family (the sum of all appropriate species in the model); list the species in the netCDF header, e.g. NOy = N + NO + NO2 + NO3 + HNO3 + 2N2O5 + HNO4 + ClONO2 + BrONO2.  Definition: Total reactive nitrogen; usually includes atomic nitrogen (N), nitric oxide (NO), NO2, nitrogen trioxide (NO3), dinitrogen radical (N2O5), nitric acid (HNO3), peroxynitric acid (HNO4), BrONO2, ClONO2.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrbr
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_atomic_bromine_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         Atomic Br Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrbro
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_bromine_monoxide_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         BrO Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrbrcl
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_bromine_chloride_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         BrCl Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrhbr
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_hydrogen_bromide_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         HBr Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrhobr
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_hypobromous_acid_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         HOBr Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrbrono2
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_bromine_nitrate_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         BrONO2 Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrbry
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_total_inorganic_bromine_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         Total Inorganic Bromine (Bry) Volume Mixing Ratio
+comment:           Total family (the sum of all appropriate species in the model) ; list the species in the netCDF header, e.g. Bry = Br + BrO + HOBr + HBr + BrONO2 + BrCl.  Definition: Total inorganic bromine (e.g., HBr and inorganic bromine oxides and radicals (e.g., BrO, atomic bromine (Br), bromine nitrate (BrONO2)) resulting from degradation of bromine-containing organic source gases (halons, methyl bromide, VSLS), and natural inorganic bromine sources (e.g., volcanoes, sea salt, and other aerosols).
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrch2o
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_formaldehyde_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         CH2O Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrch3ooh
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_methyl_hydroperoxide_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         CH3OOH Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrco
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_carbon_monoxide_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         CO Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrco2
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_carbon_dioxide_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         CO2 Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    mnstrage
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     age_of_stratospheric_air
+units:             years
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         Mean Age of Stratospheric Air
+comment:           The mean age of air is defined as the mean time that a stratospheric air mass has been out of contact with the well-mixed troposphere.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         20.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrc2h6
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_ethane_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         C2H6 Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrc2h2
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_ethyne_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         C2H2 Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmrhcn
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_hydrogen_cyanide_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         HCN Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    tntsw
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     tendency_of_air_temperature_due_to_shortwave_heating
+units:             K s-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         Shortwave Heating Rate
+comment:           shortwave heating rates
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         -1000.0
+valid_max:         1000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    tntlw
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     tendency_of_air_temperature_due_to_longwave_heating
+units:             K s-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         Longwave Heating Rate
+comment:           longwave heating rates
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         -1000.0
+valid_max:         1000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    cl
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     cloud_area_fraction_in_atmosphere_layer
+units:             %
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         Cloud Area Fraction
+comment:           Include both large-scale and convective cloud.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         101.0
+!----------------------------------
+!
+
+!============
+variable_entry:    clc
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     convective_cloud_area_fraction_in_atmosphere_layer
+units:             %
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         Convective Cloud Area Fraction
+comment:           Convective cloud fraction
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         101.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmro3ste
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+!FAILS CF25 standard_name:     mole_fraction_of_specified_o3ste_tracer_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         O3ste Volume Mixing Ratio
+comment:           Ozone tracer intended to map out strat-trop exchange (STE) of ozone: (a) set o3ste to O3 at top layer; (b) use standard O3 P-L terms to change o3ste every chemistry time step for 'stratospheric' air grid boxes; (c) reset o3ste to O3 in the lowermost layers (fix these layers to be up to sigma=0.9, ~1 km altitude) and record this tropospheric reset only as a 2-D (lat,long) monthly mean tendency (Tg/s or Tg per month pergird cell).  Determine 'stratospheric' air in any way that is most convenient (e90, O3, PV-theta, etc).
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmre90
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+!FAILS CF25 standard_name:     mole_fraction_of_specified_e90_tracer_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         e90 Volume Mixing Ratio
+comment:           Synthetic tracer e90 has 90-day e-fold everywhere; emitted uniformly (g/m2) over all land/ocean/ice; see Prather et al. 2011 JGR 116, D04306, doi:10.1029/2010JD014939; any normalization can be used if defined, but UCI chooses: mol.wt = 28.97(dry air), emissions = 2074 Tg/y (kg/m2/s) , thus steady-state mean mole fraction = 100 ppb (for ECMWF dry air mass).
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmre90n
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+!FAILS CF25 standard_name:     mole_fraction_of_specified_e90n_tracer_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         e90n Volume Mixing Ratio
+comment:           Synthetic tracer e90n, same as e90, but emitted only 40N to 90N.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vmre90s
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+!FAILS CF25 standard_name:     mole_fraction_of_specified_e90s_tracer_in_air
+units:             mole mole-1
+cell_methods:      time: point
+cell_measures:     area: areacella
+long_name:         e90s Volume Mixing Ratio
+comment:           Synthetic tracer e90s, same as e90, but emitted only 40S to 90S.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude alevel time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    zmta
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     air_temperature
+units:             K
+cell_methods:      longitude: mean
+long_name:         Air Temperature
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude plevs time1
+type:              real
+valid_min:         0.0
+valid_max:         1000000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    zmzg
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     geopotential_height
+units:             m
+cell_methods:      longitude: mean
+long_name:         Geopotential Height
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude plevs time1
+type:              real
+valid_min:         -1000.0
+valid_max:         500000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    zmua
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     eastward_wind
+units:             m s-1
+cell_methods:      longitude: mean
+long_name:         Eastward Wind
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude plevs time1
+type:              real
+valid_min:         -500.0
+valid_max:         500.0
+!----------------------------------
+!
+
+!============
+variable_entry:    vstar
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     northward_transformed_eulerian_mean_air_velocity
+units:             m s-1
+cell_methods:      longitude: mean
+long_name:         Northward TEM air velocity
+comment:           Transformed Eulerian Mean Diagnostics v*, meridional component of the residual meridional circulation (v*, w*) derived from 6 hr or higher frequency data fields (use instantaneous daily fields or 12 hr fields if the 6 hr data are not available).
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude plevs time1
+type:              real
+valid_min:         -500.0
+valid_max:         500.0
+!----------------------------------
+!
+
+!============
+variable_entry:    wstar
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+!FAILS CF25 standard_name:     upward_transformed_eulerian_mean_air_velocity
+units:             m s-1
+cell_methods:      longitude: mean
+long_name:         Upward TEM air velocity
+comment:           Transformed Eulerian Mean Diagnostics w*, meridional component of the residual meridional circulation (v*, w*) derived from 6 hr or higher frequency data fields (use instantaneous daily fields or 12 hr fields if the 6 hr data are not available). Scale height: 6950 m
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude plevs time1
+type:              real
+valid_min:         -500.0
+valid_max:         500.0
+!----------------------------------
+!
+
+!============
+variable_entry:    fy
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     northward_eliassen_palm_flux_in_air
+units:             kg s-2
+cell_methods:      longitude: mean
+long_name:         Northward EPF
+comment:           Transformed Eulerian Mean Diagnostics Meridional component Fy of EP-flux (Fy, Fz) derived from 6hr or higher frequency fields (use daily fields or 12 hr fields if the 6 hr are not available).  Please use the definitions given by equation 3.5.3a of Andrews, Holton and Leovy text book.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude plevs time1
+type:              real
+valid_min:         -10000.0
+valid_max:         10000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    fz
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     upward_eliassen_palm_flux_in_air
+units:             kg s-2
+cell_methods:      longitude: mean
+long_name:         Upward EPF
+comment:           Transformed Eulerian Mean Diagnostics Meridional component Fz of EP-flux (Fy, Fz) derived from 6hr or higher frequency fields (use daily fields or 12 hr fields if the 6 hr are not available).  Please use the definitions given by equation 3.5.3b of Andrews, Holton and Leovy text book.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude plevs time1
+type:              real
+valid_min:         -10000.0
+valid_max:         10000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    acceldivf
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     tendency_of_eastward_wind_due_to_eliassen_palm_flux_divergence
+units:             m s-2
+cell_methods:      longitude: mean
+long_name:         Tendency of Eastward Wind from EPF Divergence
+comment:           Transformed Eulerian Mean Diagnostics Acceleration from the EP-flux divergence (D) derived from 6hr or higher frequency fields (use daily fields or 12 hr fields if the 6 hr are not available).  Please use the definitions given by equation 3.5.2a of Andrews, Holton and Leovy text book.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude plevs time1
+type:              real
+valid_min:         -1000.0
+valid_max:         1000.0
+!----------------------------------
+!
+
+!============
+variable_entry:    zmo3
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_ozone_in_air
+units:             mole mole-1
+cell_methods:      longitude: mean
+long_name:         Ozone Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude plevs time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    zmh2o
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_water_vapor_in_air
+units:             mole mole-1
+cell_methods:      longitude: mean
+long_name:         Water Vapour Volume Mixing Ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude plevs time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    zmnoy
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_total_reactive_nitrogen_in_air
+units:             mole mole-1
+cell_methods:      longitude: mean
+long_name:         Total Reactive Nitrogen Volume Mixing Ratio
+comment:           Total family (the sum of all appropriate species in the model); list the species in the netCDF header, e.g. NOy = N + NO + NO2 + NO3 + HNO3 + 2N2O5 + HNO4 + ClONO2 + BrONO2.  Definition: Total reactive nitrogen; usually includes atomic nitrogen (N), nitric oxide (NO), NO2, nitrogen trioxide (NO3), dinitrogen radical (N2O5), nitric acid (HNO3), peroxynitric acid (HNO4), BrONO2, ClONO2
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude plevs time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    zmclo
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_chlorine_monoxide_in_air
+units:             mole mole-1
+cell_methods:      longitude: mean
+long_name:         ClO volume mixing ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude plevs time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    zmbro
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_bromine_monoxide_in_air
+units:             mole mole-1
+cell_methods:      longitude: mean
+long_name:         BrO volume mixing ratio
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude plevs time1
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+
+!============
+variable_entry:    nh50psca
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+!FAILS CF25 standard_name:     arctic_area_integral_of_polar_stratospheric_cloud_area_fraction
+units:             m2
+cell_methods:      area: sum
+long_name:         Area of PSC at 50 hPa over the Arctic
+comment:           Daily PSC Area that is calculated by the model's PSC scheme poleward of 60 degrees at 50 hPa for Nov-April in NH
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        time1 pr50
+type:              real
+valid_min:         0.0
+valid_max:         5.0E+14
+!----------------------------------
+!
+
+!============
+variable_entry:    sh50psca
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+!FAILS CF25 standard_name:     antarctic_area_integral_of_polar_stratospheric_cloud_area_fraction
+units:             m2
+cell_methods:      area: sum
+long_name:         Area of PSCs at 50 hPa over the Antarctic
+comment:           Daily PSC Area that is calculated by the model's PSC scheme poleward of 60 degrees at 50 hPa for July-Dec in SH
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        time1 pr50
+type:              real
+valid_min:         0.0
+valid_max:         5.0E+14
+!----------------------------------
+!
+
+!============
+variable_entry:    nh50area188k
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+!FAILS CF25 standard_name:     arctic_area_where_air_temperature_less_than_188k
+units:             m2
+cell_methods:      area: sum
+long_name:         Area over the Arctic at 50 hPa with Air Temperature Less than 188K
+comment:           Daily Area where the Temperature poleward of 60 degrees is below 188 K at 50 hPa for Nov-April in NH
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        time1 pr50
+type:              real
+valid_min:         0.0
+valid_max:         5.0E+14
+!----------------------------------
+!
+
+!============
+variable_entry:    nh50area195k
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+!FAILS CF25 standard_name:     arctic_area_where_air_temperature_less_than_195k
+units:             m2
+cell_methods:      area: sum
+long_name:         Area over the Arctic at 50 hPa with Air Temperature Less than 195K
+comment:           Daily Area where the Temperature poleward of 60 degrees is below 195 K at 50 hPa for Nov-April in NH
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        time1 pr50
+type:              real
+valid_min:         0.0
+valid_max:         5.0E+14
+!----------------------------------
+!
+
+!============
+variable_entry:    sh50area188k
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+!FAILS CF25 standard_name:     antarctic_area_where_air_temperature_less_than_188k
+units:             m2
+cell_methods:      area: sum
+long_name:         Area over the Antarctic at 50 hPa with Air Temperature Less and 188K
+comment:           Daily Area where the Temperature poleward of 60 degrees is below 188 K at 50 hPa for July-Dec in SH
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        time1 pr50
+type:              real
+valid_min:         0.0
+valid_max:         5.0E+14
+!----------------------------------
+!
+
+!============
+variable_entry:    sh50area195k
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+!FAILS CF25 standard_name:     antarctic_area_where_air_temperature_less_than_195k
+units:             m2
+cell_methods:      area: sum
+long_name:         Area over the Antarctic at 50 hPa with Air Temperature Less and 195K
+comment:           Daily Area where the Temperature poleward of 60 degrees is below 195 K at 50 hPa for July-Dec in SH
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        time1 pr50
+type:              real
+valid_min:         0.0
+valid_max:         5.0E+14
+!----------------------------------
+!
+

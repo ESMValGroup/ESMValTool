@@ -23,6 +23,8 @@ diag_script_info@range_option = 1           ; 0 = use each model's time range sp
 ;; Used by: SeaIce_polcon_diff.ncl
 diag_script_info@ref_model = "GFDL-ESM2M"   ; reference model, as specified in annotations -> if the specified string is
                                      ;  not found, the routine will print a list of valid strings before crashing
+diag_script_info@dst_grid = "./diag_scripts/aux/CDO/cdo_dst_grid_g010" 
+                                        ; path to destination grid file, required by cdo_remapdis
 ;diag_script_info@grid_min    = -0.3   	;; min contour value, default: -1.
 ;diag_script_info@grid_max    =  0.3   	;; max contour value, default: 1.
 ;diag_script_info@grid_step   =  0.05  	;; step between contours, default: 0.2

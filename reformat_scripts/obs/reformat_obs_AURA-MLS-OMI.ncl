@@ -38,8 +38,8 @@ begin
         TIER + "/" + OBSNAME + "/"
 
     ;; Period
-    YEAR1 = 2005  ; yyyy
-    YEAR2 = 2013  ; yyyy
+    YEAR1 = 2005
+    YEAR2 = 2013
 
     ;; Selected variable (standard name)
     VARS = (/"tropoz"/)
@@ -239,7 +239,7 @@ begin
 
         ;; Outfile
         fout = OUTDIR + "OBS_" + OBSNAME + "_sat_1_" + FIELD + \
-            "_" + VARS(vID) + ".nc"
+            "_" + VARS(vID) + "_" + YEAR1 + "01-" + YEAR2 + "12.nc"
 
         ;; Write variable
         write_nc(fout, VARS(vID), output, gAtt)

@@ -6,61 +6,102 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
 
+; A_laue_ax+
+load "$CVDP_SCRIPTS/functions.ncl"
+; A_laue_ax-
+
 begin
   print("Starting: metrics.ncl")
-  nsim = numAsciiRow("namelist")                ; retrieve simulation names from namelist
-  na = asciiread("namelist",(/nsim/),"string")  ; (It is not done via metrics.txt as there might be a space in names.                                                                             
+  
+  OUTDIR = getenv("OUTDIR")
+  
+  nsim = numAsciiRow("namelist_byvar/namelist_trefht")    ; retrieve total number of observational + models (all namelist_byvar/namelist have same # of rows)
+  na = asciiread("namelist_byvar/namelist_trefht",(/nsim/),"string")  ; (It is not done via metrics.txt as there might be a space in names.                                                                             
   blankrow = ind(na.eq."")
   if (.not.any(ismissing(blankrow))) then
-;     print("Extra blank row(s) detected in namelist. Check the namelist and make sure there is only one blank line at the end of namelist. Attempting to remove extra blank rows.")
-;     print("-----Original namelist---")
-;     print(""+na)
-;     print("-------------------------")
      goodrows = ind(na.ne."")
      na2 = na(goodrows)
      delete(na)
      na = na2
      delete(na2)
      nsim = dimsizes(na)
-;     print("-----Corrected namelist--")
-;     print(""+na)
-;     print("-------------------------")
   end if      
+  nsim = nsim - 1    ; first listed dataset is what all others are compared to, thus, output metrics table has nsim-1 column  
+
+  files = (/"sst.indices.1","sst.indices.2","amo","pdo","psl.nam_nao","psl.sam_psa",\
+            "sst.mean_stddev","psl.mean_stddev","pr.mean_stddev"/)
+  files = "metrics."+files
+  files = files+".txt"
   
-  names = new(nsim,"string")                                                 
-  delim = "|"
-  do gg = 0,nsim-1
-     names(gg) = str_strip(str_get_field(na(gg),1,delim))
+  do gg = 0,dimsizes(files)-1
+; A_laue_ax+
+     ; function fileexists does not exist in NCL versions earlier than 6.2.1
+     ; in NCL 6.2.1, the behavior of the function isfilepresent changed
+     ; ---> function isfilepresent2 (defined in functions.ncl) mimics the old
+     ; function isfilepresent for later versions of NCL and can be used universally
+     ; with both, earlier and later versions of NCL than 6.2.1
+;     if (.not.fileexists(OUTDIR+files(gg))) then
+     if (.not.isfilepresent2(OUTDIR+files(gg))) then
+; A_laue_ax-
+        print("1 or more metrics files missing, exiting metrics.ncl")
+        exit
+     end if
   end do
+
+  ch = new((/nsim,dimsizes(files)/),"string")   ; hold obs/simulation names
+  patcor_rms = new((/nsim,11/),"string")   ; 11 metrics  
+  cntr = 0
+
+  do gg = 0,dimsizes(files)-1
+     nrow = numAsciiRow(OUTDIR+files(gg))
+     a = asciiread(OUTDIR+files(gg),(/-1/),"string")
+     
+     t0 = tochar(a(3))
+     sti0 = str_index_of_substr(a(4), " -",0)   ; read in individual column headers from each metrics file
+     do hh = 0,dimsizes(sti0)-1
+        if (hh.eq.(dimsizes(sti0)-1)) then
+           ch(hh,gg) = str_strip(tostring(t0(sti0(hh):)))
+        else 
+           ch(hh,gg) = str_strip(tostring(t0(sti0(hh):sti0(hh+1))))
+        end if
+     end do
+     delete([/sti0,t0/])
+
+     test = tochar(a(5:))
+     if (dimsizes(dimsizes(test)).eq.2) then
+        patcor_rms(:,cntr) = str_split(tostring(test(0,18:))," ")
+        patcor_rms(:,cntr+1) = str_split(tostring(test(1,18:))," ")
+        cntr = cntr+2
+     else
+        patcor_rms(:,cntr) = str_split(tostring(test(18:))," ")
+        cntr = cntr+1
+     end if
+     delete(a)
+     delete([/test/])
+  end do
+  delete(cntr)
+
+  do gg = 0,dimsizes(files)-1  ; remove individual metrics files
+     system("rm "+OUTDIR+files(gg))
+  end do
+
+  names = ch(:,0)
+  do gg = 0,nsim-1   ; check to see if data is observations or models by seeing if every name matches
+     if (all(ch(gg,0).eq.ch(gg,1:))) then
+        names(gg) = ch(gg,0)
+     else
+        names(gg) = "OBS "+(gg+2)
+     end if
+  end do
+
   names_nchar = max(dimsizes(tochar(names)))
   spacer = ""
   do gg = 0,names_nchar
      spacer = spacer+" "
   end do
-  delete(names_nchar)
-
-  patcor_rms = new((/nsim,11/),"string")   ; 11 metrics
+  delete(names_nchar)     
   pc_score = new(nsim,"string")
   rms_score = new(nsim,"string")
-
-  nrow = numAsciiRow(getenv("OUTDIR")+"metrics_orig.txt")
-  if (nrow.ne.16) then
-     print("Unexpected number of rows encountered in metric_orig.txt. Expected 16, got "+nrow)
-     print("Not calculating total scores for each model, and copying metrics_orig.txt to metrics.txt")
-     system("cp "+getenv("OUTDIR")+"metrics_orig.txt "+getenv("OUTDIR")+"metrics.txt")
-     exit
-  end if
-  a = asciiread(getenv("OUTDIR")+"metrics_orig.txt",(/-1/),"string")    ; a(3) = row headers, a(5:15) = various metrics
-;  print(a)
-  do gg = 0,10   ; 11 metrics
-     test = tochar(a(gg+5))
-     patcor_rms(:,gg) = str_split(tostring(test(18:))," ")
-     delete(test)
-  end do
-
-;  print(patcor_rms)
-;  exit
-
   do gg = 0,nsim-1     ; strip out pattern correlations, and calculated score for each model
      pc = new(11,float,9.99)
      rms = pc
@@ -89,7 +130,11 @@ begin
         pc_score(gg) = "----"
      else     
         do ii = 0,10   ; use Fisher's z-transformation to translate r->z
-           pc_z(ii) = 0.5*(log( (1+pc(ii)) / (1-pc(ii)) ))
+           if (pc(ii).eq.1.0) then
+              pc_z(ii) = 0.5*(log( (1+1.001) / (1-1.001) ))    ; needed when pattern correlation = 1.0
+           else
+              pc_z(ii) = 0.5*(log( (1+pc(ii)) / (1-pc(ii)) ))
+           end if
         end do
         zavg = avg(pc_z)   ; compute average of z
         delete(pc_z)
@@ -100,17 +145,16 @@ begin
      end if
      delete(pc)
   end do
-;  print(pc_score)
-;  print(rms_score)
+  pc_score = where(pc_score.eq." nan","----",pc_score)  ; needed for when the nan's come out of the z-transform (likey due to numerous pattern correlations = 1)
   
   header = (/"","Pattern Correlations/RMS Differences   Observations vs. Model(s)",""/)
-  write_table(getenv("OUTDIR")+"metrics.txt","w",[/header/],"%s")
+  write_table(OUTDIR+"metrics.txt","w",[/header/],"%s")
   column_header1 = spacer+"   ENSO TAS   ENSO PSL   El Nino    La Nina      AMO        PDO        NAM        SAM     SST sigma  PSL sigma   PR sigma    Mean  "
   column_header2 = spacer+"    (DJF+1)    (DJF+1)     Hov        Hov     (Monthly)  (Monthly)    (DJF)      (DJF)      (Ann)      (Ann)       (Ann)     Score  "
   column_header3 = spacer+"  ---------  ---------  ---------  ---------  ---------  ---------  ---------  ---------  ---------  ---------  ---------  ---------"
-  write_table(getenv("OUTDIR")+"metrics.txt","a",[/column_header1/],"%s")
-  write_table(getenv("OUTDIR")+"metrics.txt","a",[/column_header2/],"%s")
-  write_table(getenv("OUTDIR")+"metrics.txt","a",[/column_header3/],"%s")
+  write_table(OUTDIR+"metrics.txt","a",[/column_header1/],"%s")
+  write_table(OUTDIR+"metrics.txt","a",[/column_header2/],"%s")
+  write_table(OUTDIR+"metrics.txt","a",[/column_header3/],"%s")
   
   patcor_rms = where(patcor_rms.eq."9.99/9.99","----/----",patcor_rms)
   spacer_char = tochar(spacer)
@@ -136,7 +180,7 @@ begin
         delete(n1)
      end do
      srow = srow+"  "+pc_score(gg)+"/"+rms_score(gg)     
-     write_table(getenv("OUTDIR")+"metrics.txt","a",[/srow/],"%s")
+     write_table(OUTDIR+"metrics.txt","a",[/srow/],"%s")
      delete([/spacer_char1,dimC,mname_char,srow/])
   end do
   delete([/patcor_rms,spacer_char,pc_score,rms_score/])  

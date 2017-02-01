@@ -1,5 +1,5 @@
 <namelist>
-<include href="./config_private.xml"/>
+<include href="./config_private_DLR-PA2.xml"/>
 <namelist_summary>
 ###############################################################################
 namelist_righi15gmd_ECVs.xml
@@ -54,11 +54,11 @@ This namelist is part of the ESMValTool
 <!-- ### ANNUAL CYCLE PLOTS (Figs. 1, 8, S4, S6, S8) ########################################################################### -->
 
 <diag>
-  <description> Temperature </description>
+  <description> Temperature                          </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            ta                           </variable>
+  <variable ref_model="ERA-Interim,NCEP">  ta        </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -85,19 +85,19 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Eastward wind </description>
+  <description> Eastward wind                        </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            ua                           </variable>
+  <variable ref_model="ERA-Interim,NCEP">  ua        </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_glob.ncl">  perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_200_glob.ncl">  perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_30_glob.ncl">   perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_5_glob.ncl">    perfmetrics_main.ncl </diag_script>
+  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_glob.ncl">   perfmetrics_main.ncl </diag_script>
+  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_200_glob.ncl">   perfmetrics_main.ncl </diag_script>
+  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_30_glob.ncl">    perfmetrics_main.ncl </diag_script>
+  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_5_glob.ncl">     perfmetrics_main.ncl </diag_script>
 
   <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_trop.ncl">   perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_200_trop.ncl">   perfmetrics_main.ncl </diag_script>
@@ -116,19 +116,19 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Northward wind </description>
-  <variable_def_dir>    ./variable_defs/              </variable_def_dir>
-  <variable>            va                            </variable>
-  <field_type>          T3M                           </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/ </diag_script_cfg_dir>
+  <description> Northward wind                       </description>
+  <variable_def_dir>    ./variable_defs/             </variable_def_dir>
+  <variable ref_model="ERA-Interim,NCEP">  va        </variable>
+  <field_type>          T3M                          </field_type>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_glob.ncl">  perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_200_glob.ncl">  perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_30_glob.ncl">   perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_5_glob.ncl">    perfmetrics_main.ncl </diag_script>
+  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_glob.ncl">   perfmetrics_main.ncl </diag_script>
+  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_200_glob.ncl">   perfmetrics_main.ncl </diag_script>
+  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_30_glob.ncl">    perfmetrics_main.ncl </diag_script>
+  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_5_glob.ncl">     perfmetrics_main.ncl </diag_script>
 
   <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_trop.ncl">   perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_200_trop.ncl">   perfmetrics_main.ncl </diag_script>
@@ -147,19 +147,19 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Geopotential height </description>
-  <variable_def_dir>    ./variable_defs/              </variable_def_dir>
-  <variable>            zg                            </variable>
-  <field_type>          T3M                           </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/ </diag_script_cfg_dir>
+  <description> Geopotential height                  </description>
+  <variable_def_dir>    ./variable_defs/             </variable_def_dir>
+  <variable ref_model="ERA-Interim,NCEP">  zg        </variable>
+  <field_type>          T3M                          </field_type>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_glob.ncl">  perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_500_glob.ncl">  perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_30_glob.ncl">   perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_5_glob.ncl">    perfmetrics_main.ncl </diag_script>
+  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_glob.ncl">   perfmetrics_main.ncl </diag_script>
+  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_500_glob.ncl">   perfmetrics_main.ncl </diag_script>
+  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_30_glob.ncl">    perfmetrics_main.ncl </diag_script>
+  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_5_glob.ncl">     perfmetrics_main.ncl </diag_script>
 
   <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_trop.ncl">   perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_500_trop.ncl">   perfmetrics_main.ncl </diag_script>
@@ -178,19 +178,19 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Specific humidity </description>
-  <variable_def_dir>    ./variable_defs/              </variable_def_dir>
-  <variable>            hus                           </variable>
-  <field_type>          T3M                           </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/ </diag_script_cfg_dir>
+  <description> Specific humidity                    </description>
+  <variable_def_dir>    ./variable_defs/             </variable_def_dir>
+  <variable ref_model="AIRS,ERA-Interim">  hus       </variable>
+  <field_type>          T3M                          </field_type>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> obs4mips AIRS        L3  	RetStd-v5   2003  2010  @{OBSPATH}/Tier1             </model>
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
 
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_glob.ncl">  perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_400_glob.ncl">  perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_30_glob.ncl">   perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_5_glob.ncl">    perfmetrics_main.ncl </diag_script>
+  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_glob.ncl">   perfmetrics_main.ncl </diag_script>
+  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_400_glob.ncl">   perfmetrics_main.ncl </diag_script>
+  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_30_glob.ncl">    perfmetrics_main.ncl </diag_script>
+  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_5_glob.ncl">     perfmetrics_main.ncl </diag_script>
 
   <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_trop.ncl">   perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_400_trop.ncl">   perfmetrics_main.ncl </diag_script>
@@ -211,11 +211,11 @@ This namelist is part of the ESMValTool
 <!-- ### ADDITIONAL DIAGNOSTICS FOR TEMPERATURE AND STRATOSPHERIC WATER VAPOUR (Figs. 3, 4) #################################### -->
 
 <diag>
-  <description> Temperature </description>
+  <description> Temperature                          </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            ta                           </variable>
+  <variable ref_model="ERA-Interim">  ta             </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
 
@@ -223,11 +223,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Water vapour </description>
+  <description> Water vapour                         </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            vmrh2o                       </variable>
+  <variable ref_model="HALOE">  vmrh2o               </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	HALOE       sat         1           1991  2002 	@{OBSPATH}/Tier2/HALOE       </model>
 
@@ -238,11 +238,11 @@ This namelist is part of the ESMValTool
 <!-- ### ZONAL MEAN PLOTS (Figs. 2, 9, S2, S3, S5, S7, S9) ##################################################################### -->
 
 <diag>
-  <description> Temperature </description>
-  <variable_def_dir>    ./variable_defs/              </variable_def_dir>
-  <variable>            ta                            </variable>
-  <field_type>          T3M                           </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/ </diag_script_cfg_dir>
+  <description> Temperature                          </description>
+  <variable_def_dir>    ./variable_defs/             </variable_def_dir>
+  <variable ref_model="ERA-Interim,NCEP">  ta        </variable>
+  <field_type>          T3M                          </field_type>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -255,11 +255,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Eastward wind </description>
-  <variable_def_dir>    ./variable_defs/              </variable_def_dir>
-  <variable>            ua                            </variable>
-  <field_type>          T3M                           </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/ </diag_script_cfg_dir>
+  <description> Eastward wind                        </description>
+  <variable_def_dir>    ./variable_defs/             </variable_def_dir>
+  <variable ref_model="ERA-Interim,NCEP">  ua        </variable>
+  <field_type>          T3M                          </field_type>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -269,11 +269,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Northward wind </description>
-  <variable_def_dir>    ./variable_defs/              </variable_def_dir>
-  <variable>            va                            </variable>
-  <field_type>          T3M                           </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/ </diag_script_cfg_dir>
+  <description> Northward wind                       </description>
+  <variable_def_dir>    ./variable_defs/             </variable_def_dir>
+  <variable ref_model="ERA-Interim,NCEP">  va        </variable>
+  <field_type>          T3M                          </field_type>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -282,11 +282,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Geopotential height </description>
-  <variable_def_dir>    ./variable_defs/              </variable_def_dir>
-  <variable>            zg                            </variable>
-  <field_type>          T3M                           </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/ </diag_script_cfg_dir>
+  <description> Geopotential height                  </description>
+  <variable_def_dir>    ./variable_defs/             </variable_def_dir>
+  <variable ref_model="ERA-Interim,NCEP">  zg        </variable>
+  <field_type>          T3M                          </field_type>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -295,11 +295,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Specific humidity </description>
-  <variable_def_dir>    ./variable_defs/              </variable_def_dir>
-  <variable>            hus                           </variable>
-  <field_type>          T3M                           </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/ </diag_script_cfg_dir>
+  <description> Specific humidity                    </description>
+  <variable_def_dir>    ./variable_defs/             </variable_def_dir>
+  <variable ref_model="AIRS,ERA-Interim">  hus       </variable>
+  <field_type>          T3M                          </field_type>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> obs4mips AIRS        L3  	RetStd-v5   2003  2010  @{OBSPATH}/Tier1             </model>
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
@@ -310,50 +310,50 @@ This namelist is part of the ESMValTool
 <!-- ### LAT-LON PLOTS (Figs. S10, S11, S12) ################################################################################### -->
 
 <diag>
-  <description> Outgoing LW radiation (clearsky) </description>
-  <variable_def_dir>    ./variable_defs/              </variable_def_dir>
-  <variable>            rlutcs                        </variable>
-  <field_type>          T2Ms                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/ </diag_script_cfg_dir>
+  <description> Outgoing LW radiation (clearsky)     </description>
+  <variable_def_dir>    ./variable_defs/             </variable_def_dir>
+  <variable ref_model="SRB,CERES-EBAF">  rlutcs      </variable>
+  <field_type>          T2Ms                         </field_type>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
-  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
   <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
+  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
 
   <diag_script cfg="cfg_perfmetrics_latlon_annualclim_all_glob.ncl"> perfmetrics_main.ncl </diag_script>
 </diag>
 
 <diag>
-  <description> Outgoing LW radiation (allsky) </description>
-  <variable_def_dir>    ./variable_defs/              </variable_def_dir>
-  <variable>            rlut                          </variable>
-  <field_type>          T2Ms                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/ </diag_script_cfg_dir>
+  <description> Outgoing LW radiation (allsky)       </description>
+  <variable_def_dir>    ./variable_defs/             </variable_def_dir>
+  <variable ref_model="SRB,CERES-EBAF">  rlut        </variable>
+  <field_type>          T2Ms                         </field_type>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
-  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
   <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
+  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
 
   <diag_script cfg="cfg_perfmetrics_latlon_annualclim_all_glob.ncl"> perfmetrics_main.ncl </diag_script>
 </diag>
 
 <diag>
-  <description> Reflected SW radiation (allsky) </description>
-  <variable_def_dir>    ./variable_defs/              </variable_def_dir>
-  <variable>            rsut                          </variable>
-  <field_type>          T2Ms                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/ </diag_script_cfg_dir>
+  <description> Reflected SW radiation (allsky)      </description>
+  <variable_def_dir>    ./variable_defs/             </variable_def_dir>
+  <variable ref_model="SRB,CERES-EBAF">  rsut        </variable>
+  <field_type>          T2Ms                         </field_type>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
-  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
   <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
+  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
 
   <diag_script cfg="cfg_perfmetrics_latlon_annualclim_all_glob.ncl"> perfmetrics_main.ncl </diag_script>
 </diag>
 
 <diag>
-  <description> Total cloud cover </description>
+  <description> Total cloud cover                     </description>
   <variable_def_dir>    ./variable_defs/              </variable_def_dir>
-  <variable>            clt                           </variable>
+  <variable ref_model="MODIS">  clt                   </variable>
   <field_type>          T2Ms                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/ </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/    </diag_script_cfg_dir>
 
   <model>  obs4mips    MODIS  L3    C5          2001  2010  @{OBSPATH}/Tier1          </model>
 
@@ -367,11 +367,11 @@ This namelist is part of the ESMValTool
 <!-- Plot file name for perfmetrics_grading_collect.ncl determined by "last out", i.e. first namelist entry -->
 
 <diag>
-  <description> Temperature </description>
+  <description> Temperature                          </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            ta                           </variable>
+  <variable ref_model="ERA-Interim,NCEP">  ta        </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -393,11 +393,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Temperature (Taylor) </description>
+  <description> Temperature (Taylor)                 </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
   <variable>            ta                           </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -406,11 +406,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Eastward wind </description>
+  <description> Eastward wind                        </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            ua                           </variable>
+  <variable ref_model="ERA-Interim,NCEP">  ua        </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -432,11 +432,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Eastward wind (Taylor) </description>
+  <description> Eastward wind (Taylor)               </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
   <variable>            ua                           </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -445,11 +445,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Northward wind </description>
+  <description> Northward wind                       </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            va                           </variable>
+  <variable ref_model="ERA-Interim,NCEP">  va        </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -466,11 +466,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Geopotential height </description>
+  <description> Geopotential height                  </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            zg                           </variable>
+  <variable ref_model="ERA-Interim,NCEP">  zg        </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -487,11 +487,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Specific humidity </description>
+  <description> Specific humidity                    </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            hus                          </variable>
+  <variable ref_model="AIRS,ERA-Interim">  hus       </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> obs4mips AIRS        L3  	RetStd-v5   2003  2010  @{OBSPATH}/Tier1             </model>
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
@@ -508,11 +508,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> TOA longwave radiation clear sky </description>
+  <description> Outgoing LW radiation (clearsky)     </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            rlutcs                       </variable>
+  <variable ref_model="SRB,CERES-EBAF">  rlutcs      </variable>
   <field_type>          T2Ms                         </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
   <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
@@ -522,11 +522,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> TOA longwave radiation clear sky </description>
+  <description> Outgoing LW radiation (allsky)       </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            rlut                         </variable>
+  <variable ref_model="SRB,CERES-EBAF">  rlut        </variable>
   <field_type>          T2Ms                         </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
   <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
@@ -536,11 +536,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> TOA longwave radiation clear sky </description>
+  <description> Reflected SW radiation (allsky)      </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            rsut                         </variable>
+  <variable ref_model="SRB,CERES-EBAF">  rsut        </variable>
   <field_type>          T2Ms                         </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
   <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
@@ -550,11 +550,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Portrait diagram </description>
+  <description> Portrait diagram                     </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
   <variable>            ta                           </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -565,11 +565,11 @@ This namelist is part of the ESMValTool
 <!-- ### RMSD GRADING (TROPICS) (Figs. 5b, 7b, 7f) ############################################################################# -->
 
 <diag>
-  <description> Temperature </description>
+  <description> Temperature                          </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            ta                           </variable>
+  <variable ref_model="ERA-Interim,NCEP">  ta        </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -591,11 +591,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Temperature (Taylor) </description>
+  <description> Temperature (Taylor)                 </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
   <variable>            ta                           </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -604,11 +604,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Eastward wind </description>
+  <description> Eastward wind                        </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            ua                           </variable>
+  <variable ref_model="ERA-Interim,NCEP">  ua        </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -630,11 +630,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Eastward wind (Taylor) </description>
+  <description> Eastward wind (Taylor)               </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
   <variable>            ua                           </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -643,11 +643,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Northward wind </description>
+  <description> Northward wind                       </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            va                           </variable>
+  <variable ref_model="ERA-Interim,NCEP">  va        </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -664,11 +664,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Geopotential height </description>
+  <description> Geopotential height                  </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            zg                           </variable>
+  <variable ref_model="ERA-Interim,NCEP">  zg        </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -685,11 +685,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Specific humidity </description>
+  <description> Specific humidity                    </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            hus                          </variable>
+  <variable ref_model="AIRS,ERA-Interim">  hus       </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> obs4mips AIRS        L3  	RetStd-v5   2003  2010  @{OBSPATH}/Tier1             </model>
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
@@ -706,11 +706,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> TOA longwave radiation clear sky </description>
+  <description> Outgoing LW radiation (clearsky)     </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            rlutcs                       </variable>
+  <variable ref_model="SRB,CERES-EBAF">  rlutcs      </variable>
   <field_type>          T2Ms                         </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
   <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
@@ -720,11 +720,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> TOA longwave radiation clear sky </description>
+  <description> Outgoing LW radiation (allsky)       </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            rlut                         </variable>
+  <variable ref_model="SRB,CERES-EBAF">  rlut        </variable>
   <field_type>          T2Ms                         </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
   <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
@@ -734,11 +734,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> TOA longwave radiation clear sky </description>
+  <description> Reflected SW radiation (allsky)      </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            rsut                         </variable>
+  <variable ref_model="SRB,CERES-EBAF">  rsut        </variable>
   <field_type>          T2Ms                         </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
   <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
@@ -748,11 +748,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Portrait diagram </description>
+  <description> Portrait diagram                     </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
   <variable>            ta                           </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -763,11 +763,11 @@ This namelist is part of the ESMValTool
 <!-- ### RMSD GRADING (NH EXTRATROPICS) (Figs. 5c, 7c, 7g) ##################################################################### -->
 
 <diag>
-  <description> Temperature </description>
+  <description> Temperature                          </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            ta                           </variable>
+  <variable ref_model="ERA-Interim,NCEP">  ta        </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -789,11 +789,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Temperature (Taylor) </description>
+  <description> Temperature (Taylor)                 </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
   <variable>            ta                           </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -802,11 +802,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Eastward wind </description>
+  <description> Eastward wind                        </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            ua                           </variable>
+  <variable ref_model="ERA-Interim,NCEP">  ua        </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -828,11 +828,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Eastward wind (Taylor)  </description>
+  <description> Eastward wind (Taylor)               </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
   <variable>            ua                           </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -841,11 +841,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Northward wind </description>
+  <description> Northward wind                       </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            va                           </variable>
+  <variable ref_model="ERA-Interim,NCEP">  va        </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -862,11 +862,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Geopotential height </description>
+  <description> Geopotential height                  </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            zg                           </variable>
+  <variable ref_model="ERA-Interim,NCEP">  zg        </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -883,11 +883,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Specific humidity </description>
+  <description> Specific humidity                    </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            hus                          </variable>
+  <variable ref_model="AIRS,ERA-Interim">  hus       </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> obs4mips AIRS        L3  	RetStd-v5   2003  2010  @{OBSPATH}/Tier1             </model>
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
@@ -904,11 +904,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> TOA longwave radiation clear sky </description>
+  <description> Outgoing LW radiation (clearsky)     </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            rlutcs                       </variable>
+  <variable ref_model="SRB,CERES-EBAF">  rlutcs      </variable>
   <field_type>          T2Ms                         </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
   <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
@@ -918,11 +918,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> TOA longwave radiation clear sky </description>
+  <description> Outgoing LW radiation (allsky)       </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            rlut                         </variable>
+  <variable ref_model="SRB,CERES-EBAF">  rlut        </variable>
   <field_type>          T2Ms                         </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
   <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
@@ -932,11 +932,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> TOA longwave radiation clear sky </description>
+  <description> Reflected SW radiation (allsky)      </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            rsut                         </variable>
+  <variable ref_model="SRB,CERES-EBAF">  rsut        </variable>
   <field_type>          T2Ms                         </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
   <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
@@ -946,11 +946,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Portrait diagram </description>
+  <description> Portrait diagram                     </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
   <variable>            ta                           </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -961,11 +961,11 @@ This namelist is part of the ESMValTool
 <!-- ### RMSD GRADING (SH EXTRATROPICS) (Figs. 5d, 7d, 7h) ##################################################################### -->
 
 <diag>
-  <description> Temperature </description>
+  <description> Temperature                          </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            ta                           </variable>
+  <variable ref_model="ERA-Interim,NCEP">  ta        </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -987,11 +987,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Temperature (Taylor) </description>
+  <description> Temperature (Taylor)                 </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
   <variable>            ta                           </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -1000,11 +1000,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Eastward wind </description>
+  <description> Eastward wind                        </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            ua                           </variable>
+  <variable ref_model="ERA-Interim,NCEP">  ua        </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -1026,11 +1026,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Eastward wind (Taylor) </description>
+  <description> Eastward wind (Taylor)               </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
   <variable>            ua                           </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -1039,11 +1039,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Northward wind </description>
+  <description> Northward wind                       </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            va                           </variable>
+  <variable ref_model="ERA-Interim,NCEP">  va        </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -1060,11 +1060,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Geopotential height </description>
+  <description> Geopotential height                  </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            zg                           </variable>
+  <variable ref_model="ERA-Interim,NCEP">  zg        </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -1081,11 +1081,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Specific humidity </description>
+  <description> Specific humidity                    </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            hus                          </variable>
+  <variable ref_model="AIRS,ERA-Interim">  hus       </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> obs4mips AIRS        L3  	RetStd-v5   2003  2010  @{OBSPATH}/Tier1             </model>
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
@@ -1102,11 +1102,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> TOA longwave radiation clear sky </description>
+  <description> Outgoing LW radiation (clearsky)     </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            rlutcs                       </variable>
+  <variable ref_model="SRB,CERES-EBAF">  rlutcs      </variable>
   <field_type>          T2Ms                         </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
   <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
@@ -1116,11 +1116,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> TOA longwave radiation clear sky </description>
+  <description> Outgoing LW radiation (allsky)       </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            rlut                         </variable>
+  <variable ref_model="SRB,CERES-EBAF">  rlut        </variable>
   <field_type>          T2Ms                         </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
   <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
@@ -1130,11 +1130,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> TOA longwave radiation clear sky </description>
+  <description> Reflected SW radiation (allsky)      </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            rsut                         </variable>
+  <variable ref_model="SRB,CERES-EBAF">  rsut        </variable>
   <field_type>          T2Ms                         </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
   <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
@@ -1144,11 +1144,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Portrait diagram </description>
+  <description> Portrait diagram                     </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
   <variable>            ta                           </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -1159,11 +1159,11 @@ This namelist is part of the ESMValTool
 <!-- ### BIAS GRADING (GLOBAL) (Fig. 6a) ####################################################################################### -->
 
 <diag>
-  <description> Temperature </description>
+  <description> Temperature                          </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            ta                           </variable>
+  <variable ref_model="ERA-Interim,NCEP">  ta        </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -1180,11 +1180,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Eastward wind </description>
+  <description> Eastward wind                        </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            ua                           </variable>
+  <variable ref_model="ERA-Interim,NCEP">  ua        </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -1201,11 +1201,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Northward wind </description>
+  <description> Northward wind                       </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            va                           </variable>
+  <variable ref_model="ERA-Interim,NCEP">  va        </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -1222,11 +1222,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Geopotential height </description>
+  <description> Geopotential height                  </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            zg                           </variable>
+  <variable ref_model="ERA-Interim,NCEP">  zg        </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -1243,11 +1243,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Specific humidity </description>
+  <description> Specific humidity                    </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            hus                          </variable>
+  <variable ref_model="AIRS,ERA-Interim">  hus       </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> obs4mips AIRS        L3  	RetStd-v5   2003  2010  @{OBSPATH}/Tier1             </model>
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
@@ -1264,11 +1264,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> TOA longwave radiation clear sky </description>
+  <description> Outgoing LW radiation (clearsky)     </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            rlutcs                       </variable>
+  <variable ref_model="SRB,CERES-EBAF">  rlutcs      </variable>
   <field_type>          T2Ms                         </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
   <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
@@ -1278,11 +1278,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> TOA longwave radiation clear sky </description>
+  <description> Outgoing LW radiation (allsky)       </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            rlut                         </variable>
+  <variable ref_model="SRB,CERES-EBAF">  rlut        </variable>
   <field_type>          T2Ms                         </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
   <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
@@ -1292,11 +1292,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> TOA longwave radiation clear sky </description>
+  <description> Reflected SW radiation (allsky)      </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            rsut                         </variable>
+  <variable ref_model="SRB,CERES-EBAF">  rsut        </variable>
   <field_type>          T2Ms                         </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
   <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
@@ -1306,11 +1306,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Portrait diagram </description>
+  <description> Portrait diagram                     </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
   <variable>            ta                           </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -1321,11 +1321,11 @@ This namelist is part of the ESMValTool
 <!-- ### BIAS GRADING (TROPICS) (Fig. 6b) ###################################################################################### -->
 
 <diag>
-  <description> Temperature </description>
+  <description> Temperature                          </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            ta                           </variable>
+  <variable ref_model="ERA-Interim,NCEP">  ta        </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -1342,11 +1342,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Eastward wind </description>
+  <description> Eastward wind                        </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            ua                           </variable>
+  <variable ref_model="ERA-Interim,NCEP">  ua        </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -1363,11 +1363,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Northward wind </description>
+  <description> Northward wind                       </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            va                           </variable>
+  <variable ref_model="ERA-Interim,NCEP">  va        </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -1384,11 +1384,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Geopotential height </description>
+  <description> Geopotential height                  </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            zg                           </variable>
+  <variable ref_model="ERA-Interim,NCEP">  zg        </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -1405,11 +1405,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Specific humidity </description>
+  <description> Specific humidity                    </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            hus                          </variable>
+  <variable ref_model="AIRS,ERA-Interim">  hus       </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> obs4mips AIRS        L3  	RetStd-v5   2003  2010  @{OBSPATH}/Tier1             </model>
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
@@ -1426,11 +1426,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> TOA longwave radiation clear sky </description>
+  <description> Outgoing LW radiation (clearsky)     </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            rlutcs                       </variable>
+  <variable ref_model="SRB,CERES-EBAF">  rlutcs      </variable>
   <field_type>          T2Ms                         </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
   <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
@@ -1440,11 +1440,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> TOA longwave radiation clear sky </description>
+  <description> Outgoing LW radiation (allsky)       </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            rlut                         </variable>
+  <variable ref_model="SRB,CERES-EBAF">  rlut        </variable>
   <field_type>          T2Ms                         </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
   <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
@@ -1454,11 +1454,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> TOA longwave radiation clear sky </description>
+  <description> Reflected SW radiation (allsky)      </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            rsut                         </variable>
+  <variable ref_model="SRB,CERES-EBAF">  rsut        </variable>
   <field_type>          T2Ms                         </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
   <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
@@ -1468,11 +1468,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Portrait diagram </description>
+  <description> Portrait diagram                     </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
   <variable>            ta                           </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -1483,11 +1483,11 @@ This namelist is part of the ESMValTool
 <!-- ### BIAS GRADING (NH EXTRATROPICS) (Fig. 6c) ############################################################################## -->
 
 <diag>
-  <description> Temperature </description>
+  <description> Temperature                          </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            ta                           </variable>
+  <variable ref_model="ERA-Interim,NCEP">  ta        </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -1504,11 +1504,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Eastward wind </description>
+  <description> Eastward wind                        </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            ua                           </variable>
+  <variable ref_model="ERA-Interim,NCEP">  ua        </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -1525,11 +1525,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Northward wind </description>
+  <description> Northward wind                       </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            va                           </variable>
+  <variable ref_model="ERA-Interim,NCEP">  va        </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -1546,11 +1546,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Geopotential height </description>
+  <description> Geopotential height                  </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            zg                           </variable>
+  <variable ref_model="ERA-Interim,NCEP">  zg        </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -1567,11 +1567,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Specific humidity </description>
+  <description> Specific humidity                    </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            hus                          </variable>
+  <variable ref_model="AIRS,ERA-Interim">  hus       </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> obs4mips AIRS        L3  	RetStd-v5   2003  2010  @{OBSPATH}/Tier1             </model>
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
@@ -1588,11 +1588,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> TOA longwave radiation clear sky </description>
+  <description> Outgoing LW radiation (clearsky)     </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            rlutcs                       </variable>
+  <variable ref_model="SRB,CERES-EBAF">  rlutcs      </variable>
   <field_type>          T2Ms                         </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
   <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
@@ -1602,11 +1602,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> TOA longwave radiation clear sky </description>
+  <description> Outgoing LW radiation (allsky)       </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            rlut                         </variable>
+  <variable ref_model="SRB,CERES-EBAF">  rlut        </variable>
   <field_type>          T2Ms                         </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
   <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
@@ -1616,11 +1616,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> TOA longwave radiation clear sky </description>
+  <description> Reflected SW radiation (allsky)      </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            rsut                         </variable>
+  <variable ref_model="SRB,CERES-EBAF">  rsut        </variable>
   <field_type>          T2Ms                         </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
   <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
@@ -1630,11 +1630,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Portrait diagram </description>
+  <description> Portrait diagram                     </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
   <variable>            ta                           </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -1645,11 +1645,11 @@ This namelist is part of the ESMValTool
 <!-- ### BIAS GRADING (SH EXTRATROPICS) (Fig. 6d) ############################################################################## -->
 
 <diag>
-  <description> Temperature </description>
+  <description> Temperature                          </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            ta                           </variable>
+  <variable ref_model="ERA-Interim,NCEP">  ta        </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -1666,11 +1666,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Eastward wind </description>
+  <description> Eastward wind                        </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            ua                           </variable>
+  <variable ref_model="ERA-Interim,NCEP">  ua        </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -1687,11 +1687,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Northward wind </description>
+  <description> Northward wind                       </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            va                           </variable>
+  <variable ref_model="ERA-Interim,NCEP">  va        </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -1708,11 +1708,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Geopotential height </description>
+  <description> Geopotential height                  </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            zg                           </variable>
+  <variable ref_model="ERA-Interim,NCEP">  zg        </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
@@ -1729,11 +1729,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Specific humidity </description>
+  <description> Specific humidity                    </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            hus                          </variable>
+  <variable ref_model="AIRS,ERA-Interim">  hus       </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> obs4mips AIRS        L3  	RetStd-v5   2003  2010  @{OBSPATH}/Tier1             </model>
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
@@ -1750,11 +1750,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> TOA longwave radiation clear sky </description>
+  <description> Outgoing LW radiation (clearsky)     </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            rlutcs                       </variable>
+  <variable ref_model="SRB,CERES-EBAF">  rlutcs      </variable>
   <field_type>          T2Ms                         </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
   <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
@@ -1764,11 +1764,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> TOA longwave radiation clear sky </description>
+  <description> Outgoing LW radiation (allsky)       </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            rlut                         </variable>
+  <variable ref_model="SRB,CERES-EBAF">  rlut        </variable>
   <field_type>          T2Ms                         </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
   <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
@@ -1778,11 +1778,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> TOA longwave radiation clear sky </description>
+  <description> Reflected SW radiation (allsky)      </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable>            rsut                         </variable>
+  <variable ref_model="SRB,CERES-EBAF">  rsut        </variable>
   <field_type>          T2Ms                         </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
   <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
@@ -1792,11 +1792,11 @@ This namelist is part of the ESMValTool
 </diag>
 
 <diag>
-  <description> Portrait diagram </description>
+  <description> Portrait diagram                     </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
   <variable>            ta                           </variable>
   <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
+  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
   <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
   <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>

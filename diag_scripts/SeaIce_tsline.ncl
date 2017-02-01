@@ -8,22 +8,27 @@
 ;;    Creates line plot for sea ice area and extent versus time.
 ;;
 ;; Required diag_script_info attributes (diagnostics specific)
-;;    multi_model_mean: additional plot MMM and standard deviation.
+;;    multi_model_mean: additionally plot MMM and standard deviation.
 ;;    month: selected month or annual mean.
 ;;    region: region to be plotted ( "Arctic" or "Antarctic").
 ;;
 ;; Optional diag_script_info attributes (diagnostics specific)
+;;    fill_pole_hole: fill observational hole at North pole, Default: False
+;;    styleset: specify line and color style
 ;;    EMs_in_lg: create legend label for each individual ensemble member
 ;;               (Default: "True")
+;;    xy_line_legend: False: do not draw a legend inside the plot
+;;    legend_outside: True: draw legend in an extra plot
 ;;
 ;; Required variable_info attributes (variable specific)
 ;;
-;; Optional diag_script_info attributes (variable specific)
+;; Optional variable_info attributes (variable specific)
 ;;
 ;; Caveats
 ;;    CMOR units expected: areacello in m2, sic in %
 ;;
 ;; Modification history
+;;    20160906-A_senf_da: added option to fill polar observation hole
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;;                        of the code
 ;;    20150325-A_laue_ax: modified reference tags used for acknowledgements
@@ -52,7 +57,7 @@ load "./plot_scripts/ncl/xy_line.ncl"
 
 begin
     verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
-   info_output("<<<<<<<< Entering " + diag_script, verbosity, 4)
+    info_output("<<<<<<<< Entering " + diag_script, verbosity, 4)
     info_output("++++++++++++++++++++++++++++++++++++++++++", verbosity, 1)
     info_output(diag_script + " (var: " + variables(0) + ")", verbosity, 1)
     info_output("++++++++++++++++++++++++++++++++++++++++++", verbosity, 1)
@@ -96,6 +101,24 @@ begin
     end if
     delete(plot_fields)
     delete(ind_f)
+
+    ;; Check region selection
+    if (diag_script_info@region.ne."Arctic" .and. \
+        diag_script_info@region.ne."Antarctic") then
+        error_msg("f", diag_script, "", "no (valid) region selection")
+    end if
+
+    ;; Check fill_pole_hole option
+    if (.not.isatt(diag_script_info,"fill_pole_hole")) then
+        diag_script_info@fill_pole_hole = False
+    else
+        if (diag_script_info@fill_pole_hole .and. \
+            diag_script_info@region.eq."Antarctic") then
+            diag_script_info@fill_pole_hole = False
+            error_msg("w", diag_script, "", "No pole hole at Antarctic " + \
+                      "- setting diag_script_info@fill_pole_hole to False")
+        end if
+    end if
 
     ;; Determine time range
     start_year = min(stringtoint(models@start_year))
@@ -144,7 +167,7 @@ begin
     if (diag_script_info@multi_model_mean .eq. "y") then
         val_ext_stddev = new((/4, end_year - start_year + 1/), float)
         val_area_stddev = new((/4, end_year - start_year + 1/), float)
-    else  ; initialize anyway, because both are needed as arguments of xy_line
+    else  ; initialize anyway: both are needed as parameters for xy_line
         val_ext_stddev = 0
         val_area_stddev = 0
     end if
@@ -194,10 +217,52 @@ begin
         sic_temp = time_operations(sic, toint(models@start_year(imod)),\
                                    toint(models@end_year(imod)), \
                                    "extract", "", 0)
+        sic_temp!0 = "time"
         delete(sic)
         sic = sic_temp
         copy_VarMeta(sic_temp, sic)
         delete(sic_temp)
+
+        ;; Fill pole hole
+        if (diag_script_info@fill_pole_hole) then
+            latstep = 0.1
+            max_lat = 90.
+            lat1D = ndtooned(area_lat)
+            do itime=0, dimsizes(sic&time)-1  ; Hole depends on time
+                actual_lat = max_lat
+                data1D = ndtooned(sic(itime,:,:))
+                if (all(ismissing(data1D))) then  ; Time step missing
+                    continue
+                end if
+                do while(1.lt.2)  ; Will break when hole is filled
+                    i1D = ind(lat1D.ge.actual_lat .and. \
+                    lat1D.lt.actual_lat+latstep)
+                    if (.not. all(ismissing(i1D))) then
+                        i2D     = ind_resolve(ind(lat1D.ge.actual_lat),\
+                        dimsizes(area_lat))
+                        dim_i2D = dimsizes(i2D)
+                        npts    = dim_i2D(0)  ; Number of elements
+                        ndim    = dim_i2D(1)  ; Rank of "lat" 
+                        if (any(ismissing(data1D(i1D)))) then
+                            do n=0, npts-1
+                                ring = sic(itime,i2D(n,0),i2D(n,1))
+                                sic(itime,i2D(n,0),i2D(n,1)) = \
+                                        where(ismissing(ring), 1., ring)
+                                delete(ring)
+                            end do
+                        else  ; Out of the hole!
+                            delete([/i1D, i2D, dim_i2D, npts, ndim/])
+                            break
+                        end if
+                        delete([/i2D, dim_i2D, npts, ndim/])
+                    end if
+                    delete([/i1D/])  
+                    actual_lat = actual_lat - latstep
+                end do  ; while
+                delete(data1D)
+            end do  ; itime
+            delete(lat1D)
+        end if
 
         ;; Select region -> name corresponds to the pole region, but entire
         ;; hemisphere will be evaluated and converted to million sqkm
@@ -207,8 +272,6 @@ begin
         else if (diag_script_info@region .eq. "Arctic")
             ;; Set area_temp to 0 in SH
             area_temp = where(area_lat .gt. 0.0, area_temp / 1.e12, 0.0)
-        else
-            error_msg("f", diag_script, "", "no (valid) region selection")
         end if
         end if
 
@@ -260,13 +323,7 @@ begin
         val_area(imod, ia:ie) = tofloat(sic_sum_area)
 
         ;; Clean up
-        delete(area_lon)
-        delete(area_lat)
-        delete(area_temp)
-        delete(sic_sum_ext)
-        delete(sic_sum_area)
-        delete(ia)
-        delete(ie)
+        delete([/area_lon,area_lat,area_temp,sic_sum_ext,sic_sum_area,ia,ie/])
 
     end do  ; imod
 
@@ -331,17 +388,23 @@ begin
         wks_area = get_wks(0, diag_script, outfile_area)
 
         ;; Define plot resources
-        res             = True
-        res@tmXBLabelAngleF   = 45
-        res@tmXBLabelJust     = "CenterRight"
+        res                 = True
+        res@tmXBLabelAngleF = 45
+        res@tmXBLabelJust   = "CenterRight"
 
-        ;; Min and max values on x-axis
-        res@trXMinF = min(val_ext&time) - 0.05 * (max(val_ext&time) - \
-                                                  min(val_ext&time))
+        ;; Min and max values on x-axis, leave space on right for legend
         res@trXMaxF = max(val_ext&time) + 0.25 * (max(val_ext&time) - \
+                                                  min(val_ext&time))
+        res@trXMinF = min(val_ext&time) - 0.05 * (max(val_ext&time) - \
                                                   min(val_ext&time))
         res@tmXBMode = "Automatic"
         res@tmXBFormat = "f"
+        if (isatt(diag_script_info, "xy_line_legend")) then
+            if (.not.diag_script_info@xy_line_legend) then
+                res@trXMaxF = max(val_ext&time)
+                res@trXMinF = min(val_ext&time)
+            end if
+        end if
 
         ;; Resources specific for extent plot
         res_ext = True
@@ -361,11 +424,26 @@ begin
         debuginfo = False
         xy_line(wks_ext, val_ext, val_ext&time, val_ext_stddev, res_ext, \
                 debuginfo)
+        if (isatt(diag_script_info, "legend_outside")) then
+            ;; Legend can only once be drawn in an extra file (hlu error), 
+            ;; but is same for both area and extent anyway
+            if (diag_script_info@legend_outside) then
+                val_area@legend_outside = True
+                wks_area@legendfile = get_outfile_name(diag_script, \
+                                                       outfile_area + "_legend")
+            end if
+        else
+            diag_script_info@legend_outside = False
+        end if
         xy_line(wks_area, val_area, val_area&time, val_area_stddev, res_area, \
                 debuginfo)
 
-        info_output(" gv " + wks_ext@fullname + " &", verbosity, 1)
-        info_output(" gv " + wks_area@fullname + " &", verbosity, 1)
+        info_output(" gs " + wks_ext@fullname + " &", verbosity, 1)
+        info_output(" gs " + wks_area@fullname + " &", verbosity, 1)
+
+        if (diag_script_info@legend_outside) then
+            info_output(" gs " + wks_area@legendfile + ".epsi &", verbosity, 1)
+        end if
 
     end if  ; More than 1 time step
 

@@ -31,7 +31,7 @@ if (! -d $outpath) then
 endif
 
 set infile=$inpath/SOCAT_tracks_gridded_monthly_v2.nc
-set outfile=$outpath/spco2_monthly_ref_SOCAT_reg_1970-2011.nc
+set outfile=$outpath/OBS_SOCAT_ocean_1_TO2M_spco2_197001-201112.nc
 
 if (-e $infile) then
     echo 'input file = '$infile

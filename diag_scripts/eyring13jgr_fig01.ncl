@@ -32,7 +32,16 @@
 ;#                                                                            #
 ;# Caveats:                                                                   #
 ;# Modification history:                                                      #
-;#    * 20151208-A-laue_ax: code clean-up, moved call to write_references to  #
+;#    * 20160926-A_laue_ax: bugfix for global mean values: missing values are #
+;#                          now taken into account for all 12 month;          #
+;#                          added option to hide/show mask in all plots       #
+;#                          (diag_script_info@show_mask)                      #
+;#    * 20160825-A_laue_ax: replaced "area_hi2lores_Wrap" with                #
+;#                          "linint2_Wrap" to prevent problems with grids     #
+;#                          that have a lower resolution than the destination #
+;#                          grid in only one coordinate (lat OR lon), which   #
+;#                          makes area_hi2lores fail.                         #
+;#    * 20151208-A_laue_ax: code clean-up, moved call to write_references to  #
 ;#                          beginning of code, using explicit color scale     #
 ;#                          levels from Eyring et al. (2013), using color map #
 ;#                          specified by diag_script_info@rgb_file            #
@@ -106,7 +115,16 @@ begin
 
     if ((isatt(diag_script_info, "e13fig01_diff_ref"))) then
         OBS_ref = diag_script_info@e13fig01_diff_ref
-        ind_OBS_ref = ind(models@name.eq.OBS_ref) 
+        do iobs = 0, dimsizes(OBS_ref)-1
+            ind_OBS_ref = ind(models@name.eq.OBS_ref(iobs))
+
+            ;;select only first OBS_ref
+            if (.not.ismissing(ind_OBS_ref)) then
+                break
+            end if
+        end do
+        delete(OBS_ref)
+        OBS_ref = models@name(ind_OBS_ref)
     end if
 
     if (isatt(diag_script_info, "rgb_file")) then
@@ -173,22 +191,41 @@ begin
             var_grd&lon = dest_grd&lon
             
             ;; ... for the mask
-            mask0 = dim_avg_n_Wrap(var_grd(0, :,:, :),0)
-            mask0(:, :) = 1
+            mask0 = var_grd(0, :, :, :)
+            mask0 = 1
         end if
 
         ;; regrid to ref
         A1 = where(ismissing(A1), Fill, A1)
         A1@_FillValue = Fill  ; ensure consistent _FillValue
-        var_grd(idx_mod, :,:, :) = area_hi2lores_Wrap(A1&lon, A1&lat, A1, \
-            True, 1, dest_grd&lon, dest_grd&lat, False)
+; A_laue_ax+
+;            var_grd(idx_mod, :,:, :) = area_hi2lores_Wrap(A1&lon, A1&lat, A1, \
+;                True, 1, dest_grd&lon, dest_grd&lat, False)
+            var_grd(idx_mod, :,:, :) = linint2_Wrap(A1&lon, A1&lat, A1, \
+                True, dest_grd&lon, dest_grd&lat, 0)
+; A_laue_ax-
+
         ;; Build the mask: missing in at least one model = missing in the mask
-        mask0 = where(ismissing(var_grd(idx_mod,0, :, :)), mask0@_FillValue, \
+        mask0 = where(ismissing(var_grd(idx_mod, :, :, :)), mask0@_FillValue, \
                       mask0)
 
         ;; clean up
         delete([/A0, A1/])
     end do  ; idx_MOD, for regridding and mask
+
+; A_laue_ax+
+        if ((isatt(diag_script_info, "show_mask"))) then
+            if (diag_script_info@show_mask) then
+                do imod = 0, dim_MOD - 1
+                    var_grd(imod, :, :, :) =  var_grd(imod, :, :, :) * mask0
+                end do
+                ; debug output
+;                system ("rm debug.nc")
+;                debugfile = addfile("debug.nc", "c")
+;                debugfile->mask0 = mask0
+            end if
+        end if
+; A_laue_ax-
 
     info_output(diag_script + ": Mean value calculated after weighted " + \
         "averaging over time, regridding (lon, lat) to coarsest grid, " + \
@@ -211,7 +248,7 @@ begin
 
     res@cnLevelSelectionMode = "ExplicitLevels"
 ;    res@cnLevels = variable_info@acp_cnlvl
-    res@cnLevels = fspan(150., 475., 14)  ; scale bar from Eyring et al. (2013)
+    res@cnLevels = variable_info@eyring13_cnlvl  ; scale bar from Eyring et al. (2013)
     res@sfXArray = ispan(0, 12, 1)
     res@txFont = diag_script_info@font
     res@tmXBLabelFont = diag_script_info@font
@@ -237,9 +274,13 @@ begin
     ;; Loop over regridded models for plotting
     do idx_mod = 0, dim_MOD - 1
         ;; calculate mean
-        A2 = where(ismissing(mask0), mask0, dim_avg_n_Wrap(var_grd(idx_mod,:,:, :),0))
-        copy_VarMeta(mask0, A2)
-        time_mean = area_operations(A2, -90, 90, 0, 360, "average", True)
+        modeldata = var_grd(idx_mod, :, :, :) * mask0
+        copy_VarMeta(mask0, modeldata)
+        area_mean = area_operations(modeldata, -90, 90, 0, 360, "average", True)
+        time_mean = avg(area_mean)
+        delete(modeldata)
+        delete(area_mean)
+
         if (time_mean.ge.1000) then
             fmt = tostring(toint(time_mean))
         else if (time_mean.lt.1000 .and. time_mean.ge.100) then
@@ -266,7 +307,7 @@ begin
         output_file_path = output_dir + output_filename
         wks = gsn_open_wks(file_type, output_file_path)
         ;; Data to plot
-        A3 = dim_avg_Wrap(var_grd(idx_mod, :, :,:))
+        A3 = dim_avg_Wrap(var_grd(idx_mod, :, :, :))
 
         ;; model specific ressources
         res@tiMainFontHeightF = 0.03
@@ -293,7 +334,7 @@ begin
         print("gv " + output_file_path + "." + file_type)
 
         ;; clean up
-        delete([/wks, A2, A3, time_mean/])
+        delete([/wks, A3, time_mean/])
     end do  ; idx_MOD, for plotting
 
     ;*********plot MMM plot lista_chem plot lista_nochem***********
@@ -321,9 +362,14 @@ begin
     ;**************plot add**********
 
     ;; calculate mean MMM
-    MMM_chem_1 = where(ismissing(mask0), mask0, dim_avg_n_Wrap(MMM_chem(:, :, :), 0))
-    copy_VarMeta(mask0, MMM_chem_1)
-    time_mean = area_operations(MMM_chem_1, -90, 90, 0, 360, "average", True)
+
+    modeldata = MMM_chem(:, :, :) * mask0
+    copy_VarMeta(mask0, modeldata)
+    area_mean = area_operations(modeldata, -90, 90, 0, 360, "average", True)
+    time_mean = avg(area_mean)
+    delete(modeldata)
+    delete(area_mean)
+
     if (time_mean.ge.1000) then
         fmt = tostring(toint(time_mean))
     else if (time_mean.lt.1000 .and. time_mean.ge.100) then
@@ -351,7 +397,7 @@ begin
             var0, field_type0, aux_title_info, -1)
     output_file_path = output_dir + output_filename
     aux_title_info = "MMM_chem"
-    aux_title_info1 = "panel"
+    aux_title_info1 = OBS_ref + "_panel" + "_" + models@experiment(0)
     output_filename1 = interface_get_figure_filename(diag_script_base, \
             var0, field_type0, aux_title_info1, -1)
     output_file_path1 = output_dir + output_filename1
@@ -384,9 +430,14 @@ begin
     ;*****************NO CHEM ***************************
 
     if ((isatt(diag_script_info, "e13fig04_list_nochem_mod"))) then
-        MMM_nochem_1 = where(ismissing(mask0), mask0, dim_avg_n_Wrap(MMM_nochem, 0))
-        copy_VarMeta(mask0, MMM_nochem_1)
-        time_mean = area_operations(MMM_nochem_1, -90, 90, 0, 360, "average", True)
+
+        modeldata = MMM_nochem(:, :, :) * mask0
+        copy_VarMeta(mask0, modeldata)
+        area_mean = area_operations(modeldata, -90, 90, 0, 360, "average", True)
+        time_mean = avg(area_mean)
+        delete(modeldata)
+        delete(area_mean)
+
         if (time_mean.ge.1000) then
             fmt = tostring(toint(time_mean))
         else if (time_mean.lt.1000 .and. time_mean.ge.100) then
@@ -440,10 +491,14 @@ begin
     ;******************REF*******************************
 
     if ((isatt(diag_script_info, "e13fig01_diff_ref"))) then        
-        var_grd_ref_1 = where(ismissing(mask0), mask0, \
-            dim_avg_n_Wrap(var_grd_ref, 0))
-        copy_VarMeta(mask0, var_grd_ref_1)
-        time_mean = area_operations(var_grd_ref_1, -90, 90, 0, 360, "average", True)
+
+        modeldata = var_grd_ref * mask0
+        copy_VarMeta(mask0, modeldata)
+        area_mean = area_operations(modeldata, -90, 90, 0, 360, "average", True)
+        time_mean = avg(area_mean)
+        delete(modeldata)
+        delete(area_mean)
+
         if (time_mean.ge.1000) then
             fmt = tostring(toint(time_mean))
         else if (time_mean.lt.1000 .and. time_mean.ge.100) then
@@ -464,18 +519,21 @@ begin
         if (ismissing(file_type)) then
             file_type = "PS"
         end if
-        aux_title_info = diag_script_info@e13fig01_diff_ref
+        aux_title_info = OBS_ref;diag_script_info@e13fig01_diff_ref
         output_filename = interface_get_figure_filename(diag_script_base, \
             var0, field_type0, aux_title_info, -1)
         output_file_path = output_dir + output_filename
 
-        res@tiMainString = diag_script_info@e13fig01_diff_ref 
+        res@tiMainString = OBS_ref;diag_script_info@e13fig01_diff_ref 
         res@tiMainFontHeightF = 0.03
         res@gsnLeftString = variable_info@short_name + \
             " [" + variable_info@units + "]"
         res@gsnRightString = fmt + " " + variable_info@units
         res@gsnRightStringFontHeightF = 0.023
         res@gsnLeftStringFontHeightF = 0.023
+        res@cnLevelSelectionMode = "ExplicitLevels"
+        delete(res@cnLevels)
+        res@cnLevels = variable_info@eyring13_reflvl
 
         ;; Plotting
         map_p(ip) = gsn_csm_lat_time(wks1, \
@@ -489,10 +547,14 @@ begin
         ;*****************diff**************************************
 
         if ((isatt(diag_script_info, "e13fig01_diff_ref"))) then      
-            diff_var_grd_1 = where(ismissing(mask0), mask0, \
-                dim_avg_n_Wrap(diff_var_grd, 0))
-            copy_VarMeta(mask0, diff_var_grd_1)
-            time_mean = area_operations(diff_var_grd_1, -90, 90, 0, 360, "average", True)
+
+            modeldata = diff_var_grd * mask0
+            copy_VarMeta(mask0, modeldata)
+            area_mean = area_operations(modeldata, -90, 90, 0, 360, "average", True)
+            time_mean = avg(area_mean)
+            delete(modeldata)
+            delete(area_mean)
+
             if (time_mean.ge.1000) then
                 fmt = tostring(toint(time_mean))
             else if (time_mean.lt.1000 .and. time_mean.ge.100) then
@@ -513,13 +575,13 @@ begin
             if (ismissing(file_type)) then
                 file_type = "PS"
             end if
-            aux_title_info = "diff_MMM-"+diag_script_info@e13fig01_diff_ref
+            aux_title_info = "diff_MMM-"+OBS_ref;diag_script_info@e13fig01_diff_ref
             output_filename = interface_get_figure_filename(diag_script_base, \
                 var0, field_type0, aux_title_info, -1)
             output_file_path = output_dir + output_filename
             if ((isatt(diag_script_info,"e13fig01_list_chem_mod_string"))) then
                 res@tiMainString = diag_script_info@e13fig01_list_chem_mod_string + \
-                    " - " + diag_script_info@e13fig01_diff_ref 
+                    " - " + OBS_ref;diag_script_info@e13fig01_diff_ref 
             else
                 res@tiMainString = "MMM_chem"
             end if
@@ -534,6 +596,12 @@ begin
             ;; Plotting
             delete(res@cnLevelSelectionMode)
             delete(res@cnLevels)
+; A_laue_ax+
+            if (isatt(variable_info, "map_diff_Levels")) then
+                res@cnLevelSelectionMode = "ExplicitLevels"
+                res@cnLevels = variable_info@map_diff_Levels
+            end if
+; A_laue_ax-
             map_p(ip) = gsn_csm_lat_time(wks1, \
                 dim_avg_Wrap(diff_var_grd(lat|:, month|:, lon|:)), res)
             ip = ip + 1
@@ -543,11 +611,14 @@ begin
             delete([/ time_mean/])
 
             if ((isatt(diag_script_info, "e13fig01_list_nochem_mod"))) then
-                diff_var_grd_nochem = where(ismissing(mask0), mask0, \
-                    dim_avg_n_Wrap(diff_var_grd_nochem, 0))
-                copy_VarMeta(mask0, diff_var_grd_nochem)
-                time_mean = area_operations(diff_var_grd_nochem, -90, \
-                    90, 0, 360, "average", True)
+
+                modeldata = diff_var_grd_nochem * mask0
+                copy_VarMeta(mask0, modeldata)
+                area_mean = area_operations(modeldata, -90, 90, 0, 360, "average", True)
+                time_mean = avg(area_mean)
+                delete(modeldata)
+                delete(area_mean)
+
                 if (time_mean.ge.1000) then
                     fmt = tostring(toint(time_mean))
                 else if (time_mean.lt.1000 .and. time_mean.ge.100) then
@@ -575,7 +646,7 @@ begin
 
                 if ((isatt(diag_script_info, "e13fig01_list_nochem_mod_string"))) then
                     res@tiMainString = e13fig01_list_nochem_mod_string + " - " \
-                        + diag_script_info@e13fig01_diff_ref
+                        + OBS_ref;diag_script_info@e13fig01_diff_ref
                 else
                     res@tiMainString = "MMM_nochem"
                 end if
@@ -590,6 +661,12 @@ begin
                 ;; Plotting
                 delete(res@cnLevelSelectionMode)
                 delete(res@cnLevels)
+; A_laue_ax+
+                if (isatt(variable_info, "map_diff_Levels")) then
+                    res@cnLevelSelectionMode = "ExplicitLevels"
+                    res@cnLevels = variable_info@map_diff_Levels
+                end if
+; A_laue_ax-
                 map_p(ip) = gsn_csm_lat_time(wks1, \
                     diff_var_grd_nochem(lat|:, month|:, lon|:), res)
                 ip = ip + 1
@@ -617,3 +694,4 @@ begin
 
     info_output(">>>>>>>> Leaving " + diag_script, verbosity, 4)
 end
+

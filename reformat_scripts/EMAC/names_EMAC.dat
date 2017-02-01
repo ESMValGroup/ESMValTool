@@ -21,10 +21,13 @@ clt            | #RECIP         | T2?s          |       | CMIP5_Amon          |
 clwvi          | #RECIP         | T2?s          |       | CMIP5_Amon          |
 cly            | #RECIP         | T3?,T2?z      |       | CCMI                |
 conccnmode     | #RECIP         | T3?,T2?s      | S     | --                  |
+conccnd5       | #RECIP         | T3?           |       | --                  |
+conccnd10      | #RECIP         | T3?           |       | --                  |
 conccnSTPd3    | #RECIP         | T3?           |       | --                  |
 conccnSTPd5    | #RECIP         | T3?           |       | --                  |
 conccnSTPd120  | #RECIP         | T3?           |       | --                  |
 conccnSTPd14   | #RECIP         | T3?           |       | --                  |
+conccnSTPmode  | #RECIP         | T3?,T2?s      | S     | --                  |
 diamcnmode     | #RECIP         | T3?,T2?s      | S     | --                  |
 hcl            | HCl            | T3?,T2?z      |       | CCMI                |
 hus            | qm1            | T3?,T2?z      |       | CMIP5_Amon          |

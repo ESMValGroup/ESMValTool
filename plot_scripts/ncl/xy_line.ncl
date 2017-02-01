@@ -8,6 +8,7 @@
 ;;
 ;;    function profile_plev
 ;;    function aerosol_profile
+;;    function aerosol_sizedist
 ;;    procedure xy_line
 ;;    function timeseries_station
 ;;    function cycle_plot
@@ -510,23 +511,29 @@ function aerosol_profile(wks_in[1],
 ;;    source_o: observations data to be plotted or a NetCDF filename with data.
 ;;    varname: variable name in the file.
 ;;
-;; Source prototype
+;; Source_m prototype
 ;;    source[*][*][*]
 ;;    source!0 = model
 ;;    source!1 = statistic
-;;    source!2 = plev or diam
+;;    source!2 = plev
+;;
+;; Source_o prototype
+;;    source[*][*][*]
+;;    source!0 = case
+;;    source!1 = statistic
+;;    source!2 = plev
 ;;
 ;; Return value
 ;;    A graphic variable.
 ;;
 ;; Description
-;;    Creates a plot of vertical profile (level vs. data) or size distribution
-;;    (data vs. diameter).
+;;    Creates a plot of vertical profile (level vs. data)
 ;;    Plots median, mean or both depending on availability of obervations.
 ;;
 ;; Caveats
 ;;
 ;; Modification history
+;;    20161013_A_righ_ma: moved size distributions to a separate routine.
 ;;    20140917-A_righ_ma: renamed to aerosol_profile and extended for plotting
 ;;                        size distributions.
 ;;    20140705-A_righ_ma: written.
@@ -572,16 +579,527 @@ begin
     gsn_define_colormap(wks, array_append_record((/"white", "black"/), \
                         colors, 0))
 
-    ;; Check input type (plev or diam)
-    if (source_m!2.eq."plev" .and. source_o!2.eq."plev") then
-        ptype = "vertprof"
-    else if (source_m!2.eq."diam" .and. source_o!2.eq."diam") then
-        ptype = "sizedist"
+    ;; Define markers and dashes for median and mean
+    marker_mean = 16
+    dash_median = 0
+    dash_mean = 1
+    dash_stddev = 2
+
+    ;; Resources
+    res = True
+    res@gsnDraw = False
+    res@gsnFrame = False
+    res@trXAxisType = "LogAxis"
+    res@trYAxisType = "LogAxis"
+    res@tmXBMinorPerMajor = 8
+    res@tmXTMinorPerMajor = 8
+    res@tmYLMinorPerMajor = 8
+    res@tmYRMinorPerMajor = 8
+    res@tiXAxisString = varname + " [" + format_units(model@units) + "]"
+    res@tiYAxisString = "Pressure [" + format_units(model&plev@units) + "]"
+    res@gsnCenterStringFontHeightF = 0.015
+
+    ;; Lines
+    resL = True
+    resL@gsLineThicknessF = 2.0
+    resL@gsLineDashSegLenF = 0.25
+
+    ;; Markers
+    resM = True
+
+    ;; Polygons
+    resP = True
+
+    ;; Text
+    resT = True
+    resT@txFont = 21
+
+    ;; Markers
+    resM = True
+
+    ;; Override defaults with "res_" attributes of "data"
+    res_new = att2var(model, "res_")
+    copy_VarMeta(res_new, res)
+
+    ;; Set number of models
+    nmodels = dimsizes(annots)
+
+    ;; Set number of cases
+    ncases = dimsizes(obser&case)
+
+    ;; Set the index for the various statistics
+    i_N      = ind(model&statistic.eq."N")
+    i_mean   = ind(model&statistic.eq."mean")
+    i_stddev = ind(model&statistic.eq."stddev")
+    i_min    = ind(model&statistic.eq."min")
+    i_max    = ind(model&statistic.eq."max")
+    i_5      = ind(model&statistic.eq."5")
+    i_10     = ind(model&statistic.eq."10")
+    i_25     = ind(model&statistic.eq."25")
+    i_median = ind(model&statistic.eq."median")
+    i_75     = ind(model&statistic.eq."75")
+    i_90     = ind(model&statistic.eq."90")
+    i_95     = ind(model&statistic.eq."95")
+
+    ;; Set plot ranges
+    modelmin = min((/min(model(:, i_mean, :)), min(model(:, i_median, :))/))
+    modelmax = max((/max(model(:, i_mean, :)), max(model(:, i_median, :))/))
+    obsermin = min((/min(obser(:, i_mean, :)), min(obser(:, i_median, :))/))
+    obsermax = max((/max(obser(:, i_mean, :)), max(obser(:, i_median, :))/))
+    res@tmXBMode = "Explicit"
+    res@tmYLMode = "Explicit"
+    res@trYReverse = True
+
+    ;; Set X-axis labels
+    res@trXMinF = min((/modelmin, obsermin/)) / 2.
+    res@trXMaxF = 2 * max((/modelmax, obsermax/))
+    res@tmXBValues = set_log_ticks(res@trXMinF, res@trXMaxF, "major")
+    res@tmXBLabels = res@tmXBValues
+    res@tmXBMinorValues = set_log_ticks(res@trXMinF, res@trXMaxF, "minor")
+
+    ;; Set Y-axis labels
+    res@trYMinF = 100
+    res@trYMaxF = 1050
+    res@tmYLValues = ispan(100, 1000, 100)
+    res@tmYLLabels = res@tmYLValues
+
+    ;; Check available statistics in the observations
+    l_median = .not.(all(ismissing(obser(:, i_median, :))))
+    l_median25 = l_median .and. \
+        .not.(all(ismissing(obser(:, i_25, :)))) .and. \
+        .not.(all(ismissing(obser(:, i_75, :))))
+    l_median10 = l_median .and. \
+        .not.(all(ismissing(obser(:, i_10, :)))) .and. \
+        .not.(all(ismissing(obser(:, i_90, :))))
+    l_median5 = l_median .and. \
+        .not.(all(ismissing(obser(:, i_5, :)))) .and. \
+        .not.(all(ismissing(obser(:, i_95, :))))
+    l_mean = .not.(all(ismissing(obser(:, i_mean, :))))
+    l_stddev = .not.(all(ismissing(obser(:, i_stddev, :))))
+    l_both = l_median.and.l_mean
+
+    ;; If both 10-90 and 5-95 are available, priority to 10-90
+    if (l_median10.and.l_median5) then
+        l_median5 = False
+    end if
+
+    ;; Check if this is a summary plot
+    l_summary = False
+    if (ncases.gt.1) then
+        l_summary = True
+        l_stddev = False
+        ;; Only one stat and priority to median
+        l_both = False
+        if (l_median) then
+            l_mean = False
+        end if
+    end if
+
+    ;; Set title for median only
+    if (l_median.and..not.l_both) then
+        res@gsnCenterString = "Median (lines), 25-75% percentiles " + \
+            "(shades)"
+        if (l_median10) then
+            res@gsnCenterString = "Median (lines), " + \
+                "25-75% and 10-90% percentiles (shades)"
+        end if
+        if (l_median5) then
+            res@gsnCenterString = "Median (lines), " + \
+                "25-75% and 5-95% percentiles (shades)"
+        end if
+        if (l_summary) then
+            res@gsnCenterString = str_sub_str(res@gsnCenterString, "(lines)", \
+                                              "(lines and crosses)")
+        end if
+    end if
+
+    ;; Set titles for mean only
+    if (l_mean.and..not.l_both) then
+        if (l_stddev) then
+            res@gsnCenterString = "            " + \
+                "Mean (dots and long-dashed lines) and " + \
+                "~C~ standard deviation (whiskers and short-dashed lines)"
+        else
+            res@gsnCenterString = "Mean (dots and long-dashed lines) and " + \
+                "standard deviation (short-dashed)"
+        end if
+        if (l_summary) then
+            res@gsnCenterString = "Mean (crosses and long_dashed line) " + \
+                "standard deviation (short-dashed)"
+        end if
+    end if
+
+    ;; Set titles for both median and mean
+    if (l_both) then
+        res@gsnCenterString =  "           " + \
+            "Median and 25-75% percentiles " + \
+            "(solid lines and shades), ~C~ mean and std. dev. "
+        if (l_median10) then
+            res@gsnCenterString =  "   " + \
+                "Median, 25-75% and 10-90% percentiles " + \
+                "(solid lines and shades), ~C~ mean and std. dev. "
+        end if
+        if (l_median5) then
+            res@gsnCenterString =  "    " + \
+                "Median, 25-75% and 5-95% percentiles " + \
+                "(solid lines and shades), ~C~ mean and std."
+        end if
+        if (l_stddev) then
+            res@gsnCenterString = res@gsnCenterString + \
+                "(long- and short-dashed lines, dots and whiskers)"
+        else
+            res@gsnCenterString = res@gsnCenterString + \
+                "(long- and short-dashed lines)"
+        end if
+    end if
+
+    ;; Draw a blank plot function, lines are dots are added below for
+    ;; better controlling the draw order
+    plot = gsn_csm_blank_plot(wks, res)
+
+    ;; Draw percentiles as shaded areas
+    if (l_median) then
+        shade_flag_m = (/l_median5, l_median10, l_median/)
+        shade_flag_o = (/l_median5, l_median10, l_median25/)
+        shade_idx1 = (/i_5, i_10, i_25/)
+        shade_idx2 = (/i_95, i_90, i_75/)
+        shade_opac = (/0.1, 0.1, 0.15/)
+        shade_name = (/"5_95", "10_90", "25_75"/)
+        do shID = 0, dimsizes(shade_flag_m) - 1
+
+            ;; Model
+            if (shade_flag_m(shID)) then
+                resP@gsFillOpacityF = shade_opac(shID)
+                g_obj = new(nmodels, graphic)
+                do ii = 0, nmodels - 1
+                    resP@gsFillColor = colors(ii)
+                    x1 = model(ii, shade_idx1(shID), :)
+                    x2 = model(ii, shade_idx2(shID), :)
+                    y1 = model&plev
+                    y2 = y1
+                    xx = array_append_record( \
+                        array_append_record(x1, x2(::-1), 0), x1(0), 0)
+                    yy = array_append_record( \
+                        array_append_record(y1, y2(::-1), 0), y1(0), 0)
+                    q = ind(.not.ismissing(xx))
+                    if (dimsizes(q).ne.dimsizes(xx)) then
+                        info_output("Some missing values in model " + \
+                                    "percentiles", verbosity, 2)
+                    end if
+                    if (.not.all(ismissing(q))) then
+                        g_obj(ii) = \
+                            gsn_add_polygon(wks, plot, xx(q), yy(q), resP)
+                    else
+                        info_output("All values in model percentiles are " + \
+                                    "missing (skipping)", verbosity, 1)
+                    end if
+                    delete([/x1, x2, y1, y2, xx, yy, q/])
+                end do
+                str = "model_" + shade_name(shID)
+                plot@$str$ = g_obj
+                delete(g_obj)
+                delete(str)
+            end if
+
+            ;; Observations
+            if (shade_flag_o(shID).and..not.l_summary) then
+                resP@gsFillColor = "black"
+                g_obj = new(ncases, graphic)
+                do ii = 0, ncases - 1
+                    x1 = obser(ii, shade_idx1(shID), :)
+                    x2 = obser(ii, shade_idx2(shID), :)
+                    y1 = obser&plev
+                    y2 = y1
+                    xx = array_append_record( \
+                    array_append_record(x1, x2(::-1), 0), x1(0), 0)
+                    yy = array_append_record( \
+                    array_append_record(y1, y2(::-1), 0), y1(0), 0)
+                    q = ind(.not.ismissing(xx))
+                    if (dimsizes(q).ne.dimsizes(xx)) then
+                        info_output("Some missing values in obs " + \
+                                    "percentiles", verbosity, 2)
+                    end if
+                    if (.not.all(ismissing(q))) then
+                        g_obj(ii) = \
+                        gsn_add_polygon(wks, plot, xx(q), yy(q), resP)
+                    else
+                        info_output("All values in obs percentiles are " + \
+                                    "missing (skipping)", verbosity, 1)
+                    end if
+                    delete([/x1, x2, y1, y2, xx, yy, q/])
+                end do
+                str = "obser_" + shade_name(shID)
+                plot@$str$ = g_obj
+                delete(g_obj)
+                delete(str)
+            end if
+        end do
+    end if
+
+    ;; Draw median as solid lines
+    if (l_median) then
+
+        ;; Model
+        g_obj = new(nmodels, graphic)
+        do ii = 0, nmodels - 1
+            resL@gsLineColor = colors(ii)
+            resL@gsLineDashPattern = dash_median
+            xx = model(ii, i_median, :)
+            yy = model&plev
+            q = ind(.not.ismissing(xx))
+            if (dimsizes(q).ne.dimsizes(xx)) then
+                info_output("Some missing values in model median", \
+                            verbosity, 2)
+            end if
+            if (.not.all(ismissing(q))) then
+                g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
+            else
+                info_output("All values in model median are missing " + \
+                            "(skipping)", verbosity, 1)
+            end if
+            delete([/xx, yy, q/])
+        end do
+        plot@model_median = g_obj
+        delete(g_obj)
+
+        ;; Observations
+        if (l_summary) then
+            resM@gsMarkerColor = "black"
+            resM@gsMarkerIndex = 5
+            resM@gsMarkerSizeF = 0.015
+        else
+            resL@gsLineColor = "black"
+        end if
+        g_obj = new(ncases, graphic)
+        do ii = 0, ncases - 1
+            xx = obser(ii, i_median, :)
+            yy = obser&plev
+            q = ind(.not.ismissing(xx))
+            if (dimsizes(q).ne.dimsizes(xx)) then
+                info_output("Some missing values in obs. median", verbosity, 2)
+            end if
+            if (.not.all(ismissing(q))) then
+                if (l_summary) then
+                    g_obj(ii) = \
+                        gsn_add_polymarker(wks, plot, xx(q), yy(q), resM)
+                else
+                    g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
+                end if
+            else
+                info_output("All values in obs median are missing " + \
+                            "(skipping)", verbosity, 1)
+            end if
+            delete([/xx, yy, q/])
+        end do
+        plot@obser_median = g_obj
+        delete(g_obj)
+
+    end if
+
+    ;; Draw mean and standard deviation as dashed/dotted (model) and dots/bars
+    ;; (observations)
+    if (l_mean) then
+
+        ;; Model mean and std. dev.
+        g_obj = new(nmodels, graphic)
+        do ii = 0, nmodels - 1
+            resL@gsLineColor = colors(ii)
+            resL@gsLineDashPattern = dash_mean
+            xx = model(ii, i_mean, :)
+            yy = model&plev
+            q = ind(.not.ismissing(xx))
+            if (dimsizes(q).ne.dimsizes(xx)) then
+                info_output("Some missing values in model mean", verbosity, 2)
+            end if
+            if (.not.all(ismissing(q))) then
+                g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
+            else
+                info_output("All values in model mean are missing " + \
+                            "(skipping)", verbosity, 1)
+            end if
+            delete([/xx, yy, q/])
+        end do
+        plot@model_mean = g_obj
+        delete(g_obj)
+
+        g_obj = new(nmodels, graphic)
+        do ii = 0, nmodels - 1
+            resL@gsLineColor = colors(ii)
+            resL@gsLineDashPattern = dash_stddev
+            xx = model(ii, i_mean, :) + model(ii, i_stddev, :)
+            yy = model&plev
+            q = ind(.not.ismissing(xx))
+            if (dimsizes(q).ne.dimsizes(xx)) then
+                info_output("Some missing values in model std. dev.", \
+                            verbosity, 2)
+            end if
+            if (.not.all(ismissing(q))) then
+                g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
+            else
+                info_output("All values in model std. dev. are missing " + \
+                            "(skipping)", verbosity, 1)
+            end if
+            delete([/xx, yy, q/])
+        end do
+        plot@model_stddev = g_obj
+        delete(g_obj)
+
+        ;; Observations mean (dots or lines, depending on standard deviation)
+        if (l_stddev) then
+            resM@gsMarkerColor = "black"
+            resM@gsMarkerIndex = marker_mean
+            resM@gsMarkerSizeF = 0.01
+        else
+            resL@gsLineColor = "black"
+            resL@gsLineDashPattern = dash_mean
+        end if
+        g_obj = new(ncases, graphic)
+        do ii = 0, ncases - 1
+            xx = obser(ii, i_mean, :)
+            yy = obser&plev
+            q = ind(.not.ismissing(xx))
+            if (dimsizes(q).ne.dimsizes(xx)) then
+                info_output("Some missing values in obs. mean", verbosity, 2)
+            end if
+            if (.not.all(ismissing(q))) then
+                if (l_stddev) then
+                    g_obj(ii) = \
+                        gsn_add_polymarker(wks, plot, xx(q), yy(q), resM)
+                else
+                    g_obj(ii) = \
+                        gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
+                end if
+            else
+                info_output("All values in obs. mean are missing " + \
+                            "(skipping)", verbosity, 1)
+            end if
+            delete([/xx, yy, q/])
+        end do
+        plot@obser_mean = g_obj
+        delete(g_obj)
+
+        ;; Observations std. dev.
+        if (l_stddev) then
+            resL@gsLineColor = "black"
+            resL@gsLineDashPattern = 0
+            resL@gsLineThicknessF = 1
+            do ii = 0, ncases - 1
+                g_obj = new(dimsizes(obser&plev), graphic)
+                do kk = 0, dimsizes(obser&plev) - 1
+                    xx = (/obser(ii, i_mean, kk), \
+                          obser(ii, i_mean, kk) + obser(ii, i_stddev, kk)/)
+                    yy = (/obser&plev(kk), obser&plev(kk)/)
+                    if (.not.ismissing(xx(0)) .and. \
+                        .not.ismissing(xx(1))) then
+                        g_obj(kk) = gsn_add_polyline(wks, plot, xx, yy, resL)
+                    end if
+                end do
+                str = "obser" + ii + "_stddev"
+                plot@$str$ = g_obj
+                delete(str)
+                delete([/xx, yy/])
+                delete(g_obj)
+            end do
+        end if
+    end if
+    draw(plot)
+
+    ;; Append legend
+    xpos = 0.21
+    resT@txJust = "CenterLeft"
+    ypos = 0.78
+    resT@txFontHeightF = 0.020
+    resT@txFontColor   = "black"
+    gsn_text_ndc(wks, diag_script_info@campaign, xpos, ypos, resT)
+    do mID = 0, dimsizes(annots) - 1
+        ypos = ypos - 0.03
+        resT@txFontColor   = colors(mID)
+        gsn_text_ndc(wks, annots(mID), xpos, ypos, resT)
+    end do
+
+    frame(wks)
+    leave_msg(scriptname, funcname, 4)
+    return(plot)
+
+end
+
+;;#############################################################################
+undef("aerosol_sizedist")
+function aerosol_sizedist(wks_in[1],
+                          source_m,
+                          source_o,
+                          varname[1])
+;;
+;; Arguments
+;;    wks_in: workstations (graphic object or default will be used).
+;;    source_m: model data to be plotted or a NetCDF filename with data.
+;;    source_o: observations data to be plotted or a NetCDF filename with data.
+;;    varname: variable name in the file.
+;;
+;; Source_m prototype
+;;    source[*][*][*]
+;;    source!0 = model
+;;    source!1 = statistic
+;;    source!2 = plev
+;;
+;; Source_o prototype
+;;    source[*][*][*]
+;;    source!0 = case
+;;    source!1 = statistic
+;;    source!2 = plev
+;;
+;; Return value
+;;    A graphic variable.
+;;
+;; Description
+;;    Creates a size distribution plot (data vs. diameter).
+;;    Plots median, mean or both depending on availability of obervations.
+;;
+;; Caveats
+;;
+;; Modification history
+;;    20161013-A_righ_ma: written based on aerosol_profile.
+;;
+local funcname, scriptname, verbosity, tmp, colors, annots, res, res_new
+begin
+
+    funcname = "aerosol_sizedist"
+    scriptname = "plot_scripts/ncl/xy_line.ncl"
+    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    enter_msg(scriptname, funcname, 4)
+
+    ;; Get model data, either directly or via netCDF file
+    if(typeof(source_m) .eq. "string") then
+        model = ncdf_read(source_m, varname)
     else
-        error_msg("f", scriptname, funcname, "cannot determine type of " + \
-                  "plot from the input")
+        model = source_m
+        copy_VarMeta(source_m, model)
     end if
+
+    ;; Get observational data, either directly or via netCDF file
+    if(typeof(source_o) .eq. "string") then
+        obser = ncdf_read(source_o, varname)
+    else
+        obser = source_o
+        copy_VarMeta(source_o, obser)
     end if
+
+    ;; Retrieve basic metadata from data
+    defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
+    if (inlist(varname, defaults)) then
+        var = att2var(model, "var")
+    else
+        var = varname
+    end if
+
+    ;; Check if a valid wks has been provided, otherwise invoke default
+    wks = get_wks(wks_in, diag_script, var)
+
+    ;; Define line colors (first color is used for the observations)
+    colors = project_style(diag_script_info, "colors")
+    annots = project_style(diag_script_info, "annots")
+    gsn_define_colormap(wks, array_append_record((/"white", "black"/), \
+                        colors, 0))
 
     ;; Define markers and dashes for median and mean
     marker_mean = 16
@@ -599,25 +1117,8 @@ begin
     res@tmXTMinorPerMajor = 8
     res@tmYLMinorPerMajor = 8
     res@tmYRMinorPerMajor = 8
-    if (ptype.eq."vertprof") then
-        res@tiXAxisString = varname + " [" + format_units(model@units) + "]"
-        res@tiYAxisString = "Pressure [" + format_units(model&plev@units) + "]"
-    else
-        res@tiYAxisString = varname + " [" + format_units(model@units) + "]"
-        res@tiXAxisString = "Diameter [" + format_units(model&diam@units) + "]"
-    end if
-    res@tmXMajorGrid = True
-    res@tmXMajorGridLineColor = "gray"
-    res@tmXMajorGridThicknessF = 1.
-    res@tmXMinorGrid = True
-    res@tmXMinorGridLineColor = "gray"
-    res@tmXMinorGridThicknessF = 0.5
-    res@tmYMajorGrid = True
-    res@tmYMajorGridLineColor = "gray"
-    res@tmYMajorGridThicknessF = 1.
-    res@tmYMinorGrid = True
-    res@tmYMinorGridLineColor = "gray"
-    res@tmYMinorGridThicknessF = 0.5
+    res@tiYAxisString = varname + " [" + format_units(model@units) + "]"
+    res@tiXAxisString = "Diameter [" + format_units(model&diam@units) + "]"
     res@gsnCenterStringFontHeightF = 0.015
 
     ;; Lines
@@ -670,33 +1171,20 @@ begin
     obsermax = max((/max(obser(:, i_mean, :)), max(obser(:, i_median, :))/))
     res@tmXBMode = "Explicit"
     res@tmYLMode = "Explicit"
-    if (ptype.eq."vertprof") then
-        res@trYReverse = True
-        ;; Set X-axis labels
-        res@trXMinF = min((/modelmin, obsermin/)) / 2.
-        res@trXMaxF = 2 * max((/modelmax, obsermax/))
-        res@tmXBValues = set_log_ticks(res@trXMinF, res@trXMaxF, "major")
-        res@tmXBLabels = res@tmXBValues
-        res@tmXBMinorValues = set_log_ticks(res@trXMinF, res@trXMaxF, "minor")
-        ;; Set Y-axis labels
-        res@trYMinF = 100
-        res@trYMaxF = 1050
-        res@tmYLValues = ispan(100, 1000, 100)
-        res@tmYLLabels = res@tmYLValues
-    else
-        ;; Set X-axis labels
-        res@trXMinF = 0.001
-        res@trXMaxF = 10.
-        res@tmXBValues = set_log_ticks(res@trXMinF, res@trXMaxF, "major")
-        res@tmXBLabels = res@tmXBValues
-        res@tmXBMinorValues = set_log_ticks(res@trXMinF, res@trXMaxF, "minor")
-        ;; Set Y-axis labels
-        res@trYMaxF = 2 * max((/modelmax, obsermax/))
-        res@trYMinF = res@trYMaxF / 1.e5
-        res@tmYLValues = set_log_ticks(res@trYMinF, res@trYMaxF, "major")
-        res@tmYLLabels = res@tmYLValues
-        res@tmYLMinorValues = set_log_ticks(res@trYMinF, res@trYMaxF, "minor")
-    end if
+
+    ;; Set X-axis labels
+    res@trXMinF = 0.001
+    res@trXMaxF = 10.
+    res@tmXBValues = set_log_ticks(res@trXMinF, res@trXMaxF, "major")
+    res@tmXBLabels = res@tmXBValues
+    res@tmXBMinorValues = set_log_ticks(res@trXMinF, res@trXMaxF, "minor")
+
+    ;; Set Y-axis labels
+    res@trYMaxF = 2 * max((/modelmax, obsermax/))
+    res@trYMinF = res@trYMaxF / 1.e5
+    res@tmYLValues = set_log_ticks(res@trYMinF, res@trYMaxF, "major")
+    res@tmYLLabels = res@tmYLValues
+    res@tmYLMinorValues = set_log_ticks(res@trYMinF, res@trYMaxF, "minor")
 
     ;; Check available statistics in the observations
     l_median = .not.(all(ismissing(obser(:, i_median, :))))
@@ -788,43 +1276,25 @@ begin
                 g_obj = new(nmodels, graphic)
                 do ii = 0, nmodels - 1
                     resP@gsFillColor = colors(ii)
-                    if (ptype.eq."vertprof") then
-                        x1 = model(ii, shade_idx1(shID), :)
-                        x2 = model(ii, shade_idx2(shID), :)
-                        y1 = model&plev
-                        y2 = y1
-                    else
-                        y1 = model(ii, shade_idx1(shID), :)
-                        y2 = model(ii, shade_idx2(shID), :)
-                        x1 = model&diam
-                        x2 = x1
-                    end if
+                    y1 = model(ii, shade_idx1(shID), :)
+                    y2 = model(ii, shade_idx2(shID), :)
+                    x1 = model&diam
+                    x2 = x1
                     xx = array_append_record( \
                         array_append_record(x1, x2(::-1), 0), x1(0), 0)
                     yy = array_append_record( \
                         array_append_record(y1, y2(::-1), 0), y1(0), 0)
-                    if (ptype.eq."vertprof") then
-                        q = ind(.not.ismissing(xx))
-                        if (dimsizes(q).ne.dimsizes(xx)) then
-                            error_msg("w", scriptname, funcname, \
-                                      "model data (percentiles) " + \
-                                      "contains missing values")
-                        end if
-                    else
-                        q = ind(.not.ismissing(yy))
-                        if (dimsizes(q).ne.dimsizes(yy)) then
-                            error_msg("w", scriptname, funcname, \
-                                      "model data (percentiles) " + \
-                                      "contains missing values")
-                        end if
+                    q = ind(.not.ismissing(yy))
+                    if (dimsizes(q).ne.dimsizes(yy)) then
+                        info_output("Some missing values in model " + \
+                                    "percentiles", verbosity, 2)
                     end if
                     if (.not.all(ismissing(q))) then
                         g_obj(ii) = \
                             gsn_add_polygon(wks, plot, xx(q), yy(q), resP)
                     else
-                        info_output("model data (percentiles) contains " + \
-                                    "only missing values, skipping", \
-                                    verbosity, 1)
+                        info_output("All values in model percentiles are " + \
+                                    "missing (skipping)", verbosity, 1)
                     end if
                     delete([/x1, x2, y1, y2, xx, yy, q/])
                 end do
@@ -839,37 +1309,26 @@ begin
                 resP@gsFillColor = "black"
                 g_obj = new(ncases, graphic)
                 do ii = 0, ncases - 1
-                    if (ptype.eq."vertprof") then
-                        x1 = obser(ii, shade_idx1(shID), :)
-                        x2 = obser(ii, shade_idx2(shID), :)
-                        y1 = obser&plev
-                        y2 = y1
-                    else
-                        y1 = obser(ii, shade_idx1(shID), :)
-                        y2 = obser(ii, shade_idx2(shID), :)
-                        x1 = obser&diam
-                        x2 = x1
-                    end if
+                    y1 = obser(ii, shade_idx1(shID), :)
+                    y2 = obser(ii, shade_idx2(shID), :)
+                    x1 = obser&diam
+                    x2 = x1
                     xx = array_append_record( \
                         array_append_record(x1, x2(::-1), 0), x1(0), 0)
                     yy = array_append_record( \
                         array_append_record(y1, y2(::-1), 0), y1(0), 0)
-                    if (ptype.eq."vertprof") then
-                        q = ind(.not.ismissing(xx))
-                        if (dimsizes(q).ne.dimsizes(xx)) then
-                            error_msg("w", scriptname, funcname, \
-                                      "observational data (percentiles) " + \
-                                      "contains missing values")
-                        end if
-                    else
-                        q = ind(.not.ismissing(yy))
-                        if (dimsizes(q).ne.dimsizes(yy)) then
-                            error_msg("w", scriptname, funcname, \
-                                      "observational data (percentiles) " + \
-                                      "contains missing values")
-                        end if
+                    q = ind(.not.ismissing(yy))
+                    if (dimsizes(q).ne.dimsizes(yy)) then
+                        info_output("Some missing values in obs " + \
+                                    "percentiles", verbosity, 2)
                     end if
-                    g_obj(ii) = gsn_add_polygon(wks, plot, xx(q), yy(q), resP)
+                    if (.not.all(ismissing(q))) then
+                        g_obj(ii) = \
+                            gsn_add_polygon(wks, plot, xx(q), yy(q), resP)
+                    else
+                        info_output("All values in obs percentiles are " + \
+                                    "missing (skipping)", verbosity, 1)
+                    end if
                     delete([/x1, x2, y1, y2, xx, yy, q/])
                     str = "obser_" + shade_name(shID)
                     plot@$str$ = g_obj
@@ -889,28 +1348,18 @@ begin
         do ii = 0, nmodels - 1
             resL@gsLineColor = colors(ii)
             resL@gsLineDashPattern = dash_median
-            if (ptype.eq."vertprof") then
-                xx = model(ii, i_median, :)
-                yy = model&plev
-                q = ind(.not.ismissing(xx))
-                if (dimsizes(q).ne.dimsizes(xx)) then
-                    error_msg("w", scriptname, funcname, \
-                              "model data (median) contains missing values")
-                end if
-            else
-                xx = model&diam
-                yy = model(ii, i_median, :)
-                q = ind(.not.ismissing(yy))
-                if (dimsizes(q).ne.dimsizes(yy)) then
-                    error_msg("w", scriptname, funcname, \
-                              "model data (median) contains missing values")
-                end if
+            xx = model&diam
+            yy = model(ii, i_median, :)
+            q = ind(.not.ismissing(yy))
+            if (dimsizes(q).ne.dimsizes(yy)) then
+                info_output("Some missing values in model median", \
+                            verbosity, 2)
             end if
             if (.not.all(ismissing(q))) then
                 g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
             else
-                info_output("model data (median) contains " + \
-                            "only missing values, skipping", verbosity, 1)
+                info_output("All values in model median are missing " + \
+                            "(skipping)", verbosity, 1)
             end if
             delete([/xx, yy, q/])
         end do
@@ -921,26 +1370,18 @@ begin
         resL@gsLineColor = "black"
         g_obj = new(ncases, graphic)
         do ii = 0, ncases - 1
-            if (ptype.eq."vertprof") then
-                xx = obser(ii, i_median, :)
-                yy = obser&plev
-                q = ind(.not.ismissing(xx))
-                if (dimsizes(q).ne.dimsizes(xx)) then
-                    error_msg("w", scriptname, funcname, \
-                              "observational data (median) " + \
-                              "contains missing values")
-                end if
-            else
-                xx = obser&diam
-                yy = obser(ii, i_median, :)
-                q = ind(.not.ismissing(yy))
-                if (dimsizes(q).ne.dimsizes(yy)) then
-                    error_msg("w", scriptname, funcname, \
-                              "observational data (median) " + \
-                              "contains missing values")
-                end if
+            xx = obser&diam
+            yy = obser(ii, i_median, :)
+            q = ind(.not.ismissing(yy))
+            if (dimsizes(q).ne.dimsizes(yy)) then
+                info_output("Some missing values in obs. median", verbosity, 2)
             end if
-            g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
+            if (.not.all(ismissing(q))) then
+                g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
+            else
+                info_output("All values in obs median are missing " + \
+                            "(skipping)", verbosity, 1)
+            end if
             delete([/xx, yy, q/])
         end do
         plot@obser_median = g_obj
@@ -957,28 +1398,17 @@ begin
         do ii = 0, nmodels - 1
             resL@gsLineColor = colors(ii)
             resL@gsLineDashPattern = dash_mean
-            if (ptype.eq."vertprof") then
-                xx = model(ii, i_mean, :)
-                yy = model&plev
-                q = ind(.not.ismissing(xx))
-                if (dimsizes(q).ne.dimsizes(xx)) then
-                    error_msg("w", scriptname, funcname, \
-                              "model data (mean) contains missing values")
-                end if
-            else
-                xx = model&diam
-                yy = model(ii, i_mean, :)
-                q = ind(.not.ismissing(yy))
-                if (dimsizes(q).ne.dimsizes(yy)) then
-                    error_msg("w", scriptname, funcname, \
-                              "model data (mean) contains missing values")
-                end if
+            xx = model&diam
+            yy = model(ii, i_mean, :)
+            q = ind(.not.ismissing(yy))
+            if (dimsizes(q).ne.dimsizes(yy)) then
+                info_output("Some missing values in model mean", verbosity, 2)
             end if
             if (.not.all(ismissing(q))) then
                 g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
             else
-                info_output("model data (mean) contains " + \
-                            "only missing values, skipping", verbosity, 1)
+                info_output("All values in model mean are missing " + \
+                            "(skipping)", verbosity, 1)
             end if
             delete([/xx, yy, q/])
         end do
@@ -989,28 +1419,18 @@ begin
         do ii = 0, nmodels - 1
             resL@gsLineColor = colors(ii)
             resL@gsLineDashPattern = dash_stddev
-            if (ptype.eq."vertprof") then
-                xx = model(ii, i_mean, :) + model(ii, i_stddev, :)
-                yy = model&plev
-                q = ind(.not.ismissing(xx))
-                if (dimsizes(q).ne.dimsizes(xx)) then
-                    error_msg("w", scriptname, funcname, \
-                              "model data (stddev) contains missing values")
-                end if
-            else
-                xx = model&diam
-                yy = model(ii, i_mean, :) + model(ii, i_stddev, :)
-                q = ind(.not.ismissing(yy))
-                if (dimsizes(q).ne.dimsizes(yy)) then
-                    error_msg("w", scriptname, funcname, \
-                              "model data (stddev) contains missing values")
-                end if
+            xx = model&diam
+            yy = model(ii, i_mean, :) + model(ii, i_stddev, :)
+            q = ind(.not.ismissing(yy))
+            if (dimsizes(q).ne.dimsizes(yy)) then
+                info_output("Some missing values in model std. dev.", \
+                            verbosity, 2)
             end if
             if (.not.all(ismissing(q))) then
                 g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
             else
-                info_output("model data (stddev) contains " + \
-                            "only missing values, skipping", verbosity, 1)
+                 info_output("All values in model std. dev. are missing " + \
+                            "(skipping)", verbosity, 1)
             end if
             delete([/xx, yy, q/])
         end do
@@ -1027,24 +1447,11 @@ begin
         end if
         g_obj = new(ncases, graphic)
         do ii = 0, ncases - 1
-            if (ptype.eq."vertprof") then
-                xx = obser(ii, i_mean, :)
-                yy = obser&plev
-                q = ind(.not.ismissing(xx))
-                if (dimsizes(q).ne.dimsizes(xx)) then
-                    error_msg("w", scriptname, funcname, \
-                              "observational data (mean) " + \
-                              "contains missing values")
-                end if
-            else
-                xx = obser&diam
-                yy = obser(ii, i_mean, :)
-                q = ind(.not.ismissing(yy))
-                if (dimsizes(q).ne.dimsizes(yy)) then
-                    error_msg("w", scriptname, funcname, \
-                              "observational data (mean) " + \
-                              "contains missing values")
-                end if
+            xx = obser&diam
+            yy = obser(ii, i_mean, :)
+            q = ind(.not.ismissing(yy))
+            if (dimsizes(q).ne.dimsizes(yy)) then
+                info_output("Some missing values in obs. mean", verbosity, 2)
             end if
             if (.not.all(ismissing(q))) then
                 if (l_stddev) then
@@ -1054,6 +1461,9 @@ begin
                     g_obj(ii) = \
                         gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
                 end if
+            else
+                info_output("All values in obs. mean are missing " + \
+                            "(skipping)", verbosity, 1)
             end if
             delete([/xx, yy, q/])
         end do
@@ -1067,31 +1477,17 @@ begin
             resL@gsLineDashPattern = 0
             resL@gsLineThicknessF = 1
             do ii = 0, ncases - 1
-                if (ptype.eq."vertprof") then
-                    g_obj = new(dimsizes(obser&plev), graphic)
-                    do kk = 0, dimsizes(obser&plev) - 1
-                        xx = (/obser(ii, i_mean, kk), \
-                              obser(ii, i_mean, kk) + obser(ii, i_stddev, kk)/)
-                        yy = (/obser&plev(kk), obser&plev(kk)/)
-                        if (.not.ismissing(xx(0)) .and. \
-                            .not.ismissing(xx(1))) then
-                            g_obj(kk) = \
-                                gsn_add_polyline(wks, plot, xx, yy, resL)
-                        end if
-                    end do
-                else
-                    g_obj = new(dimsizes(obser&diam), graphic)
-                    do kk = 0, dimsizes(obser&diam) - 1
-                        xx = (/obser&diam(kk), obser&diam(kk)/)
-                        yy = (/obser(ii, i_mean, kk), \
-                              obser(ii, i_mean, kk) + obser(ii, i_stddev, kk)/)
-                        if (.not.ismissing(xx(0)) .and. \
-                            .not.ismissing(xx(1))) then
-                            g_obj(kk) = \
-                                gsn_add_polyline(wks, plot, xx, yy, resL)
-                        end if
-                    end do
-                end if
+                g_obj = new(dimsizes(obser&diam), graphic)
+                do kk = 0, dimsizes(obser&diam) - 1
+                    xx = (/obser&diam(kk), obser&diam(kk)/)
+                    yy = (/obser(ii, i_mean, kk), \
+                    obser(ii, i_mean, kk) + obser(ii, i_stddev, kk)/)
+                    if (.not.ismissing(xx(0)) .and. \
+                        .not.ismissing(xx(1))) then
+                        g_obj(kk) = \
+                        gsn_add_polyline(wks, plot, xx, yy, resL)
+                    end if
+                end do
                 str = "obser" + ii + "_stddev"
                 plot@$str$ = g_obj
                 delete(str)
@@ -1103,13 +1499,8 @@ begin
     draw(plot)
 
     ;; Append legend
-    if (ptype.eq."vertprof") then
-        xpos = 0.21
-        resT@txJust = "CenterLeft"
-    else
-        xpos = 0.79
-        resT@txJust = "CenterRight"
-    end if
+    xpos = 0.79
+    resT@txJust = "CenterRight"
     ypos = 0.78
     resT@txFontHeightF = 0.020
     resT@txFontColor   = "black"
@@ -1162,7 +1553,7 @@ local funcname, scriptname, verbosity, res, res_in, res_stddev, source, \
     source_x, source_stddev, wks, wks_in, colors, colors_mm, dashes, \
     dashes_mm, thicks, thicks_mm, annots, annots_mm, avgstd, avgstd_mm, temp, \
     plot, shading_plot, mm, lgres, nitems, lbid, amres, annoid, labels, \
-    psres, vpx, vph, vpy, vpw, bpres, tmborder
+    lg_outfile, psres, vpx, vph, vpy, vpw, bpres, tmborder
 begin
 
     funcname = "xy_line"
@@ -1207,6 +1598,27 @@ begin
         delete(temp)
     end if
 
+    ;; Highlight ESA OBS
+    do i=0, dimsizes(models@name)-1
+        if (models@name(i).eq."ESACCI-SSMI") then
+            thicks(i) = 5*thicks(i)
+            dashes(i) = 0
+        else if (models@name(i).eq."ESACCI-AMSR") then
+            thicks(i) = 5*thicks(i)
+            dashes(i) = 1
+        else if (models@name(i).eq."NSIDC-NT") then
+            thicks(i) = 3*thicks(i)
+            dashes(i) = 2
+        else if (models@name(i).eq."NSIDC-BT") then
+            thicks(i) = 3*thicks(i)
+            dashes(i) = 12
+        end if
+        end if
+        end if
+        end if
+    end do
+
+    ;; Set/copy resources
     res                   = True
     res@xyLineColors      = colors  ; change line color
     res@xyLineThicknesses = thicks  ; make 2nd lines thicker
@@ -1220,7 +1632,6 @@ begin
     res@vpWidthF = 0.8
     res@trYMinF  = min(source) - 0.05 * (max(source) - min(source))
     res@trYMaxF  = max(source) + 0.05 * (max(source) - min(source))
-
     copy_VarMeta(res_in, res)  ; copy passed resources
 
     ;; Plot
@@ -1249,19 +1660,19 @@ begin
     end if
 
     ;; Resources for a customized legend.
-    lgres                    = True
-    lgres@lgMonoLineThickness      = False
-    ;lgres@lgItemType         = "Lines"       ; show lines only (default)
-    lgres@lgLabelFontHeightF = .08            ; legend label font thickness
-    lgres@vpWidthF           = 0.15           ; width of legend (NDC)
-    lgres@vpHeightF          = 0.4            ; height of legend (NDC)
-    ;lgres@lgPerimThicknessF  = 2.0           ; thicken the box perimeter
-    lgres@lgPerimOn          = True
-    lgres@lgPerimColor       = 0
-    lgres@lgMonoDashIndex    = False
-    lgres@lgBoxBackground    = 0
-    lgres@lgPerimFill        = 0
-    lgres@lgPerimFillColor   = 0
+    lgres                     = True
+    lgres@lgMonoLineThickness = False
+    ;lgres@lgItemType         = "Lines"   ; show lines only (default)
+    lgres@lgLabelFontHeightF  = .08      ; legend label font thickness
+    lgres@vpWidthF            = 0.15     ; width of legend (NDC)
+    lgres@vpHeightF           = 0.4      ; height of legend (NDC)
+    ;lgres@lgPerimThicknessF  = 2.0       ; thicken the box perimeter
+    lgres@lgPerimOn           = True
+    lgres@lgPerimColor        = 0
+    lgres@lgMonoDashIndex     = False
+    lgres@lgBoxBackground     = 0
+    lgres@lgPerimFill         = 0
+    lgres@lgPerimFillColor    = 0
     if (.not.isatt(diag_script_info, "EMs_in_lg")) then
         diag_script_info@EMs_in_lg = True  ; Set default
     end if
@@ -1294,9 +1705,9 @@ begin
     ;; Point (0, 0) is the dead center of the plot. Point (0, .5) is center,
     ;; flush bottom. Point (0.5, 0.5) is flush bottom, flush right.
     amres                  = True
-    amres@amJust           = "TopRight"    ; reference corner of box
-    amres@amParallelPosF   =  0.5          ; Move legend to +right, -left
-    amres@amOrthogonalPosF = -0.5          ; +down, -up
+    amres@amJust           = "TopRight"  ; reference corner of box
+    amres@amParallelPosF   =  0.5        ; Move legend to +right, -left
+    amres@amOrthogonalPosF = -0.5        ; +down, -up
 
     ;; Draw and frame
     psres = True
@@ -1306,12 +1717,11 @@ begin
 
     ;; Get plot size
     getvalues plot
-        "vpXF"                 : vpx
-        "vpYF"                 : vpy
-        "vpWidthF"             : vpw
-        "vpHeightF"            : vph
+        "vpXF"      : vpx
+        "vpYF"      : vpy
+        "vpWidthF"  : vpw
+        "vpHeightF" : vph
     end getvalues
-
     bres = True
     bres@gsnDraw      = False
     bres@gsnFrame     = False
@@ -1325,10 +1735,10 @@ begin
     bres@tmYRBorderOn = False
 
     ;; Create a blank plot with the same size as plot, attach legend
-    bres@vpXF              = vpx
-    bres@vpYF              = vpy
-    bres@vpWidthF          = vpw
-    bres@vpHeightF         = vph
+    bres@vpXF      = vpx
+    bres@vpYF      = vpy
+    bres@vpWidthF  = vpw
+    bres@vpHeightF = vph
     blank_plot = gsn_csm_blank_plot(wks, bres)
 
     ;; Add legend to plot
@@ -1340,13 +1750,24 @@ begin
         annoid = gsn_add_annotation(blank_plot, lbid, amres)
     end if
 
+    ;; Put legend into an extra file
+    if (isatt(source, "legend_outside")) then
+        if (source@legend_outside) then
+            lg_outfile = wks@legendfile
+            styles = True
+            styles@colors = colors
+            styles@dashes = dashes
+            styles@thicks = thicks
+            create_legend_lines(annots, styles, lg_outfile, "lines")
+        end if
+    end if
+
     ;; Create another blank plot to make sure plot border thickness is even
     bres@tmXBBorderOn = True
     bres@tmXTBorderOn = True
     bres@tmYLBorderOn = True
     bres@tmYRBorderOn = True
     bres@tmBorderThicknessF = 3
-
     blank_plot2 = gsn_csm_blank_plot(wks, bres)
 
     ;; Draw first plot with the actual values (+ grid lines if

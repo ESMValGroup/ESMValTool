@@ -64,6 +64,9 @@ def main(project_info):
     plot_type = E.get_graphic_format()
     diag_script = E.get_diag_script_name()
 
+    # add name of diagnostics to plot_dir
+    plot_dir = plot_dir + "/" + diag_script + "/"
+
     res = E.write_references(diag_script,              # diag script name
                              ["A_will_ke"],            # authors
                              [""],                     # contributors

@@ -1,0 +1,72 @@
+STATION CODE 553   Azores   LOCF=0.8   HICF=1.2  (08/93 - 07/95)
+PRESSURE  JAN   FEB   MAR   APR   MAY   JUN   JUL   AUG   SEP   OCT   NOV   DEC  
+ 
+               OZONE MONTHLY MEAN OVER ALL SOUNDINGS IN MICRO-MB
+1000        NA    NA    NA    NA  39.2  35.4  28.1  28.5    NA    NA    NA    NA
+ 900        NA    NA    NA    NA  44.3  39.0  35.1  32.3    NA    NA    NA    NA
+ 800        NA    NA    NA    NA  45.3  41.0  42.4  34.8    NA    NA    NA    NA
+ 700        NA    NA    NA    NA  41.9  41.9  43.1  36.7    NA    NA    NA    NA
+ 600        NA    NA    NA    NA  35.9  40.1  43.7  36.5    NA    NA    NA    NA
+ 500        NA    NA    NA    NA  33.2  37.9  42.8  33.0    NA    NA    NA    NA
+ 400        NA    NA    NA    NA  29.2  32.5  38.4  28.5    NA    NA    NA    NA
+ 300        NA    NA    NA    NA  24.0  23.9  28.4  21.0    NA    NA    NA    NA
+ 250        NA    NA    NA    NA  29.5  23.7  27.6  18.5    NA    NA    NA    NA
+ 200        NA    NA    NA    NA  35.3  29.9  29.0  20.0    NA    NA    NA    NA
+ 150        NA    NA    NA    NA  50.4  56.0  40.1  24.7    NA    NA    NA    NA
+ 125        NA    NA    NA    NA  59.4  58.4  41.0  28.4    NA    NA    NA    NA
+ 100        NA    NA    NA    NA  73.6  59.6  52.6  40.0    NA    NA    NA    NA
+  90        NA    NA    NA    NA  81.2  66.7  56.5  48.3    NA    NA    NA    NA
+  80        NA    NA    NA    NA  89.8  73.7  62.0  60.5    NA    NA    NA    NA
+  70        NA    NA    NA    NA 100.6  75.9  69.5  71.5    NA    NA    NA    NA
+  60        NA    NA    NA    NA 123.6  90.9  79.6  82.4    NA    NA    NA    NA
+  50        NA    NA    NA    NA 138.0 104.7 109.7  99.6    NA    NA    NA    NA
+  40        NA    NA    NA    NA 147.2 130.5 133.0 118.6    NA    NA    NA    NA
+  30        NA    NA    NA    NA 144.2 142.6 147.6 138.0    NA    NA    NA    NA
+  20        NA    NA    NA    NA 129.9 138.3 138.2 134.9    NA    NA    NA    NA
+  10        NA    NA    NA    NA  87.3  88.6  85.8  81.3    NA    NA    NA    NA
+               NUMBER OF SOUNDINGS
+1000        NA    NA    NA    NA    15    24    16    23    NA    NA    NA    NA
+ 900        NA    NA    NA    NA    23    25    16    23    NA    NA    NA    NA
+ 800        NA    NA    NA    NA    23    25    16    23    NA    NA    NA    NA
+ 700        NA    NA    NA    NA    23    25    16    23    NA    NA    NA    NA
+ 600        NA    NA    NA    NA    23    25    16    23    NA    NA    NA    NA
+ 500        NA    NA    NA    NA    23    25    16    22    NA    NA    NA    NA
+ 400        NA    NA    NA    NA    23    25    16    22    NA    NA    NA    NA
+ 300        NA    NA    NA    NA    23    25    16    22    NA    NA    NA    NA
+ 250        NA    NA    NA    NA    23    25    16    22    NA    NA    NA    NA
+ 200        NA    NA    NA    NA    23    25    16    22    NA    NA    NA    NA
+ 150        NA    NA    NA    NA    23    25    16    21    NA    NA    NA    NA
+ 125        NA    NA    NA    NA    23    24    16    21    NA    NA    NA    NA
+ 100        NA    NA    NA    NA    23    24    16    21    NA    NA    NA    NA
+  90        NA    NA    NA    NA    23    24    16    21    NA    NA    NA    NA
+  80        NA    NA    NA    NA    23    24    16    21    NA    NA    NA    NA
+  70        NA    NA    NA    NA    23    24    16    21    NA    NA    NA    NA
+  60        NA    NA    NA    NA    23    24    16    21    NA    NA    NA    NA
+  50        NA    NA    NA    NA    23    24    16    21    NA    NA    NA    NA
+  40        NA    NA    NA    NA    22    24    16    21    NA    NA    NA    NA
+  30        NA    NA    NA    NA    21    22    16    20    NA    NA    NA    NA
+  20        NA    NA    NA    NA    21    21    16    20    NA    NA    NA    NA
+  10        NA    NA    NA    NA    20    19    13    19    NA    NA    NA    NA
+               STANDARD DEVIATION FOR EACH MONTH OVER ALL SOUNDINGS
+1000        NA    NA    NA    NA  11.6   7.8   8.1   6.3    NA    NA    NA    NA
+ 900        NA    NA    NA    NA   6.4   7.8   6.6   6.5    NA    NA    NA    NA
+ 800        NA    NA    NA    NA   6.4  10.1   9.3   7.3    NA    NA    NA    NA
+ 700        NA    NA    NA    NA   5.8  10.0   9.6   6.8    NA    NA    NA    NA
+ 600        NA    NA    NA    NA   6.6   9.2   8.3   6.9    NA    NA    NA    NA
+ 500        NA    NA    NA    NA   6.9   9.1   8.2   5.1    NA    NA    NA    NA
+ 400        NA    NA    NA    NA   8.0   9.6   7.5   4.4    NA    NA    NA    NA
+ 300        NA    NA    NA    NA  11.6   8.0   6.1   6.6    NA    NA    NA    NA
+ 250        NA    NA    NA    NA  21.6   6.4   8.5   5.0    NA    NA    NA    NA
+ 200        NA    NA    NA    NA  28.7  17.1  13.7   7.9    NA    NA    NA    NA
+ 150        NA    NA    NA    NA  23.4  18.7  16.2   5.8    NA    NA    NA    NA
+ 125        NA    NA    NA    NA  19.5  13.7  15.4   8.4    NA    NA    NA    NA
+ 100        NA    NA    NA    NA  21.0  20.3  13.4   6.2    NA    NA    NA    NA
+  90        NA    NA    NA    NA  18.1  16.8  12.5   6.9    NA    NA    NA    NA
+  80        NA    NA    NA    NA  12.9  18.3   9.4   7.6    NA    NA    NA    NA
+  70        NA    NA    NA    NA  16.8  21.4   7.5  10.5    NA    NA    NA    NA
+  60        NA    NA    NA    NA  21.5  17.3   7.9   6.4    NA    NA    NA    NA
+  50        NA    NA    NA    NA  13.7  10.6   8.0   6.4    NA    NA    NA    NA
+  40        NA    NA    NA    NA   6.3   5.5   6.2   6.7    NA    NA    NA    NA
+  30        NA    NA    NA    NA   5.2   4.8   5.9   7.1    NA    NA    NA    NA
+  20        NA    NA    NA    NA   4.8   3.8   5.2   6.1    NA    NA    NA    NA
+  10        NA    NA    NA    NA   4.5   2.6   2.2   3.3    NA    NA    NA    NA

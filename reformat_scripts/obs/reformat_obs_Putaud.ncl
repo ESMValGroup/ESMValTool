@@ -401,7 +401,7 @@ begin
                 ;; Outfile
                 fout = OUTDIR + "OBS_" + OBSNAME + "_campaign_" + \
                     str_sub_str(STATIONS(rr), " ", "") + SEASONS(ss) + "_" + \
-                    FIELD + "_" + NAMES + ".nc"
+                    FIELD + "_" + NAMES + "_200201-200212.nc"
 
                 ;; Write variable
                 write_nc_profile(fout, NAMES, output, gAtt)

@@ -1,5 +1,5 @@
 <namelist>
-<include href="./config_private.xml"/>
+<include href="./config_private_DLR-PA2.xml"/>
 <namelist_summary>
 ###############################################################################
 namelist_CVDP.xml
@@ -120,7 +120,7 @@ This namelist is part of the ESMValTool
     <variable exclude="ersst">   psl              </variable>
     <variable exclude="ersst">   tas              </variable>
     <variable exclude="ersst">   pr               </variable>
-    <field_type exclude="ersst"> T2Ms             </field_type>
+    <field_type>                 T2Ms             </field_type>
     <diag_script_cfg_dir>        ./nml/cfg_CVDP/  </diag_script_cfg_dir>   
 
     <model> CMIP5_ETHZ MPI-ESM-LR     Amon historical r1i1p1 1984 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>

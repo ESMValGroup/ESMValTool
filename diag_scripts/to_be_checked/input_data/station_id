@@ -1,0 +1,56 @@
+00,"Ascension Island South Atlantic",0,Ascension_Island
+01,"Diego Garcia Indian Ocean      ",0,Diego_Garcia
+02,"Truk Island Pacific Ocean      ",0,Truk_Island
+03,"Western Europe                 ",0,Western_Europe
+04,"Ethiopia Africa                ",1,Ethiopia
+05,"Resolute NW Territories Canada ",0,Resolute_Canada
+06,"Western Desert Australia       ",1,Western_Desert_Australia
+07,"Northern Great Plains USA      ",0,Great_Plains_USA
+08,"Central India                  ",1,Central_India
+09,"Marshall Islands Pacific Ocean ",0,Marshall_Islands
+10,"Easter Island Pacific Ocean    ",0,Easter_Island
+11,"Ross Ice Shelf Antarctica      ",0,McMurdo_Antarctica
+12,"South Pole Antarctica          ",1,SouthPole_Antarctica
+13,"Panama Central America         ",0,Panama
+14,"Western North Atlantic         ",1,Western_North_Atlantic
+15,"Singapore Indonesia            ",1,Singapore
+16,"Manila Phillipines             ",1,Manila
+17,"Gilbert Islands Pacific Ocean  ",1,Gilbert_Islands
+18,"Hawaii Pacific Ocean           ",0,Hawaii
+19,"Sao Paulo Brazil               ",1,San_Paulo
+20,"Heard Island Indian Ocean      ",1,Heard_Island
+21,"Kagoshima Japan                ",1,Kagoshima_Japan
+22,"Port Moresby Papau New Guinea  ",1,Port_Moresby
+23,"San Juan Puerto Rico           ",1,San_Juan_PR
+24,"Western Alaska USA             ",1,Western_Alaska
+25,"Thule Greenland                ",0,Thule_Greenland
+26,"San Francisco California USA   ",0,SanFrancisco_CA
+27,"Denver Colorado USA            ",1,Denver_CO
+28,"London England                 ",1,London_UK
+29,"Crete Mediterranean            ",1,Crete
+30,"Tokyo Japan                    ",1,Tokyo
+31,"Sydney Australia               ",1,Sydney_Australia
+32,"Christchurch New Zealand       ",1,Christchurch_NZ
+33,"Lima Peru                      ",1,Lima_Peru
+34,"Miami Florida USA              ",0,Miami_FL
+35,"Samoa Island Pacific Ocean     ",1,Samoa
+36,"Ocean Ship P Gulf of Alaska    ",0,ShipP_GulfofAlaska
+37,"Ocean Ship C North Atlantic    ",1,ShipC_North_Atlantic
+38,"Azores North Atlantic          ",1,Azores
+39,"Ft Totten New York USA         ",1,NewYork_USA
+40,"Darwin Airport Australia       ",1,Darwin_Australia
+41,"Christmas Island Pacific Ocean ",1,Christmas_Island
+42,"Cocos Island Indian Ocean      ",1,Cocos_Islands
+43,"Midway Island Pacific Ocean    ",0,Midway_Island
+44,"Raoui Island Pacific Ocean     ",1,Raoui_Island
+45,"Whitehorse Yukon Canada        ",1,Whitehorse_Canada
+46,"Oklahoma City USA              ",1,OklahomaCity_OK
+47,"Gibraltor Mediterranean        ",1,Gibraltor
+48,"Mexico City Mexico             ",1,Mexico_City
+49,"Recife Brazil                  ",1,Recife_Brazil
+50,"Nairobi Kenya                  ",1,Nairobi_Kenya
+51,"New Delhi India                ",1,New_Delhi_India
+52,"Madras India                   ",1,Madras_India
+53,"Da Nang Vietnam                ",1,DaNang_Vietnam
+54,"Yap Island Pacific Ocean       ",0,Yap_Island
+55,"Falkland Islands South Atlantic",1,Falkland_Islands

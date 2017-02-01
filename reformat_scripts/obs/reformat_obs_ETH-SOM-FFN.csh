@@ -7,16 +7,15 @@
 ##    Tier 2: other freely-available dataset.
 ##
 ## Source
-##    Download at
-##    http://cdiac.ornl.gov/oceans/SPCO2_1998_2011_ETH_SOM_FFN.html
+##    http://cdiac.ornl.gov/ftp/oceans/spco2_1998_2011_ETH_SOM-FFN/
 ##
 ## Last access
 ##
 ## Download and processing instructions
-##    *) Click on "Database Files" and download spco2_1998-2011_ETH_SOM-FFN_CDIAC_G05.nc.zip
-##    *) Unzip zip archive: unzip spco2_1998-2011_ETH_SOM-FFN_CDIAC_G05.nc.zip
-##    *) Run this script (requires requires NCO, http://nco.sourceforge.net/ and
-##       CDO, http://https://code.zmaw.de/projects/cdo/)
+##    Download the file spco2_1998-2011_ETH_SOM-FFN_CDIAC_G05.nc.zip
+##    unzip spco2_1998-2011_ETH_SOM-FFN_CDIAC_G05.nc.zip
+##    Run this script (requires requires NCO, http://nco.sourceforge.net/ and
+##    CDO, http://https://code.zmaw.de/projects/cdo/)
 ##
 ## Caveats
 ##
@@ -33,7 +32,7 @@ if (! -d $outpath) then
 endif
 
 set infile=$inpath/spco2_1998-2011_ETH_SOM-FFN_CDIAC_G05.nc
-set outfile=$outpath/spco2_monthly_ref_ETH-SOM-FFN_reg_1998-2011.nc
+set outfile="$outpath/OBS_ETH-SOM-FFN_ocean_1_TO2Ms_spco2_199801-201112.nc"
 
 if (-e $infile) then
     echo 'input file = '$infile

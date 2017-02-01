@@ -17,6 +17,7 @@ procedure write_header(s_open:string,
 ;; References
 ;;
 ;; Modification history
+;;    20160713-A_laue_ax: updated ESMValTool reference
 ;;    20150630-A_laue_ax: written.
 ;;
 local namelist, version
@@ -69,8 +70,8 @@ begin
     system(s_open + "Please acknowledge the use of the ESMValTool." + s_close)
 ;    system(s_open + "Please cite Righi et al., Geosci. Model Dev., " + \
 ;           "8, 733-768 doi:10.5194/gmd-8-733-2015, 2015." + s_close)
-    system(s_open + "Please cite Eyring et al., Geosci. Model Dev. Discuss., " + \
-           "8, 7541-7661, doi:10.5194/gmdd-8-7541-2015, 2015." + s_close)
+    system(s_open + "Please cite Eyring et al., Geosci. Model Dev., " + \
+           "9, 1747-1802, doi:10.5194/gmd-9-1747-2016, 2016." + s_close)
     system(s_open + "For the specific diagnostics, see below." + s_close)
     system(s_open + "" + s_close)
 ;    system(s_open + hline + s_close)

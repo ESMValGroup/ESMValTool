@@ -123,7 +123,7 @@ class Diagnostic:
         self.variables = []
 
         # List valid variable attributes
-        possible_var_attr_keys = ["mip", "exp", "ref_model", "id", "exclude"]
+        possible_var_attr_keys = ["mip", "exp", "ref_model", "id", "exclude", "only"]
         attrs = {}
         for key in possible_var_attr_keys:
             tmp_attr = []
@@ -155,7 +155,8 @@ class Diagnostic:
                 self.variables[i].exp, \
                 self.variables[i].ref_model, \
                 self.variables[i].id, \
-                self.variables[i].exclude
+                self.variables[i].exclude, \
+                self.variables[i].only
 
     def get_diag_script(self):
         return self.diag_script
@@ -184,6 +185,9 @@ class Diagnostic:
     def get_var_attr_exclude(self):
         return [item.exclude for item in self.variables]
 
+    def get_var_attr_only(self):
+        return [item.only for item in self.variables]
+
     def get_var_attrs(self):
         return self.var_attr
 
@@ -204,6 +208,13 @@ class Diagnostic:
         if hasattr(var, "exclude") and "id" in model.attributes:
             if model.attributes["id"] == var.exclude:
                     exclude = True
+
+        if var.only != "None":
+            exclude = True
+            if "id" in model.attributes:
+                if model.attributes["id"] == var.only:
+                    exclude = False
+
         return exclude
 
     def find_dimension_entry(self, field):

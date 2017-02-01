@@ -8,10 +8,10 @@ diag_script_info = True
 ;; ############################################################################
 path = getenv("ESMValTool_OBSPATH") + "/Tier2/Emmons/"
 diag_script_info@obsfiles = (/\
-    path + "*TRACE-P-DC8-China_T0M_vmrch3coch3.nc", \
-    path + "*TRACE-P-DC8-Hawaii_T0M_vmrch3coch3.nc", \
-    path + "*TRACE-P-DC8-Guam_T0M_vmrch3coch3.nc", \
-    path + "*TRACE-P-DC8-Japan_T0M_vmrch3coch3.nc"/)
+    path + "*TRACE-P-DC8-China_T0M_vmrch3coch3_*.nc", \
+    path + "*TRACE-P-DC8-Hawaii_T0M_vmrch3coch3_*.nc", \
+    path + "*TRACE-P-DC8-Guam_T0M_vmrch3coch3_*.nc", \
+    path + "*TRACE-P-DC8-Japan_T0M_vmrch3coch3_*.nc"/)
 delete(path)
 
 ;; ############################################################################

@@ -1,9 +1,14 @@
 ;=================================================================================================
 ; create blank array for use when something may be/is wrong.
 ;
+undef("create_empty_array")
 function create_empty_array(yS:numeric,yE:numeric,mS:numeric,mE:numeric,opttype:string)
 local yS,yE,mS,mE,opttype
 begin
+  if (ismissing(yS).or.ismissing(yE)) then
+     yS = 1
+     yE = 50
+  end if
   timeT =  yyyymm_time(yS, yE, "integer")
   time = timeT({yS*100+mS:yE*100+mE})
   if (opttype.eq."time_lat_lon") then  
@@ -46,29 +51,27 @@ end
 ;      vname = (/"TS","ts","sst","sfc_t"/)
 ;   end if
 ;
+undef("data_read_in")
 function data_read_in(zpath:string,vn:string,yearS:integer,yearE:integer)
 ; path for TS file(s), variable name, start year, and end year are read in.
 local zpath,vn,cpath0,ta,tfiles,c,arr,farr,yearS,yearE,mocheck,fils_precc,fils_precl
 begin
-;  setfileoption("nc","Format","NetCDF4Classic")
-;  setfileoption("nc","Compression",1)
-
   if (vn.eq."TS") then
-     vname = (/"TS","ts","sst"/)
+     vname = (/"TS","ts","sst","t_surf","skt"/)
   end if
   if (vn.eq."PSL") then
-     vname = (/"PSL","psl","slp","SLP","prmsl"/)
+     vname = (/"PSL","psl","slp","SLP","prmsl","msl","slp_dyn"/)
   end if
   if (vn.eq."TREFHT") then
-     vname = (/"TREFHT","tas","temp","air","temperature_anomaly"/)
+     vname = (/"TREFHT","tas","temp","air","temperature_anomaly","temperature","t2m","t_ref","T2","tempanomaly"/)
   end if
   if (vn.eq."PRECT") then
-     vname = (/"PRECC","PRECL","PRECT","pr","PPT","ppt","p","P","precip","PRECIP"/)
+     vname = (/"PRECC","PRECL","PRECT","pr","PPT","ppt","p","P","precip","PRECIP","tp","prcp","prate"/)
   end if
   if (vn.eq."SNOWDP") then
      vname = (/"SNOWDP","snd"/)
   end if
-    
+
   if (ismissing(zpath) ) then
      print("File missing, creating blank array of data. View "+vn+" namelist for details.")
      arr = create_empty_array(yearS,yearE,1,12,"time_lat_lon")
@@ -78,7 +81,6 @@ begin
      emdata = 12
   else
      cpath0 = stringtochar(zpath)
-  
      ta = stringtochar("*")
      if (any(cpath0.eq.ta(0)).or.any(cpath0.eq."{")) then   ; check for "*" and "{" denoting multiple files
         tfiles = systemfunc("ls "+zpath+" 2> /dev/null")   ; /dev/null suppresses all standard error output
@@ -181,6 +183,17 @@ begin
      arr = arrT
      delete(arrT)
   end if
+  if (dimsizes(dimz).le.2) then
+     print("Possible curvilinear (or unstructured) grid detected. The CVDP cannot analyze curvilinear data. Please regrid to a rectilinear grid for inclusion in CVDP comparisons.") 
+     print("Input file: "+zpath)
+     print("Setting array to all missing")
+     delete(arr)
+     arr = create_empty_array(yearS,yearE,smdata,emdata,"time_lat_lon")
+     sydata = yearS     ; assign these variables based on yearS/yearE provided in namelist. Doesn't matter 
+     eydata = yearE     ; as data array is totally missing..  
+     smdata = 1
+     emdata = 12 
+  end if
   delete(dimz)
   
   arr!0 = "time"
@@ -211,7 +224,6 @@ begin
      
   if (yearS.lt.sydata.or.yearE.gt.eydata) then
      print("Requested "+yearS+"-"+yearE+" time span is outside the input file "+zpath+" time span of "+sydata+"-"+eydata+"")
-     print("script: data_read_in.ncl")
      print("Setting array to all missing")
      delete(arr)
      arr = create_empty_array(yearS,yearE,smdata,emdata,"time_lat_lon")
@@ -275,18 +287,20 @@ begin
   end if     
   if (min(farr&lon).lt.0.or.max(farr&lon).gt.360) then
      print(farr&lon)
-     print("Model = "+names(gg)+", path = "+paths(gg))
+     print("path = "+zpath)
      print("Fatal: Longitudes not in expected 0-360E range, creating blank array")
      delete(farr)
      farr = create_empty_array(yearS,yearE,1,12,"time_lat_lon")
   end if
   
   if (vn.eq."TREFHT".or.vn.eq."TS") then      ; units check
-     if (farr@units.eq."K".or.farr@units.eq."Kelvin") then   
-        farr = farr-273.15
+     if (farr@units.eq."K".or.farr@units.eq."Kelvin".or.farr@units.eq."deg_k".or.farr@units.eq."deg_K") then   
+        if (max(farr).ge.100) then    ; data sets can be anomalies with units of K, so check for range before subtracting
+           farr = farr-273.15
+        end if
         farr@units = "C"
      end if
-     if (farr@units.eq."degrees_C".or.farr@units.eq."degrees C") then
+     if (farr@units.eq."degrees_C".or.farr@units.eq."degrees C".or.farr@units.eq."degree_C".or.farr@units.eq."degree C") then
         farr@units = "C"
      end if
   end if
@@ -300,12 +314,12 @@ begin
      if (farr@units.eq."m/s".or.farr@units.eq."m s-1") then
         farr = farr*86400000.
      end if
-     if (farr@units.eq."kg m-2 s-1") then
+     if (farr@units.eq."kg m-2 s-1".or.farr@units.eq."kg/m2/s".or.farr@units.eq."kg/m^2/s") then
         farr = farr*86400.
      end if
-     if (farr@units.eq."cm".or.farr@units.eq."cm/month".or.farr@units.eq."mm".or.farr@units.eq."mm/month") then    
-        yr = floattointeger(farr&time)/100
-        mo = floattointeger(farr&time - (yr*100))
+     if (farr@units.eq."m".or.farr@units.eq."m/month".or.farr@units.eq."cm".or.farr@units.eq."cm/month".or.farr@units.eq."mm".or.farr@units.eq."mm/month") then    
+        yr = toint(farr&time)/100
+        mo = toint(farr&time - (yr*100))
         days = days_in_month(yr,mo)
         do gg = 0,dimsizes(farr&time)-1
 		         farr(gg,:,:) = (/ farr(gg,:,:) / days(gg) /)
@@ -313,7 +327,13 @@ begin
         if (farr@units.eq."cm".or.farr@units.eq."cm/month") then
            farr = farr*10.   ; convert from cm/day to mm/day
         end if        
+        if (farr@units.eq."m".or.farr@units.eq."m/month") then
+           farr = farr*1000.   ; convert from m/day to mm/day
+        end if   
      end if  
+     if (farr@units.eq."m/day".or.farr@units.eq."m day-1") then
+        farr = farr*1000.
+     end if
      farr@units = "mm/day" 
   end if    
   if (vn.eq."SNOWDP") then
@@ -334,272 +354,11 @@ begin
   time = cd_inv_calendar(yyyy,mm,days,hms,hms,hms,"months since "+min(yyyy)+"-01-15 00:00:00",0)
   time@long_name = "Time"
   time@standard_name = "time"
+  time@actual_range = (/min(time),max(time)/)
   time!0 = "time"
   time&time = time
   farr&time = time
   delete([/time,yyyy,mm,days,hms,date/])
-  return(farr)
-end
-;=================================================================================================
-; read in ocean data from given files
-;
-; assign time coordinate variables, check for issues with the array, assign _FillValue (if needed)
-; assign dimension names (for ease-of-use), check and modify units
-;
-; vname settings at top of this script can be modified if a different variable name is
-; encountered. For instance, if a SSH data file has the SSH array named as "seasfc_height", one
-; could add "seasfc_height" to the vname SSH coding as follows:
-;   if (vn.eq."SSH") then
-;      vname = (/"SSH","zos","seasfc_height"/)
-;   end if
-;
-function data_read_in_ocean(zpath:string,vn:string,level:numeric,yearS:integer,yearE:integer)
-; path for TS file(s), variable name, start year, and end year are read in.
-local zpath,vn,cpath0,ta,tfiles,c,arr,farr,yearS,yearE,mocheck,fils_precc,fils_precl
-begin
-  if (vn.eq."SALT") then
-     vname = (/"SALT","so"/)
-  end if
-  if (vn.eq."TEMP") then
-     vname = (/"TEMP","thetao"/)
-  end if
-  if (vn.eq."SSH") then
-     vname = (/"SSH","zos"/)
-  end if
-
-  if (ismissing(zpath) ) then
-     print("File missing, creating blank array of data. View "+vn+" namelist for details.")
-     arr = new((/(yearE-yearS+1)*12,90,180/),"float",1.e20)
-     arr!0 = "time"    ; time coordinate variable assigned below
-     arr!1 = "lat"
-     arr&lat = fspan(-89,89,90)
-     arr!2 = "lon"
-     arr&lon = fspan(0,358,180)
-     arr&lat@units = "degrees_north"
-     arr&lon@units = "degrees_east"
-     arr@units = ""
-     sydata = yearS     ; assign these variables based on yearS/yearE provided in namelist. Doesn't matter 
-     eydata = yearE     ; as data array is totally missing..  
-     smdata = 1
-     emdata = 12
-     arr@is_all_missing = True
-  else
-     cpath0 = stringtochar(zpath) 
-     ta = stringtochar("*")
-     if (any(cpath0.eq.ta(0)).or.any(cpath0.eq."{")) then   ; check for "*" and "{" denoting multiple files
-        tfiles = systemfunc("ls "+zpath+" 2> /dev/null")   ; /dev/null suppresses all standard error output
-        c = addfiles(tfiles,"r")
-        do ii=0,dimsizes(vname)-1
-           if (isfilevar(c[0],vname(ii))) then
-              if (vname(ii).eq."SALT".or.vname(ii).eq."TEMP") then
-                 print("1")
-                     
-                 arr = c[0]->$vname(ii)$(:,{level*100.},:,:)  ; level in meters, CESM levels in cm
-                 printVarSummary(arr)
-                 exit
-                 level@units = "m"
-                 delete(arr&z_t)
-                 print("2a")
-                 arr!1 = "lev"
-                 arr&lev = level
-                 print("2")
-              end if
-              if (vname(ii).eq."so".or.vname(ii).eq."thetao") then
-                 arr = c[:]->$vname(ii)$(:,{level},:,:)    ; level in meters
-              end if
-              if (vname(ii).eq."SSH".or.vname(ii).eq."zos") then
-                 arr = c[:]->$vname(ii)$
-              end if
-              break
-           end if
-        end do   
-        nfil = dimsizes(tfiles)
-        cpathS = stringtochar(tfiles(0))      ; this section will work for PRECC/PRECL, as it will read the first
-        cpathE = stringtochar(tfiles(nfil-1)) ; PRECC file and the last PRECL file.  
-        ncharS = dimsizes(cpathS)
-        ncharE = dimsizes(cpathE)
-        sydata = stringtointeger(charactertostring(cpathS(ncharS-17:ncharS-14)))
-        smdata = stringtointeger(charactertostring(cpathS(ncharS-13:ncharS-12)))
-        eydata = stringtointeger(charactertostring(cpathE(ncharE-10:ncharE-7)))
-        emdata = stringtointeger(charactertostring(cpathE(ncharE-6:ncharE-5)))      
-        delete([/cpathS,cpathE,ncharS,ncharE,nfil/])
-        delete(c)
-     else
-        c = addfile(zpath,"r")
-        do i=0,dimsizes(vname)-1
-           if (isfilevar(c,vname(i))) then
-              if (vname(ii).eq."SALT".or.vname(ii).eq."TEMP") then
-                 if (dimsizes(level).eq.1) then
-                    arr = c->$vname(ii)$(:,{level*100.:level*100.},:,:)  ; level in meters, CESM levels in cm
-                 else   
-                    arr = c->$vname(ii)$(:,{level*100.},:,:)  ; level in meters, CESM levels in cm
-                 end if
-                 level@units = "m"
-                 delete(arr&z_t)
-                 arr!1 = "lev"
-                 arr&lev = level
-              end if
-              if (vname(ii).eq."so".or.vname(ii).eq."thetao") then
-                 if (dimsizes(level).eq.1) then
-                    arr = c->$vname(ii)$(:,{level:level},:,:)    ; level in meters
-                 else
-                    arr = c->$vname(ii)$(:,{level},:,:)    ; level in meters
-                 end if
-              end if
-              if (vname(ii).eq."SSH".or.vname(ii).eq."zos") then
-                 arr = c->$vname(ii)$
-              end if
-              break
-           end if
-        end do
-        cpath = stringtochar(zpath)     
-        nchar = dimsizes(cpath)
-        sydata = stringtointeger(charactertostring(cpath(nchar-17:nchar-14)))
-        smdata = stringtointeger(charactertostring(cpath(nchar-13:nchar-12)))
-        eydata = stringtointeger(charactertostring(cpath(nchar-10:nchar-7)))
-        emdata = stringtointeger(charactertostring(cpath(nchar-6:nchar-5))) 
-        delete([/cpath,nchar/])
-;        delete(c)     
-     end if
-     delete([/ta,cpath0/])
-  end if
-  
-  if (isshort(arr)) then
-     arrT = short2flt(arr)
-     delete(arr)
-     arr = arrT
-     delete(arrT)
-  end if
-  
-  if (.not.isatt(arr,"_FillValue")) then     ; assign _FillValue if one is not present
-     if (isatt(arr,"missing_value")) then
-        arr@_FillValue = arr@missing_value
-     else
-        arr@_FillValue = default_fillvalue(typeof(arr)) 
-     end if
-  end if
-  
-  
-  if (isatt(arr,"coordinates")) then
-     strarr = str_splt(arr@coordinates)
-     if (any(strarr.eq."TLONG")) then    ; CESM longitude 2D coordinate
-        arr@lon2d = c->TLONG
-     end if
-     if (any(strarr.eq."TLAT")) then     ; CESM latitude 2D coordinate
-        arr@lat2d = c->TLAT
-     end if
-     if (any(strarr.eq."lon")) then      ; IPCC longitude 2D coordinate
-        arr@lon2d = c->lon
-     end if
-     if (any(strarr.eq."lat")) then      ; IPCC latitude 2D coordinate
-        arr@lat2d = c->lat
-     end if
-  else
-     print("2D coordinates for ocean data are not detected")
-  end if
-
-;  print("huh")
-
-;  if (dimsizes(dimsizes(arr)).eq.3) then
-;     arr!0 = "time"
-;     arr!1 = "nlat"
-;     arr!2 = "nlon"
-;  end if
-;  if (dimsizes(dimsizes(arr)).eq.4) then
-     arr!0 = "time"
-     arr!1 = "lev"
-     arr!2 = "nlat"
-     arr!3 = "nlon"
-;  end if
-
-;print("A")
-
-  if (yearS.lt.sydata.or.yearE.gt.eydata) then
-     print("Requested "+yearS+"-"+yearE+" time span is outside the input file "+zpath+" time span of "+sydata+"-"+eydata+"")
-     print("script: data_read_in.ncl")
-     print("Setting array to all missing")
-     delete(arr)
-     arr = new((/(yearE-yearS+1)*12,90,180/),"float",1.e20)
-     arr!0 = "time"    ; time coordinate variable assigned below
-     timeT =  yyyymm_time(yearS, yearE, "integer")
-     time = timeT({yearS*100+smdata:yearE*100+emdata})  
-     arr&time = time
-     arr!1 = "lat"
-     arr&lat = fspan(-89,89,90)
-     arr!2 = "lon"
-     arr&lon = fspan(0,358,180)
-     arr&lat@units = "degrees_north"
-     arr&lon@units = "degrees_east"
-     arr@units = ""
-     sydata = yearS     ; assign these variables based on yearS/yearE provided in namelist. Doesn't matter 
-     eydata = yearE     ; as data array is totally missing..  
-     smdata = 1
-     emdata = 12
-     arr@is_all_missing = True     
-  else
-     timeT =  yyyymm_time(sydata, eydata, "integer")
-     time = timeT({sydata*100+smdata:eydata*100+emdata})  
-     if (iscoord(arr,"time")) then
-        delete(arr&time)
-     end if
-     arr&time = time
-  end if
-  delete([/timeT,time,sydata,smdata,eydata,emdata/])  
-    
-  printVarSummary(arr)
-  printVarSummary(arr({sy*100+1:ey*100+12},:,:,:))
-  farr = arr({yearS*100+1:yearE*100+12},:,:,:)  
-  printVarSummary(farr)
-  delete(arr)     
-  
-  mocheck = (/(yearS*100+1)-min(farr&time),(yearE*100+12) - max(farr&time)/)
-  if (any(mocheck.ne.0)) then    ; previously: if (mod(dimsizes(farr&time),12).ne.0) then
-     if (mocheck(0).ne.0) then
-        print("First requested year is incomplete")
-     end if
-     if (mocheck(1).ne.0) then
-        print("Last requested year is incomplete")
-     end if
-     print("Incomplete data year(s) requested for file "+zpath+", printing out time and exiting from data_read_in.ncl")
-     print("Time requested: "+yearS+"-"+yearE)
-     print(farr&time)
-     exit
-  end if
-  delete(mocheck)
-
-  if (vn.eq."SSH") then
-     if (farr@units.eq."cm".or.farr@units.eq."CM") then
-        farr = farr/100.
-        farr@units = "m"
-     end if
-  end if
-  if (vn.eq."TEMP") then      ; units check
-     if (farr@units.eq."K".or.farr@units.eq."Kelvin") then   
-        farr = farr-273.15
-        farr@units = "C"
-     end if
-  end if  
-  if (vn.eq."SALT") then
-     if (farr@units.eq."gram/kilogram") then
-        farr = (/ farr/1000. /)   ; convert to units of "1"
-     end if
-  end if
-  
-  date = farr&time         ; switch time to be CF-conforming
-  delete(farr&time)
-  yyyy = date/100
-  mm = date-(yyyy*100)
-  days = (days_in_month(yyyy,mm))/2
-  hms  = days
-  hms = 0   ; hours, minutes, seconds all the same (=0)
-  time = cd_inv_calendar(yyyy,mm,days,hms,hms,hms,"months since "+min(yyyy)+"-01-15 00:00:00",0)
-  time@long_name = "Time"
-  time@standard_name = "time"
-  time!0 = "time"
-  time&time = time
-  farr&time = time
-  delete([/time,yyyy,mm,days,hms,date/])
-  
   return(farr)
 end
 ;=================================================================================================
@@ -608,6 +367,7 @@ end
 ; assign time coordinate variables, check for issues with the array, assign _FillValue (if needed)
 ; assign dimension names (for ease-of-use), check and modify units
 ;
+undef("data_read_in_ocean_MOC")
 function data_read_in_ocean_MOC(zpath:string,vn:string,yearS:integer,yearE:integer)
 ; path for MOC file(s), variable name, start year, and end year are read in.
 local zpath,vn,cpath0,ta,tfiles,c,arr,farr,yearS,yearE,mocheck,dimC,lev
@@ -707,6 +467,10 @@ begin
   arr!0 = "time"
   arr!1 = "lev"
   arr!2 = "lat"
+
+  if (isatt(arr,"coordinates")) then
+     delete(arr@coordinates)
+  end if
   
   if (arr&lev@units.eq."centimeters".or.arr&lev@units.eq."cm") then
      lev = arr&lev
@@ -752,7 +516,6 @@ begin
      
   if (yearS.lt.sydata.or.yearE.gt.eydata) then
      print("Requested "+yearS+"-"+yearE+" time span is outside the input file "+zpath+" time span of "+sydata+"-"+eydata+"")
-     print("script: data_read_in.ncl")
      print("Setting array to all missing")
      delete(arr)
      arr = create_empty_array(yearS,yearE,smdata,emdata,"time_lev_lat")
@@ -843,12 +606,337 @@ begin
   delete([/time,yyyy,mm,days,hms,date/])
   return(farr)
 end
+;=================================================================================================
+; read in ice data from given files
+;
+; assign time coordinate variables, check for issues with the array, assign _FillValue (if needed)
+; assign dimension names (for ease-of-use), check and modify units
+;
+undef("data_read_in_ice")
+function data_read_in_ice(zpath:string,vn:string,yearS:integer,yearE:integer)
+; path for ice file(s), variable name, start year, and end year are read in.
+local zpath,vn,cpath0,ta,tfiles,c,arr,farr,yearS,yearE,mocheck,dimC,lev
+begin
+  if (vn.eq."aice_nh") then
+     vname = (/"aice_nh","aice","sic","SIC","CN","ice","icec"/)
+  end if
+  if (vn.eq."aice_sh") then
+     vname = (/"aice_sh","aice","sic","SIC","CN","ice","icec"/)
+  end if
 
+  if (ismissing(zpath) ) then
+     print("File missing, creating blank array of data. View "+vn+" namelist for details.")
+     arr = create_empty_array(yearS,yearE,1,12,"time_lat_lon")
+     sydata = yearS     ; assign these variables based on yearS/yearE provided in namelist. Doesn't matter 
+     eydata = yearE     ; as data array is totally missing..  
+     smdata = 1
+     emdata = 12
+  else
+     cpath0 = stringtochar(zpath)
+  
+     ta = stringtochar("*")
+     tfiles = systemfunc("ls "+zpath+" 2> /dev/null")   ; /dev/null suppresses all standard error output
+     c = addfiles(tfiles,"r")
+     do ii=0,dimsizes(vname)-1
+        if (isfilevar(c[0],vname(ii))) then
+           if (vname(ii).eq."aice_nh".or.vname(ii).eq."aice_sh".or.vname(ii).eq."aice") then    ; CCSM/CESM file     
+              arr = c[:]->$vname(ii)$
+              if (isatt(arr,"coordinates")) then
+                 strarr = str_split(arr@coordinates," ")
+                 if (any(strarr.eq."TLON")) then    ; CESM longitude 2D coordinate
+                    dimZ = dimsizes(c[0]->TLON)
+                    if (dimsizes(dimZ).eq.3) then
+                       arr@lon2d = c[0]->TLON(0,:,:)
+                    else
+                       arr@lon2d = c[0]->TLON
+                    end if
+                    delete(dimZ)
+                 end if
+                 if (any(strarr.eq."TLAT")) then     ; CESM latitude 2D coordinate
+                    dimZ = dimsizes(c[0]->TLAT)
+                    if (dimsizes(dimZ).eq.3) then
+                       arr@lat2d = c[0]->TLAT(0,:,:)
+                    else
+                       arr@lat2d = c[0]->TLAT
+                    end if
+                    delete(dimZ)
+                 end if
+                 delete(strarr)
+;              else
+;                 print("2D coordinates for ice data are not detected")
+              end if
+              if (isatt(arr,"cell_measures").and.isfilevar(c[0],"tarea")) then    ; if an attribute named cell_measures exists, and tarea is on file(0)
+                 if (arr@cell_measures.eq."area: tarea") then
+                    arr@area = totype(c[0]->tarea,typeof(arr))      ; in units of m^2
+                 end if
+              end if
+           else                           ; CMIP or other file
+              if (vname(ii).eq."CN") then     ; GFDL file
+                 arrT = c[:]->$vname(ii)$
+                 arr = dim_sum_n_Wrap(arrT,1)
+                 delete(arrT)
+                 arr = where(arr.ge.1,1,arr) ; optional
+              else
+                 arr = c[:]->$vname(ii)$
+              end if
+              if (isatt(arr,"coordinates")) then
+                 strarr = str_split(arr@coordinates," ")
+                 if (any(strarr.eq."lon")) then      ; IPCC longitude 2D coordinate
+                    arr@lon2d = c[0]->lon
+                 end if
+                 if (any(strarr.eq."lat")) then      ; IPCC latitude 2D coordinate
+                    arr@lat2d = c[0]->lat
+                 end if
+                 if (any(strarr.eq."longitude")) then      ; NSIDC longitude 2D coordinate
+                    arr@lon2d = c[0]->longitude
+                 end if
+                 if (any(strarr.eq."latitude")) then      ; NSIDC latitude 2D coordinate
+                    arr@lat2d = c[0]->latitude
+                 end if
+                 delete(strarr)
+;              else
+;                 print("2D coordinates for ice data are not detected")
+              end if  
+              dir_name = str_split(tfiles(0),"/")
+              if (dimsizes(dir_name).ge.8) then
+                 dir_name_new = "/"+str_join(dir_name(:4),"/")+"/fx/areacello/"+dir_name(7)+"/r0i0p0/*.nc"
+                 ufile = systemfunc("ls "+dir_name_new+" 2> /dev/null")   ; /dev/null suppresses all standard error output
+                 delete(dir_name_new)
+              else
+                 ufile = new(1,string)
+              end if
+              if (.not.ismissing(ufile)) then
+                 d = addfile(ufile,"r")
+                 arr@area = totype(d->areacello,typeof(arr))
+                 dimQ = dimsizes(arr)
+                 if (dimsizes(ndtooned(arr@area)).ne.(dimQ(1)*dimQ(2))) then    ; the dimension sizes of areacello 
+                    delete(arr@area)                                  ; do not match sizes of area j,i dimensions 
+                 end if
+                 delete(dimQ)
+              end if
+
+              if (isfilevar(c[0],"AREA")) then    ; check to see if there is an AREA array present and if so use it
+                 areaT = c[0]->AREA
+                 if (areaT@units.eq."km^2") then
+                    area_unit_km2_to_m2 = True
+                    areaT = areaT*1000000.
+                    areaT@units = "m^2"
+                 end if
+                 areaT@_FillValue = 1.e20
+                 arr@area = totype(areaT,typeof(arr))
+                 if (isatt(areaT,"pole_hole_area")) then    ; format of ystart, yend, value, ystart, yend, value
+                    if (isvar("area_unit_km2_to_m2")) then
+                       extra_area = tofloat(areaT@pole_hole_area)
+                       extra_area(2::3) = extra_area(2::3)*1000000.   ; convert pole hole area from km^2->m^2
+                       arr@pole_hole_area = totype(extra_area,typeof(arr))
+                       delete(extra_area)
+                    else
+                       arr@pole_hole_area = totype(areaT@pole_hole_area,typeof(arr))
+                    end if
+                 end if
+                 delete(areaT)
+              end if
+              delete([/dir_name,ufile/]) 
+           end if   
+           break
+        end if
+     end do     
+     nfil = dimsizes(tfiles)
+     cpathS = stringtochar(tfiles(0))      
+     cpathE = stringtochar(tfiles(nfil-1)) 
+     ncharS = dimsizes(cpathS)
+     ncharE = dimsizes(cpathE)
+     sydata = stringtointeger(charactertostring(cpathS(ncharS-17:ncharS-14)))
+     smdata = stringtointeger(charactertostring(cpathS(ncharS-13:ncharS-12)))
+     eydata = stringtointeger(charactertostring(cpathE(ncharE-10:ncharE-7)))
+     emdata = stringtointeger(charactertostring(cpathE(ncharE-6:ncharE-5)))      
+     delete([/cpathS,cpathE,ncharS,ncharE,nfil,ta,cpath0/])
+  end if
+
+  if (isvar("arr").eq.False) then
+     print("Variable ("+vn+") not found. Examine input file "+zpath+". Creating empty array and continuing")
+     arr = create_empty_array(yearS,yearE,1,12,"time_lat_lon")
+  end if
+
+  if (.not.isatt(arr,"area")) then   ; calculate grid cell areas manually (not implemented)
+;     print("Grid cell areas not found.")
+  end if
+
+  if (isshort(arr)) then
+     arrT = short2flt(arr)
+     delete(arr)
+     arr = arrT
+     delete(arrT)
+  end if
+  if (.not.isatt(arr,"_FillValue")) then     ; assign _FillValue if one is not present
+     if (isatt(arr,"missing_value")) then
+        arr@_FillValue = arr@missing_value
+     else
+        arr@_FillValue = default_fillvalue(typeof(arr)) 
+     end if
+  end if
+  arr!0 = "time"
+  arr!1 = "j"
+  arr!2 = "i"
+
+  if (.not.isatt(arr,"lat2d")) then     ; if latitudes are 1D, make sure latitudes run from south to north +
+     if (arr&j(0).ge.0) then            ; calculate area of 1D lat/lon arrays
+        tarr = arr(:,::-1,:)
+        delete(arr)
+        arr = tarr
+        delete(tarr)
+     end if
+
+     if (min(arr&i).ge.0.and.max(arr&i).le.360) then
+        fctr = 111120   ; how many meters per degree of latitude (approximate)
+	       pi=4.*atan(1.0)
+        rad=(pi/180.)
+        lat = tofloat(arr&j)
+	       dimlat = dimsizes(lat)
+	       latr = new(dimlat,typeof(lat))
+	       do gg = 0,dimlat-1
+	          if (gg.eq.0) then
+		            latr(gg) = abs(-90-(lat(1)+lat(0))/2.)
+		         end if
+	          if (gg.ge.1.and.gg.lt.dimlat-1) then
+	             latr(gg) = abs((lat(gg-1)+lat(gg))/2. - (lat(gg)+lat(gg+1))/2.)
+		         end if
+		         if (gg.eq.dimlat-1) then
+		            latr(gg) = abs(90 - (lat(dimlat-2)+lat(dimlat-1))/2.)
+		         end if
+	       end do
+        lon = tofloat(arr&i)
+	       dimlon = dimsizes(lon)
+	       lonr = new(dimlon,typeof(lon))
+        do gg = 0,dimlon-1
+	          if (gg.eq.0) then
+		            lonr(gg) = abs( (lon(1)+lon(0))/2. - (((lon(dimlon-1)+(lon(0)+360))/2.)-360) )
+		         end if
+		         if (gg.ge.1.and.gg.lt.dimlon-1) then
+			       	   lonr(gg) = abs((lon(gg)+lon(gg+1))/2. - (lon(gg-1)+lon(gg))/2.)
+		         end if
+		         if (gg.eq.dimlon-1) then
+		            lonr(gg) = abs(((lon(dimlon-1)+(lon(0)+360))/2.) - (lon(gg-1)+lon(gg))/2.)
+		         end if		
+	       end do
+        area = tofloat(arr(0,:,:))
+	       area = area@_FillValue
+	       area@long_name = "Area of grid box"
+	       area@units = "m2"
+
+;        printVarSummary(area)
+	       do ff = 0,dimlat-1
+	          do gg = 0,dimlon-1
+		            area(ff,gg) = (/ (fctr*latr(ff))*(cos(rad*lat(ff))*lonr(gg)*fctr) /)     ; cosine weighting
+		         end do
+	       end do
+;        print("Total area = "+sum(area))
+        arr@area = totype(area,typeof(arr))
+        delete([/lat,lon,latr,lonr,area,fctr,pi,rad,dimlat,dimlon/])		
+     end if
+  end if
+
+  if (.not.isatt(arr,"is_all_missing")) then    ; erase data in hemisphere not specified via vn
+     if (isatt(arr,"lat2d")) then
+        tlat2 = conform(arr,arr@lat2d,(/1,2/))
+        tlon2 = conform(arr,arr@lon2d,(/1,2/))
+        if (vn.eq."aice_nh") then
+           arr = where(tlat2.ge.0,arr,arr@_FillValue)
+        end if
+        if (vn.eq."aice_sh") then
+           arr = where(tlat2.lt.0,arr,arr@_FillValue)
+        end if
+        delete([/tlat2,tlon2/])
+     else
+        if (vn.eq."aice_nh") then
+           arr(:,{:-1.},:) = arr@_FillValue
+        end if
+        if (vn.eq."aice_sh") then
+           arr(:,{0:},:) = arr@_FillValue
+        end if
+     end if
+  end if
+     
+  if (yearS.lt.sydata.or.yearE.gt.eydata) then
+     print("Requested "+yearS+"-"+yearE+" time span is outside the input file "+zpath+" time span of "+sydata+"-"+eydata+"")
+     print("Setting array to all missing")
+     delete(arr)
+     arr = create_empty_array(yearS,yearE,smdata,emdata,"time_lat_lon")
+     sydata = yearS     ; assign these variables based on yearS/yearE provided in namelist. Doesn't matter 
+     eydata = yearE     ; as data array is totally missing..  
+     smdata = 1
+     emdata = 12          
+  else
+     timeT =  yyyymm_time(sydata, eydata, "integer")
+     time = timeT({sydata*100+smdata:eydata*100+emdata})  
+     if (iscoord(arr,"time")) then
+        delete(arr&time)
+     end if
+     dimz = dimsizes(arr)
+     if (dimz(0).eq.dimsizes(time)) then
+        arr&time = time
+     else
+        print("Possible mismatch detected between time specified in file name and file variables, setting array to missing")
+        print("File = "+zpath)
+        print("Read from file name: "+min(time)+"-"+max(time))        
+        delete(arr)
+        arr = create_empty_array(yearS,yearE,smdata,emdata,"time_lat_lon")
+        sydata = yearS     ; assign these variables based on yearS/yearE provided in namelist. Doesn't matter 
+        eydata = yearE     ; as data array is totally missing..  
+        smdata = 1
+        emdata = 12 
+     end if
+     delete(dimz)
+     delete([/time,timeT/])
+  end if
+  delete([/sydata,smdata,eydata,emdata/])
+  farr = arr({yearS*100+1:yearE*100+12},:,:)  
+;  printVarSummary(farr)
+  delete(arr)     
+  
+  mocheck = (/(yearS*100+1)-min(farr&time),(yearE*100+12) - max(farr&time)/)
+  if (any(mocheck.ne.0)) then    ; previously: if (mod(dimsizes(farr&time),12).ne.0) then
+     if (mocheck(0).ne.0) then
+        print("First requested year is incomplete")
+     end if
+     if (mocheck(1).ne.0) then
+        print("Last requested year is incomplete")
+     end if
+     print("Incomplete data year(s) requested for file "+zpath+", printing out time and creating blank array")
+     print("Time requested: "+yearS+"-"+yearE)
+     print("From file: Times present from "+min(farr&time)+"-"+max(farr&time))
+     delete(farr)
+     farr = create_empty_array(yearS,yearE,1,12,"time_lat_lon")
+  end if
+  delete(mocheck)
+
+  if (farr@units.eq."0-1".or.farr@units.eq."1") then    ; GFDL units, NSIDC units
+     farr = (/ farr*100. /)
+     farr@units = "%"
+  end if  
+  
+  date = farr&time         ; switch time to be CF-conforming
+  delete(farr&time)
+  yyyy = date/100
+  mm = date-(yyyy*100)
+  days = (days_in_month(yyyy,mm))/2
+  hms  = days
+  hms = 0   ; hours, minutes, seconds all the same (=0)
+  time = cd_inv_calendar(yyyy,mm,days,hms,hms,hms,"months since "+min(yyyy)+"-01-15 00:00:00",0)
+  time@long_name = "Time"
+  time@standard_name = "time"
+  time!0 = "time"
+  time&time = time
+  farr&time = time
+  delete([/time,yyyy,mm,days,hms,date/])
+  return(farr)
+end
 ;=================================================================================================
 ;  alters the formatting of the Y-axis
 ;
 ;  not currently used
 ;
+undef("y_axis_check")
 function y_axis_check(temparr:numeric,tempres:logical)
 local temparr,tempres,minval,maxval
 begin
@@ -865,6 +953,7 @@ end
 ;=================================================================================================
 ; Check that the user-specified climatological period is within the time range of the data
 ;
+undef("check_custom_climo")
 procedure check_custom_climo(mn:string,startyear:numeric,endyear:numeric,climo_startyear:numeric,climo_endyear:numeric)
 local startyear,endyear,climo_startyear,climo_endyear,mn
 begin  
@@ -884,6 +973,7 @@ end
 ; did. To compensate for this, check the NCL version number, and use isfilepresent/fileexists when 
 ; appropriate.
 ;
+undef("isfilepresent2")
 function isfilepresent2(fdpres:string)
 local nclver, num0, num1, ra
 begin
@@ -918,6 +1008,7 @@ begin
 end
 ;=================================================================================================
 ;
+undef("table_link_setup")
 function table_link_setup(ipath:string,iname:string,ltxt:string)
 ; image name, along with link text
 local ipath, iname, ltxt, otxt, quote
@@ -931,3 +1022,146 @@ begin
   return(otxt)
   delete([/ipath,iname,ltxt,otxt,quote/])
 end
+;=================================================================================================
+undef ("gsn_panel2")
+procedure gsn_panel2(wksp:graphic,plotp:graphic,lpl:numeric,panelres:logical)
+; checks to make sure at least one image is present in plot before paneling,
+; thereby eliminating error message: 
+; Error: gsn_panel: all of the plots passed to gsn_panel appear to be invalid
+
+local wksp, plotp, lpl, panelres
+begin
+  if (.not.all(ismissing(plotp))) then
+     gsn_panel(wksp,plotp,lpl,panelres)
+  end if  
+end
+;=================================================================================================
+undef ("eofunc_north2")
+function eofunc_north2(eval[*]:numeric, N[1]:integer, prinfo[1]:logical)
+;
+; North, G.R. et al (1982): Sampling Errors in the Estimation of Empirical Orthogonal Functions.
+; Mon. Wea. Rev., 110, 699–706.
+; doi: http://dx.doi.org/10.1175/1520-0493(1982)110<0699:SEITEO>2.0.CO;2
+;
+; Usage after 'eofunc'. Here ntim was used,  
+;             prinfo = True
+;             sig    = eval_north(eof@eval, ntim, prinfo)
+;
+; Copied directly from v6.3.0 contributed.ncl for use in the package regardless of NCL version.
+;
+local neval, dlam, low, high, sig, n
+begin
+  neval   = dimsizes(eval)
+  if (neval.eq.1)
+      print("eofunc_north: neval=1, no testing can be performed")
+      sig = True 
+      sig@long_name = "EOF separation is not testable N=1"
+      sig@N         =  N
+      return(sig)
+  end if
+
+  dlam    = eval * sqrt(2.0/N)   ; eq 24
+  low     = eval-dlam
+  high    = eval+dlam
+
+  sig     = new(dimsizes(eval), logical)
+  sig = False  ; default is not significantly separated
+
+; first and last eigenvalues are special cales
+
+  if (eval(0).gt.high(1)) then
+      sig(0) = True
+  end if
+  if (eval(neval-1).lt.low(neval-2)) then
+      sig(neval-1) = True
+  end if
+
+; loop over other eignvalues
+
+  if (N.gt.2) then
+      do n=1,neval-2
+         if (eval(n).lt.low(n-1) .and. eval(n).gt.high(n+1)) then
+             sig(n) = True
+         end if
+      end do
+  end if
+
+  if (prinfo) then
+      print(dlam+"   "+low+"   "+eval+"   "+high+"  "+sig)
+  end if
+
+  sig@long_name = "EOF separation"
+  sig@N         =  N
+  return(sig)
+end
+;=================================================================================================
+; Standardize and set attributes for array. Remove NCL-added and superfluous attributes, 
+; set missing_value equal to _FillValue, provide options to set long_name, units, and comment_cvdp 
+; attributes. For last three inputs "" means leave as set and "delete" means delete the attribute.
+; This function will be used immediately prior to an array being written to a netCDF file.
+;
+undef("set_varAtts")
+function set_varAtts(zarr:numeric,loname:string,uni:string,com_cvdp:string)
+
+local zarr,loname,uni,com_cvdp
+begin
+  if (isatt(zarr,"anomaly_op_ncl")) then
+     delete(zarr@anomaly_op_ncl)
+  end if
+  if (isatt(zarr,"average_op_ncl")) then
+     delete(zarr@average_op_ncl)
+  end if
+  if (isatt(zarr,"cell_measures")) then
+     delete(zarr@cell_methods)
+  end if
+  if (isatt(zarr,"cell_methods")) then
+     delete(zarr@cell_methods)
+  end if
+  if (isatt(zarr,"lonFlip")) then
+     delete(zarr@lonFlip)
+  end if
+  if (isatt(zarr,"runave_op_ncl")) then
+     delete(zarr@runave_op_ncl)
+  end if
+  if (isatt(zarr,"stddev_op_ncl")) then
+     delete(zarr@stddev_op_ncl)
+  end if
+  if (isatt(zarr,"sum_op_ncl")) then
+     delete(zarr@sum_op_ncl)
+  end if
+  if (isatt(zarr,"time")) then
+     delete(zarr@time)
+  end if
+  if (isatt(zarr,"wgt_areaave_op_ncl")) then
+     delete(zarr@wgt_areaave_op_ncl)
+  end if
+
+  if (isatt(zarr,"_FillValue")) then      ; set missing_value = _FillValue
+     zarr@missing_value = zarr@_FillValue
+  end if
+  
+  if (loname.eq."delete") then
+     delete(zarr@long_name)
+  else
+     if (loname.ne."") then    ; "" = leave as is
+        zarr@long_name = loname
+     end if
+  end if
+  if (uni.eq."delete") then
+     delete(zarr@units)
+  else
+     if (uni.ne."") then    ; "" = leave as is
+        zarr@units = uni
+     end if
+  end if
+  if (com_cvdp.eq."delete") then
+     delete(zarr@comment_cvdp)
+  else
+     if (com_cvdp.ne."") then    ; "" = leave as is
+        zarr@comment_cvdp = com_cvdp
+     end if
+  end if
+
+  return(zarr)
+end
+

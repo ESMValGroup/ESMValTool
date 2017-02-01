@@ -79,12 +79,11 @@ begin
                      "A_righ_ma", \  ; authors
                      "A_kais_ch", \  ; contributors
                      (/"D_lauer05acp", "D_aquila11gmd"/), \  ; diag_ref
-                     (/"E_birmili01jgr",  "E_ucnpacific", "E_baumgardner08erl",    \
-                       "E_schwarz06jgr", "E_schwarz08jgr", "E_schwarz08jgr",       \
-                       "E_schwarz13grl", "E_minikin03grl", "E_schroeder02jgr",     \
-                       "E_petzold02jgr", "E_dahlkoetter14acp", "E_weinzierl09tel", \
-                       "E_saltrace", "E_access2", "E_dc3", "E_samum",              \
-                       "E_saltrace2" /), \  ; obs_ref
+                     (/"E_access2", "E_cirrus", "E_concert", "E_cr-ave", \
+                       "E_dc3", "E_hippo", "E_inca", "E_lace1", "E_lace2", \
+                       "E_saltrace1", "E_saltrace2", "E_samum1", \
+                       "E_samum2", "E_tc4", "E_texas", \
+                       "E_ucnpacific"/), \  ; obs_ref
                      (/"P_esmval", "P_dlrveu", "P_dlrveu2"/))  ; proj_acknow
 
     ;; Check for valid fields
@@ -112,6 +111,25 @@ begin
                       "required")
         end if
         l_cloud = True
+    end if
+
+    ;; Check if a summary plot (all flights together) is desired
+    l_summary = False
+    if (isatt(diag_script_info, "summary_plot")) then
+        if (diag_script_info@summary_plot) then
+            l_summary = True
+            if (isatt(diag_script_info, "exclude_flights")) then
+                exclude_flights = diag_script_info@exclude_flights
+            end if
+            nmax = 10000
+        end if
+    end if
+
+    ;; Not compatible with size distributions
+    if (l_sizedist.and.l_summary) then
+        l_summary = False
+        info_output("Summary plot available only for vertical profile, " + \
+                    "ignoring", verbosity, 1)
     end if
 
     ;; Check required diag_script_info attributes
@@ -146,7 +164,7 @@ begin
     ;; Check observational data
     obsfiles = systemfunc("ls " + diag_script_info@datapath + \
                           "/OBS_" + diag_script_info@campaign + \
-                          "_campaign_*_T0M_" + varobs + ".nc")
+                          "_campaign_*_T0M_" + varobs + "_*.nc")
     if (all(ismissing(obsfiles))) then
         info_output(diag_script_info@campaign + \
                     " observational data for " + varobs + \
@@ -175,16 +193,27 @@ begin
 
     ;; Define the specific dimension name
     if (l_sizedist) then
-        dimname = "diam"
+        dimname = "diam"  ;; for size distributions
     else
-        dimname = "plev"
+        dimname = "plev"  ;; for vertical profiles
+    end if
+
+    ;; Set number of flights for the summary array
+    if (l_summary) then
+        nsummary = dimsizes(obsfiles)
+        if (isdefined("exclude_flights")) then
+            nsummary = nsummary - dimsizes(exclude_flights)
+        end if
     end if
 
     ;; Loop over available observation files
+    icp = 0
     do cpID = 0, dimsizes(obsfiles) - 1
 
         f = addfile(obsfiles(cpID), "r")
         cname = str_get_field(systemfunc("basename " + obsfiles(cpID)), 4, "_")
+
+        info_output("Campaign: " + cname, verbosity, 1)
 
         ;; Define observations array
         if (isfilevar(f, "case")) then
@@ -202,6 +231,12 @@ begin
         obser_arr!1 = "statistic"
         obser_arr&statistic = stats
 
+        ;; Define observations summary array
+        if (l_summary.and..not.isdefined("obser_all")) then
+            obser_all = new((/nsummary, dimsizes(stats), \
+                                  dimsizes(f->$dimname$)/), float)
+        end if
+
         do st = 0, dimsizes(stats) - 1
             var = varobs + "_" + stats(st)
             if (isfilevar(f, var)) then
@@ -212,6 +247,19 @@ begin
                 end if
             end if
         end do
+
+        ;; Add to the summary array
+        if (l_summary) then
+            if (.not.isdefined("exclude_flights")) then
+                obser_all(icp, :, :) = obser_arr(0, :, :)
+                icp = icp + 1
+            else
+                if (all(cname.ne.exclude_flights)) then
+                    obser_all(icp, :, :) = obser_arr(0, :, :)
+                    icp = icp + 1
+                end if
+            end if
+        end if
 
         ;; Read the period/month attribute
         if (isatt(f, "period")) then
@@ -451,33 +499,37 @@ begin
                 model_arr&$dimname$ = dim2
             end if
             copy_VarAtts(obser_arr, model_arr)
+            if (l_summary.and..not.isdefined("model_all")) then
+                model_all = model_arr
+                model1d_all = new((/dim_MOD, dimsizes(dim2), nmax/), float)
+            end if
 
             ;; Calculate relevant statistics
             rank = dimsizes(dimsizes(amodel))
             dpos = ind(dimname.eq.getvardims(amodel))
-            do ii = 0, dimsizes(dim2) - 1
+            do kk = 0, dimsizes(dim2) - 1
                 if (rank.eq.4) then
                     if (dpos.eq.0) then
-                        model1d = ndtooned(amodel(ii, :, :, :))
+                        model1d = ndtooned(amodel(kk, :, :, :))
                     end if
                     if (dpos.eq.1) then
-                        model1d = ndtooned(amodel(:, ii, :, :))
+                        model1d = ndtooned(amodel(:, kk, :, :))
                     end if
                 end if
                 if (rank.eq.3) then
                     if (dpos.eq.0) then
-                        model1d = ndtooned(amodel(ii, :, :))
+                        model1d = ndtooned(amodel(kk, :, :))
                     end if
                     if (dpos.eq.1) then
-                        model1d = ndtooned(amodel(:, ii, :))
+                        model1d = ndtooned(amodel(:, kk, :))
                     end if
                 end if
                 if (rank.eq.2) then
                     if (dpos.eq.0)
-                        model1d = amodel(ii, :)
+                        model1d = amodel(kk, :)
                     end if
                     if (dpos.eq.1) then
-                        model1d = amodel(:, ii)
+                        model1d = amodel(:, kk)
                     end if
                 end if
                 if (rank.eq.1) then
@@ -494,10 +546,26 @@ begin
                     continue
                 end if
 
+                ;; Add to the summary array
+                if (l_summary) then
+                    if (all(ismissing(model1d_all(mID, kk, :)))) then
+                        i1 = 0
+                    else
+                        i1 = max(ind(.not.ismissing(model1d_all(mID, kk, :))))
+                        i1 = i1 + 1
+                    end if
+                    i2 = i1 + dimsizes(model1d) - 1
+                    if (i2.gt.nmax - 1) then
+                        error_msg("f", "aerosol_profiles.ncl", "", \
+                                  " array size too small, increase nmax")
+                    end if
+                    model1d_all(mID, kk, i1:i2) = model1d
+                end if
+
                 ;; Calculate statistics
-                do st = 0, dimsizes(model_arr&statistic) - 1
-                    model_arr(mID, st, ii) = \
-                        distrib_stats(model1d, model_arr&statistic(st))
+                do st = 0, dimsizes(stats) - 1
+                    model_arr(mID, st, kk) = \
+                        distrib_stats(model1d, stats(st))
                 end do
                 delete(model1d)
             end do
@@ -535,10 +603,10 @@ begin
 
         ;; Convert units for plotting (if required)
         if (isatt(variable_info, "plot_units")) then
-            idN = ind(model_arr&statistic.ne."N")
+            idN = ind(stats.ne."N")
             model_arr(:, idN, :) = \
                 convert_units(model_arr(:, idN, :), variable_info@plot_units)
-            idN = ind(obser_arr&statistic.ne."N")
+            idN = ind(stats.ne."N")
             obser_arr(:, idN, :) = \
                 convert_units(obser_arr(:, idN, :), variable_info@plot_units)
         end if
@@ -582,24 +650,93 @@ begin
         if (isatt(variables(0), "profile_min")) then
             if (l_sizedist) then
                 model_arr@res_trYMinF = variable_info@profile_min
+                if (l_summary) then
+                    model_all@res_trYMinF = variable_info@profile_min
+                end if
             else
                 model_arr@res_trXMinF = variable_info@profile_min
+                if (l_summary) then
+                    model_all@res_trXMinF = variable_info@profile_min
+                end if
             end if
         end if
         if (isatt(variables(0), "profile_max")) then
             if (l_sizedist) then
                 model_arr@res_trYMaxF = variable_info@profile_max
+                if (l_summary) then
+                    model_all@res_trYMaxF = variable_info@profile_max
+                end if
             else
                 model_arr@res_trXMaxF = variable_info@profile_max
+                if (l_summary) then
+                    model_all@res_trXMaxF = variable_info@profile_max
+                end if
             end if
         end if
 
-        plot = aerosol_profile(wks, model_arr, obser_arr, varobs)
+        if (l_sizedist) then
+            plot = aerosol_sizedist(wks, model_arr, obser_arr, varobs)
+        else
+            plot = aerosol_profile(wks, model_arr, obser_arr, varobs)
+        end if
         delete(model_arr)
         delete(obser_arr)
 
         info_output("gv " + plot_file + "." + file_type + " &", verbosity, 1)
 
     end do  ; observations loop
+
+    ;; Create summary plot
+    if (l_summary) then
+
+        info_output("Creating summary plot with all campaigns", verbosity, 1)
+        info_output("Number of campaigns: " + nsummary, verbosity, 1)
+        if (isdefined("exclude_flights")) then
+            info_output("Excluded campaigns: ", verbosity, 1)
+            do ii = 0, dimsizes(exclude_flights) - 1
+                info_output("  - " + exclude_flights(ii), verbosity, 1)
+            end do
+        end if
+
+        ;; Calculate statistics
+        do kk = 0, dimsizes(dim2) - 1
+            do mID = 0, dimsizes(models@name) - 1
+                do st = 0, dimsizes(stats) - 1
+                    maxid = \
+                        max(ind(.not.ismissing(model1d_all(mID, kk, :))))
+                    model1d = model1d_all(mID, kk, 0:maxid)
+                    model_all(mID, st, kk) = \
+                        distrib_stats(model1d, stats(st))
+                    delete(model1d)
+                end do
+            end do
+        end do
+
+        ;; Convert level units [Pa] --> [hPa]
+        model_all&plev = model_all&plev / 100.
+        model_all&plev@units = "hPa"
+        obser_all&plev = obser_all&plev / 100.
+        obser_all&plev@units = "hPa"
+
+        ;; Convert units for plotting (if required)
+        if (isatt(variable_info, "plot_units")) then
+            idN = ind(stats.ne."N")
+            model_all(:, idN, :) = \
+                convert_units(model_all(:, idN, :), variable_info@plot_units)
+            idN = ind(stats.ne."N")
+            obser_all(:, idN, :) = \
+                convert_units(obser_all(:, idN, :), variable_info@plot_units)
+        end if
+
+        model_all@res_tiMainString = diag_script_info@campaign
+        plot_file = output_dir + diag_script_info@campaign + "_ALL_" + \
+            "vertprof_" + varobs
+        wks = gsn_open_wks(file_type, plot_file)
+        plot = aerosol_profile(wks, model_all, obser_all, varobs)
+        delete(model_all)
+        delete(obser_all)
+
+    end if
+
 
 end

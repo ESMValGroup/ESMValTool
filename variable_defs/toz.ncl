@@ -11,8 +11,11 @@ variable_info@units = "DU"
 variable_info@colormap = "BlAqGrYeOrReVi200"
 variable_info@acp_cnlvl = fspan(150., 500., 15)
 variable_info@map_ref_Levels = ispan(150, 500, 15)
-variable_info@map_diff_Levels = ispan(-60, 60, 5)
+variable_info@map_diff_Levels = ispan(-30, 60, 10)
+variable_info@eyring13_cnLevels = fspan(150., 500., 15)
 
+variable_info@eyring13_cnlvl = fspan(150., 475., 14)
+variable_info@eyring13_reflvl= fspan(150, 475, 14)
 ;;#############################################################################
 load "interface_scripts/data_handling.ncl"
 load "interface_scripts/constants.ncl"
@@ -120,7 +123,8 @@ begin
         o3nd = tro3 * tofloat(dp) / (Grav * MWair / MWo3)
         delete(tro3)
         delete(dp)
-        dum(itim, :, :) = (/tofloat(dim_sum_n(o3nd, 0) / DU)/)
+;        dum(itim, :, :) = (/tofloat(dim_sum_n(o3nd, 0) / DU)/)
+        dum(itim, :, :) = tofloat(dim_sum_n(o3nd, 0) / DU)
         delete(o3nd)
 
     end do

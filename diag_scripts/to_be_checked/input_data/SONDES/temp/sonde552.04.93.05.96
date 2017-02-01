@@ -1,0 +1,72 @@
+STATION CODE 552   Bermuda   LOCF=0.8   HICF=1.2  (04/93 - 05/96)
+PRESSURE  JAN   FEB   MAR   APR   MAY   JUN   JUL   AUG   SEP   OCT   NOV   DEC  
+ 
+               OZONE MONTHLY MEAN OVER ALL SOUNDINGS IN MICRO-MB
+1000        NA    NA    NA  46.5  46.8    NA  19.8  22.6    NA    NA    NA    NA
+ 900        NA    NA    NA  46.9  48.0    NA  22.5  26.1    NA    NA    NA    NA
+ 800        NA    NA    NA  46.3  47.3    NA  26.3  30.1    NA    NA    NA    NA
+ 700        NA    NA    NA  41.9  43.3    NA  30.8  32.3    NA    NA    NA    NA
+ 600        NA    NA    NA  36.9  39.9    NA  35.4  33.1    NA    NA    NA    NA
+ 500        NA    NA    NA  31.7  36.7    NA  36.6  34.8    NA    NA    NA    NA
+ 400        NA    NA    NA  27.2  31.2    NA  36.4  28.2    NA    NA    NA    NA
+ 300        NA    NA    NA  24.5  25.0    NA  27.9  21.8    NA    NA    NA    NA
+ 250        NA    NA    NA  22.8  23.7    NA  23.6  17.8    NA    NA    NA    NA
+ 200        NA    NA    NA  26.5  28.1    NA  20.1  15.8    NA    NA    NA    NA
+ 150        NA    NA    NA  31.6  36.5    NA  22.9  13.6    NA    NA    NA    NA
+ 125        NA    NA    NA  30.5  34.8    NA  30.7  18.8    NA    NA    NA    NA
+ 100        NA    NA    NA  33.9  44.7    NA  35.1  25.8    NA    NA    NA    NA
+  90        NA    NA    NA  42.7  53.7    NA  43.6  33.6    NA    NA    NA    NA
+  80        NA    NA    NA  54.8  66.8    NA  52.8  43.0    NA    NA    NA    NA
+  70        NA    NA    NA  70.0  77.6    NA  59.7  54.4    NA    NA    NA    NA
+  60        NA    NA    NA  88.3  95.9    NA  73.4  71.0    NA    NA    NA    NA
+  50        NA    NA    NA 111.7 124.8    NA  97.1  91.5    NA    NA    NA    NA
+  40        NA    NA    NA 144.8 142.4    NA 126.0 115.2    NA    NA    NA    NA
+  30        NA    NA    NA 145.4 152.4    NA 148.1 139.6    NA    NA    NA    NA
+  20        NA    NA    NA 132.7 142.2    NA 144.9 142.5    NA    NA    NA    NA
+  10        NA    NA    NA  90.4  93.3    NA  87.6  85.4    NA    NA    NA    NA
+               NUMBER OF SOUNDINGS
+1000        NA    NA    NA    52    35    NA    22    17    NA    NA    NA    NA
+ 900        NA    NA    NA    52    36    NA    23    19    NA    NA    NA    NA
+ 800        NA    NA    NA    52    36    NA    23    19    NA    NA    NA    NA
+ 700        NA    NA    NA    51    36    NA    23    19    NA    NA    NA    NA
+ 600        NA    NA    NA    51    36    NA    23    19    NA    NA    NA    NA
+ 500        NA    NA    NA    51    36    NA    23    19    NA    NA    NA    NA
+ 400        NA    NA    NA    50    36    NA    23    19    NA    NA    NA    NA
+ 300        NA    NA    NA    50    36    NA    23    19    NA    NA    NA    NA
+ 250        NA    NA    NA    50    36    NA    23    19    NA    NA    NA    NA
+ 200        NA    NA    NA    50    36    NA    23    19    NA    NA    NA    NA
+ 150        NA    NA    NA    49    36    NA    23    18    NA    NA    NA    NA
+ 125        NA    NA    NA    49    36    NA    22    18    NA    NA    NA    NA
+ 100        NA    NA    NA    49    36    NA    22    18    NA    NA    NA    NA
+  90        NA    NA    NA    49    36    NA    22    18    NA    NA    NA    NA
+  80        NA    NA    NA    49    36    NA    22    18    NA    NA    NA    NA
+  70        NA    NA    NA    49    36    NA    22    18    NA    NA    NA    NA
+  60        NA    NA    NA    49    36    NA    22    18    NA    NA    NA    NA
+  50        NA    NA    NA    49    36    NA    22    18    NA    NA    NA    NA
+  40        NA    NA    NA    48    36    NA    22    17    NA    NA    NA    NA
+  30        NA    NA    NA    48    36    NA    18    17    NA    NA    NA    NA
+  20        NA    NA    NA    48    35    NA    17    17    NA    NA    NA    NA
+  10        NA    NA    NA    41    30    NA    12    16    NA    NA    NA    NA
+               STANDARD DEVIATION FOR EACH MONTH OVER ALL SOUNDINGS
+1000        NA    NA    NA  10.6  13.4    NA   6.6  11.8    NA    NA    NA    NA
+ 900        NA    NA    NA   8.8  11.9    NA   7.4  11.2    NA    NA    NA    NA
+ 800        NA    NA    NA   8.8  10.0    NA   6.1  11.7    NA    NA    NA    NA
+ 700        NA    NA    NA   6.3   8.0    NA   7.5   8.9    NA    NA    NA    NA
+ 600        NA    NA    NA   5.6   5.1    NA   9.1   7.4    NA    NA    NA    NA
+ 500        NA    NA    NA   6.3   9.2    NA  11.8   5.3    NA    NA    NA    NA
+ 400        NA    NA    NA   5.6   7.8    NA  11.5   5.1    NA    NA    NA    NA
+ 300        NA    NA    NA  12.6   8.0    NA  10.5   6.1    NA    NA    NA    NA
+ 250        NA    NA    NA  13.9  12.9    NA   9.6   5.7    NA    NA    NA    NA
+ 200        NA    NA    NA  16.9  22.5    NA  10.3   8.0    NA    NA    NA    NA
+ 150        NA    NA    NA  17.7  21.9    NA  10.9   3.8    NA    NA    NA    NA
+ 125        NA    NA    NA  16.6  21.1    NA  14.4   7.6    NA    NA    NA    NA
+ 100        NA    NA    NA  17.5  19.4    NA   9.9   4.7    NA    NA    NA    NA
+  90        NA    NA    NA  21.5  20.2    NA   8.2   7.5    NA    NA    NA    NA
+  80        NA    NA    NA  23.8  16.3    NA  10.3   9.2    NA    NA    NA    NA
+  70        NA    NA    NA  23.2  21.2    NA   7.8   5.1    NA    NA    NA    NA
+  60        NA    NA    NA  26.0  19.7    NA   5.7   6.6    NA    NA    NA    NA
+  50        NA    NA    NA  24.1  15.9    NA  10.5   6.7    NA    NA    NA    NA
+  40        NA    NA    NA  14.5   7.8    NA   7.1   5.3    NA    NA    NA    NA
+  30        NA    NA    NA   8.5   7.3    NA   5.2  10.0    NA    NA    NA    NA
+  20        NA    NA    NA   8.6   6.7    NA   8.9  10.8    NA    NA    NA    NA
+  10        NA    NA    NA   6.6   7.9    NA   9.8  10.6    NA    NA    NA    NA

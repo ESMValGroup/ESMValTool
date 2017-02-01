@@ -14,14 +14,13 @@
 ;; Download and processing instructions
 ;;    Specify the time range of the data as YEAR1-YEAR2 below, considering only
 ;;    complete years (Jan to Dec).
-;;    Since raw data on pressure levels and for surface have the file name and
+;;    Since raw data on pressure levels and for surface have the same file and
 ;;    variable name, surface data in the raw input has to be manually renamed
 ;;    appending a suffix -surface (e.g., for "air" --> "air-surf" both for the
 ;;    file name and for the data itself (the latter can be done with cdo
 ;;    chname).
 ;;
 ;; Caveats
-;;    Field and time range is expected to be the same for all variables.
 ;;
 ;; Modification history
 ;;    20140128-A_righ_ma: written.
@@ -46,7 +45,7 @@ begin
 
     ;; Period
     YEAR1 = 1948
-    YEAR2 = 2012
+    YEAR2 = 2015
 
     ;; Selected variable (standard name)
     VARS = (/"ta", "zg", "hus", "ua", "va", "tas"/) ;, "clt"/)
@@ -257,7 +256,7 @@ begin
 
         ;; Outfile
         fout = OUTDIR + "OBS_" + OBSNAME + "_reanaly_1_" + FIELD + \
-            "_" + VARS(vID) + ".nc"
+            "_" + VARS(vID) + "_" + YEAR1 + "01-" + YEAR2 + "12.nc"
 
         ;; Write variable
         write_nc(fout, VARS(vID), output, gAtt)

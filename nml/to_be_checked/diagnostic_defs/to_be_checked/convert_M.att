@@ -1,0 +1,128 @@
+# 2008-06-03  C. Fischer
+# 2008-06-27  CAF  Changed order of variables and plot types
+# 2008-07-15  CAF creating test case for Hisako Shiona
+# 2008-12-01  CAF convert monthly mean files
+#This is a test diagnostic package attribute file
+#list of variables and plot types.
+# vertconplot_plev    lat vs height contour plot   3d data
+# zonlnplot           lat vs height line plot      2d data
+# plrconplot          polor contour plot           2d data
+# surfconplot          surface contour plot        2d data
+# vertconplot         mystery
+# seacycplot          line plot of seasonal cycle  2d data
+# anncycplot          seasonal cycle               2d data month vs lat
+# seadiffplot         seasonal difference plot     2d data lon vs lat
+# profiles            vertical profiles of station Z3,ta, not working for Q
+# save_to_netcdf      save variable to netcdf files  all
+# taylor_metrics_table not working
+
+
+
+
+#Monthly mean (T3M)
+ta 	C3M noplot
+zg	C3M noplot
+ua	C3M noplot
+va	C3M noplot
+#wa	C3M noplot
+wap	C3M noplot
+tntlw	C3M noplot
+tntsw	C3M noplot
+O3	C3M noplot
+H2O 	C3M noplot
+mean_age	C3M noplot 
+N2O 	C3M noplot
+CH4 	C3M noplot
+CO2	C3M noplot
+HCl  	C3M noplot
+CO 	C3M noplot
+N2O 	C3M noplot
+CO2 	C3M noplot
+C2H6 	C3M noplot
+C2H2 	C3M noplot
+HCN 	C3M noplot
+clt	C3M noplot
+convclt	C3M noplot
+
+#2D monthly mean (T2Ms, TO2Ms)
+ps	C2Ms noplot
+clt	C2Ms noplot
+#convclt1000	C2Ms noplot
+#ptp   	C2Ms noplot#derived
+#tatp  	C2Ms noplot#derived
+#ztp   	C2Ms noplot#derived
+#pr	C2Ms noplot#needs unit conversion from m/s (cam) to km/m2 s
+hfls	C2Ms noplot
+hfss	C2Ms noplot
+toz	C2Ms noplot
+tos	C2Ms noplot
+sic	C2Ms noplot
+
+#2D zonal monthly mean (T2Mz)
+ta	C2Mz noplot
+ua	C2Mz noplot
+va	C2Mz noplot
+zg	C2Mz noplot
+O3 	C2Mz noplot
+N2O 	C2Mz noplot
+CH4 	C2Mz noplot
+H2O 	C2Mz noplot
+mean_age	C2Mz noplot
+CH3Cl 	C2Mz noplot
+CH3CCl3 	C2Mz noplot
+CCl4 	C2Mz noplot
+CFCl3 	C2Mz noplot
+CF2Cl2 	C2Mz noplot
+CHClF2	C2Mz noplot
+#CH3CCl2F	C2Mz noplot
+#CH3CClF2	C2Mz noplot
+#CBrClF2	C2Mz noplot
+#CBrF3	C2Mz noplot
+#C2Br2F4	C2Mz noplot
+#CH3Br 	C2Mz noplot
+#CH2Br2 	C2Mz noplot
+CHBr3  	C2Mz noplot
+HNO3 	C2Mz noplot
+HCl  	C2Mz noplot
+ClONO2 	C2Mz noplot
+NOy 	C2Mz noplot
+Cly 	C2Mz noplot
+Bry	C2Mz noplot
+Cl 	C2Mz noplot
+ClO 	C2Mz noplot
+Cl2O2 	C2Mz noplot
+HOCl 	C2Mz noplot
+ClONO2 	C2Mz noplot
+OClO 	C2Mz noplot
+OH 	C2Mz noplot
+HO2 	C2Mz noplot
+H2O2 	C2Mz noplot
+H2	C2Mz noplot
+N 	C2Mz noplot
+NO 	C2Mz noplot
+NO2 	C2Mz noplot
+N2O5 	C2Mz noplot
+#HNO4 	C2Mz noplot
+Br	C2Mz noplot
+BrO 	C2Mz noplot
+BrCl 	C2Mz noplot
+HBr 	C2Mz noplot
+HOBr 	C2Mz noplot
+BrONO2 	C2Mz noplot
+
+#EP Flux 2D zonal monthly mean (T2Mz)
+#fy	C2Mz noplot #Derived (Garcia code: convert?)
+#fz	C2Mz noplot #Derived
+#accel_divf	C2Mz noplot (Garcia Code: convert?)
+#wstar	C2Mz noplot  #Derived
+#vstar	C2Mz noplot  #Derived
+
+#GWD fields
+accel_gw	C2Mz noplot
+accel_ogw	C2Mz noplot
+ogw_flux	C2Mz noplot
+accel_nogw	C2Mz noplot
+nogw_w_flux	C2Mz noplot
+nogw_e_flux	C2Mz noplot
+diab_drag	C2Mz noplot
+

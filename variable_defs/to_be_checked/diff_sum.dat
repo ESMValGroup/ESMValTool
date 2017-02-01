@@ -1,0 +1,24 @@
+Only in .: diff_2021_202main.dat
+Only in .: H_att.ncl
+Only in /home/shionah/nclcode/diagcode/ncar_zhuxiao/Ver2.02_main/var_att/: #mpsi0W500_att.ncl#
+Only in /home/shionah/nclcode/diagcode/ncar_zhuxiao/Ver2.02_main/var_att/: #ua200maxNH_att.ncl#
+Only in .: ua200maxNH_att.ncl.orig
+Only in /home/shionah/nclcode/diagcode/ncar_zhuxiao/Ver2.02_main/var_att/: ua200maxNH_att_ori.ncl
+Only in /home/shionah/nclcode/diagcode/ncar_zhuxiao/Ver2.02_main/var_att/: ua200maxSH_att_ori.ncl
+Only in /home/shionah/nclcode/diagcode/ncar_zhuxiao/Ver2.02_main/var_att/: ua200maxW_att_backup.ncl
+Only in /home/shionah/nclcode/diagcode/ncar_zhuxiao/Ver2.02_main/var_att/: ua200maxW_att_ori.ncl
+Only in /home/shionah/nclcode/diagcode/ncar_zhuxiao/Ver2.02_main/var_att/: ua850maxNH_att_ori.ncl
+Only in /home/shionah/nclcode/diagcode/ncar_zhuxiao/Ver2.02_main/var_att/: ua850maxSH_att_ori.ncl
+Only in /home/shionah/nclcode/diagcode/ncar_zhuxiao/Ver2.02_main/var_att/: ua850maxW_att_ori.ncl
+Only in .: diff_2021_202main.dat
+diff ./H2O_att.ncl /home/shionah/nclcode/diagcode/ncar_zhuxiao/Ver2.02_main/var_att/H2O_att.ncl
+diff ./mpsi0W500_att.ncl /home/shionah/nclcode/diagcode/ncar_zhuxiao/Ver2.02_main/var_att/mpsi0W500_att.ncl
+diff ./RH_att.ncl /home/shionah/nclcode/diagcode/ncar_zhuxiao/Ver2.02_main/var_att/RH_att.ncl
+diff ./ta_att.ncl /home/shionah/nclcode/diagcode/ncar_zhuxiao/Ver2.02_main/var_att/ta_att.ncl
+diff ./T_att.ncl /home/shionah/nclcode/diagcode/ncar_zhuxiao/Ver2.02_main/var_att/T_att.ncl
+diff ./ua200maxNH_att.ncl /home/shionah/nclcode/diagcode/ncar_zhuxiao/Ver2.02_main/var_att/ua200maxNH_att.ncl
+diff ./ua200maxSH_att.ncl /home/shionah/nclcode/diagcode/ncar_zhuxiao/Ver2.02_main/var_att/ua200maxSH_att.ncl
+diff ./ua200maxW_att.ncl /home/shionah/nclcode/diagcode/ncar_zhuxiao/Ver2.02_main/var_att/ua200maxW_att.ncl
+diff ./ua850maxNH_att.ncl /home/shionah/nclcode/diagcode/ncar_zhuxiao/Ver2.02_main/var_att/ua850maxNH_att.ncl
+diff ./ua850maxSH_att.ncl /home/shionah/nclcode/diagcode/ncar_zhuxiao/Ver2.02_main/var_att/ua850maxSH_att.ncl
+diff ./ua850maxW_att.ncl /home/shionah/nclcode/diagcode/ncar_zhuxiao/Ver2.02_main/var_att/ua850maxW_att.ncl

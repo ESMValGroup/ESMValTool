@@ -1,0 +1,23 @@
+# Global variables / flags
+GLOBAL
+  force_processing    false
+  project      CCMVal2
+  wrk_dir      ./work
+  plot_dir     $wrk_dir/plots/
+  climo_dir    $wrk_dir/climo/
+
+#  write_plots    yes
+#  write_netcdf   true
+#  write_climo    yes
+#  write_plot_vars no
+  
+# Models to use
+MODELS
+  WACCM wa3548_2x_refb1.1      1 1985  1990 /project/waccm01/wa3548_2x_refb1.1/h1/
+  WACCM wa3548_2x_refb1.1      1 1960  1965 /project/waccm01/wa3548_2x_refb1.1/h1/
+ 
+# Diagnostics to do
+DIAGNOSTICS
+  # Convert Instantaneous files
+  convert_I
+

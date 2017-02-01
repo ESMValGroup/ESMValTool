@@ -55,12 +55,12 @@ begin
   wks_za_ann = gsn_open_wks(wks_type,getenv("OUTDIR")+"pr.za.ann")
   
   if (COLORMAP.eq.0) then
-     gsn_define_colormap(wks_stddev_djf,"rainbow+white") 
-     gsn_define_colormap(wks_stddev_mam,"rainbow+white")  
-     gsn_define_colormap(wks_stddev_jja,"rainbow+white") 
-     gsn_define_colormap(wks_stddev_son,"rainbow+white")  
-     gsn_define_colormap(wks_stddev_ann,"rainbow+white")   
-     gsn_define_colormap(wks_mean,"prcp_1") 
+     gsn_define_colormap(wks_stddev_djf,"precip3_16lev") 
+     gsn_define_colormap(wks_stddev_mam,"precip3_16lev")  
+     gsn_define_colormap(wks_stddev_jja,"precip3_16lev") 
+     gsn_define_colormap(wks_stddev_son,"precip3_16lev")  
+     gsn_define_colormap(wks_stddev_ann,"precip3_16lev")   
+     gsn_define_colormap(wks_mean,"precip3_16lev") 
      gsn_define_colormap(wks_za_djf,"cb_9step")  
      gsn_define_colormap(wks_za_mam,"cb_9step")  
      gsn_define_colormap(wks_za_jja,"cb_9step")  
@@ -125,47 +125,71 @@ begin
      end do 
      delete([/zt,eind/])
   end if
-   
+
   do ee = 0,nsim-1
      ppt = data_read_in(paths(ee),"PRECT",syear(ee),eyear(ee))    ; read in data, orient lats/lons correctly, set time coordinate variable up   
      if (isatt(ppt,"is_all_missing")) then
         delete(ppt)
         continue
      end if 
-     ppt_seas = runave_n_Wrap(ppt,3,0,0)
-     ppt_seas(0,:,:) = (/ dim_avg_n(ppt(:1,:,:),0) /)
-     ppt_seas(dimsizes(ppt&time)-1,:,:) = (/ dim_avg_n(ppt(dimsizes(ppt&time)-2:,:,:),0) /)
-     ppt_ann = runave_n_Wrap(ppt,12,0,0)
+     do ff = 0,1     
+        pptT = ppt
+        if (ff.eq.1) then
+           if (OPT_CLIMO.eq."Full") then
+              pptT = rmMonAnnCycTLL(pptT)
+           else
+              check_custom_climo(names(ee),syear(ee),eyear(ee),CLIMO_SYEAR,CLIMO_EYEAR)
+              temp_arr = pptT
+              delete(temp_arr&time)
+              temp_arr&time = cd_calendar(pptT&time,-1)
+              climo = clmMonTLL(temp_arr({CLIMO_SYEAR*100+1:CLIMO_EYEAR*100+12},:,:))                 
+              delete(temp_arr)
+              pptT   = calcMonAnomTLL(pptT,climo) 
+              delete(climo)
+           end if
+        end if     
+        ppt_seas = runave_n_Wrap(pptT,3,0,0)
+        ppt_seas(0,:,:) = (/ dim_avg_n(pptT(:1,:,:),0) /)
+        ppt_seas(dimsizes(pptT&time)-1,:,:) = (/ dim_avg_n(pptT(dimsizes(pptT&time)-2:,:,:),0) /)
+        ppt_ann = runave_n_Wrap(pptT,12,0,0)
+        delete(pptT)
+        
+        if (ff.eq.0) then
+           ppt_mean_djf = dim_avg_n_Wrap(ppt_seas(0::12,:,:),0)
+           ppt_mean_mam = dim_avg_n_Wrap(ppt_seas(3::12,:,:),0)
+           ppt_mean_jja = dim_avg_n_Wrap(ppt_seas(6::12,:,:),0)
+           ppt_mean_son = dim_avg_n_Wrap(ppt_seas(9::12,:,:),0)
+           ppt_mean_ann = dim_avg_n_Wrap(ppt_ann(5::12,:,:),0)
+  
+           ppt_zamean_djf = dim_avg_n_Wrap(ppt_mean_djf,1)
+           ppt_zamean_mam = dim_avg_n_Wrap(ppt_mean_mam,1)
+           ppt_zamean_jja = dim_avg_n_Wrap(ppt_mean_jja,1)
+           ppt_zamean_son = dim_avg_n_Wrap(ppt_mean_son,1)
+           ppt_zamean_ann = dim_avg_n_Wrap(ppt_mean_ann,1)
+        end if
+        if (ff.eq.1) then
+           ppt_sd_djf = dim_stddev_n_Wrap(dtrend_msg_n(ispan(0,nyr(ee)-1,1),ppt_seas(0::12,:,:),False,False,0),0)
+           ppt_sd_mam = dim_stddev_n_Wrap(dtrend_msg_n(ispan(0,nyr(ee)-1,1),ppt_seas(3::12,:,:),False,False,0),0)
+           ppt_sd_jja = dim_stddev_n_Wrap(dtrend_msg_n(ispan(0,nyr(ee)-1,1),ppt_seas(6::12,:,:),False,False,0),0)
+           ppt_sd_son = dim_stddev_n_Wrap(dtrend_msg_n(ispan(0,nyr(ee)-1,1),ppt_seas(9::12,:,:),False,False,0),0)
+           ppt_sd_ann = dim_stddev_n_Wrap(dtrend_msg_n(ispan(0,nyr(ee)-1,1),ppt_ann(5::12,:,:),False,False,0),0)
+       end if
+       delete([/ppt_seas,ppt_ann/])
+     end do
      delete(ppt)
-     
-     ppt_mean_djf = dim_avg_n_Wrap(ppt_seas(0::12,:,:),0)
-     ppt_mean_mam = dim_avg_n_Wrap(ppt_seas(3::12,:,:),0)
-     ppt_mean_jja = dim_avg_n_Wrap(ppt_seas(6::12,:,:),0)
-     ppt_mean_son = dim_avg_n_Wrap(ppt_seas(9::12,:,:),0)
-     ppt_mean_ann = dim_avg_n_Wrap(ppt_ann(5::12,:,:),0)
-     
-     ppt_zamean_djf = dim_avg_n_Wrap(ppt_mean_djf,1)
-     ppt_zamean_mam = dim_avg_n_Wrap(ppt_mean_mam,1)
-     ppt_zamean_jja = dim_avg_n_Wrap(ppt_mean_jja,1)
-     ppt_zamean_son = dim_avg_n_Wrap(ppt_mean_son,1)
-     ppt_zamean_ann = dim_avg_n_Wrap(ppt_mean_ann,1)
-     
-     ppt_sd_djf = dim_stddev_n_Wrap(dtrend_msg_n(ispan(0,nyr(ee)-1,1),ppt_seas(0::12,:,:),False,False,0),0)
-     ppt_sd_mam = dim_stddev_n_Wrap(dtrend_msg_n(ispan(0,nyr(ee)-1,1),ppt_seas(3::12,:,:),False,False,0),0)
-     ppt_sd_jja = dim_stddev_n_Wrap(dtrend_msg_n(ispan(0,nyr(ee)-1,1),ppt_seas(6::12,:,:),False,False,0),0)
-     ppt_sd_son = dim_stddev_n_Wrap(dtrend_msg_n(ispan(0,nyr(ee)-1,1),ppt_seas(9::12,:,:),False,False,0),0)
-     ppt_sd_ann = dim_stddev_n_Wrap(dtrend_msg_n(ispan(0,nyr(ee)-1,1),ppt_ann(5::12,:,:),False,False,0),0)
-     
      copy_VarMeta(ppt_mean_djf,ppt_sd_djf)
      copy_VarMeta(ppt_mean_mam,ppt_sd_mam)
      copy_VarMeta(ppt_mean_jja,ppt_sd_jja)
      copy_VarMeta(ppt_mean_son,ppt_sd_son)
      copy_VarMeta(ppt_mean_ann,ppt_sd_ann)     
      
-     delete([/ppt_seas,ppt_ann/])
      if (OUTPUT_DATA.eq."True") then
         modname = str_sub_str(names(ee)," ","_")
-        fn = getenv("OUTDIR")+modname+".cvdp_data."+syear(ee)+"-"+eyear(ee)+".nc"
+        bc = (/"/","'","(",")"/)
+        do gg = 0,dimsizes(bc)-1
+           modname = str_sub_str(modname,bc(gg),"_")
+        end do
+        fn = getenv("OUTDIR")+modname+".cvdp_data.pr.mean_stddev."+syear(ee)+"-"+eyear(ee)+".nc"
         if (.not.isfilepresent2(fn)) then
            z = addfile(fn,"c")
            z@source = "NCAR Climate Analysis Section's Climate Variability Diagnostics Package v"+getenv("VERSION")
@@ -175,22 +199,24 @@ begin
            else
               z@climatology = CLIMO_SYEAR+"-"+CLIMO_EYEAR+" climatology removed prior to all calculations (other than means)"
            end if
+           z@Conventions = "CF-1.6"
         else
            z = addfile(fn,"w")
         end if
 
-        z->ppt_spatialmean_djf     = ppt_mean_djf
-        z->ppt_spatialmean_mam     = ppt_mean_mam
-        z->ppt_spatialmean_jja     = ppt_mean_jja
-        z->ppt_spatialmean_son     = ppt_mean_son
-        z->ppt_spatialmean_ann     = ppt_mean_ann
+        z->pr_spatialmean_djf     = set_varAtts(ppt_mean_djf,"pr mean (DJF)","","")
+        z->pr_spatialmean_mam     = set_varAtts(ppt_mean_mam,"pr mean (MAM)","","")
+        z->pr_spatialmean_jja     = set_varAtts(ppt_mean_jja,"pr mean (JJA)","","")
+        z->pr_spatialmean_son     = set_varAtts(ppt_mean_son,"pr mean (SON)","","")
+        z->pr_spatialmean_ann     = set_varAtts(ppt_mean_ann,"pr mean (annual)","","")
         
-        z->ppt_spatialstddev_djf     = ppt_sd_djf
-        z->ppt_spatialstddev_mam     = ppt_sd_mam
-        z->ppt_spatialstddev_jja     = ppt_sd_jja
-        z->ppt_spatialstddev_son     = ppt_sd_son
-        z->ppt_spatialstddev_ann     = ppt_sd_ann
+        z->pr_spatialstddev_djf     = set_varAtts(ppt_sd_djf,"pr standard deviation (DJF)","","")
+        z->pr_spatialstddev_mam     = set_varAtts(ppt_sd_mam,"pr standard deviation (MAM)","","")
+        z->pr_spatialstddev_jja     = set_varAtts(ppt_sd_jja,"pr standard deviation (JJA)","","")
+        z->pr_spatialstddev_son     = set_varAtts(ppt_sd_son,"pr standard deviation (SON)","","")
+        z->pr_spatialstddev_ann     = set_varAtts(ppt_sd_ann,"pr standard deviation (annual)","","")
         delete(z)
+        delete([/modname,fn/])
      end if
 ;==========================================================================================
      res = True
@@ -204,7 +230,11 @@ begin
      res@mpFillOn = False
      res@mpCenterLonF = 210.
      res@mpOutlineOn = True  
-     res@mpDataSetName = "Earth..4"
+     if (wks_type.eq."png") then
+        res@mpGeophysicalLineThicknessF = 2.  
+     else
+        res@mpGeophysicalLineThicknessF = 1.  
+     end if
      res@gsnDraw      = False
      res@gsnFrame     = False
   
@@ -230,7 +260,7 @@ begin
      sres@cnLevels  = (/0.5,1,2,3,4,5,6,7,8,9,10,12,14,16,18/)
      res@cnLevels = (/.2,.4,.6,1.0,1.5,2.0,2.5,3.5/)
      if (COLORMAP.eq.0) then
-        res@cnFillColors = (/54,80,95,125,175,185,195,205,236/)
+        res@cnFillColors = (/2,4,6,8,10,12,14,16,18/)
      end if
      if (COLORMAP.eq.1) then
         res@cnFillColors = (/35,47,63,79,95,111,124,155,175/)
@@ -389,9 +419,10 @@ begin
   
    if (isfilepresent2("obs_prect")) then    ; for pattern correlation table  
      clat = cos(0.01745329*patcor&lat)
-     finpr   = "PR Std Dev (Ann)  "    ; Must be 18 characters long
+     finpr   = "pr Std Dev (Ann)  "    ; Must be 18 characters long
      line3   = "                  "    ; Must be 18 characters long
      line4   = line3
+     header = (/"","Pattern Correlations/RMS Differences   Observations vs. Model(s)",""/)
      do hh = 1,nsim-1
         dimY = dimsizes(tochar(names(hh)))
         nchar = dimY
@@ -422,22 +453,17 @@ begin
      end do
      if (dimsizes(tochar(line4)).ge.8190) then   ; system or fortran compiler limit
         print("Metrics table warning: Not creating metrics table as size of comparison results in a invalid ascii row size.")   
-     else
-        if (.not.isfilepresent2(getenv("OUTDIR")+"metrics_orig.txt")) then
-           header = (/"","Pattern Correlations/RMS Differences   Observations vs. Model(s)",""/)
-           write_table(getenv("OUTDIR")+"metrics_orig.txt","w",[/header/],"%s")
-           write_table(getenv("OUTDIR")+"metrics_orig.txt","a",[/line3/],"%s")
-           write_table(getenv("OUTDIR")+"metrics_orig.txt","a",[/line4/],"%s")
-           delete(header)
-        end if
-        write_table(getenv("OUTDIR")+"metrics_orig.txt","a",[/finpr/],"%s")
+     else          
+        write_table(getenv("OUTDIR")+"metrics.pr.mean_stddev.txt","w",[/header/],"%s")
+        write_table(getenv("OUTDIR")+"metrics.pr.mean_stddev.txt","a",[/line3/],"%s")
+        write_table(getenv("OUTDIR")+"metrics.pr.mean_stddev.txt","a",[/line4/],"%s")
+        write_table(getenv("OUTDIR")+"metrics.pr.mean_stddev.txt","a",[/finpr/],"%s")
      end if
-     delete([/finpr,line3,line4,format2,format3,nchar,ntc,clat,patcor,dimY,ntb/])
+     delete([/finpr,line3,line4,format2,format3,nchar,ntc,clat,patcor,dimY,ntb,header/])
   end if
      
   panres = True
   panres@gsnMaximize = True  
-  panres@gsnPanelBottom = 0.05
   panres@gsnPaperOrientation = "portrait"
   panres@gsnPanelLabelBar = True
   panres@gsnPanelYWhiteSpacePercent = 3.0
@@ -445,10 +471,17 @@ begin
   panres@pmLabelBarWidthF = 0.65
   panres@lbTitleOn = False
   panres@lbBoxLineColor = "gray70"
-  if (nsim.le.5) then
-     panres@txFontHeightF = 0.024
+  if (nsim.le.4) then
+     if (nsim.eq.1) then
+        panres@txFontHeightF = 0.022
+        panres@gsnPanelBottom = 0.50
+     else
+        panres@txFontHeightF = 0.0145
+        panres@gsnPanelBottom = 0.50
+     end if
   else
      panres@txFontHeightF = 0.016
+     panres@gsnPanelBottom = 0.05
   end if
   panres@lbLabelFontHeightF = 0.013
   panres@lbLabelStride = 1
@@ -456,39 +489,39 @@ begin
   nrow = (nsim/ncol)+mod(nsim,ncol)  
   
   panres@txString = "PR Standard Deviations (DJF)"
-  gsn_panel(wks_stddev_djf,plot_stddev_djf,(/nrow,ncol/),panres)
+  gsn_panel2(wks_stddev_djf,plot_stddev_djf,(/nrow,ncol/),panres)
   delete(wks_stddev_djf)
   
   panres@txString = "PR Standard Deviations (MAM)"
-  gsn_panel(wks_stddev_mam,plot_stddev_mam,(/nrow,ncol/),panres)
+  gsn_panel2(wks_stddev_mam,plot_stddev_mam,(/nrow,ncol/),panres)
   delete(wks_stddev_mam)
   
   panres@txString = "PR Standard Deviations (JJA)"
-  gsn_panel(wks_stddev_jja,plot_stddev_jja,(/nrow,ncol/),panres)
+  gsn_panel2(wks_stddev_jja,plot_stddev_jja,(/nrow,ncol/),panres)
   delete(wks_stddev_jja)
   
   panres@txString = "PR Standard Deviations (SON)"
-  gsn_panel(wks_stddev_son,plot_stddev_son,(/nrow,ncol/),panres)
+  gsn_panel2(wks_stddev_son,plot_stddev_son,(/nrow,ncol/),panres)
   delete(wks_stddev_son)
   
   panres@txString = "PR Standard Deviations (Annual)"
-  gsn_panel(wks_stddev_ann,plot_stddev_ann,(/nrow,ncol/),panres)
+  gsn_panel2(wks_stddev_ann,plot_stddev_ann,(/nrow,ncol/),panres)
   delete(wks_stddev_ann)
   
   panres@txString = "PR Means (DJF)"
-  gsn_panel(wks_mean,plot_mean_djf,(/nrow,ncol/),panres)
+  gsn_panel2(wks_mean,plot_mean_djf,(/nrow,ncol/),panres)
   
   panres@txString = "PR Means (MAM)"
-  gsn_panel(wks_mean,plot_mean_mam,(/nrow,ncol/),panres)
+  gsn_panel2(wks_mean,plot_mean_mam,(/nrow,ncol/),panres)
   
   panres@txString = "PR Means (JJA)"
-  gsn_panel(wks_mean,plot_mean_jja,(/nrow,ncol/),panres)
+  gsn_panel2(wks_mean,plot_mean_jja,(/nrow,ncol/),panres)
   
   panres@txString = "PR Means (SON)"
-  gsn_panel(wks_mean,plot_mean_son,(/nrow,ncol/),panres)
+  gsn_panel2(wks_mean,plot_mean_son,(/nrow,ncol/),panres)
   
   panres@txString = "PR Means (Annual)"
-  gsn_panel(wks_mean,plot_mean_ann,(/nrow,ncol/),panres)
+  gsn_panel2(wks_mean,plot_mean_ann,(/nrow,ncol/),panres)
   delete(wks_mean)
   delete(panres)
   
@@ -520,12 +553,13 @@ begin
      system("mv "+OUTDIR+"pr.mean.000004.png "+OUTDIR+"pr.mean.son.png") 
      system("mv "+OUTDIR+"pr.mean.000005.png "+OUTDIR+"pr.mean.ann.png")
   else
-     system("psplit "+OUTDIR+"pr.mean.ps "+OUTDIR+"pict")
-     system("mv "+OUTDIR+"pict0001.ps "+OUTDIR+"pr.mean.djf.ps") 
-     system("mv "+OUTDIR+"pict0002.ps "+OUTDIR+"pr.mean.mam.ps") 
-     system("mv "+OUTDIR+"pict0003.ps "+OUTDIR+"pr.mean.jja.ps") 
-     system("mv "+OUTDIR+"pict0004.ps "+OUTDIR+"pr.mean.son.ps") 
-     system("mv "+OUTDIR+"pict0005.ps "+OUTDIR+"pr.mean.ann.ps") 
+     system("psplit "+OUTDIR+"pr.mean.ps "+OUTDIR+"pr_m")
+     system("mv "+OUTDIR+"pr_m0001.ps "+OUTDIR+"pr.mean.djf.ps") 
+     system("mv "+OUTDIR+"pr_m0002.ps "+OUTDIR+"pr.mean.mam.ps") 
+     system("mv "+OUTDIR+"pr_m0003.ps "+OUTDIR+"pr.mean.jja.ps") 
+     system("mv "+OUTDIR+"pr_m0004.ps "+OUTDIR+"pr.mean.son.ps") 
+     system("mv "+OUTDIR+"pr_m0005.ps "+OUTDIR+"pr.mean.ann.ps") 
+     system("rm "+OUTDIR+"pr.mean.ps")
   end if
   print("Finished: pr.mean_stddev.ncl")
 end

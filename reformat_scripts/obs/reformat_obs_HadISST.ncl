@@ -67,8 +67,8 @@ begin
     fname_sst = INDIR + "HadISST_sst.nc"
     fname_ice = INDIR + "HadISST_ice.nc"
 
-    info_output("*** "+ fname_sst + " ***", verbosity, 1)
-    info_output("*** "+ fname_ice + " ***", verbosity, 1)
+    info_output("*** " + fname_sst + " ***", verbosity, 1)
+    info_output("*** " + fname_ice + " ***", verbosity, 1)
 
     fice = addfile(fname_ice, "r")
     fsst = addfile(fname_sst, "r")
@@ -95,7 +95,7 @@ begin
     time@long_name = "time"
     time@calendar = "gregorian"
     if (isatt(time, "_FillValue")) then
-       delete(time@_FillValue)
+        delete(time@_FillValue)
     end if
 
     sst = (/fsst->sst/)
@@ -131,7 +131,7 @@ begin
     gAtt@conventions = "CF/CMOR"
 
     ; outfile (file naming following Dominik Kunert, DLR)
-    fout = OUTDIR + "OBS_HadISST_reanaly_1_" + FIELD + "_ts.nc"
+    fout = OUTDIR + "OBS_HadISST_reanaly_1_" + FIELD + "_ts_187001-201412.nc"
 
     ; write sst
     write_nc(fout, "ts", sst, gAtt)
@@ -168,7 +168,8 @@ begin
     gAtt@conventions = "CF/CMOR"
 
     ; outfile (file naming following Dominik Kunert, DLR)
-    fout = OUTDIR + "OBS_HadISST_reanaly_20130524_" + FIELD + "_sic.nc"
+    fout = OUTDIR + "OBS_HadISST_reanaly_20130524_" + FIELD + \
+        "_sic_187001-201412.nc"
 
     ; write sic
     write_nc(fout, "sic", ice, gAtt)
@@ -178,4 +179,3 @@ begin
     leave_msg(diag_script, "", 1)
 
 end
-

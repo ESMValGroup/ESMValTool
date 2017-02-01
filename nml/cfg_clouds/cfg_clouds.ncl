@@ -1,10 +1,5 @@
 diag_script_info = True
-
-;; Used by: clouds.ncl
 diag_script_info@projection = "CylindricalEquidistant"   ; map projection, e.g., Mollweide, Mercator
-diag_script_info@styleset = "CMIP5"         ; "CMIP5", "DEFAULT"
-diag_script_info@colormap = "WhiteBlueGreenYellowRed"  ; e.g., WhiteBlueGreenYellowRed, rainbow
-diag_script_info@ncdf = "default" ;enable to output to netCDF; either use "default" or give a full file name
 
 ; --- multi-model mean parameters -----------------------------
 ; calculate multi-model mean?
@@ -16,7 +11,7 @@ diag_script_info@timemean = "annualclim"   ; options: 1) annualclim (1 plots: an
                                            ;          2) seasonalclim (4 plots: DJF, MAM, JJA, SON)
 
 ; target grid for regridding: use grid of reference model
-; (valid options are: "ref", "coarsest", "finest")
+; (valid options are: "ref", "coarsest", "finest", "1x1")
 diag_script_info@grid = "ref"
 
 ; reference model (to be skipped when calculating the multi-model mean)

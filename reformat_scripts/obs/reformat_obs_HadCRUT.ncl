@@ -77,10 +77,10 @@ begin
 
     ;; Read variable
     output = f->temp
- 
+
     info_output("", verbosity, 1)
     info_output("Processing " + VARS(0), verbosity, 1)
- 
+
     ;; Set variable attributes
     tmp = var_attrib(output, VARS(0))
     output = tmp
@@ -93,7 +93,7 @@ begin
     delete(tmp)
 
     ;; Format time coordinate
-    output_new = output(0:dimsizes(output&t)-3,:,:)
+    output_new = output(0:dimsizes(output&t) - 3, :, :)
     delete(output)
     output = output_new
     delete(output_new)
@@ -146,7 +146,8 @@ begin
     gAtt@conventions   = "CF/CMOR"
 
     ;; Outfile
-    fout = OUTDIR + "OBS_HadCRUT_ground_3v_T2Ms_tas.nc"
+    fout = OUTDIR + "OBS_HadCRUT_ground_3v_T2Ms_tas_" + \
+        YEAR1 + "01-" + YEAR2 + "12.nc"
 
     ;; Write variable
     write_nc(fout, VARS(0), output, gAtt)
@@ -156,4 +157,3 @@ begin
     leave_msg(diag_script, "", 1)
 
 end
-

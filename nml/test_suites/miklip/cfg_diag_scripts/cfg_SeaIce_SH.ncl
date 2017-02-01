@@ -13,6 +13,8 @@ diag_script_info@range_option = 0           ; 0 = use each model's whole time ra
 ;; Used by: SeaIce_tsline, SeaIce_ancyc
 ;; see style_FUNCTIONS/style_$project$.ncl for which data shall be included in the statistics
 diag_script_info@multi_model_mean = "y"     ; "y" = plot multi-model mean & stddev; "n" = don't
+diag_script_info@fill_pole_hole = False     ; Fill pole hole in data
+diag_script_info@legend_outside = False
 
 ;; Used by: SeaIce_polcon, SeaIce_polcon_diff
 diag_script_info@contour_extent = "y"       ; y = draw a red contour line for sic extent in polar stereographic plots
@@ -25,6 +27,8 @@ diag_script_info@min_lat = 60.              ; Arctic plotted from 90° up to this
 ;; Used by: SeaIce_polcon_diff.ncl
 diag_script_info@ref_model = "NSIDC"    ; reference model, as specified in annotations -> if the specified string is
                                         ; not found, the routine will print a list of valid strings before crashing
+diag_script_info@dst_grid = "./diag_scripts/aux/CDO/cdo_dst_grid_g010" 
+                                        ; path to destination grid file, required by cdo_remapdis
 ;diag_script_info@grid_min    = -0.3   	; min contour value, default: -1.
 ;diag_script_info@grid_max    =  0.3   	; max contour value, default: 1.
 ;diag_script_info@grid_step   =  0.05  	; step between contours, default: 0.2

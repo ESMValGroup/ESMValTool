@@ -1,5 +1,5 @@
 <namelist>
-<include href="./config_private.xml"/>
+<include href="./config_private_DLR-PA2.xml"/>
 <namelist_summary>
 ###############################################################################
 namelist_aerosol_CMIP5.xml
@@ -48,20 +48,9 @@ This namelist is part of the ESMValTool
 
 <MODELS>
 
+<!-- Models and observations are given below within each diag-block -->
 <!-- Links to rcp45 have to be created in the historical folder in order to have a continuous time-series beyond 2005 -->
-
-  <model>   CMIP5_ETHZ     CSIRO-Mk3-6-0   aero  historical   r1i1p1  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-  <model>   CMIP5_ETHZ     GFDL-ESM2G      aero  historical   r1i1p1  1861 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-  <model>   CMIP5_ETHZ     GFDL-ESM2M      aero  historical   r1i1p1  1861 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-  <model>   CMIP5_ETHZ     IPSL-CM5A-LR    aero  historical   r1i1p1  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-  <model>   CMIP5_ETHZ     IPSL-CM5A-MR    aero  historical   r1i1p1  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-  <model>   CMIP5_ETHZ     IPSL-CM5B-LR    aero  historical   r1i1p1  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-  <model>   CMIP5_ETHZ     MIROC4h         aero  historical   r1i1p1  1950 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-  <model>   CMIP5_ETHZ     MIROC5          aero  historical   r1i1p1  1850 2012  @{MODELPATH}/ETHZ_CMIP5/ </model>
-  <model>   CMIP5_ETHZ     MIROC-ESM       aero  historical   r1i1p1  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-  <model>   CMIP5_ETHZ     MIROC-ESM-CHEM  aero  historical   r1i1p1  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-  <model>   CMIP5_ETHZ     MRI-CGCM3       aero  historical   r1i1p1  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-  <model>   CMIP5_ETHZ     MRI-ESM1        aero  historical   r1i1p1  1851 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
+<!-- CCSM4, IPSL-CM5A-LR, IPSL-CM5A-MR, MPI-ESM-LR and MPI-ESM-MR are excluded since they use concentration-driven aerosol -->
 
 </MODELS>
 
@@ -76,16 +65,27 @@ This namelist is part of the ESMValTool
         <field_type>          T2Ms                              </field_type>
         <diag_script_cfg_dir> ./nml/cfg_aerosol/CMIP5/          </diag_script_cfg_dir>
 
-	<model>   CMIP5_ETHZ     ACCESS1-0       aero  historical   r1i1p1  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     ACCESS1-3       aero  historical   r1i1p1  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     CanESM2         aero  historical   r1i1p1  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     GFDL-CM3        aero  historical   r1i1p1  1860 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     GISS-E2-H       aero  historical   r1i1p2  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     GISS-E2-R       aero  historical   r1i1p2  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     HadGEM2-CC      aero  historical   r1i1p1  1860 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     HadGEM2-ES      aero  historical   r1i1p1  1860 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     NorESM1-M       aero  historical   r1i1p1  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     NorESM1-ME      aero  historical   r1i1p1  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  ACCESS1-0           aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  ACCESS1-3           aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+<!--         <model>  CMIP5_ETHZ  BNU-ESM             aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model> -->
+<!--         <model>  CMIP5_ETHZ  CESM1-CAM5          aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model> -->
+        <model>  CMIP5_ETHZ  CSIRO-Mk3-6-0       aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  GFDL-CM3            aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  GFDL-ESM2G          aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  GFDL-ESM2M          aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  GISS-E2-H           aero  historical   r1i1p2  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  GISS-E2-R           aero  historical   r1i1p2  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  HadGEM2-CC          aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  HadGEM2-ES          aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  IPSL-CM5B-LR        aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  MIROC4h             aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+<!--         <model>  CMIP5_ETHZ  MIROC5              aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model> -->
+        <model>  CMIP5_ETHZ  MIROC-ESM           aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  MIROC-ESM-CHEM      aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  MRI-CGCM3           aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+<!--         <model>  CMIP5_ETHZ  MRI-ESM1            aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model> -->
+        <model>  CMIP5_ETHZ  NorESM1-M           aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  NorESM1-ME          aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
 
         <diag_script cfg="cfg_aerosol_stations_IMPROVE.ncl"> aerosol_stations.ncl  </diag_script>
     </diag>
@@ -97,7 +97,27 @@ This namelist is part of the ESMValTool
         <field_type>          T2Ms                               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_aerosol/CMIP5/           </diag_script_cfg_dir>
 
-	<model>   CMIP5_ETHZ     CanESM2         aero  historical   r1i1p1  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+<!--         <model>  CMIP5_ETHZ  ACCESS1-0           aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model> -->
+<!--         <model>  CMIP5_ETHZ  ACCESS1-3           aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model> -->
+<!--         <model>  CMIP5_ETHZ  BNU-ESM             aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model> -->
+<!--         <model>  CMIP5_ETHZ  CESM1-CAM5          aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model> -->
+        <model>  CMIP5_ETHZ  CSIRO-Mk3-6-0       aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+<!--         <model>  CMIP5_ETHZ  GFDL-CM3            aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model> -->
+        <model>  CMIP5_ETHZ  GFDL-ESM2G          aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  GFDL-ESM2M          aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+<!--         <model>  CMIP5_ETHZ  GISS-E2-H           aero  historical   r1i1p2  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model> -->
+<!--         <model>  CMIP5_ETHZ  GISS-E2-R           aero  historical   r1i1p2  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model> -->
+<!--         <model>  CMIP5_ETHZ  HadGEM2-CC          aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model> -->
+<!--         <model>  CMIP5_ETHZ  HadGEM2-ES          aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model> -->
+        <model>  CMIP5_ETHZ  IPSL-CM5B-LR        aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  MIROC4h             aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+<!--         <model>  CMIP5_ETHZ  MIROC5              aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model> -->
+        <model>  CMIP5_ETHZ  MIROC-ESM           aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  MIROC-ESM-CHEM      aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  MRI-CGCM3           aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+<!--         <model>  CMIP5_ETHZ  MRI-ESM1            aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model> -->
+<!--         <model>  CMIP5_ETHZ  NorESM1-M           aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model> -->
+<!--         <model>  CMIP5_ETHZ  NorESM1-ME          aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model> -->
 
         <diag_script cfg="cfg_aerosol_stations_IMPROVE.ncl"> aerosol_stations.ncl  </diag_script>
     </diag>
@@ -109,16 +129,27 @@ This namelist is part of the ESMValTool
         <field_type>          T2Ms                               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_aerosol/CMIP5/           </diag_script_cfg_dir>
 
-	<model>   CMIP5_ETHZ     ACCESS1-0       aero  historical   r1i1p1  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     ACCESS1-3       aero  historical   r1i1p1  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     CanESM2         aero  historical   r1i1p1  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     GFDL-CM3        aero  historical   r1i1p1  1860 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     GISS-E2-H       aero  historical   r1i1p2  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     GISS-E2-R       aero  historical   r1i1p2  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     HadGEM2-CC      aero  historical   r1i1p1  1860 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     HadGEM2-ES      aero  historical   r1i1p1  1860 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     NorESM1-M       aero  historical   r1i1p1  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     NorESM1-ME      aero  historical   r1i1p1  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  ACCESS1-0           aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  ACCESS1-3           aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+<!--         <model>  CMIP5_ETHZ  BNU-ESM             aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model> -->
+<!--         <model>  CMIP5_ETHZ  CESM1-CAM5          aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model> -->
+        <model>  CMIP5_ETHZ  CSIRO-Mk3-6-0       aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  GFDL-CM3            aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  GFDL-ESM2G          aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  GFDL-ESM2M          aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  GISS-E2-H           aero  historical   r1i1p2  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  GISS-E2-R           aero  historical   r1i1p2  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  HadGEM2-CC          aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  HadGEM2-ES          aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  IPSL-CM5B-LR        aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  MIROC4h             aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+<!--         <model>  CMIP5_ETHZ  MIROC5              aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model> -->
+        <model>  CMIP5_ETHZ  MIROC-ESM           aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  MIROC-ESM-CHEM      aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  MRI-CGCM3           aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+<!--         <model>  CMIP5_ETHZ  MRI-ESM1            aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model> -->
+        <model>  CMIP5_ETHZ  NorESM1-M           aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  NorESM1-ME          aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
 
         <diag_script cfg="cfg_aerosol_stations_CASTNET.ncl"> aerosol_stations.ncl  </diag_script>
         <diag_script cfg="cfg_aerosol_stations_EANET.ncl">   aerosol_stations.ncl  </diag_script>
@@ -133,17 +164,27 @@ This namelist is part of the ESMValTool
         <field_type>          T2Ms                            </field_type>
         <diag_script_cfg_dir> ./nml/cfg_aerosol/CMIP5/        </diag_script_cfg_dir>
 
-	<model>   CMIP5_ETHZ     ACCESS1-0       aero  historical   r1i1p1  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     ACCESS1-3       aero  historical   r1i1p1  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     BNU-ESM         aero  historical   r1i1p1  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     CESM1-CAM5      aero  historical   r1i1p1  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     GFDL-CM3        aero  historical   r1i1p1  1860 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     GISS-E2-H       aero  historical   r1i1p2  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     GISS-E2-R       aero  historical   r1i1p2  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     HadGEM2-CC      aero  historical   r1i1p1  1860 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     HadGEM2-ES      aero  historical   r1i1p1  1860 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     NorESM1-M       aero  historical   r1i1p1  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     NorESM1-ME      aero  historical   r1i1p1  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  ACCESS1-0           aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  ACCESS1-3           aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  BNU-ESM             aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  CESM1-CAM5          aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  CSIRO-Mk3-6-0       aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  GFDL-CM3            aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  GFDL-ESM2G          aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  GFDL-ESM2M          aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  GISS-E2-H           aero  historical   r1i1p2  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  GISS-E2-R           aero  historical   r1i1p2  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  HadGEM2-CC          aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  HadGEM2-ES          aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  IPSL-CM5B-LR        aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  MIROC4h             aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+<!--         <model>  CMIP5_ETHZ  MIROC5              aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model> -->
+        <model>  CMIP5_ETHZ  MIROC-ESM           aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  MIROC-ESM-CHEM      aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  MRI-CGCM3           aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+<!--         <model>  CMIP5_ETHZ  MRI-ESM1            aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model> -->
+        <model>  CMIP5_ETHZ  NorESM1-M           aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  NorESM1-ME          aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
 
         <diag_script cfg="cfg_aerosol_stations_AERONET.ncl"> aerosol_stations.ncl  </diag_script>
     </diag>
@@ -157,23 +198,70 @@ This namelist is part of the ESMValTool
 	<field_type>          T2Ms                            </field_type>
 	<diag_script_cfg_dir> ./nml/cfg_aerosol/CMIP5/        </diag_script_cfg_dir>
 
-	<model>   CMIP5_ETHZ     ACCESS1-0       aero  historical   r1i1p1  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     ACCESS1-3       aero  historical   r1i1p1  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     BNU-ESM         aero  historical   r1i1p1  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     CESM1-CAM5      aero  historical   r1i1p1  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     GFDL-CM3        aero  historical   r1i1p1  1860 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     GISS-E2-H       aero  historical   r1i1p2  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     GISS-E2-R       aero  historical   r1i1p2  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     HadGEM2-CC      aero  historical   r1i1p1  1860 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     HadGEM2-ES      aero  historical   r1i1p1  1860 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     NorESM1-M       aero  historical   r1i1p1  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
-	<model>   CMIP5_ETHZ     NorESM1-ME      aero  historical   r1i1p1  1850 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ CSIRO-Mk3-6-0  aero historical r1i1p1 1850 2015 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ GFDL-ESM2G     aero historical r1i1p1 1861 2015 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ GFDL-ESM2M     aero historical r1i1p1 1861 2015 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ IPSL-CM5A-LR   aero historical r1i1p1 1850 2015 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ IPSL-CM5A-MR   aero historical r1i1p1 1850 2015 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ IPSL-CM5B-LR   aero historical r1i1p1 1850 2015 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MIROC4h        aero historical r1i1p1 1950 2015 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MIROC5         aero historical r1i1p1 1850 2012 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MIROC-ESM      aero historical r1i1p1 1850 2015 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MIROC-ESM-CHEM aero historical r1i1p1 1850 2015 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MRI-CGCM3      aero historical r1i1p1 1850 2015 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MRI-ESM1       aero historical r1i1p1 1851 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+	<model> CMIP5_ETHZ ACCESS1-0      aero historical r1i1p1 1850 2015 @{MODELPATH}/ETHZ_CMIP5/ </model>
+	<model> CMIP5_ETHZ ACCESS1-3      aero historical r1i1p1 1850 2015 @{MODELPATH}/ETHZ_CMIP5/ </model>
+	<model> CMIP5_ETHZ BNU-ESM        aero historical r1i1p1 1850 2015 @{MODELPATH}/ETHZ_CMIP5/ </model>
+	<model> CMIP5_ETHZ CESM1-CAM5     aero historical r1i1p1 1850 2015 @{MODELPATH}/ETHZ_CMIP5/ </model>
+	<model> CMIP5_ETHZ GFDL-CM3       aero historical r1i1p1 1860 2015 @{MODELPATH}/ETHZ_CMIP5/ </model>
+	<model> CMIP5_ETHZ GISS-E2-H      aero historical r1i1p2 1850 2015 @{MODELPATH}/ETHZ_CMIP5/ </model>
+	<model> CMIP5_ETHZ GISS-E2-R      aero historical r1i1p2 1850 2015 @{MODELPATH}/ETHZ_CMIP5/ </model>
+	<model> CMIP5_ETHZ HadGEM2-CC     aero historical r1i1p1 1860 2015 @{MODELPATH}/ETHZ_CMIP5/ </model>
+	<model> CMIP5_ETHZ HadGEM2-ES     aero historical r1i1p1 1860 2015 @{MODELPATH}/ETHZ_CMIP5/ </model>
+	<model> CMIP5_ETHZ NorESM1-M      aero historical r1i1p1 1850 2015 @{MODELPATH}/ETHZ_CMIP5/ </model>
+	<model> CMIP5_ETHZ NorESM1-ME     aero historical r1i1p1 1850 2015 @{MODELPATH}/ETHZ_CMIP5/ </model>
 
 	<model>  OBS         ESACCI-AEROSOL   sat   SU-v4.21   1997  2011  @{OBSPATH}/Tier2/ESACCI-AEROSOL  </model>
-        <model>  OBS         MODIS            sat   L3-C6      2003  2014  @{OBSPATH}/Tier2/MODIS_L3_C6     </model>
+        <model>  OBS         MODIS            sat   L3-C6      2003  2014  @{OBSPATH}/Tier2/MODIS-L3-C6     </model>
 
         <diag_script cfg="cfg_aerosol_tsline.ncl"> tsline.ncl  </diag_script>
     </diag>
+
+    <diag>
+        <description>         Aerosol optical depth at 550 nm </description>
+	<variable_def_dir>    ./variable_defs/                </variable_def_dir>
+	<variable>            od550aer                        </variable>
+	<field_type>          T2Ms                            </field_type>
+	<diag_script_cfg_dir> ./nml/cfg_aerosol/CMIP5/        </diag_script_cfg_dir>
+
+        <model>  CMIP5_ETHZ  ACCESS1-0           aero  historical   r1i1p1  2003 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  ACCESS1-3           aero  historical   r1i1p1  2003 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  BNU-ESM             aero  historical   r1i1p1  2003 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  CESM1-CAM5          aero  historical   r1i1p1  2003 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  CSIRO-Mk3-6-0       aero  historical   r1i1p1  2003 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  GFDL-CM3            aero  historical   r1i1p1  2003 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  GFDL-ESM2G          aero  historical   r1i1p1  2003 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  GFDL-ESM2M          aero  historical   r1i1p1  2003 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  GISS-E2-H           aero  historical   r1i1p2  2003 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  GISS-E2-R           aero  historical   r1i1p2  2003 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  HadGEM2-CC          aero  historical   r1i1p1  2003 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  HadGEM2-ES          aero  historical   r1i1p1  2003 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  IPSL-CM5B-LR        aero  historical   r1i1p1  2003 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  MIROC4h             aero  historical   r1i1p1  2003 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  MIROC5              aero  historical   r1i1p1  2003 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  MIROC-ESM           aero  historical   r1i1p1  2003 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  MIROC-ESM-CHEM      aero  historical   r1i1p1  2003 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  MRI-CGCM3           aero  historical   r1i1p1  2003 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  MRI-ESM1            aero  historical   r1i1p1  2003 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  NorESM1-M           aero  historical   r1i1p1  2003 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  NorESM1-ME          aero  historical   r1i1p1  2003 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
+
+        <model>  OBS         MODIS               sat          L3-C6         2003 2005  @{OBSPATH}/Tier2/MODIS-L3-C6     </model>
+
+        <diag_script cfg="cfg_aerosol_satellite_MODIS.ncl"> aerosol_satellite.ncl  </diag_script>
+    </diag>
+
 
 </DIAGNOSTICS>
 

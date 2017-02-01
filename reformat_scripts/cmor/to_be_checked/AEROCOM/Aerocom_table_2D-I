@@ -1,0 +1,710 @@
+cmor_version: 2.0            ! version of CMOR that can read this table
+cf_version:   2.0-AEROCOM    ! version of CF that output conforms to
+project_id:   AEROCOM-ACC    ! project id
+table_id:     Table 1D-H     ! table id
+table_date:   July 2009      ! date this table was constructed
+
+expt_id_ok:   'AEROCOM-A2-CTRL'
+expt_id_ok:   'AEROCOM-A2-PRE'
+expt_id_ok:   'AEROCOM-A2-SIZ1'
+expt_id_ok:   'AEROCOM-A2-SIZ2'
+expt_id_ok:   'AEROCOM-A2-SIZ3'
+expt_id_ok:   'AEROCOM-A2-SIZ4'
+expt_id_ok:   'AEROCOM-A2-ZERO'
+expt_id_ok:   'AEROCOM-A2-FIX'
+expt_id_ok:   'AEROCOM-A2-TROP'
+expt_id_ok:   'AEROCOM-A2-ARCTIC'
+expt_id_ok:   'AEROCOM-HCA-0'
+expt_id_ok:   'AEROCOM-HCA-IPCC'
+expt_id_ok:   'AEROCOM-HCA-FIX'
+expt_id_ok:   'AEROCOM-HCA-MET'
+
+magic_number: -1          ! used to check whether this file has been 
+                          !   altered from the official version.
+                          !   should be set to number of non-blank 
+                          !   characters in file. 
+approx_interval:  0.      ! approximate spacing between successive time
+                          !   samples (in units of the output time 
+                          !   coordinate), but this is ignored if set to 0.
+missing_value: 1.e20      ! value used to indicate a missing value
+                          !   in arrays output by netCDF as 32-bit IEEE 
+                          !   floating-point numbers (float or real)
+
+!*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#
+!
+! SUBROUTINE ARGUMENT DEFAULT INFORMATION
+!
+!*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#
+!
+!  set default specifications for subroutine arguments to:
+!     required/indeterminate/optional/ignored/forbidden
+!    (indeterminate may or may not be required information, but is not always
+!     required as an argument of the function call)
+!
+!
+!============
+subroutine_entry: cmor_axis
+!============
+!
+required: table axis_name units length coord_vals cell_bounds
+ignored: interval
+!
+!============
+subroutine_entry: cmor_variable
+!============
+!
+required: table table_entry units axis_ids
+indeterminate: missing_value
+optional: tolerance original_name history comment
+ignored: positive
+!
+!============
+subroutine_entry: cmor_write
+!============
+!
+required:  var_id data 
+indeterminate: ntimes_passed time_vals time_bnds store_with
+optional: file_suffix
+!
+!
+!*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#
+!
+! Templates for axes and variables
+!
+!*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#
+!
+!
+!  TEMPLATE FOR AXES
+!
+!============
+!axis_entry:               ! (required)
+!============
+!
+!    Override default argument specifications for cmor_axis 
+!------------
+!    acceptable arguments include units length coord_vals cell_bounds interval
+!required:                  ! (default: table axis_name units length
+!                                        coord_vals cell_bounds)
+!indeterminate:
+!optional:
+!ignored:                   ! (default: interval)
+!forbidden:
+!------------
+!
+! Axis attributes:
+!----------------------------------	
+!standard_name:             ! (required)
+!units:                     ! (required)
+!axis:                      ! X, Y, Z, T (default: undeclared)
+!positive:                  ! up or down (default: undeclared)
+!long_name:                 ! (default: undeclared)
+!----------------------------------	
+!
+! Additional axis information:
+!----------------------------------	
+!out_name:                ! (default: same as axis_entry) 
+!type:                    ! double (default), real, character, integer
+!stored_direction:        ! increasing (default) or decreasing
+!valid_min:               ! type: double precision (default: no check performed
+!valid_max:               ! type: double precision (default: no check performed
+!requested:               ! space-separated list of requested coordinates 
+                          !       (default: undeclared)
+!bounds_requested:        ! space-separated list of requested coordinate bounds
+                          !       (default: undeclared)
+!tol_on_requests:         ! fractional tolerance for meeting request
+                          !  (default=1.e-3, which is used in the formula:
+                          !     eps =  MIN(( tol*interval between grid-points)
+                          !          and (1.e-3*tol*coordinate value)))
+!value:                   ! of scalar (singleton) dimension 
+!bounds_values:           ! of scalar (singleton) dimension bounds
+!----------------------------------	
+!
+!
+!  TEMPLATE FOR VARIABLES
+!
+!
+!============
+!variable_entry:                ! (required)
+!============
+!
+!    Override default argument specifications for cmor_variable
+!------------
+!        acceptable arguments include  file_suffix missing_value tolerance 
+!                               original_name history comment positive
+!required:                   ! (default: table table_entry units axis_ids)
+!indeterminate:              ! (default: file_suffix missing_value)
+!optional:                   ! (default: original_name history comment)
+!ignored:                    ! (default: positive)
+!forbidden:
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+!standard_name:              ! (required)
+!units:                      ! (required)
+!cell_methods:               ! (default: undeclared)
+!long_name:                  ! (default: undeclared)
+!comment:                    ! (default: undeclared)
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+!dimensions:                 ! (required)  (scalar dimension(s) should appear
+                             !      last in list)
+!out_name:                   ! (default: variable_entry)
+!type:                       ! real (default), double, integer 
+!positive:                   ! up or down (default: undeclared)
+!valid_min:                  ! type: real (default: no check performed)
+!valid_max:                  ! type: real (default: no check performed)
+!ok_min_mean_abs:            ! type: real (default: no check performed)
+!ok_max_mean_abs:            ! type: real (default: no check performed)
+!----------------------------------	
+! 
+!*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#
+!
+! AXIS INFORMATION
+!
+!*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#
+!
+!
+!
+!============
+axis_entry: longitude
+!============
+!
+!------------
+!
+! Axis attributes:
+!----------------------------------	
+standard_name:    longitude
+units:            degrees_east
+axis:             X
+long_name:        longitude
+!----------------------------------	
+!
+! Additional axis information:
+!----------------------------------	
+out_name:         lon
+valid_min:        0.           ! CMOR will add n*360 to input values
+                               ! (where n is an integer) to ensure 
+                               !  longitudes are in proper range.  The
+                               !  data will also be rearranged 
+                               !  appropriately.
+valid_max:        360.         !  see above comment.
+!----------------------------------	
+!
+!
+!=============
+axis_entry: latitude
+!=============
+!
+! Axis attributes:
+!----------------------------------	
+standard_name:    latitude
+units:            degrees_north
+axis:             Y
+long_name:        latitude
+!----------------------------------	
+!
+! Additional axis information:
+!----------------------------------	
+out_name:         lat
+valid_min:        -90.
+valid_max:        90.
+!----------------------------------	
+!
+!
+!
+!============
+axis_entry: time
+!============
+!
+!    Override default argument specifications for cmor_axis 
+!------------
+optional: interval length
+indeterminate: coord_vals cell_bounds
+!------------
+!
+! Axis attributes:
+!----------------------------------	
+standard_name:    time
+units:            days since 2000-01-01
+axis:             T
+long_name:        time
+!----------------------------------	
+!
+!
+!
+!============
+axis_entry: standard_sigma
+!============
+!
+!    Override default argument specifications for cmor_axis 
+!------------
+optional: units
+!------------
+!
+! Axis attributes:
+!----------------------------------	
+standard_name:    atmosphere_sigma_coordinate
+axis:             Z
+positive:         down
+long_name:        sigma coordinate
+!----------------------------------	
+!
+! Additional axis information:
+!----------------------------------	
+out_name:         lev
+stored_direction: decreasing
+valid_min:        0.0
+valid_max:        1.0
+formula:          p(n,k,j,i) = ptop + sigma(k)*(ps(n,j,i) - ptop)
+convert_to:       standard_hybrid_sigma
+z_factors:        ptop: ptop sigma: sigma ps: ps
+z_bounds_factors: ptop: ptop sigma: sigma_bnds ps: ps
+!----------------------------------	
+!
+!
+!============
+axis_entry:  standard_hybrid_sigma
+!============
+!
+!    Override default argument specifications for cmor_axis 
+!------------
+!optional: units
+!------------
+!
+! Axis attributes:
+!----------------------------------	
+standard_name:    atmosphere_hybrid_sigma_pressure_coordinate
+units:            1
+axis:             Z 
+positive:         down
+long_name:        hybrid sigma pressure coordinate
+!----------------------------------	
+!
+! Additional axis information:
+!----------------------------------	
+out_name:         lev
+stored_direction: decreasing
+valid_min:        0.0
+valid_max:        1.0
+formula:          p(n,k,j,i) = a(k)*p0 + b(k)*ps(n,j,i)
+z_factors:        p0: p0 a: a b: b ps: ps
+z_bounds_factors: p0: p0 a: a_bnds b: b_bnds ps: ps
+!----------------------------------		
+!
+!
+!============
+axis_entry:  alternate_hybrid_sigma
+!============
+!
+!    Override default argument specifications for cmor_axis 
+!------------
+!optional: units
+!------------
+!
+! Axis attributes:
+!----------------------------------	
+standard_name:    atmosphere_hybrid_sigma_pressure_coordinate
+units:            1
+axis:             Z
+positive:         down
+long_name:        hybrid sigma pressure coordinate
+!----------------------------------	
+!
+! Additional axis information:
+!----------------------------------	
+out_name:         lev
+stored_direction: decreasing
+valid_min:        0.0
+valid_max:        1.0
+formula:          p(n,k,j,i) = ap(k) + b(k)*ps(n,j,i)
+convert_to:       standard_hybrid_sigma
+z_factors:        p0: p0 ap: ap b: b ps: ps
+z_bounds_factors: p0: p0 ap: ap_bnds b: b_bnds ps: ps
+!----------------------------------		
+!
+!
+!============
+axis_entry:  hybrid_height
+!============
+!
+!    Override default argument specifications for cmor_axis 
+!------------
+!optional: units
+!------------
+!
+! Axis attributes:
+!----------------------------------	
+standard_name:    atmosphere_hybrid_height_coordinate
+units:            m
+axis:             Z 
+positive:         up
+long_name:        hybrid height coordinate
+!----------------------------------	
+!
+! Additional axis information:
+!----------------------------------	
+out_name:         lev
+stored_direction: increasing
+valid_min:        0.0
+formula:          z(k,j,i) = a(k) + b(k)*orog(j,i)
+z_factors:        a: az b: bz orog: orog
+z_bounds_factors: a: az_bnds b: bz_bnds orog: orog
+!----------------------------------		
+!
+!
+!*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#
+!
+! VARIABLE INFORMATION
+!
+!*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#
+!
+!
+!
+! ***************************************************************
+!
+! Vertical dimensionless coordinate variables:
+!
+! ***************************************************************
+!
+!
+!
+!============
+variable_entry: p0
+!============
+!
+!    Override default argument specifications for cmor_variable
+!------------
+ignored: axis_ids
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:       reference pressure for hybrid sigma coordinate 
+units:           Pa
+!----------------------------------	
+!
+!
+!============
+variable_entry: ptop
+!============
+!
+!    Override default argument specifications for cmor_variable
+!------------
+ignored: axis_ids
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:       pressure at top of model 
+units:           Pa
+!----------------------------------	
+!
+!
+!============
+variable_entry: sigma
+!============
+!
+!    Override default argument specifications for cmor_variable
+!------------
+!optional: units
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:  sigma coordinate
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         zlevel
+type:               double
+!----------------------------------	
+!
+!
+!============
+variable_entry: sigmabnds
+!============
+!IPCC_table_A1
+!    Override default argument specifications for cmor_variable
+!------------
+!optional: units
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:  sigma coordinate for layer bounds
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         zlevel
+type:               double
+!----------------------------------	
+!
+!
+!============
+variable_entry: a
+!============
+!
+!    Override default argument specifications for cmor_variable
+!------------
+!optional: units
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   hybrid sigma coordinate A coefficient for layer
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         zlevel
+type:               double
+!----------------------------------	
+!
+!
+!============
+variable_entry: b
+!============
+!
+!    Override default argument specifications for cmor_variable
+!------------
+!optional: units
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   hybrid sigma coordinate B coefficient for layer
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         zlevel
+type:               double
+!----------------------------------	
+!
+!
+!============
+variable_entry: abnds
+!============
+!
+!    Override default argument specifications for cmor_variable
+!------------
+!optional: units
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   hybrid sigma coordinate A coefficient for layer bounds
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         zlevel
+type:               double
+!----------------------------------	
+!
+!
+!============
+variable_entry: bbnds
+!============
+!
+!    Override default argument specifications for cmor_variable
+!------------
+!optional: units
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   hybrid sigma coordinate B coefficient for layer bounds
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         zlevel
+type:               double
+!----------------------------------
+!
+!
+!============
+variable_entry: ap
+!============
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   alternate hybrid sigma coordinate A coefficient for layer
+units:           Pa
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         zlevel
+type:               double
+!----------------------------------	
+!
+!
+!============
+variable_entry: apbnds
+!============
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   alternate hybrid sigma coordinate A coefficient for layer bounds
+units:           Pa
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         zlevel
+type:               double
+!----------------------------------	
+!
+!
+!============
+variable_entry: az
+!============
+!
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   hybrid height coordinate A coefficient for layer
+units:           m
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         zlevel
+type:               double
+!----------------------------------	
+!
+!
+!============
+variable_entry: bz
+!============
+!
+!    Override default argument specifications for cmor_variable 
+!------------
+!optional: units
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   hybrid height coordinate B coefficient for layer
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         zlevel
+type:               double
+!----------------------------------	
+!
+!
+!============
+variable_entry: azbnds
+!============
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   hybrid sigma coordinate A coefficient for layer bounds
+units:           m
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         zlevel
+type:               double
+!----------------------------------	
+!
+!
+!============
+variable_entry: bzbnds
+!============
+!
+!    Override default argument specifications for cmor_variable
+!------------
+!optional: units
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   hybrid sigma coordinate B coefficient for layer bounds
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         zlevel
+type:               double
+!----------------------------------
+!
+!
+!
+! ***************************************************************
+!
+! AEROCOM-ACC Table 2D-I: Time-independent data
+!
+! ***************************************************************
+!
+!
+!
+!============
+variable_entry: orog
+!============
+!
+! Variable attributes:
+!----------------------------------	
+standard_name: surface_altitude
+units:         m
+long_name:     Surface Altitude
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:       longitude latitude
+valid_min:        -500.
+valid_max:        12000.
+!----------------------------------	
+!
+!
+!============
+variable_entry: landf
+!============
+!
+! Variable attributes:
+!----------------------------------	
+standard_name: land_area_fraction
+units:         1
+long_name:     Land Area Fraction
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:       longitude latitude
+valid_min:        0.0
+valid_max:        1.
+!----------------------------------	
+!
+!
+!
+!============
+variable_entry: area
+!============
+!
+! Variable attributes:
+!----------------------------------	
+standard_name: area
+units:         m2
+long_name:     grid-cell area 
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:       longitude latitude
+valid_min:        0.0
+valid_max:        1.e11
+!----------------------------------	
+!
+!
+!

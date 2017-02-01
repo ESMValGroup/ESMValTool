@@ -90,20 +90,14 @@ function get_output_filename(res[1]:logical,
                              mip[1]:string,
                              year1[1]:integer,
                              year2[1]:integer)
-; Define the CMIP5 DRS output filename
+; Define the output filename
 local outfile_string, month_str
 begin
 
-;;     outfile_string = res@processed_data_folder + "/"\
-;;                                                + var_name + "_"\
-;;                                                + mip + "_"\
-;;                                                + "LandFlux-EVAL_"\
-;;                                                + "obs_"\
-;;                                                + "r1i1p1_"\
-;;                                                + tostring(year1) + "01-"\
-;;                                                + tostring(year2) + "12.nc"
     outfile_string = res@processed_data_folder + "/" + \
-        "OBS_LandFlux-EVAL_ground_1_T2Ms_" + var_name + ".nc"
+        "OBS_LandFlux-EVAL_ground_1_T2Ms_" + var_name + "_" + \
+        tostring(year1) + "01-" + tostring(year2) + "12.nc"
+
     if (isfilepresent(outfile_string)) then
         system("rm -f " + outfile_string)
     end if

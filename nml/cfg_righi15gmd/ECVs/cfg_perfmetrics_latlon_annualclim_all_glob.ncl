@@ -40,25 +40,3 @@ diag_script_info@t_test = True
 
 ;; Confidence level for the t-test (for zonal and lat-lon)
 diag_script_info@conf_level = 0.95
-
-;; Reference model, as specified in annotations
-;; If the attribute is a 2D array, the first model specified the
-;; reference, the second model the alternative
-if(variables(0).eq."hus") then
-    diag_script_info@ref_model = (/"AIRS", "ERA-Interim"/)
-else if(any(variables(0).eq.(/"rlutcs", "rlut", "rsutcs", "rsut"/))) then
-    diag_script_info@ref_model = (/"SRB","CERES-EBAF"/)
-else if(any(variables(0).eq.(/"ta", "ua", "va", "zg"/))) then
-    diag_script_info@ref_model = (/"ERA-Interim", "NCEP"/)
-else if(any(variables(0).eq.(/"tropoz"/))) then
-    diag_script_info@ref_model = (/"AURA-MLS-OMI"/)  
-else if(any(variables(0).eq.(/"toz"/))) then
-    diag_script_info@ref_model = (/"NIWA", "EOC-GOME"/)
-else if(variables(0).eq."clt") then
-    diag_script_info@ref_model = (/"MODIS"/)
-end if
-end if
-end if
-end if
-end if
-end if

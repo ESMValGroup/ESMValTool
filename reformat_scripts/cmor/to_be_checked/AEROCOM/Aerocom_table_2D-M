@@ -1,0 +1,1403 @@
+cmor_version: 2.0            ! version of CMOR that can read this table
+cf_version:   1.3-AEROCOM    ! version of CF that output conforms to
+project_id:   AEROCOM-ACC    ! project id
+table_id:     Table 2D-M     ! table id
+table_date:   July 2009      ! date this table was constructed
+
+expt_id_ok:   'AEROCOM-A2-CTRL'
+expt_id_ok:   'AEROCOM-A2-PRE'
+expt_id_ok:   'AEROCOM-A2-SIZ1'
+expt_id_ok:   'AEROCOM-A2-SIZ2'
+expt_id_ok:   'AEROCOM-A2-SIZ3'
+expt_id_ok:   'AEROCOM-A2-SIZ4'
+expt_id_ok:   'AEROCOM-A2-ZERO'
+expt_id_ok:   'AEROCOM-A2-FIX'
+expt_id_ok:   'AEROCOM-A2-TROP'
+expt_id_ok:   'AEROCOM-A2-ARCTIC'
+expt_id_ok:   'AEROCOM-HCA-0'
+expt_id_ok:   'AEROCOM-HCA-IPCC'
+expt_id_ok:   'AEROCOM-HCA-FIX'
+expt_id_ok:   'AEROCOM-HCA-MET'
+
+magic_number: -1          ! used to check whether this file has been 
+                          !   altered from the official version.
+                          !   should be set to number of non-blank 
+                          !   characters in file. 
+! use approx interval according to daily/monthly/hourly output
+approx_interval: 30.      ! monthly
+!approx_interval: 1.       ! daily
+!approx_interval: 0.04     ! hourly
+!approx_interval:  0.    ! approximate spacing between successive time
+                          !   samples (in units of the output time 
+                          !   coordinate), but this is ignored if set to 0.
+missing_value: 1.e20      ! value used to indicate a missing value
+                          !   in arrays output by netCDF as 32-bit IEEE 
+                          !   floating-point numbers (float or real)
+
+!*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#
+!
+! SUBROUTINE ARGUMENT DEFAULT INFORMATION
+!
+!*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#
+!
+!  set default specifications for subroutine arguments to:
+!     required/indeterminate/optional/ignored/forbidden
+!    (indeterminate may or may not be required information, but is not always
+!     required as an argument of the function call)
+!
+!
+!============
+subroutine_entry: cmor_axis
+!============
+!
+required: table axis_name units length coord_vals cell_bounds
+ignored: interval
+!
+!============
+subroutine_entry: cmor_variable
+!============
+!
+required: table table_entry units axis_ids
+indeterminate: missing_value
+optional: tolerance original_name history comment
+ignored: positive
+!
+!============
+subroutine_entry: cmor_write
+!============
+!
+required:  var_id data 
+indeterminate: ntimes_passed time_vals time_bnds store_with
+optional: file_suffix
+!
+!
+!*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#
+!
+! Templates for axes and variables
+!
+!*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#
+!
+!
+!  TEMPLATE FOR AXES
+!
+!============
+!axis_entry:               ! (required)
+!============
+!
+!    Override default argument specifications for cmor_axis 
+!------------
+!    acceptable arguments include units length coord_vals cell_bounds interval
+!required:                  ! (default: table axis_name units length
+!                                        coord_vals cell_bounds)
+!indeterminate:
+!optional:
+!ignored:                   ! (default: interval)
+!forbidden:
+!------------
+!
+! Axis attributes:
+!----------------------------------	
+!standard_name:             ! (required)
+!units:                     ! (required)
+!axis:                      ! X, Y, Z, T (default: undeclared)
+!positive:                  ! up or down (default: undeclared)
+!long_name:                 ! (default: undeclared)
+!----------------------------------	
+!
+! Additional axis information:
+!----------------------------------	
+!out_name:                ! (default: same as axis_entry) 
+!type:                    ! double (default), real, character, integer
+!stored_direction:        ! increasing (default) or decreasing
+!valid_min:               ! type: double precision (default: no check performed
+!valid_max:               ! type: double precision (default: no check performed
+!requested:               ! space-separated list of requested coordinates 
+                          !       (default: undeclared)
+!bounds_requested:        ! space-separated list of requested coordinate bounds
+                          !       (default: undeclared)
+!tol_on_requests:         ! fractional tolerance for meeting request
+                          !  (default=1.e-3, which is used in the formula:
+                          !     eps =  MIN(( tol*interval between grid-points)
+                          !          and (1.e-3*tol*coordinate value)))
+!value:                   ! of scalar (singleton) dimension 
+!bounds_values:           ! of scalar (singleton) dimension bounds
+!----------------------------------	
+!
+!
+!  TEMPLATE FOR VARIABLES
+!
+!
+!============
+!variable_entry:                ! (required)
+!============
+!
+!    Override default argument specifications for cmor_variable
+!------------
+!        acceptable arguments include  file_suffix missing_value tolerance 
+!                               original_name history comment positive
+!required:                   ! (default: table table_entry units axis_ids)
+!indeterminate:              ! (default: file_suffix missing_value)
+!optional:                   ! (default: original_name history comment)
+!ignored:                    ! (default: positive)
+!forbidden:
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+!standard_name:              ! (required)
+!units:                      ! (required)
+!cell_methods:               ! (default: undeclared)
+!long_name:                  ! (default: undeclared)
+!comment:                    ! (default: undeclared)
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+!dimensions:                 ! (required)  (scalar dimension(s) should appear
+                             !      last in list)
+!out_name:                   ! (default: variable_entry)
+!type:                       ! real (default), double, integer 
+!positive:                   ! up or down (default: undeclared)
+!valid_min:                  ! type: real (default: no check performed)
+!valid_max:                  ! type: real (default: no check performed)
+!ok_min_mean_abs:            ! type: real (default: no check performed)
+!ok_max_mean_abs:            ! type: real (default: no check performed)
+!----------------------------------	
+! 
+!*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#
+!
+! AXIS INFORMATION
+!
+!*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#
+!
+!
+!
+!============
+axis_entry: longitude
+!============
+!
+!------------
+!
+! Axis attributes:
+!----------------------------------	
+standard_name:    longitude
+units:            degrees_east
+axis:             X
+long_name:        longitude
+!----------------------------------	
+!
+! Additional axis information:
+!----------------------------------	
+out_name:         lon
+valid_min:        0.           ! CMOR will add n*360 to input values
+                               ! (where n is an integer) to ensure 
+                               !  longitudes are in proper range.  The
+                               !  data will also be rearranged 
+                               !  appropriately.
+valid_max:        360.         !  see above comment.
+!----------------------------------	
+!
+!
+!=============
+axis_entry: latitude
+!=============
+!
+! Axis attributes:
+!----------------------------------	
+standard_name:    latitude
+units:            degrees_north
+axis:             Y
+long_name:        latitude
+!----------------------------------	
+!
+! Additional axis information:
+!----------------------------------	
+out_name:         lat
+valid_min:        -90.
+valid_max:        90.
+!----------------------------------	
+!
+!
+!
+!============
+axis_entry: time
+!============
+!
+!    Override default argument specifications for cmor_axis 
+!------------
+optional: interval length
+indeterminate: coord_vals cell_bounds
+!------------
+!
+! Axis attributes:
+!----------------------------------	
+standard_name:    time
+units:            days since 1850-01-01
+axis:             T
+long_name:        time
+!----------------------------------	
+!
+!
+!
+!*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#
+!
+! VARIABLE INFORMATION
+!
+!*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#
+!
+!
+!
+! ***************************************************************
+!
+! AEROCOM-ACC Table 2D-M: Monthly 2-d atmosphere data
+!
+! ***************************************************************
+!
+!====
+variable_entry: ps
+!====
+standard_name: surface_air_pressure
+units:Pa
+cell_methods: time: mean
+long_name: surface air pressure
+dimensions: longitude latitude time
+valid_min:        0.45e5
+valid_max:        1.2e5
+
+!====
+variable_entry: od550aer
+!====
+standard_name: atmosphere_optical_thickness_due_to_ambient_aerosol
+units:1
+cell_methods: time: mean
+long_name: AOD@550nm
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: od440aer
+!====
+standard_name: atmosphere_optical_thickness_due_to_ambient_aerosol
+units:1
+cell_methods: time: mean
+long_name: AOD@440nm
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: od870aer
+!====
+standard_name: atmosphere_optical_thickness_due_to_ambient_aerosol
+units:1
+cell_methods: time: mean
+long_name: AOD@870nm
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: od550lt1aer
+!====
+standard_name: atmosphere_optical_thickness_due_to_pm1_ambient_aerosol
+units:1
+cell_methods: time: mean
+long_name: Fine mode AOD@550nm
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: abs550aer
+!====
+standard_name: atmosphere_absorption_optical_thickness_due_to_ambient_aerosol
+units:1
+cell_methods: time: mean
+long_name: Absorption AOD@550nm
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: asyaer
+!====
+standard_name: atmosphere_aerosol_asymmetry_parameter 
+units:1
+cell_methods: time: mean
+long_name: asymmetry parameter
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: sconcoa
+!====
+standard_name: mass_concentration_of_particulate_organic_matter_dry_aerosol_in_air
+units:kg m-3
+cell_methods: time: mean
+long_name: Surface concentration POM
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: sconcbc
+!====
+standard_name: mass_concentration_of_black_carbon_dry_aerosol_in_air
+units:kg m-3
+cell_methods: time: mean
+long_name: Surface concentration BC
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: sconcso4
+!====
+standard_name: mass_concentration_of_sulfate_dry_aerosol_in_air
+units:kg m-3
+cell_methods: time: mean
+long_name: Surface concentration SO4
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: sconcdust
+!====
+standard_name: mass_concentration_of_dust_dry_aerosol_in_air
+units:kg m-3
+cell_methods: time: mean
+long_name: Surface concentration DUST
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: sconcss
+!====
+standard_name: mass_concentration_of_seasalt_dry_aerosol_in_air
+units:kg m-3
+cell_methods: time: mean
+long_name: Surface concentration SS
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: sconcno3
+!====
+standard_name: mass_concentration_of_nitrate_dry_aerosol_in_air
+units:kg m-3
+cell_methods: time: mean
+long_name: Surface concentration NO3
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: ec550dryaer
+!====
+standard_name: atmosphere_extinction_due_to_dry_aerosol
+units:m-1
+cell_methods: time: mean
+long_name: Surface dry aerosol extinction PM10
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: abs550dryaer
+!====
+standard_name: atmosphere_absorption_due_to_dry_aerosol
+units:m-1
+cell_methods: time: mean
+long_name: Surface dry aerosol absorption PM10
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: ec550aer
+!====
+standard_name: atmosphere_extinction_due_to_ambient_aerosol
+units:m-1
+cell_methods: time: mean
+long_name: Surface ambient aerosol extinction
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: precip
+!====
+standard_name: precipitation_amount
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: precipitation
+dimensions: longitude latitude time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: emioa
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_particulate_organic_matter_dry_aerosol_due_to_net_chemical_production_and_emission
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: total emission of POM
+dimensions: longitude latitude time
+positive: up
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: emibc
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_black_carbon_dry_aerosol_due_to_emission
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: total emission of BC
+dimensions: longitude latitude time
+positive: up
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: wetoa
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_particulate_organic_matter_dry_aerosol_due_to_wet_deposition
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: wet deposition of POM
+dimensions: longitude latitude time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: wetbc
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_black_carbon_dry_aerosol_due_to_wet_deposition
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: wet deposition of BC
+dimensions: longitude latitude time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: emiso2
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_sulfur_dioxide_due_to_emission
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: total emission of SO2
+dimensions: longitude latitude time
+positive: up
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: emiso4
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_sulfate_dry_aerosol_due_to_emission
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: total direct emission of SO4
+dimensions: longitude latitude time
+positive: up
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: emidms
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_dimethyl_sulfide_due_to_emission
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: total emission of DMS
+dimensions: longitude latitude time
+positive: up
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: wetso4
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_sulfate_dry_aerosol_due_to_wet_deposition
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: wet deposition of SO4
+dimensions: longitude latitude time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: emiss
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_seasalt_dry_aerosol_due_to_emission
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: total emission of seasalt
+dimensions: longitude latitude time
+positive: up
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: wetss
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_seasalt_dry_aerosol_due_to_wet_deposition
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: wet deposition of seasalt
+dimensions: longitude latitude time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: emidust
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_dust_dry_aerosol_due_to_emission
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: total emission of dust
+dimensions: longitude latitude time
+positive: up
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: wetdust
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_dust_dry_aerosol_due_to_wet_deposition
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: wet deposition of dust
+dimensions: longitude latitude time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: loadoa
+!====
+standard_name: atmosphere_mass_content_of_particulate_organic_matter_dry_aerosol
+units:kg m-2
+cell_methods: time: mean
+long_name: Load of POM
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: loadbc
+!====
+standard_name: atmosphere_mass_content_of_black_carbon_dry_aerosol
+units:kg m-2
+cell_methods: time: mean
+long_name: Load of BC
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: loadso4
+!====
+standard_name: atmosphere_mass_content_of_sulfate_dry_aerosol
+units:kg m-2
+cell_methods: time: mean
+long_name: Load of SO4
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: loaddust
+!====
+standard_name: atmosphere_mass_content_of_dust_dry_aerosol
+units:kg m-2
+cell_methods: time: mean
+long_name: Load of DUST
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: loadss
+!====
+standard_name: atmosphere_mass_content_of_seasalt_dry_aerosol
+units:kg m-2
+cell_methods: time: mean
+long_name: Load of SS
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: loadno3
+!====
+standard_name: atmosphere_mass_content_of_nitrate_dry_aerosol
+units:kg m-2
+cell_methods: time: mean
+long_name: Load of NO3
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: od550so4
+!====
+standard_name: atmosphere_optical_thickness_due_to_sulfate_ambient_aerosol
+units:1
+cell_methods: time: mean
+long_name: Sulfate AOD@550nm
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: od550bc
+!====
+standard_name: atmosphere_optical_thickness_due_to_black_carbon_ambient_aerosol
+units:1
+cell_methods: time: mean
+long_name: Black carbon AOD@550nm
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: od550oa
+!====
+standard_name: atmosphere_optical_thickness_due_to_particulate_organic_matter_ambient_aerosol
+units:1
+cell_methods: time: mean
+long_name: POM AOD@550nm
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: od550soa
+!====
+standard_name: atmosphere_optical_thickness_due_to_secondary_particulate_organic_matter_ambient_aerosol
+units:1
+cell_methods: time: mean
+long_name: SOA AOD@550nm
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: od550bb
+!====
+standard_name: atmosphere_optical_thickness_due_to_biomass_burning_ambient_aerosol
+units:1
+cell_methods: time: mean
+long_name: BB AOD@550nm
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: od550no3
+!====
+standard_name: atmosphere_optical_thickness_due_to_nitrate_ambient_aerosol
+units:1
+cell_methods: time: mean
+long_name: Nitrate AOD@550nm
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: od550ss
+!====
+standard_name: atmosphere_optical_thickness_due_to_seasalt_ambient_aerosol
+units:1
+cell_methods: time: mean
+long_name: Sea Salt AOD@550nm
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: od550dust
+!====
+standard_name: atmosphere_optical_thickness_due_to_dust_ambient_aerosol
+units:1
+cell_methods: time: mean
+long_name: Dust AOD@550nm
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: dryso2
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_sulfur_dioxide_due_to_dry_deposition
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: dry deposition of SO2
+dimensions: longitude latitude time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: dryso4
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_sulfate_due_to_dry_deposition
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: dry deposition of SO4
+dimensions: longitude latitude time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: drydms 
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_dimethyl_sulfide_due_to_dry_deposition
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: dry deposition of DMS
+dimensions: longitude latitude time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: wetso2
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_sulfur_dioxide_due_to_wet_deposition
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: wet deposition of SO2
+dimensions: longitude latitude time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: wetdms
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_dimethyl_sulfide_due_to_wet_deposition
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: wet deposition of DMS
+dimensions: longitude latitude time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: dryss
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_seasalt_dry_aerosol_due_to_dry_deposition
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: dry deposition of seasalt
+dimensions: longitude latitude time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: drydust
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_dust_dry_aerosol_due_to_dry_deposition
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: dry deposition of dust
+dimensions: longitude latitude time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: od550aerh2o
+!====
+standard_name: atmosphere_optical_thickness_due_to_water_ambient_aerosol
+units:1
+cell_methods: time: mean
+long_name: Aerosol Water AOD@550nm
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: gf90aer
+!====
+standard_name: aerosol_growth_factor_at_90_percent_relative_humidity
+units:1
+cell_methods: time: mean
+long_name: gf @ 90 % RH
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: od550lt1dust
+!====
+standard_name: atmosphere_optical_thickness_due_to_dust_pm1_ambient_aerosol
+units:1
+cell_methods: time: mean
+long_name: Fine mode DUST AOD@550nm
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: abs550bc
+!====
+standard_name: atmosphere_absorption_optical_thickness_due_to_black_carbon_ambient_aerosol
+units:1
+cell_methods: time: mean
+long_name: Absorption AOD@550nm due to BC
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: emibb
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_particulate_organic_matter_dry_aerosol_due_to_emission
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: total emission of Biomass Burning Aerosol
+dimensions: longitude latitude time
+positive: up
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: emipoa
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_primary_organic_matter_dry_aerosol_due_to_emission
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: total emission of POA
+dimensions: longitude latitude time
+positive: up
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: chepsoa
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_secondary_organic_matter_dry_aerosol_due_to_net_chemical_production
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: total production of SOA
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: chepmsa
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_methane_sulfonic_acid_dry_aerosol_due_to_net_chemical_production
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: total production of MSA
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: dryoa
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_particulate_organic_matter_dry_aerosol_due_to_dry_deposition
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: dry deposition of POM
+dimensions: longitude latitude time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: drypoa
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_primary_organic_matter_dry_aerosol_due_to_dry_deposition
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: dry deposition of POA
+dimensions: longitude latitude time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: drysoa
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_secondary_organic_matter_dry_aerosol_due_to_dry_deposition
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: dry deposition of SOA
+dimensions: longitude latitude time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: drybc
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_black_carbon_dry_aerosol_due_to_dry_deposition
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: dry deposition of BC
+dimensions: longitude latitude time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: clt
+!====
+standard_name: cloud_area_fraction
+units:%
+cell_methods: time: mean
+long_name: Cloud fraction
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: rsdt
+!====
+standard_name: toa_incoming_shortwave_flux
+units:W m-2
+cell_methods: time: mean
+long_name: SW downwelling solar flux
+dimensions: longitude latitude time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: rsut
+!====
+standard_name: toa_outgoing_shortwave_flux
+units:W m-2
+cell_methods: time: mean
+long_name: SW upwelling solar flux
+dimensions: longitude latitude time
+positive: up
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: rsutcs
+!====
+standard_name: toa_outgoing_shortwave_flux_assuming_clear_sky
+units:W m-2
+cell_methods: time: mean
+long_name: SW upwelling solar flux in clear sky regions
+dimensions: longitude latitude time
+positive: up
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: rsutcl
+!====
+standard_name: toa_outgoing_shortwave_flux_assuming_cloudy_sky
+units:W m-2
+cell_methods: time: mean
+long_name: SW upwelling solar flux in cloudy sky regions
+dimensions: longitude latitude time
+positive: up
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: rlut
+!====
+standard_name: toa_outgoing_longwave_flux
+units:W m-2
+cell_methods: time: mean
+long_name: LW upwelling terrestrial flux
+dimensions: longitude latitude time
+positive: up
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: rlutcs
+!====
+standard_name: toa_outgoing_longwave_flux_assuming_clear_sky
+units:W m-2
+cell_methods: time: mean
+long_name: LW upwelling terrestrial flux in clear sky regions
+dimensions: longitude latitude time
+positive: up
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: rsds
+!====
+standard_name: surface_downwelling_shortwave_flux_in_air
+units:W m-2
+cell_methods: time: mean
+long_name: SW surface down-welling 
+dimensions: longitude latitude time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: rsus
+!====
+standard_name: surface_upwelling_shortwave_flux_in_air
+units:W m-2
+cell_methods: time: mean
+long_name: SW surface up-welling 
+dimensions: longitude latitude time
+positive: up
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: rlds
+!====
+standard_name: surface_downwelling_longwave_flux_in_air
+units:W m-2
+cell_methods: time: mean
+long_name: LW surface down-welling 
+dimensions: longitude latitude time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: rlus
+!====
+standard_name: surface_upwelling_longwave_flux_in_air
+units:W m-2
+cell_methods: time: mean
+long_name: LW surface up-welling 
+dimensions: longitude latitude time
+positive: up
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: rsdscs
+!====
+standard_name: surface_downwelling_shortwave_flux_in_air_assuming_clear_sky
+units:W m-2
+cell_methods: time: mean
+long_name: SW downwelling surface flux clear sky
+dimensions: longitude latitude time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: rsdscsvis
+!====
+standard_name: surface_downwelling_shortwave_visible_flux_in_air_assuming_clear_sky
+units:W m-2
+cell_methods: time: mean
+long_name: VIS downwelling surface flux in clear sky 
+dimensions: longitude latitude time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: rsdscsdif
+!====
+standard_name: surface_downwelling_shortwave_visible_diffuse_flux_in_air_assuming_clear_sky
+units:W m-2
+cell_methods: time: mean
+long_name: SW downwelling surface diffuse flux in clear sky
+dimensions: longitude latitude time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: ta_min
+!====
+standard_name: air_temperature
+units:K
+cell_methods: time: mean
+long_name: Minimum Daily temperature
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: ta_max
+!====
+standard_name: air_temperature
+units:K
+cell_methods: time: mean
+long_name: Maximum Daily temperature
+dimensions: longitude latitude time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: swtoaasso4ant
+!====
+standard_name: net_downward_shortwave_flux_at_top_of_atmosphere_model
+units:W m-2
+cell_methods: time: mean
+long_name: All sky SW-RF so4 at TOA anthropogenic
+dimensions: longitude latitude time
+positive: down
+valid_min: -10000
+valid_max: 10000
+
+!====
+variable_entry: swtoaasbcffant
+!====
+standard_name: net_downward_shortwave_flux_at_top_of_atmosphere_model
+units:W m-2
+cell_methods: time: mean
+long_name: All sky SW-RF bcff at TOA anthropogenic
+dimensions: longitude latitude time
+positive: down
+valid_min: -10000
+valid_max: 10000
+
+!====
+variable_entry: swtoaasoaffant
+!====
+standard_name: net_downward_shortwave_flux_at_top_of_atmosphere_model
+units:W m-2
+cell_methods: time: mean
+long_name: All sky SW-RF pomff at TOA anthropogenic
+dimensions: longitude latitude time
+positive: down
+valid_min: -10000
+valid_max: 10000
+
+!====
+variable_entry: swtoaasbbant
+!====
+standard_name: net_downward_shortwave_flux_at_top_of_atmosphere_model
+units:W m-2
+cell_methods: time: mean
+long_name: All sky SW-RF bb at TOA anthropogenic
+dimensions: longitude latitude time
+positive: down
+valid_min: -10000
+valid_max: 10000
+
+!====
+variable_entry: swtoaassoaant
+!====
+standard_name: net_downward_shortwave_flux_at_top_of_atmosphere_model
+units:W m-2
+cell_methods: time: mean
+long_name: All sky SW-RF soa at TOA anthropogenic
+dimensions: longitude latitude time
+positive: down
+valid_min: -10000
+valid_max: 10000
+
+!====
+variable_entry: swtoaasno3ant
+!====
+standard_name: net_downward_shortwave_flux_at_top_of_atmosphere_model
+units:W m-2
+cell_methods: time: mean
+long_name: All sky SW-RF no3 at TOA anthropogenic
+dimensions: longitude latitude time
+positive: down
+valid_min: -10000
+valid_max: 10000
+
+!====
+variable_entry: swtoaasss
+!====
+standard_name: net_downward_shortwave_flux_at_top_of_atmosphere_model
+units:W m-2
+cell_methods: time: mean
+long_name: All sky SW-RF ss at TOA natural
+dimensions: longitude latitude time
+positive: down
+valid_min: -10000
+valid_max: 10000
+
+!====
+variable_entry: swtoaasdust
+!====
+standard_name: net_downward_shortwave_flux_at_top_of_atmosphere_model
+units:W m-2
+cell_methods: time: mean
+long_name: All sky SW-RF dust at TOA natural
+dimensions: longitude latitude time
+positive: down
+valid_min: -10000
+valid_max: 10000
+
+!====
+variable_entry: swtoaasso4nat
+!====
+standard_name: net_downward_shortwave_flux_at_top_of_atmosphere_model
+units:W m-2
+cell_methods: time: mean
+long_name: All sky SW-RF so4 at TOA natural
+dimensions: longitude latitude time
+positive: down
+valid_min: -10000
+valid_max: 10000
+
+!====
+variable_entry: swtoaasbbnat
+!====
+standard_name: net_downward_shortwave_flux_at_top_of_atmosphere_model
+units:W m-2
+cell_methods: time: mean
+long_name: All sky SW-RF bb at TOA natural
+dimensions: longitude latitude time
+positive: down
+valid_min: -10000
+valid_max: 10000
+
+!====
+variable_entry: swtoaassoanat
+!====
+standard_name: net_downward_shortwave_flux_at_top_of_atmosphere_model
+units:W m-2
+cell_methods: time: mean
+long_name: All sky SW-RF soa at TOA natural
+dimensions: longitude latitude time
+positive: down
+valid_min: -10000
+valid_max: 10000
+
+!====
+variable_entry: eminh3
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_ammonia_due_to_emission
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: total emission of NH3
+dimensions: longitude latitude time
+positive: up
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: drynh3
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_ammonia_due_to_dry_deposition
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: dry deposition of NH3
+dimensions: longitude latitude time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: drynh4
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_ammonium_due_to_dry_deposition
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: dry deposition of NH4
+dimensions: longitude latitude time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: wetnh4
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_ammonium_due_to_wet_deposition
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: wet deposition of NH4+NH3
+dimensions: longitude latitude time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: eminox
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_nox_expressed_as_nitrogen_due_to_emission
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: total emission of NOx
+dimensions: longitude latitude time
+positive: up
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: dryhno3
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_nitric_acid_due_to_dry_deposition
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: dry deposition of HNO3
+dimensions: longitude latitude time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: dryno2
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_nitrogen_dioxide_due_to_dry_deposition
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: dry deposition of NO2
+dimensions: longitude latitude time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: drynoy
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_noy_due_to_dry_deposition
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: dry deposition of NOy
+dimensions: longitude latitude time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: wethno3
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_nitric_acid_due_to_wet_deposition
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: wet deposition of HNO3
+dimensions: longitude latitude time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: wetnoy
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_all_nitrogen_oxides_due_to_wet_deposition
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: wet deposition of NOy incl aerosol nitrate
+dimensions: longitude latitude time
+positive: down
+valid_min: 0.0
+valid_max: 10000

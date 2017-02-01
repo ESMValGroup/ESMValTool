@@ -1,0 +1,161 @@
+cmor_version: 2.5.0       ! minimum version of CMOR that can read this table
+cf_version:   1.4         ! version of CF that output conforms to
+project_id:   CCMI1       ! project id
+table_id:     fixed
+table_date:   6 August 2014 ! date this table was constructed
+modeling_realm: atmos
+frequency: fx
+
+expt_id_ok:  'Hindcast' 'refC1'
+expt_id_ok:  'Hindcast - Specified Dynamics' 'refC1SD'
+expt_id_ok:  'Projection' 'refC2'
+expt_id_ok:  'Hindcast Scenario - altEmis' 'senC1Emis'
+expt_id_ok:  'HindcastSD Scenario - altEmis' 'senC1SDEmis'
+expt_id_ok:  'Hindcast Scenario - fxdEmis' 'senC1fEmis'
+expt_id_ok:  'HindcastSD Scenario - fxdEmis' 'senC1SDfEmis'
+expt_id_ok:  'Hindcast Scenario - altSSI' 'senC1SSI'
+expt_id_ok:  'Projection Scenario - RCP2.6' 'senC2rcp26'
+expt_id_ok:  'Projection Scenario - RCP4.5' 'senC2rcp45'
+expt_id_ok:  'Projection Scenario - RCP8.5' 'senC2rcp85'
+expt_id_ok:  'Projection Scenario - fxdODS' 'senC2fODS'
+expt_id_ok:  'Projection Scenario - fxdODS2000' 'senC2fODS2000'
+expt_id_ok:  'Projection Scenario - fxdGHG' 'senC2fGHG'
+expt_id_ok:  'Projection Scenario - fxdEmis' 'senC2fEmis'
+expt_id_ok:  'Projection Scenario - GeoMIP-G1' 'senC2GeoMIPG1'
+expt_id_ok:  'Projection Scenario - GeoMIP-G2' 'senC2GeoMIPG2'
+expt_id_ok:  'Projection Scenario - GeoMIP-G3' 'senC2GeoMIPG3'
+expt_id_ok:  'Projection Scenario - GeoMIP-G4' 'senC2GeoMIPG4'
+expt_id_ok:  'Projection Scenario - SolarTrend' 'senC2SlrTrend'
+
+approx_interval:  0.00000 ! approximate spacing between successive time
+                          !   samples (in units of the output time 
+                          !   coordinate.
+
+missing_value: 1.e20      ! value used to indicate a missing value
+                          !   in arrays output by netCDF as 32-bit IEEE 
+                          !   floating-point numbers (float or real)
+
+baseURL: http://www.met.reading.ac.uk/ccmi/
+product: output
+
+required_global_attributes: creation_date tracking_id forcing model_id parent_experiment_id parent_experiment_rip branch_time contact institute_id ! space separated required global attribute 
+
+
+!============
+axis_entry: longitude
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    longitude
+units:            degrees_east
+axis:             X             ! X, Y, Z, T (default: undeclared)
+long_name:        longitude
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         lon
+valid_min:        0.0         
+valid_max:        360.0 
+stored_direction: increasing
+type:             double
+must_have_bounds: yes
+!----------------------------------
+!
+
+!============
+axis_entry: latitude
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    latitude
+units:            degrees_north
+axis:             Y             ! X, Y, Z, T (default: undeclared)
+long_name:        latitude
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         lat
+valid_min:        -90.0         
+valid_max:        90.0 
+stored_direction: increasing
+type:             double
+must_have_bounds: yes
+!----------------------------------
+!
+
+!============
+variable_entry:    areacella
+!============
+modeling_realm:    atmos land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     cell_area
+units:             m2
+long_name:         Atmosphere Grid-Cell Area
+comment:           For atmospheres with more than 1 mesh (e.g., staggered grids), report areas that apply to surface vertical fluxes of energy.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude
+out_name:          areacella
+type:              real
+valid_min:         100000.0
+valid_max:         1e+12
+ok_min_mean_abs:   100000.0
+ok_max_mean_abs:   1e+12
+!----------------------------------
+!
+
+!============
+variable_entry:    orog
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     surface_altitude
+units:             m
+cell_measures:     area: areacella
+long_name:         Surface Altitude
+comment:           height above the geoid; as defined here, ""the geoid"" is a surface of constant geopotential that, if the ocean were at rest, would coincide with mean sea level. Under this definition, the geoid changes as the mean volume of the ocean changes (e.g., due to glacial melt, or global warming of the ocean).  Report here the height above the present-day geoid.  Over ocean, report as 0.0
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude
+out_name:          orog
+type:              real
+valid_min:         -700.0
+valid_max:         10000.0
+ok_min_mean_abs:   327.9
+ok_max_mean_abs:   431.3
+!----------------------------------
+!
+
+!============
+variable_entry:    sftlf
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     land_area_fraction
+units:             %
+cell_measures:     area: areacella
+long_name:         Land Area Fraction
+comment:           For atmospheres with more than 1 mesh (e.g., staggered grids), report areas that apply to surface vertical fluxes of energy.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude
+out_name:          sftlf
+type:              real
+valid_min:         0.0
+valid_max:         100.0
+ok_min_mean_abs:   30.58
+ok_max_mean_abs:   37.07
+!----------------------------------
+!
+

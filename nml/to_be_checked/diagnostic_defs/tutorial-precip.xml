@@ -1,0 +1,16 @@
+<set_of_diagnostics>
+
+<description>
+... a description ...
+</description>
+
+<diag_script_cfg_dir>    ./diag_scripts_cfg/tutorial    </diag_script_cfg_dir>
+
+<diag>
+    <variable_def_dir>                ./variable_defs/   </variable_def_dir>
+    <variable>                         pr                     </variable>
+    <field_type>                       T2Ms                   </field_type>
+    <diag_script cfg="precip.cfg">     surfconplot_simple.ncl     </diag_script>
+</diag>
+
+</set_of_diagnostics>

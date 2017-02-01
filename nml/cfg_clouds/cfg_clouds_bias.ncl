@@ -3,8 +3,6 @@ diag_script_info = True
 ; used by clouds_bias.ncl
 ;diag_script_info@projection = "CylindricalEquidistant"   ; map projection, e.g., Mollweide, Mercator
 diag_script_info@projection = "Robinson"   ; map projection
-diag_script_info@styleset = "CMIP5"         ; "CMIP5", "DEFAULT"
-diag_script_info@colormap = "WhiteBlueGreenYellowRed"  ; e.g., WhiteBlueGreenYellowRed, rainbow
 diag_script_info@ncdf = "default" ;enable to output to netCDF; either use "default" or give a full file name
 
 ; target grid for regridding: use grid of reference model

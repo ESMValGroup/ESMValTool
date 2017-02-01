@@ -1,5 +1,5 @@
 <namelist>
-<include href="./config_private.xml"/>
+<include href="./config_private_DLR-PA2.xml"/>
 <namelist_summary>
 ###############################################################################
 namelist_SouthernHemisphere.xml
@@ -82,7 +82,7 @@ This namelist is part of the ESMVal tool
     <diag_script cfg="SouthernHemisphere.conf">   SouthernHemisphere.py </diag_script>
     <launcher_arguments>    [('execute_as_shell', False)]               </launcher_arguments>
 
-    <model id="obs"> CMIP5 WHOI-OAFlux Amon obs r1i1p1 2001 2004 @{OBSPATH}/Tier2/OAFlux </model>
+    <model id="obs"> CMIP5 WHOI-OAFlux Amon obs r1i1p1 2001 2004 @{OBSPATH}/Tier2/WHOI-OAFlux </model>
   </diag>
 
   <diag>
@@ -108,7 +108,7 @@ This namelist is part of the ESMVal tool
     <diag_script cfg="SouthernHemisphere.conf">   SouthernHemisphere.py </diag_script>
     <launcher_arguments>    [('execute_as_shell', False)]               </launcher_arguments>
 
-    <model id="obs"> CMIP5 MODIS-L3 Amon obs C6 2003 2014 @{OBSPATH}/Tier2/MODIS_L3_C6 </model>
+    <model id="obs"> CMIP5 MODIS-L3 Amon obs C6 2003 2014 @{OBSPATH}/Tier2/MODIS-L3-C6 </model>
   </diag>
 
   <diag>
@@ -121,7 +121,7 @@ This namelist is part of the ESMVal tool
     <diag_script cfg="SouthernHemisphere.conf">   SouthernHemisphere.py </diag_script>
     <launcher_arguments>    [('execute_as_shell', False)]               </launcher_arguments>
 
-    <model id="obs"> CMIP5 MODIS-L3 Amon obs C6 2003 2014 @{OBSPATH}/Tier2/MODIS_L3_C6 </model>
+    <model id="obs"> CMIP5 MODIS-L3 Amon obs C6 2003 2014 @{OBSPATH}/Tier2/MODIS-L3-C6 </model>
   </diag>
 
   <diag>

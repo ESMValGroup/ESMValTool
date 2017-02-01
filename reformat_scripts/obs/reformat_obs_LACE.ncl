@@ -300,9 +300,13 @@ begin
         gAtt@conventions = "CF/CMOR"
 
         ;; Outfile
+        d1 = str_get_field(str_get_field(PERIOD, 1, "-"), 1, "/") + \
+            str_get_field(str_get_field(PERIOD, 1, "-"), 2, "/")
+        d2 = str_get_field(str_get_field(PERIOD, 2, "-"), 1, "/") + \
+            str_get_field(str_get_field(PERIOD, 2, "-"), 2, "/")
         fout = OUTDIR + "OBS_" + OBSNAME + "_campaign_" + \
             str_sub_str(REGIONS(rr), " ", "") + "_" + FIELD + "_" + \
-            NAMES + ".nc"
+            NAMES + "_" + d1 + "-" + d2 + ".nc"
 
         ;; Write variable
         write_nc_profile(fout, NAMES, output, gAtt)

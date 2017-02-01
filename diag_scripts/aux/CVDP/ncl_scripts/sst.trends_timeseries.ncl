@@ -1,6 +1,6 @@
 ; Calculates SST global trends, running global trends and timeseries
 ;
-; Variables used: TS
+; Variables used: ts
 ;
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
@@ -104,11 +104,7 @@ begin
   xy_ann = new(nsim,"graphic")  
   xy_mon = new(nsim,"graphic")  
   
-  xy_rt_mon_8 = new(nsim,"graphic")  
-  xy_rt_mon_10 = new(nsim,"graphic")  
-  xy_rt_mon_12 = new(nsim,"graphic")  
-  xy_rt_mon_14 = new(nsim,"graphic")  
-  xy_rt_mon_16 = new(nsim,"graphic")  
+  xy_rt_mon = new((/5,nsim/),"graphic")  
   
   if (isfilepresent2("obs_ts")) then
      xy_obs_djf = new(nsim,"graphic")  
@@ -124,17 +120,14 @@ begin
         delete(sst)
         continue
      end if 
-     if (isfilepresent2("obs_ts").and.ee.eq.0) then   ; mask out land in array going into EOF functions
-     else
-        sst = where(sst.le.-1.8,-1.8,sst)
-        d = addfile("$NCARG_ROOT/lib/ncarg/data/cdf/landsea.nc","r")   
-        basemap = d->LSMASK
-        lsm = landsea_mask(basemap,sst&lat,sst&lon)
-        sst = mask(sst,conform(sst,lsm,(/1,2/)).ge.1,False)
-;        printStatInfo(sst)
-        delete([/lsm,basemap/])
-        delete(d)
-     end if    
+     sst = where(sst.le.-1.8,-1.8,sst)    ; set all values below -1.8 to -1.8
+     d = addfile("$NCARG_ROOT/lib/ncarg/data/cdf/landsea.nc","r")   ; mask out land (this is redundant for data that is already masked)
+     basemap = d->LSMASK
+     lsm = landsea_mask(basemap,sst&lat,sst&lon)
+     sst = mask(sst,conform(sst,lsm,(/1,2/)).ge.1,False)
+     delete([/lsm,basemap/])
+     delete(d)  
+
      if (OPT_CLIMO.eq."Full") then
         sst = rmMonAnnCycTLL(sst)
      else
@@ -210,10 +203,31 @@ begin
         sst_aa_mon_obs  = sst_aa_mon
         sst_aa_ann_obs  = sst_aa_ann
      end if
-     
+
+     dimT = dimsizes(sst_aa_mon)      ; calculate running trends from the monthly data
+     sst_rt_mon = new((/5,dimT/),typeof(sst_aa_mon))
+     sst_rt_mon!1 = "time"
+     sst_rt_mon&time = sst_aa_mon&time    
+     copy_VarAtts(sst_aa_mon,sst_rt_mon)
+     sst_rt_mon@long_name =  sst_rt_mon@long_name+" global average running trend"
+     rt_nyr = (/8,10,12,14,16/)
+     do ff = 0,dimsizes(rt_nyr)-1
+        incr = rt_nyr(ff)*12
+        do gg = 0,dimT-incr-1
+           tttt = dtrend_msg(ispan(0,incr-1,1),sst_aa_mon(gg:gg+incr-1),False,True)
+           sst_rt_mon(ff,gg) = (/ tttt@slope*incr /)
+           delete(tttt) 
+        end do
+     end do
+     delete([/dimT,incr/])   
+
      if (OUTPUT_DATA.eq."True") then
         modname = str_sub_str(names(ee)," ","_")
-        fn = getenv("OUTDIR")+modname+".cvdp_data."+syear(ee)+"-"+eyear(ee)+".nc"
+        bc = (/"/","'","(",")"/)
+        do gg = 0,dimsizes(bc)-1
+           modname = str_sub_str(modname,bc(gg),"_")
+        end do
+        fn = getenv("OUTDIR")+modname+".cvdp_data.sst.trends_timeseries."+syear(ee)+"-"+eyear(ee)+".nc"
         if (.not.isfilepresent2(fn)) then
            z = addfile(fn,"c")
            z@source = "NCAR Climate Analysis Section's Climate Variability Diagnostics Package v"+getenv("VERSION")
@@ -223,6 +237,7 @@ begin
            else
               z@climatology = CLIMO_SYEAR+"-"+CLIMO_EYEAR+" climatology removed prior to all calculations (other than means)"
            end if
+           z@Conventions = "CF-1.6"
         else
            z = addfile(fn,"w")
         end if
@@ -236,36 +251,26 @@ begin
         sst_aa_ann2&TIME = ispan(syear(ee),eyear(ee),1)
         sst_aa_ann2&TIME@units = "YYYY"
         sst_aa_ann2&TIME@long_name = "time"
-        z->sst_global_avg_mon = sst_aa_mon
-        z->sst_global_avg_djf = sst_aa_seas2(0,:)
-        z->sst_global_avg_mam = sst_aa_seas2(1,:)
-        z->sst_global_avg_jja = sst_aa_seas2(2,:)
-        z->sst_global_avg_son = sst_aa_seas2(3,:)
-        z->sst_global_avg_ann = sst_aa_ann2
-        z->sst_trends_djf     = sst_trends_seas(0,:,:)
-        z->sst_trends_mam     = sst_trends_seas(1,:,:)
-        z->sst_trends_jja     = sst_trends_seas(2,:,:)
-        z->sst_trends_son     = sst_trends_seas(3,:,:)
-        z->sst_trends_ann     = sst_trends_ann
-        z->sst_trends_mon     = sst_trends_mon
+        z->sst_global_avg_mon = set_varAtts(sst_aa_mon,"sst global area-average (monthly)","C","")
+        z->sst_global_avg_djf = set_varAtts(sst_aa_seas2(0,:),"sst global area-average (DJF)","C","")
+        z->sst_global_avg_mam = set_varAtts(sst_aa_seas2(1,:),"sst global area-average (MAM)","C","")
+        z->sst_global_avg_jja = set_varAtts(sst_aa_seas2(2,:),"sst global area-average (JJA)","C","")
+        z->sst_global_avg_son = set_varAtts(sst_aa_seas2(3,:),"sst global area-average (SON)","C","")
+        z->sst_global_avg_ann = set_varAtts(sst_aa_ann2,"sst global area-average (annual)","C","")
+        z->$("sst_global_avg_runtrend_"+rt_nyr(0)+"yr")$ = set_varAtts(sst_rt_mon(0,:),"sst global area-average "+rt_nyr(0)+"yr running trend","","") 
+        z->$("sst_global_avg_runtrend_"+rt_nyr(1)+"yr")$ = set_varAtts(sst_rt_mon(1,:),"sst global area-average "+rt_nyr(1)+"yr running trend","","")
+        z->$("sst_global_avg_runtrend_"+rt_nyr(2)+"yr")$ = set_varAtts(sst_rt_mon(2,:),"sst global area-average "+rt_nyr(2)+"yr running trend","","")
+        z->$("sst_global_avg_runtrend_"+rt_nyr(3)+"yr")$ = set_varAtts(sst_rt_mon(3,:),"sst global area-average "+rt_nyr(3)+"yr running trend","","")
+        z->$("sst_global_avg_runtrend_"+rt_nyr(4)+"yr")$ = set_varAtts(sst_rt_mon(4,:),"sst global area-average "+rt_nyr(4)+"yr running trend","","")
+        z->sst_trends_djf     = set_varAtts(sst_trends_seas(0,:,:),"sst linear trends (DJF)","","")
+        z->sst_trends_mam     = set_varAtts(sst_trends_seas(1,:,:),"sst linear trends (MAM)","","")
+        z->sst_trends_jja     = set_varAtts(sst_trends_seas(2,:,:),"sst linear trends (JJA)","","")
+        z->sst_trends_son     = set_varAtts(sst_trends_seas(3,:,:),"sst linear trends (SON)","","")
+        z->sst_trends_ann     = set_varAtts(sst_trends_ann,"sst linear trends (annual)","","")
+        z->sst_trends_mon     = set_varAtts(sst_trends_mon,"sst linear trends (monthly)","","")
         delete(z)
         delete([/sst_aa_seas2,sst_aa_ann2/])
      end if
-     
-     dimT = dimsizes(sst_aa_mon)      ; calculate running trends from the monthly data
-     sst_rt_mon = new((/5,dimT/),typeof(sst_aa_mon))
-     sst_rt_mon!1 = "time"
-     sst_rt_mon&time = sst_aa_mon&time     
-     rt_nyr = (/8,10,12,14,16/)
-     do ff = 0,dimsizes(rt_nyr)-1
-        incr = rt_nyr(ff)*12
-        do gg = 0,dimT-incr-1
-           tttt = dtrend_msg(ispan(0,incr-1,1),sst_aa_mon(gg:gg+incr-1),False,True)
-           sst_rt_mon(ff,gg) = (/ tttt@slope*incr /)
-           delete(tttt) 
-        end do
-     end do
-     delete(dimT)      
 ;========================================================================
      res = True
      res@mpProjection = "WinkelTripel"
@@ -283,10 +288,10 @@ begin
      res@mpFillOn = False
      res@mpCenterLonF = 210.
      res@mpOutlineOn = True  
-     res@mpDataSetName = "Earth..4"
      res@gsnDraw      = False
      res@gsnFrame     = False
   
+     res@cnFillMode = "RasterFill"
      res@cnLevelSelectionMode = "ExplicitLevels"
      if (COLORMAP.eq.0) then
         res@cnLevels = (/-8,-6,-5,-4,-3,-2,-1,-0.5,-0.25,0,0.25,0.5,1,2,3,4,5,6,8/)
@@ -442,13 +447,13 @@ begin
         delete(xyres@trYMaxF)
      end if
      
-     xyres@gsnRightString = ""     ; this section could be made to be more generic, in case rt_nyr gets changed. 1 graphical array would be needed..
-     xy_rt_mon_8(ee)  = gsn_csm_xy(wks_rt_mon,fspan(syear(ee),eyear(ee)+.91667,dimsizes(sst_aa_mon&time)),sst_rt_mon(0,:),xyres)
-     xy_rt_mon_10(ee) = gsn_csm_xy(wks_rt_mon,fspan(syear(ee),eyear(ee)+.91667,dimsizes(sst_aa_mon&time)),sst_rt_mon(1,:),xyres)
-     xy_rt_mon_12(ee) = gsn_csm_xy(wks_rt_mon,fspan(syear(ee),eyear(ee)+.91667,dimsizes(sst_aa_mon&time)),sst_rt_mon(2,:),xyres)
-     xy_rt_mon_14(ee) = gsn_csm_xy(wks_rt_mon,fspan(syear(ee),eyear(ee)+.91667,dimsizes(sst_aa_mon&time)),sst_rt_mon(3,:),xyres)
-     xy_rt_mon_16(ee) = gsn_csm_xy(wks_rt_mon,fspan(syear(ee),eyear(ee)+.91667,dimsizes(sst_aa_mon&time)),sst_rt_mon(4,:),xyres)
-         
+     xyres@gsnRightString = ""     
+     do ff = 0,4
+        if (.not.all(ismissing(sst_rt_mon(ff,:))))    
+           xyres@gsnRightString =  sst_rt_mon@units  
+           xy_rt_mon(ff,ee)  = gsn_csm_xy(wks_rt_mon,fspan(syear(ee),eyear(ee)+.91667,dimsizes(sst_aa_mon&time)),sst_rt_mon(ff,:),xyres)
+        end if
+     end do         
      delete([/sst_trends_seas,sst_trends_ann,sst_trends_mon/])  
      delete([/sst_aa_seas,sst_aa_mon,sst_aa_ann,xyres,xyres2,res,tttt,sst_rt_mon/])
   end do
@@ -458,7 +463,6 @@ begin
   
   panres = True
   panres@gsnMaximize = True  
-  panres@gsnPanelBottom = 0.05
   panres@gsnPaperOrientation = "portrait"
   panres@gsnPanelLabelBar = True
   panres@gsnPanelYWhiteSpacePercent = 3.0
@@ -466,37 +470,44 @@ begin
   panres@pmLabelBarWidthF = 0.65
   panres@lbTitleOn = False
   panres@lbBoxLineColor = "gray70"
-  if (nsim.le.5) then
-     panres@txFontHeightF = 0.024
+  if (nsim.le.4) then
+     if (nsim.eq.1) then
+        panres@txFontHeightF = 0.022
+        panres@gsnPanelBottom = 0.50
+     else
+        panres@txFontHeightF = 0.0145
+        panres@gsnPanelBottom = 0.50
+     end if
   else
      panres@txFontHeightF = 0.016
+     panres@gsnPanelBottom = 0.05
   end if
   panres@lbLabelStride = 1
   
   panres@txString = "TS Trends (DJF)"
   ncol = floattointeger(sqrt(nsim))
   nrow = (nsim/ncol)+mod(nsim,ncol)  
-  gsn_panel(wks_trends_djf,map_djf,(/nrow,ncol/),panres)
+  gsn_panel2(wks_trends_djf,map_djf,(/nrow,ncol/),panres)
   delete(wks_trends_djf)
   
   panres@txString = "TS Trends (MAM)"
-  gsn_panel(wks_trends_mam,map_mam,(/nrow,ncol/),panres)
+  gsn_panel2(wks_trends_mam,map_mam,(/nrow,ncol/),panres)
   delete(wks_trends_mam)
   
   panres@txString = "TS Trends (JJA)"
-  gsn_panel(wks_trends_jja,map_jja,(/nrow,ncol/),panres)
+  gsn_panel2(wks_trends_jja,map_jja,(/nrow,ncol/),panres)
   delete(wks_trends_jja)
   
   panres@txString = "TS Trends (SON)"
-  gsn_panel(wks_trends_son,map_son,(/nrow,ncol/),panres)
+  gsn_panel2(wks_trends_son,map_son,(/nrow,ncol/),panres)
   delete(wks_trends_son)
   
   panres@txString = "TS Trends (Annual)"
-  gsn_panel(wks_trends_ann,map_ann,(/nrow,ncol/),panres)
+  gsn_panel2(wks_trends_ann,map_ann,(/nrow,ncol/),panres)
   delete(wks_trends_ann)
   
   panres@txString = "TS Trends (Monthly)"
-  gsn_panel(wks_trends_mon,map_mon,(/nrow,ncol/),panres)
+  gsn_panel2(wks_trends_mon,map_mon,(/nrow,ncol/),panres)
   delete(wks_trends_mon)
   delete(panres)
   
@@ -504,7 +515,7 @@ begin
   panres2@gsnMaximize = True
   panres2@gsnPaperOrientation = "portrait"
   panres2@gsnPanelYWhiteSpacePercent = 3.0  
-  if (nsim.le.5) then
+  if (nsim.le.4) then
      panres2@txFontHeightF = 0.024
   else
      panres2@txFontHeightF = 0.016
@@ -520,65 +531,67 @@ begin
      lp = (/nrow,ncol/)  ;(/nsim/2+1,nsim/8+1/)  
   end if
   panres2@txString = "TS Global Average (DJF)"
-  gsn_panel(wks_aa_djf,xy_djf,lp,panres2)  
+  gsn_panel2(wks_aa_djf,xy_djf,lp,panres2)  
   delete(wks_aa_djf)
   
   panres2@txString = "TS Global Average (MAM)"
-  gsn_panel(wks_aa_mam,xy_mam,lp,panres2)  
+  gsn_panel2(wks_aa_mam,xy_mam,lp,panres2)  
   delete(wks_aa_mam)
   
   panres2@txString = "TS Global Average (JJA)"
-  gsn_panel(wks_aa_jja,xy_jja,lp,panres2)  
+  gsn_panel2(wks_aa_jja,xy_jja,lp,panres2)  
   delete(wks_aa_jja)
   
   panres2@txString = "TS Global Average (SON)"
-  gsn_panel(wks_aa_son,xy_son,lp,panres2)  
+  gsn_panel2(wks_aa_son,xy_son,lp,panres2)  
   delete(wks_aa_son)
   
   panres2@txString = "TS Global Average (Annual)"
-  gsn_panel(wks_aa_ann,xy_ann,lp,panres2)  
+  gsn_panel2(wks_aa_ann,xy_ann,lp,panres2)  
   delete(wks_aa_ann)
   
   panres2@txString = "TS Global Average (Monthly)"
-  gsn_panel(wks_aa_mon,xy_mon,lp,panres2)  
+  gsn_panel2(wks_aa_mon,xy_mon,lp,panres2)  
   delete(wks_aa_mon)
   
   panres2@txString = "TS Running 8yr Trend (Monthly)"
-  gsn_panel(wks_rt_mon,xy_rt_mon_8,lp,panres2)  
+  gsn_panel2(wks_rt_mon,xy_rt_mon(0,:),lp,panres2)  
   
   panres2@txString = "TS Running 10yr Trend (Monthly)"
-  gsn_panel(wks_rt_mon,xy_rt_mon_10,lp,panres2)  
+  gsn_panel2(wks_rt_mon,xy_rt_mon(1,:),lp,panres2)  
   
   panres2@txString = "TS Running 12yr Trend (Monthly)"
-  gsn_panel(wks_rt_mon,xy_rt_mon_12,lp,panres2)  
+  gsn_panel2(wks_rt_mon,xy_rt_mon(2,:),lp,panres2)  
   
   panres2@txString = "TS Running 14yr Trend (Monthly)"
-  gsn_panel(wks_rt_mon,xy_rt_mon_14,lp,panres2)  
+  gsn_panel2(wks_rt_mon,xy_rt_mon(3,:),lp,panres2)  
   
   panres2@txString = "TS Running 16yr Trend (Monthly)"
-  gsn_panel(wks_rt_mon,xy_rt_mon_16,lp,panres2)  
+  gsn_panel2(wks_rt_mon,xy_rt_mon(4,:),lp,panres2)  
   delete(wks_rt_mon)
   
   delete([/nrow,ncol,lp,map_djf,map_mam,map_jja,map_son,map_ann,map_mon,xy_djf,xy_mam,xy_jja,xy_son,xy_ann,xy_mon/])
-  delete([/xy_rt_mon_8,xy_rt_mon_10,xy_rt_mon_12,xy_rt_mon_14,xy_rt_mon_16/])
+  delete([/xy_rt_mon/])
   delete(panres2)
   if (isfilepresent2("obs_ts")) then
      delete([/xy_obs_djf,xy_obs_mam,xy_obs_jja,xy_obs_son,xy_obs_ann,xy_obs_mon/])
   end if
   OUTDIR = getenv("OUTDIR")
   if (wks_type.eq."png") then  
-     system("mv "+OUTDIR+"sst.runtrend.mon.000001.png "+OUTDIR+"sst."+rt_nyr(0)+"yr_runtrend.mon.png")
-     system("mv "+OUTDIR+"sst.runtrend.mon.000002.png "+OUTDIR+"sst."+rt_nyr(1)+"yr_runtrend.mon.png")
-     system("mv "+OUTDIR+"sst.runtrend.mon.000003.png "+OUTDIR+"sst."+rt_nyr(2)+"yr_runtrend.mon.png")
-     system("mv "+OUTDIR+"sst.runtrend.mon.000004.png "+OUTDIR+"sst."+rt_nyr(3)+"yr_runtrend.mon.png")
-     system("mv "+OUTDIR+"sst.runtrend.mon.000005.png "+OUTDIR+"sst."+rt_nyr(4)+"yr_runtrend.mon.png")
+     do gg = 1,5
+        if (isfilepresent2(OUTDIR+"sst.runtrend.mon.00000"+gg+".png")) then
+           system("mv "+OUTDIR+"sst.runtrend.mon.00000"+gg+".png "+OUTDIR+"sst."+rt_nyr(gg-1)+"yr_runtrend.mon.png")
+        end if
+     end do
   else
-     system("psplit "+OUTDIR+"sst.runtrend.mon.ps "+OUTDIR+"pict")
-     system("mv "+OUTDIR+"pict0001.ps "+OUTDIR+"sst."+rt_nyr(0)+"yr_runtrend.mon.ps")
-     system("mv "+OUTDIR+"pict0002.ps "+OUTDIR+"sst."+rt_nyr(1)+"yr_runtrend.mon.ps")
-     system("mv "+OUTDIR+"pict0003.ps "+OUTDIR+"sst."+rt_nyr(2)+"yr_runtrend.mon.ps")
-     system("mv "+OUTDIR+"pict0004.ps "+OUTDIR+"sst."+rt_nyr(3)+"yr_runtrend.mon.ps")
-     system("mv "+OUTDIR+"pict0005.ps "+OUTDIR+"sst."+rt_nyr(4)+"yr_runtrend.mon.ps")
+     if (isfilepresent2(OUTDIR+"sst.runtrend.mon.ps")) then
+        system("psplit "+OUTDIR+"sst.runtrend.mon.ps "+OUTDIR+"pict")
+        do gg = 1,5
+           if (isfilepresent2(OUTDIR+"pict000"+gg+".ps")) then
+              system("mv "+OUTDIR+"pict000"+gg+".ps "+OUTDIR+"sst."+rt_nyr(gg-1)+"yr_runtrend.mon.ps")
+           end if
+        end do
+     end if
   end if
   delete(OUTDIR)
   print("Finished: sst.trends_timeseries.ncl")  

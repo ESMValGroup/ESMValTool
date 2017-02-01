@@ -1,0 +1,58 @@
+<session>
+<comment>
+========================================================================
+DESCRIPTION: namelist_E06_CCMVal1.xml is the master namelist for the E06 
+             diagnostics of the CCMVal tool.
+
+AUTHORS: Irene Cionni (irene.cionni@enea.it)
+         Veronika Eyring (veronika.eyring@dlr.de)
+
+NOTES: This namelist is part of the CCMVal diagnostic tool
+       (PIs: Andrew Gettelman, Veronika Eyring, co-I: Hisako Shiona)
+========================================================================
+</comment>
+
+<GLOBAL>
+  <write_plots type="boolean">        True                      </write_plots>
+  <write_netcdf type="boolean">       True                      </write_netcdf>
+  <force_processing type="boolean">   False                     </force_processing>
+  <wrk_dir type="path">               ./work                    </wrk_dir>
+  <plot_dir type="path">              ./work/plots_E06_CCMVal1/ </plot_dir>
+  <climo_dir type="path">             ./work/climo              </climo_dir>
+  <write_plot_vars type="boolean">    True                      </write_plot_vars>
+  <max_data_filesize type="integer">  100                       </max_data_filesize>
+  <max_data_blocksize type="integer"> 500                       </max_data_blocksize>
+  <verbosity  type="integer">         3                         </verbosity>
+  <exit_on_warning  type="boolean">   True                      </exit_on_warning>
+</GLOBAL>
+
+
+<MODELS>
+<!-- The path for the observations and the input file name is specified in the 
+     attribute files. Please edit the corresponding ./var_att/*_att.ncl. -->
+  <model> CCMVal1 AMTRAC       REF-1  1  1980 2005  $SCRATCH/CCMVal/CCMVal1-Data/REF1netcdf/AMTRAC       </model><!--not for Fig. 3, no bry-->
+  <model> CCMVal1 CCSRNIES     REF-1  1  1980 2005  $SCRATCH/CCMVal/CCMVal1-Data/REF1netcdf/CCSRNIES     </model><!--no mean_age, bry-->
+  <model> CCMVal1 CMAM         REF-1  1  1980 2005  $SCRATCH/CCMVal/CCMVal1-Data/REF1netcdf/CMAM         </model><!--no bry-->
+  <model> CCMVal1 E39C         REF-1  1  1980 2005  $SCRATCH/CCMVal/CCMVal1-Data/REF1netcdf/E39C         </model><!--no mean_age, bry-->
+  <model> CCMVal1 GEOSCCM      REF-1  1  1980 2005  $SCRATCH/CCMVal/CCMVal1-Data/REF1netcdf/GEOSCCM      </model><!--no bry-->
+  <model> CCMVal1 LMDZrepro    REF-1  1  1980 2005  $SCRATCH/CCMVal/CCMVal1-Data/REF1netcdf/LMDZrepro    </model>
+  <model> CCMVal1 MAECHAM4CHEM REF-1  1  1980 2005  $SCRATCH/CCMVal/CCMVal1-Data/REF1netcdf/MAECHAM4CHEM </model><!--no mean age, bry-->
+  <model> CCMVal1 MRInew       REF-1  1  1980 2005  $SCRATCH/CCMVal/CCMVal1-Data/REF1netcdf/MRInew       </model><!--no mean age, bry-->
+  <model> CCMVal1 SOCOL        REF-1  1  1980 2005  $SCRATCH/CCMVal/CCMVal1-Data/REF1netcdf/SOCOL        </model><!--no mean age, bry-->
+  <model> CCMVal1 ULAQ         REF-1  1  1980 2005  $SCRATCH/CCMVal/CCMVal1-Data/REF1netcdf/ULAQ         </model><!--no mean age-->
+  <model> CCMVal1 UMETRAC      REF-1  1  1980 2005  $SCRATCH/CCMVal/CCMVal1-Data/REF1netcdf/UMETRAC      </model><!--not for Fig. 3, no bry-->
+  <model> CCMVal1 UMSLIMCAT    REF-1  1  1980 2005  $SCRATCH/CCMVal/CCMVal1-Data/REF1netcdf/UMSLIMCAT    </model><!--no mean age-->
+  <model> CCMVal1 WACCM        REF-1  1  1980 2005  $SCRATCH/CCMVal/CCMVal1-Data/REF1netcdf/WACCM        </model><!--no mean age, bry-->
+<!-- OBSERVATIONS for Fig. 1, 2, 4, 7 -->
+<!--  <model> CCMVal1 ERA40        REF-B1 1  1980 2005  $HOME/ESMVal-TOOL/ESM-Diagnostic/EDiTo_obs/trunk       </model>--><!-- for Fig. 1,2,4,7-->
+<!--  <model> CCMVal2 NCEP         REF-B1 1  1980 2005  $HOME/ESMVal-TOOL/ESM-Diagnostic/EDiTo_obs/trunk       </model>  -->
+<!--  <model> CCMVal2 NCEP2        REF-B1 1  1980 2005  $HOME/ESMVal-TOOL/ESM-Diagnostic/EDiTo_obs/trunk       </model>  -->
+<!--  <model> CCMVal2 JRA25        REF-B1 1  1980 2005  $HOME/ESMVal-TOOL/ESM-Diagnostic/EDiTo_obs/trunk       </model>  -->
+</MODELS>
+
+
+<DIAGNOSTICS>
+  <diagnostic> E06Diag </diagnostic>
+</DIAGNOSTICS>
+
+</session>

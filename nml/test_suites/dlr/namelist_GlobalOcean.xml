@@ -1,5 +1,5 @@
 <namelist>
-<include href="./config_private.xml"/>
+<include href="./config_private_DLR-PA2.xml"/>
 <namelist_summary>
 ###############################################################################
 namelist_GlobalOcean.xml
@@ -61,10 +61,10 @@ This namelist is part of the ESMValTool
     <diag_script_cfg_dir>                ./nml/cfg_GO/      </diag_script_cfg_dir>
     <diag_script cfg="spco2Diag.ncl">   GO_tsline.ncl       </diag_script>
 
-    <model> CMIP5      ref       monthly ETH-SOM-FFN  reg    1998 2000 @{OBSPATH}/Tier2/ETH-SOM-FFN </model>
-    <model> CMIP5_ETHZ BNU-ESM   monthly historical   r1i1p1 1998 2000 @{MODELPATH}/ETHZ_CMIP5 </model>
-    <model> CMIP5_ETHZ CanESM2   monthly historical   r1i1p1 1998 2000 @{MODELPATH}/ETHZ_CMIP5 </model>
-    <model> CMIP5_fx   INMCM4    monthly historical   r1i1p1 1998 2000 @{MODELPATH}/ETHZ_CMIP5/historical/monthly/spco2/INMCM4/r1i1p1 fx_acello_inmcm4 </model>
+    <model> CMIP5      ref       monthly ETH-SOM-FFN  reg    1998 2001 @{OBSPATH}/Tier2/ETH-SOM-FFN </model>
+    <model> CMIP5_ETHZ BNU-ESM   monthly historical   r1i1p1 1998 2001 @{MODELPATH}/ETHZ_CMIP5 </model>
+    <model> CMIP5_ETHZ CanESM2   monthly historical   r1i1p1 1998 2001 @{MODELPATH}/ETHZ_CMIP5 </model>
+    <model> CMIP5_fx   INMCM4    monthly historical   r1i1p1 1998 2001 @{MODELPATH}/ETHZ_CMIP5/historical/monthly/spco2/INMCM4/r1i1p1 fx_acello_inmcm4 </model>
 </diag>
 
 <diag>   
@@ -73,12 +73,12 @@ This namelist is part of the ESMValTool
     <variable ref_model="ref" >                            spco2     </variable> 
     <field_type>                                           TO2Ms     </field_type>
     <diag_script_cfg_dir>                           ./nml/cfg_GO/    </diag_script_cfg_dir>
-    <diag_script cfg="spco2compmapDiag.ncl">     GO_comp_map.ncl     </diag_script>
+    <diag_script cfg="spco2compmapDiag_nodetrending.ncl">     GO_comp_map.ncl     </diag_script>
 
-    <model> CMIP5       ref      monthly ETH-SOM-FFN  reg    1998 2000 @{OBSPATH}/Tier2/ETH-SOM-FFN </model>
-    <model> CMIP5_ETHZ BNU-ESM   monthly historical   r1i1p1 1998 2000 @{MODELPATH}/ETHZ_CMIP5 </model>
-    <model> CMIP5_ETHZ CanESM2   monthly historical   r1i1p1 1998 2000 @{MODELPATH}/ETHZ_CMIP5 </model>
-    <model> CMIP5_fx   INMCM4    monthly historical   r1i1p1 1998 2000 @{MODELPATH}/ETHZ_CMIP5/historical/monthly/spco2/INMCM4/r1i1p1 fx_acello_inmcm4 </model>
+    <model> CMIP5       ref      monthly ETH-SOM-FFN  reg    1998 2001 @{OBSPATH}/Tier2/ETH-SOM-FFN </model>
+    <model> CMIP5_ETHZ BNU-ESM   monthly historical   r1i1p1 1998 2001 @{MODELPATH}/ETHZ_CMIP5 </model>
+    <model> CMIP5_ETHZ CanESM2   monthly historical   r1i1p1 1998 2001 @{MODELPATH}/ETHZ_CMIP5 </model>
+    <model> CMIP5_fx   INMCM4    monthly historical   r1i1p1 1998 2001 @{MODELPATH}/ETHZ_CMIP5/historical/monthly/spco2/INMCM4/r1i1p1 fx_acello_inmcm4 </model>
 </diag>
 
 <!--

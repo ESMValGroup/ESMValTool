@@ -16,6 +16,7 @@
 ;;    range_option: select specific or intersecting time range.
 ;;
 ;; Optional diag_script_info attributes (diagnostics specific)
+;;    fill_pole_hole: fill observational hole at North pole, Default: False
 ;;    EMs_in_lg: create legend label for each individual ensemble member
 ;;               (Default: "True")
 ;;
@@ -23,14 +24,15 @@
 ;;    CMOR units expected: areacello in m2, sic in %.
 ;;
 ;; Modification history
-;;    * 20151027-A_laue_ax: moved call to 'write_references' to the beginning
-;;                          of the code
-;;    * 20150325-A_laue_ax: modified reference tags used for acknowledgements
-;;                          (projects, observations, etc)
-;;    * 20140312-A_righ_ma: adapted to new time_operations structure.
-;;    * 20140129-A_senf_da: modularized to fit to new structure.
-;;    * 20130603-A_gott_kl: implemented into ./diag_scripts.
-;;    * 20130405-A_gott_kl: written based on previous code by Melanie Braeu.
+;;    20170125-A_senf_da: added option to fill polar observation hole
+;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
+;;                        of the code
+;;    20150325-A_laue_ax: modified reference tags used for acknowledgements
+;;                        (projects, observations, etc)
+;;    20140312-A_righ_ma: adapted to new time_operations structure.
+;;    20140129-A_senf_da: modularized to fit to new structure.
+;;    20130603-A_gott_kl: implemented into ./diag_scripts.
+;;    20130405-A_gott_kl: written based on previous code by Melanie Braeu.
 ;;
 ;;#############################################################################
 
@@ -94,6 +96,18 @@ begin
     end if
     delete(plot_fields)
     delete(ind_f)
+
+    ;; Check fill_pole_hole option
+    if (.not.isatt(diag_script_info,"fill_pole_hole")) then
+        diag_script_info@fill_pole_hole = False
+    else
+        if (diag_script_info@fill_pole_hole .and. \
+            diag_script_info@region.eq."Antarctic") then
+            diag_script_info@fill_pole_hole = False
+            error_msg("w", diag_script, "", "No pole hole at Antarctic " + \
+                      "- setting diag_script_info@fill_pole_hole to False")
+        end if
+    end if
 
     ;; Select colors and other plotting attributes
     ;; See ./diag_scripts/lib/ncl/style.ncl
@@ -205,6 +219,47 @@ begin
         var = var_temp
         copy_VarMeta(var_temp, var)
         delete(var_temp)
+
+        ;; Fill pole hole
+        if (diag_script_info@fill_pole_hole) then
+            latstep = 0.1
+            max_lat = 90.
+            lat1D = ndtooned(area_lat)
+            do itime=0, dimsizes(var&time)-1  ; Hole depends on time
+                actual_lat = max_lat
+                data1D = ndtooned(var(itime,:,:))
+                if (all(ismissing(data1D))) then  ; Time step missing
+                    continue
+                end if
+                do while(1.lt.2)  ; Will break when hole is filled
+                    i1D = ind(lat1D.ge.actual_lat .and. \
+                    lat1D.lt.actual_lat+latstep)
+                    if (.not. all(ismissing(i1D))) then
+                        i2D     = ind_resolve(ind(lat1D.ge.actual_lat),\
+                        dimsizes(area_lat))
+                        dim_i2D = dimsizes(i2D)
+                        npts    = dim_i2D(0)  ; Number of elements
+                        ndim    = dim_i2D(1)  ; Rank of "lat" 
+                        if (any(ismissing(data1D(i1D)))) then
+                            do n=0, npts-1
+                                ring = var(itime,i2D(n,0),i2D(n,1))
+                                var(itime,i2D(n,0),i2D(n,1)) = \
+                                        where(ismissing(ring), 1., ring)
+                                delete(ring)
+                            end do
+                        else  ; Out of the hole!
+                            delete([/i1D, i2D, dim_i2D, npts, ndim/])
+                            break
+                        end if
+                        delete([/i2D, dim_i2D, npts, ndim/])
+                    end if
+                    delete([/i1D/])  
+                    actual_lat = actual_lat - latstep
+                end do  ; while
+                delete(data1D)
+            end do  ; itime
+            delete(lat1D)
+        end if
 
         ;; Select region -> name corresponds to the pole region, but entire
         ;; hemisphere will be evaluated and convert areas to million sqkm

@@ -1,0 +1,23 @@
+# Global variables / flags
+GLOBAL
+  force_processing    true
+  project      CCMVal2
+  wrk_dir      ./work
+  plot_dir     $wrk_dir/plots/
+  climo_dir    $wrk_dir/climo/
+
+#  write_plots    yes
+#  write_netcdf   true
+#  write_climo    yes
+#  write_plot_vars no
+
+# Models to use
+MODELS
+
+  WACCM wa3548_2x_refb0.1      1 2015  2015 /project/waccm01/wa3548_2x_refb0.1/h0/
+  WACCM wa3548_2x_refb1.1      1 2000  2001 /project/waccm01/wa3548_2x_refb1.1/h0/
+ 
+# Diagnostics to do
+DIAGNOSTICS
+  # convert monthly mean files
+  convert_M

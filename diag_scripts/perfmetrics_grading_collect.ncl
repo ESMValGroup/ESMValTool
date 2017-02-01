@@ -69,7 +69,8 @@ begin
                      "A_fran_fr", \
                      (/"A_righ_ma", "A_eyri_ve", "A_gott_kl"/), \
                      (/"D_righi15gmd", "D_gleckler08jgr"/), \
-                     (/"E_kalnay96bams", "E_erainterim", "E_airs", "E_ceresebaf", "E_srb"/), \
+                     (/"E_ncep", "E_erainterim", "E_airs", \
+                       "E_ceresebaf", "E_srb"/), \
                      (/"P_embrace", "P_esmval"/))
 
     ;; Read grading list and add files together

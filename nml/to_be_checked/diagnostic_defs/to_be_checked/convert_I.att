@@ -1,0 +1,119 @@
+# 2008-06-03  C. Fischer
+# 2008-06-27  CAF  Changed order of variables and plot types
+# 2008-07-15  CAF creating test case for Hisako Shiona
+# 2008-12-01  CAF convert instant files
+#This is a test diagnostic package attribute file
+#list of variables and plot types.
+# vertconplot_plev    lat vs height contour plot   3d data
+# zonlnplot           lat vs height line plot      2d data
+# plrconplot          polor contour plot           2d data
+# surfconplot          surface contour plot        2d data
+# vertconplot         mystery
+# seacycplot          line plot of seasonal cycle  2d data
+# anncycplot          seasonal cycle               2d data month vs lat
+# seadiffplot         seasonal difference plot     2d data lon vs lat
+# profiles            vertical profiles of station Z3,ta, not working for Q
+# save_to_netcdf      save variable to netcdf files  all
+# taylor_metrics_table not working
+
+
+#Instantaneous 3D fields (T3I)
+
+#Dynamical
+ua 	T3I noplot
+va 	T3I noplot
+ta 	T3I noplot
+wap 	T3I noplot
+zg 	T3I noplot
+
+#Chemical
+O3 	T3I noplot
+N2O 	T3I noplot
+CH4 	T3I noplot
+HCl 	T3I noplot
+H2O  	T3I noplot
+O3s 	T3I noplot
+sad_sulf 	T3I noplot
+sad_nat  	T3I noplot
+sad_ice 	T3I noplot
+CFCl3 	T3I noplot 
+CF2Cl2 	T3I noplot 
+CH3Cl  	T3I noplot
+CH3Br 	T3I noplot 
+Cl  	T3I noplot
+ClO  	T3I noplot
+Cl2O2  	T3I noplot
+HOCl  	T3I noplot
+ClONO2 	T3I noplot 
+OClO 	T3I noplot
+Cly   	T3I noplot # Cly = HCl + ClONO2 + HOCl + ClO + Cl + 2*Cl2O2 +2Cl2 + OClO + BrCl
+OH  	T3I noplot
+HO2  	T3I noplot
+H2O2  	T3I noplot
+H2  	T3I noplot
+N  	T3I noplot
+NO  	T3I noplot
+NO2  	T3I noplot
+HNO3  	T3I noplot
+N2O5  	T3I noplot
+HNO4  	T3I noplot
+NOy  	T3I noplot #NOy = N + NO + NO2 + NO3 + HNO3 + 2N2O5 + HNO4 + ClONO2 + BrONO2 
+Br   	T3I noplot
+BrO  	T3I noplot
+BrCl  	T3I noplot
+HBr  	T3I noplot
+HOBr  	T3I noplot
+BrONO2  T3I noplot
+Bry  	T3I noplot #Bry = Br + BrO + HOBr + HBr + BrONO2 + BrCl  
+CH2O 	T3I noplot 
+CH3OOH  T3I noplot 
+JO2  	T3I noplot
+JCl2O2  T3I noplot
+O3P  	T3I Toplot
+O1D   	T3I noplot
+CO  	T3I noplot
+CO2  	T3I noplot
+mean_age T3I noplot
+C2H6  	T3I noplot
+C2H2  	T3I noplot
+HCN  	T3I noplot
+tntlw 	T3I noplot
+tntsw 	T3I noplot
+clt 	T3I noplot
+convclt 	T3I noplot
+
+#Instantaneous 2D fields
+#T2Is or T2Ds
+ua10	T2Is save_to_netcdf #Derived: we can build (already done: ask hisako)
+va10	T2Is save_to_netcdf #Derived
+ta10	T2Is save_to_netcdf #Derived
+zg10	T2Is save_to_netcdf #Derived
+ua100	T2Is save_to_netcdf #Derived
+va100	T2Is save_to_netcdf #Derived
+ta100	T2Is save_to_netcdf #Derived 
+zg100	T2Is save_to_netcdf #Derived 
+ua1000	T2Is save_to_netcdf #Derived 
+va1000	T2Is save_to_netcdf #Derived 
+ta1000	T2Is save_to_netcdf #Derived 
+zg1000	T2Is save_to_netcdf #Derived 
+ps	T2Is noplot
+#tas	T2Is noplot  #caf not in h1
+zg500	T2Is save_to_netcdf #Derived 
+#vorpot840	T2Is noplot  #Derived
+#vorpot480	T2Is noplot  #Derived
+
+#toz 	T2Is noplot #Derived  caf var_att not defined 
+rsds	T2Is noplot
+rsdscs	T2Is noplot
+nufl	T2Is noplot
+snd	T2Is noplot
+snw	T2Is noplot
+#tasmin	T2Is noplot #caf not in h1
+#tasmax	T2Is noplot #caf not in h1
+
+#2D daily zonal mean (T2Iz or T2Dz)
+zg	T2Iz noplot
+ta	T2Iz noplot
+ua 	T2Iz noplot
+
+

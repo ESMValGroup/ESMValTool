@@ -35,7 +35,7 @@
 ;; Modification history
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;;                        of the code
-;;    20150622-A_wenz_sa: added optional anomaly calculation, choise of 
+;;    20150622-A_wenz_sa: added optional anomaly calculation, choice of 
 ;;                        area opperations (sum, average) and detrending of time
 ;;                        series.
 ;;    20150420-A_righ_ma: adapted to new structure. Some of the original
@@ -130,6 +130,18 @@ begin
                              array_append_record(req_atts1, req_atts2, 0))
     end if
 
+    if ((isatt(diag_script_info, "ts_diff_ref"))) then
+        OBS_ref = diag_script_info@ts_diff_ref
+        ind_ref = ind(models@name.eq.OBS_ref) 
+        dest_grd = find_destination_grid(ind_ref, var0, field_type0, "coarsest")
+        
+        A = extract_data(ind_ref, data, -1, 0, 0)
+        mask0 = A
+        mask0 = where(ismissing(A), mask0@_FillValue, mask0)
+        delete(A)
+
+    end if
+
     ;; Time averaging
     if (isatt(diag_script_info, "time_avg")) then
         time_avg = diag_script_info@time_avg
@@ -163,10 +175,10 @@ begin
     end if
 
     ;; Multimodel mean
-    if (diag_script_info@multi_model_mean.eq."y") then
-        error_msg("f", diag_script, "", \
-                  "multi-model mean calculation not yet implemented")
-    end if
+    ;if (any(diag_script_info@multi_model_mean.eq.(/"y",True/))) then
+    ;    error_msg("f", diag_script, "", \
+    ;              "multi-model mean calculation not yet implemented")
+    ;end if
 
     ;; Determine time range
     start_year = min(stringtoint(models@start_year))
@@ -213,6 +225,23 @@ begin
             lsm  = landsea_mask(fm->LSMASK, A0&lat, A0&lon)
             A0 = mask(A0, lsm.eq.0 .or. lsm.eq.2, False)
             delete(lsm)
+        else if (lsmask.eq."refmodel") then  ; regrid according to refmodel
+            if (.not.isvar("mask0")) then
+                error_msg("f", diag_script, "", \
+                          "ts_diff_ref not defined, " + \
+                          "needed to regridd to ref models ")
+            end if
+            tmpA = area_hi2lores_Wrap(A0&lon, A0&lat, A0, \
+                   True, 1, dest_grd&lon, dest_grd&lat, False)
+            delete(A0)
+
+            mask1 = time_operations(mask0, toint(models@start_year(imod)), \
+                                           toint(models@end_year(imod)), \
+                                           "extract", "JFMAMJJASOND", False)
+            A0 = where(ismissing(mask1), mask1, tmpA)
+            copy_VarMeta(mask1, A0)
+            delete([/tmpA, mask1/])
+        end if
         end if
         end if
 
@@ -340,12 +369,36 @@ begin
         model_arr = convert_units(model_arr, variable_info@plot_units)
     end if
 
+    ;; Multimodel mean
+    if (any(diag_script_info@multi_model_mean.eq.(/"y","True"/))) then
+        if (dim_MOD .gt. 1) then
+            mmm = dim_avg_n_Wrap(model_arr,0)
+            dim_MOD = dim_MOD + 1
+            tmp_mmm = new((/dim_MOD,dimsizes(model_arr&time)/),typeof(model_arr));array_append_record(model_arr, mmm, 0)
+            tmp_mmm(:dim_MOD-2,:) = model_arr
+            tmp_mmm(dim_MOD-1,:) = mmm
+            
+            tmpm = array_append_record(models@name, "Multimodel mean", 0)
+            
+            delete([/model_arr,models@name/])
+            model_arr = tmp_mmm
+            models@name = tmpm
+            delete([/tmp_mmm,tmpm/])
+        end if
+    end if
+
     ;; Optional output to NetCDF
     if (getenv("ESMValTool_write_netcdf").eq."True") then
         out_path = get_output_dir(get_work_dir(), basename(diag_script))
-        out_path = out_path + "tsline_" + var0 + "_" + lsmask + "_" + anom + \
-            "_" + detr + "_" + models@experiment(dim_MOD-1) + "_" + \
-            start_year + "-" + end_year + ".nc"
+        if isatt(models,"experiment") then
+            out_path = out_path + "tsline_" + var0 + "_" + lsmask + "_" + anom + \
+                       "_" + detr + "_" + models@experiment(0) + "_" + \
+                       "_" + diag_script_info@ts_minlat + "_" + diag_script_info@ts_maxlat + "_" + \
+                       start_year + "-" + end_year + ".nc"
+        else
+            out_path = out_path + "tsline_" + var0 + "_" + lsmask + "_" + anom + \
+                       "_" + detr + "_" + start_year + "-" + end_year + ".nc"
+        end if
         model_arr@ncdf = out_path
         model_arr@diag_script = diag_script
         model_arr@var = var0
@@ -353,8 +406,15 @@ begin
     end if
 
     ;; Define workstation
-    outfile = var0 + "_" + lsmask + "_" + anom + "_" + detr + "_" + \
-              models@experiment(dim_MOD-1) + "_" + start_year + "-" + end_year
+    if isatt(models,"experiment") then
+        outfile = var0 + "_" + lsmask + "_" + anom + "_" + detr + "_" + \
+                  diag_script_info@ts_minlat + "_" + diag_script_info@ts_maxlat + "_" + \
+                  models@experiment(0) + "_" + start_year + "-" + end_year
+    else
+        outfile = var0 + "_" + lsmask + "_" + anom + "_" + detr + "_" + \
+                  start_year + "-" + end_year
+    end if
+
     wks = get_wks(0, diag_script, outfile)
 
     ;; Set resources
@@ -377,9 +437,19 @@ begin
     if isatt(model_arr,"long_name")
         res@tiMainString = model_arr@long_name
     end if
-    res@tiYAxisString = var0 + " [" + model_arr@units + "]"
+
+    res@tiYAxisString = var0 + " [" + model_arr@units + "/year]"
+; A_laue_ax+
+    ; if requested, do not add "per year"
+    if (isatt(diag_script_info, "dont_add_per_year")) then
+        if (diag_script_info@dont_add_per_year) then
+            res@tiYAxisString = var0 + " [" + model_arr@units + "]"
+        end if
+    end if
+; A_laue_ax-
 
     xy_line(wks, model_arr, model_arr&time, 0, res, False)
+      
 
     info_output(" gv " + wks@fullname + " &", verbosity, 1)
 

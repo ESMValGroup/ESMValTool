@@ -145,7 +145,7 @@ begin
 
     ;; Outfile
     fout = OUTDIR + "OBS_" + OBSNAME + "_reanaly_v6_" + FIELD + \
-        "_" + VAR + ".nc"
+        "_" + VAR + "_" + YEAR1 + "01-" + YEAR2 + "12.nc"
 
     ;; Write variable
     write_nc(fout, VAR, output, gAtt)

@@ -27,6 +27,7 @@
 ;;    function copy_CoordNames_n
 ;;    function empty_str
 ;;    function write_info
+;;    function remove_index
 ;;    procedure tool_stop
 ;;    function filter_attrs
 ;;    procedure write_ignore_warnings
@@ -1477,6 +1478,68 @@ begin
 
     leave_msg(scriptname, funcname, 8)
     return(infobox)
+
+end
+
+;;#############################################################################
+undef("remove_index")
+function remove_index(array,
+                      idx:integer)
+;;
+;; Arguments
+;;    array: an array of any type
+;;    index: the index(es) to be removed.
+;;
+;; Description
+;;    Remove the selected index(es) from the array's dimension 0.
+;;
+;; Caveats
+;;    Only ranking upto 5 is supported.
+;;
+;; References
+;;
+;; Modification history
+;;    20160704-A_righ_ma: written.
+;;
+local funcname, scriptname, verbosity, dsize, rank, iarr
+begin
+
+    funcname = "remove_index"
+    scriptname = "interface_scripts/auxiliary.ncl"
+    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    enter_msg(scriptname, funcname, 6)
+
+    dsize = dimsizes(array)
+    rank = dimsizes(dsize)
+    dsize := dsize(0)
+    iarr = ispan(0, dsize - 1, 1)
+    iarr@_FillValue = default_fillvalue(typeof(iarr))
+
+    iarr(idx) = iarr@_FillValue
+    iarr := iarr(ind(.not.ismissing(iarr)))
+
+    if (rank.eq.1) then
+        out = array(iarr)
+    end if
+    if (rank.eq.2) then
+        out = array(iarr, :)
+    end if
+    if (rank.eq.3) then
+        out = array(iarr, :, :)
+    end if
+    if (rank.eq.4) then
+        out = array(iarr, :, :, :)
+    end if
+    if (rank.eq.5) then
+        out = array(iarr, :, :, :, :)
+    end if
+    if (rank.gt.5) then
+        error_msg("f", funcname, scriptname, \
+                  "rank greater than 5 not supported")
+    end if
+
+    leave_msg(scriptname, funcname, 6)
+    return(out)
 
 end
 

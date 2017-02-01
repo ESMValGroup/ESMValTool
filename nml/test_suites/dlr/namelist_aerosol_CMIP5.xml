@@ -1,5 +1,5 @@
 <namelist>
-<include href="./config_private.xml"/>
+<include href="./config_private_DLR-PA2.xml"/>
 <namelist_summary>
 ###############################################################################
 namelist_aerosol_CMIP5.xml
@@ -80,7 +80,7 @@ This namelist is part of the ESMValTool
 	<diag_script_cfg_dir>  ./nml/cfg_aerosol/CMIP5/ </diag_script_cfg_dir>
 
 	<model>  OBS         ESACCI-AEROSOL   sat   SU-v4.21   2002  2004  @{OBSPATH}/Tier2/ESACCI-AEROSOL  </model>
-        <model>  OBS         MODIS            sat   L3-C6      2003  2014  @{OBSPATH}/Tier2/MODIS_L3_C6     </model>
+        <model>  OBS         MODIS            sat   L3-C6      2003  2014  @{OBSPATH}/Tier2/MODIS-L3-C6     </model>
 
         <diag_script cfg="cfg_aerosol_tsline.ncl">      tsline.ncl       </diag_script>
     </diag>

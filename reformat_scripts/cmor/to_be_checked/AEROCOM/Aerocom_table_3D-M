@@ -1,0 +1,2408 @@
+cmor_version: 2.0            ! version of CMOR that can read this table
+cf_version:   1.3-AEROCOM    ! version of CF that output conforms to
+project_id:   AEROCOM-ACC    ! project id
+table_id:     Table 3D-M     ! table id
+table_date:   July 2009      ! date this table was constructed
+
+expt_id_ok:   'AEROCOM-A2-CTRL'
+expt_id_ok:   'AEROCOM-A2-PRE'
+expt_id_ok:   'AEROCOM-A2-SIZ1'
+expt_id_ok:   'AEROCOM-A2-SIZ2'
+expt_id_ok:   'AEROCOM-A2-SIZ3'
+expt_id_ok:   'AEROCOM-A2-SIZ4'
+expt_id_ok:   'AEROCOM-A2-ZERO'
+expt_id_ok:   'AEROCOM-A2-FIX'
+expt_id_ok:   'AEROCOM-A2-TROP'
+expt_id_ok:   'AEROCOM-A2-ARCTIC'
+expt_id_ok:   'AEROCOM-HCA-0'
+expt_id_ok:   'AEROCOM-HCA-IPCC'
+expt_id_ok:   'AEROCOM-HCA-FIX'
+expt_id_ok:   'AEROCOM-HCA-MET'
+
+
+magic_number: -1          ! used to check whether this file has been 
+                          !   altered from the official version.
+                          !   should be set to number of non-blank 
+                          !   characters in file. 
+
+! use approx interval according to daily/monthly/hourly output
+approx_interval: 30.      ! monthly
+!approx_interval: 1.       ! daily
+!approx_interval: 0.04     ! hourly
+!approx_interval:  0.    ! approximate spacing between successive time
+                          !   samples (in units of the output time 
+                          !   coordinate), but this is ignored if set to 0.
+missing_value: 1.e20      ! value used to indicate a missing value
+                          !   in arrays output by netCDF as 32-bit IEEE 
+                          !   floating-point numbers (float or real)
+
+!*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#
+!
+! SUBROUTINE ARGUMENT DEFAULT INFORMATION
+!
+!*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#
+!
+!  set default specifications for subroutine arguments to:
+!     required/indeterminate/optional/ignored/forbidden
+!    (indeterminate may or may not be required information, but is not always
+!     required as an argument of the function call)
+!
+!
+!============
+subroutine_entry: cmor_axis
+!============
+!
+required: table axis_name units length coord_vals cell_bounds
+ignored: interval
+!
+!============
+subroutine_entry: cmor_variable
+!============
+!
+required: table table_entry units axis_ids
+indeterminate: missing_value
+optional: tolerance original_name history comment
+ignored: positive
+!
+!============
+subroutine_entry: cmor_write
+!============
+!
+required:  var_id data 
+indeterminate: ntimes_passed time_vals time_bnds store_with
+optional: file_suffix
+!
+!
+!*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#
+!
+! Templates for axes and variables
+!
+!*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#
+!
+!
+!  TEMPLATE FOR AXES
+!
+!============
+!axis_entry:               ! (required)
+!============
+!
+!    Override default argument specifications for cmor_axis 
+!------------
+!    acceptable arguments include units length coord_vals cell_bounds interval
+!required:                  ! (default: table axis_name units length
+!                                        coord_vals cell_bounds)
+!indeterminate:
+!optional:
+!ignored:                   ! (default: interval)
+!forbidden:
+!------------
+!
+! Axis attributes:
+!----------------------------------	
+!standard_name:             ! (required)
+!units:                     ! (required)
+!axis:                      ! X, Y, Z, T (default: undeclared)
+!positive:                  ! up or down (default: undeclared)
+!long_name:                 ! (default: undeclared)
+!----------------------------------	
+!
+! Additional axis information:
+!----------------------------------	
+!out_name:                ! (default: same as axis_entry) 
+!type:                    ! double (default), real, character, integer
+!stored_direction:        ! increasing (default) or decreasing
+!valid_min:               ! type: double precision (default: no check performed
+!valid_max:               ! type: double precision (default: no check performed
+!requested:               ! space-separated list of requested coordinates 
+                          !       (default: undeclared)
+!bounds_requested:        ! space-separated list of requested coordinate bounds
+                          !       (default: undeclared)
+!tol_on_requests:         ! fractional tolerance for meeting request
+                          !  (default=1.e-3, which is used in the formula:
+                          !     eps =  MIN(( tol*interval between grid-points)
+                          !          and (1.e-3*tol*coordinate value)))
+!value:                   ! of scalar (singleton) dimension 
+!bounds_values:           ! of scalar (singleton) dimension bounds
+!----------------------------------	
+!
+!
+!  TEMPLATE FOR VARIABLES
+!
+!
+!============
+!variable_entry:                ! (required)
+!============
+!
+!    Override default argument specifications for cmor_variable
+!------------
+!        acceptable arguments include  file_suffix missing_value tolerance 
+!                               original_name history comment positive
+!required:                   ! (default: table table_entry units axis_ids)
+!indeterminate:              ! (default: file_suffix missing_value)
+!optional:                   ! (default: original_name history comment)
+!ignored:                    ! (default: positive)
+!forbidden:
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+!standard_name:              ! (required)
+!units:                      ! (required)
+!cell_methods:               ! (default: undeclared)
+!long_name:                  ! (default: undeclared)
+!comment:                    ! (default: undeclared)
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+!dimensions:                 ! (required)  (scalar dimension(s) should appear
+                             !      last in list)
+!out_name:                   ! (default: variable_entry)
+!type:                       ! real (default), double, integer 
+!positive:                   ! up or down (default: undeclared)
+!valid_min:                  ! type: real (default: no check performed)
+!valid_max:                  ! type: real (default: no check performed)
+!ok_min_mean_abs:            ! type: real (default: no check performed)
+!ok_max_mean_abs:            ! type: real (default: no check performed)
+!----------------------------------	
+! 
+!*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#
+!
+! AXIS INFORMATION
+!
+!*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#
+!
+!
+!
+!============
+axis_entry: longitude
+!============
+!
+!------------
+!
+! Axis attributes:
+!----------------------------------	
+standard_name:    longitude
+units:            degrees_east
+axis:             X
+long_name:        longitude
+!----------------------------------	
+!
+! Additional axis information:
+!----------------------------------	
+out_name:         lon
+valid_min:        0.           ! CMOR will add n*360 to input values
+                               ! (where n is an integer) to ensure 
+                               !  longitudes are in proper range.  The
+                               !  data will also be rearranged 
+                               !  appropriately.
+valid_max:        360.         !  see above comment.
+!----------------------------------	
+!
+!
+!=============
+axis_entry: latitude
+!=============
+!
+! Axis attributes:
+!----------------------------------	
+standard_name:    latitude
+units:            degrees_north
+axis:             Y
+long_name:        latitude
+!----------------------------------	
+!
+! Additional axis information:
+!----------------------------------	
+out_name:         lat
+valid_min:        -90.
+valid_max:        90.
+!----------------------------------	
+!
+!
+!
+!============
+axis_entry: time
+!============
+!
+!    Override default argument specifications for cmor_axis 
+!------------
+optional: interval length
+indeterminate: coord_vals cell_bounds
+!------------
+!
+! Axis attributes:
+!----------------------------------	
+standard_name:    time
+units:            days since 1850-01-01
+axis:             T
+long_name:        time
+!----------------------------------	
+!
+!
+!
+!============
+axis_entry: standard_sigma
+!============
+!
+!    Override default argument specifications for cmor_axis 
+!------------
+!optional: units
+!------------
+!
+! Axis attributes:
+!----------------------------------	
+standard_name:    atmosphere_sigma_coordinate
+axis:             Z
+positive:         down
+long_name:        sigma coordinate
+!----------------------------------	
+!
+! Additional axis information:
+!----------------------------------	
+out_name:         lev
+stored_direction: decreasing
+valid_min:        0.0
+valid_max:        1.0
+formula:          p(n,k,j,i) = ptop + sigma(k)*(ps(n,j,i) - ptop)
+convert_to:       standard_hybrid_sigma
+z_factors:        ptop: ptop sigma: sigma ps: ps
+z_bounds_factors: ptop: ptop sigma: sigma_bnds ps: ps
+!----------------------------------	
+!
+!
+!============
+axis_entry:  standard_hybrid_sigma
+!============
+!
+!    Override default argument specifications for cmor_axis 
+!------------
+!optional: units
+!------------
+!
+! Axis attributes:
+!----------------------------------	
+standard_name:    atmosphere_hybrid_sigma_pressure_coordinate
+units:            1
+axis:             Z 
+positive:         down
+long_name:        hybrid sigma pressure coordinate
+!----------------------------------	
+!
+! Additional axis information:
+!----------------------------------	
+out_name:         lev
+stored_direction: decreasing
+valid_min:        0.0
+valid_max:        1.0
+formula:          p(n,k,j,i) = a(k)*p0 + b(k)*ps(n,j,i)
+z_factors:        p0: p0 a: a b: b ps: ps
+z_bounds_factors: p0: p0 a: a_bnds b: b_bnds ps: ps
+!----------------------------------		
+!
+!
+!============
+axis_entry:  alternate_hybrid_sigma
+!============
+!
+!    Override default argument specifications for cmor_axis 
+!------------
+!optional: units
+!------------
+!
+! Axis attributes:
+!----------------------------------	
+standard_name:    atmosphere_hybrid_sigma_pressure_coordinate
+units:            1
+axis:             Z
+positive:         down
+long_name:        hybrid sigma pressure coordinate
+!----------------------------------	
+!
+! Additional axis information:
+!----------------------------------	
+out_name:         lev
+stored_direction: decreasing
+valid_min:        0.0
+valid_max:        1.0
+formula:          p(n,k,j,i) = ap(k) + b(k)*ps(n,j,i)
+convert_to:       standard_hybrid_sigma
+z_factors:        p0: p0 ap: ap b: b ps: ps
+z_bounds_factors: p0: p0 ap: ap_bnds b: b_bnds ps: ps
+!----------------------------------		
+!
+!
+!============
+axis_entry:  hybrid_height
+!============
+!
+!    Override default argument specifications for cmor_axis 
+!------------
+!optional: units
+!------------
+!
+! Axis attributes:
+!----------------------------------	
+standard_name:    atmosphere_hybrid_height_coordinate
+units:            m
+axis:             Z 
+positive:         up
+long_name:        hybrid height coordinate
+!----------------------------------	
+!
+! Additional axis information:
+!----------------------------------	
+out_name:         lev
+stored_direction: increasing
+valid_min:        0.0
+formula:          z(k,j,i) = a(k) + b(k)*orog(j,i)
+z_factors:        a: az b: bz orog: orog
+z_bounds_factors: a: az_bnds b: bz_bnds orog: orog
+!----------------------------------		
+!
+!
+!*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#
+!
+! VARIABLE INFORMATION
+!
+!*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#
+!
+!
+!
+! ***************************************************************
+!
+! Vertical dimensionless coordinate variables:
+!
+! ***************************************************************
+!
+!
+!
+!============
+variable_entry: p0
+!============
+!
+!    Override default argument specifications for cmor_variable
+!------------
+ignored: axis_ids
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:       reference pressure for hybrid sigma coordinate 
+units:           Pa
+!----------------------------------	
+!
+!
+!============
+variable_entry: ptop
+!============
+!
+!    Override default argument specifications for cmor_variable
+!------------
+ignored: axis_ids
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:       pressure at top of model 
+units:           Pa
+!----------------------------------	
+!
+!
+!============
+variable_entry: sigma
+!============
+!
+!    Override default argument specifications for cmor_variable
+!------------
+!optional: units
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:  sigma coordinate
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         zlevel
+type:               double
+!----------------------------------	
+!
+!
+!============
+variable_entry: sigma_bnds
+!============
+!IPCC_table_A1
+!    Override default argument specifications for cmor_variable
+!------------
+!optional: units
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:  sigma coordinate for layer bounds
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         zlevel
+type:               double
+!----------------------------------	
+!
+!
+!============
+variable_entry: a
+!============
+!
+!    Override default argument specifications for cmor_variable
+!------------
+!optional: units
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   hybrid sigma coordinate A coefficient for layer
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         zlevel
+type:               double
+!----------------------------------	
+!
+!
+!============
+variable_entry: b
+!============
+!
+!    Override default argument specifications for cmor_variable
+!------------
+!optional: units
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   hybrid sigma coordinate B coefficient for layer
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         zlevel
+type:               double
+!----------------------------------	
+!
+!
+!============
+variable_entry: a_bnds
+!============
+!
+!    Override default argument specifications for cmor_variable
+!------------
+!optional: units
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   hybrid sigma coordinate A coefficient for layer bounds
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         zlevel
+type:               double
+!----------------------------------	
+!
+!
+!============
+variable_entry: b_bnds
+!============
+!
+!    Override default argument specifications for cmor_variable
+!------------
+!optional: units
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   hybrid sigma coordinate B coefficient for layer bounds
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         zlevel
+type:               double
+!----------------------------------
+!
+!
+!============
+variable_entry: ap
+!============
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   alternate hybrid sigma coordinate A coefficient for layer
+units:           Pa
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         zlevel
+type:               double
+!----------------------------------	
+!
+!
+!============
+variable_entry: ap_bnds
+!============
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   alternate hybrid sigma coordinate A coefficient for layer bounds
+units:           Pa
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         zlevel
+type:               double
+!----------------------------------	
+!
+!
+!============
+variable_entry: az
+!============
+!
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   hybrid height coordinate A coefficient for layer
+units:           m
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         zlevel
+type:               double
+!----------------------------------	
+!
+!
+!============
+variable_entry: bz
+!============
+!
+!    Override default argument specifications for cmor_variable 
+!------------
+!optional: units
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   hybrid height coordinate B coefficient for layer
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         zlevel
+type:               double
+!----------------------------------	
+!
+!
+!============
+variable_entry: az_bnds
+!============
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   hybrid sigma coordinate A coefficient for layer bounds
+units:           m
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         zlevel
+type:               double
+!----------------------------------	
+!
+!
+!============
+variable_entry: bz_bnds
+!============
+!
+!    Override default argument specifications for cmor_variable
+!------------
+!optional: units
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   hybrid sigma coordinate B coefficient for layer bounds
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         zlevel
+type:               double
+!----------------------------------
+!
+! ***************************************************************
+!
+! AEROCOM-ACC Table 3D-M: pressure coordinate 
+!
+! ***************************************************************
+!!
+!============
+variable_entry: ps
+!============
+!
+! Variable attributes:
+!----------------------------------	
+standard_name:   surface_air_pressure     
+units:           Pa
+cell_methods:    time: mean
+long_name:       Surface Pressure
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:       longitude latitude time
+valid_min:        0.45e5
+valid_max:        1.2e5
+ok_min_mean_abs:  0.8e5
+ok_max_mean_abs:  1.2e5
+!----------------------------------		
+!
+! ***************************************************************
+!
+! AEROCOM-ACC Table 3D-M: Monthly-mean 3-d atmosphere data
+!
+! ***************************************************************
+!
+!====
+variable_entry: temp
+!====
+standard_name: air_temperature
+units:K
+cell_methods: time: mean
+long_name: air temperature
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: hus
+!====
+standard_name: specific_humidity
+units:1
+cell_methods: time: mean
+long_name: specific humidity
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: airmass
+!====
+standard_name: atmosphere_mass_content_of_air
+units:kg m-2
+cell_methods: time: mean
+long_name: air mass
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: pressure
+!====
+standard_name: atmospheric_pressure
+units:Pa
+cell_methods: time: mean
+long_name: pressure
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 1.2e5
+
+!====
+variable_entry: ec5503Daer
+!====
+standard_name: atmosphere_extinction_due_to_ambient_aerosol
+units:m-1
+cell_methods: time: mean
+long_name: Aerosol Extinction @550nm
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: ec3553Daer
+!====
+standard_name: atmosphere_extinction_due_to_ambient_aerosol
+units:m-1
+cell_methods: time: mean
+long_name: Aerosol Extinction @355nm
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: ec10643Daer
+!====
+standard_name: atmosphere_extinction_due_to_ambient_aerosol
+units:m-1
+cell_methods: time: mean
+long_name: Aerosol Extinction @1064nm
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+
+!====
+variable_entry: abs5503Daer
+!====
+standard_name: atmosphere_absorption_due_to_ambient_aerosol
+units:m-1
+cell_methods: time: mean
+long_name: Aerosol Absorption @550nm
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: clt3D
+!====
+standard_name: cloud_area_fraction_in_atmosphere_layer
+units:%
+cell_methods: time: mean
+long_name: Cloud fraction
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: bs5503Daer
+!====
+standard_name: atmosphere_attenuated_backscatter_due_to_ambient_aerosol
+units:sr-1 m-1
+cell_methods: time: mean
+long_name: Aerosol Attenuated Backscatter @550nm
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: asy3Daer
+!====
+standard_name: atmosphere_aerosol_asymmetry_parameter 
+units:1
+cell_methods: time: mean
+long_name: asymmetry factor
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: cod3D
+!====
+standard_name: atmosphere_optical_thickness_due_to_cloud
+units:1
+cell_methods: time: mean
+long_name: cloud optical depth
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+
+!====
+variable_entry: mmraerh2o
+!====
+standard_name: mass_fraction_of_water_in_ambient_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of aerosol water
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: nucpn
+!====
+standard_name: tendency_of_atmosphere_number_content_of_aerosol_due_to_nucleation
+units:m-3 s-1
+cell_methods: time: mean
+long_name: number formation through nucleation
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000000.0
+
+!====
+variable_entry: chegpsoa
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_secondary_organic_matter_dry_aerosol_due_to_net_chemical_production
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: SOA formation
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmroa
+!====
+standard_name: mass_fraction_of_particulate_organic_matter_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: POM  
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrpoa
+!====
+standard_name: mass_fraction_of_primary_particulate_organic_matter_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: POA
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrsoa
+!====
+standard_name: mass_fraction_of_secondary_particulate_organic_matter_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: SOA  
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrbb
+!====
+standard_name: mass_fraction_of_biomass_burning_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: BB
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrbc
+!====
+standard_name: mass_fraction_ of_black_carbon_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: BC  
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: wet3Doa
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_particulate_organic_matter_dry_aerosols_due_to_wet_deposition
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: wet deposition of POM
+dimensions: longitude latitude alevel time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: wet3Dbc
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_black_carbon_dry_aerosol_due_to_wet_deposition
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: wet deposition of BC
+dimensions: longitude latitude alevel time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mcu
+!====
+standard_name: updraught_convective_mass_flux
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: convective updraft
+dimensions: longitude latitude alevel time
+positive: up
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrso4
+!====
+standard_name: mass_fraction_of_sulfate_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: SO4
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: vmrso2
+!====
+standard_name: mole_fraction_of_sulfur_dioxide_in_air
+units:1
+cell_methods: time: mean
+long_name: SO2
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: vmrdms 
+!====
+standard_name: mole_fraction_of_dimethyl_sulfide_in_air
+units:1
+cell_methods: time: mean
+long_name: DMS
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: chegpso4
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_sulfate_dry_aerosol_due_to_net_chemical_production
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: gas phase production so4
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: cheaqpso4
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_sulfate_dry_aerosol_due_to_net_chemical_production_and_emission
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: aqu phase production so4
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: cheaqpH2O2so4
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_sulfate_dry_aerosol_due_to_net_chemical_production_and_emission
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: aqu phase production so4 S(IV)+H2O2
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: cheaqpO3so4
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_sulfate_dry_aerosol_due_to_net_chemical_production_and_emission
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: aqu phase production so4 S(IV)+O3
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: wet3Dso4
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_sulfate_dry_aerosol_due_to_wet_deposition
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: wet deposition of SO4
+dimensions: longitude latitude alevel time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: wet3Dso2
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_sulfur_dioxide_due_to_wet_deposition
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: wet deposition of SO2
+dimensions: longitude latitude alevel time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: wet3Ddms 
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_dimethyl_sulfide_due_to_wet_deposition
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: wet deposition of DMS
+dimensions: longitude latitude alevel time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrno3
+!====
+standard_name: mass_fraction_ of_nitrate_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: NO3 aerosol
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrnh4
+!====
+standard_name: mass_fraction_of_ammonium_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: NH4 
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: vmrno
+!====
+standard_name: mole_fraction_of_nitrogen_monoxide_in_air
+units:1
+cell_methods: time: mean
+long_name: NO
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: vmrno2
+!====
+standard_name: mole_fraction_of_nitrogen_dioxide_in_air
+units:1
+cell_methods: time: mean
+long_name: NO2
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: vmrhno3
+!====
+standard_name: mole_fraction_of_nitrogen_acid_in_air
+units:1
+cell_methods: time: mean
+long_name: HNO3
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: vmrpan
+!====
+standard_name: mole_fraction_of_peroxyacetyl_nitrate_in_air
+units:1
+cell_methods: time: mean
+long_name: PAN
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: wet3Dhno3
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_nitric_acid_due_to_wet_deposition
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: wet deposition of HNO3
+dimensions: longitude latitude alevel time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: wet3Dnoy
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_all_nitrogen_oxides_due_to_wet_deposition
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: wet deposition of NOy incl aerosol nitrate
+dimensions: longitude latitude alevel time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: wet3Dnh4
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_ammonium_due_to_wet_deposition
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: wet deposition of NH4+NH3
+dimensions: longitude latitude alevel time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrss
+!====
+standard_name: mass_fraction_ of_seasalt_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: Sea Salt
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: wet3Dss
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_seasalt_dry_aerosol_due_to_wet_deposition
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: wet deposition of seasalt
+dimensions: longitude latitude alevel time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrdu
+!====
+standard_name: mass_fraction_ of_dust_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: Dust
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: wet3Ddu
+!====
+standard_name: tendency_of_atmosphere_mass_content_of_dust_dry_aerosol_due_to_wet_deposition
+units:kg m-2 s-1
+cell_methods: time: mean
+long_name: wet deposition of dust
+dimensions: longitude latitude alevel time
+positive: down
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr01
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 01
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr02
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 02
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr03
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 03
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr04
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 04
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr05
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 05
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr06
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 06
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr07
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 07
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr08
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 08
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr09
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 09
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr10
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 10
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr11
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 11
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr12
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 12
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr13
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 13
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr14
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 14
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr15
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 15
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr16
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 16
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr17
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 17
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr18
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 18
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr19
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 19
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr20
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 20
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr21
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 21
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr22
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 22
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr23
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 23
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr24
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 24
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr25
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 25
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr26
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 26
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr27
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 27
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr28
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 28
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr29
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 29
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr30
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 30
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr31
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 31
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr32
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 32
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr33
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 33
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr34
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 34
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr35
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 35
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr36
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 36
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr37
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 37
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr38
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 38
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr39
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 39
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr40
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 40
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr41
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 41
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr42
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 42
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr43
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 43
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr44
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 44
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr45
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 45
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr46
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 46
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr47
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 47
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr48
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 48
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr49
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 49
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr50
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 50
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr51
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 51
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr52
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 52
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr53
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 53
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr54
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 54
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr55
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 55
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr56
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 56
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr57
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 57
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr58
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 58
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr59
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 59
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr60
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 60
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr61
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 61
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr62
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 62
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr63
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 63
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr64
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 64
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr65
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 65
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr66
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 66
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr67
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 67
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr68
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 68
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr69
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 69
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr70
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 70
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr71
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 71
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr72
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 72
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr73
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 73
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr74
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 74
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr75
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 75
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr76
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 76
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr77
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 77
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr78
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 78
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr79
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 79
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr80
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 80
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr81
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 81
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr82
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 82
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr83
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 83
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr84
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 84
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr85
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 85
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr86
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 86
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr87
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 87
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr88
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 88
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr89
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 89
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr90
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 90
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr91
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 91
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr92
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 92
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr93
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 93
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr94
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 94
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr95
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 95
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr96
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 96
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr97
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 97
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr98
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 98
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr99
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 99
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: mmrtr100
+!====
+standard_name: mass_fraction_of_tracer_dry_aerosol_in_air
+units:1
+cell_methods: time: mean
+long_name: mmr of tracer 100
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 10000
+
+!====
+variable_entry: conccnmode01
+!====
+standard_name: number_concentration_of_ambient_aerosol_in_air
+units:m-3
+cell_methods: time: mean
+long_name: number concentration of mode  01
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 1000000000000.0
+
+!====
+variable_entry: conccnmode02
+!====
+standard_name: number_concentration_of_ambient_aerosol_in_air
+units:m-3
+cell_methods: time: mean
+long_name: number concentration of mode  02
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 1000000000000.0
+
+!====
+variable_entry: conccnmode03
+!====
+standard_name: number_concentration_of_ambient_aerosol_in_air
+units:m-3
+cell_methods: time: mean
+long_name: number concentration of mode  03
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 1000000000000.0
+
+!====
+variable_entry: conccnmode04
+!====
+standard_name: number_concentration_of_ambient_aerosol_in_air
+units:m-3
+cell_methods: time: mean
+long_name: number concentration of mode  04
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 1000000000000.0
+
+!====
+variable_entry: conccnmode05
+!====
+standard_name: number_concentration_of_ambient_aerosol_in_air
+units:m-3
+cell_methods: time: mean
+long_name: number concentration of mode  05
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 1000000000000.0
+
+!====
+variable_entry: conccnmode06
+!====
+standard_name: number_concentration_of_ambient_aerosol_in_air
+units:m-3
+cell_methods: time: mean
+long_name: number concentration of mode  06
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 1000000000000.0
+
+!====
+variable_entry: conccnmode07
+!====
+standard_name: number_concentration_of_ambient_aerosol_in_air
+units:m-3
+cell_methods: time: mean
+long_name: number concentration of mode  07
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 1000000000000.0
+
+!====
+variable_entry: conccnmode08
+!====
+standard_name: number_concentration_of_ambient_aerosol_in_air
+units:m-3
+cell_methods: time: mean
+long_name: number concentration of mode  08
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 1000000000000.0
+
+!====
+variable_entry: conccnmode09
+!====
+standard_name: number_concentration_of_ambient_aerosol_in_air
+units:m-3
+cell_methods: time: mean
+long_name: number concentration of mode  09
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 1000000000000.0
+
+!====
+variable_entry: conccnmode10
+!====
+standard_name: number_concentration_of_ambient_aerosol_in_air
+units:m-3
+cell_methods: time: mean
+long_name: number concentration of mode  10
+dimensions: longitude latitude alevel time
+valid_min: 0.0
+valid_max: 1000000000000.0

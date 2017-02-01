@@ -1,10 +1,10 @@
-;==================================================================================
 ; This is a donated script. It has no guarnteed support from the NCL project.
 ; See further comments below. For more info, and any improvements or bugs, 
 ; please contact Jatin Kala (Jatin.Kala.JK  *AT* gmail.com)
 ;===================================================================================
-function taylor_diagram (wks:graphic ,RATIO[*][*]:numeric, CC[*][*]:numeric \
+function taylor_diagram (wks:graphic, legendwks:graphic, RATIO[*][*]:numeric, CC[*][*]:numeric \
                                      ,rOpts:logical)
+
 local dimR, nCase, nVar, X, Y, nc, angle, xyMin, xyOne, ceil_max_val, xyMax, xyMax_Panel, \
       FontHeightF, rxy, tempo_values, tempo_values1, temp_string, temp1_string, temp_string_y, \
       temp_string_y1, npts, xx, yy, sLabels, cLabels, rad, angC, taylor, rsrRes, dum0, dum1, \
@@ -21,7 +21,6 @@ local dimR, nCase, nVar, X, Y, nc, angle, xyMin, xyOne, ceil_max_val, xyMax, xyM
 ; See further comments below. For more info, and any improvements or bugs, 
 ; please contact Jatin Kala (Jatin.Kala.JK@gmail.com)
 ;--------------------------------------------------------------------
-
 ;
 ; Generate a Taylor Diagram:
 ; Generate Multiple Aspects of Model Performance in a Single Diagram
@@ -175,7 +174,7 @@ begin
 ; base plot: Based upon request of Mark Stevens
 ; basic x-y and draw the 1.0 observed and the outer curve at 1.65
 ; ----------------------------------------------------------------
-  
+
   rxy                   = True       
   rxy@gsnDraw           = False
   rxy@gsnFrame          = False
@@ -283,6 +282,97 @@ begin
 ;;end if
 
   taylor  = gsn_xy(wks,xx,yy,rxy)                 ; Create and draw XY plot.
+
+; A_laue_ax+
+; --------------------------------------------------------------
+; draw observational uncertainties given as normalized RMS error
+; around the observational reference point at (1, 0)
+
+  if (rOpts .and. isatt(rOpts, "rmsobs")) then
+      npts = 100                                     ; arbitrary
+      rmsobj = new(2, graphic)
+
+      respl0                    = True
+      respl0@gsLineThicknessF   = 4.0
+      respl0@gsLineDashPattern  = 0
+      respl0@gsLineColor        = (/0.50, 0.95, 0.47/) ;"green2"
+      respl0@gsFillColor        = (/0.85, 1.00, 0.80/) ;"PaleGreen1"
+      rr  = rOpts@rmsobs
+
+      ; uncertainty circle covers whole plotting area
+      if (rr.ge.xyMax) then
+          ang  = fspan(180, 360, npts) * rad
+          xx  = 0.995 * xyMax * cos(ang)
+          yy  = fabs(0.995 * xyMax * sin(ang))
+          rmsobj(0) = gsn_add_polygon(wks, taylor, xx, yy, respl0)
+          rmsobj(1) = gsn_add_polygon(wks, taylor, xx, yy, respl0)
+      else  ; uncertainty circle covers only part of the plotting area
+          dist = rr + 1.0
+          if (dist .gt. max(rxy@tmXBValues)) then ; uncertainty circle has to be cropped
+              ; need to find point of intersection between uncertainty circule and outer arc
+              xtmp = (xyMax^2 - rr^2 + 1.0) / 2.0
+              ytmp = sqrt(xyMax^2 - xtmp^2)
+              xtmp = xtmp - 1.0
+              if (xtmp.eq.0.0) then
+                  phitmp = 3.1415927
+              else if (xtmp.gt.0.0) then
+                  phitmp = 2.0 * 3.1415927 - atan(ytmp / xtmp)
+              else
+                  phitmp = 3.1415927 + atan(ytmp / xtmp)
+              end if
+              end if
+
+              ang  = fspan(3.1415927, phitmp, npts)
+              xx1 = 1.0 + rr * cos(ang)
+              yy1 = fabs(rr * sin(ang))
+
+              xtmp = xx1(npts - 1)
+              ytmp = yy1(npts - 1)
+              if (xtmp.eq.0.0) then
+                  phitmp = 3.1415927
+              else if (xtmp.gt.0.0) then
+                  phitmp = 2.0 * 3.1415927 - atan(ytmp / xtmp)
+              else
+                  phitmp = 3.1415927 + atan(ytmp / xtmp)
+              end if
+              end if
+
+              ang2 = fspan(phitmp, 0.0, npts)
+
+              xx2 = 0.995 * xyMax * cos(ang2)
+              yy2 = 0.995 * fabs(xyMax * sin(ang2))
+
+              if (isvar("xx")) then
+                  delete(xx)
+              end if
+              if (isvar("yy")) then
+                  delete(yy)
+              end if
+              xx  = array_append_record(xx1, xx2, 0)
+              yy  = array_append_record(yy1, yy2, 0)
+              rmsobj(0) = gsn_add_polygon(wks, taylor, xx, yy, respl0)
+              rmsobj(1) = gsn_add_polyline(wks, taylor, xx1, yy1, respl0)
+              delete(xx1)
+              delete(xx2)
+              delete(yy1)
+              delete(yy2)
+              delete(ang2)
+          else  ; uncertainty circle does not need any adjustments
+              ang  = fspan(180, 360, npts) * rad
+              xx  = 1.0 + rr * cos(ang)
+              yy  = fabs(rr * sin(ang))
+              rmsobj(0) = gsn_add_polygon(wks, taylor, xx, yy, respl0)
+              rmsobj(1) = gsn_add_polyline(wks, taylor, xx, yy, respl0)
+          end if  ; if uncertainty circle has to be cropped
+
+          delete(ang)
+          delete(xx)
+          delete(yy)
+
+      end if  ; if uncertainty circle covers whole plotting area
+  end if  ; if an uncertainty estimate is available
+; --------------------------------------------------------------
+; A_laue_ax-
 
   rsrRes  = True
   rsrRes@gsLineThicknessF  = rxy@xyLineThicknesses(0)  ; line thickness
@@ -435,13 +525,14 @@ begin
 ; ----------------------------------------------------------------
 ; Part 3:
 ; Concentric about 1.0 on XB axis
-; I think this is correct. Still test mode.
 ; ----------------------------------------------------------------
   if (rOpts .and. isatt(rOpts,"centerDiffRMS") \
             .and. rOpts@centerDiffRMS) then
       respl                    = True                ; polyline mods desired
-      respl@xyLineThicknessF   = 1.0                 ; line thickness
-      respl@xyLineDashPattern  = 2                   ; short dash lines
+;al      respl@xyLineThicknessF   = 1.0                 ; line thickness
+;al      respl@xyLineDashPattern  = 2                   ; short dash lines
+      respl@gsLineThicknessF   = 2.0                 ; line thickness
+;al      respl@gsLineDashPattern  = 2                   ; short dash lines
       respl@gsLineColor        = "Black"             ; line color     
       if (isatt(rOpts,"centerDiffRMS_color")) then
 ; A_laue_ax+
@@ -468,7 +559,27 @@ begin
           if dist_n .gt. max(rxy@tmXBValues) ; + 0.25
              ;  print("cric too big, not drawing")
              ; need to find point of intersection between RMS circule and outer arc
-             ;  dum9(n-1) = gsn_add_polyline(wks,taylor,xx,yy,respl)
+; A_laue_ax+
+             xtmp = (xyMax^2 - rr^2 + 1.0) / 2.0
+             ytmp = sqrt(xyMax^2 - xtmp^2)
+             xtmp = xtmp - 1.0
+             if (xtmp.eq.0.0) then
+                 phitmp = 3.1415927
+             else if (xtmp.gt.0.0) then
+                 phitmp = 2.0 * 3.1415927 - atan(ytmp / xtmp)
+             else
+                 phitmp = 3.1415927 + atan(ytmp / xtmp)
+             end if
+             end if
+             ang2  = fspan(3.1415927, phitmp, npts)
+             xx2  = 1.0 + rr * cos(ang2)
+             yy2  = fabs(rr * sin(ang2))
+             dum9(n - 1) = gsn_add_polyline(wks, taylor, xx2, yy2, respl)
+             delete(ang2)
+             delete(xx2)
+             delete(yy2)
+; A_laue_ax-
+           ;    dum9(n-1) = gsn_add_polyline(wks,taylor,xx,yy,respl)
            else
                ;print("circ Ok")
                dum9(n-1) = gsn_add_polyline(wks,taylor,xx,yy,respl)
@@ -493,6 +604,33 @@ begin
       taylor@$unique_string("dum")$ = dum9
 
   end if
+
+; A_laue_ax+
+  ; ------------------------------------------------------------------------
+  ; draw filled black circle at (1, 0) to mark the reference point
+  if (rOpts .and. isatt(rOpts,"gsMarkerSizeF")) then
+      gsMarkerSizeF = rOpts@gsMarkerSizeF
+  else
+      gsMarkerSizeF = 0.0085
+  end if
+  gsRes = True
+  gsRes@gsMarkerIndex = 16
+  gsRes@gsMarkerColor = "Black"
+  gsRes@gsMarkerSizeF = gsMarkerSizeF
+  getvalues taylor
+    "vpXF"      : vpx
+    "vpYF"      : vpy
+    "vpWidthF"  : vpw
+    "vpHeightF" : vph
+  end getvalues
+  dotx = vpx + 1.0 / xyMax_Panel * vpw
+  doty = vpy - vph
+  gsn_polymarker_ndc(wks, dotx, doty, gsRes)  ; half circle below the x-axis
+  dotobj = new(1, graphic)
+  dotobj = gsn_add_polymarker(wks, taylor, 1.0, 0.0, gsRes)  ; half circle above the x-axis
+  ; ------------------------------------------------------------------------
+; A_laue_ax-
+
 ; ---------------------------------------------------------------
 ; Part 4:
 ; generic resources that will be applied to all users data points
@@ -515,7 +653,7 @@ begin
   if (rOpts .and. isatt(rOpts,"gsMarkerThicknessF")) then
       gsMarkerThicknessF = rOpts@gsMarkerThicknessF
   else
-      gsMarkerThicknessF = 1.0
+      gsMarkerThicknessF = 2.0
   end if
 
   if (rOpts .and. isatt(rOpts,"gsMarkerSizeF")) then
@@ -573,6 +711,14 @@ begin
 ; Part 5: ; add case legend and variable labels
 ; ---------------------------------------------------------------
 
+  extrafile = False
+
+  if (rOpts .and. isatt(rOpts, "legendExtraFile")) then
+      if (rOpts@legendExtraFile) then
+          extrafile = True
+      end if
+  end if
+
   if (rOpts .and. isatt(rOpts,"caseLabels")) then 
 
       if (isatt(rOpts,"caseLabelsFontHeightF")) then
@@ -610,7 +756,7 @@ begin
           end if
       end if
 ; A_laue_ax-
-;      lbid = gsn_create_legend(wks,nModel,rOpts@caseLabels,lgres)
+;      lbid = gsn_create_legend(legendwks,nModel,rOpts@caseLabels,lgres)
 
     if (nModel.le.20) then
         if (isatt(rOpts,"reverseOrder")) then
@@ -623,7 +769,7 @@ begin
         else   
             lgres@vpHeightF      = 0.030*nCase
         end if
-        lbid = gsn_create_legend(wks,nModel,rOpts@caseLabels,lgres)
+        lbid = gsn_create_legend(legendwks,nModel,rOpts@caseLabels,lgres)
         amres = True
         if (isatt(rOpts,"legendXpos")) then
             amres@amParallelPosF = rOpts@legendXpos
@@ -637,33 +783,52 @@ begin
         else
             amres@amOrthogonalPosF = -0.35
         end if
-        annoid1 = gsn_add_annotation(taylor,lbid,amres)       ; add legend to plot
+        if (extrafile) then
+            gsn_legend_ndc(legendwks, nModel, rOpts@caseLabels(0:nModel-1), 0.78, 0.75, lgres)
+        else
+            annoid1 = gsn_add_annotation(taylor,lbid,amres)       ; add legend to plot
+        end if
     else
-        if (isatt(rOpts,"reverseOrder")) then
-            if (rOpts@reverseOrder) then
-                lgres@lgItemOrder = ispan(19,0,1)
-            end if
+        if (isatt(rOpts,"modelsperrow")) then
+            modelsperrow = rOpts@modelsperrow
+        else
+            modelsperrow = (nModel + 1 ) / 2
         end if
-        lgres@vpHeightF      = 0.030*20
-
-;        lbid = gsn_create_legend(wks,20,rOpts@caseLabels(0:19),lgres)
-        gsn_legend_ndc(wks,20,rOpts@caseLabels(0:19),0.78,0.75,lgres)
-
-        if (isatt(rOpts,"reverseOrder")) then
-            if (rOpts@reverseOrder) then
-                delete(lgres@lgItemOrder)
-                lgres@lgItemOrder = ispan(nModel-21,0,1)
+        do lr = 0, nModel / modelsperrow
+            ix0 = lr * modelsperrow
+            if (ix0.ge.nCase) then
+                break
             end if
-        end if
-        lgres@vpHeightF      = 0.030*(nCase-20)
-        delete(lgres@lgMarkerColors)
-        delete(lgres@lgMarkerIndexes)
-        delete(lgres@lgMarkerSizeF)
-        lgres@lgMarkerColors  = Colors(20:nCase-1)
-        lgres@lgMarkerIndexes = Markers(20:nCase-1)
+            ix1 = min((/nCase - 1, ix0 + modelsperrow - 1/))
+            dumdelta = ix1 - ix0 + 1
 
-;        lbid2 = gsn_create_legend(wks,nModel-20,rOpts@caseLabels(20:nModel-1),lgres)
-        gsn_legend_ndc(wks,nModel-20,rOpts@caseLabels(20:nModel-1),0.89,0.75,lgres)
+            if (isatt(rOpts,"reverseOrder")) then
+                if (rOpts@reverseOrder) then
+                    if (isatt(lgres, "lgItemOrder")) then
+                        delete(lgres@lgItemOrder)
+                    end if
+                    lgres@lgItemOrder = ispan(dumdelta - 1, 0, 1)
+                end if
+            end if
+
+            lgres@vpHeightF      = 0.026 * dumdelta
+
+            delete(lgres@lgMarkerColors)
+            delete(lgres@lgMarkerIndexes)
+;            delete(lgres@lgMarkerSizeF)
+            lgres@lgMarkerColors  = Colors(ix0:ix1)
+            lgres@lgMarkerIndexes = Markers(ix0:ix1)
+            lgres@lgPerimOn = False ; no line around the legend(s)
+
+            if (extrafile) then
+                legend_x = 0.05 + 0.11 * lr
+            else
+                legend_x = 0.78 + 0.11 * lr
+            end if
+
+            gsn_legend_ndc(legendwks, dumdelta, rOpts@caseLabels(ix0:ix1), \
+                           legend_x, 0.75, lgres)
+        end do
     end if
 ; A_laue_ax-
 
@@ -733,7 +898,7 @@ begin
   taylor@$unique_string("dum")$ = dum7   ; minor tm
   taylor@$unique_string("dum")$ = dum10  ; markers
   taylor@$unique_string("dum")$ = dum11  ; text
-  
+
   if (.not.isatt(rOpts,"taylorDraw") .or. \
      (isatt(rOpts,"taylorDraw") .and. rOpts@taylorDraw)) then 
 	draw(taylor)
@@ -742,7 +907,6 @@ begin
      (isatt(rOpts,"taylorFrame") .and. rOpts@taylorFrame)) then 
 	frame(wks)
   end if
+
   return(taylor)
 end
-
-

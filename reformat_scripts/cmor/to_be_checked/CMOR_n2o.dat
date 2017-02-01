@@ -1,0 +1,21 @@
+SOURCE: http://www.pa.op.dlr.de/CCMVal/DataRequests/CCMVal-2_DatarequestSensitivityRuns_WMO2010_FINAL.pdf
+!============
+variable_entry:    n2o
+!============
+modeling_realm:    atmos atmosChem
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     mole_fraction_of_nitrous_oxide_in_air
+units:             mol mol-1
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         Mole Fraction of N2O
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude plevs time
+out_name:          n2o
+type:              real
+!----------------------------------
+!

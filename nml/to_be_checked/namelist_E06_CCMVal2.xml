@@ -1,0 +1,66 @@
+<session>
+<comment>
+========================================================================
+DESCRIPTION: namelist_E06_CCMVal2.xml is the master namelist for the E06 
+             diagnostics of the CCMVal tool.
+
+AUTHORS: Irene Cionni (irene.cionni@enea.it)
+         Veronika Eyring (veronika.eyring@dlr.de)
+
+NOTES: This namelist is part of the CCMVal diagnostic tool
+       (PIs: Andrew Gettelman, Veronika Eyring, co-I: Hisako Shiona)
+========================================================================
+</comment>
+
+<GLOBAL>
+  <write_plots type="boolean">        True                      </write_plots>
+  <write_netcdf type="boolean">       True                      </write_netcdf>
+  <force_processing type="boolean">   False                     </force_processing>
+  <wrk_dir type="path">               ./work                    </wrk_dir>
+  <plot_dir type="path">              ./work/plots_E06_CCMVal2/ </plot_dir>
+  <climo_dir type="path">             ./work/climo              </climo_dir>
+  <write_plot_vars type="boolean">    True                      </write_plot_vars>
+  <max_data_filesize type="integer">  100                       </max_data_filesize>
+  <max_data_blocksize type="integer"> 500                       </max_data_blocksize>
+  <verbosity  type="integer">         3                         </verbosity>
+  <exit_on_warning  type="boolean">   True                      </exit_on_warning>
+</GLOBAL>
+
+<MODELS>
+<!-- The path for the observations and the input file name is specified in the 
+     attribute files. Please edit the corresponding ./var_att/*_att.ncl. -->
+  <model> CCMVal2 AMTRAC3     REF-B1  1  1980 2005 $SCRATCH/CCMVal/CCMVal2-Data/REF-B1/AMTRAC3      </model><!--no HCl-->
+<!--  <model> CCMVal2 CAM3.5      REF-B1  1  1980 2005 $SCRATCH/CCMVal/CCMVal2-Data/REF-B1/CAM3.5       </model>--><!--no HCl, age, Fig. 9-->
+<!--  <model> CCMVal2 CCSRNIES    REF-B1  1  1980 2005 $SCRATCH/CCMVal/CCMVal2-Data/REF-B1/CCSRNIES     </model>--><!--no HCl, age-->
+  <model> CCMVal2 CMAM        REF-B1  1  1980 2005 $SCRATCH/CCMVal/CCMVal2-Data/REF-B1/CMAM         </model>
+  <model> CCMVal2 EMAC        REF-B1  1  1980 2005 $SCRATCH/CCMVal/CCMVal2-Data/REF-B1/EMAC         </model>--><!--no HCl, age, toz-->
+  <model> CCMVal2 E39CA       REF-B1  1  1980 2005 $SCRATCH/CCMVal/CCMVal2-Data/REF-B1/E39CA        </model>--><!--no HCl, age-->
+<!--  <model> CCMVal2 GEOSCCM     REF-B1  1  1980 2005 $SCRATCH/CCMVal/CCMVal2-Data/REF-B1/GEOSCCM      </model>--><!--no Fig. 1,2-->
+  <model> CCMVal2 LMDZrepro   REF-B1  1  1980 2005 $SCRATCH/CCMVal/CCMVal2-Data/REF-B1/LMDZrepro    </model><!--no age-->
+<!--  <model> CCMVal2 MRI         REF-B1  1  1980 2005 $SCRATCH/CCMVal/CCMVal2-Data/REF-B1/MRI          </model>-->
+  <model> CCMVal2 Niwa_SOCOL  REF-B1  1  1980 2005 $SCRATCH/CCMVal/CCMVal2-Data/REF-B1/Niwa_SOCOL   </model>
+  <model> CCMVal2 SOCOL       REF-B1  1  1980 2005 $SCRATCH/CCMVal/CCMVal2-Data/REF-B1/SOCOL        </model>
+  <model> CCMVal2 ULAQ        REF-B1  1  1980 2005 $SCRATCH/CCMVal/CCMVal2-Data/REF-B1/ULAQ         </model>
+<!--  <model> CCMVal2 UMETRAC     REF-B1  1  1980 2005 $SCRATCH/CCMVal/CCMVal2-Data/REF-B1/UMETRAC      </model>--><!--no O3-->
+  <model> CCMVal2 UMSLIMCAT   REF-B1  1  1980 2005 $SCRATCH/CCMVal/CCMVal2-Data/REF-B1/UMSLIMCAT    </model>
+<!--  <model> CCMVal2 UMUKCA-UCAM REF-B1  1  1980 2005 $SCRATCH/CCMVal/CCMVal2-Data/REF-B1/UMUKCA-UCAM  </model>--><!--no Fig. 1,2-->
+<!--  <model> CCMVal2 UMUKCA-METO REF-B1  1  1980 2005 $SCRATCH/CCMVal/CCMVal2-Data/REF-B1/UMUKCA-METO  </model>--><!--no Fig. 1,2-->
+<!--  <model> CCMVal2 WACCM       REF-B1  1  1980 2005 $SCRATCH/CCMVal/CCMVal2-Data/REF-B1/WACCM        </model>-->
+<!--  <model> CCMVal2 ERA40       REF-B1  1  1980 2005 $HOME/ESMVal-TOOL/ESM-Diagnostic/EDiTo_obs/trunk </model>-->
+<!--  <model> CCMVal2 NCEP        REF-B1  1  1980 2005 $HOME/ESMVal-TOOL/ESM-Diagnostic/EDiTo_obs/trunk </model>-->
+<!--  <model> CCMVal2 NCEP2       REF-B1  1  1980 2005 $HOME/ESMVal-TOOL/ESM-Diagnostic/EDiTo_obs/trunk </model>-->
+<!--  <model> CCMVal2 JRA25       REF-B1  1  1980 2005 $HOME/ESMVal-TOOL/ESM-Diagnostic/EDiTo_obs/trunk </model>-->
+</MODELS>
+
+
+<DIAGNOSTICS>
+  <diagnostic> E06Diag </diagnostic>
+</DIAGNOSTICS>
+
+</session>
+
+
+
+
+
+

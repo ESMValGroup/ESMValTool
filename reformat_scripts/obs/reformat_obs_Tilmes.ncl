@@ -150,7 +150,9 @@ begin
 
             spec = GAS(j)
             out_file = OUTDIR + "OBS_" + OBSNAME + "_insitu_" + \
-                REGIONS(i) + "_" + FIELD + "_" + VAR(j) + ".nc"
+                REGIONS(i) + "_" + FIELD + "_" + VAR(j) + "_" + \
+                str_get_field(RANGE, 1, "_") + "01-" + \
+                str_get_field(RANGE, 2, "_") + "12.nc"
 
             ;; Select region
             index = ind(lat.le.LATMAX(i) .and. lat.ge.LATMIN(i))
@@ -262,9 +264,8 @@ begin
 
             ;; Create soft links (workaround to deal with naming conventions)
             if (soft_links) then
-                linked_file = \
-                    str_sub_str(out_file, ".nc", "_" + REGIONS(i) + ".nc")
-                system("ln -s " + out_file + " " + linked_file)
+                link_file = str_sub_str(out_file, VAR, VAR + "_" + REGIONS(i))
+                system("ln -s " + out_file + " " + link_file)
             end if
 
         end do  ; j (variables)

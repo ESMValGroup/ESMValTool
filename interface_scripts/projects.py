@@ -130,6 +130,17 @@ class Project:
         """
         return None
 
+    def get_cf_porofile(self, project_info, model):
+        """ @brief Returns the path to the mrsofc file used for
+                   land variables
+            @param project_info Current namelist in dictionary format
+            @param model One of the <model>-tags in the XML namelist file
+            @return A string (areafile path)
+
+            This function looks for the porosity file
+        """
+        return None
+
     def get_cf_lmaskfile(self, project_info, model):
         """ @brief Returns the path to the sftlf file used for masking
                    land variables (regular grid)
@@ -322,33 +333,17 @@ class OBS(Project):
                            msd['case_name'],
                            msd['ensemble'],
                            field,
-                           variable]) + '.nc'
-
-        if (not os.path.isfile(os.path.join(indir, infile))):
-            infile = '_'.join([msd['project'],
-                               msd['name'],
-                               msd['case_name'],
-                               msd['ensemble'],
-                               field,
-                               variable]) + '*.nc'
+                           variable]) + '_??????-??????.nc'
 
         PROJECT = msd['project']
         if ('OBS_gridfile' in msd["project"]):
             PROJECT = 'OBS'
-            if (not os.path.isfile(os.path.join(indir, infile))):
-                infile = '_'.join([PROJECT,
-                                  msd['name'],
-                                  msd['case_name'],
-                                  msd['ensemble'],
-                                  field,
-                                  variable]) + '.nc'
-            if (not os.path.isfile(os.path.join(indir, infile))):
-                infile = '_'.join([PROJECT,
-                                  msd['name'],
-                                  msd['case_name'],
-                                  msd['ensemble'],
-                                  field,
-                                  variable]) + '*.nc'
+            infile = '_'.join([PROJECT,
+                               msd['name'],
+                               msd['case_name'],
+                               msd['ensemble'],
+                               field,
+                               variable]) + '_??????-??????.nc'
 
         return indir, infile
 
@@ -682,6 +677,24 @@ class CMIP5(Project):
         """
         self.basename = "CMIP5"
 
+    def get_model_mip(self, model):
+        return self.get_model_subsection(model, "mip")
+
+    def get_model_exp(self, model):
+        return self.get_model_subsection(model, "experiment")
+
+    def get_model_ens(self, model):
+        return self.get_model_subsection(model, "ensemble")
+
+    def get_model_start_year(self, model):
+        return self.get_model_subsection(model, "start_year")
+
+    def get_model_end_year(self, model):
+        return self.get_model_subsection(model, "end_year")
+
+    def get_model_dir(self, model):
+        return self.get_model_subsection(model, "dir")
+
     def get_dict_key(self, model, mip, exp):
         """ @brief Returns a unique key based on the model entries provided.
             @param model One of the <model>-tags in the XML namelist file
@@ -781,6 +794,24 @@ class CMIP5(Project):
                    "_r0i0p0.nc"
 
         return os.path.join(areadir, areafile)
+
+    def get_cf_porofile(self, project_info, model):
+        """ @brief Returns the path to the mrsofc file used for
+                   land variables
+            @param project_info Current namelist in dictionary format
+            @param model One of the <model>-tags in the XML namelist file
+            @return A string (areafile path)
+
+            This function looks for the porosity file
+        """
+        msd = self.get_model_sections(model)
+
+        maskdir = msd["dir"]
+
+        maskfile = 'mrsofc_fx_' + msd["name"] + "_" + msd["experiment"] + \
+                   "_r0i0p0.nc"
+
+        return os.path.join(maskdir, maskfile)
 
     def get_cf_lmaskfile(self, project_info, model):
         """ @brief Returns the path to the sftlf file used for masking
@@ -1065,6 +1096,31 @@ class CMIP5_ETHZ(CMIP5):
             + "_r0i0p0.nc"
 
         return os.path.join(areadir, areafile)
+
+    def get_cf_porofile(self, project_info, model):
+        """ @brief Returns the path to the mrsofc file used for
+                   land variables
+            @param project_info Current namelist in dictionary format
+            @param model One of the <model>-tags in the XML namelist file
+            @return A string (areafile path)
+
+            This function looks for the porosity file
+        """
+
+        # msd = model_section_dictionary
+        msd = self.get_model_sections(model)
+
+        maskdir = os.path.join(msd["dir"],
+                               msd["experiment"],
+                               'fx',
+                               'mrsofc',
+                               msd["name"],
+                               'r0i0p0')
+
+        maskfile = 'mrsofc_fx_' + msd["name"] + "_" + msd["experiment"] \
+            + "_r0i0p0.nc"
+
+        return os.path.join(maskdir, maskfile)
 
     def get_cf_lmaskfile(self, project_info, model):
         """ @brief Returns the path to the sftlf file used for masking
@@ -1410,6 +1466,122 @@ class MiKlip_baseline0(MiKlip):
 
         return os.path.join(areadir, areafile)
 
+class O3_Cionni(Project):
+    """ @brief Class defining the specific characteristics of the CMIP5 project
+    """
+    def __init__(self):
+        Project.__init__(self)
+
+        ## The names of the space separated entries in the XML-file <model> tag
+        ## lines
+        self.model_specifiers = ["project", "name", "ensemble", "experiment", "start_year", "end_year", "dir"]
+
+        """ Define the 'basename'-variable explicitly
+        """
+        self.basename = "O3_Cionni"
+
+    def get_dict_key(self, model, mip, exp):
+        """ @brief Returns a unique key based on the model entries provided.
+            @parjam model One of the <model>-tags in the XML namelist file
+            @return A string
+
+            This function creates and returns a key used in a number of NCL
+            scripts to refer to a specific dataset, see e.g., the variable
+            'cn' in 'interface_scripts/read_data.ncl'
+        """        
+
+        # msd = model_section_dictionary
+
+        msd = self.get_model_sections(model)
+        msd = self.rewrite_mip_exp(msd, mip, exp)
+
+        dict_key = "_".join(['Ozone_CMIP5_ACC_SPARC',
+                             msd['experiment'],
+                             msd['start_year'],
+                             msd['end_year']])
+ 
+        return dict_key
+
+    def get_figure_file_names(self, project_info, model, mip, exp):
+        """ @brief Returns the full path used for intermediate data storage
+            @param project_info Current namelist in dictionary format
+            @param model One of the <model>-tags in the XML namelist file
+            @param variable_attributes The variable attributes
+            @return A string
+
+            This function creates and returns the full path used in a number
+            of NCL scripts to write intermediate data sets.
+        """
+        # msd = model_section_dictionary
+        msd = self.get_model_sections(model)
+        msd = self.rewrite_mip_exp(msd, mip, exp)
+
+        return "_".join(['Ozone_CMIP5_ACC_SPARC',
+                         msd['name'],
+                         msd['experiment'],
+                         msd['start_year']]) + "-" + msd['end_year']
+
+    def get_cf_infile(self, project_info, model, field, variable, mip, exp):
+        """ @brief Returns the path to the input file used in reformat
+            @param variable Current variable
+            @param climo_dir Where processed (reformatted) input files reside
+            @param model One of the <model>-tags in the XML namelist file
+            @param field The field (see tutorial.pdf for available fields)
+            @param variable The variable
+                            (defaults to the variable in project_info)
+            @param variable_attributes The variable attributes
+            @return Two strings (input directory and input file)
+
+            This function looks for the input file to use in the
+            reformat routines
+        """
+        # msd = model_section_dictionary
+        msd = self.get_model_sections(model)
+        msd = self.rewrite_mip_exp(msd, mip, exp)
+
+        indir = msd["dir"]+ 'final_' + msd['experiment']
+
+        variable = self.get_project_variable_name(model, variable)
+
+        infile = '_'.join([variable,
+                           msd['experiment'],]) + '.nc'
+
+        if (not os.path.isfile(os.path.join(indir, infile))):
+            infile = '_'.join(['Ozone_CMIP5_ACC_SPARC_*',
+                               msd['experiment'],
+                               field,
+                               variable]) + '.nc'
+
+        return indir, infile
+
+    def get_cf_outfile(self, project_info, model, field, variable, mip, exp):
+        """ @brief Returns the output file used in the reformat routines
+            @param variable Current variable
+            @param climo_dir Where processed (reformatted) input files reside
+            @param model One of the <model>-tags in the XML namelist file
+            @param field The field (see tutorial.pdf for available fields)
+            @param variable The variable
+                            (defaults to the variable in project_info)
+            @return A string (output path)
+
+            This function specifies the output file to use in the reformat
+            routines and in climate.ncl
+        """
+
+        # msd = model_section_dictionary
+        msd = self.get_model_sections(model)
+
+        # Overide some model lines with settings from the variable attributes
+        msd = self.rewrite_mip_exp(msd, mip, exp)
+
+        outfile = '_'.join(['Ozone_CMIP5_ACC_SPARC',
+                            msd['name'],
+                            msd['experiment'],
+                            field,
+                            variable,
+                            msd['start_year']]) + '-' + msd['end_year'] + '.nc'
+
+        return outfile
 
 class CCMVal(Project):
     """ @brief Defining the specific characteristics of the CCMVal project

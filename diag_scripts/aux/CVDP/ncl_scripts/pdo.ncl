@@ -1,6 +1,6 @@
 ; Calculates the PDO pattern, timeseries, and spectra.
 ;
-; Variables used: TS
+; Variables used: ts
 ;
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
@@ -79,18 +79,13 @@ begin
         delete(sst)
         continue
      end if
-       
-     if (isfilepresent2("obs_ts").and.ee.eq.0) then   ; mask out land in array going into EOF functions
-     else
-        sst = where(sst.le.-1.8,-1.8,sst)
-        d = addfile("$NCARG_ROOT/lib/ncarg/data/cdf/landsea.nc","r")   
-        basemap = d->LSMASK
-        lsm = landsea_mask(basemap,sst&lat,sst&lon)
-        sst = mask(sst,conform(sst,lsm,(/1,2/)).ge.1,False)
-;        printStatInfo(sst)
-        delete([/lsm,basemap/])
-        delete(d)
-     end if    
+     sst = where(sst.le.-1.8,-1.8,sst)    ; set all values below -1.8 to -1.8
+     d = addfile("$NCARG_ROOT/lib/ncarg/data/cdf/landsea.nc","r")   ; mask out land (this is redundant for data that is already masked)
+     basemap = d->LSMASK
+     lsm = landsea_mask(basemap,sst&lat,sst&lon)
+     sst = mask(sst,conform(sst,lsm,(/1,2/)).ge.1,False)
+     delete([/lsm,basemap/])
+     delete(d)  
          
      if (OPT_CLIMO.eq."Full") then
         sst = rmMonAnnCycTLL(sst)
@@ -117,12 +112,11 @@ begin
      delete(sst)
      sst_CW= SqrtCosWeight(sst2(time|:,lat|:,lon|:))
   
-     evecv = eofunc(sst_CW({lat|20:70},{lon|110:260},time|:),4,75)
+     evecv = eofunc(sst_CW({lat|20:70},{lon|110:260},time|:),2,75)
      delete(sst_CW)
      pcts = eofunc_ts(sst2({20:70},{110:260},:),evecv,False)
      pctsS = dim_standardize(pcts(0,:),0)
-     pcvari = evecv@pcvar
-     delete([/pcts,evecv/])
+     delete([/pcts/])
      finarr = sst2(:,:,0)
      finarr = finarr@_FillValue
 
@@ -135,8 +129,14 @@ begin
      pc1!0 = "time"
      pc1&time = sst2&time
      pc1@units = "1"
-     pcvari = tofloat(sprintf("%4.1f", pcvari(0)))
-     pdo@pcvar = pcvari     
+     sig_pcv = eofunc_north2(evecv@pcvar,dimsizes(pc1),False)
+     if (sig_pcv(0)) then    ; if True then significant
+        pdo@pcvar = tofloat(sprintf("%4.1f", evecv@pcvar(0)))+"%*"
+     else
+        pdo@pcvar = tofloat(sprintf("%4.1f", evecv@pcvar(0)))+"%"
+     end if
+     delete([/sig_pcv,evecv/])
+    
      if (.not.ismissing(pdo({37},{200}))) then
         if (pdo({37},{200}).ge.0) then   ; arbitrary attempt to make all plots have the same sign..
            pdo = pdo*-1.
@@ -147,7 +147,11 @@ begin
 ;---------------------------------------------------------------------------------------------     
      if (OUTPUT_DATA.eq."True") then
         modname = str_sub_str(names(ee)," ","_")
-        fn = getenv("OUTDIR")+modname+".cvdp_data."+syear(ee)+"-"+eyear(ee)+".nc"
+        bc = (/"/","'","(",")"/)
+        do gg = 0,dimsizes(bc)-1
+           modname = str_sub_str(modname,bc(gg),"_")
+        end do
+        fn = getenv("OUTDIR")+modname+".cvdp_data.pdo."+syear(ee)+"-"+eyear(ee)+".nc"
         if (.not.isfilepresent2(fn)) then
            z = addfile(fn,"c")
            z@source = "NCAR Climate Analysis Section's Climate Variability Diagnostics Package v"+getenv("VERSION")
@@ -157,11 +161,12 @@ begin
            else
               z@climatology = CLIMO_SYEAR+"-"+CLIMO_EYEAR+" climatology removed prior to all calculations (other than means)"
            end if
+           z@Conventions = "CF-1.6"
         else
            z = addfile(fn,"w")
         end if
-        z->pdo_pattern_mon = pdo
-        z->pdo_timeseries_mon = pc1
+        z->pdo_pattern_mon = set_varAtts(pdo,"PDO spatial pattern (monthly)","","")
+        z->pdo_timeseries_mon = set_varAtts(pc1,"PDO normalized principal component timeseries (monthly)","1","")
         delete([/modname,fn/])
      end if              
 ;------------------------------------------------------------------------
@@ -189,12 +194,15 @@ begin
         if (OUTPUT_DATA.eq."True") then
            splt1!0 = "ncurves"
            splt1&ncurves = ispan(0,3,1)
+           splt1&ncurves@long_name = "power spectra curves"
+           splt1&ncurves@units = "1"
            splt1!1 = "frequency"
            splt1&frequency = sdof@frq
+           splt1&frequency@units = "1"
            splt1@units_info = "df refers to frequency interval; data are standardized so there are no physical units"
            splt1@units = "1/df"
            splt1@info = "(0,:)=spectrum,(1,:)=Markov red noise spectrum, (2,:)="+val1+"% confidence bound for Markhov, (3,:)="+val2+"% confidence bound for Markhov"
-           z->pdo_spectra = splt1
+           z->pdo_spectra = set_varAtts(splt1,"PDO (monthly) power spectra, Markov spectrum and confidence curves","","") 
         end if
         if (isfilepresent2("obs_ts").and.ee.eq.0) then
            sdof_obs = sdof
@@ -216,7 +224,6 @@ begin
      res@mpFillOn = False
      res@mpCenterLonF = 210.
      res@mpOutlineOn = True  
-     res@mpDataSetName = "Earth..4"
      res@gsnDraw      = False
      res@gsnFrame     = False
      res@vpYF = 0.95
@@ -250,7 +257,7 @@ begin
      res@gsnRightStringFontHeightF = 0.014
      res@gsnLeftString = syear(ee)+"-"+eyear(ee)
  
-     res@gsnRightString = pcvari(0)+"%"
+     res@gsnRightString = pdo@pcvar
      res@gsnCenterString = names(ee)
      map(ee) = gsn_csm_contour_map(wks,pdo,res)
      
@@ -265,7 +272,7 @@ begin
      if (isfilepresent2("obs_ts").and.ee.ge.1) then
         patcor(ee,:,:) = (/ linint2(pdo&lon,pdo&lat,pdo,True,patcor&lon,patcor&lat,0) /)
      end if
-     delete([/pcvari,pdo/])
+     delete([/pdo/])
      
      pres = True
      pres@vpXF = 0.07
@@ -308,11 +315,13 @@ begin
      pres@tiXAxisFontHeightF = 0.025
      pres@tiYAxisFontHeightF = 0.025
      pres@tiMainFontHeightF = 0.03
+     pres@gsnRightStringOrthogonalPosF = -0.115
      
      pres@tiMainOn = False
      pres@gsnCenterString = "Period (years)"
      pres@gsnCenterStringFontHeightF =    pres@tiYAxisFontHeightF
-     pres@gsnRightString = ""
+     pres@gsnRightStringFontHeightF  =    pres@tiYAxisFontHeightF - 0.005
+     pres@gsnRightString = syear(ee)+"-"+eyear(ee)+"  "
      pres@gsnLeftString = "" 
      if (wks_type.eq."png") then
         pres@xyLineThicknessF   = 3.5
@@ -327,9 +336,12 @@ begin
      
         if (isfilepresent2("obs_ts").and.ee.ge.1.and.spectra_mvf_obs.eq.False) then
            pres@xyLineColors        = (/"gray70","black","black","black"/)
+           pres@xyCurveDrawOrder = "PreDraw"
            pres@gsnCenterString = ""
+           pres@gsnRightString = ""
            pspec_obs(ee) = gsn_csm_xy(wks2,sdof_obs@frq,sdof_obs@spcx,pres)
            overlay(pspec(ee),pspec_obs(ee)) 
+           delete(pres@xyCurveDrawOrder)
         end if     
         delete([/sdof,splt1/])
      end if 
@@ -402,6 +414,7 @@ begin
      finpr   = "PDO (Monthly)     "    ; Must be 18 characters long
      line3   = "                  "    ; Must be 18 characters long
      line4   = line3
+     header = (/"","Pattern Correlations/RMS Differences   Observations vs. Model(s)",""/)
      do hh = 1,nsim-1
         dimY = dimsizes(tochar(names(hh)))
         nchar = dimY
@@ -432,22 +445,17 @@ begin
      end do
      if (dimsizes(tochar(line4)).ge.8190) then   ; system or fortran compiler limit
         print("Metrics table warning: Not creating metrics table as size of comparison results in a invalid ascii row size.")   
-     else
-        if (.not.isfilepresent2(getenv("OUTDIR")+"metrics_orig.txt")) then
-           header = (/"","Pattern Correlations/RMS Differences   Observations vs. Model(s)",""/)
-           write_table(getenv("OUTDIR")+"metrics_orig.txt","w",[/header/],"%s")
-           write_table(getenv("OUTDIR")+"metrics_orig.txt","a",[/line3/],"%s")
-           write_table(getenv("OUTDIR")+"metrics_orig.txt","a",[/line4/],"%s")
-           delete(header)
-        end if
-        write_table(getenv("OUTDIR")+"metrics_orig.txt","a",[/finpr/],"%s")
+     else        
+        write_table(getenv("OUTDIR")+"metrics.pdo.txt","w",[/header/],"%s")
+        write_table(getenv("OUTDIR")+"metrics.pdo.txt","a",[/line3/],"%s")
+        write_table(getenv("OUTDIR")+"metrics.pdo.txt","a",[/line4/],"%s")
+        write_table(getenv("OUTDIR")+"metrics.pdo.txt","a",[/finpr/],"%s")
      end if
-     delete([/finpr,line3,line4,format2,format3,nchar,ntc,clat,patcor,dimY,ntb/])
+     delete([/finpr,line3,line4,format2,format3,nchar,ntc,clat,patcor,dimY,ntb,header/])
   end if
 
   panres = True
   panres@gsnMaximize = True
-  panres@gsnPanelBottom = 0.05
   panres@gsnPaperOrientation = "portrait"
   panres@gsnPanelLabelBar = True
   panres@gsnPanelYWhiteSpacePercent = 3.0
@@ -455,20 +463,27 @@ begin
   panres@pmLabelBarWidthF = 0.55
   panres@lbTitleOn = False
   panres@lbBoxLineColor = "gray70"
-  if (nsim.le.5) then
-     panres@txFontHeightF = 0.024
+  if (nsim.le.4) then
+     if (nsim.eq.1) then
+        panres@txFontHeightF = 0.022
+        panres@gsnPanelBottom = 0.50
+     else
+        panres@txFontHeightF = 0.0145
+        panres@gsnPanelBottom = 0.50
+     end if
   else
      panres@txFontHeightF = 0.016
-  end if  
+     panres@gsnPanelBottom = 0.05
+  end if
   panres@txString = "PDO (Monthly)"
   ncol = floattointeger(sqrt(nsim))
   nrow = (nsim/ncol)+mod(nsim,ncol)  
-  gsn_panel(wks,map,(/nrow,ncol/),panres)
+  gsn_panel2(wks,map,(/nrow,ncol/),panres)
   delete(wks)
 
   delete(panres@gsnPanelLabelBar)
   panres@txString = "PDO (Monthly)"
-  gsn_panel(wks2,pspec,(/nrow,ncol/),panres)  
+  gsn_panel2(wks2,pspec,(/nrow,ncol/),panres)  
   delete(wks2)
   
   if (SCALE_TIMESERIES.eq."True") then
@@ -482,7 +497,7 @@ begin
      lp = (/nrow,ncol/)  ;(/nsim/2+1,nsim/8+1/)  
   end if
   panres@txString = "PDO (Monthly)"
-  gsn_panel(wks3,xyplot,lp,panres)  
+  gsn_panel2(wks3,xyplot,lp,panres)  
   delete(wks3)
   delete([/map,pspec,syear,eyear,nyr,nyr_max,lp/])
   print("Finished: pdo.ncl")

@@ -1,5 +1,5 @@
 <namelist>
-<include href="./config_private.xml"/>
+<include href="./config_private_DLR-PA2.xml"/>
 <namelist_summary>
 ###############################################################################
 namelist_anav13jclim.xml
@@ -271,7 +271,7 @@ This namelist is part of the ESMValTool
   <diag>
     <description>         Grading precalculations </description>
     <variable_def_dir>    ./variable_defs/        </variable_def_dir>
-    <variable MIP="Amon"> tas                     </variable>
+    <variable MIP="Amon" ref_model="CRU"> tas     </variable>
     <field_type>          T2Ms                    </field_type>
     <diag_script_cfg_dir> ./nml/cfg_anav13jclim/  </diag_script_cfg_dir>
 
@@ -291,7 +291,7 @@ This namelist is part of the ESMValTool
   <diag>
     <description>         Grading precalculations </description>
     <variable_def_dir>    ./variable_defs/        </variable_def_dir>
-    <variable MIP="Amon"> pr                      </variable>
+    <variable MIP="Amon" ref_model="CRU"> pr      </variable>
     <field_type>          T2Ms                    </field_type>
     <diag_script_cfg_dir> ./nml/cfg_anav13jclim/  </diag_script_cfg_dir>
 
@@ -311,7 +311,7 @@ This namelist is part of the ESMValTool
   <diag>
     <description>         Grading precalculations </description>
     <variable_def_dir>    ./variable_defs/        </variable_def_dir>
-    <variable MIP="Lmon"> GPP                     </variable>
+    <variable MIP="Lmon" ref_model="MTE"> GPP     </variable>
     <field_type>          T2Ms                    </field_type>
     <diag_script_cfg_dir> ./nml/cfg_anav13jclim/  </diag_script_cfg_dir>
 
@@ -329,7 +329,7 @@ This namelist is part of the ESMValTool
   <diag>
     <description>         Grading precalculations </description>
     <variable_def_dir>    ./variable_defs/        </variable_def_dir>
-    <variable MIP="Lmon"> LAI                     </variable>
+    <variable MIP="Lmon" ref_model="LAI3g"> LAI   </variable>
     <field_type>          T2Ms                    </field_type>
     <diag_script_cfg_dir> ./nml/cfg_anav13jclim/  </diag_script_cfg_dir>
 
@@ -348,7 +348,7 @@ This namelist is part of the ESMValTool
   <diag>
     <description>         Grading precalculations </description>
     <variable_def_dir>    ./variable_defs/        </variable_def_dir>
-    <variable MIP="Lmon"> NBP                     </variable>
+    <variable MIP="Lmon" ref_model="JMA-TRANSCOM"> NBP </variable>
     <field_type>          T2Ms                    </field_type>
     <diag_script_cfg_dir> ./nml/cfg_anav13jclim/  </diag_script_cfg_dir>
 
@@ -377,7 +377,7 @@ This namelist is part of the ESMValTool
   <diag>
     <description>         Grading precalculations </description>
     <variable_def_dir>    ./variable_defs/        </variable_def_dir>
-    <variable MIP="Amon"> tas                     </variable>
+    <variable MIP="Amon" ref_model="CRU"> tas     </variable>
     <field_type>          T2Ms                    </field_type>
     <diag_script_cfg_dir> ./nml/cfg_anav13jclim/  </diag_script_cfg_dir>
 
@@ -397,7 +397,7 @@ This namelist is part of the ESMValTool
   <diag>
     <description>         Grading precalculations </description>
     <variable_def_dir>    ./variable_defs/        </variable_def_dir>
-    <variable MIP="Amon"> pr                      </variable>
+    <variable MIP="Amon" ref_model="CRU"> pr      </variable>
     <field_type>          T2Ms                    </field_type>
     <diag_script_cfg_dir> ./nml/cfg_anav13jclim/  </diag_script_cfg_dir>
 
@@ -417,7 +417,7 @@ This namelist is part of the ESMValTool
   <diag>
     <description>         Grading precalculations </description>
     <variable_def_dir>    ./variable_defs/        </variable_def_dir>
-    <variable MIP="Lmon"> GPP                     </variable>
+    <variable MIP="Lmon" ref_model="MTE"> GPP     </variable>
     <field_type>          T2Ms                    </field_type>
     <diag_script_cfg_dir> ./nml/cfg_anav13jclim/  </diag_script_cfg_dir>
 
@@ -435,7 +435,7 @@ This namelist is part of the ESMValTool
   <diag>
     <description>         Grading precalculations </description>
     <variable_def_dir>    ./variable_defs/        </variable_def_dir>
-    <variable MIP="Lmon"> LAI                     </variable>
+    <variable MIP="Lmon" ref_model="LAI3g"> LAI   </variable>
     <field_type>          T2Ms                    </field_type>
     <diag_script_cfg_dir> ./nml/cfg_anav13jclim/  </diag_script_cfg_dir>
 
@@ -454,7 +454,7 @@ This namelist is part of the ESMValTool
   <diag>
     <description>         Grading precalculations </description>
     <variable_def_dir>    ./variable_defs/        </variable_def_dir>
-    <variable MIP="Lmon"> NBP                     </variable>
+    <variable MIP="Lmon" ref_model="JMA-TRANSCOM"> NBP </variable>
     <field_type>          T2Ms                    </field_type>
     <diag_script_cfg_dir> ./nml/cfg_anav13jclim/  </diag_script_cfg_dir>
 
@@ -479,11 +479,11 @@ This namelist is part of the ESMValTool
     <diag_script cfg="cfg_perfmetrics_grading_collect.ncl"> perfmetrics_grading_collect.ncl  </diag_script>
   </diag>
 
-  <!-- === Norhtern Hemisphere =================================================================================================== -->
+  <!-- === Northern Hemisphere =================================================================================================== -->
   <diag>
     <description>         Grading precalculations </description>
     <variable_def_dir>    ./variable_defs/        </variable_def_dir>
-    <variable MIP="Amon"> tas                     </variable>
+    <variable MIP="Amon" ref_model="CRU"> tas     </variable>
     <field_type>          T2Ms                    </field_type>
     <diag_script_cfg_dir> ./nml/cfg_anav13jclim/  </diag_script_cfg_dir>
 
@@ -503,7 +503,7 @@ This namelist is part of the ESMValTool
   <diag>
     <description>         Grading precalculations </description>
     <variable_def_dir>    ./variable_defs/        </variable_def_dir>
-    <variable MIP="Amon"> pr                      </variable>
+    <variable MIP="Amon" ref_model="CRU"> pr      </variable>
     <field_type>          T2Ms                    </field_type>
     <diag_script_cfg_dir> ./nml/cfg_anav13jclim/  </diag_script_cfg_dir>
 
@@ -523,7 +523,7 @@ This namelist is part of the ESMValTool
   <diag>
     <description>         Grading precalculations </description>
     <variable_def_dir>    ./variable_defs/        </variable_def_dir>
-    <variable MIP="Lmon"> GPP                     </variable>
+    <variable MIP="Lmon" ref_model="MTE"> GPP     </variable>
     <field_type>          T2Ms                    </field_type>
     <diag_script_cfg_dir> ./nml/cfg_anav13jclim/  </diag_script_cfg_dir>
 
@@ -541,7 +541,7 @@ This namelist is part of the ESMValTool
   <diag>
     <description>         Grading precalculations </description>
     <variable_def_dir>    ./variable_defs/        </variable_def_dir>
-    <variable MIP="Lmon"> LAI                     </variable>
+    <variable MIP="Lmon" ref_model="LAI3g"> LAI   </variable>
     <field_type>          T2Ms                    </field_type>
     <diag_script_cfg_dir> ./nml/cfg_anav13jclim/  </diag_script_cfg_dir>
 
@@ -560,7 +560,7 @@ This namelist is part of the ESMValTool
   <diag>
     <description>         Grading precalculations </description>
     <variable_def_dir>    ./variable_defs/        </variable_def_dir>
-    <variable MIP="Lmon"> NBP                     </variable>
+    <variable MIP="Lmon" ref_model="JMA-TRANSCOM"> NBP </variable>
     <field_type>          T2Ms                    </field_type>
     <diag_script_cfg_dir> ./nml/cfg_anav13jclim/  </diag_script_cfg_dir>
 
@@ -589,7 +589,7 @@ This namelist is part of the ESMValTool
   <diag>
     <description>         Grading precalculations </description>
     <variable_def_dir>    ./variable_defs/        </variable_def_dir>
-    <variable MIP="Amon"> tas                     </variable>
+    <variable MIP="Amon" ref_model="CRU"> tas     </variable>
     <field_type>          T2Ms                    </field_type>
     <diag_script_cfg_dir> ./nml/cfg_anav13jclim/  </diag_script_cfg_dir>
 
@@ -609,7 +609,7 @@ This namelist is part of the ESMValTool
   <diag>
     <description>         Grading precalculations </description>
     <variable_def_dir>    ./variable_defs/        </variable_def_dir>
-    <variable MIP="Amon"> pr                      </variable>
+    <variable MIP="Amon" ref_model="CRU"> pr      </variable>
     <field_type>          T2Ms                    </field_type>
     <diag_script_cfg_dir> ./nml/cfg_anav13jclim/  </diag_script_cfg_dir>
 
@@ -629,7 +629,7 @@ This namelist is part of the ESMValTool
   <diag>
     <description>         Grading precalculations </description>
     <variable_def_dir>    ./variable_defs/        </variable_def_dir>
-    <variable MIP="Lmon"> GPP                     </variable>
+    <variable MIP="Lmon" ref_model="MTE"> GPP     </variable>
     <field_type>          T2Ms                    </field_type>
     <diag_script_cfg_dir> ./nml/cfg_anav13jclim/  </diag_script_cfg_dir>
 
@@ -647,7 +647,7 @@ This namelist is part of the ESMValTool
   <diag>
     <description>         Grading precalculations </description>
     <variable_def_dir>    ./variable_defs/        </variable_def_dir>
-    <variable MIP="Lmon"> LAI                     </variable>
+    <variable MIP="Lmon" ref_model="LAI3g"> LAI   </variable>
     <field_type>          T2Ms                    </field_type>
     <diag_script_cfg_dir> ./nml/cfg_anav13jclim/  </diag_script_cfg_dir>
 
@@ -666,7 +666,7 @@ This namelist is part of the ESMValTool
   <diag>
     <description>         Grading precalculations </description>
     <variable_def_dir>    ./variable_defs/        </variable_def_dir>
-    <variable MIP="Lmon">  NBP                     </variable>
+    <variable MIP="Lmon" ref_model="JMA-TRANSCOM"> NBP </variable>
     <field_type>          T2Ms                    </field_type>
     <diag_script_cfg_dir> ./nml/cfg_anav13jclim/  </diag_script_cfg_dir>
 

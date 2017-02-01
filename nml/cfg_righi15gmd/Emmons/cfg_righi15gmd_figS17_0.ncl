@@ -8,10 +8,10 @@ diag_script_info = True
 ;; ############################################################################
 path = getenv("ESMValTool_OBSPATH") + "/Tier2/Emmons/"
 diag_script_info@obsfiles = (/\
-    path + "*PEM-Tropics-A-DC8-Fiji_T0M_vmrc3h6.nc", \
-    path + "*PEM-Tropics-A-DC8-Easter-Island_T0M_vmrc3h6.nc", \
-    path + "*PEM-Tropics-A-P3-Christmas-Island_T0M_vmrc3h6.nc", \
-    path + "*PEM-Tropics-A-P3-Easter-Island_T0M_vmrc3h6.nc"/)
+    path + "*PEM-Tropics-A-DC8-Fiji_T0M_vmrc3h6_*.nc", \
+    path + "*PEM-Tropics-A-DC8-Easter-Island_T0M_vmrc3h6_*.nc", \
+    path + "*PEM-Tropics-A-P3-Christmas-Island_T0M_vmrc3h6_*.nc", \
+    path + "*PEM-Tropics-A-P3-Easter-Island_T0M_vmrc3h6_*.nc"/)
 delete(path)
 
 ;; ############################################################################

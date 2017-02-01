@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- User-defined configuration file for DLR-PA2 cluster -->
+<settings>
+	<pathCollection>
+		<usrpath category="userDirectory" type="output" id="WORKPATH">
+			<path>work/</path>
+			<description>working directory</description>
+		</usrpath>
+
+		<usrpath category="userDirectory" type="output" id="PLOTPATH">
+			<path>work/plots/</path>
+			<description>directory for output plots</description>
+		</usrpath>
+
+		<usrpath category="userDirectory" type="output" id="CLIMOPATH">
+			<path>work/climo/</path>
+			<description>directory for output files</description>
+		</usrpath>
+
+		<usrpath category="userDirectory" type="output" id="REGRPATH">
+			<path>work/regridding/</path>
+			<description>directory for regridding files</description>
+		</usrpath>
+
+		<usrpath category="simulation" type="input" id="MODELPATH">
+			<path>/export/pa_data02/ESMVal/model/</path>
+			<description>root directory of model data</description>
+		</usrpath>
+
+		<usrpath category="observation" type="input" id="OBSPATH">
+ 			<path>/export/pa_data02/ESMVal/obs/</path>
+			<description>root directory of observational data</description>
+		</usrpath>
+
+		<usrpath category="observation" type="input" id="RAWOBSPATH">
+			<path>/export/pa_data01/ESMVal/obs/RAW/</path>
+			<description>root directory of raw observational data (for reformat_obs scripts)</description>
+		</usrpath>
+	</pathCollection>
+</settings>
