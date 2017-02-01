@@ -1,0 +1,53 @@
+New in 1.9 release
+==================
+
+* support for longs (64bit integers) by Sergei Aranovsky
+* reserved keywords allowed in tags with leading underscore
+  so this will work:
+  p = markup.page( mode='xml' )
+  p._import( )
+  print p( )
+* in 'html' mode the script kwarg of init method now accepts a list
+  of [ 'src1', 'src2', ... ] and these will be included
+  as 'javascript' and the order will be maintained
+* new kwarg 'base' in init method, can be used to set the <base>
+  tag in <head>
+
+
+New in 1.8 release
+==================
+
+* works with python 3
+* added case='given'
+
+New in 1.7 release
+==================
+
+* help(markup) will not fail
+
+New in 1.6.1 release
+====================
+
+* fix a bug introduced in 1.6
+
+
+New in 1.6 release
+==================
+
+* code cleanup
+* escape( ) also escapes & and " not only < and >
+* doctype class with frequently used doctype strings
+* class_ keyword argument to page class that adds
+  class attribute to every element in page
+
+
+New in 1.5 release
+==================
+
+* use attribute=None to have no value for an attribute
+  such as the emptyattr in <option attr='value' emptyattr>
+* new separator keyword to constructor of class page
+* new bodyattrs keyword to init( ) method of class page
+* oneliner class added that returns an element as a
+  string so there is no need to instantiate a page class
+  and this also allows for nesting

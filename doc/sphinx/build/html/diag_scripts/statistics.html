@@ -1,0 +1,514 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>statistics &mdash; ESMValTool 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="ESMValTool 1.0 documentation" href="../index.html" />
+    <link rel="up" title="NCL diagnostic scripts library" href="index.html" />
+    <link rel="next" title="style" href="style.html" />
+    <link rel="prev" title="set_operators" href="set_operators.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="style.html" title="style"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="set_operators.html" title="set_operators"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">ESMValTool 1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">NCL diagnostic scripts library</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="statistics">
+<h1><tt class="xref py py-mod docutils literal"><span class="pre">statistics</span></tt><a class="headerlink" href="#statistics" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="dim_stddev_wgt_Wrap">
+<tt class="descname">dim_stddev_wgt_Wrap</tt><big>(</big><em>field[*]:numeric</em>, <em>ww[*]:numeric</em>, <em>opt[1]:integer</em><big>)</big><a class="headerlink" href="#dim_stddev_wgt_Wrap" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>field</strong> (<em>numeric</em>) &#8211; a one-dimensional numeric array.</li>
+<li><strong>ww</strong> (<em>numeric</em>) &#8211; a one-dimensional numeric array of the same size of field.</li>
+<li><strong>opt</strong> (<em>integer</em>) &#8211; a scalar, it has the same meaning as in the corresponding NCL function dim_avg_wgt_Wrap</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Return value</dt>
+<dd>A float or a double depending on the type of input</dd>
+<dt>Description</dt>
+<dd><p class="first">Calculates the (unbiased) weighted standard deviation consistently with
+the NCL function dim_std_dev (i.e. it divides by N-1 instead of N). For
+the weighted case this means applying a correction factor:</p>
+<blockquote>
+<div>sum(w_i)/[sum(w_i)^2 - sum(w_i^2)]</div></blockquote>
+<p class="last">Missing values are ignored.</p>
+</dd>
+</dl>
+<p>Caveats</p>
+<dl class="docutils">
+<dt>References</dt>
+<dd>en.wikipedia.org/wiki/Weighted_arithmetic_mean#Weighted_sample_variance</dd>
+<dt>Modification history</dt>
+<dd>20141215-A_righ_ma: written.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="time_operations">
+<tt class="descname">time_operations</tt><big>(</big><em>field:numeric</em>, <em>y1[1]:integer</em>, <em>y2[1]:integer</em>, <em>oper[1]:string</em>, <em>opt[1]:string</em>, <em>l_wgt[1]:logical</em><big>)</big><a class="headerlink" href="#time_operations" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>field</strong> (<em>numeric</em>) &#8211; a numeric array of rank 1 to 4, first dimension must be time.</li>
+<li><strong>y1</strong> (<em>integer</em>) &#8211; start year of the time period to be averaged (-1 for full range).</li>
+<li><strong>y2</strong> (<em>integer</em>) &#8211; end year of the time period to be averaged (-1 for full range).</li>
+<li><strong>oper</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; type of operations: &#8220;extract&#8221;: no average, just extract selected period. &#8220;average&#8221;: average. &#8220;stddev&#8221;: (unbiased) standard deviation.</li>
+<li><strong>opt</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; operation options (has no effect is oper = extract): &#8220;annualclim&#8221;: annual climatology. &#8220;seasonalclim&#8221;: seasonal climatology for the standard seasons DJF, MAM, JJA, SON. &#8220;monthlyclim&#8221;: monthly climatology jan-dec. For monthly input data only! Apply mymm first, if necessary. &#8220;mymm&#8221;: multi year monthly mean &#8220;yearly&#8221;: time average over every year in [y1:y2]. [month strings]: climatology of selected (consecutive) months (e.g., &#8220;MAM&#8221;, &#8220;SONDJ&#8221;). [1, 12]: climatology of the selected month (&#8220;1&#8221;=Jan, &#8220;2&#8221;=Feb, ..., &#8220;12&#8221;=Dec).</li>
+<li><strong>l_wgt</strong> (<em>logical</em>) &#8211; if True, calculate weighted average, with days-per-month as weights (has no effect is opt = &#8220;extract&#8221;).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Return value</dt>
+<dd>An array of the same rank as field or of rank-1, depending on oper/opt.</dd>
+<dt>Description</dt>
+<dd>Performs differnt types of time average, standard deviation or extraction
+of a selected time period. Weighted average (with days-per-month as
+weights) can be optionally applied.</dd>
+<dt>Caveats</dt>
+<dd>The weighted standard deviation is not yet implmented for all cases
+The weighted standard deviation is calculated using the unbiased
+estimator, c
+This should take into account missing values and exclude the w_i for
+which the field contains only missing values. This feature is not
+implemented yet.</dd>
+</dl>
+<p>References</p>
+<dl class="docutils">
+<dt>Modification history</dt>
+<dd>20140703-A_gott_kl: added option &#8220;mymm&#8221;.
+20140312-A_righ_ma: extended with standard deviation.
+20140109-A_righ_ma: written.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="calc_season_index">
+<tt class="descname">calc_season_index</tt><big>(</big><em>season[1]:string</em><big>)</big><a class="headerlink" href="#calc_season_index" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>season</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; the season in upper case.</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Return value</dt>
+<dd>The indices to the months in season, e.g. &#8220;JFM&#8221; returns (/0, 1, 2/).</dd>
+<dt>Description</dt>
+<dd>Given the &#8220;season&#8221;, i.e., any substring from &#8220;JFMAMJJASOND&#8221;, retrieves
+the corresponding indices. Crashes if given substring is not unique or
+does not exist.</dd>
+</dl>
+<p>Caveats</p>
+<p>References</p>
+<p>Modification history</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="extract_season">
+<tt class="descname">extract_season</tt><big>(</big><em>data:numeric</em>, <em>season[1]:string</em><big>)</big><a class="headerlink" href="#extract_season" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>data</strong> (<em>numeric</em>) &#8211; a numeric field with time dimension.</li>
+<li><strong>season</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; the season in upper case.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Return value</dt>
+<dd>The temporal subset of indata defined by the &#8216;season&#8217; string.</dd>
+<dt>Description</dt>
+<dd>Given the &#8220;season&#8221;, i.e., any substring from &#8220;JFMAMJJASOND&#8221;, retrieves
+the corresponding months from data.</dd>
+</dl>
+<p>Caveats</p>
+<p>References</p>
+<p>Modification history</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="month_to_season_extended">
+<tt class="descname">month_to_season_extended</tt><big>(</big><em>indata[*][*][*]:float</em>, <em>season[1]:string</em><big>)</big><a class="headerlink" href="#month_to_season_extended" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>indata</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; a [lat][lon][time] array.</li>
+<li><strong>season</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; compute the average for this season.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Return value</dt>
+<dd>An array with the seasonal average for each year.</dd>
+<dt>Description</dt>
+<dd>For each year in the input data, averages indata over the given season.</dd>
+</dl>
+<p>Caveats</p>
+<p>References</p>
+<p>Modification history</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="coswgt_areaave">
+<tt class="descname">coswgt_areaave</tt><big>(</big><em>field:numeric</em><big>)</big><a class="headerlink" href="#coswgt_areaave" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>field</strong> (<em>numeric</em>) &#8211; numeric field.</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Return value</dt>
+<dd>The area average using cosine lat weights.</dd>
+<dt>Description</dt>
+<dd>Computes the area average using cosine lat weights and lon weights=1.</dd>
+</dl>
+<p>Caveats</p>
+<p>References</p>
+<dl class="docutils">
+<dt>Modification history</dt>
+<dd>20131209-A_eval_ma: written.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="coswgt_arearmse">
+<tt class="descname">coswgt_arearmse</tt><big>(</big><em>field1:numeric</em>, <em>field2:numeric</em><big>)</big><a class="headerlink" href="#coswgt_arearmse" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>field1</strong> (<em>numeric</em>) &#8211; numeric field</li>
+<li><strong>field2</strong> (<em>numeric</em>) &#8211; numeric field</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Return value</dt>
+<dd>Area rmse average using cosine lat weights.</dd>
+<dt>Description</dt>
+<dd>Computes area rmse areage using cosine lat weights and lon weights=1.</dd>
+</dl>
+<p>Caveats</p>
+<p>References</p>
+<dl class="docutils">
+<dt>Modification history:</dt>
+<dd>20131209-A_eval_ma: written.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="coswgt_pattern_cor">
+<tt class="descname">coswgt_pattern_cor</tt><big>(</big><em>field1:numeric</em>, <em>field2:numeric</em><big>)</big><a class="headerlink" href="#coswgt_pattern_cor" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>field1</strong> (<em>numeric</em>) &#8211; numeric field.</li>
+<li><strong>field2</strong> (<em>numeric</em>) &#8211; numeric field.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Return value</dt>
+<dd>Pattern correlation cosine lat weights.</dd>
+</dl>
+<p>Description</p>
+<p>Caveats</p>
+<p>References</p>
+<dl class="docutils">
+<dt>Modification history:</dt>
+<dd>20140115-A_eval_ma: written.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="interannual_variability">
+<tt class="descname">interannual_variability</tt><big>(</big><em>field: numeric</em>, <em>y1[1]: integer</em>, <em>y2[1]: integer</em>, <em>opt[1]: string</em><big>)</big><a class="headerlink" href="#interannual_variability" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>field</strong> (<em>numeric</em>) &#8211; a numeric array of rank 1 to 4, first dimension must be time.</li>
+<li><strong>y1</strong> (<em>integer</em>) &#8211; start year of the time period to be averaged (-1 for full range).</li>
+<li><strong>y2</strong> (<em>integer</em>) &#8211; end year of the time period to be averaged (-1 for full range).</li>
+<li><strong>opt</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; operation options (same as time_operations): &#8220;annualclim&#8221;: annual climatology. &#8220;seasonalclim&#8221;: seasonal climatology for the standard seasons DJF, MAM, JJA, SON. &#8220;monthlyclim&#8221;: monthly climatology jan-dec. [month strings]: climatology of selected (consecutive) months (e.g. &#8220;MAM&#8221;, &#8220;SONDJ&#8221;). [1, 12]: climatology of the selected month (&#8220;1&#8221;=Jan, &#8220;2&#8221;=Feb, ..., &#8220;12&#8221;=Dec).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Return value</dt>
+<dd>An array of the same rank as field or of rank-1, depending on opt.</dd>
+<dt>Description</dt>
+<dd>Calculates the standard deviation with respect to interannual
+variability, to be used as input for statistical tests.</dd>
+<dt>Caveats</dt>
+<dd>The standard deviation is not weighted, being w.r.t. interannual
+variability for which all years have the same weight.</dd>
+</dl>
+<p>Reference</p>
+<dl class="docutils">
+<dt>Modification history</dt>
+<dd>20140314-A_righ_ma: written.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="calculate_metric">
+<tt class="descname">calculate_metric</tt><big>(</big><em>var:numeric</em>, <em>ref:numeric</em>, <em>metric:string</em><big>)</big><a class="headerlink" href="#calculate_metric" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>var</strong> (<em>numeric</em>) &#8211; a 1-D or 2-D numerical array.</li>
+<li><strong>ref</strong> (<em>numeric</em>) &#8211; a numerical array of the same dimensionality of var.</li>
+<li><strong>metric</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; a string with the metric to calculate: &#8220;RMSD&#8221;: root-mean square difference. &#8220;BIAS&#8221;: mean bias. &#8220;stddev_ratio&#8221;: ratio of standard deviations of var and ref (to be used in Taylor diagram). &#8220;correlation&#8221;: pattern correlation for var and ref (to be used in Taylor diagram).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Return value</dt>
+<dd>A scalar float representing the calculated grading metric.</dd>
+<dt>Description</dt>
+<dd>Calculate a grading metrics given two input variables of the same
+dimensionality.</dd>
+<dt>Modification history</dt>
+<dd><dl class="first docutils">
+<dt>20140313-A_righ_ma: implemented weights calculation within the function,</dt>
+<dd>depending on dimensionality.</dd>
+</dl>
+<p class="last">20140120-A_fran_fr: written.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="normalize_metric">
+<tt class="descname">normalize_metric</tt><big>(</big><em>var:numeric</em>, <em>opt:string</em><big>)</big><a class="headerlink" href="#normalize_metric" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>var</strong> (<em>numeric</em>) &#8211; numerical array.</li>
+<li><strong>opt</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; option determining the used normalization: &#8220;mean&#8221;: normalization with mean. &#8220;median&#8221;: normalization with median. &#8220;stddev_mean&#8221;: normalization with substracting the mean and dividing by the standard deviation. &#8220;centered_median&#8221;: substracting and dividing by the median.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Return value</dt>
+<dd>A numerical array of the same dimensionality as var.</dd>
+<dt>Description</dt>
+<dd>Normalizes an array of metrics according to opt.</dd>
+<dt>Caveats</dt>
+<dd>Treatment of missing values not explicitely specified (yet).</dd>
+</dl>
+<p>Reference</p>
+<dl class="docutils">
+<dt>Modification history</dt>
+<dd>20140609-A_righ_ma: absolute value added to &#8220;mean&#8221; normalization.
+20140120-A_fran_fr: written.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="distrib_stats">
+<tt class="descname">distrib_stats</tt><big>(</big><em>var[*]:numeric</em>, <em>opt:string</em><big>)</big><a class="headerlink" href="#distrib_stats" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>var</strong> (<em>numeric</em>) &#8211; a one-dimensional input array.</li>
+<li><strong>opt</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; type of statistic: &#8220;N&#8221;: number of elements. &#8220;mean&#8221;: mean. &#8220;median&#8221;: median. &#8220;min&#8221;: minimum. &#8220;max&#8221;: maximum. &#8220;stddev&#8221;: standard deviation. [value]: percentile (a value between 0 and 100).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Return value</dt>
+<dd>A scalar value.</dd>
+<dt>Description</dt>
+<dd>Calculates the relevant statistics for an input one-dimensional
+distribution. Missing values are ignored.</dd>
+</dl>
+<p>Caveats</p>
+<p>Reference</p>
+<dl class="docutils">
+<dt>Modification history</dt>
+<dd>20140526-A_righ_ma: written.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="lognormal_dist">
+<tt class="descname">lognormal_dist</tt><big>(</big><em>nn:numeric</em>, <em>dg:numeric</em>, <em>sig[1]:numeric</em>, <em>darr[*]:numeric</em><big>)</big><a class="headerlink" href="#lognormal_dist" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>nn</strong> (<em>numeric</em>) &#8211; particle number concentration, can be a scalar or 1-D array.</li>
+<li><strong>dg</strong> (<em>numeric</em>) &#8211; median diameter, same dimensionality of nn</li>
+<li><strong>sig</strong> (<em>numeric</em>) &#8211; geometric standard deviation, a scalar</li>
+<li><strong>darr</strong> (<em>numeric</em>) &#8211; array of diameters.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Return value</dt>
+<dd>An array of type float, with the same dimensionality of nn, plus the darr
+dimension on the right, and with the same units of nn.</dd>
+<dt>Description</dt>
+<dd>Calculate a lognormal distribution given the three paramters and an array
+of diameters.</dd>
+<dt>Caveats</dt>
+<dd>dg and darr must have the same units.</dd>
+<dt>Reference</dt>
+<dd>Seinfeld and Pandis, Atmospheric chemistry and physics, JohnWiley &amp; Sons,
+New York, US, 1998.</dd>
+<dt>Modification history</dt>
+<dd>20130528-A_righ_ma: written.</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="set_operators.html"
+                        title="previous chapter"><tt class="docutils literal docutils literal docutils literal docutils literal"><span class="pre">set_operators</span></tt></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="style.html"
+                        title="next chapter"><tt class="docutils literal"><span class="pre">style</span></tt></a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/diag_scripts/statistics.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="style.html" title="style"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="set_operators.html" title="set_operators"
+             >previous</a> |</li>
+        <li><a href="../index.html">ESMValTool 1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" >NCL diagnostic scripts library</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,302 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>xy_line &mdash; ESMValTool 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="ESMValTool 1.0 documentation" href="../index.html" />
+    <link rel="up" title="NCL plotting scripts library" href="index.html" />
+    <link rel="next" title="zonalmean_profile" href="zonalmean_profile.html" />
+    <link rel="prev" title="taylor_plot" href="taylor_plot.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="zonalmean_profile.html" title="zonalmean_profile"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="taylor_plot.html" title="taylor_plot"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">ESMValTool 1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">NCL plotting scripts library</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="xy-line">
+<h1><a class="reference internal" href="#xy_line" title="xy_line"><tt class="xref py py-mod docutils literal"><span class="pre">xy_line</span></tt></a><a class="headerlink" href="#xy-line" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="profile_plev">
+<tt class="descname">profile_plev</tt><big>(</big><em>wks_in[1], source, varname[1]: string</em><big>)</big><a class="headerlink" href="#profile_plev" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>wks_in</strong> (<em>integer</em>) &#8211; workstations (graphic object or default will be used).</li>
+<li><strong>source</strong> (<em>integer</em>) &#8211; data to be plotted or a NetCDF filename: Must have &#8220;plev&#8221; dimension &amp; can have &#8220;models&#8221;, &#8220;quantity&#8221;. &#64;ptop: controls pressure axis range (Default: full range). &#64;pbot: controls pressure axis range (Default: full range). &#64;zoom: controls x axis range (Default: &#8220;yes&#8221;). &#64;font: font type to use &#64;Refmodel: reference model (Default: first in models dimension) &#64;long_name: long variable name (Default: var) &#64;short_name: short variable name (Default: var) &#64;units: variable units (Default: missing)</li>
+<li><strong>varname</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; variable name, needed for netCDF files with multiple variables</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Source prototype</p>
+<dl class="docutils">
+<dt>Return value</dt>
+<dd>A graphic variable.</dd>
+<dt>Description</dt>
+<dd>Creates a plot of profile(s) with vertical pressure axis.
+Adds percentiles or stddev of first model (if available) as whiskers.
+Opens default wks, if not provided as argument of type &#8220;graphic&#8221;.
+Defines default ressources, which are overridden by argument res.
+Creates plot, according to wks &amp; res.</dd>
+<dt>Caveats</dt>
+<dd>Treatment of coordinate &#8220;quantity&#8221; not very general yet.
+Selection of defaults for res almost arbitrary.
+Please check results of all scripts that use this routine if
+modifying the defaults!</dd>
+<dt>Modification history</dt>
+<dd><ul class="first last simple">
+<li>20140214-A_gott_kl: written.</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="aerosol_profile">
+<tt class="descname">aerosol_profile</tt><big>(</big><em>wks_in[1], source_m, source_o, varname[1]</em><big>)</big><a class="headerlink" href="#aerosol_profile" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>wks_in</strong> (<em>integer</em>) &#8211; workstations (graphic object or default will be used).</li>
+<li><strong>source_m</strong> (<em>integer</em>) &#8211; model data to be plotted or a NetCDF filename with data.</li>
+<li><strong>source_o</strong> (<em>integer</em>) &#8211; observations data to be plotted or a NetCDF filename with data.</li>
+<li><strong>varname</strong> (<em>integer</em>) &#8211; variable name in the file.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Source prototype</dt>
+<dd>source[*][*][*]
+source!0 = model
+source!1 = statistic
+source!2 = plev or diam</dd>
+<dt>Return value</dt>
+<dd>A graphic variable.</dd>
+<dt>Description</dt>
+<dd>Creates a plot of vertical profile (level vs. data) or size distribution
+(data vs. diameter).
+Plots median, mean or both depending on availability of obervations.</dd>
+</dl>
+<p>Caveats</p>
+<dl class="docutils">
+<dt>Modification history</dt>
+<dd><dl class="first docutils">
+<dt>20140917-A_righ_ma: renamed to aerosol_profile and extended to for plotting</dt>
+<dd>size distributions.</dd>
+</dl>
+<p class="last">20140705-A_righ_ma: written.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="xy_line">
+<tt class="descname">xy_line</tt><big>(</big><em>wks[1], source, source_x, source_stddev, res_in : logical, debuginfo[1] : logical</em><big>)</big><a class="headerlink" href="#xy_line" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>wks</strong> (<em>integer</em>) &#8211; workstation, must be passed - no default used yet!</li>
+<li><strong>source</strong> (<em>integer</em>) &#8211; data to be plotted (no netCDF input possible yet)</li>
+<li><strong>source_x</strong> (<em>integer</em>) &#8211; x-axis of array to be plotted (e.g. source&amp;time, ... )</li>
+<li><strong>source_stddev</strong> (<em>integer</em>) &#8211; standard deviation of input, needed if <a class="reference external" href="mailto:diag_script_info&#37;&#52;&#48;multi_model_mean">diag_script_info<span>&#64;</span>multi_model_mean</a> is set to &#8220;y&#8221;</li>
+<li><strong>res_in</strong> (<em>logical</em>) &#8211; diag_script-specific resources passed from diag_script</li>
+<li><strong>debuginfo</strong> (<em>logical</em>) &#8211; description about diagnostic rendered onto plot</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Source prototype</p>
+<dl class="docutils">
+<dt>Description</dt>
+<dd>Defines default ressources, which are overridden by argument res.
+Creates an xy-plot, according to wks &amp; res.
+Adds multi model mean and standard deviation if
+<a class="reference external" href="mailto:diag_script_info&#37;&#52;&#48;multi_model_mean">diag_script_info<span>&#64;</span>multi_model_mean</a> is set to &#8220;y&#8221;.</dd>
+</dl>
+<p>Caveats</p>
+<dl class="docutils">
+<dt>Modification history</dt>
+<dd>20140109-A_senf_da: written.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="timeseries_station">
+<tt class="descname">timeseries_station</tt><big>(</big><em>wks_in[1], source, varname[1]: string</em><big>)</big><a class="headerlink" href="#timeseries_station" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>wks_in</strong> (<em>integer</em>) &#8211; workstations (graphic object or default will be used).</li>
+<li><strong>source</strong> (<em>integer</em>) &#8211; data to be plotted or a NetCDF filename with data. &#64;stname: station name &#64;stlat: station latitude &#64;stlon: station longitude &#64;stalt: station altitude</li>
+<li><strong>varname</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; variable name, needed for netCDF files with multiple variables</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Source prototype</dt>
+<dd>source[*][*]
+source!0 = model
+source!1 = time or year</dd>
+<dt>Return value</dt>
+<dd>A graphic variable.</dd>
+<dt>Description</dt>
+<dd>Creates a time series plot for station data.</dd>
+<dt>Caveats:</dt>
+<dd><ul class="first last simple">
+<li>selection of defaults for res almost arbitrary</li>
+<li>Please check results of all scripts that use this routine if
+modifying the defaults!</li>
+</ul>
+</dd>
+<dt>Modification history:</dt>
+<dd><ul class="first last simple">
+<li>20140325 written by Mattia Righi</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="cycle_plot">
+<tt class="descname">cycle_plot</tt><big>(</big><em>wks_in[1], source, varname[1] : string</em><big>)</big><a class="headerlink" href="#cycle_plot" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>wks_in</strong> (<em>integer</em>) &#8211; workstations (graphic object or default will be used).</li>
+<li><strong>source</strong> (<em>integer</em>) &#8211; data to be plotted or a NetCDF filename with data.</li>
+<li><strong>varname</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; variable name in the file.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Source prototype</dt>
+<dd>source[<em>,</em>]
+source!0 = model
+source!1 = month or season</dd>
+<dt>Return value</dt>
+<dd>A graphic variable.</dd>
+<dt>Description</dt>
+<dd>Draw an annual or seasonal cycle plot.</dd>
+</dl>
+<p>Caveats</p>
+<dl class="docutils">
+<dt>Modification history</dt>
+<dd>20131206-A_fran_fr: written.</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="taylor_plot.html"
+                        title="previous chapter"><tt class="docutils literal docutils literal docutils literal docutils literal"><span class="pre">taylor_plot</span></tt></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="zonalmean_profile.html"
+                        title="next chapter"><tt class="docutils literal"><span class="pre">zonalmean_profile</span></tt></a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/plot_scripts/xy_line.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="zonalmean_profile.html" title="zonalmean_profile"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="taylor_plot.html" title="taylor_plot"
+             >previous</a> |</li>
+        <li><a href="../index.html">ESMValTool 1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" >NCL plotting scripts library</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

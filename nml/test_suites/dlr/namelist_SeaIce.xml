@@ -1,0 +1,82 @@
+<namelist>
+<namelist_summary>
+namelist_SeaIce.xml
+
+Description
+A namelist for plotting SeaIce diagnostics at the Arctic and Antarctic, (Mantis issue #9216).
+
+Author(s)
+Klaus-Dirk Gottschaldt (DLR, Germany - Klaus-Dirk.Gottschaldt@dlr.de)
+
+Contributor(s)
+Daniel Senftleben (DLR, Germany - Daniel.Senftleben@dlr.de)
+
+Reference(s)
+Braeu, M., Sea-ice in decadal and long-term simulations with the Max Planck Institute Earth 
+  System Model. Bachelor’s thesis, LMU, Munich, 2013.
+
+This namelist is part of the ESMValTool.
+ESMValTool project PI: Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
+</namelist_summary>
+
+<GLOBAL>
+    <write_plots type="boolean">              True        </write_plots>
+    <write_netcdf type="boolean">             True        </write_netcdf>
+    <force_processing type="boolean">        False        </force_processing>
+    <wrk_dir type="path">                     work/       </wrk_dir>
+    <plot_dir type="path">                    work/plots/ </plot_dir>
+    <climo_dir type="path">                   work/climo/ </climo_dir>
+    <write_plot_vars type="boolean">          True        </write_plot_vars>
+    <max_data_filesize type="integer">         100        </max_data_filesize>
+    <max_data_blocksize type="integer">        500        </max_data_blocksize>
+    <verbosity  type="integer">                  1        </verbosity>
+    <exit_on_warning  type="boolean">        False        </exit_on_warning>
+    <output_file_type>                         png        </output_file_type>
+</GLOBAL>
+
+<MODELS>
+    <model>  CMIP5_ETHZ  MPI-ESM-LR  OImon    historical  r1i1p1  2001  2004  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  MPI-ESM-MR  OImon    historical  r1i1p1  2002  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  OBS         HadISST     reanaly  20130524            1999  2004  /export/pa_data02/ESMVal/obs/Tier2/HadISST/       </model> 
+</MODELS>
+
+<DIAGNOSTICS>
+<diag>
+    <description> Set of NH Sea Ice conc. timeline, contour and difference plots </description>
+    <variable_def_dir>                 ./variable_defs/            </variable_def_dir>
+    <variable>                          sic                        </variable>
+    <field_type>                        T2Ms                       </field_type>
+    <diag_script_cfg_dir>              ./nml/cfg_SeaIce/           </diag_script_cfg_dir>
+    <diag_script cfg="cfg_SeaIce_NH.ncl">       SeaIce_tsline.ncl         </diag_script>
+    <diag_script cfg="cfg_SeaIce_NH.ncl">       SeaIce_ancyc.ncl          </diag_script>
+    <diag_script cfg="cfg_SeaIce_NH.ncl">       SeaIce_polcon.ncl         </diag_script>
+    <diag_script cfg="cfg_SeaIce_NH.ncl">       SeaIce_polcon_diff.ncl    </diag_script>
+
+    <model>  OBS_gridfile  NSIDC-NT  sat       NH        2002  2005  /export/pa_data02/ESMVal/obs/Tier2/NSIDC/
+                           /export/pa_data02/ESMVal/obs/Tier2/NSIDC/OBS_NSIDC-NT_sat_NH_T2Ms_sic_197811-201312.nc  </model>
+
+    <model>  OBS_gridfile  NSIDC-BT  sat       NH        2002  2005  /export/pa_data02/ESMVal/obs/Tier2/NSIDC/
+                           /export/pa_data02/ESMVal/obs/Tier2/NSIDC/OBS_NSIDC-BT_sat_NH_T2Ms_sic_197811-201312.nc  </model>
+</diag>
+
+<diag>
+    <description> Set of SH Sea Ice conc. timeline, contour and difference plots </description>
+    <variable_def_dir>                 ./variable_defs/            </variable_def_dir>
+    <variable>                          sic                        </variable>
+    <field_type>                        T2Ms                       </field_type>
+    <diag_script_cfg_dir>              ./nml/cfg_SeaIce/           </diag_script_cfg_dir>
+    <diag_script cfg="cfg_SeaIce_SH.ncl">       SeaIce_tsline.ncl         </diag_script>
+    <diag_script cfg="cfg_SeaIce_SH.ncl">       SeaIce_ancyc.ncl          </diag_script>
+    <diag_script cfg="cfg_SeaIce_SH.ncl">       SeaIce_polcon.ncl         </diag_script>
+    <diag_script cfg="cfg_SeaIce_SH.ncl">       SeaIce_polcon_diff.ncl    </diag_script>
+
+    <model>  OBS_gridfile  NSIDC-NT  sat       SH        1979  2005  /export/pa_data02/ESMVal/obs/Tier2/NSIDC/
+                           /export/pa_data02/ESMVal/obs/Tier2/NSIDC/OBS_NSIDC-NT_sat_SH_T2Ms_sic_197811-201312.nc  </model>
+
+    <model>  OBS_gridfile  NSIDC-BT  sat       SH        1979  2013  /export/pa_data02/ESMVal/obs/Tier2/NSIDC/
+                           /export/pa_data02/ESMVal/obs/Tier2/NSIDC/OBS_NSIDC-BT_sat_SH_T2Ms_sic_197811-201312.nc  </model>
+
+</diag>
+
+</DIAGNOSTICS>
+</namelist>

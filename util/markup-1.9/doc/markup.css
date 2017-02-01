@@ -1,0 +1,109 @@
+body
+{
+    background: #fcfcff;
+    font-size: 14px;
+    color: #444444;
+    font-family: verdana, sans-serif;
+    margin: 10px 5px 10px 5px;
+    width: 900px;
+}
+
+h1
+{
+    border-bottom: 1px dashed;
+    border-color: orange;
+    font-size: 24px;
+    width: 705px;
+    letter-spacing: 3px;
+    color: orange;
+}
+
+h2
+{
+    text-align: center;
+    font-size: 20px;
+    letter-spacing: 2px;
+    padding: 30px;
+}
+
+table
+{
+    border: none;
+    background: #fcfcff;
+    font-size: 14px;
+    color: #444444;
+    font-family: verdana, sans-serif;
+}
+
+td
+{
+    vertical-align: top;
+}
+
+#main
+{
+    margin: 0px 10px 10px 40px;
+    padding: 10px;
+}
+
+#menu
+{
+    position: absolute;
+    margin: 0px 0px 0px 0px
+    width: 172px;
+}
+
+li.side
+{
+    letter-spacing: 1px;
+    font-size: 16px;
+    padding: 10px 10px 0px 0px;
+    display: block;
+}
+
+div.code
+{
+    border: 1px dashed;
+    border-color: blue;
+    background: #fdfadd;
+    padding: 5px;
+    font-size: 12px;
+    font-family: ariel;
+    width: 700px;
+}
+
+#footer
+{
+    margin: 10px 10px 35px 150px;
+    font-size: 14px;
+}
+
+#footer li
+{
+    display: block;
+    float: left;
+    padding-right: 30px;
+}
+
+a.menu
+{
+    color: black;
+    text-decoration: none;
+}
+
+a.menu:hover
+{
+    text-decoration: underline;
+}
+
+a.menu:visited
+{
+    color: black;
+}
+
+p
+{
+    line-height: 22px;
+}
+
+/* Layout stolen from www.alistapart.com and www.bluerobot.com :)  */

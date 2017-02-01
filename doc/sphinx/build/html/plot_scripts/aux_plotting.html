@@ -1,0 +1,385 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>aux_plotting &mdash; ESMValTool 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="ESMValTool 1.0 documentation" href="../index.html" />
+    <link rel="up" title="NCL plotting scripts library" href="index.html" />
+    <link rel="next" title="contour_maps" href="contour_maps.html" />
+    <link rel="prev" title="NCL plotting scripts library" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="contour_maps.html" title="contour_maps"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="NCL plotting scripts library"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">ESMValTool 1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">NCL plotting scripts library</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="aux-plotting">
+<h1><tt class="xref py py-mod docutils literal"><span class="pre">aux_plotting</span></tt><a class="headerlink" href="#aux-plotting" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="create_legend_lines">
+<tt class="descname">create_legend_lines</tt><big>(</big><em>labels:string</em>, <em>styles</em>, <em>outfile:string</em>, <em>opt</em><big>)</big><a class="headerlink" href="#create_legend_lines" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>labels</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; labels of the lines</li>
+<li><strong>styles</strong> (<em>integer</em>) &#8211; style of the lines in the plot &#64;colors &#64;dashes  -&gt; optional (line dashes &#64;thicks  -&gt; optional (line/marker thickness) &#64;markers -&gt; optional (marker index) &#64;sizes   -&gt; optional (marker size)</li>
+<li><strong>outfile</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; outfile directory</li>
+<li><strong>opt</strong> (<em>integer</em>) &#8211; &#8220;lines&#8221; or &#8220;markers&#8221; legend</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Description</dt>
+<dd>Draws an extra plot with a legend, specified by labels and styles.</dd>
+</dl>
+<p>Caveats</p>
+<dl class="docutils">
+<dt>Modification history:</dt>
+<dd>20150508-A_righ_ma: added lines/markers option.
+20150120-A_gott_kl: remove pre-existing file type suffix
+20140305-A_righ_ma: modified to plot always as epsi format.
+20140219-A_fran_fr: written.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="output_type">
+<tt class="descname">output_type</tt><big>(</big><big>)</big><a class="headerlink" href="#output_type" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Return value</dt>
+<dd>A string with the output file type</dd>
+<dt>Description</dt>
+<dd>Provides a default, if file type is not explicitely specified</dd>
+</dl>
+<p>Caveats</p>
+<dl class="docutils">
+<dt>Modification history</dt>
+<dd>20131028-A_gott_kl: written.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="copy_VarAtt_sel">
+<tt class="descname">copy_VarAtt_sel</tt><big>(</big><em>var1</em>, <em>var2</em>, <em>sel: string</em><big>)</big><a class="headerlink" href="#copy_VarAtt_sel" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>var1</strong> (<em>integer</em>) &#8211; variable of any type and dimension with source attributes</li>
+<li><strong>var2</strong> (<em>integer</em>) &#8211; variable of any type and dimension, shall receive selected attributes from var1</li>
+<li><strong>sel</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; string (or list of strings) that specify the BEGINNING letters of the attributes to copy</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Return value</dt>
+<dd>var2 gets additional attributes</dd>
+<dt>Description</dt>
+<dd>Intended to copy selected plot ressources for use in a different 
+plot routine that may not allow all ressources from var1. 
+Written for function legend_lines (legends.ncl).</dd>
+</dl>
+<p>Caveats:</p>
+<dl class="docutils">
+<dt>Modification history:</dt>
+<dd><ul class="first last simple">
+<li>20141227-A_gott_kl written</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="panelling">
+<tt class="descname">panelling</tt><big>(</big><em>wks</em>, <em>plots : graphic</em>, <em>nvert[1] : integer</em>, <em>nhori[1] : integer</em>, <em>pres_in[1] : logical</em><big>)</big><a class="headerlink" href="#panelling" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>wks</strong> (<em>integer</em>) &#8211; graphics object associated with a file.</li>
+<li><strong>plots</strong> (<em>graphic</em>) &#8211; graphics variable containing one or more plots.</li>
+<li><strong>nvert</strong> (<em>integer</em>) &#8211; Maximum allowed number of plots per page (vertical).</li>
+<li><strong>nhori</strong> (<em>integer</em>) &#8211; Maximum allowed number of plots per page (horizontal).</li>
+<li><strong>pres_in</strong> (<em>logical</em>) &#8211; if it is a logical variable, attributes are used to override panelling defaults</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Return value</dt>
+<dd>A string with the output file name</dd>
+<dt>Description</dt>
+<dd>Writes a graphics file</dd>
+<dt>Caveats</dt>
+<dd>Might not be fit to be used with non-NCL routines.</dd>
+<dt>Modification history</dt>
+<dd>20131112-A_gott_kl: written.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="get_plot_dir">
+<tt class="descname">get_plot_dir</tt><big>(</big><big>)</big><a class="headerlink" href="#get_plot_dir" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Return value</dt>
+<dd>A string root path for plots</dd>
+<dt>Description</dt>
+<dd>Provides a default, if plot_dir is not explicitely specified</dd>
+</dl>
+<p>Caveats</p>
+<dl class="docutils">
+<dt>Modification history</dt>
+<dd><ul class="first last simple">
+<li>20131104-A_gott_kl: written.</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="get_outfile_name">
+<tt class="descname">get_outfile_name</tt><big>(</big><em>diag_script[1] : string</em>, <em>add_specs[1] : string</em><big>)</big><a class="headerlink" href="#get_outfile_name" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>diag_script</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; name of diagnostic script(s)</li>
+<li><strong>add_specs</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; string containing specific elements to be added to the file name if not of type string, only variable name is used.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Return value</dt>
+<dd>Complete outfile name incl. path, additional specifications and file type
+output_dir + diag_script_base + add_specs + file_type</dd>
+<dt>Description</dt>
+<dd>Fetches file_type, plot_dir, diag_script_base, output_dir via other
+scripts
+Fetches string with additional elements specified within diag script</dd>
+<dt>Caveats</dt>
+<dd>diag_script may need to be extended by other contributing scripts</dd>
+<dt>Modification history</dt>
+<dd>20131204-A_senf_da: generalized naming.
+20131104-A_gott_kl: written.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="get_wks">
+<tt class="descname">get_wks</tt><big>(</big><em>wks_in</em>, <em>diag_script[1]: string</em>, <em>add_specs[1]: string</em><big>)</big><a class="headerlink" href="#get_wks" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>wks_in</strong> (<em>integer</em>) &#8211; dummy or graphic object</li>
+<li><strong>diag_script</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; name of diagnostic script</li>
+<li><strong>add_specs</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; own specificactions to be added to file name, i.e. variable name, etc. - needed for function get_outfile_name</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Return value</dt>
+<dd>wks: graphic object</dd>
+<dt>Description</dt>
+<dd>Provides a default wks, if wks_in is not of type &#8220;graphic&#8221;.
+Attribute <a class="reference external" href="mailto:wks&#37;&#52;&#48;fullname">wks<span>&#64;</span>fullname</a> is used to transfer the output file name, since
+<a class="reference external" href="mailto:wks&#37;&#52;&#48;name">wks<span>&#64;</span>name</a> cuts off the path to the file name.</dd>
+</dl>
+<p>Caveats</p>
+<dl class="docutils">
+<dt>Modification history</dt>
+<dd><ul class="first last simple">
+<li>20131113-A_gott_kl: written.</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="add_markers">
+<tt class="descname">add_markers</tt><big>(</big><em>wks[1] : graphic</em>, <em>plot[1] : graphic</em>, <em>res_in[1] : logical</em>, <em>xpos_in : numeric</em>, <em>ypos_in : numeric</em><big>)</big><a class="headerlink" href="#add_markers" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>wks</strong> (<em>graphic</em>) &#8211; valid workstation, e.g. created by get_wks</li>
+<li><strong>plot</strong> (<em>graphic</em>) &#8211; plot identifier, e.g. created by gsn_*</li>
+<li><strong>res_in</strong> (<em>logical</em>) &#8211; plot ressources that may override local function defaults</li>
+<li><strong>xpos_in</strong> (<em>numeric</em>) &#8211; horizontal marker position(s)</li>
+<li><strong>ypos_in</strong> (<em>numeric</em>) &#8211; vertical marker position(s)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Return value</dt>
+<dd>Attaches polyline IDs as attributes to plot.</dd>
+<dt>Description:</dt>
+<dd>Adds markers to an existing plot. If a horizontal (vertical) coordinate
+has only one element, then this position is used for all markers.</dd>
+</dl>
+<p>Caveats:</p>
+<dl class="docutils">
+<dt>Modification history:</dt>
+<dd><ul class="first last simple">
+<li>20140224-A_gott_kl: written for use with profile_plev.ncl in Emmons.ncl</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="horizontal_whiskers">
+<tt class="descname">horizontal_whiskers</tt><big>(</big><em>wks[1] : graphic</em>, <em>plot[1] : graphic</em>, <em>res_in[1] : logical</em>, <em>xmin_in : numeric</em>, <em>xmax_in : numeric</em>, <em>ypos_in: numeric</em><big>)</big><a class="headerlink" href="#horizontal_whiskers" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>wks</strong> (<em>graphic</em>) &#8211; valid workstation, e.g. created by get_wks.</li>
+<li><strong>plot</strong> (<em>graphic</em>) &#8211; plot identifier, e.g. created by gsn_*.</li>
+<li><strong>res_in</strong> (<em>logical</em>) &#8211; plot ressources that may override local function defaults.</li>
+<li><strong>xmin_in</strong> (<em>numeric</em>) &#8211; vector of whiskers&#8217; left ends (same size as xmax &amp; y).</li>
+<li><strong>xmax_in</strong> (<em>numeric</em>) &#8211; vector of whiskers&#8217; right ends (same size as xmin &amp; y).</li>
+<li><strong>ypos_in</strong> (<em>numeric</em>) &#8211; vector of whiskers&#8217; vertical positions (must have same size as xmax &amp; xmin).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Return value</dt>
+<dd>Attaches polyline IDs as attributes to plot.</dd>
+<dt>Description</dt>
+<dd><dl class="first docutils">
+<dt>Creates vectors suitable as input for gsn_add_polyline:</dt>
+<dd>x = (/xmin1,xmax1,_FillValue,xmin2,xmax2,_FillValue, .../)
+y = (/ypos1,ypos1,_FillValue,ypos2,ypos2,_FillValue, .../)</dd>
+</dl>
+<p class="last">The separation by _FillValue results in individual whiskers.
+No whisker is created where xmin, xmax or ypos is missing.</p>
+</dd>
+</dl>
+<p>Caveats</p>
+<dl class="docutils">
+<dt>References</dt>
+<dd>www.ncl.ucar.edu/Document/Graphics/Interfaces/gsn_add_polyline.shtml</dd>
+<dt>Modification history</dt>
+<dd>20140224-A_gott_kl: written.</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">NCL plotting scripts library</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="contour_maps.html"
+                        title="next chapter"><tt class="docutils literal"><span class="pre">contour_maps</span></tt></a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/plot_scripts/aux_plotting.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="contour_maps.html" title="contour_maps"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="NCL plotting scripts library"
+             >previous</a> |</li>
+        <li><a href="../index.html">ESMValTool 1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" >NCL plotting scripts library</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

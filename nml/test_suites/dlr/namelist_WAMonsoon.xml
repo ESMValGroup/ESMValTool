@@ -1,0 +1,218 @@
+<namelist>
+<namelist_summary>
+###############################################################################
+
+namelist_WAMonsoon.xml
+
+Description
+Evaluates West African monsoon for monthly data sets
+
+Author(s)
+Romain Roehrig (MF, France - romain.roehrig@meteo.fr)
+
+Contributor(s)
+
+Project(s)
+EMBRACE
+
+Reference(s)
+Kerry H. Cook and Edward K. Vizy, 2006: J. Climate, 19, 3681–3703.
+doi: http://dx.doi.org/10.1175/JCLI3814.1 
+
+Romain Roehrig, Dominique Bouniol, Francoise Guichard, Frédéric Hourdin,
+and Jean-Luc Redelsperger, 2013: J. Climate, 26, 6471–6505.
+doi: http://dx.doi.org/10.1175/JCLI-D-12-00505.1 
+
+This namelist is part of the ESMValTool.
+
+###############################################################################
+</namelist_summary>
+
+<GLOBAL>
+  <wrk_dir type="path">                 work                  </wrk_dir>
+  <plot_dir type="path">                work/plots            </plot_dir>
+  <climo_dir type="path">               work/climo            </climo_dir>
+  <regridding_dir type="path">         ./work/regridding_tmp_wamonsoon  </regridding_dir>
+  <write_plot_vars type="boolean">      True                  </write_plot_vars>
+  <max_data_filesize type="integer">    100                   </max_data_filesize>
+  <max_data_blocksize type="integer">   500                   </max_data_blocksize>
+  <verbosity  type="integer">           2                     </verbosity>
+  <exit_on_warning  type="boolean">     False                 </exit_on_warning>
+  <output_file_type>                    png                   </output_file_type>
+  <show_debuginfo type="boolean">       False                 </show_debuginfo>
+  <write_plots type="boolean">          True                  </write_plots>
+  <read_from_vault type="boolean">      False                 </read_from_vault>
+  <write_netcdf type="boolean">         True                  </write_netcdf>
+  <force_processing type="boolean">     False                 </force_processing>
+</GLOBAL>
+
+<MODELS>
+    <model>  CMIP5_ETHZ MPI-ESM-LR   Amon historical r1i1p1  2003 2004 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ IPSL-CM5A-MR Amon historical r1i1p1  2003 2004 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
+</MODELS>
+
+<DIAGNOSTICS>
+
+<diag>
+    <description> Mean wind contour and vector plots at 200 hPa </description>
+    <variable_def_dir>            ./variable_defs/      </variable_def_dir>
+    <variable ref_model="ERAINT">   ua-200               </variable>
+    <variable>                      va-200               </variable>
+    <field_type>                    T2Ms                </field_type>
+    <diag_script_cfg_dir>         ./nml/cfg_WAMonsoon/  </diag_script_cfg_dir>
+
+    <diag_script cfg="cfg_WAMonsoon_wind_basic_200mb.ncl">   WAMonsoon_wind_basic.ncl               </diag_script>
+
+    <model id="ERAINT"> OBS ERA-Interim reanaly 1 2003 2004 /export/pa_data02/ESMVal/obs/Tier3/ERA-Interim </model>
+</diag>
+
+<diag>
+    <description> Mean/stddev wind contour and vector plots at 700 hPa </description>
+    <variable_def_dir>            ./variable_defs/       </variable_def_dir>
+    <variable ref_model="ERAINT">   ua-700                </variable>
+    <variable>                      va-700                </variable>
+    <field_type>                    T2Ms                 </field_type>
+    <diag_script_cfg_dir>         ./nml/cfg_WAMonsoon/   </diag_script_cfg_dir>
+
+    <diag_script cfg="cfg_WAMonsoon_wind_basic_700mb.ncl">   WAMonsoon_wind_basic.ncl   </diag_script>
+
+    <model id="ERAINT"> OBS ERA-Interim reanaly 1 2003 2004 /export/pa_data02/ESMVal/obs/Tier3/ERA-Interim </model>
+</diag>
+
+<diag>
+    <description> Zonal average of Zonal wind            </description>
+    <variable_def_dir>            ./variable_defs/       </variable_def_dir>
+    <variable ref_model="ERAINT">   ua                   </variable>
+    <field_type>                    T3M                  </field_type>
+    <diag_script_cfg_dir>         ./nml/cfg_WAMonsoon/   </diag_script_cfg_dir>
+
+    <diag_script cfg="cfg_WAMonsoon_10W10E_ua.ncl">   WAMonsoon_10W10E_3D_basic.ncl    </diag_script>
+
+    <model id="ERAINT"> OBS ERA-Interim reanaly 1 2003 2004 /export/pa_data02/ESMVal/obs/Tier3/ERA-Interim </model>
+</diag>
+
+<diag>
+    <description> Zonal average of Meridional wind       </description>
+    <variable_def_dir>            ./variable_defs/       </variable_def_dir>
+    <variable ref_model="ERAINT">   va                   </variable>
+    <field_type>                    T3M                  </field_type>
+    <diag_script_cfg_dir>         ./nml/cfg_WAMonsoon/   </diag_script_cfg_dir>
+
+    <diag_script cfg="cfg_WAMonsoon_10W10E_va.ncl">   WAMonsoon_10W10E_3D_basic.ncl   </diag_script>
+
+    <model id="ERAINT"> OBS ERA-Interim reanaly 1 2003 2004 /export/pa_data02/ESMVal/obs/Tier3/ERA-Interim </model>
+</diag>
+
+<diag>
+    <description> Zonal average of Theta  </description>
+    <variable_def_dir>            ./variable_defs/       </variable_def_dir>
+    <variable ref_model="ERAINT">   theta                </variable>
+    <field_type>                    T3M                  </field_type>
+    <diag_script_cfg_dir>         ./nml/cfg_WAMonsoon/   </diag_script_cfg_dir>
+
+    <diag_script cfg="cfg_WAMonsoon_10W10E_theta.ncl">   WAMonsoon_10W10E_3D_basic.ncl   </diag_script>
+
+    <model id="ERAINT"> OBS ERA-Interim reanaly 1 2003 2004 /export/pa_data02/ESMVal/obs/Tier3/ERA-Interim </model>
+</diag>
+
+<diag>
+    <description> Zonal average of theta at 850 hPa      </description>
+    <variable_def_dir>            ./variable_defs/       </variable_def_dir>
+    <variable ref_model="ERAINT">   theta-850             </variable>
+    <field_type>                    T2Ms                 </field_type>
+    <diag_script_cfg_dir>         ./nml/cfg_WAMonsoon/   </diag_script_cfg_dir>
+
+    <diag_script cfg="cfg_WAMonsoon_10W10E_theta850.ncl">   WAMonsoon_10W10E_1D_basic.ncl  </diag_script>
+
+    <model id="ERAINT"> OBS ERA-Interim reanaly 1 2003 2004 /export/pa_data02/ESMVal/obs/Tier3/ERA-Interim </model>
+</diag>
+
+<diag>
+    <description> JJAS climatology of precipitation      </description>
+    <variable_def_dir>          ./variable_defs/         </variable_def_dir>
+    <variable ref_model="trmm">   pr-mmday                </variable>
+    <field_type>                  T2Ms                   </field_type>
+    <diag_script_cfg_dir>       ./nml/cfg_WAMonsoon/     </diag_script_cfg_dir>
+
+    <diag_script cfg="cfg_WAMonsoon_precip.ncl">        WAMonsoon_contour_basic.ncl   </diag_script>
+    <diag_script cfg="cfg_WAMonsoon_10W10E_pr.ncl">   WAMonsoon_10W10E_1D_basic.ncl   </diag_script>
+
+    <model id="trmm"> OBS TRMM-L3 v7A 1 2003 2004 /export/pa_data02/ESMVal/obs/Tier1/TRMM-L3 </model>
+</diag>
+
+<diag>
+    <description> JJAS climatology of Temperature at 2m  </description>
+    <variable_def_dir>             ./variable_defs/      </variable_def_dir>
+    <variable ref_model="ERAINT">    tas                 </variable>
+    <field_type>                     T2Ms                </field_type>
+    <diag_script_cfg_dir>          ./nml/cfg_WAMonsoon/  </diag_script_cfg_dir>
+
+    <diag_script cfg="cfg_WAMonsoon_tas.ncl">            WAMonsoon_contour_basic.ncl   </diag_script>
+    <diag_script cfg="cfg_WAMonsoon_10W10E_tas.ncl">   WAMonsoon_10W10E_1D_basic.ncl   </diag_script> 
+    
+    <model id="ERAINT"> OBS ERA-Interim reanaly 1 2003 2004 /export/pa_data02/ESMVal/obs/Tier3/ERA-Interim </model>
+</diag>
+
+<diag>
+    <description> Precipitation mean annual cycle   </description>
+    <variable_def_dir>       ./variable_defs/       </variable_def_dir>
+    <variable>                 pr-mmday             </variable>
+    <field_type>               T2Ms                 </field_type>
+    <diag_script_cfg_dir>    ./nml/cfg_WAMonsoon/   </diag_script_cfg_dir>
+
+    <diag_script cfg="cfg_WAMonsoon_precip.ncl">         WAMonsoon_precip_IAV.ncl   </diag_script>
+    <diag_script cfg="cfg_WAMonsoon_precip.ncl">    WAMonsoon_precip_seasonal.ncl   </diag_script>
+
+    <model id="trmm"> OBS TRMM-L3 v7A 1 2003 2004 /export/pa_data02/ESMVal/obs/Tier1/TRMM-L3 </model>
+</diag>
+
+<diag>
+    <description> JJAS climatology of Surface SWdn  </description>
+    <variable_def_dir>             ./variable_defs/      </variable_def_dir>
+    <variable ref_model="CERES-EBAF">    rsds                 </variable>
+    <field_type>                     T2Ms                </field_type>
+    <diag_script_cfg_dir>          ./nml/cfg_WAMonsoon/  </diag_script_cfg_dir>
+
+    <diag_script cfg="cfg_WAMonsoon_10W10E_rsds.ncl">   WAMonsoon_10W10E_1D_basic.ncl   </diag_script> 
+    
+    <model> obs4mips CERES-EBAF L3B Ed2-7 2003  2004 /export/pa_data02/ESMVal/obs/Tier1 </model>
+</diag>
+
+<diag>
+    <description> JJAS climatology of Surface LWdn  </description>
+    <variable_def_dir>             ./variable_defs/      </variable_def_dir>
+    <variable ref_model="CERES-EBAF">    rlds                 </variable>
+    <field_type>                     T2Ms                </field_type>
+    <diag_script_cfg_dir>          ./nml/cfg_WAMonsoon/  </diag_script_cfg_dir>
+
+    <diag_script cfg="cfg_WAMonsoon_10W10E_rlds.ncl">   WAMonsoon_10W10E_1D_basic.ncl   </diag_script> 
+    
+    <model> obs4mips CERES-EBAF L3B Ed2-7 2003  2004 /export/pa_data02/ESMVal/obs/Tier1 </model>
+</diag>
+
+<diag>
+    <description> JJAS climatology of TOA SW CRE  </description>
+    <variable_def_dir>             ./variable_defs/      </variable_def_dir>
+    <variable ref_model="CERES-EBAF">    SW_CRE                 </variable>
+    <field_type>                     T2Ms                </field_type>
+    <diag_script_cfg_dir>          ./nml/cfg_WAMonsoon/  </diag_script_cfg_dir>
+
+    <diag_script cfg="cfg_WAMonsoon_10W10E_SW_CRE.ncl">   WAMonsoon_10W10E_1D_basic.ncl   </diag_script> 
+    
+    <model> obs4mips CERES-EBAF L3B Ed2-7 2003  2004 /export/pa_data02/ESMVal/obs/Tier1 </model>
+</diag>
+
+<diag>
+    <description> JJAS climatology of TOA LW CRE  </description>
+    <variable_def_dir>             ./variable_defs/      </variable_def_dir>
+    <variable ref_model="CERES-EBAF">    LW_CRE                 </variable>
+    <field_type>                     T2Ms                </field_type>
+    <diag_script_cfg_dir>          ./nml/cfg_WAMonsoon/  </diag_script_cfg_dir>
+
+    <diag_script cfg="cfg_WAMonsoon_10W10E_LW_CRE.ncl">   WAMonsoon_10W10E_1D_basic.ncl   </diag_script> 
+    
+    <model> obs4mips CERES-EBAF L3B Ed2-7 2003  2004 /export/pa_data02/ESMVal/obs/Tier1 </model>
+</diag>
+
+</DIAGNOSTICS>
+</namelist>

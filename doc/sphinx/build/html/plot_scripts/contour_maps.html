@@ -1,0 +1,262 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>contour_maps &mdash; ESMValTool 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="ESMValTool 1.0 documentation" href="../index.html" />
+    <link rel="up" title="NCL plotting scripts library" href="index.html" />
+    <link rel="next" title="legends" href="legends.html" />
+    <link rel="prev" title="aux_plotting" href="aux_plotting.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="legends.html" title="legends"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="aux_plotting.html" title="aux_plotting"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">ESMValTool 1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">NCL plotting scripts library</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="contour-maps">
+<h1><tt class="xref py py-mod docutils literal"><span class="pre">contour_maps</span></tt><a class="headerlink" href="#contour-maps" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="contour_map">
+<tt class="descname">contour_map</tt><big>(</big><em>wks_in[1], source, varname[1]: string</em><big>)</big><a class="headerlink" href="#contour_map" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>wks_in</strong> (<em>integer</em>) &#8211; workstations (graphic object or default will be used).</li>
+<li><strong>source</strong> (<em>integer</em>) &#8211; data to be plotted or a NetCDF filename with data.</li>
+<li><strong>varname</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; variable name in the file.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Source prototype</dt>
+<dd>source[<em>,</em>]
+source!0 = lat
+source!1 = lon</dd>
+<dt>Return value</dt>
+<dd>A graphic variable.</dd>
+<dt>Description</dt>
+<dd>Wrapper for gsn_csm_contour_map.
+Opens default wks, if not provided as argument of type &#8220;graphic&#8221;.
+Defines default resources, which are overridden by argument res.
+Creates plot, according to wks &amp; res.</dd>
+<dt>Caveats</dt>
+<dd>Selection of defaults for res almost arbitrary
+Please check results of all scripts that use this routine if modifying
+the defaults!
+Input via netCDF not yet implemented</dd>
+<dt>Modification history</dt>
+<dd>20131104-A_gott_kl: written.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="contour_map_polar">
+<tt class="descname">contour_map_polar</tt><big>(</big><em>wks_in[1], source, varname[1]: string</em><big>)</big><a class="headerlink" href="#contour_map_polar" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>wks_in</strong> (<em>integer</em>) &#8211; workstations (graphic object or default will be used).</li>
+<li><strong>source</strong> (<em>integer</em>) &#8211; data to be plotted or a NetCDF filename with data.</li>
+<li><strong>varname</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; variable name in the file.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Source prototype</dt>
+<dd>source[<em>,</em>]
+source!0 = lat
+source!1 = lon</dd>
+<dt>Return value</dt>
+<dd>A graphic variable.</dd>
+<dt>Description</dt>
+<dd><p class="first">Wrapper for gsn_csm_contour_map_polar.
+Opens default wks, if not provided as argument of type &#8220;graphic&#8221;.
+Defines default resources, which are overridden by argument res_in.
+Creates plot according to wks &amp; res, unless <a class="reference external" href="mailto:res_in&#37;&#52;&#48;gsnDraw">res_in<span>&#64;</span>gsnDraw</a> is set</p>
+<blockquote class="last">
+<div>to &#8216;False&#8217; in your diag_script (to enable panelling, for example).</div></blockquote>
+</dd>
+<dt>Caveats</dt>
+<dd>Selection of defaults for res almost arbitrary
+Please check results of all scripts that use this routine if modifying
+the defaults!
+Input via netCDF not yet implemented</dd>
+<dt>Modification history</dt>
+<dd>20140623-A_senf_da: now takes res as attributes of source.
+20131218-A_senf_da: written.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="contour_map_ce">
+<tt class="descname">contour_map_ce</tt><big>(</big><em>wks_in[1], source, varname[1]: string</em><big>)</big><a class="headerlink" href="#contour_map_ce" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>wks_in</strong> (<em>integer</em>) &#8211; workstations (graphic object or default will be used).</li>
+<li><strong>source</strong> (<em>integer</em>) &#8211; data to be plotted or a NetCDF filename with data.</li>
+<li><strong>varname</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; variable name in the file.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Source prototype</dt>
+<dd>source[<em>,</em>]
+source!0 = lat
+source!1 = lon</dd>
+<dt>Return value</dt>
+<dd>A graphic variable.</dd>
+<dt>Description</dt>
+<dd>Wrapper for gsn_csm_contour_map_ce.
+Opens default wks, if not provided as argument of type &#8220;graphic&#8221;.
+Defines default resources, which are overridden by argument res.
+Creates plot, according to wks &amp; res.</dd>
+<dt>Caveats</dt>
+<dd>Selection of defaults for res almost arbitrary
+Please check results of all scripts that use this routine if modifying
+the defaults!
+Input via netCDF not yet implemented</dd>
+<dt>Modification history</dt>
+<dd>20140228-A_righ_ma: written.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="add_markers_to_map">
+<tt class="descname">add_markers_to_map</tt><big>(</big><em>wks_in[1], plot[1]: graphic, lat[*]: numeric,  lon[*]: numeric, data[*]: numeric</em><big>)</big><a class="headerlink" href="#add_markers_to_map" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>wks_in</strong> (<em>integer</em>) &#8211; input workstation.</li>
+<li><strong>plot</strong> (<em>graphic</em>) &#8211; a graphic object representing a contour plot.</li>
+<li><strong>lat</strong> (<em>numeric</em>) &#8211; an array of latitude positions for the marker.</li>
+<li><strong>lon</strong> (<em>numeric</em>) &#8211; an array of longitude positions for the marker.</li>
+<li><strong>data</strong> (<em>numeric</em>) &#8211; an array of values to be overlaid as colored markers.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Description</dt>
+<dd>Overlays markers to an existing map plot, using the same color coding of
+the associated labelbar.</dd>
+</dl>
+<p>Caveats</p>
+<dl class="docutils">
+<dt>Modification history:</dt>
+<dd>20140214-A_righ_ma: written.</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="aux_plotting.html"
+                        title="previous chapter"><tt class="docutils literal docutils literal docutils literal"><span class="pre">aux_plotting</span></tt></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="legends.html"
+                        title="next chapter"><tt class="docutils literal"><span class="pre">legends</span></tt></a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/plot_scripts/contour_maps.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="legends.html" title="legends"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="aux_plotting.html" title="aux_plotting"
+             >previous</a> |</li>
+        <li><a href="../index.html">ESMValTool 1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" >NCL plotting scripts library</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,693 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>style &mdash; ESMValTool 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="ESMValTool 1.0 documentation" href="../index.html" />
+    <link rel="up" title="NCL diagnostic scripts library" href="index.html" />
+    <link rel="next" title="NCL plotting scripts library" href="../plot_scripts/index.html" />
+    <link rel="prev" title="statistics" href="statistics.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../plot_scripts/index.html" title="NCL plotting scripts library"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="statistics.html" title="statistics"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">ESMValTool 1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">NCL diagnostic scripts library</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="style">
+<h1><tt class="xref py py-mod docutils literal"><span class="pre">style</span></tt><a class="headerlink" href="#style" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="project_styleset">
+<tt class="descname">project_styleset</tt><big>(</big><em>info</em>, <em>flag</em><big>)</big><a class="headerlink" href="#project_styleset" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>info</strong> (<em>integer</em>) &#8211; info array, as defined in ./variable_defs.</li>
+<li><strong>flag</strong> (<em>integer</em>) &#8211; string to look for in info as first priority.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Return value</dt>
+<dd>String of style set, determining
+&#8221;./diag_scripts/GENERAL_style/<a class="reference internal" href="#style">style</a>&#8221; + styleset + &#8221;.ncl&#8221;</dd>
+<dt>Description</dt>
+<dd>Determines &#8221;./diag_scripts/GENERAL_style/<a class="reference internal" href="#style">style</a>&#8221; + styleset + &#8221;.ncl&#8221;.
+Considers 4 priority levels.</dd>
+</dl>
+<p>Caveats</p>
+<p>References</p>
+<dl class="docutils">
+<dt>Modification history:</dt>
+<dd>20130419-A_gott_kl: written.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="select_style">
+<tt class="descname">select_style</tt><big>(</big><em>modelstyles:string</em>, <em>column:integer</em>, <em>specifiers:string</em><big>)</big><a class="headerlink" href="#select_style" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>modelstyles</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; string array, relating models/cases/... with plot attributes (defined in function project_style_*)</li>
+<li><strong>column</strong> (<em>integer</em>) &#8211; integer determining which column to scan in the above array</li>
+<li><strong>specifiers</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; array of strings to loop over &amp; look for matches in the first column of modelstyles</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Return value</dt>
+<dd>Vector (integer or string) with one element for each <a class="reference external" href="mailto:models&#37;&#52;&#48;name">models<span>&#64;</span>name</a>.</dd>
+<dt>Description</dt>
+<dd>Builds the vector by looping over <a class="reference external" href="mailto:models&#37;&#52;&#48;name">models<span>&#64;</span>name</a>.
+1st priority: take value from modelstyles, if first column matches.
+2nd priority: take value from row &#8220;unknown&#8221;, if available in modelstyles.</dd>
+</dl>
+<p>Caveats</p>
+<p>References</p>
+<dl class="docutils">
+<dt>Modification history</dt>
+<dd><p class="first">20130422-A_gott_kl: written.
+20140320-A_gott_kl: modified to take list of model/case/... specifiers</p>
+<blockquote class="last">
+<div>as input argument rather than always using <a class="reference external" href="mailto:models&#37;&#52;&#48;name">models<span>&#64;</span>name</a></div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="unique_labels_min">
+<tt class="descname">unique_labels_min</tt><big>(</big><em>prio: string</em><big>)</big><a class="headerlink" href="#unique_labels_min" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>prio</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; string vector with attribute names (models&#64;*), ordered by priority for annotation (starting with highest).</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Return value</dt>
+<dd>A vector (string) with one element for each <a class="reference external" href="mailto:models&#37;&#52;&#48;name">models<span>&#64;</span>name</a> -&gt; each label
+contains the least possible attribute strings.</dd>
+<dt>Description</dt>
+<dd>Builds the vector by looping over <a class="reference external" href="mailto:models&#37;&#52;&#48;name">models<span>&#64;</span>name</a>.
+Adds &#8220;_attribute&#8221; to non-unique labels, until prio is exhausted.</dd>
+</dl>
+<p>Caveats</p>
+<p>References</p>
+<dl class="docutils">
+<dt>Modification history</dt>
+<dd>20130422-A_gott_kl: written.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="unique_labels_all">
+<tt class="descname">unique_labels_all</tt><big>(</big><em>prio:string</em><big>)</big><a class="headerlink" href="#unique_labels_all" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>prio</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; string vector with attribute names (models&#64;*), ordered by priority for annotation (starting with highest)</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Description</dt>
+<dd>Builds the vector by looping over <a class="reference external" href="mailto:models&#37;&#52;&#48;name">models<span>&#64;</span>name</a>.
+Adds &#8220;_attribute&#8221; until prio is exhausted or until labels are unique.</dd>
+<dt>Return value</dt>
+<dd>A vector (string) with one element for each <a class="reference external" href="mailto:models&#37;&#52;&#48;name">models<span>&#64;</span>name</a> -&gt; all labels
+contain the same (least possible) number of attribute strings.</dd>
+</dl>
+<p>Caveats</p>
+<p>References</p>
+<dl class="docutils">
+<dt>Modification history</dt>
+<dd>20130422-A_gott_kl: written.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="gsnColorRange">
+<tt class="descname">gsnColorRange</tt><big>(</big><em>lower: numeric</em>, <em>upper: numeric</em>, <em>step: numeric</em>, <em>center: numeric</em>, <em>color_end: integer</em>, <em>center_color: integer</em><big>)</big><a class="headerlink" href="#gsnColorRange" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>lower</strong> (<em>numeric</em>) &#8211; cnMinLevelValF.</li>
+<li><strong>upper</strong> (<em>numeric</em>) &#8211; cnMaxLevelValF.</li>
+<li><strong>step</strong> (<em>numeric</em>) &#8211; cnLevelSpacingF.</li>
+<li><strong>center</strong> (<em>numeric</em>) &#8211; The numerical value the colormap is centered on. For anomalies or trends, it&#8217;s common to use 0.0, so blue means cold or cooling and red means warm or warming.</li>
+<li><strong>color_end</strong> (<em>integer</em>) &#8211; The number of colors in colormap (ex. 97 for BlRe, 253 for BlueRed).</li>
+<li><strong>center_color</strong> (<em>integer</em>) &#8211; = Color value on the left of the &#8220;center&#8221; value (see above).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Description</dt>
+<dd>Sets the gsnSpreadXXX resources necessary to correctly span a two-color
+colortable.</dd>
+<dt>Return value</dt>
+<dd>A logical variable with the start and end colors as attributes.</dd>
+</dl>
+<p>Caveats</p>
+<dl class="docutils">
+<dt>Reference</dt>
+<dd><a class="reference external" href="http://www.ncl.ucar.edu/Applications/Scripts/contoursym_4.ncl">http://www.ncl.ucar.edu/Applications/Scripts/contoursym_4.ncl</a></dd>
+<dt>Modification history:</dt>
+<dd>20130422-A_gott_kl: written.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="project_style_CMIP5">
+<tt class="descname">project_style_CMIP5</tt><big>(</big><em>flag:string</em><big>)</big><a class="headerlink" href="#project_style_CMIP5" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>flag</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; string determining the type of array requested.</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Return value</dt>
+<dd><p class="first">An array of dimsizes(<a class="reference external" href="mailto:models&#37;&#52;&#48;name">models<span>&#64;</span>name</a>).
+Definition of plot attributes; Returns arrays of dimsizes(<a class="reference external" href="mailto:models&#37;&#52;&#48;name">models<span>&#64;</span>name</a>)</p>
+<blockquote class="last">
+<div><dl class="docutils">
+<dt>flag: &#8220;colors&#8221;: returns an array of colors</dt>
+<dd>(either RGB triples or named colors)</dd>
+</dl>
+<p>flag: &#8220;dashes&#8221;: returns an array of dash styles (integer numbers)
+flag: &#8220;thicks&#8221;: returns an array of line thicknesses (numeric)
+flag: &#8220;annots&#8221;: returns an array of annotation strings
+flag: &#8220;avgstd&#8221;: returns an array of flags</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>0 -&gt; (model) takes part in calculation of</dt>
+<dd>mean &amp; stddev</dd>
+<dt>1 -&gt; (obs/reanalysis) takes not part in calculation</dt>
+<dd>of mean &amp; stddev</dd>
+</dl>
+</div></blockquote>
+</div></blockquote>
+</dd>
+<dt>Description</dt>
+<dd>Definition of plot attributes for CMIP5.</dd>
+</dl>
+<p>Caveats</p>
+<p>Reference</p>
+<dl class="docutils">
+<dt>Modification history:</dt>
+<dd><ul class="first last simple">
+<li>20130419-A_gott_kl: written.</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="project_style_DEFAULT">
+<tt class="descname">project_style_DEFAULT</tt><big>(</big><em>flag:string</em><big>)</big><a class="headerlink" href="#project_style_DEFAULT" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>flag</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; string determining the type of array requested.</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Return value</dt>
+<dd><p class="first">An array of dimsizes(<a class="reference external" href="mailto:models&#37;&#52;&#48;name">models<span>&#64;</span>name</a>).
+Definition of plot attributes; Returns arrays of dimsizes(<a class="reference external" href="mailto:models&#37;&#52;&#48;name">models<span>&#64;</span>name</a>)</p>
+<blockquote class="last">
+<div><dl class="docutils">
+<dt>flag: &#8220;colors&#8221;: returns an array of colors</dt>
+<dd>(either RGB triples or named colors)</dd>
+</dl>
+<p>flag: &#8220;dashes&#8221;: returns an array of dash styles (integer numbers)
+flag: &#8220;thicks&#8221;: returns an array of line thicknesses (numeric)
+flag: &#8220;annots&#8221;: returns an array of annotation strings
+flag: &#8220;avgstd&#8221;: returns an array of flags</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>0 -&gt; (model) takes part in calculation of</dt>
+<dd>mean &amp; stddev</dd>
+<dt>1 -&gt; (obs/reanalysis) takes not part in calculation</dt>
+<dd>of mean &amp; stddev</dd>
+</dl>
+</div></blockquote>
+</div></blockquote>
+</dd>
+<dt>Description</dt>
+<dd>Definition of plot attributes for DEFAULT.</dd>
+</dl>
+<p>Caveats</p>
+<p>Reference</p>
+<dl class="docutils">
+<dt>Modification history:</dt>
+<dd><ul class="first last simple">
+<li>20130430-A_gott_kl: written.</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="project_style_EMAC">
+<tt class="descname">project_style_EMAC</tt><big>(</big><em>flag:string</em><big>)</big><a class="headerlink" href="#project_style_EMAC" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>flag</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; string determining the type of array requested.</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Return value</dt>
+<dd><p class="first">An array of dimsizes(<a class="reference external" href="mailto:models&#37;&#52;&#48;name">models<span>&#64;</span>name</a>).
+Definition of plot attributes; Returns arrays of dimsizes(<a class="reference external" href="mailto:models&#37;&#52;&#48;name">models<span>&#64;</span>name</a>)</p>
+<blockquote class="last">
+<div><dl class="docutils">
+<dt>flag: &#8220;colors&#8221;: returns an array of colors</dt>
+<dd>(either RGB triples or named colors)</dd>
+</dl>
+<p>flag: &#8220;dashes&#8221;: returns an array of dash styles (integer numbers)
+flag: &#8220;thicks&#8221;: returns an array of line thicknesses (numeric)
+flag: &#8220;annots&#8221;: returns an array of annotation strings
+flag: &#8220;avgstd&#8221;: returns an array of flags</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>0 -&gt; (model) takes part in calculation of</dt>
+<dd>mean &amp; stddev</dd>
+<dt>1 -&gt; (obs/reanalysis) takes not part in calculation</dt>
+<dd>of mean &amp; stddev</dd>
+</dl>
+</div></blockquote>
+</div></blockquote>
+</dd>
+<dt>Description:</dt>
+<dd><ul class="first simple">
+<li>Definition of plot attributes: type depending on flag</li>
+<li>consider models&#64; (/&#8221;name&#8221;, &#8220;ensemble&#8221;, &#8220;experiment&#8221; or &#8220;case_name&#8221;/) 
+to assign colors, dashes, thicks</li>
+</ul>
+<dl class="docutils">
+<dt>&#8211;&gt; predefined different colors/thicks/dashes for selected EMAC runs  </dt>
+<dd>(case_name is used to distinguish those selected EMAC simulations)</dd>
+<dt>&#8211;&gt; identical other colors/thicks/dashes for not listed EMAC simulations</dt>
+<dd>(entry &#8220;EMAC&#8221; in modelstyles)</dd>
+<dt>&#8211;&gt; identical, but again other colors/thicks/dashes for non EMAC data </dt>
+<dd>(entry &#8220;unknown&#8221; in modelstyles)</dd>
+</dl>
+<p class="last">&#8211;&gt; modelstyles also contains definitions for some obs/rea/specials</p>
+</dd>
+<dt>Modification history:</dt>
+<dd><ul class="first last">
+<li><dl class="first docutils">
+<dt>20140321 complete overhaul towards a combination of CMIP5 and</dt>
+<dd><p class="first last">EMAC_default styles (<a class="reference external" href="mailto:Klaus-Dirk&#46;Gottschaldt&#37;&#52;&#48;dlr&#46;de">Klaus-Dirk<span>&#46;</span>Gottschaldt<span>&#64;</span>dlr<span>&#46;</span>de</a>)</p>
+</dd>
+</dl>
+</li>
+<li><p class="first">20140120 changed to plot style for EMAC models (<a class="reference external" href="mailto:Franziska&#46;Frank&#37;&#52;&#48;dlr&#46;de">Franziska<span>&#46;</span>Frank<span>&#64;</span>dlr<span>&#46;</span>de</a>)</p>
+</li>
+<li><p class="first">20130430 written (<a class="reference external" href="mailto:Klaus-Dirk&#46;Gottschaldt&#37;&#52;&#48;dlr&#46;de">Klaus-Dirk<span>&#46;</span>Gottschaldt<span>&#64;</span>dlr<span>&#46;</span>de</a>)</p>
+</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="project_style_EMAC_default">
+<tt class="descname">project_style_EMAC_default</tt><big>(</big><em>flag:string</em><big>)</big><a class="headerlink" href="#project_style_EMAC_default" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>flag</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; string determining the type of array requested.</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Return value</dt>
+<dd><dl class="first last docutils">
+<dt>An array of dimsizes(<a class="reference external" href="mailto:models&#37;&#52;&#48;name">models<span>&#64;</span>name</a>), type depending on flag.</dt>
+<dd><dl class="first docutils">
+<dt>flag: &#8220;colors&#8221;: returns an array of colors</dt>
+<dd>(either RGB triples or named colors)</dd>
+</dl>
+<p>flag: &#8220;dashes&#8221;: returns an array of dash styles (integer numbers)
+flag: &#8220;thicks&#8221;: returns an array of line thicknesses (numeric)
+flag: &#8220;annots&#8221;: returns an array of annotation strings
+flag: &#8220;avgstd&#8221;: returns an array of flags</p>
+<blockquote class="last">
+<div><dl class="docutils">
+<dt>0 -&gt; (model) takes part in calculation of</dt>
+<dd>mean &amp; stddev</dd>
+<dt>1 -&gt; (obs/reanalysis) takes not part in calculation</dt>
+<dd>of mean &amp; stddev</dd>
+</dl>
+</div></blockquote>
+</dd>
+</dl>
+</dd>
+<dt>Description</dt>
+<dd><ul class="first last simple">
+<li>Definition of plot attributes, depending on flag</li>
+<li>EMAC data are distinguished by default colors, but all get solid line,</li>
+<li>others get grey, but are distinguished by default dashes</li>
+</ul>
+</dd>
+</dl>
+<p>Caveats</p>
+<p>Reference</p>
+<dl class="docutils">
+<dt>Modification history</dt>
+<dd><ul class="first last simple">
+<li>20140320-A_gott_kl: renamed EMAC -&gt; EMAC_default</li>
+<li>20130214-A_gott_kl: written for Emmons_diagnostics.</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="project_style_righi15gmd">
+<tt class="descname">project_style_righi15gmd</tt><big>(</big><em>flag:string</em><big>)</big><a class="headerlink" href="#project_style_righi15gmd" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>flag</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; string determining the type of array requested.</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Return value</dt>
+<dd><p class="first">An array of dimsizes(<a class="reference external" href="mailto:models&#37;&#52;&#48;name">models<span>&#64;</span>name</a>).
+Definition of plot attributes; Returns arrays of dimsizes(<a class="reference external" href="mailto:models&#37;&#52;&#48;name">models<span>&#64;</span>name</a>)</p>
+<blockquote class="last">
+<div><dl class="docutils">
+<dt>flag: &#8220;colors&#8221;: returns an array of colors</dt>
+<dd>(either RGB triples or named colors)</dd>
+</dl>
+<p>flag: &#8220;dashes&#8221;: returns an array of dash styles (integer numbers)
+flag: &#8220;thicks&#8221;: returns an array of line thicknesses (numeric)
+flag: &#8220;annots&#8221;: returns an array of annotation strings
+flag: &#8220;avgstd&#8221;: returns an array of flags</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>0 -&gt; (model) takes part in calculation of</dt>
+<dd>mean &amp; stddev</dd>
+<dt>1 -&gt; (obs/reanalysis) takes not part in calculation</dt>
+<dd>of mean &amp; stddev</dd>
+</dl>
+</div></blockquote>
+</div></blockquote>
+</dd>
+<dt>Description</dt>
+<dd>Definition of plot attributes for righi15gmd.</dd>
+</dl>
+<p>Caveats</p>
+<p>Reference</p>
+<dl class="docutils">
+<dt>Modification history:</dt>
+<dd><ul class="first last simple">
+<li>20140708-A_gott_kl: Adjusting colors to new trunk version, adding OBS</li>
+<li>20131213-A_fran_fr: written.</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="project_style">
+<tt class="descname">project_style</tt><big>(</big><em>info</em>, <em>flag</em><big>)</big><a class="headerlink" href="#project_style" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>info</strong> (<em>integer</em>) &#8211; info array, as defined in ./variable_defs.</li>
+<li><strong>flag</strong> (<em>integer</em>) &#8211; string determining the type of array requested.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Return value</dt>
+<dd><p class="first">An array of dimsizes(<a class="reference external" href="mailto:models&#37;&#52;&#48;name">models<span>&#64;</span>name</a>).
+Definition of plot attributes; Returns arrays of dimsizes(<a class="reference external" href="mailto:models&#37;&#52;&#48;name">models<span>&#64;</span>name</a>)</p>
+<blockquote class="last">
+<div><dl class="docutils">
+<dt>flag: &#8220;colors&#8221;: returns an array of colors</dt>
+<dd>(either RGB triples or named colors)</dd>
+</dl>
+<p>flag: &#8220;dashes&#8221;: returns an array of dash styles (integer numbers)
+flag: &#8220;thicks&#8221;: returns an array of line thicknesses (numeric)
+flag: &#8220;annots&#8221;: returns an array of annotation strings
+flag: &#8220;avgstd&#8221;: returns an array of flags</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>0 -&gt; (model) takes part in calculation of</dt>
+<dd>mean &amp; stddev</dd>
+<dt>1 -&gt; (obs/reanalysis) takes not part in calculation</dt>
+<dd>of mean &amp; stddev</dd>
+</dl>
+</div></blockquote>
+</div></blockquote>
+</dd>
+<dt>Description</dt>
+<dd>Definition of plot attributes for righi15gmd.</dd>
+</dl>
+<p>Caveats</p>
+<p>Reference</p>
+<dl class="docutils">
+<dt>Modification history:</dt>
+<dd><ul class="first last simple">
+<li>20130419-A_gott_kl: written.</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="place_debuginfo">
+<tt class="descname">place_debuginfo</tt><big>(</big><em>wks [1] : graphic</em>, <em>debugstring [1] : string</em>, <em>res [1] : logical</em>, <em>plot [1] : graphic</em><big>)</big><a class="headerlink" href="#place_debuginfo" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>wks</strong> (<em>graphic</em>) &#8211; &#8211; current workstation</li>
+<li><strong>debugstring</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; &#8211; string to attach</li>
+<li><strong>res</strong> (<em>logical</em>) &#8211; &#8211; resource settings for display box</li>
+<li><strong>plot</strong> (<em>graphic</em>) &#8211; &#8211; graphic object to draw text onto</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Description:</dt>
+<dd>Places the text string debugstring onto wks</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="place_description">
+<tt class="descname">place_description</tt><big>(</big><em>wks [1] : graphic</em>, <em>description [1] : string</em>, <em>y_ndc_coord [1] : float</em><big>)</big><a class="headerlink" href="#place_description" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>wks</strong> (<em>graphic</em>) &#8211; &#8211; current workstation</li>
+<li><strong>description</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; &#8211; string to attach</li>
+<li><strong>y_ndc_coord</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; &#8211; vertical placement in ndc space (-1 for default)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Description:</dt>
+<dd>Places the text strings in array debugboxes onto wks</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="format_units">
+<tt class="descname">format_units</tt><big>(</big><em>str[1]: string</em><big>)</big><a class="headerlink" href="#format_units" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>str</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; a string.</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Return value</dt>
+<dd>A string.</dd>
+<dt>Description</dt>
+<dd>Reformats units string to properly display superscripts
+(e.g. m^2 &#8211;&gt; m~S1~2)</dd>
+<dt>Caveats</dt>
+<dd>Convering only very few cases, to be extended.</dd>
+</dl>
+<p>References</p>
+<dl class="docutils">
+<dt>Modification history</dt>
+<dd>20140320-A_righ_ma: written.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="set_log_ticks">
+<tt class="descname">set_log_ticks</tt><big>(</big><em>fmin[1]:numeric</em>, <em>fmax[1]:numeric</em>, <em>opt[1]:string</em><big>)</big><a class="headerlink" href="#set_log_ticks" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fmin</strong> (<em>numeric</em>) &#8211; the minimum axis value (as specified by trXMinF or trYMinF)</li>
+<li><strong>fmax</strong> (<em>numeric</em>) &#8211; the maximum axis value (as specified by trXMaxF or trYMaxF)</li>
+<li><strong>opt</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; &#8220;major&#8221; or &#8220;minor&#8221;, to return major or minor ticks.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Return value</dt>
+<dd>An array of tickmark values, to be used in trXBValues, trYLValues and
+trXBLabels, trYLLabels</dd>
+<dt>Description</dt>
+<dd>Since NCL only allows for exponential notation in plots with logarithmic
+axes, this function creates an explicit sets of tickmarks with float
+notation.</dd>
+</dl>
+<p>Caveats</p>
+<p>References</p>
+<dl class="docutils">
+<dt>Modification history</dt>
+<dd>20141003-A_righ_ma: written.</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="statistics.html"
+                        title="previous chapter"><tt class="docutils literal docutils literal docutils literal docutils literal"><span class="pre">statistics</span></tt></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../plot_scripts/index.html"
+                        title="next chapter">NCL plotting scripts library</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/diag_scripts/style.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../plot_scripts/index.html" title="NCL plotting scripts library"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="statistics.html" title="statistics"
+             >previous</a> |</li>
+        <li><a href="../index.html">ESMValTool 1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" >NCL diagnostic scripts library</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

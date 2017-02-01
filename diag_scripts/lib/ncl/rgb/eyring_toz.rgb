@@ -1,0 +1,25 @@
+# number of colors in table not counting foreground/background color
+
+ncolors = 13
+
+# first color = GMT background color
+# last color  = GMT foreground color
+
+# r g b
+
+189 189 189
+136 21 102
+105 30 142
+38 65 140
+56 106 218
+119 196 207
+146 246 252
+161 205 89
+98 208 4
+175 253 42
+254 255 3
+255 169 8
+252 69 1
+135 38 1
+1 1 1
+
