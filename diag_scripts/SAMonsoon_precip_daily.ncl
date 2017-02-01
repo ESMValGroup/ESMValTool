@@ -17,8 +17,8 @@
 ;;                       filter_weights: number of filter weights to use
 ;;                         isv_latrange: latitude crop area
 ;;                         isv_lonrange: longitude crop area
-;;                         bob_latrange: latitude crop area for Bay of Bengali
-;;                         bob_lonrange: longitude crop area for Bay of Bengali
+;;                         bob_latrange: latitude crop area for Bay of Bengal
+;;                         bob_lonrange: longitude crop area for Bay of Bengal
 ;;                         eio_latrange: latitude crop area for eastern
 ;;                                       equatorial Indian Ocean
 ;;                         eio_lonrange: longitude crop area for eastern
@@ -229,7 +229,7 @@ begin
             season_bpass = extract_season(bpass, di@season)
             var_stddev = dim_stddev_n_Wrap(season_bpass, 0)
 
-            ;; Compute reference statistical values over Bay of Bengali (bob)
+            ;; Compute reference statistical values over Bay of Bengal (bob)
             stat_bob_const = coswgt_areaave(var_stddev({lat|di@bob_latrange(0):di@bob_latrange(1)},\
                                                        {lon|di@bob_lonrange(0):di@bob_lonrange(1)}))
 

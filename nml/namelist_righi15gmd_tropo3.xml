@@ -1,4 +1,5 @@
 <namelist>
+<include href="./config_private.xml"/>
 <namelist_summary>
 ###############################################################################
 namelist_righi15gmd_tropo3.xml
@@ -25,63 +26,63 @@ This namelist is part of the ESMValTool
 </namelist_summary>
 
 <GLOBAL>
-    <write_plots type="boolean">         True   </write_plots>
-    <write_netcdf type="boolean">        True   </write_netcdf>
-    <force_processing type="boolean">    False  </force_processing>
-    <wrk_dir type="path">                work/  </wrk_dir>
-    <plot_dir type="path">               work/plots/ </plot_dir>
-    <climo_dir type="path">              work/climo/ </climo_dir>
-    <write_plot_vars type="boolean">     True   </write_plot_vars>
-    <max_data_filesize type="integer">   100    </max_data_filesize>
-    <max_data_blocksize type="integer">  500    </max_data_blocksize>
-    <verbosity  type="integer">          1      </verbosity>
-    <exit_on_warning  type="boolean">    False  </exit_on_warning>
+    <write_plots type="boolean">         True         </write_plots>
+    <write_netcdf type="boolean">        True         </write_netcdf>
+    <force_processing type="boolean">    False        </force_processing>
+    <wrk_dir type="path">                @{WORKPATH}  </wrk_dir>
+    <plot_dir type="path">               @{PLOTPATH}  </plot_dir>
+    <climo_dir type="path">              @{CLIMOPATH} </climo_dir>
+    <write_plot_vars type="boolean">     True         </write_plot_vars>
+    <max_data_filesize type="integer">   100          </max_data_filesize>
+    <max_data_blocksize type="integer">  500          </max_data_blocksize>
+    <verbosity  type="integer">          1            </verbosity>
+    <exit_on_warning  type="boolean">    False        </exit_on_warning>
     <!-- Use epsi for correct bounding boxes, ps for transparent shadings -->
-    <output_file_type>                    ps    </output_file_type>
-    <force_calc type="boolean">          False  </force_calc>
-    <force_gradecalc type="boolean">     False  </force_gradecalc>
-    <force_taylorcalc type="boolean">    False  </force_taylorcalc>
+    <output_file_type>                    ps          </output_file_type>
+    <force_calc type="boolean">          False        </force_calc>
+    <force_gradecalc type="boolean">     False        </force_gradecalc>
+    <force_taylorcalc type="boolean">    False        </force_taylorcalc>
 </GLOBAL>
 
 <MODELS>
 
 <!-- ### EMAC simulations ############################################################################################## -->
 
-<!--     <model> EMAC   EVAL2      1  1999 2009  /export/pa_data02/ESMVal/model/EMAC/EVAL2/     </model> -->
-<!--     <model> EMAC   QCTM       1  1999 2007  /export/pa_data02/ESMVal/model/EMAC/QCTM/      </model> -->
-<!--     <model> EMAC   TS2000     1  2001 2010  /export/pa_data02/ESMVal/model/EMAC/TS2000/    </model> -->
-<!--     <model> EMAC   ACCMIP     1  2001 2010  /export/pa_data02/ESMVal/model/EMAC/ACCMIP/    </model> -->
-<!--     <model> EMAC   ACCMIP-S1  1  2001 2010  /export/pa_data02/ESMVal/model/EMAC/ACCMIP-S1/ </model> -->
-<!--     <model> EMAC   ACCMIP-S2  1  2001 2010  /export/pa_data02/ESMVal/model/EMAC/ACCMIP-S2/ </model> -->
+<!--     <model> EMAC   EVAL2      1  1999 2009  @{MODELPATH}/EMAC/EVAL2/     </model> -->
+<!--     <model> EMAC   QCTM       1  1999 2007  @{MODELPATH}/EMAC/QCTM/      </model> -->
+<!--     <model> EMAC   TS2000     1  2001 2010  @{MODELPATH}/EMAC/TS2000/    </model> -->
+<!--     <model> EMAC   ACCMIP     1  2001 2010  @{MODELPATH}/EMAC/ACCMIP/    </model> -->
+<!--     <model> EMAC   ACCMIP-S1  1  2001 2010  @{MODELPATH}/EMAC/ACCMIP-S1/ </model> -->
+<!--     <model> EMAC   ACCMIP-S2  1  2001 2010  @{MODELPATH}/EMAC/ACCMIP-S2/ </model> -->
 
 <!-- ### CMIP5 simulations (only for tropoz and toz diagnostics) ####################################################### -->
 
-    <model> CMIP5_ETHZ bcc-csm1-1     Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-    <model> CMIP5_ETHZ bcc-csm1-1-m   Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-    <model> CMIP5_ETHZ BNU-ESM        Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-    <model> CMIP5_ETHZ CanESM2        Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-    <model> CMIP5_ETHZ CCSM4          Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-    <model> CMIP5_ETHZ CESM1-FASTCHEM Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-    <model> CMIP5_ETHZ CESM1-WACCM    Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-    <model> CMIP5_ETHZ CNRM-CM5       Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-    <model> CMIP5_ETHZ CNRM-CM5-2     Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-    <model> CMIP5_ETHZ CSIRO-Mk3-6-0  Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-    <model> CMIP5_ETHZ FGOALS-g2      Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-    <model> CMIP5_ETHZ GFDL-CM3       Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-    <model> CMIP5_ETHZ GFDL-ESM2G     Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-    <model> CMIP5_ETHZ GFDL-ESM2M     Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-    <model> CMIP5_ETHZ GISS-E2-R      Amon historical r1i1p2 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-    <model> CMIP5_ETHZ IPSL-CM5A-LR   Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-    <model> CMIP5_ETHZ IPSL-CM5A-MR   Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-    <model> CMIP5_ETHZ IPSL-CM5B-LR   Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-    <model> CMIP5_ETHZ MIROC4h        Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-    <model> CMIP5_ETHZ MIROC5         Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-    <model> CMIP5_ETHZ MIROC-ESM      Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-    <model> CMIP5_ETHZ MIROC-ESM-CHEM Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-    <model> CMIP5_ETHZ MPI-ESM-LR     Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-    <model> CMIP5_ETHZ MPI-ESM-MR     Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-    <model> CMIP5_ETHZ MPI-ESM-P      Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-    <model> CMIP5_ETHZ MRI-ESM1       Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
+    <model> CMIP5_ETHZ bcc-csm1-1     Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model> CMIP5_ETHZ bcc-csm1-1-m   Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model> CMIP5_ETHZ BNU-ESM        Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model> CMIP5_ETHZ CanESM2        Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model> CMIP5_ETHZ CCSM4          Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model> CMIP5_ETHZ CESM1-FASTCHEM Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model> CMIP5_ETHZ CESM1-WACCM    Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model> CMIP5_ETHZ CNRM-CM5       Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model> CMIP5_ETHZ CNRM-CM5-2     Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model> CMIP5_ETHZ CSIRO-Mk3-6-0  Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model> CMIP5_ETHZ FGOALS-g2      Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model> CMIP5_ETHZ GFDL-CM3       Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model> CMIP5_ETHZ GFDL-ESM2G     Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model> CMIP5_ETHZ GFDL-ESM2M     Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model> CMIP5_ETHZ GISS-E2-R      Amon historical r1i1p2 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model> CMIP5_ETHZ IPSL-CM5A-LR   Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model> CMIP5_ETHZ IPSL-CM5A-MR   Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model> CMIP5_ETHZ IPSL-CM5B-LR   Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model> CMIP5_ETHZ MIROC4h        Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model> CMIP5_ETHZ MIROC5         Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model> CMIP5_ETHZ MIROC-ESM      Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model> CMIP5_ETHZ MIROC-ESM-CHEM Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model> CMIP5_ETHZ MPI-ESM-LR     Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model> CMIP5_ETHZ MPI-ESM-MR     Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model> CMIP5_ETHZ MPI-ESM-P      Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model> CMIP5_ETHZ MRI-ESM1       Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
 
 </MODELS>
 
@@ -98,9 +99,11 @@ This namelist is part of the ESMValTool
         <variable ref_model="AURA-MLS-OMI"> tropoz           </variable>
         <field_type>                        T2Ms             </field_type>
         <diag_script_cfg_dir>             ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
+
+        <model> OBS    AURA-MLS-OMI  sat  1  2005 2012  @{OBSPATH}/Tier2/AURA-MLS-OMI/ </model>
+
         <diag_script cfg="cfg_righi15gmd_fig14.ncl">      ancyc_lat.ncl      </diag_script>
         <diag_script cfg="cfg_righi15gmd_fig13.ncl">      lat_lon.ncl      </diag_script>
-        <model> OBS    AURA-MLS-OMI  sat  1  2005 2012  /export/pa_data02/ESMVal/obs/Tier2/AURA-MLS-OMI/ </model>
     </diag>
     <diag>
         <description> fig 9: total column ozone plot </description>
@@ -108,9 +111,11 @@ This namelist is part of the ESMValTool
         <variable>                          toz             </variable>
         <field_type>                        T2Ms            </field_type>
         <diag_script_cfg_dir>             ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
+
+        <model> OBS  NIWA  reanaly  1  1998 2010  @{OBSPATH}/Tier3/NIWA/ </model>
+        <model> OBS  GTO-ECV sat  1 1998 2010  @{OBSPATH}/Tier3/GTO-ECV/ </model>
+
         <diag_script cfg="cfg_righi15gmd_fig10.ncl">      ancyc_lat.ncl      </diag_script>
-        <model> OBS  NIWA  reanaly  1  1998 2010  /export/pa_data02/ESMVal/obs/Tier3/NIWA/ </model>
-        <model> OBS  GTO-ECV sat  1 1998 2010  /export/pa_data02/ESMVal/obs/Tier3/GTO-ECV/ </model>
     </diag>
 
 <!--################################################################################################################# -->
@@ -128,7 +133,8 @@ This namelist is part of the ESMValTool
         <variable>            tropoz                        </variable>
         <field_type>          T2Ms                          </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
-        <model> OBS    AURA-MLS-OMI  sat  1  2005 2012  /export/pa_data02/ESMVal/obs/Tier2/AURA-MLS-OMI/ </model>
+
+        <model> OBS    AURA-MLS-OMI  sat  1  2005 2012  @{OBSPATH}/Tier2/AURA-MLS-OMI/ </model>
 
         <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_SH_Midlat.ncl">  perfmetrics_main.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_SH_Midlat.ncl">  perfmetrics_grading.ncl </diag_script>
@@ -166,8 +172,9 @@ This namelist is part of the ESMValTool
         <variable>            toz                           </variable>
         <field_type>          T2Ms                          </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
-        <model> OBS    NIWA  reanaly  1  1998 2010  /export/pa_data02/ESMVal/obs/Tier3/NIWA/ </model>
-        <model> OBS  GTO-ECV  sat  1  1998 2010  /export/pa_data02/ESMVal/obs/Tier3/GTO-ECV/ </model>
+
+        <model> OBS    NIWA  reanaly  1  1998 2010  @{OBSPATH}/Tier3/NIWA/ </model>
+        <model> OBS  GTO-ECV  sat  1  1998 2010  @{OBSPATH}/Tier3/GTO-ECV/ </model>
 
         <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_SH_Polar.ncl">  perfmetrics_main.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_SH_Polar.ncl">  perfmetrics_grading.ncl </diag_script>
@@ -202,6 +209,7 @@ This namelist is part of the ESMValTool
         <variable>            tropoz                        </variable>
         <field_type>          T2Ms                          </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
+
         <diag_script cfg="cfg_perfmetrics_grading_RMSD_collect_O3.ncl">  perfmetrics_grading_collect.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_taylor_collect.ncl">  perfmetrics_taylor_collect.ncl </diag_script>
     </diag>
@@ -220,7 +228,8 @@ This namelist is part of the ESMValTool
         <variable>            tropoz                        </variable>
         <field_type>          T2Ms                          </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
-        <model> OBS    AURA-MLS-OMI  sat  1  2005 2012  /export/pa_data02/ESMVal/obs/Tier2/AURA-MLS-OMI/ </model>
+
+        <model> OBS    AURA-MLS-OMI  sat  1  2005 2012  @{OBSPATH}/Tier2/AURA-MLS-OMI/ </model>
 
         <diag_script cfg="cfg_perfmetrics_grading_BIAS_all_SH_Midlat.ncl">  perfmetrics_main.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_grading_BIAS_all_SH_Midlat.ncl">  perfmetrics_grading.ncl </diag_script>
@@ -241,8 +250,9 @@ This namelist is part of the ESMValTool
         <variable>            toz                           </variable>
         <field_type>          T2Ms                          </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
-        <model> OBS    NIWA  reanaly  1  1998 2010  /export/pa_data02/ESMVal/obs/Tier3/NIWA/ </model>
-        <model> OBS  GTO-ECV  sat  1  1998 2010  /export/pa_data02/ESMVal/obs/Tier3/GTO-ECV/ </model>
+
+        <model> OBS    NIWA  reanaly  1  1998 2010  @{OBSPATH}/Tier3/NIWA/ </model>
+        <model> OBS  GTO-ECV  sat  1  1998 2010  @{OBSPATH}/Tier3/GTO-ECV/ </model>
 
         <diag_script cfg="cfg_perfmetrics_grading_BIAS_all_SH_Polar.ncl">  perfmetrics_main.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_grading_BIAS_all_SH_Polar.ncl">  perfmetrics_grading.ncl </diag_script>
@@ -291,7 +301,9 @@ This namelist is part of the ESMValTool
         <variable>            vmrco_azr                     </variable>
         <field_type>          T0Ms                          </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
-        <model> OBS   GLOBALVIEW  ground   azr-01D0 1999 2008  /export/pa_data02/ESMVal/obs/Tier2/GLOBALVIEW/ </model>
+
+        <model> OBS   GLOBALVIEW  ground   azr-01D0 1999 2008  @{OBSPATH}/Tier2/GLOBALVIEW/ </model>
+
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_azr_RMSD.ncl">  perfmetrics_main.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_azr_RMSD.ncl">  perfmetrics_grading.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_azr_RMSD.ncl">  perfmetrics_taylor.ncl </diag_script>
@@ -303,7 +315,9 @@ This namelist is part of the ESMValTool
         <variable>            vmrco_hpb                     </variable>
         <field_type>          T0Ms                          </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
-        <model> OBS   GLOBALVIEW  ground   hpb-01D0 1999 2008  /export/pa_data02/ESMVal/obs/Tier2/GLOBALVIEW/ </model>
+
+        <model> OBS   GLOBALVIEW  ground   hpb-01D0 1999 2008  @{OBSPATH}/Tier2/GLOBALVIEW/ </model>
+
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_hpb_RMSD.ncl">  perfmetrics_main.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_hpb_RMSD.ncl">  perfmetrics_grading.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_hpb_RMSD.ncl">  perfmetrics_taylor.ncl </diag_script>
@@ -315,7 +329,9 @@ This namelist is part of the ESMValTool
         <variable>            vmrco_lef                     </variable>
         <field_type>          T0Ms                          </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
-        <model> OBS   GLOBALVIEW  ground   lef-01D0 1999 2008  /export/pa_data02/ESMVal/obs/Tier2/GLOBALVIEW/ </model>
+
+        <model> OBS   GLOBALVIEW  ground   lef-01D0 1999 2008  @{OBSPATH}/Tier2/GLOBALVIEW/ </model>
+
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_lef_RMSD.ncl">  perfmetrics_main.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_lef_RMSD.ncl">  perfmetrics_grading.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_lef_RMSD.ncl">  perfmetrics_taylor.ncl </diag_script>
@@ -327,7 +343,9 @@ This namelist is part of the ESMValTool
         <variable>            vmrco_nwr                     </variable>
         <field_type>          T0Ms                          </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
-        <model> OBS   GLOBALVIEW  ground   nwr-01D0 1999 2008  /export/pa_data02/ESMVal/obs/Tier2/GLOBALVIEW/ </model>
+
+        <model> OBS   GLOBALVIEW  ground   nwr-01D0 1999 2008  @{OBSPATH}/Tier2/GLOBALVIEW/ </model>
+
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_nwr_RMSD.ncl">  perfmetrics_main.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_nwr_RMSD.ncl">  perfmetrics_grading.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_nwr_RMSD.ncl">  perfmetrics_taylor.ncl </diag_script>
@@ -339,7 +357,9 @@ This namelist is part of the ESMValTool
         <variable>            vmrco_eic                     </variable>
         <field_type>          T0Ms                          </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
-        <model> OBS   GLOBALVIEW  ground   eic-01D0 1999 2008  /export/pa_data02/ESMVal/obs/Tier2/GLOBALVIEW/ </model>
+
+        <model> OBS   GLOBALVIEW  ground   eic-01D0 1999 2008  @{OBSPATH}/Tier2/GLOBALVIEW/ </model>
+
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_eic_RMSD.ncl">  perfmetrics_main.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_eic_RMSD.ncl">  perfmetrics_grading.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_eic_RMSD.ncl">  perfmetrics_taylor.ncl </diag_script>
@@ -351,6 +371,7 @@ This namelist is part of the ESMValTool
         <variable_def_dir>    ./variable_defs/              </variable_def_dir>
         <variable>            vmrco_alt                     </variable>
         <field_type>          T0Ms                          </field_type>
+
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
         <diag_script cfg="cfg_perfmetrics_taylor_collect.ncl">  perfmetrics_taylor_collect.ncl </diag_script>
     </diag>
@@ -361,7 +382,9 @@ This namelist is part of the ESMValTool
         <variable>            vmrco_alt                     </variable>
         <field_type>          T0Ms                          </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
-        <model> OBS   GLOBALVIEW  ground   alt-01D0 1999 2008  /export/pa_data02/ESMVal/obs/Tier2/GLOBALVIEW/ </model>
+
+        <model> OBS   GLOBALVIEW  ground   alt-01D0 1999 2008  @{OBSPATH}/Tier2/GLOBALVIEW/ </model>
+
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_alt_RMSD.ncl">  perfmetrics_main.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_alt_RMSD.ncl">  perfmetrics_grading.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_alt_RMSD.ncl">  perfmetrics_taylor.ncl </diag_script>
@@ -373,7 +396,9 @@ This namelist is part of the ESMValTool
         <variable>            vmrco_chr                     </variable>
         <field_type>          T0Ms                          </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
-        <model> OBS   GLOBALVIEW  ground   chr-01D0 1999 2008  /export/pa_data02/ESMVal/obs/Tier2/GLOBALVIEW/ </model>
+
+        <model> OBS   GLOBALVIEW  ground   chr-01D0 1999 2008  @{OBSPATH}/Tier2/GLOBALVIEW/ </model>
+
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_chr_RMSD.ncl">  perfmetrics_main.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_chr_RMSD.ncl">  perfmetrics_grading.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_chr_RMSD.ncl">  perfmetrics_taylor.ncl </diag_script>
@@ -385,7 +410,9 @@ This namelist is part of the ESMValTool
         <variable>            vmrco_gmi                     </variable>
         <field_type>          T0Ms                          </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
-        <model> OBS   GLOBALVIEW  ground   gmi-01D0 1999 2008  /export/pa_data02/ESMVal/obs/Tier2/GLOBALVIEW/ </model>
+
+        <model> OBS   GLOBALVIEW  ground   gmi-01D0 1999 2008  @{OBSPATH}/Tier2/GLOBALVIEW/ </model>
+
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_gmi_RMSD.ncl">  perfmetrics_main.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_gmi_RMSD.ncl">  perfmetrics_grading.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_gmi_RMSD.ncl">  perfmetrics_taylor.ncl </diag_script>
@@ -397,7 +424,9 @@ This namelist is part of the ESMValTool
         <variable>            vmrco_mlo                     </variable>
         <field_type>          T0Ms                          </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
-        <model> OBS   GLOBALVIEW  ground   mlo-01D0 1999 2008  /export/pa_data02/ESMVal/obs/Tier2/GLOBALVIEW/ </model>
+
+        <model> OBS   GLOBALVIEW  ground   mlo-01D0 1999 2008  @{OBSPATH}/Tier2/GLOBALVIEW/ </model>
+
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_mlo_RMSD.ncl">  perfmetrics_main.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_mlo_RMSD.ncl">  perfmetrics_grading.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_mlo_RMSD.ncl">  perfmetrics_taylor.ncl </diag_script>
@@ -411,6 +440,7 @@ This namelist is part of the ESMValTool
         <variable>            vmrco_alt                     </variable>
         <field_type>          T0Ms                          </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
+
         <diag_script cfg="cfg_perfmetrics_grading_RMSD_collect_CO.ncl">  perfmetrics_grading_collect.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_taylor_collect.ncl">  perfmetrics_taylor_collect.ncl </diag_script>
     </diag>
@@ -436,7 +466,9 @@ This namelist is part of the ESMValTool
         <variable>            vmrco_azr                     </variable>
         <field_type>          T0Ms                          </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
-        <model> OBS   GLOBALVIEW  ground   azr-01D0 1999 2008  /export/pa_data02/ESMVal/obs/Tier2/GLOBALVIEW/ </model>
+
+        <model> OBS   GLOBALVIEW  ground   azr-01D0 1999 2008  @{OBSPATH}/Tier2/GLOBALVIEW/ </model>
+
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_azr_BIAS.ncl">  perfmetrics_main.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_azr_BIAS.ncl">  perfmetrics_grading.ncl </diag_script>
     </diag>
@@ -447,7 +479,9 @@ This namelist is part of the ESMValTool
         <variable>            vmrco_hpb                     </variable>
         <field_type>          T0Ms                          </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
-        <model> OBS   GLOBALVIEW  ground   hpb-01D0 1999 2008  /export/pa_data02/ESMVal/obs/Tier2/GLOBALVIEW/ </model>
+
+        <model> OBS   GLOBALVIEW  ground   hpb-01D0 1999 2008  @{OBSPATH}/Tier2/GLOBALVIEW/ </model>
+
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_hpb_BIAS.ncl">  perfmetrics_main.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_hpb_BIAS.ncl">  perfmetrics_grading.ncl </diag_script>
     </diag>
@@ -458,7 +492,9 @@ This namelist is part of the ESMValTool
         <variable>            vmrco_lef                     </variable>
         <field_type>          T0Ms                          </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
-        <model> OBS   GLOBALVIEW  ground   lef-01D0 1999 2008  /export/pa_data02/ESMVal/obs/Tier2/GLOBALVIEW/ </model>
+
+        <model> OBS   GLOBALVIEW  ground   lef-01D0 1999 2008  @{OBSPATH}/Tier2/GLOBALVIEW/ </model>
+
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_lef_BIAS.ncl">  perfmetrics_main.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_lef_BIAS.ncl">  perfmetrics_grading.ncl </diag_script>
     </diag>
@@ -469,7 +505,9 @@ This namelist is part of the ESMValTool
         <variable>            vmrco_nwr                     </variable>
         <field_type>          T0Ms                          </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
-        <model> OBS   GLOBALVIEW  ground   nwr-01D0 1999 2008  /export/pa_data02/ESMVal/obs/Tier2/GLOBALVIEW/ </model>
+
+        <model> OBS   GLOBALVIEW  ground   nwr-01D0 1999 2008  @{OBSPATH}/Tier2/GLOBALVIEW/ </model>
+
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_nwr_BIAS.ncl">  perfmetrics_main.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_nwr_BIAS.ncl">  perfmetrics_grading.ncl </diag_script>
     </diag>
@@ -480,7 +518,9 @@ This namelist is part of the ESMValTool
         <variable>            vmrco_eic                     </variable>
         <field_type>          T0Ms                          </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
-        <model> OBS   GLOBALVIEW  ground   eic-01D0 1999 2008  /export/pa_data02/ESMVal/obs/Tier2/GLOBALVIEW/ </model>
+
+        <model> OBS   GLOBALVIEW  ground   eic-01D0 1999 2008  @{OBSPATH}/Tier2/GLOBALVIEW/ </model>
+
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_eic_BIAS.ncl">  perfmetrics_main.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_eic_BIAS.ncl">  perfmetrics_grading.ncl </diag_script>
     </diag>
@@ -491,7 +531,9 @@ This namelist is part of the ESMValTool
         <variable>            vmrco_alt                     </variable>
         <field_type>          T0Ms                          </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
-        <model> OBS   GLOBALVIEW  ground   alt-01D0 1999 2008  /export/pa_data02/ESMVal/obs/Tier2/GLOBALVIEW/ </model>
+
+        <model> OBS   GLOBALVIEW  ground   alt-01D0 1999 2008  @{OBSPATH}/Tier2/GLOBALVIEW/ </model>
+
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_alt_BIAS.ncl">  perfmetrics_main.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_alt_BIAS.ncl">  perfmetrics_grading.ncl </diag_script>
     </diag>
@@ -502,7 +544,9 @@ This namelist is part of the ESMValTool
         <variable>            vmrco_chr                     </variable>
         <field_type>          T0Ms                          </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
-        <model> OBS   GLOBALVIEW  ground   chr-01D0 1999 2008  /export/pa_data02/ESMVal/obs/Tier2/GLOBALVIEW/ </model>
+
+        <model> OBS   GLOBALVIEW  ground   chr-01D0 1999 2008  @{OBSPATH}/Tier2/GLOBALVIEW/ </model>
+
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_chr_BIAS.ncl">  perfmetrics_main.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_chr_BIAS.ncl">  perfmetrics_grading.ncl </diag_script>
     </diag>
@@ -513,7 +557,9 @@ This namelist is part of the ESMValTool
         <variable>            vmrco_gmi                     </variable>
         <field_type>          T0Ms                          </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
-        <model> OBS   GLOBALVIEW  ground   gmi-01D0 1999 2008  /export/pa_data02/ESMVal/obs/Tier2/GLOBALVIEW/ </model>
+
+        <model> OBS   GLOBALVIEW  ground   gmi-01D0 1999 2008  @{OBSPATH}/Tier2/GLOBALVIEW/ </model>
+
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_gmi_BIAS.ncl">  perfmetrics_main.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_gmi_BIAS.ncl">  perfmetrics_grading.ncl </diag_script>
     </diag>
@@ -524,7 +570,9 @@ This namelist is part of the ESMValTool
         <variable>            vmrco_mlo                     </variable>
         <field_type>          T0Ms                          </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
-        <model> OBS   GLOBALVIEW  ground   mlo-01D0 1999 2008  /export/pa_data02/ESMVal/obs/Tier2/GLOBALVIEW/ </model>
+
+        <model> OBS   GLOBALVIEW  ground   mlo-01D0 1999 2008  @{OBSPATH}/Tier2/GLOBALVIEW/ </model>
+
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_mlo_BIAS.ncl">  perfmetrics_main.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T0Ms_mlo_BIAS.ncl">  perfmetrics_grading.ncl </diag_script>
     </diag>
@@ -536,6 +584,7 @@ This namelist is part of the ESMValTool
         <variable>            vmrco_alt                     </variable>
         <field_type>          T0Ms                          </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
+
         <diag_script cfg="cfg_perfmetrics_grading_BIAS_collect_CO.ncl">  perfmetrics_grading_collect.ncl </diag_script>
     </diag>
 
@@ -559,7 +608,7 @@ This namelist is part of the ESMValTool
         <variable>            tro3_NHext                    </variable>
         <field_type>          T1M                           </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
-        <model> OBS   Tilmes  insitu   NHext  2000  2000  /export/pa_data02/ESMVal/obs/Tier2/Tilmes/ </model>
+        <model> OBS   Tilmes  insitu   NHext  2000  2000  @{OBSPATH}/Tier2/Tilmes/ </model>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T1M_250_NHext_RMSD.ncl">  perfmetrics_main.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T1M_250_NHext_RMSD.ncl">  perfmetrics_grading.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T1M_250_NHext_RMSD.ncl">  perfmetrics_taylor.ncl </diag_script>
@@ -577,7 +626,7 @@ This namelist is part of the ESMValTool
         <variable>            tro3_SHext                    </variable>
         <field_type>          T1M                           </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
-        <model> OBS   Tilmes  insitu   SHext  2000  2000  /export/pa_data02/ESMVal/obs/Tier2/Tilmes/ </model>
+        <model> OBS   Tilmes  insitu   SHext  2000  2000  @{OBSPATH}/Tier2/Tilmes/ </model>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T1M_250_SHext_RMSD.ncl">  perfmetrics_main.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T1M_250_SHext_RMSD.ncl">  perfmetrics_grading.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T1M_250_SHext_RMSD.ncl">  perfmetrics_taylor.ncl </diag_script>
@@ -605,7 +654,7 @@ This namelist is part of the ESMValTool
         <variable>            tro3_Trop                     </variable>
         <field_type>          T1M                           </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
-        <model> OBS   Tilmes  insitu   Trop  2000  2000  /export/pa_data02/ESMVal/obs/Tier2/Tilmes/ </model>
+        <model> OBS   Tilmes  insitu   Trop  2000  2000  @{OBSPATH}/Tier2/Tilmes/ </model>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T1M_250_Trop_RMSD.ncl">  perfmetrics_main.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T1M_250_Trop_RMSD.ncl">  perfmetrics_grading.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T1M_250_Trop_RMSD.ncl">  perfmetrics_taylor.ncl </diag_script>
@@ -651,7 +700,7 @@ This namelist is part of the ESMValTool
         <variable>            tro3_NHext                    </variable>
         <field_type>          T1M                           </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
-        <model> OBS   Tilmes  insitu   NHext  2000  2000  /export/pa_data02/ESMVal/obs/Tier2/Tilmes/ </model>
+        <model> OBS   Tilmes  insitu   NHext  2000  2000  @{OBSPATH}/Tier2/Tilmes/ </model>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T1M_250_NHext_BIAS.ncl">  perfmetrics_main.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T1M_250_NHext_BIAS.ncl">  perfmetrics_grading.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T1M_500_NHext_BIAS.ncl">  perfmetrics_main.ncl </diag_script>
@@ -666,7 +715,7 @@ This namelist is part of the ESMValTool
         <variable>            tro3_SHext                    </variable>
         <field_type>          T1M                           </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
-        <model> OBS   Tilmes  insitu   SHext  2000  2000  /export/pa_data02/ESMVal/obs/Tier2/Tilmes/ </model>
+        <model> OBS   Tilmes  insitu   SHext  2000  2000  @{OBSPATH}/Tier2/Tilmes/ </model>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T1M_250_SHext_BIAS.ncl">  perfmetrics_main.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T1M_250_SHext_BIAS.ncl">  perfmetrics_grading.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T1M_500_SHext_BIAS.ncl">  perfmetrics_main.ncl </diag_script>
@@ -681,7 +730,7 @@ This namelist is part of the ESMValTool
         <variable>            tro3_Trop                     </variable>
         <field_type>          T1M                           </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
-        <model> OBS   Tilmes  insitu   Trop  2000  2000  /export/pa_data02/ESMVal/obs/Tier2/Tilmes/ </model>
+        <model> OBS   Tilmes  insitu   Trop  2000  2000  @{OBSPATH}/Tier2/Tilmes/ </model>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T1M_250_Trop_BIAS.ncl">  perfmetrics_main.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T1M_250_Trop_BIAS.ncl">  perfmetrics_grading.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_T1M_500_Trop_BIAS.ncl">  perfmetrics_main.ncl </diag_script>

@@ -1,31 +1,35 @@
-#!/bin/csh
-#;;#############################################################################
-#;;
-#;; Tier
-#;;    Tier 2: freely available non-obs4mips datasets
-#;;
-#;; Source
-#;;    Download at
-#;;    http://cdiac.ornl.gov/oceans/SPCO2_1998_2011_ETH_SOM_FFN.html
-#;;
-#;; Download and processing instructions
-#;;    *) Click on "Database Files" and download spco2_1998-2011_ETH_SOM-FFN_CDIAC_G05.nc.zip
-#;;    *) Unzip zip archive: unzip spco2_1998-2011_ETH_SOM-FFN_CDIAC_G05.nc.zip
-#;;    *) Run this script (requires requires NCO, http://nco.sourceforge.net/ and
-#;;       CDO, http://https://code.zmaw.de/projects/cdo/)
-#;;
-#;; Caveats
-#;;
-#;; Modification history
-#;;    20151111-A_laue_ax: written.
-#;;
-#;;#############################################################################
+#!/usr/bin/env csh -eu
+###############################################################################
+## REFORMAT SCRIPT FOR ETH OBSERVATIONAL DATA
+###############################################################################
+##
+## Tier
+##    Tier 2: other freely-available dataset.
+##
+## Source
+##    Download at
+##    http://cdiac.ornl.gov/oceans/SPCO2_1998_2011_ETH_SOM_FFN.html
+##
+## Last access
+##
+## Download and processing instructions
+##    *) Click on "Database Files" and download spco2_1998-2011_ETH_SOM-FFN_CDIAC_G05.nc.zip
+##    *) Unzip zip archive: unzip spco2_1998-2011_ETH_SOM-FFN_CDIAC_G05.nc.zip
+##    *) Run this script (requires requires NCO, http://nco.sourceforge.net/ and
+##       CDO, http://https://code.zmaw.de/projects/cdo/)
+##
+## Caveats
+##
+## Modification history
+##    20151111-A_laue_ax: written.
+##
+###############################################################################
 
-set inpath=/export/pa_data01/ESMVal/obs/RAW/Tier2/ETH-SOM-FFN
-set outpath=/export/pa_data02/ESMVal/obs/Tier2/ETH-SOM-FFN
+set inpath="${ESMValTool_RAWOBSPATH}/Tier2/ETH-SOM-FFN"
+set outpath="${ESMValTool_OBSPATH}/Tier2/ETH-SOM-FFN"
 
 if (! -d $outpath) then
-    mkdir $outpath
+    mkdir -p $outpath
 endif
 
 set infile=$inpath/spco2_1998-2011_ETH_SOM-FFN_CDIAC_G05.nc
@@ -53,11 +57,11 @@ ncatted -O -a period,global,a,c,"1998-2011" $outfile
 ncatted -O -a reference,global,a,c,"Landschützer, P., Gruber, N., Bakker, D.C.E., Schuster, U.: Recent variability of the global ocean carbon sink, Global Biogeochemical Cycles, 28, doi: 10.1002/2014GB004853, 2014" $outfile
 
 if (-e $outfile) then
-    rm tmp.nc
-###    rm out.nc
-    rm spco2_monthly_ref_ETH-SOM-FFN_reg_1998-2011_varname_unit.nc
-    rm spco2_monthly_ref_ETH-SOM-FFN_reg_1998-2011_selvar.nc
-    rm spco2_monthly_ref_ETH-SOM-FFN_reg_1998-2011_origin.nc
+    rm -f tmp.nc
+###    rm -f out.nc
+    rm -f spco2_monthly_ref_ETH-SOM-FFN_reg_1998-2011_varname_unit.nc
+    rm -f spco2_monthly_ref_ETH-SOM-FFN_reg_1998-2011_selvar.nc
+    rm -f spco2_monthly_ref_ETH-SOM-FFN_reg_1998-2011_origin.nc
     echo 'created '$outfile
 else
     echo 'error: no output written'

@@ -116,7 +116,7 @@ begin
                             models@end_year(idx_mod) + "12.nc"
 
                         if (isfilepresent_esmval(newfile)) then
-                            system ("rm " + newfile)
+                            system("rm -f " + newfile)
                         end if
 ; A-laue_ax-
                         system("ln -s " + oldfile + " " + newfile)
@@ -145,7 +145,7 @@ begin
                             models@end_year(idx_mod) + "12.nc"
 
                         if (isfilepresent_esmval(newfile)) then
-                            system ("rm " + newfile)
+                            system("rm -f " + newfile)
                         end if
 ; A-laue_ax-
                         system("ln -s " + oldfile + " " + newfile)
@@ -173,7 +173,7 @@ begin
                             models@end_year(idx_mod) + "12.nc"
 
                         if (isfilepresent_esmval(newfile)) then
-                            system ("rm " + newfile)
+                            system("rm -f " + newfile)
                         end if
 ; A-laue_ax-
                         system("ln -s " + oldfile + " " + newfile)
@@ -208,7 +208,7 @@ begin
 ; A-laue_ax+
     ; delete old namelist (if present)
     if (isfilepresent_esmval("namelist_obs")) then
-        system ("rm namelist_obs")
+        system("rm -f namelist_obs")
     end if
 ; A-laue_ax-
 

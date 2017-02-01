@@ -1,24 +1,30 @@
 <namelist>
+<include href="./config_private.xml"/>
 <namelist_summary>
 ###############################################################################
 namelist_aerosol_CMIP5.xml
 
 Description
 Namelist for reproducing aerosol figures in Chapter 9 of IPCC AR5 and for
-additional aerosol diagnostics.
+additional aerosol diagnostics
 
 Author
 Mattia Righi (DLR, Germany - mattia.righi@dlr.de)
 
 Project
-CMUG
+ESA CCI CMUG
 
 References
-Flato, G., J. Marotzke, B. Abiodun, P. Braconnot, S.C. Chou, W. Collins, P. Cox, F. Driouech, S. Emori, V. Eyring, C. Forest, P. Gleckler, E. Guilyardi, C. Jakob, V. Kattsov, C. Reason and M. Rummukainen, 2013: Evaluation of Climate Models. In: Climate Change 2013: The Physical Science Basis. Contribution of Working Group I to the Fifth Assessment Report of the Intergovernmental Panel on Climate Change [Stocker, T.F., D. Qin, G.-K. Plattner, M. Tignor, S.K. Allen, J. Boschung, A. Nauels, Y. Xia, V. Bex and P.M. Midgley (eds.)]. Cambridge University Press, Cambridge, United Kingdom and New York, NY, USA.
+Flato, G. et al., Evaluation of climate models, in: Climate Change 2013: the
+Physical Science Basis, contribution of Working Group I to the Fifth Assessment
+Report of the Intergovernmental Panel on Climate Change, edited by: Stocker, T.
+F., Qin, D., Plattner, G.-K., Tignor, M., Allen, S. K., Boschung, J., Nauels, 
+A., Xia, Y., Bex, V., and Midgley, P. M., Cambridge University Press,
+Cambridge, UK and New York, NY, USA (2013).
+Righi et al., Atmos. Chem. Phys., 13, 9939-9970, doi:10.5194/acp-13-9939-2013
+(2013).
 
-Righi et al., Atmos. Chem. Phys., 13, 9939-9970, doi:10.5194/acp-13-9939-2013, 2013.
-
-This namelist is part of the ESMValTool.
+This namelist is part of the ESMValTool
 ###############################################################################
 </namelist_summary>
 
@@ -26,9 +32,9 @@ This namelist is part of the ESMValTool.
     <write_plots type="boolean">              True         </write_plots>
     <write_netcdf type="boolean">             True         </write_netcdf>
     <force_processing type="boolean">        False         </force_processing>
-    <wrk_dir type="path">                    ./work/       </wrk_dir>
-    <plot_dir type="path">                   ./work/plots/ </plot_dir>
-    <climo_dir type="path">                  ./work/climo/ </climo_dir>
+    <wrk_dir type="path">                    @{WORKPATH}   </wrk_dir>
+    <plot_dir type="path">                   @{PLOTPATH}   </plot_dir>
+    <climo_dir type="path">                  @{CLIMOPATH}  </climo_dir>
     <write_plot_vars type="boolean">          True         </write_plot_vars>
     <max_data_filesize type="integer">         100         </max_data_filesize>
     <max_data_blocksize type="integer">        500         </max_data_blocksize>
@@ -44,8 +50,8 @@ This namelist is part of the ESMValTool.
 
 <!-- Links to rcp45 have to be created in the historical folder in order to have a continuous time-series beyond 2005 -->
 
-  <model>   CMIP5_ETHZ     GFDL-ESM2G      aero  historical   r1i1p1  2002 2004  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-  <model>   CMIP5_ETHZ     IPSL-CM5A-LR    aero  historical   r1i1p1  2002 2004  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
+  <model>   CMIP5_ETHZ     GFDL-ESM2G      aero  historical   r1i1p1  2002 2004  @{MODELPATH}/ETHZ_CMIP5/ </model>
+  <model>   CMIP5_ETHZ     IPSL-CM5A-LR    aero  historical   r1i1p1  2002 2004  @{MODELPATH}/ETHZ_CMIP5/ </model>
 
 </MODELS>
 
@@ -73,8 +79,8 @@ This namelist is part of the ESMValTool.
 	<field_type>           T2Ms                            </field_type>
 	<diag_script_cfg_dir>  ./nml/cfg_aerosol/CMIP5/ </diag_script_cfg_dir>
 
-	<model>  OBS         ESACCI-AEROSOL   sat   SU-v4.2   2002  2004  /export/pa_data02/ESMVal/obs/Tier2/ESACCI-AEROSOL  </model>
-	<model>  obs4mips    MODIS            L3    C5        2002  2004  /export/pa_data02/ESMVal/obs/Tier1/         </model>
+	<model>  OBS         ESACCI-AEROSOL   sat   SU-v4.21   2002  2004  @{OBSPATH}/Tier2/ESACCI-AEROSOL  </model>
+        <model>  OBS         MODIS            sat   L3-C6      2003  2014  @{OBSPATH}/Tier2/MODIS_L3_C6     </model>
 
         <diag_script cfg="cfg_aerosol_tsline.ncl">      tsline.ncl       </diag_script>
     </diag>

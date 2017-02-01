@@ -6,7 +6,7 @@ diag_script_info = True
 ;;   All files matching the following will be scanned, all suitable data will
 ;;   be used (mandatory). Wildcards are allowed.
 ;; ############################################################################
-path = "/export/pa_data02/ESMVal/obs/Tier2/Emmons/"
+path = getenv("ESMValTool_OBSPATH") + "/Tier2/Emmons/"
 diag_script_info@obsfiles = (/\
     path + "*ACE-1-DC-8-Tasmania_T0M_vmrc3h8.nc", \
     path + "*PEM-Tropics-A-DC8-Christmas-Island_T0M_vmrc3h8.nc"/)

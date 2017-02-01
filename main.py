@@ -33,7 +33,7 @@ sys.path.append("./interface_scripts")
 sys.path.append("./diag_scripts/lib/python")
 sys.path.append("./diag_scripts")
 
-from auxiliary import info
+from auxiliary import info, error, print_header, ncl_version_check
 ## from climate import climate
 from optparse import OptionParser
 import datetime
@@ -45,8 +45,11 @@ import xml.sax
 import xml_parsers
 
 # Define ESMValTool version
-version = "1.0"
+version = "1.0.1"
 os.environ['0_ESMValTool_version'] = version
+
+# Check NCL version
+ncl_version_check()
 
 # Check command arguments.
 usage = "%prog nml/namelist-file.xml"
@@ -54,6 +57,9 @@ description = """ESMValTool - Earth System Model eValuation Tool.
 For further help, check the doc/-folder for pdfs and references therein."""
 
 parser = OptionParser(usage=usage, description=description)
+parser.add_option("-r", "--reformat",
+                  action="store_true", dest="reformat", default=False,
+                  help="run reformat scripts for the observations according to namelist")
 options, args = parser.parse_args()
 if len(args) == 0:
     parser.print_help()
@@ -70,6 +76,22 @@ parser.parse(input_xml_full_path)
 
 # Project_info is a dictionary with all info from the namelist.
 project_info = Project.project_info
+
+if options.reformat:
+	if 'REFORMAT' not in project_info.keys():
+		error('No REFORMAT tag specified in {0}'.format(input_xml_full_path))
+	if len(project_info['REFORMAT']) == 0:
+		info('No reformat script specified',1,1)
+        print_header({}, options.reformat)
+	for k,v in project_info['REFORMAT'].iteritems():
+		if not os.path.exists(v):
+			error('Path {0} does not exist'.format(v))
+		projects.run_executable(v,
+	                                project_info,
+	                                1,
+	                                False,
+	                                write_di=False)
+	sys.exit(0)
 
 verbosity = project_info['GLOBAL']['verbosity']
 climo_dir = project_info['GLOBAL']['climo_dir']
@@ -111,36 +133,9 @@ project_info['RUNTIME']['cwd'] = os.getcwd()
 timestamp1 = datetime.datetime.now()
 timestamp_format = "%Y-%m-%d --  %H:%M:%S"
 
-info("", verbosity, 1)
-info("______________________________________________________", verbosity, 1)
-info("  _____ ____  __  ____     __    _ _____           _  ", verbosity, 1)
-info(" | ____/ ___||  \/  \ \   / /_ _| |_   _|__   ___ | | ", verbosity, 1)
-info(" |  _| \___ \| |\/| |\ \ / / _` | | | |/ _ \ / _ \| | ", verbosity, 1)
-info(" | |___ ___) | |  | | \ V / (_| | | | | (_) | (_) | | ", verbosity, 1)
-info(" |_____|____/|_|  |_|  \_/ \__,_|_| |_|\___/ \___/|_| ", verbosity, 1)
-info("______________________________________________________", verbosity, 1)
-info("", verbosity, 1)
-info(" http://www.pa.op.dlr.de/ESMValTool/", verbosity, 1)
-info("______________________________________________________", verbosity, 1)
-info("", verbosity, 1)
-info("CORE DEVELOPMENT TEAM AND CONTACTS:", verbosity, 1)
-info("  Veronika Eyring (PI; DLR, Germany - veronika.eyring@dlr.de)", verbosity, 1)
-info("  Axel Lauer (DLR, Germany - axel.lauer@dlr.de)", verbosity, 1)
-info("  Mattia Righi (DLR, Germany - mattia.righi@dlr.de)", verbosity, 1)
-info("  Martin Evaldsson (SMHI, Sweden - martin.evaldsson@smhi.se)", verbosity, 1)
-info("______________________________________________________", verbosity, 1)
-info("", verbosity, 1)
+print_header(project_info, options.reformat)
 info("Starting the Earth System Model eValuation Tool v" + version + " at time: "
      + timestamp1.strftime(timestamp_format) + "...", verbosity, 1)
-info("______________________________________________________", verbosity, 1)
-info("", verbosity, 1)
-info("NAMELIST   = " + input_xml_file, verbosity, 1)
-info("WORKDIR    = " + wrk_dir, verbosity, 1)
-info("CLIMODIR   = " + project_info["GLOBAL"]["climo_dir"], verbosity, 1)
-info("PLOTDIR    = " + project_info["GLOBAL"]["plot_dir"], verbosity, 1)
-info("REFERENCES = " + out_refs, verbosity, 1)
-info("______________________________________________________",
-     verbosity, 1)
 
 # Loop over all diagnostics defined in project_info and
 # create/prepare netCDF files for each variable

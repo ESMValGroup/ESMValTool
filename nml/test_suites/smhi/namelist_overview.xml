@@ -1,13 +1,5 @@
 <namelist>
 <namelist_summary>
-========================================================================
-DESCRIPTION: A namelist used for the tutorial in the doc-folder
-AUTHORS: Martin Evaldsson (Martin.Evaldsson@smhi.se)
-
-NOTES: This namelist is part of the ESMValTool
-       ESMValTool PIs EMBRACE: Klaus Wyser (SMHI, Sweden),
-                               Veronika Eyring  (DLR, Germany)
-========================================================================
 </namelist_summary>
 
 <GLOBAL>

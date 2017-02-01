@@ -15,9 +15,13 @@ Project
 EMBRACE
 
 References
-Antonov, J. I. et al., World Ocean Atlas 2009, Volume 2: Salinity. S. Levitus, Ed. NOAA Atlas NESDIS 69, U.S. Government Printing Office, Washington, D.C., 184 pp. (2010)
+Antonov, J. I. et al., World Ocean Atlas 2009, Volume 2: Salinity. S. Levitus,
+Ed. NOAA Atlas NESDIS 69, U.S. Government Printing Office, Washington, D.C.,
+184 pp. (2010)
 Dong, S. et al., J. Geophys. Res., 113, C06013, doi:10.1029/2006JC004051 (2008)
-Locarnini, R. A. et al., World Ocean Atlas 2009, Volume 1: Temperature. S. Levitus, Ed. NOAA Atlas NESDIS 68, U.S. Government Printing Office, Washington, D.C., 184 pp. (2010)
+Locarnini, R. A. et al., World Ocean Atlas 2009, Volume 1: Temperature. S.
+Levitus, Ed. NOAA Atlas NESDIS 68, U.S. Government Printing Office, Washington,
+D.C., 184 pp. (2010)
 World Ocean Atlas 2009: https://www.nodc.noaa.gov/OC5/WOA09/pr_woa09.html
 
 This namelist is part of the ESMValTool

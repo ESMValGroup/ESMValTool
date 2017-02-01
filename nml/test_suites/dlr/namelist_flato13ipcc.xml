@@ -1,4 +1,5 @@
 <namelist>
+<include href="./config_private.xml"/>
 <namelist_summary>
 ###############################################################################
 namelist_flato13ipcc.xml
@@ -24,7 +25,12 @@ ESA CCI CMUG
 ESMVal
 
 Reference
-Flato, G. et al., Evaluation of climate models, in: Climate Change 2013: the Physical Science Basis, contribution of Working Group I to the Fifth Assessment Report of the Intergovernmental Panel on Climate Change, edited by: Stocker, T. F., Qin, D., Plattner, G.-K., Tignor, M., Allen, S. K., Boschung, J., Nauels, A., Xia, Y., Bex, V., and Midgley, P. M., Cambridge University Press, Cambridge, UK and New York, NY, USA (2013)
+Flato, G. et al., Evaluation of climate models, in: Climate Change 2013: the 
+Physical Science Basis, contribution of Working Group I to the Fifth Assessment 
+Report of the Intergovernmental Panel on Climate Change, edited by: Stocker, T. F.,
+Qin, D., Plattner, G.-K., Tignor, M., Allen, S. K., Boschung, J., Nauels, A., Xia,
+Y., Bex, V., and Midgley, P. M., Cambridge University Press, Cambridge, UK and
+New York, NY, USA (2013)
 
 This namelist is part of the ESMValTool
 ###############################################################################
@@ -34,9 +40,10 @@ This namelist is part of the ESMValTool
     <write_plots type="boolean">           True      </write_plots>
     <write_netcdf type="boolean">          True      </write_netcdf>
     <force_processing type="boolean">     False      </force_processing>
-    <wrk_dir type="path">                  work/     </wrk_dir>
-    <plot_dir type="path">           work/plots/     </plot_dir>
-    <climo_dir type="path">          work/climo/     </climo_dir>
+    <wrk_dir type="path">               @{WORKPATH}  </wrk_dir>
+    <plot_dir type="path">              @{PLOTPATH}  </plot_dir>
+    <climo_dir type="path">             @{CLIMOPATH} </climo_dir>
+    <regridding_dir type="path">        @{REGRPATH}  </regridding_dir>
     <write_plot_vars type="boolean">       True      </write_plot_vars>
     <max_data_filesize type="integer">      100      </max_data_filesize>
     <max_data_blocksize type="integer">     500      </max_data_blocksize>
@@ -47,18 +54,11 @@ This namelist is part of the ESMValTool
     <force_gradecalc type="boolean">      False      </force_gradecalc>
     <force_taylorcalc type="boolean">     False      </force_taylorcalc>
     <read_from_vault type="boolean">      False      </read_from_vault>
-    <regridding_dir type="path">     work/regridding_tmp </regridding_dir>
 </GLOBAL>
 
 <MODELS>
 </MODELS>
 
-<!--
- -->
-
-[
-<!-- Please do not change anything below this line, 
-     unless you want to modify the standard diagnostic settings. -->
 <DIAGNOSTICS>
 
 <!-- ***********************************************************************
@@ -76,11 +76,11 @@ This namelist is part of the ESMValTool
         <field_type>          T2Ms               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
 
-        <model> CMIP5_ETHZ MIROC5         Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ MPI-ESM-LR     Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ NorESM1-ME     Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MIROC5         Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MPI-ESM-LR     Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ NorESM1-ME     Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
 
-        <model> obs4mips GPCP-SG L3 v2.2 2000 2005 /export/pa_data02/ESMVal/obs/Tier1/ </model>
+        <model> obs4mips GPCP-SG L3 v2.2 2000 2005 @{OBSPATH}/Tier1/ </model>
         <diag_script cfg="cfg_clouds_bias.ncl"> clouds_bias.ncl </diag_script>
     </diag>
 
@@ -91,11 +91,11 @@ This namelist is part of the ESMValTool
         <field_type>          T2Ms               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
 
-        <model> CMIP5_ETHZ MIROC5         Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ MPI-ESM-LR     Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ NorESM1-M      Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MIROC5         Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MPI-ESM-LR     Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ NorESM1-M      Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
 
-        <model> OBS ERA-Interim reanaly     1    2000  2005 	/export/pa_data02/ESMVal/obs/Tier3/ERA-Interim </model>
+        <model> OBS ERA-Interim reanaly     1    2000  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
         <diag_script cfg="cfg_clouds_bias.ncl"> clouds_bias.ncl </diag_script>
     </diag>
 
@@ -115,11 +115,11 @@ This namelist is part of the ESMValTool
         <field_type>          T2Ms               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
 
-        <model> CMIP5_ETHZ MIROC5         Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ MPI-ESM-LR     Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ NorESM1-M      Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MIROC5         Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MPI-ESM-LR     Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ NorESM1-M      Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
 
-        <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2005 /export/pa_data02/ESMVal/obs/Tier1 </model>
+        <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2005 @{OBSPATH}/Tier1 </model>
         <diag_script cfg="cfg_clouds_ipcc.ncl"> clouds_ipcc.ncl </diag_script>
     </diag>
 
@@ -130,11 +130,11 @@ This namelist is part of the ESMValTool
         <field_type>          T2Ms               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
 
-        <model> CMIP5_ETHZ MIROC5         Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ MPI-ESM-LR     Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ NorESM1-M      Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MIROC5         Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MPI-ESM-LR     Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ NorESM1-M      Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
 
-        <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2005 /export/pa_data02/ESMVal/obs/Tier1 </model>
+        <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2005 @{OBSPATH}/Tier1 </model>
         <diag_script cfg="cfg_clouds_ipcc.ncl"> clouds_ipcc.ncl </diag_script>
     </diag>
 
@@ -145,11 +145,11 @@ This namelist is part of the ESMValTool
         <field_type>          T2Ms               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
 
-        <model> CMIP5_ETHZ MIROC5         Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ MPI-ESM-LR     Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ NorESM1-M      Amon historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MIROC5         Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MPI-ESM-LR     Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ NorESM1-M      Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
 
-        <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2005 /export/pa_data02/ESMVal/obs/Tier1 </model>
+        <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2005 @{OBSPATH}/Tier1 </model>
         <diag_script cfg="cfg_clouds_ipcc.ncl"> clouds_ipcc.ncl </diag_script>
     </diag>
 
@@ -173,12 +173,12 @@ This namelist is part of the ESMValTool
         <variable MIP="Amon">  ta               </variable>
         <field_type>           T3M              </field_type>
         <diag_script_cfg_dir>  ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
-        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model> 
-        <model> CMIP5_ETHZ MPI-ESM-LR     MIP_VAR_DEF historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model> 
+        <model> CMIP5_ETHZ MPI-ESM-LR     MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
 
-        <model> OBS NCEP        reanaly 1 2000 2005 /export/pa_data02/ESMVal/obs/Tier2/NCEP        </model>
-        <model> OBS ERA-Interim reanaly 1 2000 2005 /export/pa_data02/ESMVal/obs/Tier3/ERA-Interim </model>
+        <model> OBS NCEP        reanaly 1 2000 2005 @{OBSPATH}/Tier2/NCEP        </model>
+        <model> OBS ERA-Interim reanaly 1 2000 2005 @{OBSPATH}/Tier3/ERA-Interim </model>
 
         <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_glob.ncl"> perfmetrics_main.ncl    </diag_script>
         <diag_script cfg="cfg_perfmetrics_grading_RMSD_200_glob.ncl"> perfmetrics_main.ncl    </diag_script>
@@ -192,12 +192,12 @@ This namelist is part of the ESMValTool
         <variable MIP="Amon"> ua                           </variable>
         <field_type>          T3M                          </field_type>
         <diag_script_cfg_dir> ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
-        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model> 
-        <model> CMIP5_ETHZ MPI-ESM-LR     MIP_VAR_DEF historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model> 
+        <model> CMIP5_ETHZ MPI-ESM-LR     MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
 
-        <model> OBS NCEP        reanaly 1 2000 2005 /export/pa_data02/ESMVal/obs/Tier2/NCEP        </model>
-        <model> OBS ERA-Interim reanaly 1 2000 2005 /export/pa_data02/ESMVal/obs/Tier3/ERA-Interim </model>
+        <model> OBS NCEP        reanaly 1 2000 2005 @{OBSPATH}/Tier2/NCEP        </model>
+        <model> OBS ERA-Interim reanaly 1 2000 2005 @{OBSPATH}/Tier3/ERA-Interim </model>
 
         <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_glob.ncl"> perfmetrics_main.ncl    </diag_script>
         <diag_script cfg="cfg_perfmetrics_grading_RMSD_200_glob.ncl"> perfmetrics_main.ncl    </diag_script>
@@ -211,12 +211,12 @@ This namelist is part of the ESMValTool
         <variable MIP="Amon"> va                           </variable>
         <field_type>          T3M                          </field_type>
         <diag_script_cfg_dir> ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
-        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model> 
-        <model> CMIP5_ETHZ MPI-ESM-LR     MIP_VAR_DEF historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model> 
+        <model> CMIP5_ETHZ MPI-ESM-LR     MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
 
-        <model> OBS NCEP        reanaly 1 2000 2005 /export/pa_data02/ESMVal/obs/Tier2/NCEP        </model>
-        <model> OBS ERA-Interim reanaly 1 2000 2005 /export/pa_data02/ESMVal/obs/Tier3/ERA-Interim </model>
+        <model> OBS NCEP        reanaly 1 2000 2005 @{OBSPATH}/Tier2/NCEP        </model>
+        <model> OBS ERA-Interim reanaly 1 2000 2005 @{OBSPATH}/Tier3/ERA-Interim </model>
 
         <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_glob.ncl"> perfmetrics_main.ncl    </diag_script>
         <diag_script cfg="cfg_perfmetrics_grading_RMSD_200_glob.ncl"> perfmetrics_main.ncl    </diag_script>
@@ -230,12 +230,12 @@ This namelist is part of the ESMValTool
         <variable MIP="Amon"> zg                           </variable>
         <field_type>          T3M                          </field_type>
         <diag_script_cfg_dir> ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
-        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model> 
-        <model> CMIP5_ETHZ MPI-ESM-LR     MIP_VAR_DEF historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model> 
+        <model> CMIP5_ETHZ MPI-ESM-LR     MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
   
-        <model> OBS NCEP        reanaly 1 2000 2005 /export/pa_data02/ESMVal/obs/Tier2/NCEP        </model>
-        <model> OBS ERA-Interim reanaly 1 2000 2005 /export/pa_data02/ESMVal/obs/Tier3/ERA-Interim </model>
+        <model> OBS NCEP        reanaly 1 2000 2005 @{OBSPATH}/Tier2/NCEP        </model>
+        <model> OBS ERA-Interim reanaly 1 2000 2005 @{OBSPATH}/Tier3/ERA-Interim </model>
 
         <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl"> perfmetrics_main.ncl    </diag_script>
         <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl"> perfmetrics_grading.ncl </diag_script>
@@ -247,12 +247,12 @@ This namelist is part of the ESMValTool
         <variable MIP="Amon"> hus                          </variable>
         <field_type>          T3M                          </field_type>
         <diag_script_cfg_dir> ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
-        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model> 
-        <model> CMIP5_ETHZ MPI-ESM-LR     MIP_VAR_DEF historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model> 
+        <model> CMIP5_ETHZ MPI-ESM-LR     MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
   
-        <model> obs4mips AIRS L3 RetStd-v5 2003 2005 /export/pa_data02/ESMVal/obs/Tier1             </model>
-        <model> OBS ERA-Interim reanaly 1  2000 2005 /export/pa_data02/ESMVal/obs/Tier3/ERA-Interim </model>
+        <model> obs4mips AIRS L3 RetStd-v5 2003 2005 @{OBSPATH}/Tier1             </model>
+        <model> OBS ERA-Interim reanaly 1  2000 2005 @{OBSPATH}/Tier3/ERA-Interim </model>
 
         <diag_script cfg="cfg_perfmetrics_grading_RMSD_400_glob.ncl"> perfmetrics_main.ncl    </diag_script>
         <diag_script cfg="cfg_perfmetrics_grading_RMSD_400_glob.ncl"> perfmetrics_grading.ncl </diag_script>
@@ -264,12 +264,12 @@ This namelist is part of the ESMValTool
         <variable MIP="Amon"> tas                          </variable>
         <field_type>          T2Ms                         </field_type>
         <diag_script_cfg_dir> ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
-        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model> 
-        <model> CMIP5_ETHZ MPI-ESM-LR     MIP_VAR_DEF historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model> 
+        <model> CMIP5_ETHZ MPI-ESM-LR     MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
 
-        <model> OBS NCEP        reanaly 1 2000 2005 /export/pa_data02/ESMVal/obs/Tier2/NCEP        </model>
-        <model> OBS ERA-Interim reanaly 1 2000 2005 /export/pa_data02/ESMVal/obs/Tier3/ERA-Interim </model>
+        <model> OBS NCEP        reanaly 1 2000 2005 @{OBSPATH}/Tier2/NCEP        </model>
+        <model> OBS ERA-Interim reanaly 1 2000 2005 @{OBSPATH}/Tier3/ERA-Interim </model>
 
         <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl"> perfmetrics_main.ncl    </diag_script>
         <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl"> perfmetrics_grading.ncl </diag_script>
@@ -281,11 +281,11 @@ This namelist is part of the ESMValTool
         <variable MIP="Amon"> pr                           </variable>
         <field_type>          T2Ms                         </field_type>
         <diag_script_cfg_dir> ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
-        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model> 
-        <model> CMIP5_ETHZ MPI-ESM-LR     MIP_VAR_DEF historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model> 
+        <model> CMIP5_ETHZ MPI-ESM-LR     MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
 
-        <model> obs4mips GPCP-SG L3 v2.2 2000 2005 /export/pa_data02/ESMVal/obs/Tier1/ </model>
+        <model> obs4mips GPCP-SG L3 v2.2 2000 2005 @{OBSPATH}/Tier1/ </model>
 
         <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl"> perfmetrics_main.ncl    </diag_script>
         <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl"> perfmetrics_grading.ncl </diag_script>
@@ -297,11 +297,11 @@ This namelist is part of the ESMValTool
         <variable MIP="Amon"> rlut                         </variable>
         <field_type>          T2Ms                         </field_type>
         <diag_script_cfg_dir> ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
-        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model> 
-        <model> CMIP5_ETHZ MPI-ESM-LR     MIP_VAR_DEF historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model> 
+        <model> CMIP5_ETHZ MPI-ESM-LR     MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
 
-        <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2005 /export/pa_data02/ESMVal/obs/Tier1 </model>
+        <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2005 @{OBSPATH}/Tier1 </model>
 
         <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl"> perfmetrics_main.ncl    </diag_script>
         <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl"> perfmetrics_grading.ncl </diag_script>
@@ -313,11 +313,11 @@ This namelist is part of the ESMValTool
         <variable MIP="Amon"> rsut                         </variable>
         <field_type>          T2Ms                         </field_type>
         <diag_script_cfg_dir> ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
-        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model> 
-        <model> CMIP5_ETHZ MPI-ESM-LR     MIP_VAR_DEF historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model> 
+        <model> CMIP5_ETHZ MPI-ESM-LR     MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
 
-        <model>  obs4mips CERES-EBAF L3B Ed2-7 2001 2005 /export/pa_data02/ESMVal/obs/Tier1 </model>
+        <model>  obs4mips CERES-EBAF L3B Ed2-7 2001 2005 @{OBSPATH}/Tier1 </model>
 
         <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl"> perfmetrics_main.ncl    </diag_script>
         <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl"> perfmetrics_grading.ncl </diag_script>
@@ -329,11 +329,11 @@ This namelist is part of the ESMValTool
         <variable MIP="Amon"> SW_CRE                       </variable>
         <field_type>          T2Ms                         </field_type>
         <diag_script_cfg_dir> ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
-        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model> 
-        <model> CMIP5_ETHZ MPI-ESM-LR     MIP_VAR_DEF historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model> 
+        <model> CMIP5_ETHZ MPI-ESM-LR     MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
 
-        <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2005 /export/pa_data02/ESMVal/obs/Tier1 </model>
+        <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2005 @{OBSPATH}/Tier1 </model>
 
         <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl"> perfmetrics_main.ncl    </diag_script>
         <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl"> perfmetrics_grading.ncl </diag_script>
@@ -345,11 +345,11 @@ This namelist is part of the ESMValTool
         <variable MIP="Amon"> LW_CRE                       </variable>
         <field_type>          T2Ms                         </field_type>
         <diag_script_cfg_dir> ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
-        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model> 
-        <model> CMIP5_ETHZ MPI-ESM-LR     MIP_VAR_DEF historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model> 
+        <model> CMIP5_ETHZ MPI-ESM-LR     MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
   
-        <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2005 /export/pa_data02/ESMVal/obs/Tier1 </model>
+        <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2005 @{OBSPATH}/Tier1 </model>
 
         <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl"> perfmetrics_main.ncl    </diag_script>
         <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl"> perfmetrics_grading.ncl </diag_script>
@@ -361,14 +361,14 @@ This namelist is part of the ESMValTool
         <variable MIP="aero"> od550aer                     </variable>
         <field_type>          T2Ms                         </field_type>
         <diag_script_cfg_dir> ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
-        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model> 
-        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model> 
+        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
 
-        <model>  OBS      ESACCI-AEROSOL sat SU-v4.2 2000 2005 /export/pa_data02/ESMVal/obs/Tier2/ESACCI-AEROSOL </model>
-        <model>  obs4mips MODIS          L3  C5      2001 2005 /export/pa_data02/ESMVal/obs/Tier1                </model>
+        <model>  OBS      ESACCI-AEROSOL sat SU-v4.21 2000 2005 @{OBSPATH}/Tier2/ESACCI-AEROSOL </model>
+        <model>  obs4mips MODIS          L3  C5       2001 2005 @{OBSPATH}/Tier1                </model>
 
-        <diag_script cfg="cfg_perfmetrics_grading_RMSD_od550aer.ncl"> perfmetrics_main.ncl    </diag_script>
-        <diag_script cfg="cfg_perfmetrics_grading_RMSD_od550aer.ncl"> perfmetrics_grading.ncl </diag_script>
+        <diag_script cfg="cfg_perfmetrics_grading_RMSD_aero.ncl"> perfmetrics_main.ncl    </diag_script>
+        <diag_script cfg="cfg_perfmetrics_grading_RMSD_aero.ncl"> perfmetrics_grading.ncl </diag_script>
     </diag>
 
     <diag>
@@ -378,8 +378,8 @@ This namelist is part of the ESMValTool
         <field_type>          T3M                          </field_type>
         <diag_script_cfg_dir> ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
 
-        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model> 
-        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model> 
+        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
 
         <diag_script cfg="cfg_perfmetrics_grading_collect.ncl"> perfmetrics_grading_collect.ncl </diag_script>
     </diag>
@@ -398,9 +398,9 @@ This namelist is part of the ESMValTool
         <variable>            toz              </variable>
         <field_type>          T2Ms             </field_type>
         <diag_script_cfg_dir> ./nml/cfg_eyring13jgr/ </diag_script_cfg_dir>
-        <model> CMIP5_ETHZ MIROC5         Amon historical r1i1p1 1960 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ MPI-ESM-LR     Amon historical r1i1p1 1960 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> OBS NIWA reanaly 1 1980 2010 /export/pa_data02/ESMVal/obs/Tier3/NIWA/ </model>
+        <model> CMIP5_ETHZ MIROC5         Amon historical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MPI-ESM-LR     Amon historical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> OBS NIWA reanaly 1 1980 2010 @{OBSPATH}/Tier3/NIWA/ </model>
         <diag_script cfg="cfg_eyring13jgr_fig02.ncl"> eyring13jgr_fig02.ncl </diag_script>
   </diag> 
 
@@ -420,27 +420,27 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir> ./nml/cfg_SeaIce/ </diag_script_cfg_dir>
         <diag_script cfg="cfg_SeaIce_NH.ncl">  SeaIce_tsline.ncl      </diag_script>
 
-        <model> CMIP5_ETHZ MIROC5         OImon historical r1i1p1 1960 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ MIROC5         OImon historical r2i1p1 1960 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ MIROC5         OImon historical r3i1p1 1960 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ MIROC5         OImon historical r4i1p1 1960 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ MIROC5         OImon historical r5i1p1 1960 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ MPI-ESM-LR     OImon historical r1i1p1 1960 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ MPI-ESM-LR     OImon historical r2i1p1 1960 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ MPI-ESM-LR     OImon historical r3i1p1 1960 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ MPI-ESM-MR     OImon historical r1i1p1 1960 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ MPI-ESM-MR     OImon historical r2i1p1 1960 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ MPI-ESM-MR     OImon historical r3i1p1 1960 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ NorESM1-M      OImon historical r1i1p1 1960 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ NorESM1-M      OImon historical r2i1p1 1960 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ NorESM1-M      OImon historical r3i1p1 1960 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MIROC5         OImon historical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MIROC5         OImon historical r2i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MIROC5         OImon historical r3i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MIROC5         OImon historical r4i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MIROC5         OImon historical r5i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MPI-ESM-LR     OImon historical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MPI-ESM-LR     OImon historical r2i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MPI-ESM-LR     OImon historical r3i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MPI-ESM-MR     OImon historical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MPI-ESM-MR     OImon historical r2i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MPI-ESM-MR     OImon historical r3i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ NorESM1-M      OImon historical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ NorESM1-M      OImon historical r2i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ NorESM1-M      OImon historical r3i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
 
-        <model> OBS          HadISST  reanaly 20130524 1960 2005 /export/pa_data02/ESMVal/obs/Tier2/HadISST/  </model>
+        <model> OBS          HadISST  reanaly 20130524 1960 2005 @{OBSPATH}/Tier2/HadISST/  </model>
 
-        <model> OBS_gridfile NSIDC-NT sat NH 1979 2005 /export/pa_data02/ESMVal/obs/Tier2/NSIDC/
-                           /export/pa_data02/ESMVal/obs/Tier2/NSIDC/OBS_NSIDC-NT_sat_NH_T2Ms_sic_197811-201312.nc </model>
-        <model> OBS_gridfile NSIDC-BT sat NH 1979 2005 /export/pa_data02/ESMVal/obs/Tier2/NSIDC/
-                           /export/pa_data02/ESMVal/obs/Tier2/NSIDC/OBS_NSIDC-BT_sat_NH_T2Ms_sic_197811-201312.nc </model>
+        <model> OBS_gridfile NSIDC-NT sat NH 1979 2005 @{OBSPATH}/Tier2/NSIDC/
+                           @{OBSPATH}/Tier2/NSIDC/OBS_NSIDC-NT_sat_NH_T2Ms_sic_197811-201312.nc </model>
+        <model> OBS_gridfile NSIDC-BT sat NH 1979 2005 @{OBSPATH}/Tier2/NSIDC/
+                           @{OBSPATH}/Tier2/NSIDC/OBS_NSIDC-BT_sat_NH_T2Ms_sic_197811-201312.nc </model>
     </diag>
 
     <diag>
@@ -451,24 +451,24 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir> ./nml/cfg_SeaIce/ </diag_script_cfg_dir>
         <diag_script cfg="cfg_SeaIce_SH.ncl"> SeaIce_tsline.ncl      </diag_script>
 
-        <model> CMIP5_ETHZ MIROC5         OImon historical r1i1p1 1960 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ MIROC5         OImon historical r2i1p1 1960 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ MIROC5         OImon historical r3i1p1 1960 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ MIROC5         OImon historical r4i1p1 1960 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ MIROC5         OImon historical r5i1p1 1960 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ MPI-ESM-LR     OImon historical r1i1p1 1960 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ MPI-ESM-LR     OImon historical r2i1p1 1960 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ MPI-ESM-LR     OImon historical r3i1p1 1960 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ NorESM1-M      OImon historical r1i1p1 1960 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ NorESM1-M      OImon historical r2i1p1 1960 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ NorESM1-M      OImon historical r3i1p1 1960 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MIROC5         OImon historical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MIROC5         OImon historical r2i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MIROC5         OImon historical r3i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MIROC5         OImon historical r4i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MIROC5         OImon historical r5i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MPI-ESM-LR     OImon historical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MPI-ESM-LR     OImon historical r2i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MPI-ESM-LR     OImon historical r3i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ NorESM1-M      OImon historical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ NorESM1-M      OImon historical r2i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ NorESM1-M      OImon historical r3i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
 
-        <model> OBS          HadISST  reanaly 20130524 1960 2005 /export/pa_data02/ESMVal/obs/Tier2/HadISST/  </model>
+        <model> OBS          HadISST  reanaly 20130524 1960 2005 @{OBSPATH}/Tier2/HadISST/  </model>
 
-        <model> OBS_gridfile NSIDC-NT sat SH 1979 2005 /export/pa_data02/ESMVal/obs/Tier2/NSIDC/
-                           /export/pa_data02/ESMVal/obs/Tier2/NSIDC/OBS_NSIDC-NT_sat_SH_T2Ms_sic_197811-201312.nc </model>
-        <model> OBS_gridfile NSIDC-BT sat SH 1979 2013 /export/pa_data02/ESMVal/obs/Tier2/NSIDC/
-                           /export/pa_data02/ESMVal/obs/Tier2/NSIDC/OBS_NSIDC-BT_sat_SH_T2Ms_sic_197811-201312.nc </model>
+        <model> OBS_gridfile NSIDC-NT sat SH 1979 2005 @{OBSPATH}/Tier2/NSIDC/
+                           @{OBSPATH}/Tier2/NSIDC/OBS_NSIDC-NT_sat_SH_T2Ms_sic_197811-201312.nc </model>
+        <model> OBS_gridfile NSIDC-BT sat SH 1979 2013 @{OBSPATH}/Tier2/NSIDC/
+                           @{OBSPATH}/Tier2/NSIDC/OBS_NSIDC-BT_sat_SH_T2Ms_sic_197811-201312.nc </model>
     </diag>
 
 <!-- ***********************************************************************
@@ -492,11 +492,11 @@ This namelist is part of the ESMValTool
 	<field_type>          T2Ms                     </field_type>
 	<diag_script_cfg_dir> ./nml/cfg_aerosol/CMIP5/ </diag_script_cfg_dir>
 
-        <model> CMIP5_ETHZ MIROC5         aero historical r1i1p1 1850 2012 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-	<model> CMIP5_ETHZ NorESM1-M      aero historical r1i1p1 1850 2015 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MIROC5         aero historical r1i1p1 1850 2012 @{MODELPATH}/ETHZ_CMIP5/ </model>
+	<model> CMIP5_ETHZ NorESM1-M      aero historical r1i1p1 1850 2015 @{MODELPATH}/ETHZ_CMIP5/ </model>
 
-	<model> OBS        ESACCI-AEROSOL sat  SU-v4.2 1998 2011 /export/pa_data02/ESMVal/obs/Tier2/ESACCI-AEROSOL </model>
-	<model> obs4mips   MODIS          L3   C5      2001 2012 /export/pa_data02/ESMVal/obs/Tier1/               </model>
+	<model> OBS        ESACCI-AEROSOL sat  SU-v4.21  1998 2011 @{OBSPATH}/Tier2/ESACCI-AEROSOL </model>
+	<model> obs4mips   MODIS          L3   C5        2001 2012 @{OBSPATH}/Tier1/               </model>
 
         <diag_script cfg="cfg_aerosol_tsline.ncl">      tsline.ncl       </diag_script>
     </diag>
@@ -518,12 +518,12 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir>                        ./nml/cfg_SAMonsoon/        </diag_script_cfg_dir>
         <diag_script cfg="cfg_SAMonsoon_precip.ncl"> SAMonsoon_precip_domain.ncl </diag_script>
 
-        <model> CMIP5_ETHZ MIROC5        Amon historical r1i1p1  2003 2004 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ MPI-ESM-LR    Amon historical r1i1p1  2003 2004 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ NorESM1-M     Amon historical r1i1p1  2003 2004 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MIROC5        Amon historical r1i1p1  2003 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MPI-ESM-LR    Amon historical r1i1p1  2003 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ NorESM1-M     Amon historical r1i1p1  2003 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
 
-        <model> CMIP5 CMAP Amon observation r1i1p1 2003 2004 /export/pa_data02/ESMVal/obs/Tier2/CMAP </model>
-        <model> CMIP5 MERRA Amon reanalysis r1i1p1 2003 2004 /export/pa_data02/ESMVal/obs/Tier1/MERRA </model>
+        <model> CMIP5 CMAP Amon observation r1i1p1 2003 2004 @{OBSPATH}/Tier2/CMAP </model>
+        <model> CMIP5 MERRA Amon reanalysis r1i1p1 2003 2004 @{OBSPATH}/Tier1/MERRA </model>
     </diag>
 
 <!-- ***********************************************************************
@@ -552,9 +552,9 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir> ./nml/cfg_carbon/ </diag_script_cfg_dir>
         <diag_script cfg="cfg_carbon_G_IAV.ncl"> create_co2flux.ncl </diag_script>
 
-        <model> CMIP5_ETHZ MIROC-ESM    MIP_VAR_DEF esmHistorical r1i1p1 1960 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5 </model>
-        <model> CMIP5_ETHZ MPI-ESM-LR   MIP_VAR_DEF esmHistorical r1i1p1 1960 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5 </model>
-        <model> CMIP5_ETHZ NorESM1-ME   MIP_VAR_DEF esmHistorical r1i1p1 1960 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5 </model>
+        <model> CMIP5_ETHZ MIROC-ESM    MIP_VAR_DEF esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
+        <model> CMIP5_ETHZ MPI-ESM-LR   MIP_VAR_DEF esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
+        <model> CMIP5_ETHZ NorESM1-ME   MIP_VAR_DEF esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
     </diag>
 
     <diag>
@@ -567,8 +567,8 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir>                      ./nml/cfg_carbon/   </diag_script_cfg_dir>
         <diag_script cfg="cfg_carbon_G_IAV.ncl">  carbon_corr_2var.ncl </diag_script>
 
-        <model id="GCP">  OBS GCP  reanaly 1 1959 2005 /export/pa_data02/ESMVal/obs/Tier2/GCP  </model>
-        <model id="NCEP"> OBS NCEP reanaly 1 1959 2005 /export/pa_data02/ESMVal/obs/Tier2/NCEP </model>
+        <model id="GCP">  OBS GCP  reanaly 1 1959 2005 @{OBSPATH}/Tier2/GCP  </model>
+        <model id="NCEP"> OBS NCEP reanaly 1 1959 2005 @{OBSPATH}/Tier2/NCEP </model>
 
         <model> CMIP5 MIROC-ESM    Amon esmHistorical r1i1p1 1960 2005 ./work/climo/CMIP5_ETHZ </model>
         <model> CMIP5 MPI-ESM-LR   Amon esmHistorical r1i1p1 1960 2005 ./work/climo/CMIP5_ETHZ </model>
@@ -583,9 +583,9 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir> ./nml/cfg_carbon/ </diag_script_cfg_dir>
         <diag_script cfg="cfg_carbon_G_LT_testing.ncl"> carbon_dummy.ncl </diag_script>
 
-        <model> CMIP5_ETHZ MIROC-ESM    Lmon esmFixClim1 r1i1p1 1880 1960 /export/pa_data02/ESMVal/model/ETHZ_CMIP5 </model>
-        <model> CMIP5_ETHZ MPI-ESM-LR   Lmon esmFixClim1 r1i1p1 1880 1960 /export/pa_data02/ESMVal/model/ETHZ_CMIP5 </model>
-        <model> CMIP5_ETHZ NorESM1-ME   Lmon esmFixClim1 r1i1p1 1880 1960 /export/pa_data02/ESMVal/model/ETHZ_CMIP5 </model>
+        <model> CMIP5_ETHZ MIROC-ESM    Lmon esmFixClim1 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
+        <model> CMIP5_ETHZ MPI-ESM-LR   Lmon esmFixClim1 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
+        <model> CMIP5_ETHZ NorESM1-ME   Lmon esmFixClim1 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
     </diag>
 
     <diag>
@@ -597,9 +597,9 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir> ./nml/cfg_carbon/ </diag_script_cfg_dir>
         <diag_script cfg="cfg_carbon_G_LT_testing.ncl"> carbon_constraint.ncl </diag_script>
 
-        <model> CMIP5_ETHZ MIROC-ESM    MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 /export/pa_data02/ESMVal/model/ETHZ_CMIP5 </model>
-        <model> CMIP5_ETHZ MPI-ESM-LR   MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 /export/pa_data02/ESMVal/model/ETHZ_CMIP5 </model>
-        <model> CMIP5_ETHZ NorESM1-ME   MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 /export/pa_data02/ESMVal/model/ETHZ_CMIP5 </model>
+        <model> CMIP5_ETHZ MIROC-ESM    MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
+        <model> CMIP5_ETHZ MPI-ESM-LR   MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
+        <model> CMIP5_ETHZ NorESM1-ME   MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
     </diag>
 
 </DIAGNOSTICS>

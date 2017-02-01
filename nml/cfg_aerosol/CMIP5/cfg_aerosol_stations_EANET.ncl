@@ -11,7 +11,7 @@ diag_script_info@time_avg = "yearly"
 diag_script_info@styleset = "CMIP5"
 
 ; Path to station data
-diag_script_info@datapath = "/export/pa_data02/ESMVal/obs/Tier3/"+\
+diag_script_info@datapath = getenv("ESMValTool_OBSPATH") + "/Tier3/"+\
                             diag_script_info@network
 
 ; Use log axes in scatter plot

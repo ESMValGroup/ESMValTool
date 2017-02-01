@@ -1,6 +1,7 @@
-
 <namelist>
+<include href="./config_private.xml"/>
 <namelist_summary>
+###############################################################################
 namelist_GlobalOcean.xml
 
 Description
@@ -8,73 +9,33 @@ Diagnostics to support the evaluation of ocean biogeochemical cycles
 at global scales.  Implemented routines produce time series lines and
 contour plots (for climatological distributions or inter-annual or
 inter-seasonal variability) using either 2-D (surface) or 3-D
-(depth-resolving) ocean variables.
+(depth-resolving) ocean variables
 
-Author(s)
+Authors
 Oliver Andrews (UEA, Great Britain - o.andrews@uea.ac.uk)
-Cathy Enright (UEA, Great Britain - c.enright@uea.ac.uk)
+Clare Enright (UEA, Great Britain - c.enright@uea.ac.uk)
 
-Contributor(s)
+Project
+EMBRACE
 
-Reference(s)
-Bakker, D. C. E., Pfeil, B., Smith, K., Hankin, S., Olsen, A., Alin,
-S. R., Cosca, C., Harasawa, S., Kozyr, A., Nojiri, Y., O'Brien, K. M.,
-Schuster, U., Telszewski, M., Tilbrook, B., Wada, C., Akl, J.,
-Barbero, L., Bates, N. R., Boutin, J., Bozec, Y., Cai, W.-J., Castle,
-R. D., Chavez, F. P., Chen, L., Chierici, M., Currie, K., de Baar, H.
-J. W., Evans, W., Feely, R. A., Fransson, A., Gao, Z., Hales, B.,
-Hardman-Mountford, N. J., Hoppema, M., Huang, W.-J., Hunt, C. W.,
-Huss, B., Ichikawa, T., Johannessen, T., Jones, E. M., Jones, S. D.,
-Jutterström, S., Kitidis, V., Körtzinger, A., Landschützer, P.,
-Lauvset, S. K., Lefèvre, N., Manke, A. B., Mathis, J. T., Merlivat,
-L., Metzl, N., Murata, A., Newberger, T., Omar, A. M., Ono, T., Park,
-G.-H., Paterson, K., Pierrot, D., Ríos, A. F., Sabine, C. L., Saito,
-S., Salisbury, J., Sarma, V. V. S. S., Schlitzer, R., Sieger, R.,
-Skjelvan, I., Steinhoff, T., Sullivan, K. F., Sun, H., Sutton, A. J.,
-Suzuki, T., Sweeney, C., Takahashi, T., Tjiputra, J., Tsurushima, N.,
-van Heuven, S. M. A. C., Vandemark, D., Vlahos, P., Wallace, D. W. R.,
-Wanninkhof, R., and Watson, A. J.: An update to the Surface Ocean CO2
-Atlas (SOCAT version 2), Earth Syst. Sci. Data, 6, 69-90,
-doi:10.5194/essd-6-69-2014, 2014.
-
-Bianchi, D., Dunne, J. P., Sarmiento, J. L., and Galbraith, E. D.:
-Data-based estimates of suboxia, denitrification, and N2O production
-in the ocean and their sensitivities to dissolved O2, Global
-Biogeochem. Cy., 26, GB2009, doi:10.1029/2011GB004209, 2012.​
-
-Jones, S. D., Le Quere, C., Rödenbeck, C.​, Manning, A. C., and
-Olsen, A.: A statistical gap-filling method to interpolate global
-monthly surface ocean carbon dioxide data, J, Adv. Model Earth Syst.,
-in review.
-
-Key, R. M., Kozyr, A., Sabine, C. L., Lee, K., Wanninkhof, R.,
-Bullister, J. L., Feely, R. A., Millero, F. J., Mordy, C., and Peng,
-T.-H.: A global ocean carbon climatology: results from Global Data
-Analysis Project (GLODAP), Global Biogeochem. Cy., 18, GB4031,
-doi:10.1029/2004GB002247, 2004.
-
-Rödenbeck, C., Keeling, R. F., Bakker, D. C. E., Metzl, N., Olsen, A.,
-Sabine, C., and Heimann, M.: Global surface-ocean pCO2 and sea–air CO2
-flux variability from an observation-driven ocean mixed-layer scheme,
-Ocean Sci., 9, 193-216, doi:10.5194/os-9-193-2013, 2013.
-
-Takahashi, T., Sutherland, S. C., Chipman, D. W., Goddard, J. G., Ho,
-C., Newberger, T., Sweeney, C., and Munro, D. R.: Climatological
-distributions of pH, pCO2, total CO2, alkalinity, and CaCO3 saturation
-in the global surface ocean, and temporal changes at selected
-locations, Mar. Chem., 164, 95–125, doi:10.1016/j.marchem.2014.06.004,
-2014.
+Reference
+Bakker, D. C. E. et al., Earth Syst. Sci. Data, 6, 69-90, doi:10.5194/essd-6-69-2014 (2014)
+Bianchi, D. et al., Global Biogeochem. Cy., 26, GB2009, doi:10.1029/2011GB004209 (2012)
+Jones, S. D. et al., J. Adv. Model Earth Syst., in press (2015).
+Key, R. M. et al.,Global Biogeochem. Cy., 18, GB4031, doi:10.109/2004GB002247 (2004)
+Roedenbeck, C. et al., Ocean Sci., 9, 193-216, doi:10.5194/os-9-193-2013 (2013)
+Takahashi, T. et al., Mar. Chem., 164, 95–125, doi:10.1016/j.marchem.2014.06.004 (2014)
 
 This namelist is part of the ESMValTool
-ESMValTool project PI: Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
-
+###############################################################################
 </namelist_summary>
+
 <GLOBAL>
-  <wrk_dir type="path">                            ./work/  </wrk_dir>
-  <plot_dir type="path">                     ./work/plots/  </plot_dir>
-  <climo_dir type="path">                    ./work/climo/  </climo_dir>
+  <wrk_dir type="path">                       @{WORKPATH}   </wrk_dir>
+  <plot_dir type="path">                      @{PLOTPATH}   </plot_dir>
+  <climo_dir type="path">                     @{CLIMOPATH}  </climo_dir>
+  <regridding_dir type="path">                @{REGRPATH}   </regridding_dir>
   <write_plot_vars type="boolean">                   True   </write_plot_vars>
-  <regridding_dir type="path">      ./work/regridding_tmp/  </regridding_dir>
   <show_debuginfo type="boolean">                   False   </show_debuginfo>
   <write_plots type="boolean">                       True   </write_plots>
   <write_netcdf type="boolean">                      True   </write_netcdf>
@@ -100,10 +61,10 @@ ESMValTool project PI: Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
     <diag_script_cfg_dir>                ./nml/cfg_GO/      </diag_script_cfg_dir>
     <diag_script cfg="spco2Diag.ncl">   GO_tsline.ncl       </diag_script>
 
-    <model> CMIP5      ref       monthly ETH-SOM-FFN  reg    1998 2000 /export/pa_data02/ESMVal/obs/Tier2/ETH-SOM-FFN </model>
-    <model> CMIP5_ETHZ BNU-ESM   monthly historical   r1i1p1 1998 2000 /export/pa_data02/ESMVal/model/ETHZ_CMIP5 </model>
-    <model> CMIP5_ETHZ CanESM2   monthly historical   r1i1p1 1998 2000 /export/pa_data02/ESMVal/model/ETHZ_CMIP5 </model>
-    <model> CMIP5_fx   INMCM4    monthly historical   r1i1p1 1998 2000 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/historical/monthly/spco2/INMCM4/r1i1p1 fx_acello_inmcm4 </model>
+    <model> CMIP5      ref       monthly ETH-SOM-FFN  reg    1998 2000 @{OBSPATH}/Tier2/ETH-SOM-FFN </model>
+    <model> CMIP5_ETHZ BNU-ESM   monthly historical   r1i1p1 1998 2000 @{MODELPATH}/ETHZ_CMIP5 </model>
+    <model> CMIP5_ETHZ CanESM2   monthly historical   r1i1p1 1998 2000 @{MODELPATH}/ETHZ_CMIP5 </model>
+    <model> CMIP5_fx   INMCM4    monthly historical   r1i1p1 1998 2000 @{MODELPATH}/ETHZ_CMIP5/historical/monthly/spco2/INMCM4/r1i1p1 fx_acello_inmcm4 </model>
 </diag>
 
 <diag>   
@@ -114,10 +75,10 @@ ESMValTool project PI: Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
     <diag_script_cfg_dir>                           ./nml/cfg_GO/    </diag_script_cfg_dir>
     <diag_script cfg="spco2compmapDiag.ncl">     GO_comp_map.ncl     </diag_script>
 
-    <model> CMIP5       ref      monthly ETH-SOM-FFN  reg    1998 2000 /export/pa_data02/ESMVal/obs/Tier2/ETH-SOM-FFN </model>
-    <model> CMIP5_ETHZ BNU-ESM   monthly historical   r1i1p1 1998 2000 /export/pa_data02/ESMVal/model/ETHZ_CMIP5 </model>
-    <model> CMIP5_ETHZ CanESM2   monthly historical   r1i1p1 1998 2000 /export/pa_data02/ESMVal/model/ETHZ_CMIP5 </model>
-    <model> CMIP5_fx   INMCM4    monthly historical   r1i1p1 1998 2000 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/historical/monthly/spco2/INMCM4/r1i1p1 fx_acello_inmcm4 </model>
+    <model> CMIP5       ref      monthly ETH-SOM-FFN  reg    1998 2000 @{OBSPATH}/Tier2/ETH-SOM-FFN </model>
+    <model> CMIP5_ETHZ BNU-ESM   monthly historical   r1i1p1 1998 2000 @{MODELPATH}/ETHZ_CMIP5 </model>
+    <model> CMIP5_ETHZ CanESM2   monthly historical   r1i1p1 1998 2000 @{MODELPATH}/ETHZ_CMIP5 </model>
+    <model> CMIP5_fx   INMCM4    monthly historical   r1i1p1 1998 2000 @{MODELPATH}/ETHZ_CMIP5/historical/monthly/spco2/INMCM4/r1i1p1 fx_acello_inmcm4 </model>
 </diag>
 
 <!--
@@ -133,7 +94,7 @@ ESMValTool project PI: Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
     <diag_script_cfg_dir>                        ./nml/cfg_GO/    </diag_script_cfg_dir>
     <diag_script cfg="talkcompmapDiag.ncl">   GO_comp_map.ncl     </diag_script>
    
-    <model> CMIP5 ref monthly takahashi14 reg 2005 2005 /export/pa_data02/ESMVal/obs/Tier2/takahashi14/ </model>
+    <model> CMIP5 ref monthly takahashi14 reg 2005 2005 @{OBSPATH}/Tier2/takahashi14/ </model>
 </diag>
 
 <diag>
@@ -144,8 +105,8 @@ ESMValTool project PI: Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
     <diag_script_cfg_dir>                      ./nml/cfg_GO/   </diag_script_cfg_dir>
     <diag_script cfg="O2compmapDiag.ncl">    GO_comp_map.ncl    </diag_script>
 
-    <model> GO          woa2005    monthly bianchi    reg    2005 2005 /export/pa_data02/ESMVal/obs/Tier2/woa2005/ null use_GO_reformat </model>
-    <model> GO_gridfile GFDL-ESM2M monthly historical r1i1p1 2001 2001 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/historical/monthly/O2/GFDL-ESM2M/r1i1p1 fx_acello_gfdl_esm2m use_GO_reformat </model>
+    <model> GO          woa2005    monthly bianchi    reg    2005 2005 @{OBSPATH}/Tier2/woa2005/ null use_GO_reformat </model>
+    <model> GO_gridfile GFDL-ESM2M monthly historical r1i1p1 2001 2001 @{MODELPATH}/ETHZ_CMIP5/historical/monthly/O2/GFDL-ESM2M/r1i1p1 fx_acello_gfdl_esm2m use_GO_reformat </model>
 </diag>
 
 <!--
@@ -161,14 +122,14 @@ ESMValTool project PI: Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
     <diag_script_cfg_dir>                       ./nml/cfg_GO/    </diag_script_cfg_dir>
     <diag_script cfg="chlcompmapDiag.ncl">   GO_comp_map.ncl     </diag_script>
 
-     <model> CMIP5 ref monthly seawifs reg 2000 2005 /export/pa_data02/ESMVal/obs/Tier2/SeaWIFS/ </model>
+     <model> CMIP5 ref monthly seawifs reg 2000 2005 @{OBSPATH}/Tier2/SeaWIFS/ </model>
 </diag>
 
 </DIAGNOSTICS>
 
 <AUXILIARIES>
-    <fx_file id="fx_acello_inmcm4"> /export/pa_data02/ESMVal/model/ETHZ_CMIP5/historical/fx/areacello/inmcm4/r0i0p0/areacello_fx_inmcm4_historical_r0i0p0.nc </fx_file>
-    <fx_file id="fx_acello_gfdl_esm2m"> /export/pa_data02/ESMVal/model/ETHZ_CMIP5/historical/fx/areacello/GFDL-ESM2M/r0i0p0/areacello_fx_GFDL-ESM2M_historical_r0i0p0.nc  </fx_file>
+    <fx_file id="fx_acello_inmcm4"> @{MODELPATH}/ETHZ_CMIP5/historical/fx/areacello/inmcm4/r0i0p0/areacello_fx_inmcm4_historical_r0i0p0.nc </fx_file>
+    <fx_file id="fx_acello_gfdl_esm2m"> @{MODELPATH}/ETHZ_CMIP5/historical/fx/areacello/GFDL-ESM2M/r0i0p0/areacello_fx_GFDL-ESM2M_historical_r0i0p0.nc  </fx_file>
 </AUXILIARIES>
 
 </namelist>

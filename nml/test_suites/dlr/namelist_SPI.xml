@@ -1,23 +1,34 @@
 <namelist>
+<include href="./config_private.xml"/>
 <namelist_summary>
-========================================================================
-DESCRIPTION: A test namelist while implementing an R interface to the
-             ESMValTool (Mantis issue #10890)
+###############################################################################
+namelist_SPI.xml
 
-AUTHORS: Martin Evaldsson (Martin.Evaldsson@smhi.se)
+Description
+Diagnostic to compute the Standardized Precipitation index (SPI)
 
-NOTES: This namelist is part of the ESMValTool
-       ESMValTool PIs EMBRACE: Klaus Wyser (SMHI, Sweden),
-                               Veronika Eyring  (DLR, Germany)
-========================================================================
+Author
+Boris Orlowski (ETH, Switzerland, boris.orlowski@ethz.ch)
+
+Contributor
+Martin Evaldsson (SMHI, Sweden - Martin.Evaldsson@smhi.se)
+
+Project
+EMBRACE
+
+Reference
+Lloyd-Hughes, B. and Saunders, M. A., Int. J. Climatol., 22, 1571-1592, doi:10.1002/joc.846 (2002)
+
+This namelist is part of the ESMValTool
+###############################################################################
 </namelist_summary>
 <GLOBAL>
     <write_plots type="boolean">                  True      </write_plots>
     <write_netcdf type="boolean">                 True      </write_netcdf>
     <force_processing type="boolean">            False      </force_processing>
-    <wrk_dir type="path">                         work/     </wrk_dir>
-    <plot_dir type="path">                  work/plots/     </plot_dir>
-    <climo_dir type="path">                 work/climo/     </climo_dir>
+    <wrk_dir type="path">                   @{WORKPATH}     </wrk_dir>
+    <plot_dir type="path">                  @{PLOTPATH}     </plot_dir>
+    <climo_dir type="path">                 @{CLIMOPATH}    </climo_dir>
     <write_plot_vars type="boolean">              True      </write_plot_vars>
     <max_data_filesize type="integer">             100      </max_data_filesize>
     <max_data_blocksize type="integer">            500      </max_data_blocksize>
@@ -29,8 +40,7 @@ NOTES: This namelist is part of the ESMValTool
 </GLOBAL>
 
 <MODELS>
-<!--    <model> CMIP5  GPCC6-2deg   Amon   historical  r1i1p1  1901 2004   /nobackup/rossby16/sm_grini/Data/GPCC/GPCC6/GLB-2/mon </model> -->
-    <model> CMIP5_ETHZ  MPI-ESM-LR   Amon   historical  r1i1p1  1901 2004   /export/pa_data02/ESMVal/model/ETHZ_CMIP5  </model>
+    <model> CMIP5_ETHZ  MPI-ESM-LR   Amon   historical  r1i1p1  1901 2004   @{MODELPATH}/ETHZ_CMIP5  </model>
 </MODELS>
 
 <DIAGNOSTICS>

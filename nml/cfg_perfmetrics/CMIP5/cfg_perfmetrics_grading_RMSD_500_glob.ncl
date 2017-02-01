@@ -52,8 +52,8 @@ else if (any(variables(0).eq.(/"ta", "ua", "va", "zg", "tas"/))) then
     diag_script_info@ref_model = (/"ERA-Interim", "NCEP"/)
 else if (variables(0).eq."pr") then
     diag_script_info@ref_model = (/"GPCP-SG"/)
-else if (variables(0).eq."od550aer") then
-    diag_script_info@ref_model = (/"ESACCI-AEROSOL", "MODIS"/)
+else if (variables(0).eq."toz") then
+    diag_script_info@ref_model = (/"ESACCI-OZONE", "NIWA"/)
 end if
 end if
 end if

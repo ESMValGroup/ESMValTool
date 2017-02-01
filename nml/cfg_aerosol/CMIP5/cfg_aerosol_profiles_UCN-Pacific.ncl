@@ -8,7 +8,7 @@ diag_script_info@campaign = "UCN-Pacific"
 diag_script_info@styleset = "CMIP5"
 
 ; Path to campaign data
-diag_script_info@datapath = "/export/pa_data02/ESMVal/obs/Tier2/"+\
+diag_script_info@datapath = getenv("ESMValTool_OBSPATH") + "/Tier2/"+\
                             diag_script_info@campaign
 
 ; Cloud cover threshold (%)

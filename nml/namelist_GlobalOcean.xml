@@ -27,8 +27,8 @@ Takahashi, T. et al., Mar. Chem., 164, 95–125, doi:10.1016/j.marchem.2014.06.0
 
 This namelist is part of the ESMValTool
 ###############################################################################
-
 </namelist_summary>
+
 <GLOBAL>
   <wrk_dir type="path">                            ./work/     </wrk_dir>
   <plot_dir type="path">              ./plots_globalocean/     </plot_dir>

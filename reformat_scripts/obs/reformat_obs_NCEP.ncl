@@ -36,46 +36,47 @@ begin
     ;; Tier
     TIER = 2
 
+    ;; Input dir (raw data)
+    INDIR = getenv("ESMValTool_RAWOBSPATH") + "/Tier" + \
+        TIER + "/" + OBSNAME + "/"
+
+    ;; Output dir (CMOR-ized data)
+    OUTDIR = getenv("ESMValTool_OBSPATH") + "/Tier" + \
+        TIER + "/" + OBSNAME + "/"
+
     ;; Period
     YEAR1 = 1948
     YEAR2 = 2012
 
-    ;; Input dir (raw data)
-    INDIR = "/export/pa_data01/ESMVal/obs/RAW/Tier" + \
-        TIER + "/" + OBSNAME + "/"
-
-    ;; Output dir (CMOR-ized data)
-    OUTDIR = "/export/pa_data02/ESMVal/obs/Tier" + TIER + "/" + OBSNAME + "/"
-
     ;; Selected variable (standard name)
-    VARS = (/"ta", "zg", "hus", "ua", "va", "tas", "clt"/)
+    VARS = (/"ta", "zg", "hus", "ua", "va", "tas"/) ;, "clt"/)
 
     ;; Name in the raw data
-    NAME = (/"air", "hgt", "shum", "uwnd", "vwnd", "air-surf", "tcdc"/)
+    NAME = (/"air", "hgt", "shum", "uwnd", "vwnd", "air-surf"/) ;, "tcdc"/)
 
     ;; suffix for raw data filenames
-    SUFFIX = (/"", "", "", "", "", "", ".eatm"/)
+    SUFFIX = (/"", "", "", "", "", ""/) ; , ".eatm"/)
 
     ;; Expected units (according to CMOR standard)
-    EXPUNITS = (/"K", "m", "1", "m/s", "m/s", "K", "%"/)
+    EXPUNITS = (/"K", "m", "1", "m/s", "m/s", "K"/) ;, "%"/)
 
     ;; Fields
-    FLDARR = (/"T3M", "T3M", "T3M", "T3M", "T3M", "T2Ms", "T2M"/)
+    FLDARR = (/"T3M", "T3M", "T3M", "T3M", "T3M", "T2Ms"/) ;, "T2M"/)
 
     ;; Initialize global variable
     FIELD = ""
 
 end
 
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
 load "./interface_scripts/messaging.ncl"
 load "./reformat_scripts/constants.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity = 1
+    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
     diag_script = "reformat_obs_NCEP.ncl"
+    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent(OUTDIR)) then
@@ -264,5 +265,7 @@ begin
         delete(output)
 
     end do
+
+    leave_msg(diag_script, "", 1)
 
 end

@@ -1,30 +1,22 @@
 <namelist>
 <namelist_summary>
 ###############################################################################
-
 namelist_WAMonsoon.xml
 
 Description
 Evaluates West African monsoon for monthly data sets
 
-Author(s)
-Romain Roehrig (MF, France - romain.roehrig@meteo.fr)
+Author
+Romain Roehrig (Meteo France, France - romain.roehrig@meteo.fr)
 
-Contributor(s)
-
-Project(s)
+Project
 EMBRACE
 
-Reference(s)
-Kerry H. Cook and Edward K. Vizy, 2006: J. Climate, 19, 3681–3703.
-doi: http://dx.doi.org/10.1175/JCLI3814.1 
+References
+Kerry H. et al, J. Climate, 19, 3681-3703, doi:10.1175/JCLI3814.1 (2006)
+Roehrig, R. et al., J. Climate, 26, 6471-6505, doi:10.1175/JCLI-D-12-00505.1 (2013)
 
-Romain Roehrig, Dominique Bouniol, Francoise Guichard, Frédéric Hourdin,
-and Jean-Luc Redelsperger, 2013: J. Climate, 26, 6471–6505.
-doi: http://dx.doi.org/10.1175/JCLI-D-12-00505.1 
-
-This namelist is part of the ESMValTool.
-
+This namelist is part of the ESMValTool
 ###############################################################################
 </namelist_summary>
 

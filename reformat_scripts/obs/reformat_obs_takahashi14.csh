@@ -1,29 +1,30 @@
-#!/bin/csh
-#;;#############################################################################
-#;;
-#;; Tier
-#;;    Tier 2: freely available non-obs4mips datasets
-#;;
-#;; Source
-#;;    Download at
-#;;    http://cdiac.ornl.gov/ftp/oceans/NDP_094/
-#;;
-#;; Download and processing instructions
-#;;    *) Select "TALK_TCO2_pCO2_GLOB_Grid_Dat.nc" 
-#;;    *) Run this script (requires NCO, http://nco.sourceforge.net/)
-#;;
-#;; Caveats
-#;;
-#;; Modification history
-#;;    20151111-A_laue_ax: written.
-#;;
-#;;#############################################################################
+#!/usr/bin/env csh -eu
+###############################################################################
+## REFORMAT SCRIPT FOR THE TAKAHASHI14 OBSERVATIONAL DATA
+###############################################################################
+##
+## Tier
+##    Tier 2: other freely-available dataset.
+##
+## Source
+##    http://cdiac.ornl.gov/ftp/oceans/NDP_094/
+##
+## Download and processing instructions
+##    Select "TALK_TCO2_pCO2_GLOB_Grid_Dat.nc" 
+##    Run this script (requires NCO, http://nco.sourceforge.net/)
+##
+## Caveats
+##
+## Modification history
+##    20151111-A_laue_ax: written.
+##
+###############################################################################
 
-set inpath=/export/pa_data01/ESMVal/obs/RAW/Tier2/takahashi14
-set outpath=/export/pa_data02/ESMVal/obs/Tier2/takahashi14
+set inpath="${ESMValTool_RAWOBSPATH}/Tier2/takahashi14"
+set outpath="${ESMValTool_OBSPATH}/Tier2/takahashi14"
 
 if (! -d $outpath) then
-    mkdir $outpath
+    mkdir -p $outpath
 endif
 
 set infile=$inpath/TALK_TCO2_pCO2_GLOB_Grid_Dat.nc

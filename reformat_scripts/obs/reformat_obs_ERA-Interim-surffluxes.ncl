@@ -2,8 +2,11 @@
 ;; REFORMAT SCRIPT FOR ERA-Interim REANALYSIS ACCUMULATED FLUXES AT THE SURFACE
 ;;#############################################################################
 ;;
+;; Tier
+;;    Tier 3: restricted dataset.
+;;
 ;; Source
-;;  http://apps.ecmwf.int/datasets/data/interim-full-mnth/?levtype=sfc
+;;    http://apps.ecmwf.int/datasets/data/interim-full-mnth/?levtype=sfc
 ;;
 ;; Last access
 ;;    20150522
@@ -25,6 +28,8 @@
 ;;    wfpe, and total heat flux hfds by summing ssr+str+slhf+sshf
 ;;    A registration is required for downloading the data.
 ;;
+;; Caveats
+;;
 ;; Modification history
 ;;    20150522-A_vanu_be: written.
 ;;
@@ -35,15 +40,16 @@ begin
     ;; Source name
     OBSNAME = "ERA-Interim"
 
+    ;; Tier
+    TIER = 3
+
     ;; Input dir (raw data)
-;    INDIR = "/nobackup/users/ulft/EMBRACE/ESMVal/obs/" + OBSNAME + \
-;            "/RAW/fluxes/"
-    INDIR = "/export/pa_data01/ESMVal/obs/RAW/Tier3/" + OBSNAME + "/"
+    INDIR = getenv("ESMValTool_RAWOBSPATH") + "/Tier" + \
+        TIER + "/" + OBSNAME + "/"
 
     ;; Output dir (CMOR-ized data)
-;    OUTDIR = "/nobackup/users/ulft/EMBRACE/ESMVal/obs/" + OBSNAME + \
-;             "/CMORized/"
-    OUTDIR = "/export/pa_data02/ESMVal/obs/Tier3/" + OBSNAME + "/"
+    OUTDIR = getenv("ESMValTool_OBSPATH") + "/Tier" + \
+        TIER + "/" + OBSNAME + "/"
 
     ;; Period
     YEAR1 = 2000
@@ -70,13 +76,15 @@ begin
 
 end
 
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
 load "./interface_scripts/messaging.ncl"
 load "./reformat_scripts/constants.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
-    verbosity = 1
+
+    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    diag_script = "reformat_obs_ERA-Interim-surffluxes.ncl"
+    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent(OUTDIR)) then
@@ -85,17 +93,17 @@ begin
 
     ;; Set global attributes that are the same for every variable
     gAtt = True
-    gAtt@host          = systemfunc("echo $HOST")
-    gAtt@user          = systemfunc("echo $USER")
-    gAtt@period        = YEAR1 + "-" + YEAR2
-    gAtt@field         = FIELD
-    gAtt@source        = "http://apps.ecmwf.int/datasets/data/" + \
-                         "interim-full-mnth/?levtype=sfc"
+    gAtt@host   = systemfunc("echo $HOST")
+    gAtt@user   = systemfunc("echo $USER")
+    gAtt@period = YEAR1 + "-" + YEAR2
+    gAtt@field  = FIELD
+    gAtt@source = "http://apps.ecmwf.int/datasets/data/" + \
+        "interim-full-mnth/?levtype=sfc"
     gAtt@title = OBSNAME + \
         " reanalysis data for the ESMVal evaluation tool"
     gAtt@conventions = "CF-1.1"
     gAtt@reference     = "Dee, D. P. et al., Q. J. Roy. Meteor. Soc., " + \
-            "137, 553-597, doi:10.1002/qj.828, 2011."
+        "137, 553-597, doi:10.1002/qj.828, 2011."
 
     ;; Loop over variables
     do vID = 0, dimsizes(VARS) - 1
@@ -282,9 +290,7 @@ begin
 
     end do
 
-    ;;=========================================================================
-    ;; prepare wfpe (precipitation + evaporation)
-    ;;=========================================================================
+    ;; Prepare wfpe (precipitation + evaporation)
     varname = "wfpe"
     info_output("", verbosity, 1)
     info_output("Calculating " + varname, verbosity, 1)
@@ -323,9 +329,7 @@ begin
         delete(evspsbl)
     end if
 
-    ;;=========================================================================
-    ;; prepare total heat flux (SSR+STR+SLHF+SSHF)
-    ;;=========================================================================
+    ;; Prepare total heat flux (SSR+STR+SLHF+SSHF)
     varname = "hfds"
     info_output("", verbosity, 1)
     info_output("Calculating " + varname, verbosity, 1)
@@ -347,11 +351,11 @@ begin
         delete(tmp)
 
         ;; Set global attributes
-        gAtt@history       = "Created on " + systemfunc("date")
+        gAtt@history  = "Created on " + systemfunc("date")
 
         ;; Outfile
         fout = OUTDIR + "OBS_" + OBSNAME + "_reanaly_1_" + FIELD + "_" + \
-               varname + ".nc"
+            varname + ".nc"
 
         ;; Write variable
         write_nc(fout, varname, hfds, gAtt)
@@ -374,4 +378,7 @@ begin
 
     ;; clean
     delete(gAtt)
+
+    leave_msg(diag_script, "", 1)
+
 end

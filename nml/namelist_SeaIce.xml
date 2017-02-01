@@ -1,4 +1,5 @@
 <namelist>
+<include href="./config_private.xml"/>
 <namelist_summary>
 ###############################################################################
 namelist_SeaIce.xml
@@ -27,9 +28,9 @@ This namelist is part of the ESMValTool
     <write_plots type="boolean">              True        </write_plots>
     <write_netcdf type="boolean">             True        </write_netcdf>
     <force_processing type="boolean">        False        </force_processing>
-    <wrk_dir type="path">                     work/       </wrk_dir>
-    <plot_dir type="path">                    work/plots/ </plot_dir>
-    <climo_dir type="path">                   work/climo/ </climo_dir>
+    <wrk_dir type="path">                    @{WORKPATH}  </wrk_dir>
+    <plot_dir type="path">                   @{PLOTPATH}  </plot_dir>
+    <climo_dir type="path">                  @{CLIMOPATH} </climo_dir>
     <write_plot_vars type="boolean">          True        </write_plot_vars>
     <max_data_filesize type="integer">         100        </max_data_filesize>
     <max_data_blocksize type="integer">        500        </max_data_blocksize>
@@ -39,178 +40,178 @@ This namelist is part of the ESMValTool
 </GLOBAL>
 
 <MODELS>
-    <model>  CMIP5_ETHZ  ACCESS1-0         OImon  historical  r1i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  ACCESS1-0         OImon  historical  r1i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
-    <model>  CMIP5_ETHZ  ACCESS1-3         OImon  historical  r1i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  ACCESS1-3         OImon  historical  r2i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  ACCESS1-3         OImon  historical  r3i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  ACCESS1-3         OImon  historical  r1i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  ACCESS1-3         OImon  historical  r2i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  ACCESS1-3         OImon  historical  r3i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
-    <model>  CMIP5_ETHZ  bcc-csm1-1        OImon  historical  r1i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  bcc-csm1-1        OImon  historical  r2i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  bcc-csm1-1        OImon  historical  r3i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  bcc-csm1-1        OImon  historical  r1i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  bcc-csm1-1        OImon  historical  r2i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  bcc-csm1-1        OImon  historical  r3i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
-    <model>  CMIP5_ETHZ  bcc-csm1-1-m      OImon  historical  r1i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  bcc-csm1-1-m      OImon  historical  r2i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  bcc-csm1-1-m      OImon  historical  r3i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  bcc-csm1-1-m      OImon  historical  r1i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  bcc-csm1-1-m      OImon  historical  r2i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  bcc-csm1-1-m      OImon  historical  r3i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
-    <model>  CMIP5_ETHZ  BNU-ESM           OImon  historical  r1i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  BNU-ESM           OImon  historical  r1i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
-    <model>  CMIP5_ETHZ  CanESM2           OImon  historical  r1i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  CanESM2           OImon  historical  r2i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  CanESM2           OImon  historical  r3i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  CanESM2           OImon  historical  r4i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  CanESM2           OImon  historical  r5i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  CanESM2           OImon  historical  r1i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  CanESM2           OImon  historical  r2i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  CanESM2           OImon  historical  r3i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  CanESM2           OImon  historical  r4i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  CanESM2           OImon  historical  r5i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
-    <model>  CMIP5_ETHZ  CCSM4             OImon  historical  r1i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  CCSM4             OImon  historical  r2i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  CCSM4             OImon  historical  r3i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  CCSM4             OImon  historical  r4i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  CCSM4             OImon  historical  r5i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  CCSM4             OImon  historical  r6i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  CCSM4             OImon  historical  r1i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  CCSM4             OImon  historical  r2i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  CCSM4             OImon  historical  r3i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  CCSM4             OImon  historical  r4i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  CCSM4             OImon  historical  r5i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  CCSM4             OImon  historical  r6i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
-    <model>  CMIP5_ETHZ  CESM1-BGC         OImon  historical  r1i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  CESM1-BGC         OImon  historical  r1i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
-    <model>  CMIP5_ETHZ  CESM1-CAM5        OImon  historical  r1i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  CESM1-CAM5        OImon  historical  r2i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  CESM1-CAM5        OImon  historical  r3i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  CESM1-CAM5        OImon  historical  r1i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  CESM1-CAM5        OImon  historical  r2i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  CESM1-CAM5        OImon  historical  r3i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
-    <model>  CMIP5_ETHZ  CMCC-CM           OImon  historical  r1i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  CMCC-CM           OImon  historical  r1i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
-    <model>  CMIP5_ETHZ  CMCC-CMS          OImon  historical  r1i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  CMCC-CMS          OImon  historical  r1i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
-    <model>  CMIP5_ETHZ  CNRM-CM5          OImon  historical  r1i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  CNRM-CM5          OImon  historical  r2i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  CNRM-CM5          OImon  historical  r3i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  CNRM-CM5          OImon  historical  r4i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  CNRM-CM5          OImon  historical  r5i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  CNRM-CM5          OImon  historical  r6i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  CNRM-CM5          OImon  historical  r7i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  CNRM-CM5          OImon  historical  r8i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  CNRM-CM5          OImon  historical  r9i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  CNRM-CM5          OImon  historical  r1i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  CNRM-CM5          OImon  historical  r2i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  CNRM-CM5          OImon  historical  r3i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  CNRM-CM5          OImon  historical  r4i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  CNRM-CM5          OImon  historical  r5i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  CNRM-CM5          OImon  historical  r6i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  CNRM-CM5          OImon  historical  r7i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  CNRM-CM5          OImon  historical  r8i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  CNRM-CM5          OImon  historical  r9i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
-    <model>  CMIP5_ETHZ  CSIRO-Mk3-6-0     OImon  historical  r1i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  CSIRO-Mk3-6-0     OImon  historical  r2i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  CSIRO-Mk3-6-0     OImon  historical  r3i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  CSIRO-Mk3-6-0     OImon  historical  r4i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  CSIRO-Mk3-6-0     OImon  historical  r5i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  CSIRO-Mk3-6-0     OImon  historical  r6i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  CSIRO-Mk3-6-0     OImon  historical  r7i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  CSIRO-Mk3-6-0     OImon  historical  r8i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  CSIRO-Mk3-6-0     OImon  historical  r9i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  CSIRO-Mk3-6-0     OImon  historical  r1i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  CSIRO-Mk3-6-0     OImon  historical  r2i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  CSIRO-Mk3-6-0     OImon  historical  r3i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  CSIRO-Mk3-6-0     OImon  historical  r4i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  CSIRO-Mk3-6-0     OImon  historical  r5i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  CSIRO-Mk3-6-0     OImon  historical  r6i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  CSIRO-Mk3-6-0     OImon  historical  r7i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  CSIRO-Mk3-6-0     OImon  historical  r8i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  CSIRO-Mk3-6-0     OImon  historical  r9i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
-    <model>  CMIP5_ETHZ  EC-EARTH          OImon  historical  r1i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  EC-EARTH          OImon  historical  r2i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  EC-EARTH          OImon  historical  r3i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  EC-EARTH          OImon  historical  r5i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  EC-EARTH          OImon  historical  r6i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  EC-EARTH          OImon  historical  r7i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  EC-EARTH          OImon  historical  r8i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  EC-EARTH          OImon  historical  r9i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  EC-EARTH          OImon  historical  r1i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  EC-EARTH          OImon  historical  r2i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  EC-EARTH          OImon  historical  r3i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  EC-EARTH          OImon  historical  r5i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  EC-EARTH          OImon  historical  r6i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  EC-EARTH          OImon  historical  r7i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  EC-EARTH          OImon  historical  r8i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  EC-EARTH          OImon  historical  r9i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
-    <model>  CMIP5_ETHZ  FGOALS-g2         OImon  historical  r1i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  FGOALS-g2         OImon  historical  r2i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  FGOALS-g2         OImon  historical  r3i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  FGOALS-g2         OImon  historical  r4i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  FGOALS-g2         OImon  historical  r5i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  FGOALS-g2         OImon  historical  r1i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  FGOALS-g2         OImon  historical  r2i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  FGOALS-g2         OImon  historical  r3i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  FGOALS-g2         OImon  historical  r4i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  FGOALS-g2         OImon  historical  r5i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
-    <model>  CMIP5_ETHZ  GFDL-CM3          OImon  historical  r1i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  GFDL-CM3          OImon  historical  r2i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  GFDL-CM3          OImon  historical  r3i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  GFDL-CM3          OImon  historical  r4i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  GFDL-CM3          OImon  historical  r5i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  GFDL-CM3          OImon  historical  r1i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  GFDL-CM3          OImon  historical  r2i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  GFDL-CM3          OImon  historical  r3i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  GFDL-CM3          OImon  historical  r4i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  GFDL-CM3          OImon  historical  r5i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
-    <model>  CMIP5_ETHZ  GFDL-ESM2G        OImon  historical  r1i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  GFDL-ESM2G        OImon  historical  r1i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
-    <model>  CMIP5_ETHZ  GFDL-ESM2M        OImon  historical  r1i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  GFDL-ESM2M        OImon  historical  r1i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
-    <model>  CMIP5_ETHZ  GISS-E2-H         OImon  historical  r1i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  GISS-E2-H         OImon  historical  r2i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  GISS-E2-H         OImon  historical  r3i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  GISS-E2-H         OImon  historical  r4i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  GISS-E2-H         OImon  historical  r5i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  GISS-E2-H         OImon  historical  r6i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  GISS-E2-H         OImon  historical  r1i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  GISS-E2-H         OImon  historical  r2i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  GISS-E2-H         OImon  historical  r3i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  GISS-E2-H         OImon  historical  r4i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  GISS-E2-H         OImon  historical  r5i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  GISS-E2-H         OImon  historical  r6i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
-    <model>  CMIP5_ETHZ  GISS-E2-H-CC      OImon  historical  r1i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  GISS-E2-H-CC      OImon  historical  r1i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
-    <model>  CMIP5_ETHZ  GISS-E2-R         OImon  historical  r1i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  GISS-E2-R         OImon  historical  r2i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  GISS-E2-R         OImon  historical  r3i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  GISS-E2-R         OImon  historical  r4i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  GISS-E2-R         OImon  historical  r5i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  GISS-E2-R         OImon  historical  r6i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  GISS-E2-R         OImon  historical  r1i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  GISS-E2-R         OImon  historical  r2i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  GISS-E2-R         OImon  historical  r3i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  GISS-E2-R         OImon  historical  r4i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  GISS-E2-R         OImon  historical  r5i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  GISS-E2-R         OImon  historical  r6i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
-    <model>  CMIP5_ETHZ  GISS-E2-R-CC      OImon  historical  r1i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  GISS-E2-R-CC      OImon  historical  r1i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
-    <model>  CMIP5_ETHZ  HadCM3            OImon  historical  r1i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  HadCM3            OImon  historical  r2i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  HadCM3            OImon  historical  r3i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  HadCM3            OImon  historical  r4i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  HadCM3            OImon  historical  r5i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  HadCM3            OImon  historical  r6i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  HadCM3            OImon  historical  r7i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  HadCM3            OImon  historical  r8i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  HadCM3            OImon  historical  r9i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  HadCM3            OImon  historical  r1i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  HadCM3            OImon  historical  r2i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  HadCM3            OImon  historical  r3i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  HadCM3            OImon  historical  r4i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  HadCM3            OImon  historical  r5i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  HadCM3            OImon  historical  r6i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  HadCM3            OImon  historical  r7i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  HadCM3            OImon  historical  r8i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  HadCM3            OImon  historical  r9i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
-    <model>  CMIP5_ETHZ  HadGEM2-CC        OImon  historical  r1i1p1  1960  2004  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  HadGEM2-CC        OImon  historical  r2i1p1  1960  2004  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  HadGEM2-CC        OImon  historical  r3i1p1  1960  2000  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  HadGEM2-CC        OImon  historical  r1i1p1  1960  2004  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  HadGEM2-CC        OImon  historical  r2i1p1  1960  2004  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  HadGEM2-CC        OImon  historical  r3i1p1  1960  2000  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
-    <model>  CMIP5_ETHZ  HadGEM2-ES        OImon  historical  r1i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  HadGEM2-ES        OImon  historical  r2i1p1  1960  2004  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  HadGEM2-ES        OImon  historical  r3i1p1  1960  2004  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  HadGEM2-ES        OImon  historical  r4i1p1  1960  2004  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  HadGEM2-ES        OImon  historical  r1i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  HadGEM2-ES        OImon  historical  r2i1p1  1960  2004  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  HadGEM2-ES        OImon  historical  r3i1p1  1960  2004  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  HadGEM2-ES        OImon  historical  r4i1p1  1960  2004  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
-    <model>  CMIP5_ETHZ  inmcm4            OImon  historical  r1i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  inmcm4            OImon  historical  r1i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
-    <model>  CMIP5_ETHZ  IPSL-CM5A-LR      OImon  historical  r1i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  IPSL-CM5A-LR      OImon  historical  r2i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  IPSL-CM5A-LR      OImon  historical  r3i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  IPSL-CM5A-LR      OImon  historical  r4i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  IPSL-CM5A-LR      OImon  historical  r5i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  IPSL-CM5A-LR      OImon  historical  r6i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  IPSL-CM5A-LR      OImon  historical  r1i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  IPSL-CM5A-LR      OImon  historical  r2i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  IPSL-CM5A-LR      OImon  historical  r3i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  IPSL-CM5A-LR      OImon  historical  r4i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  IPSL-CM5A-LR      OImon  historical  r5i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  IPSL-CM5A-LR      OImon  historical  r6i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
-    <model>  CMIP5_ETHZ  IPSL-CM5A-MR      OImon  historical  r1i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  IPSL-CM5A-MR      OImon  historical  r2i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  IPSL-CM5A-MR      OImon  historical  r3i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  IPSL-CM5A-MR      OImon  historical  r1i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  IPSL-CM5A-MR      OImon  historical  r2i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  IPSL-CM5A-MR      OImon  historical  r3i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
-    <model>  CMIP5_ETHZ  IPSL-CM5B-LR      OImon  historical  r1i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  IPSL-CM5B-LR      OImon  historical  r1i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
-    <model>  CMIP5_ETHZ  MIROC5            OImon  historical  r1i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  MIROC5            OImon  historical  r2i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  MIROC5            OImon  historical  r3i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  MIROC5            OImon  historical  r4i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  MIROC5            OImon  historical  r5i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  MIROC5            OImon  historical  r1i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  MIROC5            OImon  historical  r2i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  MIROC5            OImon  historical  r3i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  MIROC5            OImon  historical  r4i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  MIROC5            OImon  historical  r5i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
-    <model>  CMIP5_ETHZ  MIROC-ESM         OImon  historical  r1i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  MIROC-ESM         OImon  historical  r2i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  MIROC-ESM         OImon  historical  r3i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  MIROC-ESM         OImon  historical  r1i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  MIROC-ESM         OImon  historical  r2i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  MIROC-ESM         OImon  historical  r3i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
-    <model>  CMIP5_ETHZ  MIROC-ESM-CHEM    OImon  historical  r1i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  MIROC-ESM-CHEM    OImon  historical  r1i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
-    <model>  CMIP5_ETHZ  MPI-ESM-LR        OImon  historical  r1i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  MPI-ESM-LR        OImon  historical  r2i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  MPI-ESM-LR        OImon  historical  r3i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  MPI-ESM-LR        OImon  historical  r1i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  MPI-ESM-LR        OImon  historical  r2i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  MPI-ESM-LR        OImon  historical  r3i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
-    <model>  CMIP5_ETHZ  MPI-ESM-MR        OImon  historical  r1i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  MPI-ESM-MR        OImon  historical  r2i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  MPI-ESM-MR        OImon  historical  r3i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  MPI-ESM-MR        OImon  historical  r1i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  MPI-ESM-MR        OImon  historical  r2i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  MPI-ESM-MR        OImon  historical  r3i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
-    <model>  CMIP5_ETHZ  MRI-CGCM3         OImon  historical  r1i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  MRI-CGCM3         OImon  historical  r2i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  MRI-CGCM3         OImon  historical  r3i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  MRI-CGCM3         OImon  historical  r4i1p2  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  MRI-CGCM3         OImon  historical  r5i1p2  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  MRI-CGCM3         OImon  historical  r1i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  MRI-CGCM3         OImon  historical  r2i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  MRI-CGCM3         OImon  historical  r3i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  MRI-CGCM3         OImon  historical  r4i1p2  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  MRI-CGCM3         OImon  historical  r5i1p2  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
-    <model>  CMIP5_ETHZ  MRI-ESM1          OImon  historical  r1i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  MRI-ESM1          OImon  historical  r1i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
-    <model>  CMIP5_ETHZ  NorESM1-M         OImon  historical  r1i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  NorESM1-M         OImon  historical  r2i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  NorESM1-M         OImon  historical  r3i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  NorESM1-M         OImon  historical  r1i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  NorESM1-M         OImon  historical  r2i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  NorESM1-M         OImon  historical  r3i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
-    <model>  CMIP5_ETHZ  NorESM1-ME        OImon  historical  r1i1p1  1960  2005  /export/pa_data02/ESMVal/model/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  NorESM1-ME        OImon  historical  r1i1p1  1960  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
 
 
-    <model>  OBS         HadISST                  reanaly   20130524  1960  2005  /export/pa_data02/ESMVal/obs/Tier2/HadISST/       </model> 
+    <model>  OBS         HadISST                  reanaly   20130524  1960  2005  @{OBSPATH}/Tier2/HadISST/       </model> 
 </MODELS>
 
 <DIAGNOSTICS>
@@ -220,17 +221,16 @@ This namelist is part of the ESMValTool
     <variable>                          sic                        </variable>
     <field_type>                        T2Ms                       </field_type>
     <diag_script_cfg_dir>              ./nml/cfg_SeaIce/           </diag_script_cfg_dir>
+
+    <model>  OBS_gridfile  NSIDC-NT  sat       NH        1979  2005  @{OBSPATH}/Tier2/NSIDC/
+                           @{OBSPATH}/Tier2/NSIDC/OBS_NSIDC-NT_sat_NH_T2Ms_sic_197811-201312.nc  </model>
+    <model>  OBS_gridfile  NSIDC-BT  sat       NH        1979  2005  @{OBSPATH}/Tier2/NSIDC/
+                           @{OBSPATH}/Tier2/NSIDC/OBS_NSIDC-BT_sat_NH_T2Ms_sic_197811-201312.nc  </model>
+
     <diag_script cfg="cfg_SeaIce_NH.ncl">  SeaIce_tsline.ncl       </diag_script>
     <diag_script cfg="cfg_SeaIce_NH.ncl">  SeaIce_ancyc.ncl        </diag_script>
     <diag_script cfg="cfg_SeaIce_NH.ncl">  SeaIce_polcon.ncl       </diag_script>
     <diag_script cfg="cfg_SeaIce_NH.ncl">  SeaIce_polcon_diff.ncl  </diag_script>
-
-    <model>  OBS_gridfile  NSIDC-NT  sat       NH        1979  2005  /export/pa_data02/ESMVal/obs/Tier2/NSIDC/
-                           /export/pa_data02/ESMVal/obs/Tier2/NSIDC/OBS_NSIDC-NT_sat_NH_T2Ms_sic_197811-201312.nc  </model>
-
-    <model>  OBS_gridfile  NSIDC-BT  sat       NH        1979  2005  /export/pa_data02/ESMVal/obs/Tier2/NSIDC/
-                           /export/pa_data02/ESMVal/obs/Tier2/NSIDC/OBS_NSIDC-BT_sat_NH_T2Ms_sic_197811-201312.nc  </model>
-
 </diag>
 
 
@@ -240,18 +240,17 @@ This namelist is part of the ESMValTool
     <variable>                          sic                        </variable>
     <field_type>                        T2Ms                       </field_type>
     <diag_script_cfg_dir>              ./nml/cfg_SeaIce/           </diag_script_cfg_dir>
+
+    <model>  OBS_gridfile  NSIDC-NT  sat       SH        1979  2005  @{OBSPATH}/Tier2/NSIDC/
+                           @{OBSPATH}/Tier2/NSIDC/OBS_NSIDC-NT_sat_SH_T2Ms_sic_197811-201312.nc  </model>
+    <model>  OBS_gridfile  NSIDC-BT  sat       SH        1979  2005  @{OBSPATH}/Tier2/NSIDC/
+                           @{OBSPATH}/Tier2/NSIDC/OBS_NSIDC-BT_sat_SH_T2Ms_sic_197811-201312.nc  </model>
+
     <diag_script cfg="cfg_SeaIce_SH.ncl">  SeaIce_tsline.ncl       </diag_script>
     <diag_script cfg="cfg_SeaIce_SH.ncl">  SeaIce_ancyc.ncl        </diag_script>
     <diag_script cfg="cfg_SeaIce_SH.ncl">  SeaIce_polcon.ncl       </diag_script>
     <diag_script cfg="cfg_SeaIce_SH.ncl">  SeaIce_polcon_diff.ncl  </diag_script>
-
-    <model>  OBS_gridfile  NSIDC-NT  sat       SH        1979  2005  /export/pa_data02/ESMVal/obs/Tier2/NSIDC/
-                           /export/pa_data02/ESMVal/obs/Tier2/NSIDC/OBS_NSIDC-NT_sat_SH_T2Ms_sic_197811-201312.nc  </model>
-
-    <model>  OBS_gridfile  NSIDC-BT  sat       SH        1979  2005  /export/pa_data02/ESMVal/obs/Tier2/NSIDC/
-                           /export/pa_data02/ESMVal/obs/Tier2/NSIDC/OBS_NSIDC-BT_sat_SH_T2Ms_sic_197811-201312.nc  </model>
-
 </diag>
-
 </DIAGNOSTICS>
+
 </namelist>

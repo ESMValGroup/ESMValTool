@@ -1,7 +1,7 @@
 diag_script_info = True
 ;;diag_script_info@styleset     = "GO"    
 diag_script_info@GO_season = "JFMAMJJASOND"
-diag_script_info@GO_detrend = False
+diag_script_info@GO_detrend = True
 diag_script_info@latrange_basic = (/-90, 90/)
 diag_script_info@lonrange_basic = (/0.,360./)
 ;;diag_script_info@depth_basic = (/100./)
@@ -20,7 +20,8 @@ diag_script_info@cn_levels_mean_basic = fspan(20,70,20)
 diag_script_info@cn_levels_mean_diff_basic = (/ -1,  -.8,  -.6, -.4, -.2, 0., .2, .4, .6, .8, 1./)
 
 
-diag_script_info@cn_levels_stddev_basic = fspan(0,5,20)
+diag_script_info@cn_levels_stddev_basic = fspan(0,2,20)
+;diag_script_info@cn_levels_stddev_basic = fspan(0,2,20)
 diag_script_info@cn_levels_stddev_diff_basic = (/ -1,  -.8,  -.6, -.4, -.2, 0., .2, .4, .6, .8, 1./)
 
 ;;diag_script_info@cn_levels_stddev_basic = (/0.0, 0.2, .4, .6, .8, 1.2, 1.4, 1.6, 1.8, 2.0/)

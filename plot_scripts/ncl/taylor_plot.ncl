@@ -99,7 +99,7 @@ begin
     ;; Set default colors
     default_colors = (/"red", "blue", "green", "darkorange", "cyan", \
                        "magenta", "black"/)
-    default_markers = (/16, 4, 6, 7, 5, 2, 3/)
+    default_markers = (/16, 4, 6, 7, 5, 2, 3, 12/)
 
     ;; Default resources
     res                 = True

@@ -1424,11 +1424,34 @@ begin
             end do
             delete(altdname)
         end if
+
         if (isdefined("latv")) then
+            ldims = getvardims(latv)
+            lsize = dimsizes(latv)
+
+            ;; Check consistency of dimension sizes
+            if (lsize(1) .ne. vsize(vrank - 1) .or. \
+                lsize(0) .ne. vsize(vrank - 2)) then
+                error_msg("f", scriptname, funcname, \
+                          "inconsistent lat_vertices for the irregular grid")
+            end if
+
+            ;; Check consistency of dimension names
+            if (ldims(1) .ne. vdims(vrank - 1) .or. \
+                ldims(0) .ne. vdims(vrank - 2)) then
+                latv!1 = vdims(vrank - 1)
+                latv!0 = vdims(vrank - 2)
+                ldims = getvardims(latv)
+            end if
+            latv!2 = "vertices"
+
             info_output("  Adding lat_vertices to OUTFILE", verbosity, 1)
             filedimdef(w, (/"vertices"/), (/4/), (/False/))
             filevardef(w, "lat_vertices", typeof(latv), getvardims(latv))
             filevarattdef(w, "lat_vertices", latv)
+
+            delete(ldims)
+            delete(lsize)
         end if
 
         ;; Longitude vertices
@@ -1445,9 +1468,31 @@ begin
             delete(altdname)
         end if
         if (isdefined("lonv")) then
+            ldims = getvardims(lonv)
+            lsize = dimsizes(lonv)
+
+            ;; Check consistency of dimension sizes
+            if (lsize(1) .ne. vsize(vrank - 1) .or. \
+                lsize(0) .ne. vsize(vrank - 2)) then
+                error_msg("f", scriptname, funcname, \
+                          "inconsistent lon_vertices for the irregular grid")
+            end if
+
+            ;; Check consistency of dimension names
+            if (ldims(1) .ne. vdims(vrank - 1) .or. \
+                ldims(0) .ne. vdims(vrank - 2)) then
+                lonv!1 = vdims(vrank - 1)
+                lonv!0 = vdims(vrank - 2)
+                ldims = getvardims(lonv)
+            end if
+            lonv!2 = "vertices"
+
             info_output("  Adding lon_vertices to OUTFILE", verbosity, 1)
             filevardef(w, "lon_vertices", typeof(lonv), getvardims(lonv))
             filevarattdef(w, "lon_vertices", lonv)
+
+            delete(ldims)
+            delete(lsize)
         end if
 
     end if

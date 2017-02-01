@@ -1,4 +1,5 @@
 <namelist>
+<include href="./config_private.xml"/>
 <namelist_summary>
 ###############################################################################
 namelist_SouthernOcean.xml
@@ -15,9 +16,13 @@ Project
 EMBRACE
 
 References
-Antonov, J. I. et al., World Ocean Atlas 2009, Volume 2: Salinity. S. Levitus, Ed. NOAA Atlas NESDIS 69, U.S. Government Printing Office, Washington, D.C., 184 pp. (2010)
+Antonov, J. I. et al., World Ocean Atlas 2009, Volume 2: Salinity. S. Levitus,
+Ed. NOAA Atlas NESDIS 69, U.S. Government Printing Office, Washington, D.C.,
+184 pp. (2010)
 Dong, S. et al., J. Geophys. Res., 113, C06013, doi:10.1029/2006JC004051 (2008)
-Locarnini, R. A. et al., World Ocean Atlas 2009, Volume 1: Temperature. S. Levitus, Ed. NOAA Atlas NESDIS 68, U.S. Government Printing Office, Washington, D.C., 184 pp. (2010)
+Locarnini, R. A. et al., World Ocean Atlas 2009, Volume 1: Temperature. S.
+Levitus, Ed. NOAA Atlas NESDIS 68, U.S. Government Printing Office, Washington,
+D.C., 184 pp. (2010)
 World Ocean Atlas 2009: https://www.nodc.noaa.gov/OC5/WOA09/pr_woa09.html
 
 This namelist is part of the ESMValTool
@@ -28,9 +33,9 @@ This namelist is part of the ESMValTool
     <write_plots type="boolean">                              True      </write_plots>
     <write_netcdf type="boolean">                             True      </write_netcdf>
     <force_processing type="boolean">                        False      </force_processing>
-    <wrk_dir type="path">                                      work/    </wrk_dir>
-    <plot_dir type="path">                               work/plots/    </plot_dir>
-    <climo_dir type="path">                              work/climo/    </climo_dir>
+    <wrk_dir type="path">                               @{WORKPATH}     </wrk_dir>
+    <plot_dir type="path">                              @{PLOTPATH}     </plot_dir>
+    <climo_dir type="path">                             @{CLIMOPATH}    </climo_dir>
     <write_plot_vars type="boolean">                           True     </write_plot_vars>
     <max_data_filesize type="integer">                          100     </max_data_filesize>
     <max_data_blocksize type="integer">                         500     </max_data_blocksize>
@@ -41,7 +46,7 @@ This namelist is part of the ESMValTool
 
 <MODELS>
 <!-- General models to be used for all diagnostics, diagnostic-specific models defined below -->
-    <model>  ECEARTH ORCA1 historic no_ensemble 2004 2005 /export/pa_data02/ESMVal/model/easytest-dataset/SouthernOcean-NEMO </model>
+    <model>  ECEARTH ORCA1 historic no_ensemble 2004 2005 @{MODELPATH}/easytest-dataset/SouthernOcean-NEMO </model>
 </MODELS>
 
 <DIAGNOSTICS>
@@ -54,9 +59,9 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir>                   ./nml/cfg_SouthernOcean/   </diag_script_cfg_dir>
         <diag_script cfg="cfg_SouthernOcean_tos.ncl"> SouthernOcean_polcon.ncl    </diag_script>
 
-        <model> OBS ERA-Interim reanaly     1    2004  2005 	/export/pa_data02/ESMVal/obs/Tier3/ERA-Interim </model>
-        <model> CMIP5    HadGEM2-ES Omon historical r1i1p1 2004 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/historical/Omon/tos/HadGEM2-ES/r1i1p1 </model>
-        <model> CMIP5_fx MPI-ESM-LR Omon historical r2i1p1 2004 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/historical/Omon/tos/MPI-ESM-LR/r2i1p1 fx_acello_mpi </model>
+        <model> OBS ERA-Interim reanaly     1    2004  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+        <model> CMIP5    HadGEM2-ES Omon historical r1i1p1 2004 2005 @{MODELPATH}/ETHZ_CMIP5/historical/Omon/tos/HadGEM2-ES/r1i1p1 </model>
+        <model> CMIP5_fx MPI-ESM-LR Omon historical r2i1p1 2004 2005 @{MODELPATH}/ETHZ_CMIP5/historical/Omon/tos/MPI-ESM-LR/r2i1p1 fx_acello_mpi </model>
     </diag>
 
     <diag>
@@ -67,9 +72,9 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir>                             ./nml/cfg_SouthernOcean/  </diag_script_cfg_dir>
         <diag_script cfg="cfg_SouthernOcean_tos_diff.ncl"> SouthernOcean_polcon_diff.ncl   </diag_script>
 
-        <model> OBS ERA-Interim reanaly     1    2004  2005 	/export/pa_data02/ESMVal/obs/Tier3/ERA-Interim </model>
-        <model> CMIP5    HadGEM2-ES Omon historical r1i1p1 2004 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/historical/Omon/tos/HadGEM2-ES/r1i1p1 </model>
-        <model> CMIP5_fx MPI-ESM-LR Omon historical r2i1p1 2004 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/historical/Omon/tos/MPI-ESM-LR/r2i1p1 fx_acello_mpi </model>
+        <model> OBS ERA-Interim reanaly     1    2004  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+        <model> CMIP5    HadGEM2-ES Omon historical r1i1p1 2004 2005 @{MODELPATH}/ETHZ_CMIP5/historical/Omon/tos/HadGEM2-ES/r1i1p1 </model>
+        <model> CMIP5_fx MPI-ESM-LR Omon historical r2i1p1 2004 2005 @{MODELPATH}/ETHZ_CMIP5/historical/Omon/tos/MPI-ESM-LR/r2i1p1 fx_acello_mpi </model>
     </diag>
 
     <diag>
@@ -80,9 +85,9 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir>                   ./nml/cfg_SouthernOcean/  </diag_script_cfg_dir>
         <diag_script cfg="cfg_SouthernOcean_sos.ncl"> SouthernOcean_polcon.ncl   </diag_script>
 
-        <model> OBS WOA09-monthly insitu 1 0 0 /export/pa_data02/ESMVal/obs/Tier2/WOA09-monthly </model>
-        <model> CMIP5    HadGEM2-ES Omon historical r1i1p1 2004 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/historical/Omon/sos/HadGEM2-ES/r1i1p1 </model>
-        <model> CMIP5_fx MPI-ESM-LR Omon historical r2i1p1 2004 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/historical/Omon/sos/MPI-ESM-LR/r2i1p1 fx_acello_mpi </model>
+        <model> OBS WOA09-monthly insitu 1 0 0 @{OBSPATH}/Tier2/WOA09-monthly </model>
+        <model> CMIP5    HadGEM2-ES Omon historical r1i1p1 2004 2005 @{MODELPATH}/ETHZ_CMIP5/historical/Omon/sos/HadGEM2-ES/r1i1p1 </model>
+        <model> CMIP5_fx MPI-ESM-LR Omon historical r2i1p1 2004 2005 @{MODELPATH}/ETHZ_CMIP5/historical/Omon/sos/MPI-ESM-LR/r2i1p1 fx_acello_mpi </model>
     </diag>
 
     <diag>
@@ -93,7 +98,7 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir>                ./nml/cfg_SouthernOcean/  </diag_script_cfg_dir>
         <diag_script cfg="cfg_SouthernOcean_sos_diff.ncl"> SouthernOcean_polcon_diff.ncl    </diag_script>
 
-        <model> OBS WOA09-monthly insitu 1 0 0 /export/pa_data02/ESMVal/obs/Tier2/WOA09-monthly </model>
+        <model> OBS WOA09-monthly insitu 1 0 0 @{OBSPATH}/Tier2/WOA09-monthly </model>
     </diag>
 
     <diag>
@@ -104,9 +109,9 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir>                      ./nml/cfg_SouthernOcean/   </diag_script_cfg_dir>
         <diag_script cfg="cfg_SouthernOcean_mlotst.ncl"> SouthernOcean_polcon.ncl    </diag_script>
 
-        <model> OBS Dong08-ARGO-monthly insitu 1 0 0 /export/pa_data02/ESMVal/obs/Tier2/Dong08-ARGO-monthly </model>
+        <model> OBS Dong08-ARGO-monthly insitu 1 0 0 @{OBSPATH}/Tier2/Dong08-ARGO-monthly </model>
 
-        <model> CMIP5_fx MPI-ESM-LR Omon historical r1i1p1 2004 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/historical/Omon/mlotst/MPI-ESM-LR/r1i1p1 fx_acello_mpi </model>
+        <model> CMIP5_fx MPI-ESM-LR Omon historical r1i1p1 2004 2005 @{MODELPATH}/ETHZ_CMIP5/historical/Omon/mlotst/MPI-ESM-LR/r1i1p1 fx_acello_mpi </model>
     </diag>
 
     <diag>
@@ -117,8 +122,8 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir>                 ./nml/cfg_SouthernOcean/   </diag_script_cfg_dir>
         <diag_script cfg="cfg_SouthernOcean_mlotst_diff.ncl"> SouthernOcean_polcon_diff.ncl </diag_script>
 
-        <model> OBS Dong08-ARGO-monthly insitu 1 0 0 /export/pa_data02/ESMVal/obs/Tier2/Dong08-ARGO-monthly </model>
-        <model> CMIP5_fx MPI-ESM-LR Omon historical r1i1p1 2004 2005 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/historical/Omon/mlotst/MPI-ESM-LR/r1i1p1 fx_acello_mpi </model>
+        <model> OBS Dong08-ARGO-monthly insitu 1 0 0 @{OBSPATH}/Tier2/Dong08-ARGO-monthly </model>
+        <model> CMIP5_fx MPI-ESM-LR Omon historical r1i1p1 2004 2005 @{MODELPATH}/ETHZ_CMIP5/historical/Omon/mlotst/MPI-ESM-LR/r1i1p1 fx_acello_mpi </model>
     </diag>
 
     <diag>
@@ -129,7 +134,7 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir>            ./nml/cfg_SouthernOcean/   </diag_script_cfg_dir>
         <diag_script cfg="cfg_SouthernOcean_wfpe-mmday_diff.ncl"> SouthernOcean_polcon_diff.ncl </diag_script>
 
-        <model> OBS ERA-Interim reanaly     1    2004  2005 	/export/pa_data02/ESMVal/obs/Tier3/ERA-Interim </model>
+        <model> OBS ERA-Interim reanaly     1    2004  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
     </diag>
 
     <diag>
@@ -140,7 +145,7 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir>           ./nml/cfg_SouthernOcean/   </diag_script_cfg_dir>
         <diag_script cfg="cfg_SouthernOcean_hfds_diff.ncl"> SouthernOcean_polcon_diff.ncl </diag_script>
 
-        <model> OBS ERA-Interim reanaly     1    2004  2005 	/export/pa_data02/ESMVal/obs/Tier3/ERA-Interim </model>
+        <model> OBS ERA-Interim reanaly     1    2004  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
     </diag>
 
     <diag>
@@ -151,7 +156,7 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir>                ./nml/cfg_SouthernOcean/   </diag_script_cfg_dir>
         <diag_script cfg="cfg_SouthernOcean_tauu_tauv_diff.ncl"> SouthernOcean_polcon_diff.ncl </diag_script>
 
-        <model> OBS ERA-Interim reanaly     1    2004  2005 	/export/pa_data02/ESMVal/obs/Tier3/ERA-Interim </model>
+        <model> OBS ERA-Interim reanaly     1    2004  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
     </diag>
 
     <diag>
@@ -162,7 +167,7 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir>                 ./nml/cfg_SouthernOcean/   </diag_script_cfg_dir>
         <diag_script cfg="cfg_SouthernOcean_tauu_tauv_diff.ncl"> SouthernOcean_polcon_diff.ncl </diag_script>
 
-        <model> OBS ERA-Interim reanaly     1    2004  2005 	/export/pa_data02/ESMVal/obs/Tier3/ERA-Interim </model>
+        <model> OBS ERA-Interim reanaly     1    2004  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
     </diag>
 
     <diag>
@@ -175,7 +180,7 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir>        ./nml/cfg_SouthernOcean/   </diag_script_cfg_dir>
         <diag_script cfg="cfg_SouthernOcean_tauw_diff.ncl"> SouthernOcean_vector_polcon_diff.ncl </diag_script>
 
-        <model> OBS ERA-Interim reanaly     1    2004  2005 	/export/pa_data02/ESMVal/obs/Tier3/ERA-Interim </model>
+        <model> OBS ERA-Interim reanaly     1    2004  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
     </diag>
 
     <diag>
@@ -186,7 +191,7 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir>      ./nml/cfg_SouthernOcean/  </diag_script_cfg_dir>
         <diag_script cfg="cfg_SouthernOcean_to.ncl"> SouthernOcean_areamean_vertconplot.ncl </diag_script>
 
-        <model> OBS WOA09-monthly insitu 1 0 0 /export/pa_data02/ESMVal/obs/Tier2/WOA09-monthly </model>
+        <model> OBS WOA09-monthly insitu 1 0 0 @{OBSPATH}/Tier2/WOA09-monthly </model>
     </diag>
 
     <diag>
@@ -197,7 +202,7 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir>    ./nml/cfg_SouthernOcean/   </diag_script_cfg_dir>
         <diag_script cfg="cfg_SouthernOcean_so.ncl"> SouthernOcean_areamean_vertconplot.ncl </diag_script>
 
-        <model> OBS WOA09-monthly insitu 1 0 0 /export/pa_data02/ESMVal/obs/Tier2/WOA09-monthly </model>
+        <model> OBS WOA09-monthly insitu 1 0 0 @{OBSPATH}/Tier2/WOA09-monthly </model>
     </diag>
 
     <diag>
@@ -212,10 +217,10 @@ This namelist is part of the ESMValTool
 </DIAGNOSTICS>
 
 <AUXILIARIES>
-    <fx_file id="fx_acello_mpi"> /export/pa_data02/ESMVal/model/ETHZ_CMIP5/historical/fx/areacello/MPI-ESM-LR/r0i0p0/areacello_fx_MPI-ESM-LR_historical_r0i0p0.nc </fx_file>
-    <fx_file id="nemo_lsm_file"> /export/pa_data02/ESMVal/model/easytest-dataset/SouthernOcean-NEMO/lsm_fx_ORCA1_SouthernOcean-NEMO_r0i0p0.nc </fx_file>
-    <fx_file id="nemo_lsm3d_file"> /export/pa_data02/ESMVal/model/easytest-dataset/SouthernOcean-NEMO/lsm3d_fx_ORCA1_SouthernOcean-NEMO_r0i0p0.nc </fx_file>
-    <fx_file id="nemo_zgrid_file"> /export/pa_data02/ESMVal/model/easytest-dataset/SouthernOcean-NEMO/mesh_zgr.nc </fx_file>
-    <fx_file id="nemo_hgrid_file"> /export/pa_data02/ESMVal/model/easytest-dataset/SouthernOcean-NEMO/mesh_hgr.nc </fx_file>
+    <fx_file id="fx_acello_mpi"> @{MODELPATH}/ETHZ_CMIP5/historical/fx/areacello/MPI-ESM-LR/r0i0p0/areacello_fx_MPI-ESM-LR_historical_r0i0p0.nc </fx_file>
+    <fx_file id="nemo_lsm_file"> @{MODELPATH}/easytest-dataset/SouthernOcean-NEMO/lsm_fx_ORCA1_SouthernOcean-NEMO_r0i0p0.nc </fx_file>
+    <fx_file id="nemo_lsm3d_file"> @{MODELPATH}/easytest-dataset/SouthernOcean-NEMO/lsm3d_fx_ORCA1_SouthernOcean-NEMO_r0i0p0.nc </fx_file>
+    <fx_file id="nemo_zgrid_file"> @{MODELPATH}/easytest-dataset/SouthernOcean-NEMO/mesh_zgr.nc </fx_file>
+    <fx_file id="nemo_hgrid_file"> @{MODELPATH}/easytest-dataset/SouthernOcean-NEMO/mesh_hgr.nc </fx_file>
 </AUXILIARIES>
 </namelist>

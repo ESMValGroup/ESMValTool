@@ -1,14 +1,20 @@
 <namelist>
 <namelist_summary>
-========================================================================
-DESCRIPTION: namelist_soilmoisture.xml is the master namelist for the soilmoisture
-             diagnostics of the ESMVal tool.
+###############################################################################
+namelist_dummy_python.xml
 
-AUTHORS: Alexander Loew (alexander.loew@mpimet.mpg.de)
+Description
 
-NOTES: This namelist is part of the ESMVal tool
-       (PIs: Veronika Eyring, Klaus Wyser)
-========================================================================
+Author
+Alexander Loew (LMU, Germany - alexander.loew@lmu.de)
+
+Project
+ESA CCI CMUG
+
+References
+
+This namelist is part of the ESMValTool
+###############################################################################
 </namelist_summary>
 
 <GLOBAL>

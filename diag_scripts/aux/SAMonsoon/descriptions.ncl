@@ -67,7 +67,7 @@ begin
                   "~C~~F22~corr def:~F21~ NCL function pattern_cor(...) computed with "+\
                   "~C~                  cosine weights in latitude. Correlation is between"+\
                   "~C~                  reference and model data."+\
-                  "~C~~F22~bob def:~F21~ Area avearge over Bay of Bengali normalized with climatology, "+\
+                  "~C~~F22~bob def:~F21~ Area avearge over Bay of Bengal normalized with climatology, "+\
                   "~C~              lat=" + di@bob_latrange(0) + "-" + di@bob_latrange(1)+\
                   ", lon=" + di@bob_lonrange(0) + "-" + di@bob_lonrange(1)+\
                   "~C~~F22~eio def:~F21~ Area avearge over eastern equatorial Indian Ocean normalized"+\
@@ -93,7 +93,7 @@ begin
                   "~C~~F22~corr def:~F21~ NCL function pattern_cor(...) computed with "+\
                   "~C~                  cosine weights in latitude. Correlation is between"+\
                   "~C~                  reference and model data."+\
-                  "~C~~F22~bob def:~F21~ Area avearge over Bay of Bengali normalized with climatology, "+\
+                  "~C~~F22~bob def:~F21~ Area avearge over Bay of Bengal normalized with climatology, "+\
                   "~C~              lat=" + di@bob_latrange(0) + "-" + di@bob_latrange(1)+\
                   ", lon=" + di@bob_lonrange(0) + "-" + di@bob_lonrange(1)+\
                   "~C~~F22~eio def:~F21~ Area avearge over eastern equatorial Indian Ocean normalized"+\

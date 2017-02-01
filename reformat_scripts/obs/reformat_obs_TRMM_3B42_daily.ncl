@@ -41,17 +41,21 @@
 ;;
 ;; ############################################################################
 
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
+load "./interface_scripts/messaging.ncl"
 load "./reformat_scripts/constants.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-   inpath = "/export/pa_data01/ESMVal/obs/RAW/Tier2/TRMM_3B42_3hourly/"
-   outpath = "/export/pa_data02/ESMVal/obs/Tier2/TRMM_3B42_daily/"
+    verbosity =  stringtointeger(getenv("ESMValTool_verbosity"))
+    diag_script = "reformat_obs_TRMM_3B42_daily.ncl"
+    enter_msg(diag_script, "", 1)
 
-   YEAR1 = 2000
-   YEAR2 = 2014
+    inpath = getenv("ESMValTool_RAWOBSPATH") + "/Tier2/TRMM_3B42_3hourly/"
+    outpath = getenv("ESMValTool_OBSPATH") + "/Tier2/TRMM_3B42_daily/"
+
+    YEAR1 = 2000
+    YEAR2 = 2014
 
     ;; Create output dir
     if (.not.isfilepresent(outpath)) then
@@ -95,7 +99,7 @@ begin
             fname = fname + ".HDF.Z"
         end if
 
-        print ("*** "+ fname + " ***")
+        info_output("*** "+ fname + " ***", verbosity, 1)
 
         tmpfile = "./temp.hdf"
         system("gzip -dc <" + fname + " >" + tmpfile)
@@ -251,5 +255,7 @@ begin
     delete(msk)
 
     system ("rm " + tmpfile)
+
+    leave_msg(diag_script, "", 1)
 
 end

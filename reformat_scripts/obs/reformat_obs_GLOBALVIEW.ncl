@@ -11,14 +11,14 @@
 ;; Last access
 ;;    20150720
 ;;
-;; Download instructions
+;; Download and processing instructions
 ;;
 ;; Caveats
 ;;    Hardcoded for *_ext* files
 ;;    Ignores weighting (*_wts* files)
 ;;
 ;; Modification history
-;;    20140623-A_gott_kl: written
+;;    20140623-A_gott_kl: written.
 ;;
 ;;#############################################################################
 
@@ -31,11 +31,12 @@ begin
     TIER = 2
 
     ;; Input dir (raw data)
-    INDIR = "/export/pa_data01/ESMVal/obs/RAW/Tier" + \
-        TIER + "/" + OBSNAME + "/gv_co/"
+    INDIR = getenv("ESMValTool_RAWOBSPATH") + "/Tier" + \
+        TIER + "/" + OBSNAME + "/"
 
     ;; Output dir (CMOR-ized data)
-    OUTDIR = "/export/pa_data02/ESMVal/obs/Tier" + TIER + "/" + OBSNAME + "/"
+    OUTDIR = getenv("ESMValTool_OBSPATH") + "/Tier" + \
+        TIER + "/" + OBSNAME + "/"
 
     ;; Input file selectors:
     ;; http://www.esrl.noaa.gov/gmd/ccgg/globalview/gv_filenames.html
@@ -65,7 +66,6 @@ begin
 
 end
 
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
 load "./interface_scripts/messaging.ncl"
 load "./interface_scripts/auxiliary.ncl"
 load "./reformat_scripts/constants.ncl"
@@ -74,8 +74,9 @@ load "./diag_scripts/lib/ncl/statistics.ncl"
 
 begin
 
-    verbosity = 1
+    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
     diag_script = "reformat_obs_GLOBALVIEW.ncl"
+    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent(OUTDIR)) then
@@ -305,5 +306,7 @@ begin
         end if
 
     end do  ; loop over input files
+
+    leave_msg(diag_script, "", 1)
 
 end

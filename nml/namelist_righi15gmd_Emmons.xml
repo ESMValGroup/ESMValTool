@@ -1,4 +1,5 @@
 <namelist>
+<include href="./config_private.xml"/>
 <namelist_summary>
 ###############################################################################
 namelist_righi15gmd_Emmons.xml
@@ -24,9 +25,9 @@ This namelist is part of the ESMValTool
     <write_plots type="boolean">           True      </write_plots>
     <write_netcdf type="boolean">          True      </write_netcdf>
     <force_processing type="boolean">     False      </force_processing>
-    <wrk_dir type="path">                  work/     </wrk_dir>
-    <plot_dir type="path">                 work/plots/     </plot_dir>
-    <climo_dir type="path">                work/climo/     </climo_dir>
+    <wrk_dir type="path">               @{WORKPATH}  </wrk_dir>
+    <plot_dir type="path">              @{PLOTPATH}  </plot_dir>
+    <climo_dir type="path">             @{CLIMOPATH} </climo_dir>
     <write_plot_vars type="boolean">       True      </write_plot_vars>
     <max_data_filesize type="integer">      100      </max_data_filesize>
     <max_data_blocksize type="integer">     500      </max_data_blocksize>
@@ -36,16 +37,14 @@ This namelist is part of the ESMValTool
 </GLOBAL>
 
 <MODELS>
-    <model> EMAC   EVAL2      1  1999 2009  /export/pa_data02/ESMVal/model/EMAC/EVAL2/     </model>
-    <model> EMAC   QCTM       1  1999 2007  /export/pa_data02/ESMVal/model/EMAC/QCTM/      </model>
-    <model> EMAC   TS2000     1  2001 2010  /export/pa_data02/ESMVal/model/EMAC/TS2000/    </model>
-    <model> EMAC   ACCMIP     1  2001 2010  /export/pa_data02/ESMVal/model/EMAC/ACCMIP/    </model>
-    <model> EMAC   ACCMIP-S1  1  2001 2010  /export/pa_data02/ESMVal/model/EMAC/ACCMIP-S1/ </model>
-    <model> EMAC   ACCMIP-S2  1  2001 2010  /export/pa_data02/ESMVal/model/EMAC/ACCMIP-S2/ </model>
+    <model> EMAC   EVAL2      1  1999 2009  @{MODELPATH}/EMAC/EVAL2/     </model>
+    <model> EMAC   QCTM       1  1999 2007  @{MODELPATH}/EMAC/QCTM/      </model>
+    <model> EMAC   TS2000     1  2001 2010  @{MODELPATH}/EMAC/TS2000/    </model>
+    <model> EMAC   ACCMIP     1  2001 2010  @{MODELPATH}/EMAC/ACCMIP/    </model>
+    <model> EMAC   ACCMIP-S1  1  2001 2010  @{MODELPATH}/EMAC/ACCMIP-S1/ </model>
+    <model> EMAC   ACCMIP-S2  1  2001 2010  @{MODELPATH}/EMAC/ACCMIP-S2/ </model>
 </MODELS>
 
-<!-- Please do not change anything below this line, 
-     unless you want to modify the standard diagnostic settings. -->
 <DIAGNOSTICS>
     <diag>
         <description> Emmons profiles: fig 16 of Righi et al., 2014 </description>
@@ -53,6 +52,7 @@ This namelist is part of the ESMValTool
         <variable> tro3 </variable>
         <field_type> T3M </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/Emmons/ </diag_script_cfg_dir>
+
         <diag_script cfg="cfg_righi15gmd_fig16_0.ncl"> Emmons.ncl </diag_script>
     </diag>
 
@@ -62,6 +62,7 @@ This namelist is part of the ESMValTool
         <variable> vmrnox </variable>
         <field_type> T3M </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/Emmons/ </diag_script_cfg_dir>
+
         <diag_script cfg="cfg_righi15gmd_fig17_0.ncl"> Emmons.ncl </diag_script>
         <diag_script cfg="cfg_righi15gmd_fig17_1.ncl"> Emmons.ncl </diag_script>
         <diag_script cfg="cfg_righi15gmd_fig17_2.ncl"> Emmons.ncl </diag_script>
@@ -73,6 +74,7 @@ This namelist is part of the ESMValTool
         <variable> vmrco </variable>
         <field_type> T3M </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/Emmons/ </diag_script_cfg_dir>
+
         <diag_script cfg="cfg_righi15gmd_fig19_0.ncl"> Emmons.ncl </diag_script>
         <diag_script cfg="cfg_righi15gmd_fig19_1.ncl"> Emmons.ncl </diag_script>
     </diag>
@@ -83,6 +85,7 @@ This namelist is part of the ESMValTool
         <variable> vmrc2h4 </variable>
         <field_type> T3M </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/Emmons/ </diag_script_cfg_dir>
+
         <diag_script cfg="cfg_righi15gmd_figS15_0.ncl"> Emmons.ncl </diag_script>
         <diag_script cfg="cfg_righi15gmd_figS15_1.ncl"> Emmons.ncl </diag_script>
     </diag>
@@ -93,6 +96,7 @@ This namelist is part of the ESMValTool
         <variable> vmrc2h6 </variable>
         <field_type> T3M </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/Emmons/ </diag_script_cfg_dir>
+
         <diag_script cfg="cfg_righi15gmd_figS16_0.ncl"> Emmons.ncl </diag_script>
         <diag_script cfg="cfg_righi15gmd_figS16_1.ncl"> Emmons.ncl </diag_script>
     </diag>
@@ -103,6 +107,7 @@ This namelist is part of the ESMValTool
         <variable> vmrc3h6 </variable>
         <field_type> T3M </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/Emmons/ </diag_script_cfg_dir>
+
         <diag_script cfg="cfg_righi15gmd_figS17_0.ncl"> Emmons.ncl </diag_script>
         <diag_script cfg="cfg_righi15gmd_figS17_1.ncl"> Emmons.ncl </diag_script>
         <diag_script cfg="cfg_righi15gmd_figS17_2.ncl"> Emmons.ncl </diag_script>
@@ -114,6 +119,7 @@ This namelist is part of the ESMValTool
         <variable> vmrc3h8 </variable>
         <field_type> T3M </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/Emmons/ </diag_script_cfg_dir>
+
         <diag_script cfg="cfg_righi15gmd_figS18_0.ncl"> Emmons.ncl </diag_script>
         <diag_script cfg="cfg_righi15gmd_figS18_1.ncl"> Emmons.ncl </diag_script>
     </diag>
@@ -124,6 +130,7 @@ This namelist is part of the ESMValTool
         <variable> vmrch3coch3 </variable>
         <field_type> T3M </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/Emmons/ </diag_script_cfg_dir>
+
         <diag_script cfg="cfg_righi15gmd_figS19_0.ncl"> Emmons.ncl </diag_script>
     </diag>
 

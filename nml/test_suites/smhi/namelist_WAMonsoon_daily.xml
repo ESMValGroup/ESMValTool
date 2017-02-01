@@ -1,21 +1,22 @@
 <namelist>
 <namelist_summary>
+###############################################################################
 namelist_WAMonsoon_daily.xml
 
 Description
-West African Monsoon diagnostics
+Evaluates West African monsoon for daily data sets
 
-Author(s)
-Romain Roehrig (MF, France - romain.roehrig@meteo.fr)
+Author
+Romain Roehrig (Meteo France, France - romain.roehrig@meteo.fr)
 
-Contributor(s)
+Project
+EMBRACE
 
-Reference(s)
-Roehrig et al. (2013)
+Reference
+Roehrig, R. et al., J. Climate, 26, 6471-6505, doi:10.1175/JCLI-D-12-00505.1 (2013)
 
 This namelist is part of the ESMValTool
-ESMValTool project PI: Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
-
+###############################################################################
 </namelist_summary>
 
 <GLOBAL>

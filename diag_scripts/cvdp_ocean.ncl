@@ -104,7 +104,7 @@ begin
                     models@end_year(idx_mod) + "12.nc"
 
                 if (isfilepresent_esmval(newfile)) then
-                    system ("rm " + newfile)
+                    system("rm -f " + newfile)
                 end if
 ; A-laue_ax-
                 system("ln -s " + oldfile + " " + newfile)

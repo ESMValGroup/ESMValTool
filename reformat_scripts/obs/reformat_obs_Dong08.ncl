@@ -29,14 +29,11 @@ begin
     OBSNAME = "Dong08-ARGO-monthly"
 
     ;; Input dir (raw data) and file
-;    INDIR = "/nobackup/users/ulft/EMBRACE/ESMVal/obs/" + OBSNAME + "/RAW/"
-    INDIR = "/export/pa_data01/ESMVal/obs/RAW/Tier2/" + OBSNAME + "/"
+    INDIR = getenv("ESMValTool_RAWOBSPATH") + "/Tier2/" + OBSNAME + "/"
     fname = INDIR + "jgrc10600-sup-0002-ds01.txt"
 
     ;; Output dir (CMOR-ized data)
-;    OUTDIR = "/nobackup/users/ulft/EMBRACE/ESMVal/obs/" + OBSNAME + \
-;             "/CMORized/"
-    OUTDIR = "/export/pa_data02/ESMVal/obs/Tier2/" + OBSNAME + "/"
+    OUTDIR = getenv("ESMValTool_OBSPATH") + "/Tier2/" + OBSNAME + "/"
 
     ;; Selected variable (standard name)
     VAR = "mlotst"
@@ -49,13 +46,17 @@ begin
 
     ;; Tier
     TIER = 2
+
 end
 
 load "./interface_scripts/messaging.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
-    verbosity = 1
+
+    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    diag_script = "reformat_obs_Dong08.ncl"
+    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent_esmval(OUTDIR)) then
@@ -139,4 +140,7 @@ begin
 
     info_output("Done, output in " + fout, verbosity, 1)
     delete([/fout, indata, mlotst, mlotst_sw, time, lat, lon/])
+
+    leave_msg(diag_script, "", 1)
+
 end

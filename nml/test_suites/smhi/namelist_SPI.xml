@@ -1,16 +1,27 @@
 <namelist>
 <namelist_summary>
-========================================================================
-DESCRIPTION: A test namelist while implementing an R interface to the
-             ESMValTool (Mantis issue #10890)
+###############################################################################
+namelist_SPI.xml
 
-AUTHORS: Martin Evaldsson (Martin.Evaldsson@smhi.se)
+Description
+Diagnostic to compute the Standardized Precipitation index (SPI)
 
-NOTES: This namelist is part of the ESMValTool
-       ESMValTool PIs EMBRACE: Klaus Wyser (SMHI, Sweden),
-                               Veronika Eyring  (DLR, Germany)
-========================================================================
+Author
+Boris Orlowski (ETH, Switzerland, boris.orlowski@ethz.ch)
+
+Contributor
+Martin Evaldsson (SMHI, Sweden - Martin.Evaldsson@smhi.se)
+
+Project
+EMBRACE
+
+Reference
+Lloyd-Hughes, B. and Saunders, M. A., Int. J. Climatol., 22, 1571-1592, doi:10.1002/joc.846 (2002)
+
+This namelist is part of the ESMValTool
+###############################################################################
 </namelist_summary>
+
 <GLOBAL>
     <write_plots type="boolean">                  True      </write_plots>
     <write_netcdf type="boolean">                 True      </write_netcdf>

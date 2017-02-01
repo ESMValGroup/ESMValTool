@@ -1,4 +1,4 @@
-from auxiliary import xmlTagError
+from auxiliary import xmlTagError, error, info
 from model import AllModels, Model
 from fx_file import AllFXfiles, FX_file, FX_file_exception
 from diagdef import AllDiagnostics, Diagnostic
@@ -38,7 +38,8 @@ class GLOBAL(Nml_base):
                 project_info = int(project_info)
 
             elif attributes.values()[0] == "path":
-                project_info = os.path.abspath(project_info)
+		if project_info[0] not in "@": 
+	                project_info = os.path.abspath(project_info)
             else:
                 raise TypeError("Invalid value for attributes")
 
@@ -189,3 +190,13 @@ class namelist_summary(Nml_base):
 class namelist:
     def __init__(self):
         pass
+
+class REFORMAT(Nml_base):
+    def __init__(self):
+        Nml_base.__init__(self)
+        self.project_info = {}
+
+    def add_nml_entry(self, name, string, attributes):
+	if attributes['id'] in self.project_info.keys():
+		error('Duplicate usage of reformat_script id: {0}'.format(attributes['id']))
+        self.project_info[attributes['id']] = string.strip()

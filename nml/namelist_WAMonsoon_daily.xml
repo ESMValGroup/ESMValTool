@@ -1,7 +1,7 @@
 <namelist>
 <namelist_summary>
 ###############################################################################
-namelist_WAMonsoon.xml
+namelist_WAMonsoon_daily.xml
 
 Description
 Evaluates West African monsoon for daily data sets
@@ -13,7 +13,7 @@ Project
 EMBRACE
 
 Reference
-Roehrig, R. et al., J. Climate, 26, 6471–6505, doi:10.1175/JCLI-D-12-00505.1 (2013)
+Roehrig, R. et al., J. Climate, 26, 6471-6505, doi:10.1175/JCLI-D-12-00505.1 (2013)
 
 This namelist is part of the ESMValTool
 ###############################################################################

@@ -952,7 +952,11 @@ begin
                     end if
                 end if
                 wks = gsn_open_wks(file_type, outfile)
-                gsn_define_colormap(wks, "amwg_blueyellowred")
+                if (isatt(variable_info, "map_ref_cmap")) then
+                    gsn_define_colormap(wks, variable_info@map_ref_cmap)
+                else
+                    gsn_define_colormap(wks, "amwg_blueyellowred")
+                end if
                 plot = contour_map_ce(wks, var, var0)
                 draw(plot)
                 frame(wks)

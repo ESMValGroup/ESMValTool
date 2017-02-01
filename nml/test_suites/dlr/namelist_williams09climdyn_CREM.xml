@@ -1,23 +1,35 @@
 <namelist>
+<include href="./config_private.xml"/>
 <namelist_summary>
-========================================================================
-DESCRIPTION: namelist_williams09climdyn_CREM.xml is the namelist for the
-             cloud regime error metric in ESMVal tool.
+###############################################################################
+namelist_williams09climdyn_CREM.xml
 
-AUTHORS: Keith Williams (keith.williams@metoffice.gov.uk)
+Description
+Namelist for the cloud regime error metric
 
-NOTES: This namelist is part of the ESMVal tool
-       (PIs: Veronika Eyring, Klaus Wyser)
-========================================================================
+Author
+Keith Williams (MetOffice, UK - keith.williams@metoffice.gov.uk)
+
+Contributor
+Axel Lauer (DLR, Germany - axel.lauer@dlr.de)
+
+Project
+ESA CCI CMUG
+
+Reference
+Williams, K. and Webb, M., Clim. Dynam., 33, 141-157, doi:10.1007/s00382-008-0443-1 (2009)
+
+This namelist is part of the ESMValTool
+###############################################################################
 </namelist_summary>
 
 <GLOBAL>
   <write_plots type="boolean">        True                      </write_plots>
   <write_netcdf type="boolean">       True                      </write_netcdf>
   <force_processing type="boolean">   False                     </force_processing>
-  <wrk_dir type="path">               ./work                    </wrk_dir>
-  <plot_dir type="path">              ./work/plots              </plot_dir>
-  <climo_dir type="path">             ./work/climo              </climo_dir>
+  <wrk_dir type="path">               @{WORKPATH}               </wrk_dir>
+  <plot_dir type="path">              @{PLOTPATH}               </plot_dir>
+  <climo_dir type="path">             @{CLIMOPATH}              </climo_dir>
   <write_plot_vars type="boolean">    True                      </write_plot_vars>
   <max_data_filesize type="integer">  100                       </max_data_filesize>
   <max_data_blocksize type="integer"> 500                       </max_data_blocksize>
@@ -44,8 +56,8 @@ NOTES: This namelist is part of the ESMVal tool
   <model> CMIP5  HadGEM2-A    day   amip r1i1p1 1985 1990  /home/m300028/shared/dev/svn/ESMVAL/data </model>
   <model> CMIP5  MRI-CGCM3    day   amip r1i1p1 1985 1990  /home/m300028/shared/dev/svn/ESMVAL/data </model>
 -->
-    <model> CMIP5_ETHZ MIROC5     MIP_VAR_DEF amip r1i1p1 1985 1985 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
-    <model> CMIP5_ETHZ MPI-ESM-LR MIP_VAR_DEF amip r1i1p1 1985 1985 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
+    <model> CMIP5_ETHZ MIROC5     MIP_VAR_DEF amip r1i1p1 1985 1985 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model> CMIP5_ETHZ MPI-ESM-LR MIP_VAR_DEF amip r1i1p1 1985 1985 @{MODELPATH}/ETHZ_CMIP5/ </model>
 </MODELS>
 
 <DIAGNOSTICS>

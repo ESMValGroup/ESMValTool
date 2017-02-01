@@ -1,33 +1,29 @@
 <namelist>
 <namelist_summary>
-
+###############################################################################
 namelist_mjo_mean_state.xml
 
 Description
-The MJO diagnostics are developed by the US CLIVAR MJO Working Group.
-
+The MJO diagnostics are developed by the US CLIVAR MJO Working Group
 The majority of scripts are based on example scripts
-at http://ncl.ucar.edu/Applications/mjoclivar.shtml.
+at http://ncl.ucar.edu/Applications/mjoclivar.shtml
+This namelist is configured for monthly diagnostics
 
-this namelist is configured for monthly diagnostics.
-
-Author(s)
+Authors
 Shiyu Wang (SMHI, Sweden - Shiyu.Wang@smhi.se)
-
-Contributor(s)
 Martin Evaldsson (SMHI, Sweden - Martin.Evaldsson@smhi.se)
 
-Reference(s)
-CLIVAR Madden–Julian Oscillation Working Group: MJO Simulation Diagnostics. J. Climate, 22,
-3006–3030. doi: http://dx.doi.org/10.1175/2008JCLI2731.1 , 2009
+Project
+EMBRACE
 
-Kim, D., Sperber,K., Stern,W., Waliser,D., Kang, I.-S., Maloney, E., Wang, W., Weickmann, K.,
-Benedict, J., Khairoutdinov, M.,  Lee, M.-I., Neale, R., Suarez, M., Thayer-Calder, K., and Zhang,
- G. : Application of MJO Simulation Diagnostics to Climate Models. J. Climate, 22, 6413–6436.
+References
+CLIVAR Madden-Julian Oscillation Working Group, J. Climate, 22, 3006–3030,
+doi: http://dx.doi.org/10.1175/2008JCLI2731.1 (2009)
+
+Kim, D. et al., J. Climate, 22, 6413–6436, doi:10.1175/2009JCLI3063.1 (2009)
 
 This namelist is part of the ESMValTool
-ESMValTool project PI: Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
-
+###############################################################################
 </namelist_summary>
 
 <GLOBAL>

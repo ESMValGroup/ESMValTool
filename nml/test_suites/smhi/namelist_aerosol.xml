@@ -1,14 +1,31 @@
 <namelist>
 <namelist_summary>
-========================================================================
-DESCRIPTION: namelist_aerosol.xml is the master namelist for the aerosol
-             diagnostics of the ESMVal tool.
+###############################################################################
+namelist_aerosol.xml
 
-AUTHORS: Mattia Righi (mattia.righi@dlr.de)
+Description
+Master namelist for the aerosol diagnostics of the ESVMal tool. It includes
+vertical profiles of aerosol concentrations, aerosol size distributions,
+surface level aerosol concentations compared with station data, aerosol optical
+depth compared with station data and satellite observations
 
-NOTES: This namelist is part of the ESMVal tool
-       (PIs: Veronika Eyring, Klaus Wyser)
-========================================================================
+Author
+Mattia Righi (DLR, Germany - mattia.righi@dlr.de)
+
+Contributors
+Christopher Kaiser (DLR, Germany - christopher.kaiser@dlr.de)
+
+Projects
+DLR VEU
+DLR ESMVal
+
+References
+Lauer et al., Atmos. Chem. Phys., 5, 3251-3276, doi:10.5194/acp-5-3251-2005 (2005)
+Aquila et al., Geosci. Model Dev., 4 , 325-355, doi:10.5194/gmd-4-325-2011 (2011)
+Righi et al., Atmos. Chem. Phys., 13, 9939-9970, doi:10.5194/acp-13-9939-2013 (2013)
+
+This namelist is part of the ESMValTool
+###############################################################################
 </namelist_summary>
 
 <GLOBAL>

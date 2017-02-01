@@ -63,7 +63,6 @@
 ;;
 ;;#############################################################################
 
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
 load "./reformat_scripts/obs/reformat_obs_func-local.ncl"
 
 function get_settings(res[1]:logical)
@@ -71,9 +70,9 @@ function get_settings(res[1]:logical)
 begin
     ;; Input/ouput/working foldesr
 ;    res@raw_data_inputfile = "/nobackup/rossby17/sm_maeva/tmp/tmp/in/precip.mon.mean.nc"
-    res@raw_data_inputfile = "/export/pa_data01/ESMVal/obs/RAW/Tier2/CMAP/precip.mon.mean.nc"
+    res@raw_data_inputfile = getenv("ESMValTool_RAWOBSPATH") + "/Tier2/CMAP/precip.mon.mean.nc"
 ;    res@processed_data_folder = "/nobackup/rossby17/sm_maeva/tmp/tmp/out/"
-    res@processed_data_folder = "/export/pa_data02/ESMVal/obs/Tier2/CMAP/"
+    res@processed_data_folder = getenv("ESMValTool_OBSPATH") + "/Tier2/CMAP/"
 ;    res@start_year = 1980
     res@start_year = 1979
     res@end_year = 2013

@@ -1,28 +1,30 @@
 <namelist>
+<include href="./config_private.xml"/>
 <namelist_summary>
+###############################################################################
 namelist_DiurnalCycle_box_SFCflux.xml
 
 Description
 Computes mean diurnal cycle of surface radiation over specific boxes
-and seasons.
+and seasons
 
-Author(s)
+Authors
 Catherine Rio (LMD, France - catherine.rio@lmd.jussieu.fr)
 
-Contributor(s)
-
-Reference(s)
+Project
+EMBRACE
 
 This namelist is part of the ESMValTool
-ESMValTool project PI: Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
+###############################################################################
 </namelist_summary>
+
 <GLOBAL>
     <write_plots type="boolean">                True  </write_plots>
     <write_netcdf type="boolean">               True  </write_netcdf>
     <force_processing type="boolean">          False  </force_processing>
-    <wrk_dir type="path">                     ./work/ </wrk_dir>
-    <plot_dir type="path">              ./work/plots/ </plot_dir>
-    <climo_dir type="path">             ./work/climo/ </climo_dir>
+    <wrk_dir type="path">                @{WORKPATH}  </wrk_dir>
+    <plot_dir type="path">               @{PLOTPATH}  </plot_dir>
+    <climo_dir type="path">              @{CLIMOPATH} </climo_dir>
     <write_plot_vars type="boolean">            True  </write_plot_vars>
     <max_data_filesize type="integer">           100  </max_data_filesize>
     <max_data_blocksize type="integer">          500  </max_data_blocksize>
@@ -33,7 +35,7 @@ ESMValTool project PI: Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
 </GLOBAL>
 
 <MODELS>       
-   <model> CMIP5_ETHZ IPSL-CM5A-LR 3hr amip r1i1p1 2004 2004 /export/pa_data02/ESMVal/model/ETHZ_CMIP5/ </model>
+   <model> CMIP5_ETHZ IPSL-CM5A-LR 3hr amip r1i1p1 2004 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
 </MODELS>
 
 <DIAGNOSTICS>
@@ -77,7 +79,7 @@ ESMValTool project PI: Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
     <diag_script cfg="cfg_DiurnalCycle_EEP_SON.ncl">    DiurnalCycle_box.ncl </diag_script>
     <diag_script cfg="cfg_DiurnalCycle_WEP_SON.ncl">    DiurnalCycle_box.ncl </diag_script>-->
 
-    <model id="ceres"> CMIP5 CERES-SYN1deg 3hr observation r1i1p1 2004 2004 /export/pa_data02/ESMVal/obs/Tier3/CERES-SYN1deg </model>
+    <model id="ceres"> CMIP5 CERES-SYN1deg 3hr observation r1i1p1 2004 2004 @{OBSPATH}/Tier3/CERES-SYN1deg </model>
 </diag>
 
 <diag>
@@ -120,7 +122,7 @@ ESMValTool project PI: Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
     <diag_script cfg="cfg_DiurnalCycle_EEP_SON.ncl">    DiurnalCycle_box.ncl  </diag_script>
     <diag_script cfg="cfg_DiurnalCycle_WEP_SON.ncl">    DiurnalCycle_box.ncl  </diag_script>-->
 
-    <model id="ceres"> CMIP5 CERES-SYN1deg 3hr observation r1i1p1 2004 2004 /export/pa_data02/ESMVal/obs/Tier3/CERES-SYN1deg </model>
+    <model id="ceres"> CMIP5 CERES-SYN1deg 3hr observation r1i1p1 2004 2004 @{OBSPATH}/Tier3/CERES-SYN1deg </model>
 </diag>
 
 <diag>
@@ -163,7 +165,7 @@ ESMValTool project PI: Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
     <diag_script cfg="cfg_DiurnalCycle_EEP_SON.ncl">    DiurnalCycle_box.ncl  </diag_script>
     <diag_script cfg="cfg_DiurnalCycle_WEP_SON.ncl">    DiurnalCycle_box.ncl  </diag_script>-->
 
-    <model id="ceres"> CMIP5 CERES-SYN1deg 3hr observation r1i1p1 2004 2004 /export/pa_data02/ESMVal/obs/Tier3/CERES-SYN1deg </model>
+    <model id="ceres"> CMIP5 CERES-SYN1deg 3hr observation r1i1p1 2004 2004 @{OBSPATH}/Tier3/CERES-SYN1deg </model>
 </diag>
 
 
@@ -207,7 +209,7 @@ ESMValTool project PI: Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
     <diag_script cfg="cfg_DiurnalCycle_EEP_SON.ncl">    DiurnalCycle_box.ncl  </diag_script>
     <diag_script cfg="cfg_DiurnalCycle_WEP_SON.ncl">    DiurnalCycle_box.ncl  </diag_script>-->
 
-    <model id="ceres"> CMIP5 CERES-SYN1deg 3hr observation r1i1p1 2004 2004 /export/pa_data02/ESMVal/obs/Tier3/CERES-SYN1deg </model>
+    <model id="ceres"> CMIP5 CERES-SYN1deg 3hr observation r1i1p1 2004 2004 @{OBSPATH}/Tier3/CERES-SYN1deg </model>
 </diag>
 
 <diag>
@@ -250,7 +252,7 @@ ESMValTool project PI: Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
      <diag_script cfg="cfg_DiurnalCycle_EEP_SON.ncl">    DiurnalCycle_box.ncl  </diag_script>
      <diag_script cfg="cfg_DiurnalCycle_WEP_SON.ncl">    DiurnalCycle_box.ncl  </diag_script>-->
 
-    <model id="ceres"> CMIP5 CERES-SYN1deg 3hr observation r1i1p1 2004 2004 /export/pa_data02/ESMVal/obs/Tier3/CERES-SYN1deg </model>
+    <model id="ceres"> CMIP5 CERES-SYN1deg 3hr observation r1i1p1 2004 2004 @{OBSPATH}/Tier3/CERES-SYN1deg </model>
 </diag>
 
 <diag>
@@ -293,7 +295,7 @@ ESMValTool project PI: Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
     <diag_script cfg="cfg_DiurnalCycle_EEP_SON.ncl">    DiurnalCycle_box.ncl  </diag_script>
     <diag_script cfg="cfg_DiurnalCycle_WEP_SON.ncl">    DiurnalCycle_box.ncl  </diag_script>-->
 
-    <model id="ceres"> CMIP5 CERES-SYN1deg 3hr observation r1i1p1 2004 2004 /export/pa_data02/ESMVal/obs/Tier3/CERES-SYN1deg </model>
+    <model id="ceres"> CMIP5 CERES-SYN1deg 3hr observation r1i1p1 2004 2004 @{OBSPATH}/Tier3/CERES-SYN1deg </model>
 </diag>
 
 <diag>
@@ -336,7 +338,7 @@ ESMValTool project PI: Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
     <diag_script cfg="cfg_DiurnalCycle_EEP_SON.ncl">    DiurnalCycle_box.ncl  </diag_script>
     <diag_script cfg="cfg_DiurnalCycle_WEP_SON.ncl">    DiurnalCycle_box.ncl  </diag_script>-->
 
-    <model id="ceres"> CMIP5 CERES-SYN1deg 3hr observation r1i1p1 2004 2004 /export/pa_data02/ESMVal/obs/Tier3/CERES-SYN1deg </model>
+    <model id="ceres"> CMIP5 CERES-SYN1deg 3hr observation r1i1p1 2004 2004 @{OBSPATH}/Tier3/CERES-SYN1deg </model>
 </diag>
 </DIAGNOSTICS>
 </namelist>
