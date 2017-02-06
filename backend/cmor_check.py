@@ -6,20 +6,30 @@ class CMORCheck(object):
     def __init__(self, cube):
         self.cube = cube
         self.field_type = None
+        self._errors = list()
 
     def check(self):
-        try:
-            self._check_rank()
-        except CMORCheckError:
-            return False
-        return True
+        self._check_rank()
+        self._is_correct()
+
 
     def _check_rank(self):
         # Field_type is like T3m or T3Om
         rank = int(self.field_type[1])
         dim_coords = self.cube.coords(dim_coord=True)
         if len(dim_coords) != rank:
-            raise CMORCheckError('Coordinates does not match')
+            self.report_error('Coordinates does not match')
+
+    def report_error(self, message, *args):
+        self._errors.append(message.format(*args))
+
+    def _is_correct(self):
+        if len(self._errors) > 0:
+            for error in self._errors:
+                print(error)
+            raise CMORCheckError('There were errors in varible {0}'.format(self.cube.standard_name))
+
+
 
 
 class CMORCheckError(Exception):
