@@ -1,6 +1,8 @@
 import numpy as np
 import iris
 import os
+import json
+
 iris.FUTURE.cell_datetime_objects = True
 iris.FUTURE.netcdf_promote = True
 
@@ -26,6 +28,13 @@ class CMORCheck(object):
         self.cube = cube
         self.field_type = None
         self._errors = list()
+        self._cmor_tables_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'cmip6-cmor-tables',
+                                                'Tables')
+        self._load_coord_information()
+
+    def _load_coord_information(self):
+        json_data = open(os.path.join(self._cmor_tables_folder, 'CMIP6_coordinate.json')).read()
+        self.json_data = json.loads(json_data)
 
     def check(self):
         self._check_rank()
