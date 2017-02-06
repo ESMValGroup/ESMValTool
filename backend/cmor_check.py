@@ -29,6 +29,12 @@ class CMORCheck(object):
 
     def check(self):
         self._check_rank()
+        self._check_dim_names()
+        self._check_coords()
+        self._check_time_coord()
+        self._check_var_metadata()
+        self._check_fill_value()
+        self._check_data_range()
 
         if len(self._errors) > 0:
             for error in self._errors:
@@ -37,45 +43,54 @@ class CMORCheck(object):
 
     def _check_rank(self):
         # Field_type is like T3m or T3Om
-        dim_names = FIELD_TYPES[self.field_type]
-
         # Check number of dim_coords matches rank required
+        dim_names = FIELD_TYPES[self.field_type]
         rank = len(dim_names)
         dim_coords = self.cube.coords(dim_coords=True)
         if len(dim_coords) != rank:
             self.report_error('Coordinate rank does not match')
 
+    def _check_dim_names(self):
         # Check names of dimensions
+        dim_names = FIELD_TYPES[self.field_type]
         for coord_name in dim_names:
             if not self.cube.coords(coord_name):
                 self.report_error('Coordinate {} does not exist', coord_name)
 
+    def _check_time_coord(self, coord):
+        coord = cube.coord('time')
+        if not coord.units.is_time():
+            self.report_error('Coord time does not have time units')
+        if not coord.units.calendar:
+            self.report_error('Coord time units does not contain a calendar')
+        if not coord.is_monotonic():
+             self.report_error('Coord time is not monotonic')
+
+    def _check_coords(self):
         # Check metadata for dim_coords
+        dim_coords = cube.coords(dim_coords=True)
         for coord in dim_coords:
-            # Check units
-            if str(coord.units) != DIM_COORD_UNITS[coord.name()]:
-                self.report_error('Units for {0} are {1}, not {2}', coord.name(), coord.units,
-                                  DIM_COORD_UNITS[coord.name()])
-            # Check calendar for time coordinates
-            if coord.name() == 'time':
-                if not coord.units.calendar:
-                    self.report_error('Coord time does not contain a calendar')
-            # Check interval
-                # Examining cell_methods
-            # Check monotonicity
-            if not coord.is_monotonic():
-                self.report_error('Coord {} is not monotonic', coord.name())
-            if coord.name() == 'air_pressure':
-                # Given we know coord is monotonic, can just compare first two points
-                if coord.points[0] < coord.points[1]:
-                    self.report_error('Coord air_pressure is not decreasing')
-            # Check ranges
-            if coord.name() == 'longitude':
-                if np.any(np.logical_or(coord.points < 0.0, coord.points >= 360.0)):
-                    self.report_error('Coord longitude is out of bounds')
-            if coord.name() == 'latitude':
-                if np.any(np.logical_or(coord.points < -90.0, coord.points > 90.0)):
-                    self.report_error('Coord latitude is out of bounds')
+            if coord.name() != 'time':
+                # Check units
+                if str(coord.units) != DIM_COORD_UNITS[coord.name()]:
+                    self.report_error('Units for {0} are {1}, not {2}', coord.name(),
+                                      coord.units, DIM_COORD_UNITS[coord.name()])
+                # Check interval
+                    # Examining cell_methods
+                # Check monotonicity
+                if not coord.is_monotonic():
+                    self.report_error('Coord {} is not monotonic', coord.name())
+                if coord.name() == 'air_pressure':
+                    # Given we know coord is monotonic, can just compare first two points
+                    if coord.points[0] < coord.points[1]:
+                        self.report_error('Coord air_pressure is not decreasing')
+                # Check ranges
+                if coord.name() == 'longitude':
+                    if np.any(np.logical_or(coord.points < 0.0, coord.points >= 360.0)):
+                        self.report_error('Coord longitude is out of bounds')
+                if coord.name() == 'latitude':
+                    if np.any(np.logical_or(coord.points < -90.0, coord.points > 90.0)):
+                        self.report_error('Coord latitude is out of bounds')
 
     def report_error(self, message, *args):
         self._errors.append(message.format(*args))
