@@ -8,6 +8,7 @@ iris.FUTURE.netcdf_promote = True
 
 FIELD_TYPES = {
     'T3M': ('time', 'air_pressure', 'latitude', 'longitude'),
+    'tas': ('longitude', 'latitude', 'time', 'height2m'),
 }
 
 DIM_COORD_UNITS = {
@@ -26,7 +27,7 @@ class CMORCheck(object):
 
     def __init__(self, cube):
         self.cube = cube
-        self.field_type = None
+        self.field_type = cube.var_name
         self._errors = list()
         self._cmor_tables_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'cmip6-cmor-tables',
                                                 'Tables')
