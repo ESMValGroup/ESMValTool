@@ -9,21 +9,25 @@ iris.FUTURE.netcdf_promote = True
 
 class CMORCheck(object):
 
-    def __init__(self, cube):
+    def __init__(self, cube, fail_on_error=False):
         self.cube = cube
+        self._failerr = fail_on_error
         self._errors = list()
-        self._cmor_tables_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'cmip6-cmor-tables',
+        self._cmor_tables_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                                'cmip6-cmor-tables',
                                                 'Tables')
         self._load_variable_information()
         self._load_coord_information()
 
     def _load_coord_information(self):
-        json_data = open(os.path.join(self._cmor_tables_folder, 'CMIP6_coordinate.json')).read()
+        json_data = open(os.path.join(self._cmor_tables_folder,
+                                      'CMIP6_coordinate.json')).read()
         self.coord_json_data = json.loads(json_data)
         self.coord_json_data = self.coord_json_data['axis_entry']
 
     def _load_variable_information(self):
-        json_data = open(os.path.join(self._cmor_tables_folder, 'CMIP6_Amon.json')).read()
+        json_data = open(os.path.join(self._cmor_tables_folder,
+                                      'CMIP6_Amon.json')).read()
         self.var_json_data = json.loads(json_data)
         self.var_json_data = self.var_json_data['variable_entry'][self.cube.var_name]
 
@@ -53,16 +57,23 @@ class CMORCheck(object):
     def _check_dim_names(self):
         if self.var_json_data['dimensions']:
             # Get names of dimension variables from variable CMOR table
-            dim_names = self.var_json_data['dimensions'].split()
-            for coord_name in dim_names:
+            var_names = self.var_json_data['dimensions'].split()
+            for var_name in var_names:
+                # Get CMOR metadata for coordinate
+                cmor = self.coord_json_data[var_name]
                 # Check for variable name in coordinate CMOR table,
                 #  get out_name as that is coordinate variable name
-                #  in variable file
-                if coord_name in self.coord_json_data:
-                    out_var_name = self.coord_json_data[coord_name]['out_name']
+                #  in variable file.
+                out_var_name = cmor['out_name']
                 # Check for out_var_name in variable coordinates
                 if not self.cube.coords(var_name=out_var_name, dim_coords=True):
-                    self.report_error('Coordinate {} does not exist', coord_name)
+                    self.report_error('Coordinate {} does not exist', var_name)
+                else:
+                    coord = self.cube.coord(var_name=out_var_name, dim_coords=True)
+                    if coord.standard_name != cmor['standard_name']:
+                        self.report_error('Coordinate {0} has wrong standard_name ({1}, should be {2})',
+                                          var_name, coord.standard_name,
+                                          cmor['standard_name'])
 
     def _check_time_coord(self):
         coord = self.cube.coord('time')
@@ -74,18 +85,27 @@ class CMORCheck(object):
              self.report_error('Coord time is not monotonic')
 
     def _check_coords(self):
-        # Check metadata for dim_coords
-        for coord in self.cube.coords(dim_coords=True):
-            if coord.name() != 'time':
+        if self.var_json_data['dimensions']:
+            # Get names of dimension variables from variable CMOR table
+            var_names = self.var_json_data['dimensions'].split()
+            # Remove time from list as it will be treated differently
+            var_names.remove('time')
+            for var_name in var_names:
                 # Get CMOR metadata for coordinate
-                cmor_table = self.coord_json_data[coord.var_name]
+                cmor = self.coord_json_data[var_name]
+                # Check for variable name in coordinate CMOR table,
+                #  get out_name as that is coordinate variable name
+                #  in variable file.
+                out_var_name = cmor['out_name']
+                # Get coordinate out_var_name as it exists!
+                coord = self.cube.coord(var_name=out_var_name, dim_coords=True)
 
                 # Check units
-                if cmor_table['units']:
-                    if str(coord.units) != cmor_table['units']:
-                        self.report_error('Units for {0} are {1}, not {2}',
-                                          coord.name(), coord.units,
-                                          cmor_table['units'])
+                if cmor['units']:
+                    if str(coord.units) != cmor['units']:
+                        self.report_error('Units for {0} is {1}, not {2}',
+                                          var_name, coord.units,
+                                          cmor['units'])
 
                 # Check monotonicity and direction
                 if not coord.is_monotonic():
@@ -99,17 +119,21 @@ class CMORCheck(object):
                             self.report_error('Coord {} is not decreasing', coord.name())
 
                 # Check coordinate value ranges
-                if cmor_table['valid_min']:
-                    valid_min = float(cmor_table['valid_min'])
+                if cmor['valid_min']:
+                    valid_min = float(cmor['valid_min'])
                     if np.any(coord.points < valid_min):
                         self.report_error('Coord {} has values < valid_min', coord.name())
-                if cmor_table['valid_max']:
-                    valid_max = float(cmor_table['valid_max'])
+                if cmor['valid_max']:
+                    valid_max = float(cmor['valid_max'])
                     if np.any(coord.points > valid_max):
                         self.report_error('Coord {} has values > valid_max', coord.name())
 
     def report_error(self, message, *args):
-        self._errors.append(message.format(*args))
+        msg = message.format(*args)
+        if self._failerr:
+            raise CMORCheckError(msg)
+        else:
+            self._errors.append(msg)
 
 
 class CMORCheckError(Exception):
@@ -119,9 +143,9 @@ class CMORCheckError(Exception):
 def main():
     #data_folder = '/Users/nube/esmval_data'
     data_folder = '/home/paul/ESMValTool/data/BACKEND-DATA'
-    cube = iris.load_cube(os.path.join(data_folder, 'ETHZ_CMIP5/historical/Amon/ta/CMCC-CESM/r1i1p1',
-                                       'ta_Amon_CMCC-CESM_historical_r1i1p1_200001-200212.nc'))
-    checker = CMORCheck(cube)
+    example_data = 'ETHZ_CMIP5/historical/Amon/ta/CMCC-CESM/r1i1p1'
+    cube = iris.load_cube(os.path.join(data_folder, example_data, '*.nc'))
+    checker = CMORCheck(cube, fail_on_error=True)
     checker.check()
 
 if __name__ == '__main__':
