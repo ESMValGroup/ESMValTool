@@ -43,7 +43,8 @@ class CMORCheck(object):
         if len(self._errors) > 0:
             for error in self._errors:
                 print(error)
-            raise CMORCheckError('There were errors in variable {0}'.format(self.cube.standard_name))
+            raise CMORCheckError('There were errors in variable {0}: \n{1}'.format(self.cube.standard_name,
+                                                                                   '\n'.join(self._errors)))
 
     def _check_rank(self):
         if self.var_json_data['dimensions']:
