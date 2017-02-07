@@ -68,9 +68,6 @@ class CMORCheck(object):
             msg = msg.format(self.cube.standard_name, '\n '.join(self._errors))
             raise CMORCheckError(msg)
 
-    def has_errors(self):
-        return len(self._errors) > 0
-
     def _check_fill_value(self):
         pass
 
@@ -160,15 +157,6 @@ class CMORCheck(object):
                 else:
                     self.report_error('Coordinate {} does not exist', var_name)
 
-    def _check_time_coord(self):
-        try:
-            coord = self.cube.coord('time', dim_coords=True)
-        except iris.exceptions.CoordinateNotFoundError:
-            return
-
-        if not coord.units.is_time_reference():
-            self.report_error('Coord time does not have time reference units')
-
     def _check_coords(self):
         if self.var_json_data['dimensions']:
             # Get names of dimension variables from variable CMOR table
@@ -187,46 +175,64 @@ class CMORCheck(object):
                 except iris.exceptions.CoordinateNotFoundError:
                     continue
 
-                # Check units
-                if cmor['units']:
-                    if str(coord.units) != cmor['units']:
-                        self.report_error('units for {} is {}, not {}',
-                                          var_name, coord.units, cmor['units'])
+                self._check_coord(cmor, coord, var_name)
 
-                # Check monotonicity and direction
-                if not coord.is_monotonic():
-                    self.report_error('Coord {} is not monotonic', var_name)
-                if cmor['stored_direction']:
-                    if cmor['stored_direction'] == 'increasing':
-                        if coord.points[0] > coord.points[1]:
-                            msg = 'Coord {} is not increasing'
-                            self.report_error(msg, var_name)
-                    elif cmor['stored_direction'] == 'decreasing':
-                        if coord.points[0] < coord.points[1]:
-                            msg = 'Coord {} is not decreasing'
-                            self.report_error(msg, var_name)
+    def _check_coord(self, cmor, coord, var_name):
+        # Check units
+        if cmor['units']:
+            if str(coord.units) != cmor['units']:
+                self.report_error('units for {} is {}, not {}',
+                                  var_name, coord.units, cmor['units'])
+        self._check_coord_monotonicity_and_direction(cmor, coord, var_name)
+        self._check_coord_values(cmor, coord, var_name)
 
-                # Check requested coordinate values exist in coord.points
-                if cmor['requested']:
-                    cmor_points = [float(val) for val in cmor['requested']]
-                    coord_points = list(coord.points)
-                    for point in cmor_points:
-                        if point not in coord_points:
-                            msg = 'Coord {} does not contain {} {}'
-                            self.report_error(msg, var_name, str(point),
-                                              str(coord.units))
+    def _check_coord_monotonicity_and_direction(self, cmor, coord, var_name):
+        if not coord.is_monotonic():
+            self.report_error('Coord {} is not monotonic', var_name)
+        if cmor['stored_direction']:
+            if cmor['stored_direction'] == 'increasing':
+                if coord.points[0] > coord.points[1]:
+                    msg = 'Coord {} is not increasing'
+                    self.report_error(msg, var_name)
+            elif cmor['stored_direction'] == 'decreasing':
+                if coord.points[0] < coord.points[1]:
+                    msg = 'Coord {} is not decreasing'
+                    self.report_error(msg, var_name)
 
-                # Check coordinate value ranges
-                if cmor['valid_min']:
-                    valid_min = float(cmor['valid_min'])
-                    if np.any(coord.points < valid_min):
-                        msg = 'Coord {} has values < valid_min ({})'
-                        self.report_error(msg, var_name, valid_min)
-                if cmor['valid_max']:
-                    valid_max = float(cmor['valid_max'])
-                    if np.any(coord.points > valid_max):
-                        msg = 'Coord {} has values > valid_max ({})'
-                        self.report_error(msg, var_name, valid_max)
+    def _check_coord_values(self, cmor, coord, var_name):
+        # Check requested coordinate values exist in coord.points
+        if cmor['requested']:
+            cmor_points = [float(val) for val in cmor['requested']]
+            coord_points = list(coord.points)
+            for point in cmor_points:
+                if point not in coord_points:
+                    msg = 'Coord {} does not contain {} {}'
+                    self.report_error(msg, var_name, str(point),
+                                      str(coord.units))
+
+        # Check coordinate value ranges
+        if cmor['valid_min']:
+            valid_min = float(cmor['valid_min'])
+            if np.any(coord.points < valid_min):
+                msg = 'Coord {} has values < valid_min ({})'
+                self.report_error(msg, var_name, valid_min)
+        if cmor['valid_max']:
+            valid_max = float(cmor['valid_max'])
+            if np.any(coord.points > valid_max):
+                msg = 'Coord {} has values > valid_max ({})'
+                self.report_error(msg, var_name, valid_max)
+
+    def _check_time_coord(self):
+        try:
+            coord = self.cube.coord('time', dim_coords=True)
+        except iris.exceptions.CoordinateNotFoundError:
+            return
+
+        if not coord.units.is_time_reference():
+            self.report_error('Coord time does not have time reference units')
+
+    def has_errors(self):
+        return len(self._errors) > 0
 
     def report_error(self, message, *args):
         msg = message.format(*args)
