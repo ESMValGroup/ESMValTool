@@ -35,16 +35,17 @@ class CMORCheck(object):
         self._check_rank()
         self._check_dim_names()
         self._check_coords()
-        #self._check_time_coord()
-        #self._check_var_metadata()
-        #self._check_fill_value()
-        #self._check_data_range()
+        # self._check_time_coord()
+        # self._check_var_metadata()
+        # self._check_fill_value()
+        # self._check_data_range()
 
-        if len(self._errors) > 0:
-            for error in self._errors:
-                print(error)
+        if self.has_errors():
             raise CMORCheckError('There were errors in variable {0}: \n{1}'.format(self.cube.standard_name,
                                                                                    '\n'.join(self._errors)))
+
+    def has_errors(self):
+        return len(self._errors) > 0
 
     def _check_rank(self):
         if self.var_json_data['dimensions']:
@@ -99,6 +100,8 @@ class CMORCheck(object):
                 #  in variable file.
                 out_var_name = cmor['out_name']
                 # Get coordinate out_var_name as it exists!
+                if out_var_name not in self.cube.coords():
+                    continue
                 coord = self.cube.coord(var_name=out_var_name, dim_coords=True)
 
                 # Check units
@@ -129,11 +132,11 @@ class CMORCheck(object):
                 if cmor['valid_min']:
                     valid_min = float(cmor['valid_min'])
                     if np.any(coord.points < valid_min):
-                        self.report_error('Coord {} has values < valid_min', coord.name())
+                        self.report_error('Coord {} has values < valid_min ({})', coord.name(), valid_min)
                 if cmor['valid_max']:
                     valid_max = float(cmor['valid_max'])
                     if np.any(coord.points > valid_max):
-                        self.report_error('Coord {} has values > valid_max', coord.name())
+                        self.report_error('Coord {} has values > valid_max ({})', coord.name(), valid_max)
 
     def report_error(self, message, *args):
         msg = message.format(*args)
@@ -153,7 +156,10 @@ def main():
     example_data = 'ETHZ_CMIP5/historical/Amon/ta/CMCC-CESM/r1i1p1'
     cube = iris.load_cube(os.path.join(data_folder, example_data, '*.nc'))
     checker = CMORCheck(cube, fail_on_error=True)
-    checker.check()
+    try:
+        checker.check()
+    except CMORCheckError, ex:
+        print(ex)
 
 if __name__ == '__main__':
     main()

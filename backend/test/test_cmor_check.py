@@ -7,14 +7,13 @@ Unit tests for the CMORCheck class.
 """
 
 # Standard library imports
-import os, re, sys
+import os, sys
 import unittest
 import json
 
 # Third-party imports
 import numpy
 import iris
-from iris.cube import Cube
 
 
 # Temporary path fix
@@ -61,7 +60,6 @@ def _create_good_cube(get_var, set_time_units="days since 1950-01-01 00:00:00"):
     spec = _parse_mip_table("CMIP6_Amon.json", get_var="tas")
     coord_spec = _parse_mip_table("CMIP6_coordinate.json")
 
-    axis_data = numpy.array(range(-50, 51, 5), 'f')
 
     coords = []
     for i, dim in enumerate(spec["dimensions"].split()):
@@ -70,29 +68,39 @@ def _create_good_cube(get_var, set_time_units="days since 1950-01-01 00:00:00"):
         # Check for time axis
         if dim_spec["units"].startswith("days since "):
             dim_spec["units"] = set_time_units
-            
-        coord = iris.coords.DimCoord(axis_data,
-                                   standard_name=dim_spec["standard_name"],
-                                   long_name=dim_spec["long_name"],
-                                   var_name=dim_spec["out_name"], 
-                                   units=dim_spec["units"])
+        valid_min = dim_spec['valid_min']
+        if valid_min:
+            valid_min = float(valid_min)
+        else:
+            valid_min = 0.0
+        valid_max = dim_spec['valid_max']
+        if valid_max:
+            valid_max = float(valid_max)
+        else:
+            valid_max = 100.0
+
+        coord = iris.coords.DimCoord(numpy.linspace(valid_min, valid_max, 20),
+                                     standard_name=dim_spec["standard_name"],
+                                     long_name=dim_spec["long_name"],
+                                     var_name=dim_spec["out_name"],
+                                     units=dim_spec["units"])
         coords.append((coord, i)) 
          
-    var_data = numpy.ones(len(coords) * [len(axis_data)], 'f')
-    cb = iris.cube.Cube(var_data, 
-              standard_name=spec["standard_name"], 
-              long_name=spec["long_name"], 
-              var_name=spec["out_name"], 
-              units=spec["units"], 
-              attributes=None, 
-              cell_methods=spec["cell_methods"]) 
+    var_data = numpy.ones(len(coords) * [20], 'f')
+    cb = iris.cube.Cube(var_data,
+                        standard_name=spec["standard_name"],
+                        long_name=spec["long_name"],
+                        var_name=spec["out_name"],
+                        units=spec["units"],
+                        attributes=None,
+                        cell_methods=spec["cell_methods"])
+    for coord, i in coords:
+        cb.add_dim_coord(coord, i)
 
     return cb
 
 
 def _create_bad_cube(get_var, set_time_units="days since 1950-01-01 00:00:00"):
-
-    axis_data = numpy.array(range(-50, 51, 5), 'f')
 
     coords = []
     coord_spec = _parse_mip_table("CMIP6_coordinate.json")
@@ -102,15 +110,24 @@ def _create_bad_cube(get_var, set_time_units="days since 1950-01-01 00:00:00"):
         # Check for time axis
         if dim_spec["units"].startswith("days since "):
             dim_spec["units"] = set_time_units
-
-        coord = iris.coords.DimCoord(axis_data,
+        valid_min = dim_spec['valid_min']
+        if valid_min:
+            valid_min = float(valid_min)
+        else:
+            valid_min = 0.0
+        valid_max = dim_spec['valid_max']
+        if valid_max:
+            valid_max = float(valid_max)
+        else:
+            valid_max = 100.0
+        coord = iris.coords.DimCoord(numpy.linspace(valid_min, valid_max, 20),
                                      standard_name=dim_spec["standard_name"],
                                      long_name=dim_spec["long_name"],
                                      var_name=dim_spec["out_name"],
                                      units=dim_spec["units"])
         coords.append((coord, i))
 
-    var_data = numpy.ones(len(coords) * [len(axis_data)], 'f')
+    var_data = numpy.ones(len(coords) * [20], 'f')
     cb = iris.cube.Cube(var_data,
                         standard_name="geopotential_height",
                         long_name="Air Temperature",
@@ -118,11 +135,13 @@ def _create_bad_cube(get_var, set_time_units="days since 1950-01-01 00:00:00"):
                         units="K",
                         attributes=None,
                         cell_methods="")
+    for coord, i in coords:
+        cb.add_dim_coord(coord, i)
 
     return cb
 
 
-class TestCMORCheckFailOnErrorArg(unittest.TestCase):
+class TestCMORCheckErrorReporting(unittest.TestCase):
 
     def setUp(self):
         self.varid = "tas"
@@ -138,9 +157,20 @@ class TestCMORCheckFailOnErrorArg(unittest.TestCase):
     def test_failed_on_error_false(self):
         self.checker = cmor_check.CMORCheck(self.cube, fail_on_error=False)
         self.checker._check_rank()
-        self.checker._check_dim_names()
 
+        self.checker._check_dim_names()
         assert len(self.checker._errors) > 1
+
+    def test_report_error(self):
+        checker = cmor_check.CMORCheck(self.cube)
+        self.assertFalse(checker.has_errors())
+        checker.report_error('New error: {}', 'something failed')
+        self.assertTrue(checker.has_errors())
+
+    def test_report_raises(self):
+        checker = cmor_check.CMORCheck(self.cube, fail_on_error=True)
+        with self.assertRaises(cmor_check.CMORCheckError):
+            checker.report_error('New error: {}', 'something failed')
 
 
 class TestCMORCheckGoodCube(unittest.TestCase):
