@@ -52,9 +52,9 @@ class CMORCheck(object):
         self._check_dim_names()
         self._check_coords()
         self._check_time_coord()
-        # self._check_var_metadata()
-        # self._check_fill_value()
-        # self._check_data_range()
+        self._check_var_metadata()
+        self._check_fill_value()
+        self._check_data_range()
 
         if len(self._errors) > 0:
             msg = 'There were errors in variable {0}:\n {1}'
@@ -63,6 +63,39 @@ class CMORCheck(object):
 
     def has_errors(self):
         return len(self._errors) > 0
+
+    def _check_fill_value(self):
+        pass
+
+    def _check_var_metadata(self):
+        # Check var_name
+        if self.var_json_data['out_name']:
+            if str(self.cube.var_name) != self.var_json_data['out_name']:
+                self.report_error('var_name for {0} is {1}, not {2}',
+                                  self.cube.name(), self.cube.var_name,
+                                  self.var_json_data['out_name'])
+        # Check standard_name
+        if self.var_json_data['standard_name']:
+            if str(self.cube.standard_name) != self.var_json_data['standard_name']:
+                self.report_error('standard_name for {0} is {1}, not {2}',
+                                  self.cube.name(), self.cube.standard_name,
+                                  self.var_json_data['standard_name'])
+        # Check units
+        if self.var_json_data['units']:
+            if str(self.cube.units) != self.var_json_data['units']:
+                self.report_error('Units for {0} is {1}, not {2}',
+                                  self.cube.name(), self.cube.units,
+                                  self.var_json_data['units'])
+
+    def _check_data_range(self):
+        if self.var_json_data['valid_min']:
+            valid_min = float(self.var_json_data['valid_min'])
+            if np.any(self.cube.data < valid_min):
+                self.report_error('Variable {} has values < valid_min ({})', self.cube.name(), valid_min)
+        if self.var_json_data['valid_max']:
+            valid_max = float(self.var_json_data['valid_max'])
+            if np.any(self.cube.data > valid_max):
+                self.report_error('Variable {} has values > valid_max ({})', self.cube.name(), valid_max)
 
     def _check_rank(self):
         # Need to check here that dimensions required not scalar coordinates
