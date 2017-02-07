@@ -1,6 +1,8 @@
 # Patterns to ignore in all directories
 *~
 *.pyc
+.coverage
+htmlcov
 
 # Temporary files in interface
 interface_data/curr_trace_indent.txt

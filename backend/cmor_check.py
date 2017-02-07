@@ -52,6 +52,9 @@ class CMORCheck(object):
             raise CMORCheckError('There were errors in variable {0}:\n  {1}'.format(self.cube.standard_name,
                                                                                     '\n  '.join(self._errors)))
 
+    def has_errors(self):
+        return len(self._errors) > 0
+
     def _check_rank(self):
         if self.var_json_data['dimensions']:
             # Check number of dim_coords matches rank required
@@ -101,7 +104,10 @@ class CMORCheck(object):
                 #  in variable file.
                 out_var_name = cmor['out_name']
                 # Get coordinate out_var_name as it exists!
-                coord = self.cube.coord(var_name=out_var_name, dim_coords=True)
+                try:
+                    coord = self.cube.coord(var_name=out_var_name, dim_coords=True)
+                except iris.exceptions.CoordinateNotFoundError:
+                    continue
 
                 # Check units
                 if cmor['units']:
@@ -135,11 +141,11 @@ class CMORCheck(object):
                 if cmor['valid_min']:
                     valid_min = float(cmor['valid_min'])
                     if np.any(coord.points < valid_min):
-                        self.report_error('Coord {} has values < valid_min', var_name)
+                        self.report_error('Coord {} has values < valid_min ({})', var_name, valid_min)
                 if cmor['valid_max']:
                     valid_max = float(cmor['valid_max'])
                     if np.any(coord.points > valid_max):
-                        self.report_error('Coord {} has values > valid_max', var_name)
+                        self.report_error('Coord {} has values > valid_max ({})', var_name, valid_max)
 
     def report_error(self, message, *args):
         msg = message.format(*args)
