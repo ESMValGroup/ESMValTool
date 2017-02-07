@@ -83,6 +83,9 @@ def _create_good_cube(get_var, set_time_units="days since 1850-1-1 00:00:00"):
     for coord, i in coords:
         cb.add_dim_coord(coord, i)
 
+    for coord in scalar_coords:
+        cb.add_aux_coord(coord)
+
     return cb
 
 
