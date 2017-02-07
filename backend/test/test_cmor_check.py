@@ -19,7 +19,8 @@ from iris.cube import Cube
 
 # Temporary path fix
 sys.path.extend([".", "..", "backend"])
-MIP_TABLE_DIR = os.environ.get("CMIP6_CMOR_TABLES", None)
+# MIP_TABLE_DIR = os.environ.get("CMIP6_CMOR_TABLES", None)
+MIP_TABLE_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'cmip6-cmor-tables', 'Tables')
 
 if not MIP_TABLE_DIR:
    raise Exception("Cannot find location of MIP TABLES - please set CMIP6_CMOR_TABLES environment variable.")
@@ -89,12 +90,39 @@ def _create_good_cube(get_var, set_time_units="days since 1950-01-01 00:00:00"):
     return cb
 
 
-def _create_bad_cube(get_var, set_time_units="days since 1950-01-01 00:00:00"): pass
+def _create_bad_cube(get_var, set_time_units="days since 1950-01-01 00:00:00"):
 
+    axis_data = numpy.array(range(-50, 51, 5), 'f')
+
+    coords = []
+    coord_spec = _parse_mip_table("CMIP6_coordinate.json")
+    for i, dim in enumerate(['time', 'longitude']):
+        dim_spec = coord_spec["axis_entry"][dim]
+
+        # Check for time axis
+        if dim_spec["units"].startswith("days since "):
+            dim_spec["units"] = set_time_units
+
+        coord = iris.coords.DimCoord(axis_data,
+                                     standard_name=dim_spec["standard_name"],
+                                     long_name=dim_spec["long_name"],
+                                     var_name=dim_spec["out_name"],
+                                     units=dim_spec["units"])
+        coords.append((coord, i))
+
+    var_data = numpy.ones(len(coords) * [len(axis_data)], 'f')
+    cb = iris.cube.Cube(var_data,
+                        standard_name="air_temperature",
+                        long_name="Air Temperature",
+                        var_name="tas",
+                        units="K",
+                        attributes=None,
+                        cell_methods="")
+
+    return cb
 
 
 class TestCMORCheckGoodCube(unittest.TestCase):
-
 
     def setUp(self):
         self.varid = "tas"
@@ -103,34 +131,26 @@ class TestCMORCheckGoodCube(unittest.TestCase):
         self.cube = _create_good_cube(self.varid)
         self.checker = cmor_check.CMORCheck(self.cube)
 
-
     def test_read_tas_spec(self):
         assert self.tas_spec["units"] == "K"
 
-
-    def test_check_rank(self):
+    def test_check(self):
         # Will raise exception if it fails
-        self.checker._check_rank()
+        self.checker.check()
 
 
-class NOTREADYYET(object): #_TestCMORCheckBadCube(unittest.TestCase):
-
+class TestCMORCheckBadCube(unittest.TestCase):
 
     def setUp(self):
         self.varid = "tas"
-        self.tas_spec = _parse_mip_table("CMIP6_Amon.json", get_var=self.varid)
         self.coords_dict = _parse_mip_table("CMIP6_coordinate.json")["axis_entry"]
         self.cube = _create_bad_cube(self.varid)
         self.checker = cmor_check.CMORCheck(self.cube)
 
-
-    def test_read_tas_spec(self):
-        assert self.tas_spec["units"] == "K"
-
-
-    def test_check_rank(self):
+    def test_check(self):
         # Will raise exception if it fails
-        self.checker._check_rank()
+        with self.assertRaises(cmor_check.CMORCheckError):
+            self.checker.check()
 
 
 if __name__ == "__main__":
