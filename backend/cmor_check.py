@@ -9,11 +9,13 @@ iris.FUTURE.netcdf_promote = True
 
 
 # Use this callback to fix anything Iris tries to break!
-# Also use this to prevent problems with merging and concatenation.
-def merge_protect_callback(cube, field, file):
+def merge_protect_callback(cube, field, filename):
+    # Remove attributes that cause issues with merging and concatenation
     for attr in ['creation_date', 'tracking_id', 'history']:
         if attr in cube.attributes:
             del cube.attributes[attr]
+    # Iris chooses to change longitude and latitude units to degrees
+    #  regardless of value in file
     if cube.coords('longitude'):
         cube.coord('longitude').units = 'degrees_east'
     if cube.coords('latitude'):
