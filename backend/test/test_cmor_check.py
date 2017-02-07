@@ -112,7 +112,7 @@ def _create_bad_cube(get_var, set_time_units="days since 1950-01-01 00:00:00"):
 
     var_data = numpy.ones(len(coords) * [len(axis_data)], 'f')
     cb = iris.cube.Cube(var_data,
-                        standard_name="air_temperature",
+                        standard_name="geopotential_height",
                         long_name="Air Temperature",
                         var_name="tas",
                         units="K",
@@ -122,6 +122,27 @@ def _create_bad_cube(get_var, set_time_units="days since 1950-01-01 00:00:00"):
     return cb
 
 
+class TestCMORCheckFailOnErrorArg(unittest.TestCase):
+
+    def setUp(self):
+        self.varid = "tas"
+        self.tas_spec = _parse_mip_table("CMIP6_Amon.json", get_var=self.varid)
+        self.coords_dict = _parse_mip_table("CMIP6_coordinate.json")["axis_entry"]
+        self.cube = _create_bad_cube(self.varid)
+
+    def test_failed_on_error_true(self):
+        self.checker = cmor_check.CMORCheck(self.cube, fail_on_error=True)
+        with self.assertRaises(Exception):
+            self.checker._check_rank()
+       
+    def test_failed_on_error_false(self):
+        self.checker = cmor_check.CMORCheck(self.cube, fail_on_error=False)
+        self.checker._check_rank()
+        self.checker._check_dim_names()
+
+        assert len(self.checker._errors) > 1
+
+
 class TestCMORCheckGoodCube(unittest.TestCase):
 
     def setUp(self):
@@ -129,17 +150,26 @@ class TestCMORCheckGoodCube(unittest.TestCase):
         self.tas_spec = _parse_mip_table("CMIP6_Amon.json", get_var=self.varid) 
         self.coords_dict = _parse_mip_table("CMIP6_coordinate.json")["axis_entry"]
         self.cube = _create_good_cube(self.varid)
-        self.checker = cmor_check.CMORCheck(self.cube)
+        self.checker = cmor_check.CMORCheck(self.cube, fail_on_error=True)
 
     def test_read_tas_spec(self):
         assert self.tas_spec["units"] == "K"
 
-    def test_check(self):
+    def test_check_rank(self):
         # Will raise exception if it fails
-        self.checker.check()
+        self.checker._check_rank()
+
+    def test_check_dim_names(self):
+        # Will raise exception if it fails
+        self.checker._check_dim_names()
+
+    def test_check_coords(self):
+        # Will raise exception if it fails
+        self.checker._check_coords()
 
 
-class TestCMORCheckBadCube(unittest.TestCase):
+
+if 0: #class TestCMORCheckBadCube(unittest.TestCase):
 
     def setUp(self):
         self.varid = "tas"
