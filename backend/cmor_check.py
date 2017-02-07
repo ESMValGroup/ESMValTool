@@ -12,6 +12,10 @@ def merge_protect_callback(cube, field, file):
     for attr in ['creation_date', 'tracking_id', 'history']:
         if attr in cube.attributes:
             del cube.attributes[attr]
+    if cube.coords('longitude'):
+        cube.coord('longitude').units = 'degrees_east'
+    if cube.coords('latitude'):
+        cube.coord('latitude').units = 'degrees_north'
 
 
 class CMORCheck(object):
@@ -61,11 +65,21 @@ class CMORCheck(object):
         return len(self._errors) > 0
 
     def _check_rank(self):
+        # Need to check here that dimensions required not scalar coordinates
+        # i.e. rank = #dims - #scalars
         if self.var_json_data['dimensions']:
             # Check number of dim_coords matches rank required
-            dim_names = self.var_json_data['dimensions'].split()
-            rank = len(dim_names)
+            var_names = self.var_json_data['dimensions'].split()
+            # Check for scalar dimensions
+            num_scalar_dims = 0
+            for var_name in var_names:
+                if self.coord_json_data[var_name]['value']:
+                    num_scalar_dims += 1
+            # Calculate actual rank of data
+            rank = len(var_names) - num_scalar_dims
+            # Extract dimension coordinates from cube
             dim_coords = self.cube.coords(dim_coords=True)
+            # Check number of dimension coords matches rank
             if len(dim_coords) != rank:
                 self.report_error('Coordinate rank does not match')
 
@@ -81,14 +95,14 @@ class CMORCheck(object):
                 #  in variable file.
                 out_var_name = cmor['out_name']
                 # Check for out_var_name in variable coordinates
-                if not self.cube.coords(var_name=out_var_name, dim_coords=True):
-                    self.report_error('Coordinate {} does not exist', var_name)
-                else:
-                    coord = self.cube.coord(var_name=out_var_name, dim_coords=True)
+                if self.cube.coords(var_name=out_var_name):
+                    coord = self.cube.coord(var_name=out_var_name)
                     if coord.standard_name != cmor['standard_name']:
                         self.report_error('standard_name for {0} is {1}, not {2}',
                                           var_name, coord.standard_name,
                                           cmor['standard_name'])
+                else:
+                    self.report_error('Coordinate {} does not exist', var_name)
 
     def _check_time_coord(self):
         try:
