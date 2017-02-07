@@ -72,7 +72,7 @@ class CMORCheck(object):
                 else:
                     coord = self.cube.coord(var_name=out_var_name, dim_coords=True)
                     if coord.standard_name != cmor['standard_name']:
-                        self.report_error('Coordinate {0} has wrong standard_name ({1}, should be {2})',
+                        self.report_error('standard_name for {0} is {1}, not {2}',
                                           var_name, coord.standard_name,
                                           cmor['standard_name'])
 
@@ -118,6 +118,12 @@ class CMORCheck(object):
                     elif cmor['stored_direction'] == 'decreasing':
                         if coord.points[0] < coord.points[1]:
                             self.report_error('Coord {} is not decreasing', coord.name())
+
+                # Check requested coordinate values exist in coord.points
+                if cmor['requested']:
+                    # Check requested coordinate values exist in coord.points
+                    #cmor_coords = [float(val) for val in cmor['requested']]
+                    pass
 
                 # Check coordinate value ranges
                 if cmor['valid_min']:
