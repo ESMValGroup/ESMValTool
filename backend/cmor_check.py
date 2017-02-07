@@ -100,9 +100,10 @@ class CMORCheck(object):
                 #  in variable file.
                 out_var_name = cmor['out_name']
                 # Get coordinate out_var_name as it exists!
-                if out_var_name not in self.cube.coords():
+                try:
+                    coord = self.cube.coord(var_name=out_var_name, dim_coords=True)
+                except iris.exceptions.CoordinateNotFoundError:
                     continue
-                coord = self.cube.coord(var_name=out_var_name, dim_coords=True)
 
                 # Check units
                 if cmor['units']:
