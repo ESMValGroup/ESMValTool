@@ -1,0 +1,52 @@
+GLOBAL:
+    write_plots:       True
+    write_netcdf:      True
+    force_processing:  False
+    wrk_dir:           ./work/
+    plot_dir:          ./plots/
+    preproc_dir:       ./preproc/
+    verbosity:         1
+    exit_on_warning:   False
+    output_file_type:  ps
+    force_calc:        False
+    force_gradecalc:   False
+    force_taylorcalc:  False
+
+MODELS:
+    - {name: ACCESS1-0,  project: CMIP5_ETHZ,  MIP: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /models/ETHZ_CMIP5}
+    - {name: BNU-ESM,    project: CMIP5_ETHZ,  MIP: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /models/ETHZ_CMIP5}
+    - {name: CanCM4,     project: CMIP5_ETHZ,  MIP: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /models/ETHZ_CMIP5}
+
+PREPROCESS:
+    select level:    850
+    target_grid:     1x1
+    regrid_scheme:   linear
+    mask_fillvalues: True
+    mask:            land
+    multimodel_mean: True
+
+DIAGNOSTICS:
+    - diag:
+        preprocess:
+          select_level:   850
+        description:         Temperature
+        variable:            [ta, va]
+        variable_def_dir:    ./variable_defs
+        ref_model:           [ACCESS1-0, BNU-ESM]
+        exclude_model:       [None, CanCM4]
+        field_type:          T3M
+        script:              perfmetrics_main.ncl
+        config_file:         ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_cycle_monthlyclim_glob.ncl
+
+
+    - diag:
+        preprocess:
+          select_level:   200
+        description:         Temperature
+        variable:            [ta, va]
+        variable_def_dir:    ./variable_defs
+        ref_model:           [ACCESS1-0, BNU-ESM]
+        exclude_model:       [None, CanCM4]
+        field_type:          T3M
+        script:              perfmetrics_main.ncl
+        config_file:         ./nml/cfg_perfmetrics/CMIP5/cfg_
