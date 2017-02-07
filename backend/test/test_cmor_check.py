@@ -21,9 +21,6 @@ sys.path.extend([".", "..", "backend"])
 # MIP_TABLE_DIR = os.environ.get("CMIP6_CMOR_TABLES", None)
 MIP_TABLE_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'cmip6-cmor-tables', 'Tables')
 
-if not MIP_TABLE_DIR:
-   raise Exception("Cannot find location of MIP TABLES - please set CMIP6_CMOR_TABLES environment variable.")
-
 # Local imports
 import cmor_check
 
