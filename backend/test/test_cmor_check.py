@@ -57,7 +57,7 @@ def _parse_mip_table(table_name, get_var=None):
 def _create_good_cube(get_var, set_time_units="days since 1950-01-01 00:00:00"): 
     "Creates a cube based on a specification for ``get_var``."
     # Get a specification and build a cube from it. 
-    spec = _parse_mip_table("CMIP6_Amon.json", get_var="tas")
+    spec = _parse_mip_table("CMIP6_Amon.json", get_var=get_var)
     coord_spec = _parse_mip_table("CMIP6_coordinate.json")
 
 
@@ -79,7 +79,12 @@ def _create_good_cube(get_var, set_time_units="days since 1950-01-01 00:00:00"):
         else:
             valid_max = 100.0
 
-        coord = iris.coords.DimCoord(numpy.linspace(valid_min, valid_max, 20),
+        if dim_spec['stored_direction'] == 'decreasing':
+            values = numpy.linspace(valid_max, valid_min, 20)
+        else:
+            values = numpy.linspace(valid_min, valid_max, 20)
+
+        coord = iris.coords.DimCoord(values,
                                      standard_name=dim_spec["standard_name"],
                                      long_name=dim_spec["long_name"],
                                      var_name=dim_spec["out_name"],
@@ -142,7 +147,7 @@ def _create_bad_cube(get_var, set_time_units="days since 1950-01-01 00:00:00"):
     cb = iris.cube.Cube(var_data,
                         standard_name="geopotential_height",
                         long_name="Air Temperature",
-                        var_name="tas",
+                        var_name=get_var,
                         units="K",
                         attributes=None,
                         cell_methods="")
@@ -188,7 +193,7 @@ class TestCMORCheckErrorReporting(unittest.TestCase):
 class TestCMORCheckGoodCube(unittest.TestCase):
 
     def setUp(self):
-        self.varid = "tas"
+        self.varid = "ta"
         self.tas_spec = _parse_mip_table("CMIP6_Amon.json", get_var=self.varid) 
         self.coords_dict = _parse_mip_table("CMIP6_coordinate.json")["axis_entry"]
         self.cube = _create_good_cube(self.varid)
@@ -197,23 +202,15 @@ class TestCMORCheckGoodCube(unittest.TestCase):
     def test_read_tas_spec(self):
         assert self.tas_spec["units"] == "K"
 
-    def test_check_rank(self):
-        # Will raise exception if it fails
-        self.checker._check_rank()
+    def test_check(self):
+        self.checker.check()
 
-    def test_check_dim_names(self):
-        # Will raise exception if it fails
-        self.checker._check_dim_names()
-
-    def test_check_coords(self):
-        # Will raise exception if it fails
-        self.checker._check_coords()
 
 
 class TestCMORCheckBadCube(unittest.TestCase):
 
     def setUp(self):
-        self.varid = "tas"
+        self.varid = "ta"
         self.coords_dict = _parse_mip_table("CMIP6_coordinate.json")["axis_entry"]
         self.cube = _create_bad_cube(self.varid)
         self.checker = cmor_check.CMORCheck(self.cube, fail_on_error=True)
@@ -235,25 +232,34 @@ class TestCMORCheckBadCube(unittest.TestCase):
         checker = cmor_check.CMORCheck(cube)
         coord = cube.coord('latitude')
         values = numpy.linspace(coord.points[-1], coord.points[0], len(coord.points))
-        self._update_latitude_values(cube, coord, values)
+        self._update_coordinate_values(cube, coord, values, 1)
         with self.assertRaises(cmor_check.CMORCheckError):
             checker.check()
 
-    def _update_latitude_values(self, cube, coord, values):
+    def test_non_decreasing(self):
+        cube = _create_good_cube(self.varid)
+        checker = cmor_check.CMORCheck(cube)
+        coord = cube.coord('air_pressure')
+        values = numpy.linspace(coord.points[-1], coord.points[0], len(coord.points))
+        self._update_coordinate_values(cube, coord, values, 2)
+        with self.assertRaises(cmor_check.CMORCheckError):
+            checker.check()
+
+    def _update_coordinate_values(self, cube, coord, values, position):
         cube.remove_coord(coord)
         new_coord = iris.coords.DimCoord(values,
                                          standard_name=coord.standard_name,
                                          long_name=coord.long_name,
                                          var_name=coord.var_name,
                                          units=coord.units)
-        cube.add_dim_coord(new_coord, 1)
+        cube.add_dim_coord(new_coord, position)
 
     def test_not_valid_min(self):
         cube = _create_good_cube(self.varid)
         checker = cmor_check.CMORCheck(cube)
         coord = cube.coord('latitude')
         values = numpy.linspace(coord.points[0]-1, coord.points[-1], len(coord.points))
-        self._update_latitude_values(cube, coord, values)
+        self._update_coordinate_values(cube, coord, values, 1)
         with self.assertRaises(cmor_check.CMORCheckError):
             checker.check()
 
@@ -262,7 +268,14 @@ class TestCMORCheckBadCube(unittest.TestCase):
         checker = cmor_check.CMORCheck(cube)
         coord = cube.coord('latitude')
         values = numpy.linspace(coord.points[0], coord.points[-1]+1, len(coord.points))
-        self._update_latitude_values(cube, coord, values)
+        self._update_coordinate_values(cube, coord, values, 1)
+        with self.assertRaises(cmor_check.CMORCheckError):
+            checker.check()
+
+    def test_bad_units(self):
+        cube = _create_good_cube(self.varid)
+        checker = cmor_check.CMORCheck(cube)
+        cube.coord('latitude').units = 'degrees_n'
         with self.assertRaises(cmor_check.CMORCheckError):
             checker.check()
 
