@@ -41,8 +41,6 @@ class CMORCheck(object):
         # self._check_data_range()
 
         if self.has_errors():
-            for error in self._errors:
-                print(error)
             raise CMORCheckError('There were errors in variable {0}: \n{1}'.format(self.cube.standard_name,
                                                                                    '\n'.join(self._errors)))
 
@@ -102,6 +100,8 @@ class CMORCheck(object):
                 #  in variable file.
                 out_var_name = cmor['out_name']
                 # Get coordinate out_var_name as it exists!
+                if out_var_name not in self.cube.coords():
+                    continue
                 coord = self.cube.coord(var_name=out_var_name, dim_coords=True)
 
                 # Check units
@@ -114,11 +114,11 @@ class CMORCheck(object):
                 # Check monotonicity and direction
                 if not coord.is_monotonic():
                     self.report_error('Coord {} is not monotonic', coord.name())
-                if cmor_table['stored_direction']:
-                    if cmor_table['stored_direction'] == 'increasing':
+                if cmor['stored_direction']:
+                    if cmor['stored_direction'] == 'increasing':
                         if coord.points[0] > coord.points[1]:
                             self.report_error('Coord {} is not increasing', coord.name())
-                    elif cmor_table['stored_direction'] == 'decreasing':
+                    elif cmor['stored_direction'] == 'decreasing':
                         if coord.points[0] < coord.points[1]:
                             self.report_error('Coord {} is not decreasing', coord.name())
 
@@ -132,11 +132,11 @@ class CMORCheck(object):
                 if cmor['valid_min']:
                     valid_min = float(cmor['valid_min'])
                     if np.any(coord.points < valid_min):
-                        self.report_error('Coord {} has values < valid_min', coord.name())
+                        self.report_error('Coord {} has values < valid_min ({})', coord.name(), valid_min)
                 if cmor['valid_max']:
                     valid_max = float(cmor['valid_max'])
                     if np.any(coord.points > valid_max):
-                        self.report_error('Coord {} has values > valid_max', coord.name())
+                        self.report_error('Coord {} has values > valid_max ({})', coord.name(), valid_max)
 
     def report_error(self, message, *args):
         msg = message.format(*args)
@@ -156,7 +156,10 @@ def main():
     example_data = 'ETHZ_CMIP5/historical/Amon/ta/CMCC-CESM/r1i1p1'
     cube = iris.load_cube(os.path.join(data_folder, example_data, '*.nc'))
     checker = CMORCheck(cube, fail_on_error=True)
-    checker.check()
+    try:
+        checker.check()
+    except CMORCheckError, ex:
+        print(ex)
 
 if __name__ == '__main__':
     main()
