@@ -54,41 +54,15 @@ def _parse_mip_table(table_name, get_var=None):
 
 
 # Functions to create iris cubes to test
-def _create_good_cube(get_var, set_time_units="days since 1950-01-01 00:00:00"): 
+def _create_good_cube(get_var, set_time_units="days since 1850-1-1 00:00:00"):
     "Creates a cube based on a specification for ``get_var``."
     # Get a specification and build a cube from it. 
     spec = _parse_mip_table("CMIP6_Amon.json", get_var=get_var)
     coord_spec = _parse_mip_table("CMIP6_coordinate.json")
 
-
     coords = []
     for i, dim in enumerate(spec["dimensions"].split()):
-        dim_spec = coord_spec["axis_entry"][dim] 
-
-        # Check for time axis
-        if dim_spec["units"].startswith("days since "):
-            dim_spec["units"] = set_time_units
-        valid_min = dim_spec['valid_min']
-        if valid_min:
-            valid_min = float(valid_min)
-        else:
-            valid_min = 0.0
-        valid_max = dim_spec['valid_max']
-        if valid_max:
-            valid_max = float(valid_max)
-        else:
-            valid_max = 100.0
-
-        if dim_spec['stored_direction'] == 'decreasing':
-            values = numpy.linspace(valid_max, valid_min, 20)
-        else:
-            values = numpy.linspace(valid_min, valid_max, 20)
-
-        coord = iris.coords.DimCoord(values,
-                                     standard_name=dim_spec["standard_name"],
-                                     long_name=dim_spec["long_name"],
-                                     var_name=dim_spec["out_name"],
-                                     units=dim_spec["units"])
+        coord = create_coord_from_spec(coord_spec, dim, set_time_units)
         coords.append((coord, i)) 
          
     var_data = numpy.ones(len(coords) * [20], 'f')
@@ -110,52 +84,75 @@ def _create_bad_cube(get_var, set_time_units="days since 1950-01-01 00:00:00"):
 
     coords = []
     coord_spec = _parse_mip_table("CMIP6_coordinate.json")
+    spec = _parse_mip_table("CMIP6_Amon.json", get_var=get_var)
 
-    for i, dim in enumerate(['time', 'longitude']):
-        dim_spec = coord_spec["axis_entry"][dim]
 
-        # Check for time axis
-        if dim_spec["units"].startswith("days since "):
-            dim_spec["units"] = set_time_units
-        valid_min = dim_spec['valid_min']
-        if valid_min:
-            valid_min = float(valid_min)
-        else:
-            valid_min = 0.0
-        valid_max = dim_spec['valid_max']
-        if valid_max:
-            valid_max = float(valid_max)
-        else:
-            valid_max = 100.0
-
-        # Set up attributes dictionary
-        coord_atts = {'stored_direction': dim_spec['stored_direction']}
-        values = numpy.linspace(valid_min, valid_max, 20)
-
-        # Reverse values so they should contradict the 'stored_direction' 
-        values = values[::-1] 
-        coord = iris.coords.DimCoord(values,
-                                     standard_name=dim_spec["standard_name"],
-                                     long_name=dim_spec["long_name"],
-                                     var_name=dim_spec["out_name"],
-                                     attributes=coord_atts,
-                                     units=dim_spec["units"])
+    for i, dim in enumerate(['time', 'height2m']):
+        coord = create_coord_from_spec(coord_spec, dim, set_time_units)
         coords.append((coord, i))
 
     coords.reverse()
     var_data = numpy.ones(len(coords) * [20], 'f')
     cb = iris.cube.Cube(var_data,
-                        standard_name="geopotential_height",
-                        long_name="Air Temperature",
-                        var_name=get_var,
-                        units="K",
+                        standard_name=spec["standard_name"],
+                        long_name=spec["long_name"],
+                        var_name=spec["out_name"],
+                        units=spec["units"],
                         attributes=None,
-                        cell_methods="")
+                        cell_methods=spec["cell_methods"])
 
     for coord, i in coords:
         cb.add_dim_coord(coord, i)
 
     return cb
+
+
+def create_coord_from_spec(coord_spec, dim, set_time_units):
+    dim_spec = coord_spec["axis_entry"][dim]
+    # Check for time axis
+    if dim_spec["units"].startswith("days since "):
+        dim_spec["units"] = set_time_units
+    valid_min = dim_spec['valid_min']
+    if valid_min:
+        valid_min = float(valid_min)
+    else:
+        valid_min = 0.0
+    valid_max = dim_spec['valid_max']
+    if valid_max:
+        valid_max = float(valid_max)
+    else:
+        valid_max = 100.0
+
+    decreasing = dim_spec['stored_direction'] == 'decreasing'
+
+    if decreasing:
+        values = numpy.linspace(valid_max, valid_min, 20)
+    else:
+        values = numpy.linspace(valid_min, valid_max, 20)
+    values = numpy.array(values)
+    if dim_spec['requested']:
+        requested = [float(val) for val in dim_spec['requested']]
+        requested.sort(reverse=decreasing)
+        for j in range(len(requested)):
+            values[j] = requested[j]
+        if decreasing:
+            extra_values = numpy.linspace(len(requested), valid_min, 20 - len(requested))
+        else:
+            extra_values = numpy.linspace(len(requested), valid_max, 20 - len(requested))
+
+        for j in range(len(requested), 20):
+            values[j] = extra_values[j - len(requested)]
+
+
+    # Set up attributes dictionary
+    coord_atts = {'stored_direction': dim_spec['stored_direction']}
+    coord = iris.coords.DimCoord(values,
+                                 standard_name=dim_spec["standard_name"],
+                                 long_name=dim_spec["long_name"],
+                                 var_name=dim_spec["out_name"],
+                                 attributes=coord_atts,
+                                 units=dim_spec["units"])
+    return coord
 
 
 class TestCMORCheckErrorReporting(unittest.TestCase):
@@ -276,6 +273,20 @@ class TestCMORCheckBadCube(unittest.TestCase):
         cube = _create_good_cube(self.varid)
         checker = cmor_check.CMORCheck(cube)
         cube.coord('latitude').units = 'degrees_n'
+        with self.assertRaises(cmor_check.CMORCheckError):
+            checker.check()
+
+    def test_bad_time(self):
+        cube = _create_good_cube(self.varid)
+        checker = cmor_check.CMORCheck(cube)
+        cube.coord('time').units = 'days'
+        with self.assertRaises(cmor_check.CMORCheckError):
+            checker.check()
+
+    def test_bad_standard_name(self):
+        cube = _create_good_cube(self.varid)
+        checker = cmor_check.CMORCheck(cube)
+        cube.coord('time').standard_name = 'region'
         with self.assertRaises(cmor_check.CMORCheckError):
             checker.check()
 

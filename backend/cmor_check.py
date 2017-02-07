@@ -91,7 +91,11 @@ class CMORCheck(object):
                                           cmor['standard_name'])
 
     def _check_time_coord(self):
-        coord = self.cube.coord('time', dim_coords=True)
+        try:
+            coord = self.cube.coord('time', dim_coords=True)
+        except iris.exceptions.CoordinateNotFoundError:
+            return
+
         if not coord.units.is_time_reference():
             self.report_error('Coord time does not have time reference units')
 
