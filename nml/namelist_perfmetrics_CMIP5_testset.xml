@@ -89,7 +89,7 @@ This namelist is part of the ESMValTool
     <diag_script_cfg_dir>  ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
 
     <!-- Dummy entry -->
-    <model>  CMIP5_ETHZ  ACCESS1-0           Amon  historical   r1i1p1  1980 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  bcc-csm1-1          Amon  historical   r1i1p1  2000 2002  @{MODELPATH}/ETHZ_CMIP5/ </model>
 
     <!-- Grading plot -->
     <diag_script cfg="cfg_perfmetrics_grading_collect.ncl">    perfmetrics_grading_collect.ncl         </diag_script>
@@ -105,7 +105,7 @@ This namelist is part of the ESMValTool
     <diag_script_cfg_dir>  ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
 
     <!-- Dummy entry -->
-    <model>  CMIP5_ETHZ  ACCESS1-0           Amon  historical   r1i1p1  1980 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  bcc-csm1-1          Amon  historical   r1i1p1  2000 2002  @{MODELPATH}/ETHZ_CMIP5/ </model>
 
     <!-- Taylor plot -->
     <diag_script cfg="cfg_perfmetrics_taylor_collect.ncl">     perfmetrics_taylor_collect.ncl          </diag_script>

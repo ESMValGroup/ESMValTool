@@ -47,7 +47,13 @@ This namelist is part of the ESMValTool
 
 <!-- MODELS AND OBSERVATIONS ARE SPECIFIC TO EACH VARIABLE AND DEFINED IN THE DIAG SECTIONS BELOW -->
 
+        <model>  CMIP5_ETHZ  bcc-csm1-1          Amon  historical   r1i1p1  2000 2002  @{MODELPATH}/ETHZ_CMIP5/ </model>
+
+
 </MODELS>
+
+
+
 
 <DIAGNOSTICS>
 
@@ -55,9 +61,14 @@ This namelist is part of the ESMValTool
 <diag>
     <description>          Temperature                  </description>
     <variable_def_dir>     ./variable_defs/             </variable_def_dir>
-    <variable ref_model="bcc-csm1-1">  ta         </variable>
+    <variable>  ta         </variable>
     <field_type>           T3M                          </field_type>
     <diag_script cfg="none_yet.py">   regrid_python.py      </diag_script>
+
+    <preprocess>
+        <regrid_target_grid>bcc-csm1-1</regrid_target_grid>
+        <regrid_scheme>Linear</regrid_scheme>
+    </preprocess>
 
     <model>  CMIP5_ETHZ  bcc-csm1-1          Amon  historical   r1i1p1  2000 2002  @{MODELPATH}/ETHZ_CMIP5/ </model>
     <model>  CMIP5_ETHZ  CMCC-CESM           Amon  historical   r1i1p1  2000 2002  @{MODELPATH}/ETHZ_CMIP5/ </model>
