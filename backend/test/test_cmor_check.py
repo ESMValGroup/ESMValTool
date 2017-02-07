@@ -126,6 +126,26 @@ def _create_bad_cube(get_var, set_time_units="days since 1950-01-01 00:00:00"):
     return cb
 
 
+class TestCMORCheckErrorReporting(unittest.TestCase):
+
+    def setUp(self):
+        self.varid = "tas"
+        self.tas_spec = _parse_mip_table("CMIP6_Amon.json", get_var=self.varid)
+        self.coords_dict = _parse_mip_table("CMIP6_coordinate.json")["axis_entry"]
+        self.cube = _create_good_cube(self.varid)
+
+    def test_report_error(self):
+        checker = cmor_check.CMORCheck(self.cube)
+        self.assertFalse(checker.has_errors())
+        checker.report_error('New error: {}', 'something failed')
+        self.assertTrue(checker.has_errors())
+
+    def test_report_raises(self):
+        checker = cmor_check.CMORCheck(self.cube)
+        with self.assertRaises(cmor_check.CMORCheckError):
+            checker.report_error('New error: {}', 'something failed')
+
+
 class TestCMORCheckGoodCube(unittest.TestCase):
 
     def setUp(self):
