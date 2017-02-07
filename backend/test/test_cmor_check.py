@@ -61,9 +61,15 @@ def _create_good_cube(get_var, set_time_units="days since 1850-1-1 00:00:00"):
     coord_spec = _parse_mip_table("CMIP6_coordinate.json")
 
     coords = []
+    scalar_coords = []
+    index = 0
     for i, dim in enumerate(spec["dimensions"].split()):
         coord = create_coord_from_spec(coord_spec, dim, set_time_units)
-        coords.append((coord, i)) 
+        if isinstance(coord, iris.coords.DimCoord):
+            coords.append((coord, index))
+            index += 1
+        else:
+            scalar_coords.append(coord)
          
     var_data = numpy.ones(len(coords) * [20], 'f')
     cb = iris.cube.Cube(var_data,
@@ -83,13 +89,18 @@ def _create_good_cube(get_var, set_time_units="days since 1850-1-1 00:00:00"):
 def _create_bad_cube(get_var, set_time_units="days since 1950-01-01 00:00:00"):
 
     coords = []
+    scalar_coords = []
     coord_spec = _parse_mip_table("CMIP6_coordinate.json")
     spec = _parse_mip_table("CMIP6_Amon.json", get_var=get_var)
 
-
+    index = 0
     for i, dim in enumerate(['time', 'height2m']):
         coord = create_coord_from_spec(coord_spec, dim, set_time_units)
-        coords.append((coord, i))
+        if isinstance(coord, iris.coords.DimCoord):
+            coords.append((coord, index))
+            index += 1
+        else:
+            scalar_coords.append(coord)
 
     coords.reverse()
     var_data = numpy.ones(len(coords) * [20], 'f')
@@ -103,8 +114,19 @@ def _create_bad_cube(get_var, set_time_units="days since 1950-01-01 00:00:00"):
 
     for coord, i in coords:
         cb.add_dim_coord(coord, i)
+    for coord in scalar_coords:
+        cb.add_aux_coord(coord)
 
     return cb
+
+
+def construct_scalar_variable(coord_spec):
+    return iris.coords.AuxCoord(float(coord_spec['value']),
+                                standard_name=coord_spec["standard_name"],
+                                long_name=coord_spec["long_name"],
+                                var_name=coord_spec["out_name"],
+                                units=coord_spec["units"],
+                                attributes=None)
 
 
 def create_coord_from_spec(coord_spec, dim, set_time_units):
@@ -112,6 +134,10 @@ def create_coord_from_spec(coord_spec, dim, set_time_units):
     # Check for time axis
     if dim_spec["units"].startswith("days since "):
         dim_spec["units"] = set_time_units
+
+    if dim_spec["value"]:
+        return construct_scalar_variable(dim_spec)
+
     valid_min = dim_spec['valid_min']
     if valid_min:
         valid_min = float(valid_min)
@@ -159,30 +185,31 @@ class TestCMORCheckErrorReporting(unittest.TestCase):
 
     def setUp(self):
         self.varid = "tas"
+        self.table = 'Amon'
         self.tas_spec = _parse_mip_table("CMIP6_Amon.json", get_var=self.varid)
         self.coords_dict = _parse_mip_table("CMIP6_coordinate.json")["axis_entry"]
         self.cube = _create_bad_cube(self.varid)
 
     def test_failed_on_error_true(self):
-        self.checker = cmor_check.CMORCheck(self.cube, fail_on_error=True)
+        self.checker = cmor_check.CMORCheck(self.cube, self.table, fail_on_error=True)
         with self.assertRaises(cmor_check.CMORCheckError):
             self.checker._check_rank()
        
     def test_failed_on_error_false(self):
-        self.checker = cmor_check.CMORCheck(self.cube, fail_on_error=False)
+        self.checker = cmor_check.CMORCheck(self.cube, self.table, fail_on_error=False)
         self.checker._check_rank()
 
         self.checker._check_dim_names()
         assert len(self.checker._errors) > 1
 
     def test_report_error(self):
-        checker = cmor_check.CMORCheck(self.cube)
+        checker = cmor_check.CMORCheck(self.cube, self.table,)
         self.assertFalse(checker.has_errors())
         checker.report_error('New error: {}', 'something failed')
         self.assertTrue(checker.has_errors())
 
     def test_report_raises(self):
-        checker = cmor_check.CMORCheck(self.cube, fail_on_error=True)
+        checker = cmor_check.CMORCheck(self.cube, self.table, fail_on_error=True)
         with self.assertRaises(cmor_check.CMORCheckError):
             checker.report_error('New error: {}', 'something failed')
 
@@ -190,11 +217,12 @@ class TestCMORCheckErrorReporting(unittest.TestCase):
 class TestCMORCheckGoodCube(unittest.TestCase):
 
     def setUp(self):
-        self.varid = "ta"
+        self.varid = "tas"
+        self.table = "Amon"
         self.tas_spec = _parse_mip_table("CMIP6_Amon.json", get_var=self.varid) 
         self.coords_dict = _parse_mip_table("CMIP6_coordinate.json")["axis_entry"]
         self.cube = _create_good_cube(self.varid)
-        self.checker = cmor_check.CMORCheck(self.cube, fail_on_error=True)
+        self.checker = cmor_check.CMORCheck(self.cube, self.table, fail_on_error=True)
 
     def test_read_tas_spec(self):
         assert self.tas_spec["units"] == "K"
@@ -203,14 +231,14 @@ class TestCMORCheckGoodCube(unittest.TestCase):
         self.checker.check()
 
 
-
 class TestCMORCheckBadCube(unittest.TestCase):
 
     def setUp(self):
         self.varid = "ta"
+        self.table = "Amon"
         self.coords_dict = _parse_mip_table("CMIP6_coordinate.json")["axis_entry"]
         self.cube = _create_bad_cube(self.varid)
-        self.checker = cmor_check.CMORCheck(self.cube, fail_on_error=True)
+        self.checker = cmor_check.CMORCheck(self.cube, self.table, fail_on_error=True)
 
     def test_check_rank_fails(self):
         with self.assertRaises(cmor_check.CMORCheckError):
@@ -226,7 +254,7 @@ class TestCMORCheckBadCube(unittest.TestCase):
 
     def test_non_increasing(self):
         cube = _create_good_cube(self.varid)
-        checker = cmor_check.CMORCheck(cube)
+        checker = cmor_check.CMORCheck(cube, self.table)
         coord = cube.coord('latitude')
         values = numpy.linspace(coord.points[-1], coord.points[0], len(coord.points))
         self._update_coordinate_values(cube, coord, values, 1)
@@ -235,7 +263,7 @@ class TestCMORCheckBadCube(unittest.TestCase):
 
     def test_non_decreasing(self):
         cube = _create_good_cube(self.varid)
-        checker = cmor_check.CMORCheck(cube)
+        checker = cmor_check.CMORCheck(cube, self.table)
         coord = cube.coord('air_pressure')
         values = numpy.linspace(coord.points[-1], coord.points[0], len(coord.points))
         self._update_coordinate_values(cube, coord, values, 2)
@@ -253,7 +281,7 @@ class TestCMORCheckBadCube(unittest.TestCase):
 
     def test_not_valid_min(self):
         cube = _create_good_cube(self.varid)
-        checker = cmor_check.CMORCheck(cube)
+        checker = cmor_check.CMORCheck(cube, self.table)
         coord = cube.coord('latitude')
         values = numpy.linspace(coord.points[0]-1, coord.points[-1], len(coord.points))
         self._update_coordinate_values(cube, coord, values, 1)
@@ -262,7 +290,7 @@ class TestCMORCheckBadCube(unittest.TestCase):
 
     def test_not_valid_max(self):
         cube = _create_good_cube(self.varid)
-        checker = cmor_check.CMORCheck(cube)
+        checker = cmor_check.CMORCheck(cube, self.table)
         coord = cube.coord('latitude')
         values = numpy.linspace(coord.points[0], coord.points[-1]+1, len(coord.points))
         self._update_coordinate_values(cube, coord, values, 1)
@@ -271,21 +299,21 @@ class TestCMORCheckBadCube(unittest.TestCase):
 
     def test_bad_units(self):
         cube = _create_good_cube(self.varid)
-        checker = cmor_check.CMORCheck(cube)
+        checker = cmor_check.CMORCheck(cube, self.table)
         cube.coord('latitude').units = 'degrees_n'
         with self.assertRaises(cmor_check.CMORCheckError):
             checker.check()
 
     def test_bad_time(self):
         cube = _create_good_cube(self.varid)
-        checker = cmor_check.CMORCheck(cube)
+        checker = cmor_check.CMORCheck(cube, self.table)
         cube.coord('time').units = 'days'
         with self.assertRaises(cmor_check.CMORCheckError):
             checker.check()
 
     def test_bad_standard_name(self):
         cube = _create_good_cube(self.varid)
-        checker = cmor_check.CMORCheck(cube)
+        checker = cmor_check.CMORCheck(cube, self.table)
         cube.coord('time').standard_name = 'region'
         with self.assertRaises(cmor_check.CMORCheckError):
             checker.check()
