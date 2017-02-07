@@ -2,6 +2,7 @@ import numpy as np
 import iris
 import os
 import json
+import warnings
 
 iris.FUTURE.cell_datetime_objects = True
 iris.FUTURE.netcdf_promote = True
@@ -178,12 +179,17 @@ def main():
         ]
 
     for (example_data, table) in example_datas:
-        print(example_data)
+        print('\n' + example_data)
 
         try:
             # Load cubes
             files = os.path.join(data_folder, example_data, '*.nc')
-            cubes = iris.load(files, callback=merge_protect_callback)
+            # Suppress warnings associated with missing 'areacella' measure
+            with warnings.catch_warnings():
+                warnings.filterwarnings('ignore',
+                                        'Missing CF-netCDF measure variable',
+                                        UserWarning)
+                cubes = iris.load(files, callback=merge_protect_callback)
             # Concatenate data to single cube
             cube = cubes.concatenate_cube()
             # Create checker for loaded cube
