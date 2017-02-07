@@ -202,17 +202,9 @@ class TestCMORCheckGoodCube(unittest.TestCase):
     def test_read_tas_spec(self):
         assert self.tas_spec["units"] == "K"
 
-    def test_check_rank(self):
-        # Will raise exception if it fails
-        self.checker._check_rank()
+    def test_check(self):
+        self.checker.check()
 
-    def test_check_dim_names(self):
-        # Will raise exception if it fails
-        self.checker._check_dim_names()
-
-    def test_check_coords(self):
-        # Will raise exception if it fails
-        self.checker._check_coords()
 
 
 class TestCMORCheckBadCube(unittest.TestCase):
