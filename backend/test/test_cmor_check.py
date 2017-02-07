@@ -72,20 +72,22 @@ def _create_good_cube(get_var, set_time_units="days since 1950-01-01 00:00:00"):
             dim_spec["units"] = set_time_units
             
         coord = iris.coords.DimCoord(axis_data,
-                                   standard_name=dim_spec["standard_name"],
-                                   long_name=dim_spec["long_name"],
-                                   var_name=dim_spec["out_name"], 
-                                   units=dim_spec["units"])
+                                     standard_name=dim_spec["standard_name"],
+                                     long_name=dim_spec["long_name"],
+                                     var_name=dim_spec["out_name"],
+                                     units=dim_spec["units"])
         coords.append((coord, i)) 
          
     var_data = numpy.ones(len(coords) * [len(axis_data)], 'f')
-    cb = iris.cube.Cube(var_data, 
-              standard_name=spec["standard_name"], 
-              long_name=spec["long_name"], 
-              var_name=spec["out_name"], 
-              units=spec["units"], 
-              attributes=None, 
-              cell_methods=spec["cell_methods"]) 
+    cb = iris.cube.Cube(var_data,
+                        standard_name=spec["standard_name"],
+                        long_name=spec["long_name"],
+                        var_name=spec["out_name"],
+                        units=spec["units"],
+                        attributes=None,
+                        cell_methods=spec["cell_methods"])
+    for coord, i in coords:
+        cb.add_dim_coord(coord, i)
 
     return cb
 
@@ -118,6 +120,8 @@ def _create_bad_cube(get_var, set_time_units="days since 1950-01-01 00:00:00"):
                         units="K",
                         attributes=None,
                         cell_methods="")
+    for coord, i in coords:
+        cb.add_dim_coord(coord, i)
 
     return cb
 

@@ -31,10 +31,10 @@ class CMORCheck(object):
         self._check_rank()
         self._check_dim_names()
         self._check_coords()
-        #self._check_time_coord()
-        #self._check_var_metadata()
-        #self._check_fill_value()
-        #self._check_data_range()
+        # self._check_time_coord()
+        # self._check_var_metadata()
+        # self._check_fill_value()
+        # self._check_data_range()
 
         if len(self._errors) > 0:
             for error in self._errors:
@@ -91,11 +91,11 @@ class CMORCheck(object):
                 # Check monotonicity and direction
                 if not coord.is_monotonic():
                     self.report_error('Coord {} is not monotonic', coord.name())
-                if cmor['stored_direction']:
-                    if cmor['stored_direction'] == 'increasing':
+                if cmor_table['stored_direction']:
+                    if cmor_table['stored_direction'] == 'increasing':
                         if coord.points[0] > coord.points[1]:
                             self.report_error('Coord {} is not increasing', coord.name())
-                    elif cmor['stored_direction'] == 'decreasing':
+                    elif cmor_table['stored_direction'] == 'decreasing':
                         if coord.points[0] < coord.points[1]:
                             self.report_error('Coord {} is not decreasing', coord.name())
 
