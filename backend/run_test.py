@@ -16,7 +16,9 @@ cov.save()
 source_files = list()
 for path, dirs, files in os.walk('backend'):
     for filename in files:
-        if filename.endswith('.py') and filename.startswith('test'):
+        if filename.endswith('.py') and 'test' not in path:
+            print 'Hello'
             source_files.append(os.path.join(path, filename))
+
 cov.report(source_files)
 cov.html_report(source_files)
