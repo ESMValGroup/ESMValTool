@@ -94,6 +94,7 @@ def _create_good_cube(get_var, set_time_units="days since 1950-01-01 00:00:00"):
                         units=spec["units"],
                         attributes=None,
                         cell_methods=spec["cell_methods"])
+
     for coord, i in coords:
         cb.add_dim_coord(coord, i)
 
@@ -104,6 +105,7 @@ def _create_bad_cube(get_var, set_time_units="days since 1950-01-01 00:00:00"):
 
     coords = []
     coord_spec = _parse_mip_table("CMIP6_coordinate.json")
+
     for i, dim in enumerate(['time', 'longitude']):
         dim_spec = coord_spec["axis_entry"][dim]
 
@@ -120,13 +122,22 @@ def _create_bad_cube(get_var, set_time_units="days since 1950-01-01 00:00:00"):
             valid_max = float(valid_max)
         else:
             valid_max = 100.0
-        coord = iris.coords.DimCoord(numpy.linspace(valid_min, valid_max, 20),
+
+        # Set up attributes dictionary
+        coord_atts = {'stored_direction': dim_spec['stored_direction']}
+        values = numpy.linspace(valid_min, valid_max, 20)
+
+        # Reverse values so they should contradict the 'stored_direction' 
+        values = values[::-1] 
+        coord = iris.coords.DimCoord(values,
                                      standard_name=dim_spec["standard_name"],
                                      long_name=dim_spec["long_name"],
                                      var_name=dim_spec["out_name"],
+                                     attributes=coord_atts,
                                      units=dim_spec["units"])
         coords.append((coord, i))
 
+    coords.reverse()
     var_data = numpy.ones(len(coords) * [20], 'f')
     cb = iris.cube.Cube(var_data,
                         standard_name="geopotential_height",
@@ -135,6 +146,7 @@ def _create_bad_cube(get_var, set_time_units="days since 1950-01-01 00:00:00"):
                         units="K",
                         attributes=None,
                         cell_methods="")
+
     for coord, i in coords:
         cb.add_dim_coord(coord, i)
 
@@ -151,7 +163,7 @@ class TestCMORCheckErrorReporting(unittest.TestCase):
 
     def test_failed_on_error_true(self):
         self.checker = cmor_check.CMORCheck(self.cube, fail_on_error=True)
-        with self.assertRaises(Exception):
+        with self.assertRaises(cmor_check.CMORCheckError):
             self.checker._check_rank()
        
     def test_failed_on_error_false(self):
@@ -198,19 +210,25 @@ class TestCMORCheckGoodCube(unittest.TestCase):
         self.checker._check_coords()
 
 
-
-if 0: #class TestCMORCheckBadCube(unittest.TestCase):
+class TestCMORCheckBadCube(unittest.TestCase):
 
     def setUp(self):
         self.varid = "tas"
         self.coords_dict = _parse_mip_table("CMIP6_coordinate.json")["axis_entry"]
         self.cube = _create_bad_cube(self.varid)
-        self.checker = cmor_check.CMORCheck(self.cube)
+        self.checker = cmor_check.CMORCheck(self.cube, fail_on_error=True)
 
-    def test_check(self):
-        # Will raise exception if it fails
+    def test_check_rank_fails(self):
         with self.assertRaises(cmor_check.CMORCheckError):
-            self.checker.check()
+            self.checker._check_rank()
+
+    def test_check_dim_names_fails(self):
+        with self.assertRaises(cmor_check.CMORCheckError):
+            self.checker._check_dim_names()
+
+    def test_check_coords_fails_reversed_direction(self):
+        with self.assertRaises(cmor_check.CMORCheckError):
+            self.checker._check_coords()
 
 
 if __name__ == "__main__":
