@@ -70,8 +70,18 @@ def _create_good_cube(get_var, set_time_units="days since 1850-1-1 00:00:00"):
             index += 1
         else:
             scalar_coords.append(coord)
+
+    if spec['valid_min']:
+        valid_min = float(spec['valid_min'])
+    else:
+        valid_min = 0
+
+    if spec['valid_max']:
+        valid_max = float(spec['valid_max'])
+    else:
+        valid_max = valid_min + 100
          
-    var_data = numpy.ones(len(coords) * [20], 'f')
+    var_data = numpy.ones(len(coords) * [20], 'f') * (valid_min + (valid_max - valid_min)/2)
     cb = iris.cube.Cube(var_data,
                         standard_name=spec["standard_name"],
                         long_name=spec["long_name"],
@@ -320,6 +330,43 @@ class TestCMORCheckBadCube(unittest.TestCase):
         cube.coord('time').standard_name = 'region'
         with self.assertRaises(cmor_check.CMORCheckError):
             checker.check()
+
+    def test_bad_data_units(self):
+        cube = _create_good_cube(self.varid)
+        checker = cmor_check.CMORCheck(cube, self.table)
+        cube.units = 'hPa'
+        with self.assertRaises(cmor_check.CMORCheckError):
+            checker.check()
+
+    def test_bad_data_standard_name(self):
+        cube = _create_good_cube(self.varid)
+        checker = cmor_check.CMORCheck(cube, self.table)
+        cube.standard_name = 'wind_speed'
+        with self.assertRaises(cmor_check.CMORCheckError):
+            checker.check()
+
+    def test_bad_data_var_name(self):
+        cube = _create_good_cube(self.varid)
+        checker = cmor_check.CMORCheck(cube, self.table)
+        cube.var_name = 'wind_speed'
+        with self.assertRaises(cmor_check.CMORCheckError):
+            checker.check()
+
+    # For the moment, we don't have a variable definition with these values to test
+
+    # def test_data_not_valid_max(self):
+    #     cube = _create_good_cube(self.varid)
+    #     checker = cmor_check.CMORCheck(cube, self.table)
+    #     cube.data[0] = 100000000000
+    #     with self.assertRaises(cmor_check.CMORCheckError):
+    #         checker.check()
+    #
+    # def test_data_not_valid_min(self):
+    #     cube = _create_good_cube(self.varid)
+    #     checker = cmor_check.CMORCheck(cube, self.table)
+    #     cube.data[0] = -100000000000
+    #     with self.assertRaises(cmor_check.CMORCheckError):
+    #         checker.check()
 
 
 if __name__ == "__main__":

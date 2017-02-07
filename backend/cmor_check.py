@@ -215,18 +215,18 @@ class CMORCheckError(Exception):
 
 
 def main():
-    # data_folder = '/Users/nube/esmval_data'
-    data_folder = '/home/paul/ESMValTool/data'
+    data_folder = '/Users/nube/esmval_data'
+    # data_folder = '/home/paul/ESMValTool/data'
     example_datas = [
         ('ETHZ_CMIP5/historical/Amon/ta/CMCC-CESM/r1i1p1', 'Amon'),
-        ('CMIP6/1pctCO2/Amon/ua/MPI-ESM-LR/r1i1p1f1', 'Amon'),
-        ('CMIP6/1pctCO2/Amon/tas/MPI-ESM-LR/r1i1p1f1', 'Amon'),
-        ('CMIP6/1pctCO2/day/tas/MPI-ESM-LR/r1i1p1f1', 'day'),
-        ('CMIP6/1pctCO2/day/pr/MPI-ESM-LR/r1i1p1f1', 'day'),
-        # ('CMIP6/1pctCO2/cfDay/hur/MPI-ESM-LR/r1i1p1f1', 'CFday'),
-        ('CMIP6/1pctCO2/LImon/snw/MPI-ESM-LR/r1i1p1f1', 'LImon'),
-        ('CMIP6/1pctCO2/Lmon/cropFrac/MPI-ESM-LR/r1i1p1f1', 'Lmon'),
-        # ('CMIP6/1pctCO2/Oyr/co3/MPI-ESM-LR/r1i1p1f1', 'Oyr'),
+        # ('CMIP6/1pctCO2/Amon/ua/MPI-ESM-LR/r1i1p1f1', 'Amon'),
+        # ('CMIP6/1pctCO2/Amon/tas/MPI-ESM-LR/r1i1p1f1', 'Amon'),
+        # ('CMIP6/1pctCO2/day/tas/MPI-ESM-LR/r1i1p1f1', 'day'),
+        # ('CMIP6/1pctCO2/day/pr/MPI-ESM-LR/r1i1p1f1', 'day'),
+        # # ('CMIP6/1pctCO2/cfDay/hur/MPI-ESM-LR/r1i1p1f1', 'CFday'),
+        # ('CMIP6/1pctCO2/LImon/snw/MPI-ESM-LR/r1i1p1f1', 'LImon'),
+        # ('CMIP6/1pctCO2/Lmon/cropFrac/MPI-ESM-LR/r1i1p1f1', 'Lmon'),
+        # # ('CMIP6/1pctCO2/Oyr/co3/MPI-ESM-LR/r1i1p1f1', 'Oyr'),
         ]
 
     for (example_data, table) in example_datas:
