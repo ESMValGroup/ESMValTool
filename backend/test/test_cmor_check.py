@@ -191,7 +191,42 @@ class TestCMORCheckBadCube(unittest.TestCase):
         with self.assertRaises(cmor_check.CMORCheckError):
             self.checker.check()
 
+    def test_non_increasing(self):
+        cube = _create_good_cube(self.varid)
+        checker = cmor_check.CMORCheck(cube)
+        coord = cube.coord('latitude')
+        values = numpy.linspace(coord.points[-1], coord.points[0], len(coord.points))
+        self._update_latitude_values(cube, coord, values)
+        with self.assertRaises(cmor_check.CMORCheckError):
+            checker.check()
+
+    def _update_latitude_values(self, cube, coord, values):
+        cube.remove_coord(coord)
+        new_coord = iris.coords.DimCoord(values,
+                                         standard_name=coord.standard_name,
+                                         long_name=coord.long_name,
+                                         var_name=coord.var_name,
+                                         units=coord.units)
+        cube.add_dim_coord(new_coord, 1)
+
+    def test_not_valid_min(self):
+        cube = _create_good_cube(self.varid)
+        checker = cmor_check.CMORCheck(cube)
+        coord = cube.coord('latitude')
+        values = numpy.linspace(coord.points[0]-1, coord.points[-1], len(coord.points))
+        self._update_latitude_values(cube, coord, values)
+        with self.assertRaises(cmor_check.CMORCheckError):
+            checker.check()
+
+    def test_not_valid_max(self):
+        cube = _create_good_cube(self.varid)
+        checker = cmor_check.CMORCheck(cube)
+        coord = cube.coord('latitude')
+        values = numpy.linspace(coord.points[0], coord.points[-1]+1, len(coord.points))
+        self._update_latitude_values(cube, coord, values)
+        with self.assertRaises(cmor_check.CMORCheckError):
+            checker.check()
+
 
 if __name__ == "__main__":
-
     unittest.main()
