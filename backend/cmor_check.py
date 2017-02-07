@@ -86,8 +86,12 @@ class CMORCheck(object):
                                           cmor['standard_name'])
 
     def _check_time_coord(self):
-        coord = self.cube.coord('time', dim_coords=True)
-        if not coord.units.is_time():
+        try:
+            coord = self.cube.coord('time', dim_coords=True)
+        except iris.exceptions.CoordinateNotFoundError:
+            return
+
+        if not coord.units.is_time_reference():
             self.report_error('Coord time does not have time units')
         if not coord.units.calendar:
             self.report_error('Coord time units does not contain a calendar')
@@ -176,10 +180,10 @@ def main():
         # Run checks
         checker.check()
 
-    except iris.exceptions.ConstraintMismatchError, ex:
+    except iris.exceptions.ConstraintMismatchError as ex:
         print ex
 
-    except iris.exceptions.ConcatenateError, ex:
+    except iris.exceptions.ConcatenateError as ex:
         print ex
 
     except CMORCheckError, ex:
