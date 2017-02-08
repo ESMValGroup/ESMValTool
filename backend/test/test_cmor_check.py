@@ -12,9 +12,11 @@ import unittest
 import json
 
 # Third-party imports
+import datetime
 import numpy
 import iris
 import iris.coords
+from cf_units import Unit
 
 # Local imports
 from backend.cmor_check import CMORCheck, CMORCheckError
@@ -190,6 +192,48 @@ class TestCMORCheckBadCube(unittest.TestCase):
         with self.assertRaises(CMORCheckError):
             checker.check()
 
+    def test_bad_frequency_day(self):
+        cube = self.cube_creator.get_cube(self.table, self.varid)
+        checker = CMORCheck(cube, self.table, frequency='day')
+        with self.assertRaises(CMORCheckError):
+            checker.check()
+
+    def test_bad_frequency_subhr(self):
+        cube = self.cube_creator.get_cube(self.table, self.varid)
+        checker = CMORCheck(cube, self.table, frequency='subhr')
+        with self.assertRaises(CMORCheckError):
+            checker.check()
+
+    def test_bad_frequency_dec(self):
+        cube = self.cube_creator.get_cube(self.table, self.varid)
+        checker = CMORCheck(cube, self.table, frequency='dec')
+        with self.assertRaises(CMORCheckError):
+            checker.check()
+
+    def test_bad_frequency_yr(self):
+        cube = self.cube_creator.get_cube(self.table, self.varid)
+        checker = CMORCheck(cube, self.table, frequency='yr')
+        with self.assertRaises(CMORCheckError):
+            checker.check()
+
+    def test_bad_frequency_mon(self):
+        cube = self.cube_creator.get_cube(self.table, self.varid, frequency='day')
+        checker = CMORCheck(cube, self.table)
+        with self.assertRaises(CMORCheckError):
+            checker.check()
+
+    def test_bad_frequency_hourly(self):
+        cube = self.cube_creator.get_cube(self.table, self.varid)
+        checker = CMORCheck(cube, self.table, frequency='3hr')
+        with self.assertRaises(CMORCheckError):
+            checker.check()
+
+    def test_bad_frequency_not_supported(self):
+        cube = self.cube_creator.get_cube(self.table, self.varid)
+        checker = CMORCheck(cube, self.table, frequency='wrong_freq')
+        with self.assertRaises(CMORCheckError):
+            checker.check()
+
     # For the moment, we don't have a variable definition with these values to test
 
     # def test_data_not_valid_max(self):
@@ -212,7 +256,7 @@ class CubeCreator(object):
         self.coord_specs = self._parse_mip_table("coordinate")
         self.vars_spec = {}
 
-    def get_cube(self, table, var_name, set_time_units="days since 1850-1-1 00:00:00"):
+    def get_cube(self, table, var_name, set_time_units="days since 1850-1-1 00:00:00", frequency=None):
         """
         Creates a cube based on a specification
 
@@ -226,11 +270,14 @@ class CubeCreator(object):
             self.vars_spec[var_name] = self._parse_mip_table(table, get_var=var_name)
 
         spec = self.vars_spec[var_name]
+        if frequency is None:
+             frequency = spec['frequency']
+
         coords = []
         scalar_coords = []
         index = 0
         for i, dim in enumerate(spec["dimensions"].split()):
-            coord = self._create_coord_from_spec(table, dim, set_time_units)
+            coord = self._create_coord_from_spec(table, dim, set_time_units, frequency)
             if isinstance(coord, iris.coords.DimCoord):
                 coords.append((coord, index))
                 index += 1
@@ -300,8 +347,9 @@ class CubeCreator(object):
             dim_spec["units"] = set_time_units
         return dim_spec
 
-    def _create_coord_from_spec(self, table, dim, set_time_units):
+    def _create_coord_from_spec(self, table, dim, set_time_units, frequency):
         dim_spec = self._get_coord_spec(table, dim, set_time_units)
+        dim_spec['frequency'] = frequency
 
         if dim_spec["value"]:
             return self._construct_scalar_coord(dim_spec)
@@ -309,6 +357,24 @@ class CubeCreator(object):
         return self._construct_array_coord(dim_spec)
 
     def _construct_array_coord(self, dim_spec):
+        if dim_spec["units"].startswith("days since "):
+            values = self._get_time_values(dim_spec)
+            unit = Unit(dim_spec["units"], calendar='360_day')
+        else:
+            values = self._get_values(dim_spec)
+            unit = Unit(dim_spec["units"])
+        # Set up attributes dictionary
+        coord_atts = {'stored_direction': dim_spec['stored_direction'], 'positive': dim_spec['positive']}
+        coord = iris.coords.DimCoord(values,
+                                     standard_name=dim_spec["standard_name"],
+                                     long_name=dim_spec["long_name"],
+                                     var_name=dim_spec["out_name"],
+                                     attributes=coord_atts,
+                                     units=unit,
+                                     )
+        return coord
+
+    def _get_values(self, dim_spec):
         valid_min = dim_spec['valid_min']
         if valid_min:
             valid_min = float(valid_min)
@@ -338,16 +404,21 @@ class CubeCreator(object):
             for j in range(len(requested), 20):
                 values[j] = extra_values[j - len(requested)]
 
-        # Set up attributes dictionary
-        coord_atts = {'stored_direction': dim_spec['stored_direction'], 'positive': dim_spec['positive']}
-        coord = iris.coords.DimCoord(values,
-                                     standard_name=dim_spec["standard_name"],
-                                     long_name=dim_spec["long_name"],
-                                     var_name=dim_spec["out_name"],
-                                     attributes=coord_atts,
-                                     units=dim_spec["units"],
-                                     )
-        return coord
+        return values
+
+    def _get_time_values(self, dim_spec):
+        frequency = dim_spec['frequency']
+        if frequency == 'mon':
+            delta = 30
+        elif frequency == 'day':
+            delta = 1
+        elif frequency.ends_with('hr'):
+            delta = float(frequency[:-2])/24
+        else:
+            raise Exception('Frequency {} not supported'.format(frequency))
+        start = 0
+        end = start + delta * 20
+        return numpy.arange(start, end, step=delta)
 
     def _safely_join_dicts(self, d1, d2):
         """

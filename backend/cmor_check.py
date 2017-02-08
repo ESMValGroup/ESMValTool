@@ -54,14 +54,20 @@ class CMORTable(object):
         self.var = self._var['variable_entry'][var_name]
         self._load_coord_information()
 
+    def get_frequency(self):
+        return self._var['Header']['frequency']
+
 
 class CMORCheck(object):
 
-    def __init__(self, cube, table, fail_on_error=False):
+    def __init__(self, cube, table, frequency=None, fail_on_error=False):
         self.cube = cube
         self._failerr = fail_on_error
         self._errors = list()
         self._cmor = CMORTable(table, self.cube.var_name)
+        if frequency is None:
+            frequency = self._cmor.get_frequency()
+        self.frequency = frequency
 
     def check(self):
         self._check_rank()
@@ -238,6 +244,34 @@ class CMORCheck(object):
 
         if not coord.units.is_time_reference():
             self.report_error('Coord time does not have time reference units')
+
+        if self.frequency:
+            tolerance = 0.001
+            if self.frequency == 'dec':
+                target_interval = (3600 - tolerance, 3660 + tolerance)
+            elif self.frequency == 'yr':
+                target_interval = (360 - tolerance, 366 + tolerance)
+            elif self.frequency == 'mon':
+                target_interval = (28 - tolerance, 31 + tolerance)
+            elif self.frequency == 'day':
+                target_interval = (1 - tolerance, 1 + tolerance)
+            elif self.frequency.endswith('hr'):
+
+                frequency = self.frequency[:-2]
+                if frequency == 'sub':
+                    frequency = 1.0 / 24
+                    target_interval = (-tolerance, frequency + tolerance)
+                else:
+                    frequency = float(frequency) / 24
+                    target_interval = (frequency - tolerance, frequency + tolerance)
+            else:
+                self.report_error('Frequency {} not supported by checker', self.frequency)
+                return
+            for i in range(len(coord.points)-1):
+                interval = coord.points[i + 1] - coord.points[i]
+                if interval < target_interval[0] or interval > target_interval[1]:
+                    self.report_error('Frequency {} does not mach input data', self.frequency)
+                    break
 
     def has_errors(self):
         return len(self._errors) > 0
