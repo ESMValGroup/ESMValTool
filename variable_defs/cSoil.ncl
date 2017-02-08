@@ -2,7 +2,7 @@
 ;  Requires: cSoil:*2*s
 ;
 variable_info = True
-variable_info@derived = True
+variable_info@derived = True 
 variable_info@units = "kg m-2"
 variable_info@plot_units = "PgC"
 
@@ -16,7 +16,7 @@ function calculate(index[1]:integer,
                    field_type[1]:string)
 ;;
 ;; Arguments
-;;    index: index to current infile defined in the
+;;    index: index to current infile defined in the 
 ;;           'interface_data/ncl.interface'-file
 ;;    variable: a string with current variable
 ;;    field_type: a string with field type classification
