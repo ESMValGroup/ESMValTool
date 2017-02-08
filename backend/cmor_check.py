@@ -5,8 +5,8 @@ import os
 import json
 import warnings
 
-# iris.FUTURE.cell_datetime_objects = True
-# iris.FUTURE.netcdf_promote = True
+iris.FUTURE.cell_datetime_objects = True
+iris.FUTURE.netcdf_promote = True
 
 
 class CMORTable(object):
@@ -84,6 +84,11 @@ class CMORCheck(object):
             raise CMORCheckError(msg)
 
     def _check_fill_value(self):
+        # Iris removes _FillValue/missing_value information if data has none
+        #  of these values. If there are values == _FillValue then it will
+        #  be encoded in the numpy.ma object created.
+        #
+        #  => Very difficult to check!
         pass
 
     def _check_var_metadata(self):
@@ -130,11 +135,8 @@ class CMORCheck(object):
             if np.any(self.cube.data > valid_max):
                 self.report_error(msg, '> valid_max',
                                   self.cube.name(), valid_max)
-        # Add fill value check here?
 
     def _check_rank(self):
-        # Need to check here that dimensions required are
-        # not scalar coordinates, i.e. rank = #dims - #scalars
         # Count rank, excluding scalar dimensions
         rank = 0
         for (axis, cmor) in self._cmor.coords.items():
@@ -184,8 +186,8 @@ class CMORCheck(object):
                 # Get coordinate var_name as it exists!
                 try:
                     coord = self.cube.coord(var_name=var_name,
-                                            axis=axis,
-                                            dim_coords=True)
+                                            dim_coords=True) #,
+                                            # axis=axis)
                 except iris.exceptions.CoordinateNotFoundError:
                     continue
 
@@ -289,18 +291,18 @@ class CMORCheckError(Exception):
 
 
 def main():
-    data_folder = '/Users/nube/esmval_data'
-    #data_folder = '/home/paul/ESMValTool/data'
+    #data_folder = '/Users/nube/esmval_data'
+    data_folder = '/home/paul/ESMValTool/data'
     example_datas = [
-        ('ETHZ_CMIP5/historical/Amon/ta/CMCC-CESM/r1i1p1', 'Amon'),
-        ('CMIP6/1pctCO2/Amon/ua/MPI-ESM-LR/r1i1p1f1', 'Amon'),
-        ('CMIP6/1pctCO2/Amon/tas/MPI-ESM-LR/r1i1p1f1', 'Amon'),
-        ('CMIP6/1pctCO2/day/tas/MPI-ESM-LR/r1i1p1f1', 'day'),
-        ('CMIP6/1pctCO2/day/pr/MPI-ESM-LR/r1i1p1f1', 'day'),
-        ('CMIP6/1pctCO2/cfDay/hur/MPI-ESM-LR/r1i1p1f1', 'CFday'),
-        ('CMIP6/1pctCO2/LImon/snw/MPI-ESM-LR/r1i1p1f1', 'LImon'),
-        ('CMIP6/1pctCO2/Lmon/cropFrac/MPI-ESM-LR/r1i1p1f1', 'Lmon'),
-        ('CMIP6/1pctCO2/Oyr/co3/MPI-ESM-LR/r1i1p1f1', 'Oyr'),
+        ('ETHZ_CMIP5/historical/Amon/ta/CMCC-CESM/r1i1p1', 'ta', 'Amon'),
+        ('CMIP6/1pctCO2/Amon/ua/MPI-ESM-LR/r1i1p1f1', 'ua', 'Amon'),
+        ('CMIP6/1pctCO2/Amon/tas/MPI-ESM-LR/r1i1p1f1', 'tas', 'Amon'),
+        ('CMIP6/1pctCO2/day/tas/MPI-ESM-LR/r1i1p1f1', 'tas', 'day'),
+        ('CMIP6/1pctCO2/day/pr/MPI-ESM-LR/r1i1p1f1', 'pr', 'day'),
+        ('CMIP6/1pctCO2/cfDay/hur/MPI-ESM-LR/r1i1p1f1', 'hur', 'CFday'),
+        ('CMIP6/1pctCO2/LImon/snw/MPI-ESM-LR/r1i1p1f1', 'snw', 'LImon'),
+        ('CMIP6/1pctCO2/Lmon/cropFrac/MPI-ESM-LR/r1i1p1f1', 'cropFrac', 'Lmon'),
+        ('CMIP6/1pctCO2/Oyr/co3/MPI-ESM-LR/r1i1p1f1', 'co3', 'Oyr'),
         ]
 
     # Use this callback to fix anything Iris tries to break!
@@ -317,7 +319,7 @@ def main():
         if raw_cube.coords('latitude'):
             raw_cube.coord('latitude').units = 'degrees_north'
 
-    for (example_data, table) in example_datas:
+    for (example_data, var_name, table) in example_datas:
         print('\n' + example_data)
 
         try:
@@ -328,10 +330,9 @@ def main():
                 warnings.filterwarnings('ignore',
                                         'Missing CF-netCDF measure variable',
                                         UserWarning)
-                warnings.filterwarnings('ignore',
-                                        'NetCDF default loading behaviour currently does not expose variables which define reference surfaces for dimensionless vertical coordinates as independent Cubes',
-                                        iris.IrisDeprecation)
-                cubes = iris.load(files, callback=merge_protect_callback)
+                var_lambda = lambda cube: cube.var_name==var_name
+                cubes = iris.load(files, iris.Constraint(cube_func=var_lambda),
+                                  callback=merge_protect_callback)
             # Concatenate data to single cube
             cube = cubes.concatenate_cube()
             # Create checker for loaded cube
@@ -339,7 +340,9 @@ def main():
             # Run checks
             checker.check()
 
-        except (iris.exceptions.ConstraintMismatchError, iris.exceptions.ConcatenateError, CMORCheckError) as ex:
+        except (iris.exceptions.ConstraintMismatchError,
+                iris.exceptions.ConcatenateError,
+                CMORCheckError) as ex:
             print(ex)
 
 if __name__ == '__main__':
