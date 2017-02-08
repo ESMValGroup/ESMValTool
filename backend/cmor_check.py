@@ -9,37 +9,59 @@ iris.FUTURE.cell_datetime_objects = True
 iris.FUTURE.netcdf_promote = True
 
 
-class CMORCheck(object):
+class CMORTable(object):
 
-    def __init__(self, cube, table, fail_on_error=False):
-        self.cube = cube
-        self._failerr = fail_on_error
-        self._errors = list()
+    def __init__(self, table, var_name):
         cwd = os.path.dirname(os.path.realpath(__file__))
         self._cmor_tables_folder = os.path.join(cwd, 'cmip6-cmor-tables', 'Tables')
         self._cmor_tables_file = 'CMIP6_{}.json'.format(table)
-        self._load_variable_information()
-        self._load_coord_information()
+        self._load_variable_information(var_name)
 
     def _load_coord_information(self):
         table_file = os.path.join(self._cmor_tables_folder,
                                   'CMIP6_coordinate.json')
         with open(table_file) as inf:
             json_data = inf.read()
-        self.coord_json_data = json.loads(json_data)
-        self.coord_json_data = self.coord_json_data['axis_entry']
-        # Don't look here!
-        # Entry in table is 'days since ?', this matches test CMIP6 data
-        self.coord_json_data['time']['units'] = u'days since 1850-1-1 00:00:00'
+        self._coord = json.loads(json_data)
 
-    def _load_variable_information(self):
+        # Fill up coordinate axes with CMOR metadata
+        self.coords = {}
+        for var_name in self.var['dimensions'].split():
+            if var_name in self._generic_levels:
+                coord = 'generic_level'
+                axis = 'Z'
+            else:
+                coord = self._coord['axis_entry'][var_name]
+                axis = coord['axis']
+                if not axis:
+                    axis = 'band'
+
+            if axis not in self.coords:
+                self.coords[axis] = coord
+                # Don't look here!
+                if axis == 'T':
+                    self.coords[axis]['units'] = u'days since 1850-1-1 00:00:00'
+            else:
+                print('axis {} already exists'.format(axis))
+
+    def _load_variable_information(self, var_name):
         table_file = os.path.join(self._cmor_tables_folder,
                                   self._cmor_tables_file)
         with open(table_file) as inf:
             json_data = inf.read()
-        self.var_json_data = json.loads(json_data)
-        self.var_json_data = self.var_json_data['variable_entry']
-        self.var_json_data = self.var_json_data[self.cube.var_name]
+        self._var = json.loads(json_data)
+        self._generic_levels = self._var['Header']['generic_levels'].split()
+        self.var = self._var['variable_entry'][var_name]
+        self._load_coord_information()
+
+
+class CMORCheck(object):
+
+    def __init__(self, cube, table, fail_on_error=False):
+        self.cube = cube
+        self._failerr = fail_on_error
+        self._errors = list()
+        self._cmor = CMORTable(table, self.cube.var_name)
 
     def check(self):
         self._check_rank()
@@ -62,80 +84,79 @@ class CMORCheck(object):
         # Set generic error message
         msg = '{} for {} is {}, not {}'
         # Check standard_name
-        if self.var_json_data['standard_name']:
-            if self.cube.standard_name != self.var_json_data['standard_name']:
+        if self._cmor.var['standard_name']:
+            if self.cube.standard_name != self._cmor.var['standard_name']:
                 self.report_error(msg, 'standard_name',
                                   self.cube.var_name,
                                   self.cube.standard_name,
-                                  self.var_json_data['standard_name'])
+                                  self._cmor.var['standard_name'])
 
         # Check units
-        if self.var_json_data['units']:
-            if str(self.cube.units) != self.var_json_data['units']:
+        if self._cmor.var['units']:
+            if str(self.cube.units) != self._cmor.var['units']:
                 self.report_error(msg, 'units',
                                   self.cube.var_name,
                                   self.cube.units,
-                                  self.var_json_data['units'])
+                                  self._cmor.var['units'])
 
         # Check other variable attributes that match entries in cube.attributes
         attrs = ['positive']
         for attr in attrs:
-            if self.var_json_data[attr]:
-                if self.cube.attributes[attr] != self.var_json_data[attr]:
+            if self._cmor.var[attr]:
+                if self.cube.attributes[attr] != self._cmor.var[attr]:
                     self.report_error(msg, attr,
                                       self.cube.var_name,
                                       self.cube.attributes[attr],
-                                      self.var_json_data[attr])
+                                      self._cmor.var[attr])
 
     def _check_data_range(self):
         # Set generic error message
         msg = 'Variable {} has values {} ({})'
         # Check data is not less than valid_min
-        if self.var_json_data['valid_min']:
-            valid_min = float(self.var_json_data['valid_min'])
+        if self._cmor.var['valid_min']:
+            valid_min = float(self._cmor.var['valid_min'])
             if np.any(self.cube.data < valid_min):
                 self.report_error(msg, '< valid_min',
                                   self.cube.name(), valid_min)
         # Check data is not greater than valid_max
-        if self.var_json_data['valid_max']:
-            valid_max = float(self.var_json_data['valid_max'])
+        if self._cmor.var['valid_max']:
+            valid_max = float(self._cmor.var['valid_max'])
             if np.any(self.cube.data > valid_max):
                 self.report_error(msg, '> valid_max',
                                   self.cube.name(), valid_max)
+        # Add fill value check here?
 
     def _check_rank(self):
-        # Need to check here that dimensions required not scalar coordinates
-        # i.e. rank = #dims - #scalars
-        if self.var_json_data['dimensions']:
-            # Check number of dim_coords matches rank required
-            var_names = self.var_json_data['dimensions'].split()
-            # Check for scalar dimensions
-            num_scalar_dims = 0
-            for var_name in var_names:
-                if self.coord_json_data[var_name]['value']:
-                    num_scalar_dims += 1
-            # Calculate actual rank of data
-            rank = len(var_names) - num_scalar_dims
-            # Extract dimension coordinates from cube
-            dim_coords = self.cube.coords(dim_coords=True)
-            # Check number of dimension coords matches rank
-            if len(dim_coords) != rank:
-                self.report_error('Coordinate rank does not match')
+        # Need to check here that dimensions required are
+        # not scalar coordinates, i.e. rank = #dims - #scalars
+        # Count rank, excluding scalar dimensions
+        rank = 0
+        for (axis, cmor) in self._cmor.coords.items():
+            if cmor == 'generic_level' or not cmor['value']:
+                rank += 1
+        # Extract dimension coordinates from cube
+        dim_coords = self.cube.coords(dim_coords=True)
+        # Check number of dimension coords matches rank
+        if len(dim_coords) != rank:
+            self.report_error('Coordinate rank does not match')
 
     def _check_dim_names(self):
-        if self.var_json_data['dimensions']:
-            # Get names of dimension variables from variable CMOR table
-            var_names = self.var_json_data['dimensions'].split()
-            for var_name in var_names:
-                # Get CMOR metadata for coordinate
-                cmor = self.coord_json_data[var_name]
-                # Check for variable name in coordinate CMOR table,
-                #  get out_name as that is coordinate variable name
-                #  in variable file.
-                out_var_name = cmor['out_name']
-                # Check for out_var_name in variable coordinates
-                if self.cube.coords(var_name=out_var_name):
-                    coord = self.cube.coord(var_name=out_var_name)
+        for (axis, cmor) in self._cmor.coords.items():
+            if axis == 'band':
+                axis = None
+            if cmor == 'generic_level':
+                if self.cube.coords(axis=axis):
+                    coord = self.cube.coord(axis=axis)
+                    if not coord.standard_name:
+                        self.report_error('generic_level coordinate does not have a standard name')
+                else:
+                    self.report_error('generic_level coordinate does not exist')
+            else:
+                var_name = cmor['out_name']
+                # Check for var_name in cube coordinates
+                #  Don't insist on dim_coords as could be scalar
+                if self.cube.coords(var_name=var_name): #, axis=axis):
+                    coord = self.cube.coord(var_name=var_name) #, axis=axis)
                     if coord.standard_name != cmor['standard_name']:
                         self.report_error('standard_name for {} is {}, not {}',
                                           var_name,
@@ -145,19 +166,19 @@ class CMORCheck(object):
                     self.report_error('Coordinate {} does not exist', var_name)
 
     def _check_coords(self):
-        if self.var_json_data['dimensions']:
-            # Get names of dimension variables from variable CMOR table
-            var_names = self.var_json_data['dimensions'].split()
-            for var_name in var_names:
-                # Get CMOR metadata for coordinate
-                cmor = self.coord_json_data[var_name]
-                # Check for variable name in coordinate CMOR table,
-                #  get out_name as that is coordinate variable name
-                #  in variable file.
-                out_var_name = cmor['out_name']
-                # Get coordinate out_var_name as it exists!
+        for (axis, cmor) in self._cmor.coords.items():
+            if axis == 'band':
+                axis = None
+
+            # Cannot check generic_level coords as no CMOR information
+            #  Do we want to do a basic check for units, etc.?
+            if cmor != 'generic_level':
+                var_name = cmor['out_name']
+
+                # Get coordinate var_name as it exists!
                 try:
-                    coord = self.cube.coord(var_name=out_var_name,
+                    coord = self.cube.coord(var_name=var_name,
+                                            axis=axis,
                                             dim_coords=True)
                 except iris.exceptions.CoordinateNotFoundError:
                     continue
@@ -211,7 +232,7 @@ class CMORCheck(object):
 
     def _check_time_coord(self):
         try:
-            coord = self.cube.coord('time', dim_coords=True)
+            coord = self.cube.coord('time', dim_coords=True)  # , axis='T')
         except iris.exceptions.CoordinateNotFoundError:
             return
 
@@ -235,7 +256,7 @@ class CMORCheckError(Exception):
 
 def main():
     data_folder = '/Users/nube/esmval_data'
-    # data_folder = '/home/paul/ESMValTool/data'
+    #data_folder = '/home/paul/ESMValTool/data'
     example_datas = [
         ('ETHZ_CMIP5/historical/Amon/ta/CMCC-CESM/r1i1p1', 'Amon'),
         # ('CMIP6/1pctCO2/Amon/ua/MPI-ESM-LR/r1i1p1f1', 'Amon'),
@@ -245,7 +266,7 @@ def main():
         # # ('CMIP6/1pctCO2/cfDay/hur/MPI-ESM-LR/r1i1p1f1', 'CFday'),
         # ('CMIP6/1pctCO2/LImon/snw/MPI-ESM-LR/r1i1p1f1', 'LImon'),
         # ('CMIP6/1pctCO2/Lmon/cropFrac/MPI-ESM-LR/r1i1p1f1', 'Lmon'),
-        # # ('CMIP6/1pctCO2/Oyr/co3/MPI-ESM-LR/r1i1p1f1', 'Oyr'),
+        # ('CMIP6/1pctCO2/Oyr/co3/MPI-ESM-LR/r1i1p1f1', 'Oyr'),
         ]
 
     # Use this callback to fix anything Iris tries to break!

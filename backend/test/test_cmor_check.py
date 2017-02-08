@@ -57,6 +57,11 @@ class TestCMORCheckGoodCube(unittest.TestCase):
         checker = CMORCheck(cube, 'Omon')
         checker.check()
 
+    def test_check_with_band(self):
+        cube = self.cube_creator.get_cube('Amon', 'cl')
+        checker = CMORCheck(cube, 'Amon')
+        checker.check()
+
     def test_check_with_postive_attributte(self):
         cube = self.cube_creator.get_cube(self.table, 'tauu')
         checker = CMORCheck(cube, self.table)
@@ -171,6 +176,20 @@ class TestCMORCheckBadCube(unittest.TestCase):
         with self.assertRaises(CMORCheckError):
             checker.check()
 
+    def test_bad_standard_name_generic_level_attributte(self):
+        cube = self.cube_creator.get_cube('Omon', 'uo')
+        cube.coord('depth').standard_name = None
+        checker = CMORCheck(cube, 'Omon')
+        with self.assertRaises(CMORCheckError):
+            checker.check()
+
+    def test_bad_axis_generic_level_attributte(self):
+        cube = self.cube_creator.get_cube('Omon', 'uo')
+        cube.coord('depth').attributes['positive'] = ''
+        checker = CMORCheck(cube, 'Omon')
+        with self.assertRaises(CMORCheckError):
+            checker.check()
+
     # For the moment, we don't have a variable definition with these values to test
 
     # def test_data_not_valid_max(self):
@@ -262,7 +281,18 @@ class CubeCreator(object):
         except KeyError:
             table_spec = self._parse_mip_table(table)
             if dim in table_spec['Header']['generic_levels']:
-                return None
+                if dim == 'olevel':
+                    dim_spec = {'standard_name': 'depth', 'units': '', 'value': '', 'valid_min': '', 'valid_max': '',
+                                'stored_direction': '', 'requested': '',
+                                'long_name': 'ocean_depth_coordinate', 'out_name': 'lev', 'axis': 'Z',
+                                'positive': 'down'}
+                elif dim == 'alevel':
+                    dim_spec = {'standard_name': 'height', 'units': '', 'value': '', 'valid_min': '', 'valid_max': '',
+                                'stored_direction': '', 'requested': '',
+                                'long_name': 'ocean_depth_coordinate', 'out_name': 'lev', 'axis': 'Z',
+                                'positive': 'down'}
+                else:
+                    raise Exception('Generic levels dimension {} not supported by CubeCreator'.format(dim))
             else:
                 raise
 
@@ -272,9 +302,6 @@ class CubeCreator(object):
 
     def _create_coord_from_spec(self, table, dim, set_time_units):
         dim_spec = self._get_coord_spec(table, dim, set_time_units)
-
-        if dim_spec is None:
-            return None
 
         if dim_spec["value"]:
             return self._construct_scalar_coord(dim_spec)
@@ -312,13 +339,14 @@ class CubeCreator(object):
                 values[j] = extra_values[j - len(requested)]
 
         # Set up attributes dictionary
-        coord_atts = {'stored_direction': dim_spec['stored_direction']}
+        coord_atts = {'stored_direction': dim_spec['stored_direction'], 'positive': dim_spec['positive']}
         coord = iris.coords.DimCoord(values,
                                      standard_name=dim_spec["standard_name"],
                                      long_name=dim_spec["long_name"],
                                      var_name=dim_spec["out_name"],
                                      attributes=coord_atts,
-                                     units=dim_spec["units"])
+                                     units=dim_spec["units"],
+                                     )
         return coord
 
     def _safely_join_dicts(self, d1, d2):
