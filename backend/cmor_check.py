@@ -4,8 +4,8 @@ import os
 import json
 import warnings
 
-iris.FUTURE.cell_datetime_objects = True
-iris.FUTURE.netcdf_promote = True
+# iris.FUTURE.cell_datetime_objects = True
+# iris.FUTURE.netcdf_promote = True
 
 
 # Use this callback to fix anything Iris tries to break!
@@ -48,7 +48,7 @@ class CMORTable(object):
                 coord = self._coord['axis_entry'][var_name]
                 axis = coord['axis']
                 if not axis:
-                    axis = 'band'
+                    axis = 'none'
 
             if axis not in self.coords:
                 self.coords[axis] = coord
@@ -156,11 +156,11 @@ class CMORCheck(object):
 
     def _check_dim_names(self):
         for (axis, cmor) in self._cmor.coords.items():
-            if axis == 'band':
+            if axis == 'none':
                 axis = None
             if cmor == 'generic_level':
-                if self.cube.coords(axis=axis):
-                    coord = self.cube.coord(axis=axis)
+                if self.cube.coords(axis=axis, dim_coords=True):
+                    coord = self.cube.coord(axis=axis, dim_coords=True)
                     if not coord.standard_name:
                         self.report_error('generic_level coordinate does not have a standard name')
                 else:
@@ -181,7 +181,7 @@ class CMORCheck(object):
 
     def _check_coords(self):
         for (axis, cmor) in self._cmor.coords.items():
-            if axis == 'band':
+            if axis == 'none':
                 axis = None
 
             # Cannot check generic_level coords as no CMOR information
@@ -277,7 +277,7 @@ def main():
         ('CMIP6/1pctCO2/Amon/tas/MPI-ESM-LR/r1i1p1f1', 'Amon'),
         ('CMIP6/1pctCO2/day/tas/MPI-ESM-LR/r1i1p1f1', 'day'),
         ('CMIP6/1pctCO2/day/pr/MPI-ESM-LR/r1i1p1f1', 'day'),
-        # ('CMIP6/1pctCO2/cfDay/hur/MPI-ESM-LR/r1i1p1f1', 'CFday'),
+        ('CMIP6/1pctCO2/cfDay/hur/MPI-ESM-LR/r1i1p1f1', 'CFday'),
         ('CMIP6/1pctCO2/LImon/snw/MPI-ESM-LR/r1i1p1f1', 'LImon'),
         ('CMIP6/1pctCO2/Lmon/cropFrac/MPI-ESM-LR/r1i1p1f1', 'Lmon'),
         ('CMIP6/1pctCO2/Oyr/co3/MPI-ESM-LR/r1i1p1f1', 'Oyr'),
@@ -294,6 +294,9 @@ def main():
                 warnings.filterwarnings('ignore',
                                         'Missing CF-netCDF measure variable',
                                         UserWarning)
+                warnings.filterwarnings('ignore',
+                                        'NetCDF default loading behaviour currently does not expose variables which define reference surfaces for dimensionless vertical coordinates as independent Cubes',
+                                        iris.IrisDeprecation)
                 cubes = iris.load(files, callback=merge_protect_callback)
             # Concatenate data to single cube
             cube = cubes.concatenate_cube()
