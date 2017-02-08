@@ -11,6 +11,12 @@ iris.FUTURE.netcdf_promote = True
 
 class CMORTable(object):
 
+    # Dictionary to map CMIP5 variable names to CMIP6
+    CMIP5_to_CMIP6 = {
+        'sic': 'siconc',
+        'tro3': 'o3',
+    }
+
     def __init__(self, table, var_name):
         cwd = os.path.dirname(os.path.realpath(__file__))
         self._cmor_tables_folder = os.path.join(cwd, 'cmip6-cmor-tables', 'Tables')
@@ -51,7 +57,11 @@ class CMORTable(object):
             json_data = inf.read()
         self._var = json.loads(json_data)
         self._generic_levels = self._var['Header']['generic_levels'].split()
-        self.var = self._var['variable_entry'][var_name]
+        if var_name in self.CMIP5_to_CMIP6:
+            new_var_name = self.CMIP5_to_CMIP6[var_name]
+            self.var = self._var['variable_entry'][new_var_name]
+        else:
+            self.var = self._var['variable_entry'][var_name]
         self._load_coord_information()
 
 
@@ -260,7 +270,18 @@ def main():
     #data_folder = '/Users/nube/esmval_data'
     data_folder = '/home/paul/ESMValTool/data'
     example_datas = [
+        ('ETHZ_CMIP5/historical/Amon/ps/GFDL-ESM2G/r1i1p1', 'ps', 'Amon'),
+        ('ETHZ_CMIP5/historical/Amon/ps/MIROC5/r1i1p1', 'ps', 'Amon'),
+        ('ETHZ_CMIP5/historical/Amon/ps/MIROC-ESM/r1i1p1', 'ps', 'Amon'),
         ('ETHZ_CMIP5/historical/Amon/ta/CMCC-CESM/r1i1p1', 'ta', 'Amon'),
+        ('ETHZ_CMIP5/historical/Amon/ta/GFDL-ESM2G/r1i1p1', 'ta', 'Amon'),
+        ('ETHZ_CMIP5/historical/Amon/ta/bcc-csm1-1/r1i1p1', 'ta', 'Amon'),
+        ('ETHZ_CMIP5/historical/Amon/tro3/GFDL-ESM2G/r1i1p1', 'tro3', 'Amon'),
+        ('ETHZ_CMIP5/historical/Amon/tro3/MIROC5/r1i1p1', 'tro3', 'Amon'),
+        ('ETHZ_CMIP5/historical/Amon/tro3/MIROC-ESM/r1i1p1', 'tro3', 'Amon'),
+        ('ETHZ_CMIP5/historical/OImon/sic/EC-EARTH/r1i1p1', 'sic', 'SImon'),
+        ('ETHZ_CMIP5/historical/OImon/sic/HadCM3/r1i1p1', 'sic', 'SImon'),
+        ('ETHZ_CMIP5/historical/OImon/sic/MRI-ESM1/r1i1p1', 'sic', 'SImon'),
         ('CMIP6/1pctCO2/Amon/ua/MPI-ESM-LR/r1i1p1f1', 'ua', 'Amon'),
         ('CMIP6/1pctCO2/Amon/tas/MPI-ESM-LR/r1i1p1f1', 'tas', 'Amon'),
         ('CMIP6/1pctCO2/day/tas/MPI-ESM-LR/r1i1p1f1', 'tas', 'day'),
@@ -295,6 +316,9 @@ def main():
             with warnings.catch_warnings():
                 warnings.filterwarnings('ignore',
                                         'Missing CF-netCDF measure variable',
+                                        UserWarning)
+                warnings.filterwarnings('ignore',
+                                        'Missing CF-netCDF boundary variable',
                                         UserWarning)
                 var_lambda = lambda cube: cube.var_name==var_name
                 cubes = iris.load(files, iris.Constraint(cube_func=var_lambda),
