@@ -2,6 +2,7 @@
 *~
 *.pyc
 .coverage
+.idea
 htmlcov
 
 # Temporary files in interface

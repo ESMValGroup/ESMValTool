@@ -18,6 +18,9 @@ class CMORTable(object):
     }
 
     def __init__(self, table, var_name):
+        # Convert old CMIP5 names to the CMIP6 ones
+        if table == 'OImon':
+            table = 'SImon'
         cwd = os.path.dirname(os.path.realpath(__file__))
         self._cmor_folder = os.path.join(cwd, 'cmip6-cmor-tables', 'Tables')
         self._cmor_file = 'CMIP6_{}.json'.format(table)
