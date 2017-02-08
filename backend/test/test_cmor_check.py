@@ -69,8 +69,9 @@ class TestCMORCheckGoodCube(unittest.TestCase):
         checker = CMORCheck(cube, self.table)
         checker.check()
 
-    def test_check_with_table_correction(self):
+    def test_check_with_var_and_table_correction(self):
         cube = self.cube_creator.get_cube('SImon', 'siconc')
+        cube.var_name = 'sic'
         checker = CMORCheck(cube, 'OImon')
         checker.check()
 
