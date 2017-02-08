@@ -19,12 +19,12 @@ class CMORTable(object):
 
     def __init__(self, table, var_name):
         cwd = os.path.dirname(os.path.realpath(__file__))
-        self._cmor_tables_folder = os.path.join(cwd, 'cmip6-cmor-tables', 'Tables')
-        self._cmor_tables_file = 'CMIP6_{}.json'.format(table)
+        self._cmor_folder = os.path.join(cwd, 'cmip6-cmor-tables', 'Tables')
+        self._cmor_file = 'CMIP6_{}.json'.format(table)
         self._load_variable_information(var_name)
 
     def _load_coord_information(self):
-        table_file = os.path.join(self._cmor_tables_folder,
+        table_file = os.path.join(self._cmor_folder,
                                   'CMIP6_coordinate.json')
         with open(table_file) as inf:
             json_data = inf.read()
@@ -51,8 +51,8 @@ class CMORTable(object):
                 print('axis {} already exists'.format(axis))
 
     def _load_variable_information(self, var_name):
-        table_file = os.path.join(self._cmor_tables_folder,
-                                  self._cmor_tables_file)
+        table_file = os.path.join(self._cmor_folder,
+                                  self._cmor_file)
         with open(table_file) as inf:
             json_data = inf.read()
         self._var = json.loads(json_data)
@@ -103,22 +103,22 @@ class CMORCheck(object):
 
     def _check_var_metadata(self):
         # Set generic error message
-        msg = '{} for {} is {}, not {}'
+        msg = '{} for {} should be {}, not {}'
         # Check standard_name
         if self._cmor.var['standard_name']:
             if self.cube.standard_name != self._cmor.var['standard_name']:
                 self.report_error(msg, 'standard_name',
                                   self.cube.var_name,
-                                  self.cube.standard_name,
-                                  self._cmor.var['standard_name'])
+                                  self._cmor.var['standard_name'],
+                                  self.cube.standard_name)
 
         # Check units
         if self._cmor.var['units']:
             if str(self.cube.units) != self._cmor.var['units']:
                 self.report_error(msg, 'units',
                                   self.cube.var_name,
-                                  self.cube.units,
-                                  self._cmor.var['units'])
+                                  self._cmor.var['units'],
+                                  self.cube.units)
 
         # Check other variable attributes that match entries in cube.attributes
         attrs = ['positive']
@@ -127,8 +127,8 @@ class CMORCheck(object):
                 if self.cube.attributes[attr] != self._cmor.var[attr]:
                     self.report_error(msg, attr,
                                       self.cube.var_name,
-                                      self.cube.attributes[attr],
-                                      self._cmor.var[attr])
+                                      self._cmor.var[attr],
+                                      self.cube.attributes[attr])
 
     def _check_data_range(self):
         # Set generic error message
@@ -159,34 +159,40 @@ class CMORCheck(object):
             self.report_error('Coordinate rank does not match')
 
     def _check_dim_names(self):
+        # Set generic error message
+        msg = 'Coordinate {} does not {}'
         for (axis, cmor) in self._cmor.coords.items():
             if axis == 'none':
                 axis = None
             if cmor == 'generic_level':
+                var_name = 'generic_level'
                 if self.cube.coords(axis=axis, dim_coords=True):
                     coord = self.cube.coord(axis=axis, dim_coords=True)
                     if not coord.standard_name:
-                        self.report_error('generic_level coordinate does not have a standard name')
+                        self.report_error(msg, var_name, 'have standard_name')
                 else:
-                    self.report_error('generic_level coordinate does not exist')
+                    self.report_error(msg, var_name, 'exist')
             else:
                 var_name = cmor['out_name']
                 # Check for var_name in cube coordinates
                 #  Don't insist on dim_coords as could be scalar
-                if self.cube.coords(var_name=var_name): #, axis=axis):
-                    coord = self.cube.coord(var_name=var_name) #, axis=axis)
+                #  Cannot use axis as a keyword as Iris has stripped this out
+                #   and made it impossible to re-add
+                if self.cube.coords(var_name=var_name):  # , axis=axis):
+                    coord = self.cube.coord(var_name=var_name)  # , axis=axis)
                     if coord.standard_name != cmor['standard_name']:
-                        self.report_error('standard_name for {} is {}, not {}',
+                        msg = 'standard_name for {} should be {}, not {}'
+                        self.report_error(msg,
                                           var_name,
-                                          coord.standard_name,
-                                          cmor['standard_name'])
+                                          cmor['standard_name'],
+                                          coord.standard_name)
                 else:
-                    self.report_error('Coordinate {} does not exist', var_name)
+                    self.report_error(msg, var_name, 'exist')
 
     def _check_coords(self):
         for (axis, cmor) in self._cmor.coords.items():
-            if axis == 'none':
-                axis = None
+            # if axis == 'none':
+            #     axis = None
 
             # Cannot check generic_level coords as no CMOR information
             #  Do we want to do a basic check for units, etc.?
@@ -196,8 +202,8 @@ class CMORCheck(object):
                 # Get coordinate var_name as it exists!
                 try:
                     coord = self.cube.coord(var_name=var_name,
-                                            dim_coords=True) #,
-                                            # axis=axis)
+                                            dim_coords=True)  # ,
+                    #                        axis=axis)
                 except iris.exceptions.CoordinateNotFoundError:
                     continue
 
@@ -207,23 +213,25 @@ class CMORCheck(object):
         # Check units
         if cmor['units']:
             if str(coord.units) != cmor['units']:
-                self.report_error('units for {} is {}, not {}',
-                                  var_name, coord.units, cmor['units'])
+                msg = 'units for {} should be {}, not {}'
+                self.report_error(msg, var_name, cmor['units'], coord.units)
         self._check_coord_monotonicity_and_direction(cmor, coord, var_name)
         self._check_coord_values(cmor, coord, var_name)
 
     def _check_coord_monotonicity_and_direction(self, cmor, coord, var_name):
+        # Set generic error message
+        msg = 'Coordinate {} is not {}'
+
         if not coord.is_monotonic():
-            self.report_error('Coord {} is not monotonic', var_name)
+            self.report_error(msg, var_name, 'monotonic')
+
         if cmor['stored_direction']:
             if cmor['stored_direction'] == 'increasing':
                 if coord.points[0] > coord.points[1]:
-                    msg = 'Coord {} is not increasing'
-                    self.report_error(msg, var_name)
+                    self.report_error(msg, var_name, cmor['stored_direction'])
             elif cmor['stored_direction'] == 'decreasing':
                 if coord.points[0] < coord.points[1]:
-                    msg = 'Coord {} is not decreasing'
-                    self.report_error(msg, var_name)
+                    self.report_error(msg, var_name, cmor['stored_direction'])
 
     def _check_coord_values(self, cmor, coord, var_name):
         # Check requested coordinate values exist in coord.points
@@ -232,21 +240,20 @@ class CMORCheck(object):
             coord_points = list(coord.points)
             for point in cmor_points:
                 if point not in coord_points:
-                    msg = 'Coord {} does not contain {} {}'
+                    msg = 'Coordinate {} does not contain {} {}'
                     self.report_error(msg, var_name, str(point),
                                       str(coord.units))
 
         # Check coordinate value ranges
+        msg = 'Coordinate {} has values {} ({})'
         if cmor['valid_min']:
             valid_min = float(cmor['valid_min'])
             if np.any(coord.points < valid_min):
-                msg = 'Coord {} has values < valid_min ({})'
-                self.report_error(msg, var_name, valid_min)
+                self.report_error(msg, var_name, '< valid_min', valid_min)
         if cmor['valid_max']:
             valid_max = float(cmor['valid_max'])
             if np.any(coord.points > valid_max):
-                msg = 'Coord {} has values > valid_max ({})'
-                self.report_error(msg, var_name, valid_max)
+                self.report_error(msg, var_name, '> valid_max', valid_max)
 
     def _check_time_coord(self):
         try:
@@ -255,34 +262,38 @@ class CMORCheck(object):
             return
 
         if not coord.units.is_time_reference():
-            self.report_error('Coord time does not have time reference units')
+            msg = 'Coordinate {} does not {}'
+            self.report_error(msg, 'time', 'have time reference units')
 
         if self.frequency:
-            tolerance = 0.001
+            tol = 0.001
             if self.frequency == 'dec':
-                target_interval = (3600 - tolerance, 3660 + tolerance)
+                target_interval = (3600 - tol, 3660 + tol)
             elif self.frequency == 'yr':
-                target_interval = (360 - tolerance, 366 + tolerance)
+                target_interval = (360 - tol, 366 + tol)
             elif self.frequency == 'mon':
-                target_interval = (28 - tolerance, 31 + tolerance)
+                target_interval = (28 - tol, 31 + tol)
             elif self.frequency == 'day':
-                target_interval = (1 - tolerance, 1 + tolerance)
+                target_interval = (1 - tol, 1 + tol)
             elif self.frequency.endswith('hr'):
 
                 frequency = self.frequency[:-2]
                 if frequency == 'sub':
                     frequency = 1.0 / 24
-                    target_interval = (-tolerance, frequency + tolerance)
+                    target_interval = (-tol, frequency + tol)
                 else:
                     frequency = float(frequency) / 24
-                    target_interval = (frequency - tolerance, frequency + tolerance)
+                    target_interval = (frequency - tol, frequency + tol)
             else:
-                self.report_error('Frequency {} not supported by checker', self.frequency)
+                msg = 'Frequency {} not supported by checker'
+                self.report_error(msg, self.frequency)
                 return
             for i in range(len(coord.points)-1):
                 interval = coord.points[i + 1] - coord.points[i]
-                if interval < target_interval[0] or interval > target_interval[1]:
-                    self.report_error('Frequency {} does not mach input data', self.frequency)
+                if (interval < target_interval[0] or
+                   interval > target_interval[1]):
+                    msg = 'Frequency {} does not match input data'
+                    self.report_error(msg, self.frequency)
                     break
 
     def has_errors(self):
@@ -301,7 +312,7 @@ class CMORCheckError(Exception):
 
 
 def main():
-    #data_folder = '/Users/nube/esmval_data'
+    # data_folder = '/Users/nube/esmval_data'
     data_folder = '/home/paul/ESMValTool/data'
     example_datas = [
         ('ETHZ_CMIP5/historical/Amon/ps/GFDL-ESM2G/r1i1p1', 'ps', 'Amon'),
@@ -328,7 +339,7 @@ def main():
 
     # Use this callback to fix anything Iris tries to break!
     # noinspection PyUnusedLocal
-    def merge_protect_callback(raw_cube, field, filename):
+    def merge_callback(raw_cube, field, filename):
         # Remove attributes that cause issues with merging and concatenation
         for attr in ['creation_date', 'tracking_id', 'history']:
             if attr in raw_cube.attributes:
@@ -344,9 +355,12 @@ def main():
         print('\n' + example_data)
 
         try:
-            # Load cubes
+            # Load cubes for requested variable in given files
             files = os.path.join(data_folder, example_data, '*.nc')
-            # Suppress warnings associated with missing 'areacella' measure
+            # Suppress warnings associated with missing cell measure and
+            #  boundary variables. This may be a problem long term as these
+            #  variables are expected to be in the same NetCDF files as the
+            #  model data. This is not the case with CMIP data.
             with warnings.catch_warnings():
                 warnings.filterwarnings('ignore',
                                         'Missing CF-netCDF measure variable',
@@ -354,10 +368,12 @@ def main():
                 warnings.filterwarnings('ignore',
                                         'Missing CF-netCDF boundary variable',
                                         UserWarning)
-                var_lambda = lambda cube: cube.var_name==var_name
-                cubes = iris.load(files, iris.Constraint(cube_func=var_lambda),
-                                  callback=merge_protect_callback)
-            # Concatenate data to single cube
+
+                def cube_var_name(raw_cube):
+                    return raw_cube.var_name == var_name
+                var_cons = iris.Constraint(cube_func=cube_var_name)
+                cubes = iris.load(files, var_cons, callback=merge_callback)
+            # Concatenate data to single cube, i.e. merge time series
             cube = cubes.concatenate_cube()
             # Create checker for loaded cube
             checker = CMORCheck(cube, table)  # , fail_on_error=True)
