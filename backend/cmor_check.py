@@ -1,25 +1,12 @@
 import numpy as np
 import iris
+import iris.exceptions
 import os
 import json
 import warnings
 
 iris.FUTURE.cell_datetime_objects = True
 iris.FUTURE.netcdf_promote = True
-
-
-# Use this callback to fix anything Iris tries to break!
-def merge_protect_callback(cube, field, filename):
-    # Remove attributes that cause issues with merging and concatenation
-    for attr in ['creation_date', 'tracking_id', 'history']:
-        if attr in cube.attributes:
-            del cube.attributes[attr]
-    # Iris chooses to change longitude and latitude units to degrees
-    #  regardless of value in file
-    if cube.coords('longitude'):
-        cube.coord('longitude').units = 'degrees_east'
-    if cube.coords('latitude'):
-        cube.coord('latitude').units = 'degrees_north'
 
 
 class CMORCheck(object):
@@ -248,18 +235,32 @@ class CMORCheckError(Exception):
 
 def main():
     data_folder = '/Users/nube/esmval_data'
-    data_folder = '/home/paul/ESMValTool/data'
+    # data_folder = '/home/paul/ESMValTool/data'
     example_datas = [
         ('ETHZ_CMIP5/historical/Amon/ta/CMCC-CESM/r1i1p1', 'Amon'),
-        ('CMIP6/1pctCO2/Amon/ua/MPI-ESM-LR/r1i1p1f1', 'Amon'),
-        ('CMIP6/1pctCO2/Amon/tas/MPI-ESM-LR/r1i1p1f1', 'Amon'),
-        ('CMIP6/1pctCO2/day/tas/MPI-ESM-LR/r1i1p1f1', 'day'),
-        ('CMIP6/1pctCO2/day/pr/MPI-ESM-LR/r1i1p1f1', 'day'),
-        # ('CMIP6/1pctCO2/cfDay/hur/MPI-ESM-LR/r1i1p1f1', 'CFday'),
-        ('CMIP6/1pctCO2/LImon/snw/MPI-ESM-LR/r1i1p1f1', 'LImon'),
-        ('CMIP6/1pctCO2/Lmon/cropFrac/MPI-ESM-LR/r1i1p1f1', 'Lmon'),
-        # ('CMIP6/1pctCO2/Oyr/co3/MPI-ESM-LR/r1i1p1f1', 'Oyr'),
+        # ('CMIP6/1pctCO2/Amon/ua/MPI-ESM-LR/r1i1p1f1', 'Amon'),
+        # ('CMIP6/1pctCO2/Amon/tas/MPI-ESM-LR/r1i1p1f1', 'Amon'),
+        # ('CMIP6/1pctCO2/day/tas/MPI-ESM-LR/r1i1p1f1', 'day'),
+        # ('CMIP6/1pctCO2/day/pr/MPI-ESM-LR/r1i1p1f1', 'day'),
+        # # ('CMIP6/1pctCO2/cfDay/hur/MPI-ESM-LR/r1i1p1f1', 'CFday'),
+        # ('CMIP6/1pctCO2/LImon/snw/MPI-ESM-LR/r1i1p1f1', 'LImon'),
+        # ('CMIP6/1pctCO2/Lmon/cropFrac/MPI-ESM-LR/r1i1p1f1', 'Lmon'),
+        # # ('CMIP6/1pctCO2/Oyr/co3/MPI-ESM-LR/r1i1p1f1', 'Oyr'),
         ]
+
+    # Use this callback to fix anything Iris tries to break!
+    # noinspection PyUnusedLocal
+    def merge_protect_callback(raw_cube, field, filename):
+        # Remove attributes that cause issues with merging and concatenation
+        for attr in ['creation_date', 'tracking_id', 'history']:
+            if attr in raw_cube.attributes:
+                del raw_cube.attributes[attr]
+        # Iris chooses to change longitude and latitude units to degrees
+        #  regardless of value in file
+        if raw_cube.coords('longitude'):
+            raw_cube.coord('longitude').units = 'degrees_east'
+        if raw_cube.coords('latitude'):
+            raw_cube.coord('latitude').units = 'degrees_north'
 
     for (example_data, table) in example_datas:
         print('\n' + example_data)
@@ -280,13 +281,7 @@ def main():
             # Run checks
             checker.check()
 
-        except iris.exceptions.ConstraintMismatchError as ex:
-            print(ex)
-
-        except iris.exceptions.ConcatenateError as ex:
-            print(ex)
-
-        except CMORCheckError as ex:
+        except (iris.exceptions.ConstraintMismatchError, iris.exceptions.ConcatenateError, CMORCheckError) as ex:
             print(ex)
 
 if __name__ == '__main__':
