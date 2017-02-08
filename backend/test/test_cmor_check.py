@@ -169,22 +169,13 @@ class TestCMORCheckErrorReporting(unittest.TestCase):
         self.cube = _create_good_cube(self.varid)
         self.cube.units = 'hPa'
 
-    def test_failed_on_error_true(self):
-        checker = cmor_check.CMORCheck(self.cube, self.table, fail_on_error=True)
-        with self.assertRaises(cmor_check.CMORCheckError):
-            checker.report_error('New error: {}', 'something failed')
-       
-    def test_failed_on_error_false(self):
-        checker = cmor_check.CMORCheck(self.cube, self.table, fail_on_error=False)
-        checker.report_error('New error: {}', 'something failed')
-
     def test_report_error(self):
         checker = cmor_check.CMORCheck(self.cube, self.table,)
         self.assertFalse(checker.has_errors())
         checker.report_error('New error: {}', 'something failed')
         self.assertTrue(checker.has_errors())
 
-    def test_report_raises(self):
+    def test_fail_on_error(self):
         checker = cmor_check.CMORCheck(self.cube, self.table, fail_on_error=True)
         with self.assertRaises(cmor_check.CMORCheckError):
             checker.report_error('New error: {}', 'something failed')
@@ -195,18 +186,15 @@ class TestCMORCheckGoodCube(unittest.TestCase):
     def setUp(self):
         self.varid = "tas"
         self.table = "Amon"
-        self.tas_spec = _parse_mip_table("CMIP6_Amon.json", get_var=self.varid) 
-        self.coords_dict = _parse_mip_table("CMIP6_coordinate.json")["axis_entry"]
         self.cube = _create_good_cube(self.varid)
         self.checker = cmor_check.CMORCheck(self.cube, self.table, fail_on_error=True)
 
-    def test_read_tas_spec(self):
-        assert self.tas_spec["units"] == "K"
-
     def test_check(self):
-        self.checker.check()
+        cube = _create_good_cube(self.varid)
+        checker = cmor_check.CMORCheck(cube, self.table)
+        checker.check()
 
-    def test_postive_attributte(self):
+    def test_check_with_postive_attributte(self):
         cube = _create_good_cube('tauu')
         checker = cmor_check.CMORCheck(cube, self.table)
         checker.check()
@@ -217,10 +205,6 @@ class TestCMORCheckBadCube(unittest.TestCase):
     def setUp(self):
         self.varid = "ta"
         self.table = "Amon"
-        self.coords_dict = _parse_mip_table("CMIP6_coordinate.json")["axis_entry"]
-        self.cube = _create_good_cube(self.varid)
-        self.cube.units = 'hPa'
-        self.checker = cmor_check.CMORCheck(self.cube, self.table, fail_on_error=True)
 
     def test_invalid_rank(self):
         cube = _create_good_cube(self.varid)
