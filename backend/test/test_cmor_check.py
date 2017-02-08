@@ -52,6 +52,11 @@ class TestCMORCheckGoodCube(unittest.TestCase):
         checker = CMORCheck(cube, self.table)
         checker.check()
 
+    def test_check_with_ocean_levels(self):
+        cube = self.cube_creator.get_cube('Omon', 'uo')
+        checker = CMORCheck(cube, 'Omon')
+        checker.check()
+
     def test_check_with_postive_attributte(self):
         cube = self.cube_creator.get_cube(self.table, 'tauu')
         checker = CMORCheck(cube, self.table)
@@ -185,7 +190,7 @@ class TestCMORCheckBadCube(unittest.TestCase):
 
 class CubeCreator(object):
     def __init__(self):
-        self.coord_specs = self._parse_mip_table("CMIP6_coordinate.json")
+        self.coord_specs = self._parse_mip_table("coordinate")
         self.vars_spec = {}
 
     def get_cube(self, table, var_name, set_time_units="days since 1850-1-1 00:00:00"):
@@ -199,18 +204,18 @@ class CubeCreator(object):
         """
         # Get a specification and build a cube from it.
         if var_name not in self.vars_spec:
-            self.vars_spec[var_name] = self._parse_mip_table("CMIP6_{}.json".format(table), get_var=var_name)
+            self.vars_spec[var_name] = self._parse_mip_table(table, get_var=var_name)
 
         spec = self.vars_spec[var_name]
         coords = []
         scalar_coords = []
         index = 0
         for i, dim in enumerate(spec["dimensions"].split()):
-            coord = self.create_coord_from_spec(dim, set_time_units)
+            coord = self._create_coord_from_spec(table, dim, set_time_units)
             if isinstance(coord, iris.coords.DimCoord):
                 coords.append((coord, index))
                 index += 1
-            else:
+            elif isinstance(coord, iris.coords.AuxCoord):
                 scalar_coords.append(coord)
 
         if spec['valid_min']:
@@ -224,25 +229,26 @@ class CubeCreator(object):
             valid_max = valid_min + 100
 
         var_data = numpy.ones(len(coords) * [20], 'f') * (valid_min + (valid_max - valid_min) / 2)
-        cb = iris.cube.Cube(var_data,
-                            standard_name=spec["standard_name"],
-                            long_name=spec["long_name"],
-                            var_name=spec["out_name"],
-                            units=spec["units"],
-                            attributes=None,
-                            cell_methods=spec["cell_methods"])
+        cube = iris.cube.Cube(var_data,
+                              standard_name=spec["standard_name"],
+                              long_name=spec["long_name"],
+                              var_name=spec["out_name"],
+                              units=spec["units"],
+                              attributes=None,
+                              cell_methods=spec["cell_methods"],
+                              )
         if spec['positive']:
-            cb.attributes['positive'] = spec['positive']
+            cube.attributes['positive'] = spec['positive']
 
         for coord, i in coords:
-            cb.add_dim_coord(coord, i)
+            cube.add_dim_coord(coord, i)
 
         for coord in scalar_coords:
-            cb.add_aux_coord(coord)
+            cube.add_aux_coord(coord)
 
-        return cb
+        return cube
 
-    def construct_scalar_variable(self, coord_spec):
+    def _construct_scalar_coord(self, coord_spec):
         return iris.coords.AuxCoord(float(coord_spec['value']),
                                     standard_name=coord_spec["standard_name"],
                                     long_name=coord_spec["long_name"],
@@ -250,15 +256,32 @@ class CubeCreator(object):
                                     units=coord_spec["units"],
                                     attributes=None)
 
-    def create_coord_from_spec(self, dim, set_time_units):
-        dim_spec = self.coord_specs["axis_entry"][dim]
-        # Check for time axis
+    def _get_coord_spec(self, table, dim, set_time_units):
+        try:
+            dim_spec = self.coord_specs["axis_entry"][dim]
+        except KeyError:
+            table_spec = self._parse_mip_table(table)
+            if dim in table_spec['Header']['generic_levels']:
+                return None
+            else:
+                raise
+
         if dim_spec["units"].startswith("days since "):
             dim_spec["units"] = set_time_units
+        return dim_spec
+
+    def _create_coord_from_spec(self, table, dim, set_time_units):
+        dim_spec = self._get_coord_spec(table, dim, set_time_units)
+
+        if dim_spec is None:
+            return None
 
         if dim_spec["value"]:
-            return self.construct_scalar_variable(dim_spec)
+            return self._construct_scalar_coord(dim_spec)
 
+        return self._construct_array_coord(dim_spec)
+
+    def _construct_array_coord(self, dim_spec):
         valid_min = dim_spec['valid_min']
         if valid_min:
             valid_min = float(valid_min)
@@ -269,9 +292,7 @@ class CubeCreator(object):
             valid_max = float(valid_max)
         else:
             valid_max = 100.0
-
         decreasing = dim_spec['stored_direction'] == 'decreasing'
-
         if decreasing:
             values = numpy.linspace(valid_max, valid_min, 20)
         else:
@@ -318,7 +339,7 @@ class CubeCreator(object):
 
     def _parse_mip_table(self, table_name, get_var=None):
         "Reads MIP table and returns a dictionary."
-        table_path = os.path.join(MIP_TABLE_DIR, table_name)
+        table_path = os.path.join(MIP_TABLE_DIR, 'CMIP6_{}.json'.format(table_name))
         d = json.load(open(table_path))
 
         if get_var:
