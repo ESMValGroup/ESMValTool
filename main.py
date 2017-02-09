@@ -195,6 +195,32 @@ for currDiag in project_info['DIAGNOSTICS']:
                                 exit_on_warning)
     project_info['RUNTIME']['derived_var'] = "Undefined"
 
+    # #Regrid
+    #
+    # regrid_options = fetch_from_namelist(project_info)
+    # regrid_scheme = regrid_options.get_method()
+    # regrid_target_grid = regrid_options.get_target()
+    #
+    # from modules.regridder import regridder
+    #
+    #
+    # ...
+    #
+    # write_out_files(source_cubes)
+    #
+    #
+    # regridder.regrid(method, target, source_cubes)
+    #
+    #
+    #
+    # ....
+    #
+    #
+
+
+
+
+
     executable = "./diag_scripts/" + currDiag.get_diag_script()
     configfile = currDiag.get_diag_script_cfg()
     info("", verbosity, required_verbosity=1)
