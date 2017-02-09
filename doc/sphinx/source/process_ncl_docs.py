@@ -136,8 +136,7 @@ def parseFile(inFileName, outFileName):
     except IOError:
         print "Couldn't open", inFileName
         return
-    if not os.path.isdir(os.path.dirname(outFileName)):
-        os.makedirs(os.path.dirname(outFileName))
+
     try:
         oup = open(outFileName, "w")
     except IOError:
@@ -215,6 +214,8 @@ def create_doc_files_from_ncl():
         # Form the output directory name from the input directory name (NB we assume the
         # latter are all named ../../../foo/bar, where foo is the useful part of the name.
         outDir =os.path.join(esmval_root_folder, "doc/sphinx/source/", ncl_folder)
+        if not os.path.isdir(outDir):
+            os.makedirs(outDir)
 
         # Find all the ncl files in the input directory, and loop over them.
         inFiles = glob.glob(os.path.join(inDir, '*.ncl'))
