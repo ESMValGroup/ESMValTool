@@ -4,6 +4,42 @@ from auxiliary import info, error, print_header, ncl_version_check
 
 # class PreProcessor(object):
 
+def load_variable(variable, model):
+
+    file = Projects.get_cf_infile(model, variable)
+
+    cube = iris.load(file)
+
+    cube = fix_metadata_format(cube)
+
+    cube = time_extraction(cube)
+
+    cube = fix_data_format(cube)
+
+    #perhaps also have a "thougouh" check mode at some point
+    #will produce an exception
+    format_check(cube)
+
+    return cube
+
+
+def is_derived(variable, model):
+
+    file = Projects.get_cf_infile(model, variable)
+
+    if os.path.isfile(file):
+        return False
+
+    elif derivation.can_derive(variable):
+        return True
+
+    raise Exception('variable is not available, and cannot be derived')
+
+
+def get_target_grid(diagnostic, variable):
+
+
+
 def preprocess(project_info):
     logging.info("preprocessing")
 
@@ -13,39 +49,32 @@ def preprocess(project_info):
         variables = []
         for variable in variables:
 
+            target_grid_cube = get_target_grid(diagnostic, variable)
 
-            #we changed the loop order. Is that ok?
+            #we changed the loop order. Is that ok? - yes
             result_cubes = []
-            for model in project_info['MODELS']:
+            for model in diagnostic.models:
+                if is_derived(variable, model):
+                    required_variables = derivation.get_required_variables(variable)
 
-                is_derived_var = False
-                if is_derived_var:
-                    cubes = iris.load(files) # all vars needed for derive
+                    cubes = [load_variable(variable, model) for variable in required_variables]
 
-                    cubes = [extract_time(cube) for cube in cubes]
-
-                    cube = derive_var(cubes)
+                    cube = derivation.derive_var(cubes)
                 else:
-                    cubes = load_cube() #just the var
-                    cube = extract_time(cube)
+                    cube = load_variable(variable, model)
 
-                #Q: isn't this too late to do the fix?
-                #use fix files
-                cube = fix_format(cube)
-
-                #should this be second
-                #will raise exception if format is incorrect
-                check_format(cube)
+                cube = level_selection(cube, level)
 
                 #target grid should have right amount of vertical levels
                 cube = regrid(cube, target_grid_cube, scheme)
 
-                cube = mask(cube)
+                cube = mask(cube, mask_fillvalues, mask_landocean)
 
-                #do we need this at all?
-                cube = extract_region(cube)
+                #for instance region extraction
+                #cube = grid_operations(cube)
 
-                cube = calculate_time_statistics(cube)
+
+                cube = time_operations(cube)
 
                 iris.save(cube, filename)
 
