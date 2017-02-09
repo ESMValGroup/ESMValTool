@@ -4,6 +4,7 @@ import iris.exceptions
 import os
 import json
 import warnings
+import cf_units
 
 iris.FUTURE.cell_datetime_objects = True
 iris.FUTURE.netcdf_promote = True
@@ -76,7 +77,7 @@ class CMORTable(object):
 
 class CMORCheck(object):
 
-    def __init__(self, cube, table, frequency=None, fail_on_error=False):
+    def __init__(self, cube, table, frequency=None, fail_on_error=False, automatic_fixes=False):
         self.cube = cube
         self._failerr = fail_on_error
         self._errors = list()
@@ -84,6 +85,7 @@ class CMORCheck(object):
         if frequency is None:
             frequency = self._cmor.get_frequency()
         self.frequency = frequency
+        self.automatic_fixes = automatic_fixes
 
     def check(self):
         self._check_rank()
@@ -219,8 +221,17 @@ class CMORCheck(object):
         # Check units
         if cmor['units']:
             if str(coord.units) != cmor['units']:
-                msg = 'units for {} should be {}, not {}'
-                self.report_error(msg, var_name, cmor['units'], coord.units)
+                fixed = False
+                if self.automatic_fixes:
+                    try:
+                        new_unit = cf_units.Unit(cmor['units'], coord.units.calendar)
+                        coord.convert_units(new_unit)
+                        fixed = True
+                    except ValueError:
+                        pass
+                if not fixed:
+                    msg = 'units for {} should be {}, not {}'
+                    self.report_error(msg, var_name, cmor['units'], coord.units)
         self._check_coord_monotonicity_and_direction(cmor, coord, var_name)
         self._check_coord_values(cmor, coord, var_name)
 
@@ -318,8 +329,8 @@ class CMORCheckError(Exception):
 
 
 def main():
-    # data_folder = '/Users/nube/esmval_data'
-    data_folder = '/home/paul/ESMValTool/data'
+    data_folder = '/Users/nube/esmval_data'
+    # data_folder = '/home/paul/ESMValTool/data'
     example_datas = [
         ('ETHZ_CMIP5/historical/Amon/ps/GFDL-ESM2G/r1i1p1', 'ps', 'Amon'),
         ('ETHZ_CMIP5/historical/Amon/ps/MIROC5/r1i1p1', 'ps', 'Amon'),
@@ -333,14 +344,14 @@ def main():
         ('ETHZ_CMIP5/historical/OImon/sic/EC-EARTH/r1i1p1', 'sic', 'SImon'),
         ('ETHZ_CMIP5/historical/OImon/sic/HadCM3/r1i1p1', 'sic', 'SImon'),
         ('ETHZ_CMIP5/historical/OImon/sic/MRI-ESM1/r1i1p1', 'sic', 'SImon'),
-        ('CMIP6/1pctCO2/Amon/ua/MPI-ESM-LR/r1i1p1f1', 'ua', 'Amon'),
-        ('CMIP6/1pctCO2/Amon/tas/MPI-ESM-LR/r1i1p1f1', 'tas', 'Amon'),
-        ('CMIP6/1pctCO2/day/tas/MPI-ESM-LR/r1i1p1f1', 'tas', 'day'),
-        ('CMIP6/1pctCO2/day/pr/MPI-ESM-LR/r1i1p1f1', 'pr', 'day'),
-        ('CMIP6/1pctCO2/cfDay/hur/MPI-ESM-LR/r1i1p1f1', 'hur', 'CFday'),
-        ('CMIP6/1pctCO2/LImon/snw/MPI-ESM-LR/r1i1p1f1', 'snw', 'LImon'),
-        ('CMIP6/1pctCO2/Lmon/cropFrac/MPI-ESM-LR/r1i1p1f1', 'cropFrac', 'Lmon'),
-        ('CMIP6/1pctCO2/Oyr/co3/MPI-ESM-LR/r1i1p1f1', 'co3', 'Oyr'),
+        # ('CMIP6/1pctCO2/Amon/ua/MPI-ESM-LR/r1i1p1f1', 'ua', 'Amon'),
+        # ('CMIP6/1pctCO2/Amon/tas/MPI-ESM-LR/r1i1p1f1', 'tas', 'Amon'),
+        # ('CMIP6/1pctCO2/day/tas/MPI-ESM-LR/r1i1p1f1', 'tas', 'day'),
+        # ('CMIP6/1pctCO2/day/pr/MPI-ESM-LR/r1i1p1f1', 'pr', 'day'),
+        # ('CMIP6/1pctCO2/cfDay/hur/MPI-ESM-LR/r1i1p1f1', 'hur', 'CFday'),
+        # ('CMIP6/1pctCO2/LImon/snw/MPI-ESM-LR/r1i1p1f1', 'snw', 'LImon'),
+        # ('CMIP6/1pctCO2/Lmon/cropFrac/MPI-ESM-LR/r1i1p1f1', 'cropFrac', 'Lmon'),
+        # ('CMIP6/1pctCO2/Oyr/co3/MPI-ESM-LR/r1i1p1f1', 'co3', 'Oyr'),
         ]
 
     # Use this callback to fix anything Iris tries to break!
@@ -382,7 +393,7 @@ def main():
             # Concatenate data to single cube, i.e. merge time series
             cube = cubes.concatenate_cube()
             # Create checker for loaded cube
-            checker = CMORCheck(cube, table)  # , fail_on_error=True)
+            checker = CMORCheck(cube, table, automatic_fixes=True)  # , fail_on_error=True)
             # Run checks
             checker.check()
 
