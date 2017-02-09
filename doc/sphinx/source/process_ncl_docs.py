@@ -136,6 +136,8 @@ def parseFile(inFileName, outFileName):
     except IOError:
         print "Couldn't open", inFileName
         return
+    if not os.path.isdir(os.path.dirname(outFileName)):
+        os.makedirs(os.path.dirname(outFileName))
     try:
         oup = open(outFileName, "w")
     except IOError:
@@ -197,29 +199,30 @@ def parseFile(inFileName, outFileName):
                 
     # Close the files.
     inp.close()
-    oup.close()    
+    oup.close()
+
+
+def create_doc_files_from_ncl():
+    # Do some rudimentary checking of where this script is being run from, because we're going to be
+    # using relative paths below to find the directories containing the input & output.
+    file_path = os.path.dirname(os.path.realpath(__file__))
+    esmval_root_folder = os.path.abspath(os.path.join(file_path, '..', '..', '..'))
+
+    # List the directories containing input files, then loop over them.
+    ncl_folders = {'diag_scripts': 'lib/ncl', 'plot_scripts': 'ncl'}
+    for ncl_folder in ncl_folders:
+        inDir = os.path.join(esmval_root_folder, ncl_folder, ncl_folders[ncl_folder])
+        # Form the output directory name from the input directory name (NB we assume the
+        # latter are all named ../../../foo/bar, where foo is the useful part of the name.
+        outDir =os.path.join(esmval_root_folder, "doc/sphinx/source/", ncl_folder)
+
+        # Find all the ncl files in the input directory, and loop over them.
+        inFiles = glob.glob(os.path.join(inDir, '*.ncl'))
+        for nclFile in inFiles:
+            print "Processing " + nclFile
+            rstFile = os.path.join(outDir, os.path.basename(nclFile).replace('.ncl', '.rst'))
+            parseFile(nclFile, rstFile)
 
 
 if __name__ == '__main__':
-    
-    # Do some rudimentary checking of where this script is being run from, because we're going to be 
-    # using relative paths below to find the directories containing the input & output.
-    if not os.path.exists("../../doc/sphinx/scripts"):
-        print "Error - this script should be run from within the doc/sphinx directory using the command"
-        print "% python scripts/process_ncl_docs.py"
-        sys.exit()
-
-    # List the directories containing input files, then loop over them.
-    inDirs = ["../../diag_scripts/lib/ncl/", "../../plot_scripts/ncl/"]
-    for inDir in inDirs:
-        
-        # Form the output directory name from the input directory name (NB we assume the 
-        # latter are all named ../../../foo/bar, where foo is the useful part of the name.
-        outDir = "source/" + inDir.split('/')[2] + '/'
-
-        # Find all the ncl files in the input directory, and loop over them.
-        inFiles = glob.glob(inDir + '*.ncl')
-        for nclFile in inFiles:
-            print "Processing " + nclFile
-            rstFile = outDir + os.path.basename(nclFile).replace('.ncl', '.rst')
-            parseFile(nclFile, rstFile)
+    create_doc_files_from_ncl()
