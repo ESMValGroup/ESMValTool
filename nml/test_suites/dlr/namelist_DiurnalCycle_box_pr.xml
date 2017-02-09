@@ -1,5 +1,5 @@
 <namelist>
-<include href="./config_private_DLR-PA2.xml"/>
+<include href="./config_private.xml"/>
 <namelist_summary>
 ###############################################################################
 namelist_DiurnalCycle_box_box_pr.xml
