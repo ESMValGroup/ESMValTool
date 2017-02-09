@@ -218,10 +218,21 @@ def create_doc_files_from_ncl():
 
         # Find all the ncl files in the input directory, and loop over them.
         inFiles = glob.glob(os.path.join(inDir, '*.ncl'))
+        index_file = open(os.path.join(outDir, 'index.rst'), 'w')
+        index_file.write(ncl_folder.upper())
+        index_file.write('\n')
+        index_file.write('-'*len(ncl_folder))
+        index_file.write('\n')
+        index_file.write('\n')
+        index_file.write('.. toctree::\n   :maxdepth: 2\n\n')
+
         for nclFile in inFiles:
             print "Processing " + nclFile
             rstFile = os.path.join(outDir, os.path.basename(nclFile).replace('.ncl', '.rst'))
             parseFile(nclFile, rstFile)
+            index_file.write('   ')
+            index_file.write(os.path.basename(nclFile).replace('.ncl', ''))
+            index_file.write('\n')
 
 
 if __name__ == '__main__':
