@@ -339,7 +339,7 @@ class CubeCreator(object):
                                     long_name=coord_spec["long_name"],
                                     var_name=coord_spec["out_name"],
                                     units=coord_spec["units"],
-                                    attributes={'axis': coord_spec["axis"]})
+                                    attributes=None)  # {'axis': coord_spec["axis"]})
 
     def _get_coord_spec(self, table, dim, set_time_units):
         try:
@@ -383,7 +383,7 @@ class CubeCreator(object):
             values = self._get_values(dim_spec)
             unit = Unit(dim_spec["units"])
         # Set up attributes dictionary
-        coord_atts = {'stored_direction': dim_spec['stored_direction'], 'positive': dim_spec['positive'], 'axis': dim_spec['axis'],}
+        coord_atts = {'stored_direction': dim_spec['stored_direction'], 'positive': dim_spec['positive'])  # , 'axis': dim_spec['axis'],}
         coord = iris.coords.DimCoord(values,
                                      standard_name=dim_spec["standard_name"],
                                      long_name=dim_spec["long_name"],
