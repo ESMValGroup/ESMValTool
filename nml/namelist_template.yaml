@@ -30,21 +30,21 @@ PREPROCESS:
 DIAGNOSTICS:
     - diag:
         description:         Temperature
-	variable:            {name: ta, ref_model:ACCESS1-0, field: T3M}
-	variable:            {name: va, ref_model: BNU-ESM, exclude_model: CanCM4]
+        variable:            {name: ta, ref_model: ACCESS1-0, field: T3M}
+        variable:            {name: va, ref_model: BNU-ESM, exclude_model: CanCM4}
         preprocess:
           select_level:   850
           regrid_scheme:  area
 # OPTION1: old-fashion, read cfg_ file
-	settings:
-	  file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_cycle_monthlyclim_glob.ncl
+        settings:
+          file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_cycle_monthlyclim_glob.ncl
 # OPTION 2: define settings here
         settings:
-	  plot_type: cycle
-	  plot_diff: True
+          plot_type: cycle
+          plot_diff: True
 
         script:              perfmetrics_main.ncl
-	model:               {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1980,  end: 2005,  path: obs/Tier3/ERA-Interim}
+        model:               {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1980,  end: 2005,  path: obs/Tier3/ERA-Interim}
 
 
     - diag:
