@@ -373,6 +373,13 @@ def main():
         ('CMIP6/1pctCO2/Oyr/co3/MPI-ESM-LR/r1i1p1f1', 'co3', 'Oyr'),
         ]
 
+    def get_attr_from_field(ncfield, attr):
+        attrs = ncfield.cf_attrs()
+        attr_val = [value for (key, value) in attrs if key == attr]
+        if attr_val:
+            return attr_val[0]
+        return None
+
     def get_attr_from_field_coord(ncfield, coord_name, attr):
         attrs = ncfield.cf_group[coord_name].cf_attrs()
         attr_val = [value for (key, value) in attrs if key == attr]
@@ -388,18 +395,28 @@ def main():
             if attr in raw_cube.attributes:
                 del raw_cube.attributes[attr]
 
-        # Iris chooses to change longitude and latitude units to degrees
-        #  regardless of value in file, so reinstating file value
-        if raw_cube.coords('longitude'):
-            coord = raw_cube.coord('longitude')
-            units = get_attr_from_field_coord(field, coord.var_name, 'units')
-            if units:
-                raw_cube.coord('longitude').units = units
-        if raw_cube.coords('latitude'):
-            coord = raw_cube.coord('latitude')
-            units = get_attr_from_field_coord(field, coord.var_name, 'units')
-            if units:
-                raw_cube.coord('latitude').units = units
+        # Updates to cube
+        # Iris removes several attributes, attempting to re-add them
+        attrs = ['_FillValue', 'missing_value']
+        for attr in attrs:
+            attrval = get_attr_from_field(field, attr)
+            if attrval is not None:
+                raw_cube.attributes[attr] = attrval
+
+        # Updates to coordinates
+        for coord in raw_cube.coords():
+            # Iris chooses to change longitude and latitude units to degrees
+            #  regardless of value in file, so reinstating file value
+            if coord.standard_name in ['longitude', 'latitude']:
+                units = get_attr_from_field_coord(field, coord.var_name, 'units')
+                if units:
+                    coord.units = units
+            # Iris removes several attributes, attempting to re-add them
+            attrs = ['axis']
+            for attr in attrs:
+                attrval = get_attr_from_field_coord(field, coord.var_name, attr)
+                if attrval is not None:
+                    coord.attributes[attr] = attrval
 
     for (example_data, var_name, table) in example_datas:
         print('\n' + example_data)
