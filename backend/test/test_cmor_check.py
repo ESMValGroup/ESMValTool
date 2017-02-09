@@ -206,7 +206,7 @@ class TestCMORCheckBadCube(unittest.TestCase):
 
     def test_bad_axis_generic_level_attribute(self):
         cube = self.cube_creator.get_cube('Omon', 'uo')
-        cube.coord('depth').attributes['axis'] = ''
+        cube.coord('depth').attributes['positive'] = ''
         checker = CMORCheck(cube, 'Omon')
         with self.assertRaises(CMORCheckError):
             checker.check()
