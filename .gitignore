@@ -1,0 +1,4 @@
+*~
+*.pyc
+interface_data/curr_trace_indent.txt
+interface_data/ncl.interface
