@@ -18,13 +18,16 @@ class CMORTable(object):
     }
 
     def __init__(self, table, var_name):
-        # Convert old CMIP5 names to the CMIP6 ones
-        if table == 'OImon':
-            table = 'SImon'
+        table = self._translate_table_name(table)
         cwd = os.path.dirname(os.path.realpath(__file__))
         self._cmor_tables_folder = os.path.join(cwd, 'cmip6-cmor-tables', 'Tables')
         self._cmor_tables_file = 'CMIP6_{}.json'.format(table)
         self._load_variable_information(var_name)
+
+    def _translate_table_name(self, table):
+        if table == 'OImon':
+            table = 'SImon'
+        return table
 
     def _load_coord_information(self):
         table_file = os.path.join(self._cmor_tables_folder,
