@@ -69,7 +69,7 @@ class Diag_tag:
     """ @brief Class to hold an instance for a single Diagnostic xml-file
     """
     def __init__(self, variable, var_def_dir, field, var_attr, diag_scripts,
-                 cfg_dir, cfg, diag_specific_models, launch_args):
+                 cfg_dir, cfg, diag_specific_models, launch_args, preprocess):
         self.variable = variable
         self.var_def_dir = var_def_dir
         self.var_attr = var_attr
@@ -79,6 +79,7 @@ class Diag_tag:
         self.diag_script_cfg = cfg
         self.diag_specific_models = diag_specific_models
         self.launcher_arguments = launch_args
+        self.preprocess = preprocess
 
     def get_tag_variable(self):
         return self.variable
@@ -101,6 +102,10 @@ class Diag_tag:
     def get_diag_script_cfg_dir(self):
         return self.diag_script_cfg_dir
 
+    def get_preprocess(self):
+        return self.preprocess
+
+
     def __iter__(self):
         for idx in range(len(self.diag_scripts)):
             yield self.diag_scripts[idx],\
@@ -113,7 +118,7 @@ class Diagnostic:
     """ @brief Class to hold a single Diagnostic instance
     """
     def __init__(self, variable, variable_def_dir, field_type,
-                 var_attrs, diag_script, diag_script_cfg, models, launch_args):
+                 var_attrs, diag_script, diag_script_cfg, models, launch_args, preprocess):
 
         self.diag_script = diag_script
         self.launcher_arguments = launch_args
@@ -121,6 +126,7 @@ class Diagnostic:
         variable_list = variable.split(",")
         field_types = field_type.split(",")
         self.variables = []
+        self.preprocess = preprocess
 
         # List valid variable attributes
         possible_var_attr_keys = ["mip", "exp", "ref_model", "id", "exclude", "only"]
