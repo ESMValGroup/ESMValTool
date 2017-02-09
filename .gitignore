@@ -4,7 +4,9 @@
 .coverage
 .idea
 htmlcov
-
+doc/sphinx/build
+doc/sphinx/source/diag_scripts
+doc/sphinx/source/plot_scripts
 # Temporary files in interface
 interface_data/curr_trace_indent.txt
 interface_data/*.tmp
