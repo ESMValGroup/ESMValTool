@@ -12,26 +12,36 @@ iris.FUTURE.netcdf_promote = True
 class CMORTable(object):
 
     # Dictionary to map CMIP5 variable names to CMIP6
-    CMIP5_to_CMIP6 = {
+    _CMIP_5to6_varname = {
         'sic': 'siconc',
         'tro3': 'o3',
     }
 
+    # Dictionary to map CMIP5 table names to CMIP6
+    _CMIP_5to6_table = {
+        'OImon': 'SImon'
+    }
+
     def __init__(self, table, var_name):
         table = self._translate_table_name(table)
+        var_name = self._translate_var_name(var_name)
         cwd = os.path.dirname(os.path.realpath(__file__))
         self._cmor_folder = os.path.join(cwd, 'cmip6-cmor-tables', 'Tables')
         self._cmor_file = 'CMIP6_{}.json'.format(table)
         self._load_variable_information(var_name)
 
     def _translate_table_name(self, table):
-        if table == 'OImon':
-            table = 'SImon'
+        if table in self._CMIP_5to6_table:
+            table = self._CMIP_5to6_table[table]
         return table
 
+    def _translate_var_name(self, var_name):
+        if var_name in self._CMIP_5to6_varname:
+            var_name = self._CMIP_5to6_varname[var_name]
+        return var_name
+
     def _load_coord_information(self):
-        table_file = os.path.join(self._cmor_folder,
-                                  'CMIP6_coordinate.json')
+        table_file = os.path.join(self._cmor_folder, 'CMIP6_coordinate.json')
         with open(table_file) as inf:
             json_data = inf.read()
         self._coord = json.loads(json_data)
@@ -53,8 +63,6 @@ class CMORTable(object):
                 # Don't look here!
                 if axis == 'T':
                     self.coords[axis]['units'] = u'days since 1850-1-1 00:00:00'
-            else:
-                print('axis {} already exists'.format(axis))
 
     def _load_variable_information(self, var_name):
         table_file = os.path.join(self._cmor_folder,
@@ -63,11 +71,7 @@ class CMORTable(object):
             json_data = inf.read()
         self._var = json.loads(json_data)
         self._generic_levels = self._get_generic_levels()
-        if var_name in self.CMIP5_to_CMIP6:
-            new_var_name = self.CMIP5_to_CMIP6[var_name]
-            self.var = self._var['variable_entry'][new_var_name]
-        else:
-            self.var = self._var['variable_entry'][var_name]
+        self.var = self._var['variable_entry'][var_name]
         self._load_coord_information()
 
     def get_frequency(self):
@@ -145,17 +149,19 @@ class CMORCheck(object):
 
     def _check_data_range(self):
         # Check data is not less than valid_min
-        if self._cmor.var['valid_min']:
-            valid_min = float(self._cmor.var['valid_min'])
+        attr = 'valid_min'
+        if self._cmor.var[attr]:
+            valid_min = float(self._cmor.var[attr])
             if np.any(self.cube.data < valid_min):
                 self.report_error(self._vals_msg, self.cube.var_name,
-                                  '< valid_min =', valid_min)
+                                  '< {} ='.format(attr), valid_min)
         # Check data is not greater than valid_max
-        if self._cmor.var['valid_max']:
-            valid_max = float(self._cmor.var['valid_max'])
+        attr = 'valid_max'
+        if self._cmor.var[attr]:
+            valid_max = float(self._cmor.var[attr])
             if np.any(self.cube.data > valid_max):
                 self.report_error(self._vals_msg, self.cube.var_name,
-                                  '> valid_max =', valid_max)
+                                  '> {} ='.format(attr), valid_max)
 
     def _check_rank(self):
         # Count rank, excluding scalar dimensions
@@ -181,6 +187,13 @@ class CMORCheck(object):
                     if not coord.standard_name:
                         self.report_error(self._does_msg, var_name,
                                           'have standard_name')
+                    # Test for units that match standard_name?
+                    # Check for attributest hat must exist for a generic_level
+                    attrs = ['positive']
+                    for attr in attrs:
+                        if attr not in cube.attributes:
+                            self.report_error(self._does_msg, var_name,
+                                              'have {}'.format(attr))
                 else:
                     self.report_error(self._does_msg, var_name, 'exist')
             else:
@@ -254,16 +267,18 @@ class CMORCheck(object):
                                       str(coord.units))
 
         # Check coordinate value ranges
-        if cmor['valid_min']:
-            valid_min = float(cmor['valid_min'])
+        attr = 'valid_min'
+        if cmor[attr]:
+            valid_min = float(cmor[attr])
             if np.any(coord.points < valid_min):
                 self.report_error(self._vals_msg, var_name,
-                                  '< valid_min =', valid_min)
-        if cmor['valid_max']:
-            valid_max = float(cmor['valid_max'])
+                                  '< {} ='.format(attr), valid_min)
+        attr = 'valid_max'
+        if cmor[attr]:
+            valid_max = float(cmor[attr])
             if np.any(coord.points > valid_max):
                 self.report_error(self._vals_msg, var_name,
-                                  '> valid_max =', valid_max)
+                                  '> {} ='.format(attr), valid_max)
 
     def _check_time_coord(self):
         try:
