@@ -204,8 +204,8 @@ class CMORCheck(object):
                 #  Don't insist on dim_coords as could be scalar
                 #  Cannot use axis as a keyword as Iris has stripped this out
                 #   and made it impossible to re-add
-                if self.cube.coords(var_name=var_name):  # , axis=axis):
-                    coord = self.cube.coord(var_name=var_name)  # , axis=axis)
+                if self.cube.coords(var_name=var_name, axis=axis):
+                    coord = self.cube.coord(var_name=var_name, axis=axis)
                     attr = 'standard_name'
                     if coord.standard_name != cmor[attr]:
                         self.report_error(self._attr_msg, var_name, attr,
@@ -215,8 +215,8 @@ class CMORCheck(object):
 
     def _check_coords(self):
         for (axis, cmor) in self._cmor.coords.items():
-            # if axis == 'none':
-            #     axis = None
+            if axis == 'none':
+                axis = None
 
             # Cannot check generic_level coords as no CMOR information
             #  Do we want to do a basic check for units, etc.?
@@ -226,8 +226,8 @@ class CMORCheck(object):
                 # Get coordinate var_name as it exists!
                 try:
                     coord = self.cube.coord(var_name=var_name,
-                                            dim_coords=True)  # ,
-                    #                        axis=axis)
+                                            dim_coords=True,
+                                            axis=axis)
                 except iris.exceptions.CoordinateNotFoundError:
                     continue
 
@@ -292,7 +292,7 @@ class CMORCheck(object):
 
     def _check_time_coord(self):
         try:
-            coord = self.cube.coord('time', dim_coords=True)  # , axis='T')
+            coord = self.cube.coord(dim_coords=True, axis='T')
             var_name = coord.var_name
         except iris.exceptions.CoordinateNotFoundError:
             return
@@ -381,10 +381,11 @@ def main():
         return None
 
     def get_attr_from_field_coord(ncfield, coord_name, attr):
-        attrs = ncfield.cf_group[coord_name].cf_attrs()
-        attr_val = [value for (key, value) in attrs if key == attr]
-        if attr_val:
-            return attr_val[0]
+        if coord_name is not None:
+            attrs = ncfield.cf_group[coord_name].cf_attrs()
+            attr_val = [value for (key, value) in attrs if key == attr]
+            if attr_val:
+                return attr_val[0]
         return None
 
     # Use this callback to fix anything Iris tries to break!
@@ -395,28 +396,30 @@ def main():
             if attr in raw_cube.attributes:
                 del raw_cube.attributes[attr]
 
-        # Updates to cube
-        # Iris removes several attributes, attempting to re-add them
-        attrs = ['_FillValue', 'missing_value']
-        for attr in attrs:
-            attrval = get_attr_from_field(field, attr)
-            if attrval is not None:
-                raw_cube.attributes[attr] = attrval
-
-        # Updates to coordinates
-        for coord in raw_cube.coords():
-            # Iris chooses to change longitude and latitude units to degrees
-            #  regardless of value in file, so reinstating file value
-            if coord.standard_name in ['longitude', 'latitude']:
-                units = get_attr_from_field_coord(field, coord.var_name, 'units')
-                if units:
-                    coord.units = units
-            # Iris removes several attributes, attempting to re-add them
-            attrs = ['axis']
-            for attr in attrs:
-                attrval = get_attr_from_field_coord(field, coord.var_name, attr)
-                if attrval is not None:
-                    coord.attributes[attr] = attrval
+        # # Updates to cube
+        # # Iris removes several attributes, attempting to re-add them
+        # attrs = ['_FillValue', 'missing_value']
+        # for attr in attrs:
+        #     if attr not in raw_cube.attributes:
+        #         attrval = get_attr_from_field(field, attr)
+        #         if attrval is not None:
+        #             raw_cube.attributes[attr] = attrval
+        #
+        # # Updates to coordinates
+        # for coord in raw_cube.coords():
+        #     # Iris chooses to change longitude and latitude units to degrees
+        #     #  regardless of value in file, so reinstating file value
+        #     if coord.standard_name in ['longitude', 'latitude']:
+        #         units = get_attr_from_field_coord(field, coord.var_name, 'units')
+        #         if units is not None:
+        #             coord.units = units
+        #     # Iris removes several attributes, attempting to re-add them
+        #     attrs = ['axis']
+        #     for attr in attrs:
+        #         if attr not in coord.attributes:
+        #             attrval = get_attr_from_field_coord(field, coord.var_name, attr)
+        #             if attrval is not None:
+        #                 coord.attributes[attr] = attrval
 
     for (example_data, var_name, table) in example_datas:
         print('\n' + example_data)
