@@ -108,15 +108,6 @@ class TestCMORCheckBadCube(unittest.TestCase):
         with self.assertRaises(CMORCheckError):
             checker.check()
 
-    def _update_coordinate_values(self, cube, coord, values, position):
-        cube.remove_coord(coord)
-        new_coord = iris.coords.DimCoord(values,
-                                         standard_name=coord.standard_name,
-                                         long_name=coord.long_name,
-                                         var_name=coord.var_name,
-                                         units=coord.units)
-        cube.add_dim_coord(new_coord, position)
-
     def test_not_valid_min(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
         coord = cube.coord('latitude')
@@ -135,6 +126,15 @@ class TestCMORCheckBadCube(unittest.TestCase):
         with self.assertRaises(CMORCheckError):
             checker.check()
 
+    def _update_coordinate_values(self, cube, coord, values, position):
+        cube.remove_coord(coord)
+        new_coord = iris.coords.DimCoord(values,
+                                         standard_name=coord.standard_name,
+                                         long_name=coord.long_name,
+                                         var_name=coord.var_name,
+                                         units=coord.units)
+        cube.add_dim_coord(new_coord, position)
+
     def test_bad_units(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
         cube.coord('latitude').units = 'degrees_n'
@@ -146,6 +146,19 @@ class TestCMORCheckBadCube(unittest.TestCase):
         cube = self.cube_creator.get_cube(self.table, self.varid)
         checker = CMORCheck(cube, self.table)
         cube.coord('time').units = 'days'
+        with self.assertRaises(CMORCheckError):
+            checker.check()
+
+    def test_bad_time_automatic_fix(self):
+        cube = self.cube_creator.get_cube(self.table, self.varid)
+        checker = CMORCheck(cube, self.table, automatic_fixes=True)
+        cube.coord('time').units = 'days since 1950-1-1 00:00:00'
+        checker.check()
+
+    def test_bad_time_automatic_fix_failed(self):
+        cube = self.cube_creator.get_cube(self.table, self.varid)
+        checker = CMORCheck(cube, self.table, automatic_fixes=True)
+        cube.coord('time').units = 'K'
         with self.assertRaises(CMORCheckError):
             checker.check()
 
