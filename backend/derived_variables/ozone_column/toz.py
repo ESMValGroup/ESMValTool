@@ -2,7 +2,10 @@ import cf_units
 import numpy as np
 import iris
 import numba
+from scipy import constants
 
+Avogadro_const = constants.value('Avogadro constant')
+Avogadro_const_unit = constants.unit('Avogadro constant')
 g = 9.81
 g_unit = cf_units.Unit('m s^-2')
 mw_air = 29
@@ -29,6 +32,11 @@ def total_column_ozone(tro3_cube, ps_cube):
     toz = (tro3_cube * p_layer_widths / g * mw_O3 / mw_air).collapsed('air_pressure', iris.analysis.SUM)
     toz.units = tro3_cube.units * p_layer_widths.units / g_unit * mw_O3_unit / mw_air_unit
     toz.rename('atmosphere mass content of ozone')
+
+    # Convert from kg m^-2 to Dobson unit (2.69e20 m^-2 )
+    toz = toz / mw_O3 * Avogadro_const
+    toz.units = toz.units / mw_O3_unit * Avogadro_const_unit
+    toz.convert_units('2.69e20 m^-2')
     return toz
 
 
@@ -51,7 +59,7 @@ def pressure_level_widths(tro3_cube, ps_cube, top_limit=100):
 
     p_level_widths_cube = tro3_cube.copy(data=apply_pressure_level_widths(pressure_array))
     p_level_widths_cube.rename('pressure level widths')
-    p_level_widths_cube.units = tro3_cube.units
+    p_level_widths_cube.units = ps_cube.units
 
     return p_level_widths_cube
 
