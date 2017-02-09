@@ -1,0 +1,44 @@
+<namelist>
+<include href="./config_private.xml"/>
+<namelist_summary>
+###############################################################################
+###############################################################################
+</namelist_summary>
+
+<GLOBAL>
+<write_plots type="boolean"> True </write_plots>
+<write_netcdf type="boolean"> True </write_netcdf>
+<force_processing type="boolean"> False </force_processing>
+<wrk_dir type="path"> @{WORKPATH} </wrk_dir>
+<plot_dir type="path"> @{PLOTPATH} </plot_dir>
+<climo_dir type="path"> @{CLIMOPATH} </climo_dir>
+<write_plot_vars type="boolean"> True </write_plot_vars>
+<max_data_filesize type="integer"> 100 </max_data_filesize>
+<max_data_blocksize type="integer"> 500 </max_data_blocksize>
+<verbosity type="integer"> 1 </verbosity>
+<exit_on_warning type="boolean"> False </exit_on_warning>
+<output_file_type> ps </output_file_type>
+<force_calc type="boolean"> False </force_calc>
+<force_gradecalc type="boolean"> False </force_gradecalc>
+<force_taylorcalc type="boolean"> False </force_taylorcalc>
+</GLOBAL>
+
+<MODELS>
+</MODELS>
+
+<DIAGNOSTICS>
+
+<diag>
+<description> Dummy diagnositc </description>
+<variable_def_dir> ./variable_defs/ </variable_def_dir>
+<variable> MyVar </variable>
+<field_type> T3M </field_type>
+<diag_script_cfg_dir> ./nml/cfg_MyDiag/ </diag_script_cfg_dir>
+<diag_script cfg="cfg_MyDiag.ncl"> MyDiag.ncl </diag_script>
+
+<model> CMIP5_ETHZ bcc-csm1-1 Amon historical r1i1p1 2000 2002 @{MODELPATH}/ETHZ_CMIP5/ </model>
+</diag>
+
+</DIAGNOSTICS>
+
+</namelist>

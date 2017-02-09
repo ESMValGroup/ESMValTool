@@ -18,7 +18,7 @@ RUN conda env update -f environment.yml
 RUN curl -L -O https://github.com/ESMValGroup/ESMValTool/archive/docker.zip
 RUN unzip docker.zip
 WORKDIR /src/ESMValTool-docker
-COPY private_config.yml /src/ESMValTool-docker/config_private.yml
+COPY config_private.xml /src/ESMValTool-docker/config_private.xml
 
 ENTRYPOINT ["python", "main.py"]
-CMD ["nml/namelist_perfmetrics_CMIP5_testset.xml"]
+CMD ["nml/namelist_test.xml"]
