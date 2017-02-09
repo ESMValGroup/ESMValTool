@@ -6,14 +6,13 @@ import pytest
 from toz import pressure_level_widths
 
 
-@pytest.mark.skip('Monotonicity.')
 def test_col_is_not_monotonic():
     sp = 1000
     top_limit = 5
     col = np.array([1, 2, 3, 2, 1])
     col = np.insert(col, 0, sp)
     col = np.append(col, top_limit)
-    with pytest.raises(AssertionError):
+    with pytest.raises(ValueError):
         pressure_level_widths(col)
 
 
@@ -78,8 +77,7 @@ def test_highest_level_above_top_limit():
     col = np.array([1000, 900, 3])
     col = np.insert(col, 0, sp)
     col = np.append(col, top_limit)
-    result = np.array([70, 50 + 895/2, 0])
-    with pytest.raises(AssertionError):
+    with pytest.raises(ValueError):
         pressure_level_widths(col)
 
 

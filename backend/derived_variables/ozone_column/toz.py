@@ -1,7 +1,7 @@
 import cf_units
 import numpy as np
 import iris
-
+import numba
 
 g = 9.81
 g_unit = cf_units.Unit('m s^-2')
@@ -23,11 +23,12 @@ def total_column_ozone(tro3_cube, ps_cube):
 
     returns: Cube containing total column ozone.
     """
+    assert tro3_cube.coord_dims('time') and ps_cube.coord_dims('time'), \
+            'No time dimension found.'
     p_layer_widths = pressure_layer_widths(tro3_cube, ps_cube, top_limit=100)
     toz = (tro3_cube * p_layer_widths / g * mw_O3 / mw_air).collapsed('air_pressure', iris.analysis.SUM)
-    #toz.units = tro3_cube.units * p_layer_widths.units / g_unit * mw_O3.units / mw_air_unit
-    # TODO check toz variable name
-    # TODO check toz target unit
+    toz.units = tro3_cube.units * p_layer_widths.units / g_unit * mw_O3_unit / mw_air_unit
+    toz.rename('atmosphere mass content of ozone')
     return toz
 
 
@@ -42,45 +43,58 @@ def pressure_layer_widths(tro3_cube, ps_cube, top_limit=100):
 
     returns:
     """
-    # TODO: assert all pressures in Pa
-    pressure_cube = create_pressure_cube(tro3_cube, ps_cube, top_limit)
-    return apply_pressure_level_widths(pressure_cube)
+    assert ps_cube.units == 'Pa'
+    assert tro3_cube.coord('air_pressure').units == 'Pa'
+
+    pressure_array = create_pressure_array(tro3_cube, ps_cube, top_limit)
+
+    p_level_widths_cube = tro3_cube.copy(data=apply_pressure_level_widths(pressure_array))
+    p_level_widths_cube.rename('pressure level widths')
+    p_level_widths_cube.units = tro3_cube.units
+
+    return p_level_widths_cube
 
 
-def create_pressure_cube(tro3_cube, ps_cube, top_limit):
+def create_pressure_array(tro3_cube, ps_cube, top_limit):
     """
     Create a cube filled with the the 'air_pressure' coord values of the
     tro3_cube of the same dimensions as tro3_cube.
     This array is then sandwiched with a 2D array containing the surface
     pressure, and a 2D array containing the top pressure limit.
     """
-    p = tro3_cube.coord('air_pressure').points
-    pressure_4D_array = iris.util.broadcast_to_shape(p,            tro3_cube.shape, [1])
-    ps_4D_array       = iris.util.broadcast_to_shape(ps_cube.data, tro3_cube.shape, [0, 2, 3])
+    # create 4D array filled with pressure level values
+    p_levels = tro3_cube.coord('air_pressure').points
+    p_4D_array = iris.util.broadcast_to_shape(p_levels, tro3_cube.shape, [1])
+    assert p_4D_array.shape == tro3_cube.shape
 
-    pressure_4d = np.where((ps_4D_array - pressure_4D_array) < 0, np.NaN, pressure_4D_array)
+    # create 4d array filled with surface pressure values
+    ps_4D_array = iris.util.broadcast_to_shape(ps_cube.data, tro3_cube.shape, [0, 2, 3])
+    assert ps_4D_array.shape == tro3_cube.shape
+
+    # set pressure levels below the surface pressure to NaN
+    pressure_4d = np.where((ps_4D_array - p_4D_array) < 0, np.NaN, pressure_4D_array)
 
     # make top_limit last pressure level
     top_limit_array = np.ones(ps_cube.shape) * top_limit
     pressure_4d = np.concatenate((pressure_4d, top_limit_array[:, np.newaxis, :, :]), axis=1)
+    assert (pressure_4d[:, -1, :, :] == top_limit).all()
 
     # make surface pressure the first pressure level
-    pressure_4d = np.concatenate((ps_cube.data[:, np.newaxis,: , :], pressure_4d, ), axis=1)
+    pressure_4d = np.concatenate((ps_cube.data[:, np.newaxis, :, :], pressure_4d, ), axis=1)
+    assert (pressure_4d[:, 0, :, :] == ps_cube.data).all()
 
-    # TODO return iris cube
     return pressure_4d
 
 
-def apply_pressure_level_widths(array):
+def apply_pressure_level_widths(array, air_pressure_axis=1):
     """
-    For an array with pressure level columns, return an array with pressure
+    For a  1D array with pressure level columns, return a 1D  array with pressure
     level widths.
     """
-    # TODO assert monotonicity
-    # TODO axis number -> work with cube here, then # cube.coord_dims('air_pressure')
-    return np.apply_along_axis(pressure_level_widths, 1, array)
+    return np.apply_along_axis(pressure_level_widths, air_pressure_axis, array)
 
 
+@numba.jit()  # ~10x faster
 def pressure_level_widths(array):
     """
     Creates pressure level widths from an array with pressure level values.
@@ -101,26 +115,34 @@ def pressure_level_widths(array):
     surface_pressure = array[0]
     top_limit = array[-1]
     array = array[1:-1]
-    assert np.min(np.ma.fix_invalid(array, fill_value=np.Inf)) >= top_limit, \
-            "Lowest value is below top_limit."
 
-    pressure_level_widths = []
-    num_array = len(array)
+    p_level_widths = np.ones(array.shape) * np.NAN
+
+    last_pressure_level = len(array) - 1
     for i, val in enumerate(array):
+        bounds_width = np.NAN  # numba would otherwise initialise it to 0 and
+                               # hide bugs that would occur in raw Python
         if np.isnan(val):
             bounds_width = 0
         else:
+            # distance to lower bound
             if i == 0 or np.isnan(array[i-1]):  # first pressure level with value
                 dist_to_lower_bound = surface_pressure - val
             else:
                 dist_to_lower_bound = 0.5*(array[i-1] - val)
 
-            if i == num_array - 1:              # last pressure level
+            # distance to upper bound
+            if i == last_pressure_level:        # last pressure level
                 dist_to_upper_bound = val - top_limit
             else:
                 dist_to_upper_bound = 0.5*(val - array[i+1])
 
+            # Check monotonicity - all distances must be >= 0
+            if dist_to_lower_bound < 0.0 or dist_to_upper_bound < 0.0:
+                raise ValueError('Pressure level value increased with height.')
+
             bounds_width = dist_to_lower_bound + dist_to_upper_bound
-        pressure_level_widths.append(bounds_width)
-    return pressure_level_widths
+
+        p_level_widths[i] = bounds_width
+    return p_level_widths
 
