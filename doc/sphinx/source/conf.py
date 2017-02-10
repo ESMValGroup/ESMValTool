@@ -22,7 +22,6 @@ import os
 sys.path.insert(0, os.path.abspath('.'))
 doc_folder = os.path.dirname(os.path.realpath(__file__))
 esmval_root_folder = os.path.abspath(os.path.join(doc_folder, '../../..'))
-print (esmval_root_folder)
 sys.path.append(esmval_root_folder)
 import process_ncl_docs
 
