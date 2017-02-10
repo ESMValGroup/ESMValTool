@@ -28,20 +28,21 @@ def calc_lwp(cubes):
     (condensed water path).
     Note: Some models output the variable "clwvi" which only contains lwp. In
     these cases, the input clwvi cube is just returned.
-    
+
     Args:
         * cubes: cubelist containing clwvi_cube and clivi_cube
+
     Returns:
         Cube containing liquid water path.
     """
     # TODO: find out correct names for clwvi/clivi
-    clwvi_cube = cubes.extract('clwvi')
-    clivi_cube = cubes.extract('clivi')
+    clwvi_cube = cubes.extract_cube('clwvi')
+    clivi_cube = cubes.extract_cube('clivi')
 
     model = clwvi_cube.attributes['model_id']
     project = clwvi_cube.attributes['project_id']
     # Should we check that the model/project_id are the same on both cubes?
-    
+
     BAD_MODELS = ['CESM1-CAM5-1-FV2', 'CESM1-CAM5', 'CMCC-CESM', 'CMCC-CM',
                   'CMCC-CMS', 'IPSL-CM5A-MR', 'IPSL-CM5A-LR', 'IPSL-CM5B-LR',
                   'CCSM4', 'IPSL-CM5A-MR', 'MIROC-ESM', 'MIROC-ESM-CHEM',
@@ -59,18 +60,25 @@ def calc_lwp(cubes):
     # TODO: Fix units? lwp_cube.units = cf_units.Unit('kg') here?
     return lwp_cube
 
-def total_column_ozone(tro3_cube, ps_cube):
+
+def total_column_ozone(cubes):
     """
     Create total column ozone from ozone mol fraction on pressure levels.
 
     The surface pressure is used as a lower integration bound. A fixed upper
     integration bound of 100 Pa is used.
 
-    tro3_cube: Cube containing mole_fraction_of_ozone_in_air
-    ps_cube: Surface pressure cube.
+    Args:
+        * cubes: cubelist containing tro3_cube (mole_fraction_of_ozone_in_air)
+                 and ps_cube (surface_ pressure).
 
-    returns: Cube containing total column ozone.
+    Returns:
+        Cube containing total column ozone.
     """
+    # TODO: find out correct names for tro3/ps
+    tro3_cube = cubes.extract_cube('tro3')
+    ps_cube = cubes.extract_cube('ps')
+
     assert tro3_cube.coord_dims('time') and ps_cube.coord_dims('time'), \
             'No time dimension found.'
     p_layer_widths = pressure_level_widths(tro3_cube, ps_cube, top_limit=100)
