@@ -20,6 +20,8 @@ import os
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.insert(0, os.path.abspath('.'))
+esmval_root_folder = os.path.abspath('../../..')
+sys.path.append(esmval_root_folder)
 import process_ncl_docs
 
 # -- General configuration ------------------------------------------------

@@ -9,9 +9,11 @@ Welcome to ESMValTool's documentation!
 Contents:
 
 .. toctree::
-   :maxdepth: 6
+   :maxdepth: 2
 
    intro
+
+   codedoc/main
 
    diag_scripts/index
    plot_scripts/index
