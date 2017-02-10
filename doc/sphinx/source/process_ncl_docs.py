@@ -1,4 +1,4 @@
-'''
+"""
 This script is part of the ESMValTool distribution.  It's been added as part of the incorporation
 of the Sphinx documentation generator.  Sphinx was originally developed for documenting Python code, 
 and one of its features is that it is able - using the so-called autodoc extension - to extract 
@@ -15,23 +15,26 @@ Sphinx; running make in doc/sphinx builds the ESMValTool documentation from them
 Created on July 14, 2015
 
 @author: jeremy.walton@metoffice.gov.uk
-'''
+"""
 
 import os
 import glob
 import re
 import string
 import collections
-import sys
 
-def makeParamDetails(params):
-    
-    '''Create a list of parameter names and types from the params string.  '''
+
+def make_param_details(params):
+    """
+    Create a list of parameter names and types from the params string.
+    :param params:
+    :return:
+    """
     
     # We'll store the parameter names and their types in a dictionary.  Note that it has to be 
     # an ordered dictionary, because later on we want to pull the entries out in the same order 
     # that we added them.   
-    paramDetails = collections.OrderedDict()
+    param_details = collections.OrderedDict()
     for param in params:
         
         # Extract the type if it's specified, otherwise default to integer (say).
@@ -46,30 +49,31 @@ def makeParamDetails(params):
         pname = pname.strip()
         
         # Tie the name and the type of the parameter together.
-        paramDetails[pname] = ptype
+        param_details[pname] = ptype
         
-    return paramDetails
+    return param_details
 
 
-def processParams(params, inp, oup):
-    
-    ''' Extract the parameter names and types from the params string, pull their 
-    descriptions out from the input file and reformat the lot in the output.  '''
+def process_params(params, inp, oup):
+    """
+    Extract the parameter names and types from the params string, pull their
+    descriptions out from the input file and reformat the lot in the output.
+    """
 
     # Get the names and types.
-    paramDetails = makeParamDetails(params)
+    param_details = make_param_details(params)
 
     # We assume we're at the line before the first parameter description.  Bump it, then check to see
     # if we're really at the right location and issue a warning if not.
     line = inp.next()
-    if paramDetails.keys()[0] not in line:
-        print "Warning - parameter " + paramDetails.keys()[0] + " not found in this line:\n" + line
+    if param_details.keys()[0] not in line:
+        print "Warning - parameter " + param_details.keys()[0] + " not found in this line:\n" + line
     
     # Want a blank line just before parameter descriptions.
     oup.write('\n')   
        
     # Loop over all parameters in the argument list.
-    for i, pname in enumerate(paramDetails.keys()):
+    for i, pname in enumerate(param_details.keys()):
         
         # Now assemble the description from the line(s).
         if pname in line:
@@ -84,11 +88,11 @@ def processParams(params, inp, oup):
             # by the name of the next parameter.  For the last (or maybe the only) parameter, it's 
             # signaled by a blank line.  
             line = inp.next()
-            if i < len(paramDetails.keys())-1:
-                pnext = paramDetails.keys()[i+1]     
+            if i < len(param_details.keys())-1:
+                pnext = param_details.keys()[i+1]
                 if pnext not in line:
-                    # Do the concatentation, stripping whitespace (including the CR) as we go.
-                    while not pnext in line:
+                    # Do the concatenation, stripping whitespace (including the CR) as we go.
+                    while pnext not in line:
                         pdesc += " " + line.replace(';;', '  ', 1).strip()
                         line = inp.next()
             else:
@@ -101,54 +105,59 @@ def processParams(params, inp, oup):
                 pdesc = ':' + pdesc             
             
             # Write out the complete description of this parameter. 
-            oup.write('   :param ' + paramDetails[pname] + ' ' + pname + pdesc + '\n')                 
+            oup.write('   :param ' + param_details[pname] + ' ' + pname + pdesc + '\n')
     
     # Want a blank line just after parameter descriptions.
     oup.write('\n')   
 
 
-def findArgument(inp):
-    
-    ''' Find the start of the Arguments list.  '''
+def find_argument(inp):
+    """
+    Find the start of the Arguments list.
+    """
     
     line = inp.next()
     count = 1
-    while not 'Arguments' in line:
+    while 'Arguments' not in line:
         line = inp.next()
         
         # We assume we're going to find this within two lines of the original location of the input
         # - stop looking if we don't.
-        count = count + 1
+        count += 1
         if count > 2:
             return False
     
     return True
 
 
-def parseFile(inFileName, outFileName):
-    
-    ''' Processes an ncl file and produces an rst file as output, which contains documentation of the 
-    ncl functions in a form suitable for input to the Sphinx documentation generator.  ''' 
+def parse_file(in_filename, out_filename):
+    """
+    Processes an ncl file and produces an rst file as output, which contains documentation of the
+    ncl functions in a form suitable for input to the Sphinx documentation generator.
+    :param in_filename:
+    :param out_filename:
+    :return:
+    """
     
     # Open the files.
     try:
-        inp = open(inFileName, "r")
+        inp = open(in_filename, "r")
     except IOError:
-        print "Couldn't open", inFileName
+        print "Couldn't open", in_filename
         return
 
     try:
-        oup = open(outFileName, "w")
+        oup = open(out_filename, "w")
     except IOError:
-        print "Couldn't open", outFileName
+        print "Couldn't open", out_filename
         return
     
     # We assume the file name has the form /path/to/foo.ncl, and the module name is foo.  Pull it out,
     # and write it to the output file as the title.
-    modName = os.path.splitext(os.path.basename(inFileName))[0]
+    mod_name = os.path.splitext(os.path.basename(in_filename))[0]
     
-    oup.write(':mod:' + '`' + modName + '`' + '\n')
-    oup.write("=" * (7+len(modName)) + '\n')
+    oup.write(':mod:' + '`' + mod_name + '`' + '\n')
+    oup.write("=" * (7+len(mod_name)) + '\n')
     
     for line in inp:
         
@@ -177,7 +186,7 @@ def parseFile(inFileName, outFileName):
             params = plist.split(',')
                                
             # Position the input just after the line containing 'Arguments'.  
-            if not findArgument(inp):
+            if not find_argument(inp):
                 print "Warning - argument list not found for " + fname
             else:
                 
@@ -185,7 +194,7 @@ def parseFile(inFileName, outFileName):
                 # then we don't need to process any.               
                 if len(plist) > 0:
                     # Read the parameter descriptions and reformat them before writing them out.
-                    line = processParams(params, inp, oup)
+                    process_params(params, inp, oup)
                 
                 # We assume the first batch of comments immediately following the function are 
                 # part of the documentation.
@@ -210,30 +219,34 @@ def create_doc_files_from_ncl():
     # List the directories containing input files, then loop over them.
     ncl_folders = {'diag_scripts': 'lib/ncl', 'plot_scripts': 'ncl'}
     for ncl_folder in ncl_folders:
-        inDir = os.path.join(esmval_root_folder, ncl_folder, ncl_folders[ncl_folder])
+        in_dir = os.path.join(esmval_root_folder, ncl_folder, ncl_folders[ncl_folder])
         # Form the output directory name from the input directory name (NB we assume the
         # latter are all named ../../../foo/bar, where foo is the useful part of the name.
-        outDir =os.path.join(esmval_root_folder, "doc/sphinx/source/", ncl_folder)
-        if not os.path.isdir(outDir):
-            os.makedirs(outDir)
+        out_dir = os.path.join(esmval_root_folder, "doc/sphinx/source/", ncl_folder)
+        if not os.path.isdir(out_dir):
+            os.makedirs(out_dir)
 
         # Find all the ncl files in the input directory, and loop over them.
-        inFiles = glob.glob(os.path.join(inDir, '*.ncl'))
-        index_file = open(os.path.join(outDir, 'index.rst'), 'w')
-        index_file.write(ncl_folder.upper())
-        index_file.write('\n')
-        index_file.write('-'*len(ncl_folder))
-        index_file.write('\n')
-        index_file.write('\n')
-        index_file.write('.. toctree::\n   :maxdepth: 2\n\n')
+        in_files = glob.glob(os.path.join(in_dir, '*.ncl'))
+        index_file = open(os.path.join(out_dir, 'index.rst'), 'w')
+        write_index_header(index_file, ncl_folder)
 
-        for nclFile in inFiles:
+        for nclFile in in_files:
             print "Processing " + nclFile
-            rstFile = os.path.join(outDir, os.path.basename(nclFile).replace('.ncl', '.rst'))
-            parseFile(nclFile, rstFile)
+            rst_file = os.path.join(out_dir, os.path.basename(nclFile).replace('.ncl', '.rst'))
+            parse_file(nclFile, rst_file)
             index_file.write('   ')
             index_file.write(os.path.basename(nclFile).replace('.ncl', ''))
             index_file.write('\n')
+
+
+def write_index_header(index_file, ncl_folder):
+    index_file.write(ncl_folder.upper())
+    index_file.write('\n')
+    index_file.write('-' * len(ncl_folder))
+    index_file.write('\n')
+    index_file.write('\n')
+    index_file.write('.. toctree::\n   :maxdepth: 2\n\n')
 
 
 if __name__ == '__main__':
