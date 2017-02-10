@@ -11,6 +11,9 @@ iris.FUTURE.netcdf_promote = True
 
 
 class CMORTable(object):
+    """
+    Handles information from the CMOR tables
+    """
 
     # Dictionary to map CMIP5 variable names to CMIP6
     _CMIP_5to6_varname = {
@@ -83,6 +86,10 @@ class CMORTable(object):
 
 
 class CMORCheck(object):
+    """
+    Class used to check the CMOR-compliance of the data.
+    It can also fix some minor errors
+    """
 
     _attr_msg = '{}: {} should be {}, not {}'
     _does_msg = '{}: does not {}'
@@ -101,6 +108,9 @@ class CMORCheck(object):
         self.automatic_fixes = automatic_fixes
 
     def check(self):
+        """
+        Checks the data. Raises CMORCheckError if an error is found.
+        """
         self._check_rank()
         self._check_var_metadata()
         self._check_fill_value()
