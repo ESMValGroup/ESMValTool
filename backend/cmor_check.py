@@ -90,7 +90,8 @@ class CMORCheck(object):
     _vals_msg = '{}: has values {} {}'
     _contain_msg = '{}: does not contain {} {}'
 
-    def __init__(self, cube, table, frequency=None, fail_on_error=False, automatic_fixes=False):
+    def __init__(self, cube, table, frequency=None, fail_on_error=False,
+                 automatic_fixes=False):
         self.cube = cube
         self._failerr = fail_on_error
         self._errors = list()
@@ -241,13 +242,15 @@ class CMORCheck(object):
                 fixed = False
                 if self.automatic_fixes:
                     try:
-                        new_unit = cf_units.Unit(cmor[attr], coord.units.calendar)
+                        new_unit = cf_units.Unit(cmor[attr],
+                                                 coord.units.calendar)
                         coord.convert_units(new_unit)
                         fixed = True
                     except ValueError:
                         pass
                 if not fixed:
-                    self.report_error(self._attr_msg, var_name, attr, cmor[attr], coord.units)
+                    self.report_error(self._attr_msg, var_name, attr,
+                                      cmor[attr], coord.units)
         self._check_coord_monotonicity_and_direction(cmor, coord, var_name)
         self._check_coord_values(cmor, coord, var_name)
 
@@ -283,6 +286,7 @@ class CMORCheck(object):
             if np.any(coord.points < valid_min):
                 self.report_error(self._vals_msg, var_name,
                                   '< {} ='.format(attr), valid_min)
+
         attr = 'valid_max'
         if cmor[attr]:
             valid_max = float(cmor[attr])
@@ -410,14 +414,18 @@ def main():
             # Iris chooses to change longitude and latitude units to degrees
             #  regardless of value in file, so reinstating file value
             if coord.standard_name in ['longitude', 'latitude']:
-                units = get_attr_from_field_coord(field, coord.var_name, 'units')
+                units = get_attr_from_field_coord(field,
+                                                  coord.var_name,
+                                                  'units')
                 if units is not None:
                     coord.units = units
             # Iris removes several attributes, attempting to re-add them
             # attrs = ['axis']
             # for attr in attrs:
             #     if attr not in coord.attributes:
-            #         attrval = get_attr_from_field_coord(field, coord.var_name, attr)
+            #         attrval = get_attr_from_field_coord(field,
+            #                                             coord.var_name,
+            #                                             attr)
             #         if attrval is not None:
             #             coord.attributes[attr] = attrval
 
@@ -446,7 +454,8 @@ def main():
             # Concatenate data to single cube, i.e. merge time series
             cube = cubes.concatenate_cube()
             # Create checker for loaded cube
-            checker = CMORCheck(cube, table, automatic_fixes=True)  # , fail_on_error=True)
+            checker = CMORCheck(cube, table, automatic_fixes=True)  # ,
+            #                     fail_on_error=True)
             # Run checks
             checker.check()
 
