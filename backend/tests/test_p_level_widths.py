@@ -3,7 +3,9 @@ from __future__ import division
 import numpy as np
 import pytest
 
-from calculate_variables import _p_level_widths
+from conf_imports import backend
+
+from backend.derived_variables.calculate_variables import _p_level_widths
 
 
 def test_col_is_not_monotonic():
