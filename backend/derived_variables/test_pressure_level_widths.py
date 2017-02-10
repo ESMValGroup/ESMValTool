@@ -3,7 +3,7 @@ from __future__ import division
 import numpy as np
 import pytest
 
-from toz import p_level_widths
+from calculate_variables import p_level_widths
 
 
 def test_col_is_not_monotonic():

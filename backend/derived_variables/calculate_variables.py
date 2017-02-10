@@ -4,6 +4,7 @@ import iris
 import numba
 from scipy import constants
 
+
 Avogadro_const = constants.value('Avogadro constant')
 Avogadro_const_unit = constants.unit('Avogadro constant')
 g = 9.81
@@ -12,6 +13,7 @@ mw_air = 29
 mw_air_unit = cf_units.Unit('g mol^-1')
 mw_O3 = 48
 mw_O3_unit = cf_units.Unit('g mol^-1')
+Dobson_unit = cf_units.Unit('2.69e20 m^-2')
 
 
 def total_column_ozone(tro3_cube, ps_cube):
@@ -36,7 +38,7 @@ def total_column_ozone(tro3_cube, ps_cube):
     # Convert from kg m^-2 to Dobson unit (2.69e20 m^-2 )
     toz = toz / mw_O3 * Avogadro_const
     toz.units = toz.units / mw_O3_unit * Avogadro_const_unit
-    toz.convert_units('2.69e20 m^-2')
+    toz.convert_units(Dobson_unit)
     return toz
 
 
