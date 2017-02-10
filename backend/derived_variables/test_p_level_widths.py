@@ -3,7 +3,7 @@ from __future__ import division
 import numpy as np
 import pytest
 
-from calculate_variables import p_level_widths
+from calculate_variables import _p_level_widths
 
 
 def test_col_is_not_monotonic():
@@ -13,16 +13,16 @@ def test_col_is_not_monotonic():
     col = np.insert(col, 0, sp)
     col = np.append(col, top_limit)
     with pytest.raises(ValueError):
-        p_level_widths(col)
+        _p_level_widths(col)
 
 
-def test_p_level_widths_keeps_columns_length():
+def test__p_level_widths_keeps_columns_length():
     sp = 1000
     top_limit = 5
     col = np.array([1000, 900, 800])
     col = np.insert(col, 0, sp)
     col = np.append(col, top_limit)
-    assert len(p_level_widths(col)) == len(col) - 2
+    assert len(_p_level_widths(col)) == len(col) - 2
 
 
 def test_lowest_level_is_surface_pressure():
@@ -32,7 +32,7 @@ def test_lowest_level_is_surface_pressure():
     col = np.insert(col, 0, sp)
     col = np.append(col, top_limit)
     result = np.array([50, 100, 845])
-    assert all(p_level_widths(col) == result)
+    assert all(_p_level_widths(col) == result)
 
 
 def test_lowest_level_is_above_surface_pressure():
@@ -42,7 +42,7 @@ def test_lowest_level_is_above_surface_pressure():
     col = np.insert(col, 0, sp)
     col = np.append(col, top_limit)
     result = np.array([70, 100, 845])
-    assert all(p_level_widths(col) == result)
+    assert all(_p_level_widths(col) == result)
 
 
 def test_lowest_level_is_below_surface_pressure():
@@ -52,13 +52,13 @@ def test_lowest_level_is_below_surface_pressure():
     col = np.insert(col, 0, sp)
     col = np.append(col, top_limit)
     result = np.array([0, 120, 845])
-    assert all(p_level_widths(col) == result)
+    assert all(_p_level_widths(col) == result)
 
     col = np.array([np.NaN, np.NaN, 900, 800])
     col = np.insert(col, 0, sp)
     col = np.append(col, top_limit)
     result = np.array([0, 0, 120, 845])
-    assert all(p_level_widths(col) == result)
+    assert all(_p_level_widths(col) == result)
 
 
 def test_highest_level_is_top_limit():
@@ -68,7 +68,7 @@ def test_highest_level_is_top_limit():
     col = np.insert(col, 0, sp)
     col = np.append(col, top_limit)
     result = np.array([70, 50 + 895/2, 895/2])
-    assert all(p_level_widths(col) == result)
+    assert all(_p_level_widths(col) == result)
 
 
 def test_highest_level_above_top_limit():
@@ -78,6 +78,6 @@ def test_highest_level_above_top_limit():
     col = np.insert(col, 0, sp)
     col = np.append(col, top_limit)
     with pytest.raises(ValueError):
-        p_level_widths(col)
+        _p_level_widths(col)
 
 

@@ -8,6 +8,7 @@ import cf_units
 import numba
 import numpy as np
 import iris
+from iris import Constraint
 from scipy import constants
 
 
@@ -35,9 +36,10 @@ def calc_lwp(cubes):
     Returns:
         Cube containing liquid water path.
     """
-    # TODO: find out correct names for clwvi/clivi
-    clwvi_cube = cubes.extract_cube('clwvi')
-    clivi_cube = cubes.extract_cube('clivi')
+    clwvi_cube = cubes.extract_strict(
+        Constraint(name='atmosphere_mass_content_of_cloud_condensed_water'))
+    clivi_cube = cubes.extract_strict(
+        Constraint(name='atmosphere_mass_content_of_cloud_ice'))
 
     model = clwvi_cube.attributes['model_id']
     project = clwvi_cube.attributes['project_id']
@@ -51,7 +53,7 @@ def calc_lwp(cubes):
     if (project in ["CMIP5", "CMIP5_ETHZ"] and model in BAD_MODELS) or \
         (project == 'OBS' and model == 'UWisc'):
             print("INFO: assuming that variable clwvi from {} model {} "
-                  "contains only liquid water".format(project, model)
+                  "contains only liquid water".format(project, model))
             lwp_cube = clwvi_cube
     else:
         lwp_cube = clwvi_cube - clivi_cube
@@ -61,7 +63,7 @@ def calc_lwp(cubes):
     return lwp_cube
 
 
-def total_column_ozone(cubes):
+def calc_toz(cubes):
     """
     Create total column ozone from ozone mol fraction on pressure levels.
 
@@ -70,18 +72,18 @@ def total_column_ozone(cubes):
 
     Args:
         * cubes: cubelist containing tro3_cube (mole_fraction_of_ozone_in_air)
-                 and ps_cube (surface_ pressure).
+                 and ps_cube (surface_air_pressure).
 
     Returns:
         Cube containing total column ozone.
     """
-    # TODO: find out correct names for tro3/ps
-    tro3_cube = cubes.extract_cube('tro3')
-    ps_cube = cubes.extract_cube('ps')
+    tro3_cube = cubes.extract_strict(
+        Constraint(name='mole_fraction_of_ozone_in_air'))
+    ps_cube = cubes.extract_strict(Constraint(name='surface_air_pressure'))
 
     assert tro3_cube.coord_dims('time') and ps_cube.coord_dims('time'), \
             'No time dimension found.'
-    p_layer_widths = pressure_level_widths(tro3_cube, ps_cube, top_limit=100)
+    p_layer_widths = _pressure_level_widths(tro3_cube, ps_cube, top_limit=100)
     toz = (tro3_cube * p_layer_widths / g * mw_O3 / mw_air).collapsed('air_pressure', iris.analysis.SUM)
     toz.units = tro3_cube.units * p_layer_widths.units / g_unit * mw_O3_unit / mw_air_unit
     toz.rename('atmosphere mass content of ozone')
@@ -93,14 +95,14 @@ def total_column_ozone(cubes):
     return toz
 
 
-def pressure_level_widths(tro3_cube, ps_cube, top_limit=100):
+def _pressure_level_widths(tro3_cube, ps_cube, top_limit=100):
     """
     Create a cube with pressure level widths taking a 2D surface pressure field
     as lower bound.
 
     Args:
         tro3_cube: Cube containing mole_fraction_of_ozone_in_air
-        ps_cube: Surface pressure cube.
+        ps_cube: Surface air pressure cube.
         top_limit: Pressure in Pa.
 
     returns: Cube of same shape as tro3_cube containing pressure level widths.
@@ -108,16 +110,16 @@ def pressure_level_widths(tro3_cube, ps_cube, top_limit=100):
     assert ps_cube.units == 'Pa'
     assert tro3_cube.coord('air_pressure').units == 'Pa'
 
-    pressure_array = create_pressure_array(tro3_cube, ps_cube, top_limit)
+    pressure_array = _create_pressure_array(tro3_cube, ps_cube, top_limit)
 
-    p_level_widths_cube = tro3_cube.copy(data=apply_pressure_level_widths(pressure_array))
+    p_level_widths_cube = tro3_cube.copy(data=_apply_pressure_level_widths(pressure_array))
     p_level_widths_cube.rename('pressure level widths')
     p_level_widths_cube.units = ps_cube.units
 
     return p_level_widths_cube
 
 
-def create_pressure_array(tro3_cube, ps_cube, top_limit):
+def _create_pressure_array(tro3_cube, ps_cube, top_limit):
     """
     Create an array filled with the 'air_pressure' coord values from the
     tro3_cube with the same dimensions as tro3_cube.
@@ -148,16 +150,16 @@ def create_pressure_array(tro3_cube, ps_cube, top_limit):
     return pressure_4d
 
 
-def apply_pressure_level_widths(array, air_pressure_axis=1):
+def _apply_pressure_level_widths(array, air_pressure_axis=1):
     """
     For a  1D array with pressure level columns, return a 1D  array with pressure
     level widths.
     """
-    return np.apply_along_axis(p_level_widths, air_pressure_axis, array)
+    return np.apply_along_axis(_p_level_widths, air_pressure_axis, array)
 
 
 @numba.jit()  # ~10x faster
-def p_level_widths(array):
+def _p_level_widths(array):
     """
     Creates pressure level widths from an array with pressure level values.
     The array is assumed to be monotonic and the values are decreasing.
@@ -167,11 +169,11 @@ def p_level_widths(array):
     between these boundaries, the returned array, therefore, contains two
     elements less.
 
-    >>> pressure_level_widths(np.array([1020, 1000, 700, 500, 5]))
+    >>> _p_level_widths(np.array([1020, 1000, 700, 500, 5]))
     [170 250 595]
 
 
-    >>> pressure_level_widths(np.array([990, np.NaN, 700, 500, 5]))
+    >>> _p_level_widths(np.array([990, np.NaN, 700, 500, 5]))
     [0 390 595]
     """
     surface_pressure = array[0]
