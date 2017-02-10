@@ -29,7 +29,8 @@ in advance. Below are few user scenerios.
 docker run -v <local_data>:/data/ esmvalgroup/esmvaltool:<tag> nml/<namelist_name>.xml
 ```
 Replace:
-* `<tag>` with `centos` or `ubuntu` depending on which image
+* `<tag>` with `1.1.0-centos7`, `1.1.0-xenial` or `1.1.0-debian-8.5`
+    depending on which image
 you want to use
 * `<namelist_name>` with name of the namelist you want to execute
 * `<local_data>` with  a location on your local machine
