@@ -115,6 +115,12 @@ class TestCMORCheckBadCube(unittest.TestCase):
         with self.assertRaises(CMORCheckError):
             checker.check()
 
+    def test_not_correct_lons_automatic_fix(self):
+        cube = self.cube_creator.get_cube(self.table, self.varid)
+        cube = cube.intersection(longitude=(-180., 180.))
+        checker = CMORCheck(cube, self.table, automatic_fixes=True)
+        checker.check()
+
     def test_not_valid_min(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
         coord = cube.coord('latitude')
