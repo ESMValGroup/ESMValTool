@@ -1,3 +1,6 @@
+# This file may be used to create an environment using:
+# $ conda create --name <env> --file <this file>
+# platform: linux-64
 basemap=1.0.8.dev0=np110py27_1
 biggus=0.14.0=py27_0
 bzip2=1.0.6=3

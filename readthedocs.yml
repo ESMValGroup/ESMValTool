@@ -1,2 +1,2 @@
 conda:
-    file: conda-requirements.txt
+    file: environment.yml
