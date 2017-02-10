@@ -289,20 +289,34 @@ class CMORCheck(object):
                     self.report_error(self._contain_msg, var_name, str(point),
                                       str(coord.units))
 
+        l_fix_coord_value = False
+
         # Check coordinate value ranges
         attr = 'valid_min'
         if cmor[attr]:
             valid_min = float(cmor[attr])
             if np.any(coord.points < valid_min):
-                self.report_error(self._vals_msg, var_name,
-                                  '< {} ='.format(attr), valid_min)
+                if cmor['standard_name'] == 'longitude' and \
+                        self.automatic_fixes:
+                    l_fix_coord_value = True
+                else:
+                    self.report_error(self._vals_msg, var_name,
+                                      '< {} ='.format(attr), valid_min)
 
         attr = 'valid_max'
         if cmor[attr]:
             valid_max = float(cmor[attr])
             if np.any(coord.points > valid_max):
-                self.report_error(self._vals_msg, var_name,
-                                  '> {} ='.format(attr), valid_max)
+                if cmor['standard_name'] == 'longitude' and \
+                        self.automatic_fixes:
+                    l_fix_coord_value = True
+                else:
+                    self.report_error(self._vals_msg, var_name,
+                                      '> {} ='.format(attr), valid_max)
+
+        if l_fix_coord_value:
+            lon_extent = iris.coords.CoordExtent(coord, 0.0, 360., True, False)
+            self.cube = self.cube.intersection(lon_extent)
 
     def _check_time_coord(self):
         try:
