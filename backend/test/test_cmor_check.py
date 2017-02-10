@@ -108,6 +108,13 @@ class TestCMORCheckBadCube(unittest.TestCase):
         with self.assertRaises(CMORCheckError):
             checker.check()
 
+    def test_not_correct_lons(self):
+        cube = self.cube_creator.get_cube(self.table, self.varid)
+        cube = cube.intersection(longitude=(-180., 180.))
+        checker = CMORCheck(cube, self.table)
+        with self.assertRaises(CMORCheckError):
+            checker.check()
+
     def test_not_valid_min(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
         coord = cube.coord('latitude')
@@ -405,10 +412,11 @@ class CubeCreator(object):
         else:
             valid_max = 100.0
         decreasing = dim_spec['stored_direction'] == 'decreasing'
+        endpoint = not dim_spec['standard_name'] == 'longitude'
         if decreasing:
-            values = numpy.linspace(valid_max, valid_min, 20)
+            values = numpy.linspace(valid_max, valid_min, 20, endpoint=endpoint)
         else:
-            values = numpy.linspace(valid_min, valid_max, 20)
+            values = numpy.linspace(valid_min, valid_max, 20, endpoint=endpoint)
         values = numpy.array(values)
         if dim_spec['requested']:
             requested = [float(val) for val in dim_spec['requested']]
