@@ -15,10 +15,15 @@
 import sys
 import os
 
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('.'))
+doc_folder = os.path.dirname(os.path.realpath(__file__))
+esmval_root_folder = os.path.abspath(os.path.join(doc_folder, '../../..'))
+sys.path.append(esmval_root_folder)
+import process_ncl_docs
 
 # -- General configuration ------------------------------------------------
 
@@ -38,7 +43,7 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
 ]
-
+process_ncl_docs.create_doc_files_from_ncl()
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
