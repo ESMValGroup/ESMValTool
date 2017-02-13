@@ -82,6 +82,7 @@ pyparsing=2.1.4=py27_0
 pyproj=1.9.5.1=py27_0
 pyqt=4.11.4=py27_4
 pyshp=1.2.3=py27_0
+pytest=3.0.5=py27_0
 python=2.7.13=0
 python-dateutil=2.2=py27_0
 pytz=2016.10=py27_0
