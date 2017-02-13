@@ -10,6 +10,7 @@ dependencies:
 - cython
 - basemap
 - iris
+- python-stratify
 - esgf-pyclient
 - scientificpython
 - ncl
