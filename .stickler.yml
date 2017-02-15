@@ -1,3 +1,6 @@
 linters:
     flake8:
-    pep8:
+files:
+    ignore: ['*.nc', '*.r', '*.xml', 'esmvaltool/diag_scripts/*', 'esmvaltool/interface_data/*', 'esmvaltool/interface_scripts/*', 'esmvaltool/nml/*', 'esmvaltool/plot_scripts/*', 'esmvaltool/reformat_scripts/*', 'esmvaltool/tests/*', 'esmvaltool/util/*', 'esmvaltool/variable_defs/*', 'esmvaltool/Makefile'. 'doc/*', 'docker/*']
+branches:
+    ignore: ['REFACTORING/conda', 'REFACTORING/esgf-coupling', 'adding_axis_attributes', 'development', 'editorconfig', 'master', 'refactoring-backend-new-parser']
