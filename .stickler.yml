@@ -1,0 +1,3 @@
+linters:
+    flake8:
+    pep8:
