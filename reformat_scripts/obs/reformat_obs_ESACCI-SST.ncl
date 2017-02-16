@@ -31,13 +31,11 @@ begin
     TIER = 2
 
     ;; Input dir (raw data)
-;    INDIR = getenv("ESMValTool_RAWOBSPATH") + "/Tier" + \
-    INDIR = "/export/pa_data01/ESMVal/obs/RAW/Tier" + \
+    INDIR = getenv("ESMValTool_RAWOBSPATH") + "/Tier" + \
         TIER + "/" + OBSNAME + "/"
 
     ;; Output dir (CMOR-ized data)
-;    OUTDIR = getenv("ESMValTool_OBSPATH") + "/Tier" + \
-    OUTDIR = "/export/pa_data02/ESMVal/obs/Tier" + \
+    OUTDIR = getenv("ESMValTool_OBSPATH") + "/Tier" + \
         TIER + "/" + OBSNAME + "/"
 
     ;; Period

@@ -728,7 +728,7 @@ This namelist is part of the ESMValTool
    <diag_script_cfg_dir> ./nml/cfg_lauer17rse/  </diag_script_cfg_dir>
    <diag_script cfg="cfg_eyring13jgr_fig02.ncl"> eyring13jgr_fig02.ncl </diag_script>
    <model> CMIP5_ETHZ MIROC-ESM-CHEM Amon historical r1i1p1 2003 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-   <model> O3_Cionni IGAG/SPARC      1    historical        2003 2005 /export/pa_data01/ESMVal/forcings/ozonedatabase2011/ </model>
+   <model> O3_Cionni IGAG/SPARC      1    historical        2003 2005 @{OBSPATH2}/forcings/ozonedatabase2011/ </model>
    <model> OBS ESACCI-OZONE               sat        L3     2003 2005 @{OBSPATH}/Tier2/ESACCI-OZONE/ </model>
    <model> OBS NIWA                       reanaly    1      2003 2005 @{OBSPATH}/Tier3/NIWA/ </model> 
    </diag>

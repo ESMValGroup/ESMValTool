@@ -37,12 +37,8 @@
 ###############################################################################
 """
 
-#inpath="/Work/Reference/OBS_ESACCI_LC/"
-#outpath="/Work/Reference/OBS_ESACCI_LC/output/"
-#path2lctool="./lib/lc-user-tools-3.10/"
-
-inpath="/export/pa_data01/ESMVal/obs/RAW/Tier2/ESACCI-LANDCOVER/"
-outpath="/export/pa_data02/ESMVal/obs/Tier2/ESACCI-LANDCOVER/"
+inpath="/Work/Reference/OBS_ESACCI_LC/"
+outpath="/Work/Reference/OBS_ESACCI_LC/output/"
 path2lctool="./lib/lc-user-tools-3.10/"
 
 #these LC-classes will be processed

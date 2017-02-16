@@ -22,8 +22,8 @@
 ##
 ###############################################################################
 
-set inpath  = "/export/pa_data02/ESMVal/obs/Tier1/ESACCI-GHG"
-set outpath = "/export/pa_data02/ESMVal/obs/Tier1/ESACCI-GHG"
+set inpath="${ESMValTool_OBSPATH}/Tier1/ESACCI-GHG"
+set outpath="${ESMValTool_OBSPATH}/Tier1/ESACCI-GHG"
 
 if (! -d $outpath) then
     mkdir -p $outpath
