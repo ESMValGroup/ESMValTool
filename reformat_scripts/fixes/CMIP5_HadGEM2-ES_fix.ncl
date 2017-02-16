@@ -45,7 +45,7 @@ begin
         ;var&plev = z(:,0,0)
         ;delete([/b,orog,i,k,j/])
    
-        ;fils1 = systemfunc("ls /export/pa_data02/ESMVal/model/ETHZ_CMIP5/historical/Amon/zg/HadGEM2-ES/r1i1p1/zg_Amon_HadGEM2-ES_historical_r1i1p1_*.nc")
+        ;fils1 = systemfunc("ls /data/ESMValTool/model/ETHZ_CMIP5/historical/Amon/zg/HadGEM2-ES/r1i1p1/zg_Amon_HadGEM2-ES_historical_r1i1p1_*.nc")
         ;tmp1 = addfiles(fils1, "cat")
         ;zg   = tmp1[:]->zg
 

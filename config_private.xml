@@ -32,6 +32,11 @@
 			<description>root directory of observational data</description>
 		</usrpath>
 
+                <usrpath category="observation" type="input" id="OBSPATH2">
+                        <path>/path/to/data/obsdata2/</path>
+                        <description>alternative root directory of observational data</description>
+                </usrpath>
+
 		<usrpath category="observation" type="input" id="RAWOBSPATH">
 			<path>/path/to/data/rawobsdata/</path>
 			<description>root directory of raw observational data (for reformat_obs scripts)</description>

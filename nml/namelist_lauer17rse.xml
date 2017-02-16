@@ -2192,7 +2192,7 @@ This namelist is part of the ESMValTool
    <model> CMIP5_ETHZ GISS-E2-R      Amon historical r1i1p2 1960 2010 @{MODELPATH}/ETHZ_CMIP5/ </model>
    <model> CMIP5_ETHZ GISS-E2-R      Amon historical r1i1p3 1960 2010 @{MODELPATH}/ETHZ_CMIP5/ </model>
    <model> CMIP5_ETHZ MIROC-ESM-CHEM Amon historical r1i1p1 1960 2010 @{MODELPATH}/ETHZ_CMIP5/ </model>
-   <model> O3_Cionni IGAG/SPARC      1    historical        1960 2009 /export/pa_data01/ESMVal/forcings/ozonedatabase2011/ </model>
+   <model> O3_Cionni IGAG/SPARC      1    historical        1960 2009 @{OBSPATH2}/forcings/ozonedatabase2011/ </model>
    <model> OBS ESACCI-OZONE               sat        L3     1997 2010 @{OBSPATH}/Tier2/ESACCI-OZONE/ </model>
    <model> OBS NIWA                       reanaly    1      1980 2010 @{OBSPATH}/Tier3/NIWA/ </model> 
    </diag>
