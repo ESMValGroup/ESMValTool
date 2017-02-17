@@ -49,6 +49,7 @@ This namelist is part of the ESMValTool
 </MODELS>
 
 <DIAGNOSTICS>
+<!--
    <diag>
        <description> eyring13jgr figure 01: total column ozone annual cycle </description>
        <variable_def_dir>          ./variable_defs/ </variable_def_dir>
@@ -164,6 +165,7 @@ This namelist is part of the ESMValTool
 
     	<diag_script cfg="cfg_eyring13jgr_fig04.ncl"> eyring13jgr_fig04.ncl </diag_script>
    </diag>
+-->
 
    <!-- eyring13jgr_fig06.ncl not yet tested - use with caution -->
    <!-- Please report problems and bugs to the ESMValTool core development team -->
@@ -198,7 +200,7 @@ This namelist is part of the ESMValTool
         <model> CMIP5_ETHZ IPSL-CM5A-LR   Amon rcp85      r1i1p1 2006 2099 @{MODELPATH}/ETHZ_CMIP5/ </model>
         <model> CMIP5_ETHZ MIROC-ESM-CHEM Amon rcp85      r1i1p1 2006 2099 @{MODELPATH}/ETHZ_CMIP5/ </model>
     </diag>
--->
+
    <diag>
        <description> eyring13jgr figure 07: vertical profile ozone differences </description>
        <variable_def_dir>         ./variable_defs/   </variable_def_dir>
@@ -410,7 +412,7 @@ This namelist is part of the ESMValTool
 
        <diag_script cfg="cfg_eyring13jgr_fig10f.ncl"> eyring13jgr_fig10.ncl </diag_script>
     </diag>
-
+-->
     <diag>
          <description> eyring13jgr figure 11a: trend scatter plots between two variables </description>
          <variable_def_dir>        ./variable_defs/   </variable_def_dir>

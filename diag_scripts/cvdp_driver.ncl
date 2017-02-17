@@ -9,35 +9,35 @@
   load "./interface_scripts/messaging.ncl"
 
   diag_script = "cvdp_driver.ncl"
-;  outdir            = "./work/plots_CVDP/"   ; location of output files   (must end in a "/")
-  outdir = getenv("ESMValTool_plot_dir") + "/"
+;  outdir            = "/project/CVDP/"   ; location of output files   (must end in a "/")
+;                                                           ; It is recommended that a new or empty directory be pointed to here 
+;                                                           ; as existing files in outdir can get removed.
+  outdir = getenv("ESMValTool_plot_dir") + "/CVDP/"
 ; A-laue_ax-
-                                             ; It is recommended that a new or empty directory be pointed to here 
-                                             ; as existing files in outdir can get removed.
 
   namelists_only       = "False"             ; Set to True to only create the variable namelists. Useful
                                              ; upon running the package for the first time to verify that the correct
                                              ; files are being selected by the package. (See files in namelist_byvar/ directory)
                                              ; Set to False to run the entire package. 
                                              
-  obs                  = "True"              ; True = plot OBS (specified in namelist_obs), False = do not
-  scale_timeseries     = "True"              ; True = scale timeseries so that x-axis length is comparable across timeseries, False = do not
+  obs                  = "True"              ; True = analyze and plot observations (specified in namelist_obs), False = do not
+  scale_timeseries     = "False"              ; True = scale timeseries so that x-axis length is comparable across timeseries, False = do not
   output_data          = "True"              ; True = output selected calculated data to a netCDF file. Make sure .nc files from previous CVDP
-                                             ;        runs are in outdir or they will get added to/modified.  
-  compute_modes_mon    = "False"             ; True = compute DJF, MAM, JJA, SON, Annual and Monthly Atmospheric Modes of Variability 
+                                             ;        runs are not in outdir or they will get added to or modified.  
+  compute_modes_mon    = "True"              ; True = compute DJF, MAM, JJA, SON, Annual and Monthly Atmospheric Modes of Variability 
                                              ; False = do not compute the Monthly Atmospheric Modes of Variability  (saves computation time)                               
 ;- - - - - - - - - - - - - - - - - -   
-  opt_climo         = "Full"                 ; "Full"  = remove climatology based on full record of each simulation,
-                                             ; "Custom" = use start and end year of climatological period specified by climo_syear and climo_eyear 
+  opt_climo         = "Full"                 ; Full  = remove climatology based on full record of each simulation,
+                                             ; Custom = use start and end year of climatological period specified by climo_syear and climo_eyear 
   if (opt_climo.eq."Custom") then
-     climo_syear    = 700                    ; remove the climatology/annual cycle based on these years when opt_climo = "Custom"
-     climo_eyear    = 719                    ; note: climo_syear and climo_eyear should be within the range of years of all analyzed model runs 
-  end if                                     ;       and specified observational datasets.
+     climo_syear    = 700                   ; remove the climatology/annual cycle based on these years when opt_climo = "Custom"
+     climo_eyear    = 719                   ; note: climo_syear and climo_eyear should be within the range of years of all analyzed model runs 
+  end if                                    ;       and specified observational datasets.
 ;- - - - - - - - - - - - - - - - - -   
   colormap          = 0               ; 0 = default colormaps, 1 = colormaps better for color blindness
 
 ; A-laue_ax+
-;  output_type       = "ps"           ; "ps" or "png". Note that for output_type = "ps", png's are created from the .ps files for web use.
+;  output_type       = "png"           ; png = create png files, ps = create postscript files as well as png files (for web viewing).  
   output_type = getenv("ESMValTool_output_file_type")  ; "ps" or "png". Note that for output_type = "ps",
                                                        ; png's are created from the .ps files for web use.
   if (output_type .ne. "ps" .and. output_type .ne. "png") then
@@ -45,80 +45,122 @@
   end if
 ; A-laue_ax-
   
-  png_scale         = 1.5             ; Value between .1->5.  Any value > 1 (< 1) increases (decreases) png page size. 
+  png_scale         = 1.5             ; Set the output .png size. Value between .1->5.  Any value > 1 (< 1) increases (decreases) png size. 
                                       ; When output_type = "png" a value of 1 will result in a png sized 1500 (H) x 1500 (W) before automatic cropping of white space
                                       ; When output_type = "ps"  a value of 1 will result in a png density setting of 144 before automatic cropping of white space
-  webpage_title     = "Title goes here"  ; Webpage title   
+  webpage_title     = "Title goes here"          ; Set webpage title   
   
-  tar_output        = "False"       ; tar up all output in outdir and remove individual files?                                      
-                                    ; Note: ALL files in outdir will be tarred up and then removed fromthe outdir directory. 
-                                             
-  zp = "./diag_scripts/aux/CVDP/ncl_scripts/"    ; directory path of CVDP NCL scripts. (must end in a "/")
-                                    ; Examples: "ncl_scripts/" if all code is local, or on CGD or CISL systems: "~asphilli/CESM-diagnostics/CVDP/ncl_scripts/"
-                                    ; Regardless of this setting the following files should be in one directory: namelist, driver.ncl, and namelist_obs. 
-                                    ; If pointing to code in ~asphilli make sure the driver script version #s match between the local version of driver.ncl and the 
-                                    ; version # in ~asphilli/CESM-diagnostics/CVDP/driver.ncl
+  tar_output        = "False"               ; True = tar up all output in outdir and remove individual files, False = do not                                      
+                                            ; Note: ALL files in outdir will be tarred up and then removed from the outdir directory. 
 
-; A-laue_ax+  
-  ncl_exec = "ncl"       ; this can be changed to a different path if a different version of NCL needs to be used, 
-; A-laue_ax-
-                         ; such as "/different/path/to/bin/ncl"                                             
-;========END USER MODIFICATIONS===========================================================
-  version = "3.7.0"
+;---Advanced Options----------------------------------------------------------------------                                             
+; A_laue_ax+
+;  zp = "ncl_scripts/"    ; directory path of CVDP NCL scripts. (must end in a "/")
+;                         ; Examples: "ncl_scripts/" if all code is local, or on CGD or CISL systems: "~asphilli/CESM-diagnostics/CVDP/Release/v4.1.0/ncl_scripts/"
+;                         ; Regardless of this setting the following files should be in one directory: namelist, driver.ncl, and namelist_obs. 
+;                         ; If pointing to code in ~asphilli make sure the driver script version #s match between this script and the script in ~asphilli.
+  zp = "./diag_scripts/aux/CVDP/ncl_scripts/"
+; A_laue_ax-
+
+
   
+  ncl_exec = "ncl"       ; This can be changed to a different path if a different version of NCL needs to be used, such as "/different/path/to/bin/ncl"                           
+                         
+  run_style = "parallel"   ; parallel = allow simple python-based parallelization to occur. X number of CVDP NCL scripts will be called at once. 
+                         ;            X is set via max_num_tasks. Terminal output will be harder to follow.
+                         ; serial = call CVDP NCL scripts serially. (Default)    
+                         
+  max_num_tasks = 4      ; if run_parallel = "parallel", how many CVDP NCL scripts can be called at once? (If unsure set to 3)     
+  
+  modular = "False"      ; True = Run only those CVDP scripts specified in modular_list.
+                         ; False = Run all CVDP scripts (Default)
+
+  modular_list = "aice.mean_stddev,aice.trends_timeseries,sst.indices"  ; When modular = "True" list the CVDP scripts that will be run. 
+                                           ; Example: modular_list = "amoc,amo,pr.trends_timeseries"
+                                           ; For a list of available scripts see complete_list (line 70) 
+
+  machine_casesen = "True"  ; True = Your filesystem is case sensitive  (Default)
+                             ; False = Your filesystem is case insensitive                                                          
+;========END USER MODIFICATIONS===========================================================
+  version = "4.1.0"
+
+  print("Starting: Climate Variability Diagnostics Package ("+systemfunc("date")+")")
+
+  complete_list = "psl.nam_nao,psl.pna_npo,tas.trends_timeseries,snd.trends,psl.trends,amo,pdo,sst.indices,pr.trends_timeseries,"+\
+                   "psl.sam_psa,sst.mean_stddev,psl.mean_stddev,pr.mean_stddev,sst.trends_timeseries,amoc,tas.mean_stddev,"+\
+                   "snd.mean_stddev,aice.mean_stddev,aice.trends_timeseries,ipo"
+
   loadscript(zp+"functions.ncl")
-  variables = (/"ts","trefht","psl","prect","snowdp", "moc"/)
-  do gg = 0,dimsizes(variables)-1
-     if (isfilepresent2("obs_"+variables(gg))) then
-        system("rm -f obs_"+variables(gg))
+  outfiles = (/"ts","trefht","psl","prect","snowdp","moc","maxnum","aice_nh","aice_sh"/)
+  do gg = 0,dimsizes(outfiles)-1
+     if (isfilepresent2("obs_"+outfiles(gg))) then
+        system("rm obs_"+outfiles(gg))
      end if 
   end do
 
   if (isfilepresent2(outdir+"metrics_orig.txt")) then    ; remove metrics_orig.txt file if present
-     system("rm -f "+outdir+"metrics_orig.txt")
+     system("rm "+outdir+"metrics_orig.txt")
   end if
   if (isfilepresent2(outdir+"metrics.txt")) then    ; remove metrics.txt file if present
-     system("rm -f "+outdir+"metrics.txt")
+     system("rm "+outdir+"metrics.txt")
   end if
 
   if (.not.isfilepresent2(outdir)) then
-     system("mkdir -p "+outdir)
+     system("mkdir "+outdir)
   end if
   if (opt_climo.ne."Custom") then
      climo_syear = -999
      climo_eyear = -999
   end if
 
-  webpage_title = str_sub_str(webpage_title," ","%")
-    
-  if (namelists_only.eq."True") then
-     system("   export OUTDIR="+outdir+";   export OBS="+obs+";   export SCALE_TIMESERIES="+scale_timeseries+";   "+\
+  envvar_str = "   export OUTDIR="+outdir+";   export OBS="+obs+";   export SCALE_TIMESERIES="+scale_timeseries+";   "+\
          "export OUTPUT_DATA="+output_data+";   export VERSION="+version+";   export PNG_SCALE="+png_scale+";   "+\
          "export OPT_CLIMO="+opt_climo+";   export CLIMO_SYEAR="+climo_syear+";   export CLIMO_EYEAR="+climo_eyear+";   "+\
-         "export COMPUTE_MODES_MON="+compute_modes_mon+";   export CVDP_SCRIPTS="+zp+";   export OUTPUT_TYPE="+output_type+";"+\         
-         " "+ncl_exec+" "+zp+"namelist.ncl")
+         "export COMPUTE_MODES_MON="+compute_modes_mon+";   export OUTPUT_TYPE="+output_type+";   export MACHINE="+machine_casesen+";   "+\
+         "export COLORMAP="+colormap+";   export CVDP_SCRIPTS="+zp+";   export MAX_TASKS="+max_num_tasks+";"  
+  ncl_exec = ncl_exec+" -n -Q" 
+
+  system(envvar_str + " "+str_sub_str(ncl_exec," -Q","")+" "+zp+"namelist.ncl")
+  if (namelists_only.eq."True") then
      print("Variable namelists have been created. Examine files in namelist_byvar/ directory to verify CVDP file selection.")
      print("Finished: Climate Variability Diagnostics Package")
+     do gg = 0,dimsizes(outfiles)-1
+        if (isfilepresent2("obs_"+outfiles(gg))) then
+           system("rm obs_"+outfiles(gg))
+        end if 
+     end do
      exit
-  end if             
+  end if   
 
-; If one alters the order that scripts are called in the following system calls one will have to modify the metrics.ncl 
-; script to account for this. (metrics.ncl assumes that the metric rows are created in the same order every time.) 
-; Adding scripts to the end of this system call is completely fine as that will not alter the order of the 
-; calculated metrics.
+  if (modular.eq."True") then
+     modular_list = str_sub_str(modular_list," ","")   ; remove spaces if present
+     modular_list = str_sub_str(modular_list,",",".ncl,")   ; add .ncl in to end of each script name
+     modular_list = modular_list+".ncl"                     ; add .ncl in to last script name
+     if (run_style.eq."parallel") then
+        modular_list = str_sub_str(modular_list,","," "+zp)
+        system(envvar_str+" python "+zp+"runTasks.py "+zp+modular_list)
+     else
+        modular_list = str_sub_str(modular_list,","," "+ncl_exec+" "+zp)
+        modular_list = str_sub_str(modular_list,".ncl",".ncl;")
+        system(envvar_str+" "+ncl_exec+" "+zp+modular_list) 
+     end if
+  else
+     complete_list = str_sub_str(complete_list,",",".ncl,")   ; add .ncl in to end of each script name
+     complete_list = complete_list+".ncl"                     ; add .ncl in to last script name
+     if (run_style.eq."parallel") then
+        complete_list = str_sub_str(complete_list,","," "+zp)
+        system(envvar_str+" python "+zp+"runTasks.py "+zp+complete_list)		   
+     else
+        complete_list = str_sub_str(complete_list,","," "+ncl_exec+" "+zp)
+        complete_list = str_sub_str(complete_list,".ncl",".ncl;")
+        system(envvar_str+" "+ncl_exec+" "+zp+complete_list)                 
+     end if
+  end if
 
-  ncl_exec = ncl_exec+" -Q"            
-  system("   export OUTDIR="+outdir+";   export OBS="+obs+";   export SCALE_TIMESERIES="+scale_timeseries+";   "+\
-         "export OUTPUT_DATA="+output_data+";   export VERSION="+version+";   export PNG_SCALE="+png_scale+";   "+\
-         "export OPT_CLIMO="+opt_climo+";   export CLIMO_SYEAR="+climo_syear+";   export CLIMO_EYEAR="+climo_eyear+";   "+\
-         "export COMPUTE_MODES_MON="+compute_modes_mon+";   export OUTPUT_TYPE="+output_type+";   "+\
-         "export COLORMAP="+colormap+";   export CVDP_SCRIPTS="+zp+";"+\     
-         " "+str_sub_str(ncl_exec," -Q","")+" "+zp+"namelist.ncl; "+ncl_exec+" "+zp+"sst.indices.ncl; "+ncl_exec+" "+zp+"amo.ncl;"+\         
-         " "+ncl_exec+" "+zp+"pdo.ncl; "+ncl_exec+" "+zp+"psl.modes_indices.ncl; "+ncl_exec+" "+zp+"tas.trends_timeseries.ncl;"+\
-         " "+ncl_exec+" "+zp+"psl.trends.ncl; "+ncl_exec+" "+zp+"pr.trends_timeseries.ncl; "+ncl_exec+" "+zp+"sst.mean_stddev.ncl;"+\ 
-         " "+ncl_exec+" "+zp+"snd.trends.ncl; "+ncl_exec+" "+zp+"psl.mean_stddev.ncl; "+ncl_exec+" "+zp+"tas.mean_stddev.ncl;"+\
-         " "+ncl_exec+" "+zp+"pr.mean_stddev.ncl; "+ncl_exec+" "+zp+"sst.trends_timeseries.ncl; "+ncl_exec+" "+zp+"amoc.ncl")                
-         
+  if (output_data.eq."True") then   
+     system(envvar_str + " "+ncl_exec+" "+zp+"ncfiles.append.ncl")
+  end if 
+      
   if (output_type.eq."png") then
      ofiles = systemfunc("ls "+outdir+"*.png")
      do gg = 0,dimsizes(ofiles)-1
@@ -131,7 +173,7 @@
         filesize =  tofloat(str_get_field(ofilesT(gg),5," "))
         if (filesize.lt.10000) then
            print("Removing: "+ofilesT(gg))
-           system("rm -f "+ofilesS(gg))
+           system("rm "+ofilesS(gg))
         end if
      end do
      delete([/filesize,ofilesS,ofilesT/])
@@ -152,16 +194,24 @@
   if (obs.eq."True") then
      system("cp namelist_obs "+outdir)
   end if
-  if (isfilepresent2(outdir+"metrics_orig.txt")) then
-     system("   export OUTDIR="+outdir+"; "+ncl_exec+" "+zp+"metrics.ncl")
+
+  met_files = systemfunc("ls "+outdir+"metrics.*.txt  2> /dev/null")
+  if (dimsizes(met_files).eq.9) then   ; all 9 metrics text files are present
+; A_laue_ax+
+;     system("   export OUTDIR="+outdir+"; "+ncl_exec+" "+zp+"metrics.ncl")
+     system("   export OUTDIR="+outdir+"; export CVDP_SCRIPTS="+zp+"; "+ncl_exec+" "+zp+"metrics.ncl")
+; A_laue_ax-
   end if
+
+  quote = str_get_dq()
   system("   export OUTDIR="+outdir+";   export VERSION="+version+";   export OUTPUT_DATA="+output_data+";   "+\
          "export OPT_CLIMO="+opt_climo+";   export CLIMO_SYEAR="+climo_syear+";   export CLIMO_EYEAR="+climo_eyear+";   "+\
-         "export WEBTITLE="+webpage_title+";   export OBS="+obs+";   export CVDP_SCRIPTS="+zp+"; "+ncl_exec+" "+zp+"webpage.ncl")
+         "export OBS="+obs+";   export CVDP_SCRIPTS="+zp+"; "+ncl_exec+" 'webtitle="+quote+webpage_title+quote+"' "+zp+"webpage.ncl")
+  delete(quote)
 ;-------------------------------
   if (tar_output.eq."True") then
      if (isfilepresent2(outdir+"cvdp.tar")) then
-        system("rm -f "+outdir+"cvdp.tar")
+        system("rm "+outdir+"cvdp.tar")
      end if
 ;     print("cd "+outdir+"; tar -cf cvdp.tar *")
      system("cd "+outdir+"; tar -cf cvdp.tar *")
@@ -169,12 +219,14 @@
   end if
 ;-------------------------------
 ; Cleanup
-  do gg = 0,dimsizes(variables)-1
-     if (isfilepresent2("obs_"+variables(gg))) then
-        system("rm -f obs_"+variables(gg))
+  do gg = 0,dimsizes(outfiles)-1
+     if (isfilepresent2("obs_"+outfiles(gg))) then
+        system("rm obs_"+outfiles(gg))
      end if 
   end do
-  delete([/ofiles,variables,outdir,obs,scale_timeseries,output_data,opt_climo,climo_syear,climo_eyear,png_scale,webpage_title,compute_modes_mon/])
-  
-  print("Finished: Climate Variability Diagnostics Package")
+
+  delete([/ofiles,outfiles,outdir,obs,scale_timeseries,output_data,opt_climo,climo_syear,climo_eyear,\
+           png_scale,webpage_title,compute_modes_mon,met_files/])
+
+  print("Finished: Climate Variability Diagnostics Package ("+systemfunc("date")+")")
   

@@ -69,6 +69,26 @@ begin
             leave_msg(scriptname, funcname, 6)
             return(out)
         end if
+        if (units_to.eq."ppmv") then
+            out = out * 1.e-6
+            out@units = units_to
+            leave_msg(scriptname, funcname, 6)
+            return(out)
+        end if
+        if (units_to.eq."ppm9") then
+            out = out * 1.e-9
+            out@units = units_to
+            leave_msg(scriptname, funcname, 6)
+            return(out)
+        end if
+    end if
+
+    if (units_from.eq."1e-6") then
+        if (any(units_to.eq.(/"ppm", "ppmv", "umol/mol"/))) then
+            out@units = units_to
+            leave_msg(scriptname, funcname, 6)
+            return(out)
+        end if
     end if
 
     if (units_from.eq."1e-9") then
@@ -78,7 +98,7 @@ begin
             leave_msg(scriptname, funcname, 6)
             return(out)
         end if
-        if (any(units_to.eq.(/"ppb", "ppbv", "nmol/mol"/))) then
+        if (any(units_to.eq.(/"ppb", "ppbv", "ppmb", "nmol/mol"/))) then
             out@units = units_to
             leave_msg(scriptname, funcname, 6)
             return(out)

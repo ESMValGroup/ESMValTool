@@ -28,7 +28,7 @@ if (! -d $outpath) then
 endif
 
 set infile=$inpath/TALK_TCO2_pCO2_GLOB_Grid_Dat.nc
-set outfile=$outpath/talk_monthly_ref_takahashi14_reg_2005-2005.nc
+set outfile=$outpath/OBS_takahashi14_ocean_1_TO2Ms_talk_200501-200512.nc
 
 if (-e $infile) then
     echo 'input file = '$infile

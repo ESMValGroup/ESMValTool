@@ -1,11 +1,11 @@
-;;#############################################################################
+;;###############################################################################
 ;; REFORMAT SCRIPT FOR THE HadCRUT4 TEMPERATURE (tas) OBSERVATIONAL DATA
 ;;
 ;; Note: In contrast to the HadCRUT3 reformat script which produces temperature
 ;;       anomalies (relative to the 1961-90 climatology), this script calculates
 ;;       absolute tas by adding the climatology ("absolute.nc") to the anomalies
 ;;       ("HadCRUT.4.4.0.0.median.nc").
-;;#############################################################################
+;;###############################################################################
 ;;
 ;; Tier
 ;;    Tier 2: other freely-available dataset.
@@ -35,7 +35,7 @@
 ;; Modification history
 ;;    20160203-A_laue_ax: written.
 ;;
-;;#############################################################################
+;;###############################################################################
 
 begin
 
@@ -174,7 +174,8 @@ begin
     gAtt@conventions   = "CF/CMOR"
 
     ;; Outfile
-    fout = OUTDIR + "OBS_HadCRUT4_ground_1_T2Ms_tas.nc"
+    fout = OUTDIR + "OBS_HadCRUT4_ground_1_T2Ms_tas_" + \
+        YEAR1 + "01-" + YEAR2 + "12.nc"
 
     ;; Write variable
     write_nc(fout, VARS(0), output, gAtt)

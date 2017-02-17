@@ -39,13 +39,6 @@ diag_script_info@t_test = False
 ;; Confidence level for the t-test (for zonal and lat-lon)
 diag_script_info@conf_level = 0.95
 
-;; Reference model, as specified in annotations
-;; If the attribute is a 2D array, the first model specified the
-;; reference, the second model the alternative
-if(isStrSubset(variables(0), "tro3_")) then
-    diag_script_info@ref_model = (/"Tilmes"/)
-end if
-
 ;; Used by: perfmetrics_grading.ncl
 
 ;; Metric ("RMSD", "BIAS")

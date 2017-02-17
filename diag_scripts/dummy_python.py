@@ -15,17 +15,17 @@
 *********************************************************************
 """
 
-from esmval_lib import ESMValProject
+#from esmval_lib import ESMValProject
 
 def main(project_info):
     print('Hello, here is the dummy routine from the direct python interface!')
 
     # create instance of a wrapper that allows easy access to data
-    E = ESMValProject(project_info)
+    #E = ESMValProject(project_info)
 
     # get filenames of preprocessed climatological mean files
-    model_filenames = E.get_clim_model_filenames(variable='ta', monthly=True)
-    print model_filenames
+    #model_filenames = E.get_clim_model_filenames(variable='ta', monthly=True)
+    #print model_filenames
 
     print('Do something here!')
     print('ENDED SUCESSFULLY!!')

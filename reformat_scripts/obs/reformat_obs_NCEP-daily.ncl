@@ -262,7 +262,7 @@ begin
 
             ;; Outfile
             fout = OUTDIR + "OBS_" + OBSNAME + "_reanaly_1_" + FIELD + \
-                "_" + VARS(vID) + "_" + yr + ".nc"
+                "_" + VARS(vID) + "_" + yr + "01-" + yr + "12.nc"
 
             ;; Write variable
             write_nc(fout, VARS(vID), output, gAtt)
@@ -271,6 +271,6 @@ begin
         end do  ; yr-loop
     end do ; varriable-loop
 
-    enter_msg(diag_script, "", 1)
+    leave_msg(diag_script, "", 1)
 
 end

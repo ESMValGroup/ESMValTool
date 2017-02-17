@@ -41,22 +41,6 @@ diag_script_info@t_test = False
 ;; Confidence level for the t-test
 diag_script_info@conf_level = 0.95
 
-;; Reference model, as specified in annotations
-;; If the attribute is a 2D array, the first model specified the
-;; reference, the second model the alternative
-if (any(variables(0).eq.(/"tas", "pr"/))) then
-    diag_script_info@ref_model = (/"CRU"/)
-else if (variables(0).eq."GPP") then
-    diag_script_info@ref_model = (/"MTE"/)
-else if (variables(0).eq."LAI") then
-    diag_script_info@ref_model = (/"LAI3g"/)
-else if (variables(0).eq."NBP") then
-    diag_script_info@ref_model = (/"JMA-TRANSCOM"/)
-end if
-end if
-end if
-end if
-
 ;; Used by: perfmetrics_grading.ncl
 
 ;; MultiModelMean

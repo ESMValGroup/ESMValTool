@@ -25,6 +25,7 @@
 ;; Caveats
 ;;
 ;; Modification history
+;;    20160913-A_laue_ax: added variable tcc
 ;;    20150820-A_laue_ax: added variables lwp, iwp, sftlf
 ;;    20150327-A_righ_ma: merged with ERA-Interim-surf.ncl and 
 ;;                        ERA-Interim-surf_daily.ncl.
@@ -57,14 +58,14 @@ begin
                        "hus",         "ua",           "va",\
                        "tas",         "ps",          "tos",\
                       "tauu",       "tauv",        "clwvi",\
-                     "clivi",      "sftlf"/)
+                     "clivi",      "sftlf",          "clt"/)
      
     ;; Name in the raw data
     NAME = (/          "msl",          "t",            "z",\
                          "q",          "u",            "v",\
                        "t2m",         "sp",          "sst",\
                       "iews",       "inss",      "p56.162",\
-                   "p57.162",        "lsm"/)
+                   "p57.162",        "lsm",          "tcc"/)
           
     ;; Units in the input  data and corresponding conversion factor
     ;; to CMOR standard units
@@ -72,20 +73,20 @@ begin
                  "kg kg**-1",    "m s**-1",      "m s**-1",\
                          "K",         "Pa",            "K",\
                    "N m**-2",    "N m**-2",     "kg m**-2",\
-                  "kg m**-2",    "(0 - 1)"/)  
+                  "kg m**-2",    "(0 - 1)",      "(0 - 1)"/)  
     
     CONVERSION = (/       1.,           1.,     1./9.80665,\
                           1.,           1.,             1.,\
                           1.,           1.,             1.,\
                           1.,           1.,             1.,\
-                          1.,         100./)
+                          1.,         100.,           100./)
      
     ;; Fields
     FLDARR = (/       "T2Ds",        "T3M",          "T3M",\
                        "T3M",        "T3M",          "T3M",\
                       "T2Ms",       "T2Ms",        "TO2Ms",\
                      "TO2Ms",      "TO2Ms",         "T2Ms",\
-                      "T2Ms",       "T2Ms"/)
+                      "T2Ms",       "T2Ms",         "T2Ms"/)
 
     ;; Initialize global variable
     FIELD = ""
@@ -415,7 +416,7 @@ begin
 
         ;; Outfile
         fout = OUTDIR + "OBS_" + OBSNAME + "_reanaly_1_" + FIELD + \
-            "_" + VARS(vID) + ".nc"
+            "_" + VARS(vID) + "_" + YEAR1 + "01-" + YEAR2 + "12.nc"
 
         ;; Write variable
         write_nc(fout, VARS(vID), output, gAtt)

@@ -1,6 +1,6 @@
 ; Calculates 2m air temperature global trends, running global trends and timeseries
 ;
-; Variables used: TREFHT (tas)
+; Variables used: tas
 ;
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
@@ -45,21 +45,21 @@ begin
      wks_type@wkWidth = 1500*PNG_SCALE
      wks_type@wkHeight = 1500*PNG_SCALE
   end if
-  wks_trends_djf = gsn_open_wks(wks_type,getenv("OUTDIR")+"air2m.trends.djf")
-  wks_trends_mam = gsn_open_wks(wks_type,getenv("OUTDIR")+"air2m.trends.mam")
-  wks_trends_jja = gsn_open_wks(wks_type,getenv("OUTDIR")+"air2m.trends.jja")
-  wks_trends_son = gsn_open_wks(wks_type,getenv("OUTDIR")+"air2m.trends.son")
-  wks_trends_ann = gsn_open_wks(wks_type,getenv("OUTDIR")+"air2m.trends.ann")
-  wks_trends_mon = gsn_open_wks(wks_type,getenv("OUTDIR")+"air2m.trends.mon")
+  wks_trends_djf = gsn_open_wks(wks_type,getenv("OUTDIR")+"tas.trends.djf")
+  wks_trends_mam = gsn_open_wks(wks_type,getenv("OUTDIR")+"tas.trends.mam")
+  wks_trends_jja = gsn_open_wks(wks_type,getenv("OUTDIR")+"tas.trends.jja")
+  wks_trends_son = gsn_open_wks(wks_type,getenv("OUTDIR")+"tas.trends.son")
+  wks_trends_ann = gsn_open_wks(wks_type,getenv("OUTDIR")+"tas.trends.ann")
+  wks_trends_mon = gsn_open_wks(wks_type,getenv("OUTDIR")+"tas.trends.mon")
     
-  wks_aa_djf = gsn_open_wks(wks_type,getenv("OUTDIR")+"air2m.timeseries.djf")
-  wks_aa_mam = gsn_open_wks(wks_type,getenv("OUTDIR")+"air2m.timeseries.mam")
-  wks_aa_jja = gsn_open_wks(wks_type,getenv("OUTDIR")+"air2m.timeseries.jja")
-  wks_aa_son = gsn_open_wks(wks_type,getenv("OUTDIR")+"air2m.timeseries.son")
-  wks_aa_ann = gsn_open_wks(wks_type,getenv("OUTDIR")+"air2m.timeseries.ann")
-  wks_aa_mon = gsn_open_wks(wks_type,getenv("OUTDIR")+"air2m.timeseries.mon")
+  wks_aa_djf = gsn_open_wks(wks_type,getenv("OUTDIR")+"tas.timeseries.djf")
+  wks_aa_mam = gsn_open_wks(wks_type,getenv("OUTDIR")+"tas.timeseries.mam")
+  wks_aa_jja = gsn_open_wks(wks_type,getenv("OUTDIR")+"tas.timeseries.jja")
+  wks_aa_son = gsn_open_wks(wks_type,getenv("OUTDIR")+"tas.timeseries.son")
+  wks_aa_ann = gsn_open_wks(wks_type,getenv("OUTDIR")+"tas.timeseries.ann")
+  wks_aa_mon = gsn_open_wks(wks_type,getenv("OUTDIR")+"tas.timeseries.mon")
   
-  wks_rt_mon = gsn_open_wks(wks_type,getenv("OUTDIR")+"air2m.runtrend.mon")
+  wks_rt_mon = gsn_open_wks(wks_type,getenv("OUTDIR")+"tas.runtrend.mon")
 
   if (COLORMAP.eq.0) then
      gsn_define_colormap(wks_trends_djf,"ncl_default")   
@@ -104,11 +104,7 @@ begin
   xy_ann = new(nsim,"graphic")  
   xy_mon = new(nsim,"graphic")  
   
-  xy_rt_mon_8 = new(nsim,"graphic")  
-  xy_rt_mon_10 = new(nsim,"graphic")  
-  xy_rt_mon_12 = new(nsim,"graphic")  
-  xy_rt_mon_14 = new(nsim,"graphic")  
-  xy_rt_mon_16 = new(nsim,"graphic")  
+  xy_rt_mon = new((/5,nsim/),"graphic")  
   
   if (isfilepresent2("obs_trefht")) then
      xy_obs_djf = new(nsim,"graphic")  
@@ -200,9 +196,30 @@ begin
         tas_aa_ann_obs  = tas_aa_ann
      end if
      
+     dimT = dimsizes(tas_aa_mon)      ; calculate running trends from the monthly data
+     tas_rt_mon = new((/5,dimT/),typeof(tas_aa_mon))
+     tas_rt_mon!1 = "time"
+     tas_rt_mon&time = tas_aa_mon&time    
+     copy_VarAtts(tas_aa_mon,tas_rt_mon)
+     tas_rt_mon@long_name =  tas_rt_mon@long_name+" global average running trend"
+     rt_nyr = (/8,10,12,14,16/)
+     do ff = 0,dimsizes(rt_nyr)-1
+        incr = rt_nyr(ff)*12
+        do gg = 0,dimT-incr-1
+           tttt = dtrend_msg(ispan(0,incr-1,1),tas_aa_mon(gg:gg+incr-1),False,True)
+           tas_rt_mon(ff,gg) = (/ tttt@slope*incr /)
+           delete(tttt) 
+        end do
+     end do
+     delete([/dimT,incr/])  
+
      if (OUTPUT_DATA.eq."True") then
         modname = str_sub_str(names(ee)," ","_")
-        fn = getenv("OUTDIR")+modname+".cvdp_data."+syear(ee)+"-"+eyear(ee)+".nc"
+        bc = (/"/","'","(",")"/)
+        do gg = 0,dimsizes(bc)-1
+           modname = str_sub_str(modname,bc(gg),"_")
+        end do
+        fn = getenv("OUTDIR")+modname+".cvdp_data.tas.trends_timeseries."+syear(ee)+"-"+eyear(ee)+".nc"
         if (.not.isfilepresent2(fn)) then
            z = addfile(fn,"c")
            z@source = "NCAR Climate Analysis Section's Climate Variability Diagnostics Package v"+getenv("VERSION")
@@ -212,7 +229,8 @@ begin
            else
               z@climatology = CLIMO_SYEAR+"-"+CLIMO_EYEAR+" climatology removed prior to all calculations (other than means)"
            end if
-        else
+           z@Conventions = "CF-1.6" 
+       else
            z = addfile(fn,"w")
         end if
         tas_aa_seas2 = tas_aa_seas
@@ -225,36 +243,26 @@ begin
         tas_aa_ann2&TIME = ispan(syear(ee),eyear(ee),1)
         tas_aa_ann2&TIME@units = "YYYY"
         tas_aa_ann2&TIME@long_name = "time"
-        z->tas_global_avg_mon = tas_aa_mon
-        z->tas_global_avg_djf = tas_aa_seas2(0,:)
-        z->tas_global_avg_mam = tas_aa_seas2(1,:)
-        z->tas_global_avg_jja = tas_aa_seas2(2,:)
-        z->tas_global_avg_son = tas_aa_seas2(3,:)
-        z->tas_global_avg_ann = tas_aa_ann2
-        z->tas_trends_djf     = tas_trends_seas(0,:,:)
-        z->tas_trends_mam     = tas_trends_seas(1,:,:)
-        z->tas_trends_jja     = tas_trends_seas(2,:,:)
-        z->tas_trends_son     = tas_trends_seas(3,:,:)
-        z->tas_trends_ann     = tas_trends_ann
-        z->tas_trends_mon     = tas_trends_mon
+        z->tas_global_avg_mon = set_varAtts(tas_aa_mon,"tas global area-average (monthly)","C","")
+        z->tas_global_avg_djf = set_varAtts(tas_aa_seas2(0,:),"tas global area-average (DJF)","C","")
+        z->tas_global_avg_mam = set_varAtts(tas_aa_seas2(1,:),"tas global area-average (MAM)","C","")
+        z->tas_global_avg_jja = set_varAtts(tas_aa_seas2(2,:),"tas global area-average (JJA)","C","")
+        z->tas_global_avg_son = set_varAtts(tas_aa_seas2(3,:),"tas global area-average (SON)","C","")
+        z->tas_global_avg_ann = set_varAtts(tas_aa_ann2,"tas global area-average (annual)","C","")
+        z->$("tas_global_avg_runtrend_"+rt_nyr(0)+"yr")$ = set_varAtts(tas_rt_mon(0,:),"tas global area-average "+rt_nyr(0)+"yr running trend","","") 
+        z->$("tas_global_avg_runtrend_"+rt_nyr(1)+"yr")$ = set_varAtts(tas_rt_mon(1,:),"tas global area-average "+rt_nyr(1)+"yr running trend","","") 
+        z->$("tas_global_avg_runtrend_"+rt_nyr(2)+"yr")$ = set_varAtts(tas_rt_mon(2,:),"tas global area-average "+rt_nyr(2)+"yr running trend","","") 
+        z->$("tas_global_avg_runtrend_"+rt_nyr(3)+"yr")$ = set_varAtts(tas_rt_mon(3,:),"tas global area-average "+rt_nyr(3)+"yr running trend","","") 
+        z->$("tas_global_avg_runtrend_"+rt_nyr(4)+"yr")$ = set_varAtts(tas_rt_mon(4,:),"tas global area-average "+rt_nyr(4)+"yr running trend","","") 
+        z->tas_trends_djf     = set_varAtts(tas_trends_seas(0,:,:),"tas linear trends (DJF)","","")
+        z->tas_trends_mam     = set_varAtts(tas_trends_seas(1,:,:),"tas linear trends (MAM)","","")
+        z->tas_trends_jja     = set_varAtts(tas_trends_seas(2,:,:),"tas linear trends (JJA)","","")
+        z->tas_trends_son     = set_varAtts(tas_trends_seas(3,:,:),"tas linear trends (SON)","","")
+        z->tas_trends_ann     = set_varAtts(tas_trends_ann,"tas linear trends (annual)","","")
+        z->tas_trends_mon     = set_varAtts(tas_trends_mon,"tas linear trends (monthly)","","")
         delete(z)
         delete([/tas_aa_seas2,tas_aa_ann2/])
-     end if
-     
-     dimT = dimsizes(tas_aa_mon)      ; calculate running trends from the monthly data
-     tas_rt_mon = new((/5,dimT/),typeof(tas_aa_mon))
-     tas_rt_mon!1 = "time"
-     tas_rt_mon&time = tas_aa_mon&time     
-     rt_nyr = (/8,10,12,14,16/)
-     do ff = 0,dimsizes(rt_nyr)-1
-        incr = rt_nyr(ff)*12
-        do gg = 0,dimT-incr-1
-           tttt = dtrend_msg(ispan(0,incr-1,1),tas_aa_mon(gg:gg+incr-1),False,True)
-           tas_rt_mon(ff,gg) = (/ tttt@slope*incr /)
-           delete(tttt) 
-        end do
-     end do
-     delete(dimT)      
+     end if    
 ;========================================================================
      res = True
      res@mpProjection = "WinkelTripel"
@@ -272,7 +280,6 @@ begin
      res@mpFillOn = False
      res@mpCenterLonF = 210.
      res@mpOutlineOn = True  
-     res@mpDataSetName = "Earth..4"
      res@gsnDraw      = False
      res@gsnFrame     = False
   
@@ -311,9 +318,6 @@ begin
 
      xyres = True
      xyres@gsnDraw = False
-     xyres@gsnFrame = False
-     
-
      xyres@gsnFrame = False
      xyres@gsnYRefLine = 0.0
      xyres@gsnYRefLineColor = "gray42"
@@ -435,12 +439,13 @@ begin
         delete(xyres@trYMaxF)
      end if
      
-     xyres@gsnRightString = ""     ; this section could be made to be more generic, in case rt_nyr gets changed. 1 graphical array would be needed..
-     xy_rt_mon_8(ee)  = gsn_csm_xy(wks_rt_mon,fspan(syear(ee),eyear(ee)+.91667,dimsizes(tas_aa_mon&time)),tas_rt_mon(0,:),xyres)
-     xy_rt_mon_10(ee) = gsn_csm_xy(wks_rt_mon,fspan(syear(ee),eyear(ee)+.91667,dimsizes(tas_aa_mon&time)),tas_rt_mon(1,:),xyres)
-     xy_rt_mon_12(ee) = gsn_csm_xy(wks_rt_mon,fspan(syear(ee),eyear(ee)+.91667,dimsizes(tas_aa_mon&time)),tas_rt_mon(2,:),xyres)
-     xy_rt_mon_14(ee) = gsn_csm_xy(wks_rt_mon,fspan(syear(ee),eyear(ee)+.91667,dimsizes(tas_aa_mon&time)),tas_rt_mon(3,:),xyres)
-     xy_rt_mon_16(ee) = gsn_csm_xy(wks_rt_mon,fspan(syear(ee),eyear(ee)+.91667,dimsizes(tas_aa_mon&time)),tas_rt_mon(4,:),xyres)
+     xyres@gsnRightString = ""     
+     do ff = 0,4
+        if (.not.all(ismissing(tas_rt_mon(ff,:))))     
+           xyres@gsnRightString =  tas_rt_mon@units    
+           xy_rt_mon(ff,ee)  = gsn_csm_xy(wks_rt_mon,fspan(syear(ee),eyear(ee)+.91667,dimsizes(tas_aa_mon&time)),tas_rt_mon(ff,:),xyres)
+        end if
+     end do   
          
      delete([/tas_trends_seas,tas_trends_ann,tas_trends_mon/])  
      delete([/tas_aa_seas,tas_aa_mon,tas_aa_ann,xyres,xyres2,res,tttt,tas_rt_mon/])
@@ -451,7 +456,6 @@ begin
   
   panres = True
   panres@gsnMaximize = True  
-  panres@gsnPanelBottom = 0.05
   panres@gsnPaperOrientation = "portrait"
   panres@gsnPanelLabelBar = True
   panres@gsnPanelYWhiteSpacePercent = 3.0
@@ -459,37 +463,44 @@ begin
   panres@pmLabelBarWidthF = 0.65
   panres@lbTitleOn = False
   panres@lbBoxLineColor = "gray70"
-  if (nsim.le.5) then
-     panres@txFontHeightF = 0.024
+  if (nsim.le.4) then
+     if (nsim.eq.1) then
+        panres@txFontHeightF = 0.022
+        panres@gsnPanelBottom = 0.50
+     else
+        panres@txFontHeightF = 0.0145
+        panres@gsnPanelBottom = 0.50
+     end if
   else
      panres@txFontHeightF = 0.016
+     panres@gsnPanelBottom = 0.05
   end if
   panres@lbLabelStride = 1
   
   panres@txString = "TAS Trends (DJF)"
   ncol = floattointeger(sqrt(nsim))
   nrow = (nsim/ncol)+mod(nsim,ncol)  
-  gsn_panel(wks_trends_djf,map_djf,(/nrow,ncol/),panres)
+  gsn_panel2(wks_trends_djf,map_djf,(/nrow,ncol/),panres)
   delete(wks_trends_djf)
   
   panres@txString = "TAS Trends (MAM)"
-  gsn_panel(wks_trends_mam,map_mam,(/nrow,ncol/),panres)
+  gsn_panel2(wks_trends_mam,map_mam,(/nrow,ncol/),panres)
   delete(wks_trends_mam)
   
   panres@txString = "TAS Trends (JJA)"
-  gsn_panel(wks_trends_jja,map_jja,(/nrow,ncol/),panres)
+  gsn_panel2(wks_trends_jja,map_jja,(/nrow,ncol/),panres)
   delete(wks_trends_jja)
   
   panres@txString = "TAS Trends (SON)"
-  gsn_panel(wks_trends_son,map_son,(/nrow,ncol/),panres)
+  gsn_panel2(wks_trends_son,map_son,(/nrow,ncol/),panres)
   delete(wks_trends_son)
   
   panres@txString = "TAS Trends (Annual)"
-  gsn_panel(wks_trends_ann,map_ann,(/nrow,ncol/),panres)
+  gsn_panel2(wks_trends_ann,map_ann,(/nrow,ncol/),panres)
   delete(wks_trends_ann)
   
   panres@txString = "TAS Trends (Monthly)"
-  gsn_panel(wks_trends_mon,map_mon,(/nrow,ncol/),panres)
+  gsn_panel2(wks_trends_mon,map_mon,(/nrow,ncol/),panres)
   delete(wks_trends_mon)
   delete(panres)
   
@@ -513,65 +524,68 @@ begin
      lp = (/nrow,ncol/)   ;(/nsim/2+1,nsim/8+1/)  
   end if
   panres2@txString = "TAS Global Average (DJF)"
-  gsn_panel(wks_aa_djf,xy_djf,lp,panres2)  
+  gsn_panel2(wks_aa_djf,xy_djf,lp,panres2)  
   delete(wks_aa_djf)
   
   panres2@txString = "TAS Global Average (MAM)"
-  gsn_panel(wks_aa_mam,xy_mam,lp,panres2)  
+  gsn_panel2(wks_aa_mam,xy_mam,lp,panres2)  
   delete(wks_aa_mam)
   
   panres2@txString = "TAS Global Average (JJA)"
-  gsn_panel(wks_aa_jja,xy_jja,lp,panres2)  
+  gsn_panel2(wks_aa_jja,xy_jja,lp,panres2)  
   delete(wks_aa_jja)
   
   panres2@txString = "TAS Global Average (SON)"
-  gsn_panel(wks_aa_son,xy_son,lp,panres2)  
+  gsn_panel2(wks_aa_son,xy_son,lp,panres2)  
   delete(wks_aa_son)
   
   panres2@txString = "TAS Global Average (Annual)"
-  gsn_panel(wks_aa_ann,xy_ann,lp,panres2)  
+  gsn_panel2(wks_aa_ann,xy_ann,lp,panres2)  
   delete(wks_aa_ann)
   
   panres2@txString = "TAS Global Average (Monthly)"
-  gsn_panel(wks_aa_mon,xy_mon,lp,panres2)  
+  gsn_panel2(wks_aa_mon,xy_mon,lp,panres2)  
   delete(wks_aa_mon)
   
   panres2@txString = "TAS Running 8yr Trend (Monthly)"
-  gsn_panel(wks_rt_mon,xy_rt_mon_8,lp,panres2)  
+  gsn_panel2(wks_rt_mon,xy_rt_mon(0,:),lp,panres2)  
   
   panres2@txString = "TAS Running 10yr Trend (Monthly)"
-  gsn_panel(wks_rt_mon,xy_rt_mon_10,lp,panres2)  
+  gsn_panel2(wks_rt_mon,xy_rt_mon(1,:),lp,panres2)  
   
   panres2@txString = "TAS Running 12yr Trend (Monthly)"
-  gsn_panel(wks_rt_mon,xy_rt_mon_12,lp,panres2)  
+  gsn_panel2(wks_rt_mon,xy_rt_mon(2,:),lp,panres2)  
   
   panres2@txString = "TAS Running 14yr Trend (Monthly)"
-  gsn_panel(wks_rt_mon,xy_rt_mon_14,lp,panres2)  
+  gsn_panel2(wks_rt_mon,xy_rt_mon(3,:),lp,panres2)  
   
   panres2@txString = "TAS Running 16yr Trend (Monthly)"
-  gsn_panel(wks_rt_mon,xy_rt_mon_16,lp,panres2)  
+  gsn_panel2(wks_rt_mon,xy_rt_mon(4,:),lp,panres2)  
   delete(wks_rt_mon)
   
   delete([/nrow,ncol,lp,map_djf,map_mam,map_jja,map_son,map_ann,map_mon,xy_djf,xy_mam,xy_jja,xy_son,xy_ann,xy_mon/])
-  delete([/xy_rt_mon_8,xy_rt_mon_10,xy_rt_mon_12,xy_rt_mon_14,xy_rt_mon_16/])
+  delete([/xy_rt_mon/])
   delete(panres2)
   if (isfilepresent2("obs_trefht")) then
      delete([/xy_obs_djf,xy_obs_mam,xy_obs_jja,xy_obs_son,xy_obs_ann,xy_obs_mon/])
   end if
   OUTDIR = getenv("OUTDIR")
   if (wks_type.eq."png") then  
-     system("mv "+OUTDIR+"air2m.runtrend.mon.000001.png "+OUTDIR+"air2m."+rt_nyr(0)+"yr_runtrend.mon.png")
-     system("mv "+OUTDIR+"air2m.runtrend.mon.000002.png "+OUTDIR+"air2m."+rt_nyr(1)+"yr_runtrend.mon.png")
-     system("mv "+OUTDIR+"air2m.runtrend.mon.000003.png "+OUTDIR+"air2m."+rt_nyr(2)+"yr_runtrend.mon.png")
-     system("mv "+OUTDIR+"air2m.runtrend.mon.000004.png "+OUTDIR+"air2m."+rt_nyr(3)+"yr_runtrend.mon.png")
-     system("mv "+OUTDIR+"air2m.runtrend.mon.000005.png "+OUTDIR+"air2m."+rt_nyr(4)+"yr_runtrend.mon.png")
+     do gg = 1,5
+        if (isfilepresent2(OUTDIR+"tas.runtrend.mon.00000"+gg+".png")) then
+           system("mv "+OUTDIR+"tas.runtrend.mon.00000"+gg+".png "+OUTDIR+"tas."+rt_nyr(gg-1)+"yr_runtrend.mon.png")
+        end if
+     end do
   else
-     system("psplit "+OUTDIR+"air2m.runtrend.mon.ps "+OUTDIR+"pict")
-     system("mv "+OUTDIR+"pict0001.ps "+OUTDIR+"air2m."+rt_nyr(0)+"yr_runtrend.mon.ps")
-     system("mv "+OUTDIR+"pict0002.ps "+OUTDIR+"air2m."+rt_nyr(1)+"yr_runtrend.mon.ps")
-     system("mv "+OUTDIR+"pict0003.ps "+OUTDIR+"air2m."+rt_nyr(2)+"yr_runtrend.mon.ps")
-     system("mv "+OUTDIR+"pict0004.ps "+OUTDIR+"air2m."+rt_nyr(3)+"yr_runtrend.mon.ps")
-     system("mv "+OUTDIR+"pict0005.ps "+OUTDIR+"air2m."+rt_nyr(4)+"yr_runtrend.mon.ps")
+     if (isfilepresent2(OUTDIR+"tas.runtrend.mon.ps")) then
+        system("psplit "+OUTDIR+"tas.runtrend.mon.ps "+OUTDIR+"tas_rt")
+        do gg = 1,5
+           if (isfilepresent2(OUTDIR+"tas_rt000"+gg+".ps")) then
+              system("mv "+OUTDIR+"tas_rt000"+gg+".ps "+OUTDIR+"tas."+rt_nyr(gg-1)+"yr_runtrend.mon.ps")
+           end if
+        end do
+        system("rm "+OUTDIR+"tas.runtrend.mon.ps")
+     end if
   end if
   delete(OUTDIR)
   print("Finished: tas.trends_timeseries.ncl")

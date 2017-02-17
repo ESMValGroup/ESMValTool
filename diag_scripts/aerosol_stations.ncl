@@ -23,6 +23,7 @@
 ;;    legend_outside: save legend in a separate file.
 ;;
 ;; Optional diag_script_info attributes (diagnostic specific)
+;;    projection: map projection (default = cylindrical equidistant)
 ;;    styleset: project-specific styleset.
 ;;
 ;; Required variable_info attributes (variable specific)
@@ -34,6 +35,8 @@
 ;;    standard). Conversion to microg/m3 is performed within the script.
 ;;
 ;; Modification history
+;;    20161220_A_laue_ax: added option to set map projection
+;;                        (diag_script_info@projection)
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;;                        of the code
 ;;    20150325-A_laue_ax: modified reference tags used for acknowledgements
@@ -112,7 +115,7 @@ begin
     ;; Check for data availability
     if (all(ismissing(systemfunc("ls " + diag_script_info@datapath + \
                                  "/OBS_" + diag_script_info@network + \
-                                 "_ground_*_T0M_" + var0 + ".nc")))) then
+                                 "_ground_*_T0M_" + var0 + "_*.nc")))) then
         info_output(diag_script_info@network + \
                     " observational data for " + var0 + \
                     " not available, skipping", verbosity, 1)
@@ -330,7 +333,11 @@ begin
         + min(years) + "-" + max(years) + "_" + var0
     plot_file = output_dir + plot_file
     wks = gsn_open_wks(file_type, plot_file)
-    gsn_define_colormap(wks, variable_info@colortable_abs)
+    if (isatt(variable_info, "colortable_abs")) then
+        gsn_define_colormap(wks, variable_info@colortable_abs)
+    else
+        gsn_define_colormap(wks, "WhiteBlueGreenYellowRed")
+    end if
 
     do mID = 0, dimsizes(models@name) - 1
 
@@ -391,6 +398,11 @@ begin
         model@res_gsnRightString = t1 + "-" + t2
         model@res_tiMainString = var0 + " (" + annots(mID) + " - " + \
             diag_script_info@network + ")"
+
+        if (isatt(diag_script_info, "projection")) then
+            model@projection = diag_script_info@projection
+        end if
+
         plot = contour_map_ce(wks, model, var0)
 
         ;; Overlay observations as filled markers

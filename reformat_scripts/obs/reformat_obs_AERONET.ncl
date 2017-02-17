@@ -140,7 +140,7 @@ begin
 
         ;; Calculate alternative aot(550) from aot(440) and Angstrom exponent
         aot550_alt = aot440
-        aot550_alt = aot440 * (550/440.)^(-1. * angstr)
+        aot550_alt = aot440 * (550/440.) ^ (-1. * angstr)
 
         ;; Choose the most complete series
         if (num(ismissing(aot550)) .gt. num(ismissing(aot550_alt))) then
@@ -195,7 +195,7 @@ begin
             ;; Outfile
             fout = OUTDIR + "OBS_" + OBSNAME + "_ground_" + \
                 str_sub_str(st_name, "_", "-") + "_" + FIELD + \
-                "_" + VAR + ".nc"
+                "_" + VAR + "_" + YEAR1 + "01-" + YEAR2 + "12.nc"
 
             ;; Write variable
             write_nc(fout, VAR, output, gAtt)

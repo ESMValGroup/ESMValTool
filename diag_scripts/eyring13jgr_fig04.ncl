@@ -29,6 +29,7 @@
 ;#                                                                            #
 ;# Optional diag_script_info attributes:                                      #
 ;#     mpProjection: map projection                                           #
+;#     subtract_global_mean: subtract global mean before plotting             #
 ;#                                                                            #
 ;# Required variable_info attributes (variable specific):                     #
 ;#     variable_info@acp_cnlvl                                                #
@@ -37,21 +38,20 @@
 ;# Caveats:                                                                   #
 ;#                                                                            #
 ;# Modification history:                                                      #
+;#    20160916-A-laue_ax: added option to subtract global mean before         #
+;#                        plotting (--> anomalies)                            #
 ;#    20151208-A-laue_ax: code clean-up, moved call to write_references to    #
 ;#                        beginning of code                                   #
 ;#    20140528-A_GoKl: written based on ancyc_lat.ncl                         #
 ;#                                                                            #
 ;##############################################################################
 
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/shea_util.ncl"
-
 load "./interface_data/ncl.interface"
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/data_handling.ncl"
 load "./interface_scripts/messaging.ncl"
+
+load "./diag_scripts/lib/ncl/scaling.ncl"
 load "./diag_scripts/lib/ncl/set_operators.ncl"
 load "./diag_scripts/lib/ncl/statistics.ncl"
 load "./diag_scripts/lib/ncl/latlon.ncl"
@@ -98,6 +98,19 @@ begin
                      "P_esmval")          ; proj_references
 
     ;********************diag_script_info*****************
+
+; A_laue_ax+
+    if ((isatt(diag_script_info, "subtract_global_mean"))) then
+        subtract_global_mean = diag_script_info@subtract_global_mean
+        if ((isatt(diag_script_info, "anomalylevels"))) then
+            anomalylevels = diag_script_info@anomalylevels
+        else
+            anomalylevels = fspan(-10., 10., 21)
+        end if
+    else
+        subtract_global_mean = False
+    end if
+; A_laue_ax-
 
     if ((isatt(diag_script_info,"e13fig04_list_chem_mod"))) then
         list_chem_mod = diag_script_info@e13fig04_list_chem_mod
@@ -202,6 +215,11 @@ begin
         delete([/A0, A1/])
     end do  ; idx_MOD, for regridding and mask
 
+    ;; Convert units if appropriate
+    if (isatt(variable_info, "plot_units")) then
+        var_grd = convert_units(var_grd, variable_info@plot_units)
+    end if
+
     info_output(diag_script + ": Mean value calculated after weighted " + \
         "averaging over time, regridding (lon, lat) to coarsest grid, " + \
         "masking all points that are missing in at least one model, " + \
@@ -218,19 +236,20 @@ begin
     res@cnLinesOn = False
     ;res@cnFillPalette =
     res@cnLevelSelectionMode = "ExplicitLevels"
-    res@cnLevels = variable_info@acp_cnlvl
-    if (isatt(diag_script, "mpProjection")) then
+    res@cnLevels = variable_info@acp_cnlvl;fspan(min(var_grd), max(var_grd), 20);variable_info@acp_cnlvl
+    if (isatt(diag_script_info, "mpProjection")) then
         res@mpProjection = diag_script_info@mpProjection
+        if (res@mpProjection.eq."Robinson") then
+            res@mpPerimOn = False  ; turn off perimeter around map
+            res@mpGridLineColor = -1
+            res@mpGridAndLimbOn = True
+        end if
     else
         res@mpProjection = "CylindricalEquidistant"
     end if
     res@txFont = diag_script_info@font
     res@tmXBLabelFont = diag_script_info@font
     res@tmYLLabelFont = diag_script_info@font
-    ;res@tmXBMode = "Explicit"
-    ;res@tmXBValues = (/1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12/)
-    ;res@tmXBLabels = (/"J", "F", "M", "A", "M", "J", "J", "A", "S", "O", \
-                      ;"N", "D"/)
     if(isatt(diag_script_info, "lbLabelBarOn")) then
         res@lbLabelBarOn = diag_script_info@lbLabelBarOn
     else
@@ -294,7 +313,19 @@ begin
         res@gsnLeftStringFontHeightF = 0.023
 
         ;; Plotting
-        map = gsn_csm_contour_map(wks, A3, res)
+; A_laue_ax+
+        if (subtract_global_mean) then
+            plotfield = A3 - area_operations(A3, -90, 90, 0, 360, "average", True)
+            delete(res@cnLevels)
+            res@cnLevels = anomalylevels
+        else
+            plotfield = A3
+        end if
+        copy_VarMeta(A3, plotfield)
+;        map = gsn_csm_contour_map(wks, A3, res)
+        map = gsn_csm_contour_map(wks, plotfield, res)
+        delete(plotfield)
+; A_laue_ax-
         print("gv " + output_file_path + "." + file_type)
 
         ;; clean up
@@ -303,7 +334,7 @@ begin
 
     ;*********plot MMM plot lista_chem plot lista_nochem***********
 
-    var_grd_mod=var_grd(ind_chem_mod, :, :)
+    var_grd_mod = var_grd(ind_chem_mod, :, :)
     MMM_chem = dim_avg_n_Wrap(var_grd_mod, 0)
 
     if ((isatt(diag_script_info, "e13fig04_diff_ref"))) then
@@ -356,9 +387,10 @@ begin
     output_file_path = output_dir + output_filename
     aux_title_info = "MMM_chem"
 
-    aux_title_info1 = "panel"
+    aux_title_info1 = "panel" + "_" + models@experiment(0)
     output_filename1 = interface_get_figure_filename(diag_script_base,\
-        var0, field_type0, aux_title_info1, -1)
+        var0, field_type0, aux_title_info1, -1) + "_" + \
+        sprinti("%0.4i", y1(0)) + "-" + sprinti("%0.4i", y2(0))
     output_file_path1 = output_dir + output_filename1
         
     wks1 = gsn_open_wks(file_type, output_file_path1)    
@@ -377,9 +409,22 @@ begin
     res@gsnRightString = fmt + " " + variable_info@units
     res@gsnRightStringFontHeightF = 0.023
     res@gsnLeftStringFontHeightF = 0.023
+    res@cnLevels = variable_info@acp_cnlvl;fspan(min(MMM_chem), max(MMM_chem), 20);
 
     ;; Plotting
-    map_p(ip) = gsn_csm_contour_map(wks1, MMM_chem, res)
+; A_laue_ax+
+    if (subtract_global_mean) then
+        plotfield = MMM_chem - area_operations(MMM_chem, -90, 90, 0, 360, "average", True)
+        delete(res@cnLevels)
+        res@cnLevels = anomalylevels
+    else
+        plotfield = MMM_chem
+    end if
+    copy_VarMeta(MMM_chem, plotfield)
+;    map_p(ip) = gsn_csm_contour_map(wks1, MMM_chem, res)
+    map_p(ip) = gsn_csm_contour_map(wks1, plotfield, res)
+    delete(plotfield)
+; A_laue_ax-
     ip = ip + 1
 ;    print("gv " + output_file_path1 + "." + file_type)
 
@@ -430,9 +475,22 @@ begin
         res@gsnRightString = fmt + " " + variable_info@units
         res@gsnLeftStringFontHeightF = 0.023
         res@gsnRightStringFontHeightF = 0.023
+        res@cnLevels = variable_info@acp_cnlvl;fspan(min(MMM_nochem), max(MMM_nochem), 20);
 
         ;; Plotting
-        map_p(ip) = gsn_csm_contour_map(wks1, MMM_nochem, res)
+; A_laue_ax+
+        if (subtract_global_mean) then
+            plotfield = MMM_nochem - area_operations(MMM_nochem, -90, 90, 0, 360, "average", True)
+            delete(res@cnLevels)
+            res@cnLevels = anomalylevels
+        else
+            plotfield = MMM_nochem
+        end if
+        copy_VarMeta(MMM_nochem, plotfield)
+;        map_p(ip) = gsn_csm_contour_map(wks1, MMM_nochem, res)
+        map_p(ip) = gsn_csm_contour_map(wks1, plotfield, res)
+        delete(plotfield)
+; A_laue_ax-
         ip = ip + 1
 ;        print("gv " + output_file_path1 + "." + file_type)
 
@@ -478,9 +536,23 @@ begin
         res@gsnRightString = fmt + " " + variable_info@units
         res@gsnRightStringFontHeightF = 0.023
         res@gsnLeftStringFontHeightF = 0.023
+        delete(res@cnLevels)
+        res@cnLevels = variable_info@map_ref_Levels;fspan(min(var_grd_ref), max(var_grd_ref), 20);variable_info@map_ref_Levels
 
         ;; Plotting
-        map_p(ip) = gsn_csm_contour_map(wks1, var_grd_ref, res)
+; A_laue_ax+
+        if (subtract_global_mean) then
+            plotfield = var_grd_ref - area_operations(var_grd_ref, -90, 90, 0, 360, "average", True)
+            delete(res@cnLevels)
+            res@cnLevels = anomalylevels
+        else
+            plotfield = var_grd_ref
+        end if
+        copy_VarMeta(var_grd_ref, plotfield)
+;        map_p(ip) = gsn_csm_contour_map(wks1, var_grd_ref, res)
+        map_p(ip) = gsn_csm_contour_map(wks1, plotfield, res)
+        delete(plotfield)
+; A_laue_ax-
         ip = ip + 1
 ;        print("gv " + output_file_path + "." + file_type)
 
@@ -533,8 +605,9 @@ begin
         res@gsnLeftStringFontHeightF = 0.023
 
         ;; Plotting
-        delete(res@cnLevelSelectionMode)
+        ;delete(res@cnLevelSelectionMode)
         delete(res@cnLevels)
+        res@cnLevels = variable_info@map_diff_Levels;fspan(min(diff_var_grd), max(diff_var_grd), 20);variable_info@map_diff_Levels
         map_p(ip) = gsn_csm_contour_map(wks1, diff_var_grd, res)
         ip = ip + 1
 ;        print("gv " + output_file_path1 + "." + file_type)
@@ -586,8 +659,9 @@ begin
             res@gsnLeftStringFontHeightF = 0.023
 
             ;; Plotting
-            delete(res@cnLevelSelectionMode)
+            ;delete(res@cnLevelelSectionMode)
             delete(res@cnLevels)
+            res@cnLevels = variable_info@map_diff_Levels
             map_p(ip) = gsn_csm_contour_map(wks1, diff_var_grd_nochem, res)
             ip = ip + 1
 ;            print("gv " + output_file_path1 + "." + file_type)

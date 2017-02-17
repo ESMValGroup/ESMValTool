@@ -50,7 +50,7 @@ if (! -d $outpath) then
     mkdir -p $outpath
 endif
 
-set outfile=$outpath/chl_monthly_ref_seawifs_reg_1997-2010.nc
+set outfile=$outpath/OBS_SeaWIFS_ocean_1_TO2Ms_chl_199701-201012.nc
 
 if ($use_original_data == "1") then
     # In case of using the original SeaWiFS files, a time dimension

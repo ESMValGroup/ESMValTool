@@ -5,25 +5,20 @@
 ;;#############################################################################
 ;;
 ;; Description
-;;    Transfers all data to a common (Gaussian) grid.
-;;    Draws sea ice concentration color coded and a red contour line at 0.15
-;;      (extent).
-;;    Draws absolute difference of sea ice area between two data sets.
-;;
-;; To be implemented
-;;    Draws relative difference of sea ice area between two data sets
-;;    Draws extent difference (absolute)
-;;    Calculates performance metrics with respect to a reference model
+;;    Transfers all data to a common 1°x1° Gaussian grid
+;;    Draws contour maps of absolute difference in sea ice concentration between
+;;      all models and the specified reference model (e.g., observations)
 ;;
 ;; Required variable_info attributes (variable specific)
 ;;
 ;; Required diag_script_info attributes (diagnostics specific)
-;;    month: selected month or annual mean.
-;;    region: region to be plotted ( "Arctic" or "Antarctic").
-;;    contour_extent: optionally draw a red contour line at 0.15.
-;;    max_lat, min_lat: plot ranges for SH & NH.
-;;    ref_model: reference model as specified by annots.
-;;    range_option: select specific or intersecting time range.
+;;    month: selected month or annual mean
+;;    region: region to be plotted ("Arctic" or "Antarctic")
+;;    contour_extent: optionally draw a red contour line at 0.15
+;;    max_lat, min_lat: plot ranges for SH & NH
+;;    ref_model: reference model as specified by annots
+;;    range_option: select specific or intersecting time range
+;;    dst_grid: path to destination grid description file for 'cdo remapdis'
 ;;
 ;; Optional diag_script_info attributes (diagnostic specific)
 ;;    max_vert, max_hori: allowed dimensions of a panel page
@@ -33,28 +28,26 @@
 ;;    colormap: NCL colour map name
 ;;    PanelLabelBar: use single label bar per page
 ;;    showunits: display units in figure title
+;;    multi_model_mean: only plot multi-model-mean minus ref_model
 ;;
 ;; Caveats
 ;;    No masking of the apparent line of missing data between the two grid
-;;    poles yet (for a workaround, see
-;;    http://www.ncl.ucar.edu/Applications/Scripts/ice_4.ncl).
-;;    Currently no option to re-use pre-calculated auxiliary regridding files
-;;    tested only for a few CMIP5 models.
-;;    Always uses Opt@SrcRegional=True -> could possibly improve regridding by
-;;    using this option only where necessary (i.e. when there is a polar hole
-;;    in the data).
+;;      poles yet (for a workaround, see
+;;      http://www.ncl.ucar.edu/Applications/Scripts/ice_4.ncl).
 ;;
 ;; Modification history
-;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
+;;    20170120-A_senf_da: Moved regridding to cdo_remapdis (latlon.ncl)
+;;    20160713-A_senf_da: Included multi-model-mean option
+;;    20151027-A_laue_ax: Moved call to 'write_references' to the beginning
 ;;                        of the code
-;;    20150605-A_vanu_be: additional attributes for more formatting control
-;;    20150325-A_laue_ax: modified reference tags used for acknowledgements
+;;    20150605-A_vanu_be: Additional attributes for more formatting control
+;;    20150325-A_laue_ax: Modified reference tags used for acknowledgements
 ;;                        (projects, observations, etc)
-;;    20141023-A_vanu_be: externalized make_latlon2D + var specific weights
-;;    20140623-A_senf_da: res now passed to plot script as attributes of var.
-;;    20140312-A_righ_ma adapted to new time_operations structure.
-;;    20140114-A_senf_da: modularized to fit to new structure.
-;;    20130613-A_gott_kl: implemented.
+;;    20141023-A_vanu_be: Externalized make_latlon2D + var specific weights
+;;    20140623-A_senf_da: res now passed to plot script as attributes of var
+;;    20140312-A_righ_ma: Adapted to new time_operations structure
+;;    20140114-A_senf_da: Modularized to fit to new structure
+;;    20130613-A_gott_kl: Implemented
 ;;
 ;;#############################################################################
 
@@ -89,11 +82,11 @@ begin
     field_type0 = field_types(0)
 
     ;; References Information
-    write_references(diag_script,       \  ; script name
-                     "A_gott_kl",          \  ; authors
-                     "A_senf_da",          \  ; contributors
-                     "D_0001",            \  ; diag_references
-                     "",                \  ; obs_references
+    write_references(diag_script,    \  ; script name
+                     "A_gott_kl",    \  ; authors
+                     "A_senf_da",    \  ; contributors
+                     "D_0001",       \  ; diag_references
+                     "",             \  ; obs_references
                      (/"P_embrace", "P_climval"/))   ; proj_acknowledgements
 
     do idx_mod = 0, dim_MOD - 1
@@ -158,8 +151,8 @@ begin
     wks = get_wks(0, diag_script, name_string)
 
     ;; Panel parameters
-    nvert = 1  ; Default
-    nhori = 1  ; Default
+    nvert  = 1  ; Default
+    nhori  = 1  ; Default
     if (isatt(diag_script_info, "max_vert")) then
         ;; Maximum allowed number of plots per page (vertical)
         nvert = toint(diag_script_info@max_vert)
@@ -169,6 +162,15 @@ begin
         nhori = toint(diag_script_info@max_hori)
     end if
     npages = toint(ceil(tofloat(dimsizes(annots) - 1)/tofloat(nvert * nhori)))
+
+    ;; Check further diag_script_info attributes
+    MMM = False
+    if (diag_script_info@multi_model_mean.eq."y") then
+        MMM    = True
+        nvert  = 1
+        nhori  = 1
+        npages = 1
+    end if
 
     ;; individual label bar (default) or 1 per panel
     lblBarOn = True
@@ -256,6 +258,7 @@ begin
                                       "average", diag_script_info@month, True)
         end if
         range = start_year + " - " + end_year
+
         delete(var)
 
         var = var_ann
@@ -263,56 +266,14 @@ begin
         delete(var_ann)
 
         ;; Regridding
-        stem = interface_get_inpaths(imod) + "/ESMF_regrid_"\
-                                           + models@project(imod) + "_"\
-                                           + models@name(imod) + "_"
-
-        ending = var0 + "_" + diag_script_info@region + "_"\
-                            + diag_script_info@month + "_"\
-                            + start_year + "-" + end_year + ".nc"
-
-        Opt                   = True
-        Opt@DstLLCorner       = (/-89.75d,   0.75d /)
-        Opt@DstURCorner       = (/ 89.75d, 359.75d /)
-        Opt@SrcMask2D         = where(ismissing(var), 0, 1)
-        Opt@DstGridType       = "1deg"      ; Destination grid
-        Opt@ForceOverwrite    = True
-        Opt@PrintTimings      = True
-        Opt@Debug             = True
-
-        ;; "bilinear" ; "patch"  ; "conserve" fails
-        Opt@InterpMethod      = "patch"
-
-        ;; Save regrid files for later use: careful with naming!
-        Opt@WgtFileName       = stem + "Wgt_" + ending
-        Opt@SrcFileName       = stem + "Src_" + ending
-        Opt@DstFileName       = stem + "Dst_" + ending
-
-        ;; ESMF_regrid may issue a warning
-        ;; (e.g. if Dst is not covered Src grid)
-        ;; -> set "exit_on_warning" to False (in main nml) to continue to the
-        ;; next diag
-
-        ;; Setting Opt@SrcRegional=True avoids artefacts
-        ;; from incomplete Src grids
-        Opt@SrcRegional = True  ; Activate if only part of the sphere is given
-
-        ;; reuse regrid files if present
-        if (isfilepresent_esmval(Opt@SrcFileName)) then
-            Opt@SkipSrcGen = True
-        end if
-        if (isfilepresent_esmval(Opt@DstFileName)) then
-            Opt@SkipDstGen = True
-        end if
-        if (isfilepresent_esmval(Opt@WgtFileName)) then
-            Opt@SkipWgtGen = True
-            var_regrid = ESMF_regrid_with_weights(var, Opt@WgtFileName, Opt)
-        else
-            var_regrid = ESMF_regrid(var, Opt)
-        end if
+        var_regrid = cdo_remapdis(var0, var, imod, data, \
+                                  diag_script_info@dst_grid, "")
+        if (var_regrid!0.eq."lon") then  ; reorder dimensions
+            var_regrid := var_regrid(lat|:, lon|:)
+        end if        
 
         ;; Some attributes for area plot
-        if diag_script_info@month.eq."A" then  ; Weighted annual mean
+        if (diag_script_info@month.eq."A") then  ; Weighted annual mean
             var_regrid@units = "annual mean " + range
         else  ; Select a month
             var_regrid@units = smonths(\
@@ -320,14 +281,8 @@ begin
                 + " mean " + range
         end if
         var_regrid@long_name = diag_script_info@region + \
-            " " + var@long_name
-
-        ;; Clean up
-        ;; Consider re-use of these files for speed-up
-        ;system("rm " + Opt@WgtFileName)
-        ;system("rm " + Opt@SrcFileName)
-        ;system("rm " + Opt@DstFileName)
-        delete([/var, Opt/])
+                               " " + var@long_name
+        delete(var)
 
         ;; Just keep ref_model OR plot difference to ref_model
         if (iannots .eq. 0) then  ; ref_model -> keep, but don't plot
@@ -338,6 +293,23 @@ begin
 
         else  ; plot difference to ref_model
 
+            if (MMM) then
+                if (.not.isdefined("all_models")) then
+                    all_models = new((/dimsizes(annots), \
+                                       dimsizes(var_regrid&lat), \
+                                       dimsizes(var_regrid&lon)/), \
+                                      typeof(var_regrid))
+                    all_models!0 = "models"
+                end if
+                all_models(iannots, :, :) = var_regrid
+                delete(var_regrid)
+                if (iannots.eq.dimsizes(annots) - 1) then
+                    var_regrid := dim_avg_n_Wrap(all_models, 0)
+                else
+                    continue
+                end if
+            end if
+
             ;; Enforce identical _FillValue for var_ref & var_regrid
             if (var_regrid@_FillValue .ne. var_ref@_FillValue) then
                 var_regrid = where(ismissing(var_regrid), \
@@ -346,6 +318,8 @@ begin
             end if
 
             ;; Difference to ref_model
+printVarSummary(var_regrid)
+printVarSummary(var_ref)
             var = var_regrid - var_ref
             copy_VarMeta(var_regrid, var)
             var = where(ismissing(var_ref), var_ref@_FillValue, var)
@@ -392,7 +366,12 @@ begin
                                       grid_step, grid_center, 255, 98)
 
             ;; Define diag-specific resources to be passed to plot routine
-            var@res_tiMainString          = annots(imod) + " - " + \
+            if (MMM) then
+                title_model = "MMM"
+            else
+                title_model = annots(imod)
+            end if
+            var@res_tiMainString          = title_model + " - " + \
                                             diag_script_info@ref_model
             var@res_gsnRightString        = var@units
             var@res_lbLabelBarOn          = lblBarOn  ; individual bars
@@ -432,7 +411,11 @@ begin
     pres@lbLabelStride = 2
     pres@gsnPanelLabelBar = PanelLabelBar  ; 1 bar per panel?
 
-    outfile = panelling(wks, plots, nvert, nhori, pres)
+    if (MMM) then
+        outfile = panelling(wks, plots(dimsizes(plots)-1), nvert, nhori, pres)
+    else
+        outfile = panelling(wks, plots, nvert, nhori, pres)
+    end if
 
     info_output(" gv " + outfile + " &", verbosity, 1)
 

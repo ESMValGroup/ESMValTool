@@ -302,6 +302,8 @@ function contour_map_ce(wks_in[1],
 ;;    Input via netCDF not yet implemented
 ;;
 ;; Modification history
+;;    20161220-A_laue_ax: added option to specificy plotting projection
+;;                        (via attribute data@projection)
 ;;    20140228-A_righ_ma: written.
 ;;
 local verbosity, data, var, wks, res
@@ -359,7 +361,19 @@ begin
     copy_VarMeta(res_new, res)
 
     ;; Create plot
-    plot = gsn_csm_contour_map_ce(wks_in, data, res)
+    if (isatt(data, "projection")) then
+        res@mpProjection = data@projection
+        if (res@mpProjection.eq."Robinson") then
+            res@mpPerimOn = False  ; turn off perimeter around map for Robinson projection
+            res@mpGridLineColor = -1
+            res@mpGridAndLimbOn = True
+            res@lbAutoManage = False
+            res@lbLabelFontHeightF = 0.0125
+        end if
+        plot = gsn_csm_contour_map(wks_in, data, res)
+    else
+        plot = gsn_csm_contour_map_ce(wks_in, data, res)
+    end if
 
     info_output(">>>>>>>> Leaving contour_map_ce", verbosity, 4)
     return(plot)

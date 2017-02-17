@@ -261,10 +261,21 @@ begin
         res@vpHeightF = 0.6
     else
         res@vpWidthF = 0.6
-        res@vpHeightF = 0.6 * ndiag / tofloat(nmod)
-        if (2 * ndiag.le.nmod) then
-            res@vpHeightF = 2 * res@vpHeightF
+; A_laue_ax+
+        if (isatt(diag_script_info, "scale_aspect")) then
+            ; code for ESA CCI paper Lauer et al. (2016)
+            scale_aspect = diag_script_info@scale_aspect
+            res@vpHeightF = 0.6 * ndiag / tofloat(nmod) * scale_aspect
+        else
+            ; standard code
+; A_laue_ax-
+            res@vpHeightF = 0.6 * ndiag / tofloat(nmod)
+            if (2 * ndiag.le.nmod) then
+                res@vpHeightF = 2 * res@vpHeightF
+            end if
+; A_laue_ax+
         end if
+; A_laue_ax-
     end if
     res@vpYF = 0.2 + res@vpHeightF
 
@@ -329,8 +340,21 @@ begin
     end if
 
     ;; Draw polygons
-    do imod = 0, nmod - 1
-        do idiag = 0, ndiag - 1
+    do idiag = 0, ndiag - 1
+
+        ;; Set triangle or square
+        ;;  - draw a square if only 1 reference model is available or if the
+        ;;    alternative model contains only missing values
+        ;;  - draw a triangle if an alternative reference is available and
+        ;;    contains valid values
+        l_square = True
+        if (nref.gt.1) then
+            if (.not.all(ismissing(data(idiag, :, 1)))) then
+                l_square = False
+            end if
+        end if
+
+        do imod = 0, nmod - 1
 
             ;; Find corresponding color for primary reference
             curr = data(idiag, imod, 0)
@@ -359,8 +383,7 @@ begin
                 resPol@gsFillColor = round(pos(lidx), 3)
             end if
 
-            ;; Draw a square if only 1 reference model is available
-            if (nref.eq.1) then
+            if (l_square) then
                 xx = (/imod * xbsize, (imod + 1) * xbsize, \
                       (imod + 1) * xbsize, imod * xbsize, imod * xbsize/)
                 yy = (/idiag * ybsize, idiag * ybsize, (idiag + 1) * ybsize, \
@@ -389,8 +412,8 @@ begin
                 delete(xx)
                 delete(yy)
 
-            ;; Draw a triangle if an alternative reference is available
             else
+
                 ;; Primary reference => lower triangle
                 xx = (/imod * xbsize, (imod + 1) * xbsize, \
                       (imod + 1) * xbsize, imod * xbsize/)

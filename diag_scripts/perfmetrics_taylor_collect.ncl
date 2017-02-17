@@ -39,8 +39,10 @@ load "./plot_scripts/ncl/taylor_plot.ncl"
 begin
 
     verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
-    info_output("<<<<<<<< Entering " + diag_script, verbosity, 4)
+    enter_msg(diag_script, "", 4)
     diag_script_base = basename(diag_script)
+
+    ;; Check file type
     file_type = getenv("ESMValTool_output_file_type")
     if (ismissing(file_type)) then
         file_type = "PS"
@@ -50,8 +52,9 @@ begin
     write_references(diag_script, \
                      "A_fran_fr", \
                      (/"A_righ_ma", "A_eyri_ve", "A_gott_kl"/), \
-                     "D_righi15gmd", \
-                     (/"E_kalnay96bams", "E_erainterim", "E_airs", "E_ceresebaf", "E_srb"/), \
+                     (/"D_righi15gmd", "D_gleckler08jgr"/), \
+                     (/"E_ncep", "E_erainterim", "E_airs", \
+                       "E_ceresebaf", "E_srb"/), \
                      (/"P_embrace", "P_esmval"/))
 
     ;; Read grading list and add files together
@@ -112,7 +115,7 @@ begin
     data_all@res_caseLabels   = data_all&diagnostics
     copy_VarAtts(diag_script_info, data_all)
 
-    ;; Plotting
+    ;; Plot
     if (getenv("ESMValTool_write_plots").eq.True) then
         xml_name = getenv("ESMValTool_xml_name")
         suffix = get_file_suffix(xml_name, 0)
@@ -140,8 +143,9 @@ begin
         info_output(" gv " + outfile_plot + "." + file_type, verbosity, 1)
     end if
 
+    ;; Remove temporary Taylor list
     system("rm -f " + temp_dir)
 
-    info_output(">>>>>>>> Leaving " + diag_script, verbosity, 4)
+    leave_msg(diag_script, "", 4)
 
 end

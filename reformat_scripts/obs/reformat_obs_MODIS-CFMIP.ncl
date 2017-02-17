@@ -4,7 +4,7 @@
 ;;#############################################################################
 ;;
 ;; Tier
-;;    2 (freely available data set other than obs4MIPs and ana4MIPs)
+;;    Tier 2: other freely-available dataset.
 ;;
 ;; Source
 ;;    References:
@@ -161,7 +161,7 @@ begin
 
        ;; Outfile
        fout = OUTDIR + "OBS_" + OBSNAME + "_sat_v2_" + FIELD + "_clivi_" + \
-           yr + ".nc"
+           yr + "01-" + yr + "12.nc"
        ;; Write variable
        write_nc(fout, "clivi", iwp, gAtt)
        delete(gAtt)

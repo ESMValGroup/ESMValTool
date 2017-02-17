@@ -185,7 +185,8 @@ begin
 
             ;; Outfile
             fout = OUTDIR + "OBS_" + OBSNAME + "_ground_" + \
-                st_code(stID) + "_" + FIELD + "_" + VAR + ".nc"
+                st_code(stID) + "_" + FIELD + "_" + VAR + "_" + \
+                YEAR1 + "01-" + YEAR2 + "12.nc"
 
             ;; Write variable
             write_nc(fout, VAR, output, gAtt)

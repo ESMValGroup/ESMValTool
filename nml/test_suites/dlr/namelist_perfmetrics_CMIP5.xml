@@ -55,7 +55,7 @@ This namelist is part of the ESMValTool
 <diag>
     <description>          Temperature                  </description>
     <variable_def_dir>     ./variable_defs/             </variable_def_dir>
-    <variable>             ta                           </variable>
+    <variable ref_model="ERA-Interim,NCEP">  ta         </variable>
     <field_type>           T3M                          </field_type>
     <diag_script_cfg_dir>  ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
 
@@ -86,7 +86,7 @@ This namelist is part of the ESMValTool
 <diag>
     <description>          Near-surface temperature     </description>
     <variable_def_dir>     ./variable_defs/             </variable_def_dir>
-    <variable>             tas                          </variable>
+    <variable ref_model="ERA-Interim,NCEP">  tas        </variable>
     <field_type>           T2Ms                         </field_type>
     <diag_script_cfg_dir>  ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
 
@@ -108,7 +108,7 @@ This namelist is part of the ESMValTool
 <diag>
     <description>          Shortwave cloud frocing      </description>
     <variable_def_dir>     ./variable_defs/             </variable_def_dir>
-    <variable>             SW_CRE                       </variable>
+    <variable ref_model="CERES-EBAF">  SW_CRE           </variable>
     <field_type>           T2Ms                         </field_type>
     <diag_script_cfg_dir>  ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
 
@@ -130,35 +130,37 @@ This namelist is part of the ESMValTool
 <diag>
     <description>          Aerosol optical depth 870 nm </description>
     <variable_def_dir>     ./variable_defs/             </variable_def_dir>
-    <variable>             od870aer                     </variable>
+    <variable ref_model="ESACCI-AEROSOL">  od870aer     </variable>
     <field_type>           T2Ms                         </field_type>
     <diag_script_cfg_dir>  ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
 
+    <model>  CMIP5_ETHZ  GFDL-CM3            aero  historical   r1i1p1  2003 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
     <model>  CMIP5_ETHZ  MIROC-ESM           aero  historical   r1i1p1  2003 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
 
     <model>  OBS         ESACCI-AEROSOL      sat          SU-v4.21      2003 2005  @{OBSPATH}/Tier2/ESACCI-AEROSOL  </model>
 
     <!--  Grading precalculations -->
-    <diag_script cfg="cfg_perfmetrics_grading_RMSD_aero.ncl">       perfmetrics_main.ncl          </diag_script>
-    <diag_script cfg="cfg_perfmetrics_grading_RMSD_aero.ncl">       perfmetrics_grading.ncl       </diag_script>
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob_aero.ncl">       perfmetrics_main.ncl          </diag_script>
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob_aero.ncl">       perfmetrics_grading.ncl       </diag_script>
 </diag>
 
 <!-- ### TOTAL COLUMN OZONE: grading precalculations ############################################################################################# -->
 <diag>
     <description>          Total column ozone           </description>
     <variable_def_dir>     ./variable_defs/             </variable_def_dir>
-    <variable>             toz                          </variable>
+    <variable ref_model="ESACCI-OZONE,NIWA">  toz       </variable>
     <field_type>           T2Ms                         </field_type>
     <diag_script_cfg_dir>  ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
 
     <model>  CMIP5_ETHZ  BNU-ESM             Amon  historical   r1i1p1  2003 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  GFDL-CM3            Amon  historical   r1i1p1  2003 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
 
     <model>  OBS         ESACCI-OZONE        sat          L3            2003 2005  @{OBSPATH}/Tier2/ESACCI-OZONE    </model>
     <model>  OBS         NIWA                reanaly      1             2003 2005  @{OBSPATH}/Tier3/NIWA            </model>
 
     <!--  Grading precalculations -->
-    <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl">       perfmetrics_main.ncl          </diag_script>
-    <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl">       perfmetrics_grading.ncl       </diag_script>
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob_toz.ncl">       perfmetrics_main.ncl          </diag_script>
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob_toz.ncl">       perfmetrics_grading.ncl       </diag_script>
 </diag>
 
 <!-- ### Collect and plot previously calculated gradings ######################################################################################## -->

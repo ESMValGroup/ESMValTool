@@ -67,6 +67,9 @@ begin
     ;; Mask file for ocean variables (irregular grids)
     OMASKFILE = getenv("ESMValTool_omaskfile_path")
 
+    ;; Porosity file for mrso variable
+    POROFILE = getenv("ESMValTool_porofile_path")
+
     ;; Fix file (for model-specific fixes)
     FIXFILE = "./reformat_scripts/fixes/" + \
         getenv("ESMValTool_project_basename") + "_" + MODEL + "_fix.ncl"
@@ -92,15 +95,9 @@ begin
     info_output("GRID TYPE = " + GRID, verbosity, 2)
 
     ;; Read variable and extract given time range
-; a_laue_ax+
-    ; filelist will be filled with the names of the files processed by read_var
-    ; fixfile will be filled with the name of the script "FIXFILE"
-    ; (if script has been applied by read_var)
-    filelist = new(1000, string)
-    fixfile  = new(1, string)
-;    VARPROC = read_var(VAR)
-    VARPROC = read_var(VAR, filelist, fixfile)  ; filelist, fixfile are output vars
-; a_laue_ax-
+    filelist = new(1000, string)  ; list of files processed by read_var
+    fixfile  = new(1, string)  ; list of files processed by FIXFILE
+    VARPROC = read_var(VAR, filelist, fixfile)  ; filelist, fixfile are output
 
     ;; Check rank/field
     tmp = check_rank(VARPROC)
@@ -127,22 +124,14 @@ begin
     delete(tmp)
 
     ;; Write output
-; a_laue_ax+
-;    write_output(VARPROC, VAR)
     version  = getenv("0_ESMValTool_version")
     write_output(VARPROC, VAR, filelist, fixfile, version)
     delete(fixfile)
     delete(filelist)
-; a_laue_ax-
 
     ;; Add latitude and longitude information (for irregular grids only)
     if (GRID.eq."irregular") then
         add_irregulargrid_info(VARPROC)
-    end if
-
-    ;; Add region information (for ocean variables using the basin coord)
-    if (iscoord(VARPROC, "basin")) then
-        add_regionbasin_info()
     end if
 
     ;; Add land-mask information
@@ -153,6 +142,21 @@ begin
     ;; Add ocean-mask information
     if (isStrSubset(INFILE, "Omon")) then
         add_omask_info(VARPROC)
+    end if
+
+    ;; Add porosity information
+    if (VAR.eq."mrso") then
+        add_porosity_info(VARPROC)
+    end if
+
+    ;; Add depth information
+    if (VAR.eq."mrsos") then
+        add_depth_info(VARPROC)
+    end if
+
+    ;; Add region information (for ocean variables using the basin coord)
+    if (iscoord(VARPROC, "basin")) then
+        add_regionbasin_info()
     end if
 
     delete(VARPROC)

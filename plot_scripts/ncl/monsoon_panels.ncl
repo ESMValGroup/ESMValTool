@@ -2739,14 +2739,25 @@ begin
     res@tmYLMajorOutwardLengthF = 0  ; draw tickmarks inward
     res@tmYLMinorOutwardLengthF = 0  ; draw minor ticsk inward
 
-    if (isatt(res, "trYMaxF")) then
-        no_operation()  ; use preset values (in diagnostic script)
-    else  ; default value
+; A_laue_ax+
+    if (isatt(di, "minmax")) then
         ymax = di@minmax(1)
         ymin = di@minmax(0)
         res@trYMaxF = ymax + 0.03 * (ymax - ymin)
         res@trYMinF = ymin - 0.03 * (ymax - ymin)
+    else
+; A_laue_ax-
+        if (isatt(res, "trYMaxF")) then
+            no_operation()  ; use preset values (in diagnostic script)
+        else  ; default value
+            ymax = di@minmax(1)
+            ymin = di@minmax(0)
+            res@trYMaxF = ymax + 0.03 * (ymax - ymin)
+            res@trYMinF = ymin - 0.03 * (ymax - ymin)
+        end if
+; A_laue_ax+
     end if
+; A_laue_ax-
 
     if (di@x_gridlines .eq. "y") then
         res@tmXMajorGrid = True
@@ -2770,7 +2781,12 @@ begin
     ;; here rather than in a config file....
     if (iscoord(values, "hour")) then
         interp =  fspan(0,24,9)
+;        interp =  fspan(0,24,25)
         coord = "hour"
+; A_laue_ax+
+        res@trXMinF = 0. 
+        res@trXMaxF = 24.
+; A_laue_ax-
     else
         interp = ispan(di@latrange(0), di@latrange(1), 1)
         coord = "lat"

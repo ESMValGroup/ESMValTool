@@ -1,4 +1,4 @@
-;; CLOUDS_IPCC
+;; CLOUDS_BIAS
 ;;#############################################################################
 ;; Author: Axel Lauer (DLR, Germany)
 ;; PROJECT-NAME EMBRACE
@@ -10,17 +10,17 @@
 ;;    reference data set (observations) are calculated.
 ;;
 ;; Required diag_script_info attributes (diagnostics specific)
-;;    grid:            grid for regridding (coarsest, finest, ref)
+;;    grid:            grid for regridding (coarsest, finest, ref, 1x1)
 ;;    ref_model:       name of reference data set
 ;;    valid_fraction:  minimum fraction of valid data points
 ;;                     (for creating a mask)
 ;;
 ;; Optional diag_script_info attributes (diagnostic specific)
-;;    colormap:        e.g., WhiteBlueGreenYellowRed, rainbow
 ;;    ncdf:            enable to output to netCDF; either use "default" or give
 ;;                     a full file name
 ;;    projection:      map projection, e.g., Mollweide, Mercator
-;;    styleset:        "CMIP5", "DEFAULT"
+;;    timemean:        time averaging, i.e. "seasonalclim" (DJF, MAM, JJA, SON),
+;;                     "annualclim" (annual mean)
 ;;
 ;; Required variable_info attributes (variable specific)
 ;;    long_name:       description of variable
@@ -34,6 +34,7 @@
 ;;    none
 ;;
 ;; Modification history
+;;    20160901-A_laue_ax: added regridding option 1 deg x 1 deg
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;;                        of the code
 ;;    20150428-A-laue_ax: written.
@@ -136,8 +137,8 @@ begin
 
     if (.not.(isatt(diag_script_info, "grid"))) then
         error_msg("w", diag_script, "", "Regridding method not defined. " + \
-                  "Using coarsest")
-        selected_grid = "coarsest"
+                  "Using 1x1")
+        selected_grid = "1x1"
     else
         selected_grid = diag_script_info@grid
     end if
@@ -149,9 +150,24 @@ begin
     if (selected_grid.eq."ref") then
         grid = find_destination_grid(ref_ind, \
                                      var0, field_type0, "coarsest")
+        else if (selected_grid.eq."1x1") then
+            grid     = new((/180, 360/), float)
+            grid!0   = "lat"
+            grid!1   = "lon"
+            grid&lat = flt2dble(fspan(-89.5,  89.5, 180))  ; CMOR standard
+            grid&lon = flt2dble(fspan(0.5, 359.5, 360))    ; CMOR standard
+            grid&lat@standard_name = "latitude"
+            grid&lon@standard_name = "longitude"
+            grid&lat@long_name     = "latitude"
+            grid&lon@long_name     = "longitude"
+            grid&lat@units         = "degrees_north"
+            grid&lon@units         = "degrees_east"
+            grid&lat@axis          = "Y"
+            grid&lon@axis          = "X"
     else
         grid = find_destination_grid(models_ind, \
                                      var0, field_type0, selected_grid)
+    end if
     end if
     delete(models_ind)
 

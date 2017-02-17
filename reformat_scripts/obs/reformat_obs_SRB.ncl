@@ -166,10 +166,10 @@ begin
         gAtt@title = OBSNAME + \
             " satellite data reformatted for the ESMValTool"
         gAtt@conventions = "CF/CMOR"
-        
+
         ;; Outfile
         fout = OUTDIR + "OBS_" + OBSNAME + "_sat_1_" + FIELD + \
-        "_" + VARS(vID) + ".nc"
+            "_" + VARS(vID) + "_" + YEAR1 + "01-" + YEAR2 + "12.nc"
 
         ;; Write variable
         write_nc(fout, VARS(vID), output, gAtt)

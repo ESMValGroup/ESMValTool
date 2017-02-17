@@ -20,6 +20,7 @@
 ;; Caveats
 ;;
 ;; Modification history
+;;    20160718-A_laue_ax: added AOD550 + AOD870 uncertainties
 ;;    20160525-A_righ_ma: updated to v4.21 and adding more variables.
 ;;    20150126-A_righ_ma: adding AOD at other wavelengths.
 ;;    20151124-A_righ_ma: switched to monthly raw data (now available).
@@ -48,10 +49,12 @@ begin
     YEAR2 = 2011
 
     ;; Selected variable (standard name)
-    VARS = (/"od550aer", "od870aer", "od550lt1aer", "abs550aer"/)
+    VARS = (/"od550aer", "od870aer", "od550lt1aer", "abs550aer", "od550aerStderr", \
+             "od870aerStderr"/)
 
     ;; Name in the raw data
-    NAME = (/"AOD550_mean", "AOD870_mean", "FM_AOD550_mean", "AAOD550_mean"/)
+    NAME = (/"AOD550_mean", "AOD870_mean", "FM_AOD550_mean", "AAOD550_mean", \
+             "AOD550_uncertainty", "AOD870_uncertainty"/)
 
     ;; Field
     FIELD = "T2Ms"
@@ -188,7 +191,7 @@ begin
 
         ;; Outfile
         fout = OUTDIR + "OBS_" + OBSNAME + "_sat_SU-v4.21_" + FIELD + \
-            "_" + VARS(vID) + ".nc"
+            "_" + VARS(vID) + "_" + YEAR1 + "01-" + YEAR2 + "12.nc"
 
         ;; Write variable
         write_nc(fout, VARS(vID), OUTPUT, gAtt)

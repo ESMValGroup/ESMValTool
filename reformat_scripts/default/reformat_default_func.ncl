@@ -21,11 +21,14 @@
 ;;    function reformat_lon
 ;;    function reformat_coord
 ;;    procedure add_irregulargrid_info
+;;    procedure add_lmask_info
+;;    procedure add_omask_info
+;;    procedure add_porosity_info
+;;    procedure add_depth_info
 ;;    procedure add_regionbasin_info
 ;;
 ;;#############################################################################
 
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
 load "./reformat_scripts/constants.ncl"
 load "./interface_scripts/messaging.ncl"
 load "./interface_data/ncl.interface"
@@ -63,7 +66,7 @@ begin
     ;; Simulation path
     if (.not. isfilepresent_esmval(INPATH)) then
         error_msg("f", scriptname, funcname, \
-                  "simulation path INPATH = " +  INPATH + ", not found")
+                  "simulation path INPATH = " + INPATH + ", not found")
     end if
 
     ;; Get rid of $ in path strings
@@ -201,10 +204,7 @@ end
 
 ;;#############################################################################
 undef("apply_fixes")
-; a_laue_ax+
-;procedure apply_fixes(var:numeric, name:string)
 procedure apply_fixes(var:numeric, name:string, fixfile:string)
-; a_laue_ax-
 ;;
 ;; Arguments
 ;;    var: the variable's field.
@@ -223,9 +223,7 @@ procedure apply_fixes(var:numeric, name:string, fixfile:string)
 local funcname, scriptname, verbosity, ret
 begin
 
-; a_laue_ax+
     fixfile = ""  ; filename of "FIXFILE"
-; a_laue_ax-
 
     funcname = "apply_fixes"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
@@ -238,9 +236,7 @@ begin
             info_output("  A data-fixing function (" + FIXFILE + ") " + \
                         "has been applied to this model/variable!", \
                         verbosity, 1)
-; a_laue_ax+
             fixfile = FIXFILE
-; a_laue_ax-
         end if
     end if
     leave_msg(scriptname, funcname, 4)
@@ -249,10 +245,7 @@ end
 
 ;;######################################################################
 undef("read_var")
-; al_aue_ax+
-;function read_var(name:string)
 function read_var(name:string, filelist:string, fixfile:string)
-; a_laue_ax-
 ;;
 ;; Arguments
 ;;    name: the variable's standard name.
@@ -292,9 +285,7 @@ begin
     ;; Lists of files
     files = systemfunc("ls " + INFILE)
 
-; a_laue_ax+
     ic = 0
-; a_laue_ax-
 
     do ff = 0, dimsizes(files) - 1
         f = addfile(files(ff), "r")
@@ -306,10 +297,7 @@ begin
         tmp = f->$altname$
 
         ;; Check for model-specific fixes to this variable
-; a_laue_ax+
-;        apply_fixes(tmp, name)
         apply_fixes(tmp, name, fixfile)
-; a_laue_ax-
 
         ;; Define rank
         rank = dimsizes(dimsizes(tmp))
@@ -324,93 +312,84 @@ begin
         end if
         tname = tmp!0
 
-; a_laue_ax+
-        ; in order to support F2Ms fields (lon+lat, no time dimension),
+        ; In order to support F2Ms fields (lon+lat, no time dimension),
         ; we need the possibility to skip the selection of the time rage
         ; ---> if (year1=0) .and. (year2=0) ---> skip selection of time range
         if ((YEAR1.eq.0).and.(YEAR2.eq.0)) then
             xx = tmp
         else
-; a_laue_ax-
 
-        ;; Set calendar for date conversion
-        opt = 0
-        if (isatt(tmp&$tname$, "calendar")) then
-            opt@calendar = tmp&$tname$@calendar
-        end if
-
-        ;; Set standard units for time coordinate
-        if (tmp&$tname$@units .ne. TUNITS) then
-            date = cd_calendar(tmp&$tname$, 0)
-            tcoord = cd_inv_calendar(toint(date(:, 0)), toint(date(:, 1)), \
-                                     toint(date(:, 2)), toint(date(:, 3)), \
-                                     toint(date(:, 4)), toint(date(:, 5)), \
-                                     TUNITS, opt)
-            delete(tmp&$tname$)
-            tmp&$tname$ = tcoord
-            delete(tcoord)
-            delete(date)
-        end if
-
-        ;; Given time interval (from namelist)
-        lim_date1 = cd_inv_calendar(YEAR1, 1, 1, 0, 0, 0,\
-                                    tmp&$tname$@units, opt)
-        lim_date2 = cd_inv_calendar(YEAR2, 12, 31, 23, 59, 59,\
-                                    tmp&$tname$@units, opt)
-        if (isatt(tmp&$tname$, "calendar")) then
-            if (any(tmp&$tname$@calendar.eq.(/"360", "360_day"/))) then
-                lim_date2 = cd_inv_calendar(YEAR2, 12, 30, 23, 59, 59,\
-                                            tmp&$tname$@units, opt)
+            ;; Set calendar for date conversion
+            opt = 0
+            if (isatt(tmp&$tname$, "calendar")) then
+                opt@calendar = tmp&$tname$@calendar
             end if
-        end if
 
-        ;; Current time interval in this file
-        curr_date1 = tmp&$tname$(0)
-        curr_date2 = tmp&$tname$(dimsizes(tmp&$tname$) - 1)
+            ;; Set standard units for time coordinate
+            if (tmp&$tname$@units .ne. TUNITS) then
+                date = cd_calendar(tmp&$tname$, 0)
+                tcoord = cd_inv_calendar(toint(date(:, 0)), toint(date(:, 1)),\
+                                         toint(date(:, 2)), toint(date(:, 3)),\
+                                         toint(date(:, 4)), toint(date(:, 5)),\
+                                         TUNITS, opt)
+                delete(tmp&$tname$)
+                tmp&$tname$ = tcoord
+                delete(tcoord)
+                delete(date)
+            end if
 
-        ;; Select time interval
-        if (lim_date1 .gt. curr_date2 .or. lim_date2 .lt. curr_date1) then
-            delete(tmp)
-            continue
-        end if
-        set_date1 = max((/lim_date1, curr_date1/))
-        set_date2 = min((/lim_date2, curr_date2/))
+            ;; Given time interval (from namelist)
+            lim_date1 = cd_inv_calendar(YEAR1, 1, 1, 0, 0, 0,\
+                                        tmp&$tname$@units, opt)
+            lim_date2 = cd_inv_calendar(YEAR2, 12, 31, 23, 59, 59,\
+                                        tmp&$tname$@units, opt)
+            if (isatt(tmp&$tname$, "calendar")) then
+                if (any(tmp&$tname$@calendar.eq.(/"360", "360_day"/))) then
+                    lim_date2 = cd_inv_calendar(YEAR2, 12, 30, 23, 59, 59,\
+                                                tmp&$tname$@units, opt)
+                end if
+            end if
 
-        ;; Set consistent time coordinate types
-        if (typeof(tmp&$tname$).eq."float") then
-            s1 = tofloat(set_date1)
-            s2 = tofloat(set_date2)
-            delete(set_date1)
-            delete(set_date2)
-            set_date1 = s1
-            set_date2 = s2
-            delete(s1)
-            delete(s2)
-        end if
+            ;; Current time interval in this file
+            curr_date1 = tmp&$tname$(0)
+            curr_date2 = tmp&$tname$(dimsizes(tmp&$tname$) - 1)
 
-        ;; Extract time interval
-        if (rank.eq.4) then
-            xx = tmp({set_date1:set_date2}, :, :, :)
-        else if (rank.eq.3) then
-            xx = tmp({set_date1:set_date2}, :, :)
-        else if (rank.eq.2) then
-            xx = tmp({set_date1:set_date2}, :)
-        else if (rank.eq.1) then
-            xx = tmp({set_date1:set_date2})
-        end if
-        end if
-        end if
-        end if
+            ;; Select time interval
+            if (lim_date1 .gt. curr_date2 .or. lim_date2 .lt. curr_date1) then
+                delete(tmp)
+                continue
+            end if
+            set_date1 = max((/lim_date1, curr_date1/))
+            set_date2 = min((/lim_date2, curr_date2/))
 
-; a_laue_ax+
-        end if
-; a_laue_ax-
+            ;; Set consistent time coordinate types
+            if (typeof(tmp&$tname$).eq."float") then
+                s1 = tofloat(set_date1)
+                s2 = tofloat(set_date2)
+                delete(set_date1)
+                delete(set_date2)
+                set_date1 = s1
+                set_date2 = s2
+                delete(s1)
+                delete(s2)
+            end if
 
+            ;; Extract time interval
+            if (rank.eq.4) then
+                xx = tmp({set_date1:set_date2}, :, :, :)
+            else if (rank.eq.3) then
+                xx = tmp({set_date1:set_date2}, :, :)
+            else if (rank.eq.2) then
+                xx = tmp({set_date1:set_date2}, :)
+            else if (rank.eq.1) then
+                xx = tmp({set_date1:set_date2})
+            end if
+            end if
+            end if
+            end if
+
+        end if
         delete(tmp)
-
-; a_laue_ax+
-;        print(files(ff))
-; al_laue_ax-
 
         ;; Append to time series
         if (.not. isdefined("outvar")) then
@@ -421,25 +400,15 @@ begin
             outvar = tmp
             delete(tmp)
         end if
-
-; a_lauer_ax+
         filelist(ic) = files(ff)
         ic = ic + 1
-; a_laue_ax-
-
         delete(xx)
         delete(f)
-; a_laue_ax+
-;        delete(opt)
         if (isvar("opt")) then
             delete(opt)
         end if
-; a_laue_ax-
-    end do
 
-; a_laue_ax+
-;    print(filelist)
-; a_laue_ax-
+    end do
 
     if (isdefined("outvar")) then
         leave_msg(scriptname, funcname, 4)
@@ -600,7 +569,7 @@ begin
     verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
     enter_msg(scriptname, funcname, 4)
     files = systemfunc("ls " + INFILE)
-    
+
     ff = addfile(files(0), "r")
 
     ;; Check if latitude is present, if not assume rectilinear grid
@@ -1238,6 +1207,7 @@ procedure add_irregulargrid_info(var:numeric)
 ;; References
 ;;
 ;; Modification history
+;;    20161202-A_laue_ax: preserve attribute "bounds" if present
 ;;    20130528-A_righ_ma: written.
 ;;
 local funcname, scriptname, verbosity, vdims, vsize, vrank, files, ff, vars, \
@@ -1281,6 +1251,12 @@ begin
                   "cannot find latitude coordinate for the irregular grid")
     end if
     lat = lat_attrib(clat)
+; A_laue_ax+
+    ; if present, preserve the attribute "bounds"
+    if (isatt(clat, "bounds")) then
+        lat@bounds = "lat_vertices"
+    end if
+; A_laue_ax-
     ldims = getvardims(clat)
     lsize = dimsizes(clat)
     if (ldims(1) .ne. vdims(vrank - 1) .or. \
@@ -1313,6 +1289,12 @@ begin
                   "cannot find longitude coordinate for the irregular grid")
     end if
     lon = lon_attrib(clon)
+; A_laue_ax+
+    ; if present, preserve the attribute "bounds"
+    if (isatt(clon, "bounds")) then
+        lon@bounds = "lon_vertices"
+    end if
+; A_laue_ax-
     ldims = getvardims(clon)
     lsize = dimsizes(clon)
     if (ldims(1) .ne. vdims(vrank - 1) .or. \
@@ -1591,7 +1573,7 @@ begin
             msize(mrank - 1).ne.vsize(vrank - 1)) then
             lwrite = False
         end if
-        
+
         ;; Write output
         if (lwrite) then
             w = addfile(OUTFILE, "w")
@@ -1628,6 +1610,8 @@ procedure add_omask_info(var:numeric)
 ;; Modification history
 ;;    20151029-A_righ_ma: written.
 ;;
+local funcname, scriptname, verbosity, lexist, ff, vname, altdname, maskl, \
+    tmp, w, mdims, msize
 begin
 
     funcname = "add_omask_info"
@@ -1687,7 +1671,7 @@ begin
             msize(mrank - 1).ne.vsize(vrank - 1)) then
             lwrite = False
         end if
-        
+
         ;; Write output
         if (lwrite) then
             w = addfile(OUTFILE, "w")
@@ -1700,12 +1684,172 @@ begin
         else
             info_output("Dimensionality of sftof not consistent with " + \
                         "dimensionality of " + VAR + ", skipping", \
-                        verbosity, 2)           
+                        verbosity, 2)
         end if
 
-        info_output("  Adding sftof to OUTFILE", verbosity, 2)
-
     end if
+
+    leave_msg(scriptname, funcname, 4)
+
+end
+
+;;######################################################################
+undef("add_porosity_info")
+procedure add_porosity_info(var:numeric)
+;;
+;; Arguments
+;;
+;; Description
+;;    Add porosity to the output.
+;;
+;; Caveats
+;;
+;; References
+;;
+;; Modification history
+;;    20160823-A_righ_ma: written.
+;;
+local funcname, scriptname, verbosity, vdims, vsize, vrank, lexist, ff, \
+    vname, altdname, ii, maskl, tmp, lwrite, mdims, msize, mrank, w
+begin
+
+    funcname = "add_porosity_info"
+    scriptname = "reformat_scripts/default/reformat_default_func.ncl"
+    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    enter_msg(scriptname, funcname, 4)
+
+    ;; Variable dimensions (must be consistent with mrsofc dimensions)
+    vdims = getvardims(var)
+    vsize = dimsizes(var)
+    vrank = dimsizes(vsize)
+
+    lexist = False
+    if (isfilepresent_esmval(POROFILE)) then
+        ff = addfile(POROFILE, "r")
+        if (isfilevar(ff, "mrsofc")) then
+            lexist = True
+            vname = "mrsofc"
+        else
+            altdname = find_alt_names("mrsofc")
+            do ii = 0, dimsizes(altdname) - 1
+                if (isfilevar(ff, altdname(ii))) then
+                    lexist = True
+                    vname = altdname(ii)
+                    break
+                end if
+            end do
+            delete(altdname)
+        end if
+    end if
+
+    if (lexist) then
+        maskl = ff->$vname$
+
+        ;; Reformat variable
+        apply_fixes(maskl, "mrsofc", "")
+        check_units(maskl, "mrsofc")
+        tmp = var_attrib(maskl, "mrsofc")
+        delete(maskl)
+        maskl = tmp
+        delete(tmp)
+        tmp = reformat_coord(maskl)
+        delete(maskl)
+        maskl = tmp
+        delete(tmp)
+
+        ;; Check latitude/longitude consistency
+        lwrite = True
+        mdims = getvardims(maskl)
+        msize = dimsizes(maskl)
+        mrank = dimsizes(msize)
+        if (mdims(mrank - 2).ne.vdims(vrank - 2) .or. \
+            msize(mrank - 2).ne.vsize(vrank - 2)) then
+            lwrite = False
+        end if
+        if (mdims(mrank - 1).ne.vdims(vrank - 1) .or. \
+            msize(mrank - 1).ne.vsize(vrank - 1)) then
+            lwrite = False
+        end if
+
+        ;; Write output
+        if (lwrite) then
+            w = addfile(OUTFILE, "w")
+            setfileoption(w, "DefineMode", True)
+            filevardef(w, "mrsofc", typeof(maskl), mdims)
+            filevarattdef(w, "mrsofc", maskl)
+            setfileoption(w, "DefineMode", False)
+            w->mrsofc = (/maskl/)
+            info_output("  Adding mrsofc to OUTFILE", verbosity, 1)
+        else
+            info_output("Dimensionality of mrsofc not consistent with " + \
+                        "dimensionality of " + VAR + ", skipping", \
+                        verbosity, 2)
+        end if
+    end if
+
+    leave_msg(scriptname, funcname, 4)
+
+end
+
+;;######################################################################
+undef("add_depth_info")
+procedure add_depth_info(var:numeric)
+;;
+;; Arguments
+;;
+;; Description
+;;    Add depth to the output.
+;;
+;; Caveats
+;;
+;; References
+;;
+;; Modification history
+;;    20160824-A_righ_ma: written.
+;;
+local funcname, scriptname, verbosity, files, ff, depths, ii, lexist, vname, \
+    altdname, w
+begin
+
+    funcname = "add_depth_info"
+    scriptname = "reformat_scripts/default/reformat_default_func.ncl"
+    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    enter_msg(scriptname, funcname, 4)
+
+    ;; Any of the input files is ok, since depth/depth_bnds are constants
+    files = systemfunc("ls " + INFILE)
+    ff = addfile(files(0), "r")
+
+    ;; Read and add depth variables
+    depths = (/"depth", "depth_bnds"/)
+    do ii = 0, dimsizes(depths) - 1
+        lexist = False
+        if (isfilevar(ff, depths(ii))) then
+            lexist = True
+            vname = depths(ii)
+        else
+            altdname = find_alt_names(depths(ii))
+            do ii = 0, dimsizes(altdname) - 1
+                if (isfilevar(ff, altdname(ii))) then
+                    lexist = True
+                    vname = altdname(ii)
+                    break
+                end if
+            end do
+            delete(altdname)
+        end if
+
+        if (lexist) then
+            depth = ff->$vname$
+            w = addfile(OUTFILE, "w")
+            w->$depths(ii)$ = depth
+            info_output("  Adding " + depths(ii) + " to OUTFILE", verbosity, 1)
+            delete(depth)
+        else
+            error_msg("f", scriptname, funcname, \
+                      "variable " + name + " not found in input file")
+        end if
+    end do
 
     leave_msg(scriptname, funcname, 4)
 

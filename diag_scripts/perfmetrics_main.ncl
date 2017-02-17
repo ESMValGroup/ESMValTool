@@ -11,6 +11,8 @@
 ;;    (see perfmetrics_grading.ncl).
 ;;    Input data are regridded to a common grid and a consistent mask of
 ;;    missing values is applied to all models and observations.
+;;    The user can select the target grid (the coarsest grid is used as
+;;    default). For irregular grids, the 1x1 grid must be selected.
 ;;
 ;; Required diag_script_info attributes (diagnostics specific)
 ;;    plot_type: cycle (time), zonal (plev, lat), latlon (lat, lon) or
@@ -25,14 +27,15 @@
 ;;    styleset: as in lib/ncl/style.ncl functions
 ;;    t_test: calculate t-test in difference plots
 ;;    conf_level: confidence level for the t-test
-;;    ref_model: reference model used for comparison (optionally two models can
-;;               be provided in an array, the second is used as alternative)
 ;;
 ;; Optional diag_script_info attributes (diagnostic specific)
 ;;    grid: regridding option
 ;;    region: selected region
 ;;    level: pressure level in hPa (for T3M fields only)
 ;;    range_option: time range selection option (default 0)
+;;    projection: map projection for lat-lon plots (default = cylindrical equidistant)
+;;    stippling: True = use stippling to mark statistically significant differences
+;;               False = mask out non-significant differences in gray (default)
 ;;
 ;; Required variable_info attributes (variable specific)
 ;;    map_ref_Levels: contour levels for the latlon plot
@@ -47,7 +50,9 @@
 ;;    plot_units: plotting units (if different from standard CMOR units)
 ;;
 ;; Caveats
-;;    See FIXME comments in the code.
+;;    The reference model must be specified in the main namelsit in the 
+;;    <variable> tag as <variable ref_model="XX">. An alternative model
+;;    can be also given, separated by a comme <variable ref_model="XX,"YY">.
 ;;    Consistent regridding and a uniform missing value mask are applied to all
 ;;    models before the diagnostics are calculated. Regarding the masking, the
 ;;    following shall be considered:
@@ -63,17 +68,27 @@
 ;;          and a warning is issued.
 ;;
 ;; Modification history
+;;    20161220_A_laue_ax: added option to set map projection for lat-lon plots
+;;                        (diag_script_info@projection)
+;;                        added option to choose how to plot t-test results:
+;;                        stippling or masking out in gray (lat-lon plots only)
+;;    20161019_A_laue_ax: changed plotting of t-test results:
+;;                        now stippling significant grid cells
+;;                        (old version: masking out non-significant values in gray)
+;;    20160628_A_righ_ma: moving ref_model specification from cfg- files to
+;;                        main namelist
+;;    20160628-A_senf_da: added regridding for irregular grids (ESMF_regrid).
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
-;;                        of the code
-;;    20151013-A_righ_ma: fixed t-test mask in lat-lon difference plots
+;;                        of the code.
+;;    20151013-A_righ_ma: fixed t-test mask in lat-lon difference plots.
 ;;    20150325-A_laue_ax: modified reference tags used for acknowledgements
-;;                        (projects, observations, etc)
+;;                        (projects, observations, etc.).
 ;;    20150119-A-gott_kl: removed "grid", "region" from req_atts
-;;                        (for T2Ms vmrco)
+;;                        (for T2Ms vmrco).
 ;;    20150113-A_gott_kl: reconciled generalised regridding with T1* & T0*
 ;;    20140905-A_righ_ma: consistent regridding and missing values mask.
-;;    20140701-A_gott_kl: Adapted for T1M
-;;    20140630-A_gott_kl: Adapted for T0Ms
+;;    20140701-A_gott_kl: Adapted for T1M.
+;;    20140630-A_gott_kl: Adapted for T0Ms.
 ;;    20131203-A_fran_fr: written.
 ;;
 ;;#############################################################################
@@ -98,7 +113,7 @@ load "./diag_scripts/aux/perfmetrics/aux_perfmetrics.ncl"
 begin
 
     verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
-    info_output("<<<<<<<< Entering " + diag_script, verbosity, 4)
+    enter_msg(diag_script, "", 4)
     info_output("++++++++++++++++++++++++++++++++++++++++++", verbosity, 1)
     info_output(diag_script + " (var: " + variables(0) + ")", verbosity, 1)
     info_output("++++++++++++++++++++++++++++++++++++++++++", verbosity, 1)
@@ -111,9 +126,9 @@ begin
     ;; Write references
     write_references(diag_script, \
                      "A_fran_fr", \
-                     (/"A_righ_ma", "A_eyri_ve", "A_gott_kl"/), \
+                     (/"A_righ_ma", "A_eyri_ve", "A_gott_kl", "A_senf_da"/), \
                      (/"D_righi15gmd", "D_gleckler08jgr"/), \
-                     (/"E_kalnay96bams", "E_erainterim", "E_airs", \
+                     (/"E_ncep", "E_erainterim", "E_airs", \
                        "E_ceresebaf", "E_srb"/), \
                      (/"P_embrace", "P_esmval"/))
 end
@@ -134,12 +149,8 @@ begin
     ;; Check required diag_script_info attributes
     req_atts = (/"plot_type", "time_avg", "valid_fraction", "draw_plots", \
                  "plot_diff", "plot_stddev", "legend_outside", "styleset", \
-                 "t_test", "conf_level", "ref_model"/)
-    if (.not.all(isatt(diag_script_info, req_atts))) then
-        error_msg("f", diag_script, "", "missing required " + \
-                  "diag_script_info attribute:" + \
-                  req_atts(ind(.not.isatt(diag_script_info, req_atts))))
-    end if
+                 "t_test", "conf_level"/)
+    exit_if_missing_atts(diag_script_info, req_atts)
 
     ;; Set plot type
     ptype = diag_script_info@plot_type
@@ -159,6 +170,13 @@ begin
          all(field_type0.ne.(/"T3M", "T2Ms"/)))) then
         error_msg("f", diag_script, "", "input field " + field_type0 + \
                   " is not compatible with plot_type " + ptype)
+    end if
+
+    ;; stippling / or masking out of significant/non-significant differences
+    if (isatt(diag_script_info, "stippling")) then
+        stippling = diag_script_info@stippling
+    else
+        stippling = False  ; default = mask out non-significant differences in gray
     end if
 
     ;; Selected time average
@@ -196,7 +214,7 @@ begin
 
     ;; Check for regridding method
     if (.not.(isatt(diag_script_info, "grid"))) then
-        error_msg("w", diag_script, "", "Regridding method not defined. " + \
+        error_msg("w", diag_script, "", "regridding method not defined. " + \
                   "Using coarsest")
         selected_grid = "coarsest"
     else
@@ -204,38 +222,71 @@ begin
     end if
 
     ;; Check for reference model definition
-    if (.not.(isatt(diag_script_info, "ref_model"))) then
-        error_msg("f", diag_script, "", "no reference model is selected")
+    if (var_attr_ref(0).eq."None") then
+        error_msg("f", diag_script, "", "no reference model is specified")
     end if
 
-    ;; Determine reference model
-    ref_ind = ind(models@name.eq.diag_script_info@ref_model(0))
-    if (ismissing(ref_ind)) then
-        error_msg("f", diag_script, "", "no adequate reference model provided")
-    end if
-
-    ;; Determine alternative model
-    if (dimsizes(diag_script_info@ref_model).gt.1) then
-        alt_ind = ind(models@name.eq.diag_script_info@ref_model(1))
-        if (ismissing(alt_ind)) then
-            error_msg("f", diag_script, "", "no adequate alternative " + \
-                      "model provided")
-        end if
+    ;; Determine reference (and alternative) model
+    ref_ind = get_ref_model_idx(models, var_attr_ref(0))
+    if (dimsizes(ref_ind).gt.1) then
+        alt_ind = ref_ind(1)
+        ref_ind := ref_ind(0)
     end if
 
     ;; Output plot directory
     plot_dir = getenv("ESMValTool_plot_dir")
     output_dir = get_output_dir(plot_dir, diag_script_base)
 
+    ;; Check for irregular grid
+    l_irreg = new(dim_MOD, logical)
+    l_irreg = False
+    do imod = 0, dim_MOD - 1
+        data = read_data(imod, var0, field_type0)
+        cnt = interface_get_dictkeys(var0, imod) + "_dimNames"
+        dims = data@$cnt$
+        ndims = dimsizes(dims)
+        if (ndims.lt.2) then
+            continue
+        end if
+        if (ndims.eq.2 .and. dims(0).eq."time") then
+            continue
+        end if
+        if (dims(ndims - 1).ne."lon" .and. dims(ndims - 2).ne."lat") then
+            l_irreg(imod) = True
+            continue
+        end if
+    end do
+    delete([/data, cnt, dims, ndims/])
+
     ;; Define target grid for regridding
+    if (any(l_irreg) .and. selected_grid.ne."1x1") then
+        error_msg("f", diag_script, "", "models are on irregular grid, " + \
+                  "diag_script_info@grid = '1x1' must be used")
+    end if
+
     models_ind = ispan(0, dim_MOD - 1, 1)
     info_output("Setting target grid:", verbosity, 2)
     if (selected_grid.eq."ref") then
         grid = find_destination_grid(ref_ind, \
                                      var0, field_type0, "coarsest")
+    else if (selected_grid.eq."1x1") then
+        grid     = new((/180, 360/), float)
+        grid!0   = "lat"
+        grid!1   = "lon"
+        grid&lat = flt2dble(fspan(-89.5,  89.5, 180))  ; CMOR standard
+        grid&lon = flt2dble(fspan(0.5, 359.5, 360))    ; CMOR standard
+        grid&lat@standard_name = "latitude"
+        grid&lon@standard_name = "longitude"
+        grid&lat@long_name     = "latitude"
+        grid&lon@long_name     = "longitude"
+        grid&lat@units         = "degrees_north"
+        grid&lon@units         = "degrees_east"
+        grid&lat@axis          = "Y"
+        grid&lon@axis          = "X"
     else
         grid = find_destination_grid(models_ind, \
                                      var0, field_type0, selected_grid)
+    end if
     end if
     delete(models_ind)
 
@@ -259,17 +310,126 @@ begin
             dnames = getVarDimNames(pre_var)
 
         else
-
-           ;; Extract model corresponding data
+            ;; Extract model corresponding data
             data = read_data(imod, var0, field_type0)
             var = extract_data_extended(imod, var0, data, -1, 0, 0)
-            delete(data)
-
-            ;; Determine dimensions to regrid
-            zregrid = False  ; plev
-            xregrid = False  ; lon
-            yregrid = False  ; lat
             dnames = getVarDimNames(var)
+
+            ;; Regular or irregular grid?
+            if (l_irreg(imod)) then  ; irregular grid
+
+                ;; Regrid using ESMF_regrid
+
+                ;; ESMF_regrid cannot handle integer coordinates
+                do ii = 0, dimsizes(dnames) - 1
+                    if (dnames(ii).eq."time") then
+                        continue
+                    end if
+                    if (typeof(var&$dnames(ii)$).eq."integer") then
+                        var&$dnames(ii)$ := tofloat(var&$dnames(ii)$)
+                    end if
+                end do
+
+                ;; Pass information of irregular grid as attributes of var
+                ;;  - lat/lon grid information comes from another file
+                ;; this is NOT CMOR standard! Reformat below.
+                var@lat2d := extract_area(imod, data, "lat", var0)
+                var@lon2d := extract_area(imod, data, "lon", var0)
+
+                ;; Naming of intermediate regrid files: will be re-used if
+                ;; already present - ensure unambiguous naming!
+                ;; Because of the mask of missing values, even different
+                ;; time-steps / model levels need their own wgt file
+                stem   = interface_get_inpaths(imod) + \
+                    "/ESMF_regrid_" + models@project(imod) + "_" + \
+                    models@name(imod) + "_" + models@experiment(imod) + "_" + \
+                    models@ensemble(imod)
+                ending = var0 + "_" + models@start_year(imod) + \
+                    "-" + models@end_year(imod) + ".nc"
+
+                ;; Set options
+                Opt = True
+                Opt@SrcMask2D  = where(ismissing(var(0, :, :)), 0, 1)
+                Opt@DstGridLat = grid&lat
+                Opt@DstGridLon = grid&lon
+                ;Opt@DstGridType    = "rectilinear"  ; problem with that Opt
+                Opt@ForceOverwrite = True
+                Opt@PrintTimings   = True
+                Opt@Debug          = True
+                Opt@InterpMethod   = "patch"  ; "bilinear", "patch", "conserve"
+
+                ;; Save regrid files for later use: careful with naming!
+                Opt@WgtFileName = stem + "_Wgt_" + var0 + ".nc"
+                Opt@SrcFileName = stem + "_Src_" + ending
+                Opt@DstFileName = stem + "_Dst_" + ending
+
+                ;; Reuse regrid files if present
+                if (isfilepresent(Opt@SrcFileName)) then
+                    Opt@SkipSrcGen = True
+                end if
+                if (isfilepresent(Opt@DstFileName)) then
+                    Opt@SkipDstGen = True
+                end if
+                if (isfilepresent(Opt@WgtFileName)) then
+                    Opt@SkipWgtGen = True
+                    var_hreg = ESMF_regrid_with_weights(var, \
+                                                        Opt@WgtFileName, Opt)
+                else
+                    var_hreg = ESMF_regrid(var, Opt)
+                end if
+                delete(Opt)
+
+            else  ; regular grid
+
+                ;; Determine dimensions to be regridded
+                xregrid = False  ; lon
+                yregrid = False  ; lat
+                if (any(dnames.eq."lon")) then
+                    xregrid = True
+                    if (dimsizes(var&lon).eq.dimsizes(grid&lon)) then
+                        if (max(abs(var&lon - grid&lon)).lt.1.d-5) then
+                            xregrid = False
+                        end if
+                    end if
+                end if
+                if (any(dnames.eq."lat")) then
+                    yregrid = True
+                    if (dimsizes(var&lat).eq.dimsizes(grid&lat)) then
+                        if (max(abs(var&lat - grid&lat)).lt.1.d-5) then
+                            yregrid = False
+                        end if
+                    end if
+                end if
+
+                ;; Regrid in the horizontal (if necessary)
+                if (xregrid.and.yregrid) then
+                    var_hreg = linint2_Wrap(var&lon, var&lat, var, True, \
+                                            grid&lon, grid&lat, 0)
+                else if (xregrid.and..not.yregrid) then
+                    dx = ind(dnames.eq."lon")
+                    var_hreg = linint1_n_Wrap(var&lon, var, True, grid&lon, \
+                                              0, dx)
+                    info_output("Latitude regridding not required", \
+                                verbosity, 4)
+                else if (.not.xregrid.and.yregrid) then
+                    dx = ind(dnames.eq."lat")
+                    var_hreg = linint1_n_Wrap(var&lat, var, False, \
+                                              grid&lat, 0, dx)
+                    info_output("Longitude regridding not required", \
+                                verbosity, 4)
+                else if (.not.xregrid .and. .not.yregrid) then
+                    var_hreg = var
+                    info_output("Horizontal regridding not required", \
+                                verbosity, 4)
+                end if
+                end if
+                end if
+                end if
+
+            end if  ; regular or irregular grid?
+
+            ;; Regrid in the vertical (if necessary)
+            zregrid = False  ; plev
             if (any(dnames.eq."plev")) then
                 zregrid = True
                 if (dimsizes(var&plev).eq.dimsizes(grid&plev)) then
@@ -278,45 +438,6 @@ begin
                     end if
                 end if
             end if
-            if (any(dnames.eq."lon")) then
-                xregrid = True
-                if (dimsizes(var&lon).eq.dimsizes(grid&lon)) then
-                    if (max(abs(var&lon - grid&lon)).lt.1.d-5) then
-                        xregrid = False
-                    end if
-                end if
-            end if
-            if (any(dnames.eq."lat")) then
-                yregrid = True
-                if (dimsizes(var&lat).eq.dimsizes(grid&lat)) then
-                    if (max(abs(var&lat - grid&lat)).lt.1.d-5) then
-                        yregrid = False
-                    end if
-                end if
-            end if
-
-            ;; Regrid in the horizontal (if necessary)
-            if (xregrid.and.yregrid) then
-                var_hreg = linint2_Wrap(var&lon, var&lat, var, True, \
-                                        grid&lon, grid&lat, 0)
-            else if (xregrid.and..not.yregrid) then
-                dx = ind(dnames.eq."lon")
-                var_hreg = linint1_n_Wrap(var&lon, var, True, grid&lon, 0, dx)
-                info_output("Latitude regridding not required", verbosity, 4)
-            else if (.not.xregrid.and.yregrid) then
-                dx = ind(dnames.eq."lat")
-                var_hreg = linint1_n_Wrap(var&lat, var, False, grid&lat, 0, dx)
-                info_output("Longitude regridding not required", verbosity, 4)
-            else if (.not.xregrid .and. .not.yregrid) then
-                var_hreg = var
-                info_output("Horizontal regridding not required", verbosity, 4)
-            end if
-            end if
-            end if
-            end if
-            delete(var)
-
-            ;; Regrid in the vertical (if necessary)
             if (zregrid) then
                 var_vreg = int2p_n_Wrap(var_hreg&plev, var_hreg, \
                                         grid&plev, 1, 1)
@@ -333,8 +454,9 @@ begin
             pre_var@diag_script = (/diag_script/)
             pre_var@ncdf = regr_path
             ncdf_outfile = ncdf_write(pre_var, regr_path)
+            delete([/data, var/])
 
-        end if
+        end if  ; data already processed?
 
         ;; Create a missing value mask for each model
         ;; The dim_avg_wgt function with option limit is used on the time
@@ -348,8 +470,8 @@ begin
 
         ww = pre_var&time
         ww = 1.
-        limit  = toint(diag_script_info@valid_fraction * \
-                       dimsizes(pre_var&time))
+        limit = toint(diag_script_info@valid_fraction * \
+                      dimsizes(pre_var&time))
 
         if (any(dnames.eq."plev")) then  ; process levels individually
 
@@ -378,7 +500,7 @@ begin
                     if (all(ismissing(tmp))) then
                         error_msg("w", diag_script, "", modelnames(imod) + \
                                   " (level " + kk + ") contains only " + \
-                                  "missing values. Excluding from global " + \
+                                  "missing values, excluding from global " + \
                                   "masking.")
                     else
                         if (dimsizes(dimsizes(global_mask)).eq.3) then
@@ -409,13 +531,12 @@ begin
             tmp = where(ismissing(tmp), tmp, 0.)
             if (all(ismissing(tmp))) then
                 error_msg("w", diag_script, "", modelnames(imod) + \
-                          "contains only missing values, Excluding from global " + \
-                          "masking.")
+                          "contains only missing values, excluding " + \
+                          "from global masking.")
             else
                 global_mask = global_mask + tmp
             end if
             delete(tmp)
-
         end if
         delete(ww)
         delete(pre_var)
@@ -504,6 +625,13 @@ begin
         var_diff = var_all(:, :, :, 0)
     end if
 
+    ; if needed, create array for statistically significant grid cells
+    if (isatt(diag_script_info, "t_test")) then
+        if (diag_script_info@t_test) then
+            var_sig = var_diff
+        end if
+    end if
+
     ;; Variable rank: cycle:3, zonal/latlon:4, cycle_latlon:5
     irank = dimsizes(dimsizes(var_all))
 
@@ -511,6 +639,7 @@ begin
     var_all@var = var0
     var_all@diag_script = (/diag_script/)
     copy_VarAtts(diag_script_info, var_all)
+    var_all@ref_model = str_get_field(var_attr_ref(0), 1, ",")
 
     ;; Loop over models
     do imod = 0, dim_MOD - 1
@@ -708,7 +837,6 @@ begin
             var = var_all(imod, :, :, :)
             delete(var_avg)
             delete(var_std)
-
         end if
 
         ;; Optional output to NetCDF
@@ -753,10 +881,11 @@ begin
                     n1 = get_end_year(imod) - get_start_year(imod) + 1
                     n2 = get_end_year(ref_ind) - get_start_year(ref_ind) + 1
                     prob = ttest(x1, s1, n1, x2, s2, n2, True, False)
-                    prob = 1. - prob
-                    var_diff(imod, :, :) = \
-                        where(prob.gt.diag_script_info@conf_level, \
-                              var_diff(imod, :, :), var_diff@_FillValue)
+;                    prob = 1. - prob
+;                    var_diff(imod, :, :) = \
+;                        where(prob.gt.diag_script_info@conf_level, \
+;                              var_diff(imod, :, :), var_diff@_FillValue)
+                    var_sig(imod, :, :) = 1. - prob
                     var_diff@conf_level = diag_script_info@conf_level
                     delete(prob)
                 end if
@@ -779,11 +908,12 @@ begin
                     n1 = get_end_year(imod) - get_start_year(imod) + 1
                     n2 = get_end_year(ref_ind) - get_start_year(ref_ind) + 1
                     prob = ttest(x1, s1, n1, x2, s2, n2, True, False)
-                    prob = 1. - prob
-                    var_diff(imod, :) = \
-                        where(prob.gt.diag_script_info@conf_level, \
-                              var_diff(imod, :), var_diff@_FillValue)
-                    var_diff@conf_level = diag_script_info@conf_level
+;                    prob = 1. - prob
+;                    var_diff(imod, :) = \
+;                        where(prob.gt.diag_script_info@conf_level, \
+;                              var_diff(imod, :), var_diff@_FillValue)
+;                    var_diff@conf_level = diag_script_info@conf_level
+                    var_sig(imod, :) = 1. - prob
                     delete(prob)
                 end if
 
@@ -915,6 +1045,28 @@ begin
                         wks = gsn_open_wks(file_type, outfile)
                         gsn_merge_colormaps(wks, "temp_19lev", "gray70")
                         plot = zonalmean_profile(wks, var, var0)
+
+                        ; add stippling for statistically significant grid cells
+                        var = var_sig(imod, :, :)
+                        var@res_cnMissingValFillColor = -1 ; transparent
+                        var@res_gsnSpreadColorEnd   = -2
+                        var@res_gsnDraw = False       ; Do not draw plot
+                        var@res_gsnFrame= False       ; Do not advance frome
+                        var@res_cnLevelSelectionMode = "ExplicitLevels"
+                        var@res_cnFillColors        = (/"transparent", "black"/)
+                        delete(var@res_cnLevels)
+                        var@res_cnLevels            = diag_script_info@conf_level
+                        var@res_cnInfoLabelOn       = False       ; turn off info label
+                        var@res_cnLinesOn           = False       ; do not draw contour lines
+                        var@res_cnLineLabelsOn      = False       ; do not draw contour labels
+                        var@res_lbLabelBarOn        = False
+                        var@res_cnFillPattern       = 17
+
+                        delete(var@long_name)
+                        plot2 = zonalmean_profile(wks, var, var0)
+
+                        overlay (plot, plot2)
+
                         draw(plot)
                         frame(wks)
                         info_output(" gv " + outfile + "." + file_type, \
@@ -922,6 +1074,7 @@ begin
                         delete(var@res_cnLevels)
                         delete(wks)
                         delete(plot)
+                        delete(plot2)
                     end if
                 end if
                 delete(var)
@@ -935,6 +1088,9 @@ begin
                     modelnames(imod) + "_" + var0 + "_" + ptype + "_" + \
                     time_avg + "_" + level + region_name
                 var = var_all(imod, :, :, 0)
+                if (isatt(diag_script_info, "projection")) then
+                    var@projection = diag_script_info@projection
+                end if
                 var@res_cnLinesOn = False
                 var@res_cnLevelSelectionMode = "ExplicitLevels"
                 var@res_tiMainString = modelnames(imod)
@@ -988,6 +1144,9 @@ begin
                         var@res_cnLevels = variable_info@map_diff_Levels
                         var@res_cnMissingValFillColor = "gray70"
                         var@res_gsnSpreadColorEnd = -2
+                        if (isatt(diag_script_info, "projection")) then
+                            var@projection = diag_script_info@projection
+                        end if
                         ;; Append global field average
                         if (isatt(variable_info, "show_global_avg")) then
                             if (variable_info@show_global_avg) then
@@ -1002,6 +1161,32 @@ begin
                         wks = gsn_open_wks(file_type, outfile)
                         gsn_merge_colormaps(wks, "temp_19lev", "gray70")
                         plot = contour_map_ce(wks, var, var0)
+
+                        ; add stippling/masking of statistically significant/not-significant grid cells
+
+                        res2 = True
+                        res2@cnLevelSelectionMode = "ExplicitLevels"
+                        res2@cnLevels = (/0.0, diag_script_info@conf_level, 1.0/)
+                        res2@cnInfoLabelOn = False
+                        res2@cnLinesOn = False
+                        res2@cnLineLabelsOn = False
+                        res2@gsnDraw = False
+                        res2@gsnFrame = False
+
+                        plot2 = gsn_csm_contour(wks, var_sig(imod, :, :), res2)
+
+                        opt = True
+                        if (stippling) then
+                            opt@gsnShadeFillType = "pattern"
+                            opt@gsnShadeMid = 17
+                        else
+                            opt@gsnShadeFillType = "color"
+                            opt@gsnShadeLow = "gray70"
+                        end if
+
+                        plot2 = gsn_contour_shade(plot2, diag_script_info@conf_level, 999., opt)
+                        overlay (plot, plot2)
+
                         draw(plot)
                         frame(wks)
                         info_output(" gv " + outfile + "." + file_type, \
@@ -1009,6 +1194,7 @@ begin
                         delete(var@res_cnLevels)
                         delete(wks)
                         delete(plot)
+                        delete(plot2)
                     end if
                 end if
                 delete(var)
@@ -1017,6 +1203,6 @@ begin
         end if
     end if
 
-    info_output(">>>>>>>> Leaving " + diag_script, verbosity, 4)
+    leave_msg(diag_script, "", 4)
 
 end

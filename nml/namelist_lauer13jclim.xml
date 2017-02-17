@@ -121,7 +121,7 @@ This namelist is part of the ESMValTool
         <model> obs4mips GPCP-SG L3 v2.2 1986 2005 @{OBSPATH}/Tier1/ </model>
         <diag_script cfg="cfg_clouds.ncl"> clouds.ncl </diag_script>
     </diag>
-
+<!--
     <diag>
         <description> Cloud diagnostics</description>
         <variable_def_dir>    ./variable_defs/   </variable_def_dir>
@@ -131,7 +131,7 @@ This namelist is part of the ESMValTool
         <model> OBS MODIS-CFMIP sat v2 2003 2014 @{OBSPATH}/Tier2/MODIS-CFMIP </model>
         <diag_script cfg="cfg_clouds.ncl"> clouds.ncl </diag_script>
     </diag>
-
+-->
     <diag>
         <description> Cloud diagnostics</description>
         <variable_def_dir>    ./variable_defs/   </variable_def_dir>
@@ -207,7 +207,7 @@ This namelist is part of the ESMValTool
         <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2012 @{OBSPATH}/Tier1/ </model>
         <diag_script cfg="cfg_clouds_taylor.ncl"> clouds_taylor.ncl </diag_script>
     </diag>
-
+<!--
     <diag>
         <description> Cloud diagnostics</description>
         <variable_def_dir>    ./variable_defs/   </variable_def_dir>
@@ -217,7 +217,7 @@ This namelist is part of the ESMValTool
         <model> OBS MODIS-CFMIP sat v2 2003 2014 @{OBSPATH}/Tier2/MODIS-CFMIP </model>
         <diag_script cfg="cfg_clouds_taylor.ncl"> clouds_taylor.ncl </diag_script>
     </diag>
-
+-->
     <diag>
         <description> Cloud diagnostics</description>
         <variable_def_dir>    ./variable_defs/   </variable_def_dir>
@@ -285,7 +285,7 @@ This namelist is part of the ESMValTool
         <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2012 @{OBSPATH}/Tier1/ </model>
         <diag_script cfg="cfg_clouds_interannual.ncl"> clouds_interannual.ncl </diag_script>
     </diag>
-
+<!--
     <diag>
         <description> Cloud diagnostics</description>
         <variable_def_dir>    ./variable_defs/   </variable_def_dir>
@@ -295,7 +295,7 @@ This namelist is part of the ESMValTool
         <model> OBS MODIS-CFMIP sat v2 2003 2014 @{OBSPATH}/Tier2/MODIS-CFMIP </model>
         <diag_script cfg="cfg_clouds_interannual.ncl"> clouds_interannual.ncl </diag_script>
     </diag>
-
+-->
     <diag>
         <description> Cloud diagnostics</description>
         <variable_def_dir>    ./variable_defs/   </variable_def_dir>

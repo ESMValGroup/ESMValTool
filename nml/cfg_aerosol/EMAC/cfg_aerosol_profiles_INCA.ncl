@@ -12,4 +12,7 @@ diag_script_info@datapath = getenv("ESMValTool_OBSPATH") + "/Tier3/"+\
                             diag_script_info@campaign
 
 ; Cloud cover threshold (%)
-diag_script_info@cc_threshold = 5.
+diag_script_info@cc_threshold = 100.
+
+; Summary plot
+diag_script_info@summary_plot = False

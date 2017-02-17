@@ -125,14 +125,9 @@ function get_output_filename(res[1]:logical,
 ; Define the CMIP5 DRS output filename
 local outfile_string, month_str
 begin
-    outfile_string = res@processed_data_folder + "/"\
-                                               + var_name + "_"\
-                                               + mip + "_"\
-                                               + "CMAP_"\
-                                               + "observation_"\
-                                               + "r1i1p1_"\
-                                               + tostring(year1) + "01-"\
-                                               + tostring(year2) + "12.nc"
+    outfile_string = res@processed_data_folder + "/" + \
+        "OBS_CMAP_mergedanaly_1_T2Ms_pr_" + \
+        tostring(year1) + "01-" + tostring(year2) + "12.nc"
     if (isfilepresent(outfile_string)) then
         system("rm -f " + outfile_string)
     end if

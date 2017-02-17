@@ -293,6 +293,8 @@ begin
         gAtt@conventions = "CF/CMOR"
 
         ;; Write variable
+        out_file = str_sub_str(out_file, ".nc", "_" + \
+                               YEAR1 + "01-" + YEAR2 + "12.nc")
         write_nc(out_file, VAR, output, gAtt)
         info_output("  Wrote " + out_file, verbosity, 1)
         delete(gAtt)
@@ -301,7 +303,7 @@ begin
 
         ;; Create soft links (workaround to deal with naming conventions)
         if(soft_links) then
-            linked_file = str_sub_str(out_file, ".nc", "_" + station + ".nc")
+            linked_file = str_sub_str(out_file, VAR, VAR + "_" + station)
             system("ln -s " + out_file + " " + linked_file)
         end if
 

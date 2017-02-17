@@ -96,6 +96,9 @@ def cmor_reformat(currProject, project_info, variable, model):
     lmaskfile_path = currProject.get_cf_lmaskfile(project_info, model)
     omaskfile_path = currProject.get_cf_omaskfile(project_info, model)
 
+    # Porosity file name for land variables
+    porofile_path = currProject.get_cf_porofile(project_info, model)
+
     # Additional grid file names for ocean grids, if available (ECEARTH)
     hgridfile_path = False
     zgridfile_path = False
@@ -138,6 +141,7 @@ def cmor_reformat(currProject, project_info, variable, model):
     project_info['TEMPORARY']['areafile_path'] = areafile_path
     project_info['TEMPORARY']['lmaskfile_path'] = lmaskfile_path
     project_info['TEMPORARY']['omaskfile_path'] = omaskfile_path
+    project_info['TEMPORARY']['porofile_path'] = porofile_path
     project_info['TEMPORARY']['start_year'] = start_year
     project_info['TEMPORARY']['end_year'] = end_year
     project_info['TEMPORARY']['ensemble'] = ensemble

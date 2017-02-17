@@ -40,13 +40,3 @@ diag_script_info@t_test = False
 
 ;; Confidence level for the t-test (for zonal and lat-lon)
 diag_script_info@conf_level = 0.95
-
-;; Reference model, as specified in annotations
-;; If the attribute is a 2D array, the first model specified the
-;; reference, the second model the alternative
-if (variables(0).eq."ta") then
-    diag_script_info@ref_model = "ERA-Interim"
-else if (variables(0).eq."vmrh2o") then
-    diag_script_info@ref_model = "HALOE"
-end if
-end if

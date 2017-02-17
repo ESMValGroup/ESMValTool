@@ -15,10 +15,20 @@
 ;;            styleset: chose styles set for lines
 ;;
 ;; Optional diag_script_info attributes (diagnostics specific)
+;;    masking         0 = no masking (default)
+;;                    1 = land points only
+;;                    2 = ocean points only
+;;    show_anomalies  False = plot absolute values (default)
+;;                    True  = plot anomalies in % of daily mean
 ;;
 ;; Caveats
 ;;
 ;; Modification history
+;;    20161109-A_laue_ax: - added option to mask land/ocean points
+;;                        - added option to plot anomalies
+;;                        - generalized calculation of diurnal cycle removing
+;;                          restriction of supporting 3-hourly values only
+;;                        - weighting of grid cells by surface area
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;;                        of the code
 ;;    20150702-A_eval_ma: written.
@@ -34,6 +44,10 @@ load "./interface_scripts/data_handling.ncl"
 load "./interface_scripts/messaging.ncl"
 
 load "./diag_scripts/lib/ncl/set_operators.ncl"
+
+; A_laue_ax+
+load "./diag_scripts/lib/ncl/latlon.ncl"
+; A_laue_ax-
 
 exact_panel_position_file = "./diag_scripts/aux/SAMonsoon/exact_panel_positions_precip_world.ncl"
 load "./plot_scripts/ncl/monsoon_panels.ncl"
@@ -115,12 +129,28 @@ begin
     ;; Abbreviate a little...
     di = diag_script_info
 
+; A_laue_ax+
+    if (isatt(di, "masking")) then
+        masking = di@masking
+    else
+        masking = 0
+    end if
+
+    if (isatt(di, "show_anomalies")) then
+        show_anomalies = di@show_anomalies
+    else
+        show_anomalies = False
+    end if
+
+    season = di@season
+; A_laue_ax-
+
      ;;------------------------------------------------------
     ;; Define transforms apply and and debug data to display
     ;;------------------------------------------------------
     transforms = True
     transforms@apply_these = (/"lonflip", "season", "latrange", "lonrange"/)
-    transforms@season = di@season
+    transforms@season = season
     transforms@latrange = di@latrange
     transforms@lonrange = di@lonrange
 
@@ -175,13 +205,78 @@ begin
             ;; Extract and modify data
             A0_full = extract_data(idx_mod, nml_data_vault, -1, 0, 0)
             A0 = apply_transforms(transforms, A0_full)
+; A_laue_ax+
+            ; optionally extract second season and append to data array
+            ; (needed for IPCC Ch.9 Fig 9.30)
+            if (isatt(di, "season2")) then
+                transforms@season = di@season2
+                A0B = apply_transforms(transforms, A0_full)
+                A0_tmp = array_append_record(A0, A0B, 0)
+                delete(A0)
+                delete(A0B)
+                A0 = A0_tmp
+                delete(A0_tmp)
+                season = di@season + "+" + di@season2
+            end if
+; A_laue_ax-
             delete(A0_full)
+; A_laue_ax+
+            ; optionally apply masking
 
+            if (masking.ne.0) then
+                f = addfile("$NCARG_ROOT/lib/ncarg/data/cdf/landsea.nc", "r")
+                a = f->LSMASK
+                sftlf = byte2flt(landsea_mask(a, A0&lat, A0&lon))
+                delete(a)
+            end if
+
+            if (masking.eq.1) then      ; 1 = land points only
+                sftlf = where(sftlf.lt.1, sftlf@_FillValue, 0.0)
+                A0 = A0 + conform(A0, sftlf, (/1, 2/))
+            else if (masking.eq.2) then ; 2 = ocean points only
+                sftlf = where(sftlf.ge.1, sftlf@_FillValue, 0.0)
+                A0 = A0 + conform(A0, sftlf, (/1, 2/))
+            end if
+            end if
+
+;            ; debug output
+;            system ("rm debug.nc")
+;            debugfile = addfile("debug.nc","c")
+;            debugfile->A0 = A0
+;            exit
+
+            if (masking.ne.0) then
+                delete(sftlf)
+            end if
+; A_laue_ax-
             ;; Diagnostic data arrays
             ;; based on CMIP5 3hr data
             ;; If some models do not have 3hr data, change code to
             ;; extract nHR from input file
-            nHR = 8
+
+            ;; Compute box mean
+; A_laue_ax+
+;            var_box = dim_avg_n(A0(:, :, :), (/1, 2/))
+            ; weight boxes by surface area
+            var_box = area_operations(A0, -90, 90, -180, 180, "average", True)
+; A_laue_ax-
+
+            ;; Compute mean for each hour
+            timeh = cd_calendar(A0&time, 0)
+
+; A_laue_ax+
+            nHR = 0
+            hharray = new((/24/), integer)
+
+            do hh = 0, 23
+                if (.not.all(ismissing(ind(timeh(:, 3).eq.hh)))) then
+                    hharray(nHR) = hh
+                    nHR = nHR + 1
+                end if
+            end do
+
+;            nHR = 8
+
             model_tmp = models@name
             model_tmp@long_name = "Model names"
             hour_tmp = new((/nHR/), float)
@@ -206,13 +301,14 @@ begin
             LT_sort = new((/nHR/), float)
             localhour = new((/nHR + 2/), float)
 
-            ;; Compute box mean
-            var_box = dim_avg_n(A0(:, :, :), (/1, 2/))
-
-            ;; Compute mean for each hour
-            timeh = cd_calendar(A0&time, 0)
-            hour_tmp = timeh(0:nHR - 1, 3)
+            hour_tmp = hharray(0:nHR - 1)
             min_tmp = timeh(0:nHR - 1, 4)
+
+;            hour_tmp = timeh(0:nHR - 1, 3)
+;            min_tmp = timeh(0:nHR - 1, 4)
+
+; A_laue_ax-
+
             n = -1
             do nh = 0, nHR - 1
                 n = n + 1
@@ -221,7 +317,6 @@ begin
 
                 ;; Compute time
                 utc(n) = hour_tmp(nh) + min_tmp(nh) / 60.
-
                 ;; Compute mean diurnal cycle
                 dc(n) = dim_avg(var_box(indh))
                 delete([/indh/])
@@ -269,6 +364,18 @@ begin
             delete(utc)
             delete(hour_tmp)
             delete(min_tmp)
+
+; A_laue_ax+
+            ; optionally, calculate anomalies in % of daily mean
+
+            if (show_anomalies) then
+                mean = avg(diurnalcycle(1:nHR))
+                if (mean.ne.0.0) then
+                    diurnalcycle = (diurnalcycle - mean) / mean * 100.0
+                    diurnalcycle@units = "%"
+                end if
+            end if
+; A_laue_ax-
 
             ;; Check if start/end years are consistent across all models
             if ((first_start_year .ne. models@start_year(idx_mod))\
@@ -349,7 +456,7 @@ begin
 
     debuginfo@description_ycoord = 0.8
     debuginfo@description = "~F22~Diag def:~F21~ "\
-                            + di@season\
+                            + season\
                             + " average across indicated years"
 
     plot_settings@gsn_right_string = variable_info@long_name
@@ -363,13 +470,37 @@ begin
         years_string = "~F22~yrs:~F21~ inconsistent"
     end if
 
-    plot_settings@aux_filename_info = di@box + "-" + di@season + "-diurnal-cycle"
-    plot_settings@title_string = di@season + " Diurnal cycle over " + di@box
-    plot_settings@yaxis_string = variable_info@long_name
+; A_laue_ax+
+    if (isatt(di, "plotfile_suffix")) then
+        plot_settings@aux_filename_info = di@box + "-" + season + "-" + di@plotfile_suffix + "-diurnal-cycle"
+        plot_settings@title_string = season + " Diurnal cycle over " + di@box + " (" + di@plotfile_suffix + ")"
+    else
+        plot_settings@aux_filename_info = di@box + "-" + season + "-diurnal-cycle"
+        plot_settings@title_string = season + " Diurnal cycle over " + di@box
+    end if
+    if (show_anomalies) then
+        plot_settings@yaxis_string = "Anomaly " + variable_info@long_name + " (%)"
+    else
+; A_laue_ax-
+        plot_settings@yaxis_string = variable_info@long_name
+; A_laue_ax+
+    end if
+; A_laue_ax-
     plot_settings@xaxis_string = "Local hour"
     plot_settings@type = "Not applicable"
     plot_settings@left_plot_subheader = latlon_header_string + ", " + years_string
-    di@minmax = variable_info@minmax
+; A_laue_ax+
+    if (.not.isatt(di, "minmax")) then
+        if (isatt(variable_info, "minmax")) then
+; A_laue_ax-
+            di@minmax = variable_info@minmax
+; A_laue_ax+
+        else
+            ; default values to prevent the plotting routine from crashing
+            di@minmax = (/0.0, 1.0/)
+        end if
+    end if
+; A_laue_ax-
 
     xy_line_overlap(storage_vault, di, plot_settings, "diurnalcycle", debuginfo)
 

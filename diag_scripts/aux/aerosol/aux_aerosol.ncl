@@ -58,7 +58,7 @@ begin
     ;; Read list of stations
     stations = systemfunc("ls " + diag_script_info@datapath + \
                           "/OBS_" + diag_script_info@network + \
-                          "_ground_*_T0M_" + variable + ".nc")
+                          "_ground_*_T0M_" + variable + "_*.nc")
 
     nstations = dimsizes(stations)
     stname = new(nstations, string)

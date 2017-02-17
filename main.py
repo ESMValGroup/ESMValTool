@@ -45,7 +45,7 @@ import xml.sax
 import xml_parsers
 
 # Define ESMValTool version
-version = "1.0.1"
+version = "1.1.0"
 os.environ['0_ESMValTool_version'] = version
 
 # Check NCL version
@@ -53,7 +53,7 @@ ncl_version_check()
 
 # Check command arguments.
 usage = "%prog nml/namelist-file.xml"
-description = """ESMValTool - Earth System Model eValuation Tool.
+description = """ESMValTool - Earth System Model Evaluation Tool.
 For further help, check the doc/-folder for pdfs and references therein."""
 
 parser = OptionParser(usage=usage, description=description)
@@ -117,7 +117,7 @@ if not os.path.isdir(wrk_dir):
 
 # Prepare writing of references/acknowledgementes to file
 refs_acknows_file = str.replace(input_xml_file, "namelist_", "refs-acknows_")
-refs_acknows_file = refs_acknows_file.split(os.extsep)[0] + ".txt"
+refs_acknows_file = refs_acknows_file.split(os.extsep)[0] + ".log"
 
 out_refs = os.path.join(wrk_dir, refs_acknows_file)
 if (os.path.isfile(out_refs)):
@@ -134,7 +134,7 @@ timestamp1 = datetime.datetime.now()
 timestamp_format = "%Y-%m-%d --  %H:%M:%S"
 
 print_header(project_info, options.reformat)
-info("Starting the Earth System Model eValuation Tool v" + version + " at time: "
+info("Starting the Earth System Model Evaluation Tool v" + version + " at time: "
      + timestamp1.strftime(timestamp_format) + "...", verbosity, 1)
 
 # Loop over all diagnostics defined in project_info and
@@ -214,7 +214,7 @@ del(os.environ['0_ESMValTool_version'])
 #End time timing
 timestamp2 = datetime.datetime.now()
 info("", verbosity, 1)
-info("Ending the Earth System Model eValuation Tool v" + version + " at time: "
+info("Ending the Earth System Model Evaluation Tool v" + version + " at time: "
      + timestamp2.strftime(timestamp_format), verbosity, 1)
 info("Time for running namelist was: " + str(timestamp2 - timestamp1), verbosity, 1)
 

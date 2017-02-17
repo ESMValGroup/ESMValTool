@@ -9,6 +9,8 @@ diag_script_info@range_option = 1                 ; 0 = use each model's time ra
 diag_script_info@region       = "Antarctic"       ; region name, must be Antarctic currently
 diag_script_info@ref_model    = "ERA-Interim"     ; reference model, as specified in annotations -> if the specified string is
                                                   ;  not found, the routine will print a list of valid strings before crashing
+diag_script_info@dst_grid = "./diag_scripts/aux/CDO/cdo_dst_grid_g010" 
+                                        ; path to destination grid file, required by cdo_remapdis
 
 ;; optional settings
 diag_script_info@max_lat      = -40.0             ; For Arctic, use min_lat, for Antarctic use max_lat

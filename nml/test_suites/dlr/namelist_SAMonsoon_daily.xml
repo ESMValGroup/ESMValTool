@@ -64,7 +64,7 @@ This namelist is part of the ESMValTool
     <diag_script_cfg_dir>                              ./nml/cfg_SAMonsoon/         </diag_script_cfg_dir>
     <diag_script cfg="cfg_SAMonsoon_precip_daily.ncl">  SAMonsoon_precip_daily.ncl  </diag_script>
     <model id="gpcp"> obs4mips GPCP-1DD L3 v1.2 2003 2004 @{OBSPATH}/Tier1/ </model>
-    <model id="trmm"> OBS TRMM_3B42 sat v7 2003 2004 @{OBSPATH}/Tier2/TRMM_3B42_daily </model>
+    <model id="trmm"> OBS TRMM sat 3B42-v7 2003 2004 @{OBSPATH}/Tier2/TRMM-3B42 </model>
 </diag>
 
 <diag>
@@ -75,7 +75,7 @@ This namelist is part of the ESMValTool
     <diag_script_cfg_dir>                               ./nml/cfg_SAMonsoon/                </diag_script_cfg_dir>
     <diag_script cfg="cfg_SAMonsoon_precip_daily.ncl">   SAMonsoon_precip_propagation.ncl   </diag_script>
     <model id="gpcp"> obs4mips GPCP-1DD L3 v1.2 2003 2004 @{OBSPATH}/Tier1/ </model>
-    <model id="trmm"> OBS TRMM_3B42 sat v7 2003 2004 @{OBSPATH}/Tier2/TRMM_3B42_daily </model>
+    <model id="trmm"> OBS TRMM sat 3B42-v7 2003 2004 @{OBSPATH}/Tier2/TRMM-3B42 </model>
 </diag>
 
 </DIAGNOSTICS>

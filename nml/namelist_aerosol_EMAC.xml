@@ -78,7 +78,17 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/     </diag_script_cfg_dir>
 
         <diag_script cfg="cfg_aerosol_profiles_Putaud.ncl">  aerosol_profiles.ncl  </diag_script>
-        <diag_script cfg="cfg_aerosol_profiles_Melpitz.ncl"> aerosol_profiles.ncl  </diag_script>
+    </diag>
+
+    <diag>
+        <description>         Aerosol  size distributions </description>
+        <variable_def_dir>    ./variable_defs/            </variable_def_dir>
+        <variable>            conccnSTPmode               </variable>
+        <variable>            diamcnmode                  </variable>
+        <field_type>          T2Is                        </field_type>
+        <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/     </diag_script_cfg_dir>
+
+        <diag_script cfg="cfg_aerosol_profiles_Asmi11.ncl">  aerosol_profiles.ncl  </diag_script>
     </diag>
 
 <!-- ### VERTICAL PROFILES ##################################################################### -->
@@ -128,6 +138,28 @@ This namelist is part of the ESMValTool
     </diag>
 
     <diag>
+        <description>         Vertical profile of number concentration </description>
+        <variable_def_dir>    ./variable_defs/                         </variable_def_dir>
+        <variable>            conccnd5                                 </variable>
+        <variable>            cl                                       </variable>
+        <field_type>          T3I                                      </field_type>
+        <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/                  </diag_script_cfg_dir>
+
+        <diag_script cfg="cfg_aerosol_profiles_ACCESS-2.ncl"> aerosol_profiles.ncl  </diag_script>
+    </diag>
+
+    <diag>
+        <description>         Vertical profile of number concentration </description>
+        <variable_def_dir>    ./variable_defs/                         </variable_def_dir>
+        <variable>            conccnd10                                </variable>
+        <variable>            cl                                       </variable>
+        <field_type>          T3I                                      </field_type>
+        <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/                  </diag_script_cfg_dir>
+
+        <diag_script cfg="cfg_aerosol_profiles_ACCESS-2.ncl"> aerosol_profiles.ncl  </diag_script>
+    </diag>
+
+    <diag>
         <description>         Vertical profile of BC mass concentration </description>
         <variable_def_dir>    ./variable_defs/                          </variable_def_dir>
         <variable>            mmrbc                                     </variable>
@@ -135,13 +167,15 @@ This namelist is part of the ESMValTool
         <field_type>          T3I                                       </field_type>
         <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/                   </diag_script_cfg_dir>
 
+        <diag_script cfg="cfg_aerosol_profiles_ACCESS.ncl">   aerosol_profiles.ncl  </diag_script>
         <diag_script cfg="cfg_aerosol_profiles_CONCERT.ncl">  aerosol_profiles.ncl  </diag_script>
-        <diag_script cfg="cfg_aerosol_profiles_Texas.ncl">    aerosol_profiles.ncl  </diag_script>
         <diag_script cfg="cfg_aerosol_profiles_CR-AVE.ncl">   aerosol_profiles.ncl  </diag_script>
-        <diag_script cfg="cfg_aerosol_profiles_TC4.ncl">      aerosol_profiles.ncl  </diag_script>
-        <diag_script cfg="cfg_aerosol_profiles_HIPPO.ncl">    aerosol_profiles.ncl  </diag_script>
-        <diag_script cfg="cfg_aerosol_profiles_SALTRACE.ncl"> aerosol_profiles.ncl  </diag_script>
         <diag_script cfg="cfg_aerosol_profiles_DC3.ncl">      aerosol_profiles.ncl  </diag_script>
+        <diag_script cfg="cfg_aerosol_profiles_HIPPO.ncl">    aerosol_profiles.ncl  </diag_script>
+        <diag_script cfg="cfg_aerosol_profiles_SALTRACE1.ncl"> aerosol_profiles.ncl </diag_script>
+        <diag_script cfg="cfg_aerosol_profiles_SALTRACE2.ncl"> aerosol_profiles.ncl </diag_script>
+        <diag_script cfg="cfg_aerosol_profiles_TC4.ncl">      aerosol_profiles.ncl  </diag_script>
+        <diag_script cfg="cfg_aerosol_profiles_Texas.ncl">    aerosol_profiles.ncl  </diag_script>
     </diag>
 
     <diag>

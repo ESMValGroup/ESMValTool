@@ -1,4 +1,4 @@
-;; CLOUDS
+;; CLOUDS_INTERANNUAL
 ;;#############################################################################
 ;; Author: Axel Lauer (DLR, Germany)
 ;; PROJECT-NAME EMBRACE
@@ -9,18 +9,19 @@
 ;;    climatological mean seasonal cycle.
 ;;
 ;; Required diag_script_info attributes (diagnostics specific)
-;;    grid:            grid for regridding (coarsest, finest, ref) in case
+;;    colormap:        e.g., WhiteBlueGreenYellowRed, rainbow
+;;    grid:            grid for regridding (coarsest, finest, ref, 1x1) in case
 ;;                     calculation og the multi-model mean is requested
 ;;                     (see optional diag_script_info attributes below)
-;;    ref_model:       name of reference data set
+;;    models_to_skip:  name(s) of data set(s) to be skipped when calculating the
+;;                     multi-model mean
+;;    projection:      map projection, e.g., Mollweide, Mercator
+;;    ref_model:       specifies model that should be taken as "reference"
+;;                     when regridding to "ref" (only required if grid = "ref")
 ;;
 ;; Optional diag_script_info attributes (diagnostic specific)
 ;;    calcmm:          include calculating of the multi-model mean
-;;    colormap:        e.g., WhiteBlueGreenYellowRed, rainbow
-;;    ncdf:            enable to output to netCDF; either use "default" or give
-;;                     a full file name
-;;    projection:      map projection, e.g., Mollweide, Mercator
-;;    styleset:        "CMIP5", "DEFAULT"
+;;    extrafiles:      write plots for individual models to separate files (True, False)
 ;;
 ;; Required variable_info attributes (variable specific)
 ;;    none
@@ -32,6 +33,7 @@
 ;;    none
 ;;
 ;; Modification history
+;;    20160901-A_laue_ax: added regridding option 1 deg x 1 deg
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;;                        of the code
 ;;    20150415-A-laue_ax: written.
@@ -97,27 +99,20 @@ begin
         end if
     end if
 
+    extrafiles = False
+    if (isatt(diag_script_info, "extrafiles")) then
+        if (diag_script_info@extrafiles) then
+            extrafiles = True
+        end if
+    end if
+
     if (flag_mean) then
-        ; check for reference model definition
-        if (.not.(isatt(diag_script_info, "ref_model"))) then
-            error_msg("f", diag_script, "", "no reference model is selected")
-        end if
-
-        ; set reference model
-
-        ref_ind = ind(models@name.eq.diag_script_info@ref_model(0))
-        ref_model = diag_script_info@ref_model
-        if (ismissing(ref_ind)) then
-            error_msg("f", diag_script, "", \
-                      "no adequate reference model provided")
-        end if
-
         ; set regridding method
 
         if (.not.(isatt(diag_script_info, "grid"))) then
             error_msg("w", diag_script, "", \
-                      "Regridding method not defined. " + "Using coarsest")
-            selected_grid = "coarsest"
+                      "Regridding method not defined. " + "Using 1x1")
+            selected_grid = "1x1"
         else
             selected_grid = diag_script_info@grid
         end if
@@ -127,11 +122,41 @@ begin
         models_ind = ispan(0, dim_MOD - 1, 1)
         info_output("Setting target grid:", verbosity, 2)
         if (selected_grid.eq."ref") then
+
+            ; check for reference model definition
+            if (.not.(isatt(diag_script_info, "ref_model"))) then
+                error_msg("f", diag_script, "", "no reference model is selected")
+            end if
+
+            ; set reference model
+
+            ref_model = diag_script_info@ref_model
+            ref_ind = ind(models@name.eq.diag_script_info@ref_model(0))
+            if (ismissing(ref_ind)) then
+                error_msg("f", diag_script, "", \
+                          "specified reference model not found")
+            end if
+
             grid = find_destination_grid(ref_ind, \
                                          var0, field_type0, "coarsest")
+        else if (selected_grid.eq."1x1") then
+            grid     = new((/180, 360/), float)
+            grid!0   = "lat"
+            grid!1   = "lon"
+            grid&lat = flt2dble(fspan(-89.5,  89.5, 180))  ; CMOR standard
+            grid&lon = flt2dble(fspan(0.5, 359.5, 360))    ; CMOR standard
+            grid&lat@standard_name = "latitude"
+            grid&lon@standard_name = "longitude"
+            grid&lat@long_name     = "latitude"
+            grid&lon@long_name     = "longitude"
+            grid&lat@units         = "degrees_north"
+            grid&lon@units         = "degrees_east"
+            grid&lat@axis          = "Y"
+            grid&lon@axis          = "X"
         else
             grid = find_destination_grid(models_ind, \
                                          var0, field_type0, selected_grid)
+        end if
         end if
         delete(models_ind)
 
@@ -327,9 +352,16 @@ begin
                 ncdf_outfile = ncdf_write(var_hreg, regr_path)
             end if
 
-            ; skip reference model (observations) and multi-model mean entry
+            ; check for model(s) to skip (typically observation(s)) and multi-model mean entry
 
-            if ((imod.ne.ref_ind).and.(imod.ne.mm_ind)) then
+            skip_this_model = False
+            if (isatt(diag_script_info, "models_to_skip")) then
+                if (any(models@name(imod) .eq. diag_script_info@models_to_skip)) then
+                    skip_this_model = True
+                end if
+            end if
+
+            if ((.not.skip_this_model).and.(imod.ne.mm_ind)) then
                 nummod = nummod + 1
                 if (nummod.eq.1) then  ; first element
                     mmdata = var_hreg
@@ -337,6 +369,10 @@ begin
                 else
                     mmdata = mmdata + var_hreg
                 end if
+            end if
+
+            if (skip_this_model.and.imod.ne.mm_ind) then
+                print("skipped model " + models@name(imod) + " in multi-model mean calculation")
             end if
 
         end if  ; flag_mean
@@ -361,7 +397,10 @@ begin
         ; colors
         ; http://www.ncl.ucar.edu/Document/Graphics/color_table_gallery.shtml
 
-;        data1@res_cnFillPalette           = diag_script_info@colormap
+        if (isdefined("pal")) then
+            delete(pal)
+        end if
+        pal = read_colormap_file(diag_script_info@colormap)
 
         ; annotation
 
@@ -372,20 +411,37 @@ begin
 ;        data1@res_gsnLeftString           = models@name(imod)
         data1@res_cnLevelSelectionMode     = "ExplicitLevels"
 
-        data1@res_mpOutlineOn              = True
+        
+        if (diag_script_info@projection.eq."Robinson") then
+            data1@res_mpPerimOn = False  ; turn off perimeter around map
+            data1@res_mpGridLineColor = -1
+            data1@res_mpGridAndLimbOn = True
+        end if
+
+        data1@res_mpOutlineOn          = True
         data1@res_mpFillOn                 = False
 
         ; variable specific plotting settings
 
-        data1@res_cnLevels                 = ispan(5, 100, 5)
+        if (any((/"clt"/).eq.var0)) then
+            data1@res_cnLevels                 = ispan(5, 50, 5)
+        else
+            data1@res_cnLevels                 = ispan(5, 100, 5)
+        end if
 
         if (var0.eq."lwp") then
             data1@res_mpOutlineOn          = False
             data1@res_mpFillOn             = True
             data1@res_mpLandFillColor      = "Black"
-            pal = read_colormap_file("diag_scripts/lib/ncl/rgb/qcm3.rgb")
-            data1@res_cnFillColors         = pal
+;            delete(pal)
+;            pal = read_colormap_file("diag_scripts/lib/ncl/rgb/qcm3.rgb")
         end if
+
+        nboxes = dimsizes(data1@res_cnLevels)
+        clen = dimsizes(pal)
+        stride = max((/1, ((clen(0)-1) - 2) / nboxes /))
+        fill_colors = ispan(2, clen(0) - 1, stride)
+        data1@res_cnFillColors = fill_colors
 
         data1@res_lbLabelBarOn             = False
         data1@res_gsnRightString           = ""
@@ -443,17 +499,37 @@ begin
         ; # create the plot                         #
         ; ###########################################
 
-        data1@res_gsnDraw           = False  ; Do not draw yet
         data1@res_gsnFrame          = False  ; Don't advance frame.
+        data1@res_gsnDraw           = False
 
         ; function in aux_plotting.ncl
 
         if (imod.eq.0) then
-            wks = get_wks("dummy_for_wks", diag_script, var0)
+            if (.not.extrafiles) then
+                wks = get_wks("dummy_for_wks", diag_script, var0)
+            end if
 ;            drawNDCGrid(wks)  ; debugging option
         end if
 
+        if (extrafiles) then
+            if (isvar("wks")) then
+                delete(wks)
+            end if
+            wks = get_wks("dummy_for_wks", diag_script, var0 + "_" + annots(imod))
+        end if
+
         maps(imod) = contour_map(wks, data1, var0)
+
+        if (extrafiles) then ; add labels
+            txres = True
+            txres@txFontHeightF = 0.03
+            txres@txJust = "BottomRight"
+            txres@txPerimOn = True
+            txres@txBackgroundFillColor = "white"
+            text = gsn_add_text(wks, maps(imod), annots(imod), 170, -80, txres)
+            draw(maps(imod))
+            frame(wks)
+        end if
     end do  ; imod-loop (models)
 
     pres                                  = True      ; needed to override
@@ -479,9 +555,26 @@ begin
                                                    ; the bottom
 ;    pres@gsnPanelDebug                    = True
 
-    outfile = panelling(wks, maps, (dim_MOD + 3) / 4, 4, pres)
-
-    info_output(" Wrote " + outfile, verbosity, 1)
+    if (extrafiles) then
+        if (isvar("wks")) then
+            delete(wks)
+        end if
+        ; plot legend
+        wks = get_wks("dummy_for_wks", diag_script, var0 + "_legend")
+        pres@lbMonoFillPattern = True
+        pres@lbOrientation = "Horizontal"
+        pres@vpWidthF = 0.7
+        pres@vpHeightF = 0.1
+        pres@lbLabelFontHeightF = 0.015
+        pres@lbLabelAlignment = "InteriorEdges"
+        pres@lbTitleFontHeightF = 0.015
+        labels = tostring(data1@res_cnLevels)
+        pres@lbFillColors = fill_colors
+        gsn_labelbar_ndc (wks, nboxes, labels, 0.1, 0.9, pres)
+    else
+        outfile = panelling(wks, maps, (dim_MOD + 3) / 4, 4, pres)
+        info_output(" Wrote " + outfile, verbosity, 1)
+    end if
 
     info_output(">>>>>>>> Leaving " + diag_script, verbosity, 4)
 end

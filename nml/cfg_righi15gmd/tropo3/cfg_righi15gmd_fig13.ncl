@@ -8,7 +8,6 @@ diag_script_info@lbLabelBarOn = True  ; Plot a Label Bar (True/False)?
 diag_script_info@mpProjection = "CylindricalEquidistant"
 diag_script_info@gsnZonalMean = False  ; plot zonal mean beside map 
 
-;A-laue_ax+
 ; Options added to create fig. 24 of Eyring et al. 2016
 ; ----------------------------------------------------
 ; Calculate multi-model mean? (valid options: True, False)
@@ -17,4 +16,3 @@ diag_script_info@calcmm = True
 ; Note: the name of reference data set is given via namelist (ref_model = "..."
 ; in the <variable>-tag).
 diag_script_info@calcdiff = True
-;A-laue_ax-

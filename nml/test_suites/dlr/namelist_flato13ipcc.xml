@@ -6,16 +6,17 @@ namelist_flato13ipcc.xml
 
 Description
 Reproducing selected figures from IPCC AR5, chap. 9 (Flato et al., 2013):
-Figs. 9.2a/b, 9.4a/b, 9.5, 9,7, 9.10, 9.24a, 9.29, 9.32, 9.45
+Figs. 9.2a/b, 9.4a/b, 9.5, 9,7, 9.10, 9.24a, 9.28, 9.29, 9.30, 9.32, 9.45
 
-Author
+Authors
 Axel Lauer (DLR, Germany - axel.lauer@dlr.de)
 Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
  
 Contributors
 Irene Cionni, ENEA, namelist_eyring13jgr.xml (Fig. 9.10)
 Ricard Levine, UK Met Office, namelist_SAMonsoon.xml (Fig. 9.32)
-Mattia Righi, DLR, namelist_perfmetrics_CMIP5.xml (Fig. 9.7), namelist_aerosol.xml (Fig. 9.29)
+Mattia Righi, DLR, namelist_perfmetrics_CMIP5.xml (Fig. 9.7),
+    namelist_aerosol_CMIP5.xml (Figs. 9.28, 9.29)
 Daniel Senftleben, DLR, namelist_SeaIce.xml (Fig. 9.24)
 Sabrina Welzel, DLR, namelist_wenzel14jgr.xml (Fig. 9.45)
 
@@ -61,13 +62,13 @@ This namelist is part of the ESMValTool
 
 <DIAGNOSTICS>
 
-<!-- ***********************************************************************
-     * Flato et al. (2013) - IPCC AR5, chap. 9                             *
-     * similar to figs. 9.2 a/b, 9.4 a/b                                   *
-     * =================================================================== *
-     * Multi model mean and multi model mean bias (geographical            *
-     * distribution).                                                      *
-     *********************************************************************** -->
+<!-- *********************************************************************** -->
+<!-- * Flato et al. (2013) - IPCC AR5, chap. 9                             * -->
+<!-- * similar to figs. 9.2 a/b, 9.4 a/b                                   * -->
+<!-- * =================================================================== * -->
+<!-- * Multi model mean and multi model mean bias (geographical            * -->
+<!-- * distribution).                                                      * -->
+<!-- *********************************************************************** -->
 
     <diag>
         <description> multi model mean bias precipitation </description>
@@ -99,14 +100,15 @@ This namelist is part of the ESMValTool
         <diag_script cfg="cfg_clouds_bias.ncl"> clouds_bias.ncl </diag_script>
     </diag>
 
-<!-- ***********************************************************************
-     * Flato et al. (2013) - IPCC AR5, chap. 9                             *
-     * similar to fig. 9.5                                                 *
-     * =================================================================== *
-     * Difference of multi-model mean and reference data set (geographical *
-     * distribution, annual mean) + zonal averages of individual models    *
-     * and multi-model mean (annual means).                                *
-     *********************************************************************** -->
+
+<!-- *********************************************************************** -->
+<!-- * Flato et al. (2013) - IPCC AR5, chap. 9                             * -->
+<!-- * similar to fig. 9.5                                                 * -->
+<!-- * =================================================================== * -->
+<!-- * Difference of multi-model mean and reference data set (geographical * -->
+<!-- * distribution, annual mean) + zonal averages of individual models    * -->
+<!-- * and multi-model mean (annual means).                                * -->
+<!-- *********************************************************************** -->
 
     <diag>
         <description> multi model mean bias shortwave cloud forcing </description>
@@ -153,244 +155,32 @@ This namelist is part of the ESMValTool
         <diag_script cfg="cfg_clouds_ipcc.ncl"> clouds_ipcc.ncl </diag_script>
     </diag>
 
-<!-- ***********************************************************************
-     * Flato et al. (2013) - IPCC AR5, chap. 9                             *
-     * similar to fig. 9.7                                                 *
-     * =================================================================== *
-     * Portrait plot global seasonal cycle climatology (RMSD)              *
-     * Contribution by Mattia Righi, DLR, namelist_perfmetrics_CMIP5.xml   *
-     *                                                                     *
-     * PLEASE NOTE: This diagnostic is quite slow and requires a large     *
-     *              amount of disk space. For the approx. 40-50 CMIP5      *
-     *              models listed below, this diagnostic takes about       *
-     *              2-3 days to process and consumes roughly 1.2 TB of     *
-     *              disk space.                                            *
-     *********************************************************************** -->
 
-    <diag>
-        <description> Temperature </description>
-        <variable_def_dir>     ./variable_defs/ </variable_def_dir>
-        <variable MIP="Amon">  ta               </variable>
-        <field_type>           T3M              </field_type>
-        <diag_script_cfg_dir>  ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
-        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model> 
-        <model> CMIP5_ETHZ MPI-ESM-LR     MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+<!-- *********************************************************************** -->
+<!-- * Flato et al. (2013) - IPCC AR5, chap. 9                             * -->
+<!-- * similar to fig. 9.7                                                 * -->
+<!-- * =================================================================== * -->
+<!-- * Portrait plot global seasonal cycle climatology (RMSD)              * -->
+<!-- * Contribution by Mattia Righi, DLR, namelist_perfmetrics_CMIP5.xml   * -->
+<!-- *                                                                     * -->
+<!-- * PLEASE NOTE: This diagnostic is quite slow and requires a large     * -->
+<!-- *              amount of disk space. For the approx. 40-50 CMIP5      * -->
+<!-- *              models listed below, this diagnostic takes about       * -->
+<!-- *              5-6 days to process and consumes roughly 1.2 TB of     * -->
+<!-- *              disk space.                                            * -->
+<!-- *********************************************************************** -->
 
-        <model> OBS NCEP        reanaly 1 2000 2005 @{OBSPATH}/Tier2/NCEP        </model>
-        <model> OBS ERA-Interim reanaly 1 2000 2005 @{OBSPATH}/Tier3/ERA-Interim </model>
+<!-- NO NEED TO TEST THIS PART, AS LONG AS namelist_perfmetrics_CMIP5.xml is tested -->
 
-        <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_glob.ncl"> perfmetrics_main.ncl    </diag_script>
-        <diag_script cfg="cfg_perfmetrics_grading_RMSD_200_glob.ncl"> perfmetrics_main.ncl    </diag_script>
-        <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_glob.ncl"> perfmetrics_grading.ncl </diag_script>
-        <diag_script cfg="cfg_perfmetrics_grading_RMSD_200_glob.ncl"> perfmetrics_grading.ncl </diag_script>
-    </diag>
 
-    <diag>
-        <description> Eastward wind </description>
-       <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-        <variable MIP="Amon"> ua                           </variable>
-        <field_type>          T3M                          </field_type>
-        <diag_script_cfg_dir> ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
-        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model> 
-        <model> CMIP5_ETHZ MPI-ESM-LR     MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
 
-        <model> OBS NCEP        reanaly 1 2000 2005 @{OBSPATH}/Tier2/NCEP        </model>
-        <model> OBS ERA-Interim reanaly 1 2000 2005 @{OBSPATH}/Tier3/ERA-Interim </model>
-
-        <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_glob.ncl"> perfmetrics_main.ncl    </diag_script>
-        <diag_script cfg="cfg_perfmetrics_grading_RMSD_200_glob.ncl"> perfmetrics_main.ncl    </diag_script>
-        <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_glob.ncl"> perfmetrics_grading.ncl </diag_script>
-        <diag_script cfg="cfg_perfmetrics_grading_RMSD_200_glob.ncl"> perfmetrics_grading.ncl </diag_script>
-    </diag>
-
-    <diag>
-        <description> Northward wind </description>
-        <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-        <variable MIP="Amon"> va                           </variable>
-        <field_type>          T3M                          </field_type>
-        <diag_script_cfg_dir> ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
-        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model> 
-        <model> CMIP5_ETHZ MPI-ESM-LR     MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-
-        <model> OBS NCEP        reanaly 1 2000 2005 @{OBSPATH}/Tier2/NCEP        </model>
-        <model> OBS ERA-Interim reanaly 1 2000 2005 @{OBSPATH}/Tier3/ERA-Interim </model>
-
-        <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_glob.ncl"> perfmetrics_main.ncl    </diag_script>
-        <diag_script cfg="cfg_perfmetrics_grading_RMSD_200_glob.ncl"> perfmetrics_main.ncl    </diag_script>
-        <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_glob.ncl"> perfmetrics_grading.ncl </diag_script>
-        <diag_script cfg="cfg_perfmetrics_grading_RMSD_200_glob.ncl"> perfmetrics_grading.ncl </diag_script>
-    </diag>
-
-    <diag>
-        <description> Geopotential height </description>
-        <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-        <variable MIP="Amon"> zg                           </variable>
-        <field_type>          T3M                          </field_type>
-        <diag_script_cfg_dir> ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
-        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model> 
-        <model> CMIP5_ETHZ MPI-ESM-LR     MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-  
-        <model> OBS NCEP        reanaly 1 2000 2005 @{OBSPATH}/Tier2/NCEP        </model>
-        <model> OBS ERA-Interim reanaly 1 2000 2005 @{OBSPATH}/Tier3/ERA-Interim </model>
-
-        <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl"> perfmetrics_main.ncl    </diag_script>
-        <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl"> perfmetrics_grading.ncl </diag_script>
-    </diag>
-
-    <diag>
-        <description> Specific humidity </description>
-        <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-        <variable MIP="Amon"> hus                          </variable>
-        <field_type>          T3M                          </field_type>
-        <diag_script_cfg_dir> ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
-        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model> 
-        <model> CMIP5_ETHZ MPI-ESM-LR     MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-  
-        <model> obs4mips AIRS L3 RetStd-v5 2003 2005 @{OBSPATH}/Tier1             </model>
-        <model> OBS ERA-Interim reanaly 1  2000 2005 @{OBSPATH}/Tier3/ERA-Interim </model>
-
-        <diag_script cfg="cfg_perfmetrics_grading_RMSD_400_glob.ncl"> perfmetrics_main.ncl    </diag_script>
-        <diag_script cfg="cfg_perfmetrics_grading_RMSD_400_glob.ncl"> perfmetrics_grading.ncl </diag_script>
-    </diag>
-
-    <diag>
-        <description> Near-surface temperature </description>
-        <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-        <variable MIP="Amon"> tas                          </variable>
-        <field_type>          T2Ms                         </field_type>
-        <diag_script_cfg_dir> ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
-        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model> 
-        <model> CMIP5_ETHZ MPI-ESM-LR     MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-
-        <model> OBS NCEP        reanaly 1 2000 2005 @{OBSPATH}/Tier2/NCEP        </model>
-        <model> OBS ERA-Interim reanaly 1 2000 2005 @{OBSPATH}/Tier3/ERA-Interim </model>
-
-        <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl"> perfmetrics_main.ncl    </diag_script>
-        <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl"> perfmetrics_grading.ncl </diag_script>
-    </diag>
-
-    <diag>
-        <description> Precipitation </description>
-        <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-        <variable MIP="Amon"> pr                           </variable>
-        <field_type>          T2Ms                         </field_type>
-        <diag_script_cfg_dir> ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
-        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model> 
-        <model> CMIP5_ETHZ MPI-ESM-LR     MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-
-        <model> obs4mips GPCP-SG L3 v2.2 2000 2005 @{OBSPATH}/Tier1/ </model>
-
-        <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl"> perfmetrics_main.ncl    </diag_script>
-        <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl"> perfmetrics_grading.ncl </diag_script>
-    </diag>
-
-    <diag>
-        <description> Longwave radiation </description>
-        <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-        <variable MIP="Amon"> rlut                         </variable>
-        <field_type>          T2Ms                         </field_type>
-        <diag_script_cfg_dir> ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
-        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model> 
-        <model> CMIP5_ETHZ MPI-ESM-LR     MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-
-        <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2005 @{OBSPATH}/Tier1 </model>
-
-        <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl"> perfmetrics_main.ncl    </diag_script>
-        <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl"> perfmetrics_grading.ncl </diag_script>
-    </diag>
-
-    <diag>
-        <description> Shortwave radiation </description>
-        <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-        <variable MIP="Amon"> rsut                         </variable>
-        <field_type>          T2Ms                         </field_type>
-        <diag_script_cfg_dir> ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
-        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model> 
-        <model> CMIP5_ETHZ MPI-ESM-LR     MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-
-        <model>  obs4mips CERES-EBAF L3B Ed2-7 2001 2005 @{OBSPATH}/Tier1 </model>
-
-        <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl"> perfmetrics_main.ncl    </diag_script>
-        <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl"> perfmetrics_grading.ncl </diag_script>
-    </diag>
-
-    <diag>
-        <description> Shortwave cloud frocing </description>
-        <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-        <variable MIP="Amon"> SW_CRE                       </variable>
-        <field_type>          T2Ms                         </field_type>
-        <diag_script_cfg_dir> ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
-        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model> 
-        <model> CMIP5_ETHZ MPI-ESM-LR     MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-
-        <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2005 @{OBSPATH}/Tier1 </model>
-
-        <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl"> perfmetrics_main.ncl    </diag_script>
-        <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl"> perfmetrics_grading.ncl </diag_script>
-    </diag>
-
-    <diag>
-        <description> Longwave cloud forcing </description>
-        <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-        <variable MIP="Amon"> LW_CRE                       </variable>
-        <field_type>          T2Ms                         </field_type>
-        <diag_script_cfg_dir> ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
-        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model> 
-        <model> CMIP5_ETHZ MPI-ESM-LR     MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-  
-        <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2005 @{OBSPATH}/Tier1 </model>
-
-        <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl"> perfmetrics_main.ncl    </diag_script>
-        <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl"> perfmetrics_grading.ncl </diag_script>
-    </diag>
-
-    <diag>
-        <description> Aerosol optical depth </description>
-        <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-        <variable MIP="aero"> od550aer                     </variable>
-        <field_type>          T2Ms                         </field_type>
-        <diag_script_cfg_dir> ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
-        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model> 
-        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-
-        <model>  OBS      ESACCI-AEROSOL sat SU-v4.21 2000 2005 @{OBSPATH}/Tier2/ESACCI-AEROSOL </model>
-        <model>  obs4mips MODIS          L3  C5       2001 2005 @{OBSPATH}/Tier1                </model>
-
-        <diag_script cfg="cfg_perfmetrics_grading_RMSD_aero.ncl"> perfmetrics_main.ncl    </diag_script>
-        <diag_script cfg="cfg_perfmetrics_grading_RMSD_aero.ncl"> perfmetrics_grading.ncl </diag_script>
-    </diag>
-
-    <diag>
-        <description> Portrait diagram </description>
-        <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-        <variable MIP="Amon"> ta                           </variable>
-        <field_type>          T3M                          </field_type>
-        <diag_script_cfg_dir> ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
-
-        <model> CMIP5_ETHZ MIROC5         MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model> 
-        <model> CMIP5_ETHZ NorESM1-M      MIP_VAR_DEF historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-
-        <diag_script cfg="cfg_perfmetrics_grading_collect.ncl"> perfmetrics_grading_collect.ncl </diag_script>
-    </diag>
-
-<!-- ***********************************************************************
-     * Flato et al. (2013) - IPCC AR5, chap. 9                             *
-     * similar to fig. 9.10                                                *
-     * =================================================================== *
-     * Time series of total column ozone                                   *
-     * Contribution by Irene Cionni, ENEA, namelist_eyring13jgr.xml        *
-     *********************************************************************** -->
+<!-- *********************************************************************** -->
+<!-- * Flato et al. (2013) - IPCC AR5, chap. 9                             * -->
+<!-- * similar to fig. 9.10                                                * -->
+<!-- * =================================================================== * -->
+<!-- * Time series of total column ozone                                   * -->
+<!-- * Contribution by Irene Cionni, ENEA, namelist_eyring13jgr.xml        * -->
+<!-- *********************************************************************** -->
 
    <diag>
         <description> fig 2: total column ozone timeseries </description>
@@ -404,13 +194,14 @@ This namelist is part of the ESMValTool
         <diag_script cfg="cfg_eyring13jgr_fig02.ncl"> eyring13jgr_fig02.ncl </diag_script>
   </diag> 
 
-<!-- ***********************************************************************
-     * Flato et al. (2013) - IPCC AR5, chap. 9                             *
-     * similar to fig. 9.24                                                *
-     * =================================================================== *
-     * Time series of Arctic and Antarctic sea ice extent                  *
-     * Contribution by Daniel Senftleben, DLR, namelist_SeaIce.xml         *
-     *********************************************************************** -->
+
+<!-- *********************************************************************** -->
+<!-- * Flato et al. (2013) - IPCC AR5, chap. 9                             * -->
+<!-- * similar to fig. 9.24                                                * -->
+<!-- * =================================================================== * -->
+<!-- * Time series of Arctic and Antarctic sea ice extent                  * -->
+<!-- * Contribution by Daniel Senftleben, DLR, namelist_SeaIce.xml         * -->
+<!-- *********************************************************************** -->
 
     <diag>
         <description> Set of NH sic timeline, contour and difference plots </description>
@@ -471,19 +262,43 @@ This namelist is part of the ESMValTool
                            @{OBSPATH}/Tier2/NSIDC/OBS_NSIDC-BT_sat_SH_T2Ms_sic_197811-201312.nc </model>
     </diag>
 
-<!-- ***********************************************************************
-     * Flato et al. (2013) - IPCC AR5, chap. 9                             *
-     * similar to fig. 9.29                                                *
-     * =================================================================== *
-     * Time series of aerosol optical depth (AOD) in comparison with       *
-     * satellite data                                                      *
-     * Contribution by Mattia Righi, DLR, namelist_perfmetrics_CMIP5.xml   *
-     *                                                                     *
-     * PLEASE NOTE                                                         *
-     * ***********                                                         *
-     * Links to rcp45 have to be created in the historical folder in order *
-     * to have a continuous time-series beyond 2005                        *
-     *********************************************************************** -->
+<!-- *********************************************************************** -->
+<!-- * Flato et al. (2013) - IPCC AR5, chap. 9                             * -->
+<!-- * similar to fig. 9.28                                                * -->
+<!-- * =================================================================== * -->
+<!-- * Multi-year average aerosol optical depth (AOD) in comparison with   * -->
+<!-- * satellite data                                                      * -->
+<!-- * Contribution by Mattia Righi, DLR, namelist_aerosol_CMIP5.xml       * -->
+<!-- *********************************************************************** -->
+
+    <diag>
+        <description>         Aerosol optical depth at 550 nm </description>
+	<variable_def_dir>    ./variable_defs/                </variable_def_dir>
+	<variable>            od550aer                        </variable>
+	<field_type>          T2Ms                            </field_type>
+	<diag_script_cfg_dir> ./nml/cfg_aerosol/CMIP5/        </diag_script_cfg_dir>
+
+        <model>  CMIP5_ETHZ  MIROC5              aero  historical   r1i1p1  2003 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model>  CMIP5_ETHZ  NorESM1-M           aero  historical   r1i1p1  2003 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
+
+        <model>  OBS         MODIS               sat          L3-C6         2003 2005  @{OBSPATH}/Tier2/MODIS-L3-C6     </model>
+
+        <diag_script cfg="cfg_aerosol_satellite_MODIS.ncl"> aerosol_satellite.ncl  </diag_script>
+    </diag>
+
+<!-- *********************************************************************** -->
+<!-- * Flato et al. (2013) - IPCC AR5, chap. 9                             * -->
+<!-- * similar to fig. 9.29                                                * -->
+<!-- * =================================================================== * -->
+<!-- * Time series of aerosol optical depth (AOD) in comparison with       * -->
+<!-- * satellite data                                                      * -->
+<!-- * Contribution by Mattia Righi, DLR, namelist_perfmetrics_CMIP5.xml   * -->
+<!-- *                                                                     * -->
+<!-- * PLEASE NOTE                                                         * -->
+<!-- * ***********                                                         * -->
+<!-- * Links to rcp45 have to be created in the historical folder in order * -->
+<!-- * to have a continuous time-series beyond 2005                        * -->
+<!-- *********************************************************************** -->
 
     <diag>
         <description> Aerosol optical depth at 550 nm </description>
@@ -501,13 +316,39 @@ This namelist is part of the ESMValTool
         <diag_script cfg="cfg_aerosol_tsline.ncl">      tsline.ncl       </diag_script>
     </diag>
 
-<!-- ***********************************************************************
-     * Flato et al. (2013) - IPCC AR5, chap. 9                             *
-     * roughly resembling fig. 9.32                                        *
-     * =================================================================== *
-     * Monsoon precipitation intensity and monsoon precipitation domain.   *
-     * Contribution by Ricard Levine, UK Met Office, namelist_SAMonsoon.xml*
-     *********************************************************************** -->
+<!-- *********************************************************************** -->
+<!-- * Flato et al. (2013) - IPCC AR5, chap. 9                             * -->
+<!-- * roughly resembling fig. 9.30                                        * -->
+<!-- * =================================================================== * -->
+<!-- * Composite diurnal cycle of precipitation averaged over              * -->
+<!-- * land / ocean for different latitude bands at local time and season  * -->
+<!-- * (June–July–August (JJA), December–January–February (DJF),           * -->
+<!-- * or their sum).                                                      * -->
+<!-- *********************************************************************** -->
+
+    <diag>
+        <description> diurnal cycle of precipitation over specific latitude bands </description>
+        <variable_def_dir>          ./variable_defs/  </variable_def_dir>
+        <variable ref_model="trmm">  pr               </variable>
+        <field_type>                 T2Is             </field_type>
+        <diag_script_cfg_dir> ./nml/cfg_ipcc_fig9-30/ </diag_script_cfg_dir>
+        <model id="trmm"> OBS TRMM sat 3B42-v7 2004 2004 @{OBSPATH}/Tier2/TRMM-3B42 </model>
+        <model> CMIP5_ETHZ CNRM-CM5     3hr amip r1i1p1 2004 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ HadGEM2-A    3hr amip r1i1p1 2004 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ IPSL-CM5A-LR 3hr amip r1i1p1 2004 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <diag_script cfg="cfg_DiurnalCycle_25N-70N_land_JJA.ncl">      DiurnalCycle_box.ncl </diag_script>
+        <diag_script cfg="cfg_DiurnalCycle_25N-70N_ocean_JJA.ncl">     DiurnalCycle_box.ncl </diag_script>
+        <diag_script cfg="cfg_DiurnalCycle_25S-25N_land_JJA+DJF.ncl">  DiurnalCycle_box.ncl </diag_script>
+        <diag_script cfg="cfg_DiurnalCycle_25S-25N_ocean_JJA+DJF.ncl"> DiurnalCycle_box.ncl </diag_script>
+    </diag>
+
+<!-- *********************************************************************** -->
+<!-- * Flato et al. (2013) - IPCC AR5, chap. 9                             * -->
+<!-- * roughly resembling fig. 9.32                                        * -->
+<!-- * =================================================================== * -->
+<!-- * Monsoon precipitation intensity and monsoon precipitation domain.   * -->
+<!-- * Contribution by Ricard Levine, UK Met Office, namelist_SAMonsoon.xml* -->
+<!-- *********************************************************************** -->
 
     <diag>
         <description> Mean/stddev precip contour plots,
@@ -526,21 +367,22 @@ This namelist is part of the ESMValTool
         <model> CMIP5 MERRA Amon reanalysis r1i1p1 2003 2004 @{OBSPATH}/Tier1/MERRA </model>
     </diag>
 
-<!-- ***********************************************************************
-     * Flato et al. (2013) - IPCC AR5, chap. 9                             *
-     * similar to fig. 9.45                                                *
-     * =================================================================== *
-     * Carbon cycle-climate feedback (gamma_LT) vs. short-term sensitivity *
-     * of atmospheric CO2                                                  *
-     * Contribution by Sabrina Welzel, DLR, namelist_wenzel14jgr.xml       *
-     *                                                                     *
-     * Notes:                                                              *
-     *   1) in diag_scripts/create_co2flux.ncl: please adjust fx-filepath  *
-     *      (lines: 154, 158, 188, 193) to local file path                 *
-     *   2) please change model file path to the same as climo_dir         *
-     *      defined in the header of this namelist for the call to         *
-     *      carbon_corr_2var.ncl (2nd <diag> block)                        *   
-     *********************************************************************** -->
+
+<!-- *********************************************************************** -->
+<!-- * Flato et al. (2013) - IPCC AR5, chap. 9                             * -->
+<!-- * similar to fig. 9.45                                                * -->
+<!-- * =================================================================== * -->
+<!-- * Carbon cycle-climate feedback (gamma_LT) vs. short-term sensitivity * -->
+<!-- * of atmospheric CO2                                                  * -->
+<!-- * Contribution by Sabrina Welzel, DLR, namelist_wenzel14jgr.xml       * -->
+<!-- *                                                                     * -->
+<!-- * Notes:                                                              * -->
+<!-- *   1) in diag_scripts/create_co2flux.ncl: please adjust fx-filepath  * -->
+<!-- *      (lines: 154, 158, 188, 193) to local file path                 * -->
+<!-- *   2) please change model file path to the same as climo_dir         * -->
+<!-- *      defined in the header of this namelist for the call to         * -->
+<!-- *      carbon_corr_2var.ncl (2nd diag-block)                          * -->
+<!-- *********************************************************************** -->
 
     <diag>
         <description> preprocess and save co2flux and tas in climo_dir </description>

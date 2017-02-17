@@ -183,7 +183,7 @@ begin
         resT@txFontHeightF = 0.016
         resT@txJust        = "CenterLeft"
 
-        nstats = 6
+        nstats = 7
         st = new(nstats, string)
         text = new(nstats, graphic)
 
@@ -243,6 +243,10 @@ begin
 
         ;; Root-mean-square error
         st(5) = "RMSE = " + sprintf("%5.2f", dim_rmsd(xpts, ypts))
+
+        ;; Correlation coefficient
+        corr = escorc(xpts, ypts)
+        st(6) = "R~S1~2  = " + sprintf("%3.2f", corr)
 
         ;; Add labels
         do ii = 0, nstats - 1

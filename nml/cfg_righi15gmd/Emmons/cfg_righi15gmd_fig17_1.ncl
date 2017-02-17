@@ -8,7 +8,7 @@ diag_script_info = True
 ;; ############################################################################
 path = getenv("ESMValTool_OBSPATH") + "/Tier2/Emmons/"
 diag_script_info@obsfiles = (/\
-    path + "*TOPSE-Mar-C130-Thule_T0M_vmrnox.nc"/)
+    path + "*TOPSE-Mar-C130-Thule_T0M_vmrnox_*.nc"/)
 delete(path)
 
 ;; ############################################################################

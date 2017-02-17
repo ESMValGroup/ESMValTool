@@ -9,6 +9,7 @@
 ;;    function get_varName_from_file
 ;;    function extract_data_extended
 ;;    function extract_data
+;;    function extract_data_region
 ;;    procedure modify_data
 ;;    function read_data
 ;;
@@ -560,6 +561,280 @@ begin
 
     data_new = extract_data_extended(index, "default", data_pointer, dim_id, \
                                      lw_limit, up_limit)
+
+    leave_msg(scriptname, funcname, 6)
+    return(data_new)
+
+end
+
+;;#############################################################################
+undef("extract_data_region")
+function extract_data_region(index[1]:integer,
+                             var[1]:string,
+                             data_pointer[1]:logical,
+                             latmin[1]:numeric,
+                             latmax[1]:numeric,
+                             lonmin[1]:numeric,
+                             lonmax[1]:numeric)
+;;
+;; Arguments
+;;    index: index to current "dictionary keys" (see below).
+;;    data_pointer: a pointer to the data which will be extracted.
+;;    latmin: minimum latitude boundary of the region to be selected.
+;;    latmax: maximum latitude boundary of the region to be selected.
+;;    lonmin: minimum longitude boundary of the region to be selected.
+;;    lonmax: maximum longitude boundary of the region to be selected.
+;;
+;; Return value
+;;    The actual data array for the selected region with all metadata.
+;;
+;; Description
+;;    Uses the variable 'dictkeys' defined in the
+;;    'interface_data/ncl.interface' file to access and extract data from
+;;    variable 'data'.
+;;    The region extraction follows the same algorithm used in the
+;;    area_operations function in diag_script/lib/ncl/latlon.ncl.
+;;
+;; Caveats
+;;    Tested only in aerosol_profiles.ncl.
+;;
+;; References
+;;
+;; Modification history
+;;    20161021-A_righ_ma: written
+;;
+local funcname, scriptname, verbosity, cn, cnt, dimNames, rank, pos1, pos2, \
+    inMemo, data_lat, data_lon, f_latmin, f_latmax, f_lonmin, f_lonmax, \
+    delta, idx_latmin, idx_latmax, latidx, idx_lonmin, idx_lonmax, lonidx, \
+    modelfile, variable, fm, temp_data, attNames
+begin
+
+    funcname = "extract_data_region"
+    scriptname = "interface_scripts/data_handling.ncl"
+    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    enter_msg(scriptname, funcname, 6)
+
+    ;; 'cn' is the basic building block for the keys used in
+    ;; the 'data_pointer' dictionary
+    ;; 'dictkeys' is loaded from 'interface_data/ncl.interface'
+    cn = interface_get_dictkeys(var, index)
+
+    ;; 'cnt' is used (and reused) to specify a key in the dictionary.
+    ;; Here it is used to fetch the dimension names.
+    cnt = cn + "_dimNames"
+    dimNames = data_pointer@$cnt$
+    rank = dimsizes(dimNames)
+    pos1 = ind(dimNames.eq."lat")
+    pos2 = ind(dimNames.eq."lon")
+    if (ismissing(pos1)) then
+        error_msg("f", scriptname, funcname, "no latitude coordinate in data")
+    end if
+    if (ismissing(pos2)) then
+        error_msg("f", scriptname, funcname, "no longitude coordinate in data")
+    end if
+
+    cnt = cn + "_inMemo"
+    inMemo = data_pointer@$cnt$
+
+    ;; Read latitude and longitude
+    cnt = cn + "_lat_values"
+    data_lat = data_pointer@$cnt$
+    cnt = cn + "_lon_values"
+    data_lon = data_pointer@$cnt$
+
+    ;; Copy arguments to local (swap lat limits if necessary)
+    f_latmin = todouble(min((/latmin, latmax/)))
+    f_latmax = todouble(max((/latmin, latmax/)))
+    f_lonmin = todouble(where(lonmin .lt. 0., lonmin + 360., lonmin))
+    f_lonmax = todouble(where(lonmax .lt. 0., lonmax + 360., lonmax))
+
+    ; If single gridbox lon = 360, replace with 0 to account for periodicity
+    if (f_lonmin .eq. 360 .and. f_lonmax .eq. 360) then
+        f_lonmin = 0.d0
+        f_lonmax = 0.d0
+    end if
+
+    ;; Find nearest points to latitude boundaries
+    ;; In the (unlikely) case that the selected boundary point is at the
+    ;; midpoint between two gridboxes, ind will return two points.
+    ;; The minimum index (= minumum value) is chosen in such case,
+    ;; consistently with NCL coordinate subscripting
+    ;; http://www.ncl.ucar.edu/Document/Language/subscript_coord.shtml
+    delta = abs(data_lat - f_latmin)
+    idx_latmin = min(ind(delta .eq. min(delta)))
+    delta = abs(data_lat - f_latmax)
+    idx_latmax = min(ind(delta .eq. min(delta)))
+    delete(delta)
+    if (ismissing(idx_latmin) .or. ismissing(idx_latmax)) then
+        error_msg("f", scriptname, funcname, "no values found in the " + \
+                  "given latitude range")
+    end if
+    if (latmin .eq. latmax .and. idx_latmin .ne. idx_latmax) then
+        error_msg("f", scriptname, funcname, "multiple indexes found " + \
+                  "for single gridbox latitude selection")
+    end if
+
+    ;; Define latitude indexes
+    latidx = ispan(idx_latmin, idx_latmax, 1)  ; array of indexes
+    delete(idx_latmin)
+    delete(idx_latmax)
+
+    ;; Find neartest points to longitude boundaries
+    ;; In the (unlikely) case that the selected boundary point is at the
+    ;; midpoint between two gridboxes, ind will return two points.
+    ;; The minimum index (= minumum value) is chosen in such case,
+    ;; consistently with NCL coordinate subscripting
+    ;; http://www.ncl.ucar.edu/Document/Language/subscript_coord.shtml
+    if (f_lonmin.gt.max(data_lon)) then
+        idx_lonmin = 0
+    else
+        delta = abs(data_lon - f_lonmin)
+        idx_lonmin = min(ind(delta .eq. min(delta)))
+        delete(delta)
+    end if
+    if (f_lonmax.gt.max(data_lon)) then
+        idx_lonmax = dimsizes(data_lon) - 1
+    else
+        delta = abs(data_lon - f_lonmax)
+        idx_lonmax = min(ind(delta .eq. min(delta)))
+        delete(delta)
+    end if
+    if (ismissing(idx_lonmin) .or. ismissing(idx_lonmax)) then
+        error_msg("f", scriptname, funcname, "no values found in the " + \
+                  "given longitude range")
+    end if
+    ;; Special case: single gridbox selection beteen max(data_lon) and 0
+    if (lonmin .eq. lonmax .and. lonmin.gt.max(data_lon)) then
+        idx_lonmin = where(abs(360. - lonmin) .lt. \
+                           abs(max(data_lon) - lonmin), \
+                           0, dimsizes(data_lon) - 1)
+        idx_lonmax = idx_lonmin
+    end if
+    if (lonmin .eq. lonmax .and. idx_lonmin .ne. idx_lonmax) then
+        error_msg("f", scriptname, funcname, "multiple indexes found " + \
+                  "for single gridbox longitude selection")
+    end if
+
+    ;; Define longitude indexes
+    if (idx_lonmin .le. idx_lonmax) then  ; Greenwich outside
+        lonidx = ispan(idx_lonmin, idx_lonmax, 1)
+    else  ; Greenwich inside
+        lonidx = array_append_record( \
+            ispan(idx_lonmin, dimsizes(data_lon) - 1, 1), \
+            ispan(0, idx_lonmax, 1), 0)
+    end if
+    delete(idx_lonmin)
+    delete(idx_lonmax)
+
+    ;; Extract data
+    if (dimNames(0) .eq. "ncl_scalar") then
+        error_msg("f", scriptname, funcname, \
+                  "no latitude/longitude coordinate in data")
+    end if
+
+    if (inMemo .eq. 0) then
+
+        ;; Read from hdd
+        cnt = cn + "_filepath"
+        modelfile = data_pointer@$cnt$
+
+        ;; Get variable name from file
+        variable = get_varName_from_file(modelfile)
+
+        fm = addfile(modelfile, "r")
+
+        if (rank.eq.5) then
+            if (pos1.eq.3 .and. pos2.eq.4) then
+                data_new = fm->$variable$(:, :, :, latidx, lonidx)
+            end if
+            if (pos1.eq.2 .and. pos2.eq.3) then
+                data_new = fm->$variable$(:, :, latidx, lonidx, :)
+            end if
+        end if
+
+        if (rank.eq.4) then
+            if (pos1.eq.2 .and. pos2.eq.3) then
+                data_new = fm->$variable$(:, :, latidx, lonidx)
+            end if
+            if (pos1.eq.1 .and. pos2.eq.2) then
+                data_new = fm->$variable$(:, latidx, lonidx, :)
+            end if
+        end if
+
+        if (rank.eq.3) then
+            data_new = fm->$variable$(:, latidx, lonidx)
+        end if
+
+        if (rank.eq.2) then
+            data_new = fm->$variable$(latidx, lonidx)
+        end if
+
+        delete(fm)
+
+    else
+
+        ;; Read from memory
+        temp_data = data_pointer@$cn$
+
+        ;; Loop over all dimensions and create dimensions in data_new
+        ;; and copy dimension values to data_new
+        do i = 0, dimsizes(dimNames) - 1, 1
+            cnt = cn + "_" + dimNames(i) + "_values"
+            temp_data!i = dimNames(i)
+            temp_data&$dimNames(i)$ = data_pointer@$cnt$
+
+            ;; Copy out coord attributes
+            cnt = cn + "_" + dimNames(i) + "_attNames"
+            attNames = data_pointer@$cnt$
+            do j = 0, dimsizes(attNames) - 1, 1
+                cnt = cn + "_" + dimNames(i) + "_attributes_" + attNames(j)
+                temp_data&$dimNames(i)$@$attNames(j)$ = data_pointer@$cnt$
+            end do
+            delete(attNames)
+        end do
+
+        ;; Get attribute names
+        cnt = cn + "_attNames"
+        attNames = data_pointer@$cnt$
+
+        ;; Create attributes of data_new
+        do i = 0, dimsizes(attNames) - 1, 1
+            cnt = cn + "_attributes_" + attNames(i)
+            temp_data@$attNames(i)$ = data_pointer@$cnt$
+        end do
+
+        ;; Fetch data
+        if (rank.eq.5) then
+            if (pos1.eq.3 .and. pos2.eq.4) then
+                data_new = temp_data(:, :, :, latidx, lonidx)
+            end if
+            if (pos1.eq.2 .and. pos2.eq.3) then
+                data_new = temp_data(:, :, latidx, lonidx, :)
+            end if
+        end if
+
+        if (rank.eq.4) then
+            if (pos1.eq.2 .and. pos2.eq.3) then
+                data_new = temp_data(:, :, latidx, lonidx)
+            end if
+        end if
+
+        if (rank.eq.3) then
+            data_new = temp_data(:, latidx, lonidx)
+        end if
+
+        if (rank.eq.2) then
+            data_new = temp_data(latidx, lonidx)
+        end if
+
+        delete(temp_data)
+
+    end if
+
+    if (.not.isdefined("data_new")) then
+        error_msg("f", scriptname, funcname, \
+                  "invalid rank or position")
+    end if
 
     leave_msg(scriptname, funcname, 6)
     return(data_new)

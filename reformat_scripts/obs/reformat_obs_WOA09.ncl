@@ -125,7 +125,7 @@ begin
 
         ;; Outfile
         fout = OUTDIR + "OBS_" + OBSNAME + "_insitu_1_" + FIELD + \
-            "_" + VARS(vID) + ".nc"
+            "_" + VARS(vID) + "_000001-000012.nc"
 
         ;; Write variable
         write_nc(fout, VARS(vID), output, gAtt)
@@ -144,7 +144,7 @@ begin
 
         ;; Write variable
         fout = OUTDIR + "OBS_" + OBSNAME + "_insitu_1_" + FIELD + \
-            "_" + VARS(vID) + "s.nc"
+            "_" + VARS(vID) + "s_000001-000012.nc"
         write_nc(fout, VARS(vID) + "s", sfc, gAtt)
         delete(fout)
 

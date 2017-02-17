@@ -26,3 +26,6 @@ diag_script_info@range_option = 0           ; 0 = use each model's time range sp
 ;; Used by: SeaIce_polcon_diff.ncl
 diag_script_info@ref_model    = "WOA09-monthly" ; reference model, as specified in annotations -> if the specified string is
                                             ;  not found, the routine will print a list of valid strings before crashing
+diag_script_info@dst_grid = "./diag_scripts/aux/CDO/cdo_dst_grid_g010" 
+                                        ; path to destination grid file, required by cdo_remapdis
+

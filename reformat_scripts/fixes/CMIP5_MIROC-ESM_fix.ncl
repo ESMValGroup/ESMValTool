@@ -5,7 +5,7 @@
 ;# PROJECT:     CMIP5                                                  #
 ;# ENSEMBLE:    1pctCO2, esmFixClim1,esmHistorical                     #
 ;# MODEL:       MIROC-ESM                                              #
-;# VARIABLES:   time, co2                                               #
+;# VARIABLES:   time, co2, tro3                                        #
 ;# FIELDS:      all                                                    #
 ;# DESCRIPTION: change time units and calendar                         #
 ;#######################################################################
@@ -36,12 +36,12 @@ begin
         ret = 0
     end if
 
-    if (name .eq. "co2") then
-        if (isatt(var,"units")) then
-            var@units = "1.e-6"
-            ret = 0
-        end if
-    end if
+    ;if (name .eq. "co2") then
+    ;    if (isatt(var,"units")) then
+    ;        var@units = "1.e-6"
+    ;        ret = 0
+    ;    end if
+    ;end if
 
     if (name .eq. "gpp") then
         if (isatt(var,"units")) then  ; [gC/m2/day]
@@ -52,6 +52,12 @@ begin
             var@units = "kg m-2 s-1"
             ret = 0
         end if
+    end if
+
+    if (name .eq. "tro3") then
+        ; files say unit of ozone is "1e-9" ut unit is actually "1e-6"
+        var = var * 1.0e3
+        ret = 0   
     end if
 
     return(ret)

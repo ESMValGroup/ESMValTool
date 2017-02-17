@@ -1,6 +1,6 @@
 ; Calculates SST global means and standard deviations
 ;
-; Variables used: TS
+; Variables used: ts
 ;
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
@@ -54,11 +54,11 @@ begin
   wks_mean_ann = gsn_open_wks(wks_type,getenv("OUTDIR")+"sst.mean.ann")
   
   if (COLORMAP.eq.0) then
-     gsn_define_colormap(wks_stddev_djf,"rainbow+white") 
-     gsn_define_colormap(wks_stddev_mam,"rainbow+white")  
-     gsn_define_colormap(wks_stddev_jja,"rainbow+white") 
-     gsn_define_colormap(wks_stddev_son,"rainbow+white")  
-     gsn_define_colormap(wks_stddev_ann,"rainbow+white")  
+     gsn_define_colormap(wks_stddev_djf,"precip3_16lev") 
+     gsn_define_colormap(wks_stddev_mam,"precip3_16lev")  
+     gsn_define_colormap(wks_stddev_jja,"precip3_16lev") 
+     gsn_define_colormap(wks_stddev_son,"precip3_16lev")  
+     gsn_define_colormap(wks_stddev_ann,"precip3_16lev")  
      gsn_define_colormap(wks_mean_djf,"ncl_default") 
      gsn_define_colormap(wks_mean_mam,"ncl_default")  
      gsn_define_colormap(wks_mean_jja,"ncl_default") 
@@ -94,46 +94,66 @@ begin
         delete(sst)
         continue
      end if 
-     if (isfilepresent2("obs_ts").and.ee.eq.0) then   ; mask out land in array going into EOF functions
-     else
-        sst = where(sst.le.-1.8,-1.8,sst)
-        d = addfile("$NCARG_ROOT/lib/ncarg/data/cdf/landsea.nc","r")   
-        basemap = d->LSMASK
-        lsm = landsea_mask(basemap,sst&lat,sst&lon)
-        sst = mask(sst,conform(sst,lsm,(/1,2/)).ge.1,False)
-;        printStatInfo(sst)
-        delete([/lsm,basemap/])
-        delete(d)
-     end if    
-     sst_seas = runave_n_Wrap(sst,3,0,0)
-     sst_seas(0,:,:) = (/ dim_avg_n(sst(:1,:,:),0) /)
-     sst_seas(dimsizes(sst&time)-1,:,:) = (/ dim_avg_n(sst(dimsizes(sst&time)-2:,:,:),0) /)
-     sst_ann = runave_n_Wrap(sst,12,0,0)
-     delete(sst)
-     
-     sst_mean_djf = dim_avg_n_Wrap(sst_seas(0::12,:,:),0)
-     sst_mean_mam = dim_avg_n_Wrap(sst_seas(3::12,:,:),0)
-     sst_mean_jja = dim_avg_n_Wrap(sst_seas(6::12,:,:),0)
-     sst_mean_son = dim_avg_n_Wrap(sst_seas(9::12,:,:),0)
-     sst_mean_ann = dim_avg_n_Wrap(sst_ann(5::12,:,:),0)
-     
-     sst_sd_djf = dim_stddev_n_Wrap(dtrend_msg_n(ispan(0,nyr(ee)-1,1),sst_seas(0::12,:,:),False,False,0),0)
-     sst_sd_mam = dim_stddev_n_Wrap(dtrend_msg_n(ispan(0,nyr(ee)-1,1),sst_seas(3::12,:,:),False,False,0),0)
-     sst_sd_jja = dim_stddev_n_Wrap(dtrend_msg_n(ispan(0,nyr(ee)-1,1),sst_seas(6::12,:,:),False,False,0),0)
-     sst_sd_son = dim_stddev_n_Wrap(dtrend_msg_n(ispan(0,nyr(ee)-1,1),sst_seas(9::12,:,:),False,False,0),0)
-     sst_sd_ann = dim_stddev_n_Wrap(dtrend_msg_n(ispan(0,nyr(ee)-1,1),sst_ann(5::12,:,:),False,False,0),0)
+     sst = where(sst.le.-1.8,-1.8,sst)    ; set all values below -1.8 to -1.8
+     d = addfile("$NCARG_ROOT/lib/ncarg/data/cdf/landsea.nc","r")   ; mask out land (this is redundant for data that is already masked)
+     basemap = d->LSMASK
+     lsm = landsea_mask(basemap,sst&lat,sst&lon)
+     sst = mask(sst,conform(sst,lsm,(/1,2/)).ge.1,False)
+     delete([/lsm,basemap/])
+     delete(d)  
 
+     do ff = 0,1     
+        sstT = sst
+        if (ff.eq.1) then
+           if (OPT_CLIMO.eq."Full") then
+              sstT = rmMonAnnCycTLL(sstT)
+           else
+              check_custom_climo(names(ee),syear(ee),eyear(ee),CLIMO_SYEAR,CLIMO_EYEAR)
+              temp_arr = sstT
+              delete(temp_arr&time)
+              temp_arr&time = cd_calendar(sstT&time,-1)
+              climo = clmMonTLL(temp_arr({CLIMO_SYEAR*100+1:CLIMO_EYEAR*100+12},:,:))                 
+              delete(temp_arr)
+              sstT   = calcMonAnomTLL(sstT,climo) 
+              delete(climo)
+           end if
+        end if        
+        sst_seas = runave_n_Wrap(sstT,3,0,0)
+        sst_seas(0,:,:) = (/ dim_avg_n(sstT(:1,:,:),0) /)
+        sst_seas(dimsizes(sstT&time)-1,:,:) = (/ dim_avg_n(sstT(dimsizes(sstT&time)-2:,:,:),0) /)
+        sst_ann = runave_n_Wrap(sstT,12,0,0)
+        delete(sstT)
+        
+        if (ff.eq.0) then
+           sst_mean_djf = dim_avg_n_Wrap(sst_seas(0::12,:,:),0)
+           sst_mean_mam = dim_avg_n_Wrap(sst_seas(3::12,:,:),0)
+           sst_mean_jja = dim_avg_n_Wrap(sst_seas(6::12,:,:),0)
+           sst_mean_son = dim_avg_n_Wrap(sst_seas(9::12,:,:),0)
+           sst_mean_ann = dim_avg_n_Wrap(sst_ann(5::12,:,:),0)
+        end if
+        if (ff.eq.1) then     
+           sst_sd_djf = dim_stddev_n_Wrap(dtrend_msg_n(ispan(0,nyr(ee)-1,1),sst_seas(0::12,:,:),False,False,0),0)
+           sst_sd_mam = dim_stddev_n_Wrap(dtrend_msg_n(ispan(0,nyr(ee)-1,1),sst_seas(3::12,:,:),False,False,0),0)
+           sst_sd_jja = dim_stddev_n_Wrap(dtrend_msg_n(ispan(0,nyr(ee)-1,1),sst_seas(6::12,:,:),False,False,0),0)
+           sst_sd_son = dim_stddev_n_Wrap(dtrend_msg_n(ispan(0,nyr(ee)-1,1),sst_seas(9::12,:,:),False,False,0),0)
+           sst_sd_ann = dim_stddev_n_Wrap(dtrend_msg_n(ispan(0,nyr(ee)-1,1),sst_ann(5::12,:,:),False,False,0),0)
+        end if
+        delete([/sst_seas,sst_ann/])
+     end do
+     delete(sst)
      copy_VarMeta(sst_mean_djf,sst_sd_djf)
      copy_VarMeta(sst_mean_mam,sst_sd_mam)
      copy_VarMeta(sst_mean_jja,sst_sd_jja)
      copy_VarMeta(sst_mean_son,sst_sd_son)
      copy_VarMeta(sst_mean_ann,sst_sd_ann)
-
-     delete([/sst_seas,sst_ann/])
-     
+ 
      if (OUTPUT_DATA.eq."True") then
         modname = str_sub_str(names(ee)," ","_")
-        fn = getenv("OUTDIR")+modname+".cvdp_data."+syear(ee)+"-"+eyear(ee)+".nc"
+        bc = (/"/","'","(",")"/)
+        do gg = 0,dimsizes(bc)-1
+           modname = str_sub_str(modname,bc(gg),"_")
+        end do
+        fn = getenv("OUTDIR")+modname+".cvdp_data.sst.mean_stddev."+syear(ee)+"-"+eyear(ee)+".nc"
         if (.not.isfilepresent2(fn)) then
            z = addfile(fn,"c")
            z@source = "NCAR Climate Analysis Section's Climate Variability Diagnostics Package v"+getenv("VERSION")
@@ -143,21 +163,22 @@ begin
            else
               z@climatology = CLIMO_SYEAR+"-"+CLIMO_EYEAR+" climatology removed prior to all calculations (other than means)"
            end if
+           z@Conventions = "CF-1.6"
         else
            z = addfile(fn,"w")
         end if
 
-        z->sst_spatialmean_djf     = sst_mean_djf
-        z->sst_spatialmean_mam     = sst_mean_mam
-        z->sst_spatialmean_jja     = sst_mean_jja
-        z->sst_spatialmean_son     = sst_mean_son
-        z->sst_spatialmean_ann     = sst_mean_ann
+        z->sst_spatialmean_djf     = set_varAtts(sst_mean_djf,"sst mean (DJF)","","")
+        z->sst_spatialmean_mam     = set_varAtts(sst_mean_mam,"sst mean (MAM)","","")
+        z->sst_spatialmean_jja     = set_varAtts(sst_mean_jja,"sst mean (JJA)","","")
+        z->sst_spatialmean_son     = set_varAtts(sst_mean_son,"sst mean (SON)","","")
+        z->sst_spatialmean_ann     = set_varAtts(sst_mean_ann,"sst mean (annual)","","")
         
-        z->sst_spatialstddev_djf     = sst_sd_djf
-        z->sst_spatialstddev_mam     = sst_sd_mam
-        z->sst_spatialstddev_jja     = sst_sd_jja
-        z->sst_spatialstddev_son     = sst_sd_son
-        z->sst_spatialstddev_ann     = sst_sd_ann
+        z->sst_spatialstddev_djf     = set_varAtts(sst_sd_djf,"sst standard deviation (DJF)","","")
+        z->sst_spatialstddev_mam     = set_varAtts(sst_sd_mam,"sst standard deviation (MAM)","","")
+        z->sst_spatialstddev_jja     = set_varAtts(sst_sd_jja,"sst standard deviation (JJA)","","")
+        z->sst_spatialstddev_son     = set_varAtts(sst_sd_son,"sst standard deviation (SON)","","")
+        z->sst_spatialstddev_ann     = set_varAtts(sst_sd_ann,"sst standard deviation (annual)","","")
         delete(z)
      end if
 ;==========================================================================================
@@ -172,7 +193,6 @@ begin
      
      res@mpCenterLonF = 210.
      res@mpOutlineOn = True  
-     res@mpDataSetName = "Earth..4"
      if (wks_type.eq."png") then
         res@mpGeophysicalLineThicknessF = 2.  
      else
@@ -201,7 +221,7 @@ begin
      
      res@cnLevels = fspan(.2,1.6,8)
      if (COLORMAP.eq.0) then
-        res@cnFillColors = (/54,80,95,125,175,185,195,205,236/)
+        res@cnFillColors = (/2,4,6,8,10,12,14,16,18/)
         res@mpLandFillColor = "gray75"
         sres@cnLevels = ispan(0,36,2)
      end if
@@ -248,6 +268,7 @@ begin
      finpr   = "SST Std Dev (Ann) "    ; Must be 18 characters long
      line3   = "                  "    ; Must be 18 characters long
      line4   = line3
+     header = (/"","Pattern Correlations/RMS Differences   Observations vs. Model(s)",""/)
      do hh = 1,nsim-1
         dimY = dimsizes(tochar(names(hh)))
         nchar = dimY
@@ -279,21 +300,16 @@ begin
      if (dimsizes(tochar(line4)).ge.8190) then   ; system or fortran compiler limit
         print("Metrics table warning: Not creating metrics table as size of comparison results in a invalid ascii row size.")   
      else
-        if (.not.isfilepresent2(getenv("OUTDIR")+"metrics_orig.txt")) then
-           header = (/"","Pattern Correlations/RMS Differences   Observations vs. Model(s)",""/)
-           write_table(getenv("OUTDIR")+"metrics_orig.txt","w",[/header/],"%s")
-           write_table(getenv("OUTDIR")+"metrics_orig.txt","a",[/line3/],"%s")
-           write_table(getenv("OUTDIR")+"metrics_orig.txt","a",[/line4/],"%s")
-           delete(header)
-        end if
-        write_table(getenv("OUTDIR")+"metrics_orig.txt","a",[/finpr/],"%s")
+        write_table(getenv("OUTDIR")+"metrics.sst.mean_stddev.txt","w",[/header/],"%s")
+        write_table(getenv("OUTDIR")+"metrics.sst.mean_stddev.txt","a",[/line3/],"%s")
+        write_table(getenv("OUTDIR")+"metrics.sst.mean_stddev.txt","a",[/line4/],"%s")
+        write_table(getenv("OUTDIR")+"metrics.sst.mean_stddev.txt","a",[/finpr/],"%s")
      end if
-     delete([/finpr,line3,line4,format2,format3,nchar,ntc,clat,patcor,dimY,ntb/])
+     delete([/finpr,line3,line4,format2,format3,nchar,ntc,clat,patcor,dimY,ntb,header/])
   end if
      
   panres = True
   panres@gsnMaximize = True  
-  panres@gsnPanelBottom = 0.05
   panres@gsnPaperOrientation = "portrait"
   panres@gsnPanelLabelBar = True
   panres@gsnPanelYWhiteSpacePercent = 3.0
@@ -301,54 +317,61 @@ begin
   panres@pmLabelBarWidthF = 0.65
   panres@lbTitleOn = False
   panres@lbBoxLineColor = "gray70"
-  if (nsim.le.5) then
-     panres@txFontHeightF = 0.024
+  if (nsim.le.4) then
+     if (nsim.eq.1) then
+        panres@txFontHeightF = 0.022
+        panres@gsnPanelBottom = 0.50
+     else
+        panres@txFontHeightF = 0.0145
+        panres@gsnPanelBottom = 0.50
+     end if
   else
      panres@txFontHeightF = 0.016
+     panres@gsnPanelBottom = 0.05
   end if
   panres@lbLabelFontHeightF = 0.013
   panres@lbLabelStride = 1
   ncol = floattointeger(sqrt(nsim))
   nrow = (nsim/ncol)+mod(nsim,ncol)  
   
-  panres@txString = "TS Standard Deviations (DJF)"
-  gsn_panel(wks_stddev_djf,plot_stddev_djf,(/nrow,ncol/),panres)
+  panres@txString = "SST Standard Deviations (DJF)"
+  gsn_panel2(wks_stddev_djf,plot_stddev_djf,(/nrow,ncol/),panres)
   delete(wks_stddev_djf)
   
-  panres@txString = "TS Standard Deviations (MAM)"
-  gsn_panel(wks_stddev_mam,plot_stddev_mam,(/nrow,ncol/),panres)
+  panres@txString = "SST Standard Deviations (MAM)"
+  gsn_panel2(wks_stddev_mam,plot_stddev_mam,(/nrow,ncol/),panres)
   delete(wks_stddev_mam)
   
-  panres@txString = "TS Standard Deviations (JJA)"
-  gsn_panel(wks_stddev_jja,plot_stddev_jja,(/nrow,ncol/),panres)
+  panres@txString = "SST Standard Deviations (JJA)"
+  gsn_panel2(wks_stddev_jja,plot_stddev_jja,(/nrow,ncol/),panres)
   delete(wks_stddev_jja)
   
-  panres@txString = "TS Standard Deviations (SON)"
-  gsn_panel(wks_stddev_son,plot_stddev_son,(/nrow,ncol/),panres)
+  panres@txString = "SST Standard Deviations (SON)"
+  gsn_panel2(wks_stddev_son,plot_stddev_son,(/nrow,ncol/),panres)
   delete(wks_stddev_son)
   
-  panres@txString = "TS Standard Deviations (Annual)"
-  gsn_panel(wks_stddev_ann,plot_stddev_ann,(/nrow,ncol/),panres)
+  panres@txString = "SST Standard Deviations (Annual)"
+  gsn_panel2(wks_stddev_ann,plot_stddev_ann,(/nrow,ncol/),panres)
   delete(wks_stddev_ann)
   
-  panres@txString = "TS Means (DJF)"
-  gsn_panel(wks_mean_djf,plot_mean_djf,(/nrow,ncol/),panres)
+  panres@txString = "SST Means (DJF)"
+  gsn_panel2(wks_mean_djf,plot_mean_djf,(/nrow,ncol/),panres)
   delete(wks_mean_djf)
   
-  panres@txString = "TS Means (MAM)"
-  gsn_panel(wks_mean_mam,plot_mean_mam,(/nrow,ncol/),panres)
+  panres@txString = "SST Means (MAM)"
+  gsn_panel2(wks_mean_mam,plot_mean_mam,(/nrow,ncol/),panres)
   delete(wks_mean_mam)
   
-  panres@txString = "TS Means (JJA)"
-  gsn_panel(wks_mean_jja,plot_mean_jja,(/nrow,ncol/),panres)
+  panres@txString = "SST Means (JJA)"
+  gsn_panel2(wks_mean_jja,plot_mean_jja,(/nrow,ncol/),panres)
   delete(wks_mean_jja)
   
-  panres@txString = "TS Means (SON)"
-  gsn_panel(wks_mean_son,plot_mean_son,(/nrow,ncol/),panres)
+  panres@txString = "SST Means (SON)"
+  gsn_panel2(wks_mean_son,plot_mean_son,(/nrow,ncol/),panres)
   delete(wks_mean_son)
   
-  panres@txString = "TS Means (Annual)"
-  gsn_panel(wks_mean_ann,plot_mean_ann,(/nrow,ncol/),panres)
+  panres@txString = "SST Means (Annual)"
+  gsn_panel2(wks_mean_ann,plot_mean_ann,(/nrow,ncol/),panres)
   delete(wks_mean_ann)
   delete(panres)
   print("Finished: sst.mean_stddev.ncl")

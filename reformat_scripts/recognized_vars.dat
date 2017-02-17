@@ -71,7 +71,7 @@ std_name = to
 alt_name = 
 
 std_name = tos
-alt_name = 
+alt_name = ts
 
 std_name = toz
 alt_name = o3col,tro3_totcol
@@ -231,3 +231,13 @@ alt_name = tmp
 
 std_name = fgco2
 alt_name = poste_oce
+
+std_name = sic
+alt_name = 
+
+std_name = xch4
+alt_name = 
+
+std_name = xco2
+alt_name = 
+

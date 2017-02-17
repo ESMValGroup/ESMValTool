@@ -191,17 +191,17 @@ begin
 
         ;; Write variable
         fout = OUTDIR + "OBS_" + OBSNAME + "_sat_1_" + FIELD + \
-            "_" + VARS(ivar) + ".nc"
+            "_" + VARS(ivar) + "_" + YEAR1 + "01-" + YEAR2 + "12.nc"
         write_nc(fout, VARS(ivar), output, gAtt)
         delete(output)
         info_output("Wrote " + fout, verbosity, 1)
 
         ;; Write stddev
-        fout = OUTDIR + "OBS_" + OBSNAME + "_sat_1_" + FIELD + \
-            "_" + VARS(ivar) + "_stdddev.nc"
-        write_nc(fout, VARS(ivar) + "_stddev", output_stddev, gAtt)
-        delete(output_stddev)
-        info_output("Wrote " + fout, verbosity, 1)
+;;         fout = OUTDIR + "OBS_" + OBSNAME + "_sat_1_" + FIELD + \
+;;             "_" + VARS(ivar) + "_stdddev.nc"
+;;         write_nc(fout, VARS(ivar) + "_stddev", output_stddev, gAtt)
+;;         delete(output_stddev)
+;;         info_output("Wrote " + fout, verbosity, 1)
 
         delete(gAtt)
     end do  ; ivar

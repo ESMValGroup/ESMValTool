@@ -81,6 +81,11 @@ begin
     MWair@name = "Molecular weight of the atmosphere"
 
     ; Molecular weight of ozone [g mol^-1]
+    MWh2o = 18.01528
+    MWh2o@units = "g mol^-1"
+    MWh2o@name = "Molecular mass of h2o"
+
+    ; Molecular weight of ozone [g mol^-1]
     MWo3 = 47.9982
     MWo3@source = "http://pubchem.ncbi.nlm.nih.gov"
     MWo3@units = "g mol^-1"

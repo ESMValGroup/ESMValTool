@@ -20,7 +20,7 @@ begin
     ret = 1
 
     if (name.eq."co2") then
-        if (var_attr_exp(0).eq."esmFixClim1") then
+        if (models@experiment(0).eq."esmFixClim1") then
             var = var * (28.966 / 44.)
             ret = 0
         end if

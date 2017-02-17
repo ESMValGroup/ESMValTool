@@ -1,6 +1,6 @@
 ; Calculates snow depth global trends
 ;
-; Variables used: SNOWDP
+; Variables used: snd
 ;
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
@@ -78,13 +78,14 @@ begin
   map_mon = new(nsim,"graphic")  
 
   do ee = 0,nsim-1
-     snd = data_read_in(paths(ee),"SNOWDP",syear(ee),eyear(ee))    ; read in data, orient lats/lons correctly, set time coordinate variable up
-     
-     if (isatt(snd&lat,"_FillValue")) then    ; needed in v6.2.0-beta to reset _FillValue to smaller value to avoid "warning:FileReadVarAtt: _FillValue attribute type differs from variable (lat)" warning
+     snd = data_read_in(paths(ee),"SNOWDP",syear(ee),eyear(ee))    ; read in data, orient lats/lons correctly, set time coordinate variable up    
+     if (isatt(snd&lat,"_FillValue")) then   ; required in v6.2.0-beta to reset _FillValue to avoid error message
         snd&lat@_FillValue = 1.e20
+        snd&lat@missing_value = snd&lat@_FillValue
      end if
      if (isatt(snd&lon,"_FillValue")) then
         snd&lon@_FillValue = 1.e20
+        snd&lon@missing_value = snd&lon@_FillValue
      end if
      
      if (isatt(snd,"is_all_missing")) then
@@ -145,7 +146,11 @@ begin
      
      if (OUTPUT_DATA.eq."True") then
         modname = str_sub_str(names(ee)," ","_")
-        fn = getenv("OUTDIR")+modname+".cvdp_data."+syear(ee)+"-"+eyear(ee)+".nc"
+        bc = (/"/","'","(",")"/)
+        do gg = 0,dimsizes(bc)-1
+           modname = str_sub_str(modname,bc(gg),"_")
+        end do
+        fn = getenv("OUTDIR")+modname+".cvdp_data.snd.trends."+syear(ee)+"-"+eyear(ee)+".nc"
         if (.not.isfilepresent2(fn)) then
            z = addfile(fn,"c")
            z@source = "NCAR Climate Analysis Section's Climate Variability Diagnostics Package v"+getenv("VERSION")
@@ -155,6 +160,7 @@ begin
            else
               z@climatology = CLIMO_SYEAR+"-"+CLIMO_EYEAR+" climatology removed prior to all calculations (other than means)"
            end if
+           z@Conventions = "CF-1.6"
         else
            z = addfile(fn,"w")
         end if
@@ -163,25 +169,28 @@ begin
         snd_seas&LAT = snd_trends_seas&lat
         snd_seas!2 = "LON"
         snd_seas&LON = snd_trends_seas&lon
+        copy_VarAtts(snd_trends_seas,snd_seas)
         
         snd_ann = (/ snd_trends_ann /)
         snd_ann!0 = "LAT"
         snd_ann&LAT = snd_trends_ann&lat
         snd_ann!1 = "LON"
         snd_ann&LON = snd_trends_ann&lon
+        copy_VarAtts(snd_trends_ann,snd_ann)
         
         snd_mon = (/ snd_trends_mon /)
         snd_mon!0 = "LAT"
         snd_mon&LAT = snd_trends_mon&lat
         snd_mon!1 = "LON"
         snd_mon&LON = snd_trends_mon&lon
+        copy_VarAtts(snd_trends_mon,snd_mon)
         
-        z->snd_trends_djf     = snd_seas(0,:,:)
-        z->snd_trends_mam     = snd_seas(1,:,:)
-        z->snd_trends_jja     = snd_seas(2,:,:)
-        z->snd_trends_son     = snd_seas(3,:,:)
-        z->snd_trends_ann     = snd_ann
-        z->snd_trends_mon     = snd_mon
+        z->snd_trends_djf     = set_varAtts(snd_seas(0,:,:),"snd linear trends (DJF)","","")
+        z->snd_trends_mam     = set_varAtts(snd_seas(1,:,:),"snd linear trends (MAM)","","")
+        z->snd_trends_jja     = set_varAtts(snd_seas(2,:,:),"snd linear trends (JJA)","","")
+        z->snd_trends_son     = set_varAtts(snd_seas(3,:,:),"snd linear trends (SON)","","")
+        z->snd_trends_ann     = set_varAtts(snd_ann,"snd linear trends (annual)","","")
+        z->snd_trends_mon     = set_varAtts(snd_mon,"snd linear trends (monthly)","","")
         delete(z)
         delete([/snd_seas,snd_ann,snd_mon/])
      end if
@@ -209,11 +218,10 @@ begin
      res@mpFillOn = False
      res@mpCenterLonF = 0.
      res@mpOutlineOn = True  
-     res@mpDataSetName = "Earth..4"
      res@gsnDraw      = False
      res@gsnFrame     = False
   
-     res@cnFillPalette = cmap(::-1,:)
+     res@cnFillPalette = cmap(2::-1,:)
      res@cnFillMode = "RasterFill"
      res@cnLevelSelectionMode = "ExplicitLevels"
      if (COLORMAP.eq.0) then
@@ -252,7 +260,6 @@ begin
   end do  
   panres = True
   panres@gsnMaximize = True  
-  panres@gsnPanelBottom = 0.05
   panres@gsnPaperOrientation = "portrait"
   panres@gsnPanelLabelBar = True
   panres@gsnPanelYWhiteSpacePercent = 3.0
@@ -260,37 +267,44 @@ begin
   panres@pmLabelBarWidthF = 0.65
   panres@lbTitleOn = False
   panres@lbBoxLineColor = "gray70"
-  if (nsim.le.5) then
-     panres@txFontHeightF = 0.024
+  if (nsim.le.4) then
+     if (nsim.eq.1) then
+        panres@txFontHeightF = 0.022
+        panres@gsnPanelBottom = 0.50
+     else
+        panres@txFontHeightF = 0.0145
+        panres@gsnPanelBottom = 0.50
+     end if
   else
      panres@txFontHeightF = 0.016
+     panres@gsnPanelBottom = 0.05
   end if
   panres@lbLabelStride = 1
   
   panres@txString = "SND Trends (DJF)"
   ncol = floattointeger(sqrt(nsim))
   nrow = (nsim/ncol)+mod(nsim,ncol)  
-  gsn_panel(wks_trends_djf,map_djf,(/nrow,ncol/),panres)
+  gsn_panel2(wks_trends_djf,map_djf,(/nrow,ncol/),panres)
   delete(wks_trends_djf)
   
   panres@txString = "SND Trends (MAM)"
-  gsn_panel(wks_trends_mam,map_mam,(/nrow,ncol/),panres)
+  gsn_panel2(wks_trends_mam,map_mam,(/nrow,ncol/),panres)
   delete(wks_trends_mam)
   
   panres@txString = "SND Trends (JJA)"
-  gsn_panel(wks_trends_jja,map_jja,(/nrow,ncol/),panres)
+  gsn_panel2(wks_trends_jja,map_jja,(/nrow,ncol/),panres)
   delete(wks_trends_jja)
   
   panres@txString = "SND Trends (SON)"
-  gsn_panel(wks_trends_son,map_son,(/nrow,ncol/),panres)
+  gsn_panel2(wks_trends_son,map_son,(/nrow,ncol/),panres)
   delete(wks_trends_son)
   
   panres@txString = "SND Trends (Annual)"
-  gsn_panel(wks_trends_ann,map_ann,(/nrow,ncol/),panres)
+  gsn_panel2(wks_trends_ann,map_ann,(/nrow,ncol/),panres)
   delete(wks_trends_ann)
   
   panres@txString = "SND Trends (Monthly)"
-  gsn_panel(wks_trends_mon,map_mon,(/nrow,ncol/),panres)
+  gsn_panel2(wks_trends_mon,map_mon,(/nrow,ncol/),panres)
   delete(wks_trends_mon)  
   delete([/nrow,ncol,map_djf,map_mam,map_jja,map_son,map_ann,map_mon,panres,cmap/])
   print("Finished: snd.trends.ncl")

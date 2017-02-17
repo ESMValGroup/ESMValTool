@@ -15,6 +15,8 @@
 ;; Optional diag_script_info attributes (diagnostic specific)
 ;;    styleset: project-specific plot style.
 ;;    range_option: time selection option.
+;;    multi_model_mean: calculate multi-model mean
+;;    multi_model_median: calculate multi-model median
 ;;
 ;; Required variable_info attributes (variable specific)
 ;;    contours_abs: array of contour levels for the absolute value map.
@@ -25,8 +27,11 @@
 ;; Optional variable_info attributes (variable specific)
 ;;
 ;; Caveats
+;;    If no colortables are specified in variable_info, the IPCC colors from
+;;    Fig. 9.28 are used by default.
 ;;
 ;; Modification history
+;;    20160817-A_righ_ma: added multi-model statistics
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;;                        of the code
 ;;    20150325-A_laue_ax: modified reference tags used for acknowledgements
@@ -48,8 +53,7 @@ load "./plot_scripts/ncl/contour_maps.ncl"
 
 begin
     verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
-    info_output("<<<<<<<< Entering " + diag_script, \
-                verbosity, 2)
+    enter_msg(diag_script, "", 2)
     info_output("++++++++++++++++++++++++++++++++++++++++++", verbosity, 1)
     info_output(diag_script + " (var: " + variables(0) + ")", verbosity, 1)
     info_output("++++++++++++++++++++++++++++++++++++++++++", verbosity, 1)
@@ -59,7 +63,7 @@ begin
                      "A_righ_ma", \  ; authors
                      "A_kais_ch", \  ; contributors
                      "D_0000",    \  ; diag_ref
-                     (/"E_modis", "E_misr"/), \  ; obs_ref
+                     (/"E_modis", "E_misr", "E_esacci-aerosol"/), \  ; obs_ref
                      (/"P_esmval", "P_dlrveu"/) \  ; proj_acknow
                      )
 
@@ -177,6 +181,22 @@ begin
         ncdf_outfile = ncdf_write(output, new_path)
     end if
 
+    ;; Multi-model statistics
+    if (isatt(diag_script_info, "multi_model_mean")) then
+        if (diag_script_info@multi_model_mean) then
+            models_only = remove_index(output, refID)
+            MM_mean = dim_avg_n_Wrap(models_only, 0)
+        end if
+    end if
+    if (isatt(diag_script_info, "multi_model_median")) then
+        if (diag_script_info@multi_model_median) then
+            models_only = remove_index(output, refID)
+            MM_median = dim_median_n(models_only, 0)
+            copy_VarAtts(models_only(0,:,:), MM_median)
+            copy_VarCoords(models_only(0,:,:), MM_median)
+        end if
+    end if
+
     ;; Plot
     annots = project_style(diag_script_info, "annots")
     plot_dir = getenv("ESMValTool_plot_dir")
@@ -184,10 +204,22 @@ begin
 
     plot_abs = output_dir + diag_script_info@ref_model + "_absolute_" + var0
     wksabs = gsn_open_wks(file_type, plot_abs)
-    gsn_define_colormap(wksabs, variable_info@colortable_abs)
+    if (isatt(variable_info, "colortable_abs")) then
+        cmap_abs = variable_info@colortable_abs
+    else
+        cmap_abs = \
+            read_colormap_file("diag_scripts/lib/ncl/rgb/ipcc-od550aer.rgb")
+    end if
+
     plot_diff = output_dir + diag_script_info@ref_model + "_difference_" + var0
     wksdiff = gsn_open_wks(file_type, plot_diff)
-    gsn_define_colormap(wksdiff, variable_info@colortable_diff)
+    if (isatt(variable_info, "colortable_diff")) then
+        cmap_diff = variable_info@colortable_diff
+    else
+        cmap_diff = \
+            read_colormap_file("diag_scripts/lib/ncl/rgb/" + \
+                               "ipcc-od550aer-delta.rgb")
+    end if
 
     do mID = 0, dimsizes(models@name) - 1
 
@@ -197,27 +229,81 @@ begin
         var@res_cnLevelSelectionMode = "ExplicitLevels"
         var@res_tiMainString = var0 + " (" + annots(mID) + ")"
         var@res_cnLevels = variable_info@contours_abs
+        var@res_cnFillColors = cmap_abs
         plot = contour_map_ce(wksabs, var, var0)
         delete(var@res_cnLevels)
+        delete(var@res_cnFillColors)
         draw(plot)
         frame(wksabs)
 
         if (mID .ne. refID) then
             var = output(mID, :, :) - output(refID, :, :)
-            var@res_cnLevels = variable_info@contours_diff
             var@res_tiMainString = var0 + " (" + annots(mID) + " - " + \
                 annots(refID) + ")"
+            var@res_cnLevels = variable_info@contours_diff
+            var@res_cnFillColors = cmap_diff
             plot = contour_map_ce(wksdiff, var, var0)
             delete(var@res_cnLevels)
+            delete(var@res_cnFillColors)
             draw(plot)
             frame(wksdiff)
         end if
 
     end do
+
+    if (isdefined("MM_mean")) then
+        MM_mean@res_cnFillMode = "CellFill"
+        MM_mean@res_cnLinesOn = False
+        MM_mean@res_cnLevelSelectionMode = "ExplicitLevels"
+        MM_mean@res_tiMainString = var0 + " (multi-model-mean)"
+        MM_mean@res_cnLevels = variable_info@contours_abs
+        MM_mean@res_cnFillColors = cmap_abs
+        plot = contour_map_ce(wksabs, MM_mean, var0)
+        delete(MM_mean@res_cnLevels)
+        delete(MM_mean@res_cnFillColors)
+        draw(plot)
+        frame(wksabs)
+
+        MM_mean = MM_mean - output(refID, :, :)
+        MM_mean@res_tiMainString = var0 + \
+            " (multi-model-mean - " + annots(refID) + ")"
+        MM_mean@res_cnLevels = variable_info@contours_diff
+        MM_mean@res_cnFillColors = cmap_diff
+        plot = contour_map_ce(wksdiff, MM_mean, var0)
+        delete(MM_mean@res_cnLevels)
+        delete(MM_mean@res_cnFillColors)
+        draw(plot)
+        frame(wksdiff)
+    end if
+
+    if (isdefined("MM_median")) then
+        MM_median@res_cnFillMode = "CellFill"
+        MM_median@res_cnLinesOn = False
+        MM_median@res_cnLevelSelectionMode = "ExplicitLevels"
+        MM_median@res_tiMainString = var0 + " (multi-model-median)"
+        MM_median@res_cnLevels = variable_info@contours_abs
+        MM_median@res_cnFillColors = cmap_abs
+        plot = contour_map_ce(wksabs, MM_median, var0)
+        delete(MM_median@res_cnLevels)
+        delete(MM_median@res_cnFillColors)
+        draw(plot)
+        frame(wksabs)
+
+        MM_median = MM_median - output(refID, :, :)
+        MM_median@res_tiMainString = var0 + \
+            " (multi-model-median - " + annots(refID) + ")"
+        MM_median@res_cnLevels = variable_info@contours_diff
+        MM_median@res_cnFillColors = cmap_diff
+        plot = contour_map_ce(wksdiff, MM_median, var0)
+        delete(MM_median@res_cnLevels)
+        delete(MM_median@res_cnFillColors)
+        draw(plot)
+        frame(wksdiff)
+    end if
+
     info_output("gv " + plot_abs + "." + file_type, verbosity, 1)
     info_output("gv " + plot_diff + "." + file_type, verbosity, 1)
 
-    info_output(">>>>>>>> Leaving " + diag_script, \
-                verbosity, 2)
+    leave_msg(diag_script, "", 2)
 
 end

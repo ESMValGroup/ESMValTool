@@ -95,6 +95,13 @@ undef("add_line")
 procedure add_line(wks,plot,x,yval,line_color,line_dash)
 local plres,str,y,plot,x,yval,line_color,line_dash
 begin
+; A-laue_ax+
+   ; gsn_add_polyline crashes if the arrays x and/or yval contain
+   ; only missing values
+   if (all(ismissing(x)).or.all(ismissing(yval))) then
+       return
+   end if
+; A-laue_ax-
    plres = True
    plres@gsLineColor = line_color
    plres@gsLineDashPattern = line_dash
