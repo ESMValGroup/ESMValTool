@@ -1,0 +1,78 @@
+<namelist>
+<namelist_summary>
+namelist_WAMonsoon_daily.xml
+
+Description
+West African Monsoon diagnostics
+
+Author(s)
+Romain Roehrig (MF, France - romain.roehrig@meteo.fr)
+
+Contributor(s)
+
+Reference(s)
+Roehrig et al. (2013)
+
+This namelist is part of the ESMValTool
+ESMValTool project PI: Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
+
+</namelist_summary>
+
+<GLOBAL>
+  <wrk_dir type="path">                  ./work                           </wrk_dir>
+  <plot_dir type="path">                 ./work/plots_wamonsoon_daily     </plot_dir>
+  <climo_dir type="path">                ./work/climo                     </climo_dir>
+  <regridding_dir type="path">           ./work/regridding_tmp_wamonsoon  </regridding_dir>
+  <write_plot_vars type="boolean">        True                            </write_plot_vars>
+  <max_data_filesize type="integer">      100                             </max_data_filesize>
+  <max_data_blocksize type="integer">     500                             </max_data_blocksize>
+  <verbosity  type="integer">             2                               </verbosity>
+  <exit_on_warning  type="boolean">       False                           </exit_on_warning>
+  <output_file_type>                      PNG                             </output_file_type>
+  <show_debuginfo type="boolean">         False                           </show_debuginfo>
+  <write_plots type="boolean">            True                            </write_plots>
+  <write_netcdf type="boolean">           True                            </write_netcdf>
+  <read_from_vault type="boolean">        False                           </read_from_vault>
+  <force_processing type="boolean">       False                           </force_processing>
+</GLOBAL>
+
+<MODELS>
+    <model> CMIP5   IPSL-CM5A-LR     day   historical   r1i1p1    1998   1999   ./   </model>
+    <model> CMIP5     MPI-ESM-LR     day   historical   r1i1p1    1998   1999   ./   </model>
+</MODELS>
+
+<DIAGNOSTICS>
+<diag>
+    <description> Intra-seasonal variability of precipitation                          </description>
+    <variable_def_dir>                                 ./variable_defs/                </variable_def_dir>
+    <variable ref_model="gpcp">                         pr-mmday                       </variable>
+    <field_type>                                        T2Ds                           </field_type>
+    <diag_script_cfg_dir>                              ./nml/cfg_WAMonsoon/            </diag_script_cfg_dir>
+    <diag_script cfg="cfg_WAMonsoon_precip_hp90.ncl">  WAMonsoon_isv_filtered.ncl   </diag_script>
+    <diag_script cfg="cfg_WAMonsoon_precip_bp3-10.ncl">  WAMonsoon_isv_filtered.ncl </diag_script>
+    <model id="gpcp"> CMIP5  GPCP-1DD-V12       day  obs   r1i1p1   1998  1999  ./  </model>
+</diag>
+
+<diag>
+    <description> Intra-seasonal variability of OLR                                    </description>
+    <variable_def_dir>                                 ./variable_defs/                </variable_def_dir>
+    <variable ref_model="noaa">                         rlut                           </variable>
+    <field_type>                                        T2Ds                           </field_type>
+    <diag_script_cfg_dir>                              ./nml/cfg_WAMonsoon/            </diag_script_cfg_dir>
+    <diag_script cfg="cfg_WAMonsoon_rlut_hp90.ncl">  WAMonsoon_isv_filtered.ncl       </diag_script>
+    <diag_script cfg="cfg_WAMonsoon_rlut_bp3-10.ncl">  WAMonsoon_isv_filtered.ncl     </diag_script>
+    <model id="noaa"> CMIP5  NOAA-PSD-Interp     day  obs   r1i1p1   1998  1999  ./        </model>
+</diag>
+
+<diag>
+    <description> 1-day autocorrelation of 1-90d (intraseasonal) precipitation anomalies       </description>
+    <variable_def_dir>                                 ./variable_defs/                        </variable_def_dir>
+    <variable ref_model="gpcp">                         pr-mmday                               </variable>
+    <field_type>                                        T2Ds                                   </field_type>
+    <diag_script_cfg_dir>                              ./nml/cfg_WAMonsoon/                    </diag_script_cfg_dir>
+    <diag_script cfg="cfg_WAMonsoon_precip_autocorr_hp90.ncl">  WAMonsoon_autocorr.ncl  </diag_script>
+    <model id="gpcp"> CMIP5  GPCP-1DD-V12       day  obs   r1i1p1   1998  1999  ./  </model>
+</diag>
+
+</DIAGNOSTICS>
+</namelist>

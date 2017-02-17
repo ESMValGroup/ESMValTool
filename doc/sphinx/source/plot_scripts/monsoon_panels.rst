@@ -1,0 +1,17 @@
+:mod:`monsoon_panels`
+=====================
+.. function:: get_title_suffix(plot_settings [1] : logical)
+.. function::  remove_attrs(p_settings [1]:logical, attributes [*]:string)
+.. function::  plot_two_by_one(wks [1]:graphic, res [1]:logical, di [1]:logical, plot_settings [1]:logical, valid_statistics [*]:string, storage_name1 [1]:string, storage_name2 [1]:string, debuginfo [1]:logical, storage_vault [1]:logical, idx_mod [1]:integer)
+.. function::  plot_three_by_one_diff(wks [1]:graphic, res [1]:logical, di [1]:logical, plot_settings [1]:logical, valid_statistics [*]:string, storage_name [1]:string, debuginfo [1]:logical, storage_vault [1]:logical, ref [*][*]:numeric, idx_mod [1]:integer)
+.. function::  two_by_one(storage_vault [1] : logical, di [1] : logical, plot_settings [1] : logical, storage_name1 [1] : string, storage_name2 [1] : string, debuginfo [1] : logical, valid_statistics [*] : string, res [1] : logical)
+.. function::  three_by_one_diff(storage_vault [1] : logical, di [1] : logical, plot_settings [1] : logical, storage_name [1] : string, debuginfo [1] : logical, valid_statistics [*] : string, res [1] : logical)
+.. function::  plot_three_by_one_vector(wks [1]:graphic, res [1]:logical, di [1]:logical, plot_settings [1]:logical, valid_statistics [*]:string, storage_name [1]:string, debuginfo [1]:logical, storage_vault [1]:logical, ua_ref [*][*]:numeric, va_ref [*][*]:numeric, speed_ref [*][*]:numeric, idx_mod [1]:integer)
+.. function::  three_by_one_vector(storage_vault [1] : logical, di [1] : logical, plot_settings [1] : logical, storage_name [1] : string, debuginfo [1] : logical, valid_statistics [*] : string, res [1] : logical)
+.. function::  plot_multipanel(cols[*]:integer, rows[*]:float, curr_idx[1]:integer, curr_page[1]:integer, res[1]:logical, storage_name[1]:string, storage_vault[1]:logical, wks[1]:graphic, di[1]:logical, plot_settings[1]:logical, valid_statistics[*]:string, debuginfo[1]:logical, figures_per_page[*]:integer, model_panel_placement[*]:integer, figure_panel_placement[*]:integer, plot_array[*]:graphic, type_specifier[1]:string, no_figures_on_this_page[1]:integer)
+.. function::  multipanel(storage_vault [1] : logical, di [1] : logical, plot_settings [1] : logical, storage_name [1] : string, debuginfo [1] : logical, valid_statistics [*] : string, res [1] : logical)
+.. function::  plot_multipanel_vector(cols[*]:integer, rows[*]:float, curr_idx[1]:integer, curr_page[1]:integer, res[1]:logical, storage_name[1]:string, storage_vault[1]:logical, wks[1]:graphic, di[1]:logical, plot_settings[1]:logical, valid_statistics[*]:string, debuginfo[1]:logical, figures_per_page[*]:integer, model_panel_placement[*]:integer, figure_panel_placement[*]:integer, plot_array[*]:graphic, type_specifier[1]:string, no_figures_on_this_page[1]:integer)
+.. function::  multipanel_vector(storage_vault [1] : logical, di [1] : logical, plot_settings [1] : logical, storage_name [1] : string, debuginfo [1] : logical, valid_statistics [*] : string, res [1] : logical)
+.. function::  seasonal_plot(storage_vault [1] : logical, di [1] : logical, plot_settings [1] : logical, storage_name [1] : string, debuginfo [1] : logical)
+.. function::  xy_plot_wrapper(storage_vault [1] : logical, di [1] : logical, plot_settings [1] : logical, storage_name [1] : string, debuginfo [1] : logical)
+.. function::  ts_line_wrapper(storage_vault [1] : logical, di [1] : logical, plot_settings [1] : logical, storage_name [1] : string, debuginfo [1] : logical)

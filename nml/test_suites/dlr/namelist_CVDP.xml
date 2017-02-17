@@ -1,0 +1,126 @@
+<namelist>
+<namelist_summary>
+namelist_CVDP.xml
+
+Description
+Climate Variability Dynamics Package (CVDP)
+
+Author(s)
+Adam Phillips and Clara Deser NCAR, USA
+
+Contributor(s)
+Dominik Kunert (DLR, Germany - Dominik.Kunert@dlr.de)
+
+Reference(s)
+http://webext.cgd.ucar.edu/Multi-Case/CVDP_ex/CMIP5-Historical/methodology.html
+
+This namelist is part of the ESMValTool
+ESMValTool project PI: Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
+</namelist_summary>
+
+<GLOBAL>
+  <wrk_dir type="path">                  ./work            </wrk_dir>
+  <plot_dir type="path">                 ./work/plots/CVDP </plot_dir>
+  <climo_dir type="path">                ./work/climo      </climo_dir>
+  <regridding_dir type="path">           ./work/regridding_tmp_cmip5  </regridding_dir>
+  <write_plot_vars type="boolean">        True             </write_plot_vars>
+  <max_data_filesize type="integer">      1000             </max_data_filesize>
+  <max_data_blocksize type="integer">     4000             </max_data_blocksize>
+  <verbosity  type="integer">               2              </verbosity>
+  <exit_on_warning  type="boolean">       False            </exit_on_warning>
+  <output_file_type>                      png              </output_file_type>
+  <show_debuginfo type="boolean">         True             </show_debuginfo>
+  <write_plots type="boolean">            True             </write_plots>
+  <write_netcdf type="boolean">           True             </write_netcdf>
+  <read_from_vault type="boolean">        False            </read_from_vault>
+  <force_processing type="boolean">       True             </force_processing>
+</GLOBAL>
+
+<MODELS>
+<!-- NOT REQUIRED -->      
+</MODELS>
+
+<DIAGNOSTICS>
+<diag>
+  <description> Sea Surface Temperature (SST) Observations   </description>
+  <variable_def_dir>  ./variable_defs/               </variable_def_dir>
+  <variable>           ts                           </variable>
+  <field_type>         T2Ms                          </field_type>
+  <diag_script_cfg_dir>    ./nml/cfg_CVDP/      </diag_script_cfg_dir>   
+  <diag_script cfg="cfg_cvdp.ncl">    cvdp_obs.ncl   </diag_script>
+  <model>    OBS         HadISST                reanaly 1    1984   2005 /data/ESMValTool/obs/Tier2/HadISST  </model>
+</diag>
+<diag>
+  <description> Sea Surface Pressure (SLP) Observations   </description>
+  <variable_def_dir>  ./variable_defs/               </variable_def_dir>
+  <variable>           psl                           </variable>
+  <field_type>         T2Ms                          </field_type>
+  <diag_script_cfg_dir>    ./nml/cfg_CVDP/      </diag_script_cfg_dir>   
+  <diag_script cfg="cfg_cvdp.ncl">    cvdp_obs.ncl   </diag_script>
+  <model>   ana4mips      IFS-Cy31r2 Amon          reanalysis        1984 2005 /data/ESMValTool/obs/Tier1     </model>
+</diag>
+
+<diag>
+  <description> 2m Air Temperature (TAS) Observations   </description>
+  <variable_def_dir>  ./variable_defs/               </variable_def_dir>
+  <variable>           tas                           </variable>
+  <field_type>         T2Ms                          </field_type>
+  <diag_script_cfg_dir>    ./nml/cfg_CVDP/      </diag_script_cfg_dir>   
+  <diag_script cfg="cfg_cvdp.ncl">    cvdp_obs.ncl   </diag_script>
+  <model>  OBS         NCEP              reanaly   1   1984 2005 /data/ESMValTool/obs/Tier2/NCEP  </model>
+</diag>
+
+<diag>
+  <description> Precipitation (PR) Observations   </description>
+  <variable_def_dir>  ./variable_defs/               </variable_def_dir>
+  <variable>           pr                           </variable>
+  <field_type>         T2Ms                          </field_type>
+  <diag_script_cfg_dir>    ./nml/cfg_CVDP/      </diag_script_cfg_dir>   
+  <diag_script cfg="cfg_cvdp.ncl">    cvdp_obs.ncl   </diag_script>
+  <model> obs4mips    GPCP-SG    L3   v2.2   1984 2005     /data/ESMValTool/obs/Tier1   </model>
+</diag>
+
+<!--
+<diag>
+  <description> Snow Depth (SND) Observations   </description>
+  <variable_def_dir>  ./variable_defs/               </variable_def_dir>
+  <variable>           snowdp                           </variable>
+  <field_type>         T2Ms                          </field_type>
+  <diag_script_cfg_dir>    ./nml/cfg_SAMonsoon/      </diag_script_cfg_dir>   
+  <diag_script cfg="cfg_cvdp.ncl">    test.ncl   </diag_script>    
+</diag>-->
+<!--
+<diag>
+  <description> OImon Models   </description>
+  <variable_def_dir>  ./variable_defs/               </variable_def_dir>
+  <variable>           snd                            </variable>
+  <field_type>         T2Ms                          </field_type>
+  <diag_script_cfg_dir>    ./nml/cfg_CVDP/      </diag_script_cfg_dir>   
+  <diag_script cfg="cfg_cvdp.ncl">    cvdp_ocean.ncl   </diag_script>
+  <model> CMIP5_ETHZ  MPI-ESM-LR    OImon  historical  r1i1p1   1984  2005  /data/ESMValTool/model/ETHZ_CMIP5 </model>
+</diag>-->
+
+<diag>
+  <description> Omon Models   </description>
+  <variable_def_dir>  ./variable_defs/               </variable_def_dir>
+  <variable>           msftmyz                            </variable>
+  <field_type>         T3Mz                          </field_type>
+  <diag_script_cfg_dir>    ./nml/cfg_CVDP/      </diag_script_cfg_dir>   
+  <diag_script cfg="cfg_cvdp.ncl">    cvdp_ocean.ncl   </diag_script>
+  <model> CMIP5_ETHZ  MPI-ESM-LR    Omon  historical  r1i1p1   1984  2005    /data/ESMValTool/model/ETHZ_CMIP5 </model>
+</diag>
+
+<diag>
+  <description> Amon Models   </description>
+  <variable_def_dir>  ./variable_defs/               </variable_def_dir>
+  <variable>           ts                            </variable>
+  <variable exclude="ersst">           psl                           </variable>
+  <variable exclude="ersst">           tas                           </variable>
+  <variable exclude="ersst">           pr                            </variable> 
+  <field_type exclude="ersst">         T2Ms                          </field_type>
+  <diag_script_cfg_dir>    ./nml/cfg_CVDP/      </diag_script_cfg_dir>   
+  <diag_script cfg="cfg_cvdp.ncl">    cvdp_atmos.ncl   </diag_script>
+  <model> CMIP5_ETHZ  MPI-ESM-LR    Amon  historical  r1i1p1   1984  2005  /data/ESMValTool/model/ETHZ_CMIP5 </model>
+</diag>
+</DIAGNOSTICS>
+</namelist>

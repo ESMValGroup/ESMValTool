@@ -1,0 +1,249 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>scaling &mdash; ESMValTool 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="ESMValTool 1.0 documentation" href="../index.html" />
+    <link rel="up" title="NCL diagnostic scripts library" href="index.html" />
+    <link rel="next" title="set_operators" href="set_operators.html" />
+    <link rel="prev" title="regridding" href="regridding.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="set_operators.html" title="set_operators"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="regridding.html" title="regridding"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">ESMValTool 1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">NCL diagnostic scripts library</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="scaling">
+<h1><tt class="xref py py-mod docutils literal"><span class="pre">scaling</span></tt><a class="headerlink" href="#scaling" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="convert_units">
+<tt class="descname">convert_units</tt><big>(</big><em>var:numeric</em>, <em>units_to[1]:string</em><big>)</big><a class="headerlink" href="#convert_units" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>var</strong> (<em>numeric</em>) &#8211; a numeric field on any dimensionality, it must have a units attribute.</li>
+<li><strong>units_to</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; a string, specifying the units to be converted to.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Return value</dt>
+<dd>A numeric field of the same dimensionality of var.</dd>
+<dt>Description</dt>
+<dd>Converts units of var from the one specified by the units attribute to
+the one given by the units_to argument. An error message is issued if
+the requested unit conversion is not available.</dd>
+<dt>Caveats</dt>
+<dd>Covers only a few cases, to be extended.</dd>
+</dl>
+<p>References</p>
+<dl class="docutils">
+<dt>Modification history:</dt>
+<dd>20150216-A_righ_ma: written.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="scalfac">
+<tt class="descname">scalfac</tt><big>(</big><em>u:numeric</em>, <em>digits[1]:numeric</em><big>)</big><a class="headerlink" href="#scalfac" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>u</strong> (<em>numeric</em>) &#8211; numeric field of any dimension containing the data to be scaled.</li>
+<li><strong>digits</strong> (<em>numeric</em>) &#8211; number of desired relevant digits left of the decimal point.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Return value</dt>
+<dd>Scaling factor of type float, which would need to be multiplied to the
+original data to bring them in the desired range (needed e.g. for
+annotation).</dd>
+<dt>Description</dt>
+<dd>Calculates a factor for scaling the input data to a range with the
+desired number of relevant digits left of the decimal point.
+The sign is counted as one of those digits if required for negative
+values.</dd>
+</dl>
+<p>Caveats</p>
+<p>References</p>
+<dl class="docutils">
+<dt>Modification history:</dt>
+<dd>20140220-A_gott_kl: written.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="scale_units">
+<tt class="descname">scale_units</tt><big>(</big><em>u:numeric</em>, <em>digits[1]:numeric</em><big>)</big><a class="headerlink" href="#scale_units" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>u</strong> (<em>numeric</em>) &#8211; numeric field of any dimension containing the data to be scaled.</li>
+<li><strong>digits</strong> (<em>numeric</em>) &#8211; number of desired relevant digits left of the decimal point (needed e.g. for annotation).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Return value</dt>
+<dd>Scaling factor of type float, which would need to be multiplied to the
+original data to bring them in the desired range.
+The string of the new unit is added as attribute.
+If the &#8220;units&#8221; string contains function codes, the code used will be
+added in <a class="reference external" href="mailto:s&#37;&#52;&#48;FuncCode">s<span>&#64;</span>FuncCode</a>.</dd>
+<dt>Description</dt>
+<dd>Calculates a factor for scaling the input data to a range with the
+desired number of relevant digits left of the decimal point.
+The result is further scaled to match a &#8220;nice&#8221; unit (if available)
+depending on the original unit attribute of u.
+Format codes: <a class="reference external" href="http://www.ncl.ucar.edu/Applications/text.shtml">http://www.ncl.ucar.edu/Applications/text.shtml</a></dd>
+</dl>
+<p>Caveats</p>
+<p>References</p>
+<dl class="docutils">
+<dt>Modification history</dt>
+<dd>20140220-A_gott_kl: written.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="rescale">
+<tt class="descname">rescale</tt><big>(</big><em>u:numeric</em>, <em>s[1]:numeric</em><big>)</big><a class="headerlink" href="#rescale" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>u</strong> (<em>numeric</em>) &#8211; numeric field of any dimension containing the data to be scaled.</li>
+<li><strong>s</strong> (<em>numeric</em>) &#8211; scaling factor, e.g. as output by function scale_units.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Return value</dt>
+<dd>Field of the same dimensions and type of u, rescaled to the units
+of s.</dd>
+<dt>Description</dt>
+<dd>Rescales the input field according to scaling factor s.
+Metadata of u are kept, but the units attribute will be changed according
+to <a class="reference external" href="mailto:s&#37;&#52;&#48;units">s<span>&#64;</span>units</a>.</dd>
+</dl>
+<p>Caveats</p>
+<p>References</p>
+<dl class="docutils">
+<dt>Modification history</dt>
+<dd>20140221-A_gott_kl: written.</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="regridding.html"
+                        title="previous chapter"><tt class="docutils literal docutils literal docutils literal docutils literal"><span class="pre">regridding</span></tt></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="set_operators.html"
+                        title="next chapter"><tt class="docutils literal"><span class="pre">set_operators</span></tt></a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/diag_scripts/scaling.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="set_operators.html" title="set_operators"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="regridding.html" title="regridding"
+             >previous</a> |</li>
+        <li><a href="../index.html">ESMValTool 1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" >NCL diagnostic scripts library</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,638 @@
+<namelist>
+<namelist_summary>
+###############################################################################
+namelist_perfmetrics_CMIP5.xml
+
+Description
+Namelist for plotting the performance metrics for the CMIP5 models. It 
+considers temperature, zonal and meridional wind, geopotential height, surface
+temperature, precipitation, TOA SW and LW radiation, SW and LW cloud radiative
+effects, and aerosol optical depth
+
+Authors
+Franziska Frank (DLR, Germany - franziska.frank@dlr.de)
+Mattia Righi (DLR, Germany - mattia.righi@dlr.de)
+Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
+
+Project
+DLR ESMVal
+
+Reference
+Gleckler et al., J. Geophys. Res., 113, D06104, doi: 10.1029/2007JD008972 (2008)
+
+This namelist is part of the ESMValTool
+###############################################################################
+</namelist_summary>
+
+<GLOBAL>
+    <write_plots type="boolean">              True         </write_plots>
+    <write_netcdf type="boolean">             True         </write_netcdf>
+    <force_processing type="boolean">        False         </force_processing>
+    <wrk_dir type="path">                    ./work/       </wrk_dir>
+    <plot_dir type="path">                   ./work/plots/ </plot_dir>
+    <climo_dir type="path">                  ./work/climo/ </climo_dir>
+    <write_plot_vars type="boolean">          True         </write_plot_vars>
+    <max_data_filesize type="integer">         100         </max_data_filesize>
+    <max_data_blocksize type="integer">        500         </max_data_blocksize>
+    <verbosity  type="integer">                  1         </verbosity>
+    <exit_on_warning  type="boolean">        False         </exit_on_warning>
+    <output_file_type>                          ps         </output_file_type>
+    <force_calc type="boolean">              False         </force_calc>
+    <force_gradecalc type="boolean">         False         </force_gradecalc>
+    <force_taylorcalc type="boolean">        False         </force_taylorcalc>
+</GLOBAL>
+
+<MODELS>
+
+
+<!-- ### CMIP5 MODELS. MODELS WHICH DO NOT PROVIDE ALL VARIABLES ARE DEFINED WITHIN EACH DIAG BLOCK BELOW ####################### -->
+<model>  CMIP5_ETHZ  ACCESS1-0          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+<model>  CMIP5_ETHZ  ACCESS1-3          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+<!-- <model>  CMIP5_ETHZ  bcc-csm1-1         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  -->
+<!-- <model>  CMIP5_ETHZ  bcc-csm1-1-m       MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  -->
+<model>  CMIP5_ETHZ  BNU-ESM            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+<!-- <model>  CMIP5_ETHZ  CanCM4             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  -->
+<!-- <model>  CMIP5_ETHZ  CanESM2            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  -->
+<!-- <model>  CMIP5_ETHZ  CCSM4              MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  -->
+<!-- <model>  CMIP5_ETHZ  CESM1-BGC          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  -->
+<model>  CMIP5_ETHZ  CESM1-CAM5         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+<!-- <model>  CMIP5_ETHZ  CESM1-FASTCHEM     MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  -->
+<!-- <model>  CMIP5_ETHZ  CESM1-WACCM        MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  -->
+<!-- <model>  CMIP5_ETHZ  CMCC-CESM          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  -->
+<!-- <model>  CMIP5_ETHZ  CMCC-CM            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  -->
+<!-- <model>  CMIP5_ETHZ  CMCC-CMS           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  -->
+<!-- <model>  CMIP5_ETHZ  CNRM-CM5           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  -->
+<model>  CMIP5_ETHZ  CSIRO-Mk3-6-0      MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+<!-- <model>  CMIP5_ETHZ  EC-EARTH           MIP_VAR_DEF  historical   r6i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  -->
+<!-- <model>  CMIP5_ETHZ  FGOALS-g2          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  -->
+<!-- <model>  CMIP5_ETHZ  FIO-ESM            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  -->
+<!-- <model>  CMIP5_ETHZ  GFDL-CM2p1         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  -->
+<model>  CMIP5_ETHZ  GFDL-CM3           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model> 
+<model>  CMIP5_ETHZ  GFDL-ESM2G         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model> 
+<model>  CMIP5_ETHZ  GFDL-ESM2M         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model> 
+<!-- <model>  CMIP5_ETHZ  GISS-E2-R          MIP_VAR_DEF  historical   r1i1p2  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  -->
+<!-- <model>  CMIP5_ETHZ  HadCM3             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  -->
+<!-- <model>  CMIP5_ETHZ  HadGEM2-AO         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  -->
+<model>  CMIP5_ETHZ  HadGEM2-CC         MIP_VAR_DEF  historical   r1i1p1  1980 2004  /data/ESMValTool/model/ETHZ_CMIP5/ </model> 
+<model>  CMIP5_ETHZ  HadGEM2-ES         MIP_VAR_DEF  historical   r1i1p1  1980 2004  /data/ESMValTool/model/ETHZ_CMIP5/ </model> 
+<!-- <model>  CMIP5_ETHZ  inmcm4             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  -->
+<model>  CMIP5_ETHZ  IPSL-CM5A-LR       MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+<model>  CMIP5_ETHZ  IPSL-CM5A-MR       MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+<model>  CMIP5_ETHZ  IPSL-CM5B-LR       MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+<model>  CMIP5_ETHZ  MIROC-ESM          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model> 
+<model>  CMIP5_ETHZ  MIROC-ESM-CHEM     MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+<model>  CMIP5_ETHZ  MIROC4h            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model> 
+<model>  CMIP5_ETHZ  MIROC5             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model> 
+<!-- <model>  CMIP5_ETHZ  MPI-ESM-LR         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  -->
+<!-- <model>  CMIP5_ETHZ  MPI-ESM-P          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  -->
+<model>  CMIP5_ETHZ  MRI-CGCM3          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+<!-- <model>  CMIP5_ETHZ  MRI-ESM1           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  -->
+<model>  CMIP5_ETHZ  NorESM1-M          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+<model>  CMIP5_ETHZ  NorESM1-ME         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+<!-- ######################################################################################################################### -->
+
+
+<!-- OBSERVATIONS ARE SPECIFIC TO EACH VARIABLE AND DEFINE WITHIN EACH DIAG BLOCK BELOW -->
+
+</MODELS>
+
+<DIAGNOSTICS>
+
+<!-- ### TEMPERATURE: annual-cycle line plot, zonal mean plot, grading and taylor precalculations ################################################ -->
+<diag>
+    <description>          Temperature                  </description>
+    <variable_def_dir>     ./variable_defs/             </variable_def_dir>
+    <variable MIP="Amon">  ta                           </variable>
+    <field_type>           T3M                          </field_type>
+    <diag_script_cfg_dir>  ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
+    <model>  CMIP5_ETHZ  bcc-csm1-1         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  bcc-csm1-1-m       MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CanCM4             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CanESM2            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CCSM4              MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CESM1-BGC          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CESM1-FASTCHEM     MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CESM1-WACCM        MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CMCC-CESM          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CMCC-CM            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CMCC-CMS           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CNRM-CM5           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  EC-EARTH           MIP_VAR_DEF  historical   r6i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  FGOALS-g2          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  FIO-ESM            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  GFDL-CM2p1         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  GISS-E2-H          MIP_VAR_DEF  historical   r1i1p2  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  GISS-E2-R          MIP_VAR_DEF  historical   r1i1p2  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  HadCM3             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  HadGEM2-AO         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  inmcm4             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  MPI-ESM-LR         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  MPI-ESM-P          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  MRI-ESM1           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+
+    <model> OBS   NCEP        reanaly     1           1980  2005  /data/ESMValTool/obs/Tier2/NCEP        </model>
+    <model> OBS   ERA-Interim reanaly     1           1980  2005  /data/ESMValTool/obs/Tier3/ERA-Interim </model>
+
+    <!-- Annual cycle plots -->
+    <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_glob.ncl">  perfmetrics_main.ncl          </diag_script>
+    <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_200_glob.ncl">  perfmetrics_main.ncl          </diag_script>
+    <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_30_glob.ncl">   perfmetrics_main.ncl          </diag_script>
+    <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_5_glob.ncl">    perfmetrics_main.ncl          </diag_script>
+
+    <!-- Zonal mean plots -->
+    <diag_script cfg="cfg_perfmetrics_zonal_annualclim_all_glob.ncl">   perfmetrics_main.ncl          </diag_script>
+
+    <!-- Taylor and grading precalculations -->
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_glob.ncl">       perfmetrics_main.ncl          </diag_script>
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_200_glob.ncl">       perfmetrics_main.ncl          </diag_script>
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_glob.ncl">       perfmetrics_grading.ncl       </diag_script>
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_200_glob.ncl">       perfmetrics_grading.ncl       </diag_script>
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_glob.ncl">       perfmetrics_taylor.ncl        </diag_script>
+</diag>
+
+<!-- ### EASTWARD WIND: grading precalculations ################################################################################################## -->
+<diag>
+    <description>          Eastward wind                </description>
+    <variable_def_dir>     ./variable_defs/             </variable_def_dir>
+    <variable MIP="Amon">  ua                           </variable>
+    <field_type>           T3M                          </field_type>
+    <diag_script_cfg_dir>  ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
+
+    <model>  CMIP5_ETHZ  bcc-csm1-1         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  bcc-csm1-1-m       MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CanCM4             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CanESM2            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CCSM4              MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CESM1-BGC          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CESM1-FASTCHEM     MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CESM1-WACCM        MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CMCC-CESM          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CMCC-CM            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CMCC-CMS           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CNRM-CM5           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  EC-EARTH           MIP_VAR_DEF  historical   r6i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  FGOALS-g2          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  FIO-ESM            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  GFDL-CM2p1         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  GISS-E2-H          MIP_VAR_DEF  historical   r1i1p2  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  GISS-E2-R          MIP_VAR_DEF  historical   r1i1p2  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  HadCM3             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  HadGEM2-AO         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  inmcm4             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  MPI-ESM-LR         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  MPI-ESM-P          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  MRI-ESM1           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+
+    <model> OBS   NCEP        reanaly     1           1980  2005  /data/ESMValTool/obs/Tier2/NCEP        </model>
+    <model> OBS   ERA-Interim reanaly     1           1980  2005  /data/ESMValTool/obs/Tier3/ERA-Interim </model>
+
+    <!-- Grading precalculations -->
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_glob.ncl">       perfmetrics_main.ncl          </diag_script>
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_200_glob.ncl">       perfmetrics_main.ncl          </diag_script>
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_glob.ncl">       perfmetrics_grading.ncl       </diag_script>
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_200_glob.ncl">       perfmetrics_grading.ncl       </diag_script>
+</diag>
+
+<!-- ### NORTHWARD WIND: grading precalculations ################################################################################################# -->
+<diag>
+    <description>          Northward wind               </description>
+    <variable_def_dir>     ./variable_defs/             </variable_def_dir>
+    <variable MIP="Amon">  va                           </variable>
+    <field_type>           T3M                          </field_type>
+    <diag_script_cfg_dir>  ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
+  
+    <model>  CMIP5_ETHZ  bcc-csm1-1         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  bcc-csm1-1-m       MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CanCM4             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CanESM2            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CCSM4              MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CESM1-BGC          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CESM1-FASTCHEM     MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CESM1-WACCM        MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CMCC-CESM          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CMCC-CM            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CMCC-CMS           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CNRM-CM5           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  EC-EARTH           MIP_VAR_DEF  historical   r6i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  FGOALS-g2          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  FIO-ESM            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  GFDL-CM2p1         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  GISS-E2-H          MIP_VAR_DEF  historical   r1i1p2  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  GISS-E2-R          MIP_VAR_DEF  historical   r1i1p2  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  HadCM3             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  HadGEM2-AO         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  inmcm4             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  MPI-ESM-LR         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  MPI-ESM-P          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  MRI-ESM1           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+
+    <model> OBS   NCEP        reanaly     1           1980  2005  /data/ESMValTool/obs/Tier2/NCEP        </model>
+    <model> OBS   ERA-Interim reanaly     1           1980  2005  /data/ESMValTool/obs/Tier3/ERA-Interim </model>
+
+    <!-- Grading precalculations -->
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_glob.ncl">       perfmetrics_main.ncl          </diag_script>
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_200_glob.ncl">       perfmetrics_main.ncl          </diag_script>
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_glob.ncl">       perfmetrics_grading.ncl       </diag_script>
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_200_glob.ncl">       perfmetrics_grading.ncl       </diag_script>
+</diag>
+
+<!-- ### GEOPOTENTIAL HEIGHT: grading precalculations ############################################################################################ -->
+<diag>
+    <description>          Geopotential height          </description>
+    <variable_def_dir>     ./variable_defs/             </variable_def_dir>
+    <variable MIP="Amon">  zg                           </variable>
+    <field_type>           T3M                          </field_type>
+    <diag_script_cfg_dir>  ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
+
+    <model>  CMIP5_ETHZ  bcc-csm1-1         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  bcc-csm1-1-m       MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CanCM4             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CanESM2            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CCSM4              MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CESM1-BGC          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CESM1-FASTCHEM     MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CESM1-WACCM        MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CMCC-CESM          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CMCC-CM            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CMCC-CMS           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CNRM-CM5           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+<!--     <model>  CMIP5_ETHZ  EC-EARTH           MIP_VAR_DEF  historical   r6i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+    <model>  CMIP5_ETHZ  FGOALS-g2          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  FIO-ESM            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  GFDL-CM2p1         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  GISS-E2-H          MIP_VAR_DEF  historical   r1i1p2  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+<!--     <model>  CMIP5_ETHZ  GISS-E2-R          MIP_VAR_DEF  historical   r1i1p2  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+    <model>  CMIP5_ETHZ  HadCM3             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  HadGEM2-AO         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  inmcm4             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  MPI-ESM-LR         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  MPI-ESM-P          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+<!--     <model>  CMIP5_ETHZ  MRI-ESM1           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+  
+    <model> OBS   NCEP        reanaly     1           1980  2005  /data/ESMValTool/obs/Tier2/NCEP        </model>
+    <model> OBS   ERA-Interim reanaly     1           1980  2005  /data/ESMValTool/obs/Tier3/ERA-Interim </model>
+
+    <!-- Grading precalculations -->
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl">       perfmetrics_main.ncl          </diag_script>
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl">       perfmetrics_grading.ncl       </diag_script>
+</diag>
+
+<!-- ### GEOPOTENTIAL HEIGHT: grading precalculations ############################################################################################ -->
+<diag>
+    <description>          Specific humidity            </description>
+    <variable_def_dir>     ./variable_defs/             </variable_def_dir>
+    <variable MIP="Amon">  hus                          </variable>
+    <field_type>           T3M                          </field_type>
+    <diag_script_cfg_dir>  ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
+
+    <model>  CMIP5_ETHZ  bcc-csm1-1         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  bcc-csm1-1-m       MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+<!--     <model>  CMIP5_ETHZ  CanCM4             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+    <model>  CMIP5_ETHZ  CanESM2            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CCSM4              MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CESM1-BGC          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CESM1-FASTCHEM     MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CESM1-WACCM        MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CMCC-CESM          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CMCC-CM            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CMCC-CMS           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CNRM-CM5           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+<!--     <model>  CMIP5_ETHZ  EC-EARTH           MIP_VAR_DEF  historical   r6i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+    <model>  CMIP5_ETHZ  FGOALS-g2          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  FIO-ESM            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  GFDL-CM2p1         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+<!--     <model>  CMIP5_ETHZ  GISS-E2-H          MIP_VAR_DEF  historical   r1i1p2  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+<!--     <model>  CMIP5_ETHZ  GISS-E2-R          MIP_VAR_DEF  historical   r1i1p2  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+<!--     <model>  CMIP5_ETHZ  HadCM3             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+    <model>  CMIP5_ETHZ  HadGEM2-AO         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  inmcm4             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  MPI-ESM-LR         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  MPI-ESM-P          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+<!--     <model>  CMIP5_ETHZ  MRI-ESM1           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+  
+    <model> obs4mips  AIRS       L3       RetStd-v5   2003  2010  /data/ESMValTool/obs/Tier1    </model>
+    <model> OBS   ERA-Interim reanaly     1           1980  2005  /data/ESMValTool/obs/Tier3/ERA-Interim </model>
+
+    <!-- Grading precalculations -->
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_400_glob.ncl">       perfmetrics_main.ncl          </diag_script>
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_400_glob.ncl">       perfmetrics_grading.ncl       </diag_script>
+</diag>
+
+<!-- ### NEAR-SURFACE TEMPERATURE: grading precalculations ####################################################################################### -->
+<diag>
+    <description>          Near-surface temperature     </description>
+    <variable_def_dir>     ./variable_defs/             </variable_def_dir>
+    <variable MIP="Amon">  tas                          </variable>
+    <field_type>           T2Ms                         </field_type>
+    <diag_script_cfg_dir>  ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
+
+    <model>  CMIP5_ETHZ  bcc-csm1-1         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  bcc-csm1-1-m       MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CanCM4             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CanESM2            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CCSM4              MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CESM1-BGC          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CESM1-FASTCHEM     MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CESM1-WACCM        MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CMCC-CESM          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CMCC-CM            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CMCC-CMS           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CNRM-CM5           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  EC-EARTH           MIP_VAR_DEF  historical   r6i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  FGOALS-g2          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  FIO-ESM            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  GFDL-CM2p1         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  GISS-E2-H          MIP_VAR_DEF  historical   r1i1p2  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  GISS-E2-R          MIP_VAR_DEF  historical   r1i1p2  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  HadCM3             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  HadGEM2-AO         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  inmcm4             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  MPI-ESM-LR         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  MPI-ESM-P          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  MRI-ESM1           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+
+    <model> OBS   NCEP        reanaly     1           1980  2005  /data/ESMValTool/obs/Tier2/NCEP        </model>
+    <model> OBS   ERA-Interim reanaly     1           1980  2005  /data/ESMValTool/obs/Tier3/ERA-Interim </model>
+
+    <!-- Lat-lon plots -->
+    <diag_script cfg="cfg_perfmetrics_latlon_annualclim_all_glob.ncl">  perfmetrics_main.ncl          </diag_script>
+
+    <!-- Grading precalculations -->
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl">       perfmetrics_main.ncl          </diag_script>
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl">       perfmetrics_grading.ncl       </diag_script>
+</diag>
+
+<!-- ### PRECIPITATIONS: grading precalculations ################################################################################################# -->
+<diag>
+    <description>          Precipitations               </description>
+    <variable_def_dir>     ./variable_defs/             </variable_def_dir>
+    <variable MIP="Amon">  pr                           </variable>
+    <field_type>           T2Ms                         </field_type>
+    <diag_script_cfg_dir>  ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
+
+    <model>  CMIP5_ETHZ  bcc-csm1-1         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  bcc-csm1-1-m       MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+<!--     <model>  CMIP5_ETHZ  CanCM4             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+    <model>  CMIP5_ETHZ  CanESM2            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CCSM4              MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CESM1-BGC          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CESM1-FASTCHEM     MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CESM1-WACCM        MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CMCC-CESM          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CMCC-CM            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CMCC-CMS           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CNRM-CM5           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  EC-EARTH           MIP_VAR_DEF  historical   r6i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  FGOALS-g2          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  FIO-ESM            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  GFDL-CM2p1         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  GISS-E2-H          MIP_VAR_DEF  historical   r1i1p2  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  GISS-E2-R          MIP_VAR_DEF  historical   r1i1p2  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  HadCM3             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  HadGEM2-AO         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  inmcm4             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  MPI-ESM-LR         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  MPI-ESM-P          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  MRI-ESM1           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+
+    <model> obs4mips   GPCP-SG  L3  v2.2   1980  2005  /data/ESMValTool/obs/Tier1/ </model>
+
+    <!-- Grading precalculations -->
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl">       perfmetrics_main.ncl          </diag_script>
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl">       perfmetrics_grading.ncl       </diag_script>
+</diag>
+
+<!-- ### ALLSKY LW RADIATION: grading precalculations ############################################################################################ -->
+<diag>
+    <description>          Longwave radiation           </description>
+    <variable_def_dir>     ./variable_defs/             </variable_def_dir>
+    <variable MIP="Amon">  rlut                         </variable>
+    <field_type>           T2Ms                         </field_type>
+    <diag_script_cfg_dir>  ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
+
+    <model>  CMIP5_ETHZ  bcc-csm1-1         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  bcc-csm1-1-m       MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CanCM4             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CanESM2            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CCSM4              MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CESM1-BGC          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CESM1-FASTCHEM     MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CESM1-WACCM        MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CMCC-CESM          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CMCC-CM            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CMCC-CMS           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CNRM-CM5           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  EC-EARTH           MIP_VAR_DEF  historical   r6i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  FGOALS-g2          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  FIO-ESM            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  GFDL-CM2p1         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  GISS-E2-H          MIP_VAR_DEF  historical   r1i1p2  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  GISS-E2-R          MIP_VAR_DEF  historical   r1i1p2  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  HadCM3             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  HadGEM2-AO         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  inmcm4             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  MPI-ESM-LR         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  MPI-ESM-P          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  MRI-ESM1           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+
+    <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  /data/ESMValTool/obs/Tier1 </model>
+
+    <!-- Grading precalculations -->
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl">       perfmetrics_main.ncl          </diag_script>
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl">       perfmetrics_grading.ncl       </diag_script>
+</diag>
+
+<!-- ### ALLSKY SW RADIATION: grading precalculations ############################################################################################ -->
+<diag>
+    <description>          Shortwave radiation          </description>
+    <variable_def_dir>     ./variable_defs/             </variable_def_dir>
+    <variable MIP="Amon">  rsut                         </variable>
+    <field_type>           T2Ms                         </field_type>
+    <diag_script_cfg_dir>  ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
+
+    <model>  CMIP5_ETHZ  bcc-csm1-1         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  bcc-csm1-1-m       MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+<!--     <model>  CMIP5_ETHZ  CanCM4             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+    <model>  CMIP5_ETHZ  CanESM2            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CCSM4              MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CESM1-BGC          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CESM1-FASTCHEM     MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CESM1-WACCM        MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CMCC-CESM          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CMCC-CM            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CMCC-CMS           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CNRM-CM5           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+<!--     <model>  CMIP5_ETHZ  EC-EARTH           MIP_VAR_DEF  historical   r6i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+    <model>  CMIP5_ETHZ  FGOALS-g2          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  FIO-ESM            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  GFDL-CM2p1         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  GISS-E2-H          MIP_VAR_DEF  historical   r1i1p2  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  GISS-E2-R          MIP_VAR_DEF  historical   r1i1p2  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  HadCM3             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  HadGEM2-AO         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  inmcm4             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  MPI-ESM-LR         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  MPI-ESM-P          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  MRI-ESM1           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+
+    <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  /data/ESMValTool/obs/Tier1 </model>
+
+    <!-- Grading precalculations -->
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl">       perfmetrics_main.ncl          </diag_script>
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl">       perfmetrics_grading.ncl       </diag_script>
+</diag>
+
+<!-- ### SW CLOUD FORCING: lat-lon plot and grading precalculations ############################################################################## -->
+<diag>
+    <description>          Shortwave cloud frocing      </description>
+    <variable_def_dir>     ./variable_defs/             </variable_def_dir>
+    <variable MIP="Amon">  SW_CRE                       </variable>
+    <field_type>           T2Ms                         </field_type>
+    <diag_script_cfg_dir>  ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
+
+
+    <model>  CMIP5_ETHZ  bcc-csm1-1         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  bcc-csm1-1-m       MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+<!--     <model>  CMIP5_ETHZ  CanCM4             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+    <model>  CMIP5_ETHZ  CanESM2            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CCSM4              MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CESM1-BGC          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CESM1-FASTCHEM     MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CESM1-WACCM        MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CMCC-CESM          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CMCC-CM            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+<!--     <model>  CMIP5_ETHZ  CMCC-CMS           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+    <model>  CMIP5_ETHZ  CNRM-CM5           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+<!--     <model>  CMIP5_ETHZ  EC-EARTH           MIP_VAR_DEF  historical   r6i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+    <model>  CMIP5_ETHZ  FGOALS-g2          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  FIO-ESM            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+<!--     <model>  CMIP5_ETHZ  GFDL-CM2p1         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+    <model>  CMIP5_ETHZ  GISS-E2-H          MIP_VAR_DEF  historical   r1i1p2  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  GISS-E2-R          MIP_VAR_DEF  historical   r1i1p2  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  HadCM3             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  HadGEM2-AO         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  inmcm4             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  MPI-ESM-LR         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  MPI-ESM-P          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  MRI-ESM1           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+
+    <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  /data/ESMValTool/obs/Tier1 </model>
+
+    <!-- Lat-lon plots -->
+    <diag_script cfg="cfg_perfmetrics_latlon_annualclim_all_glob.ncl">  perfmetrics_main.ncl          </diag_script>
+
+    <!-- Grading precalculations -->
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl">       perfmetrics_main.ncl          </diag_script>
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl">       perfmetrics_grading.ncl       </diag_script>
+</diag>
+
+<!-- ### LW CLOUD FORCING: lat-lon plot and grading precalculations ############################################################################## -->
+<diag>
+    <description>          Longwave cloud forcing       </description>
+    <variable_def_dir>     ./variable_defs/             </variable_def_dir>
+    <variable MIP="Amon">  LW_CRE                       </variable>
+    <field_type>           T2Ms                         </field_type>
+    <diag_script_cfg_dir>  ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
+
+    <model>  CMIP5_ETHZ  bcc-csm1-1         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  bcc-csm1-1-m       MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+<!--     <model>  CMIP5_ETHZ  CanCM4             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+    <model>  CMIP5_ETHZ  CanESM2            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CCSM4              MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CESM1-BGC          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CESM1-FASTCHEM     MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CESM1-WACCM        MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CMCC-CESM          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CMCC-CM            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CMCC-CMS           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CNRM-CM5           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+<!--     <model>  CMIP5_ETHZ  EC-EARTH           MIP_VAR_DEF  historical   r6i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+    <model>  CMIP5_ETHZ  FGOALS-g2          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  FIO-ESM            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+<!--     <model>  CMIP5_ETHZ  GFDL-CM2p1         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+    <model>  CMIP5_ETHZ  GISS-E2-H          MIP_VAR_DEF  historical   r1i1p2  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  GISS-E2-R          MIP_VAR_DEF  historical   r1i1p2  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  HadCM3             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  HadGEM2-AO         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  inmcm4             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  MPI-ESM-LR         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  MPI-ESM-P          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  MRI-ESM1           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+  
+    <model>  obs4mips    CERES-EBAF L3B   Ed2-7        2001  2012  /data/ESMValTool/obs/Tier1 </model>
+
+    <!-- Lat-lon plots -->
+    <diag_script cfg="cfg_perfmetrics_latlon_annualclim_all_glob.ncl">  perfmetrics_main.ncl          </diag_script>
+
+    <!-- Grading precalculations -->
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl">       perfmetrics_main.ncl          </diag_script>
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl">       perfmetrics_grading.ncl       </diag_script>
+</diag>
+
+<!-- ### AEROSOL OPTICAL DEPTH: grading precalculations ########################################################################################## -->
+<diag>
+    <description>          Aerosol optical depth        </description>
+    <variable_def_dir>     ./variable_defs/             </variable_def_dir>
+    <variable MIP="aero">  od550aer                     </variable>
+    <field_type>           T2Ms                         </field_type>
+    <diag_script_cfg_dir>  ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
+
+<!--     <model>  CMIP5_ETHZ  bcc-csm1-1         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+<!--     <model>  CMIP5_ETHZ  bcc-csm1-1-m       MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+<!--     <model>  CMIP5_ETHZ  CanCM4             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+<!--     <model>  CMIP5_ETHZ  CanESM2            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+<!--     <model>  CMIP5_ETHZ  CCSM4              MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+<!--     <model>  CMIP5_ETHZ  CESM1-BGC          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+<!--     <model>  CMIP5_ETHZ  CESM1-FASTCHEM     MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+<!--     <model>  CMIP5_ETHZ  CESM1-WACCM        MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+<!--     <model>  CMIP5_ETHZ  CMCC-CESM          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+<!--     <model>  CMIP5_ETHZ  CMCC-CM            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+<!--     <model>  CMIP5_ETHZ  CMCC-CMS           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+<!--     <model>  CMIP5_ETHZ  CNRM-CM5           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+<!--     <model>  CMIP5_ETHZ  EC-EARTH           MIP_VAR_DEF  historical   r6i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+<!--     <model>  CMIP5_ETHZ  FGOALS-g2          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+<!--     <model>  CMIP5_ETHZ  FIO-ESM            MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+<!--     <model>  CMIP5_ETHZ  GFDL-CM2p1         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+    <model>  CMIP5_ETHZ  GISS-E2-H          MIP_VAR_DEF  historical   r1i1p2  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  GISS-E2-R          MIP_VAR_DEF  historical   r1i1p2  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+<!--     <model>  CMIP5_ETHZ  HadCM3             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+<!--     <model>  CMIP5_ETHZ  HadGEM2-AO         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+<!--     <model>  CMIP5_ETHZ  inmcm4             MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+<!--     <model>  CMIP5_ETHZ  MPI-ESM-LR         MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+<!--     <model>  CMIP5_ETHZ  MPI-ESM-P          MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>  DATA NOT AVAILABLE -->
+    <model>  CMIP5_ETHZ  MRI-ESM1           MIP_VAR_DEF  historical   r1i1p1  1980 2005  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+
+    <model>  OBS         ESACCI-AEROSOL   sat   SU-v4.2   1998  2011  /data/ESMValTool/obs/Tier2/ESACCI-AEROSOL </model>
+    <model>  obs4mips    MODIS            L3    C5        2001  2012  /data/ESMValTool/obs/Tier1       </model>
+
+    <!--  Grading precalculations -->
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_od550aer.ncl">       perfmetrics_main.ncl          </diag_script>
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_od550aer.ncl">       perfmetrics_grading.ncl       </diag_script>
+</diag>
+
+<!-- Collect and plot previously calculated gradings ############################################################################################# -->
+<diag>
+    <description>          Portrait diagram             </description>
+    <variable_def_dir>     ./variable_defs/             </variable_def_dir>
+    <variable MIP="Amon">  ta                           </variable>
+    <field_type>           T3M                          </field_type>
+    <diag_script_cfg_dir>  ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
+
+    <!-- Grading plot -->
+    <diag_script cfg="cfg_perfmetrics_grading_collect.ncl">    perfmetrics_grading_collect.ncl         </diag_script>
+</diag>
+
+<!-- Collect and plot previously calculated taylor ############################################################################################### -->
+<diag>
+    <description>          Taylor diagram               </description>
+    <variable_def_dir>     ./variable_defs/             </variable_def_dir>
+    <variable MIP="Amon">  ta                           </variable>
+    <field_type>           T3M                          </field_type>
+    <diag_script_cfg_dir>  ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
+
+    <!-- Taylor plot -->
+    <diag_script cfg="cfg_perfmetrics_taylor_collect.ncl">     perfmetrics_taylor_collect.ncl          </diag_script>
+</diag>
+
+</DIAGNOSTICS>
+</namelist>

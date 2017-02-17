@@ -1,0 +1,4 @@
+a {text-align:left;}
+.figure {float:left;}
+.diag {clear: both;display:block;width:auto;}
+.diag_single {clear: both;display:block;width:auto;padding-top:2cm;}

@@ -1,0 +1,28 @@
+###############################################
+# Similar to the colors used in IPCC Fig. 9.2 #
+###############################################
+
+# number of colors in table not counting foreground/background color
+
+ncolors = 14
+
+# first color = GMT background color
+# last color  = GMT foreground color
+
+# r g b
+
+161	83	21
+183	105	39
+207	135	63
+225	166	100
+245	206	131
+244	225	159
+253	244	187
+208	229	196
+162	209	167
+78	185	157
+111	170	200
+74	133	163
+35	95	129
+21	56	88
+

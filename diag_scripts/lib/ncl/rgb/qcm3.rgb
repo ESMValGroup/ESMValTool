@@ -1,0 +1,35 @@
+##################################################################
+# Converted from GMT color table "IPRC:Enso/cmip5/plot/qcm3.cpt" #
+##################################################################
+
+# number of colors in table not counting foreground/background color
+
+ncolors = 19
+
+# first color = GMT background color
+# last color  = GMT foreground color
+
+# r g b
+
+0	0	150
+0	0	205
+0	0	255
+0	105	255
+0	155	255
+0	205	255
+0	255	255
+100	255	255
+200	255	255
+255	255	255
+255	255	200
+255	255	100
+255	255	0
+255	205	0
+255	155	0
+255	105	0
+255	0	0
+230	0	0
+205	0	0
+180	0	0
+125	0	0
+

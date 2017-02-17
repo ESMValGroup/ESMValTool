@@ -1,0 +1,83 @@
+<namelist>
+<namelist_summary>
+========================================================================
+DESCRIPTION: namelist_aerosol.xml is the master namelist for the aerosol
+             diagnostics of the ESMVal tool.
+
+AUTHORS: Mattia Righi (mattia.righi@dlr.de)
+
+NOTES: This namelist is part of the ESMVal tool
+       (PIs: Veronika Eyring, Klaus Wyser)
+========================================================================
+</namelist_summary>
+
+<GLOBAL>
+    <write_plots type="boolean">                        True           </write_plots>
+    <write_netcdf type="boolean">                       True           </write_netcdf>
+    <force_processing type="boolean">                  False           </force_processing>
+    <wrk_dir type="path">                             ./work           </wrk_dir>
+    <plot_dir type="path">              ./work/plots_aerosol/          </plot_dir>
+    <climo_dir type="path">             ./work/climo_aerosol           </climo_dir>
+    <write_plot_vars type="boolean">                    True           </write_plot_vars>
+    <max_data_filesize type="integer">                   100           </max_data_filesize>
+    <max_data_blocksize type="integer">                  500           </max_data_blocksize>
+    <output_file_type>                                    PS           </output_file_type>
+    <verbosity  type="integer">                            3           </verbosity>
+    <debuginfo type="boolean">                         False           </debuginfo>
+    <exit_on_warning  type="boolean">                   True           </exit_on_warning>
+</GLOBAL>
+
+
+<MODELS>
+    <model> ESMVal  EMAC         15082  1  1999 2001  /nobackup/rossby17/sm_maeva/Data/EMAC         use_EMAC_reformat </model>
+</MODELS>
+
+
+<DIAGNOSTICS>
+    <diag>
+        <description>  Aerosol diagnostic for sconcso4 </description>
+        <variable_def_dir>         ./variable_defs/    </variable_def_dir>
+        <variable>                   concso4          </variable>
+        <field_type>                 T2Ms              </field_type>
+        <diag_script_cfg_dir>   ./nml/test_suites/smhi/cfg_diag_scripts/cfg_aerosol   </diag_script_cfg_dir>
+        <diag_script cfg="cfg_aerosol_stations_IMPROVE.ncl"> aerosol_stations.ncl </diag_script>
+    </diag>
+    <diag>
+        <description>  Aerosol diagnostic for sconcso3 </description>
+        <variable_def_dir>         ./variable_defs/    </variable_def_dir>
+        <variable>                   concno3          </variable>
+        <field_type>                 T2Ms              </field_type>
+        <diag_script_cfg_dir>   ./nml/test_suites/smhi/cfg_diag_scripts/cfg_aerosol   </diag_script_cfg_dir>
+        <diag_script cfg="cfg_aerosol_stations_IMPROVE.ncl"> aerosol_stations.ncl </diag_script>
+    </diag>
+
+    <diag>
+        <description>  Aerosol diagnostic for sconcnh4 </description>
+        <variable_def_dir>         ./variable_defs/    </variable_def_dir>
+        <variable>                   concnh4          </variable>
+        <field_type>                 T2Ms              </field_type>
+        <diag_script_cfg_dir>   ./nml/test_suites/smhi/cfg_diag_scripts/cfg_aerosol   </diag_script_cfg_dir>
+        <diag_script cfg="cfg_aerosol_stations_IMPROVE.ncl"> aerosol_stations.ncl </diag_script>
+    </diag>
+    
+    <diag>
+        <description>  Aerosol diagnostic for sconcbc </description>
+        <variable_def_dir>         ./variable_defs/    </variable_def_dir>
+        <variable>                   concbc          </variable>
+        <field_type>                 T2Ms              </field_type>
+        <diag_script_cfg_dir>   ./nml/test_suites/smhi/cfg_diag_scripts/cfg_aerosol   </diag_script_cfg_dir>
+        <diag_script cfg="cfg_aerosol_stations_IMPROVE.ncl"> aerosol_stations.ncl </diag_script>
+    </diag>
+    
+    <diag>
+        <description>  Aerosol diagnostic for sconcoa </description>
+        <variable_def_dir>         ./variable_defs/    </variable_def_dir>
+        <variable>                   concoa          </variable>
+        <field_type>                 T2Ms              </field_type>
+        <diag_script_cfg_dir>   ./nml/test_suites/smhi/cfg_diag_scripts/cfg_aerosol   </diag_script_cfg_dir>
+        <diag_script cfg="cfg_aerosol_stations_IMPROVE.ncl"> aerosol_stations.ncl </diag_script>
+    </diag>
+
+</DIAGNOSTICS>
+
+</namelist>

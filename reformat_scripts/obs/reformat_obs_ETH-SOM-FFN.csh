@@ -1,0 +1,65 @@
+#!/bin/csh
+#;;#############################################################################
+#;;
+#;; Tier
+#;;    Tier 2: freely available non-obs4mips datasets
+#;;
+#;; Source
+#;;    Download at
+#;;    http://cdiac.ornl.gov/oceans/SPCO2_1998_2011_ETH_SOM_FFN.html
+#;;
+#;; Download and processing instructions
+#;;    *) Click on "Database Files" and download spco2_1998-2011_ETH_SOM-FFN_CDIAC_G05.nc.zip
+#;;    *) Unzip zip archive: unzip spco2_1998-2011_ETH_SOM-FFN_CDIAC_G05.nc.zip
+#;;    *) Run this script (requires requires NCO, http://nco.sourceforge.net/ and
+#;;       CDO, http://https://code.zmaw.de/projects/cdo/)
+#;;
+#;; Caveats
+#;;
+#;; Modification history
+#;;    20151111-A_laue_ax: written.
+#;;
+#;;#############################################################################
+
+set inpath=/data/ESMValTool/obs/RAW/Tier2/ETH-SOM-FFN
+set outpath=/data/ESMValTool/obs/Tier2/ETH-SOM-FFN
+
+if (! -d $outpath) then
+    mkdir $outpath
+endif
+
+set infile=$inpath/spco2_1998-2011_ETH_SOM-FFN_CDIAC_G05.nc
+set outfile=$outpath/spco2_monthly_ref_ETH-SOM-FFN_reg_1998-2011.nc
+
+if (-e $infile) then
+    echo 'input file = '$infile
+else
+    echo 'error: input file not found - '$infile
+    exit
+endif
+
+ncks -v lon,lat,time,spco2_raw $infile tmp.nc
+ncrename -v spco2_raw,spco2 tmp.nc
+cdo chunit,muatm,uatm tmp.nc spco2_monthly_ref_ETH-SOM-FFN_reg_1998-2011_varname_unit.nc
+cdo selvar,spco2 spco2_monthly_ref_ETH-SOM-FFN_reg_1998-2011_varname_unit.nc spco2_monthly_ref_ETH-SOM-FFN_reg_1998-2011_selvar.nc
+ncatted -a origin,time,c,c,"seconds since 2000-01-01 00:00:00" spco2_monthly_ref_ETH-SOM-FFN_reg_1998-2011_selvar.nc spco2_monthly_ref_ETH-SOM-FFN_reg_1998-2011_origin.nc
+ncks -O -x -v nb2,time_bnds spco2_monthly_ref_ETH-SOM-FFN_reg_1998-2011_origin.nc $outfile
+###ncwa -a nb2 out.nc $outfile
+
+ncatted -O -a title,global,a,c,"One Surface Ocean pCO2 Mapping Intercomparison (SOCOM) product: ETH-SOM-FFN" $outfile
+ncatted -O -a source,global,a,c,"http://cdiac.ornl.gov/oceans/SPCO2_1998_2011_ETH_SOM_FFN.html" $outfile
+ncatted -O -a tier,global,a,c,"2" $outfile
+ncatted -O -a period,global,a,c,"1998-2011" $outfile
+ncatted -O -a reference,global,a,c,"Landschützer, P., Gruber, N., Bakker, D.C.E., Schuster, U.: Recent variability of the global ocean carbon sink, Global Biogeochemical Cycles, 28, doi: 10.1002/2014GB004853, 2014" $outfile
+
+if (-e $outfile) then
+    rm tmp.nc
+###    rm out.nc
+    rm spco2_monthly_ref_ETH-SOM-FFN_reg_1998-2011_varname_unit.nc
+    rm spco2_monthly_ref_ETH-SOM-FFN_reg_1998-2011_selvar.nc
+    rm spco2_monthly_ref_ETH-SOM-FFN_reg_1998-2011_origin.nc
+    echo 'created '$outfile
+else
+    echo 'error: no output written'
+endif
+

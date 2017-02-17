@@ -1,0 +1,163 @@
+<namelist>
+<namelist_summary>
+namelist_perfmetrics_CMIP5.xml
+
+Description
+Test namelist for namelist_perfmetrics_CMIP.xml
+
+Author
+Franziska Frank (DLR, Germany - franziska.frank@dlr.de)
+Mattia Righi (DLR, Germany - mattia.righi@dlr.de)
+Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
+
+Project
+ESMVal
+
+References
+Gleckler, P.J. et al., J. Geophys. Res., 113, D06104, doi: 10.1029/2007JD008972, 2008.
+</namelist_summary>
+
+<GLOBAL>
+    <write_plots type="boolean">              True         </write_plots>
+    <write_netcdf type="boolean">             True         </write_netcdf>
+    <force_processing type="boolean">        False         </force_processing>
+    <wrk_dir type="path">                    ./work/       </wrk_dir>
+    <plot_dir type="path">                   ./work/plots/ </plot_dir>
+    <climo_dir type="path">                  ./work/climo/ </climo_dir>
+    <write_plot_vars type="boolean">          True         </write_plot_vars>
+    <max_data_filesize type="integer">         100         </max_data_filesize>
+    <max_data_blocksize type="integer">        500         </max_data_blocksize>
+    <verbosity  type="integer">                  1         </verbosity>
+    <exit_on_warning  type="boolean">        False         </exit_on_warning>
+    <output_file_type>                          ps         </output_file_type>
+    <force_calc type="boolean">              False         </force_calc>
+    <force_gradecalc type="boolean">         False         </force_gradecalc>
+    <force_taylorcalc type="boolean">        False         </force_taylorcalc>
+</GLOBAL>
+
+
+
+
+<MODELS>
+<model>  CMIP5_ETHZ  MPI-ESM-LR       Amon  historical   r1i1p1  1998 2002  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+<model>  CMIP5_ETHZ  NorESM1-M        Amon  historical   r1i1p1  1998 2002  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+
+</MODELS>
+
+<DIAGNOSTICS>
+
+<!-- ANNUAL CYCLE LINE PLOTS -->
+<diag>
+    <description>          Temperature                  </description>
+    <variable_def_dir>     ./variable_defs/             </variable_def_dir>
+    <variable>             ta                           </variable>
+    <field_type>           T3M                          </field_type>
+    <diag_script_cfg_dir>  ./nml/cfg_perfmetrics/CMIP5 </diag_script_cfg_dir>
+
+    <model> OBS   NCEP        reanaly     1           2000  2001  /data/ESMValTool/obs/Tier2/NCEP        </model>
+    <model> OBS   ERA-Interim reanaly     1           2000  2001  /data/ESMValTool/obs/Tier3/ERA-Interim </model>
+
+    <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_glob.ncl">  perfmetrics_main.ncl          </diag_script>
+</diag>
+
+<!-- ZONAL MEAN PLOT -->
+<diag>
+    <description>          Temperature                  </description>
+    <variable_def_dir>     ./variable_defs/             </variable_def_dir>
+    <variable>             ta                           </variable>
+    <field_type>           T3M                          </field_type>
+    <diag_script_cfg_dir>  ./nml/cfg_perfmetrics/CMIP5 </diag_script_cfg_dir>
+
+    <model> OBS   NCEP        reanaly     1           2000  2001  /data/ESMValTool/obs/Tier2/NCEP        </model>
+    <model> OBS   ERA-Interim reanaly     1           2000  2001  /data/ESMValTool/obs/Tier3/ERA-Interim </model>
+
+    <diag_script cfg="cfg_perfmetrics_zonal_MAM_all_glob.ncl">          perfmetrics_main.ncl          </diag_script>
+</diag>
+
+<!-- LAT-LON CONTOUR MAP -->
+<diag>
+    <description>          Shortwave cloud frocing      </description>
+    <variable_def_dir>     ./variable_defs/             </variable_def_dir>
+    <variable>             SW_CRE                       </variable>
+    <field_type>           T2Ms                         </field_type>
+    <diag_script_cfg_dir>  ./nml/cfg_perfmetrics/CMIP5 </diag_script_cfg_dir>
+
+    <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001 2002  /data/ESMValTool/obs/Tier1          </model>
+
+    <diag_script cfg="cfg_perfmetrics_latlon_annualclim_all_glob.ncl">  perfmetrics_main.ncl          </diag_script>
+</diag>
+
+<!-- GRADING PLOT -->
+<diag>
+    <description>          Temperature                  </description>
+    <variable_def_dir>     ./variable_defs/             </variable_def_dir>
+    <variable>             ta                           </variable>
+    <field_type>           T3M                          </field_type>
+    <diag_script_cfg_dir>  ./nml/cfg_perfmetrics/CMIP5 </diag_script_cfg_dir>
+
+    <model> OBS   NCEP        reanaly     1           2000  2001  /data/ESMValTool/obs/Tier2/NCEP        </model>
+    <model> OBS   ERA-Interim reanaly     1           2000  2001  /data/ESMValTool/obs/Tier3/ERA-Interim </model>
+
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_glob.ncl">       perfmetrics_main.ncl          </diag_script>
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_200_glob.ncl">       perfmetrics_main.ncl          </diag_script>
+
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_glob.ncl">       perfmetrics_grading.ncl       </diag_script>
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_200_glob.ncl">       perfmetrics_grading.ncl       </diag_script>
+</diag>
+
+<diag>
+    <description>          Shortwave cloud frocing      </description>
+    <variable_def_dir>     ./variable_defs/             </variable_def_dir>
+    <variable>             SW_CRE                       </variable>
+    <field_type>           T2Ms                         </field_type>
+    <diag_script_cfg_dir>  ./nml/cfg_perfmetrics/CMIP5 </diag_script_cfg_dir>
+
+    <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001 2002  /data/ESMValTool/obs/Tier1          </model>
+
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl">  perfmetrics_main.ncl          </diag_script>
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl">  perfmetrics_grading.ncl       </diag_script>
+</diag>
+
+<diag>
+    <description>          Portrait diagram             </description>
+    <variable_def_dir>     ./variable_defs/             </variable_def_dir>
+    <variable>             ta                           </variable>
+    <field_type>           T3M                          </field_type>
+    <diag_script_cfg_dir>  ./nml/cfg_perfmetrics/CMIP5 </diag_script_cfg_dir>
+
+    <diag_script cfg="cfg_perfmetrics_grading_collect.ncl">    perfmetrics_grading_collect.ncl         </diag_script>
+</diag>
+
+
+
+<!-- TAYLOR DIAGRAM -->
+<diag>
+    <description>          Temperature                  </description>
+    <variable_def_dir>     ./variable_defs/             </variable_def_dir>
+    <variable>             ta                           </variable>
+    <field_type>           T3M                          </field_type>
+    <diag_script_cfg_dir>  ./nml/cfg_perfmetrics/CMIP5 </diag_script_cfg_dir>
+
+    <model> OBS   NCEP        reanaly     1           2000  2001  /data/ESMValTool/obs/Tier2/NCEP        </model>
+    <model> OBS   ERA-Interim reanaly     1           2000  2001  /data/ESMValTool/obs/Tier3/ERA-Interim </model>
+
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_glob.ncl">       perfmetrics_main.ncl          </diag_script>
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_200_glob.ncl">       perfmetrics_main.ncl          </diag_script>
+
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_glob.ncl">       perfmetrics_taylor.ncl        </diag_script>
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_200_glob.ncl">       perfmetrics_taylor.ncl        </diag_script>
+</diag>
+
+<diag>
+    <description>          Taylor diagram             </description>
+    <variable_def_dir>     ./variable_defs/             </variable_def_dir>
+    <variable>             ta                           </variable>
+    <field_type>           T3M                          </field_type>
+    <diag_script_cfg_dir>  ./nml/cfg_perfmetrics/CMIP5 </diag_script_cfg_dir>
+
+    <diag_script cfg="cfg_perfmetrics_taylor_collect.ncl">     perfmetrics_taylor_collect.ncl          </diag_script>
+</diag>
+
+
+</DIAGNOSTICS>
+</namelist>
