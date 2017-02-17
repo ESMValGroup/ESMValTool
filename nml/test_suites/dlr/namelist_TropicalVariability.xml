@@ -1,43 +1,36 @@
 <namelist>
+<include href="./config_private.xml"/>
 <namelist_summary>
-
 ###############################################################################
-
 namelist_TropicalVariability.xml
 
 Description
-Evaluates tropical biases by the equatorial mean , 5 degrees N to 5 degrees S
-for a range of atmosphere variables and SST.
+Evaluates tropical biases in the equatorial mean, 5 degrees N to 5 degrees S
+for a range of atmospheric variables and SST
 
-Author(s)
+Author
 Jarmo Makela (FMI, Finland - jarmo.makela@fmi.fi)
 
-Contributor(s)
+Contributors
 Martin Evaldsson (SMHI, Sweden - martin.evaldsson@smhi.se)
 Colin Jones (MetOffice, UK - colin.jones@metoffice.gov.uk)
 
-Project(s)
+Project
 EMBRACE
 
-Reference(s)
-Gen, L., Shang-Ping, X. J. Climate, 27, 1765–1780 (2014). 
-Tropical Biases in CMIP5 Multimodel Ensemble: The Excessive
-Equatorial Pacific Cold Tongue and Double ITCZ Problems.
-doi: http://dx.doi.org/10.1175/JCLI-D-13-00337.1
+Reference
+Gen, L. et al., J. Climate, 27, 1765–1780, doi:10.1175/JCLI-D-13-00337.1 (2014)
 
-This namelist is part of the ESMValTool.
-
-###############################################################################
-
-</namelist_summary>
+This namelist is part of the ESMValTool
+###############################################################################</namelist_summary>
 
 <GLOBAL>
   <write_plots type="boolean">        True                      </write_plots>
   <write_netcdf type="boolean">       True                      </write_netcdf>
   <force_processing type="boolean">   False                     </force_processing>
-  <wrk_dir type="path">               ./work                    </wrk_dir>
-  <plot_dir type="path">              ./work/plots/             </plot_dir>
-  <climo_dir type="path">             ./work/climo/             </climo_dir>
+  <wrk_dir type="path">               @{WORKPATH}               </wrk_dir>
+  <plot_dir type="path">              @{PLOTPATH}               </plot_dir>
+  <climo_dir type="path">             @{CLIMOPATH}              </climo_dir>
   <write_plot_vars type="boolean">    True                      </write_plot_vars>
   <max_data_filesize type="integer">  100                       </max_data_filesize>
   <max_data_blocksize type="integer"> 500                       </max_data_blocksize>
@@ -50,12 +43,9 @@ This namelist is part of the ESMValTool.
 
 <MODELS>
   <!-- put here all the models you want to analyze -->
-  <model> CMIP5_ETHZ MPI-ESM-LR Amon historical r1i1p1 2004 2004 
-  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+  <model> CMIP5_ETHZ MPI-ESM-LR Amon historical r1i1p1 2004 2004  @{MODELPATH}/ETHZ_CMIP5/ </model>
 
-  <model> CMIP5_ETHZ HadGEM2-ES Amon historical r1i1p1 2004 2004 
-  /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-
+  <model> CMIP5_ETHZ HadGEM2-ES Amon historical r1i1p1 2004 2004  @{MODELPATH}/ETHZ_CMIP5/ </model>
 </MODELS>
 
 <DIAGNOSTICS>
@@ -69,10 +59,9 @@ This namelist is part of the ESMValTool.
 	<diag_script_cfg_dir>                          ./nml/cfg_TropicalVariability  </diag_script_cfg_dir>
         <diag_script cfg="TropicalVariability.conf">   TropicalVariability.py         </diag_script>
         <launcher_arguments>    [('execute_as_shell', False)]                         </launcher_arguments>
-	<!-- put here your observation models,
-	     remember to reference and exclude variables above -->
-        <model id="ts_obs"> OBS HadISST reanaly 1 2004 2004 /data/ESMValTool/obs/Tier2/HadISST </model>
-        <model id="pr_obs"> OBS TRMM-L3 v7A 1 2004 2004 /data/ESMValTool/obs/Tier1/TRMM-L3 </model>
+	<!-- put here your observation models, remember to reference and exclude variables above -->
+        <model id="ts_obs"> OBS HadISST reanaly 1 2004 2004 @{OBSPATH}/Tier2/HadISST </model>
+        <model id="pr_obs"> OBS TRMM-L3 v7A 1 2004 2004 @{OBSPATH}/Tier1/TRMM-L3 </model>
     </diag>
 
     <diag>
@@ -87,9 +76,8 @@ This namelist is part of the ESMValTool.
         <diag_script cfg="TropicalVariability.conf">   TropicalVariability_wind.py    </diag_script>
         <launcher_arguments>    [('execute_as_shell', False)]                         </launcher_arguments>
 
-	<!-- put here your observation models,
-	     remember to reference and exclude variables above -->
-        <model id="obs"> OBS ERA-Interim reanaly 1 2004 2004 /data/ESMValTool/obs/Tier3/ERA-Interim </model>
+	<!-- put here your observation models, remember to reference and exclude variables above -->
+        <model id="obs"> OBS ERA-Interim reanaly 1 2004 2004 @{OBSPATH}/Tier3/ERA-Interim </model>
     </diag>
 
     <diag>
@@ -104,9 +92,8 @@ This namelist is part of the ESMValTool.
 
 	<!-- put here your observation models,
 	     remember to reference and exclude variables above -->
-        <model id="ua_obs"> OBS ERA-Interim reanaly 1 2004 2004 /data/ESMValTool/obs/Tier3/ERA-Interim </model>
+        <model id="ua_obs"> OBS ERA-Interim reanaly 1 2004 2004 @{OBSPATH}/Tier3/ERA-Interim </model>
     </diag>
-
 </DIAGNOSTICS>
 
 </namelist>

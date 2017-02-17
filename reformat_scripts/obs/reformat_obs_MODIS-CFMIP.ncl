@@ -19,17 +19,19 @@
 ;;          doi: 10.1175/JCLI-D-11-00267.1.
 ;;
 ;; Last access
-;;    04/2015
+;;    20160502
 ;;
 ;; Download and processing instructions
 ;;    Download: ftp://laadsweb.nascom.nasa.gov/NetCDF/L3_Monthly/V02/
 ;;    Processing: this script (reformat_obs_MODIS.ncl)
 ;;
 ;; Caveats
-;;    None
+;;    These MODIS IWP data are in-cloud values whereas the clivi data from the
+;;    CMIP5 models are grid-box averages --> e.g. multiplication with cloud
+;;    fraction needed!
 ;;
 ;; Modification history
-;;    20150417D-A_laue_ax: written.
+;;    20150417-A_laue_ax: written.
 ;;
 ;; ############################################################################
 
@@ -38,11 +40,16 @@ begin
     ;; Source name
     OBSNAME = "MODIS-CFMIP"
 
+    ;; Tier
+    TIER = 2
+
     ;; Input dir (raw data)
-    INDIR = "/data/ESMValTool/obs/RAW/" + OBSNAME + "/"
+    INDIR = getenv("ESMValTool_RAWOBSPATH") + "/Tier" + \
+        TIER + "/" + OBSNAME + "/"
 
     ;; Output dir (CMOR-ized data)
-    OUTDIR = "/data/ESMValTool/obs/" + OBSNAME + "/"
+    OUTDIR = getenv("ESMValTool_OBSPATH") + "/Tier" + \
+        TIER + "/" + OBSNAME + "/"
 
     ;; Field
     FIELD = "T2Ms"
@@ -53,10 +60,14 @@ begin
 
 end
 
-;;load "./reformat_scripts/constants.ncl"
+load "./interface_scripts/messaging.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
+
+    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    diag_script = "reformat_obs_MODIS-CFMIP.ncl"
+    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent(OUTDIR)) then
@@ -70,7 +81,7 @@ begin
        do mo = 1, 12
           month = sprinti("%0.2i", mo)
           fname = INDIR + "MCD08_M3_NC." + yr + "." + month + ".C051.V02.nc"
-          print ("*** "+ fname + " ***")
+          info_output("*** "+ fname + " ***", verbosity, 1)
 
           f = addfile(fname, "r")
 
@@ -140,7 +151,7 @@ begin
        gAtt@host        = systemfunc("echo $HOST")
        gAtt@user        = systemfunc("echo $USER")
        gAtt@period      = yr
-       gAtt@tier        = 2
+       gAtt@tier        = TIER
        gAtt@field       = FIELD
        gAtt@reference1  = "Pincus et al. (2012), J. Clim."
        gAtt@reference2  = "King et al. (2003), IEEE Trans. Geosci. " \
@@ -158,6 +169,8 @@ begin
 
     delete(time)
     delete(iwp)
+
+    leave_msg(diag_script, "", 1)
 
 end
 

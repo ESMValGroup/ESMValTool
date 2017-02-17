@@ -17,26 +17,24 @@
 ;;
 ;; Caveats
 ;;    Requires NCL v6.1.1
-;;    If you use the Interpolated OLR data in a publication, please cite Liebmann
-;;    and Smith (Bulletin of the American Meteorological Society, 77, 1275-1277,
-;;    June 1996).
+;;    If you use the Interpolated OLR data in a publication, please cite
+;;    Liebmann  and Smith, Bull. Am. Meteorol. Soc. 77, 1275-1277 (1996).
 ;;
 ;;    Please note: If you acquire Interpolated OLR data products from PSD, we
 ;;    ask that you acknowledge us in your use of the data. This may be done by
-;;    including text such as Interpolated OLR data provided by the NOAA/OAR/ESRL PSD,
-;;    Boulder, Colorado, USA, from their Web site at http://www.esrl.noaa.gov/psd/ in
-;;    any documents or publications using these data. We would also appreciate
-;;    receiving a copy of the relevant publications. This will help PSD to justify
-;;    keeping the Interpolated OLR data set freely available online in the future.
-;;    Thank you!
+;;    including text such as Interpolated OLR data provided by the
+;;    NOAA/OAR/ESRL PSD, Boulder, Colorado, USA, from their Web site at
+;;    http://www.esrl.noaa.gov/psd/ in any documents or publications using
+;;    these data. We would also appreciate receiving a copy of the relevant
+;;    publications. This will help PSD to justify keeping the Interpolated OLR
+;;    data set freely available online in the future. Thank you!
 ;;
 ;; Modification history
-;;    20151116-A-laue_ax: changed field code in output filename from "T2Ms" to "T2Ds"
-;;    20150810-eval_ma: written.
+;;    20151116-A_laue_ax: changed field code in output filename from "T2Ms"
+;;                        to "T2Ds"
+;;    20150810-A_eval_ma: written.
 ;;
 ;;#############################################################################
-
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
 
 function get_settings(res[1]:logical)
 ;; Settings for the various variables availabe in the WHOI data set
@@ -53,11 +51,8 @@ begin
     res@attrCopy_err2err = (/"comments"/)
     res@attrCopy_var2err = (/"units"/)
 
-;    res@raw_data_folder = "/nobackup/rossby17/sm_maeva/Data/NOAA-interp/"
-;    res@processed_data_folder = "/nobackup/rossby17/sm_maeva/" + \
-;        "requests/noaa-interp-rlut/processed_data"
-    res@raw_data_folder = "/data/ESMValTool/obs/RAW/Tier2/NOAA-interp/"
-    res@processed_data_folder = "/data/ESMValTool/obs/Tier2/NOAA-interp/"
+    res@raw_data_folder = getenv("ESMValTool_RAWOBSPATH") + "/Tier2/NOAA-interp/"
+    res@processed_data_folder = getenv("ESMValTool_OBSPATH") + "/Tier2/NOAA-interp/"
 
     ;; Variable specific settings
     ;; Monthly mean surface latent heat flux, positive upward"
@@ -117,7 +112,6 @@ begin
 
 end
 
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
 load "./interface_scripts/messaging.ncl"
 load "./reformat_scripts/constants.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"

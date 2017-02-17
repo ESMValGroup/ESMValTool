@@ -31,11 +31,12 @@ begin
     TIER = 2
 
     ;; Input dir (raw data)
-    INDIR = "/data/ESMValTool/obs/RAW/Tier" + \
+    INDIR = getenv("ESMValTool_RAWOBSPATH") + "/Tier" + \
         TIER + "/" + OBSNAME + "/profiles/"
 
     ;; Output dir (CMOR-ized data)
-    OUTDIR = "/data/ESMValTool/obs/Tier" + TIER + "/" + OBSNAME + "/"
+    OUTDIR = getenv("ESMValTool_OBSPATH") + "/Tier" + \
+        TIER + "/" + OBSNAME + "/"
 
     ;; Field
     FIELD = "T0M"
@@ -62,8 +63,9 @@ load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity = 1
+    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
     diag_script = "reformat_obs_Emmons.ncl"
+    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent(OUTDIR)) then
@@ -129,13 +131,15 @@ begin
             end do
 
             ;; Check if file has data
-            if (toint(systemfunc("more " + flist(ff) + " | wc -l")) .eq. \
+            if (toint(systemfunc("wc -l <" + flist(ff))) .eq. \
                 dimsizes(head)) then
+                delete(head)
                 continue
             end if
 
             ;; Read data
             data = readAsciiTable(flist(ff), 1, "string", dimsizes(head))
+            delete(head)
             nrows = dimsizes(data(:, 0))
 
             ;; Read altitude and convert to integer to use as index
@@ -241,5 +245,7 @@ begin
         delete(flist)
 
     end do
+
+    leave_msg(diag_script, "", 1)
 
 end

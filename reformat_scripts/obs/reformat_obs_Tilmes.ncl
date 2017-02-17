@@ -17,7 +17,7 @@
 ;; Last access
 ;;    20150720
 ;;
-;; Download instructions
+;; Download and processing instructions
 ;;    Select Monthly averaged ozone profiles averaged between 1995-2011, and
 ;;    Profiles in pressure altitudes for 42 sites (ncdf).
 ;;
@@ -44,11 +44,12 @@ begin
     TIER = 2
 
     ;; Input dir (raw data)
-    INDIR = "/data/ESMValTool/obs/RAW/Tier" + \
+    INDIR = getenv("ESMValTool_RAWOBSPATH") + "/Tier" + \
         TIER + "/" + OBSNAME + "/" + RANGE + "/stations/"
 
     ;; Output dir (CMOR-ized data)
-    OUTDIR = "/data/ESMValTool/obs/Tier" + TIER + "/" + OBSNAME + "/"
+    OUTDIR = getenv("ESMValTool_OBSPATH") + "/Tier" + \
+        TIER + "/" + OBSNAME + "/"
 
     ;; Input file selectors:
     ;; Specify explicitely, since not all available files contribute to
@@ -115,7 +116,6 @@ begin
 
 end
 
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
 load "./interface_scripts/messaging.ncl"
 load "./interface_scripts/auxiliary.ncl"
 load "./reformat_scripts/constants.ncl"
@@ -123,8 +123,9 @@ load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity = 1
+    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
     diag_script = "reformat_obs_Tilmes.ncl"
+    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent(OUTDIR)) then
@@ -180,7 +181,7 @@ begin
             ;; collect data
             if(nrfiles.gt.1) then
                 do k = 1, nrfiles - 1
-                    print("Reading " + rfiles(k))
+                    info_output("Reading " + rfiles(k), verbosity, 1)
                     f = addfile(rfiles(k), "r")
                     uu = f->$spec$(months|:, level|:)
                     data_full(:, :, k) = uu
@@ -254,7 +255,7 @@ begin
 
             ;; Write variable
             write_nc(out_file, VAR(j), output, gAtt)
-            print("  Wrote " + out_file)
+            info_output("  Wrote " + out_file, verbosity, 1)
             delete(gAtt)
             delete(output)
             delete(data)
@@ -273,5 +274,7 @@ begin
         delete(rlon)
         delete(rfiles)
     end do  ; i (regions)
+
+    leave_msg(diag_script, "", 1)
 
 end

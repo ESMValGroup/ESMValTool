@@ -19,7 +19,7 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
 ; user parameter: set output path "outpath"
 ; input files are expected in the current directory "."
 
-  outpath="/data/ESMValTool/model/ETHZ_CMIP5"
+  outpath = getenv(ESMValTool_MODELPATH) + "/ETHZ_CMIP5"
   fils = systemfunc ("ls *.nc")				
   dim_FILE = dimsizes(fils)
   

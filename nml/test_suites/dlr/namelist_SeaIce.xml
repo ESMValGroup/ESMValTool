@@ -1,31 +1,36 @@
 <namelist>
+<include href="./config_private.xml"/>
 <namelist_summary>
+###############################################################################
 namelist_SeaIce.xml
 
 Description
-A namelist for plotting SeaIce diagnostics at the Arctic and Antarctic, (Mantis issue #9216).
+A namelist for plotting SeaIce diagnostics at the Arctic and Antarctic
 
-Author(s)
-Klaus-Dirk Gottschaldt (DLR, Germany - Klaus-Dirk.Gottschaldt@dlr.de)
-
-Contributor(s)
+Author
 Daniel Senftleben (DLR, Germany - Daniel.Senftleben@dlr.de)
 
-Reference(s)
-Braeu, M., Sea-ice in decadal and long-term simulations with the Max Planck Institute Earth 
-  System Model. Bachelor’s thesis, LMU, Munich, 2013.
+Contributor
+Melanie Braeu (DLR, Germany)
+Klaus-Dirk Gottschaldt (DLR, Germany - Klaus-Dirk.Gottschaldt@dlr.de)
 
-This namelist is part of the ESMValTool.
-ESMValTool project PI: Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
+Project
+ESMVal
+
+Reference
+Stroeve, J. et al., Geophys. Res. Lett., 34, L09501, doi:10.1029/2007GL029703 (2007)
+
+This namelist is part of the ESMValTool
+###############################################################################
 </namelist_summary>
 
 <GLOBAL>
     <write_plots type="boolean">              True        </write_plots>
     <write_netcdf type="boolean">             True        </write_netcdf>
     <force_processing type="boolean">        False        </force_processing>
-    <wrk_dir type="path">                     work/       </wrk_dir>
-    <plot_dir type="path">                    work/plots/ </plot_dir>
-    <climo_dir type="path">                   work/climo/ </climo_dir>
+    <wrk_dir type="path">                    @{WORKPATH}  </wrk_dir>
+    <plot_dir type="path">                   @{PLOTPATH}  </plot_dir>
+    <climo_dir type="path">                  @{CLIMOPATH} </climo_dir>
     <write_plot_vars type="boolean">          True        </write_plot_vars>
     <max_data_filesize type="integer">         100        </max_data_filesize>
     <max_data_blocksize type="integer">        500        </max_data_blocksize>
@@ -35,9 +40,9 @@ ESMValTool project PI: Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
 </GLOBAL>
 
 <MODELS>
-    <model>  CMIP5_ETHZ  MPI-ESM-LR  OImon    historical  r1i1p1  2001  2004  /data/ESMValTool/model/ETHZ_CMIP5/  </model>
-    <model>  CMIP5_ETHZ  MPI-ESM-MR  OImon    historical  r1i1p1  2002  2005  /data/ESMValTool/model/ETHZ_CMIP5/  </model>
-    <model>  OBS         HadISST     reanaly  20130524            1999  2004  /data/ESMValTool/obs/Tier2/HadISST/       </model> 
+    <model>  CMIP5_ETHZ  MPI-ESM-LR  OImon    historical  r1i1p1  2001  2004  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  CMIP5_ETHZ  MPI-ESM-MR  OImon    historical  r1i1p1  2002  2005  @{MODELPATH}/ETHZ_CMIP5/  </model>
+    <model>  OBS         HadISST     reanaly  20130524            1999  2004  @{OBSPATH}/Tier2/HadISST/       </model> 
 </MODELS>
 
 <DIAGNOSTICS>
@@ -52,11 +57,11 @@ ESMValTool project PI: Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
     <diag_script cfg="cfg_SeaIce_NH.ncl">       SeaIce_polcon.ncl         </diag_script>
     <diag_script cfg="cfg_SeaIce_NH.ncl">       SeaIce_polcon_diff.ncl    </diag_script>
 
-    <model>  OBS_gridfile  NSIDC-NT  sat       NH        2002  2005  /data/ESMValTool/obs/Tier2/NSIDC/
-                           /data/ESMValTool/obs/Tier2/NSIDC/OBS_NSIDC-NT_sat_NH_T2Ms_sic_197811-201312.nc  </model>
+    <model>  OBS_gridfile  NSIDC-NT  sat       NH        2002  2005  @{OBSPATH}/Tier2/NSIDC/
+                           @{OBSPATH}/Tier2/NSIDC/OBS_NSIDC-NT_sat_NH_T2Ms_sic_197811-201312.nc  </model>
 
-    <model>  OBS_gridfile  NSIDC-BT  sat       NH        2002  2005  /data/ESMValTool/obs/Tier2/NSIDC/
-                           /data/ESMValTool/obs/Tier2/NSIDC/OBS_NSIDC-BT_sat_NH_T2Ms_sic_197811-201312.nc  </model>
+    <model>  OBS_gridfile  NSIDC-BT  sat       NH        2002  2005  @{OBSPATH}/Tier2/NSIDC/
+                           @{OBSPATH}/Tier2/NSIDC/OBS_NSIDC-BT_sat_NH_T2Ms_sic_197811-201312.nc  </model>
 </diag>
 
 <diag>
@@ -70,11 +75,11 @@ ESMValTool project PI: Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
     <diag_script cfg="cfg_SeaIce_SH.ncl">       SeaIce_polcon.ncl         </diag_script>
     <diag_script cfg="cfg_SeaIce_SH.ncl">       SeaIce_polcon_diff.ncl    </diag_script>
 
-    <model>  OBS_gridfile  NSIDC-NT  sat       SH        1979  2005  /data/ESMValTool/obs/Tier2/NSIDC/
-                           /data/ESMValTool/obs/Tier2/NSIDC/OBS_NSIDC-NT_sat_SH_T2Ms_sic_197811-201312.nc  </model>
+    <model>  OBS_gridfile  NSIDC-NT  sat       SH        1979  2005  @{OBSPATH}/Tier2/NSIDC/
+                           @{OBSPATH}/Tier2/NSIDC/OBS_NSIDC-NT_sat_SH_T2Ms_sic_197811-201312.nc  </model>
 
-    <model>  OBS_gridfile  NSIDC-BT  sat       SH        1979  2013  /data/ESMValTool/obs/Tier2/NSIDC/
-                           /data/ESMValTool/obs/Tier2/NSIDC/OBS_NSIDC-BT_sat_SH_T2Ms_sic_197811-201312.nc  </model>
+    <model>  OBS_gridfile  NSIDC-BT  sat       SH        1979  2013  @{OBSPATH}/Tier2/NSIDC/
+                           @{OBSPATH}/Tier2/NSIDC/OBS_NSIDC-BT_sat_SH_T2Ms_sic_197811-201312.nc  </model>
 
 </diag>
 

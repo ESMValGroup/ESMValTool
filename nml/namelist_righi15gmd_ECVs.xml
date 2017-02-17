@@ -1,4 +1,5 @@
 <namelist>
+<include href="./config_private.xml"/>
 <namelist_summary>
 ###############################################################################
 namelist_righi15gmd_ECVs.xml
@@ -26,9 +27,9 @@ This namelist is part of the ESMValTool
   <write_plots type="boolean">              True         </write_plots>
   <write_netcdf type="boolean">             True         </write_netcdf>
   <force_processing type="boolean">        False         </force_processing>
-  <wrk_dir type="path">                    ./work/       </wrk_dir>
-  <plot_dir type="path">                   ./work/plots/ </plot_dir>
-  <climo_dir type="path">                  ./work/climo/ </climo_dir>
+  <wrk_dir type="path">                    @{WORKPATH}   </wrk_dir>
+  <plot_dir type="path">                   @{PLOTPATH}   </plot_dir>
+  <climo_dir type="path">                  @{CLIMOPATH}  </climo_dir>
   <write_plot_vars type="boolean">          True         </write_plot_vars>
   <max_data_filesize type="integer">         100         </max_data_filesize>
   <max_data_blocksize type="integer">        500         </max_data_blocksize>
@@ -42,10 +43,10 @@ This namelist is part of the ESMValTool
 </GLOBAL>
 
 <MODELS>
-    <model> EMAC   EVAL2      1  1999 2009  /data/ESMValTool/model/EMAC/EVAL2/     </model>
-    <model> EMAC   QCTM       1  1999 2007  /data/ESMValTool/model/EMAC/QCTM/      </model>
-    <model> EMAC   TS2000     1  2001 2010  /data/ESMValTool/model/EMAC/TS2000/    </model>
-    <model> EMAC   ACCMIP     1  2001 2010  /data/ESMValTool/model/EMAC/ACCMIP/    </model>
+    <model> EMAC   EVAL2      1  1999 2009  @{MODELPATH}/EMAC/EVAL2/     </model>
+    <model> EMAC   QCTM       1  1999 2007  @{MODELPATH}/EMAC/QCTM/      </model>
+    <model> EMAC   TS2000     1  2001 2010  @{MODELPATH}/EMAC/TS2000/    </model>
+    <model> EMAC   ACCMIP     1  2001 2010  @{MODELPATH}/EMAC/ACCMIP/    </model>
 </MODELS>
 
 <DIAGNOSTICS>
@@ -59,8 +60,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_glob.ncl">   perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_200_glob.ncl">   perfmetrics_main.ncl </diag_script>
@@ -90,8 +91,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_glob.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_200_glob.ncl">  perfmetrics_main.ncl </diag_script>
@@ -121,8 +122,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                           </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/ </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_glob.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_200_glob.ncl">  perfmetrics_main.ncl </diag_script>
@@ -152,8 +153,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                           </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/ </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_glob.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_500_glob.ncl">  perfmetrics_main.ncl </diag_script>
@@ -183,8 +184,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                           </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/ </diag_script_cfg_dir>
 
-  <model> obs4mips AIRS        L3  	RetStd-v5   2003  2010  /data/ESMValTool/obs/Tier1             </model>
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
+  <model> obs4mips AIRS        L3  	RetStd-v5   2003  2010  @{OBSPATH}/Tier1             </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
 
   <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_glob.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_400_glob.ncl">  perfmetrics_main.ncl </diag_script>
@@ -216,7 +217,7 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
 
   <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_100_trop.ncl">   perfmetrics_main.ncl </diag_script>
 </diag>
@@ -228,7 +229,7 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	HALOE       sat         1           1991  2002 	/data/ESMValTool/obs/Tier2/HALOE       </model>
+  <model> OBS 	HALOE       sat         1           1991  2002 	@{OBSPATH}/Tier2/HALOE       </model>
 
   <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_200_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_100_trop.ncl">   perfmetrics_main.ncl </diag_script>
@@ -243,8 +244,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                           </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/ </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_zonal_annualclim_all_glob.ncl"> perfmetrics_main.ncl  </diag_script>
   <diag_script cfg="cfg_perfmetrics_zonal_DJF_all_glob.ncl">        perfmetrics_main.ncl  </diag_script>
@@ -260,8 +261,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                           </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/ </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_zonal_DJF_all_glob.ncl">        perfmetrics_main.ncl  </diag_script>
   <diag_script cfg="cfg_perfmetrics_zonal_JJA_all_glob.ncl">        perfmetrics_main.ncl  </diag_script>
@@ -274,8 +275,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                           </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/ </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_zonal_annualclim_all_glob.ncl"> perfmetrics_main.ncl  </diag_script>
 </diag>
@@ -287,8 +288,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                           </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/ </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_zonal_annualclim_all_glob.ncl"> perfmetrics_main.ncl  </diag_script>
 </diag>
@@ -300,8 +301,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                           </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/ </diag_script_cfg_dir>
 
-  <model> obs4mips AIRS        L3  	RetStd-v5   2003  2010  /data/ESMValTool/obs/Tier1             </model>
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
+  <model> obs4mips AIRS        L3  	RetStd-v5   2003  2010  @{OBSPATH}/Tier1             </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
 
   <diag_script cfg="cfg_perfmetrics_zonal_annualclim_all_glob.ncl"> perfmetrics_main.ncl  </diag_script>
 </diag>
@@ -315,8 +316,8 @@ This namelist is part of the ESMValTool
   <field_type>          T2Ms                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/ </diag_script_cfg_dir>
 
-  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  /data/ESMValTool/obs/Tier1          </model>
-  <model>  OBS         SRB        sat   1           1995  2005  /data/ESMValTool/obs/Tier2/SRB      </model>
+  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
+  <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
 
   <diag_script cfg="cfg_perfmetrics_latlon_annualclim_all_glob.ncl"> perfmetrics_main.ncl </diag_script>
 </diag>
@@ -328,8 +329,8 @@ This namelist is part of the ESMValTool
   <field_type>          T2Ms                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/ </diag_script_cfg_dir>
 
-  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  /data/ESMValTool/obs/Tier1          </model>
-  <model>  OBS         SRB        sat   1           1995  2005  /data/ESMValTool/obs/Tier2/SRB      </model>
+  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
+  <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
 
   <diag_script cfg="cfg_perfmetrics_latlon_annualclim_all_glob.ncl"> perfmetrics_main.ncl </diag_script>
 </diag>
@@ -341,8 +342,8 @@ This namelist is part of the ESMValTool
   <field_type>          T2Ms                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/ </diag_script_cfg_dir>
 
-  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  /data/ESMValTool/obs/Tier1          </model>
-  <model>  OBS         SRB        sat   1           1995  2005  /data/ESMValTool/obs/Tier2/SRB      </model>
+  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
+  <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
 
   <diag_script cfg="cfg_perfmetrics_latlon_annualclim_all_glob.ncl"> perfmetrics_main.ncl </diag_script>
 </diag>
@@ -354,7 +355,7 @@ This namelist is part of the ESMValTool
   <field_type>          T2Ms                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/ </diag_script_cfg_dir>
 
-  <model>  obs4mips    MODIS  L3    C5          2001  2010  /data/ESMValTool/obs/Tier1          </model>
+  <model>  obs4mips    MODIS  L3    C5          2001  2010  @{OBSPATH}/Tier1          </model>
 
   <diag_script cfg="cfg_perfmetrics_latlon_annualclim_all_glob.ncl"> perfmetrics_main.ncl </diag_script>
 </diag>
@@ -372,8 +373,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_glob.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_200_glob.ncl">  perfmetrics_main.ncl </diag_script>
@@ -398,8 +399,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_taylor_collect.ncl">  perfmetrics_taylor_collect.ncl </diag_script>
 </diag>
@@ -411,8 +412,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_glob.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_200_glob.ncl">  perfmetrics_main.ncl </diag_script>
@@ -437,8 +438,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_taylor_collect.ncl">  perfmetrics_taylor_collect.ncl </diag_script>
 </diag>
@@ -450,8 +451,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_glob.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_200_glob.ncl">  perfmetrics_main.ncl </diag_script>
@@ -471,8 +472,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_glob.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_glob.ncl">  perfmetrics_main.ncl </diag_script>
@@ -492,8 +493,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> obs4mips AIRS        L3  	RetStd-v5   2003  2010  /data/ESMValTool/obs/Tier1             </model>
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
+  <model> obs4mips AIRS        L3  	RetStd-v5   2003  2010  @{OBSPATH}/Tier1             </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_glob.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_400_glob.ncl">  perfmetrics_main.ncl </diag_script>
@@ -513,8 +514,8 @@ This namelist is part of the ESMValTool
   <field_type>          T2Ms                         </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model>  OBS         SRB        sat   1           1995  2005  /data/ESMValTool/obs/Tier2/SRB      </model>
-  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  /data/ESMValTool/obs/Tier1          </model>
+  <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
+  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob.ncl">  perfmetrics_grading.ncl </diag_script>
@@ -527,8 +528,8 @@ This namelist is part of the ESMValTool
   <field_type>          T2Ms                         </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model>  OBS         SRB        sat   1           1995  2005  /data/ESMValTool/obs/Tier2/SRB      </model>
-  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  /data/ESMValTool/obs/Tier1          </model>
+  <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
+  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob.ncl">  perfmetrics_grading.ncl </diag_script>
@@ -541,8 +542,8 @@ This namelist is part of the ESMValTool
   <field_type>          T2Ms                         </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model>  OBS         SRB        sat   1           1995  2005  /data/ESMValTool/obs/Tier2/SRB      </model>
-  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  /data/ESMValTool/obs/Tier1          </model>
+  <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
+  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob.ncl">  perfmetrics_grading.ncl </diag_script>
@@ -555,8 +556,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_collect.ncl">  perfmetrics_grading_collect.ncl </diag_script>
 </diag>
@@ -570,8 +571,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_trop.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_200_trop.ncl">  perfmetrics_main.ncl </diag_script>
@@ -596,8 +597,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_taylor_collect.ncl">  perfmetrics_taylor_collect.ncl </diag_script>
 </diag>
@@ -609,8 +610,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_trop.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_200_trop.ncl">  perfmetrics_main.ncl </diag_script>
@@ -635,8 +636,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_taylor_collect.ncl">  perfmetrics_taylor_collect.ncl </diag_script>
 </diag>
@@ -648,8 +649,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_trop.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_200_trop.ncl">  perfmetrics_main.ncl </diag_script>
@@ -669,8 +670,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_trop.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_trop.ncl">  perfmetrics_main.ncl </diag_script>
@@ -690,8 +691,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> obs4mips AIRS        L3  	RetStd-v5   2003  2010  /data/ESMValTool/obs/Tier1             </model>
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
+  <model> obs4mips AIRS        L3  	RetStd-v5   2003  2010  @{OBSPATH}/Tier1             </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_trop.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_400_trop.ncl">  perfmetrics_main.ncl </diag_script>
@@ -711,8 +712,8 @@ This namelist is part of the ESMValTool
   <field_type>          T2Ms                         </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model>  OBS         SRB        sat   1           1995  2005  /data/ESMValTool/obs/Tier2/SRB      </model>
-  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  /data/ESMValTool/obs/Tier1          </model>
+  <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
+  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_trop.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_trop.ncl">  perfmetrics_grading.ncl </diag_script>
@@ -725,8 +726,8 @@ This namelist is part of the ESMValTool
   <field_type>          T2Ms                         </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model>  OBS         SRB        sat   1           1995  2005  /data/ESMValTool/obs/Tier2/SRB      </model>
-  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  /data/ESMValTool/obs/Tier1          </model>
+  <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
+  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_trop.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_trop.ncl">  perfmetrics_grading.ncl </diag_script>
@@ -739,8 +740,8 @@ This namelist is part of the ESMValTool
   <field_type>          T2Ms                         </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model>  OBS         SRB        sat   1           1995  2005  /data/ESMValTool/obs/Tier2/SRB      </model>
-  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  /data/ESMValTool/obs/Tier1          </model>
+  <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
+  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_trop.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_trop.ncl">  perfmetrics_grading.ncl </diag_script>
@@ -753,8 +754,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_collect.ncl">  perfmetrics_grading_collect.ncl </diag_script>
 </diag>
@@ -768,8 +769,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_NHExt.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_200_NHExt.ncl">  perfmetrics_main.ncl </diag_script>
@@ -794,8 +795,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_taylor_collect.ncl">  perfmetrics_taylor_collect.ncl </diag_script>
 </diag>
@@ -807,8 +808,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_NHExt.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_200_NHExt.ncl">  perfmetrics_main.ncl </diag_script>
@@ -833,8 +834,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_taylor_collect.ncl">  perfmetrics_taylor_collect.ncl </diag_script>
 </diag>
@@ -846,8 +847,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_NHExt.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_200_NHExt.ncl">  perfmetrics_main.ncl </diag_script>
@@ -867,8 +868,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_NHExt.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_NHExt.ncl">  perfmetrics_main.ncl </diag_script>
@@ -888,8 +889,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> obs4mips AIRS        L3  	RetStd-v5   2003  2010  /data/ESMValTool/obs/Tier1             </model>
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
+  <model> obs4mips AIRS        L3  	RetStd-v5   2003  2010  @{OBSPATH}/Tier1             </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_NHExt.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_400_NHExt.ncl">  perfmetrics_main.ncl </diag_script>
@@ -909,8 +910,8 @@ This namelist is part of the ESMValTool
   <field_type>          T2Ms                         </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model>  OBS         SRB        sat   1           1995  2005  /data/ESMValTool/obs/Tier2/SRB      </model>
-  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  /data/ESMValTool/obs/Tier1          </model>
+  <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
+  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_NHExt.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_NHExt.ncl">  perfmetrics_grading.ncl </diag_script>
@@ -923,8 +924,8 @@ This namelist is part of the ESMValTool
   <field_type>          T2Ms                         </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model>  OBS         SRB        sat   1           1995  2005  /data/ESMValTool/obs/Tier2/SRB      </model>
-  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  /data/ESMValTool/obs/Tier1          </model>
+  <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
+  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_NHExt.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_NHExt.ncl">  perfmetrics_grading.ncl </diag_script>
@@ -937,8 +938,8 @@ This namelist is part of the ESMValTool
   <field_type>          T2Ms                         </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model>  OBS         SRB        sat   1           1995  2005  /data/ESMValTool/obs/Tier2/SRB      </model>
-  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  /data/ESMValTool/obs/Tier1          </model>
+  <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
+  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_NHExt.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_NHExt.ncl">  perfmetrics_grading.ncl </diag_script>
@@ -951,8 +952,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_collect.ncl">  perfmetrics_grading_collect.ncl </diag_script>
 </diag>
@@ -966,8 +967,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_200_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
@@ -992,8 +993,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_taylor_collect.ncl">  perfmetrics_taylor_collect.ncl </diag_script>
 </diag>
@@ -1005,8 +1006,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_200_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
@@ -1031,8 +1032,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_taylor_collect.ncl">  perfmetrics_taylor_collect.ncl </diag_script>
 </diag>
@@ -1044,8 +1045,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_200_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
@@ -1065,8 +1066,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_500_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
@@ -1086,8 +1087,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> obs4mips AIRS        L3  	RetStd-v5   2003  2010  /data/ESMValTool/obs/Tier1             </model>
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
+  <model> obs4mips AIRS        L3  	RetStd-v5   2003  2010  @{OBSPATH}/Tier1             </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_850_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_400_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
@@ -1107,8 +1108,8 @@ This namelist is part of the ESMValTool
   <field_type>          T2Ms                         </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model>  OBS         SRB        sat   1           1995  2005  /data/ESMValTool/obs/Tier2/SRB      </model>
-  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  /data/ESMValTool/obs/Tier1          </model>
+  <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
+  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_SHExt.ncl">  perfmetrics_grading.ncl </diag_script>
@@ -1121,8 +1122,8 @@ This namelist is part of the ESMValTool
   <field_type>          T2Ms                         </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model>  OBS         SRB        sat   1           1995  2005  /data/ESMValTool/obs/Tier2/SRB      </model>
-  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  /data/ESMValTool/obs/Tier1          </model>
+  <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
+  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_SHExt.ncl">  perfmetrics_grading.ncl </diag_script>
@@ -1135,8 +1136,8 @@ This namelist is part of the ESMValTool
   <field_type>          T2Ms                         </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model>  OBS         SRB        sat   1           1995  2005  /data/ESMValTool/obs/Tier2/SRB      </model>
-  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  /data/ESMValTool/obs/Tier1          </model>
+  <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
+  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_SHExt.ncl">  perfmetrics_grading.ncl </diag_script>
@@ -1149,8 +1150,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_RMSD_collect.ncl">  perfmetrics_grading_collect.ncl </diag_script>
 </diag>
@@ -1164,8 +1165,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_850_glob.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_200_glob.ncl">  perfmetrics_main.ncl </diag_script>
@@ -1185,8 +1186,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_850_glob.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_200_glob.ncl">  perfmetrics_main.ncl </diag_script>
@@ -1206,8 +1207,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_850_glob.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_200_glob.ncl">  perfmetrics_main.ncl </diag_script>
@@ -1227,8 +1228,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_850_glob.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_500_glob.ncl">  perfmetrics_main.ncl </diag_script>
@@ -1248,8 +1249,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> obs4mips AIRS        L3  	RetStd-v5   2003  2010  /data/ESMValTool/obs/Tier1             </model>
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
+  <model> obs4mips AIRS        L3  	RetStd-v5   2003  2010  @{OBSPATH}/Tier1             </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_850_glob.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_400_glob.ncl">  perfmetrics_main.ncl </diag_script>
@@ -1269,8 +1270,8 @@ This namelist is part of the ESMValTool
   <field_type>          T2Ms                         </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model>  OBS         SRB        sat   1           1995  2005  /data/ESMValTool/obs/Tier2/SRB      </model>
-  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  /data/ESMValTool/obs/Tier1          </model>
+  <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
+  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_all_glob.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_all_glob.ncl">  perfmetrics_grading.ncl </diag_script>
@@ -1283,8 +1284,8 @@ This namelist is part of the ESMValTool
   <field_type>          T2Ms                         </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model>  OBS         SRB        sat   1           1995  2005  /data/ESMValTool/obs/Tier2/SRB      </model>
-  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  /data/ESMValTool/obs/Tier1          </model>
+  <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
+  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_all_glob.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_all_glob.ncl">  perfmetrics_grading.ncl </diag_script>
@@ -1297,8 +1298,8 @@ This namelist is part of the ESMValTool
   <field_type>          T2Ms                         </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model>  OBS         SRB        sat   1           1995  2005  /data/ESMValTool/obs/Tier2/SRB      </model>
-  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  /data/ESMValTool/obs/Tier1          </model>
+  <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
+  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_all_glob.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_all_glob.ncl">  perfmetrics_grading.ncl </diag_script>
@@ -1311,8 +1312,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_collect.ncl">  perfmetrics_grading_collect.ncl </diag_script>
 </diag>
@@ -1326,8 +1327,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_850_trop.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_200_trop.ncl">  perfmetrics_main.ncl </diag_script>
@@ -1347,8 +1348,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_850_trop.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_200_trop.ncl">  perfmetrics_main.ncl </diag_script>
@@ -1368,8 +1369,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_850_trop.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_200_trop.ncl">  perfmetrics_main.ncl </diag_script>
@@ -1389,8 +1390,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_850_trop.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_500_trop.ncl">  perfmetrics_main.ncl </diag_script>
@@ -1410,8 +1411,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> obs4mips AIRS        L3  	RetStd-v5   2003  2010  /data/ESMValTool/obs/Tier1             </model>
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
+  <model> obs4mips AIRS        L3  	RetStd-v5   2003  2010  @{OBSPATH}/Tier1             </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_850_trop.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_400_trop.ncl">  perfmetrics_main.ncl </diag_script>
@@ -1431,8 +1432,8 @@ This namelist is part of the ESMValTool
   <field_type>          T2Ms                         </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model>  OBS         SRB        sat   1           1995  2005  /data/ESMValTool/obs/Tier2/SRB      </model>
-  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  /data/ESMValTool/obs/Tier1          </model>
+  <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
+  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_all_trop.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_all_trop.ncl">  perfmetrics_grading.ncl </diag_script>
@@ -1445,8 +1446,8 @@ This namelist is part of the ESMValTool
   <field_type>          T2Ms                         </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model>  OBS         SRB        sat   1           1995  2005  /data/ESMValTool/obs/Tier2/SRB      </model>
-  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  /data/ESMValTool/obs/Tier1          </model>
+  <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
+  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_all_trop.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_all_trop.ncl">  perfmetrics_grading.ncl </diag_script>
@@ -1459,8 +1460,8 @@ This namelist is part of the ESMValTool
   <field_type>          T2Ms                         </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model>  OBS         SRB        sat   1           1995  2005  /data/ESMValTool/obs/Tier2/SRB      </model>
-  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  /data/ESMValTool/obs/Tier1          </model>
+  <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
+  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_all_trop.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_all_trop.ncl">  perfmetrics_grading.ncl </diag_script>
@@ -1473,8 +1474,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_collect.ncl">  perfmetrics_grading_collect.ncl </diag_script>
 </diag>
@@ -1488,8 +1489,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_850_NHExt.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_200_NHExt.ncl">  perfmetrics_main.ncl </diag_script>
@@ -1509,8 +1510,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_850_NHExt.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_200_NHExt.ncl">  perfmetrics_main.ncl </diag_script>
@@ -1530,8 +1531,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_850_NHExt.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_200_NHExt.ncl">  perfmetrics_main.ncl </diag_script>
@@ -1551,8 +1552,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_850_NHExt.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_500_NHExt.ncl">  perfmetrics_main.ncl </diag_script>
@@ -1572,8 +1573,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> obs4mips AIRS        L3  	RetStd-v5   2003  2010  /data/ESMValTool/obs/Tier1             </model>
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
+  <model> obs4mips AIRS        L3  	RetStd-v5   2003  2010  @{OBSPATH}/Tier1             </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_850_NHExt.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_400_NHExt.ncl">  perfmetrics_main.ncl </diag_script>
@@ -1593,8 +1594,8 @@ This namelist is part of the ESMValTool
   <field_type>          T2Ms                         </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model>  OBS         SRB        sat   1           1995  2005  /data/ESMValTool/obs/Tier2/SRB      </model>
-  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  /data/ESMValTool/obs/Tier1          </model>
+  <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
+  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_all_NHExt.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_all_NHExt.ncl">  perfmetrics_grading.ncl </diag_script>
@@ -1607,8 +1608,8 @@ This namelist is part of the ESMValTool
   <field_type>          T2Ms                         </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model>  OBS         SRB        sat   1           1995  2005  /data/ESMValTool/obs/Tier2/SRB      </model>
-  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  /data/ESMValTool/obs/Tier1          </model>
+  <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
+  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_all_NHExt.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_all_NHExt.ncl">  perfmetrics_grading.ncl </diag_script>
@@ -1621,8 +1622,8 @@ This namelist is part of the ESMValTool
   <field_type>          T2Ms                         </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model>  OBS         SRB        sat   1           1995  2005  /data/ESMValTool/obs/Tier2/SRB      </model>
-  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  /data/ESMValTool/obs/Tier1          </model>
+  <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
+  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_all_NHExt.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_all_NHExt.ncl">  perfmetrics_grading.ncl </diag_script>
@@ -1635,8 +1636,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_collect.ncl">  perfmetrics_grading_collect.ncl </diag_script>
 </diag>
@@ -1650,8 +1651,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_850_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_200_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
@@ -1671,8 +1672,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_850_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_200_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
@@ -1692,8 +1693,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_850_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_200_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
@@ -1713,8 +1714,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_850_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_500_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
@@ -1734,8 +1735,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> obs4mips AIRS        L3  	RetStd-v5   2003  2010  /data/ESMValTool/obs/Tier1             </model>
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
+  <model> obs4mips AIRS        L3  	RetStd-v5   2003  2010  @{OBSPATH}/Tier1             </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_850_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_400_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
@@ -1755,8 +1756,8 @@ This namelist is part of the ESMValTool
   <field_type>          T2Ms                         </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model>  OBS         SRB        sat   1           1995  2005  /data/ESMValTool/obs/Tier2/SRB      </model>
-  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  /data/ESMValTool/obs/Tier1          </model>
+  <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
+  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_all_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_all_SHExt.ncl">  perfmetrics_grading.ncl </diag_script>
@@ -1769,8 +1770,8 @@ This namelist is part of the ESMValTool
   <field_type>          T2Ms                         </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model>  OBS         SRB        sat   1           1995  2005  /data/ESMValTool/obs/Tier2/SRB      </model>
-  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  /data/ESMValTool/obs/Tier1          </model>
+  <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
+  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_all_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_all_SHExt.ncl">  perfmetrics_grading.ncl </diag_script>
@@ -1783,8 +1784,8 @@ This namelist is part of the ESMValTool
   <field_type>          T2Ms                         </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model>  OBS         SRB        sat   1           1995  2005  /data/ESMValTool/obs/Tier2/SRB      </model>
-  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  /data/ESMValTool/obs/Tier1          </model>
+  <model>  OBS         SRB        sat   1           1995  2005  @{OBSPATH}/Tier2/SRB      </model>
+  <model>  obs4mips    CERES-EBAF L3B   Ed2-7       2001  2012  @{OBSPATH}/Tier1          </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_all_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_all_SHExt.ncl">  perfmetrics_grading.ncl </diag_script>
@@ -1797,8 +1798,8 @@ This namelist is part of the ESMValTool
   <field_type>          T3M                          </field_type>
   <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/  </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	/data/ESMValTool/obs/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	/data/ESMValTool/obs/Tier2/NCEP        </model>
+  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
+  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
 
   <diag_script cfg="cfg_perfmetrics_grading_BIAS_collect.ncl">  perfmetrics_grading_collect.ncl </diag_script>
 </diag>

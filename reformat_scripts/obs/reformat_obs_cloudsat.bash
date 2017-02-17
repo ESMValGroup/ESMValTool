@@ -1,24 +1,28 @@
-#! /bin/bash -eu
-#;;#############################################################################
-#;;
-#;; Tier
-#;;    Tier 1: obs4mips
-#;;
-#;; Source
-#;;    Download at ESGF-nodes, documenation at
-#;;    https://www.earthsystemcog.org/projects/obs4mips/satellite_products
-#;;
-#;; Download and processing instructions
-#;;    *) Download from ESGF, expected file name is along the lines, 
-#;;           cltcloudsat_obs4MIPs_CloudSat_L3_V2.0_20060601_20060630.nc
-#;;    *) Run this script
-#;;
-#;; Caveats
-#;;
-#;; Modification history
-#;;    20151009-A_eval_ma: written.
-#;;
-#;;#############################################################################
+#!/usr/bin/env bash -eu
+###############################################################################
+## REFORMAT SCRIPT FOR THE CLOUDSAT OBSERVATIONAL DATA
+###############################################################################
+##
+## Tier
+##    Tier 1: obs4mips
+##
+## Source
+##    Download at ESGF-nodes, documenation at
+##    https://www.earthsystemcog.org/projects/obs4mips/satellite_products
+##
+## Last access
+##
+## Download and processing instructions
+##    Download from ESGF, expected file name is along the lines, 
+##    cltcloudsat_obs4MIPs_CloudSat_L3_V2.0_20060601_20060630.nc
+##    Run this script
+##
+## Caveats
+##
+## Modification history
+##    20151009-A_eval_ma: written.
+##
+###############################################################################
 
 # USER SETTINGS
 declare -A cloudsat2cmip5  # map variable names

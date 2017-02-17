@@ -70,19 +70,19 @@
   variables = (/"ts","trefht","psl","prect","snowdp", "moc"/)
   do gg = 0,dimsizes(variables)-1
      if (isfilepresent2("obs_"+variables(gg))) then
-        system("rm obs_"+variables(gg))
+        system("rm -f obs_"+variables(gg))
      end if 
   end do
 
   if (isfilepresent2(outdir+"metrics_orig.txt")) then    ; remove metrics_orig.txt file if present
-     system("rm "+outdir+"metrics_orig.txt")
+     system("rm -f "+outdir+"metrics_orig.txt")
   end if
   if (isfilepresent2(outdir+"metrics.txt")) then    ; remove metrics.txt file if present
-     system("rm "+outdir+"metrics.txt")
+     system("rm -f "+outdir+"metrics.txt")
   end if
 
   if (.not.isfilepresent2(outdir)) then
-     system("mkdir "+outdir)
+     system("mkdir -p "+outdir)
   end if
   if (opt_climo.ne."Custom") then
      climo_syear = -999
@@ -131,7 +131,7 @@
         filesize =  tofloat(str_get_field(ofilesT(gg),5," "))
         if (filesize.lt.10000) then
            print("Removing: "+ofilesT(gg))
-           system("rm "+ofilesS(gg))
+           system("rm -f "+ofilesS(gg))
         end if
      end do
      delete([/filesize,ofilesS,ofilesT/])
@@ -161,7 +161,7 @@
 ;-------------------------------
   if (tar_output.eq."True") then
      if (isfilepresent2(outdir+"cvdp.tar")) then
-        system("rm "+outdir+"cvdp.tar")
+        system("rm -f "+outdir+"cvdp.tar")
      end if
 ;     print("cd "+outdir+"; tar -cf cvdp.tar *")
      system("cd "+outdir+"; tar -cf cvdp.tar *")
@@ -171,7 +171,7 @@
 ; Cleanup
   do gg = 0,dimsizes(variables)-1
      if (isfilepresent2("obs_"+variables(gg))) then
-        system("rm obs_"+variables(gg))
+        system("rm -f obs_"+variables(gg))
      end if 
   end do
   delete([/ofiles,variables,outdir,obs,scale_timeseries,output_data,opt_climo,climo_syear,climo_eyear,png_scale,webpage_title,compute_modes_mon/])

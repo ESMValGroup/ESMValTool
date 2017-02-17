@@ -58,8 +58,8 @@ begin
     ;; Fetch data
     tmp1 = read_data(index, "tro3", "T3*")
     tmp2 = read_data(index, "ps", "T2*s")
-    tro3_t = extract_data(index, tmp1, -1, 0, 0)
-    ps_t = extract_data(index, tmp2, -1, 0, 0)
+    tro3_t = extract_data_extended(index, "tro3", tmp1, -1, 0, 0)
+    ps_t = extract_data_extended(index, "ps", tmp2, -1, 0, 0)
 
     ;; Convert units [1e9 --> mol mol-1]
     tro3_t = 1.e-9 * tro3_t

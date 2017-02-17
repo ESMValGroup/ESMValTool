@@ -12,7 +12,6 @@
 ;;
 ;;#############################################################################
 
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
 load "./interface_scripts/messaging.ncl"
 load "./interface_scripts/auxiliary.ncl"
 
@@ -48,8 +47,10 @@ local verbosity, funcname, years, YEAR, units, offset, sorted, spy, ileap, \
     iyears, iy, f, f_sec, time, ut
 begin
 
-    verbosity = 1
     funcname = "yyyyfrac_to_ut"
+    scriptname = "reformat_scripts/obs/reformat_obs_func.ncl"
+    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    enter_msg(scriptname, funcname, 4)
 
     ;; Seconds per year
     years = toint(frac)
@@ -98,6 +99,7 @@ begin
     ;; Convert to UT
     ut = cd_calendar(time, flag)
 
+    leave_msg(scriptname, funcname, 4)
     return(ut)
 end
 
@@ -122,8 +124,10 @@ function create_timec(y1:integer,
 local verbosity, funcname, yy, mm
 begin
 
-    verbosity = 1
     funcname = "create_timec"
+    scriptname = "reformat_scripts/obs/reformat_obs_func.ncl"
+    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    enter_msg(scriptname, funcname, 4)
 
     out = new(12 * (y2 - y1 + 1), double)
     do yy = y1, y2
@@ -133,6 +137,7 @@ begin
         end do
     end do
 
+    leave_msg(scriptname, funcname, 4)
     return(out)
 end
 
@@ -164,8 +169,10 @@ local verbosity, funcname, w, gAtt, dim_names, ndims, dim_sizes, dim_types, \
     dim_unlim, ii
 begin
 
-    verbosity = 1
     funcname = "write_nc"
+    scriptname = "reformat_scripts/obs/reformat_obs_func.ncl"
+    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    enter_msg(scriptname, funcname, 4)
 
     ;; Open file
     if (isfilepresent(outfile)) then
@@ -213,6 +220,8 @@ begin
     end do
     w->$name$ = (/var/)
 
+    leave_msg(scriptname, funcname, 4)
+
 end
 
 ;;#############################################################################
@@ -243,8 +252,10 @@ procedure write_nc_profile(outfile: string,
 local verbosity, funcname, w, coords, cc, jj, locname, locvar, cname
 begin
 
-    verbosity = 1
     funcname = "write_nc_profile"
+    scriptname = "reformat_scripts/obs/reformat_obs_func.ncl"
+    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    enter_msg(scriptname, funcname, 4)
 
     ;; Open file
     if (isfilepresent_esmval(outfile)) then
@@ -298,6 +309,8 @@ begin
 
     end do
 
+    leave_msg(scriptname, funcname, 4)
+
 end
 
 ;;#############################################################################
@@ -346,8 +359,10 @@ local timec, datec, vID, fID, bn, en, head, hh, cline, syear, smonth, sday, \
     monthind, stday, enday, nd, pt1, pt2
 begin
 
-    verbosity = 1
     funcname = "process_EBAS_data"
+    scriptname = "reformat_scripts/obs/reformat_obs_func.ncl"
+    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    enter_msg(scriptname, funcname, 4)
 
     ;; EBAS flags for valid measurements
     ;; (see http://www.nilu.no/projects/ccc/flags/index.html)
@@ -415,7 +430,7 @@ begin
             info_output("  most recent revision date", verbosity, 1)
             info_output("  most complete time coverage", verbosity, 1)
             info_output("  same instrument in different years", verbosity, 1)
-            error_msg("f", "reformat_obs_func.ncl", funcname, \
+            error_msg("f", scriptname, funcname, \
                       "rerun this station after removing duplicates")
         end if
         delete(sy)
@@ -436,7 +451,7 @@ begin
             ;; Get time units
             utime = str_sub_str(head(8), "file reference point", "")
             if (.not.isStrSubset(utime, "days")) then
-                error_msg("f", "reformat_obs_func.ncl", funcname, \
+                error_msg("f", scriptname, funcname, \
                           "unexpected time units")
             end if
             utime = utime + syear + "-" + smonth + "-" + sday
@@ -454,7 +469,7 @@ begin
                 if (isStrSubset(head(hh), "Unit:")) then
                     unit = str_squeeze(str_get_field(head(hh), 2, ":"))
                     if (unit .ne. in_units(vID) .and. unit.ne."ug/m3") then
-                        error_msg("f", "reformat_obs_func.ncl", funcname, \
+                        error_msg("f", scriptname, funcname, \
                                   "units in the file not as expected " + \
                                   "(" + unit + " vs. " + in_units(vID) + ")")
                     end if
@@ -551,7 +566,7 @@ begin
 
         ;; Check monotonicity
         if (isMonotonic(start_time).ne.1) then
-            error_msg("f", "reformat_obs_func.ncl", funcname, \
+            error_msg("f", scriptname, funcname, \
                       "non-monotonically increasing time-series, possible " + \
                       "duplicated data in input")
         end if
@@ -631,6 +646,7 @@ begin
 
     end do  ; variables
 
+    leave_msg(scriptname, funcname, 4)
     return(data_arr)
 
 end

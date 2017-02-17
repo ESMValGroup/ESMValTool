@@ -1,29 +1,33 @@
 <namelist>
+<include href="./config_private.xml"/>
 <namelist_summary>
-# namelist_lauer13jclim.xml
-#
-# Description
-# Diagnostics of clouds and hydrological cycle.
-# Reproducing selected figures from Lauer and Hamilton (2013), J. Climate
-# 
-# Author(s)
-# Axel Lauer (DLR, Germany - axel.lauer@dlr.de)
-# 
-# Contributor(s)
-# 
-# Reference(s)
-# 
-# This namelist is part of the ESMValTool.
-# ESMValTool project PI: Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
+###############################################################################
+namelist_lauer13jclim.xml
+
+Description
+Diagnostics of clouds and hydrological cycle reproducing selected figures from
+Lauer and Hamilton (2013)
+ 
+Author
+Axel Lauer (DLR, Germany - axel.lauer@dlr.de)
+
+Project
+DLR ESMVal
+
+Reference
+Lauer, A., and Hamilton, K., J. Climate, 26, 3823-3845, doi:10.1175/JCLI-D-12-00451.1 (2013)
+ 
+This namelist is part of the ESMValTool
+###############################################################################
 </namelist_summary>
 
 <GLOBAL>
     <write_plots type="boolean">           True      </write_plots>
     <write_netcdf type="boolean">          True      </write_netcdf>
     <force_processing type="boolean">     False      </force_processing>
-    <wrk_dir type="path">                  work/     </wrk_dir>
-    <plot_dir type="path">           work/plots/     </plot_dir>
-    <climo_dir type="path">          work/climo/     </climo_dir>
+    <wrk_dir type="path">              @{WORKPATH}   </wrk_dir>
+    <plot_dir type="path">             @{PLOTPATH}   </plot_dir>
+    <climo_dir type="path">            @{CLIMOPATH}  </climo_dir>
     <write_plot_vars type="boolean">       True      </write_plot_vars>
     <max_data_filesize type="integer">      100      </max_data_filesize>
     <max_data_blocksize type="integer">     500      </max_data_blocksize>
@@ -34,19 +38,13 @@
 </GLOBAL>
 
 <MODELS>
-    <model>  CMIP5_ETHZ CNRM-CM5         Amon historical r1i1p1  2001 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-    <model>  CMIP5_ETHZ CSIRO-Mk3-6-0    Amon historical r1i1p1  2001 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-    <model>  CMIP5_ETHZ MIROC5           Amon historical r1i1p1  2001 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-    <model>  CMIP5_ETHZ MPI-ESM-LR       Amon historical r1i1p1  2001 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-    <model>  CMIP5_ETHZ NorESM1-M        Amon historical r1i1p1  2001 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ CNRM-CM5         Amon historical r1i1p1  2001 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ CSIRO-Mk3-6-0    Amon historical r1i1p1  2001 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ MIROC5           Amon historical r1i1p1  2001 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ MPI-ESM-LR       Amon historical r1i1p1  2001 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ NorESM1-M        Amon historical r1i1p1  2001 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
 </MODELS>
 
-<!--
- -->
-
-[
-<!-- Please do not change anything below this line, 
-     unless you want to modify the standard diagnostic settings. -->
 <DIAGNOSTICS>
 
 <!-- *******************************************************************************
@@ -61,7 +59,7 @@
         <variable>            lwp                </variable>
         <field_type>          T2Ms               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
-        <model> OBS UWisc sat v2 2001 2005 /data/ESMValTool/obs/Tier3/UWisc </model>
+        <model> OBS UWisc sat v2 2001 2005 @{OBSPATH}/Tier3/UWisc </model>
         <diag_script cfg="cfg_clouds.ncl"> clouds.ncl </diag_script>
     </diag>
 
@@ -71,7 +69,7 @@
         <variable>            pr-mmday           </variable>
         <field_type>          T2Ms               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
-        <model> obs4mips GPCP-SG L3 v2.2 2001 2005 /data/ESMValTool/obs/Tier1/ </model>
+        <model> obs4mips GPCP-SG L3 v2.2 2001 2005 @{OBSPATH}/Tier1/ </model>
         <diag_script cfg="cfg_clouds.ncl"> clouds.ncl </diag_script>
     </diag>
 
@@ -87,7 +85,7 @@
         <variable>            clt                </variable>
         <field_type>          T2Ms               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
-        <model> obs4mips MODIS L3 C5 2001 2005 /data/ESMValTool/obs/Tier1/ </model>
+        <model> obs4mips MODIS L3 C5 2001 2005 @{OBSPATH}/Tier1/ </model>
         <diag_script cfg="cfg_clouds_taylor.ncl"> clouds_taylor.ncl </diag_script>
     </diag>
 
@@ -105,7 +103,7 @@
         <variable>            SW_CRE             </variable>
         <field_type>          T2Ms               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
-        <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2005 /data/ESMValTool/obs/Tier1/ </model>
+        <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2005 @{OBSPATH}/Tier1/ </model>
         <diag_script cfg="cfg_clouds_interannual.ncl"> clouds_interannual.ncl </diag_script>
     </diag>
 

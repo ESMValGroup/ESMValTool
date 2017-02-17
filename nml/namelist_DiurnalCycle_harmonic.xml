@@ -16,6 +16,7 @@ EMBRACE
 This namelist is part of the ESMValTool
 ###############################################################################
 </namelist_summary>
+
 <GLOBAL>
     <write_plots type="boolean">                                       True   </write_plots>
     <write_netcdf type="boolean">                                      True   </write_netcdf>

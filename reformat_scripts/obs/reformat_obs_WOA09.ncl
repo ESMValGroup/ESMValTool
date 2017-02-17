@@ -32,13 +32,12 @@ begin
     TIER = 2
 
     ;; Input dir (raw data)
-;    INDIR = "/nobackup/users/ulft/EMBRACE/ESMVal/obs/" + OBSNAME + "/RAW/"
-    INDIR = "/data/ESMValTool/obs/RAW/Tier2/" + OBSNAME + "/"
+    INDIR = getenv("ESMValTool_RAWOBSPATH") + "/Tier" + \
+        TIER + "/" + OBSNAME + "/"
 
     ;; Output dir (CMOR-ized data)
-;    OUTDIR = "/nobackup/users/ulft/EMBRACE/ESMVal/obs/" + OBSNAME + \
-;             "/CMORized/"
-    OUTDIR = "/data/ESMValTool/obs/Tier2/" + OBSNAME + "/"
+    OUTDIR = getenv("ESMValTool_OBSPATH") + "/Tier" + \
+        TIER + "/" + OBSNAME + "/"
 
     ;; variable names as in file name, also used for long and standard names in
     ;; surface files
@@ -62,7 +61,10 @@ load "./reformat_scripts/constants.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
-    verbosity = 1
+
+    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    diag_script = "reformat_obs_WOA09.ncl"
+    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not. isfilepresent_esmval(OUTDIR)) then
@@ -109,14 +111,15 @@ begin
         gAtt@tier          = TIER
         gAtt@source        = "ftp://ftp.nodc.noaa.gov/pub/WOA09/NetCDFdata"
         gAtt@inputfile     = fname
-        gAtt@reference     = "Locarnini, R. A., et al., 2010. World Ocean Atlas 2009, " \
-                           + "Volume 1: Temperature. S. Levitus, Ed., " \
-                           + "NOAA Atlas NESDIS 68, U.S. Gov. Printing Office, " \
-                           + "Washington, D.C., 184 pp.;" \
-                           + "Antonov, J. I., et al., 2010. World Ocean Atlas 2009, " \
-                           + "Volume 2: Salinity. S. Levitus Ed., " \
-                           + "NOAA Atlas NESDIS 69, U.S. Gov. Printing Office, " \
-                           + "Washington, D.C., 184 pp."
+        gAtt@reference     = \
+            "Locarnini, R. A., et al., 2010. World Ocean Atlas 2009, " + \
+            "Volume 1: Temperature. S. Levitus, Ed., " + \
+            "NOAA Atlas NESDIS 68, U.S. Gov. Printing Office, " + \
+            "Washington, D.C., 184 pp.;" + \
+            "Antonov, J. I., et al., 2010. World Ocean Atlas 2009, " + \
+            "Volume 2: Salinity. S. Levitus Ed., " + \
+            "NOAA Atlas NESDIS 69, U.S. Gov. Printing Office, " + \
+            "Washington, D.C., 184 pp."
         gAtt@title = OBSNAME + \
             " climatology data for the ESMVal evaluation tool"
 
@@ -151,4 +154,7 @@ begin
         delete(sfc)
         delete(f)
     end do
+
+    leave_msg(diag_script, "", 1)
+
 end

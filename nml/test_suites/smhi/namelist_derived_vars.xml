@@ -1,19 +1,21 @@
 <namelist>
 <namelist_summary>
-########################################################################
-# 'namelist_MyDiag.xml' is a tutorial namelist for the EMBRACE NCL     #
-# diagnostic part of the ESMValTool. It specifies models and input     #
-# directories as well as global variables                              #
-########################################################################
-# Contact:                                                             #
-# Klaus-Dirk.Gottschaldt@dlr.de                                        #
-########################################################################
-# The namelist is part of the ESMValTool                               #
-# ESMValTool PIs EMBRACE:                                              #
-#  Veronika Eyring (DLR, Germany) and Klaus Wyser (SMHI, Sweden)       #
-########################################################################
-# THIS NAMELIST IS CALLED BY main.py                                   #
-########################################################################
+###############################################################################
+namelist_MyDiag.xml
+
+Description
+Sandbox namelist for implementing new diagnostics
+
+Author
+Klaus-Dirk Gottschaldt (DLR, Germany -  Klaus-Dirk.Gottschaldt@dlr.de)
+
+Project
+EMBRACE
+
+Reference
+
+This namelist is part of the ESMValTool
+###############################################################################
 </namelist_summary>
 
 <GLOBAL>

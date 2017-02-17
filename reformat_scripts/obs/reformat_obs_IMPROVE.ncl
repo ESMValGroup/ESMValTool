@@ -28,6 +28,8 @@
 ;; Caveats
 ;;
 ;; Modification history
+;;    20160427-A_righ_ma: data reading moved outside variable- and station-
+;;                        loops to improve performance.
 ;;    20140127-A_righ_ma: written.
 ;;
 ;;#############################################################################
@@ -41,11 +43,12 @@ begin
     TIER = 2
 
     ;; Input dir (raw data)
-    INDIR = "/data/ESMValTool/obs/RAW/Tier" + \
+    INDIR = getenv("ESMValTool_RAWOBSPATH") + "/Tier" + \
         TIER + "/" + OBSNAME + "/"
 
     ;; Output dir (CMOR-ized data)
-    OUTDIR = "/data/ESMValTool/obs/Tier" + TIER + "/" + OBSNAME + "/"
+    OUTDIR = getenv("ESMValTool_OBSPATH") + "/Tier" + \
+        TIER + "/" + OBSNAME + "/"
 
     ;; Period
     YEAR1 = 1988
@@ -89,15 +92,15 @@ begin
 
 end
 
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
 load "./interface_scripts/messaging.ncl"
 load "./reformat_scripts/constants.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity = 1
+    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
     diag_script = "reformat_obs_IMPROVE.ncl"
+    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent(OUTDIR)) then
@@ -146,30 +149,11 @@ begin
 
     qq = ind(st_code .ne. -999)
 
-    tmp = st_code(qq)
-    delete(st_code)
-    st_code = tmp
-    delete(tmp)
-
-    tmp = st_name(qq)
-    delete(st_name)
-    st_name = tmp
-    delete(tmp)
-
-    tmp = st_lat(qq)
-    delete(st_lat)
-    st_lat = tmp
-    delete(tmp)
-
-    tmp = st_lon(qq)
-    delete(st_lon)
-    st_lon = tmp
-    delete(tmp)
-
-    tmp = st_alt(qq)
-    delete(st_alt)
-    st_alt = tmp
-    delete(tmp)
+    st_code := st_code(qq)
+    st_name := st_name(qq)
+    st_lat := st_lat(qq)
+    st_lon := st_lon(qq)
+    st_alt := st_alt(qq)
 
     nstats = dimsizes(st_name)
 
@@ -178,7 +162,7 @@ begin
     ;; Find first and last line with data info in the input
     ld1 = toint(systemfunc("head -n 12000 " + INFILE + " | nl -ba | grep " + \
                 "Dataset | grep    SiteCode | awk '{print $1}'"))
-    ld2 = toint(systemfunc("more " + INFILE + " | wc -l"))
+    ld2 = toint(systemfunc("wc -l < " + INFILE))
     ldd = ld2 - ld1
 
     ;; Header
@@ -191,6 +175,12 @@ begin
     ;; Find column indices for site code
     s1 = str_index_of_substr(head, "SiteCode", 0)
     s2 = s1 + 13
+
+    ;; Read all data
+    data = systemfunc("more " + INFILE + " | tail -" + ldd)
+
+    ;; Read all sites
+    all_s = str_squeeze(str_get_cols(data, s1, s2))
 
     ;; Loop over variables
     do vID = 0, NVARS - 1
@@ -211,20 +201,20 @@ begin
         ;; Loop over stations
         do stID = 0, nstats - 1
 
-            info_output("  Station " + st_code(stID), verbosity, 1)
-
-            ;; Get data for the current stations
-            data = systemfunc("more " + INFILE + " | tail -" + ldd + \
-                              " | grep " + st_code(stID))
-
-            ;; Variable values
-            values = tofloat(str_squeeze(str_get_cols(data, c1, c2)))
+            ;; Filter data for the current station
+            idx := ind(all_s.eq.st_code(stID))
+            if (all(ismissing(idx))) then
+                continue
+            end if
+            
+            ;; Read values for the current variable
+            values := tofloat(str_squeeze(str_get_cols(data(idx), c1, c2)))
             values@_FillValue = FILL
 
-            ;; Flag
-            flags = str_squeeze(str_get_cols(data, f1, f2))
+            ;; Read flag
+            flags := str_squeeze(str_get_cols(data(idx), f1, f2))
 
-            ;; Filter
+            ;; Filter for invalid flag
             values = where(values.lt.0., values@_FillValue, values)  ; missing
             values = where(flags.ne."V0" .and. \
                            flags.ne."V1" .and. \
@@ -238,17 +228,14 @@ begin
                            values@_FillValue, values)  ; invalid flag
 
             if (all(ismissing(values))) then
-                delete(data)
-                delete(values)
-                delete(flags)
                 continue
             end if
 
             ;; Get date
             year  = toint(str_get_cols(str_squeeze( \
-                          str_get_cols(data, d1, d2)), 0, 3))
+                          str_get_cols(data(idx), d1, d2)), 0, 3))
             month = toint(str_get_cols(str_squeeze( \
-                          str_get_cols(data, d1, d2)), 4, 5))
+                          str_get_cols(data(idx), d1, d2)), 4, 5))
 
             ;; Define output array
             output = new(dimsizes(timec), float)
@@ -322,7 +309,7 @@ begin
 
             end if
 
-            delete(data)
+            delete(idx)
             delete(values)
             delete(flags)
             delete(year)
@@ -331,5 +318,9 @@ begin
 
         end do  ; stations
     end do  ; variables
+
+    delete(data)
+
+    leave_msg(diag_script, "", 1)
 
 end

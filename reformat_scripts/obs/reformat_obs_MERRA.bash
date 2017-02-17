@@ -1,7 +1,6 @@
-#!/bin/bash -eu
-
+#!/usr/bin/env bash -eu
 ###############################################################################
-## REFORMAT SCRIPT FOR THE MERRA REANALYSIS DATA SET
+## REFORMAT SCRIPT FOR THE MERRA REANALYSIS DATA
 ###############################################################################
 ##
 ## Tier
@@ -14,16 +13,16 @@
 ##    20150703
 ##
 ## Download and processing instructions
-##    Followin the links for the MERRA products and chose the "on-the-fly"
-##    data subsettter. Make sure to choose NetCDF as download format. This
+##    Follow the links for the MERRA products and choose the "on-the-fly"
+##    data subsetter. Make sure to choose NetCDF as download format. This
 ##    script is written for monthly data input files.
 ##
 ## Caveats
 ##    Only variable 'pr' implemented so far
 ##
 ## Modification history
-##    20??????-?????????: Written by Grigory Nikulin, SMHI
-##    20150703-A_eval_ma: Rewritten sligthly to fit with ESMValTool
+##    20150703-A_eval_ma: rewritten sligthly to fit with ESMValTool.
+##    20??????-A_niku_gr: written.
 ##
 ################################################################################
 
@@ -48,6 +47,10 @@ error()
     exit 1
 }
 
+# --- INPUT / OUTPUT ---
+path_in="${ESMValTool_RAWOBSPATH}/Tier2/MERRA/"
+path_out="${ESMValTool_OBSPATH}/Tier2/MERRA/"
+
 # VARIABLES
 var_in=(pr)
 
@@ -60,10 +63,6 @@ gcm_version_id=r1i1p1
 #---- FIRST and LAST YEARS ---
 fy_in=(1979)   # first year
 ly_in=(1984)   # last year
-
-# --- INPUT / OUTPUT ---
-path_in="/nobackup/rossby17/sm_maeva/tmp/tmp/in/"
-path_out="/nobackup/rossby17/sm_maeva/tmp/tmp/out/"
 
 # --- META INFO ---
 ref_time='1950-01-01,00:00'  # reference time

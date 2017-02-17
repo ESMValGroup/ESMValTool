@@ -34,11 +34,12 @@ begin
     TIER = 3
 
     ;; Input dir (raw data)
-    INDIR = "/data/ESMValTool/obs/RAW/Tier" + \
+    INDIR = getenv("ESMValTool_RAWOBSPATH") + "/Tier" + \
         TIER + "/" + OBSNAME + "/"
 
     ;; Output dir (CMOR-ized data)
-    OUTDIR = "/data/ESMValTool/obs/Tier" + TIER + "/" + OBSNAME + "/"
+    OUTDIR = getenv("ESMValTool_OBSPATH") + "/Tier" + \
+        TIER + "/" + OBSNAME + "/"
 
     ;; Field
     FIELD = "T0M"
@@ -60,15 +61,15 @@ begin
 
 end
 
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
 load "./interface_scripts/messaging.ncl"
 load "./reformat_scripts/constants.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity = 1
+    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
     diag_script = "reformat_obs_INCA.ncl"
+    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent(OUTDIR)) then
@@ -96,6 +97,8 @@ begin
 
         ;; Loop over variables
         do vID = 0, dimsizes(VARIABLES) - 1
+
+            info_output("Processing " + VARIABLES(vID), verbosity, 1)
 
             infile = INDIR + "prfl" + "_" + CODE(cpID) + "_" + \
                 VARIABLES(vID) + ".txt"
@@ -191,5 +194,7 @@ begin
 
         end do
     end do
+
+    leave_msg(diag_script, "", 1)
 
 end

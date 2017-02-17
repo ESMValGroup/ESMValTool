@@ -1,4 +1,5 @@
 <namelist>
+<include href="./config_private.xml"/>
 <namelist_summary>
 #############################################################################
 namelist_wenzel14jgr.xml
@@ -19,16 +20,15 @@ Wenzel, S. et al. J. Geophys. Res. Biogeosci., 119, 794–807, doi:10.1002/2013J
 
 This namelist is part of the ESMValTool
 #############################################################################
-
 </namelist_summary>
 
 <GLOBAL>
     <write_plots type="boolean">        True           </write_plots>
     <write_netcdf type="boolean">       True           </write_netcdf>
     <force_processing type="boolean">   False          </force_processing>
-    <wrk_dir type="path">               ./work/        </wrk_dir>
-    <plot_dir type="path">              ./work/plots/  </plot_dir>
-    <climo_dir type="path">             ./work/climo/  </climo_dir>
+    <wrk_dir type="path">               @{WORKPATH}    </wrk_dir>
+    <plot_dir type="path">              @{PLOTPATH}    </plot_dir>
+    <climo_dir type="path">             @{CLIMOPATH}   </climo_dir>
     <write_plot_vars type="boolean">    True           </write_plot_vars>
     <max_data_filesize type="integer">  100            </max_data_filesize>
     <max_data_blocksize type="integer"> 500            </max_data_blocksize>
@@ -58,14 +58,14 @@ This namelist is part of the ESMValTool
   <diag_script_cfg_dir>                   ./nml/cfg_carbon/ </diag_script_cfg_dir>
   <diag_script cfg="cfg_carbon_line.ncl"> tsline.ncl </diag_script>
 
-  <model> CMIP5_ETHZ CanESM2      Lmon 1pctCO2 r1i1p1 1850 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ CESM1-BGC    Lmon 1pctCO2 r1i1p1 1850 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ GFDL-ESM2M   Lmon 1pctCO2 r1i1p1 1861 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ HadGEM2-ES   Lmon 1pctCO2 r1i1p1 1860 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ IPSL-CM5A-LR Lmon 1pctCO2 r1i1p1 1850 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ MIROC-ESM    Lmon 1pctCO2 r1i1p1 1850 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ MPI-ESM-LR   Lmon 1pctCO2 r1i1p1 1850 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ NorESM1-ME   Lmon 1pctCO2 r1i1p1 1850 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ CanESM2      Lmon 1pctCO2 r1i1p1 1850 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ CESM1-BGC    Lmon 1pctCO2 r1i1p1 1850 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ GFDL-ESM2M   Lmon 1pctCO2 r1i1p1 1861 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ HadGEM2-ES   Lmon 1pctCO2 r1i1p1 1860 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ IPSL-CM5A-LR Lmon 1pctCO2 r1i1p1 1850 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ MIROC-ESM    Lmon 1pctCO2 r1i1p1 1850 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ MPI-ESM-LR   Lmon 1pctCO2 r1i1p1 1850 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ NorESM1-ME   Lmon 1pctCO2 r1i1p1 1850 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
 </diag>
 
 <diag>
@@ -76,14 +76,14 @@ This namelist is part of the ESMValTool
   <diag_script_cfg_dir>                   ./nml/cfg_carbon/ </diag_script_cfg_dir>
   <diag_script cfg="cfg_carbon_line.ncl"> tsline.ncl </diag_script>
 
-  <model> CMIP5_ETHZ CanESM2      Lmon esmFixClim1 r1i1p1 1850 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ CESM1-BGC    Lmon esmFixClim1 r1i1p1 1850 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ GFDL-ESM2M   Lmon esmFixClim1 r1i1p1 1861 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ HadGEM2-ES   Lmon esmFixClim1 r1i1p1 1860 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ IPSL-CM5A-LR Lmon esmFixClim1 r1i1p1 1850 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ MIROC-ESM    Lmon esmFixClim1 r1i1p1 1850 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ MPI-ESM-LR   Lmon esmFixClim1 r1i1p1 1850 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ NorESM1-ME   Lmon esmFixClim1 r1i1p1 1850 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ CanESM2      Lmon esmFixClim1 r1i1p1 1850 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ CESM1-BGC    Lmon esmFixClim1 r1i1p1 1850 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ GFDL-ESM2M   Lmon esmFixClim1 r1i1p1 1861 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ HadGEM2-ES   Lmon esmFixClim1 r1i1p1 1860 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ IPSL-CM5A-LR Lmon esmFixClim1 r1i1p1 1850 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ MIROC-ESM    Lmon esmFixClim1 r1i1p1 1850 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ MPI-ESM-LR   Lmon esmFixClim1 r1i1p1 1850 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ NorESM1-ME   Lmon esmFixClim1 r1i1p1 1850 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
 </diag>
 
 <diag>
@@ -94,14 +94,14 @@ This namelist is part of the ESMValTool
   <diag_script_cfg_dir>                   ./nml/cfg_carbon/ </diag_script_cfg_dir>
   <diag_script cfg="cfg_carbon_line.ncl"> tsline.ncl </diag_script>
   
-  <model> CMIP5_ETHZ CanESM2      Amon 1pctCO2 r1i1p1 1850 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ CESM1-BGC    Amon 1pctCO2 r1i1p1 1850 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ GFDL-ESM2M   Amon 1pctCO2 r1i1p1 1861 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ HadGEM2-ES   Amon 1pctCO2 r1i1p1 1860 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ IPSL-CM5A-LR Amon 1pctCO2 r1i1p1 1850 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ MIROC-ESM    Amon 1pctCO2 r1i1p1 1850 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ MPI-ESM-LR   Amon 1pctCO2 r1i1p1 1850 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ NorESM1-ME   Amon 1pctCO2 r1i1p1 1850 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ CanESM2      Amon 1pctCO2 r1i1p1 1850 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ CESM1-BGC    Amon 1pctCO2 r1i1p1 1850 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ GFDL-ESM2M   Amon 1pctCO2 r1i1p1 1861 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ HadGEM2-ES   Amon 1pctCO2 r1i1p1 1860 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ IPSL-CM5A-LR Amon 1pctCO2 r1i1p1 1850 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ MIROC-ESM    Amon 1pctCO2 r1i1p1 1850 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ MPI-ESM-LR   Amon 1pctCO2 r1i1p1 1850 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ NorESM1-ME   Amon 1pctCO2 r1i1p1 1850 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
 </diag>
 
 <!-- ################################################################## -->
@@ -116,14 +116,14 @@ This namelist is part of the ESMValTool
   <diag_script_cfg_dir>                   ./nml/cfg_carbon/ </diag_script_cfg_dir>
   <diag_script cfg="cfg_carbon_line_h.ncl"> tsline.ncl </diag_script>
 
-  <model> CMIP5_ETHZ CanESM2      Lmon 1pctCO2 r1i1p1 1890 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ CESM1-BGC    Lmon 1pctCO2 r1i1p1 1890 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ GFDL-ESM2M   Lmon 1pctCO2 r1i1p1 1890 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ HadGEM2-ES   Lmon 1pctCO2 r1i1p1 1890 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ IPSL-CM5A-LR Lmon 1pctCO2 r1i1p1 1890 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ MIROC-ESM    Lmon 1pctCO2 r1i1p1 1890 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ MPI-ESM-LR   Lmon 1pctCO2 r1i1p1 1890 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ NorESM1-ME   Lmon 1pctCO2 r1i1p1 1890 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ CanESM2      Lmon 1pctCO2 r1i1p1 1890 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ CESM1-BGC    Lmon 1pctCO2 r1i1p1 1890 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ GFDL-ESM2M   Lmon 1pctCO2 r1i1p1 1890 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ HadGEM2-ES   Lmon 1pctCO2 r1i1p1 1890 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ IPSL-CM5A-LR Lmon 1pctCO2 r1i1p1 1890 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ MIROC-ESM    Lmon 1pctCO2 r1i1p1 1890 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ MPI-ESM-LR   Lmon 1pctCO2 r1i1p1 1890 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ NorESM1-ME   Lmon 1pctCO2 r1i1p1 1890 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
 </diag>
 
 <diag>
@@ -134,14 +134,14 @@ This namelist is part of the ESMValTool
   <diag_script_cfg_dir>                   ./nml/cfg_carbon/ </diag_script_cfg_dir>
   <diag_script cfg="cfg_carbon_line_h.ncl"> tsline.ncl </diag_script>
 
-  <model> CMIP5_ETHZ CanESM2      Lmon esmHistorical r1i1p1 1960 2005 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ CESM1-BGC    Lmon esmHistorical r1i1p1 1960 2005 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ GFDL-ESM2M   Lmon esmHistorical r1i1p1 1960 2005 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ HadGEM2-ES   Lmon esmHistorical r1i1p1 1960 2005 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ IPSL-CM5A-LR Lmon esmHistorical r1i1p1 1960 2005 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ MIROC-ESM    Lmon esmHistorical r1i1p1 1960 2005 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ MPI-ESM-LR   Lmon esmHistorical r1i1p1 1960 2005 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ NorESM1-ME   Lmon esmHistorical r1i1p1 1960 2005 /data/ESMValTool/model/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ CanESM2      Lmon esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ CESM1-BGC    Lmon esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ GFDL-ESM2M   Lmon esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ HadGEM2-ES   Lmon esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ IPSL-CM5A-LR Lmon esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ MIROC-ESM    Lmon esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ MPI-ESM-LR   Lmon esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ NorESM1-ME   Lmon esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
 </diag>
 
 <!--<diag>
@@ -152,22 +152,22 @@ This namelist is part of the ESMValTool
   <diag_script_cfg_dir>                   ./nml/cfg_carbon/ </diag_script_cfg_dir>
   <diag_script cfg="cfg_carbon_line_h.ncl"> tsline.ncl </diag_script>
 
-  <model> CMIP5_gridfile CanESM2      Omon 1pctCO2 r1i1p1 1890 1989 /data/ESMValTool/model/ETHZ_CMIP5/1pctCO2/Omon/fgco2/CanESM2/r1i1p1/
-/data/ESMValTool/model/ETHZ_CMIP5/historical/fx/areacello/CanESM2/r0i0p0/areacello_fx_CanESM2_historical_r0i0p0.nc </model>
-  <model> CMIP5_gridfile CESM1-BGC    Omon 1pctCO2 r1i1p1 1850 1989 /data/ESMValTool/model/ETHZ_CMIP5/1pctCO2/Omon/fgco2/CESM1-BGC/r1i1p1/ 
-/data/ESMValTool/model/ETHZ_CMIP5/historical/fx/areacello/CESM1-BGC/r0i0p0/areacello_fx_CESM1-BGC_historical_r0i0p0.nc </model>
-  <model> CMIP5_gridfile GFDL-ESM2M   Omon 1pctCO2 r1i1p1 1890 1989 /data/ESMValTool/model/ETHZ_CMIP5/1pctCO2/Omon/fgco2/GFDL-ESM2M/r1i1p1/ 
-/data/ESMValTool/model/ETHZ_CMIP5/historical/fx/areacello/GFDL-ESM2M/r0i0p0/areacello_fx_GFDL-ESM2M_historical_r0i0p0.nc </model>
-  <model> CMIP5_gridfile HadGEM2-ES   Omon 1pctCO2 r1i1p1 1890 1989 /data/ESMValTool/model/ETHZ_CMIP5/1pctCO2/Omon/fgco2/HadGEM2-ES/r1i1p1/ 
-/data/ESMValTool/model/ETHZ_CMIP5/historical/fx/areacello/HadGEM2-ES/r0i0p0/areacello_fx_HadGEM2-ES_historical_r0i0p0.nc </model>
-  <model> CMIP5_gridfile IPSL-CM5A-LR Omon 1pctCO2 r1i1p1 1890 1989 /data/ESMValTool/model/ETHZ_CMIP5/1pctCO2/Omon/fgco2/IPSL-CM5A-LR/r1i1p1/ 
-/data/ESMValTool/model/ETHZ_CMIP5/historical/fx/areacello/IPSL-CM5A-LR/r0i0p0/areacello_fx_IPSL-CM5A-LR_historical_r0i0p0.nc </model>
-  <model> CMIP5_gridfile MIROC-ESM    Omon 1pctCO2 r1i1p1 1890 1989 /data/ESMValTool/model/ETHZ_CMIP5/1pctCO2/Omon/fgco2/MIROC-ESM/r1i1p1/ 
-/data/ESMValTool/model/ETHZ_CMIP5/historical/fx/areacello/MIROC-ESM/r0i0p0/areacello_fx_MIROC-ESM_historical_r0i0p0.nc </model>
-  <model> CMIP5_gridfile MPI-ESM-LR   Omon 1pctCO2 r1i1p1 1890 1989 /data/ESMValTool/model/ETHZ_CMIP5/1pctCO2/Omon/fgco2/MPI-ESM-LR/r1i1p1/
-/data/ESMValTool/model/ETHZ_CMIP5/historical/fx/areacello/MPI-ESM-LR/r0i0p0/areacello_fx_MPI-ESM-LR_historical_r0i0p0.nc </model>
-  <model> CMIP5_gridfile NorESM1-ME   Omon 1pctCO2 r1i1p1 1890 1989 /data/ESMValTool/model/ETHZ_CMIP5/1pctCO2/Omon/fgco2/NorESM1-ME/r1i1p1/ 
-/data/ESMValTool/model/ETHZ_CMIP5/historical/fx/areacello/NorESM1-ME/r0i0p0/areacello_fx_NorESM1-ME_historical_r0i0p0.nc </model>
+  <model> CMIP5_gridfile CanESM2      Omon 1pctCO2 r1i1p1 1890 1989 @{MODELPATH}/ETHZ_CMIP5/1pctCO2/Omon/fgco2/CanESM2/r1i1p1/
+@{MODELPATH}/ETHZ_CMIP5/historical/fx/areacello/CanESM2/r0i0p0/areacello_fx_CanESM2_historical_r0i0p0.nc </model>
+  <model> CMIP5_gridfile CESM1-BGC    Omon 1pctCO2 r1i1p1 1850 1989 @{MODELPATH}/ETHZ_CMIP5/1pctCO2/Omon/fgco2/CESM1-BGC/r1i1p1/ 
+@{MODELPATH}/ETHZ_CMIP5/historical/fx/areacello/CESM1-BGC/r0i0p0/areacello_fx_CESM1-BGC_historical_r0i0p0.nc </model>
+  <model> CMIP5_gridfile GFDL-ESM2M   Omon 1pctCO2 r1i1p1 1890 1989 @{MODELPATH}/ETHZ_CMIP5/1pctCO2/Omon/fgco2/GFDL-ESM2M/r1i1p1/ 
+@{MODELPATH}/ETHZ_CMIP5/historical/fx/areacello/GFDL-ESM2M/r0i0p0/areacello_fx_GFDL-ESM2M_historical_r0i0p0.nc </model>
+  <model> CMIP5_gridfile HadGEM2-ES   Omon 1pctCO2 r1i1p1 1890 1989 @{MODELPATH}/ETHZ_CMIP5/1pctCO2/Omon/fgco2/HadGEM2-ES/r1i1p1/ 
+@{MODELPATH}/ETHZ_CMIP5/historical/fx/areacello/HadGEM2-ES/r0i0p0/areacello_fx_HadGEM2-ES_historical_r0i0p0.nc </model>
+  <model> CMIP5_gridfile IPSL-CM5A-LR Omon 1pctCO2 r1i1p1 1890 1989 @{MODELPATH}/ETHZ_CMIP5/1pctCO2/Omon/fgco2/IPSL-CM5A-LR/r1i1p1/ 
+@{MODELPATH}/ETHZ_CMIP5/historical/fx/areacello/IPSL-CM5A-LR/r0i0p0/areacello_fx_IPSL-CM5A-LR_historical_r0i0p0.nc </model>
+  <model> CMIP5_gridfile MIROC-ESM    Omon 1pctCO2 r1i1p1 1890 1989 @{MODELPATH}/ETHZ_CMIP5/1pctCO2/Omon/fgco2/MIROC-ESM/r1i1p1/ 
+@{MODELPATH}/ETHZ_CMIP5/historical/fx/areacello/MIROC-ESM/r0i0p0/areacello_fx_MIROC-ESM_historical_r0i0p0.nc </model>
+  <model> CMIP5_gridfile MPI-ESM-LR   Omon 1pctCO2 r1i1p1 1890 1989 @{MODELPATH}/ETHZ_CMIP5/1pctCO2/Omon/fgco2/MPI-ESM-LR/r1i1p1/
+@{MODELPATH}/ETHZ_CMIP5/historical/fx/areacello/MPI-ESM-LR/r0i0p0/areacello_fx_MPI-ESM-LR_historical_r0i0p0.nc </model>
+  <model> CMIP5_gridfile NorESM1-ME   Omon 1pctCO2 r1i1p1 1890 1989 @{MODELPATH}/ETHZ_CMIP5/1pctCO2/Omon/fgco2/NorESM1-ME/r1i1p1/ 
+@{MODELPATH}/ETHZ_CMIP5/historical/fx/areacello/NorESM1-ME/r0i0p0/areacello_fx_NorESM1-ME_historical_r0i0p0.nc </model>
 </diag>
 
 <diag>
@@ -178,22 +178,22 @@ This namelist is part of the ESMValTool
   <diag_script_cfg_dir>                   ./nml/cfg_carbon/ </diag_script_cfg_dir>
   <diag_script cfg="cfg_carbon_line_h.ncl"> tsline.ncl </diag_script>
 
-  <model> CMIP5_gridfile CanESM2      Omon esmHistorical r1i1p1 1960 2005 /data/ESMValTool/model/ETHZ_CMIP51pctCO2/Omon/fgco2/CanESM2/r1i1p1/ 
-/data/ESMValTool/model/ETHZ_CMIP5/historical/fx/areacello/CanESM2/r0i0p0/areacello_fx_CanESM2_historical_r0i0p0.nc </model>
-  <model> CMIP5_gridfile CESM1-BGC    Omon esmHistorical r1i1p1 1960 2005 /data/ESMValTool/model/ETHZ_CMIP5/1pctCO2/Omon/fgco2/CESM1-BGC/r1i1p1/  
-/data/ESMValTool/model/ETHZ_CMIP5/historical/fx/areacello/CESM1-BGC/r0i0p0/areacello_fx_CESM1-BGC_historical_r0i0p0.nc </model> 
-  <model> CMIP5_gridfile GFDL-ESM2M   Omon esmHistorical r1i1p1 1960 2005 /data/ESMValTool/model/ETHZ_CMIP5/1pctCO2/Omon/fgco2/GFDL-ESM2M/r1i1p1/  
-/data/ESMValTool/model/ETHZ_CMIP5/historical/fx/areacello/GFDL-ESM2M/r0i0p0/areacello_fx_GFDL-ESM2M_historical_r0i0p0.nc </model>
-  <model> CMIP5_gridfile HadGEM2-ES   Omon esmHistorical r1i1p1 1960 2005 /data/ESMValTool/model/ETHZ_CMIP5/1pctCO2/Omon/fgco2/HadGEM2-ES/r1i1p1/  
-/data/ESMValTool/model/ETHZ_CMIP5/historical/fx/areacello/HadGEM2-ES/r0i0p0/areacello_fx_HadGEM2-ES_historical_r0i0p0.nc </model>
-  <model> CMIP5_gridfile IPSL-CM5A-LR Omon esmHistorical r1i1p1 1960 2005 /data/ESMValTool/model/ETHZ_CMIP5/1pctCO2/Omon/fgco2/IPSL-CM5A-LR/r1i1p1/  
-/data/ESMValTool/model/ETHZ_CMIP5/historical/fx/areacello/IPSL-CM5A-LR/r0i0p0/areacello_fx_IPSL-CM5A-LR_historical_r0i0p0.nc </model>
-  <model> CMIP5_gridfile MIROC-ESM    Omon esmHistorical r1i1p1 1960 2005 /data/ESMValTool/model/ETHZ_CMIP5/1pctCO2/Omon/fgco2/MIROC-ESM/r1i1p1/  
-/data/ESMValTool/model/ETHZ_CMIP5/historical/fx/areacello/MIROC-ESM/r0i0p0/areacello_fx_MIROC-ESM_historical_r0i0p0.nc </model>
-  <model> CMIP5_gridfile MPI-ESM-LR   Omon esmHistorical r1i1p1 1960 2005 /data/ESMValTool/model/ETHZ_CMIP5/1pctCO2/Omon/fgco2/MPI-ESM-LR/r1i1p1/ 
-/data/ESMValTool/model/ETHZ_CMIP5/historical/fx/areacello/MPI-ESM-LR/r0i0p0/areacello_fx_MPI-ESM-LR_historical_r0i0p0.nc </model>
-  <model> CMIP5_gridfile NorESM1-ME   Omon esmHistorical r1i1p1 1960 2005 /data/ESMValTool/model/ETHZ_CMIP5/1pctCO2/Omon/fgco2/NorESM1-ME/r1i1p1/  
-/data/ESMValTool/model/ETHZ_CMIP5/historical/fx/areacello/NorESM1-ME/r0i0p0/areacello_fx_NorESM1-ME_historical_r0i0p0.nc </model> 
+  <model> CMIP5_gridfile CanESM2      Omon esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP51pctCO2/Omon/fgco2/CanESM2/r1i1p1/ 
+@{MODELPATH}/ETHZ_CMIP5/historical/fx/areacello/CanESM2/r0i0p0/areacello_fx_CanESM2_historical_r0i0p0.nc </model>
+  <model> CMIP5_gridfile CESM1-BGC    Omon esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/1pctCO2/Omon/fgco2/CESM1-BGC/r1i1p1/  
+@{MODELPATH}/ETHZ_CMIP5/historical/fx/areacello/CESM1-BGC/r0i0p0/areacello_fx_CESM1-BGC_historical_r0i0p0.nc </model> 
+  <model> CMIP5_gridfile GFDL-ESM2M   Omon esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/1pctCO2/Omon/fgco2/GFDL-ESM2M/r1i1p1/  
+@{MODELPATH}/ETHZ_CMIP5/historical/fx/areacello/GFDL-ESM2M/r0i0p0/areacello_fx_GFDL-ESM2M_historical_r0i0p0.nc </model>
+  <model> CMIP5_gridfile HadGEM2-ES   Omon esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/1pctCO2/Omon/fgco2/HadGEM2-ES/r1i1p1/  
+@{MODELPATH}/ETHZ_CMIP5/historical/fx/areacello/HadGEM2-ES/r0i0p0/areacello_fx_HadGEM2-ES_historical_r0i0p0.nc </model>
+  <model> CMIP5_gridfile IPSL-CM5A-LR Omon esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/1pctCO2/Omon/fgco2/IPSL-CM5A-LR/r1i1p1/  
+@{MODELPATH}/ETHZ_CMIP5/historical/fx/areacello/IPSL-CM5A-LR/r0i0p0/areacello_fx_IPSL-CM5A-LR_historical_r0i0p0.nc </model>
+  <model> CMIP5_gridfile MIROC-ESM    Omon esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/1pctCO2/Omon/fgco2/MIROC-ESM/r1i1p1/  
+@{MODELPATH}/ETHZ_CMIP5/historical/fx/areacello/MIROC-ESM/r0i0p0/areacello_fx_MIROC-ESM_historical_r0i0p0.nc </model>
+  <model> CMIP5_gridfile MPI-ESM-LR   Omon esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/1pctCO2/Omon/fgco2/MPI-ESM-LR/r1i1p1/ 
+@{MODELPATH}/ETHZ_CMIP5/historical/fx/areacello/MPI-ESM-LR/r0i0p0/areacello_fx_MPI-ESM-LR_historical_r0i0p0.nc </model>
+  <model> CMIP5_gridfile NorESM1-ME   Omon esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/1pctCO2/Omon/fgco2/NorESM1-ME/r1i1p1/  
+@{MODELPATH}/ETHZ_CMIP5/historical/fx/areacello/NorESM1-ME/r0i0p0/areacello_fx_NorESM1-ME_historical_r0i0p0.nc </model> 
 </diag>-->
 
 <diag>
@@ -204,14 +204,14 @@ This namelist is part of the ESMValTool
   <diag_script_cfg_dir>                   ./nml/cfg_carbon/ </diag_script_cfg_dir>
   <diag_script cfg="cfg_carbon_line_h.ncl"> tsline.ncl </diag_script>
 
-  <model> CMIP5_ETHZ CanESM2      Amon 1pctCO2 r1i1p1 1890 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ CESM1-BGC    Amon 1pctCO2 r1i1p1 1890 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ GFDL-ESM2M   Amon 1pctCO2 r1i1p1 1890 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ HadGEM2-ES   Amon 1pctCO2 r1i1p1 1890 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ IPSL-CM5A-LR Amon 1pctCO2 r1i1p1 1890 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ MIROC-ESM    Amon 1pctCO2 r1i1p1 1890 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ MPI-ESM-LR   Amon 1pctCO2 r1i1p1 1890 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ NorESM1-ME   Amon 1pctCO2 r1i1p1 1890 1989 /data/ESMValTool/model/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ CanESM2      Amon 1pctCO2 r1i1p1 1890 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ CESM1-BGC    Amon 1pctCO2 r1i1p1 1890 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ GFDL-ESM2M   Amon 1pctCO2 r1i1p1 1890 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ HadGEM2-ES   Amon 1pctCO2 r1i1p1 1890 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ IPSL-CM5A-LR Amon 1pctCO2 r1i1p1 1890 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ MIROC-ESM    Amon 1pctCO2 r1i1p1 1890 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ MPI-ESM-LR   Amon 1pctCO2 r1i1p1 1890 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ NorESM1-ME   Amon 1pctCO2 r1i1p1 1890 1989 @{MODELPATH}/ETHZ_CMIP5 </model>
 </diag>
 
 <diag>
@@ -222,14 +222,14 @@ This namelist is part of the ESMValTool
   <diag_script_cfg_dir>                   ./nml/cfg_carbon/ </diag_script_cfg_dir>
   <diag_script cfg="cfg_carbon_line_h.ncl"> tsline.ncl </diag_script>
 
-  <model> CMIP5_ETHZ CanESM2      Amon esmHistorical r1i1p1 1960 2005 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ CESM1-BGC    Amon esmHistorical r1i1p1 1960 2005 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ GFDL-ESM2M   Amon esmHistorical r1i1p1 1960 2005 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ HadGEM2-ES   Amon esmHistorical r1i1p1 1960 2005 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ IPSL-CM5A-LR Amon esmHistorical r1i1p1 1960 2005 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ MIROC-ESM    Amon esmHistorical r1i1p1 1960 2005 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ MPI-ESM-LR   Amon esmHistorical r1i1p1 1960 2005 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ NorESM1-ME   Amon esmHistorical r1i1p1 1960 2005 /data/ESMValTool/model/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ CanESM2      Amon esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ CESM1-BGC    Amon esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ GFDL-ESM2M   Amon esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ HadGEM2-ES   Amon esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ IPSL-CM5A-LR Amon esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ MIROC-ESM    Amon esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ MPI-ESM-LR   Amon esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ NorESM1-ME   Amon esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
 </diag>
 
 <!-- ################################################################## -->
@@ -248,14 +248,14 @@ This namelist is part of the ESMValTool
   (lines: 154, 158, 188, 193) to local file path !!! -->
   <diag_script cfg="cfg_carbon_G_IAV.ncl"> create_co2flux.ncl </diag_script>
 
-  <model> CMIP5_ETHZ CanESM2      MIP_VAR_DEF esmHistorical r1i1p1 1960 2005 /data/ESMValTool/model/ETHZ_CMIP5  </model>
-  <model> CMIP5_ETHZ CESM1-BGC    MIP_VAR_DEF esmHistorical r1i1p1 1960 2005 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ GFDL-ESM2M   MIP_VAR_DEF esmHistorical r1i1p1 1960 2005 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ HadGEM2-ES   MIP_VAR_DEF esmHistorical r1i1p1 1960 2004 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ IPSL-CM5A-LR MIP_VAR_DEF esmHistorical r1i1p1 1960 2005 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ MIROC-ESM    MIP_VAR_DEF esmHistorical r1i1p1 1960 2005 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ MPI-ESM-LR   MIP_VAR_DEF esmHistorical r1i1p1 1960 2005 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ NorESM1-ME   MIP_VAR_DEF esmHistorical r1i1p1 1960 2005 /data/ESMValTool/model/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ CanESM2      MIP_VAR_DEF esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5  </model>
+  <model> CMIP5_ETHZ CESM1-BGC    MIP_VAR_DEF esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ GFDL-ESM2M   MIP_VAR_DEF esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ HadGEM2-ES   MIP_VAR_DEF esmHistorical r1i1p1 1960 2004 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ IPSL-CM5A-LR MIP_VAR_DEF esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ MIROC-ESM    MIP_VAR_DEF esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ MPI-ESM-LR   MIP_VAR_DEF esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ NorESM1-ME   MIP_VAR_DEF esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
 </diag>
 
 <diag>
@@ -268,18 +268,18 @@ This namelist is part of the ESMValTool
   <diag_script_cfg_dir>            ./nml/cfg_carbon/             </diag_script_cfg_dir>
   <diag_script cfg="cfg_carbon_G_IAV.ncl">  carbon_corr_2var.ncl </diag_script>
 
-  <model id="GCP">  OBS   GCP    reanaly   1    1959 2005 /data/ESMValTool/obs/Tier2/GCP </model>
-  <model id="NCEP"> OBS   NCEP   reanaly   1    1959 2005 /data/ESMValTool/obs/Tier2/NCEP </model>
+  <model id="GCP">  OBS   GCP    reanaly   1    1959 2005 @{OBSPATH}/Tier2/GCP </model>
+  <model id="NCEP"> OBS   NCEP   reanaly   1    1959 2005 @{OBSPATH}/Tier2/NCEP </model>
 
   <!-- !!! NOTE2: please change model file path according to climo_dir !!! -->
-  <model> CMIP5 CanESM2      Amon esmHistorical r1i1p1 1960 2005 ./work/climo/CMIP5_ETHZ </model>
-  <model> CMIP5 CESM1-BGC    Amon esmHistorical r1i1p1 1960 2005 ./work/climo/CMIP5_ETHZ </model>
-  <model> CMIP5 GFDL-ESM2M   Amon esmHistorical r1i1p1 1960 2005 ./work/climo/CMIP5_ETHZ </model>
-  <model> CMIP5 HadGEM2-ES   Amon esmHistorical r1i1p1 1960 2004 ./work/climo/CMIP5_ETHZ </model>
-  <model> CMIP5 IPSL-CM5A-LR Amon esmHistorical r1i1p1 1960 2005 ./work/climo/CMIP5_ETHZ </model>
-  <model> CMIP5 MIROC-ESM    Amon esmHistorical r1i1p1 1960 2005 ./work/climo/CMIP5_ETHZ </model>
-  <model> CMIP5 MPI-ESM-LR   Amon esmHistorical r1i1p1 1960 2005 ./work/climo/CMIP5_ETHZ </model>
-  <model> CMIP5 NorESM1-ME   Amon esmHistorical r1i1p1 1960 2005 ./work/climo/CMIP5_ETHZ </model>
+  <model> CMIP5 CanESM2      Amon esmHistorical r1i1p1 1960 2005 @{CLIMOPATH}/CMIP5_ETHZ </model>
+  <model> CMIP5 CESM1-BGC    Amon esmHistorical r1i1p1 1960 2005 @{CLIMOPATH}/CMIP5_ETHZ </model>
+  <model> CMIP5 GFDL-ESM2M   Amon esmHistorical r1i1p1 1960 2005 @{CLIMOPATH}/CMIP5_ETHZ </model>
+  <model> CMIP5 HadGEM2-ES   Amon esmHistorical r1i1p1 1960 2004 @{CLIMOPATH}/CMIP5_ETHZ </model>
+  <model> CMIP5 IPSL-CM5A-LR Amon esmHistorical r1i1p1 1960 2005 @{CLIMOPATH}/CMIP5_ETHZ </model>
+  <model> CMIP5 MIROC-ESM    Amon esmHistorical r1i1p1 1960 2005 @{CLIMOPATH}/CMIP5_ETHZ </model>
+  <model> CMIP5 MPI-ESM-LR   Amon esmHistorical r1i1p1 1960 2005 @{CLIMOPATH}/CMIP5_ETHZ </model>
+  <model> CMIP5 NorESM1-ME   Amon esmHistorical r1i1p1 1960 2005 @{CLIMOPATH}/CMIP5_ETHZ </model>
 </diag>
 
 <!-- ############################################################################# -->
@@ -294,14 +294,14 @@ This namelist is part of the ESMValTool
   <diag_script_cfg_dir>           ./nml/cfg_carbon/    </diag_script_cfg_dir>
   <diag_script cfg="cfg_carbon_G_LT.ncl"> carbon_dummy.ncl </diag_script>
 
-  <model> CMIP5_ETHZ CanESM2      Lmon esmFixClim1 r1i1p1 1880 1960 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ CESM1-BGC    Lmon esmFixClim1 r1i1p1 1880 1960 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ GFDL-ESM2M   Lmon esmFixClim1 r1i1p1 1880 1960 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ HadGEM2-ES   Lmon esmFixClim1 r1i1p1 1880 1960 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ IPSL-CM5A-LR Lmon esmFixClim1 r1i1p1 1880 1960 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ MIROC-ESM    Lmon esmFixClim1 r1i1p1 1880 1960 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ MPI-ESM-LR   Lmon esmFixClim1 r1i1p1 1880 1960 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ NorESM1-ME   Lmon esmFixClim1 r1i1p1 1880 1960 /data/ESMValTool/model/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ CanESM2      Lmon esmFixClim1 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ CESM1-BGC    Lmon esmFixClim1 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ GFDL-ESM2M   Lmon esmFixClim1 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ HadGEM2-ES   Lmon esmFixClim1 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ IPSL-CM5A-LR Lmon esmFixClim1 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ MIROC-ESM    Lmon esmFixClim1 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ MPI-ESM-LR   Lmon esmFixClim1 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ NorESM1-ME   Lmon esmFixClim1 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
 </diag>
 
 <diag>
@@ -313,14 +313,14 @@ This namelist is part of the ESMValTool
   <diag_script_cfg_dir>           ./nml/cfg_carbon/    </diag_script_cfg_dir>
   <diag_script cfg="cfg_carbon_G_LT.ncl"> carbon_constraint.ncl </diag_script>
 
-  <model> CMIP5_ETHZ CanESM2      MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ CESM1-BGC    MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ GFDL-ESM2M   MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ HadGEM2-ES   MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ IPSL-CM5A-LR MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ MIROC-ESM    MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ MPI-ESM-LR   MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-  <model> CMIP5_ETHZ NorESM1-ME   MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 /data/ESMValTool/model/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ CanESM2      MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ CESM1-BGC    MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ GFDL-ESM2M   MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ HadGEM2-ES   MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ IPSL-CM5A-LR MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ MIROC-ESM    MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ MPI-ESM-LR   MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
+  <model> CMIP5_ETHZ NorESM1-ME   MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
 </diag>
 
 </DIAGNOSTICS>

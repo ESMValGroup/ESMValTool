@@ -34,11 +34,12 @@ begin
     TIER = 2
 
     ;; Input dir (raw data)
-    INDIR = "/data/ESMValTool/obs/RAW/Tier" + \
+    INDIR = getenv("ESMValTool_RAWOBSPATH") + "/Tier" + \
         TIER + "/" + OBSNAME + "/"
 
     ;; Output dir (CMOR-ized data)
-    OUTDIR = "/data/ESMValTool/obs/Tier" + TIER + "/" + OBSNAME + "/"
+    OUTDIR = getenv("ESMValTool_OBSPATH") + "/Tier" + \
+        TIER + "/" + OBSNAME + "/"
 
     ;; Period
     YEAR1 = 1850
@@ -55,12 +56,15 @@ begin
 
 end
 
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
 load "./interface_scripts/messaging.ncl"
 load "./reformat_scripts/constants.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
+
+    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    diag_script = "reformat_obs_HadCRUT.ncl"
+    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent(OUTDIR)) then
@@ -74,8 +78,8 @@ begin
     ;; Read variable
     output = f->temp
  
-    print(" ")
-    print("Processing " + VARS(0))
+    info_output("", verbosity, 1)
+    info_output("Processing " + VARS(0), verbosity, 1)
  
     ;; Set variable attributes
     tmp = var_attrib(output, VARS(0))
@@ -102,8 +106,8 @@ begin
     ;; Format latitude coordinate
     output!1 = "lat"
     if (isMonotonic(output&lat) .eq. 0) then
-        print("Non-monotonic latitude coordinate")
-        status_exit(1)
+        error_msg("f", diag_script, \
+                  "", "non-monotonic latitude coordinate")
     end if
     if (isMonotonic(output&lat) .eq. -1) then
         output = output(:, :, ::-1, :)
@@ -116,15 +120,15 @@ begin
     ;; Format longitude coordinate
     output!2 = "lon"
     if (isMonotonic(output&lon) .eq. 0) then
-        print("Non-monotonic longitude coordinate")
-        status_exit(1)
+        error_msg("f", diag_script, \
+                  "", "non-monotonic longitude coordinate")
     end if
     clon = lon_attrib(output&lon)
     delete(output&lon)
     output&lon = clon
     delete(clon)
 
-    print("  Range: " + min(output) + "; " + max(output))
+    info_output("  Range: " + min(output) + "; " + max(output), verbosity, 1)
 
     ;; Set global attributes
     gAtt = True
@@ -148,6 +152,8 @@ begin
     write_nc(fout, VARS(0), output, gAtt)
     delete(gAtt)
     delete(output)
+
+    leave_msg(diag_script, "", 1)
 
 end
 

@@ -99,7 +99,7 @@ begin
                           models@end_year(idx_mod) + "12.nc"
 
                 if (isfilepresent_esmval(newfile)) then
-                    system ("rm " + newfile)
+                    system("rm -f " + newfile)
                 end if
 ; A-laue_ax-
 
@@ -128,7 +128,7 @@ begin
                           models@end_year(idx_mod) + "12.nc"
 
                 if (isfilepresent_esmval(newfile)) then
-                    system ("rm " + newfile)
+                    system("rm -f " + newfile)
                 end if
 ; A-laue_ax-
                 system("ln -s " + oldfile + " " + newfile)
@@ -155,7 +155,7 @@ begin
 ; A-laue_ax+
     ; delete old namelist (if present)
     if (isfilepresent_esmval("namelist")) then
-        system ("rm namelist")
+        system("rm -f namelist")
     end if
 ; A-laue_ax-
 
@@ -163,14 +163,14 @@ begin
 
 ;;------------------------------end_namelist_creator-------------------------
 
-    system ("ncl ./diag_scripts/cvdp_driver.ncl") ; <--- Execution of CVDP
+    system("ncl ./diag_scripts/cvdp_driver.ncl") ; <--- Execution of CVDP
 
-    ; system ("rm namelist") ; After termination of CVDP, CVDP-"namelist" is deleted,
+    ; system("rm namelist") ; After termination of CVDP, CVDP-"namelist" is deleted,
 
     ; and if present CVDP-"namelist_obs"
 
     ;if (isfilepresent_esmval("namelist_obs")) then
-    ;    system ("rm namelist_obs")
+    ;    system("rm namelist_obs")
     ;end if
 
     info_output(">>>>>>>> Leaving " + diag_script, verbosity, 4)

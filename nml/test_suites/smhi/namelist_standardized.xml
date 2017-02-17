@@ -1,15 +1,22 @@
 <namelist>
 <namelist_summary>
-========================================================================
-DESCRIPTION: A test namelist while working on the standardized namelist
-             concept detailed in Mantis issue #8662.
+###############################################################################
+namelist_standardized.xml
 
-AUTHORS: Martin Evaldsson (Martin.Evaldsson@smhi.se)
+Description
+A test namelist while working on the standardized namelist concept detailed in
+Mantis issue #8662.
 
-NOTES: This namelist is part of the ESMValTool
-       ESMValTool PIs EMBRACE: Klaus Wyser (SMHI, Sweden),
-                               Veronika Eyring  (DLR, Germany)
-========================================================================
+Author
+Martin Evaldsson (SMHI, Sweden - martin.evaldsson@smhi.se)
+
+Project
+EMBRACE
+
+Reference
+
+This namelist is part of the ESMValTool
+###############################################################################
 </namelist_summary>
 
 <GLOBAL>

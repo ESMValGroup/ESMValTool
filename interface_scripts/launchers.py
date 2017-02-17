@@ -1,4 +1,4 @@
-from auxiliary import nclExecuteError, nclExecuteWarning
+from auxiliary import nclExecuteError, nclExecuteWarning, error, info
 import os
 import pdb
 import re
@@ -26,7 +26,8 @@ def stdoutIO(std_outerr=None):
 class launchers(object):
     def __init__(self):
         self.persistent_env_variables = ['ESMValTool_data_root']
-
+        self.filename = os.path.join(os.path.dirname(__file__),                   
+                                        '../interface_data/curr_trace_indent.txt') 
     def convert_arguments(self):
         """
         convert launcher arguments to a dictionary
@@ -154,7 +155,7 @@ class ncl_launcher(launchers):
             'ESMValTool_'-prefixed environment variables after execution.
         """
         # Reset NCL trace back indent (available with verbosity=2)
-        f_ncl_indent = open("interface_data/curr_trace_indent.txt", "w")
+	f_ncl_indent = open(self.filename, "w")
         f_ncl_indent.write("0")
         f_ncl_indent.close()
 
@@ -197,7 +198,7 @@ class r_launcher(launchers):
             environment variables after execution.
         """
         # Reset NCL trace back indent (available with verbosity=2)
-        f_r_indent = open("interface_data/curr_trace_indent.txt", "w")
+	f_r_indent = open(self.filename, "w")
         f_r_indent.write("0" + '\n')
         f_r_indent.close()
 
@@ -335,3 +336,55 @@ class py_launcher(launchers):
 
         for key in [env for env in os.environ if re.search('^ESMValTool_*', env)]:
             del(os.environ[key])
+
+class shell_launcher(launchers):                                                           
+      """ @brief general unix shell launcher                                             
+            @param shell: name of shell (bash or csh)                                      
+      """                                                                                  
+      def __init__(self,shell):                                                            
+              if shell in ['csh','bash']:                                                  
+                      self.lang = shell                                                    
+              else:                                                                        
+                      raise error('Unknown shell: {0}'.format(shell))                      
+              super(shell_launcher, self).__init__()                                       
+                                                                                           
+      def execute(self, executable, project_info, verbosity, exit_on_warning):             
+              try:                                                                         
+                      with open(self.filename, "w") as f:                                  
+                              f.write("0")                                                 
+                              f.close()                                                    
+              except IOError:                                                              
+                      raise error("IOError while open/write: '{0}'".format(filename))      
+                                                                                           
+              if not os.path.exists(executable):                                           
+                      raise IOError("file to execute is missing: {0}".format(executable))  
+                                                                                           
+              cmd = self.lang + " {0}".format(executable)                                  
+              run_application = subprocess.Popen(cmd, shell=True,                          
+                                           stdin=open(os.devnull),                         
+                                           stdout=subprocess.PIPE,                         
+                                           stderr=subprocess.PIPE)                         
+              run_application.wait()                                                       
+              output = run_application.communicate()                                       
+              std_out = filter(None,output[0].split('\n'))                                 
+              std_err = filter(None,output[1].split('\n'))                                 
+              for i in [self.lang.upper() + ' INFO : ' + item for item in std_out]:        
+                      print i                                                              
+              for i in [self.lang.upper() + ' ERROR: ' + item for item in std_err]:        
+                                                                                           
+                      print i                                                              
+                                                                                           
+              for key in [env for env in os.environ if re.search('^ESMValTool_*', env)]:   
+                      del(os.environ[key])                                                 
+                                                                                           
+class csh_launcher(shell_launcher):                                                        
+      """ @brief csh-shell script launcher                                               
+      """                                                                                  
+      def __init__(self):                                                                  
+              super(csh_launcher, self).__init__('csh')                                    
+                                                                                           
+class bash_launcher(shell_launcher):                                                       
+      """ @brief bash-shell script launcher                                              
+      """                                                                                  
+      def __init__(self):                                                                  
+              super(bash_launcher, self).__init__('bash')                                  

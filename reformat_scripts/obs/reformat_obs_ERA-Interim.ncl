@@ -41,15 +41,16 @@ begin
     TIER = 3
 
     ;; Input dir (raw data)
-    INDIR = "/data/ESMValTool/obs/RAW/Tier" + \
+    INDIR = getenv("ESMValTool_RAWOBSPATH") + "/Tier" + \
         TIER + "/" + OBSNAME + "/"
 
     ;; Output dir (CMOR-ized data)
-    OUTDIR = "/data/ESMValTool/obs/Tier" + TIER + "/" + OBSNAME + "/"
+    OUTDIR = getenv("ESMValTool_OBSPATH") + "/Tier" + \
+        TIER + "/" + OBSNAME + "/"
 
     ;; Period
     YEAR1 = 1979
-    YEAR2 = 2012
+    YEAR2 = 2014
 
     ;; Selected variable (standard name)
     VARS = (/          "psl",         "ta",           "zg",\
@@ -79,29 +80,27 @@ begin
                           1.,           1.,             1.,\
                           1.,         100./)
      
-         ;; Fields
+    ;; Fields
     FLDARR = (/       "T2Ds",        "T3M",          "T3M",\
                        "T3M",        "T3M",          "T3M",\
                       "T2Ms",       "T2Ms",        "TO2Ms",\
                      "TO2Ms",      "TO2Ms",         "T2Ms",\
                       "T2Ms",       "T2Ms"/)
 
-    ;; Fields
-
     ;; Initialize global variable
     FIELD = ""
 
 end
 
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
 load "./interface_scripts/messaging.ncl"
 load "./reformat_scripts/constants.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity = 1
+    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
     diag_script = "reformat_obs_ERA-Interim.ncl"
+    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent_esmval(OUTDIR)) then
@@ -196,7 +195,8 @@ begin
 
                 do i = 1, 12
                     mm = i
-                    time(i-1) = toint(cd_inv_calendar(yy,mm,dd,hh,mn,sc,units,0))
+                    time(i-1) = \
+                        toint(cd_inv_calendar(yy,mm,dd,hh,mn,sc,units,0))
                 end do
 
                 tmp2&time = time
@@ -423,5 +423,7 @@ begin
         delete(output)
 
     end do
+
+    leave_msg(diag_script, "", 1)
 
 end

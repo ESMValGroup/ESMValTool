@@ -1,43 +1,45 @@
 <namelist>
+<include href="./config_private.xml"/>
 <namelist_summary>
+###############################################################################
 namelist_DiurnalCycle_harmonic.xml
 
 Description
 Computes mean diurnal cycle of precipitation over specific boxes
 and seasons.
 
-Author(s)
+Authors
 Catherine Rio (LMD, France - catherine.rio@lmd.jussieu.fr)
 
-Contributor(s)
-
-Reference(s)
+Project
+EMBRACE
 
 This namelist is part of the ESMValTool
-ESMValTool project PI: Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
+###############################################################################
 </namelist_summary>
+
 <GLOBAL>
-    <write_plots type="boolean">                                       True   </write_plots>
-    <write_netcdf type="boolean">                                      True   </write_netcdf>
-    <force_processing type="boolean">                                 False   </force_processing>
-    <wrk_dir type="path">                                            ./work/  </wrk_dir>
-    <plot_dir type="path">                                     ./work/plots/  </plot_dir>
-    <climo_dir type="path">                                    ./work/climo/  </climo_dir>
-    <regridding_dir type="path">         ./work/regridding_tmp_DiurnalCycle/  </regridding_dir>
-    <write_plot_vars type="boolean">                                   True   </write_plot_vars>
-    <max_data_filesize type="integer">                                  100   </max_data_filesize>
-    <max_data_blocksize type="integer">                                 500   </max_data_blocksize>
-    <verbosity  type="integer">                                          10   </verbosity>
-    <exit_on_warning  type="boolean">                                 False   </exit_on_warning>
-    <output_file_type>                                                  png   </output_file_type>
-    <show_debuginfo type="boolean">                                   False   </show_debuginfo>
-    <read_from_vault type="boolean">                                  False   </read_from_vault>
-    <force_processing type="boolean">                                 False   </force_processing>
+    <write_plots type="boolean">               True   </write_plots>
+    <write_netcdf type="boolean">              True   </write_netcdf>
+    <force_processing type="boolean">         False   </force_processing>
+    <wrk_dir type="path">                @{WORKPATH}  </wrk_dir>
+    <plot_dir type="path">               @{PLOTPATH}  </plot_dir>
+    <climo_dir type="path">              @{CLIMOPATH} </climo_dir>
+    <regridding_dir type="path">         @{REGRPATH}  </regridding_dir>
+    <write_plot_vars type="boolean">           True   </write_plot_vars>
+    <max_data_filesize type="integer">          100   </max_data_filesize>
+    <max_data_blocksize type="integer">         500   </max_data_blocksize>
+    <verbosity  type="integer">                   1   </verbosity>
+    <exit_on_warning  type="boolean">         False   </exit_on_warning>
+    <output_file_type>                          png   </output_file_type>
+    <show_debuginfo type="boolean">           False   </show_debuginfo>
+    <read_from_vault type="boolean">          False   </read_from_vault>
+    <force_processing type="boolean">         False   </force_processing>
 </GLOBAL>
 
 <MODELS>
-   <model> CMIP5_ETHZ CNRM-AM-PRE6 3hr amip r1i1p1 2004 2004 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-   <model> CMIP5_ETHZ MPIESM-1-1   3hr amip r1i1p1 2004 2004 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+   <model> CMIP5_ETHZ CNRM-AM-PRE6 3hr amip r1i1p1 2004 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+   <model> CMIP5_ETHZ MPIESM-1-1   3hr amip r1i1p1 2004 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
 </MODELS>
 
 <DIAGNOSTICS>
@@ -53,7 +55,7 @@ ESMValTool project PI: Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
     <diag_script cfg="cfg_DiurnalCycle_harmonic_JJA.ncl">  DiurnalCycle_precip_harmonic.ncl </diag_script>
 <!--    <diag_script cfg="cfg_DiurnalCycle_harmonic_SON.ncl">  DiurnalCycle_precip_harmonic.ncl </diag_script> -->
 
-    <model id="trmm"> OBS TRMM_3B42 sat v7 2004 2004 /data/ESMValTool/obs/Tier2/TRMM_3B42_3hourly </model>
+    <model id="trmm"> OBS TRMM_3B42 sat v7 2004 2004 @{OBSPATH}/Tier2/TRMM_3B42_3hourly </model>
 </diag>
 </DIAGNOSTICS>
 </namelist>

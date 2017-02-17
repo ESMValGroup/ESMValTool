@@ -85,7 +85,7 @@ function compute_stat(requested_stats[*] : string,
 ;;                        @refA: reference area in lat/lon
 ;;                        @latB: latitude boundary
 ;;                        @lonB: longitude boundary
-;;                        @bob: Bay of Bengali area avearge
+;;                        @bob: Bay of Bengal area avearge
 ;;                        @eio: eastern equatorial Indian Ocean
 ;;                        @sa34: India region area average
 ;;                        @en34: enso34 area average

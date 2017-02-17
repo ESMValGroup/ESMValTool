@@ -21,7 +21,8 @@ Sperber, K. R. et al., Clim. Dyn. 41, 2711-2744, doi:10.1007/s00382-012-1607-6 (
 Lin, J.-L.  et al., J. Climate, 21, 4541-4567, doi: 10.1175/2008JCLI1816.1 (2008)
 Webster, P.J. and Yang, S., J. Roy. Meteor. Soc., 118, 877-926, doi:10.1002/qj.49711850705 (1992)
 Goswami, B. N. et al., Quart. J. Roy. Meteor. Soc., 125, 611-633, doi:10.1002/qj.49712555412 (1999)
-Wang, B. and Z. Fan, Bull. Amer. Meteor. Soc., 80, 629-638, doi:10.1175/1520-0477(1999)080&lt;0629:COSASM&gt;2.0.CO;2 (1999)  <!-- replace &lt; and &gt; with their HTML equivalents-->
+<!-- replace &lt; and &gt; with their HTML equivalents-->
+Wang, B. and Z. Fan, Bull. Amer. Meteor. Soc., 80, 629-638, doi:10.1175/1520-0477(1999)080&lt;0629:COSASM&gt;2.0.CO;2 (1999)
 Wang, B. et al., Clim. Dyn., 39, 1123-1135, doi:10.1007/s00382-011-1266-z (2011)
 
 This namelist is part of the ESMValTool

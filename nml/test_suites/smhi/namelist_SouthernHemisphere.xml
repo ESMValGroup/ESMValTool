@@ -1,22 +1,27 @@
 <namelist>
 <namelist_summary>
-========================================================================
-DESCRIPTION: "namelist_SouthernHemisphere.xml" is the namelist file for
-diagnostics of Southern Hemisphere clouds, radiation and fluxes.
+###############################################################################
+namelist_SouthernHemisphere.xml
 
-AUTHORS: Jarmo Makela (FMI, Finland, jarmo.makela@fmi.fi)
+Description
+Namelist for the diagnostics of Southern Hemisphere clouds, radiation and fluxes
 
-CONTRIBUTORS: Martin Evaldsson (SMHI, Sweden, martin.evaldsson@smhi.se)
-              Ralf Doescher (SMHI, Sweden ralf.doescher@smhi.se)
-              Colin Jones (MetOffice, UK, colin.jones@metoffice.gov.uk)
-	      Ulrika Willen (SMHI, Sweden, ulrika.willen@smhi.se)
+Author
+Jarmo Makela (FMI, Finland, jarmo.makela@fmi.fi)
 
-REFERENCES: XXX
+Contributors
+Martin Evaldsson (SMHI, Sweden, martin.evaldsson@smhi.se)
+Ralf Doescher (SMHI, Sweden ralf.doescher@smhi.se)
+Colin Jones (MetOffice, UK, colin.jones@metoffice.gov.uk)
+Ulrika Willen (SMHI, Sweden, ulrika.willen@smhi.se)
 
-NOTES: This namelist is part of the ESMVal tool; PIs:
-       Veronika Eyring (DLR, Germany)
-       Klaus Wyser (SMHI, Sweden)
-========================================================================
+Project
+EMBRACE
+
+Reference
+
+This namelist is part of the ESMVal tool
+###############################################################################
 </namelist_summary>
 
 <GLOBAL>

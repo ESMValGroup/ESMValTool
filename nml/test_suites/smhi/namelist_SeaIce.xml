@@ -1,16 +1,28 @@
 <namelist>
 <namelist_summary>
-========================================================================
-DESCRIPTION: A namelist for plotting cfg_SeaIce diagnostics at the Arctic and
-             Antarctic, (Mantis issue #9216).
+###############################################################################
+namelist_SeaIce.xml
 
-AUTHORS: Klaus-Dirk.Gottschaldt@dlr.de
+Description
+A namelist for plotting SeaIce diagnostics at the Arctic and Antarctic
 
-NOTES: This namelist is part of the ESMValTool
-       ESMValTool PIs EMBRACE: Veronika Eyring  (DLR, Germany)
-                               Klaus Wyser (SMHI, Sweden),
-========================================================================
+Author
+Daniel Senftleben (DLR, Germany - Daniel.Senftleben@dlr.de)
+
+Contributor
+Melanie Braeu (DLR, Germany)
+Klaus-Dirk Gottschaldt (DLR, Germany - Klaus-Dirk.Gottschaldt@dlr.de)
+
+Project
+ESMVal
+
+Reference
+Stroeve, J. et al., Geophys. Res. Lett., 34, L09501, doi:10.1029/2007GL029703 (2007)
+
+This namelist is part of the ESMValTool
+###############################################################################
 </namelist_summary>
+
 <GLOBAL>
     <write_plots type="boolean">                     True         </write_plots>
     <write_netcdf type="boolean">                    True         </write_netcdf>

@@ -1,4 +1,5 @@
 <namelist>
+<include href="./config_private.xml"/>
 <namelist_summary>
 ###############################################################################
 namelist_lauer13jclim.xml
@@ -24,9 +25,9 @@ This namelist is part of the ESMValTool
     <write_plots type="boolean">           True      </write_plots>
     <write_netcdf type="boolean">          True      </write_netcdf>
     <force_processing type="boolean">     False      </force_processing>
-    <wrk_dir type="path">                  work/     </wrk_dir>
-    <plot_dir type="path">           work/plots/     </plot_dir>
-    <climo_dir type="path">          work/climo/     </climo_dir>
+    <wrk_dir type="path">              @{WORKPATH}   </wrk_dir>
+    <plot_dir type="path">             @{PLOTPATH}   </plot_dir>
+    <climo_dir type="path">            @{CLIMOPATH}  </climo_dir>
     <write_plot_vars type="boolean">       True      </write_plot_vars>
     <max_data_filesize type="integer">      100      </max_data_filesize>
     <max_data_blocksize type="integer">     500      </max_data_blocksize>
@@ -37,58 +38,52 @@ This namelist is part of the ESMValTool
 </GLOBAL>
 
 <MODELS>
-    <model>  CMIP5_ETHZ ACCESS1-0        Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-    <model>  CMIP5_ETHZ ACCESS1-3        Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-    <model>  CMIP5_ETHZ bcc-csm1-1       Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-    <model>  CMIP5_ETHZ bcc-csm1-1-m     Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-    <model>  CMIP5_ETHZ BNU-ESM          Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-    <model>  CMIP5_ETHZ CanESM2          Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-    <model>  CMIP5_ETHZ CCSM4            Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-    <model>  CMIP5_ETHZ CESM1-BGC        Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-<!--    <model>  CMIP5_ETHZ CESM1-CAM5-1-FV2 Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model> -->
-    <model>  CMIP5_ETHZ CESM1-CAM5       Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-    <model>  CMIP5_ETHZ CESM1-FASTCHEM   Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-    <model>  CMIP5_ETHZ CESM1-WACCM      Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-    <model>  CMIP5_ETHZ CMCC-CESM        Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-<!--    <model>  CMIP5_ETHZ CMCC-CM          Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model> -->
-<!--    <model>  CMIP5_ETHZ CMCC-CMS         Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model> -->
-<!--    <model>  CMIP5_ETHZ CNRM-CM5-2       Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model> -->
-    <model>  CMIP5_ETHZ CNRM-CM5         Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-    <model>  CMIP5_ETHZ CSIRO-Mk3-6-0    Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-<!--    <model>  CMIP5_ETHZ FGOALS-g2        Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model> -->
-    <model>  CMIP5_ETHZ GFDL-CM3         Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-    <model>  CMIP5_ETHZ GFDL-ESM2G       Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-    <model>  CMIP5_ETHZ GFDL-ESM2M       Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-    <model>  CMIP5_ETHZ GISS-E2-H-CC     Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-    <model>  CMIP5_ETHZ GISS-E2-H        Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-    <model>  CMIP5_ETHZ GISS-E2-R-CC     Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-    <model>  CMIP5_ETHZ GISS-E2-R        Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-<!--    <model>  CMIP5_ETHZ HadGEM2-CC       Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model> -->
-<!--    <model>  CMIP5_ETHZ HadGEM2-ES       Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model> -->
-    <model>  CMIP5_ETHZ inmcm4           Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-    <model>  CMIP5_ETHZ IPSL-CM5A-LR     Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-    <model>  CMIP5_ETHZ IPSL-CM5A-MR     Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-    <model>  CMIP5_ETHZ IPSL-CM5B-LR     Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-    <model>  CMIP5_ETHZ MIROC4h          Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-    <model>  CMIP5_ETHZ MIROC5           Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-    <model>  CMIP5_ETHZ MIROC-ESM        Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-    <model>  CMIP5_ETHZ MIROC-ESM-CHEM   Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-    <model>  CMIP5_ETHZ MPI-ESM-LR       Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-    <model>  CMIP5_ETHZ MPI-ESM-MR       Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-    <model>  CMIP5_ETHZ MPI-ESM-P        Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-    <model>  CMIP5_ETHZ MRI-CGCM3        Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-    <model>  CMIP5_ETHZ NorESM1-M        Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
-    <model>  CMIP5_ETHZ NorESM1-ME       Amon historical r1i1p1  1986 2005 /data/ESMValTool/model/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ ACCESS1-0        Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ ACCESS1-3        Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ bcc-csm1-1       Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ bcc-csm1-1-m     Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ BNU-ESM          Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ CanESM2          Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ CCSM4            Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ CESM1-BGC        Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+<!--    <model>  CMIP5_ETHZ CESM1-CAM5-1-FV2 Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model> -->
+    <model>  CMIP5_ETHZ CESM1-CAM5       Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ CESM1-FASTCHEM   Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ CESM1-WACCM      Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ CMCC-CESM        Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+<!--    <model>  CMIP5_ETHZ CMCC-CM          Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model> -->
+<!--    <model>  CMIP5_ETHZ CMCC-CMS         Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model> -->
+<!--    <model>  CMIP5_ETHZ CNRM-CM5-2       Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model> -->
+    <model>  CMIP5_ETHZ CNRM-CM5         Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ CSIRO-Mk3-6-0    Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+<!--    <model>  CMIP5_ETHZ FGOALS-g2        Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model> -->
+    <model>  CMIP5_ETHZ GFDL-CM3         Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ GFDL-ESM2G       Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ GFDL-ESM2M       Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ GISS-E2-H-CC     Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ GISS-E2-H        Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ GISS-E2-R-CC     Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ GISS-E2-R        Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+<!--    <model>  CMIP5_ETHZ HadGEM2-CC       Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model> -->
+<!--    <model>  CMIP5_ETHZ HadGEM2-ES       Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model> -->
+    <model>  CMIP5_ETHZ inmcm4           Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ IPSL-CM5A-LR     Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ IPSL-CM5A-MR     Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ IPSL-CM5B-LR     Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ MIROC4h          Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ MIROC5           Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ MIROC-ESM        Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ MIROC-ESM-CHEM   Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ MPI-ESM-LR       Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ MPI-ESM-MR       Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ MPI-ESM-P        Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ MRI-CGCM3        Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ NorESM1-M        Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ NorESM1-ME       Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
 <!--    <model> EMAC RC1-base-07   1 1986 2005 /gpfs01/home/laue_ax/emac/RC1-base-07/   </model>
     <model> EMAC RC1SD-base-07   1 1986 2005 /gpfs01/home/laue_ax/emac/RC1SD-base-07/   </model> -->
 </MODELS>
 
-<!--
- -->
-
-[
-<!-- Please do not change anything below this line, 
-     unless you want to modify the standard diagnostic settings. -->
 <DIAGNOSTICS>
 
 <!-- *******************************************************************************
@@ -103,7 +98,7 @@ This namelist is part of the ESMValTool
         <variable>            lwp                </variable>
         <field_type>          T2Ms               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
-        <model> OBS UWisc sat v2 1988 2007 /data/ESMValTool/obs/Tier3/UWisc </model>
+        <model> OBS UWisc sat v2 1988 2007 @{OBSPATH}/Tier3/UWisc </model>
         <diag_script cfg="cfg_clouds.ncl"> clouds.ncl </diag_script>
     </diag>
 
@@ -113,7 +108,7 @@ This namelist is part of the ESMValTool
         <variable>            clt                </variable>
         <field_type>          T2Ms               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
-        <model> obs4mips MODIS L3 C5 2001 2010 /data/ESMValTool/obs/Tier1/ </model>
+        <model> obs4mips MODIS L3 C5 2001 2010 @{OBSPATH}/Tier1/ </model>
         <diag_script cfg="cfg_clouds.ncl"> clouds.ncl </diag_script>
     </diag>
 
@@ -123,7 +118,7 @@ This namelist is part of the ESMValTool
         <variable>            pr-mmday           </variable>
         <field_type>          T2Ms               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
-        <model> obs4mips GPCP-SG L3 v2.2 1986 2005 /data/ESMValTool/obs/Tier1/ </model>
+        <model> obs4mips GPCP-SG L3 v2.2 1986 2005 @{OBSPATH}/Tier1/ </model>
         <diag_script cfg="cfg_clouds.ncl"> clouds.ncl </diag_script>
     </diag>
 
@@ -133,7 +128,7 @@ This namelist is part of the ESMValTool
         <variable>            clivi              </variable>
         <field_type>          T2Ms               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
-        <model> OBS MODIS-CFMIP sat v2 2003 2014 /data/ESMValTool/obs/Tier2/MODIS-CFMIP </model>
+        <model> OBS MODIS-CFMIP sat v2 2003 2014 @{OBSPATH}/Tier2/MODIS-CFMIP </model>
         <diag_script cfg="cfg_clouds.ncl"> clouds.ncl </diag_script>
     </diag>
 
@@ -143,7 +138,7 @@ This namelist is part of the ESMValTool
         <variable>            SW_CRE             </variable>
         <field_type>          T2Ms               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
-        <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2012 /data/ESMValTool/obs/Tier1/ </model>
+        <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2012 @{OBSPATH}/Tier1/ </model>
         <diag_script cfg="cfg_clouds.ncl"> clouds.ncl </diag_script>
     </diag>
 
@@ -153,7 +148,7 @@ This namelist is part of the ESMValTool
         <variable>            LW_CRE             </variable>
         <field_type>          T2Ms               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
-        <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2012 /data/ESMValTool/obs/Tier1/ </model>
+        <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2012 @{OBSPATH}/Tier1/ </model>
         <diag_script cfg="cfg_clouds.ncl"> clouds.ncl </diag_script>
     </diag>
 
@@ -163,7 +158,7 @@ This namelist is part of the ESMValTool
         <variable>            NET_CRE            </variable>
         <field_type>          T2Ms               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
-        <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2012 /data/ESMValTool/obs/Tier1/ </model>
+        <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2012 @{OBSPATH}/Tier1/ </model>
         <diag_script cfg="cfg_clouds.ncl"> clouds.ncl </diag_script>
     </diag>
 
@@ -179,7 +174,7 @@ This namelist is part of the ESMValTool
         <variable>            clt                </variable>
         <field_type>          T2Ms               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
-        <model> obs4mips MODIS L3 C5 2001 2010 /data/ESMValTool/obs/Tier1/ </model>
+        <model> obs4mips MODIS L3 C5 2001 2010 @{OBSPATH}/Tier1/ </model>
         <diag_script cfg="cfg_clouds_taylor.ncl"> clouds_taylor.ncl </diag_script>
     </diag>
 
@@ -189,7 +184,7 @@ This namelist is part of the ESMValTool
         <variable>            lwp                </variable>
         <field_type>          T2Ms               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
-        <model> OBS UWisc sat v2 1988 2007 /data/ESMValTool/obs/Tier3/UWisc </model>
+        <model> OBS UWisc sat v2 1988 2007 @{OBSPATH}/Tier3/UWisc </model>
         <diag_script cfg="cfg_clouds_taylor.ncl"> clouds_taylor.ncl </diag_script>
     </diag>
 
@@ -199,7 +194,7 @@ This namelist is part of the ESMValTool
         <variable>            SW_CRE             </variable>
         <field_type>          T2Ms               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
-        <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2012 /data/ESMValTool/obs/Tier1/ </model>
+        <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2012 @{OBSPATH}/Tier1/ </model>
         <diag_script cfg="cfg_clouds_taylor.ncl"> clouds_taylor.ncl </diag_script>
     </diag>
 
@@ -209,7 +204,7 @@ This namelist is part of the ESMValTool
         <variable>            LW_CRE             </variable>
         <field_type>          T2Ms               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
-        <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2012 /data/ESMValTool/obs/Tier1/ </model>
+        <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2012 @{OBSPATH}/Tier1/ </model>
         <diag_script cfg="cfg_clouds_taylor.ncl"> clouds_taylor.ncl </diag_script>
     </diag>
 
@@ -219,7 +214,7 @@ This namelist is part of the ESMValTool
         <variable>            clivi              </variable>
         <field_type>          T2Ms               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
-        <model> OBS MODIS-CFMIP sat v2 2003 2014 /data/ESMValTool/obs/Tier2/MODIS-CFMIP </model>
+        <model> OBS MODIS-CFMIP sat v2 2003 2014 @{OBSPATH}/Tier2/MODIS-CFMIP </model>
         <diag_script cfg="cfg_clouds_taylor.ncl"> clouds_taylor.ncl </diag_script>
     </diag>
 
@@ -229,7 +224,7 @@ This namelist is part of the ESMValTool
         <variable>            pr-mmday           </variable>
         <field_type>          T2Ms               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
-        <model> obs4mips GPCP-SG L3 v2.2 1986 2005 /data/ESMValTool/obs/Tier1/ </model>
+        <model> obs4mips GPCP-SG L3 v2.2 1986 2005 @{OBSPATH}/Tier1/ </model>
         <diag_script cfg="cfg_clouds_taylor.ncl"> clouds_taylor.ncl </diag_script>
     </diag>
 
@@ -247,7 +242,7 @@ This namelist is part of the ESMValTool
         <variable>            lwp                </variable>
         <field_type>          T2Ms               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
-        <model> OBS UWisc sat v2 1988 2007 /data/ESMValTool/obs/Tier3/UWisc </model>
+        <model> OBS UWisc sat v2 1988 2007 @{OBSPATH}/Tier3/UWisc </model>
         <diag_script cfg="cfg_clouds_interannual.ncl"> clouds_interannual.ncl </diag_script>
     </diag>
 
@@ -257,7 +252,7 @@ This namelist is part of the ESMValTool
         <variable>            clt                </variable>
         <field_type>          T2Ms               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
-        <model> obs4mips MODIS L3 C5 2001 2010 /data/ESMValTool/obs/Tier1/ </model>
+        <model> obs4mips MODIS L3 C5 2001 2010 @{OBSPATH}/Tier1/ </model>
         <diag_script cfg="cfg_clouds_interannual.ncl"> clouds_interannual.ncl </diag_script>
     </diag>
 
@@ -267,7 +262,7 @@ This namelist is part of the ESMValTool
         <variable>            SW_CRE             </variable>
         <field_type>          T2Ms               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
-        <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2012 /data/ESMValTool/obs/Tier1/ </model>
+        <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2012 @{OBSPATH}/Tier1/ </model>
         <diag_script cfg="cfg_clouds_interannual.ncl"> clouds_interannual.ncl </diag_script>
     </diag>
 
@@ -277,7 +272,7 @@ This namelist is part of the ESMValTool
         <variable>            LW_CRE             </variable>
         <field_type>          T2Ms               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
-        <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2012 /data/ESMValTool/obs/Tier1/ </model>
+        <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2012 @{OBSPATH}/Tier1/ </model>
         <diag_script cfg="cfg_clouds_interannual.ncl"> clouds_interannual.ncl </diag_script>
     </diag>
 
@@ -287,7 +282,7 @@ This namelist is part of the ESMValTool
         <variable>            NET_CRE            </variable>
         <field_type>          T2Ms               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
-        <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2012 /data/ESMValTool/obs/Tier1/ </model>
+        <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2012 @{OBSPATH}/Tier1/ </model>
         <diag_script cfg="cfg_clouds_interannual.ncl"> clouds_interannual.ncl </diag_script>
     </diag>
 
@@ -297,7 +292,7 @@ This namelist is part of the ESMValTool
         <variable>            clivi              </variable>
         <field_type>          T2Ms               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
-        <model> OBS MODIS-CFMIP sat v2 2003 2014 /data/ESMValTool/obs/Tier2/MODIS-CFMIP </model>
+        <model> OBS MODIS-CFMIP sat v2 2003 2014 @{OBSPATH}/Tier2/MODIS-CFMIP </model>
         <diag_script cfg="cfg_clouds_interannual.ncl"> clouds_interannual.ncl </diag_script>
     </diag>
 
@@ -307,7 +302,7 @@ This namelist is part of the ESMValTool
         <variable>            pr-mmday           </variable>
         <field_type>          T2Ms               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
-        <model> obs4mips GPCP-SG L3 v2.2 1986 2005 /data/ESMValTool/obs/Tier1/ </model>
+        <model> obs4mips GPCP-SG L3 v2.2 1986 2005 @{OBSPATH}/Tier1/ </model>
         <diag_script cfg="cfg_clouds_interannual.ncl"> clouds_interannual.ncl </diag_script>
     </diag>
 

@@ -1,6 +1,9 @@
 <namelist>
+<include href="./config_private.xml"/>
 <namelist_summary>
 ###############################################################################
+namelist_righi15gmd_tropo3.xml
+
 Description
 This namelist produces figures 9, 11, 12, 13, 14, 15, 18 of Righi et al. (2015)
 
@@ -13,12 +16,12 @@ Mattia Righi (DLR, Germany - mattia.righi@dlr.de)
 Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
 
 Project
-ESMVal
+DLR ESMVal
 
 References
-Righi et al., Geosci. Model Dev., 8, 733-768 10.5194/gmd-8-733-2015, 2015.
+Righi et al., Geosci. Model Dev., 8, 733-768 10.5194/gmd-8-733-2015 (2015)
 
-This namelist is part of the ESMValTool.
+This namelist is part of the ESMValTool
 ###############################################################################
 </namelist_summary>
 
@@ -26,9 +29,9 @@ This namelist is part of the ESMValTool.
     <write_plots type="boolean">         True   </write_plots>
     <write_netcdf type="boolean">        True   </write_netcdf>
     <force_processing type="boolean">    False  </force_processing>
-    <wrk_dir type="path">                work/  </wrk_dir>
-    <plot_dir type="path">               work/plots/ </plot_dir>
-    <climo_dir type="path">              work/climo/ </climo_dir>
+    <wrk_dir type="path">                @{WORKPATH}  </wrk_dir>
+    <plot_dir type="path">               @{PLOTPATH}  </plot_dir>
+    <climo_dir type="path">              @{CLIMOPATH} </climo_dir>
     <write_plot_vars type="boolean">     True   </write_plot_vars>
     <max_data_filesize type="integer">   100    </max_data_filesize>
     <max_data_blocksize type="integer">  500    </max_data_blocksize>
@@ -42,8 +45,8 @@ This namelist is part of the ESMValTool.
 </GLOBAL>
 
 <MODELS>
-    <model> EMAC   EVAL2      1  1999 2001  /data/ESMValTool/model/EMAC/EVAL2/     </model>
-    <model> EMAC   QCTM       1  1999 2001  /data/ESMValTool/model/EMAC/QCTM/      </model>
+    <model> EMAC   EVAL2      1  1999 2001  @{MODELPATH}/EMAC/EVAL2/     </model>
+    <model> EMAC   QCTM       1  1999 2001  @{MODELPATH}/EMAC/QCTM/      </model>
 </MODELS>
 
 <!-- Please do not change anything below this line, 
@@ -62,7 +65,7 @@ This namelist is part of the ESMValTool.
         <diag_script_cfg_dir>             ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
         <diag_script cfg="cfg_righi15gmd_fig14.ncl">      ancyc_lat.ncl      </diag_script>
         <diag_script cfg="cfg_righi15gmd_fig13.ncl">      lat_lon.ncl      </diag_script>
-        <model> OBS    AURA-MLS-OMI  sat  1  2006 2008  /data/ESMValTool/obs/Tier2/AURA-MLS-OMI/ </model>
+        <model> OBS    AURA-MLS-OMI  sat  1  2006 2008  @{OBSPATH}/Tier2/AURA-MLS-OMI/ </model>
     </diag>
     <diag>
         <description> fig 9: total column ozone plot </description>
@@ -71,8 +74,8 @@ This namelist is part of the ESMValTool.
         <field_type>                        T2Ms              </field_type>
         <diag_script_cfg_dir>             ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
         <diag_script cfg="cfg_righi15gmd_fig10.ncl">      ancyc_lat.ncl      </diag_script>
-        <model> OBS  NIWA  reanaly  1  2000 2002  /data/ESMValTool/obs/Tier3/NIWA/ </model>
-        <model> OBS  GTO-ECV sat  1 2000 2002  /data/ESMValTool/obs/Tier3/GTO-ECV/ </model>
+        <model> OBS  NIWA  reanaly  1  2000 2002  @{OBSPATH}/Tier3/NIWA/ </model>
+        <model> OBS  GTO-ECV sat  1 2000 2002  @{OBSPATH}/Tier3/GTO-ECV/ </model>
     </diag>
 
 

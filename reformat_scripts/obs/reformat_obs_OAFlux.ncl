@@ -19,25 +19,25 @@
 ;;    Connect to ftp.whoi.edu
 ;;    Browse to /pub/science/oaflux/data_v3/monthly/turbulence
 ;;    Download and gunzip all the lh_oaflux_YYYY.nc.gz and sh_oaflux_YYYY.nc.gz
-;;    Run this script with:
-;;       ncl shortname='"'<shortname>'"'
-;;           reformat_scripts/obs/reformat_obs_OAFlux.ncl
-;;    Where <shortname> is one of
-;;       "hl" - Surface latent heat flux
-;;       "sl" - Surface sensible heat flux
+;;    Set the variable to be processed as shortname below, choosing among:
+;;      hl - Surface latent heat flux (hfls)
+;;      sl - Surface sensible heat flux (hfss)
+;;      qa - Surface sensible heat flux (huss)
+;;      ta - Near-Surface Air Temperature (tas)
+;;      ts - Surface Temperature (ts)
+;;      ws - Near-Surface Wind Speed (sfcWind)
 ;;
 ;; Caveats
-;;    Requires NCL v6.1.1
 ;;    The data type in the WHOI data set (short) is inconsistent with the
 ;;    missing_value type (float) - this produces a warning from NCL
 ;;
 ;; Modification history
-;;    20150722-righ_ma: added @reference attribute and pep8.
-;;    20150421-eval_ma: written.
+;;    20160502-A_righ_ma: repalcing input argument with hard setting to allow
+;;                        use withing namelist_reformat_obs.xml.
+;;    20150722-A_righ_ma: added @reference attribute and pep8.
+;;    20150421-A_eval_ma: written.
 ;;
 ;;#############################################################################
-
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
 
 function get_settings(res[1]:logical,
                       req_variable[1]:string)
@@ -54,12 +54,8 @@ begin
     res@attrCopy_err2err = (/"comments"/)
     res@attrCopy_var2err = (/"units"/)
 
-    res@raw_data_folder = "/nobackup/rossby17/sm_maeva/requests/" + \
-        "oafluxes/data/turbulence"
-    res@processed_data_folder = "/nobackup/rossby17/sm_maeva/" + \
-        "requests/oafluxes/processed_data"
-;;     res@raw_data_folder = "/data/ESMValTool/obs/RAW/Tier2/OAFlux/"
-;;     res@processed_data_folder = "/data/ESMValTool/obs/Tier2/OAFlux/"
+    res@raw_data_folder = getenv("ESMValTool_RAWOBSPATH") + "/Tier2/OAFlux/"
+    res@processed_data_folder = getenv("ESMValTool_OBSPATH") + "/Tier2/OAFlux/"
 
     ;; Variable specific settings
     ;; Monthly mean surface latent heat flux, positive upward"
@@ -170,35 +166,27 @@ begin
 
 end
 
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
 load "./interface_scripts/messaging.ncl"
 load "./reformat_scripts/constants.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
-    if (.not. isdefined("shortname")) then
-        dq = str_get_dq()
-        sq = str_get_sq()
-        print("Usage: ")
-        print("   ncl shortname=" + sq + dq + "<shortname>" + dq + sq +\
-              " reformat_scripts/obs/reformat_obs_OAFlux.ncl")
-        print("   Where <shortname> is one of")
-        print("   * hl - Surface latent heat flux (hfls)")
-        print("   * sl - Surface sensible heat flux (hfss)")
-        print("   * qa - Surface sensible heat flux (huss)")
-        print("   * ta - Near-Surface Air Temperature (tas)")
-        print("   * ts - Surface Temperature (ts)")
-        print("   * ws - Near-Surface Wind Speed (sfcWind)")
-        print("")
 
-        error_msg("f", diag_script, "", \
-                  "<short_name> not defined on command line")
-    end if
+    verbosity =  stringtointeger(getenv("ESMValTool_verbosity"))
+    diag_script = "reformat_obs_OAFlux.ncl"
+    enter_msg(diag_script, "", 1)
+
+    ;; Variable
+    ;;   hl - Surface latent heat flux (hfls)
+    ;;   sl - Surface sensible heat flux (hfss)
+    ;;   qa - Surface sensible heat flux (huss)
+    ;;   ta - Near-Surface Air Temperature (tas)
+    ;;   ts - Surface Temperature (ts)
+    ;;   ws - Near-Surface Wind Speed (sfcWind)
+    shortname = "hl"
 
     res = True
     res = get_settings(res, shortname)
-
-    diag_script = "reformat_obs_OAFlux.ncl"
 
     ;; Create output dir
     if (.not. isfilepresent_esmval(res@processed_data_folder)) then
@@ -377,4 +365,7 @@ begin
     end if
     fout = addfile(outobs_file, "c")
     fout->$res@vars$ = var
+
+    leave_msg(diag_script, "", 1)
+
 end

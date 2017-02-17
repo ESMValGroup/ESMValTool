@@ -1,42 +1,45 @@
 <namelist>
+<include href="./config_private.xml"/>
 <namelist_summary>
+###############################################################################
 namelist_SAMonsoon_daily.xml
 
 Description
-South Asian Monsoon diagnostics implemented from the UKMET Monsoon suite, this namelist
-is configured for daily diagnostics. See Mantis issue #9217 for details.
+South Asian Monsoon diagnostics implemented from the UKMET Monsoon suite, this
+namelist is configured for daily diagnostics
 
-Author(s)
-Ricard Levine (UKMET, Great Britain - Richard.Levine@metoffice.gov.uk)
+Authors
+Ricard Levine (UKMET, UK - Richard.Levine@metoffice.gov.uk)
 Martin Evaldsson (SMHI, Sweden - Martin.Evaldsson@smhi.se)
 
-Contributor(s)
+Contributor
 Gill Martin (UKMET, Great Britain - Gill.Martin@metoffice.gov.uk)
 
-Project(s)
+Project
 EMBRACE
 
-Reference(s)
-Sperber, K. R., et al, The Asian summer monsoon: an intercomparison of CMIP5 vs. CMIP3 simulations of the late 20th century, Clim Dyn (2013) 41:2711-2744, doi:10.1007/s00382-012-1607-6
-Lin, Jia-Lin,  et al, Subseasonal Variability Associated with Asian Summer Monsoon Simulated by 14 IPCC AR4 Coupled GCMs, J. Climate, 21, 4541-4567, doi: 10.1175/2008JCLI1816.1
-Webster, P.J. and S.Yang, Monsoon and ENSO: Selectively interactive systems, Quart. J. Roy. Meteor. Soc., 118, 877-926. (1992)
-Goswami, B. N. et al, A broad-scale circulation index for interannual variability of the Indian summer monsoon, Quart. J. Roy. Meteor. Soc., 125, 611-633 (1999)
-Wang, B. and Z. Fan, Choice of south Asian summer monsoon indices, Bull. Amer. Meteor. Soc., 80, 629-638 (1999)
-Wang, B et al, Recent change of global monsoon precipitation (1979-2008), Climate Dynamics, doi:10.1007/s00382-011-1266-z, (2011)
+References
+Sperber, K. R. et al., Clim. Dyn. 41, 2711-2744, doi:10.1007/s00382-012-1607-6 (2013)
+Lin, J.-L.  et al., J. Climate, 21, 4541-4567, doi: 10.1175/2008JCLI1816.1 (2008)
+Webster, P.J. and Yang, S., J. Roy. Meteor. Soc., 118, 877-926, doi:10.1002/qj.49711850705 (1992)
+Goswami, B. N. et al., Quart. J. Roy. Meteor. Soc., 125, 611-633, doi:10.1002/qj.49712555412 (1999)
+<!-- replace &lt; and &gt; with their HTML equivalents-->
+Wang, B. and Z. Fan, Bull. Amer. Meteor. Soc., 80, 629-638, doi:10.1175/1520-0477(1999)080&lt;0629:COSASM&gt;2.0.CO;2 (1999)
+Wang, B. et al., Clim. Dyn., 39, 1123-1135, doi:10.1007/s00382-011-1266-z (2011)cd
 
 This namelist is part of the ESMValTool
-ESMValTool project PI: Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
+###############################################################################
 </namelist_summary>
 
 <GLOBAL>
-  <wrk_dir type="path">                  ./work        </wrk_dir>
-  <plot_dir type="path">                 ./work/plots  </plot_dir>
-  <climo_dir type="path">                ./work/climo  </climo_dir>
-  <regridding_dir type="path">           ./work/regridding_tmp  </regridding_dir>
+  <wrk_dir type="path">                  @{WORKPATH}   </wrk_dir>
+  <plot_dir type="path">                 @{PLOTPATH}   </plot_dir>
+  <climo_dir type="path">                @{CLIMOPATH}  </climo_dir>
+  <regridding_dir type="path">           @{REGRPATH}   </regridding_dir>
   <write_plot_vars type="boolean">        True         </write_plot_vars>
   <max_data_filesize type="integer">      100          </max_data_filesize>
   <max_data_blocksize type="integer">     500          </max_data_blocksize>
-  <verbosity  type="integer">               2          </verbosity>
+  <verbosity  type="integer">               1          </verbosity>
   <exit_on_warning  type="boolean">       True         </exit_on_warning>
   <output_file_type>                      png          </output_file_type>
   <show_debuginfo type="boolean">         True         </show_debuginfo>
@@ -47,8 +50,8 @@ ESMValTool project PI: Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
 </GLOBAL>
 
 <MODELS>
-    <model> CMIP5_ETHZ MPI-ESM-LR day historical r1i1p1 2003 2004 /data/ESMValTool/model/ETHZ_CMIP5 </model>
-    <model> CMIP5_ETHZ MIROC5     day historical r1i1p1 2003 2004 /data/ESMValTool/model/ETHZ_CMIP5 </model>
+    <model> CMIP5_ETHZ MPI-ESM-LR day historical r1i1p1 2003 2004 @{MODELPATH}/ETHZ_CMIP5 </model>
+    <model> CMIP5_ETHZ MIROC5     day historical r1i1p1 2003 2004 @{MODELPATH}/ETHZ_CMIP5 </model>
 </MODELS>
 
 <DIAGNOSTICS>
@@ -60,8 +63,8 @@ ESMValTool project PI: Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
     <field_type>                                        T2Ds                        </field_type>
     <diag_script_cfg_dir>                              ./nml/cfg_SAMonsoon/         </diag_script_cfg_dir>
     <diag_script cfg="cfg_SAMonsoon_precip_daily.ncl">  SAMonsoon_precip_daily.ncl  </diag_script>
-    <model id="gpcp"> obs4mips GPCP-1DD L3 v1.2 2003 2004 /data/ESMValTool/obs/Tier1/ </model>
-    <model id="trmm"> OBS TRMM_3B42 sat v7 2003 2004 /data/ESMValTool/obs/Tier2/TRMM_3B42_daily </model>
+    <model id="gpcp"> obs4mips GPCP-1DD L3 v1.2 2003 2004 @{OBSPATH}/Tier1/ </model>
+    <model id="trmm"> OBS TRMM_3B42 sat v7 2003 2004 @{OBSPATH}/Tier2/TRMM_3B42_daily </model>
 </diag>
 
 <diag>
@@ -71,8 +74,8 @@ ESMValTool project PI: Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
     <field_type>                                         T2Ds                               </field_type>
     <diag_script_cfg_dir>                               ./nml/cfg_SAMonsoon/                </diag_script_cfg_dir>
     <diag_script cfg="cfg_SAMonsoon_precip_daily.ncl">   SAMonsoon_precip_propagation.ncl   </diag_script>
-    <model id="gpcp"> obs4mips GPCP-1DD L3 v1.2 2003 2004 /data/ESMValTool/obs/Tier1/ </model>
-    <model id="trmm"> OBS TRMM_3B42 sat v7 2003 2004 /data/ESMValTool/obs/Tier2/TRMM_3B42_daily </model>
+    <model id="gpcp"> obs4mips GPCP-1DD L3 v1.2 2003 2004 @{OBSPATH}/Tier1/ </model>
+    <model id="trmm"> OBS TRMM_3B42 sat v7 2003 2004 @{OBSPATH}/Tier2/TRMM_3B42_daily </model>
 </diag>
 
 </DIAGNOSTICS>

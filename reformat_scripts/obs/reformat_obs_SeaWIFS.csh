@@ -1,38 +1,40 @@
-#!/bin/csh
-#;;#############################################################################
-#;;
-#;; Tier
-#;;    Tier 2: freely available non-obs4mips datasets
-#;;
-#;; Source
-#;;    Download original files at http://oceandata.sci.gsfc.nasa.gov/SeaWiFS/Mapped/Monthly/
-#;;    Alternatively, download preprocessed SeaWiFS data at http://lgmacweb.env.uea.ac.uk/green_ocean/data/biogeochemistry/seawifs_chl.nc 
-#;;
-#;; Download and processing instructions (original SeaWiFS files)
-#;;    *) Select "9 km" and "chl", then download all files (e.g., S19972441997273.L3m_MO_CHL_chl_ocx_9km.nc)
-#;;    *  Data is missing for the following 3 time slots:
-#;;       2008032-2008060, 2008061-2008091, 2009121-2009151
-#;;       --> create symbolic links pointing to the empty file S2008001-2008031.L3m_MO_CHL_chl_ocx_9km.nc:
-#;;       ln -s S20080012008031.L3m_MO_CHL_chl_ocx_9km.nc S20080322008060.L3m_MO_CHL_chl_ocx_9km.nc
-#;;       ln -s S20080012008031.L3m_MO_CHL_chl_ocx_9km.nc S20080612008091.L3m_MO_CHL_chl_ocx_9km.nc
-#;;       ln -s S20080012008031.L3m_MO_CHL_chl_ocx_9km.nc S20091212009151.L3m_MO_CHL_chl_ocx_9km.nc
-#;;    *) Alternatively, the preprocessed SeaWiFS data can be downloaded from
-#;;       http://lgmacweb.env.uea.ac.uk/green_ocean/data/biogeochemistry/seawifs_chl.nc
-#;;       Then set variable "use_original_data" to "0" (in this script)
-#;;    *) Run this script (requires NCO, http://nco.sourceforge.net/)
-#;;
-#;; Caveats
-#;;    When processing the original SeaWiFs files, ncrename might produce the error message
-#;;    "NetCDF: Operation not allowed in data mode". The reason for this is unknown but the
-#;;    error message does not seem to have any relevant effect on the output.
-#;;
-#;; Modification history
-#;;    20151111-A_laue_ax: written.
-#;;
-#;;#############################################################################
+#!/usr/bin/env csh -eu
+###############################################################################
+## REFORMAT SCRIPT FOR THE SeaWIFS OBSERVATIONAL DATA
+###############################################################################
+##
+## Tier
+##    Tier 2: other freely-available dataset.
+##
+## Source
+##    Download original files at http://oceandata.sci.gsfc.nasa.gov/SeaWiFS/Mapped/Monthly/
+##    Alternatively, download preprocessed SeaWiFS data at 
+##    http://lgmacweb.env.uea.ac.uk/green_ocean/data/biogeochemistry/seawifs_chl.nc 
+##
+## Download and processing instructions (original SeaWiFS files)
+##    Select "9 km" and "chl", then download all files (e.g., S19972441997273.L3m_MO_CHL_chl_ocx_9km.nc)
+##    Data is missing for the following 3 time slots: 2008032-2008060, 2008061-2008091, 2009121-2009151
+##    --> create symbolic links pointing to the empty file S2008001-2008031.L3m_MO_CHL_chl_ocx_9km.nc:
+##      ln -s S20080012008031.L3m_MO_CHL_chl_ocx_9km.nc S20080322008060.L3m_MO_CHL_chl_ocx_9km.nc
+##      ln -s S20080012008031.L3m_MO_CHL_chl_ocx_9km.nc S20080612008091.L3m_MO_CHL_chl_ocx_9km.nc
+##      ln -s S20080012008031.L3m_MO_CHL_chl_ocx_9km.nc S20091212009151.L3m_MO_CHL_chl_ocx_9km.nc
+##    Alternatively, the preprocessed SeaWiFS data can be downloaded from
+##    http://lgmacweb.env.uea.ac.uk/green_ocean/data/biogeochemistry/seawifs_chl.nc
+##    Then set variable "use_original_data" to "0" (in this script)
+##    Run this script (requires NCO, http://nco.sourceforge.net/)
+##
+## Caveats
+##    When processing the original SeaWiFs files, ncrename might produce the error message
+##    "NetCDF: Operation not allowed in data mode". The reason for this is unknown but the
+##    error message does not seem to have any relevant effect on the output.
+##
+## Modification history
+##    20151111-A_laue_ax: written.
+##
+###############################################################################
 
-set inpath=/data/ESMValTool/obs/RAW/Tier2/SeaWIFS
-set outpath=/data/ESMValTool/obs/Tier2/SeaWIFS
+set inpath="${ESMValTool_RAWOBSPATH}/Tier2/SeaWIFS"
+set outpath="${ESMValTool_OBSPATH}/Tier2/SeaWIFS"
 
 # ------------------------------
 # user switch: use_original_data
@@ -45,7 +47,7 @@ set outpath=/data/ESMValTool/obs/Tier2/SeaWIFS
 set use_original_data=0
 
 if (! -d $outpath) then
-    mkdir $outpath
+    mkdir -p $outpath
 endif
 
 set outfile=$outpath/chl_monthly_ref_seawifs_reg_1997-2010.nc
@@ -109,11 +111,10 @@ ncatted -O -a period,global,a,c,"1997-2010" $outfile
 ncatted -O -a reference,global,a,c,"SeaWiFS Project, NASA Goddard Space Flight Center" $outfile 
 
 if (-e $outfile) then
-    if (-e tmp.nc) rm tmp.nc
-    rm seawifs_chl_ncks.nc
-    rm seawifs_chl_ncatted.nc
+    if (-e tmp.nc) rm -f tmp.nc
+    rm -f seawifs_chl_ncks.nc
+    rm -f seawifs_chl_ncatted.nc
     echo 'created '$outfile
 else
     echo 'error: no output written'
 endif
-

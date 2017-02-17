@@ -29,7 +29,6 @@
 ;;
 ;;#############################################################################
 
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
 load "./reformat_scripts/constants.ncl"
 
 function get_settings(res[1]:logical)
@@ -37,15 +36,10 @@ function get_settings(res[1]:logical)
 begin
 
     ;; Input/ouput/working foldesr
-;;     res@raw_data_inputfile = "/nobackup/rossby17/sm_maeva/Data/tmp/" + \
-;;         "landflux-eval/LandFluxEVAL.merged.89-05.monthly.all.nc"
-;;     res@processed_data_folder = "/nobackup/rossby17/sm_maeva/requests/" + \
-;;         "landflux-eval/processed_data"
-    res@raw_data_inputfile = "/data/ESMValTool/obs/RAW/Tier3/" + \
+    res@raw_data_inputfile = getenv("ESMValTool_RAWOBSPATH") + "/Tier3/" + \
         "LandFlux-EVAL/LandFluxEVAL.merged.89-05.monthly.all.nc"
-    res@processed_data_folder = "/data/ESMValTool/obs/Tier3/" + \
+    res@processed_data_folder = getenv("ESMValTool_OBSPATH") + "/Tier3/" + \
         "LandFlux-EVAL/"
-    res@scratch_dir = "/scratch/local/"
 
     res@variables_to_extract = (/"ET_mean",\
                                  "ET_sd"/)
@@ -151,7 +145,6 @@ begin
 
 end
 
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
 load "./interface_scripts/messaging.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 

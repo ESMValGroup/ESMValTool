@@ -2692,7 +2692,7 @@ def run_executable(string_to_execute,
                    project_info,
                    verbosity,
                    exit_on_warning,
-                   launcher_arguments=None):
+                   launcher_arguments=None,write_di=True):
     """ @brief Executes script/binary
         @param executable String pointing to the script/binary to execute
         @param project_info Current namelist in dictionary format
@@ -2703,8 +2703,9 @@ def run_executable(string_to_execute,
         Check the type of script/binary from the executable string suffix and
         execute the script/binary properly.
     """
-
-    write_data_interface(string_to_execute, project_info)
+    
+    if write_di:
+	write_data_interface(string_to_execute, project_info)
 
     suffix = os.path.splitext(string_to_execute)[1][1:]
     currLauncher = vars(launchers)[suffix + '_launcher']()

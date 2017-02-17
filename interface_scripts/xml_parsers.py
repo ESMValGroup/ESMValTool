@@ -2,11 +2,51 @@ import pdb
 import xml.sax
 import nml_tags
 import xml.dom.minidom
-from auxiliary import info
+from auxiliary import info, error
+import base64
+import re
+import os
 
 verbosity = 0
 
+class configPrivateHandler(xml.sax.handler.ContentHandler):
+	""" @brief SAX handler class for parsing the user defined configuration file
 
+	"""
+        def __init__(self):
+            self.pathCollection = {}
+	    self.ctag = []
+   	    self.ccont = {}
+            self.current_content = "" 
+
+        def startElement(self, name, attrs):
+                self.current_content = "" 
+		self.ctag.append(name)
+                self.ccont.update(attrs) 
+			
+        def characters(self, content):
+        	self.current_content += content.strip()
+		
+        def endElement(self, name):
+		if len(self.ctag) == 4:
+			if "/".join(self.ctag[-4:-1]) == "settings/pathCollection/usrpath":
+	   	    		self.ccont.update({ name : self.current_content })
+		if name == "usrpath":
+			if 'id' in self.ccont.keys():
+                                pathid = self.ccont.pop('id')
+			else:
+				pathid = hash(frozenset(self.ccont.items()))
+				pathid = base64.b64encode(str(pathid))[:8]
+			self.pathCollection[pathid] = self.ccont
+			self.ccont = {}
+		self.ctag.pop()
+
+	def getPathByID(self,pathid):
+		if pathid in self.pathCollection.keys():
+			return self.pathCollection[pathid]["path"]
+		else:
+			return None
+	
 class namelistHandler(xml.sax.handler.ContentHandler):
     """ @brief SAX handler class for parsing ESMValTool namelists
 
@@ -34,6 +74,8 @@ class namelistHandler(xml.sax.handler.ContentHandler):
         self.str = ""
         self.attributes = None
         self.id = None
+	self.include = None
+	self.conf = None
 
     def startElement(self, name, attr):
         """ @brief default SAX startElement event handler
@@ -41,6 +83,13 @@ class namelistHandler(xml.sax.handler.ContentHandler):
             @param attr default SAX startElement attribute
         """
         info("startElement: " + name, verbosity, required_verbosity=12)
+	if name == 'include':
+		self.include = attr['href']
+		self.conf = configPrivateHandler()
+     		p = xml.sax.make_parser()
+     		p.setContentHandler(self.conf)
+     		p.parse(self.include)
+
         if name in vars(nml_tags):
             self.current_tag = vars(nml_tags)[name]()
 
@@ -55,16 +104,54 @@ class namelistHandler(xml.sax.handler.ContentHandler):
 
     def characters(self, data):
         self.str = self.str + data
-
+ 
     def endElement(self, name):
         """ @brief default SAX endElement event handler
             @param name default SAX endElement argument
         """
+	def replaceAttag(tbr):
+	   pat = re.compile('@\\{..*\\}')
+           if pat.search(tbr):
+		patlist = pat.findall(tbr)
+		patlist = [item[2:-1] for item in patlist] 
+		tmp = list(set(patlist) & set(self.conf.pathCollection.keys()))
+		for t in tmp: 
+		   tbr = re.sub("@{"+t+"}", self.conf.getPathByID(t), tbr)
+	   return tbr
+ 
+
         info("endElement: " + name, verbosity, required_verbosity=12)
 
-        if name == self.current_tag.__class__.__name__:
-            self.project_info[name] = getattr(self.current_tag, 'closing_tag')(self.str, self.attributes)
-        elif name == 'namelist':
-            pass
-        else:
-            self.current_tag.add_nml_entry(name, self.str, self.attributes)
+	if self.include is not None:
+           if name == self.current_tag.__class__.__name__:
+               self.project_info[name] = getattr(self.current_tag, 'closing_tag')(replaceAttag(self.str), self.attributes)
+           elif name == 'include':
+               pass
+           elif name == 'namelist':
+               pass
+           else:
+               self.current_tag.add_nml_entry(name, replaceAttag(self.str), self.attributes)
+	else:
+           if name == self.current_tag.__class__.__name__:
+               self.project_info[name] = getattr(self.current_tag, 'closing_tag')(self.str, self.attributes)
+           elif name == 'include':
+               pass
+           elif name == 'namelist':
+               pass
+           else:
+               self.current_tag.add_nml_entry(name, self.str, self.attributes)
+	
+	
+    def endDocument(self):
+	if self.include is not None:
+		for k,v in self.conf.pathCollection.iteritems():
+			if v['type'] not in  'output':
+				if not os.path.exists(v['path']):
+					error('Path {!s} defined in {!s} does not exist'.format(v['path'],
+					      self.include))
+				#	if k in self.project_info.keys():
+				#		error('Path-ID {!s} in {!s} already used in different context. Please, choose  \
+				#		      a different Path-ID'.format(k,self.include))	
+				#	else:
+				#		self.project_info[k] = v['path']
+				os.putenv("ESMValTool_" + k, str(v['path']))

@@ -6,15 +6,13 @@
 ;; depend on the ESMValTool framework.
 ;;
 ;; Contents
-;;    function yyyyfrac_to_ut
-;;    function create_timec
-;;    procedure write_nc
-;;    procedure write_nc_profile
-;;    function process_EBAS_data
+;;    function var_attrib
+;;    function check_time_range
+;;    function time_attrib
+;;    function lat_attrib
+;;    function lon_attrib
 ;;
 ;;#############################################################################
-
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
 
 ;; Global variables/constants
 TUNITS = "days since 1950-01-01 00:00:00"

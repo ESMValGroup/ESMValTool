@@ -1,7 +1,8 @@
 <namelist>
+<include href="./config_private.xml"/>
 <namelist_summary>
 ###############################################################################
-namelist_aerosol.xml
+namelist_aerosol_EMAC.xml
 
 Description
 Master namelist for the aerosol diagnostics of the ESVMal tool. It includes
@@ -32,9 +33,9 @@ This namelist is part of the ESMValTool
   <write_plots type="boolean">        True                      </write_plots>
   <write_netcdf type="boolean">       True                      </write_netcdf>
   <force_processing type="boolean">   False                     </force_processing>
-  <wrk_dir type="path">               ./work                    </wrk_dir>
-  <plot_dir type="path">              ./work/plots/             </plot_dir>
-  <climo_dir type="path">             ./work/climo              </climo_dir>
+  <wrk_dir type="path">               @{WORKPATH}               </wrk_dir>
+  <plot_dir type="path">              @{PLOTPATH}               </plot_dir>
+  <climo_dir type="path">             @{CLIMOPATH}              </climo_dir>
   <write_plot_vars type="boolean">    True                      </write_plot_vars>
   <max_data_filesize type="integer">  100                       </max_data_filesize>
   <max_data_blocksize type="integer"> 500                       </max_data_blocksize>
@@ -46,9 +47,9 @@ This namelist is part of the ESMValTool
 
 
 <MODELS>
-   <model> EMAC   MADE-REF    1    1999 2001 /data/ESMValTool/model/EMAC/MADE-REF/    </model>
-   <model> EMAC   MADEin-REF  1    1999 2001 /data/ESMValTool/model/EMAC/MADEin-REF/  </model>
-   <model> EMAC   MADE3-REF   1    1999 2001 /data/ESMValTool/model/EMAC/MADE3-REF/   </model>
+   <model> EMAC   MADE-REF    1    1999 2001 @{MODELPATH}/EMAC/MADE-REF/    </model>
+   <model> EMAC   MADEin-REF  1    1999 2001 @{MODELPATH}/EMAC/MADEin-REF/  </model>
+   <model> EMAC   MADE3-REF   1    1999 2001 @{MODELPATH}/EMAC/MADE3-REF/   </model>
 </MODELS>
 
 
@@ -57,220 +58,243 @@ This namelist is part of the ESMValTool
 <!-- ### SIZE DISTRIBUTIONS #################################################################### -->
 
     <diag>
-        <description> Aerosol  size distributions  </description>
-        <variable_def_dir>         ./variable_defs/    </variable_def_dir>
-        <variable>                   conccnmode        </variable>
-        <variable>                   diamcnmode        </variable>
-        <variable>                   cl                </variable>
-        <field_type>                 T3I               </field_type>
-        <diag_script_cfg_dir>      ./nml/cfg_aerosol/EMAC/  </diag_script_cfg_dir>
-        <diag_script cfg="cfg_aerosol_profiles_LACE.ncl"> aerosol_profiles.ncl   </diag_script>
+        <description>         Aerosol  size distributions </description>
+        <variable_def_dir>    ./variable_defs/            </variable_def_dir>
+        <variable>            conccnmode                  </variable>
+        <variable>            diamcnmode                  </variable>
+        <variable>            cl                          </variable>
+        <field_type>          T3I                         </field_type>
+        <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/     </diag_script_cfg_dir>
+
+        <diag_script cfg="cfg_aerosol_profiles_LACE.ncl"> aerosol_profiles.ncl  </diag_script>
     </diag>
 
     <diag>
-        <description> Aerosol  size distributions  </description>
-        <variable_def_dir>         ./variable_defs/    </variable_def_dir>
-        <variable>                   conccnmode        </variable>
-        <variable>                   diamcnmode        </variable>
-        <field_type>                 T2Is              </field_type>
-        <diag_script_cfg_dir>      ./nml/cfg_aerosol/EMAC/  </diag_script_cfg_dir>
-        <diag_script cfg="cfg_aerosol_profiles_Putaud.ncl"> aerosol_profiles.ncl   </diag_script>
-        <diag_script cfg="cfg_aerosol_profiles_Melpitz.ncl"> aerosol_profiles.ncl   </diag_script>
+        <description>         Aerosol  size distributions </description>
+        <variable_def_dir>    ./variable_defs/            </variable_def_dir>
+        <variable>            conccnmode                  </variable>
+        <variable>            diamcnmode                  </variable>
+        <field_type>          T2Is                        </field_type>
+        <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/     </diag_script_cfg_dir>
+
+        <diag_script cfg="cfg_aerosol_profiles_Putaud.ncl">  aerosol_profiles.ncl  </diag_script>
+        <diag_script cfg="cfg_aerosol_profiles_Melpitz.ncl"> aerosol_profiles.ncl  </diag_script>
     </diag>
 
 <!-- ### VERTICAL PROFILES ##################################################################### -->
 
     <diag>
-        <description> Vertical profile of number concentration  </description>
-        <variable_def_dir>         ./variable_defs/    </variable_def_dir>
-        <variable>                   conccnSTPd3       </variable>
-        <variable>                   cl                </variable>
-        <field_type>                 T3I               </field_type>
-        <diag_script_cfg_dir>      ./nml/cfg_aerosol/EMAC/  </diag_script_cfg_dir>
-        <diag_script cfg="cfg_aerosol_profiles_UCN-Pacific.ncl"> aerosol_profiles.ncl   </diag_script>
+        <description>         Vertical profile of number concentration </description>
+        <variable_def_dir>    ./variable_defs/                         </variable_def_dir>
+        <variable>            conccnSTPd3                              </variable>
+        <variable>            cl                                       </variable>
+        <field_type>          T3I                                      </field_type>
+        <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/                  </diag_script_cfg_dir>
+
+        <diag_script cfg="cfg_aerosol_profiles_UCN-Pacific.ncl"> aerosol_profiles.ncl  </diag_script>
     </diag>
 
     <diag>
-        <description> Vertical profile of number concentration  </description>
-        <variable_def_dir>         ./variable_defs/    </variable_def_dir>
-        <variable>                   conccnSTPd5       </variable>
-        <variable>                   cl                </variable>
-        <field_type>                 T3I               </field_type>
-        <diag_script_cfg_dir>      ./nml/cfg_aerosol/EMAC/  </diag_script_cfg_dir>
-        <diag_script cfg="cfg_aerosol_profiles_INCA.ncl"> aerosol_profiles.ncl   </diag_script>
+        <description>         Vertical profile of number concentration </description>
+        <variable_def_dir>    ./variable_defs/                         </variable_def_dir>
+        <variable>            conccnSTPd5                              </variable>
+        <variable>            cl                                       </variable>
+        <field_type>          T3I                                      </field_type>
+        <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/                  </diag_script_cfg_dir>
+
+        <diag_script cfg="cfg_aerosol_profiles_INCA.ncl"> aerosol_profiles.ncl  </diag_script>
     </diag>
 
     <diag>
-        <description> Vertical profile of number concentration  </description>
-        <variable_def_dir>         ./variable_defs/    </variable_def_dir>
-        <variable>                   conccnSTPd14      </variable>
-        <variable>                   cl                </variable>
-        <field_type>                 T3I               </field_type>
-        <diag_script_cfg_dir>      ./nml/cfg_aerosol/EMAC/  </diag_script_cfg_dir>
-        <diag_script cfg="cfg_aerosol_profiles_INCA.ncl"> aerosol_profiles.ncl   </diag_script>
+        <description>         Vertical profile of number concentration </description>
+        <variable_def_dir>    ./variable_defs/                         </variable_def_dir>
+        <variable>            conccnSTPd14                             </variable>
+        <variable>            cl                                       </variable>
+        <field_type>          T3I                                      </field_type>
+        <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/                  </diag_script_cfg_dir>
+
+        <diag_script cfg="cfg_aerosol_profiles_INCA.ncl"> aerosol_profiles.ncl  </diag_script>
     </diag>
 
     <diag>
-        <description> Vertical profile of number concentration  </description>
-        <variable_def_dir>         ./variable_defs/    </variable_def_dir>
-        <variable>                   conccnSTPd120     </variable>
-        <variable>                   cl                </variable>
-        <field_type>                 T3I               </field_type>
-        <diag_script_cfg_dir>      ./nml/cfg_aerosol/EMAC/  </diag_script_cfg_dir>
-        <diag_script cfg="cfg_aerosol_profiles_INCA.ncl"> aerosol_profiles.ncl   </diag_script>
+        <description>         Vertical profile of number concentration </description>
+        <variable_def_dir>    ./variable_defs/                         </variable_def_dir>
+        <variable>            conccnSTPd120                            </variable>
+        <variable>            cl                                       </variable>
+        <field_type>          T3I                                      </field_type>
+        <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/                  </diag_script_cfg_dir>
+
+        <diag_script cfg="cfg_aerosol_profiles_INCA.ncl"> aerosol_profiles.ncl  </diag_script>
     </diag>
 
     <diag>
-        <description> Vertical profile of BC mass concentration  </description>
-        <variable_def_dir>         ./variable_defs/    </variable_def_dir>
-        <variable>                   mmrbc             </variable>
-        <variable>                   cl                </variable>
-        <field_type>                 T3I               </field_type>
-        <diag_script_cfg_dir>      ./nml/cfg_aerosol/EMAC/  </diag_script_cfg_dir>
-        <diag_script cfg="cfg_aerosol_profiles_CONCERT.ncl"> aerosol_profiles.ncl   </diag_script>
-        <diag_script cfg="cfg_aerosol_profiles_Texas.ncl"> aerosol_profiles.ncl   </diag_script>
-        <diag_script cfg="cfg_aerosol_profiles_CR-AVE.ncl"> aerosol_profiles.ncl   </diag_script>
-        <diag_script cfg="cfg_aerosol_profiles_TC4.ncl"> aerosol_profiles.ncl   </diag_script>
-        <diag_script cfg="cfg_aerosol_profiles_HIPPO.ncl"> aerosol_profiles.ncl   </diag_script>
-        <diag_script cfg="cfg_aerosol_profiles_SALTRACE.ncl"> aerosol_profiles.ncl   </diag_script>
-        <diag_script cfg="cfg_aerosol_profiles_DC3.ncl"> aerosol_profiles.ncl   </diag_script>
+        <description>         Vertical profile of BC mass concentration </description>
+        <variable_def_dir>    ./variable_defs/                          </variable_def_dir>
+        <variable>            mmrbc                                     </variable>
+        <variable>            cl                                        </variable>
+        <field_type>          T3I                                       </field_type>
+        <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/                   </diag_script_cfg_dir>
+
+        <diag_script cfg="cfg_aerosol_profiles_CONCERT.ncl">  aerosol_profiles.ncl  </diag_script>
+        <diag_script cfg="cfg_aerosol_profiles_Texas.ncl">    aerosol_profiles.ncl  </diag_script>
+        <diag_script cfg="cfg_aerosol_profiles_CR-AVE.ncl">   aerosol_profiles.ncl  </diag_script>
+        <diag_script cfg="cfg_aerosol_profiles_TC4.ncl">      aerosol_profiles.ncl  </diag_script>
+        <diag_script cfg="cfg_aerosol_profiles_HIPPO.ncl">    aerosol_profiles.ncl  </diag_script>
+        <diag_script cfg="cfg_aerosol_profiles_SALTRACE.ncl"> aerosol_profiles.ncl  </diag_script>
+        <diag_script cfg="cfg_aerosol_profiles_DC3.ncl">      aerosol_profiles.ncl  </diag_script>
     </diag>
 
     <diag>
-        <description> Vertical profile of aerosol mass concentration  </description>
-        <variable_def_dir>         ./variable_defs/    </variable_def_dir>
-        <variable>                   mmraer            </variable>
-        <variable>                   cl                </variable>
-        <field_type>                 T3I               </field_type>
-        <diag_script_cfg_dir>      ./nml/cfg_aerosol/EMAC/  </diag_script_cfg_dir>
-        <diag_script cfg="cfg_aerosol_profiles_Texas.ncl"> aerosol_profiles.ncl   </diag_script>
+        <description>         Vertical profile of aerosol mass concentration </description>
+        <variable_def_dir>    ./variable_defs/                               </variable_def_dir>
+        <variable>            mmraer                                         </variable>
+        <variable>            cl                                             </variable>
+        <field_type>          T3I                                            </field_type>
+        <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/                        </diag_script_cfg_dir>
+
+        <diag_script cfg="cfg_aerosol_profiles_Texas.ncl"> aerosol_profiles.ncl  </diag_script>
     </diag>
 
     <diag>
-        <description> Vertical profile of BC-free aerosol mass concentration  </description>
-        <variable_def_dir>         ./variable_defs/    </variable_def_dir>
-        <variable>                   mmrbcfree         </variable>
-        <variable>                   cl                </variable>
-        <field_type>                 T3I               </field_type>
-        <diag_script_cfg_dir>      ./nml/cfg_aerosol/EMAC/  </diag_script_cfg_dir>
-        <diag_script cfg="cfg_aerosol_profiles_CIRRUS.ncl"> aerosol_profiles.ncl   </diag_script>
+        <description>         Vertical profile of BC-free aerosol mass concentration </description>
+        <variable_def_dir>    ./variable_defs/                                       </variable_def_dir>
+        <variable>            mmrbcfree                                              </variable>
+        <variable>            cl                                                     </variable>
+        <field_type>          T3I                                                    </field_type>
+        <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/                                </diag_script_cfg_dir>
+
+        <diag_script cfg="cfg_aerosol_profiles_CIRRUS.ncl"> aerosol_profiles.ncl  </diag_script>
     </diag>
 
 <!-- ### STATION DATA ########################################################################## -->
 
     <diag>
-        <description> Surface-level concentration of SO4  </description>
-        <variable_def_dir>         ./variable_defs/    </variable_def_dir>
-        <variable>                   sconcso4          </variable>
-        <field_type>                 T2Ms              </field_type>
-        <diag_script_cfg_dir>      ./nml/cfg_aerosol/EMAC/  </diag_script_cfg_dir>
-        <diag_script cfg="cfg_aerosol_stations_CASTNET.ncl"> aerosol_stations.ncl   </diag_script>
-        <diag_script cfg="cfg_aerosol_stations_EANET.ncl">   aerosol_stations.ncl   </diag_script>
-        <diag_script cfg="cfg_aerosol_stations_EMEP.ncl">    aerosol_stations.ncl   </diag_script>
-        <diag_script cfg="cfg_aerosol_stations_IMPROVE.ncl"> aerosol_stations.ncl   </diag_script>
+        <description>         Surface-level concentration of SO4 </description>
+        <variable_def_dir>    ./variable_defs/                   </variable_def_dir>
+        <variable>            sconcso4                           </variable>
+        <field_type>          T2Ms                               </field_type>
+        <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/            </diag_script_cfg_dir>
+
+        <diag_script cfg="cfg_aerosol_stations_CASTNET.ncl"> aerosol_stations.ncl  </diag_script>
+        <diag_script cfg="cfg_aerosol_stations_EANET.ncl">   aerosol_stations.ncl  </diag_script>
+        <diag_script cfg="cfg_aerosol_stations_EMEP.ncl">    aerosol_stations.ncl  </diag_script>
+        <diag_script cfg="cfg_aerosol_stations_IMPROVE.ncl"> aerosol_stations.ncl  </diag_script>
     </diag>
     
     <diag>
-        <description> Surface-level concentration of NO3  </description>
-        <variable_def_dir>         ./variable_defs/    </variable_def_dir>
-        <variable>                   sconcno3          </variable>
-        <field_type>                 T2Ms              </field_type>
-        <diag_script_cfg_dir>      ./nml/cfg_aerosol/EMAC/  </diag_script_cfg_dir>
-        <diag_script cfg="cfg_aerosol_stations_CASTNET.ncl"> aerosol_stations.ncl   </diag_script>
-        <diag_script cfg="cfg_aerosol_stations_EANET.ncl">   aerosol_stations.ncl   </diag_script>
-        <diag_script cfg="cfg_aerosol_stations_EMEP.ncl">    aerosol_stations.ncl   </diag_script>
-        <diag_script cfg="cfg_aerosol_stations_IMPROVE.ncl"> aerosol_stations.ncl   </diag_script>
+        <description>         Surface-level concentration of NO3 </description>
+        <variable_def_dir>    ./variable_defs/                   </variable_def_dir>
+        <variable>            sconcno3                           </variable>
+        <field_type>          T2Ms                               </field_type>
+        <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/            </diag_script_cfg_dir>
+
+        <diag_script cfg="cfg_aerosol_stations_CASTNET.ncl"> aerosol_stations.ncl  </diag_script>
+        <diag_script cfg="cfg_aerosol_stations_EANET.ncl">   aerosol_stations.ncl  </diag_script>
+        <diag_script cfg="cfg_aerosol_stations_EMEP.ncl">    aerosol_stations.ncl  </diag_script>
+        <diag_script cfg="cfg_aerosol_stations_IMPROVE.ncl"> aerosol_stations.ncl  </diag_script>
     </diag>
     
     <diag>
-        <description> Surface-level concentration of NH4  </description>
-        <variable_def_dir>         ./variable_defs/    </variable_def_dir>
-        <variable>                   sconcnh4          </variable>
-        <field_type>                 T2Ms              </field_type>
-        <diag_script_cfg_dir>      ./nml/cfg_aerosol/EMAC/  </diag_script_cfg_dir>
-        <diag_script cfg="cfg_aerosol_stations_CASTNET.ncl"> aerosol_stations.ncl   </diag_script>
-        <diag_script cfg="cfg_aerosol_stations_EANET.ncl">   aerosol_stations.ncl   </diag_script>
-        <diag_script cfg="cfg_aerosol_stations_EMEP.ncl">    aerosol_stations.ncl   </diag_script>
-        <diag_script cfg="cfg_aerosol_stations_IMPROVE.ncl"> aerosol_stations.ncl   </diag_script>
+        <description>         Surface-level concentration of NH4 </description>
+        <variable_def_dir>    ./variable_defs/                   </variable_def_dir>
+        <variable>            sconcnh4                           </variable>
+        <field_type>          T2Ms                               </field_type>
+        <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/            </diag_script_cfg_dir>
+
+        <diag_script cfg="cfg_aerosol_stations_CASTNET.ncl"> aerosol_stations.ncl  </diag_script>
+        <diag_script cfg="cfg_aerosol_stations_EANET.ncl">   aerosol_stations.ncl  </diag_script>
+        <diag_script cfg="cfg_aerosol_stations_EMEP.ncl">    aerosol_stations.ncl  </diag_script>
+        <diag_script cfg="cfg_aerosol_stations_IMPROVE.ncl"> aerosol_stations.ncl  </diag_script>
     </diag>
     
     <diag>
-        <description> Surface-level concentration of BC  </description>
-        <variable_def_dir>         ./variable_defs/   </variable_def_dir>
-        <variable>                   sconcbc          </variable>
-        <field_type>                 T2Ms             </field_type>
-        <diag_script_cfg_dir>      ./nml/cfg_aerosol/EMAC/ </diag_script_cfg_dir>
-        <diag_script cfg="cfg_aerosol_stations_IMPROVE.ncl"> aerosol_stations.ncl   </diag_script>
+        <description>         Surface-level concentration of BC </description>
+        <variable_def_dir>    ./variable_defs/                  </variable_def_dir>
+        <variable>            sconcbc                           </variable>
+        <field_type>          T2Ms                              </field_type>
+        <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/           </diag_script_cfg_dir>
+
+        <diag_script cfg="cfg_aerosol_stations_IMPROVE.ncl"> aerosol_stations.ncl  </diag_script>
     </diag>
     
     <diag>
-        <description> Surface-level concentration of POM  </description>
-        <variable_def_dir>          ./variable_defs/   </variable_def_dir>
-        <variable>                    sconcoa          </variable>
-        <field_type>                  T2Ms             </field_type>
-        <diag_script_cfg_dir>       ./nml/cfg_aerosol/EMAC/ </diag_script_cfg_dir>
-        <diag_script cfg="cfg_aerosol_stations_IMPROVE.ncl"> aerosol_stations.ncl   </diag_script>
+        <description>         Surface-level concentration of POM </description>
+        <variable_def_dir>    ./variable_defs/                   </variable_def_dir>
+        <variable>            sconcoa                            </variable>
+        <field_type>          T2Ms                               </field_type>
+        <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/            </diag_script_cfg_dir>
+
+        <diag_script cfg="cfg_aerosol_stations_IMPROVE.ncl"> aerosol_stations.ncl  </diag_script>
     </diag>
     
     <diag>
-        <description> Surface-level concentration of PM10  </description>
-        <variable_def_dir>        ./variable_defs/     </variable_def_dir>
-        <variable>                  sconcpm10          </variable>
-        <field_type>                T2Ms               </field_type>
-        <diag_script_cfg_dir>     ./nml/cfg_aerosol/EMAC/   </diag_script_cfg_dir>
-        <diag_script cfg="cfg_aerosol_stations_EMEP.ncl">    aerosol_stations.ncl   </diag_script>
-        <diag_script cfg="cfg_aerosol_stations_IMPROVE.ncl"> aerosol_stations.ncl   </diag_script>
+        <description>         Surface-level concentration of PM10 </description>
+        <variable_def_dir>    ./variable_defs/                    </variable_def_dir>
+        <variable>            sconcpm10                           </variable>
+        <field_type>          T2Ms                                </field_type>
+        <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/             </diag_script_cfg_dir>
+
+        <diag_script cfg="cfg_aerosol_stations_EMEP.ncl">    aerosol_stations.ncl  </diag_script>
+        <diag_script cfg="cfg_aerosol_stations_IMPROVE.ncl"> aerosol_stations.ncl  </diag_script>
     </diag>
     
     <diag>
-        <description> Surface-level concentration of PM2.5  </description>
-        <variable_def_dir>        ./variable_defs/     </variable_def_dir>
-        <variable>                  sconcpm2p5         </variable>
-        <field_type>                T2Ms               </field_type>
-        <diag_script_cfg_dir>     ./nml/cfg_aerosol/EMAC/   </diag_script_cfg_dir>
-        <diag_script cfg="cfg_aerosol_stations_EMEP.ncl">    aerosol_stations.ncl   </diag_script>
-        <diag_script cfg="cfg_aerosol_stations_IMPROVE.ncl"> aerosol_stations.ncl   </diag_script>
+        <description>         Surface-level concentration of PM2.5 </description>
+        <variable_def_dir>    ./variable_defs/                     </variable_def_dir>
+        <variable>            sconcpm2p5                           </variable>
+        <field_type>          T2Ms                                 </field_type>
+        <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/              </diag_script_cfg_dir>
+
+        <diag_script cfg="cfg_aerosol_stations_EMEP.ncl">    aerosol_stations.ncl  </diag_script>
+        <diag_script cfg="cfg_aerosol_stations_IMPROVE.ncl"> aerosol_stations.ncl  </diag_script>
     </diag>
     
     <diag>
-        <description> Aerosol optical depth at 550 nm  </description>
-        <variable_def_dir>        ./variable_defs/     </variable_def_dir>
-        <variable>                  od550aer          </variable>
-        <field_type>                T2Ms               </field_type>
-        <diag_script_cfg_dir>     ./nml/cfg_aerosol/EMAC/   </diag_script_cfg_dir>
-        <diag_script cfg="cfg_aerosol_stations_AERONET.ncl"> aerosol_stations.ncl    </diag_script>
+        <description>         Aerosol optical depth at 550 nm </description>
+        <variable_def_dir>    ./variable_defs/                </variable_def_dir>
+        <variable>            od550aer                        </variable>
+        <field_type>          T2Ms                            </field_type>
+        <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/         </diag_script_cfg_dir>
+
+        <diag_script cfg="cfg_aerosol_stations_AERONET.ncl"> aerosol_stations.ncl  </diag_script>
     </diag>
 
 <!-- ### SATELLITE DATA ######################################################################## -->
 
     <diag>
-        <description> AOD at 550 nm versus satellite (MODIS)  </description>
-        <variable_def_dir>        ./variable_defs/     </variable_def_dir>
-        <variable>                  od550aer           </variable>
-        <field_type>                T2Ms               </field_type>
-        <diag_script_cfg_dir>     ./nml/cfg_aerosol/EMAC/   </diag_script_cfg_dir>
-        <diag_script cfg="cfg_aerosol_satellite_MODIS.ncl">       aerosol_satellite.ncl   </diag_script>
-        <model> obs4mips  MODIS  L3     C5           2001 2012  /data/ESMValTool/obs/Tier1 </model>
+        <description>         AOD at 550 nm versus satellite (MODIS) </description>
+        <variable_def_dir>    ./variable_defs/                       </variable_def_dir>
+        <variable>             od550aer                              </variable>
+        <field_type>           T2Ms                                  </field_type>
+        <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/                </diag_script_cfg_dir>
+
+        <model> obs4mips  MODIS  L3     C5           2001 2012  @{OBSPATH}/Tier1 </model>
+
+        <diag_script cfg="cfg_aerosol_satellite_MODIS.ncl"> aerosol_satellite.ncl  </diag_script>
     </diag>
 
     <diag>
-        <description> AOD at 550 nm versus satellite (MISR)  </description>
-        <variable_def_dir>        ./variable_defs/     </variable_def_dir>
-        <variable>                  od550aer           </variable>
-        <field_type>                T2Ms               </field_type>
-        <diag_script_cfg_dir>     ./nml/cfg_aerosol/EMAC/   </diag_script_cfg_dir>
-        <diag_script cfg="cfg_aerosol_satellite_MISR.ncl">        aerosol_satellite.ncl   </diag_script>
-        <model> obs4mips  MISR   L3     F12_0022     2001 2012  /data/ESMValTool/obs/Tier1 </model>
+        <description>         AOD at 550 nm versus satellite (MISR) </description>
+        <variable_def_dir>    ./variable_defs/                      </variable_def_dir>
+        <variable>            od550aer                              </variable>
+        <field_type>          T2Ms                                  </field_type>
+        <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/               </diag_script_cfg_dir>
+
+        <model> obs4mips  MISR   L3     F12_0022     2001 2012  @{OBSPATH}/Tier1 </model>
+
+        <diag_script cfg="cfg_aerosol_satellite_MISR.ncl"> aerosol_satellite.ncl  </diag_script>
     </diag>
 
     <diag>
-        <description> AOD at 550 nm versus satellite (ESACCI-AEROSOL)  </description>
-        <variable_def_dir>        ./variable_defs/     </variable_def_dir>
-        <variable>                  od550aer           </variable>
-        <field_type>                T2Ms               </field_type>
-        <diag_script_cfg_dir>     ./nml/cfg_aerosol/EMAC/   </diag_script_cfg_dir>
-        <diag_script cfg="cfg_aerosol_satellite_ESACCI-AEROSOL.ncl">        aerosol_satellite.ncl   </diag_script>
-	<model>  OBS         ESACCI-AEROSOL   sat   SU-v4.2   1998  2011  /data/ESMValTool/obs/Tier2/ESACCI-AEROSOL </model>
+        <description>         AOD at 550 nm versus satellite (ESACCI-AEROSOL) </description>
+        <variable_def_dir>    ./variable_defs/                                </variable_def_dir>
+        <variable>            od550aer                                        </variable>
+        <field_type>          T2Ms                                            </field_type>
+        <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/                         </diag_script_cfg_dir>
+
+	<model>  OBS  ESACCI-AEROSOL   sat   SU-v4.21   1997  2011  @{OBSPATH}/Tier2/ESACCI-AEROSOL </model>
+
+        <diag_script cfg="cfg_aerosol_satellite_ESACCI-AEROSOL.ncl"> aerosol_satellite.ncl  </diag_script>
     </diag>
 
 </DIAGNOSTICS>

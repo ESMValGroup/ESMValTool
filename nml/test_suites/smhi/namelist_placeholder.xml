@@ -1,15 +1,22 @@
 <namelist>
 <namelist_summary>
-========================================================================
-DESCRIPTION: A test namelist while working on the Atmosphere-only South
-             Asian Monsoon diagnostics (Mantis issue #9217)
+###############################################################################
+namelist_placeholder.xml
 
-AUTHORS: Martin Evaldsson (Martin.Evaldsson@smhi.se)
+Description
+A test namelist while working on the Atmosphere-only South-Asian Monsoon
+diagnostics (Mantis issue #9217)
 
-NOTES: This namelist is part of the ESMValTool
-       ESMValTool PIs EMBRACE: Klaus Wyser (SMHI, Sweden),
-                               Veronika Eyring  (DLR, Germany)
-========================================================================
+Author
+Martin Evaldsson (SMHI, Sweden - martin.evaldsson@smhi.se)
+
+Project
+EMBRACE
+
+Reference
+
+This namelist is part of the ESMValTool
+###############################################################################
 </namelist_summary>
 
 <GLOBAL>

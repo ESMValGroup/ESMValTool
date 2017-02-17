@@ -29,8 +29,12 @@ begin
     ;; Tier
     TIER = 2
 
+    ;; Input dir
+    ;; (not needed)
+
     ;; Output dir (CMOR-ized data)
-    OUTDIR = "/data/ESMValTool/obs/Tier" + TIER + "/" + OBSNAME + "/"
+    OUTDIR = getenv("ESMValTool_OBSPATH") + "/Tier" + \
+        TIER + "/" + OBSNAME + "/"
 
     ;; Field
     FIELD = "T0M"
@@ -70,7 +74,6 @@ begin
 
 end
 
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
 load "./interface_scripts/messaging.ncl"
 load "./reformat_scripts/constants.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
@@ -78,8 +81,9 @@ load "./diag_scripts/lib/ncl/statistics.ncl"
 
 begin
 
-    verbosity = 1
+    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
     diag_script = "reformat_obs_LACE.ncl"
+    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent(OUTDIR)) then
@@ -229,6 +233,8 @@ begin
     ;; Loop over regions
     do rr = 0, NREGIONS - 1
 
+        info_output("Processing region " + REGIONS(rr), verbosity, 1)
+
         output = OUTPUT
 
         ;; Loop over cases
@@ -303,5 +309,7 @@ begin
 
         delete(output)
     end do
+
+    leave_msg(diag_script, "", 1)
 
 end

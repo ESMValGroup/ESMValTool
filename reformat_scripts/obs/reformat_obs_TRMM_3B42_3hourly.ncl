@@ -1,6 +1,7 @@
 ;;#############################################################################
 ;; REFORMAT SCRIPT FOR TRMM OBSERVATIONAL DATA
 ;;#############################################################################
+;;
 ;; Full name of data set
 ;;    TRMM_3B42 Version 7: TRMM 3-Hourly 0.25 deg.
 ;;    TRMM and Others Rainfall Estimate Data 
@@ -41,17 +42,21 @@
 ;;
 ;; ############################################################################
 
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
+load "./interface_scripts/messaging.ncl"
 load "./reformat_scripts/constants.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-   inpath = "/data/ESMValTool/obs/RAW/Tier2/TRMM_3B42_3hourly/"
-   outpath = "/data/ESMValTool/obs/Tier2/TRMM_3B42_3hourly/"
+    verbosity =  stringtointeger(getenv("ESMValTool_verbosity"))
+    diag_script = "reformat_obs_TRMM_3B42_3hourly.ncl"
+    enter_msg(diag_script, "", 1)
 
-   YEAR1 = 2004  ; 2000
-   YEAR2 = 2004  ; 2014
+    inpath = getenv("ESMValTool_RAWOBSPATH") + "/Tier2/TRMM_3B42_3hourly/"
+    outpath = getenv("ESMValTool_OBSPATH") + "/Tier2/TRMM_3B42_3hourly/"
+
+    YEAR1 = 2004  ; 2000
+    YEAR2 = 2004  ; 2014
 
     ;; Create output dir
     if (.not.isfilepresent(outpath)) then
@@ -96,7 +101,7 @@ begin
             fname = fname + ".HDF.Z"
         end if
 
-        print ("*** "+ fname + " ***")
+        info_output("*** "+ fname + " ***", verbosity, 1)
 
         tmpfile = "./temp.hdf"
         system("gzip -dc <" + fname + " >" + tmpfile)
@@ -247,5 +252,7 @@ begin
     delete(msk)
 
     system ("rm " + tmpfile)
+
+    leave_msg(diag_script, "", 1)
 
 end

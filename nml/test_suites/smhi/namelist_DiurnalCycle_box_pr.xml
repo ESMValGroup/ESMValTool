@@ -1,21 +1,22 @@
 <namelist>
 <namelist_summary>
-namelist_DiurnalCycle_box_pr.xml
+###############################################################################
+namelist_DiurnalCycle_box_box_pr.xml
 
 Description
 Computes mean diurnal cycle of precipitation over specific boxes
-and seasons.
+and seasons
 
-Author(s)
+Authors
 Catherine Rio (LMD, France - catherine.rio@lmd.jussieu.fr)
 
-Contributor(s)
-
-Reference(s)
+Project
+EMBRACE
 
 This namelist is part of the ESMValTool
-ESMValTool project PI: Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
+###############################################################################
 </namelist_summary>
+
 <GLOBAL>
     <write_plots type="boolean">                            True      </write_plots>
     <write_netcdf type="boolean">                           True      </write_netcdf>

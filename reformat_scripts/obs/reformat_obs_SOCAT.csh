@@ -1,29 +1,33 @@
-#!/bin/csh
-#;;#############################################################################
-#;;
-#;; Tier
-#;;    Tier 2: freely available non-obs4mips datasets
-#;;
-#;; Source
-#;;    Download at
-#;;    http://cdiac.ornl.gov/ftp/oceans/SOCATv2/SOCATv2_Gridded_Dat/SOCAT_tracks_gridded_monthly_v2.nc.zip
-#;;
-#;; Download and processing instructions
-#;;    *) Download data and unpack zip file (unzip SOCAT_tracks_gridded_monthly_v2.nc.zip) 
-#;;    *) Run this script (requires NCO, http://nco.sourceforge.net/)
-#;;
-#;; Caveats
-#;;
-#;; Modification history
-#;;    20151111-A_laue_ax: written.
-#;;
-#;;#############################################################################
+#!/usr/bin/env csh -eu
+###############################################################################
+## REFORMAT SCRIPT FOR THE SeaWIFS OBSERVATIONAL DATA
+###############################################################################
+##
+## Tier
+##    Tier 2: other freely-available dataset.
+##
+## Source
+##    http://cdiac.ornl.gov/ftp/oceans/SOCATv2/SOCATv2_Gridded_Dat/SOCAT_tracks_gridded_monthly_v2.nc.zip
+##
+## Last access
+##
+## Download and processing instructions
+##    Download data and unpack zip file 
+##    (unzip SOCAT_tracks_gridded_monthly_v2.nc.zip) 
+##    Run this script (requires NCO, http://nco.sourceforge.net/)
+##
+## Caveats
+##
+## Modification history
+##    20151111-A_laue_ax: written.
+##
+###############################################################################
 
-set inpath=/data/ESMValTool/obs/RAW/Tier2/SOCAT
-set outpath=/data/ESMValTool/obs/Tier2/SOCAT
+set inpath="${ESMValTool_RAWOBSPATH}/Tier2/SOCAT"
+set outpath="${ESMValTool_OBSPATH}/Tier2/SOCAT"
 
 if (! -d $outpath) then
-    mkdir $outpath
+    mkdir -p $outpath
 endif
 
 set infile=$inpath/SOCAT_tracks_gridded_monthly_v2.nc

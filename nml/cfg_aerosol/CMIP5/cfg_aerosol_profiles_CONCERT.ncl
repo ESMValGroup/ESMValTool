@@ -8,7 +8,7 @@ diag_script_info@campaign = "CONCERT"
 diag_script_info@styleset = "CMIP5"
 
 ; Path to campaign data
-diag_script_info@datapath = "/data/ESMValTool/obs/Tier3/"+\
+diag_script_info@datapath = getenv("ESMValTool_OBSPATH") + "/Tier3/"+\
                             diag_script_info@campaign
 
 ; Cloud cover threshold (%)

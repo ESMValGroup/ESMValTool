@@ -36,11 +36,12 @@ begin
     TIER = 3
 
     ;; Input dir (raw data)
-    INDIR = "/data/ESMValTool/obs/RAW/Tier" + \
+    INDIR = getenv("ESMValTool_RAWOBSPATH") + "/Tier" + \
         TIER + "/" + OBSNAME + "/"
 
     ;; Output dir (CMOR-ized data)
-    OUTDIR = "/data/ESMValTool/obs/Tier" + TIER + "/" + OBSNAME + "/"
+    OUTDIR = getenv("ESMValTool_OBSPATH") + "/Tier" + \
+        TIER + "/" + OBSNAME + "/"
 
     ;; Field
     FIELD = "T2Ms"
@@ -51,10 +52,14 @@ begin
 
 end
 
-;;load "./reformat_scripts/constants.ncl"
+load "./interface_scripts/messaging.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
+
+    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    diag_script = "reformat_obs_UWisc.ncl"
+    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent(OUTDIR)) then
@@ -64,7 +69,7 @@ begin
     ;; Loop over years
     do yr = YEAR1, YEAR2
        fname = INDIR + "UWisc_LWPMEAN_" + yr + "_v2.nc"
-       print ("*** "+ fname + " ***")
+       info_output("*** "+ fname + " ***", verbosity, 1)
 
        f = addfile(fname, "r")
        lwp = (/f->LWP/)
@@ -157,6 +162,8 @@ begin
     end do
 
     delete(time)
+
+    leave_msg(diag_script, "", 1)
 
 end
 

@@ -1,36 +1,39 @@
 <namelist>
+<include href="./config_private.xml"/>
 <namelist_summary>
-namelist_catchment_analysis_val.xml
+###############################################################################
+namelist_runoff_et.xml
 
 Description
-namelist_runoff_et.xml is the master namelist for the runoff and ET diagnostics
-of the ESMVal tool. The diagnostics calculates water balance components for
-different catchments and compares the results against observations
+Namelist for the runoff and ET diagnostics. The diagnostics calculates water
+balance components for different catchments and compares the results against
+observations
 
-Author(s)
+Authors
 Stefan Hagemann (MPI, Germany - stefan.hagemann@mpimet.mpg.de)
 Alexander Loew (LMU, Germany - alexander.loew@lmu.de)
 
-Contributor(s)
+Project
+EMBRACE
 
-Reference(s)
-Dümenil Gates, L., S. Hagemann and C. Golz, 2000:  Observed historical discharge data from major rivers for climate model validation. Max Planck Institute for Meteorology Report 307, Hamburg , Germany.
-
-Hagemann, S., A. Loew, A. Andersson, 2013: Combined evaluation of MPI-ESM land surface water and energy fluxes. J. Adv. Model. Earth Syst., 5: 259-286, doi:10.1029/2012MS000173.
-
-Weedon, G. P., G. Balsamo, N. Bellouin, S. Gomes, M. J. Best, and P. Viterbo (2014), The WFDEI meteorological forcing data set: WATCH Forcing Data methodology applied to ERA-Interim reanalysis data, Water Resour. Res., 50, 7505–7514, doi:10.1002/2014WR015638. 
+References
+Duemenil Gates et al., Observed historical discharge data from major rivers for
+climate model validation. Max Planck Institute for Meteorology Report 307,
+Hamburg, Germany (2000)
+Hagemann, S. et al.,J. Adv. Model. Earth Syst., 5, 259-286, doi:10.1029/2012MS000173 (2013)
+Weedon, G. P. et al., Water Resour. Res., 50, 7505–7514, doi:10.1002/2014WR015638 (2014)
 
 This namelist is part of the ESMValTool
-ESMValTool project PI: Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
+###############################################################################
 </namelist_summary>
 
 <GLOBAL>
   <write_plots type="boolean">        True                      </write_plots>
   <write_netcdf type="boolean">       True                      </write_netcdf>
   <force_processing type="boolean">   False                     </force_processing>
-  <wrk_dir type="path">               ./work                    </wrk_dir>
-  <plot_dir type="path">              ./work/plots              </plot_dir>
-  <climo_dir type="path">             ./work/climo              </climo_dir>
+  <wrk_dir type="path">               @{WORKPATH}               </wrk_dir>
+  <plot_dir type="path">              @{PLOTPATH}               </plot_dir>
+  <climo_dir type="path">             @{CLIMOPATH}              </climo_dir>
   <write_plot_vars type="boolean">    True                      </write_plot_vars>
   <max_data_filesize type="integer">  100                       </max_data_filesize>
   <max_data_blocksize type="integer"> 500                       </max_data_blocksize>
@@ -42,7 +45,7 @@ ESMValTool project PI: Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
 
 
 <MODELS>
-<model> CMIP5_ETHZ MPI-ESM-LR MIP_VAR_DEF historical r1i1p1 1980 2005 /data/ESMValTool/model/ETHZ_CMIP5 </model>
+<model> CMIP5_ETHZ MPI-ESM-LR MIP_VAR_DEF historical r1i1p1 1980 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
 </MODELS>
 
 

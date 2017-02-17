@@ -6,7 +6,7 @@ diag_script_info = True
 ;;   All files matching the following will be scanned, all suitable data will
 ;;   be used (mandatory). Wildcards are allowed.
 ;; ############################################################################
-path = "/data/ESMValTool/obs/Tier2/Emmons/"
+path = getenv("ESMValTool_OBSPATH") + "/Tier2/Emmons/"
 diag_script_info@obsfiles = (/\
     path + "*TOPSE-Mar-C130-Churchill_T0M_vmrnox.nc", \
     path + "*PEM-Tropics-B-DC8-Fiji_T0M_vmrnox.nc"/)

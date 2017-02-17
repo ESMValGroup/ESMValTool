@@ -38,11 +38,16 @@ begin
     ;; Source name
     OBSNAME = "GCP"
 
+    ;; Tier
+    TIER = 2
+
     ;; Input dir (raw data)
-    INDIR = "/data/ESMValTool/obs/RAW/Tier2/" + OBSNAME + "/"
+    INDIR = getenv("ESMValTool_RAWOBSPATH") + "/Tier" + \
+        TIER + "/" + OBSNAME + "/"
 
     ;; Output dir (CMOR-ized data)
-    OUTDIR = "/data/ESMValTool/obs/Tier2/" + OBSNAME + "/"
+    OUTDIR = getenv("ESMValTool_OBSPATH") + "/Tier" + \
+        TIER + "/" + OBSNAME + "/"
 
     ;; Period
     YEAR1 = 1959
@@ -56,15 +61,15 @@ begin
 
 end
 
-;load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
 load "./interface_scripts/messaging.ncl"
 load "./reformat_scripts/constants.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity = 1
-    diag_script = "reformat_obs_GCP.ncl"
+    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    diag_script = "reformat_obs_ESACCI-GCP.ncl"
+    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent(OUTDIR)) then
@@ -139,10 +144,9 @@ begin
         gAtt@user = systemfunc("echo $USER")
         gAtt@period = YEAR1 + "-" + YEAR2
         gAtt@field = FIELD
-        gAtt@tier = 2
+        gAtt@tier = TIER
         gAtt@source = "http://www.globalcarbonproject.org/carbonbudget/"
-        gAtt@title = OBSNAME + \
-        " data reformatted for the ESMValTool"
+        gAtt@title = OBSNAME + " data reformatted for the ESMValTool"
         gAtt@conventions = "CF/CMOR"
         
         ;; Outfile
@@ -154,5 +158,7 @@ begin
         delete(gAtt)
         
     end if
+
+    leave_msg(diag_script, "", 1)
     
 end

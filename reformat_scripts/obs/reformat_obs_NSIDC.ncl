@@ -3,7 +3,7 @@
 ;;#############################################################################
 ;;
 ;; Tier
-;;    Tier 2: other freely-available dataset
+;;    Tier 2: other freely-available dataset.
 ;;
 ;; Source
 ;;    ftp://sidads.colorado.edu/pub/DATASETS/NOAA/G02202_v2/
@@ -42,7 +42,7 @@ begin
     TIER = 2
 
     ;; Input dir/files (raw data)
-    INDIR = "/data/ESMValTool/obs/RAW/Tier" + \
+    INDIR = getenv("ESMValTool_RAWOBSPATH") + "/Tier" + \
         TIER + "/" + OBSNAME + "/"
     INFILES = (/"NSIDC_all_monthly_NH.nc", "NSIDC_all_monthly_SH.nc"/)
 
@@ -53,7 +53,8 @@ begin
     FIELD   = "T2Ms"
 
     ;; Output directory (CMOR-ized data)
-    OUTDIR = "/data/ESMValTool/obs/Tier" + TIER + "/" + OBSNAME + "/"
+    OUTDIR = getenv("ESMValTool_OBSPATH") + "/Tier" + \
+        TIER + "/" + OBSNAME + "/"
     outstem_end = (/"_sat_NH_" + FIELD + "_" + VAR, \
                     "_sat_SH_" + FIELD + "_" + VAR /)
                   ; must correspond to INFILES
@@ -70,8 +71,10 @@ load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity = 1
+    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
     diag_script = "reformat_obs_NSIDC.ncl"
+    enter_msg(diag_script, "", 1)
+
     setnames = (/"NSIDC-NT", "NSIDC-BT"/)
     setabbr  = (/"nt", "bt"/)
 
@@ -179,5 +182,7 @@ begin
         end do  ; iset
 
     end do  ; ifile
+
+    leave_msg(diag_script, "", 1)
 
 end
