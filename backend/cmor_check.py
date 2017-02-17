@@ -66,7 +66,8 @@ class CMORTable(object):
                 self.coords[axis] = coord
                 # Don't look here!
                 if axis == 'T':
-                    self.coords[axis]['units'] = u'days since 1850-1-1 00:00:00'
+                    units = u'days since 1850-1-1 00:00:00'
+                    self.coords[axis]['units'] = units
 
     def _load_variable_information(self, var_name):
         table_file = os.path.join(self._cmor_folder,
@@ -397,7 +398,8 @@ def main():
         ('CMIP6/1pctCO2/day/pr/MPI-ESM-LR/r1i1p1f1', 'pr', 'day'),
         ('CMIP6/1pctCO2/cfDay/hur/MPI-ESM-LR/r1i1p1f1', 'hur', 'CFday'),
         ('CMIP6/1pctCO2/LImon/snw/MPI-ESM-LR/r1i1p1f1', 'snw', 'LImon'),
-        ('CMIP6/1pctCO2/Lmon/cropFrac/MPI-ESM-LR/r1i1p1f1', 'cropFrac', 'Lmon'),
+        ('CMIP6/1pctCO2/Lmon/cropFrac/MPI-ESM-LR/r1i1p1f1', 'cropFrac',
+         'Lmon'),
         ('CMIP6/1pctCO2/Oyr/co3/MPI-ESM-LR/r1i1p1f1', 'co3', 'Oyr'),
         ]
 

@@ -51,7 +51,7 @@ def calc_lwp(cubes):
                   'MIROC-ESM', 'CSIRO-Mk3-6-0', 'MPI-ESM-MR', 'MPI-ESM-LR',
                   'MPI-ESM-P']
     if (project in ["CMIP5", "CMIP5_ETHZ"] and model in BAD_MODELS) or \
-        (project == 'OBS' and model == 'UWisc'):
+       (project == 'OBS' and model == 'UWisc'):
             print("INFO: assuming that variable clwvi from {} model {} "
                   "contains only liquid water".format(project, model))
             lwp_cube = clwvi_cube
@@ -82,10 +82,12 @@ def calc_toz(cubes):
     ps_cube = cubes.extract_strict(Constraint(name='surface_air_pressure'))
 
     assert tro3_cube.coord_dims('time') and ps_cube.coord_dims('time'), \
-            'No time dimension found.'
+        'No time dimension found.'
     p_layer_widths = _pressure_level_widths(tro3_cube, ps_cube, top_limit=100)
-    toz = (tro3_cube * p_layer_widths / g * mw_O3 / mw_air).collapsed('air_pressure', iris.analysis.SUM)
-    toz.units = tro3_cube.units * p_layer_widths.units / g_unit * mw_O3_unit / mw_air_unit
+    toz = tro3_cube * p_layer_widths / g * mw_O3 / mw_air
+    toz = toz.collapsed('air_pressure', iris.analysis.SUM)
+    toz.units = (tro3_cube.units * p_layer_widths.units /
+                 g_unit * mw_O3_unit / mw_air_unit)
     toz.rename('atmosphere mass content of ozone')
 
     # Convert from kg m^-2 to Dobson unit (2.69e20 m^-2 )
@@ -112,7 +114,8 @@ def _pressure_level_widths(tro3_cube, ps_cube, top_limit=100):
 
     pressure_array = _create_pressure_array(tro3_cube, ps_cube, top_limit)
 
-    p_level_widths_cube = tro3_cube.copy(data=_apply_pressure_level_widths(pressure_array))
+    data = _apply_pressure_level_widths(pressure_array)
+    p_level_widths_cube = tro3_cube.copy(data=data)
     p_level_widths_cube.rename('pressure level widths')
     p_level_widths_cube.units = ps_cube.units
 
@@ -132,7 +135,8 @@ def _create_pressure_array(tro3_cube, ps_cube, top_limit):
     assert p_4D_array.shape == tro3_cube.shape
 
     # create 4d array filled with surface pressure values
-    ps_4D_array = iris.util.broadcast_to_shape(ps_cube.data, tro3_cube.shape, [0, 2, 3])
+    shape = tro3_cube.shape
+    ps_4D_array = iris.util.broadcast_to_shape(ps_cube.data, shape, [0, 2, 3])
     assert ps_4D_array.shape == tro3_cube.shape
 
     # set pressure levels below the surface pressure to NaN
@@ -140,11 +144,13 @@ def _create_pressure_array(tro3_cube, ps_cube, top_limit):
 
     # make top_limit last pressure level
     top_limit_array = np.ones(ps_cube.shape) * top_limit
-    pressure_4d = np.concatenate((pressure_4d, top_limit_array[:, np.newaxis, :, :]), axis=1)
+    data = top_limit_array[:, np.newaxis, :, :]
+    pressure_4d = np.concatenate((pressure_4d, data), axis=1)
     assert (pressure_4d[:, -1, :, :] == top_limit).all()
 
     # make surface pressure the first pressure level
-    pressure_4d = np.concatenate((ps_cube.data[:, np.newaxis, :, :], pressure_4d, ), axis=1)
+    data = ps_cube.data[:, np.newaxis, :, :]
+    pressure_4d = np.concatenate((data, pressure_4d), axis=1)
     assert (pressure_4d[:, 0, :, :] == ps_cube.data).all()
 
     return pressure_4d
@@ -152,8 +158,8 @@ def _create_pressure_array(tro3_cube, ps_cube, top_limit):
 
 def _apply_pressure_level_widths(array, air_pressure_axis=1):
     """
-    For a  1D array with pressure level columns, return a 1D  array with pressure
-    level widths.
+    For a  1D array with pressure level columns, return a 1D  array with
+    pressure level widths.
     """
     return np.apply_along_axis(_p_level_widths, air_pressure_axis, array)
 
@@ -184,13 +190,16 @@ def _p_level_widths(array):
 
     last_pressure_level = len(array) - 1
     for i, val in enumerate(array):
-        bounds_width = np.NAN  # numba would otherwise initialise it to 0 and
-                               # hide bugs that would occur in raw Python
+        # numba would otherwise initialise it to 0 and
+        # hide bugs that would occur in raw Python
+        bounds_width = np.NAN
+
         if np.isnan(val):
             bounds_width = 0
         else:
             # distance to lower bound
-            if i == 0 or np.isnan(array[i-1]):  # first pressure level with value
+            if i == 0 or np.isnan(array[i-1]):
+                # first pressure level with value
                 dist_to_lower_bound = surface_pressure - val
             else:
                 dist_to_lower_bound = 0.5*(array[i-1] - val)
@@ -209,4 +218,3 @@ def _p_level_widths(array):
 
         p_level_widths[i] = bounds_width
     return p_level_widths
-

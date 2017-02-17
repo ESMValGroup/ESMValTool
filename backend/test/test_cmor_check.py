@@ -20,7 +20,8 @@ from cf_units import Unit
 
 # Local imports
 from backend.cmor_check import CMORCheck, CMORCheckError
-MIP_TABLE_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'cmip6-cmor-tables', 'Tables')
+MIP_TABLE_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                             '..', 'cmip6-cmor-tables', 'Tables')
 
 
 class TestCMORCheckErrorReporting(unittest.TestCase):
@@ -94,7 +95,8 @@ class TestCMORCheckBadCube(unittest.TestCase):
         cube = self.cube_creator.get_cube(self.table, self.varid)
         checker = CMORCheck(cube, self.table)
         coord = cube.coord('latitude')
-        values = numpy.linspace(coord.points[-1], coord.points[0], len(coord.points))
+        values = numpy.linspace(coord.points[-1], coord.points[0],
+                                len(coord.points))
         self._update_coordinate_values(cube, coord, values, 1)
         with self.assertRaises(CMORCheckError):
             checker.check()
@@ -103,7 +105,8 @@ class TestCMORCheckBadCube(unittest.TestCase):
         cube = self.cube_creator.get_cube(self.table, self.varid)
         checker = CMORCheck(cube, self.table)
         coord = cube.coord('air_pressure')
-        values = numpy.linspace(coord.points[-1], coord.points[0], len(coord.points))
+        values = numpy.linspace(coord.points[-1], coord.points[0],
+                                len(coord.points))
         self._update_coordinate_values(cube, coord, values, 2)
         with self.assertRaises(CMORCheckError):
             checker.check()
@@ -124,7 +127,8 @@ class TestCMORCheckBadCube(unittest.TestCase):
     def test_not_valid_min(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
         coord = cube.coord('latitude')
-        values = numpy.linspace(coord.points[0]-1, coord.points[-1], len(coord.points))
+        values = numpy.linspace(coord.points[0]-1, coord.points[-1],
+                                len(coord.points))
         self._update_coordinate_values(cube, coord, values, 1)
         checker = CMORCheck(cube, self.table)
         with self.assertRaises(CMORCheckError):
@@ -133,7 +137,8 @@ class TestCMORCheckBadCube(unittest.TestCase):
     def test_not_valid_max(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
         coord = cube.coord('latitude')
-        values = numpy.linspace(coord.points[0], coord.points[-1]+1, len(coord.points))
+        values = numpy.linspace(coord.points[0], coord.points[-1]+1,
+                                len(coord.points))
         self._update_coordinate_values(cube, coord, values, 1)
         checker = CMORCheck(cube, self.table)
         with self.assertRaises(CMORCheckError):
@@ -249,7 +254,8 @@ class TestCMORCheckBadCube(unittest.TestCase):
             checker.check()
 
     def test_bad_frequency_mon(self):
-        cube = self.cube_creator.get_cube(self.table, self.varid, frequency='day')
+        cube = self.cube_creator.get_cube(self.table, self.varid,
+                                          frequency='day')
         checker = CMORCheck(cube, self.table)
         with self.assertRaises(CMORCheckError):
             checker.check()
@@ -266,7 +272,8 @@ class TestCMORCheckBadCube(unittest.TestCase):
         with self.assertRaises(CMORCheckError):
             checker.check()
 
-    # For the moment, we don't have a variable definition with these values to test
+    # For the moment, we don't have a variable definition with these values
+    # to test
 
     # def test_data_not_valid_max(self):
     #     cube = _create_good_cube(self.varid)
@@ -288,7 +295,9 @@ class CubeCreator(object):
         self.coord_specs = self._parse_mip_table("coordinate")
         self.vars_spec = {}
 
-    def get_cube(self, table, var_name, set_time_units="days since 1850-1-1 00:00:00", frequency=None):
+    def get_cube(self, table, var_name,
+                 set_time_units="days since 1850-1-1 00:00:00",
+                 frequency=None):
         """
         Creates a cube based on a specification
 
@@ -299,17 +308,19 @@ class CubeCreator(object):
         """
         # Get a specification and build a cube from it.
         if var_name not in self.vars_spec:
-            self.vars_spec[var_name] = self._parse_mip_table(table, get_var=var_name)
+            self.vars_spec[var_name] = self._parse_mip_table(table,
+                                                             get_var=var_name)
 
         spec = self.vars_spec[var_name]
         if frequency is None:
-             frequency = spec['frequency']
+            frequency = spec['frequency']
 
         coords = []
         scalar_coords = []
         index = 0
         for i, dim in enumerate(spec["dimensions"].split()):
-            coord = self._create_coord_from_spec(table, dim, set_time_units, frequency)
+            coord = self._create_coord_from_spec(table, dim, set_time_units,
+                                                 frequency)
             if isinstance(coord, iris.coords.DimCoord):
                 coords.append((coord, index))
                 index += 1
@@ -326,7 +337,8 @@ class CubeCreator(object):
         else:
             valid_max = valid_min + 100
 
-        var_data = numpy.ones(len(coords) * [20], 'f') * (valid_min + (valid_max - valid_min) / 2)
+        var_data = (numpy.ones(len(coords) * [20], 'f') *
+                    (valid_min + (valid_max - valid_min) / 2))
         cube = iris.cube.Cube(var_data,
                               standard_name=spec["standard_name"],
                               long_name=spec["long_name"],
@@ -352,7 +364,8 @@ class CubeCreator(object):
                                     long_name=coord_spec["long_name"],
                                     var_name=coord_spec["out_name"],
                                     units=coord_spec["units"],
-                                    attributes=None)  # {'axis': coord_spec["axis"]})
+                                    attributes=None)
+#                                   {'axis': coord_spec["axis"]})
 
     def _get_coord_spec(self, table, dim, set_time_units):
         try:
@@ -361,17 +374,23 @@ class CubeCreator(object):
             table_spec = self._parse_mip_table(table)
             if dim in table_spec['Header']['generic_levels']:
                 if dim == 'olevel':
-                    dim_spec = {'standard_name': 'depth', 'units': '', 'value': '', 'valid_min': '', 'valid_max': '',
+                    dim_spec = {'standard_name': 'depth', 'units': '',
+                                'value': '', 'valid_min': '', 'valid_max': '',
                                 'stored_direction': '', 'requested': '',
-                                'long_name': 'ocean_depth_coordinate', 'out_name': 'lev', 'axis': 'Z',
+                                'long_name': 'ocean_depth_coordinate',
+                                'out_name': 'lev', 'axis': 'Z',
                                 'positive': 'down'}
                 elif dim == 'alevel':
-                    dim_spec = {'standard_name': 'height', 'units': '', 'value': '', 'valid_min': '', 'valid_max': '',
+                    dim_spec = {'standard_name': 'height', 'units': '',
+                                'value': '', 'valid_min': '', 'valid_max': '',
                                 'stored_direction': '', 'requested': '',
-                                'long_name': 'ocean_depth_coordinate', 'out_name': 'lev', 'axis': 'Z',
+                                'long_name': 'ocean_depth_coordinate',
+                                'out_name': 'lev', 'axis': 'Z',
                                 'positive': 'down'}
                 else:
-                    raise Exception('Generic levels dimension {} not supported by CubeCreator'.format(dim))
+                    emsg = ('Generic levels dimension {} not supported by '
+                            'CubeCreator')
+                    raise Exception(emsg.format(dim))
             else:
                 raise
 
@@ -396,7 +415,9 @@ class CubeCreator(object):
             values = self._get_values(dim_spec)
             unit = Unit(dim_spec["units"])
         # Set up attributes dictionary
-        coord_atts = {'stored_direction': dim_spec['stored_direction'], 'positive': dim_spec['positive']}  # , 'axis': dim_spec['axis'],}
+        coord_atts = {'stored_direction': dim_spec['stored_direction'],
+                      'positive': dim_spec['positive']}
+#                     'axis': dim_spec['axis'],}
         coord = iris.coords.DimCoord(values,
                                      standard_name=dim_spec["standard_name"],
                                      long_name=dim_spec["long_name"],
@@ -420,9 +441,11 @@ class CubeCreator(object):
         decreasing = dim_spec['stored_direction'] == 'decreasing'
         endpoint = not dim_spec['standard_name'] == 'longitude'
         if decreasing:
-            values = numpy.linspace(valid_max, valid_min, 20, endpoint=endpoint)
+            values = numpy.linspace(valid_max, valid_min, 20,
+                                    endpoint=endpoint)
         else:
-            values = numpy.linspace(valid_min, valid_max, 20, endpoint=endpoint)
+            values = numpy.linspace(valid_min, valid_max, 20,
+                                    endpoint=endpoint)
         values = numpy.array(values)
         if dim_spec['requested']:
             requested = [float(val) for val in dim_spec['requested']]
@@ -430,9 +453,11 @@ class CubeCreator(object):
             for j in range(len(requested)):
                 values[j] = requested[j]
             if decreasing:
-                extra_values = numpy.linspace(len(requested), valid_min, 20 - len(requested))
+                extra_values = numpy.linspace(len(requested), valid_min,
+                                              20 - len(requested))
             else:
-                extra_values = numpy.linspace(len(requested), valid_max, 20 - len(requested))
+                extra_values = numpy.linspace(len(requested), valid_max,
+                                              20 - len(requested))
 
             for j in range(len(requested), 20):
                 values[j] = extra_values[j - len(requested)]
@@ -455,7 +480,8 @@ class CubeCreator(object):
 
     def _safely_join_dicts(self, d1, d2):
         """
-        Returns a join of two dictionaries but raises exception if repeated keys found."
+        Returns a join of two dictionaries but raises exception
+        if repeated keys found."
         :param d1: first dictionary
         :param d2: second dictionary
         :return: joint dictionary
@@ -464,14 +490,16 @@ class CubeCreator(object):
 
         for key, value in d2.items():
             if key in d:
-                raise Exception("Repeated key in dictionaries when merging: %s" % key)
+                emsg = "Repeated key in dictionaries when merging: {}"
+                raise Exception(emsg.format(key))
             d[key] = value
 
         return d
 
     def _parse_mip_table(self, table_name, get_var=None):
         "Reads MIP table and returns a dictionary."
-        table_path = os.path.join(MIP_TABLE_DIR, 'CMIP6_{}.json'.format(table_name))
+        table_path = os.path.join(MIP_TABLE_DIR,
+                                  'CMIP6_{}.json'.format(table_name))
         d = json.load(open(table_path))
 
         if get_var:

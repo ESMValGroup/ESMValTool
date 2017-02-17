@@ -4,6 +4,7 @@ from auxiliary import info, error, print_header, ncl_version_check
 
 # class PreProcessor(object):
 
+
 def load_variable(variable, model):
 
     file = Projects.get_cf_infile(model, variable)
@@ -16,8 +17,8 @@ def load_variable(variable, model):
 
     cube = fix_data_format(cube)
 
-    #perhaps also have a "thougouh" check mode at some point
-    #will produce an exception
+    # perhaps also have a "thougouh" check mode at some point
+    # will produce an exception
     format_check(cube)
 
     return cube
@@ -37,27 +38,28 @@ def is_derived(variable, model):
 
 
 def get_target_grid(diagnostic, variable):
-
+    pass
 
 
 def preprocess(project_info):
     logging.info("preprocessing")
 
     for diagnostic in project_info['DIAGNOSTICS']:
-        #fetch and check preprocess options
+        # fetch and check preprocess options
 
         variables = []
         for variable in variables:
 
             target_grid_cube = get_target_grid(diagnostic, variable)
 
-            #we changed the loop order. Is that ok? - yes
+            # we changed the loop order. Is that ok? - yes
             result_cubes = []
             for model in diagnostic.models:
                 if is_derived(variable, model):
-                    required_variables = derivation.get_required_variables(variable)
+                    required = derivation.get_required_variables(variable)
 
-                    cubes = [load_variable(variable, model) for variable in required_variables]
+                    cubes = [load_variable(variable, model)
+                             for variable in required]
 
                     cube = derivation.derive_var(cubes)
                 else:
@@ -65,14 +67,13 @@ def preprocess(project_info):
 
                 cube = level_selection(cube, level)
 
-                #target grid should have right amount of vertical levels
+                # target grid should have right amount of vertical levels
                 cube = regrid(cube, target_grid_cube, scheme)
 
                 cube = mask(cube, mask_fillvalues, mask_landocean)
 
-                #for instance region extraction
-                #cube = grid_operations(cube)
-
+                # for instance region extraction
+                # cube = grid_operations(cube)
 
                 cube = time_operations(cube)
 
@@ -81,29 +82,19 @@ def preprocess(project_info):
                 if calculate_multi_model_statistics:
                     result_cubes.append(cube)
 
-            #are there any multi-variable mms's?
+            # are there any multi-variable mms's?
             if (calculate_multi_model_statistics):
                 mms_cube = calculate_multi_model_statistics(result_cubes)
 
                 iris.save(mms_cube, filename)
 
-
-
-
-
-
-
-
-
-
-
-
     verbosity = project_info['GLOBAL']['verbosity']
 
     for currDiag in project_info['DIAGNOSTICS']:
 
-        # Are the requested variables derived from other, more basic, variables?
-        requested_vars = currDiag.get_variables_list()
+        # Are the requested variables derived from other,
+        # more basic, variables?
+        vars = currDiag.get_variables_list()
 
         # Update currDiag-specific models
         project_info['MODELS'] = projects.remove_diag_specific_models(
@@ -113,14 +104,17 @@ def preprocess(project_info):
 
         # Prepare/reformat model data for each model
         for model in project_info['MODELS']:
-            currProject = getattr(vars()['projects'], model.split_entries()[0])()
+            currProject = getattr(vars()['projects'],
+                                  model.split_entries()[0])()
             model_name = currProject.get_model_name(model)
             project_name = currProject.get_project_name(model)
             info("", verbosity, 1)
-            info("MODEL = " + model_name + " (" + project_name + ")", verbosity, 1)
+            info("MODEL = " + model_name + " (" +
+                 project_name + ")", verbosity, 1)
 
             # variables needed for target variable, according to variable_defs
-            variable_defs_base_vars = currDiag.add_base_vars_fields(requested_vars, model)
+            variable_defs_base_vars = currDiag.add_base_vars_fields(vars,
+                                                                    model)
             # if not all variable_defs_base_vars are available, try to fetch
             # the target variable directly (relevant for derived variables)
             base_vars = currDiag.select_base_vars(variable_defs_base_vars,
@@ -135,12 +129,11 @@ def preprocess(project_info):
                 info("VARIABLE = " + base_var.var + " (" + base_var.fld + ")",
                      verbosity, 1)
 
-
-
                 # # Rewrite netcdf to expected input format.
                 # info("Calling cmor_reformat.py to check/reformat model data",
                 #      verbosity, 2)
-                # reformat.cmor_reformat(currProject, project_info, base_var, model)
+                # reformat.cmor_reformat(currProject, project_info, base_var,
+                #                        model)
                 #
         variables = currDiag.get_variables()
         field_types = currDiag.get_field_types()
@@ -157,4 +150,3 @@ def preprocess(project_info):
             projects.run_executable(executable, project_info, verbosity,
                                     exit_on_warning)
         project_info['RUNTIME']['derived_var'] = "Undefined"
-
