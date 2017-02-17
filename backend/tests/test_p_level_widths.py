@@ -81,5 +81,3 @@ def test_highest_level_above_top_limit():
     col = np.append(col, top_limit)
     with pytest.raises(ValueError):
         _p_level_widths(col)
-
-

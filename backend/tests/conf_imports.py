@@ -1,2 +1,5 @@
-import sys; sys.path.append('..')  # run test in backend/
+import sys
 import backend
+
+
+sys.path.append('..')  # run test in backend/
