@@ -95,6 +95,8 @@ class DIAGNOSTICS(Nml_base):
         self.variable = []
         self.var_attributes = []
         self.cfg = []
+        self.preprocess = {}
+
 
         ## Default value
         self.diag_script_cfg_dir = []
@@ -132,7 +134,8 @@ class DIAGNOSTICS(Nml_base):
                                                    self.diag_script_cfg_dir,
                                                    self.diag_script_cfg,
                                                    self.diag_specific_models,
-                                                   self.launcher_arguments))
+                                                   self.launcher_arguments,
+                                                   self.preprocess))
             self.reset_temp_diag_storage()
 
         elif name == 'description':
@@ -141,6 +144,10 @@ class DIAGNOSTICS(Nml_base):
         elif name == 'variable':
             self.variable.append(string.strip())
             self.var_attributes.append(attributes)
+        elif name in ['regrid_target_grid', 'regrid_scheme']:
+            self.preprocess[name] = string.strip()
+        elif name == 'preprocess':
+            pass
         else:
             vars(self)[name].append(string.strip())
 
@@ -169,8 +176,9 @@ class DIAGNOSTICS(Nml_base):
             field = curr_diag_tag.get_tag_field_type()
             var_def_dir = curr_diag_tag.get_var_def_dir()
             launch_args = curr_diag_tag.get_launcher_args()
+            preprocess = curr_diag_tag.get_preprocess()
 
-            diags = [Diagnostic(var, var_def_dir, field, var_attr, diag_script, cfg, model, launch_args)
+            diags = [Diagnostic(var, var_def_dir, field, var_attr, diag_script, cfg, model, launch_args, preprocess)
                      for diag_script, cfg, model in curr_diag_tag]
 
             all_diags.extend(diags)
