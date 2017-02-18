@@ -2130,6 +2130,199 @@ class GFDL(Project):
         return os.path.join(outdir, outfile)
 
 
+class GFDL_UDA(Project):
+    """ @brief Class defining the specific characteristics of the CMIP5 project
+    and the data available in the GFDL Unified Data Archive. """
+    def __init__(self):
+        Project.__init__(self)
+
+        ## The names of the space separated entries in the XML-file <model> tag
+        ## lines
+        self.model_specifiers = ["project", "name", "mip", "experiment",
+                                 "ensemble", "start_year", "end_year", "dir"]
+
+        self.add_specifier['case_name'] = 'experiment'
+
+        """ Define the 'basename'-variable explicitly
+        """
+        self.basename = "GFDL_UDA"
+
+    def get_dict_key(self, model, mip, exp):
+        """ @brief Returns a unique key based on the model entries provided.
+            @param model One of the <model>-tags in the XML namelist file
+            @return A string
+
+            This function creates and returns a key used in a number of NCL
+            scripts to refer to a specific dataset, see e.g., the variable
+            'cn' in 'interface_scripts/read_data.ncl'
+        """
+        # msd = model_section_dictionary
+        msd = self.get_model_sections(model)
+        msd = self.rewrite_mip_exp(msd, mip, exp)
+
+        dict_key = "_".join([msd['project'],
+                             msd['name'],
+                             msd['mip'],
+                             msd['experiment'],
+                             msd['ensemble'],
+                             msd['start_year'],
+                             msd['end_year']])
+        return dict_key
+
+    def get_figure_file_names(self, project_info, model, mip, exp):
+        """ @brief Returns the full path used for intermediate data storage
+            @param project_info Current namelist in dictionary format
+            @param model One of the <model>-tags in the XML namelist file
+            @param variable_attributes The variable attributes
+            @return A string
+
+            This function creates and returns the full path used in a number
+            of NCL scripts to write intermediate data sets.
+        """
+        # msd = model_section_dictionary
+        msd = self.get_model_sections(model)
+        msd = self.rewrite_mip_exp(msd, mip, exp)
+
+        return "_".join([msd['project'],
+                         msd['name'],
+                         msd['mip'],
+                         msd['experiment'],
+                         msd['ensemble'],
+                         msd['start_year']]) + "-" + msd['end_year']
+
+    def get_cf_infile(self, project_info, model, field, variable, mip, exp):
+        """ @brief Returns the path to the input file used in reformat
+            @param variable Current variable
+            @param climo_dir Where processed (reformatted) input files reside
+            @param model One of the <model>-tags in the XML namelist file
+            @param field The field (see tutorial.pdf for available fields)
+            @param variable The variable
+                            (defaults to the variable in project_info)
+            @param variable_attributes The variable attributes
+            @return Two strings (input directory and input file)
+
+            This function looks for the input file to use in the
+            reformat routines
+        """
+        indata_root = self.get_data_root()
+
+        msd = self.get_model_sections(model)
+        msd = self.rewrite_mip_exp(msd, mip, exp)
+
+        variable = self.get_project_variable_name(model, variable)
+
+        indir = self.get_uda_dir(msd['dir'], msd['name'], msd['experiment'],
+                                 variable, msd['mip'], msd['ensemble'])
+
+        infile = '_'.join([variable,
+                           self.table,
+                           msd['name'],
+                           msd['experiment'],
+                           msd['ensemble']]) + '.nc'
+
+        if (not os.path.isfile(os.path.join(indir, infile))):
+            infile = '_'.join([variable,
+                               self.table,
+                               msd['name'],
+                               msd['experiment'],
+                               msd['ensemble']]) + '*.nc'
+
+        self.dmget_gfdl_files(indir, infile)
+
+        return indir, infile
+
+    def dmget_gfdl_files(self, indir, infile):
+        """ The seems to be the need to make sure that the files
+        are available on disk in archive despite using the /work repo
+        """
+        full_path = os.path.join(indir, infile)
+        full_path = re.sub("^/work2", "/archive/pcmdi", full_path)
+
+        os.system("dmget %s" % full_path)
+        return
+
+    def get_uda_dir(self, basedir, model_name, experiment,
+                    variable, mip, ensemble):
+        """ @brief Returns the GFDL UDA directory for the
+        collection of CMIP5 Data housed at GFDL in standard
+        DRS Syntax. """
+
+        ModelCenters = os.walk(basedir).next()[1]
+        modelCenter = ""
+        finalPath = ""
+        freq = "mon"
+        realm = mip
+        if re.match("aero", realm):
+            realm = "aerosol"
+        while not modelCenter:
+            for center in ModelCenters:
+                models = os.walk(os.path.join(basedir, center)).next()[1]
+                if model_name in models:
+                    modelCenter = center
+        expandedPath = os.path.join(basedir, modelCenter,
+                                    model_name, experiment, freq, realm, )
+        if not os.path.isdir(expandedPath):
+            error_msg = "ERROR: Unable to determine Modeling center for "
+            error_msg += "%s, check model name" % model_name
+            return error_msg
+        self.table = os.walk(expandedPath).next()[1][0]
+        expandedPath = os.path.join(expandedPath, str(self.table), ensemble)
+        versions = os.walk(expandedPath).next()[1]
+        versions.sort(reverse=True)
+        var_version = versions[0]
+        expandedPath = os.path.join(expandedPath, var_version, variable)
+
+        return expandedPath
+
+    def get_cf_areafile(self, project_info, model):
+        """ @brief Returns the path to the areacello file
+                   used for ocean variables
+            @param project_info Current namelist in dictionary format
+            @param model One of the <model>-tags in the XML namelist file
+            @return A string (areafile path)
+
+            This function looks for the areafile of the ocean grid
+        """
+        msd = self.get_model_sections(model)
+
+        areadir = msd["dir"]
+
+        areafile = 'areacello_fx_' + msd["name"] + "_" + msd["experiment"] + \
+                   "_r0i0p0.nc"
+
+        return os.path.join(areadir, areafile)
+
+    def get_cf_outfile(self, project_info, model, field, variable, mip, exp):
+        """ @brief Returns the output file used in the reformat routines
+            @param variable Current variable
+            @param climo_dir Where processed (reformatted) input files reside
+            @param model One of the <model>-tags in the XML namelist file
+            @param field The field (see tutorial.pdf for available fields)
+            @param variable The variable
+                            (defaults to the variable in project_info)
+            @return A string (output path)
+
+            This function specifies the output file to use in the reformat
+            routines and in climate.ncl
+        """
+
+        msd = self.get_model_sections(model)
+
+        # Overide some model lines with settings from the variable attributes
+        msd = self.rewrite_mip_exp(msd, mip, exp)
+
+        outfile = '_'.join([msd['project'],
+                            msd['mip'],
+                            msd['experiment'],
+                            msd['name'],
+                            msd['ensemble'],
+                            field,
+                            variable,
+                            msd['start_year']]) + '-' + msd['end_year'] + '.nc'
+
+        return outfile
+
+
 class GO(CCMVal):
     """ @brief Class defining the specific characteristics of the GO project
     """
