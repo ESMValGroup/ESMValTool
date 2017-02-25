@@ -1,20 +1,31 @@
 Testing in ESMValTool
 =====================
 
-This documentation briefly describes how testing of ESMValTool works. This document is supposed to become part of the SPHINX based documentation later and should be moved there and modified accordingly.
+This documentation briefly describes how testing of ESMValTool works. 
 
 Why testing?
 ------------
 
-TBD
+In a nutshell: To make sure that the software does what it is supposed to do.
+
+The overall objective of automated testing in the ESMValTool is to ensure that
+
+* the software was properly installed on the system
+* ensure that the different software components (backend, diagnostics,
+  plotting) results in correct results
 
 Getting started
 ---------------
 
+To be able to use the testing a number of prerequesites need to be fulfilled.
+These are typically already installed when the ESMValTool is installed using
+`conda``.
+
+
 Prerequesite #1: install `easytest`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The ESMValTool testing facility is based on the python package `easytest <https://github.com/pygeo/easytest>`_ . If `easytest` is not installed yet on your machine, install it within seconds using the instructions provided `here <http://easytest.readthedocs.org/en/latest/>`_. There you find also the information on the types of tests supported so far. To use the `easytest` functionality for testing entire ESMValTool diagnostics only a few lines of code and reference data is needed. The implementation of a test for a new diagnostic will be described in the following.
+The ESMValTool testing facility is based on the python package `easytest <https://github.com/pygeo/easytest>`_ . If `easytest` is not installed yet on your machine yet, install it within seconds using the instructions provided `here <http://easytest.readthedocs.org/en/latest/>`_. There you find also the information on the types of tests supported so far. To use the `easytest` functionality for testing entire ESMValTool diagnostics only a few lines of code and reference data is needed. The implementation of a test for a new diagnostic will be described in the following.
 
 Prerequesite #2: nosetests
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
