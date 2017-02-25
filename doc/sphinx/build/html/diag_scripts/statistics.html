@@ -6,9 +6,9 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>statistics &mdash; ESMValTool 1.0 documentation</title>
+    <title>statistics &#8212; ESMValTool 1.0 documentation</title>
     
-    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -17,20 +17,21 @@
         VERSION:     '1.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="ESMValTool 1.0 documentation" href="../index.html" />
-    <link rel="up" title="NCL diagnostic scripts library" href="index.html" />
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="style" href="style.html" />
     <link rel="prev" title="set_operators" href="set_operators.html" /> 
   </head>
-  <body>
-    <div class="related">
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -42,21 +43,21 @@
         <li class="right" >
           <a href="set_operators.html" title="set_operators"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">ESMValTool 1.0 documentation</a> &raquo;</li>
-          <li><a href="index.html" accesskey="U">NCL diagnostic scripts library</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">ESMValTool 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">NCL diagnostic scripts library</a> &#187;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="statistics">
-<h1><tt class="xref py py-mod docutils literal"><span class="pre">statistics</span></tt><a class="headerlink" href="#statistics" title="Permalink to this headline">¶</a></h1>
+<h1><code class="xref py py-mod docutils literal"><span class="pre">statistics</span></code><a class="headerlink" href="#statistics" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="dim_stddev_wgt_Wrap">
-<tt class="descname">dim_stddev_wgt_Wrap</tt><big>(</big><em>field[*]:numeric</em>, <em>ww[*]:numeric</em>, <em>opt[1]:integer</em><big>)</big><a class="headerlink" href="#dim_stddev_wgt_Wrap" title="Permalink to this definition">¶</a></dt>
+<code class="descname">dim_stddev_wgt_Wrap</code><span class="sig-paren">(</span><em>field[*]:numeric</em>, <em>ww[*]:numeric</em>, <em>opt[1]:integer</em><span class="sig-paren">)</span><a class="headerlink" href="#dim_stddev_wgt_Wrap" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -93,7 +94,7 @@ the weighted case this means applying a correction factor:</p>
 
 <dl class="function">
 <dt id="time_operations">
-<tt class="descname">time_operations</tt><big>(</big><em>field:numeric</em>, <em>y1[1]:integer</em>, <em>y2[1]:integer</em>, <em>oper[1]:string</em>, <em>opt[1]:string</em>, <em>l_wgt[1]:logical</em><big>)</big><a class="headerlink" href="#time_operations" title="Permalink to this definition">¶</a></dt>
+<code class="descname">time_operations</code><span class="sig-paren">(</span><em>field:numeric</em>, <em>y1[1]:integer</em>, <em>y2[1]:integer</em>, <em>oper[1]:string</em>, <em>opt[1]:string</em>, <em>l_wgt[1]:logical</em><span class="sig-paren">)</span><a class="headerlink" href="#time_operations" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -102,8 +103,8 @@ the weighted case this means applying a correction factor:</p>
 <li><strong>field</strong> (<em>numeric</em>) &#8211; a numeric array of rank 1 to 4, first dimension must be time.</li>
 <li><strong>y1</strong> (<em>integer</em>) &#8211; start year of the time period to be averaged (-1 for full range).</li>
 <li><strong>y2</strong> (<em>integer</em>) &#8211; end year of the time period to be averaged (-1 for full range).</li>
-<li><strong>oper</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; type of operations: &#8220;extract&#8221;: no average, just extract selected period. &#8220;average&#8221;: average. &#8220;stddev&#8221;: (unbiased) standard deviation.</li>
-<li><strong>opt</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; operation options (has no effect is oper = extract): &#8220;annualclim&#8221;: annual climatology. &#8220;seasonalclim&#8221;: seasonal climatology for the standard seasons DJF, MAM, JJA, SON. &#8220;monthlyclim&#8221;: monthly climatology jan-dec. For monthly input data only! Apply mymm first, if necessary. &#8220;mymm&#8221;: multi year monthly mean &#8220;yearly&#8221;: time average over every year in [y1:y2]. [month strings]: climatology of selected (consecutive) months (e.g., &#8220;MAM&#8221;, &#8220;SONDJ&#8221;). [1, 12]: climatology of the selected month (&#8220;1&#8221;=Jan, &#8220;2&#8221;=Feb, ..., &#8220;12&#8221;=Dec).</li>
+<li><strong>oper</strong> (<a class="reference external" href="https://docs.python.org/2/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; type of operations: &#8220;extract&#8221;: no average, just extract selected period. &#8220;average&#8221;: average. &#8220;stddev&#8221;: (unbiased) standard deviation.</li>
+<li><strong>opt</strong> (<a class="reference external" href="https://docs.python.org/2/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; operation options (has no effect is oper = extract): &#8220;annualclim&#8221;: annual climatology. &#8220;seasonalclim&#8221;: seasonal climatology for the standard seasons DJF, MAM, JJA, SON. &#8220;monthlyclim&#8221;: monthly climatology jan-dec. For monthly input data only! Apply mymm first, if necessary. &#8220;mymm&#8221;: multi year monthly mean &#8220;yearly&#8221;: time average over every year in [y1:y2]. [month strings]: climatology of selected (consecutive) months (e.g., &#8220;MAM&#8221;, &#8220;SONDJ&#8221;). [1, 12]: climatology of the selected month (&#8220;1&#8221;=Jan, &#8220;2&#8221;=Feb, ..., &#8220;12&#8221;=Dec).</li>
 <li><strong>l_wgt</strong> (<em>logical</em>) &#8211; if True, calculate weighted average, with days-per-month as weights (has no effect is opt = &#8220;extract&#8221;).</li>
 </ul>
 </td>
@@ -136,12 +137,12 @@ implemented yet.</dd>
 
 <dl class="function">
 <dt id="calc_season_index">
-<tt class="descname">calc_season_index</tt><big>(</big><em>season[1]:string</em><big>)</big><a class="headerlink" href="#calc_season_index" title="Permalink to this definition">¶</a></dt>
+<code class="descname">calc_season_index</code><span class="sig-paren">(</span><em>season[1]:string</em><span class="sig-paren">)</span><a class="headerlink" href="#calc_season_index" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>season</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; the season in upper case.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>season</strong> (<a class="reference external" href="https://docs.python.org/2/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; the season in upper case.</td>
 </tr>
 </tbody>
 </table>
@@ -160,14 +161,14 @@ does not exist.</dd>
 
 <dl class="function">
 <dt id="extract_season">
-<tt class="descname">extract_season</tt><big>(</big><em>data:numeric</em>, <em>season[1]:string</em><big>)</big><a class="headerlink" href="#extract_season" title="Permalink to this definition">¶</a></dt>
+<code class="descname">extract_season</code><span class="sig-paren">(</span><em>data:numeric</em>, <em>season[1]:string</em><span class="sig-paren">)</span><a class="headerlink" href="#extract_season" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>data</strong> (<em>numeric</em>) &#8211; a numeric field with time dimension.</li>
-<li><strong>season</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; the season in upper case.</li>
+<li><strong>season</strong> (<a class="reference external" href="https://docs.python.org/2/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; the season in upper case.</li>
 </ul>
 </td>
 </tr>
@@ -187,14 +188,14 @@ the corresponding months from data.</dd>
 
 <dl class="function">
 <dt id="month_to_season_extended">
-<tt class="descname">month_to_season_extended</tt><big>(</big><em>indata[*][*][*]:float</em>, <em>season[1]:string</em><big>)</big><a class="headerlink" href="#month_to_season_extended" title="Permalink to this definition">¶</a></dt>
+<code class="descname">month_to_season_extended</code><span class="sig-paren">(</span><em>indata[*][*][*]:float</em>, <em>season[1]:string</em><span class="sig-paren">)</span><a class="headerlink" href="#month_to_season_extended" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>indata</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; a [lat][lon][time] array.</li>
-<li><strong>season</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; compute the average for this season.</li>
+<li><strong>indata</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; a [lat][lon][time] array.</li>
+<li><strong>season</strong> (<a class="reference external" href="https://docs.python.org/2/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; compute the average for this season.</li>
 </ul>
 </td>
 </tr>
@@ -213,7 +214,7 @@ the corresponding months from data.</dd>
 
 <dl class="function">
 <dt id="coswgt_areaave">
-<tt class="descname">coswgt_areaave</tt><big>(</big><em>field:numeric</em><big>)</big><a class="headerlink" href="#coswgt_areaave" title="Permalink to this definition">¶</a></dt>
+<code class="descname">coswgt_areaave</code><span class="sig-paren">(</span><em>field:numeric</em><span class="sig-paren">)</span><a class="headerlink" href="#coswgt_areaave" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -238,7 +239,7 @@ the corresponding months from data.</dd>
 
 <dl class="function">
 <dt id="coswgt_arearmse">
-<tt class="descname">coswgt_arearmse</tt><big>(</big><em>field1:numeric</em>, <em>field2:numeric</em><big>)</big><a class="headerlink" href="#coswgt_arearmse" title="Permalink to this definition">¶</a></dt>
+<code class="descname">coswgt_arearmse</code><span class="sig-paren">(</span><em>field1:numeric</em>, <em>field2:numeric</em><span class="sig-paren">)</span><a class="headerlink" href="#coswgt_arearmse" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -267,7 +268,7 @@ the corresponding months from data.</dd>
 
 <dl class="function">
 <dt id="coswgt_pattern_cor">
-<tt class="descname">coswgt_pattern_cor</tt><big>(</big><em>field1:numeric</em>, <em>field2:numeric</em><big>)</big><a class="headerlink" href="#coswgt_pattern_cor" title="Permalink to this definition">¶</a></dt>
+<code class="descname">coswgt_pattern_cor</code><span class="sig-paren">(</span><em>field1:numeric</em>, <em>field2:numeric</em><span class="sig-paren">)</span><a class="headerlink" href="#coswgt_pattern_cor" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -295,7 +296,7 @@ the corresponding months from data.</dd>
 
 <dl class="function">
 <dt id="interannual_variability">
-<tt class="descname">interannual_variability</tt><big>(</big><em>field: numeric</em>, <em>y1[1]: integer</em>, <em>y2[1]: integer</em>, <em>opt[1]: string</em><big>)</big><a class="headerlink" href="#interannual_variability" title="Permalink to this definition">¶</a></dt>
+<code class="descname">interannual_variability</code><span class="sig-paren">(</span><em>field: numeric</em>, <em>y1[1]: integer</em>, <em>y2[1]: integer</em>, <em>opt[1]: string</em><span class="sig-paren">)</span><a class="headerlink" href="#interannual_variability" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -304,7 +305,7 @@ the corresponding months from data.</dd>
 <li><strong>field</strong> (<em>numeric</em>) &#8211; a numeric array of rank 1 to 4, first dimension must be time.</li>
 <li><strong>y1</strong> (<em>integer</em>) &#8211; start year of the time period to be averaged (-1 for full range).</li>
 <li><strong>y2</strong> (<em>integer</em>) &#8211; end year of the time period to be averaged (-1 for full range).</li>
-<li><strong>opt</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; operation options (same as time_operations): &#8220;annualclim&#8221;: annual climatology. &#8220;seasonalclim&#8221;: seasonal climatology for the standard seasons DJF, MAM, JJA, SON. &#8220;monthlyclim&#8221;: monthly climatology jan-dec. [month strings]: climatology of selected (consecutive) months (e.g. &#8220;MAM&#8221;, &#8220;SONDJ&#8221;). [1, 12]: climatology of the selected month (&#8220;1&#8221;=Jan, &#8220;2&#8221;=Feb, ..., &#8220;12&#8221;=Dec).</li>
+<li><strong>opt</strong> (<a class="reference external" href="https://docs.python.org/2/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; operation options (same as time_operations): &#8220;annualclim&#8221;: annual climatology. &#8220;seasonalclim&#8221;: seasonal climatology for the standard seasons DJF, MAM, JJA, SON. &#8220;monthlyclim&#8221;: monthly climatology jan-dec. [month strings]: climatology of selected (consecutive) months (e.g. &#8220;MAM&#8221;, &#8220;SONDJ&#8221;). [1, 12]: climatology of the selected month (&#8220;1&#8221;=Jan, &#8220;2&#8221;=Feb, ..., &#8220;12&#8221;=Dec).</li>
 </ul>
 </td>
 </tr>
@@ -329,7 +330,7 @@ variability for which all years have the same weight.</dd>
 
 <dl class="function">
 <dt id="calculate_metric">
-<tt class="descname">calculate_metric</tt><big>(</big><em>var:numeric</em>, <em>ref:numeric</em>, <em>metric:string</em><big>)</big><a class="headerlink" href="#calculate_metric" title="Permalink to this definition">¶</a></dt>
+<code class="descname">calculate_metric</code><span class="sig-paren">(</span><em>var:numeric</em>, <em>ref:numeric</em>, <em>metric:string</em><span class="sig-paren">)</span><a class="headerlink" href="#calculate_metric" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -337,7 +338,7 @@ variability for which all years have the same weight.</dd>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>var</strong> (<em>numeric</em>) &#8211; a 1-D or 2-D numerical array.</li>
 <li><strong>ref</strong> (<em>numeric</em>) &#8211; a numerical array of the same dimensionality of var.</li>
-<li><strong>metric</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; a string with the metric to calculate: &#8220;RMSD&#8221;: root-mean square difference. &#8220;BIAS&#8221;: mean bias. &#8220;stddev_ratio&#8221;: ratio of standard deviations of var and ref (to be used in Taylor diagram). &#8220;correlation&#8221;: pattern correlation for var and ref (to be used in Taylor diagram).</li>
+<li><strong>metric</strong> (<a class="reference external" href="https://docs.python.org/2/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; a string with the metric to calculate: &#8220;RMSD&#8221;: root-mean square difference. &#8220;BIAS&#8221;: mean bias. &#8220;stddev_ratio&#8221;: ratio of standard deviations of var and ref (to be used in Taylor diagram). &#8220;correlation&#8221;: pattern correlation for var and ref (to be used in Taylor diagram).</li>
 </ul>
 </td>
 </tr>
@@ -361,14 +362,14 @@ dimensionality.</dd>
 
 <dl class="function">
 <dt id="normalize_metric">
-<tt class="descname">normalize_metric</tt><big>(</big><em>var:numeric</em>, <em>opt:string</em><big>)</big><a class="headerlink" href="#normalize_metric" title="Permalink to this definition">¶</a></dt>
+<code class="descname">normalize_metric</code><span class="sig-paren">(</span><em>var:numeric</em>, <em>opt:string</em><span class="sig-paren">)</span><a class="headerlink" href="#normalize_metric" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>var</strong> (<em>numeric</em>) &#8211; numerical array.</li>
-<li><strong>opt</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; option determining the used normalization: &#8220;mean&#8221;: normalization with mean. &#8220;median&#8221;: normalization with median. &#8220;stddev_mean&#8221;: normalization with substracting the mean and dividing by the standard deviation. &#8220;centered_median&#8221;: substracting and dividing by the median.</li>
+<li><strong>opt</strong> (<a class="reference external" href="https://docs.python.org/2/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; option determining the used normalization: &#8220;mean&#8221;: normalization with mean. &#8220;median&#8221;: normalization with median. &#8220;stddev_mean&#8221;: normalization with substracting the mean and dividing by the standard deviation. &#8220;centered_median&#8221;: substracting and dividing by the median.</li>
 </ul>
 </td>
 </tr>
@@ -392,14 +393,14 @@ dimensionality.</dd>
 
 <dl class="function">
 <dt id="distrib_stats">
-<tt class="descname">distrib_stats</tt><big>(</big><em>var[*]:numeric</em>, <em>opt:string</em><big>)</big><a class="headerlink" href="#distrib_stats" title="Permalink to this definition">¶</a></dt>
+<code class="descname">distrib_stats</code><span class="sig-paren">(</span><em>var[*]:numeric</em>, <em>opt:string</em><span class="sig-paren">)</span><a class="headerlink" href="#distrib_stats" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>var</strong> (<em>numeric</em>) &#8211; a one-dimensional input array.</li>
-<li><strong>opt</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; type of statistic: &#8220;N&#8221;: number of elements. &#8220;mean&#8221;: mean. &#8220;median&#8221;: median. &#8220;min&#8221;: minimum. &#8220;max&#8221;: maximum. &#8220;stddev&#8221;: standard deviation. [value]: percentile (a value between 0 and 100).</li>
+<li><strong>opt</strong> (<a class="reference external" href="https://docs.python.org/2/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; type of statistic: &#8220;N&#8221;: number of elements. &#8220;mean&#8221;: mean. &#8220;median&#8221;: median. &#8220;min&#8221;: minimum. &#8220;max&#8221;: maximum. &#8220;stddev&#8221;: standard deviation. [value]: percentile (a value between 0 and 100).</li>
 </ul>
 </td>
 </tr>
@@ -422,7 +423,7 @@ distribution. Missing values are ignored.</dd>
 
 <dl class="function">
 <dt id="lognormal_dist">
-<tt class="descname">lognormal_dist</tt><big>(</big><em>nn:numeric</em>, <em>dg:numeric</em>, <em>sig[1]:numeric</em>, <em>darr[*]:numeric</em><big>)</big><a class="headerlink" href="#lognormal_dist" title="Permalink to this definition">¶</a></dt>
+<code class="descname">lognormal_dist</code><span class="sig-paren">(</span><em>nn:numeric</em>, <em>dg:numeric</em>, <em>sig[1]:numeric</em>, <em>darr[*]:numeric</em><span class="sig-paren">)</span><a class="headerlink" href="#lognormal_dist" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -460,37 +461,36 @@ New York, US, 1998.</dd>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
   <p class="topless"><a href="set_operators.html"
-                        title="previous chapter"><tt class="docutils literal docutils literal docutils literal docutils literal"><span class="pre">set_operators</span></tt></a></p>
+                        title="previous chapter"><code class="docutils literal"><span class="pre">set_operators</span></code></a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="style.html"
-                        title="next chapter"><tt class="docutils literal"><span class="pre">style</span></tt></a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="../_sources/diag_scripts/statistics.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
+                        title="next chapter"><code class="docutils literal"><span class="pre">style</span></code></a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/diag_scripts/statistics.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -502,13 +502,13 @@ New York, US, 1998.</dd>
         <li class="right" >
           <a href="set_operators.html" title="set_operators"
              >previous</a> |</li>
-        <li><a href="../index.html">ESMValTool 1.0 documentation</a> &raquo;</li>
-          <li><a href="index.html" >NCL diagnostic scripts library</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">ESMValTool 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >NCL diagnostic scripts library</a> &#187;</li> 
       </ul>
     </div>
-    <div class="footer">
-        &copy; Copyright 2015, Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2015, Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2.
     </div>
   </body>
 </html>

@@ -6,9 +6,9 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>regridding &mdash; ESMValTool 1.0 documentation</title>
+    <title>regridding &#8212; ESMValTool 1.0 documentation</title>
     
-    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -17,20 +17,21 @@
         VERSION:     '1.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="ESMValTool 1.0 documentation" href="../index.html" />
-    <link rel="up" title="NCL diagnostic scripts library" href="index.html" />
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="scaling" href="scaling.html" />
     <link rel="prev" title="latlon" href="latlon.html" /> 
   </head>
-  <body>
-    <div class="related">
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -42,30 +43,30 @@
         <li class="right" >
           <a href="latlon.html" title="latlon"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">ESMValTool 1.0 documentation</a> &raquo;</li>
-          <li><a href="index.html" accesskey="U">NCL diagnostic scripts library</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">ESMValTool 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">NCL diagnostic scripts library</a> &#187;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="regridding">
-<h1><tt class="xref py py-mod docutils literal"><span class="pre">regridding</span></tt><a class="headerlink" href="#regridding" title="Permalink to this headline">¶</a></h1>
+<h1><code class="xref py py-mod docutils literal"><span class="pre">regridding</span></code><a class="headerlink" href="#regridding" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="find_destination_grid">
-<tt class="descname">find_destination_grid</tt><big>(</big><em>indexes[*]:integer</em>, <em>var:string</em>, <em>field:string</em>, <em>opt[1]:string</em><big>)</big><a class="headerlink" href="#find_destination_grid" title="Permalink to this definition">¶</a></dt>
+<code class="descname">find_destination_grid</code><span class="sig-paren">(</span><em>indexes[*]:integer</em>, <em>var:string</em>, <em>field:string</em>, <em>opt[1]:string</em><span class="sig-paren">)</span><a class="headerlink" href="#find_destination_grid" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>indexes</strong> (<em>integer</em>) &#8211; a 1-D array of model indexes to be considered.</li>
-<li><strong>var</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; variable name.</li>
-<li><strong>field</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; field type.</li>
-<li><strong>opt</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; type of grid to be selected: &#8220;coarsest&#8221;: returns the lowest resolution grid. &#8220;finest&#8221;: returns the highest resolution grid.</li>
+<li><strong>var</strong> (<a class="reference external" href="https://docs.python.org/2/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; variable name.</li>
+<li><strong>field</strong> (<a class="reference external" href="https://docs.python.org/2/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; field type.</li>
+<li><strong>opt</strong> (<a class="reference external" href="https://docs.python.org/2/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; type of grid to be selected: &#8220;coarsest&#8221;: returns the lowest resolution grid. &#8220;finest&#8221;: returns the highest resolution grid.</li>
 </ul>
 </td>
 </tr>
@@ -96,7 +97,7 @@ longitude from another model.</dd>
 
 <dl class="function">
 <dt id="guestimate_average_grid_area">
-<tt class="descname">guestimate_average_grid_area</tt><big>(</big><em>data[*][*]:numeric</em><big>)</big><a class="headerlink" href="#guestimate_average_grid_area" title="Permalink to this definition">¶</a></dt>
+<code class="descname">guestimate_average_grid_area</code><span class="sig-paren">(</span><em>data[*][*]:numeric</em><span class="sig-paren">)</span><a class="headerlink" href="#guestimate_average_grid_area" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return value</p>
 <p>Description</p>
 <p>Caveats</p>
@@ -106,7 +107,7 @@ longitude from another model.</dd>
 
 <dl class="function">
 <dt id="get_lower_limits">
-<tt class="descname">get_lower_limits</tt><big>(</big><em>coordinate[*]:numeric</em><big>)</big><a class="headerlink" href="#get_lower_limits" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_lower_limits</code><span class="sig-paren">(</span><em>coordinate[*]:numeric</em><span class="sig-paren">)</span><a class="headerlink" href="#get_lower_limits" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return value</p>
 <p>Description</p>
 <p>Caveats</p>
@@ -116,7 +117,7 @@ longitude from another model.</dd>
 
 <dl class="function">
 <dt id="get_upper_limits">
-<tt class="descname">get_upper_limits</tt><big>(</big><em>coordinate[*]:numeric</em><big>)</big><a class="headerlink" href="#get_upper_limits" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_upper_limits</code><span class="sig-paren">(</span><em>coordinate[*]:numeric</em><span class="sig-paren">)</span><a class="headerlink" href="#get_upper_limits" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return value</p>
 <p>Description</p>
 <p>Caveats</p>
@@ -126,7 +127,7 @@ longitude from another model.</dd>
 
 <dl class="function">
 <dt id="esmf_conserve_wrapper">
-<tt class="descname">esmf_conserve_wrapper</tt><big>(</big><em>source[*][*]:numeric</em>, <em>destination[*][*]:numeric</em><big>)</big><a class="headerlink" href="#esmf_conserve_wrapper" title="Permalink to this definition">¶</a></dt>
+<code class="descname">esmf_conserve_wrapper</code><span class="sig-paren">(</span><em>source[*][*]:numeric</em>, <em>destination[*][*]:numeric</em><span class="sig-paren">)</span><a class="headerlink" href="#esmf_conserve_wrapper" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return value</p>
 <p>Description</p>
 <p>Caveats</p>
@@ -136,7 +137,7 @@ longitude from another model.</dd>
 
 <dl class="function">
 <dt id="rect2rect_interp">
-<tt class="descname">rect2rect_interp</tt><big>(</big><em>source[*][*]:numeric</em>, <em>target[*][*]:numeric</em><big>)</big><a class="headerlink" href="#rect2rect_interp" title="Permalink to this definition">¶</a></dt>
+<code class="descname">rect2rect_interp</code><span class="sig-paren">(</span><em>source[*][*]:numeric</em>, <em>target[*][*]:numeric</em><span class="sig-paren">)</span><a class="headerlink" href="#rect2rect_interp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return value</p>
 <dl class="docutils">
 <dt>Description</dt>
@@ -150,7 +151,7 @@ longitude from another model.</dd>
 
 <dl class="function">
 <dt id="get_model_minus_ref">
-<tt class="descname">get_model_minus_ref</tt><big>(</big><em>model[*][*]:numeric</em>, <em>ref[*][*]:numeric</em><big>)</big><a class="headerlink" href="#get_model_minus_ref" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_model_minus_ref</code><span class="sig-paren">(</span><em>model[*][*]:numeric</em>, <em>ref[*][*]:numeric</em><span class="sig-paren">)</span><a class="headerlink" href="#get_model_minus_ref" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return value</p>
 <dl class="docutils">
 <dt>Description</dt>
@@ -164,7 +165,7 @@ difference.</dd>
 
 <dl class="function">
 <dt id="esmf_conserve_wrapper_time">
-<tt class="descname">esmf_conserve_wrapper_time</tt><big>(</big><em>source[*][*][*]:numeric</em>, <em>destination[*][*][*]:numeric</em>, <em>weight_file[1]:string</em>, <em>source_file[1]:string</em>, <em>destination_file[1]:string</em><big>)</big><a class="headerlink" href="#esmf_conserve_wrapper_time" title="Permalink to this definition">¶</a></dt>
+<code class="descname">esmf_conserve_wrapper_time</code><span class="sig-paren">(</span><em>source[*][*][*]:numeric</em>, <em>destination[*][*][*]:numeric</em>, <em>weight_file[1]:string</em>, <em>source_file[1]:string</em>, <em>destination_file[1]:string</em><span class="sig-paren">)</span><a class="headerlink" href="#esmf_conserve_wrapper_time" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return value</p>
 <p>Description</p>
 <dl class="docutils">
@@ -181,37 +182,36 @@ difference.</dd>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
   <p class="topless"><a href="latlon.html"
-                        title="previous chapter"><tt class="docutils literal docutils literal docutils literal docutils literal"><span class="pre">latlon</span></tt></a></p>
+                        title="previous chapter"><code class="docutils literal"><span class="pre">latlon</span></code></a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="scaling.html"
-                        title="next chapter"><tt class="docutils literal"><span class="pre">scaling</span></tt></a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="../_sources/diag_scripts/regridding.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
+                        title="next chapter"><code class="docutils literal"><span class="pre">scaling</span></code></a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/diag_scripts/regridding.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -223,13 +223,13 @@ difference.</dd>
         <li class="right" >
           <a href="latlon.html" title="latlon"
              >previous</a> |</li>
-        <li><a href="../index.html">ESMValTool 1.0 documentation</a> &raquo;</li>
-          <li><a href="index.html" >NCL diagnostic scripts library</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">ESMValTool 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >NCL diagnostic scripts library</a> &#187;</li> 
       </ul>
     </div>
-    <div class="footer">
-        &copy; Copyright 2015, Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2015, Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2.
     </div>
   </body>
 </html>

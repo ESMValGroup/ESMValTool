@@ -6,9 +6,9 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>scaling &mdash; ESMValTool 1.0 documentation</title>
+    <title>scaling &#8212; ESMValTool 1.0 documentation</title>
     
-    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -17,20 +17,21 @@
         VERSION:     '1.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="ESMValTool 1.0 documentation" href="../index.html" />
-    <link rel="up" title="NCL diagnostic scripts library" href="index.html" />
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="set_operators" href="set_operators.html" />
     <link rel="prev" title="regridding" href="regridding.html" /> 
   </head>
-  <body>
-    <div class="related">
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -42,28 +43,28 @@
         <li class="right" >
           <a href="regridding.html" title="regridding"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">ESMValTool 1.0 documentation</a> &raquo;</li>
-          <li><a href="index.html" accesskey="U">NCL diagnostic scripts library</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">ESMValTool 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">NCL diagnostic scripts library</a> &#187;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="scaling">
-<h1><tt class="xref py py-mod docutils literal"><span class="pre">scaling</span></tt><a class="headerlink" href="#scaling" title="Permalink to this headline">¶</a></h1>
+<h1><code class="xref py py-mod docutils literal"><span class="pre">scaling</span></code><a class="headerlink" href="#scaling" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="convert_units">
-<tt class="descname">convert_units</tt><big>(</big><em>var:numeric</em>, <em>units_to[1]:string</em><big>)</big><a class="headerlink" href="#convert_units" title="Permalink to this definition">¶</a></dt>
+<code class="descname">convert_units</code><span class="sig-paren">(</span><em>var:numeric</em>, <em>units_to[1]:string</em><span class="sig-paren">)</span><a class="headerlink" href="#convert_units" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>var</strong> (<em>numeric</em>) &#8211; a numeric field on any dimensionality, it must have a units attribute.</li>
-<li><strong>units_to</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; a string, specifying the units to be converted to.</li>
+<li><strong>units_to</strong> (<a class="reference external" href="https://docs.python.org/2/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; a string, specifying the units to be converted to.</li>
 </ul>
 </td>
 </tr>
@@ -88,7 +89,7 @@ the requested unit conversion is not available.</dd>
 
 <dl class="function">
 <dt id="scalfac">
-<tt class="descname">scalfac</tt><big>(</big><em>u:numeric</em>, <em>digits[1]:numeric</em><big>)</big><a class="headerlink" href="#scalfac" title="Permalink to this definition">¶</a></dt>
+<code class="descname">scalfac</code><span class="sig-paren">(</span><em>u:numeric</em>, <em>digits[1]:numeric</em><span class="sig-paren">)</span><a class="headerlink" href="#scalfac" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -122,7 +123,7 @@ values.</dd>
 
 <dl class="function">
 <dt id="scale_units">
-<tt class="descname">scale_units</tt><big>(</big><em>u:numeric</em>, <em>digits[1]:numeric</em><big>)</big><a class="headerlink" href="#scale_units" title="Permalink to this definition">¶</a></dt>
+<code class="descname">scale_units</code><span class="sig-paren">(</span><em>u:numeric</em>, <em>digits[1]:numeric</em><span class="sig-paren">)</span><a class="headerlink" href="#scale_units" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -159,7 +160,7 @@ Format codes: <a class="reference external" href="http://www.ncl.ucar.edu/Applic
 
 <dl class="function">
 <dt id="rescale">
-<tt class="descname">rescale</tt><big>(</big><em>u:numeric</em>, <em>s[1]:numeric</em><big>)</big><a class="headerlink" href="#rescale" title="Permalink to this definition">¶</a></dt>
+<code class="descname">rescale</code><span class="sig-paren">(</span><em>u:numeric</em>, <em>s[1]:numeric</em><span class="sig-paren">)</span><a class="headerlink" href="#rescale" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -195,37 +196,36 @@ to <a class="reference external" href="mailto:s&#37;&#52;&#48;units">s<span>&#64
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
   <p class="topless"><a href="regridding.html"
-                        title="previous chapter"><tt class="docutils literal docutils literal docutils literal docutils literal"><span class="pre">regridding</span></tt></a></p>
+                        title="previous chapter"><code class="docutils literal"><span class="pre">regridding</span></code></a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="set_operators.html"
-                        title="next chapter"><tt class="docutils literal"><span class="pre">set_operators</span></tt></a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="../_sources/diag_scripts/scaling.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
+                        title="next chapter"><code class="docutils literal"><span class="pre">set_operators</span></code></a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/diag_scripts/scaling.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -237,13 +237,13 @@ to <a class="reference external" href="mailto:s&#37;&#52;&#48;units">s<span>&#64
         <li class="right" >
           <a href="regridding.html" title="regridding"
              >previous</a> |</li>
-        <li><a href="../index.html">ESMValTool 1.0 documentation</a> &raquo;</li>
-          <li><a href="index.html" >NCL diagnostic scripts library</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">ESMValTool 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >NCL diagnostic scripts library</a> &#187;</li> 
       </ul>
     </div>
-    <div class="footer">
-        &copy; Copyright 2015, Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2015, Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2.
     </div>
   </body>
 </html>

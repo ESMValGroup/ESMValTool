@@ -6,9 +6,9 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>style &mdash; ESMValTool 1.0 documentation</title>
+    <title>style &#8212; ESMValTool 1.0 documentation</title>
     
-    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -17,20 +17,21 @@
         VERSION:     '1.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="ESMValTool 1.0 documentation" href="../index.html" />
-    <link rel="up" title="NCL diagnostic scripts library" href="index.html" />
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="NCL plotting scripts library" href="../plot_scripts/index.html" />
     <link rel="prev" title="statistics" href="statistics.html" /> 
   </head>
-  <body>
-    <div class="related">
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -42,21 +43,21 @@
         <li class="right" >
           <a href="statistics.html" title="statistics"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">ESMValTool 1.0 documentation</a> &raquo;</li>
-          <li><a href="index.html" accesskey="U">NCL diagnostic scripts library</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">ESMValTool 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">NCL diagnostic scripts library</a> &#187;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="style">
-<h1><tt class="xref py py-mod docutils literal"><span class="pre">style</span></tt><a class="headerlink" href="#style" title="Permalink to this headline">¶</a></h1>
+<h1><code class="xref py py-mod docutils literal"><span class="pre">style</span></code><a class="headerlink" href="#style" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="project_styleset">
-<tt class="descname">project_styleset</tt><big>(</big><em>info</em>, <em>flag</em><big>)</big><a class="headerlink" href="#project_styleset" title="Permalink to this definition">¶</a></dt>
+<code class="descname">project_styleset</code><span class="sig-paren">(</span><em>info</em>, <em>flag</em><span class="sig-paren">)</span><a class="headerlink" href="#project_styleset" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -87,15 +88,15 @@ Considers 4 priority levels.</dd>
 
 <dl class="function">
 <dt id="select_style">
-<tt class="descname">select_style</tt><big>(</big><em>modelstyles:string</em>, <em>column:integer</em>, <em>specifiers:string</em><big>)</big><a class="headerlink" href="#select_style" title="Permalink to this definition">¶</a></dt>
+<code class="descname">select_style</code><span class="sig-paren">(</span><em>modelstyles:string</em>, <em>column:integer</em>, <em>specifiers:string</em><span class="sig-paren">)</span><a class="headerlink" href="#select_style" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>modelstyles</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; string array, relating models/cases/... with plot attributes (defined in function project_style_*)</li>
+<li><strong>modelstyles</strong> (<a class="reference external" href="https://docs.python.org/2/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; string array, relating models/cases/... with plot attributes (defined in function project_style_*)</li>
 <li><strong>column</strong> (<em>integer</em>) &#8211; integer determining which column to scan in the above array</li>
-<li><strong>specifiers</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; array of strings to loop over &amp; look for matches in the first column of modelstyles</li>
+<li><strong>specifiers</strong> (<a class="reference external" href="https://docs.python.org/2/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; array of strings to loop over &amp; look for matches in the first column of modelstyles</li>
 </ul>
 </td>
 </tr>
@@ -123,12 +124,12 @@ Considers 4 priority levels.</dd>
 
 <dl class="function">
 <dt id="unique_labels_min">
-<tt class="descname">unique_labels_min</tt><big>(</big><em>prio: string</em><big>)</big><a class="headerlink" href="#unique_labels_min" title="Permalink to this definition">¶</a></dt>
+<code class="descname">unique_labels_min</code><span class="sig-paren">(</span><em>prio: string</em><span class="sig-paren">)</span><a class="headerlink" href="#unique_labels_min" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>prio</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; string vector with attribute names (models&#64;*), ordered by priority for annotation (starting with highest).</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>prio</strong> (<a class="reference external" href="https://docs.python.org/2/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; string vector with attribute names (models&#64;*), ordered by priority for annotation (starting with highest).</td>
 </tr>
 </tbody>
 </table>
@@ -150,12 +151,12 @@ Adds &#8220;_attribute&#8221; to non-unique labels, until prio is exhausted.</dd
 
 <dl class="function">
 <dt id="unique_labels_all">
-<tt class="descname">unique_labels_all</tt><big>(</big><em>prio:string</em><big>)</big><a class="headerlink" href="#unique_labels_all" title="Permalink to this definition">¶</a></dt>
+<code class="descname">unique_labels_all</code><span class="sig-paren">(</span><em>prio:string</em><span class="sig-paren">)</span><a class="headerlink" href="#unique_labels_all" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>prio</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; string vector with attribute names (models&#64;*), ordered by priority for annotation (starting with highest)</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>prio</strong> (<a class="reference external" href="https://docs.python.org/2/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; string vector with attribute names (models&#64;*), ordered by priority for annotation (starting with highest)</td>
 </tr>
 </tbody>
 </table>
@@ -177,7 +178,7 @@ contain the same (least possible) number of attribute strings.</dd>
 
 <dl class="function">
 <dt id="gsnColorRange">
-<tt class="descname">gsnColorRange</tt><big>(</big><em>lower: numeric</em>, <em>upper: numeric</em>, <em>step: numeric</em>, <em>center: numeric</em>, <em>color_end: integer</em>, <em>center_color: integer</em><big>)</big><a class="headerlink" href="#gsnColorRange" title="Permalink to this definition">¶</a></dt>
+<code class="descname">gsnColorRange</code><span class="sig-paren">(</span><em>lower: numeric</em>, <em>upper: numeric</em>, <em>step: numeric</em>, <em>center: numeric</em>, <em>color_end: integer</em>, <em>center_color: integer</em><span class="sig-paren">)</span><a class="headerlink" href="#gsnColorRange" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -212,12 +213,12 @@ colortable.</dd>
 
 <dl class="function">
 <dt id="project_style_CMIP5">
-<tt class="descname">project_style_CMIP5</tt><big>(</big><em>flag:string</em><big>)</big><a class="headerlink" href="#project_style_CMIP5" title="Permalink to this definition">¶</a></dt>
+<code class="descname">project_style_CMIP5</code><span class="sig-paren">(</span><em>flag:string</em><span class="sig-paren">)</span><a class="headerlink" href="#project_style_CMIP5" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>flag</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; string determining the type of array requested.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>flag</strong> (<a class="reference external" href="https://docs.python.org/2/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; string determining the type of array requested.</td>
 </tr>
 </tbody>
 </table>
@@ -260,12 +261,12 @@ flag: &#8220;avgstd&#8221;: returns an array of flags</p>
 
 <dl class="function">
 <dt id="project_style_DEFAULT">
-<tt class="descname">project_style_DEFAULT</tt><big>(</big><em>flag:string</em><big>)</big><a class="headerlink" href="#project_style_DEFAULT" title="Permalink to this definition">¶</a></dt>
+<code class="descname">project_style_DEFAULT</code><span class="sig-paren">(</span><em>flag:string</em><span class="sig-paren">)</span><a class="headerlink" href="#project_style_DEFAULT" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>flag</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; string determining the type of array requested.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>flag</strong> (<a class="reference external" href="https://docs.python.org/2/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; string determining the type of array requested.</td>
 </tr>
 </tbody>
 </table>
@@ -308,12 +309,12 @@ flag: &#8220;avgstd&#8221;: returns an array of flags</p>
 
 <dl class="function">
 <dt id="project_style_EMAC">
-<tt class="descname">project_style_EMAC</tt><big>(</big><em>flag:string</em><big>)</big><a class="headerlink" href="#project_style_EMAC" title="Permalink to this definition">¶</a></dt>
+<code class="descname">project_style_EMAC</code><span class="sig-paren">(</span><em>flag:string</em><span class="sig-paren">)</span><a class="headerlink" href="#project_style_EMAC" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>flag</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; string determining the type of array requested.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>flag</strong> (<a class="reference external" href="https://docs.python.org/2/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; string determining the type of array requested.</td>
 </tr>
 </tbody>
 </table>
@@ -343,31 +344,28 @@ flag: &#8220;avgstd&#8221;: returns an array of flags</p>
 <dt>Description:</dt>
 <dd><ul class="first simple">
 <li>Definition of plot attributes: type depending on flag</li>
-<li>consider models&#64; (/&#8221;name&#8221;, &#8220;ensemble&#8221;, &#8220;experiment&#8221; or &#8220;case_name&#8221;/) 
+<li>consider models&#64; (/&#8221;name&#8221;, &#8220;ensemble&#8221;, &#8220;experiment&#8221; or &#8220;case_name&#8221;/)
 to assign colors, dashes, thicks</li>
 </ul>
 <dl class="docutils">
-<dt>&#8211;&gt; predefined different colors/thicks/dashes for selected EMAC runs  </dt>
+<dt>&#8211;&gt; predefined different colors/thicks/dashes for selected EMAC runs</dt>
 <dd>(case_name is used to distinguish those selected EMAC simulations)</dd>
 <dt>&#8211;&gt; identical other colors/thicks/dashes for not listed EMAC simulations</dt>
 <dd>(entry &#8220;EMAC&#8221; in modelstyles)</dd>
-<dt>&#8211;&gt; identical, but again other colors/thicks/dashes for non EMAC data </dt>
+<dt>&#8211;&gt; identical, but again other colors/thicks/dashes for non EMAC data</dt>
 <dd>(entry &#8220;unknown&#8221; in modelstyles)</dd>
 </dl>
 <p class="last">&#8211;&gt; modelstyles also contains definitions for some obs/rea/specials</p>
 </dd>
 <dt>Modification history:</dt>
-<dd><ul class="first last">
+<dd><ul class="first last simple">
 <li><dl class="first docutils">
 <dt>20140321 complete overhaul towards a combination of CMIP5 and</dt>
-<dd><p class="first last">EMAC_default styles (<a class="reference external" href="mailto:Klaus-Dirk&#46;Gottschaldt&#37;&#52;&#48;dlr&#46;de">Klaus-Dirk<span>&#46;</span>Gottschaldt<span>&#64;</span>dlr<span>&#46;</span>de</a>)</p>
-</dd>
+<dd>EMAC_default styles (<a class="reference external" href="mailto:Klaus-Dirk&#46;Gottschaldt&#37;&#52;&#48;dlr&#46;de">Klaus-Dirk<span>&#46;</span>Gottschaldt<span>&#64;</span>dlr<span>&#46;</span>de</a>)</dd>
 </dl>
 </li>
-<li><p class="first">20140120 changed to plot style for EMAC models (<a class="reference external" href="mailto:Franziska&#46;Frank&#37;&#52;&#48;dlr&#46;de">Franziska<span>&#46;</span>Frank<span>&#64;</span>dlr<span>&#46;</span>de</a>)</p>
-</li>
-<li><p class="first">20130430 written (<a class="reference external" href="mailto:Klaus-Dirk&#46;Gottschaldt&#37;&#52;&#48;dlr&#46;de">Klaus-Dirk<span>&#46;</span>Gottschaldt<span>&#64;</span>dlr<span>&#46;</span>de</a>)</p>
-</li>
+<li>20140120 changed to plot style for EMAC models (<a class="reference external" href="mailto:Franziska&#46;Frank&#37;&#52;&#48;dlr&#46;de">Franziska<span>&#46;</span>Frank<span>&#64;</span>dlr<span>&#46;</span>de</a>)</li>
+<li>20130430 written (<a class="reference external" href="mailto:Klaus-Dirk&#46;Gottschaldt&#37;&#52;&#48;dlr&#46;de">Klaus-Dirk<span>&#46;</span>Gottschaldt<span>&#64;</span>dlr<span>&#46;</span>de</a>)</li>
 </ul>
 </dd>
 </dl>
@@ -375,12 +373,12 @@ to assign colors, dashes, thicks</li>
 
 <dl class="function">
 <dt id="project_style_EMAC_default">
-<tt class="descname">project_style_EMAC_default</tt><big>(</big><em>flag:string</em><big>)</big><a class="headerlink" href="#project_style_EMAC_default" title="Permalink to this definition">¶</a></dt>
+<code class="descname">project_style_EMAC_default</code><span class="sig-paren">(</span><em>flag:string</em><span class="sig-paren">)</span><a class="headerlink" href="#project_style_EMAC_default" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>flag</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; string determining the type of array requested.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>flag</strong> (<a class="reference external" href="https://docs.python.org/2/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; string determining the type of array requested.</td>
 </tr>
 </tbody>
 </table>
@@ -429,12 +427,12 @@ flag: &#8220;avgstd&#8221;: returns an array of flags</p>
 
 <dl class="function">
 <dt id="project_style_righi15gmd">
-<tt class="descname">project_style_righi15gmd</tt><big>(</big><em>flag:string</em><big>)</big><a class="headerlink" href="#project_style_righi15gmd" title="Permalink to this definition">¶</a></dt>
+<code class="descname">project_style_righi15gmd</code><span class="sig-paren">(</span><em>flag:string</em><span class="sig-paren">)</span><a class="headerlink" href="#project_style_righi15gmd" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>flag</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; string determining the type of array requested.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>flag</strong> (<a class="reference external" href="https://docs.python.org/2/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; string determining the type of array requested.</td>
 </tr>
 </tbody>
 </table>
@@ -478,7 +476,7 @@ flag: &#8220;avgstd&#8221;: returns an array of flags</p>
 
 <dl class="function">
 <dt id="project_style">
-<tt class="descname">project_style</tt><big>(</big><em>info</em>, <em>flag</em><big>)</big><a class="headerlink" href="#project_style" title="Permalink to this definition">¶</a></dt>
+<code class="descname">project_style</code><span class="sig-paren">(</span><em>info</em>, <em>flag</em><span class="sig-paren">)</span><a class="headerlink" href="#project_style" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -530,14 +528,14 @@ flag: &#8220;avgstd&#8221;: returns an array of flags</p>
 
 <dl class="function">
 <dt id="place_debuginfo">
-<tt class="descname">place_debuginfo</tt><big>(</big><em>wks [1] : graphic</em>, <em>debugstring [1] : string</em>, <em>res [1] : logical</em>, <em>plot [1] : graphic</em><big>)</big><a class="headerlink" href="#place_debuginfo" title="Permalink to this definition">¶</a></dt>
+<code class="descname">place_debuginfo</code><span class="sig-paren">(</span><em>wks [1] : graphic</em>, <em>debugstring [1] : string</em>, <em>res [1] : logical</em>, <em>plot [1] : graphic</em><span class="sig-paren">)</span><a class="headerlink" href="#place_debuginfo" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>wks</strong> (<em>graphic</em>) &#8211; &#8211; current workstation</li>
-<li><strong>debugstring</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; &#8211; string to attach</li>
+<li><strong>debugstring</strong> (<a class="reference external" href="https://docs.python.org/2/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; &#8211; string to attach</li>
 <li><strong>res</strong> (<em>logical</em>) &#8211; &#8211; resource settings for display box</li>
 <li><strong>plot</strong> (<em>graphic</em>) &#8211; &#8211; graphic object to draw text onto</li>
 </ul>
@@ -553,15 +551,15 @@ flag: &#8220;avgstd&#8221;: returns an array of flags</p>
 
 <dl class="function">
 <dt id="place_description">
-<tt class="descname">place_description</tt><big>(</big><em>wks [1] : graphic</em>, <em>description [1] : string</em>, <em>y_ndc_coord [1] : float</em><big>)</big><a class="headerlink" href="#place_description" title="Permalink to this definition">¶</a></dt>
+<code class="descname">place_description</code><span class="sig-paren">(</span><em>wks [1] : graphic</em>, <em>description [1] : string</em>, <em>y_ndc_coord [1] : float</em><span class="sig-paren">)</span><a class="headerlink" href="#place_description" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>wks</strong> (<em>graphic</em>) &#8211; &#8211; current workstation</li>
-<li><strong>description</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; &#8211; string to attach</li>
-<li><strong>y_ndc_coord</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; &#8211; vertical placement in ndc space (-1 for default)</li>
+<li><strong>description</strong> (<a class="reference external" href="https://docs.python.org/2/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; &#8211; string to attach</li>
+<li><strong>y_ndc_coord</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; &#8211; vertical placement in ndc space (-1 for default)</li>
 </ul>
 </td>
 </tr>
@@ -575,12 +573,12 @@ flag: &#8220;avgstd&#8221;: returns an array of flags</p>
 
 <dl class="function">
 <dt id="format_units">
-<tt class="descname">format_units</tt><big>(</big><em>str[1]: string</em><big>)</big><a class="headerlink" href="#format_units" title="Permalink to this definition">¶</a></dt>
+<code class="descname">format_units</code><span class="sig-paren">(</span><em>str[1]: string</em><span class="sig-paren">)</span><a class="headerlink" href="#format_units" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>str</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; a string.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>str</strong> (<a class="reference external" href="https://docs.python.org/2/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; a string.</td>
 </tr>
 </tbody>
 </table>
@@ -602,7 +600,7 @@ flag: &#8220;avgstd&#8221;: returns an array of flags</p>
 
 <dl class="function">
 <dt id="set_log_ticks">
-<tt class="descname">set_log_ticks</tt><big>(</big><em>fmin[1]:numeric</em>, <em>fmax[1]:numeric</em>, <em>opt[1]:string</em><big>)</big><a class="headerlink" href="#set_log_ticks" title="Permalink to this definition">¶</a></dt>
+<code class="descname">set_log_ticks</code><span class="sig-paren">(</span><em>fmin[1]:numeric</em>, <em>fmax[1]:numeric</em>, <em>opt[1]:string</em><span class="sig-paren">)</span><a class="headerlink" href="#set_log_ticks" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -610,7 +608,7 @@ flag: &#8220;avgstd&#8221;: returns an array of flags</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>fmin</strong> (<em>numeric</em>) &#8211; the minimum axis value (as specified by trXMinF or trYMinF)</li>
 <li><strong>fmax</strong> (<em>numeric</em>) &#8211; the maximum axis value (as specified by trXMaxF or trYMaxF)</li>
-<li><strong>opt</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; &#8220;major&#8221; or &#8220;minor&#8221;, to return major or minor ticks.</li>
+<li><strong>opt</strong> (<a class="reference external" href="https://docs.python.org/2/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; &#8220;major&#8221; or &#8220;minor&#8221;, to return major or minor ticks.</li>
 </ul>
 </td>
 </tr>
@@ -639,37 +637,36 @@ notation.</dd>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
   <p class="topless"><a href="statistics.html"
-                        title="previous chapter"><tt class="docutils literal docutils literal docutils literal docutils literal"><span class="pre">statistics</span></tt></a></p>
+                        title="previous chapter"><code class="docutils literal"><span class="pre">statistics</span></code></a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="../plot_scripts/index.html"
                         title="next chapter">NCL plotting scripts library</a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="../_sources/diag_scripts/style.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/diag_scripts/style.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -681,13 +678,13 @@ notation.</dd>
         <li class="right" >
           <a href="statistics.html" title="statistics"
              >previous</a> |</li>
-        <li><a href="../index.html">ESMValTool 1.0 documentation</a> &raquo;</li>
-          <li><a href="index.html" >NCL diagnostic scripts library</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">ESMValTool 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >NCL diagnostic scripts library</a> &#187;</li> 
       </ul>
     </div>
-    <div class="footer">
-        &copy; Copyright 2015, Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2015, Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2.
     </div>
   </body>
 </html>

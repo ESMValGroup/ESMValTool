@@ -6,9 +6,9 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>NCL plotting scripts library &mdash; ESMValTool 1.0 documentation</title>
+    <title>NCL plotting scripts library &#8212; ESMValTool 1.0 documentation</title>
     
-    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -17,19 +17,21 @@
         VERSION:     '1.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="ESMValTool 1.0 documentation" href="../index.html" />
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="aux_plotting" href="aux_plotting.html" />
     <link rel="prev" title="style" href="../diag_scripts/style.html" /> 
   </head>
-  <body>
-    <div class="related">
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -41,30 +43,30 @@
         <li class="right" >
           <a href="../diag_scripts/style.html" title="style"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">ESMValTool 1.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">ESMValTool 1.0 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="ncl-plotting-scripts-library">
 <h1>NCL plotting scripts library<a class="headerlink" href="#ncl-plotting-scripts-library" title="Permalink to this headline">¶</a></h1>
 <p>Contents:</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="aux_plotting.html"><tt class="docutils literal"><span class="pre">aux_plotting</span></tt></a></li>
-<li class="toctree-l1"><a class="reference internal" href="contour_maps.html"><tt class="docutils literal"><span class="pre">contour_maps</span></tt></a></li>
-<li class="toctree-l1"><a class="reference internal" href="legends.html"><tt class="docutils literal"><span class="pre">legends</span></tt></a></li>
-<li class="toctree-l1"><a class="reference internal" href="monsoon_domain_panels.html"><tt class="docutils literal"><span class="pre">monsoon_domain_panels</span></tt></a></li>
-<li class="toctree-l1"><a class="reference internal" href="monsoon_panels.html"><tt class="docutils literal"><span class="pre">monsoon_panels</span></tt></a></li>
-<li class="toctree-l1"><a class="reference internal" href="portrait_plot.html"><tt class="docutils literal"><span class="pre">portrait_plot</span></tt></a></li>
-<li class="toctree-l1"><a class="reference internal" href="scatterplot.html"><tt class="docutils literal"><span class="pre">scatterplot</span></tt></a></li>
-<li class="toctree-l1"><a class="reference internal" href="taylor_plot.html"><tt class="docutils literal"><span class="pre">taylor_plot</span></tt></a></li>
-<li class="toctree-l1"><a class="reference internal" href="xy_line.html"><tt class="docutils literal"><span class="pre">xy_line</span></tt></a></li>
-<li class="toctree-l1"><a class="reference internal" href="zonalmean_profile.html"><tt class="docutils literal"><span class="pre">zonalmean_profile</span></tt></a></li>
+<li class="toctree-l1"><a class="reference internal" href="aux_plotting.html"><code class="docutils literal"><span class="pre">aux_plotting</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="contour_maps.html"><code class="docutils literal"><span class="pre">contour_maps</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="legends.html"><code class="docutils literal"><span class="pre">legends</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="monsoon_domain_panels.html"><code class="docutils literal"><span class="pre">monsoon_domain_panels</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="monsoon_panels.html"><code class="docutils literal"><span class="pre">monsoon_panels</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="portrait_plot.html"><code class="docutils literal"><span class="pre">portrait_plot</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="scatterplot.html"><code class="docutils literal"><span class="pre">scatterplot</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="taylor_plot.html"><code class="docutils literal"><span class="pre">taylor_plot</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="xy_line.html"><code class="docutils literal"><span class="pre">xy_line</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="zonalmean_profile.html"><code class="docutils literal"><span class="pre">zonalmean_profile</span></code></a></li>
 </ul>
 </div>
 </div>
@@ -73,37 +75,36 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
   <p class="topless"><a href="../diag_scripts/style.html"
-                        title="previous chapter"><tt class="docutils literal docutils literal docutils literal docutils literal"><span class="pre">style</span></tt></a></p>
+                        title="previous chapter"><code class="docutils literal"><span class="pre">style</span></code></a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="aux_plotting.html"
-                        title="next chapter"><tt class="docutils literal docutils literal docutils literal docutils literal"><span class="pre">aux_plotting</span></tt></a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="../_sources/plot_scripts/index.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
+                        title="next chapter"><code class="docutils literal"><span class="pre">aux_plotting</span></code></a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/plot_scripts/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -115,12 +116,12 @@
         <li class="right" >
           <a href="../diag_scripts/style.html" title="style"
              >previous</a> |</li>
-        <li><a href="../index.html">ESMValTool 1.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">ESMValTool 1.0 documentation</a> &#187;</li> 
       </ul>
     </div>
-    <div class="footer">
-        &copy; Copyright 2015, Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2015, Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2.
     </div>
   </body>
 </html>

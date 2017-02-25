@@ -6,9 +6,9 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>contour_maps &mdash; ESMValTool 1.0 documentation</title>
+    <title>contour_maps &#8212; ESMValTool 1.0 documentation</title>
     
-    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -17,20 +17,21 @@
         VERSION:     '1.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="ESMValTool 1.0 documentation" href="../index.html" />
-    <link rel="up" title="NCL plotting scripts library" href="index.html" />
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="legends" href="legends.html" />
     <link rel="prev" title="aux_plotting" href="aux_plotting.html" /> 
   </head>
-  <body>
-    <div class="related">
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -42,21 +43,21 @@
         <li class="right" >
           <a href="aux_plotting.html" title="aux_plotting"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">ESMValTool 1.0 documentation</a> &raquo;</li>
-          <li><a href="index.html" accesskey="U">NCL plotting scripts library</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">ESMValTool 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">NCL plotting scripts library</a> &#187;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="contour-maps">
-<h1><tt class="xref py py-mod docutils literal"><span class="pre">contour_maps</span></tt><a class="headerlink" href="#contour-maps" title="Permalink to this headline">¶</a></h1>
+<h1><code class="xref py py-mod docutils literal"><span class="pre">contour_maps</span></code><a class="headerlink" href="#contour-maps" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="contour_map">
-<tt class="descname">contour_map</tt><big>(</big><em>wks_in[1], source, varname[1]: string</em><big>)</big><a class="headerlink" href="#contour_map" title="Permalink to this definition">¶</a></dt>
+<code class="descname">contour_map</code><span class="sig-paren">(</span><em>wks_in[1], source, varname[1]: string</em><span class="sig-paren">)</span><a class="headerlink" href="#contour_map" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -64,7 +65,7 @@
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>wks_in</strong> (<em>integer</em>) &#8211; workstations (graphic object or default will be used).</li>
 <li><strong>source</strong> (<em>integer</em>) &#8211; data to be plotted or a NetCDF filename with data.</li>
-<li><strong>varname</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; variable name in the file.</li>
+<li><strong>varname</strong> (<a class="reference external" href="https://docs.python.org/2/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; variable name in the file.</li>
 </ul>
 </td>
 </tr>
@@ -94,7 +95,7 @@ Input via netCDF not yet implemented</dd>
 
 <dl class="function">
 <dt id="contour_map_polar">
-<tt class="descname">contour_map_polar</tt><big>(</big><em>wks_in[1], source, varname[1]: string</em><big>)</big><a class="headerlink" href="#contour_map_polar" title="Permalink to this definition">¶</a></dt>
+<code class="descname">contour_map_polar</code><span class="sig-paren">(</span><em>wks_in[1], source, varname[1]: string</em><span class="sig-paren">)</span><a class="headerlink" href="#contour_map_polar" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -102,7 +103,7 @@ Input via netCDF not yet implemented</dd>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>wks_in</strong> (<em>integer</em>) &#8211; workstations (graphic object or default will be used).</li>
 <li><strong>source</strong> (<em>integer</em>) &#8211; data to be plotted or a NetCDF filename with data.</li>
-<li><strong>varname</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; variable name in the file.</li>
+<li><strong>varname</strong> (<a class="reference external" href="https://docs.python.org/2/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; variable name in the file.</li>
 </ul>
 </td>
 </tr>
@@ -136,7 +137,7 @@ Input via netCDF not yet implemented</dd>
 
 <dl class="function">
 <dt id="contour_map_ce">
-<tt class="descname">contour_map_ce</tt><big>(</big><em>wks_in[1], source, varname[1]: string</em><big>)</big><a class="headerlink" href="#contour_map_ce" title="Permalink to this definition">¶</a></dt>
+<code class="descname">contour_map_ce</code><span class="sig-paren">(</span><em>wks_in[1], source, varname[1]: string</em><span class="sig-paren">)</span><a class="headerlink" href="#contour_map_ce" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -144,7 +145,7 @@ Input via netCDF not yet implemented</dd>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>wks_in</strong> (<em>integer</em>) &#8211; workstations (graphic object or default will be used).</li>
 <li><strong>source</strong> (<em>integer</em>) &#8211; data to be plotted or a NetCDF filename with data.</li>
-<li><strong>varname</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; variable name in the file.</li>
+<li><strong>varname</strong> (<a class="reference external" href="https://docs.python.org/2/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; variable name in the file.</li>
 </ul>
 </td>
 </tr>
@@ -174,7 +175,7 @@ Input via netCDF not yet implemented</dd>
 
 <dl class="function">
 <dt id="add_markers_to_map">
-<tt class="descname">add_markers_to_map</tt><big>(</big><em>wks_in[1], plot[1]: graphic, lat[*]: numeric,  lon[*]: numeric, data[*]: numeric</em><big>)</big><a class="headerlink" href="#add_markers_to_map" title="Permalink to this definition">¶</a></dt>
+<code class="descname">add_markers_to_map</code><span class="sig-paren">(</span><em>wks_in[1], plot[1]: graphic, lat[*]: numeric,  lon[*]: numeric, data[*]: numeric</em><span class="sig-paren">)</span><a class="headerlink" href="#add_markers_to_map" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -208,37 +209,36 @@ the associated labelbar.</dd>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
   <p class="topless"><a href="aux_plotting.html"
-                        title="previous chapter"><tt class="docutils literal docutils literal docutils literal"><span class="pre">aux_plotting</span></tt></a></p>
+                        title="previous chapter"><code class="docutils literal"><span class="pre">aux_plotting</span></code></a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="legends.html"
-                        title="next chapter"><tt class="docutils literal"><span class="pre">legends</span></tt></a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="../_sources/plot_scripts/contour_maps.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
+                        title="next chapter"><code class="docutils literal"><span class="pre">legends</span></code></a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/plot_scripts/contour_maps.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -250,13 +250,13 @@ the associated labelbar.</dd>
         <li class="right" >
           <a href="aux_plotting.html" title="aux_plotting"
              >previous</a> |</li>
-        <li><a href="../index.html">ESMValTool 1.0 documentation</a> &raquo;</li>
-          <li><a href="index.html" >NCL plotting scripts library</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">ESMValTool 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >NCL plotting scripts library</a> &#187;</li> 
       </ul>
     </div>
-    <div class="footer">
-        &copy; Copyright 2015, Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2015, Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2.
     </div>
   </body>
 </html>
