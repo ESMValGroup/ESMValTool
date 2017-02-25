@@ -76,6 +76,7 @@ class ESMValToolTest(EasyTest):
         # run first all Easytest routines and then run internal tests
 
         EasyTest.run_tests(self, **kwargs)
+        # check that log files are existing and have a size > 0 bytes
         if not self.test_logfile_exists():
             self.sucess = False
 

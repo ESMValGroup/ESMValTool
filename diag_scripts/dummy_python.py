@@ -34,6 +34,10 @@ def main(project_info):
     if plot_dir[-1] != os.sep:
         plot_dir += os.sep
 
+    wrk_dir = project_info['GLOBAL']['wrk_dir']
+    if wrk_dir[-1] != os.sep:
+        wrk_dir += os.sep
+
     f = plt.figure()
     ax = f.add_subplot(111)
     ax.plot(np.random.random(100))
@@ -49,6 +53,10 @@ def main(project_info):
     o=open(plot_dir + 'empty.txt', 'w')
     o.close()
 
+    # write something to the logfile
+    o = open(wrk_dir + 'refs-acknows_dummy_python_new.log', 'w')
+    o.write('Luke Skywalker was here!')
+    o.close()
 
 
     #~ print 'Project info keys:'
