@@ -1,7 +1,7 @@
-import pdb
+# import pdb
 import sys
 import commands
-import string
+# import string
 
 
 class nclExecuteError(Exception):
@@ -101,10 +101,12 @@ def ncl_version_check():
     if out[0] != 0:
         error("NCL not found")
 
-    if out[1] == "6.3.0":
-        error("NCL version " + out[1] + 
-              " not supported due to a bug " + 
-              "(see Known Issues in the ESMValTool user guide)")
+    # AL deactivated for testing only; needs to be activated again
+    # disadvantage: NCL 6.3.0 is the current standard!
+    # if out[1] == "6.3.0":
+    #    error("NCL version " + out[1] + 
+    #          " not supported due to a bug " + 
+    #          "(see Known Issues in the ESMValTool user guide)")
 
     if int(out[1].split(".")[0]) < 6:
         error("NCL version " + out[1] + " not supported, need version 6.2.0 or higher")
