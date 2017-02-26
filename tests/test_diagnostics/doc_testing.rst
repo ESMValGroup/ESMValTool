@@ -19,7 +19,7 @@ Getting started
 
 To be able to use the testing a number of prerequesites need to be fulfilled.
 These are typically already installed when the ESMValTool is installed using
-`conda``.
+`conda`.
 
 
 Prerequesite #1: install `easytest`
@@ -30,7 +30,7 @@ The ESMValTool testing facility is based on the python package `easytest <https:
 Prerequesite #2: nosetests
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-`nosetests <https://nose.readthedocs.org/en/latest/>`_ should have been already installed. If not, do so as it is needed for the entire testing of ESMValTool.
+`nosetests <https://nose.readthedocs.org/en/latest/>`_ should have been already installed. If not, do so as it is needed for a convenient testing experience. Test could also be exectuted without `nosetests``, but this makes life so much easier. 
 
 
 Prerequesite #3: provide reference data
@@ -82,6 +82,14 @@ The general concept of the testing framework is that it compares results of a di
 1. check if all output files are available (Filecheck)
 2. check that content of output files is the same (MD5 checksum check)
 3. check that graphic files look the same (graphic check)  - TBD in development
+
+
+check no zero bytes
+check that acknowledgements are there
+
+TODO put flowchart image for testing in the documentation as well !!!
+
+
 
 What is needed?
 
