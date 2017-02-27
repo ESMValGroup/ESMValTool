@@ -14,14 +14,14 @@ The overall objective of automated testing in the ESMValTool is to ensure that
 * ensure that the different software components (backend, diagnostics,
   plotting) results in correct results
   
-  
+The following figure shows how testing integrates in the overall software development workflow. 
   
 
 .. figure:: testing_workflow.png
    :scale: 50 %
    :alt: Testing in the continous integration (CI) workflow
 
-   The role of testing in the continous integration (CI ) lifecyle of a software project
+   The role of testing in the continous integration (CI) lifecyle of a software project
 
 
 
