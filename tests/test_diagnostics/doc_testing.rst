@@ -13,21 +13,35 @@ The overall objective of automated testing in the ESMValTool is to ensure that
 * the software was properly installed on the system
 * ensure that the different software components (backend, diagnostics,
   plotting) results in correct results
+  
+  
+  
+
+.. figure:: testing_workflow.png
+   :scale: 50 %
+   :alt: Testing in the continous integration (CI) workflow
+
+   The role of testing in the continous integration (CI ) lifecyle of a software project
+
+   xxxxx The legend consists of all elements after the caption.  In this
+   case, the legend consists of this paragraph and the following
+   table:
+
+
+
+
+
+
 
 How does the testing in ESMValTool work in principle?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The general concept of the testing framework is that it compares results of a diagnostic with reference data generated once with the same inputs for the same diagnostic. The following checks can be performed:
+The general concept of the testing framework is that it compares results of a diagnostic with reference data generated once with the same inputs for the same diagnostic. The following checks can be currently performed:
 
 1. check if all output files are available (Filecheck)
 2. check that content of output files is the same (MD5 checksum check)
-3. check that graphic files look the same (graphic check)  - TBD in development
-
-
-check no zero bytes
-check that acknowledgements are there
-
-TODO put flowchart image for testing in the documentation as well !!!
+3. check that output file sizes are greater than zero bytes
+4. check that acknowledgments are provided for each diagnostic with the processing
 
 
 
