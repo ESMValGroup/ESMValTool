@@ -32,6 +32,7 @@ Testing is done on different levels within the ESMValTool
  * `unittests <https://en.wikipedia.org/wiki/Unit_testing>`_ are used to verify that small pieces of the ESMValTool software work correctly. This can comprise the test of specific functions, modules or classes
  * Testing of entire diagnostics are done to verify that a diagnostic produces the right output
  
+ When developing a new diagnostic for the ESMValTool or improve some other components of the ESMValTool framework, you should always consider to implement appropriate tests. You might implement tests after having implemented the code functionality, it might be however also worth to consider a more agile `test driven development cycle <https://en.wikipedia.org/wiki/Test-driven_development>`_.
  
  
 Unittesting in the ESMValTool
@@ -50,26 +51,27 @@ The general concept of the testing framework is that it compares results of a di
 3. check that output file sizes are greater than zero bytes
 4. check that acknowledgments are provided for each diagnostic with the processing
 
+The overall testing approach is currently based on the philosophy that
 
+a) testing should be fast to execture
+b) should not require the user to download larger data volumes
 
-What is needed?
+For that reason the testing is largely based on synthetic data as an input which allows to control the input and thus also expected output of a specific diagnostic.
+
+**What is needed?**
 
 * a namelist for your diagnostic tailored for your tests
-* test data
 * a script that implements your test
-
-For more detailed information about the different test implementations refer to
-the `easytest` `documentation <http://easytest.readthedocs.org/en/latest/>`_.
-
 
 
 Getting started
 ---------------
 
+The steps required to sucessfully implement testing for the ESMValTool is described in the folliwing.
+
 To be able to use the testing a number of prerequesites need to be fulfilled.
 These are typically already installed when the ESMValTool is installed using
-`conda`.
-
+`conda <https://conda.io/>`_.
 
 Prerequesite #1: install `easytest`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -81,17 +83,16 @@ Prerequesite #2: nosetests
 
 `nosetests <https://nose.readthedocs.org/en/latest/>`_ should have been already installed. If not, do so as it is needed for a convenient testing experience. Test could also be exectuted without `nosetests``, but this makes life so much easier. 
 
-
-Prerequesite #3: provide reference data
+Prerequesite #3: install `dummydata`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You should collect all reference data (= expected results) for a diagnostic into a directory. This is easiest achieved by running your diagnostic script after finalizing the development and then put the output (typically ./work/plots ./work/climo) into some directory which we will call the *reference directory* subsequently.
+The `dummydata <https://github.com/pygeo/dummydata>` package is required for the generation of synthetic datasets to be used within the testing. When the ESMValTool is installed via `conda` this will have been installed already automatically. Otherwise install the package like described in its documentation.
 
 
-Implement a test for a new diagnostic
--------------------------------------
+How to implement a test for a new diagnostic?
+---------------------------------------------
 
-Here you go ... To implement the test for your diagnostic only a few more steps are needed:
+To implement a test for a new diagnostic only a few steps are required.
 
 1. create your test file. The filename should include your diagnostic name::
 
