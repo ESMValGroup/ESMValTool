@@ -1,10 +1,14 @@
 TODO for deliverables
 ---------------------
 
-* document dummydata
-* document easytest
+DONE * document dummydata
+* generate pip build for dummydata
+* conda recipe for dummydata
 
-* document testing
+* document easytest
+* conda recipe for easytest
+
+* document testing  --> how it works
 * document reporting
 
 * integrate code for testing
