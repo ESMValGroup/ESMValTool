@@ -29,7 +29,7 @@ Testing levels in ESMValTool
 
 Testing is done on different levels within the ESMValTool
 
- * [unittests](https://en.wikipedia.org/wiki/Unit_testing) are used to verify that small pieces of the ESMValTool software work correctly. This can comprise the test of specific functions, modules or classes
+ * `unittests <https://en.wikipedia.org/wiki/Unit_testing>`_ are used to verify that small pieces of the ESMValTool software work correctly. This can comprise the test of specific functions, modules or classes
  * Testing of entire diagnostics are done to verify that a diagnostic produces the right output
  
  
@@ -37,15 +37,11 @@ Testing is done on different levels within the ESMValTool
 Unittesting in the ESMValTool
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Test for individual pieces of code are currantly implemented largely based on the python core libraray [unittest](https://docs.python.org/2/library/unittest.html). Please look there or in the `tests`directory for examples how to implement tests for python code.
+Test for individual pieces of code are currantly implemented largely based on the python core libraray `unittest <https://docs.python.org/2/library/unittest.html>`_. Please look there or in the `tests`directory for examples how to implement tests for python code.
 
 
 How does the testing of diagnostics in ESMValTool work in principle?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-
-
 
 The general concept of the testing framework is that it compares results of a diagnostic with reference data generated once with the same inputs for the same diagnostic. The following checks can be currently performed:
 
