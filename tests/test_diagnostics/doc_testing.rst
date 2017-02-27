@@ -89,7 +89,7 @@ Prerequesite #3: install `dummydata`
 The `dummydata <https://github.com/pygeo/dummydata>` package is required for the generation of synthetic datasets to be used within the testing. When the ESMValTool is installed via `conda` this will have been installed already automatically. Otherwise install the package like described in its documentation.
 
 
-How to implement a test for a new diagnostic?
+How to implement a test for a new diagnostic? THIS SECTION NEEDS COMPLETE REVISION
 ---------------------------------------------
 
 To implement a test for a new diagnostic only a few steps are required.
@@ -127,26 +127,4 @@ In any other case, failures (e.g. missing files, files with different content) w
 
 
 
-Best practice
-~~~~~~~~~~~~~
 
-* small test data packages: During the development, the tests will be frequently executed. You should
-therefore use a small set of testdata to test the functionality of your
-diagnostic
-* to obtain reliable test results it is recommended to clean up all output
-  directories (work, plots, temp) before running the tests. Othwise you don't
-  know if old files were used for the testing.
-
-
-Known issues
-~~~~~~~~~~~~
-
-The following issues are known:
-
-* postscript file content can not be tested: As postscript output has always
-  different header information, the MD5 checksum will always differ. The
-  similarity of two postscript files can therefore currently not be checked.
-* portability of tests across different user machines is currently not ensured.
-  When tests are run on a different machine, the test data package needs to be
-  available and filenames in the test namelists need to be adapted. In the mid
-  term future this should be used by using environment variables.
