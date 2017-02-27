@@ -14,7 +14,7 @@ The overall objective of automated testing in the ESMValTool is to ensure that
 * ensure that the different software components (backend, diagnostics,
   plotting) results in correct results
   
-The following figure shows how testing integrates in the overall software development workflow. 
+The following figure shows how testing integrates in the overall software development workflow. After a new feature has been implemented, tests should ensure that the altered code of the feature branch does not cause conflicts with the original version of the code. Once tests have passed sucessfully, the feature branch can be merged into the development or master branch.
   
 
 .. figure:: testing_workflow.png
@@ -24,9 +24,28 @@ The following figure shows how testing integrates in the overall software develo
    The role of testing in the continous integration (CI) lifecyle of a software project
 
 
+Testing levels in ESMValTool
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-How does the testing in ESMValTool work in principle?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Testing is done on different levels within the ESMValTool
+
+ * [unittests](https://en.wikipedia.org/wiki/Unit_testing) are used to verify that small pieces of the ESMValTool software work correctly. This can comprise the test of specific functions, modules or classes
+ * Testing of entire diagnostics are done to verify that a diagnostic produces the right output
+ 
+ 
+ 
+Unittesting in the ESMValTool
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Test for individual pieces of code are currantly implemented largely based on the python core libraray [unittest](https://docs.python.org/2/library/unittest.html). Please look there or in the `tests`directory for examples how to implement tests for python code.
+
+
+How does the testing of diagnostics in ESMValTool work in principle?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+
 
 The general concept of the testing framework is that it compares results of a diagnostic with reference data generated once with the same inputs for the same diagnostic. The following checks can be currently performed:
 
