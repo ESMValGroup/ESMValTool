@@ -1,0 +1,5 @@
+c
+*.pyc
+*.orig
+*.tmp
+config_private_BM_local.xml

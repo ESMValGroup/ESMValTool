@@ -1,0 +1,87 @@
+<namelist>
+<include href="./config_private_BM_local.xml"/>
+<namelist_summary>
+###############################################################################
+namelist_alb_ESACCI.xml
+
+Description
+
+Author
+Alexander Loew (LMU, Germany - alexander.loew@lmu.de)
+
+Project
+QA4ECV
+
+References
+
+This namelist is part of the ESMValTool
+###############################################################################
+</namelist_summary>
+
+<GLOBAL>
+  <write_plots type="boolean">        True                      </write_plots>
+  <write_netcdf type="boolean">       True                      </write_netcdf>
+  <force_processing type="boolean">   False                     </force_processing>
+  <wrk_dir type="path">               @{WORKPATH}               </wrk_dir>
+  <plot_dir type="path">              @{PLOTPATH}/alb/     			 </plot_dir>
+  <climo_dir type="path">             @{CLIMOPATH}       		 </climo_dir>
+  <write_plot_vars type="boolean">    True                      </write_plot_vars>
+  <max_data_filesize type="integer">  100                       </max_data_filesize>
+  <max_data_blocksize type="integer"> 500                       </max_data_blocksize>
+  <output_file_type>                  png                       </output_file_type>
+  <verbosity  type="integer">         1                         </verbosity>
+  <debuginfo type="boolean">          False                     </debuginfo>
+  <exit_on_warning  type="boolean">   True                      </exit_on_warning>
+</GLOBAL>
+
+
+<MODELS>
+
+  <model> CMIP5 		ACCESS1-0 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <model> CMIP5 		ACCESS1-3 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <!--<model> CMIP5 		CMCC-CESM 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>-->
+  <!--<model> CMIP5 		CMCC-CM 					Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>-->
+  <!--<model> CMIP5 		CMCC-CMS					Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>-->
+  <!--<model> CMIP5 		CNRM-CM5 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>-->
+  <!--<model> CMIP5 		CNRM-CM5-2 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>-->
+  <model> CMIP5 		GFDL-CM2p1 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <model> CMIP5 		GFDL-CM3 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <model> CMIP5 		GFDL-ESM2G 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <model> CMIP5 		GFDL-ESM2M 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <model> CMIP5 		GISS-E2-H 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <model> CMIP5 		GISS-E2-H-CC			Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <model> CMIP5 		GISS-E2-R				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <model> CMIP5 		GISS-E2-R-CC			Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <!--<model> CMIP5 		HadCM3 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>-->
+  <!--<model> CMIP5 		HadGEM2-CC 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>-->
+  <!--<model> CMIP5 		HadGEM2-ES 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>-->
+  <model> CMIP5 		inmcm4 					Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <model> CMIP5 		IPSL-CM5A-LR 			Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <model> CMIP5 		IPSL-CM5A-MR			Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <model> CMIP5 		IPSL-CM5B-LR			Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <model> CMIP5 		MPI-ESM-LR 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <model> CMIP5 		MPI-ESM-MR 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <model> CMIP5 		MPI-ESM-P 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <model> CMIP5 		MRI-ESM1 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <model> CMIP5 		NorESM1-M 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <model> CMIP5 		NorESM1-ME 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <model> OBS        GlobAlbedo				sat				white-online 		 1998 2005  @{OBSPATH}  </model>
+
+</MODELS>
+
+
+<DIAGNOSTICS>
+
+
+    <diag>
+        <description>  															Doing QA4ECV albedo analysis. 		</description>
+        <variable_def_dir>                								./variable_defs/      							</variable_def_dir>
+        <variable ref_model="GlobAlbedo">			   					alb                                    </variable>
+        <field_type>                      								T2Ms                                      </field_type>
+        <diag_script cfg="./nml/cfg_QA4ECV/cfg_alb_QA4ECV.py">   	alb_QA4ECV.py                    				</diag_script>
+        <launcher_arguments>               								[('execute_as_shell', False)]             </launcher_arguments>
+    </diag>
+
+</DIAGNOSTICS>
+
+</namelist>
