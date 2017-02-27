@@ -23,14 +23,6 @@ The overall objective of automated testing in the ESMValTool is to ensure that
 
    The role of testing in the continous integration (CI ) lifecyle of a software project
 
-   xxxxx The legend consists of all elements after the caption.  In this
-   case, the legend consists of this paragraph and the following
-   table:
-
-
-
-
-
 
 
 How does the testing in ESMValTool work in principle?
