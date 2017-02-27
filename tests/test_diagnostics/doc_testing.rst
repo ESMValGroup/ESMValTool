@@ -14,6 +14,34 @@ The overall objective of automated testing in the ESMValTool is to ensure that
 * ensure that the different software components (backend, diagnostics,
   plotting) results in correct results
 
+How does the testing in ESMValTool work in principle?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The general concept of the testing framework is that it compares results of a diagnostic with reference data generated once with the same inputs for the same diagnostic. The following checks can be performed:
+
+1. check if all output files are available (Filecheck)
+2. check that content of output files is the same (MD5 checksum check)
+3. check that graphic files look the same (graphic check)  - TBD in development
+
+
+check no zero bytes
+check that acknowledgements are there
+
+TODO put flowchart image for testing in the documentation as well !!!
+
+
+
+What is needed?
+
+* a namelist for your diagnostic tailored for your tests
+* test data
+* a script that implements your test
+
+For more detailed information about the different test implementations refer to
+the `easytest` `documentation <http://easytest.readthedocs.org/en/latest/>`_.
+
+
+
 Getting started
 ---------------
 
@@ -40,7 +68,7 @@ You should collect all reference data (= expected results) for a diagnostic into
 
 
 Implement a test for a new diagnostic
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------------------
 
 Here you go ... To implement the test for your diagnostic only a few more steps are needed:
 
@@ -74,31 +102,7 @@ This will run your diagnostics and after this was sucessfully completed the test
 In any other case, failures (e.g. missing files, files with different content) will be reported. Further interested, then keep reading ...
 
 
-How does the testing work in principle?
----------------------------------------
 
-The general concept of the testing framework is that it compares results of a diagnostic with reference data generated once with the same inputs for the same diagnostic. The following checks can be performed:
-
-1. check if all output files are available (Filecheck)
-2. check that content of output files is the same (MD5 checksum check)
-3. check that graphic files look the same (graphic check)  - TBD in development
-
-
-check no zero bytes
-check that acknowledgements are there
-
-TODO put flowchart image for testing in the documentation as well !!!
-
-
-
-What is needed?
-
-* a namelist for your diagnostic tailored for your tests
-* test data
-* a script that implements your test
-
-For more detailed information about the different test implementations refer to
-the `easytest` `documentation <http://easytest.readthedocs.org/en/latest/>`_.
 
 
 Best practice
