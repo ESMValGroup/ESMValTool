@@ -86,7 +86,7 @@ Prerequesite #2: nosetests
 Prerequesite #3: install `dummydata`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The `dummydata <https://github.com/pygeo/dummydata>` package is required for the generation of synthetic datasets to be used within the testing. When the ESMValTool is installed via `conda` this will have been installed already automatically. Otherwise install the package like described in its documentation.
+The `dummydata <https://github.com/pygeo/dummydata>`_ package is required for the generation of synthetic datasets to be used within the testing. When the ESMValTool is installed via `conda` this will have been installed already automatically. Otherwise install the package like described in its documentation.
 
 
 How to implement a test for a new diagnostic? THIS SECTION NEEDS COMPLETE REVISION
