@@ -38,7 +38,7 @@ Testing is done on different levels within the ESMValTool
 Unittesting in the ESMValTool
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Test for individual pieces of code are currantly implemented largely based on the python core libraray `unittest <https://docs.python.org/2/library/unittest.html>`_. Please look there or in the `tests`directory for examples how to implement tests for python code.
+Test for individual pieces of code are currantly implemented largely based on the python core libraray `unittest <https://docs.python.org/2/library/unittest.html>`_. Please look there or in the `tests` directory for examples how to implement tests for python code.
 
 
 How does the testing of diagnostics in ESMValTool work in principle?
