@@ -1471,7 +1471,7 @@ class MiKlip_baseline0(MiKlip):
 class CMIP5_DKRZ(MiKlip):
     """@brief Follows the DKRZ directory structure for input data
               that in turn follows ESGF data organisation.
-              + fx file 
+              + fx file
     """
     def __init__(self):
         MiKlip.__init__(self)
