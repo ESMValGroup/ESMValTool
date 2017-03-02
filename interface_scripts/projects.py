@@ -1467,16 +1467,17 @@ class MiKlip_baseline0(MiKlip):
 
         return os.path.join(areadir, areafile)
 
+
 class CMIP5_DKRZ(MiKlip):
-    """ @brief Follows the DKRZ directory structure for input data
-               that in turn follows ESGF data organisation.
-               + fx file 
+    """@brief Follows the DKRZ directory structure for input data
+              that in turn follows ESGF data organisation.
+              + fx file 
     """
     def __init__(self):
         MiKlip.__init__(self)
 
-        ## The names of the space separated entries in the XML-file <model> tag
-        ## lines
+        # The names of the space separated entries in the XML-file <model> tag
+        # lines
         self.model_specifiers = ["project",
                                  "institute",
                                  "name",
@@ -1515,17 +1516,16 @@ class CMIP5_DKRZ(MiKlip):
             mip = 'monClim'
 
         version_path = os.path.join(msd["dir"],
-                             msd["institute"],
-                             msd["name"],
-                             msd["experiment"],
-                             mip,
-                             msd["realm"],
-                             msd["mip"],
-                             msd["ensemble"])
+                                    msd["institute"],
+                                    msd["name"],
+                                    msd["experiment"],
+                                    mip,
+                                    msd["realm"],
+                                    msd["mip"],
+                                    msd["ensemble"])
         list_versions = glob.glob(version_path+'/*')
         list_versions.sort()
         version = os.path.basename(list_versions[-1])
-
 
         indir = os.path.join(msd["dir"],
                              msd["institute"],
@@ -1553,7 +1553,7 @@ class CMIP5_DKRZ(MiKlip):
                                msd["ensemble"]]) + "*.nc"
 
         return indir, infile
-   
+
     def get_cf_areafile(self, project_info, model):
         """ @brief Returns the path to the areacello file
                    used for ocean variables
