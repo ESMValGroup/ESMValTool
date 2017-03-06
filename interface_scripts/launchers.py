@@ -7,6 +7,7 @@ import sys
 import string
 import StringIO
 import contextlib
+import traceback
 
 @contextlib.contextmanager
 def stdoutIO(std_outerr=None):
@@ -310,7 +311,8 @@ class py_launcher(launchers):
         try:
             exec cmd
         except:
-            print cmd
+            print(cmd)
+	    print(traceback.format_exc())
             raise ValueError('The script %s can not be imported!' % python_executable)
 
         # import was successfull. Now call the script with project_info
