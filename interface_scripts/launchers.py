@@ -312,7 +312,7 @@ class py_launcher(launchers):
             exec cmd
         except:
             print(cmd)
-	    print(traceback.format_exc())
+            print(traceback.format_exc())
             raise ValueError('The script %s can not be imported!' % python_executable)
 
         # import was successfull. Now call the script with project_info
