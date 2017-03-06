@@ -42,6 +42,7 @@ from esmval_lib import ESMValProject
 from sst_diagnostic import SeaSurfaceTemperatureDiagnostic
 
 def main(project_info):
+    import projects
     print(">>>>>>>> sst_ESACCI.py is running! <<<<<<<<<<<<")
 
 # A_laue_ax+
@@ -77,11 +78,14 @@ def main(project_info):
             for inc in range(len(project_info['MODELS'])):
                 
                 model=project_info['MODELS'][inc]
+                currProject = getattr(vars()['projects'], model.split_entries()[0])()
+                model_name = currProject.get_model_name(model)
+
                 
                 # only for non-reference models
-                if not model.model_line.split()[1] == project_info['RUNTIME']['currDiag'].variables[v].ref_model:
+                if not model_name == project_info['RUNTIME']['currDiag'].variables[v].ref_model:
                 
-                    model_filename=model_filelist[model.model_line.split()[1]]
+                    model_filename=model_filelist[model_name]
                     reference_filename=model_filelist[project_info['RUNTIME']['currDiag'].variables[v].ref_model]
                 
                     # copy old data to provide data that is needed again                                                                                                                                                           # copy old data to provide data that is needed again
