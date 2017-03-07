@@ -3,20 +3,21 @@
 #
 # Description
 # Namelist for plotting the performance metrics for the CMIP5 models. It 
-# considers temperature, zonal and meridional wind, geopotential height, surface
-# temperature, precipitation, TOA SW and LW radiation, SW and LW cloud radiative
-# effects, and aerosol optical depth
+# considers temperature, zonal and meridional wind, geopotential height,
+# surface temperature, precipitation, TOA SW and LW radiation, SW and LW cloud
+# radiative effects, and aerosol optical depth
 #
 # Authors
-# Franziska Frank (DLR, Germany - franziska.frank@dlr.de)
-# Mattia Righi (DLR, Germany - mattia.righi@dlr.de)
-# Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
+# Franziska Frank (DLR, Germany)
+# Mattia Righi (DLR, Germany)
+# Veronika Eyring (DLR, Germany)
 #
 # Project
 # DLR ESMVal
 #
 # Reference
-# Gleckler et al., J. Geophys. Res., 113, D06104, doi: 10.1029/2007JD008972 (2008)
+# Gleckler et al., J. Geophys. Res., 113, D06104, doi: 10.1029/2007JD008972
+# (2008)
 #
 # This namelist is part of the ESMValTool
 ###############################################################################
@@ -24,7 +25,7 @@
 GLOBAL:
     write_plots:       True
     write_netcdf:      True
-#    force_processing:  False
+#    force_processing:  False # this goes away
 #    wrk_dir:           ./work/    # this goes to config file
 #    plot_dir:          ./plots/   # this goes to config file
 #    preproc_dir:       ./preproc/ # this goes to config file
