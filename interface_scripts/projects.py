@@ -1585,8 +1585,8 @@ class CMIP5_DKRZ(MiKlip):
         version = os.path.basename(list_versions[-1])
 
         areadir = os.path.join(msd["dir"],
-                               msd["name"],
                                msd["institute"],
+                               msd["name"],
                                msd["experiment"],
                                'fx',
                                'ocean',
