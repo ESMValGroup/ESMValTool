@@ -2267,7 +2267,35 @@ begin
     res@trYMinF = min(data(0, :) - data(1, :) / 2.)
     res@trYMinF = where(res@trXMinF.lt.0, 1.1 * res@trYMinF, 0.9 * res@trYMinF)
     res@trYMaxF = max(data(0, :) + data(1, :) / 2.)
+; A_laue_ax+
+    ; if there are more than 20 data points, reduce font size to avoid
+    ; overlapping of the labels
+    if (dimsizes(data(0, :)).gt.20) then
+        res@tmYLLabelFontHeightF = 0.015
+        res@tmXBLabelFontHeightF = 20.0 / dimsizes(data(0, :)) * 0.02
+    end if
+    ; make sure y-reference line (if present) will be visible
+    ; (the line itself is not plotted by this function)
+    if (isatt(data, "yrefline")) then
+        res@trYMinF = min((/res@trYMinF, data@yrefline/))
+        res@trYMaxF = max((/res@trYMaxF, data@yrefline/))
+    end if
+    ; if requested, plot grid lines
+    if (isatt(diag_script_info, "showgrid")) then
+        if (diag_script_info@showgrid) then
+            res@tmXMajorGrid                = True          ; implement x grid 
+            res@tmXMajorGridThicknessF      = 1.0           ; 2.0 is default
+            res@tmXMajorGridLineDashPattern = 2             ; select short dash lines
+            res@tmXMajorGridLineColor       = (/0.2, 0.4, 1.0/)
+            res@tmYMajorGrid                = True          ; implement y grid
+            res@tmYMajorGridThicknessF      = 1.0           ; 2.0 is default
+            res@tmYMajorGridLineDashPattern = 2             ; select short dash lines
+            res@tmYMajorGridLineColor       = res@tmXMajorGridLineColor
+        end if
+    end if
+; A_laue_ax-
     res@trYMaxF = where(res@trXMaxF.gt.0, 1.1 * res@trYMaxF, 0.9 * res@trYMaxF)
+
     res@tiMainString = varname + " - " + diag_script_info@region
     res@tmXBLabels = data&model
     res@tmXBLabelAngleF = 45.

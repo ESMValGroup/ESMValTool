@@ -6,7 +6,7 @@ namelist_flato13ipcc.xml
 
 Description
 Reproducing selected figures from IPCC AR5, chap. 9 (Flato et al., 2013):
-Figs. 9.2a/b, 9.4a/b, 9.5, 9,7, 9.10, 9.24a, 9.28, 9.29, 9.30, 9.32, 9.45
+Figs. 9.2a/b, 9.4a/b, 9.5, 9,7, 9.10, 9.24a, 9.28, 9.29, 9.30, 9.32, 9.36, 9.45
 
 Authors
 Axel Lauer (DLR, Germany - axel.lauer@dlr.de)
@@ -21,6 +21,7 @@ Daniel Senftleben, DLR, namelist_SeaIce.xml (Fig. 9.24)
 Sabrina Welzel, DLR, namelist_wenzel14jgr.xml (Fig. 9.45)
 
 Projects
+CRESCENDO
 EMBRACE
 ESA CCI CMUG
 ESMVal
@@ -367,6 +368,44 @@ This namelist is part of the ESMValTool
         <model> CMIP5 MERRA Amon reanalysis r1i1p1 2003 2004 @{OBSPATH}/Tier1/MERRA </model>
     </diag>
 
+<!-- ************************************************************************ -->
+<!-- * Flato et al. (2013) - IPCC AR5, chap. 9                              * -->
+<!-- * roughly resembling fig. 9.36                                         * -->
+<!-- * ==================================================================== * -->
+<!-- * ENSO metrics: SST anomaly standard deviation (K) and precipitation   * -->
+<!-- * response (standard deviation, mm/day) in Nino3 and Nino4 regions     * -->
+<!-- *                                                                      * --> 
+<!-- * Notes: (1) using historical experiments instead of piControl used in * -->
+<!-- *            IPCC chap. 9                                              * -->
+<!-- *        (2) using ts (Amon) instead of tos (Omon) because some of the * -->
+<!-- *            used ESMValTool-functions are limited to regular grids    * -->
+<!-- ************************************************************************ -->
+
+    <diag>
+        <description> similar to IPCC ch. 9 fig 9.36 for historical runs </description>
+        <variable_def_dir>    ./variable_defs/                      </variable_def_dir>
+        <variable ref_model="HadISST"> ts                           </variable>
+        <field_type>          T2Ms                                  </field_type>
+        <diag_script_cfg_dir> ./nml/cfg_ipcc_fig9-36/               </diag_script_cfg_dir>
+        <model> CMIP5_ETHZ MIROC5         Amon historical r1i1p1 1980 1982 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MPI-ESM-LR     Amon historical r1i1p1 1980 1982 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ NorESM1-M      Amon historical r1i1p1 1980 1982 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> OBS        HadISST          reanaly       1      1980 1982 @{OBSPATH}/Tier2/HadISST/ </model>
+        <diag_script cfg="cfg_ipcc-fig-9-36.ncl"> ipcc-fig-9-36.ncl </diag_script>
+    </diag>
+
+    <diag>
+        <description> similar to IPCC ch. 9 fig 9.36 for historical runs </description>
+        <variable_def_dir>    ./variable_defs/                      </variable_def_dir>
+        <variable ref_model="CMAP"> pr-mmday                        </variable>
+        <field_type>          T2Ms                                  </field_type>
+        <diag_script_cfg_dir> ./nml/cfg_ipcc_fig9-36/               </diag_script_cfg_dir>
+        <model> CMIP5_ETHZ MIROC5         Amon historical r1i1p1 1980 1982 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MPI-ESM-LR     Amon historical r1i1p1 1980 1982 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ NorESM1-M      Amon historical r1i1p1 1980 1982 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> OBS CMAP mergedanaly 1 1980 1982 @{OBSPATH}/Tier2/CMAP </model>
+        <diag_script cfg="cfg_ipcc-fig-9-36.ncl"> ipcc-fig-9-36.ncl </diag_script>
+    </diag>
 
 <!-- *********************************************************************** -->
 <!-- * Flato et al. (2013) - IPCC AR5, chap. 9                             * -->

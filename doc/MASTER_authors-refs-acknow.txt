@@ -127,6 +127,7 @@ D_eyring06jgr = Eyring et al., J. Geophys. Res., 111, D22308, doi:10.1029/2006JD
 D_eyring13jgr = Eyring et al., J. Geophys. Res., 118, 5029-5060, doi:10.1002/jgrd.50316, 2013.
 D_gleckler08jgr = Gleckler et al., J. Geophys. Res., 113, D06104, doi:10.1029/2007JD008972, 2008.
 D_hagemann13jadvmodelearthsyst = Hagemann et al., J. Adv. Model. Earth Syst., 5, doi:10.1029/2012MS000173, 2013.
+D_kim12grl = Kim and Yu, Geophys. Res. Lett., 39, L11704, doi:10.1029/2012GL052006, 2012.
 D_lauer05acp = Lauer et al., Atmos. Chem. Phys., 5, 3251-3276, doi:10.5194/acp-5-3251-2005, 2005.
 D_lauer13jclim = Lauer and Hamilton, J. Climate, 26, 3823-3845, doi:10.1175/JCLI-D-12-00451.1, 2013.
 D_lauer17rse = Lauer et al., Remote Sens. Environ., in press, 2017.
@@ -188,6 +189,7 @@ E_weedon14waterresourres = WFDEI - Weedon et al., Water Resour. Res. 50, 2014
 
 P_climval = BMBF MiKlip Project ClimVal
 P_cmug = ESA CMUG
+P_crescendo = EU H2020 project CRESCENDO
 P_dlrveu = DLR project VEU
 P_dlrveu2 = DLR project VEU2
 P_embrace = EU FP7 project EMBRACE
