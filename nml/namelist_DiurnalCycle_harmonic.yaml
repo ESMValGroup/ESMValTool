@@ -1,0 +1,58 @@
+###############################################################################
+# namelist_DiurnalCycle_harmonic.xml
+# 
+# Description
+# Computes mean diurnal cycle of precipitation over specific boxes
+# and seasons.
+
+# Author
+# Catherine Rio (LMD, France)
+# 
+# Project
+# EMBRACE
+# 
+# This namelist is part of the ESMValTool
+###############################################################################
+
+GLOBAL:
+  write_plots:       True
+  write_netcdf:      True
+#  wrk_dir:           ./work/    # this goes to config file
+#  plot_dir:          ./plots/   # this goes to config file
+#  preproc_dir:       ./preproc/ # this goes to config file
+  verbosity:         1
+  exit_on_warning:   False
+  output_file_type:  ps
+  max_data_filesize:   100 # this goes to config file
+  max_data_blocksize:  500 # this goes to config file
+  read_from_vault:   False
+
+
+MODELS:
+  - {name: CMRN-CM5,      project: CMIP5,  mip: 3hr,  exp: amip,  ensemble: r1i1p1,  start: 2004, end: 2004,  path: /modelpath/CMIP5}
+  - {name: HadGEM-A,      project: CMIP5,  mip: 3hr,  exp: amip,  ensemble: r1i1p1,  start: 2004, end: 2004,  path: /modelpath/CMIP5}
+  - {name: EC-EARTH,      project: CMIP5,  mip: 3hr,  exp: amip,  ensemble: r1i1p1,  start: 2004, end: 2004,  path: /modelpath/CMIP5}
+  - {name: IPSL-CM5A-LR,  project: CMIP5,  mip: 3hr,  exp: amip,  ensemble: r1i1p1,  start: 2004, end: 2004,  path: /modelpath/CMIP5}
+
+
+PREPROCESS:
+  select_level:    None
+  target_grid:     None
+  regrid_scheme:   None
+  mask_fillvalues: None
+  mask_landocean:  None
+  multimodel_mean: False     
+
+
+DIAGNOSTICS:
+
+- diag:
+    description: Maximum of precipitation
+    variable: {name: pr-mmh,  ref_model: TRMM,  field: T2Is}
+    settings:
+      file: cfg_DiurnalCycle_harmonic_DJF.ncl
+      file: cfg_DiurnalCycle_harmonic_MAM.ncl
+      file: cfg_DiurnalCycle_harmonic_JJA.ncl
+      file: cfg_DiurnalCycle_harmonic_SON.ncl
+    script: DiurnalCycle_precip_harmonic.ncl
+    model: {name: TRMM,  project: OBS,  type: sat,  version: 3B42-v7,  start: 2004,  end: 2004,  path: /obspath/Tier2/TRMM-3B42/}
