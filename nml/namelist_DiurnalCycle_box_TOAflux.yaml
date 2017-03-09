@@ -1,0 +1,202 @@
+###############################################################################
+# namelist_DiurnalCycle_box_TOAflux.xml
+# 
+# Description
+# Computes mean diurnal cycle of TOA radiation over specific boxes and seasons
+# 
+# Author
+# Catherine Rio (LMD, France)
+# 
+# Project
+# EMBRACE
+# 
+# This namelist is part of the ESMValTool
+###############################################################################
+
+GLOBAL:
+  write_plots:       True
+  write_netcdf:      True
+#  wrk_dir:           ./work/    # this goes to config file
+#  plot_dir:          ./plots/   # this goes to config file
+#  preproc_dir:       ./preproc/ # this goes to config file
+  verbosity:         1
+  exit_on_warning:   False
+  output_file_type:  ps
+  max_data_filesize:   100 # this goes to config file
+  max_data_blocksize:  500 # this goes to config file
+  read_from_vault:   False
+
+  
+MODELS:
+  - {name: CNRM-AM-PRE6,  project: CMIP5,  mip: 3hr,  exp: amip,  ensmble: r1i1p1,  start: 2004,  end: 2004,  path: /modelpath/CMIP5/}
+  - {name: MPIESM-1-1,    project: CMIP5,  mip: 3hr,  exp: amip,  ensmble: r1i1p1,  start: 2004,  end: 2004,  path: /modelpath/CMIP5/}
+
+
+PREPROCESS:
+  select_level:    None
+  target_grid:     None
+  regrid_scheme:   None
+  mask_fillvalues: None
+  mask_landocean:  None
+  multimodel_mean: False     
+
+
+DIAGNOSTICS:
+
+- diag:
+    description: Mean diurnal cycle of SWupTOA over specific boxes
+    variable: {name: rsut,  ref_model: CERES-SYN1deg,  field: T2Is}
+    settings:
+      file: cfg_DiurnalCycle_Sahel_DJF.ncl
+      file: cfg_DiurnalCycle_WestAf_DJF.ncl
+      file: cfg_DiurnalCycle_GoG_DJF.ncl
+      file: cfg_DiurnalCycle_India_DJF.ncl
+      file: cfg_DiurnalCycle_IO_DJF.ncl
+      file: cfg_DiurnalCycle_Amazon_DJF.ncl
+      file: cfg_DiurnalCycle_EEP_DJF.ncl
+      file: cfg_DiurnalCycle_WEP_DJF.ncl
+      file: cfg_DiurnalCycle_Sahel_MAM.ncl
+      file: cfg_DiurnalCycle_WestAf_MAM.ncl
+      file: cfg_DiurnalCycle_GoG_MAM.ncl
+      file: cfg_DiurnalCycle_India_MAM.ncl
+      file: cfg_DiurnalCycle_IO_MAM.ncl
+      file: cfg_DiurnalCycle_Amazon_MAM.ncl
+      file: cfg_DiurnalCycle_EEP_MAM.ncl
+      file: cfg_DiurnalCycle_WEP_MAM.ncl
+      file: cfg_DiurnalCycle_Sahel_JJA.ncl
+      file: cfg_DiurnalCycle_WestAf_JJA.ncl
+      file: cfg_DiurnalCycle_GoG_JJA.ncl
+      file: cfg_DiurnalCycle_India_JJA.ncl
+      file: cfg_DiurnalCycle_IO_JJA.ncl
+      file: cfg_DiurnalCycle_Amazon_JJA.ncl
+      file: cfg_DiurnalCycle_EEP_JJA.ncl
+      file: cfg_DiurnalCycle_WEP_JJA.ncl
+      file: cfg_DiurnalCycle_Sahel_SON.ncl
+      file: cfg_DiurnalCycle_WestAf_SON.ncl
+      file: cfg_DiurnalCycle_GoG_SON.ncl
+      file: cfg_DiurnalCycle_India_SON.ncl
+      file: cfg_DiurnalCycle_IO_SON.ncl
+      file: cfg_DiurnalCycle_Amazon_SON.ncl
+      file: cfg_DiurnalCycle_EEP_SON.ncl
+      file: cfg_DiurnalCycle_WEP_SON.ncl
+    script: DiurnalCycle_box.ncl
+    model: {name: CERES-SYN1deg,  project: OBS,  type: sat,  version: 3hr,  start: 2004,  end: 2004,  /modelpath/CMIP5}
+
+- diag:
+    description: Mean diurnal cycle of SWupTOAclr over specific boxes
+    variable: {name: rsutcs,  ref_model: CERES-SYN1deg,  field: T2Is}
+    settings:
+      file: cfg_DiurnalCycle_Sahel_DJF.ncl
+      file: cfg_DiurnalCycle_WestAf_DJF.ncl
+      file: cfg_DiurnalCycle_GoG_DJF.ncl
+      file: cfg_DiurnalCycle_India_DJF.ncl
+      file: cfg_DiurnalCycle_IO_DJF.ncl
+      file: cfg_DiurnalCycle_Amazon_DJF.ncl
+      file: cfg_DiurnalCycle_EEP_DJF.ncl
+      file: cfg_DiurnalCycle_WEP_DJF.ncl
+      file: cfg_DiurnalCycle_Sahel_MAM.ncl
+      file: cfg_DiurnalCycle_WestAf_MAM.ncl
+      file: cfg_DiurnalCycle_GoG_MAM.ncl
+      file: cfg_DiurnalCycle_India_MAM.ncl
+      file: cfg_DiurnalCycle_IO_MAM.ncl
+      file: cfg_DiurnalCycle_Amazon_MAM.ncl
+      file: cfg_DiurnalCycle_EEP_MAM.ncl
+      file: cfg_DiurnalCycle_WEP_MAM.ncl
+      file: cfg_DiurnalCycle_Sahel_JJA.ncl
+      file: cfg_DiurnalCycle_WestAf_JJA.ncl
+      file: cfg_DiurnalCycle_GoG_JJA.ncl
+      file: cfg_DiurnalCycle_India_JJA.ncl
+      file: cfg_DiurnalCycle_IO_JJA.ncl
+      file: cfg_DiurnalCycle_Amazon_JJA.ncl
+      file: cfg_DiurnalCycle_EEP_JJA.ncl
+      file: cfg_DiurnalCycle_WEP_JJA.ncl
+      file: cfg_DiurnalCycle_Sahel_SON.ncl
+      file: cfg_DiurnalCycle_WestAf_SON.ncl
+      file: cfg_DiurnalCycle_GoG_SON.ncl
+      file: cfg_DiurnalCycle_India_SON.ncl
+      file: cfg_DiurnalCycle_IO_SON.ncl
+      file: cfg_DiurnalCycle_Amazon_SON.ncl
+      file: cfg_DiurnalCycle_EEP_SON.ncl
+      file: cfg_DiurnalCycle_WEP_SON.ncl
+    script: DiurnalCycle_box.ncl
+    model: {name: CERES-SYN1deg,  project: OBS,  type: sat,  version: 3hr,  start: 2004,  end: 2004,  /modelpath/CMIP5}
+
+
+- diag:
+    description:    Mean diurnal cycle of LWupTOA over specific boxes
+    variable: {name: rlut,  ref_model: CERES-SYN1deg,  field: T2Is}
+    settings:
+      file: cfg_DiurnalCycle_Sahel_DJF.ncl
+      file: cfg_DiurnalCycle_WestAf_DJF.ncl
+      file: cfg_DiurnalCycle_GoG_DJF.ncl
+      file: cfg_DiurnalCycle_India_DJF.ncl
+      file: cfg_DiurnalCycle_IO_DJF.ncl
+      file: cfg_DiurnalCycle_Amazon_DJF.ncl
+      file: cfg_DiurnalCycle_EEP_DJF.ncl
+      file: cfg_DiurnalCycle_WEP_DJF.ncl
+      file: cfg_DiurnalCycle_Sahel_MAM.ncl
+      file: cfg_DiurnalCycle_WestAf_MAM.ncl
+      file: cfg_DiurnalCycle_GoG_MAM.ncl
+      file: cfg_DiurnalCycle_India_MAM.ncl
+      file: cfg_DiurnalCycle_IO_MAM.ncl
+      file: cfg_DiurnalCycle_Amazon_MAM.ncl
+      file: cfg_DiurnalCycle_EEP_MAM.ncl
+      file: cfg_DiurnalCycle_WEP_MAM.ncl
+      file: cfg_DiurnalCycle_Sahel_JJA.ncl
+      file: cfg_DiurnalCycle_WestAf_JJA.ncl
+      file: cfg_DiurnalCycle_GoG_JJA.ncl
+      file: cfg_DiurnalCycle_India_JJA.ncl
+      file: cfg_DiurnalCycle_IO_JJA.ncl
+      file: cfg_DiurnalCycle_Amazon_JJA.ncl
+      file: cfg_DiurnalCycle_EEP_JJA.ncl
+      file: cfg_DiurnalCycle_WEP_JJA.ncl
+      file: cfg_DiurnalCycle_Sahel_SON.ncl
+      file: cfg_DiurnalCycle_WestAf_SON.ncl
+      file: cfg_DiurnalCycle_GoG_SON.ncl
+      file: cfg_DiurnalCycle_India_SON.ncl
+      file: cfg_DiurnalCycle_IO_SON.ncl
+      file: cfg_DiurnalCycle_Amazon_SON.ncl
+      file: cfg_DiurnalCycle_EEP_SON.ncl
+      file: cfg_DiurnalCycle_WEP_SON.ncl
+    script: DiurnalCycle_box.ncl
+    model: {name: CERES-SYN1deg,  project: OBS,  type: sat,  version: 3hr,  start: 2004,  end: 2004,  /modelpath/CMIP5}
+
+
+- diag:
+    description: Mean diurnal cycle of LWupTOAclr over specific boxes
+    variable: {name: rlutcs,  ref_model: CERES-SYN1deg,  field: T2Is}
+    settings:
+      file: cfg_DiurnalCycle_Sahel_DJF.ncl
+      file: cfg_DiurnalCycle_WestAf_DJF.ncl
+      file: cfg_DiurnalCycle_GoG_DJF.ncl
+      file: cfg_DiurnalCycle_India_DJF.ncl
+      file: cfg_DiurnalCycle_IO_DJF.ncl
+      file: cfg_DiurnalCycle_Amazon_DJF.ncl
+      file: cfg_DiurnalCycle_EEP_DJF.ncl
+      file: cfg_DiurnalCycle_WEP_DJF.ncl
+      file: cfg_DiurnalCycle_Sahel_MAM.ncl
+      file: cfg_DiurnalCycle_WestAf_MAM.ncl
+      file: cfg_DiurnalCycle_GoG_MAM.ncl
+      file: cfg_DiurnalCycle_India_MAM.ncl
+      file: cfg_DiurnalCycle_IO_MAM.ncl
+      file: cfg_DiurnalCycle_Amazon_MAM.ncl
+      file: cfg_DiurnalCycle_EEP_MAM.ncl
+      file: cfg_DiurnalCycle_WEP_MAM.ncl
+      file: cfg_DiurnalCycle_Sahel_JJA.ncl
+      file: cfg_DiurnalCycle_WestAf_JJA.ncl
+      file: cfg_DiurnalCycle_GoG_JJA.ncl
+      file: cfg_DiurnalCycle_India_JJA.ncl
+      file: cfg_DiurnalCycle_IO_JJA.ncl
+      file: cfg_DiurnalCycle_Amazon_JJA.ncl
+      file: cfg_DiurnalCycle_EEP_JJA.ncl
+      file: cfg_DiurnalCycle_WEP_JJA.ncl
+      file: cfg_DiurnalCycle_Sahel_SON.ncl
+      file: cfg_DiurnalCycle_WestAf_SON.ncl
+      file: cfg_DiurnalCycle_GoG_SON.ncl
+      file: cfg_DiurnalCycle_India_SON.ncl
+      file: cfg_DiurnalCycle_IO_SON.ncl
+      file: cfg_DiurnalCycle_Amazon_SON.ncl
+      file: cfg_DiurnalCycle_EEP_SON.ncl
+      file: cfg_DiurnalCycle_WEP_SON.ncl
+    script: DiurnalCycle_box.ncl
+    model: {name: CERES-SYN1deg,  project: OBS,  type: sat,  version: 3hr,  start: 2004,  end: 2004,  /modelpath/CMIP5}
