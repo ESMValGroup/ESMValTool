@@ -238,7 +238,7 @@ DIAGNOSTICS:
     description: Grading precalculations
     variable: {name: tas,  ref_model: CRU,  mip: Amon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -258,7 +258,7 @@ DIAGNOSTICS:
     description: Grading calculations
     variable: {name: tas,  ref_model: CRU,  mip: Amon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -278,7 +278,7 @@ DIAGNOSTICS:
     description: Grading precalculations
     variable: {name: pr,  ref_model: CRU,  mip: Amon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -298,7 +298,7 @@ DIAGNOSTICS:
     description: Grading calculations
     variable: {name: pr,  ref_model: CRU,  mip: Amon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -318,7 +318,7 @@ DIAGNOSTICS:
     description: Grading precalculations
     variable: {name: gpp,  ref_model: MTE,  mip: Lmon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -336,7 +336,7 @@ DIAGNOSTICS:
     description: Grading calculations
     variable: {name: gpp,  ref_model: MTE,  mip: Lmon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -354,7 +354,7 @@ DIAGNOSTICS:
     description: Grading precalculations
     variable: {name: lai,  ref_model: LAI3g,  mip: Lmon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -373,7 +373,7 @@ DIAGNOSTICS:
     description: Grading calculations
     variable: {name: lai,  ref_model: LAI3g,  mip: Lmon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -392,7 +392,7 @@ DIAGNOSTICS:
     description: Grading precalculations
     variable: {name: nbp,  ref_model: JMA-TRANSCOM,  mip: Lmon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -410,7 +410,7 @@ DIAGNOSTICS:
     description: Grading calculations
     variable: {name: nbp,  ref_model: JMA-TRANSCOM,  mip: Lmon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -435,7 +435,7 @@ DIAGNOSTICS:
     description: Grading precalculations
     variable: {name: tas,  ref_model: CRU,  mip: Amon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -455,7 +455,7 @@ DIAGNOSTICS:
     description: Grading calculations
     variable: {name: tas,  ref_model: CRU,  mip: Amon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -475,7 +475,7 @@ DIAGNOSTICS:
     description: Grading precalculations
     variable: {name: pr,  ref_model: CRU,  mip: Amon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -495,7 +495,7 @@ DIAGNOSTICS:
     description: Grading calculations
     variable: {name: pr,  ref_model: CRU,  mip: Amon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -515,7 +515,7 @@ DIAGNOSTICS:
     description: Grading precalculations
     variable: {name: gpp,  ref_model: MTE,  mip: Lmon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -533,7 +533,7 @@ DIAGNOSTICS:
     description: Grading calculations
     variable: {name: gpp,  ref_model: MTE,  mip: Lmon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -551,7 +551,7 @@ DIAGNOSTICS:
     description: Grading precalculations
     variable: {name: lai,  ref_model: LAI3g,  mip: Lmon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -570,7 +570,7 @@ DIAGNOSTICS:
     description: Grading calculations
     variable: {name: lai,  ref_model: LAI3g,  mip: Lmon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -589,7 +589,7 @@ DIAGNOSTICS:
     description: Grading precalculations
     variable: {name: nbp,  ref_model: JMA-TRANSCOM,  mip: Lmon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -607,7 +607,7 @@ DIAGNOSTICS:
     description: Grading calculations
     variable: {name: nbp,  ref_model: JMA-TRANSCOM,  mip: Lmon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -633,7 +633,7 @@ DIAGNOSTICS:
     description: Grading precalculations
     variable: {name: tas,  ref_model: CRU,  mip: Amon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -653,7 +653,7 @@ DIAGNOSTICS:
     description: Grading calculations
     variable: {name: tas,  ref_model: CRU,  mip: Amon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -673,7 +673,7 @@ DIAGNOSTICS:
     description: Grading precalculations
     variable: {name: pr,  ref_model: CRU,  mip: Amon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -693,7 +693,7 @@ DIAGNOSTICS:
     description: Grading calculations
     variable: {name: pr,  ref_model: CRU,  mip: Amon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -713,7 +713,7 @@ DIAGNOSTICS:
     description: Grading precalculations
     variable: {name: gpp,  ref_model: MTE,  mip: Lmon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -731,7 +731,7 @@ DIAGNOSTICS:
     description: Grading calculations
     variable: {name: gpp,  ref_model: MTE,  mip: Lmon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -749,7 +749,7 @@ DIAGNOSTICS:
     description: Grading precalculations
     variable: {name: lai,  ref_model: LAI3g,  mip: Lmon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -768,7 +768,7 @@ DIAGNOSTICS:
     description: Grading calculations
     variable: {name: lai,  ref_model: LAI3g,  mip: Lmon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -787,7 +787,7 @@ DIAGNOSTICS:
     description: Grading precalculations
     variable: {name: nbp,  ref_model: JMA-TRANSCOM,  mip: Lmon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -805,7 +805,7 @@ DIAGNOSTICS:
     description: Grading calculations
     variable: {name: nbp,  ref_model: JMA-TRANSCOM,  mip: Lmon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -830,7 +830,7 @@ DIAGNOSTICS:
     description: Grading precalculations
     variable: {name: tas,  ref_model: CRU,  mip: Amon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -850,7 +850,7 @@ DIAGNOSTICS:
     description: Grading calculations
     variable: {name: tas,  ref_model: CRU,  mip: Amon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -870,7 +870,7 @@ DIAGNOSTICS:
     description: Grading precalculations
     variable: {name: pr,  ref_model: CRU,  mip: Amon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -890,7 +890,7 @@ DIAGNOSTICS:
     description: Grading calculations
     variable: {name: pr,  ref_model: CRU,  mip: Amon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -910,7 +910,7 @@ DIAGNOSTICS:
     description: Grading precalculations
     variable: {name: gpp,  ref_model: MTE,  mip: Lmon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -928,7 +928,7 @@ DIAGNOSTICS:
     description: Grading calculations
     variable: {name: gpp,  ref_model: MTE,  mip: Lmon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -946,7 +946,7 @@ DIAGNOSTICS:
     description: Grading precalculations
     variable: {name: lai,  ref_model: LAI3g,  mip: Lmon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -965,7 +965,7 @@ DIAGNOSTICS:
     description: Grading calculations
     variable: {name: lai,  ref_model: LAI3g,  mip: Lmon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -984,7 +984,7 @@ DIAGNOSTICS:
     description: Grading precalculations
     variable: {name: nbp,  ref_model: JMA-TRANSCOM,  mip: Lmon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:
@@ -1002,7 +1002,7 @@ DIAGNOSTICS:
     description: Grading calculations
     variable: {name: nbp,  ref_model: JMA-TRANSCOM,  mip: Lmon,  field: T2Ms}
     preprocess:
-      target_grid:    ref
+      target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
     settings:

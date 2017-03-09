@@ -230,7 +230,7 @@ DIAGNOSTICS:
       description: Aerosol optical depth at 550 nm vs. MODIS
       variable: {name: od550aer,  field: T2Ms}
       preprocess:
-        target_grid:    ref
+        target_grid:    ref_model
         regrid_scheme:  linear
       settings:
         file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_satellite_MODIS.ncl
@@ -241,7 +241,7 @@ DIAGNOSTICS:
       description: Aerosol optical depth at 550 nm vs. MISR
       variable: {name: od550aer,  field: T2Ms}
       preprocess:
-        target_grid:    ref
+        target_grid:    ref_model
         regrid_scheme:  linear
       settings:
         file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_satellite_MODIS.ncl
@@ -252,7 +252,7 @@ DIAGNOSTICS:
       description: Aerosol optical depth at 550 nm vs. ESACCI
       variable: {name: od550aer,  field: T2Ms}
       preprocess:
-        target_grid:    ref
+        target_grid:    ref_model
         regrid_scheme:  linear
       settings:
         file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_satellite_ESACCI-AEROSOL.ncl

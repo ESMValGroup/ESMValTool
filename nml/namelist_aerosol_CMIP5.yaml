@@ -42,8 +42,7 @@ MODELS:
 # CCSM4, IPSL-CM5A-LR, IPSL-CM5A-MR, MPI-ESM-LR and MPI-ESM-MR are excluded since they use concentration-driven aerosol
 
 PREPROCESS:
-  select_level:    None
-  target_grid:     None
+  select_level:    None  target_grid:     None
   regrid_scheme:   None
   mask_fillvalues: None
   mask_landocean:  None
@@ -184,7 +183,7 @@ DIAGNOSTICS:
       description: aerosol optical depth at 550 nm
       variable: {name: od550aer, field: T2Ms}
       preprocess:
-        target_grid:        ref
+        target_grid:        ref_model
         regrid_scheme:     linear
         multimodel_mean:   True
         multimodel_median: True

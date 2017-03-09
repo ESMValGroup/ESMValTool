@@ -21,7 +21,7 @@ MODELS:
 
 PREPROCESS:
     select_level:    None
-    target_grid:     ref
+    target_grid:     ref_model
     regrid_scheme:   linear
     mask_fillvalues: True
     mask_landocean:  land
