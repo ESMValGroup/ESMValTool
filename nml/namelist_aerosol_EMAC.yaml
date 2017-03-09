@@ -131,7 +131,7 @@ DIAGNOSTICS:
       description: Vertical profile of BC concentration
       variable: {name: mmrbc,  field: T3I}
       variable: {name: cl,     field: T3I}
-      settings: # this would need to be called multiple times for each cfg file
+      settings: # MR: this would need to be called multiple times for each cfg file
         file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_ACCESS.ncl
         file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_CONCERT.ncl
         file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_CR-AVE.ncl

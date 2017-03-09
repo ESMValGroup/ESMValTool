@@ -39,7 +39,7 @@ GLOBAL:
 
 MODELS:
 # Models which do not provide all variables are defined within each diag block block
-# HERE WE NEED TO IMPLEMENT A WAY TO REPLACE mip WITH VARIABLE-SPECIFIC mip (e.g., USE * AS A WILDCARD)
+# MR: HERE WE NEED TO IMPLEMENT A WAY TO REPLACE mip WITH VARIABLE-SPECIFIC mip (e.g., USE * AS A WILDCARD)
   - {name: CanESM2,         project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble:  r1i1p1,  start: 1986,  end: 2005,   path: /modelpath/ETHZ_CMIP5}
   - {name: GFDL-ESM2G,      project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble:  r1i1p1,  start: 1986,  end: 2005,   path: /modelpath/ETHZ_CMIP5}
   - {name: GFDL-ESM2M,      project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble:  r1i1p1,  start: 1986,  end: 2005,   path: /modelpath/ETHZ_CMIP5}
