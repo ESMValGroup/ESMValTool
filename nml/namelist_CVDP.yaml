@@ -43,6 +43,15 @@ MODELS:
 # Not required
 
 
+PREPROCESS:
+  select_level:    None
+  target_grid:     None
+  regrid_scheme:   None
+  mask_fillvalues: None
+  mask_landocean:  None
+  multimodel_mean: None
+
+  
 DIAGNOSTICS:
 
 # OBSERVATIONS PREPROCESSING
