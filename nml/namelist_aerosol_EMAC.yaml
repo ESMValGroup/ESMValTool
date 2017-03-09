@@ -40,11 +40,13 @@ GLOBAL:
   max_data_filesize:   100 # this goes to config file
   max_data_blocksize:  500 # this goes to config file
 
+  
 MODELS:
   - {name: MADE-REF,    project: EMAC,  ensemble: 1,  start: 1999,  end: 2001, path: /modelpath/}
   - {name: MADEin-REF,  project: EMAC,  ensemble: 1,  start: 1999,  end: 2001, path: /modelpath/}
   - {name: MAD3E-REF,   project: EMAC,  ensemble: 1,  start: 1999,  end: 2001, path: /modelpath/}
 
+  
 PREPROCESS:
   select_level:    None
   target_grid:     None
@@ -53,6 +55,7 @@ PREPROCESS:
   mask_landocean:  None
   multimodel_mean: False
 
+  
 DIAGNOSTICS:
   - diag:
       description: Aerosol size distribution
