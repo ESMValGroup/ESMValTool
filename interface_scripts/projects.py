@@ -1525,7 +1525,10 @@ class CMIP5_DKRZ(MiKlip):
                                     msd["ensemble"])
         list_versions = glob.glob(version_path+'/*')
         list_versions.sort()
-        version = os.path.basename(list_versions[-1])
+        try:
+            version = os.path.basename(list_versions[-1])
+        except:
+            version ='/'
 
         indir = os.path.join(msd["dir"],
                              msd["institute"],
@@ -1582,7 +1585,10 @@ class CMIP5_DKRZ(MiKlip):
                                     'r0i0p0')
         list_versions = glob.glob(version_path+'/*')
         list_versions.sort()
-        version = os.path.basename(list_versions[-1])
+        try:
+            version = os.path.basename(list_versions[-1])
+        except:
+            version = '/'
 
         areadir = os.path.join(msd["dir"],
                                msd["institute"],
