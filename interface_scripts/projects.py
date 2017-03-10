@@ -1528,7 +1528,7 @@ class CMIP5_DKRZ(MiKlip):
         try:
             version = os.path.basename(list_versions[-1])
         except:
-            version ='/'
+            version =''
 
         indir = os.path.join(msd["dir"],
                              msd["institute"],
@@ -1588,7 +1588,7 @@ class CMIP5_DKRZ(MiKlip):
         try:
             version = os.path.basename(list_versions[-1])
         except:
-            version = '/'
+            version = ''
 
         areadir = os.path.join(msd["dir"],
                                msd["institute"],
