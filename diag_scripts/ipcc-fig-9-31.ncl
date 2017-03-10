@@ -6,11 +6,11 @@
 ;;
 ;; Description
 ;;    Calculates the two leading Empirical Orthogonal Functions (EOFs) of
-;;    outgoing longwave radiation (OLR). The 20- to 100-day filtered OLR
-;;    from observations and each of the CMIP5 historical simulations is
+;;    the observed outgoing longwave radiation (OLR). The 20- to 100-day
+;;    filtered OLR from observations and each of the CMIP5 historical simulations is
 ;;    projected on these two leading EOFs to obtain MJO Principal Component
 ;;    time series. A scatterplot shows the maximum positive correlation
-;;    between the resulting MJO principal components (PC) and the time lag at
+;;    between the resulting MJO principal components 1 + 2 and the time lag at
 ;;    which it occurred for all winters (November to March). The maximum
 ;;    positive correlation is an indication of the coherence with which the
 ;;    MJO convection propagates from the Indian Ocean to the Maritime
@@ -30,11 +30,15 @@
 ;; Optional variable_info attributes (variable specific)
 ;;     none
 ;;
+;; Required variable attributes (defined in namelist)
+;;    ref_model: name of reference data set (observations)
+;;
 ;; Caveats
-;;     none
+;;     no selection of winters with strong MJO, all winters (Nov-Mar)
+;;     will be used for the calculations
 ;;
 ;; Modification history
-;;    20170309-A_laue_ax: written.
+;;    20170310-A_laue_ax: written.
 ;;
 ;;#############################################################################
 
@@ -45,6 +49,8 @@ load "./interface_data/ncl.interface"
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/data_handling.ncl"
 load "./interface_scripts/messaging.ncl"
+
+load "./diag_scripts/aux/perfmetrics/aux_perfmetrics.ncl"
 
 load "./diag_scripts/lib/ncl/style.ncl"
 load "./diag_scripts/lib/ncl/latlon.ncl"
@@ -102,16 +108,10 @@ begin
     ;; Check field type
     plot_fields = (/"T2Ds"/)
     if (field_type0.ne.plot_fields) then
-        error_msg("f", diag_script, "", "can't use field " + field_type + \
+        error_msg("f", diag_script, "", "can't use field " + field_type0 + \
                   " for this diag_script")
     end if
     delete(plot_fields)
-
-    ; define region of interest
-    latmin = -20.0
-    latmax = 20.0
-    lonmin = 45.0  ;0.0
-    lonmax = 240.0 ;360.0
 
     ; output plot directory
     plot_dir = getenv("ESMValTool_plot_dir")
@@ -120,18 +120,114 @@ begin
     rmax = new(dim_MOD, float)
     rmaxlag = new(dim_MOD, float)
 
-    ;; Loop over models
-    do imod = 0, dim_MOD - 1
+    ; the reference model (observations) has to be processed first
+    ; --> create list of all models with the reference model as the first entry
+
+    all_models = ispan(0, dim_MOD -1, 1)
+    idx = ind(all_models .ne. idx_ref)
+    sorted_models = new(dim_MOD, integer)
+    sorted_models(0) = idx_ref
+    sorted_models(1:dim_MOD - 1) = all_models(idx)
+    delete(idx)
+    delete(all_models)
+
+    ; loop over models
+    do iloop = 0, dim_MOD - 1
+
+        imod = sorted_models(iloop)
 
         info_output("Processing " + models@name(imod), verbosity, 0)
 
-        ; extract model corresponding data
-        var  = extract_data_extended(imod, var0, data, -1, 0, 0)
+        ; get grid definition of reference data
 
-        ; extract region
-        regvar = area_operations(var, latmin, latmax, \
-                 lonmin, lonmax, "extract", False)
-        delete(var)
+        if (imod .eq. idx_ref) then  ; this is always the first model in the list
+            grid = find_destination_grid(idx_ref, var0, field_type0, "coarsest")
+        end if
+
+        ; ========================================================
+        ; ====================== regridding ======================
+        ; ========================================================
+
+        opt = True
+        opt@plot_type = "regridded"
+        opt@time_avg = "ref"
+
+        regr_path = clim_diag_file_path(var0, field_type0, imod, diag_script, opt)
+
+        ; do not process data if already processed
+        if (isfilepresent(regr_path) .and. \
+            getenv("ESMValTool_force_calc").eq."False") then
+            pre_var = ncdf_read(regr_path, var0)
+            dnames = getVarDimNames(pre_var)
+        else
+            info_output("Regridding " + models@name(imod), verbosity, 2)
+            ; extract model corresponding data
+            data = read_data(imod, var0, field_type0)
+            var = extract_data_extended(imod, var0, data, -1, 0, 0)
+            dnames = getVarDimNames(var)
+    
+            ; determine dimensions to regrid
+            xregrid = False  ; lon
+            yregrid = False  ; lat
+            dnames = getVarDimNames(var)
+            if (any(dnames.eq."lon")) then
+                xregrid = True
+                if (dimsizes(var&lon).eq.dimsizes(grid&lon)) then
+                    if (max(abs(var&lon - grid&lon)).lt.1.0d-5) then
+                        xregrid = False
+                    end if
+                end if
+            end if
+            if (any(dnames.eq."lat")) then
+                yregrid = True
+                if (dimsizes(var&lat).eq.dimsizes(grid&lat)) then
+                    if (max(abs(var&lat - grid&lat)).lt.1.0d-5) then
+                        yregrid = False
+                    end if
+                end if
+            end if
+
+           ; regrid in the horizontal (if necessary)
+           if (xregrid.and.yregrid) then
+                var_hreg = linint2_Wrap(var&lon, var&lat, var, True, \
+                                        grid&lon, grid&lat, 0)
+            else if (xregrid.and..not.yregrid) then
+                dx = ind(dnames.eq."lon")
+                var_hreg = linint1_n_Wrap(var&lon, var, True, grid&lon, 0, dx)
+                info_output("Latitude regridding not required", verbosity, 4)
+            else if (.not.xregrid.and.yregrid) then
+                dx = ind(dnames.eq."lat")
+                var_hreg = linint1_n_Wrap(var&lat, var, False, grid&lat, 0, dx)
+                info_output("Longitude regridding not required", verbosity, 4)
+            else if (.not.xregrid .and. .not.yregrid) then
+                var_hreg = var
+                info_output("Horizontal regridding not required", verbosity, 4)
+            end if
+            end if
+            end if
+            end if
+
+            delete(data)
+            delete(var)
+
+            pre_var = var_hreg
+            delete(var_hreg)
+
+            ;; output to NetCDF
+            pre_var@var = var0
+            pre_var@diag_script = (/diag_script/)
+            pre_var@ncdf = regr_path
+            ncdf_outfile = ncdf_write(pre_var, regr_path)
+        end if
+
+        ; ========================================================
+
+        ; extract region (0-360 longitude seems to be standard)
+        regvar = area_operations(pre_var, -20.0, 20.0, 0.0, 360.0, "extract", False)
+        delete(pre_var)
+
+        ; the bandpass filering and calculation of the EOFs is taken from
+        ; function "calc_daily_univari_eof" in diag_scripts/aux/mjo/mjo.ncl
 
         ; compute Lanczos weights
         ihp = 2      ; 2 = band-pass filter
@@ -162,72 +258,73 @@ begin
         delete(yyyyddd)
         delete(ymd)
 
+        ; extract winter months, i.e. November through March
+
+        date = cd_calendar(anom&time, 0)
+        month = date(:, 1)
+        idx = ind(month.eq.1 .or. month.eq.2 .or. month.eq.3 .or. month.eq.11 .or. month.eq.12)
+        anomts = anom(idx, :, :)
+
+        delete(date)
+        delete(idx)
+        delete(month)
+        delete(anom)
+
         ; apply bandpass filter (time dimension = leftmost dimension)
-        xbp = wgt_runave_Wrap(anom(lat|:, lon|:, time|:), wgt, 0)
+        xbp = wgt_runave_Wrap(anomts(lat|:, lon|:, time|:), wgt, 0)
 
         ; remove means of band pass series: *not* necessary
         xbp = dim_rmvmean(xbp)
 
-        delete(anom)
+        delete(anomts)
 
-;        ; extract winter months, i.e. November through March
-;
-;        date = cd_calendar(xbp&time, 0)
-;        month = date(:, 1)
-;        idx = ind(month.eq.1 .or. month.eq.2 .or. month.eq.3 .or. month.eq.11 .or. month.eq.12)
-;        timeseries = xbp(:, :, idx)
-;
-;        delete(date)
-;        delete(idx)
-;        delete(month)
+        ; EOFs are only calculated for the reference data (observations)
+        ; (the reference dataset is always the first dataset)
 
-        ; calculate fir two EOFs
-;        eof = eofunc_Wrap(timeseries, 2, False)
-;        eof_ts = eofunc_ts_Wrap(timeseries, eof, False)
-        eof = eofunc_Wrap(xbp, 2, False)
-        eof_ts = eofunc_ts_Wrap(xbp, eof, False)
+        if (.not.isvar("eof_obs")) then
+            ; calculate first two EOFs
+            eof_obs = eofunc_Wrap(xbp, 2, False)
+        end if
+
+        ; the 20-100 day band-pass filtered daily OLR from each model is
+        ; projected onto the observed modes (Sperber and Kim, Atmos. Sci. Let., 2012)
+
+        eof_ts = eofunc_ts_Wrap(xbp, eof_obs, False)
 
         delete(xbp)
+
+;        system ("rm debug.nc")
+;        debugfile = addfile("debug.nc", "c")
+;        debugfile->eof_obs = eof_obs
+;        debugfile->eof_ts = eof_ts
+;        ts = timeseries(time|:, lat|:, lon|:)
+;        debugfile->ts = ts
+;        exit
+
 ;        delete(timeseries)
 
         ; calculate cross-correlation between the resulting MJO principal components 1 + 2
         maxlag = 20
-        result01 = esccr(eof_ts(0, :), eof_ts(1, :), maxlag)
-        result10 = esccr(eof_ts(1, :), eof_ts(0, :), maxlag)
+        result_p = esccr(eof_ts(1, :), eof_ts(0, :), maxlag)
+        result_n = esccr(eof_ts(0, :), eof_ts(1, :), maxlag)
+
+        delete(eof_ts)
 
         ccr = new((/2 * maxlag + 1/), float)
-        ccr(maxlag:)  = result01
-        ccr(0:maxlag) = result10(::-1)       ; reverse order
+        ccr(0:maxlag-1) = result_n(1:maxlag:-1)  ; "negative lag", -1 reverses order
+        ccr(maxlag:)    = result_p(0:maxlag)     ; "positive lag"
 
         lag = ispan(-maxlag, maxlag, 1)      ; days
         imaxcorr = maxind(ccr)
-
         rmaxlag(imod) = lag(imaxcorr)
         rmax(imod) = ccr(imaxcorr)
 
         delete(lag)
         delete(ccr)
-        delete(result01)
-        delete(result10)
+        delete(result_n)
+        delete(result_p)
 
-;        system ("rm debug.nc")
-;        debugfile = addfile("debug.nc", "c")
-;        debugfile->eof = eof
-;        debugfile->eof_ts = eof_ts
-
-        ; save EOFs from observation (ref_model) for plotting
-
-        if (imod.eq.idx_ref) then
-            eof1 = eof(0, :, :)
-            eof2 = eof(1, :, :)
-            eof1@vpercent = sprintf("%5.2f", eof@pcvar(0)) + "%"
-            eof2@vpercent = sprintf("%5.2f", eof@pcvar(1)) + "%"
-        end if
-
-        delete(eof)
-        delete(eof_ts)
-
-    end do  ; imod-loop
+    end do  ; iloop
 
     ; ===========================================================================================
     ; plot results - based on script "Fig9_31.ncl" from Hongmei Li (MPI, Germany)
@@ -252,10 +349,10 @@ begin
     res@cnFillOn        = True           ; color fill
     res@cnLineLabelsOn  = False          ; turn off contour lines
     res@cnLinesOn       = False
-    res@mpMinLatF       = -20.
-    res@mpMaxLatF       = 20.
-    res@mpMinLonF       = 45.
-    res@mpMaxLonF       = 240.
+    res@mpMinLatF       = -20.0
+    res@mpMaxLatF       = 20.0
+    res@mpMinLonF       = 45.0
+    res@mpMaxLonF       = 240.0
     res@mpCenterLonF    = 180.
     res@gsnAddCyclic    = False
     res@gsnLeftString   = " "            ; no left string
@@ -282,11 +379,11 @@ begin
     res@vpHeightF       = 0.3
  
     res@gsnLeftString   = "(a) EOF1"
-    res@gsnRightString  = eof1@vpercent ; title
-    plot_L(0) = gsn_csm_contour_map_ce(wks, eof1, res)
+    res@gsnRightString  = sprintf("%4.1f", eof_obs@pcvar(0)) + "%" ; title
+    plot_L(0) = gsn_csm_contour_map_ce(wks, eof_obs(0, :, :), res)
     res@gsnLeftString    = "(b) EOF2"
-    res@gsnRightString  = eof2@vpercent ; title
-    plot_L(1) = gsn_csm_contour_map_ce(wks, eof2, res)
+    res@gsnRightString  = sprintf("%4.1f", eof_obs@pcvar(1)) + "%" ; title
+    plot_L(1) = gsn_csm_contour_map_ce(wks, eof_obs(1, :, :), res)
 
     pres_L = True
     pres_L@gsnFrame = False
