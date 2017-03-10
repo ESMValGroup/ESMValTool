@@ -1,0 +1,82 @@
+<namelist>
+<include href="./config_private.xml"/>
+<namelist_summary>
+###############################################################################
+namelist_ipcc-fig-9-31.xml
+
+Description
+This namelist reproduces IPCC ch. 9 fig. 9.31
+
+Author
+Axel Lauer (DLR, Germany - axel.lauer@dlr.de)
+
+Contributors
+
+Project
+CRESCENDO
+
+Reference
+Flato et al. (2013)
+
+This namelist is part of the ESMValTool
+###############################################################################
+</namelist_summary>
+
+<GLOBAL>
+    <write_plots type="boolean">        True           </write_plots>
+    <write_netcdf type="boolean">       True           </write_netcdf>
+    <force_processing type="boolean">   False          </force_processing>
+    <wrk_dir type="path">               @{WORKPATH}    </wrk_dir>
+    <plot_dir type="path">              @{PLOTPATH}    </plot_dir>
+    <climo_dir type="path">             @{CLIMOPATH}   </climo_dir>
+    <write_plot_vars type="boolean">    True           </write_plot_vars>
+    <max_data_filesize type="integer">  100            </max_data_filesize>
+    <max_data_blocksize type="integer"> 500            </max_data_blocksize>
+    <verbosity  type="integer">         1              </verbosity>
+    <exit_on_warning  type="boolean">   False          </exit_on_warning>
+    <output_file_type>                  ps             </output_file_type>
+    <force_calc type="boolean">         False          </force_calc>
+    <force_gradecalc type="boolean">    False          </force_gradecalc>
+    <force_taylorcalc type="boolean">   False          </force_taylorcalc>
+</GLOBAL>
+
+<MODELS>
+</MODELS>
+
+<DIAGNOSTICS>
+
+    <diag>
+        <description> similar to IPCC ch. 9 fig 9.31 </description>
+        <variable_def_dir>    ./variable_defs/                      </variable_def_dir>
+        <variable ref_model="noaa"> rlut                            </variable>
+        <field_type>          T2Ds                                  </field_type>
+        <diag_script_cfg_dir> ./nml/cfg_ipcc_ch9/                   </diag_script_cfg_dir>
+        <model> CMIP5_ETHZ MPI-ESM-LR      day historical r1i1p1 1980 1982 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model id="noaa"> OBS NOAA-PSD-Interp ground 1 1980 1982 @{OBSPATH}/Tier2/NOAA-PSD-Interp/  </model>
+        <diag_script cfg="cfg_ipcc-fig-9-31.ncl"> ipcc-fig-9-31.ncl </diag_script>
+    </diag>
+<!--
+    <diag>
+        <description> similar to IPCC ch. 9 fig 9.31 </description>
+        <variable_def_dir>    ./variable_defs/                      </variable_def_dir>
+        <variable ref_model="noaa"> rlut                            </variable>
+        <field_type>          T2Ds                                  </field_type>
+        <diag_script_cfg_dir> ./nml/cfg_ipcc_ch9/                   </diag_script_cfg_dir>
+        <model> CMIP5_ETHZ BNU-ESM         day historical r1i1p1 1980 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ CMCC-CESM       day historical r1i1p1 1980 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ CMCC-CM         day historical r1i1p1 1980 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ CMCC-CMS        day historical r1i1p1 1980 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ CSIRO-Mk3-6-0   day historical r1i1p1 1980 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ FGOALS-g2       day historical r1i1p1 1980 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ inmcm4          day historical r1i1p1 1980 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ IPSL-CM5A-LR    day historical r1i1p1 1980 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MPI-ESM-LR      day historical r1i1p1 1980 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MPI-ESM-MR      day historical r1i1p1 1980 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MPI-ESM-P       day historical r1i1p1 1980 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model id="noaa"> OBS NOAA-PSD-Interp ground 1 1980 2005 @{OBSPATH}/Tier2/NOAA-PSD-Interp/  </model>
+        <diag_script cfg="cfg_ipcc-fig-9-31.ncl"> ipcc-fig-9-31.ncl </diag_script>
+    </diag>
+-->
+</DIAGNOSTICS>
+
+</namelist>

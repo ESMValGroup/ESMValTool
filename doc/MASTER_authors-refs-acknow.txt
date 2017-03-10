@@ -134,6 +134,7 @@ D_lauer17rse = Lauer et al., Remote Sens. Environ., in press, 2017.
 D_li14jclim = Li and Xie, J. Climate, 27, 1765-1780, doi:http://dx.doi.org/10.1175/JCLI-D-13-00337.1, 2014.
 D_righi13acp = Righi et al., Atmos. Chem. Phys., 13, 9939-9970, doi:10.5194/acp-13-9939-2013, 2013.
 D_righi15gmd = Righi et al., Geosci. Model Dev., 8, 733-768 doi:10.5194/gmd-8-733-2015, 2015.
+D_sperber12asl = Sperber and Kim, Atmos. Sci. Lett., 13, 3, 187-193, doi:10.1002/asl.378, 2012.
 D_anav13jclim = Anav et al., J. Clim., 26, 6801-6843, doi: http://dx.doi.org/10.1175/JCLI-D-12-00417.1, 2013.
 D_wenzel14jgr = Wenzel et al., J. Geophys. Res. Biogeosci., 119(5), doi:2013JG002591, 2014.
 D_Williams09climdyn = Williams and Webb, Clim. Dynam., 33, 141-157, doi:10.1007/s00382-008-0443-1, 2009.
