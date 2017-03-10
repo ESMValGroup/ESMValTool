@@ -95,7 +95,7 @@ Prerequesite #3: install `dummydata`
 The `dummydata <https://github.com/pygeo/dummydata>`_ package is required for the generation of synthetic datasets to be used within the testing. When the ESMValTool is installed via `conda` this will have been installed already automatically. Otherwise install the package like described in its documentation.
 
 
-How to implement a test for a new diagnostic? THIS SECTION NEEDS COMPLETE REVISION
+How to implement a test for a new diagnostic?
 ---------------------------------------------
 
 Two cases should be always considered
@@ -184,7 +184,7 @@ What is important is, that you identify the variables (e.g. precipitation) that 
 
 If you have a look to the `get_field_definitions()`, you will recognize that a dictionary `r` is generated. This dictionary contains all relevant information that tells the testing routine how the test data should be generated.
 
-The most recent list of supported variables is provided within the `dummydata` package. Please have a look `here <https://github.com/pygeo/dummydata/blob/master/dummydata/meta.py#L7>`_ if you want to check which variables are supported. 
+The most recent list of supported variables is provided within the `dummydata` package. Please have a look `there <https://github.com/pygeo/dummydata/blob/master/dummydata/meta.py#L7>`_ if you want to check which variables are supported. 
 
 Examples for variables definitions::
 
