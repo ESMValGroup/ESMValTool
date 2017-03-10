@@ -4,19 +4,22 @@ TODO for deliverables
 DONE * document dummydata
 * generate pip build for dummydata
 * conda recipe for dummydata
+* document dummydata
 
 DONE * document easytest
 * more examples needed in documentation
 * add some general information on the easytest workflow within the documentation!
-* conda recipe for easytest
+DONE * conda recipe for easytest
 
-* document testing  --> how it works
-* document reporting
+DONE * document testing  --> how it works
+* document reporting (Ben)
 
-* integrate code for testing
+* let somebody else implement a test based on the documentation ( Ben)
+
+DONE * integrate code for testing
 * integrate code for reporting
 
-* write cover page for entire report
+DONE * write cover page for entire report
 
 * integrate easytest and dummydata documentation simply as an Annex to the main deliverable! --> separate PDF documents!
 
