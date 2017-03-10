@@ -100,8 +100,7 @@ How to implement a test for a new diagnostic?
 
 Two cases should be always considered
 
-* ensure that your code or its individual components do the right thing. It is therefore highly recommended that you implement unittests for your code as much as you can (and want). This will ensure that the integritiy of your diagnostic code and if you get used to it you will find out that you will probably write faster and better code with testing. More details on how you can implement unittests is given either in the `tests` directory of the ESMValTool or can be also found in the documentation of the corresponding
-`unittest <https://docs.python.org/2/library/unittest.html>`_. Please look there or in the `tests` directory for examples how to implement tests for python code.
+* ensure that your code or its individual components do the right thing. It is therefore highly recommended that you implement unittests for your code as much as you can (and want). This will ensure that the integritiy of your diagnostic code and if you get used to it you will find out that you will probably write faster and better code with testing. More details on how you can implement unittests is given either in the `tests` directory of the ESMValTool or can be also found in the documentation of the corresponding `unittest <https://docs.python.org/2/library/unittest.html>`_. Please look there or in the `tests` directory for examples how to implement tests for python code.
 
 * set up a test for the entire diagnostic. This test can be as complicated as you like. A template is provided that helps you to facilitate the test integration. This basic testing template will run your diagnostic with sample data and check if the diagnostic produces appropriate output files like you would expect. Based on this basic tests, you can then further implement new tests that check e.g. that specific results have been produced that you expect from the diagnostic with predefined input data. For this, the dummy data used for the testing can have different chanracteristics. Details are provided in the documentation of the `dummydata <https://github.com/pygeo/dummydata>`_ package.
 
@@ -265,8 +264,9 @@ After the execution was sucessfully completed you should get an::
     O.K!
 
 
+More advanced testing
+---------------------
 
+Like already said in the introduction, you could implement an arbitrary complexity for the testing. The above is only the very basic, but already sufficient at least to test that the diagnostic is working in a lightweight setup.
 
-
-
-
+One very usefull way to also test that the diagnostic produces the correct results would be to a) implement first of all unittest for the individual components of the diagnostic itself if possible and then b) generate synthetic test data with predefined properties. Currenty, `dummydata` support only random uniform fields and constant fields. Thus the first question would be, what kind of results you would expect if a constant field is used within the diagnostic (note that you can specify the constant value). Later on, one could also think about generating more complex input fields using `dummydata` like e.g. constants values for each latitude or similar things. If you have a good idea, then open an issue at the `dummydata <https://github.com/pygeo/dummydata>`_ repository.
