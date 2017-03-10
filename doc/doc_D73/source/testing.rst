@@ -100,10 +100,10 @@ How to implement a test for a new diagnostic?
 
 Two cases should be always considered
 
-a) ensure that your code or its individual components do the right thing. It is therefore highly recommended that you implement unittests for your code as much as you can (and want). This will ensure that the integritiy of your diagnostic code and if you get used to it you will find out that you will probably write faster and better code with testing. More details on how you can implement unittests is given either in the `tests` directory of the ESMValTool or can be also found in the documentation of the corresponding
+* ensure that your code or its individual components do the right thing. It is therefore highly recommended that you implement unittests for your code as much as you can (and want). This will ensure that the integritiy of your diagnostic code and if you get used to it you will find out that you will probably write faster and better code with testing. More details on how you can implement unittests is given either in the `tests` directory of the ESMValTool or can be also found in the documentation of the corresponding
 `unittest <https://docs.python.org/2/library/unittest.html>`_. Please look there or in the `tests` directory for examples how to implement tests for python code.
 
-b) set up a test for the entire diagnostic. This test can be as complicated as you like. A template is provided that helps you to facilitate the test integration. This basic testing template will run your diagnostic with sample data and check if the diagnostic produces appropriate output files like you would expect. Based on this basic tests, you can then further implement new tests that check e.g. that specific results have been produced that you expect from the diagnostic with predefined input data. For this, the dummy data used for the testing can have different chanracteristics. Details are provided in the documentation of the `dummydata <https://github.com/pygeo/dummydata>`_ package.
+* set up a test for the entire diagnostic. This test can be as complicated as you like. A template is provided that helps you to facilitate the test integration. This basic testing template will run your diagnostic with sample data and check if the diagnostic produces appropriate output files like you would expect. Based on this basic tests, you can then further implement new tests that check e.g. that specific results have been produced that you expect from the diagnostic with predefined input data. For this, the dummy data used for the testing can have different chanracteristics. Details are provided in the documentation of the `dummydata <https://github.com/pygeo/dummydata>`_ package.
 
 To implement a test for a new diagnostic only a few steps are required, which are described in the following
 
@@ -178,7 +178,7 @@ TODO example how it would work with subdirectories as part of the plotdir
 3. Specify the data
 ~~~~~~~~~~~~~~~~~~~
 
-The tests are currently designed to work efficiently. This is why the default testing implementation is based on generated synthetic data. The generation of such synthetic testing data is acomplished by using the the `dummydata <https://github.com/pygeo/dummydata>` package. For a detailed documentation of the capabilities of this package, see in its documentation.
+The tests are currently designed to work efficiently. This is why the default testing implementation is based on generated synthetic data. The generation of such synthetic testing data is acomplished by using the the `dummydata <https://github.com/pygeo/dummydata>`_ package. For a detailed documentation of the capabilities of this package, see in its documentation.
 
 What is important is, that you identify the variables (e.g. precipitation) that are expected within the diagnostic to be tested. You need to tell the class for testing which fields are supposed to be generated and which kind of characteristics they are expected to have.
 
