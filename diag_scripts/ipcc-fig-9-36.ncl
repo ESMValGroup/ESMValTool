@@ -20,6 +20,9 @@
 ;; Optional variable_info attributes (variable specific)
 ;;     none
 ;;
+;; Required variable attributes (defined in namelist)
+;;    ref_model: name of reference data set (observations)
+;;
 ;; Caveats
 ;;     none
 ;;
@@ -236,7 +239,7 @@ begin
         y = reg_std(ireg, idx_ref)
 
         ;; Draw plot
-        outfile = output_dir + diag_script + "_" + var0 + "_" + region(ireg)
+        outfile = output_dir + diag_script_base + "_" + var0 + "_" + region(ireg)
         wks = gsn_open_wks(file_type, outfile)
         data_arr@res_tiMainString = var0 + " - " + region(ireg)
         diag_script_info@region = region(ireg)

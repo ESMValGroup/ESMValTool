@@ -1762,7 +1762,7 @@ This namelist is part of the ESMValTool
         <variable_def_dir>          ./variable_defs/  </variable_def_dir>
         <variable ref_model="trmm">  pr               </variable>
         <field_type>                 T2Is             </field_type>
-        <diag_script_cfg_dir> ./nml/cfg_ipcc_fig9-30/ </diag_script_cfg_dir>
+        <diag_script_cfg_dir> ./nml/cfg_ipcc_ch9/     </diag_script_cfg_dir>
         <model id="trmm"> OBS TRMM sat 3B42-v7 2004 2004 @{OBSPATH}/Tier2/TRMM-3B42 </model>
         <model> CMIP5_ETHZ CNRM-CM5     3hr amip r1i1p1 2004 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
         <model> CMIP5_ETHZ HadGEM2-A    3hr amip r1i1p1 2004 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
@@ -1828,7 +1828,7 @@ This namelist is part of the ESMValTool
         <variable_def_dir>    ./variable_defs/                      </variable_def_dir>
         <variable ref_model="HadISST"> ts                           </variable>
         <field_type>          T2Ms                                  </field_type>
-        <diag_script_cfg_dir> ./nml/cfg_ipcc_fig9-36/               </diag_script_cfg_dir>
+        <diag_script_cfg_dir> ./nml/cfg_ipcc_ch9/                   </diag_script_cfg_dir>
         <model> CMIP5_ETHZ ACCESS1-0      Amon historical r1i1p1 1980 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
         <model> CMIP5_ETHZ ACCESS1-3      Amon historical r1i1p1 1980 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
         <model> CMIP5_ETHZ bcc-csm1-1     Amon historical r1i1p1 1980 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
@@ -1879,7 +1879,7 @@ This namelist is part of the ESMValTool
         <variable_def_dir>    ./variable_defs/                      </variable_def_dir>
         <variable ref_model="CMAP"> pr-mmday                        </variable>
         <field_type>          T2Ms                                  </field_type>
-        <diag_script_cfg_dir> ./nml/cfg_ipcc_fig9-36/               </diag_script_cfg_dir>
+        <diag_script_cfg_dir> ./nml/cfg_ipcc_ch9/                   </diag_script_cfg_dir>
         <model> CMIP5_ETHZ ACCESS1-0      Amon historical r1i1p1 1980 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
         <model> CMIP5_ETHZ ACCESS1-3      Amon historical r1i1p1 1980 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
         <model> CMIP5_ETHZ bcc-csm1-1     Amon historical r1i1p1 1980 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
