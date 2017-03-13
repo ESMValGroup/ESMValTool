@@ -1,7 +1,7 @@
 Reporting Service for ESMValTool
 =====================
 
-Why testing?
+Why reporting?
 ------------
 
 The ESMValTool is supposed to provide automated reporting on the calculated diagnostics. The automated reporting service is supposed to be web-based, so the server preparing the data, can also provide the resulting report without forcing the user to download data or install additional software. The automated reporting service should care for gathering the output from the ESMValTool and present it in a flexible manner.
@@ -20,6 +20,7 @@ Two different approaches were considered for realization:
 The delivered version can be seen as a hybrid form of reporting service. If the reporting service recognizes an ESMValTool namelist as input, the tool acts as a processing environment for the tool and collects multiple diagnostic block outputs into seperately reported parts. If the reporting service receives a specific report namelist, former results are gathered from committed search directories and prepared based on specific grouping instructions.
 
 *put images here*
+
 *V1, V2, new hybrid*
 
 
