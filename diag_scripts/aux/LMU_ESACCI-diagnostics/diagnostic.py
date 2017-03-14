@@ -18,6 +18,7 @@ from geoval.core.data import GeoData
 from geoval.core.mapping import *
 import extended_data
 from esmval_lib import ESMValProject
+from METAdata import METAdata
 #from GeoData_mapping import *
 
 #import ConfigParser
@@ -72,6 +73,8 @@ class Diagnostic(object):
         self._regions=None
         self._changed=False
         
+        self._basetags=[]
+        
 
     def _get_output_rootname(self):
         """
@@ -124,6 +127,10 @@ class Diagnostic(object):
         self._mod_type=project_info['RUNTIME']['project']
         
         self.output_type = project_info['GLOBAL']['output_file_type']
+
+        self._basetags = self._basetags + [x.strip() for x in project_info.get('GLOBAL')['tags']]      
+        
+        self._basetags = self._basetags + [self.var]
 
         if var == 'sm':
             self._vartype = 'soil moisture'
@@ -752,6 +759,17 @@ class BasicDiagnostics(Diagnostic):
                            
         plt.close()
 
+        Dict={'ESMValTool':{
+            'built':str(datetime.datetime.now()),
+            'tags':self._basetags + ['gmd','basic',self.modname],
+            'caption':str('Global mean difference of the time series between '+self.modname +' and ' + self.refname + ' ' + self._vartype + '.'),
+            'block':'#ID'+'gmd'+self.var
+        }}
+        
+        MD=METAdata("both",self._get_output_rootname() + '_gmd.' + self.output_type,Dict)
+        MD.write()
+
+
         #and     
 
         if '_gmt_r_data' in self.__dict__.keys() and '_gmt_m_data' in self.__dict__.keys():   
@@ -846,6 +864,16 @@ class BasicDiagnostics(Diagnostic):
             plt.close(f.number)  # close figure for memory reasons!
             del f
         
+            Dict={'ESMValTool':{
+                'built':str(datetime.datetime.now()),
+                'tags':self._basetags + ['4plot','basic',self.modname],
+                'caption':str('Global mean time series for '+self.modname +' and ' + self.refname + ' ' + self._vartype + ' (upper row). Additionally, differences are shown in the lower row, both in absolute values and relative to the ' + self.refname + ' data set.'),
+                'block':'#ID'+'4plot'+self.var
+            }}
+            
+            MD=METAdata("both",oname,Dict)
+            MD.write()
+        
     def _p_stat(self,D,ts):
             
         """ produce table """
@@ -925,6 +953,16 @@ class BasicDiagnostics(Diagnostic):
         f.savefig(self._get_output_rootname() + '_smean_ts.' + self.output_type)
         plt.close(f.number)
         
+        Dict={'ESMValTool':{
+                'built':str(datetime.datetime.now()),
+                'tags':self._basetags + ['TimeS','basic',self.modname],
+                'caption':str('Time series of spatial mean for ' + self.modname + ' and ' + self.refname + ' ' + self._vartype + '.'),
+                'block':'#ID'+'TimeS'+self.var
+            }}
+            
+        MD=METAdata("both",self._get_output_rootname() + '_smean_ts.' + self.output_type,Dict)
+        MD.write()
+        
         if self.cfg.regionalization:
             unit2=math.ceil(np.sqrt(len(self._regions))) #2
             unit1=math.ceil(len(self._regions)/unit2)
@@ -998,6 +1036,16 @@ class BasicDiagnostics(Diagnostic):
             f.savefig(self._get_output_rootname() + '_regionalized_smean_ts.' + self.output_type)
             plt.close(f.number)
 
+            Dict={'ESMValTool':{
+                'built':str(datetime.datetime.now()),
+                'tags':self._basetags + ['TimeS','reg','basic',self.modname],
+                'caption':str('Regionalized time series of spatial mean for ' + self.modname + ' and ' + self.refname + ' ' + self._vartype + '.'),
+                'block':'#ID'+'TimeSreg'+self.var
+            }}
+            
+            MD=METAdata("both",self._get_output_rootname() + '_regionalized_smean_ts.' + self.output_type,Dict)
+            MD.write()
+
     def _global_mean_timeseries(self,name):
         """ calculating mean of TS """
         print('   global mean time series ...')
@@ -1063,7 +1111,15 @@ class BasicDiagnostics(Diagnostic):
                            dpi=self.plot_dpi)
         plt.close()
         
+        Dict={'ESMValTool':{
+            'built':str(datetime.datetime.now()),
+            'tags':self._basetags + ['gmt','basic',name],
+            'caption':str('Temporal mean of the '+ name + ' ' + self._vartype + ' data set.'),
+            'block':'#ID'+'gmt'+self.var# + name
+        }}
 
+        MD=METAdata("both",self._plot_dir + os.sep + self._vartype.replace(" ","_") + '_' + name + '_gmt.' + self.output_type,Dict)
+        MD.write()
 
     def _calc_spatial_correlation(self,X,Y):
         """
@@ -1196,6 +1252,16 @@ class BasicDiagnostics(Diagnostic):
         plt.close(f.number)  # close figure for memory reasons!
         del f
         
+        Dict={'ESMValTool':{
+            'built':str(datetime.datetime.now()),
+            'tags':self._basetags + ['TCorr','basic',self.modname],
+            'caption':str('Pixelwise correlation of temporal trend between '+ self.modname + ' and ' + self.refname + ' ' +  self._vartype + ' (left). The right panel describes the pattern of corresponding p-values.'),
+            'block':'#ID'+'TCorr'+self.var
+        }}
+        
+        MD=METAdata("both",oname,Dict)
+        MD.write()
+        
     def _plot_trend_maps(self, S, P,name):
         """
         plot trend slopes
@@ -1252,7 +1318,7 @@ class BasicDiagnostics(Diagnostic):
             
             submap(S, ax=ax1, title="slope",vmin=-mima,vmax=+mima,cmap='RdBu',ctick={'ticks': np.linspace(-mima,+mima,11), 'labels': np.append(np.insert(np.linspace(-mima,+mima,11).astype('string')[1:10],0,'< ' + str(-mima)),'> ' + str(mima))})
             submap(P, ax=ax2, title="p-value",vmin=0,vmax=1,cmap='summer',ctick={'ticks': np.arange(0,1.01,0.1), 'labels': np.append(np.arange(0,1,0.1).astype('string'),'> 1.0')})
-            f.suptitle(name + " pixelwise temporal trend and p-value (" + str(self._start_time.year) + "_" + str(self._stop_time) + ")")
+            f.suptitle(name + " pixelwise temporal trend and p-value (" + str(self._start_time.year) + "_" + str(self._stop_time.year) + ")")
     
             oname = self._plot_dir + os.sep + self._vartype.replace(" ","_") + '_' + name + "_trend+p" + '.' + self.output_type
             if os.path.exists(oname):
@@ -1261,6 +1327,16 @@ class BasicDiagnostics(Diagnostic):
     
             plt.close(f.number)  # close figure for memory reasons!
             del f
+            
+            Dict={'ESMValTool':{
+                'built':str(datetime.datetime.now()),
+                'tags':self._basetags + ['trend','basic',name],
+                'caption':str("Spatially distributed temporal trend of " + name + " and the p-values of these trends (right panel) for the years " + str(self._start_time.year) + " to " + str(self._stop_time.year) + ". The p-values higher than 1.0 are not shown seperately."),
+                'block':'#ID'+'trend'+self.var
+            }}
+            
+            MD=METAdata("both",oname,Dict)
+            MD.write()
             
         else:
             f = plt.figure(figsize=(10,6))
@@ -1323,6 +1399,15 @@ class BasicDiagnostics(Diagnostic):
             plt.close(f.number)  # close figure for memory reasons!
             del f
             
+            Dict={'ESMValTool':{
+                'built':str(datetime.datetime.now()),
+                'tags':self._basetags + ['trend','basic',name],
+                'caption':str("Spatially distributed temporal trend of " + name + " for the years " + str(self._start_time.year) + " to " + str(self._stop_time.year) + ". Values are only shown for trends with a p-value smaller than 0.05."),
+                'block':'#ID'+'trend'+self.var
+            }}
+            
+            MD=METAdata("both",oname,Dict)
+            MD.write()
         
     def _write_shape_statistics(self,data,diag,name):
         """
@@ -1514,7 +1599,6 @@ class BasicDiagnostics(Diagnostic):
 
                 R_list_d, R_length = self._get_files_in_directory(self._plot_dir + os.sep,onameR,False)
 
-                #M_list=filter(lambda x: not(x in R_list_d), M_list_d)
                 M_list_d=filter(lambda x: not(x in R_list_d), M_list_d)
                 
                 M_length=M_length-R_length
@@ -1594,5 +1678,19 @@ class BasicDiagnostics(Diagnostic):
                         ax.set_xlim(start,stop)
                         ax.grid()
         
+                        handles, labels = ax.get_legend_handles_labels()
+        
                     f.savefig(rootname + '_regionalized_smean_ts.' + self.output_type)
                     plt.close(f.number)    
+
+        
+
+                    Dict={'ESMValTool':{
+                        'built':str(datetime.datetime.now()),
+                        'tags':self._basetags + ['TimeS','overview','basic'] + labels,
+                        'caption':str('Time series of spatial mean for different regions. The multiple models are: ' + ", ".join(labels) + '.'),
+                        'block':'#ID'+'regov'+self.var
+                    }}
+            
+                    MD=METAdata("both",rootname + '_regionalized_smean_ts.' + self.output_type,Dict)
+                    MD.write()

@@ -2,6 +2,12 @@ from auxiliary import xmlTagError, error, info
 from model import AllModels, Model
 from fx_file import AllFXfiles, FX_file, FX_file_exception
 from diagdef import AllDiagnostics, Diagnostic
+
+# bn_muel ++
+from tag import AllTags, Tags
+from folder import AllFolders, Folders
+# bn_muel ++
+
 import diagdef
 import os
 import pdb
@@ -42,8 +48,15 @@ class GLOBAL(Nml_base):
 	                project_info = os.path.abspath(project_info)
             else:
                 raise TypeError("Invalid value for attributes")
-
-        self.project_info[name] = project_info
+        
+        # bn_muel++
+        #self.project_info[name] = project_info 
+        
+        if name == 'tags':
+            self.project_info[name] = project_info.split(",")
+        else:
+            self.project_info[name] = project_info        
+        # bn_muel++
 
 
 class MODELS(Nml_base):
@@ -95,7 +108,10 @@ class DIAGNOSTICS(Nml_base):
         self.variable = []
         self.var_attributes = []
         self.cfg = []
-
+        # bn_muel ++
+        self.tags = []
+        # bn_muel ++
+        
         ## Default value
         self.diag_script_cfg_dir = []
 
@@ -132,6 +148,9 @@ class DIAGNOSTICS(Nml_base):
                                                    self.diag_script_cfg_dir,
                                                    self.diag_script_cfg,
                                                    self.diag_specific_models,
+                                                   # bn_muel ++
+                                                   self.tags,
+                                                   # bn_muel ++
                                                    self.launcher_arguments))
             self.reset_temp_diag_storage()
 
@@ -141,6 +160,12 @@ class DIAGNOSTICS(Nml_base):
         elif name == 'variable':
             self.variable.append(string.strip())
             self.var_attributes.append(attributes)
+        
+        # bn_muel ++
+        elif name == 'tags':
+            self.tags.append(string.strip())
+        # bn_muel ++
+        
         else:
             vars(self)[name].append(string.strip())
 
@@ -168,9 +193,12 @@ class DIAGNOSTICS(Nml_base):
             var_attr = curr_diag_tag.get_tag_attr()
             field = curr_diag_tag.get_tag_field_type()
             var_def_dir = curr_diag_tag.get_var_def_dir()
+            # bn_muel ++
+            tags = curr_diag_tag.get_tag_tags()
+            # bn_muel ++
             launch_args = curr_diag_tag.get_launcher_args()
 
-            diags = [Diagnostic(var, var_def_dir, field, var_attr, diag_script, cfg, model, launch_args)
+            diags = [Diagnostic(var, var_def_dir, field, var_attr, diag_script, cfg, model, tags ,launch_args)
                      for diag_script, cfg, model in curr_diag_tag]
 
             all_diags.extend(diags)
@@ -200,3 +228,24 @@ class REFORMAT(Nml_base):
 	if attributes['id'] in self.project_info.keys():
 		error('Duplicate usage of reformat_script id: {0}'.format(attributes['id']))
         self.project_info[attributes['id']] = string.strip()
+        
+        
+# bn_muel ++
+class TAGS(Nml_base):
+    def __init__(self):
+        Nml_base.__init__(self)
+        self.project_info = AllTags()
+
+    def add_nml_entry(self, name, string, attributes):
+        self.project_info.append(Tags(string.strip()).get_tag_line())
+        
+class FOLDERS(Nml_base):
+    def __init__(self):
+        Nml_base.__init__(self)
+        self.project_info = AllFolders()
+
+    def add_nml_entry(self, name, string, attributes):
+        self.project_info.append(Folders(string.strip()).get_folder_line())
+
+        
+# bn_muel ++

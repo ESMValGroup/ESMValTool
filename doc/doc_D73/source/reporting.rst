@@ -104,7 +104,8 @@ Example for a python dictionary that can be transferred to xml/image metadata (f
 	      'ESMValTool':{
               'built':str(datetime.datetime.now()),
               'tags':self._basetags + ['TimeS','overview','basic'] + labels,
-              'caption':str('Time series of spatial mean for different regions. The multiple models are: ' + ", ".join(labels) + '.'),
+              'caption':str('Time series of spatial mean for different regions. 
+			     The multiple models are: ' + ", ".join(labels) + '.'),
               'block':'#ID'+'regov'+self.var
              }}
 

@@ -1,2 +1,4 @@
 *.pyc
 *.tmp
+*.orig
+/c

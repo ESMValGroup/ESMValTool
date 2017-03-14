@@ -77,6 +77,17 @@ parser.parse(input_xml_full_path)
 # Project_info is a dictionary with all info from the namelist.
 project_info = Project.project_info
 
+#bn_muel++
+#add namelist to tags
+if 'GLOBAL' not in project_info.keys():
+    assert False, "This is a reporting namelist!"
+
+if "tags" in project_info.get('GLOBAL').keys():
+    project_info.get('GLOBAL')['tags'].append(input_xml_full_path.split('/')[-1])
+else:
+    project_info.get('GLOBAL')['tags']=input_xml_full_path.split('/')[-1]
+#bn_muel++
+
 if options.reformat:
 	if 'REFORMAT' not in project_info.keys():
 		error('No REFORMAT tag specified in {0}'.format(input_xml_full_path))
@@ -134,12 +145,22 @@ timestamp1 = datetime.datetime.now()
 timestamp_format = "%Y-%m-%d --  %H:%M:%S"
 
 print_header(project_info, options.reformat)
+
 info("Starting the Earth System Model Evaluation Tool v" + version + " at time: "
      + timestamp1.strftime(timestamp_format) + "...", verbosity, 1)
 
 # Loop over all diagnostics defined in project_info and
 # create/prepare netCDF files for each variable
+DiagCounter=1
+
 for currDiag in project_info['DIAGNOSTICS']:
+    
+    #bn_muel++
+    if "tags" in currDiag.__dict__.keys():
+        GlobalTags=list(project_info.get('GLOBAL')['tags']) 
+        project_info.get('GLOBAL')['tags'].extend(currDiag.__dict__['tags'][0].split(",") + ["Auto_Diag_"+str(DiagCounter).zfill(3)])
+        DiagCounter+=1
+    #bn_muel++
 
     # Are the requested variables derived from other, more basic, variables?
     requested_vars = currDiag.get_variables_list()
@@ -207,6 +228,11 @@ for currDiag in project_info['DIAGNOSTICS']:
                             verbosity,
                             exit_on_warning,
                             launcher_arguments=currDiag.get_launcher_arguments())
+    
+    #bn_muel++
+    if "tags" in currDiag.__dict__.keys():
+        project_info.get('GLOBAL')['tags'] = list(GlobalTags)
+    #bn_muel++
 
 # delete environment variable
 del(os.environ['0_ESMValTool_version'])

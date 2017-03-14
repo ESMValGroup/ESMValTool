@@ -3,7 +3,7 @@ from diagnostic import *
 
 class SeaSurfaceTemperatureDiagnostic(BasicDiagnostics):
     """
-    class to implement soil moisture diagnostics, like e.g. global means, global differences, RMSD etc.
+    class to implement sea surface temperature diagnostics, like e.g. global means, global differences, RMSD etc.
 
     TODO implement testing for this diagnostic
 
@@ -187,7 +187,7 @@ class SeaSurfaceTemperatureDiagnostic(BasicDiagnostics):
 
         
     def _load_model_data(self):
-        """ load soil moisture model data """
+        """ load sea surface temperature model data """
         
         edited=False
         
@@ -205,7 +205,7 @@ class SeaSurfaceTemperatureDiagnostic(BasicDiagnostics):
             lon=-1
         mod_info.close()
         
-        if not (lat == 96 and lon == 192): #TODO add diffs
+        if not ((lat == 96 and lon == 192) or (lat == 6 and lon == 12)): #TODO add diffs
         
             if not os.path.exists(newfile):
                 tempfile=self._aggregate_resolution(self._mod_file,"T63",remove=False)
@@ -235,7 +235,7 @@ class SeaSurfaceTemperatureDiagnostic(BasicDiagnostics):
             lon=-1
         mod_info.close()
         
-        if not (lat == 96 and lon == 192): #TODO add diffs
+        if not ((lat == 96 and lon == 192) or (lat == 6 and lon == 12)): #TODO add diffs
             if not os.path.exists(newfile):
                 tempfile=self._aggregate_resolution(self._ref_file,"T63",remove=False)
                 subprocess.call(["mkdir",newdir])
