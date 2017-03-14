@@ -20,19 +20,19 @@ Two different approaches were primarily considered for realization:
 The current version 1.0 is a hybrid form of the aforementioned approaches. If the reporting service recognizes an ESMValTool namelist as input, the tool acts as a run-time environment for the tool and collects multiple diagnostic blocks' output into seperately reported parts. If the reporting service receives a specific report namelist, former results are gathered from predefined search directories and are prepared based on specific grouping instructions.
 
 .. figure:: reporting_post_workflow.png
-   :scale: 50 %
+   :width: 500 px
    :alt: Reporting service as a collector
 
    The reporting service (blue) implemented as collector for ESMValTool (red) output based on specific reporting namelists
 
 .. figure:: reporting_envi_workflow.png
-   :scale: 50 %
+   :width: 500 px
    :alt: Reporting service as an environment
 
    The reporting service (blue) implemented as environment for ESMValTool (red) output distributing original namelists
 
 .. figure:: reporting_comb_workflow.png
-   :scale: 50 %
+   :width: 500 px
    :alt: Reporting service as a hybrid
 
    The reporting service (blue) implemented as environment-collector-hybrid for ESMValTool (red) output reacting to specified namelists
@@ -41,13 +41,16 @@ Version 1.0 covers the following issues:
 
 * Automatic production of a short HTML5 report with a simple "Home" site and tabs for different diagnostic blocks or tag combinations.
 * A print tab for easy conversion to PDF format.
+* Currently, only specific data format can be processed (png, jpg, jpeg, tiff). 
 * The reports are responsive to scaling of the browser window.
 * The reports can be reached and presented within the same network via IP and port number (e.g.: 127.0.0.1:5000). 
+* Reports use a defined sorting algorithm to provide a usefull arrangement of results.
 
 Known issues:
 
 * Currently, not all (irregular) errors might be caught and show adequate information to prevent them.
-* The flask app is not the most stable server for the site. 
+* The flask app is not the most stable server for the site and might break. 
+* Various data formats need to be incorporated (e.g. csv, pdf).
 
 
 Requirements
