@@ -1,4 +1,4 @@
-Reporting Service for ESMValTool
+Reporting service for ESMValTool
 =====================
 
 Why reporting?
@@ -17,23 +17,37 @@ Two different approaches were primarily considered for realization:
 
 * The other approach is, to implement the collector (and organizer) as part of the ESMValTool runtime. An ESMValTool **run-time environment** is needed for this. This approach basically is preferred, as the reporting service is in charge of producing and managing the output of the ESMValTool, including reading or setting up namelists, etc. The advantage is, that results from multiple namelist can be easily incorporated. Therefore, information on the reporting structure is not mandatory. It is also possible to easily report on diagnostics that are currently not supporting such kind of information.
 
-The current version is a hybrid form of the aforementioned approaches. If the reporting service recognizes an ESMValTool namelist as input, the tool acts as a run-time environment for the tool and collects multiple diagnostic blocks' output into seperately reported parts. If the reporting service receives a specific report namelist, former results are gathered from predefined search directories and are prepared based on specific grouping instructions.
-
-*put images here*
-
-*missing: new hybrid*
+The current version 1.0 is a hybrid form of the aforementioned approaches. If the reporting service recognizes an ESMValTool namelist as input, the tool acts as a run-time environment for the tool and collects multiple diagnostic blocks' output into seperately reported parts. If the reporting service receives a specific report namelist, former results are gathered from predefined search directories and are prepared based on specific grouping instructions.
 
 .. figure:: reporting_post_workflow.png
-   :scale: 100 %
+   :scale: 50 %
    :alt: Reporting service as a collector
 
-   The reporting service implemented as collector for ESMValTool output based on specific reporting namelists
+   The reporting service (blue) implemented as collector for ESMValTool (red) output based on specific reporting namelists
 
 .. figure:: reporting_envi_workflow.png
-   :scale: 100 %
+   :scale: 50 %
    :alt: Reporting service as an environment
 
-   The reporting service implemented as environment for ESMValTool output distributing original namelists
+   The reporting service (blue) implemented as environment for ESMValTool (red) output distributing original namelists
+
+.. figure:: reporting_comb_workflow.png
+   :scale: 50 %
+   :alt: Reporting service as a hybrid
+
+   The reporting service (blue) implemented as environment-collector-hybrid for ESMValTool (red) output reacting to specified namelists
+
+Version 1.0 covers the following issues:
+
+* Automatic production of a short HTML5 report with a simple "Home" site and tabs for different diagnostic blocks or tag combinations.
+* A print tab for easy conversion to PDF format.
+* The reports are responsive to scaling of the browser window.
+* The reports can be reached and presented within the same network via IP and port number (e.g.: 127.0.0.1:5000). 
+
+Known issues:
+
+* Currently, not all (irregular) errors might be caught and show adequate information to prevent them.
+* The flask app is not the most stable server for the site. 
 
 
 Requirements
@@ -44,8 +58,6 @@ MetaData for Files
 V1: time synchronous setup
 
 V2: tags version in nmls, tagged images
-
-
 
 
 1) Specify MetaData
