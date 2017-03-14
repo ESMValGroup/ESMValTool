@@ -13,26 +13,28 @@ The current reporting service composes a functional and flexible html-based webs
 
 Two different approaches were primarily considered for realization:
 
-* The first approach is, to implement a serial reporting service that is running a **collector (and organizer)** after the ESMValTool produced the output for the reporting. Therefore, the ESMValTool must deliver collectable information on the structure of the outputs and their pattern for the report. This approach allows to prevents redundant and time consuming calculations.
+* The first approach (A1) is, to implement a serial reporting service that is running a **collector (and organizer)** after the ESMValTool produced the output for the reporting. Therefore, the ESMValTool must deliver collectable information on the structure of the outputs and their pattern for the report. This approach allows to prevents redundant and time consuming calculations.
 
-* The other approach is, to implement the collector (and organizer) as part of the ESMValTool runtime. An ESMValTool **run-time environment** is needed for this. This approach basically is preferred, as the reporting service is in charge of producing and managing the output of the ESMValTool, including reading or setting up namelists, etc. The advantage is, that results from multiple namelist can be easily incorporated. Therefore, information on the reporting structure is not mandatory. It is also possible to easily report on diagnostics that are currently not supporting such kind of information.
+* The other approach (A2) is, to implement the collector (and organizer) as part of the ESMValTool runtime. An ESMValTool **runtime environment** is needed for this. This approach basically is preferred, as the reporting service is in charge of producing and managing the output of the ESMValTool, including reading or setting up namelists, etc. The advantage is, that results from multiple namelist can be easily incorporated. Therefore, information on the reporting structure is not mandatory. It is also possible to easily report on diagnostics that are currently not supporting such kind of information.
 
-The current version 1.0 is a hybrid form of the aforementioned approaches. If the reporting service recognizes an ESMValTool namelist as input, the tool acts as a run-time environment for the tool and collects multiple diagnostic blocks' output into seperately reported parts. If the reporting service receives a specific report namelist, former results are gathered from predefined search directories and are prepared based on specific grouping instructions.
+The current version 1.0 is a hybrid form of the aforementioned approaches. If the reporting service recognizes an ESMValTool namelist as input, the tool acts as a runtime environment for the tool and collects multiple diagnostic blocks' output into seperately reported parts. If the reporting service receives a specific report namelist, former results are gathered from predefined search directories and are prepared based on specific grouping instructions.
+
+.. TODO: I don't know why neither scaling nor setting the wirdth does not work here. 
 
 .. figure:: reporting_post_workflow.png
-   :width: 500 px
+   :width: 250 px
    :alt: Reporting service as a collector
 
-   The reporting service (blue) implemented as collector for ESMValTool (red) output based on specific reporting namelists
+   The reporting service (blue) implemented as collector for ESMValTool (red) output based on specific reporting namelists (A1)
 
 .. figure:: reporting_envi_workflow.png
-   :width: 500 px
+   :width: 250 px
    :alt: Reporting service as an environment
 
-   The reporting service (blue) implemented as environment for ESMValTool (red) output distributing original namelists
+   The reporting service (blue) implemented as environment for ESMValTool (red) output distributing original namelists (A2)
 
 .. figure:: reporting_comb_workflow.png
-   :width: 500 px
+   :width: 250 px
    :alt: Reporting service as a hybrid
 
    The reporting service (blue) implemented as environment-collector-hybrid for ESMValTool (red) output reacting to specified namelists
@@ -56,19 +58,58 @@ Known issues:
 Requirements
 ------------
 
-MetaData for Files
+*METAdata for output files*
 
-V1: time synchronous setup
+METAdata has to be written to all files for either of the two approaches to provide captions and a rudimental report structure. 
+Diagnostics that do not provide METAdata will come down to an unstructured presentation of the results. 
 
-V2: tags version in nmls, tagged images
+*Specifications for A1*
+
+The collector approach specifically needs such a MetaData structure. 
+For gathering results throughout different directories, relevant information must be filtered from a vast number of files. 
+Therefore, tags can be specified, that restrict a list of files to a manageable amount.
+For example, results might be grouped by ECV, domain, spatial/temporal plots, regionalized information, or specific basic information, like differences. 
+
+*Specifications for A2*
+
+For the runtime environment approach, the ESMValTool figure processing routines need to be time synchronous to python, running *main_report.py*.
+The results from the directories, given by the namelist, are then chosen based on the creation time information of the files.
+This information must fall within the start and stop time of the processing of ESMValTool's *main.py*.
 
 
 1) Specify MetaData
 ~~~~~~~~~~~~~~~~~~~
 
-xml object
+The required METAdata is in basic xml format, hidden in the data description.
+If figures are written in a compatible image format, METAdata is added to the common entry "Image.ImageDescription". 
+This functionality is provided by the GExiv2 package.
+Additionally and for other files, the same information is stored in a related invisible file.
+The format follows the simple rules: ".filename.fileextension.xml", e.g. for "thisimage.png" METAdata is stored in ".thisimage.png.xml".
 
-current limitation
+The structure of the METAdata in it's current realization provides the processing time, user and diagnostic specific tags, a caption and a block identifier for better report structure.
+
+Setup for a python dictionary that can be transferred to xml/image metadata:
+
+	DICT={
+	      'ESMValTool':{ 			# mandatory dictonary titel
+    	      'built':'datetime',               # datetime string object for processing time
+    	      'tags':['tag1','tag2','tag3'],    # list of various tags as strings
+    	      'caption':'CAPTIONTEXT',		# one string object as caption
+    	      'block':'#123'        		# block specifyer for more structured reports
+             }}
+
+Example for a python dictionary that can be transferred to xml/image metadata (from the overview plotting function in diagnostic.py): 
+
+	Dict={
+	      'ESMValTool':{
+              'built':str(datetime.datetime.now()),
+              'tags':self._basetags + ['TimeS','overview','basic'] + labels,
+              'caption':str('Time series of spatial mean for different regions. The multiple models are: ' + ", ".join(labels) + '.'),
+              'block':'#ID'+'regov'+self.var
+             }}
+
+Here, the tags are built based on namelist specific strings (self._basetag), plot specific strings (['TimeS','overview','basic']), and data specific strings (labels).
+Similarly, the blocks and captions are built based on the ESMValTool input.
 
 
 2) Specify namelist tags
