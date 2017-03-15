@@ -1,5 +1,5 @@
 Reporting service for ESMValTool
-=====================
+================================
 
 Why reporting?
 ------------
@@ -90,6 +90,8 @@ The structure of the METAdata in it's current realization provides the processin
 
 Setup for a python dictionary that can be transferred to xml/image metadata::
 
+.. code-block:: python
+
 	DICT={
 	      'ESMValTool':{ 			# mandatory dictonary titel
     	      'built':'datetime',               # datetime string object for processing time
@@ -99,6 +101,8 @@ Setup for a python dictionary that can be transferred to xml/image metadata::
              }}
 
 Example for a python dictionary that can be transferred to xml/image metadata (from the overview plotting function in diagnostic.py):: 
+
+.. code-block:: python
 
 	Dict={
 	      'ESMValTool':{
@@ -126,9 +130,11 @@ Within the GLOBAL section, tags can be introduced, that are covering all followi
 Usefull tags might be the author's or project's name, the temporal or spactial resolution or a version specification.
 
 .. code-block:: xml
+	:emphasize-lines: 35
 
 	<namelist>
-	<include href="./config_private_local.xml"/>
+		<include href="./config_private_local.xml"/>
+
 	<namelist_summary>
 	###############################################################################
 	namelist.xml
@@ -160,19 +166,25 @@ Usefull tags might be the author's or project's name, the temporal or spactial r
 	  <debuginfo type="boolean">          False                     </debuginfo>
 	  <exit_on_warning  type="boolean">   True                      </exit_on_warning>
 	  
-	  **<tags> example, monthly, author </tags>**
+	  <tags> example, monthly, author </tags>
   
 	</GLOBAL>
 
 
 	<MODELS>
 
-	  <model> CMIP5 	Example		Amon 	  historical 		r1i1p1 1990 2005  @{MODELPATH} </model>
+	  <model> CMIP5 Example	Amon historical r1i1p1 1990 2005  @{MODELPATH} 	</model>
 	
 	</MODELS>
 
 	...
 
+* DIAGNOSTICS section
+
+The tags element in the DIAGNOSTICS section can be used 
+
+.. code-block:: xml
+	:emphasize-lines: 14
 
 	...
 
@@ -189,14 +201,14 @@ Usefull tags might be the author's or project's name, the temporal or spactial r
         
         	<tags> variable_alternative_name, surface </tags>
         
-        	<model> OBS        dataset 	sat     Example  	1990 2005  @{OBSPATH}  </model>
+        	<model> OBS dataset sat Example 1990 2005 @{OBSPATH}  		</model>
     	     </diag>
 
 	</DIAGNOSTICS>
 
 	</namelist>
 
-Diagnostic
+
 
 
 3) Specify report namelist 
