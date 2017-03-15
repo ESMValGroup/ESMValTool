@@ -90,8 +90,6 @@ The structure of the METAdata in it's current realization provides the processin
 
 Setup for a python dictionary that can be transferred to xml/image metadata::
 
-.. code-block:: python
-
 	DICT={
 	      'ESMValTool':{ 			# mandatory dictonary titel
     	      'built':'datetime',               # datetime string object for processing time
@@ -102,9 +100,7 @@ Setup for a python dictionary that can be transferred to xml/image metadata::
 
 Example for a python dictionary that can be transferred to xml/image metadata (from the overview plotting function in diagnostic.py):: 
 
-.. code-block:: python
-
-	Dict={
+	DICT={
 	      'ESMValTool':{
               'built':str(datetime.datetime.now()),
               'tags':self._basetags + ['TimeS','overview','basic'] + labels,
