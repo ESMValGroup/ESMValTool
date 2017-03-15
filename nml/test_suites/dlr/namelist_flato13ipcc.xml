@@ -6,13 +6,15 @@ namelist_flato13ipcc.xml
 
 Description
 Reproducing selected figures from IPCC AR5, chap. 9 (Flato et al., 2013):
-Figs. 9.2a/b, 9.4a/b, 9.5, 9,7, 9.10, 9.24a, 9.28, 9.29, 9.30, 9.31, 9.32, 9.36, 9.45
+Figs. 9.2a/b, 9.4a/b, 9.5, 9,7, 9.8, 9.10, 9.24a, 9.28, 9.29, 9.30, 9.31,
+9.32, 9.36, 9.45
 
 Authors
 Axel Lauer (DLR, Germany - axel.lauer@dlr.de)
 Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
  
 Contributors
+Lisa Bock, DLR (Fig. 9.8)
 Irene Cionni, ENEA, namelist_eyring13jgr.xml (Fig. 9.10)
 Ricard Levine, UK Met Office, namelist_SAMonsoon.xml (Fig. 9.32)
 Mattia Righi, DLR, namelist_perfmetrics_CMIP5.xml (Fig. 9.7),
@@ -173,7 +175,26 @@ This namelist is part of the ESMValTool
 
 <!-- NO NEED TO TEST THIS PART, AS LONG AS namelist_perfmetrics_CMIP5.xml is tested -->
 
+<!-- ***********************************************************************
+     * Flato et al. (2013) - IPCC AR5, chap. 9                             *
+     * similar to fig. 9.8                                                 *
+     * =================================================================== *
+     * Time series of anomalies of annual and global surface temperature   *
+     * Contribution by Lisa Bock, DLR                                      *
+     *********************************************************************** -->
 
+    <diag>
+        <description> Set of ts anomaly timeline </description>
+        <variable_def_dir>    ./variable_defs/  </variable_def_dir>
+        <variable>            tas               </variable>
+        <field_type>          T2Ms              </field_type>
+        <diag_script_cfg_dir> ./nml/cfg_ipcc_ch9/ </diag_script_cfg_dir>
+        <model> CMIP5_ETHZ IPSL-CM5A-LR   Amon historical r1i1p1 1950 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MPI-ESM-LR     Amon historical r1i1p1 1950 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ NorESM1-M      Amon historical r1i1p1 1950 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> OBS        HadCRUT4  ground  1  1950 2004 @{OBSPATH}/Tier2/HadCRUT4/  </model>
+        <diag_script cfg="cfg_IPCC_Fig_9_8_tsline.ncl">  tsline_IPCC_Fig_9_8.ncl      </diag_script>
+    </diag>
 
 <!-- *********************************************************************** -->
 <!-- * Flato et al. (2013) - IPCC AR5, chap. 9                             * -->
