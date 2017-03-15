@@ -88,7 +88,7 @@ The format follows the simple rules: ".filename.fileextension.xml", e.g. for "th
 
 The structure of the METAdata in it's current realization provides the processing time, user and diagnostic specific tags, a caption and a block identifier for better report structure.
 
-Setup for a python dictionary that can be transferred to xml/image metadata::
+Setup for a python dictionary that can be transferred to xml/image metadata
 
 .. code-block:: python
 
@@ -100,7 +100,7 @@ Setup for a python dictionary that can be transferred to xml/image metadata::
     	      'block':'#123'        		# block specifyer for more structured reports
              }}
 
-Example for a python dictionary that can be transferred to xml/image metadata (from the overview plotting function in diagnostic.py):: 
+Example for a python dictionary that can be transferred to xml/image metadata (from the overview plotting function in diagnostic.py)
 
 .. code-block:: python
 
