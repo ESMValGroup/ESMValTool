@@ -19,7 +19,7 @@ Two different approaches were primarily considered for realization:
 
 The current version 1.0 is a hybrid form of the aforementioned approaches. If the reporting service recognizes an ESMValTool namelist as input, the tool acts as a runtime environment for the tool and collects multiple diagnostic blocks' output into seperately reported parts. If the reporting service receives a specific report namelist, former results are gathered from predefined search directories and are prepared based on specific grouping instructions.
 
-.. TODO: I don't know why neither scaling nor setting the wirdth does not work here. 
+.. TODO: I don't know why neither scaling nor setting the width does not work here. 
 
 .. figure:: reporting_post_workflow.png
    :width: 250 px
@@ -109,14 +109,89 @@ Example for a python dictionary that can be transferred to xml/image metadata (f
               'block':'#ID'+'regov'+self.var
              }}
 
-Here, the tags are built based on namelist specific strings (self._basetag), plot specific strings (['TimeS','overview','basic']), and data specific strings (labels).
+Here, the tags are a dynamically built list based on namelist specific strings (**self._basetag**), plot specific strings (**['TimeS','overview','basic']**), and data specific strings (**labels**).
 Similarly, the blocks and captions are built based on the ESMValTool input.
 
 
 2) Specify namelist tags
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Global
+Two new elements are introduced to the namelist as it is known from ESMValTool. 
+It is the intention to implement a full flexibile while least interferringn additional element to the current namelist structures.
+Tags can be added within two sections of the namelist:
+
+* Global section
+
+Within the GLOBAL section, tags can be introduced, that are covering all following diagnostics. Usefull information can be the author's or project name, the temporal or spactial resolution or a version specification.
+
+::
+	<namelist>
+	<include href="./config_private_local.xml"/>
+	<namelist_summary>
+	###############################################################################
+	namelist.xml
+
+	Description
+
+	Author
+
+	Project
+
+	References
+
+	This namelist is part of the ESMValTool
+	###############################################################################
+	</namelist_summary>
+
+	<GLOBAL>
+	  <write_plots type="boolean">        True                      </write_plots>
+	  <write_netcdf type="boolean">       True                      </write_netcdf>
+	  <force_processing type="boolean">   False                     </force_processing>
+	  <wrk_dir type="path">               @{WORKPATH}               </wrk_dir>
+	  <plot_dir type="path">              @{PLOTPATH}      	        </plot_dir>
+	  <climo_dir type="path">             @{CLIMOPATH}       	</climo_dir>
+	  <write_plot_vars type="boolean">    True                      </write_plot_vars>
+	  <max_data_filesize type="integer">  100                       </max_data_filesize>
+	  <max_data_blocksize type="integer"> 500                       </max_data_blocksize>
+	  <output_file_type>                  png                       </output_file_type>
+	  <verbosity  type="integer">         1                         </verbosity>
+	  <debuginfo type="boolean">          False                     </debuginfo>
+	  <exit_on_warning  type="boolean">   True                      </exit_on_warning>
+	  
+	  **<tags> example, monthly, author </tags>**
+  
+	</GLOBAL>
+
+
+	<MODELS>
+
+	  <model> CMIP5 	Example		Amon 	  historical 		r1i1p1 1990 2005  @{MODELPATH} </model>
+	
+	</MODELS>
+
+	...
+
+
+
+	<DIAGNOSTICS>
+
+
+	    <diag>
+	        <description>  				Doing some analysis. 		</description>
+        	<variable_def_dir>      		./variable_defs/      		</variable_def_dir>
+        	<variable>     				var                             </variable>
+        	<field_type>                    	T2Ms                    	</field_type>
+        	<diag_script cfg="./nml/cfg.py">   	this_diagnostic.py              </diag_script>
+        	<launcher_arguments>               	[('execute_as_shell', False)]   </launcher_arguments>
+        
+        	<tags> variable_alternative_name, surface </tags>
+        
+        	<model> OBS        dataset 	sat     Example  	1990 2005  @{OBSPATH}  </model>
+    	     </diag>
+
+	</DIAGNOSTICS>
+
+	</namelist>
 
 Diagnostic
 
@@ -125,6 +200,11 @@ Diagnostic
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Tags, Folders
+
+
+4) Making use of the METAdata package 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 
 
 Examples
