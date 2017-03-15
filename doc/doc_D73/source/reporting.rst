@@ -125,6 +125,7 @@ Tags can be added within two sections of the namelist:
 Within the GLOBAL section, tags can be introduced, that are covering all following diagnostics. 
 Usefull tags might be the author's or project's name, the temporal or spactial resolution or a version specification.
 
+.. code-block:: xml
 	<namelist>
 	<include href="./config_private_local.xml"/>
 	<namelist_summary>
