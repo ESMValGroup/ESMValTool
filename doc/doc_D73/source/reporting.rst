@@ -120,11 +120,11 @@ Two new elements are introduced to the namelist as it is known from ESMValTool.
 It is the intention to implement a full flexibile while least interferringn additional element to the current namelist structures.
 Tags can be added within two sections of the namelist:
 
-* Global section
+* GLOBAL section
 
-Within the GLOBAL section, tags can be introduced, that are covering all following diagnostics. Usefull information can be the author's or project name, the temporal or spactial resolution or a version specification.
+Within the GLOBAL section, tags can be introduced, that are covering all following diagnostics. 
+Usefull tags might be the author's or project's name, the temporal or spactial resolution or a version specification.
 
-::
 	<namelist>
 	<include href="./config_private_local.xml"/>
 	<namelist_summary>
@@ -172,6 +172,7 @@ Within the GLOBAL section, tags can be introduced, that are covering all followi
 	...
 
 
+	...
 
 	<DIAGNOSTICS>
 
