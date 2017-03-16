@@ -82,11 +82,14 @@ def main(project_info):
                 model_name = currProject.get_model_name(model)
 
                 # only for non-reference models
-                refference_model = project_info['RUNTIME']['currDiag'].variables[v].ref_model
+                refference_model = project_info['RUNTIME']\
+                                               ['currDiag'].\
+                                               variables[v].\
+                                               ref_model
                 if not model_name == refference_model:
                 
                     model_filename = model_filelist[model_name]
-                    reference_filename=model_filelist[refference_model]
+                    reference_filename = model_filelist[refference_model]
                 
                     # copy old data to provide data that is needed again                                                                                                                                                           # copy old data to provide data that is needed again
                     D_old=copy(Diag)
