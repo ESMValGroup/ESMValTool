@@ -79,7 +79,7 @@ The results from the directories, given by the namelist, are then chosen based o
 This information must fall within the start and stop time of the processing of ESMValTool's *main.py*.
 
 
-1) Specify MetaData
+1) Specify METAdata
 ~~~~~~~~~~~~~~~~~~~
 
 The required METAdata is in basic xml format, hidden in the data description.
