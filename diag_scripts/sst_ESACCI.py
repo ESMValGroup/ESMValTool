@@ -82,10 +82,8 @@ def main(project_info):
                 model_name = currProject.get_model_name(model)
 
                 # only for non-reference models
-                refference_model = project_info['RUNTIME']\
-                                               ['currDiag'].\
-                                               variables[v].\
-                                               ref_model
+                current_diagnostic = project_info['RUNTIME']['currDiag']
+                refference_model = current_diagnostic.variables[v].ref_model
                 if not model_name == refference_model:
                 
                     model_filename = model_filelist[model_name]
