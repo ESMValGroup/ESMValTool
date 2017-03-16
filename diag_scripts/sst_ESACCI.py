@@ -76,16 +76,16 @@ def main(project_info):
     
             # only models are read
             for inc in range(len(project_info['MODELS'])):
-                
                 model=project_info['MODELS'][inc]
-                currProject = getattr(vars()['projects'], model.split_entries()[0])()
+                currProject = getattr(vars()['projects'],\
+                                      model.split_entries()[0])()
                 model_name = currProject.get_model_name(model)
 
-                
                 # only for non-reference models
-                if not model_name == project_info['RUNTIME']['currDiag'].variables[v].ref_model:
+                refference_model = project_info['RUNTIME']['currDiag'].variables[v].ref_model
+                if not model_name == refference_model:
                 
-                    model_filename=model_filelist[model_name]
+                    model_filename = model_filelist[model_name]
                     reference_filename=model_filelist[project_info['RUNTIME']['currDiag'].variables[v].ref_model]
                 
                     # copy old data to provide data that is needed again                                                                                                                                                           # copy old data to provide data that is needed again
