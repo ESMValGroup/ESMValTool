@@ -19,7 +19,7 @@ Two different approaches were primarily considered for realization:
 
 The current version 1.0 is a hybrid form of the aforementioned approaches. If the reporting service recognizes an ESMValTool namelist as input, the tool acts as a runtime environment for the tool and collects multiple diagnostic blocks' output into seperately reported parts. If the reporting service receives a specific report namelist, former results are gathered from predefined search directories and are prepared based on specific grouping instructions.
 
-.. TODO: I don't know why neither scaling nor setting the width does not work here. 
+.. TODO: I don't know why neither scaling nor setting the width does not work here. Also Hyperlinks do not work.
 
 .. figure:: reporting_post_workflow.png
    :width: 250 px
@@ -310,20 +310,60 @@ For the examples, we use simple ts/sst (sea surface temperature) data from CMIP5
 1) The collector reporting service (A1)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The Home screen
+The reporting namelist looks as follows:
+
+.. code-block:: xml
+
+	<namelist>
+	<include href="./config_private_local.xml"/>
+	<namelist_summary>
+	###############################################################################
+	report_test.xml
+
+	Description
+	
+	Author
+	Benjamin Müller (LMU, Germany - b.mueller@iggf.geo.uni-muenchen.de)
+
+	Project
+	CRESCENDO
+
+	References
+
+	This namelist is part of the reporting service for the ESMValTool 
+	###############################################################################
+	</namelist_summary>
+
+	<TAGS>
+		<set> sst </set>
+		<set> gmt </set>
+		<set> TimeS </set>
+		<set> reg </set>
+	</TAGS>
+
+	<FOLDERS>
+    		<place> @{PLOTPATH} </place>
+	</FOLDERS>
+
+	</namelist>
+	
+Therefore, the resulting report will consist of 5 tabs: HOME, SST, GMT, TIMES, and REG.
+The results are gathered from PLOTPATH that is defined in the included config_private_local.xml.
+The HOME tab is showing the ESMValTool logo, as there are no logs from the ESMValTool.
 
 .. figure:: reporting_post_home.png
    :width: 250 px
    :alt: Reporting service as an environment, Home tab
 
-   The Home tab showing the ESMValTool logo (center) and the namelist's name (right)
+   The HOME tab showing the ESMValTool logo (center) and the namelist's name (right)
 
+The GMT tab shows results that were produced by the namelist below (see 'The runtime environment reporting service (A2)'_).
 
 .. figure:: reporting_post_GMT.png
    :width: 250 px
    :alt: Reporting service as an environment, GMT tab
 
-   The GMT tab showing the ESMValTool results output (center) with the gmt tag; the rightmost column is empty within this version
+   The GMT tab showing the ESMValTool results output (center) with the gmt tag (global mean time series); the rightmost column is empty within this version
 
 
 2) The runtime environment reporting service (A2)
@@ -402,7 +442,7 @@ The GLOBAL and DIAGNOSTICS elements from the namelist look as follows:
 	</DIAGNOSTICS>
 	...
 
-This will produce a Home tab with the ESMValTool output and the namelist's name, and an AUTO_DIAG_001 tab, showing the results from the sea surface temperature analsysis together with the config declarations.
+This will produce a HOME tab with the ESMValTool output and the namelist's name, and an AUTO_DIAG_001 tab, showing the results from the sea surface temperature analsysis together with the config declarations.
 
 .. figure:: reporting_envi_home.png
    :width: 250 px
