@@ -289,11 +289,16 @@ A common call for the METAdata package in python diagnostics looks as follows::
 		    'block':'#ID'+'ExLin'
 		}}
 		
-	MD=METAdata("both",fig_name,Dict)	# "meta" and "xml" are options for specific meta data (e.g. "xml" with csv files)
+	MD=METAdata("both",fig_name,Dict)	# "meta" and "xml" are options for specific meta data 
+						# (e.g. "xml" with csv files)
 	MD.write()
 
 
-There will be a wrapper for this meta data to be written by ncl diagnostics within the next version. 
+First, a plotting function is called, then the figure is saved to a specific file ("name.png"). 
+Afterwards a dictionary object is constructed that is describing the plot and, e.g., the input data.
+The last step is, to initialize a METAdata object, connected to the saved file ("name.png") and the describing dictionary, which is finally attatched to this file.
+
+There will be a wrapper for meta data to be written by ncl diagnostics within the next version. 
 
 
 Examples
@@ -345,15 +350,15 @@ The GLOBAL and DIAGNOSTICS elements from the namelist look as follows:
 	 	<debuginfo type="boolean">          False                     </debuginfo>
   		<exit_on_warning  type="boolean">   True                      </exit_on_warning>
   
-  		<tags> 				    Example, monthly, ESACCI  </tags>
+  		<tags> 				    example, monthly, ESACCI  </tags>
   
 	</GLOBAL>
 
 
 	<MODELS>
 
-  		<model> CMIP5 	12x6 		MIP_VAR_DEF 	  historical 	r1i1p1 1991 2005  @{MODELPATH} </model>
-  		<model> CMIP5	12x6A		MIP_VAR_DEF	  historical	r1i1p1 1991 2005  @{MODELPATH} </model>
+  		<model> CMIP5 	12x6 	MIP_VAR_DEF 	  historical 	r1i1p1 1991 2005  @{MODELPATH} </model>
+  		<model> CMIP5	12x6A	MIP_VAR_DEF	  historical	r1i1p1 1991 2005  @{MODELPATH} </model>
 	
 	</MODELS>
 
@@ -361,16 +366,37 @@ The GLOBAL and DIAGNOSTICS elements from the namelist look as follows:
 	<DIAGNOSTICS>
 
     		<diag>
-        		<description>  						Doing ESACCI sea surface temperature analysis. 		</description>
-        		<variable_def_dir>     					./variable_defs/      					</variable_def_dir>
-        		<variable ref_model="ESACCI-SST" MIP="Amon">    	ts                                        		</variable>
-        		<field_type>                      			T2Ms                                      		</field_type>
-        		<diag_script cfg="./nml/cfg_ESACCI/cfg_sst_ESACCI.py">  sst_ESACCI.py                    			</diag_script>
-        		<launcher_arguments>               			[('execute_as_shell', False)]             		</launcher_arguments>
+        		<description>  						
+				Doing ESACCI sea surface temperature analysis. 		
+			</description>
+			
+        		<variable_def_dir>     					
+				./variable_defs/      					
+			</variable_def_dir>
+        		
+			<variable ref_model="ESACCI-SST" MIP="Amon">    	
+				ts                                        		
+			</variable>
+        		
+			<field_type>                      			
+				T2Ms                                      		
+			</field_type>
+        		
+			<diag_script cfg="./nml/cfg_ESACCI/cfg_sst_ESACCI.py">  
+				sst_ESACCI.py                    			
+			</diag_script>
+        		
+			<launcher_arguments>               			
+				[('execute_as_shell', False)]             		
+			</launcher_arguments>
         
-        		<tags> 							sst, Ocean 						</tags>
+        		<tags> 							
+				sst, ocean 						
+			</tags>
         
-        		<model> 	OBS       ESACCI-SST 	sat    12x6  1992 2005  @{OBSPATH}  					</model>
+        		<model> 	
+				OBS       ESACCI-SST 	sat    12x6  1992 2005  @{OBSPATH}  					
+			</model>
    		 </diag>
 
 	</DIAGNOSTICS>
