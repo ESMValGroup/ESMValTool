@@ -260,7 +260,7 @@ subdirectories have to be specified seperately.
 4) Making use of the METAdata package 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-For providing meta data within the ESMValTool diagnostics, a METAdata package (./diag_scripts/lib/python/METAdata.py) is provided with the ESMValTool. 
+For providing meta data within the ESMValTool diagnostics, a METAdata package (./diag_scripts/lib/python/METAdata.py) is integrated within the ESMValTool. 
 Both ESMValTool and reporting service make use of this package.
 There is a simple example within the package to show its functionality.
 
