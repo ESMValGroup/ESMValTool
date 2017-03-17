@@ -101,7 +101,7 @@ DIAGNOSTICS:
       settings:
         file:   ./nml/cfg_clouds/cfg_clouds_bias.ncl
       script: cloud_bias.ncl
-      model: {name: GPCP-SG,  project: obs4mips,  level: L3,  ensemble: C5,  start: 2001,  end: 2012,  path: /obspath/Tier1/}
+      model: {name: GPCP-SG,  project: obs4mips,  level: L3,  version: C5,  start: 2001,  end: 2012,  path: /obspath/Tier1/}
 
   - diag:
       description: IPCC AR5 Ch. 9, Fig. 9.2 (2-m temperature)

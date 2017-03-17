@@ -25,6 +25,7 @@
 ###############################################################################
 
 GLOBAL:
+  config_file:       config_private_DLR-PA2
   write_plots:       True
   write_netcdf:      True
 #  wrk_dir:           ./work/    # this goes to config file
@@ -42,175 +43,178 @@ MODELS:
 # CCSM4, IPSL-CM5A-LR, IPSL-CM5A-MR, MPI-ESM-LR and MPI-ESM-MR are excluded since they use concentration-driven aerosol
 
 PREPROCESS:
-  select_level:    None  target_grid:     None
+  select_level:    None
+  target_grid:     None
   regrid_scheme:   None
   mask_fillvalues: None
   mask_landocean:  None
   multimodel_mean: False
 
 DIAGNOSTICS:
-  - diag:
-      description: surface-level concentration of BC
-      variable: {name: sconcbc, field: T2Ms}
-      settings: 
-        file: ./nml/cfg_aerosol/CMIP5/cfg_aerosol_stations_IMPROVE.ncl
-      script: aerosol_stations.ncl
-      model: {name: ACCESS1-0,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980   end: 2015,  path: /modelpath/}
-      model: {name: ACCESS1-3,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: CSIRO-Mk3-6-0,   project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: GFDL-CM3,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: GFDL-ESM2G,      project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: GFDL-ESM2M,      project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: GISS-E2-H,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p2,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: GISS-E2-R,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p2,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: HadGEM2-CC,      project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: HadGEM2-ES,      project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: IPSL-CM5B-LR,    project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: MIROC4h,         project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: MIROC-ESM,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: MIROC-ESM-CHEM,  project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: MRI-CGCM3,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: NorESM1-M,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: NorESM1-ME,      project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      # OPTION: add line for station data (now in cfg file)
 
-  - diag:
-      description: surface-level concentration of OA
-      variable: {name: sconcoa, field: T2Ms}
-      settings: 
-        file: ./nml/cfg_aerosol/CMIP5/cfg_aerosol_stations_IMPROVE.ncl
-      script: aerosol_stations.ncl
-      model: {name: CSIRO-Mk3-6-0,    project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,   end: 2015,  path: /modelpath/}
-      model: {name: GFDL-ESM2G,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,   end: 2015,  path: /modelpath/}
-      model: {name: GFDL-ESM2M,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,   end: 2015,  path: /modelpath/}
-      model: {name: IPSL-CM5B-LR,     project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,   end: 2015,  path: /modelpath/}
-      model: {name: MIROC4h,          project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,   end: 2015,  path: /modelpath/}
-      model: {name: MIROC-ESM,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,   end: 2015,  path: /modelpath/}
-      model: {name: MIROC-ESM-CHEM,   project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,   end: 2015,  path: /modelpath/}
-      model: {name: MRI-CGCM3,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,   end: 2015,  path: /modelpath/}
-      # MR: add line for station data (now in cfg file) ?
+- diag:
+    description: surface-level concentration of BC
+    variable: {name: sconcbc,  field: T2Ms}
+    settings: 
+      file: ./nml/cfg_aerosol/CMIP5/cfg_aerosol_stations_IMPROVE.ncl
+    script: aerosol_stations.ncl
+    model: {name: ACCESS1-0,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980   end: 2015,  path: /modelpath/}
+    model: {name: ACCESS1-3,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: CSIRO-Mk3-6-0,   project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: GFDL-CM3,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: GFDL-ESM2G,      project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: GFDL-ESM2M,      project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: GISS-E2-H,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p2,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: GISS-E2-R,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p2,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: HadGEM2-CC,      project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: HadGEM2-ES,      project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: IPSL-CM5B-LR,    project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: MIROC4h,         project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: MIROC-ESM,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: MIROC-ESM-CHEM,  project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: MRI-CGCM3,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: NorESM1-M,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: NorESM1-ME,      project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    # OPTION: add line for station data (now in cfg file)
 
-  - diag:
-      description: surface-level concentration of SO4
-      variable: {name: sconcso4, field: T2Ms}
-      settings: # MR: this would need to be called 4 times with 4 different cfg files
-        file: ./nml/cfg_aerosol/CMIP5/cfg_aerosol_stations_CASTNET.ncl
-        file: ./nml/cfg_aerosol/CMIP5/cfg_aerosol_stations_EANET.ncl
-        file: ./nml/cfg_aerosol/CMIP5/cfg_aerosol_stations_EMEP.ncl
-        file: ./nml/cfg_aerosol/CMIP5/cfg_aerosol_stations_IMPROVE.ncl
-      script: aerosol_stations.ncl
-      model: {name: ACCESS1-0,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: ACCESS1-3,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: CSIRO-Mk3-6-0,    project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: GFDL-CM3,         project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: GFDL-ESM2G,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: GFDL-ESM2M,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: GISS-E2-H,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p2,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: GISS-E2-R,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p2,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: HadGEM2-CC,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: HadGEM2-ES,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: IPSL-CM5B-LR,     project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: MIROC4h,          project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: MIROC-ESM,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: MIROC-ESM-CHEM,   project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: MRI-CGCM3,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: NorESM1-M,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: NorESM1-ME,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      # MR: add line for station data (now in cfg file) ?
+- diag:
+    description: surface-level concentration of OA
+    variable: {name: sconcoa,  field: T2Ms}
+    settings: 
+      file: ./nml/cfg_aerosol/CMIP5/cfg_aerosol_stations_IMPROVE.ncl
+    script: aerosol_stations.ncl
+    model: {name: CSIRO-Mk3-6-0,    project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,   end: 2015,  path: /modelpath/}
+    model: {name: GFDL-ESM2G,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,   end: 2015,  path: /modelpath/}
+    model: {name: GFDL-ESM2M,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,   end: 2015,  path: /modelpath/}
+    model: {name: IPSL-CM5B-LR,     project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,   end: 2015,  path: /modelpath/}
+    model: {name: MIROC4h,          project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,   end: 2015,  path: /modelpath/}
+    model: {name: MIROC-ESM,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,   end: 2015,  path: /modelpath/}
+    model: {name: MIROC-ESM-CHEM,   project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,   end: 2015,  path: /modelpath/}
+    model: {name: MRI-CGCM3,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,   end: 2015,  path: /modelpath/}
+    # MR: add line for station data (now in cfg file) ?
 
-      
-  - diag:
-      description: aerosol optical depth at 550 nm
-      variable: {name: od550aer, field: T2Ms}
-      settings:
-        file: ./nml/cfg_aerosol/CMIP5/cfg_aerosol_stations_AERONET.ncl
-      script: aerosol_stations.ncl
-      model: {name: ACCESS1-0,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: ACCESS1-3,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: BNU-ESM,          project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: CESM1-CAM5,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: CSIRO-Mk3-6-0,    project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: GFDL-CM3,         project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: GFDL-ESM2G,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: GFDL-ESM2M,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: GISS-E2-H,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p2,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: GISS-E2-R,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p2,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: HadGEM2-CC,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: HadGEM2-ES,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: IPSL-CM5B-LR,     project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: MIROC4h,          project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: MIROC-ESM,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: MIROC-ESM-CHEM,   project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: MRI-CGCM3,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: NorESM1-M,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      model: {name: NorESM1-ME,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
-      # MR: add line for station data (now in cfg file) ?
+- diag:
+    description: surface-level concentration of SO4
+    variable: {name: sconcso4,  field: T2Ms}
+    settings: # MR: this would need to be called 4 times with 4 different cfg files
+      file: ./nml/cfg_aerosol/CMIP5/cfg_aerosol_stations_CASTNET.ncl
+      file: ./nml/cfg_aerosol/CMIP5/cfg_aerosol_stations_EANET.ncl
+      file: ./nml/cfg_aerosol/CMIP5/cfg_aerosol_stations_EMEP.ncl
+      file: ./nml/cfg_aerosol/CMIP5/cfg_aerosol_stations_IMPROVE.ncl
+    script: aerosol_stations.ncl
+    model: {name: ACCESS1-0,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: ACCESS1-3,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: CSIRO-Mk3-6-0,    project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: GFDL-CM3,         project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: GFDL-ESM2G,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: GFDL-ESM2M,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: GISS-E2-H,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p2,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: GISS-E2-R,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p2,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: HadGEM2-CC,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: HadGEM2-ES,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: IPSL-CM5B-LR,     project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: MIROC4h,          project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: MIROC-ESM,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: MIROC-ESM-CHEM,   project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: MRI-CGCM3,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: NorESM1-M,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: NorESM1-ME,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    # MR: add line for station data (now in cfg file) ?
 
       
-  - diag:
-      description: aerosol optical depth at 550 nm
-      variable: {name: od550aer, field: T2Ms}
-      preprocess:
-        multimodel_mean: True
-      settings:
-        file: ./nml/cfg_aerosol/CMIP5/cfg_aerosol_tsline.ncl
-      script: aerosol_tsline.ncl
-      model: {name: ACCESS1-0,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1850,  end: 2015,  path: /modelpath/}
-      model: {name: ACCESS1-3,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1850,  end: 2015,  path: /modelpath/}
-      model: {name: BNU-ESM,          project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1850,  end: 2015,  path: /modelpath/}
-      model: {name: CESM1-CAM5,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1850,  end: 2015,  path: /modelpath/}
-      model: {name: CSIRO-Mk3-6-0,    project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1850,  end: 2015,  path: /modelpath/}
-      model: {name: GFDL-CM3,         project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1860,  end: 2015,  path: /modelpath/}
-      model: {name: GFDL-ESM2G,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1861,  end: 2015,  path: /modelpath/}
-      model: {name: GFDL-ESM2M,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1861,  end: 2015,  path: /modelpath/}
-      model: {name: GISS-E2-H,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p2,  start: 1850,  end: 2015,  path: /modelpath/}
-      model: {name: GISS-E2-R,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p2,  start: 1850,  end: 2015,  path: /modelpath/}
-      model: {name: HadGEM2-CC,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1860,  end: 2015,  path: /modelpath/}
-      model: {name: HadGEM2-ES,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1860,  end: 2015,  path: /modelpath/}
-      model: {name: IPSL-CM5A-LR,     project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1850,  end: 2015,  path: /modelpath/}
-      model: {name: IPSL-CM5A-MR,     project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1850,  end: 2015,  path: /modelpath/}
-      model: {name: IPSL-CM5B-LR,     project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1850,  end: 2015,  path: /modelpath/}
-      model: {name: MIROC4h,          project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1950,  end: 2015,  path: /modelpath/}
-      model: {name: MIROC5,           project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1850,  end: 2012,  path: /modelpath/}
-      model: {name: MIROC-ESM,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1850,  end: 2015,  path: /modelpath/}
-      model: {name: MIROC-ESM-CHEM,   project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1850,  end: 2015,  path: /modelpath/}
-      model: {name: MRI-CGCM3,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1850,  end: 2015,  path: /modelpath/}
-      model: {name: MRI-ESM1,         project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1851,  end: 2005,  path: /modelpath/}
-      model: {name: NorESM1-M,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1850,  end: 2015,  path: /modelpath/}
-      model: {name: NorESM1-ME,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1850,  end: 2015,  path: /modelpath/}
-      model: {name: ESACCI-AEROSOL,   project: OBS,  type: sat,  version: SU-v4.21,  start: 1997,  end: 2011,  path: /obspath/Tier2/ESACCI-AEROSOL}
-      model: {name: MODIS,            project: OBS,  type: sat,  version: L3-C6,     start: 2003,  end: 2014,  path: /obspath/Tier2/MODIS-L3-C6}
+- diag:
+    description: aerosol optical depth at 550 nm
+    variable: {name: od550aer,  field: T2Ms}
+    settings:
+      file: ./nml/cfg_aerosol/CMIP5/cfg_aerosol_stations_AERONET.ncl
+    script: aerosol_stations.ncl
+    model: {name: ACCESS1-0,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: ACCESS1-3,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: BNU-ESM,          project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: CESM1-CAM5,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: CSIRO-Mk3-6-0,    project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: GFDL-CM3,         project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: GFDL-ESM2G,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: GFDL-ESM2M,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: GISS-E2-H,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p2,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: GISS-E2-R,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p2,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: HadGEM2-CC,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: HadGEM2-ES,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: IPSL-CM5B-LR,     project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: MIROC4h,          project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: MIROC-ESM,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: MIROC-ESM-CHEM,   project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: MRI-CGCM3,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: NorESM1-M,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    model: {name: NorESM1-ME,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/}
+    # MR: add line for station data (now in cfg file) ?
 
-  - diag:
-      description: aerosol optical depth at 550 nm
-      variable: {name: od550aer, field: T2Ms}
-      preprocess:
-        target_grid:        ref_model
-        regrid_scheme:     linear
-        multimodel_mean:   True
-        multimodel_median: True
-      settings:
-        file: ./nml/cfg_aerosol/CMIP5/cfg_aerosol_satellite_MODIS.ncl
-      script: aerosol_satellite.ncl
-      model: {name: ACCESS1-0,         project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
-      model: {name: ACCESS1-3,         project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
-      model: {name: BNU-ESM,           project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
-      model: {name: CESM1-CAM5,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
-      model: {name: CSIRO-Mk3-6-0,     project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
-      model: {name: GFDL-CM3,          project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
-      model: {name: GFDL-ESM2G,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
-      model: {name: GFDL-ESM2M,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
-      model: {name: GISS-E2-H,         project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p2,  start: 2003,  end: 2005,  path: /modelpath/}
-      model: {name: GISS-E2-R,         project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p2,  start: 2003,  end: 2005,  path: /modelpath/}
-      model: {name: HadGEM2-CC,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
-      model: {name: HadGEM2-ES,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
-      model: {name: IPSL-CM5B-LR,      project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
-      model: {name: MIROC4h,           project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
-      model: {name: MIROC5,            project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
-      model: {name: MIROC-ESM,         project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
-      model: {name: MIROC-ESM-CHEM,    project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
-      model: {name: MRI-CGCM3,         project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
-      model: {name: MRI-ESM1,          project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
-      model: {name: NorESM1-M,         project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
-      model: {name: NorESM1-ME,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
-      model: {name: MODIS,             project: OBS,  type: sat,  version: L3-C6,     start: 2003,  end: 2005,  path: /obspath/Tier2/MODIS-L3-C6}
+      
+- diag:
+    description: aerosol optical depth at 550 nm
+    variable: {name: od550aer,  field: T2Ms}
+    preprocess:
+      multimodel_mean: True
+    settings:
+      file: ./nml/cfg_aerosol/CMIP5/cfg_aerosol_tsline.ncl
+    script: aerosol_tsline.ncl
+    model: {name: ACCESS1-0,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1850,  end: 2015,  path: /modelpath/}
+    model: {name: ACCESS1-3,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1850,  end: 2015,  path: /modelpath/}
+    model: {name: BNU-ESM,          project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1850,  end: 2015,  path: /modelpath/}
+    model: {name: CESM1-CAM5,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1850,  end: 2015,  path: /modelpath/}
+    model: {name: CSIRO-Mk3-6-0,    project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1850,  end: 2015,  path: /modelpath/}
+    model: {name: GFDL-CM3,         project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1860,  end: 2015,  path: /modelpath/}
+    model: {name: GFDL-ESM2G,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1861,  end: 2015,  path: /modelpath/}
+    model: {name: GFDL-ESM2M,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1861,  end: 2015,  path: /modelpath/}
+    model: {name: GISS-E2-H,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p2,  start: 1850,  end: 2015,  path: /modelpath/}
+    model: {name: GISS-E2-R,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p2,  start: 1850,  end: 2015,  path: /modelpath/}
+    model: {name: HadGEM2-CC,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1860,  end: 2015,  path: /modelpath/}
+    model: {name: HadGEM2-ES,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1860,  end: 2015,  path: /modelpath/}
+    model: {name: IPSL-CM5A-LR,     project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1850,  end: 2015,  path: /modelpath/}
+    model: {name: IPSL-CM5A-MR,     project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1850,  end: 2015,  path: /modelpath/}
+    model: {name: IPSL-CM5B-LR,     project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1850,  end: 2015,  path: /modelpath/}
+    model: {name: MIROC4h,          project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1950,  end: 2015,  path: /modelpath/}
+    model: {name: MIROC5,           project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1850,  end: 2012,  path: /modelpath/}
+    model: {name: MIROC-ESM,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1850,  end: 2015,  path: /modelpath/}
+    model: {name: MIROC-ESM-CHEM,   project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1850,  end: 2015,  path: /modelpath/}
+    model: {name: MRI-CGCM3,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1850,  end: 2015,  path: /modelpath/}
+    model: {name: MRI-ESM1,         project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1851,  end: 2005,  path: /modelpath/}
+    model: {name: NorESM1-M,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1850,  end: 2015,  path: /modelpath/}
+    model: {name: NorESM1-ME,       project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1850,  end: 2015,  path: /modelpath/}
+    model: {name: ESACCI-AEROSOL,   project: OBS,  type: sat,  version: SU-v4.21,  start: 1997,  end: 2011,  path: /obspath/Tier2/ESACCI-AEROSOL}
+    model: {name: MODIS,            project: OBS,  type: sat,  version: L3-C6,     start: 2003,  end: 2014,  path: /obspath/Tier2/MODIS-L3-C6}
+
+- diag:
+    description: aerosol optical depth at 550 nm
+    variable: {name: od550aer,  field: T2Ms}
+    preprocess:
+      target_grid:        ref_model
+      regrid_scheme:     linear
+      multimodel_mean:   True
+      multimodel_median: True
+    settings:
+      file: ./nml/cfg_aerosol/CMIP5/cfg_aerosol_satellite_MODIS.ncl
+    script: aerosol_satellite.ncl
+    model: {name: ACCESS1-0,         project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
+    model: {name: ACCESS1-3,         project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
+    model: {name: BNU-ESM,           project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
+    model: {name: CESM1-CAM5,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
+    model: {name: CSIRO-Mk3-6-0,     project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
+    model: {name: GFDL-CM3,          project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
+    model: {name: GFDL-ESM2G,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
+    model: {name: GFDL-ESM2M,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
+    model: {name: GISS-E2-H,         project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p2,  start: 2003,  end: 2005,  path: /modelpath/}
+    model: {name: GISS-E2-R,         project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p2,  start: 2003,  end: 2005,  path: /modelpath/}
+    model: {name: HadGEM2-CC,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
+    model: {name: HadGEM2-ES,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
+    model: {name: IPSL-CM5B-LR,      project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
+    model: {name: MIROC4h,           project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
+    model: {name: MIROC5,            project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
+    model: {name: MIROC-ESM,         project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
+    model: {name: MIROC-ESM-CHEM,    project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
+    model: {name: MRI-CGCM3,         project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
+    model: {name: MRI-ESM1,          project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
+    model: {name: NorESM1-M,         project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
+    model: {name: NorESM1-ME,        project: CMIP5_ETHZ,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/}
+    model: {name: MODIS,             project: OBS,  type: sat,  version: L3-C6,     start: 2003,  end: 2005,  path: /obspath/Tier2/MODIS-L3-C6}
+

@@ -71,8 +71,7 @@ DIAGNOSTICS:
     settings:
       file: ./nml/cfg_CVDP/cfg_cvdp.ncl
     script: cvdp_obs.ncl
-    # MR: DEFINE DIFFERENT TAGS FOR ana4mips?
-    model: {name: IFS-Cy31r2,  project: ana4mips,  level: Amon,  type: reanalyses,  start: 1984,  end: 2005,  path: /obspath/Tier1/}
+    model: {name: IFS-Cy31r2,  project: ana4mips,  mip: Amon,  type: reanalyses,  start: 1984,  end: 2005,  path: /obspath/Tier1/}
 
 
 - diag:

@@ -237,7 +237,7 @@ DIAGNOSTICS:
         regrid_scheme:  linear
       settings:
         file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_satellite_MODIS.ncl
-      model: {name: MODIS,  project: obs4mips,  level: L3,  ensemble: C5,  start: 2001,  end: 2012, path: /obspath/Tier1/}
+      model: {name: MODIS,  project: obs4mips,  level: L3,  version: C5,  start: 2001,  end: 2012, path: /obspath/Tier1/}
       script: aerosol_satellite.ncl
       
   - diag:
@@ -248,7 +248,7 @@ DIAGNOSTICS:
         regrid_scheme:  linear
       settings:
         file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_satellite_MODIS.ncl
-      model: {name: MISR,  project: obs4mips,  level: L3,  ensemble: F12_0022,  start: 2001,  end: 2012, path: /obspath/Tier1/}
+      model: {name: MISR,  project: obs4mips,  level: L3,  version: F12_0022,  start: 2001,  end: 2012, path: /obspath/Tier1/}
       script: aerosol_satellite.ncl
 
   - diag:
