@@ -2,7 +2,7 @@ Reporting service for ESMValTool
 ================================
 
 Why reporting?
-------------
+--------------
 
 The ESMValTool is supposed to provide automated reporting on the calculated diagnostics. The automated reporting service is supposed to be web-based, so the server preparing the data, can also provide the resulting report without forcing the user to download data or install additional software. The automated reporting service should care for gathering the output from the ESMValTool and present it in a flexible manner.
 
@@ -199,7 +199,7 @@ Tags should generally be used to add information the diagnostics by itself does 
         	<launcher_arguments>               	[('execute_as_shell', False)]   </launcher_arguments>
         
         	<tags> alternative_variable_name, surface 				</tags> 	<!-- HERE -->
-        
+
         	<model> OBS dataset sat Example 1990 2005 @{OBSPATH}  		</model>
     	     </diag>
 
@@ -323,7 +323,7 @@ The reporting namelist looks as follows:
 	Description
 	
 	Author
-	Benjamin Müller (LMU, Germany - b.mueller@iggf.geo.uni-muenchen.de)
+	Benjamin Mueller (LMU, Germany - b.mueller@iggf.geo.uni-muenchen.de)
 
 	Project
 	CRESCENDO
