@@ -7,7 +7,7 @@ namelist_flato13ipcc.xml
 Description
 Reproducing selected figures from IPCC AR5, chap. 9 (Flato et al., 2013):
 Figs. 9.2a/b, 9.4a/b, 9.5, 9,7, 9.8, 9.10, 9.24a, 9.28, 9.29, 9.30, 9.31,
-9.32, 9.36, 9.45
+9.32, 9.35, 9.36, 9.45b
 
 Authors
 Axel Lauer (DLR, Germany - axel.lauer@dlr.de)
@@ -412,6 +412,26 @@ This namelist is part of the ESMValTool
         <model> CMIP5 MERRA Amon reanalysis r1i1p1 2003 2004 @{OBSPATH}/Tier1/MERRA </model>
     </diag>
 
+<!-- ***********************************************************************
+     * Flato et al. (2013) - IPCC AR5, chap. 9                             *
+     * similar to fig. 9.35                                                *
+     * =================================================================== *
+     * Maximum entropy power spectra of surface air temperature averaged   *
+     * over the NINO3 region (5°N to 5°S, 150°W to 90°W)                   *
+     *********************************************************************** -->
+
+    <diag>
+        <description> max. entropy power spectra of tas anomalies </description>
+        <variable_def_dir>    ./variable_defs/  </variable_def_dir>
+        <variable>            tas               </variable>
+        <field_type>          T2Ms              </field_type>
+        <diag_script_cfg_dir> ./nml/cfg_ipcc_ch9/ </diag_script_cfg_dir>
+        <model> CMIP5_ETHZ GISS-E2-R Amon historical r1i1p1 1950 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ FIO-ESM   Amon historical r1i1p1 1950 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> OBS HadCRUT4    ground  1  1950 2005 @{OBSPATH}/Tier2/HadCRUT4/    </model>
+        <diag_script cfg="cfg_ipcc-fig-9-35.ncl"> enso_mem.ncl </diag_script>
+    </diag>
+
 <!-- ************************************************************************ -->
 <!-- * Flato et al. (2013) - IPCC AR5, chap. 9                              * -->
 <!-- * roughly resembling fig. 9.36                                         * -->
@@ -453,7 +473,7 @@ This namelist is part of the ESMValTool
 
 <!-- *********************************************************************** -->
 <!-- * Flato et al. (2013) - IPCC AR5, chap. 9                             * -->
-<!-- * similar to fig. 9.45                                                * -->
+<!-- * similar to fig. 9.45b                                               * -->
 <!-- * =================================================================== * -->
 <!-- * Carbon cycle-climate feedback (gamma_LT) vs. short-term sensitivity * -->
 <!-- * of atmospheric CO2                                                  * -->

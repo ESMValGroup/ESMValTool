@@ -7,7 +7,7 @@ namelist_flato13ipcc.xml
 Description
 Reproducing selected figures from IPCC AR5, chap. 9 (Flato et al., 2013):
 Figs. 9.2a/b, 9.4a/b, 9.5, 9,7, 9.8, 9.10, 9.24a, 9.28, 9.29, 9.30, 9.31,
-9.32, 9.36, 9.45
+9.32, 9.35, 9.36, 9.45b
 
 Authors
 Axel Lauer (DLR, Germany - axel.lauer@dlr.de)
@@ -1898,6 +1898,64 @@ This namelist is part of the ESMValTool
         <diag_script cfg="cfg_SAMonsoon_precip.ncl"> SAMonsoon_precip_domain.ncl </diag_script>
     </diag>
 
+<!-- ***********************************************************************
+     * Flato et al. (2013) - IPCC AR5, chap. 9                             *
+     * similar to fig. 9.35                                                *
+     * =================================================================== *
+     * Maximum entropy power spectra of surface air temperature averaged   *
+     * over the NINO3 region (5°N to 5°S, 150°W to 90°W)                   *
+     *********************************************************************** -->
+
+    <diag>
+        <description> max. entropy power spectra of tas anomalies </description>
+        <variable_def_dir>    ./variable_defs/  </variable_def_dir>
+        <variable>            tas               </variable>
+        <field_type>          T2Ms              </field_type>
+        <diag_script_cfg_dir> ./nml/cfg_ipcc_ch9/ </diag_script_cfg_dir>
+        <model> CMIP5_ETHZ ACCESS1-0      Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ ACCESS1-3      Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ bcc-csm1-1     Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ bcc-csm1-1-m   Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ BNU-ESM        Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ CanESM2        Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ CCSM4          Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ CESM1-BGC      Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ CESM1-CAM5     Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ CMCC-CM        Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ CMCC-CMS       Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ CNRM-CM5       Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ CSIRO-Mk3-6-0  Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ FIO-ESM        Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ GFDL-CM3       Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ GFDL-ESM2G     Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ GFDL-ESM2M     Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ GISS-E2-H      Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ GISS-E2-H-CC   Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ GISS-E2-R      Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ GISS-E2-R-CC   Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ HadCM3         Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ HadGEM2-AO     Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ HadGEM2-CC     Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ HadGEM2-ES     Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ IPSL-CM5A-LR   Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ IPSL-CM5A-MR   Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ IPSL-CM5B-LR   Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MIROC5         Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MIROC-ESM      Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MIROC-ESM-CHEM Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MPI-ESM-LR     Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MPI-ESM-MR     Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MRI-CGCM3      Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ NorESM1-M      Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ NorESM1-ME     Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> OBS HadCRUT4  ground  1   1870 2004 @{OBSPATH}/Tier2/HadCRUT4/    </model>
+        <model> OBS HadCRUT   ground  3v  1870 2004 @{OBSPATH}/Tier2/HadCRUT/     </model>
+        <model> OBS NCEP      reanaly 1   1948 2004 @{OBSPATH}/Tier2/NCEP/        </model>
+        <model> OBS CRU       reanaly 1   1901 2004 @{OBSPATH}/Tier3/CRU/         </model>
+        <model> OBS ERA-Interim reanaly 1 1979 2004 @{OBSPATH}/Tier3/ERA-Interim/ </model>
+        <diag_script cfg="cfg_ipcc-fig-9-35.ncl"> enso_mem.ncl </diag_script>
+    </diag>
+
 <!-- ************************************************************************ -->
 <!-- * Flato et al. (2013) - IPCC AR5, chap. 9                              * -->
 <!-- * roughly resembling fig. 9.36                                         * -->
@@ -2015,7 +2073,7 @@ This namelist is part of the ESMValTool
 
 <!-- *********************************************************************** -->
 <!-- * Flato et al. (2013) - IPCC AR5, chap. 9                             * -->
-<!-- * similar to fig. 9.45                                                * -->
+<!-- * similar to fig. 9.45b                                               * -->
 <!-- * =================================================================== * -->
 <!-- * Carbon cycle-climate feedback (gamma_LT) vs. short-term sensitivity * -->
 <!-- * of atmospheric CO2                                                  * -->
