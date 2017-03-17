@@ -1,0 +1,273 @@
+###############################################################################
+# namelist_lauer13jclim.xml
+# 
+# Description
+# Diagnostics of clouds and hydrological cycle reproducing selected figures
+# from Lauer and Hamilton (2013)
+#  
+# Author
+# Axel Lauer (DLR, Germany)
+#
+# Project
+# DLR ESMVal
+#
+# Reference
+# Lauer, A., and Hamilton, K., J. Climate, 26, 3823-3845,
+# doi:10.1175/JCLI-D-12-00451.1 (2013)
+#  
+# This namelist is part of the ESMValTool
+###############################################################################
+
+GLOBAL:
+  config_file:       config_private_DLR-PA2
+  write_plots:       True
+  write_netcdf:      True
+  verbosity:         1
+  exit_on_warning:   False
+  output_file_type:  ps
+
+
+MODELS:
+  - {name: ACCESS1-0,         Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: ACCESS1-3,         Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: bcc-csm1-1,        Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: bcc-csm1-1-m,      Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: BNU-ESM,           Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: CanESM2,           Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: CCSM4,             Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: CESM1-BGC,         Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+#   - {name: CESM1-CAM5-1-FV2,  Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: CESM1-CAM5,        Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: CESM1-FASTCHEM,    Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: CESM1-WACCM,       Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: CMCC-CESM,         Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+#   - {name: CMCC-CM,           Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+#   - {name: CMCC-CMS,          Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+#   - {name: CNRM-CM5-2,        Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: CNRM-CM5,          Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: CSIRO-Mk3-6-0,     Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+#   - {name: FGOALS-g2,         Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: GFDL-CM3,          Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: GFDL-ESM2G,        Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: GFDL-ESM2M,        Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: GISS-E2-H-CC,      Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: GISS-E2-H,         Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: GISS-E2-R-CC,      Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: GISS-E2-R,         Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+#   - {name: HadGEM2-CC,        Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+#   - {name: HadGEM2-ES,        Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: inmcm4,            Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: IPSL-CM5A-LR,      Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: IPSL-CM5A-MR,      Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: IPSL-CM5B-LR,      Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: MIROC4h,           Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: MIROC5,            Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: MIROC-ESM,         Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: MIROC-ESM-CHEM,    Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: MPI-ESM-LR,        Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: MPI-ESM-MR,        Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: MPI-ESM-P,         Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: MRI-CGCM3,         Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: NorESM1-M,         Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: NorESM1-ME,        Amon,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+#   - {name: RC1-base-07,    project: EMAC,  ensemble: 1, start: 1986,  end: 2005,  path: /modelpath/EMAC/}
+  - {name: RC1SD-base-07,  project: EMAC,  ensemble: 1,  start: 1986,  end: 2005,  path: /modelpath/EMAC/}
+
+
+PREPROCESS:
+  select_level:    None
+  target_grid:     None
+  regrid_scheme:   None
+  mask_fillvalues: None
+  mask_landocean:  None
+  multimodel_mean: False
+
+
+DIAGNOSTICS:
+
+# Lauer and Hamilton (2013) - Figure 1
+# Geographical distribution of multi-year annual/seasonal means (panel plot)
+
+- diag:
+    description: Cloud diagnostics
+    variable: {name: lwp,  field: T2Ms}
+    settings:
+      file: ./nml/cfg_clouds/cfg_clouds.ncl
+    script: clouds.ncl
+    model: {name: UWisc,  project: OBS,  type: sat,  version: v2,  start: 1988,  end: 2007,  path: /obspath/Tier3/UWisc}
+
+
+- diag:
+    description: Cloud diagnostics
+    variable: {name: clt,  field: T2Ms}
+    settings:
+      file: ./nml/cfg_clouds/cfg_clouds.ncl
+    script: clouds.ncl
+    model: {name: MODIS,  project: obs4mips,  level: L3,  version: C5,  start: 2001,  end: 2010,  path: /obspath/Tier1/}
+
+
+- diag:
+    description: Cloud diagnostics
+    variable: {name: pr-mmday,  field: T2Ms}
+    settings:
+      file: ./nml/cfg_clouds/cfg_clouds.ncl
+    script: clouds.ncl
+    model: {name: GPCP-SG,  project: obs4mips,  level: L3,  version: v2.2,  start: 1986,  end: 2005,  path: /obspath/Tier1/}
+
+
+# - diag:
+#     description: Cloud diagnostics
+#     variable: {name: clivi,  field: T2Ms}
+#     settings:
+#       file: ./nml/cfg_clouds/cfg_clouds.ncl
+#     script: clouds.ncl
+#     model: {name: MODIS-CFMIP,  project: OBS,  type: sat,  version: v2,  start: 2003,  end: 2014,  path: /obspath/Tier2/MODIS-CFMIP}
+
+
+- diag:
+    description: Cloud diagnostics
+    variable: {name: SW_CRE,  field: T2Ms}
+    settings:
+      file: ./nml/cfg_clouds/cfg_clouds.ncl
+    script: clouds.ncl
+    model: {name: CERES-EBAF,  project: obs4mips,   level: L3B,  version: Ed2-7,  start: 2001,  end: 2012,  path: /obspath/Tier1/}
+
+
+- diag:
+    description: Cloud diagnostics
+    variable: {name: LW_CRE,  field: T2Ms}
+    settings:
+      file: ./nml/cfg_clouds/cfg_clouds.ncl
+    script: clouds.ncl
+    model: {name: CERES-EBAF,  project: obs4mips,   level: L3B,  version: Ed2-7,  start: 2001,  end: 2012,  path: /obspath/Tier1/}
+    
+- diag:
+    description: Cloud diagnostics
+    variable: {name: NET_CRE,  field: T2Ms}
+    settings:
+      file: ./nml/cfg_clouds/cfg_clouds.ncl
+    script: clouds.ncl
+    model: {name: CERES-EBAF,  project: obs4mips,   level: L3B,  version: Ed2-7,  start: 2001,  end: 2012,  path: /obspath/Tier1/}
+
+
+# Lauer and Hamilton (2013) - Figure 3
+# Taylor plots of multi-year annual mean quantities
+
+- diag:
+    description: Cloud diagnostics
+    variable: {name: clt,  field: T2Ms}
+    settings:
+      file: ./nml/cfg_clouds/cfg_clouds_taylor.ncl
+    script: clouds_taylor.ncl
+    model: {name: MODIS,  project: obs4mips,   level: L3,  version: C5,  start: 2001,  end: 2010,  path: /obspath/Tier1/}
+
+
+- diag:
+    description: Cloud diagnostics
+    variable: {name: lwp,  field: T2Ms}
+    settings:
+      file: ./nml/cfg_clouds/cfg_clouds_taylor.ncl
+    script: clouds_taylor.ncl
+    model: {name: UWisc,  project: OBS,  type: sat,  version: v2,  start: 1988,  end: 2007,  path: /obspath/Tier3/UWisc}
+
+
+- diag:
+    description: Cloud diagnostics
+    variable: {name: SW_CRE,  field: T2Ms}
+    settings:
+      file: ./nml/cfg_clouds/cfg_clouds_taylor.ncl
+    script: clouds_taylor.ncl
+    model: {name: CERES-EBAF,  project: obs4mips,   level: L3B,  version: Ed2-7,  start: 2001,  end: 2012,  path: /obspath/Tier1/}
+
+
+- diag:
+    description: Cloud diagnostics
+    variable: {name: LW_CRE,  field: T2Ms}
+    settings:
+      file: ./nml/cfg_clouds/cfg_clouds_taylor.ncl
+    script: clouds_taylor.ncl
+    model: {name: CERES-EBAF,  project: obs4mips,   level: L3B,  version: Ed2-7,  start: 2001,  end: 2012,  path: /obspath/Tier1/}
+
+# - diag:
+#     description: Cloud diagnostics
+#     variable: {name: clivi,  field: T2Ms}
+#     settings:
+#       file: ./nml/cfg_clouds/cfg_clouds_taylor.ncl
+#     script: clouds_taylor.ncl
+#     model: {name: MODIS-CFMIP,  project: OBS,  type: sat,  version: v2,  start: 2003,  end: 2014,  path: /obspath/Tier2/MODIS-CFMIP}
+
+
+- diag:
+    description: Cloud diagnostics
+    variable: {name: pr-mmday,  field: T2Ms}
+    settings:
+      file: ./nml/cfg_clouds/cfg_clouds_taylor.ncl
+    script: clouds_taylor.ncl
+    model: {name: GPCP-SG,  project: obs4mips,  level: L3,  version: v2.2,  start: 1986,  end: 2005,  path: /obspath/Tier1/}
+
+
+# Lauer and Hamilton (2013) - Equation 2, part of Figure 8
+# Interannual variability: relative temporal standard deviation calculated from
+# monthly mean anomalies after subtracting the climatological mean seasonal cycle
+
+- diag:
+    description: Cloud diagnostics
+    variable: {name: lwp,  field: T2Ms}
+    settings:
+      file: ./nml/cfg_clouds/cfg_clouds_interannual.ncl
+    script: clouds_interannual.ncl
+    model: {name: UWisc,  project: OBS,  type: sat,  version: v2,  start: 1988,  end: 2007,  path: /obspath/Tier3/UWisc}
+
+
+- diag:
+    description: Cloud diagnostics
+    variable: {name: clt,  field: T2Ms}
+    settings:
+      file: ./nml/cfg_clouds/cfg_clouds_interannual.ncl
+    script: clouds_interannual.ncl
+    model: {name: MODIS,  project: obs4mips,  level: L3,  version: C5,  start: 2001,  end: 2010,  path: /obspath/Tier1/}
+
+
+- diag:
+    description: Cloud diagnostics
+    variable: {name: SW_CRE,  field: T2Ms}
+    settings:
+      file: ./nml/cfg_clouds/cfg_clouds_interannual.ncl
+    script: clouds_interannual.ncl
+    model: {name: CERES-EBAF,  project: obs4mips,   level: L3B,  version: Ed2-7,  start: 2001,  end: 2012,  path: /obspath/Tier1/}
+
+
+- diag:
+    description: Cloud diagnostics
+    variable: {name: LW_CRE,  field: T2Ms}
+    settings:
+      file: ./nml/cfg_clouds/cfg_clouds_interannual.ncl
+    script: clouds_interannual.ncl
+    model: {name: CERES-EBAF,  project: obs4mips,   level: L3B,  version: Ed2-7,  start: 2001,  end: 2012,  path: /obspath/Tier1/}
+
+
+- diag:
+    description: Cloud diagnostics
+    variable: {name: NET_CRE,  field: T2Ms}
+    settings:
+      file: ./nml/cfg_clouds/cfg_clouds_interannual.ncl
+    script: clouds_interannual.ncl
+    model: {name: CERES-EBAF,  project: obs4mips,   level: L3B,  version: Ed2-7,  start: 2001,  end: 2012,  path: /obspath/Tier1/}
+
+
+# - diag:
+#     description: Cloud diagnostics
+#     variable: {name: clivi,  field: T2Ms}
+#     settings:
+#       file: ./nml/cfg_clouds/cfg_clouds_interannual.ncl
+#     script: clouds_interannual.ncl
+#     model: {name: MODIS-CFMIP,  project: OBS,  type: sat,  version: v2,  start: 2003,  end: 2014,  path: /obspath/Tier2/MODIS-CFMIP}
+
+
+- diag:
+    description: Cloud diagnostics
+    variable: {name: pr-mmday,  field: T2Ms}
+    settings:
+      file: ./nml/cfg_clouds/cfg_clouds_interannual.ncl
+    script: clouds_interannual.ncl
+    model: {name: GPCP-SG,  project: obs4mips,  level: L3,  version: v2.2,  start: 1986,  end: 2005,  path: /obspath/Tier1/}
