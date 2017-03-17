@@ -174,8 +174,9 @@ A typical namelist looks somewhat like this:
 	  <model> CMIP5 Example	Amon historical r1i1p1 1990 2005  @{MODELPATH} 	</model>
 	
 	</MODELS>
+	<!--...-->
+	</namelist>
 
-	...
 
 * DIAGNOSTICS section
 
@@ -185,7 +186,8 @@ Tags should generally be used to add information the diagnostics by itself does 
 
 .. code-block:: xml
 
-	...
+	<namelist>
+	<!--...-->
 
 	<DIAGNOSTICS>
 
@@ -373,7 +375,9 @@ The GLOBAL and DIAGNOSTICS elements from the namelist look as follows:
 
 .. code-block:: xml
 
-	...
+	<namelist>
+	<!--...-->
+
 	<GLOBAL>
 
   		<write_plots type="boolean">        True                      </write_plots>
@@ -394,14 +398,12 @@ The GLOBAL and DIAGNOSTICS elements from the namelist look as follows:
   
 	</GLOBAL>
 
-
 	<MODELS>
 
   		<model> CMIP5 	12x6 	MIP_VAR_DEF 	  historical 	r1i1p1 1991 2005  @{MODELPATH} </model>
   		<model> CMIP5	12x6A	MIP_VAR_DEF	  historical	r1i1p1 1991 2005  @{MODELPATH} </model>
 	
 	</MODELS>
-
 
 	<DIAGNOSTICS>
 
@@ -440,7 +442,8 @@ The GLOBAL and DIAGNOSTICS elements from the namelist look as follows:
    		 </diag>
 
 	</DIAGNOSTICS>
-	...
+
+	</namelist>
 
 This will produce a HOME tab with the ESMValTool output and the namelist's name, and an AUTO_DIAG_001 tab, showing the results from the sea surface temperature analsysis together with the config declarations.
 
