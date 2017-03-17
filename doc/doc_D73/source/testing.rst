@@ -44,7 +44,7 @@ Testing is done on different levels within the ESMValTool
 Unittesting in the ESMValTool
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Test for individual pieces of code are currantly implemented largely based on the python core libraray `unittest <https://docs.python.org/2/library/unittest.html>`_. Please look there or in the `tests` directory for examples how to implement tests for python code.
+Test for individual pieces of code are currently implemented largely based on the python core library `unittest <https://docs.python.org/2/library/unittest.html>`_. Please look there or in the `tests` directory for examples how to implement tests for python code.
 
 
 How does the testing of diagnostics in ESMValTool work in principle?
@@ -59,10 +59,10 @@ The general concept of the testing framework is that it compares results of a di
 
 The overall testing approach is currently based on the philosophy that
 
-a) testing should be fast to execture
+a) testing should be fast to execute
 b) should not require the user to download larger data volumes
 
-For that reason the testing is largely based on synthetic data as an input which allows to control the input and thus also expected output of a specific diagnostic.
+For that reason, the testing is largely based on synthetic data as an input which allows to control the input and thus also expected output of a specific diagnostic.
 
 **What is needed?**
 
@@ -87,7 +87,7 @@ The ESMValTool testing facility is based on the python package `easytest <https:
 Prerequesite #2: nosetests
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-`nosetests <https://nose.readthedocs.org/en/latest/>`_ should have been already installed. If not, do so as it is needed for a convenient testing experience. Tests could also be exectuted without `nosetests``, but this makes life so much easier. 
+`nosetests <https://nose.readthedocs.org/en/latest/>`_ should have been already installed. If not, do so as it is needed for a convenient testing experience. Tests could also be exectuted without `nosetests`, but this makes life so much easier. 
 
 Prerequesite #3: install `dummydata`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -19,7 +19,7 @@ Two different approaches were primarily considered for realization:
 
 The current version 1.0 is a hybrid form of the aforementioned approaches. If the reporting service recognizes an ESMValTool namelist as input, the tool acts as a runtime environment for the tool and collects multiple diagnostic blocks' output into seperately reported parts. If the reporting service receives a specific report namelist, former results are gathered from predefined search directories and are prepared based on specific grouping instructions.
 
-.. TODO: I don't know why neither scaling nor setting the width does not work here. Also Hyperlinks do not work.
+.. TODO: I don't know why neither scaling nor setting the width does not work here.
 
 .. figure:: reporting_post_workflow.png
    :width: 250 px
@@ -41,7 +41,7 @@ The current version 1.0 is a hybrid form of the aforementioned approaches. If th
 
 Version 1.0 covers the following issues:
 
-* Automatic production of a short HTML5 report with a simple "Home" site and tabs for different diagnostic blocks or tag combinations (see 'Examples'_ below).
+* Automatic production of a short HTML5 report with a simple "Home" site and tabs for different diagnostic blocks or tag combinations (see `Examples`_ below).
 * A print tab for easy conversion to PDF format.
 * Currently, only specific data format can be processed (png, jpg, jpeg, tiff). 
 * The reports are responsive to scaling of the browser window.
@@ -306,7 +306,7 @@ There will be a wrapper for meta data to be written by ncl diagnostics within th
 Examples
 --------
 
-For the examples, we use simple ts/sst (sea surface temperature) data from CMIP5 and ESACCI, once regridded to 12x6 pixels and once additionally altered (12x6A).
+For the examples, we use simplified ts/sst (sea surface temperature) data from CMIP5 and ESACCI, once regridded to 12x6 pixels and once additionally altered (12x6A).
 
 
 1) The collector reporting service (A1)
@@ -355,11 +355,11 @@ The HOME tab is showing the ESMValTool logo, as there are no logs from the ESMVa
 
 .. figure:: reporting_post_home.png
    :width: 250 px
-   :alt: Reporting service as an environment, Home tab
+   :alt: Reporting service as an environment, HOME tab
 
    The HOME tab showing the ESMValTool logo (center) and the namelist's name (right)
 
-The GMT tab shows results that were produced by the namelist below (see 'The runtime environment reporting service (A2)'_).
+The GMT tab shows results that were produced by the namelist below (see `The runtime environment reporting service (2)`_).
 
 .. figure:: reporting_post_GMT.png
    :width: 250 px
@@ -451,14 +451,14 @@ This will produce a HOME tab with the ESMValTool output and the namelist's name,
    :width: 250 px
    :alt: Reporting service as a collector, Home tab
 
-   The Home tab showing the ESMValTool terminal output (center) and the namelist's name (right)
+   The HOME tab showing the ESMValTool terminal output (center) and the namelist's name (right)
 
 
 .. figure:: reporting_envi_Auto_Diag.png
    :width: 250 px
    :alt: Reporting service as a collector, Diag tab
 
-   The diagnostic result tab showing the ESMValTool results output (center) and the config file (right)
+   The diagnostic result tab (AUTO_DIAG_001) showing the ESMValTool results output (center) and the config file (right)
 
 
 
