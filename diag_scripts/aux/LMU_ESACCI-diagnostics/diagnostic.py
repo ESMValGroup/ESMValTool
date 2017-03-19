@@ -715,10 +715,13 @@ class BasicDiagnostics(Diagnostic):
 
         self._gmd_data=self._mod_data.copy()
         self._gmd_data.label='global_mean_difference' + ' [' + self._ref_data.label + '-' + self._mod_data.label + ']'
-        self._gmd_data.data=self._mod_data.timmean(return_object=False)-self._ref_data.timmean(return_object=False)
+        self._gmd_data.data = (self._mod_data.timmean(return_object=False) -
+                               self._ref_data.timmean(return_object=False))
         self._gmdr_data=self._mod_data.copy()
         self._gmdr_data.label='relative_global_mean_difference' + ' [' + self._ref_data.label + '-' + self._mod_data.label + ']'
-        self._gmdr_data.data=(self._mod_data.timmean(return_object=False)-self._ref_data.timmean(return_object=False))/self._ref_data.timmean(return_object=False)
+        self._gmdr_data.data = ((self._mod_data.timmean(return_object=False) -
+                                self._ref_data.timmean(return_object=False)) /
+                                self._ref_data.timmean(return_object=False))
         self._gmdr_data.unit="-"
             
             
@@ -850,13 +853,13 @@ class BasicDiagnostics(Diagnostic):
             
         """ produce table """
         
-        _min_data=D.data.min(axis=(1,2)).data
-        _mean_data=D.fldmean(return_data=False)#data.mean(axis=1).mean(axis=1).data
-        _max_data=D.data.max(axis=(1,2)).data
+        _min_data = D.data.min(axis=(1, 2)).data
+        _mean_data = D.fldmean(return_data=False)
+        _max_data = D.data.max(axis=(1, 2)).data
         
         D2=D.copy()
         D2.data=D2.data**2
-        _std_data=np.sqrt((D2.fldmean(return_data=False)-_mean_data**2))
+        _std_data = np.sqrt((D2.fldmean(return_data=False) - _mean_data**2))
         
         _cov_data=_std_data/_mean_data
         _count=np.logical_not(D.data.mask).sum(axis=(1,2))
