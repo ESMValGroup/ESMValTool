@@ -6,7 +6,7 @@ namelist_flato13ipcc.xml
 
 Description
 Reproducing selected figures from IPCC AR5, chap. 9 (Flato et al., 2013):
-Figs. 9.2a/b, 9.4a/b, 9.5, 9,7, 9.8, 9.10, 9.24a, 9.28, 9.29, 9.30, 9.31,
+Figs. 9.2a/b/c, 9.4, 9.5, 9,7, 9.8, 9.10, 9.24a, 9.28, 9.29, 9.30, 9.31,
 9.32, 9.35, 9.36, 9.45b
 
 Authors
@@ -67,42 +67,45 @@ This namelist is part of the ESMValTool
 
 <!-- *********************************************************************** -->
 <!-- * Flato et al. (2013) - IPCC AR5, chap. 9                             * -->
-<!-- * similar to figs. 9.2 a/b, 9.4 a/b                                   * -->
+<!-- * similar to figs. 9.2 a/b/c                                          * -->
 <!-- * =================================================================== * -->
-<!-- * Multi model mean and multi model mean bias (geographical            * -->
-<!-- * distribution).                                                      * -->
+<!-- * Multi model mean, multi model mean bias, and mean absolute error    * --> 
+<!-- * (geographical distributions).                                       * -->
 <!-- *********************************************************************** -->
-
-    <diag>
-        <description> multi model mean bias precipitation </description>
-        <variable_def_dir>    ./variable_defs/   </variable_def_dir>
-        <variable>            pr-mmday           </variable>
-        <field_type>          T2Ms               </field_type>
-        <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
-
-        <model> CMIP5_ETHZ MIROC5         Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ MPI-ESM-LR     Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model> CMIP5_ETHZ NorESM1-ME     Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-
-        <model> obs4mips GPCP-SG L3 v2.2 2000 2005 @{OBSPATH}/Tier1/ </model>
-        <diag_script cfg="cfg_clouds_bias.ncl"> clouds_bias.ncl </diag_script>
-    </diag>
 
     <diag>
         <description> multi model mean bias near-surface temperature </description>
         <variable_def_dir>    ./variable_defs/   </variable_def_dir>
         <variable>            tas-degC           </variable>
         <field_type>          T2Ms               </field_type>
-        <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
-
+        <diag_script_cfg_dir> ./nml/cfg_ipcc_ch9/ </diag_script_cfg_dir>
         <model> CMIP5_ETHZ MIROC5         Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
         <model> CMIP5_ETHZ MPI-ESM-LR     Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
         <model> CMIP5_ETHZ NorESM1-M      Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
-
         <model> OBS ERA-Interim reanaly     1    2000  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
-        <diag_script cfg="cfg_clouds_bias.ncl"> clouds_bias.ncl </diag_script>
+        <diag_script cfg="cfg_ipcc-fig-9-2.ncl"> clouds_bias.ncl </diag_script>
     </diag>
 
+<!-- *********************************************************************** -->
+<!-- * Flato et al. (2013) - IPCC AR5, chap. 9                             * -->
+<!-- * similar to figs. 9.4                                                * -->
+<!-- * =================================================================== * -->
+<!-- * Multi model mean, multi model mean bias, mean absolute error, and   * -->
+<!-- * mean relative error (geographical ditributions)                     * --> 
+<!-- * ******************************************************************* * -->
+
+    <diag>
+        <description> multi model mean bias precipitation </description>
+        <variable_def_dir>    ./variable_defs/   </variable_def_dir>
+        <variable>            pr-mmday           </variable>
+        <field_type>          T2Ms               </field_type>
+        <diag_script_cfg_dir> ./nml/cfg_ipcc_ch9/ </diag_script_cfg_dir>
+        <model> CMIP5_ETHZ MIROC5         Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ MPI-ESM-LR     Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> CMIP5_ETHZ NorESM1-ME     Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
+        <model> obs4mips GPCP-SG L3 v2.2 2000 2005 @{OBSPATH}/Tier1/ </model>
+        <diag_script cfg="cfg_ipcc-fig-9-4.ncl"> clouds_bias.ncl </diag_script>
+    </diag>
 
 <!-- *********************************************************************** -->
 <!-- * Flato et al. (2013) - IPCC AR5, chap. 9                             * -->
