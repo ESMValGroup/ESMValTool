@@ -67,10 +67,10 @@ This namelist is part of the ESMValTool
 
 <!-- *********************************************************************** -->
 <!-- * Flato et al. (2013) - IPCC AR5, chap. 9                             * -->
-<!-- * similar to figs. 9.2 a/b/c, 9.4                                     * -->
+<!-- * similar to figs. 9.2 a/b/c                                          * -->
 <!-- * =================================================================== * -->
-<!-- * Multi model mean and multi model mean bias (geographical            * -->
-<!-- * distribution).                                                      * -->
+<!-- * Multi model mean, multi model mean bias, and mean absolute error    * --> 
+<!-- * (geographical distributions).                                       * -->
 <!-- *********************************************************************** -->
 
     <diag>
@@ -85,6 +85,14 @@ This namelist is part of the ESMValTool
         <model> OBS ERA-Interim reanaly     1    2000  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
         <diag_script cfg="cfg_ipcc-fig-9-2.ncl"> clouds_bias.ncl </diag_script>
     </diag>
+
+<!-- *********************************************************************** -->
+<!-- * Flato et al. (2013) - IPCC AR5, chap. 9                             * -->
+<!-- * similar to figs. 9.4                                                * -->
+<!-- * =================================================================== * -->
+<!-- * Multi model mean, multi model mean bias, mean absolute error, and   * -->
+<!-- * mean relative error (geographical ditributions)                     * --> 
+<!-- * ******************************************************************* * -->
 
     <diag>
         <description> multi model mean bias precipitation </description>
