@@ -94,8 +94,6 @@ Prerequesite #3: install `dummydata`
 
 The `dummydata <https://github.com/pygeo/dummydata>`_ package is required for the generation of synthetic datasets to be used within the testing. When the ESMValTool is installed via `conda` this will have been installed already automatically. Otherwise install the package like described in its documentation.
 
-(Conda does not work: package not found; pip does not work: could not find requiremente dateutil; git does not work: could not find suitable distribution for dateutil)
-
 
 How to implement a test for a new diagnostic?
 ---------------------------------------------
