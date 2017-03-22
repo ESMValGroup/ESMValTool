@@ -11,6 +11,8 @@ import unittest
 import sys
 sys.path.append('../..')
 
+sys.path.append('/media/bmueller/Work/GIT/DUMMYDATA/dummydata-master')
+
 from esmvaltool_testlib import ESMValToolTest
 
 
@@ -57,9 +59,10 @@ class TestDiagnostic(unittest.TestCase):
             # reffiles.append(('plot',m + '_sep-bias-plot-precip.png'))
             # reffiles.append(('plot',m + '_sep-bias-plot-runoff.png'))
 	# example if output file list is produced with 'ls [-a] > filenames.txt'
+	reffiles=[]
 	with open('filenames.txt', 'rU') as f:
   	    for line in f: 
-		reffiles.append(('plot',f))
+		reffiles.append(('plot',line))
 
         T = DiagnosticTest(files=reffiles)  
         T.run_nml()

@@ -140,6 +140,7 @@ img {
 .threecol .col1 {
 	width:56%;			/* width of center column content (column width minus padding on either side) */
 	left:102%;			/* 100% plus left padding of center column */
+	white-space: pre-wrap;
 }
 .threecol .col2 {
 	width:11%;			/* Width of left column content (column width minus padding on either side) */

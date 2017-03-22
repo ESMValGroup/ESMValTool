@@ -1,5 +1,5 @@
 <namelist>
-<include href="/media/bmueller/Work/GIT/Tagging/config_private_BM_local.xml"/>
+<include href="./config_private_BM_local.xml"/>
 <namelist_summary>
 ###############################################################################
 namelist_sst_TEST.xml

@@ -20,7 +20,7 @@ This namelist is part of the Reporting suite for the ESMValTool
 
 <TAGS>
 	<set> sst </set>
-	<!--<set> sm </set> -->
+	<set> sm </set>
 	<set> gmt </set>
 	<set> TimeS </set>
 	<!--<set> trend,land,ocean </set>-->

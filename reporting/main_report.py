@@ -197,5 +197,5 @@ def diagnostic(tagname):
     return render_template(tagname+'.html')
     
 if __name__ == '__main__':
-    app.debug=False
+    app.debug=True
     app.run(host=host_add,port=host_port) 

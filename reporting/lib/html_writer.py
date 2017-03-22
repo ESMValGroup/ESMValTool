@@ -13,7 +13,6 @@ from itertools import compress
 from METAdata import METAdata
 from difflib import SequenceMatcher
 import index_blocks
-import datetime
 
 class HTML_writer(object):
     
@@ -23,6 +22,12 @@ class HTML_writer(object):
         Default values
         """
         self.lines=[]
+        self._default_Dict={'ESMValTool':{
+                    'built':'',
+                    'tags':[],
+                    'caption':'No caption available',
+                    'block':'#IDUnknown'
+                    }}
         
     def _get_files_in_directory(self, directory, pattern, asstring=True):
         """ returns list and number of files with pattern in directory """
@@ -163,8 +168,8 @@ class HTML_writer(object):
         
         file_list=list(compress(file_list,actual_file_list))
         
-        if len(file_list)==0: #TODO: don't break, but produce empty site
-            assert False, "No Files found with restrictor '" + str((", ").join(restrictor_or_time) if isinstance(restrictor_or_time,list) else restrictor_or_time) + "'!"
+#        if len(file_list)==0: #TODO: don't break, but produce empty site
+#            assert False, "No Files found with restrictor '" + str((", ").join(restrictor_or_time) if isinstance(restrictor_or_time,list) else restrictor_or_time) + "'!"
         
         return file_list
 
@@ -179,7 +184,6 @@ class HTML_writer(object):
                 
         
         self.lines.extend(self.block1(PDF_file_list+IMG_file_list))
-        
         
         self.lines.extend(self.block2(['<p>This is the summary of the preliminary reporting service!</p>','<p>Original namelist version. </p>']))
         
@@ -249,7 +253,11 @@ class HTML_writer(object):
             PDF_file_list = []
                 #PDF_file_list = self.make_PDF_list(folder,name,mindate,host) #TODO MetaData with PDF
                         
-        self.lines.extend(self.block1(PDF_file_list+IMG_file_list))
+        all_files = PDF_file_list+IMG_file_list
+        
+        
+                
+        self.lines.extend(self.block1(all_files if len(all_files)>0 else ["<p>Nothing to show!</p>","<p>Could not find any files for tag " + ", ".join(tags) + "!</p>"]))
         
         self.lines.extend(self.block2(['<p>This is the summary of the preliminary reporting service!</p>','<p>Report namelist version. </p>']))
   
@@ -267,12 +275,15 @@ class HTML_writer(object):
     
 
     def _similar_follower(self,v):
-            
-        v1=list(v)
-        v1.pop(0)
-        v2=list(v)
-        v2.pop(-1)
-        return list(map(self._similar,v1,v2))
+          
+        if len(v)==0:
+            return v
+        else:
+            v1=list(v)
+            v1.pop(0)
+            v2=list(v)
+            v2.pop(-1)
+            return list(map(self._similar,v1,v2))
     
     def _similar(self,a, b):
         return SequenceMatcher(None, a, b).ratio()
