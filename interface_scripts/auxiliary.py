@@ -95,7 +95,7 @@ def ncl_version_check():
     """ @brief Check the NCL version
     """
 
-    out = (0,subprocess.check_output(["ncl", "-V"]).split()[0])  # split function is used to remove trailing whitespaces
+    out = (0, subprocess.check_output(["ncl", "-V"]).split()[0])  # split function is used to remove trailing whitespaces
     if out[0] != 0:
         error("NCL not found")
 
