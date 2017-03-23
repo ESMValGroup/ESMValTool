@@ -43,7 +43,7 @@ def info(string, verbosity, required_verbosity):
         @param required_verbosity level required to print something
     """
     if verbosity >= required_verbosity:
-        print "PY  info: " + str(string)
+        print("PY  info: " + str(string))
 
 
 def error(string):
