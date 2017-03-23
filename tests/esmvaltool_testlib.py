@@ -14,8 +14,13 @@ import glob
 
 
 class ESMValTestDiagnostic(unittest.TestCase):
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        super(ESMValTestDiagnostic, self).__init__(*args, **kwargs)
         pass
+
+    def read_reffiles(self, fname):
+        assert False
+
 
 class ESMValToolTest(EasyTest):
     """
@@ -90,7 +95,7 @@ class ESMValToolTest(EasyTest):
         if os.path.getsize(f) > 0.:
             return True
         else:
-            print 'ERROR: The filesize of the file ' + f + ' is 0 bytes !!!'
+            print('ERROR: The filesize of the file ' + f + ' is 0 bytes !!!')
             return False
 
     def test_logfile_exists(self):
@@ -269,7 +274,6 @@ class ESMValToolTest(EasyTest):
 
             # generate ouput directory if not existing yet
             if not os.path.exists(os.path.dirname(oname)):
-                #~ print oname
                 os.makedirs(os.path.dirname(oname))
 
             if force:
