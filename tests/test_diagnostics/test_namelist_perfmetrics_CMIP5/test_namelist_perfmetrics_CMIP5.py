@@ -11,7 +11,7 @@ import unittest
 import sys
 sys.path.append('../..')
 
-from esmvaltool_testlib import ESMValToolTest
+from esmvaltool_testlib import ESMValToolTest, ESMValTestDiagnostic
 
 
 class PerfmetricTest(ESMValToolTest):
@@ -53,7 +53,7 @@ class PerfmetricTest(ESMValToolTest):
 
 
 
-class TestPerfmetric(unittest.TestCase):
+class TestPerfmetric(ESMValTestDiagnostic):
 
     def setUp(self):
         pass

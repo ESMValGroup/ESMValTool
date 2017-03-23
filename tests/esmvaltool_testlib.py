@@ -4,6 +4,7 @@ performance metrics testing
 """
 
 import os
+import unittest
 from xml.etree import ElementTree
 
 from easytest import EasyTest
@@ -11,6 +12,10 @@ from dummydata import Model3, Model2
 from wrappers import *
 import glob
 
+
+class ESMValTestDiagnostic(unittest.TestCase):
+    def __init__(self):
+        pass
 
 class ESMValToolTest(EasyTest):
     """

@@ -11,7 +11,7 @@ import unittest
 import sys
 sys.path.append('../..')
 
-from esmvaltool_testlib import ESMValToolTest
+from esmvaltool_testlib import ESMValToolTest, ESMValTestDiagnostic
 
 
 class TropicalVariabilityTest(ESMValToolTest):
@@ -38,7 +38,7 @@ class TropicalVariabilityTest(ESMValToolTest):
 
 
 
-class TestDiagnostic(unittest.TestCase):
+class TestDiagnostic(ESMValTestDiagnostic):
 
     def setUp(self):
         pass

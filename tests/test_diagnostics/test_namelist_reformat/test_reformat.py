@@ -11,7 +11,7 @@ import unittest
 import sys
 sys.path.append('../..')
 
-from esmvaltool_testlib import ESMValToolTest
+from esmvaltool_testlib import ESMValToolTest, ESMValTestDiagnostic
 
 
 class ReformatTest(ESMValToolTest):
@@ -32,7 +32,7 @@ class ReformatTest(ESMValToolTest):
         return r
 
 
-class TestDiagnostic(unittest.TestCase):
+class TestDiagnostic(iESMValTestDiagnostic):
 
     def setUp(self):
         pass

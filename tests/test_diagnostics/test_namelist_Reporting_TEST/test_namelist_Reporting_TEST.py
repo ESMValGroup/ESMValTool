@@ -11,9 +11,9 @@ import unittest
 import sys
 sys.path.append('../..')
 
-sys.path.append('/media/bmueller/Work/GIT/DUMMYDATA/dummydata-master')
+#sys.path.append('/media/bmueller/Work/GIT/DUMMYDATA/dummydata-master')
 
-from esmvaltool_testlib import ESMValToolTest
+from esmvaltool_testlib import ESMValToolTest, ESMValTestDiagnostic
 
 
 class DiagnosticTest(ESMValToolTest):
@@ -35,7 +35,7 @@ class DiagnosticTest(ESMValToolTest):
         return r
 
 
-class TestDiagnostic(unittest.TestCase):
+class TestDiagnostic(ESMValTestDiagnostic):
 
     def setUp(self):
         pass

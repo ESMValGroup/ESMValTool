@@ -11,7 +11,7 @@ import unittest
 import sys
 sys.path.append('../..')
 
-from esmvaltool_testlib import ESMValToolTest
+from esmvaltool_testlib import ESMValToolTest, ESMValTestDiagnostic
 
 
 class MJOMeanTest(ESMValToolTest):
@@ -37,7 +37,7 @@ class MJOMeanTest(ESMValToolTest):
 
 
 
-class TestDiagnostic(unittest.TestCase):
+class TestDiagnostic(ESMValTestDiagnostic):
 
     def setUp(self):
         pass

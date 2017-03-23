@@ -11,7 +11,7 @@ import unittest
 import sys
 sys.path.append('../..')
 
-from esmvaltool_testlib import ESMValToolTest
+from esmvaltool_testlib import ESMValToolTest, ESMValTestDiagnostic
 
 
 class DiagnosticTest(ESMValToolTest):
@@ -34,7 +34,7 @@ class DiagnosticTest(ESMValToolTest):
         return r
 
 
-class TestDiagnostic(unittest.TestCase):
+class TestDiagnostic(ESMValTestDiagnostic):
 
     def setUp(self):
         pass
@@ -45,7 +45,7 @@ class TestDiagnostic(unittest.TestCase):
     def test_general_output(self):
         # specify list with expected output files as tuples with directory and filename
         reffiles=[('plot','ro_coefficient-rel-pr_biases.png'),('plot','ro-et_coefficient_biases.png')]
-        # example if output files based on model names need to be processed
+        # ALTERNATIVE 1: example if output files based on model names need to be processed
         # models = ['MPIESM', 'MPIESM-LR'] # models as specified in testing namelist
         # for m in models:
             # reffiles.append(('plot',m + '_bias_ET_catchments.txt'))
@@ -57,6 +57,8 @@ class TestDiagnostic(unittest.TestCase):
             # reffiles.append(('plot',m + '_sep-bias-plot-ET.png'))
             # reffiles.append(('plot',m + '_sep-bias-plot-precip.png'))
             # reffiles.append(('plot',m + '_sep-bias-plot-runoff.png'))
+        # ALTERNATIVE 2: read reference files directly from a separate ASCII file
+        # reffiles = self.read_reffiles('myreffiles.txt')
 
         T = DiagnosticTest(files=reffiles)  
         T.run_nml()

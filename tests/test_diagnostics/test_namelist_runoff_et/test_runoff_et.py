@@ -11,7 +11,7 @@ import unittest
 import sys
 sys.path.append('../..')
 
-from esmvaltool_testlib import ESMValToolTest
+from esmvaltool_testlib import ESMValToolTest, ESMValTestDiagnostic
 
 
 class RunoffTest(ESMValToolTest):
@@ -34,7 +34,7 @@ class RunoffTest(ESMValToolTest):
         return r
 
 
-class TestDiagnostic(unittest.TestCase):
+class TestDiagnostic(ESMValTestDiagnostic):
 
     def setUp(self):
         pass
