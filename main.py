@@ -89,20 +89,16 @@ else:
 #bn_muel++
 
 if options.reformat:
-	if 'REFORMAT' not in project_info.keys():
-		error('No REFORMAT tag specified in {0}'.format(input_xml_full_path))
-	if len(project_info['REFORMAT']) == 0:
-		info('No reformat script specified',1,1)
+    if 'REFORMAT' not in project_info.keys():
+        error('No REFORMAT tag specified in {0}'.format(input_xml_full_path))
+    if len(project_info['REFORMAT']) == 0:
+        info('No reformat script specified',1,1)
         print_header({}, options.reformat)
-	for k,v in project_info['REFORMAT'].iteritems():
-		if not os.path.exists(v):
-			error('Path {0} does not exist'.format(v))
-		projects.run_executable(v,
-	                                project_info,
-	                                1,
-	                                False,
-	                                write_di=False)
-	sys.exit(0)
+    for k,v in project_info['REFORMAT'].iteritems():
+        if not os.path.exists(v):
+            error('Path {0} does not exist'.format(v))
+        projects.run_executable(v, project_info, 1, False, write_di=False)
+        sys.exit(0)
 
 verbosity = project_info['GLOBAL']['verbosity']
 climo_dir = project_info['GLOBAL']['climo_dir']
