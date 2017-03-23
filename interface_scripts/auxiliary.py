@@ -1,7 +1,5 @@
-import pdb
 import sys
-import commands
-import string
+import subprocess
 
 
 class nclExecuteError(Exception):
@@ -96,8 +94,8 @@ def print_header(projdict, opt):
 def ncl_version_check():
     """ @brief Check the NCL version
     """
-    out = commands.getstatusoutput("ncl -V")
 
+    out = (0,subprocess.check_output(["ncl", "-V"]).split()[0])  # split function is used to remove trailing whitespaces
     if out[0] != 0:
         error("NCL not found")
 
