@@ -96,7 +96,7 @@ def index_foot(version,inputs):
 	    '</div>',
     '</div>',
     '<div id="footer">',
-	    '<p>ESMValTool Reporting service v.' + version + ' | (' + input_desc + ')</p>',
+	    '<p>ESMValTool Reporting service v.' + version + ' | Contact(s): ' + input_desc + '</p>',
     '</div>',
     '</body>',
     '</html>'

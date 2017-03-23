@@ -2,3 +2,5 @@
 *.tmp
 *.orig
 /c
+/tests/data/**
+/test_bash.sh

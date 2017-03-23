@@ -139,7 +139,7 @@ class ESMValToolTest(EasyTest):
 
     def _get_model_class(self, s):
         # return model class name
-        return s.lstrip().split(' ')[0]
+        return s.lstrip().split()[0]
 
     def _set_model_class(self, s):
         """

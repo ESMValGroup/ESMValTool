@@ -62,9 +62,9 @@ class TestDiagnostic(unittest.TestCase):
 	reffiles=[]
 	with open('filenames.txt', 'rU') as f:
   	    for line in f: 
-		reffiles.append(('plot',line))
+              reffiles.append(('plot',line.split()[0]))
 
-        T = DiagnosticTest(files=reffiles)  
+        T = DiagnosticTest(files=reffiles, subdirectory = 'sst_ESACCI')  
         T.run_nml()
         T.run_tests(execute=False, graphics=None, checksum_files=None, files='all', check_size_gt_zero=True)
         self.assertTrue(T.sucess)

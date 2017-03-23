@@ -261,7 +261,7 @@ class HTML_writer(object):
         
         self.lines.extend(self.block2(['<p>This is the summary of the preliminary reporting service!</p>','<p>Report namelist version. </p>']))
   
-        add_info=["<h2>Config:</h2>"]
+        add_info=["<h2>Placeholder!</h2>"]
         #add_info.extend(add_cfg) 
         
         self.lines.extend(self.block3(add_info))
