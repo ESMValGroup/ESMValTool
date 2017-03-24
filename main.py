@@ -85,7 +85,7 @@ if 'GLOBAL' not in project_info.keys():
 if "tags" in project_info.get('GLOBAL').keys():
     project_info.get('GLOBAL')['tags'].append(input_xml_full_path.split('/')[-1])
 else:
-    project_info.get('GLOBAL')['tags']=input_xml_full_path.split('/')[-1]
+    project_info.get('GLOBAL')['tags']=[input_xml_full_path.split('/')[-1]]
 #bn_muel++
 
 if options.reformat:
@@ -157,8 +157,12 @@ for currDiag in project_info['DIAGNOSTICS']:
     
     #bn_muel++
     if "tags" in currDiag.__dict__.keys():
-        GlobalTags=list(project_info.get('GLOBAL')['tags']) 
-        project_info.get('GLOBAL')['tags'].extend(currDiag.__dict__['tags'][0].split(",") + ["Auto_Diag_"+str(DiagCounter).zfill(3)])
+        GlobalTags=list(project_info.get('GLOBAL')['tags'])
+        if len(currDiag.__dict__['tags'])>0:
+            more_tags=currDiag.__dict__['tags'][0].split(",") + ["Auto_Diag_"+str(DiagCounter).zfill(3)]
+        else:
+            more_tags=["Auto_Diag_"+str(DiagCounter).zfill(3)]
+        project_info.get('GLOBAL')['tags'].extend(more_tags)
         DiagCounter+=1
     #bn_muel++
 
