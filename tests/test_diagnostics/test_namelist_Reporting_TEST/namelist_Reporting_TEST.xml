@@ -39,8 +39,8 @@ This namelist is part of the ESMValTool
 
 <MODELS>
 
-  <model> CMIP5 		12x6 				Amon 	  historical 			r1i1p1 1991 2005  @{MODELPATH} </model>
-  <!--<model> CMIP5		12x6II			Amon	  	  historical			r1i1p1 1991 2005  @{MODELPATH} </model>-->
+  <model> CMIP5 		12x6 				MIP_VAR_DEF 	  historical 			r1i1p1 1991 2005  @{MODELPATH} </model>
+  <model> CMIP5		12x6II			MIP_VAR_DEF	  	  historical			r1i1p1 1991 2005  @{MODELPATH} </model>
 	
 </MODELS>
 
@@ -58,7 +58,7 @@ This namelist is part of the ESMValTool
         
         <tags> sst, Ocean </tags>
         
-        <model> OBS        ESACCI-SST 	sat     	 		  12x6  		 1992 2005  @{MODELPATH}  </model>
+        <model> OBS        ESACCI-SST 	sat     	 		  12x6  		 1992 2005  @{OBSPATH}  </model>
     </diag>
 
 

@@ -56,14 +56,9 @@ class ESMValToolTest(EasyTest):
         exe = 'python main.py'  # the command to call ESMValTool
         assert exe is not None, 'Executable needs to be given!'
 
-        #~ self.esmval_dir = kwargs.pop('esmval_dir', None)
-        #~ assert self.esmval_dir is not None, 'esmval_dir directory needs to be given'
-
         # directory of current file
         fdir = os.path.dirname(os.path.realpath(__file__))
         self.esmval_dir = fdir + os.sep + '..'
-
-
 
         self._default_dir = os.path.abspath(fdir + os.sep + 'data' + os.sep + os.path.basename(self._nml))
         self._default_output_dir = self._default_dir + os.sep + 'output' + os.sep
@@ -170,7 +165,8 @@ class ESMValToolTest(EasyTest):
 
     def _set_model_class(self, s):
         """
-        store model class as attribute; currently only ONE model class for all models is supported
+        store model class as attribute;
+        currently only ONE model class for all models is supported
         """
         mc = self._get_model_class(s).upper()
         if mc == 'CMIP5':
@@ -191,14 +187,10 @@ class ESMValToolTest(EasyTest):
             assert False, 'Model class not supported yet! ' + mc
         return M
 
-
-
-
     def _replace_modelpath(self, s):
         o = s.replace('@{MODEL_PATH}', self._default_input_dir)
         o = o.replace('@{MODELPATH}', self._default_input_dir)
         return o
-
 
     def _modify_nml(self):
         """
@@ -218,6 +210,7 @@ class ESMValToolTest(EasyTest):
         # change attributes in MODEL section
         models = tree.find('MODELS')
         for m in models.getchildren():
+
             themodel = self._set_model_class(m.text)
             m.text = self._replace_modelpath(m.text)
 
@@ -287,7 +280,6 @@ class ESMValToolTest(EasyTest):
                 oname = model.get_oname(oname, k, dim=var_defs[k]['ndim'])
             else:
                 assert False, 'Should probably not happen'
-
 
             # generate ouput directory if not existing yet
             if not os.path.exists(os.path.dirname(oname)):
