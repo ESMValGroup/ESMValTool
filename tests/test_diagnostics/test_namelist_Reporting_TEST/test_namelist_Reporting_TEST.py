@@ -59,10 +59,12 @@ class TestDiagnostic(ESMValTestDiagnostic):
             # reffiles.append(('plot',m + '_sep-bias-plot-precip.png'))
             # reffiles.append(('plot',m + '_sep-bias-plot-runoff.png'))
 	# example if output file list is produced with 'ls [-a] > filenames.txt'
-	reffiles=[]
-	with open('filenames.txt', 'rU') as f:
-  	    for line in f: 
-              reffiles.append(('plot',line.split()[0]))
+ 	#reffiles=[]
+	#with open('filenames.txt', 'rU') as f:
+  	#    for line in f: 
+        #      reffiles.append(('plot',line.split()[0]))
+
+        reffiles=self.read_reffiles('filenames.txt', tdir='plot')
 
         T = DiagnosticTest(files=reffiles, subdirectory = 'sst_ESACCI')  
         T.run_nml()

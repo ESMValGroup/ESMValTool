@@ -18,8 +18,25 @@ class ESMValTestDiagnostic(unittest.TestCase):
         super(ESMValTestDiagnostic, self).__init__(*args, **kwargs)
         pass
 
-    def read_reffiles(self, fname):
-        assert False
+    def read_reffiles(self, fname, tdir='plot'):
+        """
+        read reference files from given file
+        the routine also ensure that trailing whitespaces
+        like e.g. \n are removed.
+
+        Parameters
+        ----------
+        fname : str
+            name of file with required files (one filename per line)
+        tdir : str
+            specifier for target directory ['plot']
+        """
+        assert os.path.exists(fname)
+        reffiles=[]
+        with open(fname, 'rU') as f:
+            for line in f:
+                reffiles.append((tdir, line.split()[0]))
+        return reffiles
 
 
 class ESMValToolTest(EasyTest):
