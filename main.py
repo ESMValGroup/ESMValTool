@@ -152,10 +152,11 @@ DiagCounter=1
 for currDiag in project_info['DIAGNOSTICS']:
     
     #bn_muel++
-    if "tags" in currDiag.__dict__.keys():
-        GlobalTags=list(project_info.get('GLOBAL')['tags']) 
-        project_info.get('GLOBAL')['tags'].extend(currDiag.__dict__['tags'][0].split(",") + ["Auto_Diag_"+str(DiagCounter).zfill(3)])
-        DiagCounter+=1
+    # AL temporary deactivated as not working for testing!!!!
+    #if "tags" in currDiag.__dict__.keys():
+    #    GlobalTags=list(project_info.get('GLOBAL')['tags']) 
+    #    project_info.get('GLOBAL')['tags'].extend(currDiag.__dict__['tags'][0].split(",") + ["Auto_Diag_"+str(DiagCounter).zfill(3)])
+    #    DiagCounter+=1
     #bn_muel++
 
     # Are the requested variables derived from other, more basic, variables?
