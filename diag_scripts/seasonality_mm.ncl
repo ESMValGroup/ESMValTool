@@ -1,13 +1,12 @@
-;; CLOUDS_BIAS
+;; SEASONALITY_MM
 ;;#############################################################################
 ;; Author: Axel Lauer (DLR, Germany)
-;; PROJECT-NAME EMBRACE
+;; PROJECT-NAME CRESCENDO
 ;;#############################################################################
 ;; Description
-;;    Calculates the multi-model mean bias of annual mean 2-d cloud variables
-;;    compared with a reference data set (observations). In addition,
-;;    zonal averages of the individual models, the multi-model mean and the
-;;    reference data set (observations) are calculated.
+;;    Calculates the multi-model mean seasonality (DJF - JJA), multi-model mean
+;;    of absolute seasonality, multi-model mean bias in seasonality, and multi-
+;;    model mean bias in absolute seasonality (similar to IPCC ch. 9 fig. 9.3).
 ;;
 ;; Required diag_script_info attributes (diagnostics specific)
 ;;    grid:            grid for regridding (coarsest, finest, ref, 1x1)
@@ -18,28 +17,20 @@
 ;; Optional diag_script_info attributes (diagnostic specific)
 ;;    ncdf:            enable to output to netCDF; either use "default" or give
 ;;                     a full file name
-;;    plot_abs_diff:   additionally also plot absolute differences (True, False)
-;;    plot_rel_diff:   additionally also plot relative differences (True, False)
 ;;    projection:      map projection, e.g., Mollweide, Mercator
-;;    timemean:        time averaging, i.e. "seasonalclim" (DJF, MAM, JJA, SON),
-;;                     "annualclim" (annual mean)
 ;;
 ;; Required variable_info attributes (variable specific)
-;;    long_name:       description of variable
 ;;    map_diff_Levels: contour levels for difference plot
 ;;    units:           variable units
 ;;
 ;; Optional variable_info attributes (variable specific)
-;;    none
+;;    long_name:       description of variable
 ;;
 ;; Caveats
 ;;    none
 ;;
 ;; Modification history
-;;    20160901-A_laue_ax: added regridding option 1 deg x 1 deg
-;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
-;;                        of the code
-;;    20150428-A-laue_ax: written.
+;;    20170320-A_laue_ax: written.
 ;;
 ;;#############################################################################
 
@@ -70,26 +61,15 @@ begin
                      "",               \  ; contributors
                      "",               \  ; diag_references
                      "",               \  ; obs_references
-                     (/"P_embrace"/))     ; proj_references
+                     (/"P_crescendo"/))   ; proj_references
 
     dim_MOD = dimsizes(models@name)
     dim_VAR = 1
     var0 = variables(0)
     field_type0 = field_types(0)
 
-    ; time averaging: at the moment, only "annualclim" and "seasonalclim"
-    ; are supported
-
-    timemean = "annualclim"  ; default
-    numseas = 1              ; default
-    season = (/"DJF", "MAM", "JJA", "SON"/)
-
-    if (isatt(diag_script_info, "timemean")) then
-        timemean = diag_script_info@timemean
-        if (timemean.eq."seasonalclim") then
-            numseas = 4
-        end if
-    end if
+    season = (/"DJF", "JJA"/)
+    numseas = 2
 end
 
 begin
@@ -112,22 +92,15 @@ begin
         file_type = "PS"
     end if
 
-    ; check for reference model definition
+    ; check for required diag_script_info and variable_info attributes
 
-    if (.not.(isatt(diag_script_info, "ref_model"))) then
-        error_msg("f", diag_script, "", "no reference model is selected")
-    end if
+    exit_if_missing_atts(diag_script_info, (/"grid", "ref_model", "valid_fraction"/))
 
-    if (isatt(diag_script_info, "plot_abs_diff")) then
-        plot_abs_diff = diag_script_info@plot_abs_diff
-    else
-        plot_abs_diff = False
-    end if
-
-    if (isatt(diag_script_info, "plot_rel_diff")) then
-        plot_rel_diff = diag_script_info@plot_rel_diff
-    else
-        plot_rel_diff = False
+    reqatts = (/"map_diff_Levels", "units"/)
+    if (.not.all(isatt(variable_info, reqatts))) then
+        error_msg("f", diag_script, "", "missing required " + \
+                  "variable_info attribute: " + \
+                  reqatts(ind(.not.isatt(variable_info, reqatts))))
     end if
 
     ; set reference model
@@ -335,12 +308,6 @@ begin
 
     ref_ind = ind(models@name.eq.diag_script_info@ref_model(0))
 
-    ; debug output
-
-;    system ("rm debug.nc")
-;    debugfile = addfile("debug.nc","c")
-;    debugfile->mask = global_mask
-
     ; read data
 
     do imod = 0, dim_MOD - 1
@@ -354,33 +321,26 @@ begin
 
         if (isfilepresent_esmval(new_path)) then
             info_output("Read in: " + new_path, verbosity, 1)
-            data_temp = ncdf_read(new_path, var0)
-            data1 = time_operations(data_temp, -1, -1, "average", \
-                                    timemean, True)
-            if (numseas.gt.1) then
-                do is = 0, numseas - 1
-                    data1(is, :, :) = data1(is, :, :) + global_mask
-                end do
-            else
-                data1 = data1 + global_mask
-            end if
             if (.not.isdefined("data")) then
-                dim_data = array_append_record((/dim_MOD/), dimsizes(data1), 0)
+                dim_data = new((/4/), integer)
+                dim_data(0) = dim_MOD
+                dim_data(1) = numseas
+                dim_data(2:3) = dimsizes(global_mask)
                 data = new(dim_data, float)
+                copy_VarMeta(global_mask, data(0, 0, :, :))
                 data!0 = "model"
                 data&model = models@name
+                data!1 = "season"
+                data&season = season
+                delete(dim_data)
             end if
-            rank = dimsizes(dim_data)
 
-            ; debug output
-
-;            debugfile->$models@name(imod)$ = data1
-
-            if (numseas.gt.1) then
-                data(imod, :, :, :) = data1
-            else
-                data(imod, :, :) = data1
-            end if
+            data_temp = ncdf_read(new_path, var0)
+            do is = 0, numseas - 1
+                data1 = time_operations(data_temp, -1, -1, "average", \
+                                    season(is), True)
+                data(imod, is, :, :) = data1 + global_mask
+            end do
 
             delete(data_temp)
             delete(data1)
@@ -398,23 +358,20 @@ begin
     end do  ; imod
 
     model_ind_woref = ind(ref_model.ne.data&model)
-    if (numseas.gt.1) then
-        data(mm_ind, :, :, :) = dim_avg_n_Wrap(data(model_ind_woref, :, :, :), 0)
-    else
-        data(mm_ind, :, :) = dim_avg_n_Wrap(data(model_ind_woref, :, :), 0)
-    end if
+    data(mm_ind, :, :, :) = dim_avg_n_Wrap(data(model_ind_woref, :, :, :), 0)
 
-    ; differences between multi-model mean and reference data set
+    ; seasonality = DJF - JJA
 
-    if (numseas.gt.1) then
-        diff = data(mm_ind, :, :, :) - data(ref_ind, :, :, :)
-        copy_VarMeta(data(ref_ind, :, :, :), diff)
-    else
-        diff = data(mm_ind, :, :) - data(ref_ind, :, :)
-        copy_VarMeta(data(ref_ind, :, :), diff)
-    end if
+    seas_ref = data(ref_ind, 0, :, :) - data(ref_ind, 1, :, :)
+    seas_mm = data(mm_ind, 0, :, :) - data(mm_ind, 1, :, :)
+    seas_mm@diag_script = (/diag_script/)
+    copy_VarMeta(data(ref_ind, 0, :, :), seas_ref)
+    copy_VarMeta(seas_ref, seas_mm)
+    delete(data)
 
-;    debugfile->diff = diff
+    abs_seas = abs(seas_mm)
+    bias_seas = seas_mm - seas_ref
+    bias_abs_seas = abs_seas - abs(seas_ref)
 
     ; ========================================================================
     ; ============================= plotting =================================
@@ -426,52 +383,36 @@ begin
         plot_dir = getenv("ESMValTool_plot_dir")
         output_dir = get_output_dir(plot_dir, "clouds_ipcc")
 
-        diff@res_gsnMaximize       = True         ; use full page for the plot
-        diff@res_cnFillOn          = True         ; color plot desired
-        diff@res_cnLineLabelsOn    = False        ; contour lines
-        diff@res_cnLinesOn         = False
-        diff@res_tiMainOn                 = True
-;        diff@res_gsnLeftString           = annots(imod)
-        diff@res_gsnLeftStringFontHeightF = 0.015
-;        diff@res_gsnLeftString           = models@name(imod)
-        diff@res_cnLevelSelectionMode     = "ExplicitLevels"
-        diff@res_mpOutlineOn              = True
-        diff@res_cnLevels                 = variable_info@map_diff_Levels
-        diff@res_mpFillOn                 = False
-        diff@res_lbLabelBarOn             = True
-        diff@res_gsnRightString           = ""
-        diff@res_mpFillDrawOrder          = "PostDraw"     ; draw map fill last
-        diff@res_cnMissingValFillColor    = "Gray"
-        diff@res_tmYLLabelsOn             = False
-        diff@res_tmYLOn                   = False
-        diff@res_tmYRLabelsOn             = False
-        diff@res_tmYROn                   = False
-        diff@res_tmXBLabelsOn             = False
-        diff@res_tmXBOn                   = False
-        diff@res_tmXTLabelsOn             = False
-        diff@res_tmXTOn                   = False
-;        diff@res_gsnRightString           = variable_info@long_name + " in " \
-;                                            + variable_info@units
-        diff@res_cnInfoLabelOn            = False      ; turn off cn info label
-        diff@res_mpProjection             = diag_script_info@projection
-;        if (isatt(diag_script_info, "explicit_cn_levels")) then
-;            diff@res_cnLevelSelectionMode = "ExplicitLevels"
-;            diff@res_cnLevels = diag_script_info@explicit_cn_levels
-;        end if
+        seas_mm@res_gsnMaximize       = True         ; use full page for the plot
+        seas_mm@res_cnFillOn          = True         ; color plot desired
+        seas_mm@res_cnLineLabelsOn    = False        ; contour lines
+        seas_mm@res_cnLinesOn         = False
+        seas_mm@res_tiMainOn                 = True
+        seas_mm@res_gsnLeftStringFontHeightF = 0.015
+        seas_mm@res_cnLevelSelectionMode     = "ExplicitLevels"
+        seas_mm@res_mpOutlineOn              = True
+        seas_mm@res_mpFillOn                 = False
+        seas_mm@res_lbLabelBarOn             = True
+        seas_mm@res_gsnRightString           = ""
+        seas_mm@res_mpFillDrawOrder          = "PostDraw"     ; draw map fill last
+        seas_mm@res_cnMissingValFillColor    = "Gray"
+        seas_mm@res_tmYLLabelsOn             = False
+        seas_mm@res_tmYLOn                   = False
+        seas_mm@res_tmYRLabelsOn             = False
+        seas_mm@res_tmYROn                   = False
+        seas_mm@res_tmXBLabelsOn             = False
+        seas_mm@res_tmXBOn                   = False
+        seas_mm@res_tmXTLabelsOn             = False
+        seas_mm@res_tmXTOn                   = False
+        seas_mm@res_cnInfoLabelOn            = False      ; turn off cn info label
+        seas_mm@res_mpProjection             = diag_script_info@projection
 
-        diff@var = var0  ; Overwrite existing entry
+        seas_mm@var = var0  ; Overwrite existing entry
         if (isatt(variable_info, "long_name")) then
-            diff@var_long_name = variable_info@long_name
+            seas_mm@var_long_name = variable_info@long_name
         end if
         if (isatt(variable_info, "units")) then
-            diff@var_units     = variable_info@units
-        end if
-
-        if (var0.eq."clt") then
-            if (isatt(diff, "res_cnLevels")) then
-                delete(diff@res_cnLevels)
-            end if
-            diff@res_cnLevels = fspan(-25, 25, 11)
+            seas_mm@var_units     = variable_info@units
         end if
 
         ; ###########################################
@@ -480,10 +421,9 @@ begin
         ; optional output (controlled by diag_script_info)
 
         if (isatt(diag_script_info, "ncdf")) then
-            diff@ncdf = diag_script_info@ncdf
-
+            seas_mm@ncdf = diag_script_info@ncdf
             ; function in ~/interface_scripts/auxiliary.ncl
-            ncdf_outfile = ncdf_write(diff, diag_script_info@ncdf)
+            ncdf_outfile = ncdf_write(seas_mm, diag_script_info@ncdf)
         end if
 
         ; --------------------------------------------------------------------
@@ -492,138 +432,60 @@ begin
         wks = get_wks("dummy_for_wks", diag_script, var0)
 ;        drawNDCGrid(wks) ; debugging option
 
-        plots = new((/4, numseas/), graphic)
+        plots = new((/4/), graphic)
 
         ; --------------------------------------------------------------------
         ; plot contour map
 
-        diff@res_gsnDraw         = False  ; Do not draw yet
-        diff@res_gsnFrame        = False  ; Don't advance frame.
-        diff@res_mpPerimOn       = False
+        seas_mm@res_gsnDraw         = False  ; Do not draw yet
+        seas_mm@res_gsnFrame        = False  ; Don't advance frame.
+        seas_mm@res_mpPerimOn       = False
 
-;        diff@res_lbTitleString   = "~F8~D~F21~" + variable_info@long_name + \
-;                                   " (" + variable_info@units + ")"
-        diff@res_lbTitleString   = "(" + variable_info@units + ")"
-        diff@res_lbTitlePosition      = "Bottom"
+        seas_mm@res_lbTitleString   = "(" + variable_info@units + ")"
+        seas_mm@res_lbTitlePosition      = "Bottom"
 
-        diff@res_lbLabelFontHeightF   = 0.014
-;        diff@res_lbAutoManage         = False
-        diff@res_lbTopMarginF         = 0.1
-        diff@res_lbTitleFontHeightF   = 0.014
-;        diff@res_pmLabelBarWidthF     = 0.8
+        seas_mm@res_lbLabelFontHeightF   = 0.014
+        seas_mm@res_lbTopMarginF         = 0.1
+        seas_mm@res_lbTitleFontHeightF   = 0.014
 
-        diff@res_tiMainFontHeightF    = 0.016
+        seas_mm@res_tiMainFontHeightF    = 0.016
 
-        diff@res_tiMainString = "Multi Model Mean Bias"
-;        if (var0.eq."pr-mmday") then
-;            diff@res_tiMainString = "d) Multi Model Mean Bias"
-;        else
-;            diff@res_tiMainString = "b) Multi Model Mean Bias"
-;        end if
+        seas_mm@res_tiMainString = "Multi Model Mean Bias"
 
-        if (numseas.gt.1) then
-            copy_VarMeta(diff, data(mm_ind, :, :, :))
-        else
-            copy_VarMeta(diff, data(mm_ind, :, :))
+        if (isatt(seas_mm, "res_cnLevels")) then
+            delete(seas_mm@res_cnLevels)
         end if
+        seas_mm@res_cnLevels = variable_info@map_diff_Levels
+
+        copy_VarMeta(seas_mm, abs_seas)
+        copy_VarMeta(seas_mm, bias_seas)
+        copy_VarMeta(seas_mm, bias_abs_seas)
 
         if ((var0.eq."tas").or.(var0.eq."tas-degC")) then
             pal = read_colormap_file("diag_scripts/lib/ncl/rgb/ipcc-tas.rgb")
-            data@res_cnFillColors = pal
-            pal2 = read_colormap_file("diag_scripts/lib/ncl/rgb/ipcc-tas-delta.rgb")
-            diff@res_cnFillColors = pal2
-            if (plot_abs_diff) then
-                pal3 = read_colormap_file("diag_scripts/lib/ncl/rgb/ipcc-tas-absdelta.rgb")
-            end if
+            seas_mm@res_cnFillColors = pal
+            pal2 = read_colormap_file("diag_scripts/lib/ncl/rgb/ipcc-tas-absdelta.rgb")
+            abs_seas@res_cnFillColors = pal2
+            pal3 = read_colormap_file("diag_scripts/lib/ncl/rgb/ipcc-tas-seasdelta.rgb")
+            bias_seas@res_cnFillColors = pal3
+            bias_abs_seas@res_cnFillColors = pal3
+
+            delete(seas_mm@res_cnLevels)
+            delete(abs_seas@res_cnLevels)
+            delete(bias_seas@res_cnLevels)
+            delete(bias_abs_seas@res_cnLevels)
+
+            ; IPCC ch.9 fig. 9.3 scales for tas
+            seas_mm@res_cnLevels = fspan(-50, 50, 21)
+            abs_seas@res_cnLevels = fspan(5, 50, 10)
+            bias_seas@res_cnLevels = fspan(-8, 8, 17)
+            bias_abs_seas@res_cnLevels = fspan(-8, 8, 17)
         end if
 
-        if ((var0.eq."pr-mmday").or.(var0.eq."pr")) then
-            pal = read_colormap_file("diag_scripts/lib/ncl/rgb/ipcc-precip.rgb")
-            data@res_cnFillColors = pal
-            pal2 = read_colormap_file("diag_scripts/lib/ncl/rgb/ipcc-precip-delta.rgb")
-            diff@res_cnFillColors = pal2
-            if (plot_abs_diff) then
-                pal3 = read_colormap_file("diag_scripts/lib/ncl/rgb/ipcc-precip-absdelta.rgb")
-            end if
-            if (plot_rel_diff) then
-                pal4 = read_colormap_file("diag_scripts/lib/ncl/rgb/ipcc-precip-reldelta.rgb")
-            end if
-        end if
-
-        data@res_tiMainString = "Multi Model Mean"
-;        if (var0.eq."pr-mmday") then
-;            data@res_tiMainString = "c) Multi Model Mean"
-;        else
-;            data@res_tiMainString = "a) Multi Model Mean"
-;        end if
-
-        if (isatt(data, "res_cnLevels")) then
-            delete(data@res_cnLevels)
-        end if
-        data@res_cnLevels     = variable_info@map_ref_Levels
-
-        plotsperline = (/2, 0/)
-        plotind = (/0, 1/)  ; mmm and mean bias are always plotted
-
-        ; absolute differences
-
-        if (plot_abs_diff) then
-            absdiff = abs(diff)
-            copy_VarMeta(diff, absdiff)
-            if (isvar("pal3")) then
-                delete(absdiff@res_cnFillColors)
-                absdiff@res_cnFillColors = pal3
-                nt = dimsizes(pal3)
-                n = nt(0)
-            else
-                n = dimsizes(variable_info@map_diff_Levels)
-            end if
-            mx = max(variable_info@map_diff_Levels)
-            delete(absdiff@res_cnLevels)
-            tmp = fspan(0.0, mx, n)
-            absdiff@res_cnLevels = tmp(1:dimsizes(tmp)-1)
-            delete(tmp)
-
-            absdiff@res_tiMainString = "Multi Model Mean of Absolute Error"
-
-            iadd = 2
-            itmp = array_append_record(plotind, iadd, 0)
-            delete(plotind)
-            plotind = itmp
-            delete(itmp)
-            plotsperline(1) = plotsperline(1) + 1
-        end if
-
-        ; relative differences
-
-        if (plot_rel_diff) then
-            ; replace "epsilon" values with missing value
-            if (numseas.gt.1) then
-                mm = where(abs(data(mm_ind, :, :, :)).lt.1.0e-6, data@_FillValue, data(mm_ind, :, :, :))
-            else
-                mm = where(abs(data(mm_ind, :, :)).lt.1.0e-6, data@_FillValue, data(mm_ind, :, :))
-            end if
-
-            reldiff = 100.0 * diff / mm
-
-            copy_VarMeta(diff, reldiff)
-            delete(reldiff@res_cnLevels)
-            reldiff@res_cnLevels = fspan(-90.0, 90.0, 13)
-            reldiff@res_tiMainString = "Multi Model Mean of Relative Error"
-            reldiff@units = "%"
-            reldiff@res_lbTitleString = "(" + reldiff@units + ")"
-            if (isvar("pal4")) then
-                delete(reldiff@res_cnFillColors)
-                reldiff@res_cnFillColors = pal4
-            end if
-
-            iadd = 3
-            itmp = array_append_record(plotind, iadd, 0)
-            delete(plotind)
-            plotind = itmp
-            delete(itmp)
-            plotsperline(1) = plotsperline(1) + 1
-        end if
+        seas_mm@res_tiMainString = "Multi Model Mean"
+        abs_seas@res_tiMainString = "Multi Model Mean of Absolute Seasonality"
+        bias_seas@res_tiMainString = "Multi Model Mean Bias in Seasonality"
+        bias_abs_seas@res_tiMainString = "Multi Model Mean Bias in Absolute Seasonality"
 
         ; panelling resources
 
@@ -633,32 +495,12 @@ begin
         pres@gsnPanelYWhiteSpacePercent = 5
         pres@gsnPanelXWhiteSpacePercent = 5
 
-        if (numseas.gt.1) then
-            do is = 0, numseas - 1
-                pres@txString = season(is)
-                plots(0, is) = contour_map(wks, data(mm_ind, is, :, :), var0)
-                plots(1, is) = contour_map(wks, diff(is, :, :), var0)
-                if (plot_abs_diff) then
-                    plots(2, is) = contour_map(wks, absdiff(is, :, :), var0)
-                end if
-                if (plot_rel_diff) then
-                    plots(3, is) = contour_map(wks, reldiff(is, :, :), var0)
-                end if
-                gsn_panel(wks, plots(plotind, is), plotsperline, pres)
-;                outfile = panelling(wks, plots(:, is), 1, 2, pres)
-            end do
-        else
-            plots(0, 0) = contour_map(wks, data(mm_ind, :, :), var0)
-            plots(1, 0) = contour_map(wks, diff, var0)
-            if (plot_abs_diff) then
-                plots(2, 0) = contour_map(wks, absdiff, var0)
-            end if
-            if (plot_rel_diff) then
-                plots(3, 0) = contour_map(wks, reldiff, var0)
-            end if
-            gsn_panel(wks, plots(plotind, 0), plotsperline, pres)
-;            outfile = panelling(wks, plots(:, 0), 1, 2, pres)
-        end if
+        plots(0) = contour_map(wks, seas_mm, var0)
+        plots(1) = contour_map(wks, abs_seas, var0)
+        plots(2) = contour_map(wks, bias_seas, var0)
+        plots(3) = contour_map(wks, bias_abs_seas, var0)
+
+        gsn_panel(wks, plots, (/2, 2/), pres)
 
         info_output(" Wrote " + wks@fullname, verbosity, 1)
     end if
