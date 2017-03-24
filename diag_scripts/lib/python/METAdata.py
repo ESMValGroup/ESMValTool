@@ -70,8 +70,9 @@ class METAdata(object):
         
         if not self.__modfile__.split(".")[-1] in self.__meta_formats__:
             print("Warning! This is not an acceptable meta data file format! Instead, XML-file for meta data will be produced!")
-            self.__dtype__=="xml"
+            self.__dtype__="xml"
             self.write()
+            return
         
         if len(self.__data_dict__.keys())==1:
             
@@ -258,7 +259,7 @@ class METAdata(object):
 #
 #MDR.get_dict()
         
-####### Standard Dict:
+####### Standard Dict for ESMValTool:
         
         
 #DICT={'ESMValTool':{

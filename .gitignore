@@ -49,4 +49,10 @@ coverage.xml
 # Jupyter Notebook
 .ipynb_checkpoints
 
->>>>>>> gitignore
+*.pyc
+*.tmp
+*.orig
+/c
+/tests/data/**
+/test_bash.sh
+/python_test_out.txt

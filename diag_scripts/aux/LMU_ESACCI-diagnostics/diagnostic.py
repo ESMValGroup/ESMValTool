@@ -19,6 +19,7 @@ from geoval.core.mapping import *
 import extended_data
 from esmval_lib import ESMValProject
 from METAdata import METAdata
+from ESMValMD import ESMValMD
 #from GeoData_mapping import *
 
 #import ConfigParser
@@ -950,18 +951,23 @@ class BasicDiagnostics(Diagnostic):
         stop=stop.replace(month=12,day=31)+datetime.timedelta(days=1)
         ax.set_xlim(start,stop)
         ax.grid()
-        f.savefig(self._get_output_rootname() + '_smean_ts.' + self.output_type)
+        f_name=self._get_output_rootname() + '_smean_ts.' + self.output_type
+        f.savefig(f_name)
         plt.close(f.number)
         
-        Dict={'ESMValTool':{
-                'built':str(datetime.datetime.now()),
-                'tags':self._basetags + ['TimeS','basic',self.modname],
-                'caption':str('Time series of spatial mean for ' + self.modname + ' and ' + self.refname + ' ' + self._vartype + '.'),
-                'block':'#ID'+'TimeS'+self.var
-            }}
-            
-        MD=METAdata("both",self._get_output_rootname() + '_smean_ts.' + self.output_type,Dict)
-        MD.write()
+        ESMValMD("both",f_name,self._basetags + ['TimeS','basic',self.modname],str('Time series of spatial mean for ' + self.modname + ' and ' + self.refname + ' ' + self._vartype + '.'),'#ID'+'TimeS'+self.var)
+        
+#        Dict={'ESMValTool':{
+#                'built':str(datetime.datetime.now()),
+#                'tags':self._basetags + ['TimeS','basic',self.modname],
+#                'caption':str('Time series of spatial mean for ' + self.modname + ' and ' + self.refname + ' ' + self._vartype + '.'),
+#                'block':'#ID'+'TimeS'+self.var
+#            }}
+#            
+#        MD=METAdata("both",self._get_output_rootname() + '_smean_ts.' + self.output_type,Dict)
+#        MD.write()
+
+        
         
         if self.cfg.regionalization:
             unit2=math.ceil(np.sqrt(len(self._regions))) #2
