@@ -1,35 +1,28 @@
 TODO for deliverables
 ---------------------
 
-DONE * document dummydata
-* generate pip build for dummydata
-* conda recipe for dummydata
-* document dummydata
+* Implement fixes for testing problems (Alex)
 
-DONE * document easytest
-* more examples needed in documentation
-* add some general information on the easytest workflow within the documentation!
-DONE * conda recipe for easytest
 
-DONE * document testing  --> how it works
 * document reporting (Ben)
 
-* let somebody else implement a test based on the documentation ( Ben)
 
-DONE * integrate code for testing
 * integrate code for reporting
 
-DONE * write cover page for entire report
 
+
+
+ACTUAL DOCUMENT COMPILATION
 * integrate easytest and dummydata documentation simply as an Annex to the main deliverable! --> separate PDF documents!
 
 
 
 * generate for all packages a final and tagged version for the deliverable
+also upload this final version on pip and conda-forge
  * easytest
   * dummydata
   * CRESCENDO D73 branch
-  
+store also github HASHKEY  
   
 
 
