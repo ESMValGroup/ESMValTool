@@ -1,0 +1,67 @@
+###############################################################################
+# namelist_reformat.xml
+# 
+# Description
+# Test namelist for the reformat routines
+# 
+# Author
+# Mattia Righi (DLR, Germany)
+# 
+# Project
+# DLR ESMVal
+# 
+# Reference
+# 
+# This namelist is part of the ESMValTool
+###############################################################################
+
+GLOBAL:
+  config_file:       config_private_DLR-PA2
+  write_plots:       True
+  write_netcdf:      True
+  verbosity:         1
+  exit_on_warning:   False
+  output_file_type:  ps
+
+
+MODELS:
+# Each block below is used for testing the project classes in projects.py
+
+  # CMIP5
+  - {name: ACCESS1-0,          project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1998,  end: 2004,  path: /modelpath/ETHZ_CMIP5/}
+
+  # EMAC
+#   - {name: EVAL2,  project: EMAC,  ensemble: 1,  start: 1999,  end: 2008, path: /modelpath/EMAC/EVAL2/}
+
+  # GFDL
+#   - {name: CM4i_c96L48_am4a1r1_2000climo,  project: GFDL,  realm: atmos,  ensemble: 1, start: 1980,  end: 1983,  shift: 1979,  path: /modelpath/GFDL/CM4i_c96L48_am4a1r1_2000climo/}
+
+  # CCMVal
+#   - {name: AMTRAC,   project: CCMVal,  exp: REF-1,  ensemble: 1,  start: 1960,  end: 2004,  path: /modelpath/CCMVal/CCMVal1-Data/}
+#   - {name: AMTRAC,   project: CCMVal,  exp: REF-2,  ensemble: 1,  start: 2050,  end: 2099,  path: /modelpath/CCMVal/CCMVal1-Data/}
+#   - {name: AMTRAC3,  project: CCMVal,  exp: REF-B1, ensemble: 1,  start: 1951,  end: 2007,  path: /modelpath/CCMVal/CCMVal2-Data/}
+
+  # OBS
+#   - {name: ESACCI-AEROSOL,   project: OBS,  type: sat,  version: SU-v4.21,  start: 1997,  end: 2011,  path: /obspath/Tier2/ESACCI-AEROSOL}
+
+  # obs4mips
+#   - {name: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start: 2001,  end: 2012,  path: /obspath/Tier1/}
+
+  # ana4mips
+#   - {name: IFS-Cy31r2,  project: ana4mips,  mip: Amon,  type: reanalyses,  start: 1984,  end: 2005,  path: /obspath/Tier1/}
+
+
+PREPROCESS:
+  select_level:    None
+  target_grid:     None
+  regrid_scheme:   None
+  mask_fillvalues: None
+  mask_landocean:  None
+  multimodel_mean: False
+  
+
+DIAGNOSTICS:
+
+- diag:
+    description: Empty diagnostic
+    variable: {name: tas,  field: T2Ms}
