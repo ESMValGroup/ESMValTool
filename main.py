@@ -27,19 +27,19 @@
 # 2015-06-30  a_laue_ax: added ESMValTool version
 
 import sys
-sys.path.append("./interface_scripts")
+import os
+sys.path.append(os.path.abspath("./interface_scripts"))
 
-# path to ESMVal python toolbox library
-sys.path.append("./diag_scripts/lib/python")
-sys.path.append("./diag_scripts")
+# path to ESMVal python toolbox library (ensure absolute path as otherwise modules might not found properly)
+sys.path.append(os.path.abspath("./diag_scripts/lib/python"))
+sys.path.append(os.path.abspath("./diag_scripts"))
 
 from auxiliary import info, error, print_header, ncl_version_check
 ## from climate import climate
 from optparse import OptionParser
 import datetime
 import projects
-import os
-import pdb
+#import pdb
 import reformat
 import xml.sax
 import xml_parsers
