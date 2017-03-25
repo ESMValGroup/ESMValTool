@@ -9,7 +9,7 @@ from xml.etree import ElementTree
 
 from easytest import EasyTest
 from dummydata import Model3, Model2
-from wrappers import *
+from wrappers import CMIP5, CMIP5fx_w, CMIP5_ETHZ, OBS, OBS_gridfile, OBS4MIPS, ANA4MIPS
 import glob
 
 
@@ -190,6 +190,7 @@ class ESMValToolTest(EasyTest):
     def _replace_modelpath(self, s):
         o = s.replace('@{MODEL_PATH}', self._default_input_dir)
         o = o.replace('@{MODELPATH}', self._default_input_dir)
+        o = o.replace('@{OBSPATH}', self._default_input_dir)
         return o
 
     def _modify_nml(self):
