@@ -4,12 +4,12 @@ Created on Fri Dec 16 15:43:30 2016
 
 @author: bmueller
 """
-from gi.repository import GExiv2 as EXIV
 import xml.etree.ElementTree as XMLT
 import xml.dom.minidom as XMLPP
 
+
 class METAdata(object):
-    
+
     def __init__(self, dtype="xml",modfile=None,data_dict={},**kwargs):
         super(METAdata, self).__init__(**kwargs)
         """
@@ -18,18 +18,31 @@ class METAdata(object):
         self.__avail__=["xml","meta","both"]
         self.__meta_formats__=["jpg","jpeg","png","eps","mp4","tiff","pdf","ps"] #http://www.sno.phy.queensu.ca/~phil/exiftool/exiftool_pod.html; relevant r/w formats
         self.__exif_maintag__="Exif.Image.ImageDescription"
-        self.__dtype__=dtype
+        #self.__dtype__=dtype
+        self.set_type(dtype)
         self.__data_dict__=data_dict
         self.__modfile__=modfile
         
         self.tags=None
         
         
-    def set_type(self,dtype):        
+    def set_type(self,dtype):
+        """
+        set data type of metadata output
+        currently: 'xml', 'meta', 'both'
+        the routine also checks if the EXIV library is available
+        if not, then only XML is written
+        """
         if dtype in self.__avail__:
             self.__dtype__=dtype
         else:
             assert False, "This type (" + dtype + ") is not defineded as as available data type. Please consider writing [" + ", ".join(self.avail) + "]!"
+        # check if exif is available
+        try:
+            from gi.repository import GExiv2 as EXIV
+        except:
+            self.__dtype__ = 'xml'
+
         
     def get_avail(self):        
         return self.__avail__
@@ -45,14 +58,14 @@ class METAdata(object):
             self.__data_dict__=dictionary
         else:
             assert False, "Input is not a dictionary!"
-            
+
     def set_file(self,modfile):
         if isinstance(modfile, (unicode,str)):
             self.__modfile__=modfile
         else:
             print(type(modfile))
             assert False, "Input is not a string!"
-        
+
     def write(self):
         if self.__dtype__ == "xml":
             self.__adjust_xml_file__()
