@@ -46,6 +46,9 @@ class METAdata(object):
         
     def get_avail(self):        
         return self.__avail__
+    
+    def get_file(self):        
+        return self.__modfile__
         
     def get_dict(self):        
         return self.__data_dict__
@@ -201,7 +204,11 @@ class METAdata(object):
         if self.__dtype__ == "xml":
             self.__read_xml__()
         elif self.__dtype__ == "meta":
-            self.__read_meta__()
+            try:
+                self.__read_meta__()
+            except:
+                self.__adjust_xml_file__()
+                self.__read_xml__()
         else:
             assert False, "Wrong data type! This should not happen!"
 
