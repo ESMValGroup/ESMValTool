@@ -171,7 +171,7 @@ class ESMValToolTest(EasyTest):
         mc = self._get_model_class(s).upper()
         if mc == 'CMIP5':
             M = CMIP5(s)
-        elif mc == 'CMIP5_fx':
+        elif mc == 'CMIP5_FX':
             M = CMIP5fx_w(s)
         elif mc == 'CMIP5_ETHZ':
             M = CMIP5_ETHZ(s)

@@ -9,7 +9,9 @@ Test script for "python dummy"
 import os
 import unittest
 import sys
-sys.path.append('../..')
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)) + os.sep + '..' + os.sep + '..')
+
 
 from esmvaltool_testlib import ESMValToolTest, ESMValTestDiagnostic
 

@@ -9,8 +9,7 @@ Test script for "python dummy"
 import os
 import unittest
 import sys
-sys.path.append('../..')
-
+sys.path.append(os.path.dirname(os.path.abspath(__file__)) + os.sep + '..' + os.sep + '..')
 from esmvaltool_testlib import ESMValToolTest, ESMValTestDiagnostic
 
 
@@ -33,10 +32,6 @@ class MJOMeanTest(ESMValToolTest):
         r.update({'ua' : {'method' : 'constant', 'constant' : 20., 'filename' : rpath + os.sep + '@{VAR_FILE}', 'ndim' : 3}})
         return r
 
-
-
-
-
 class TestDiagnostic(ESMValTestDiagnostic):
 
     def setUp(self):
@@ -51,8 +46,8 @@ class TestDiagnostic(ESMValTestDiagnostic):
 
         T = MJOMeanTest(files=reffiles)
         T.run_nml()
-        #T.run_tests(execute=False, graphics=None, checksum_files=None, files='all', check_size_gt_zero=True)
-        #self.assertTrue(T.sucess)
+        T.run_tests(execute=False, graphics=None, checksum_files=None, files='all', check_size_gt_zero=True)
+        self.assertTrue(T.sucess)
 
 if __name__ == "__main__":
     unittest.main()

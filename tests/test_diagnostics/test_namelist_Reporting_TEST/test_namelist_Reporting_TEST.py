@@ -9,10 +9,7 @@ Test script
 import os
 import unittest
 import sys
-sys.path.append('../..')
-
-#sys.path.append('/media/bmueller/Work/GIT/DUMMYDATA/dummydata-master')
-
+sys.path.append(os.path.dirname(os.path.abspath(__file__)) + os.sep + '..' + os.sep + '..')
 from esmvaltool_testlib import ESMValToolTest, ESMValTestDiagnostic
 
 
