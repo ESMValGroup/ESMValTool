@@ -46,6 +46,9 @@ class METAdata(object):
         
     def get_avail(self):        
         return self.__avail__
+    
+    def get_file(self):        
+        return self.__modfile__
         
     def get_dict(self):        
         return self.__data_dict__
@@ -80,6 +83,8 @@ class METAdata(object):
             assert False, "Wrong data type! This should not happen!"
         
     def __write_meta__(self):
+        
+        from gi.repository import GExiv2 as EXIV
         
         if not self.__modfile__.split(".")[-1] in self.__meta_formats__:
             print("Warning! This is not an acceptable meta data file format! Instead, XML-file for meta data will be produced!")
@@ -189,9 +194,9 @@ class METAdata(object):
         self.__dtype__ = modfile.split(".")[-1]
         
         if self.__dtype__ not in self.__meta_formats__:
-                self.__dtype__ = "xml"
-                if modfile.split("/")[-1].split(".")[0]!="":
-                    self.__adjust_xml_file__(modfile)
+            self.__dtype__ = "xml"
+            if modfile.split("/")[-1].split(".")[0]!="":
+                self.__adjust_xml_file__(modfile)
         else:
             self.__dtype__ = "meta"
             self.__modfile__ = modfile
@@ -199,7 +204,11 @@ class METAdata(object):
         if self.__dtype__ == "xml":
             self.__read_xml__()
         elif self.__dtype__ == "meta":
-            self.__read_meta__()
+            try:
+                self.__read_meta__()
+            except:
+                self.__adjust_xml_file__()
+                self.__read_xml__()
         else:
             assert False, "Wrong data type! This should not happen!"
 
@@ -217,6 +226,8 @@ class METAdata(object):
         return self.__data_dict__
         
     def __read_meta__(self):  
+        
+        from gi.repository import GExiv2 as EXIV
         
         metadata = EXIV.Metadata(self.__modfile__)
         root=XMLT.fromstring(metadata.get(self.__exif_maintag__))

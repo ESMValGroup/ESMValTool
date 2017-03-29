@@ -124,19 +124,32 @@ class HTML_writer(object):
         if time is not None:
             file_list = self.correct_file_list(file_list,name,time)
         
+        additional_files=[]
+        for fl in file_list:
+            MD=METAdata("xml",fl)
+            MD.__adjust_xml_file__()
+            additional_files.append(MD.get_file())
+        file_list = file_list + additional_files
+        
         ofolder="./static/images/"+name
         
         subprocess.call(['mkdir','-p',ofolder])
         
-        [subprocess.call(['ln','-sfn',f,ofolder]) for f in file_list] #gather images into static folder
+        [subprocess.call(['ln','-sfn',f,ofolder]) for f in file_list] #gather images and xml into static folder
         
-        file_list=["/".join([ofolder,f.split("/")[-1]]) for f in file_list]
-        
-        
+        #file_list=["/".join([ofolder,f.split("/")[-1]]) for f in file_list]
+        file_list=self._get_img_files(ofolder)
         
         MD=METAdata()
         
         blocks=[MD.read(f).get_dict()['ESMValTool']['block'][0] for f in file_list]
+        
+        index=sorted(range(len(blocks)), key=blocks.__getitem__)
+        
+        file_list=[file_list[i] for i in index]
+        blocks=[blocks[i] for i in index]
+        
+        print(blocks)
         
         breaks=self._similar_follower(blocks)
         
