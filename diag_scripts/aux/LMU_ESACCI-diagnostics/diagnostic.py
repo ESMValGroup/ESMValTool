@@ -1,10 +1,6 @@
 """
 Basic implementation for diagnostics into ESMValTool
 """
-
-"""
-Used modules
-"""
 # import code
 import numpy as np
 import os
@@ -18,11 +14,10 @@ from geoval.core.data import GeoData
 from geoval.core.mapping import SingleMap
 import extended_data
 from esmval_lib import ESMValProject
-from METAdata import METAdata
 from ESMValMD import ESMValMD
 # from GeoData_mapping import *
 
-#i mport ConfigParser
+# import ConfigParser
 import csv
 import imp
 import shapefile as shp
@@ -39,19 +34,19 @@ from cdo import Cdo
 
 # All packages checked
 
-# ignored GLOBAL values
-# TODO verbosity_level
-# TODO exit_on_warning
-# TODO debuginfo
+# ignored GLOBAL values:
+# * verbosity_level
+# * exit_on_warning
+# * debuginfo
 
-# TODO max_data_filesize
-# TODO max_data_blocksize
+# * max_data_filesize
+# * max_data_blocksize
 
-# TODO write_plots
-# TODO write_netcdf
-# TODO write_plot_vars
+# * write_plots
+# * write_netcdf
+# * write_plot_vars
 
-# TODO force_processing
+# * force_processing
 
 
 class Diagnostic(object):
@@ -873,11 +868,9 @@ class BasicDiagnostics(Diagnostic):
         ESMValMD("xml",
                  oname,
                  self._basetags + ['stattab', 'basic', name],
-                 str('Statistics for ' + name +
-                     self._vartype +
-                     ' (upper row). Additionally, differences are shown ' +
-                     'in the lower row, both in absolute values and ' +
-                     'relative to the ' + self.refname + ' data set.'),
+                 str('Statistics for ' + name + " " + self._vartype +
+                     '. All statistics are based on the time dependent ' +
+                     'counts and not normalized'),
                  '#ID' + 'stattab' + self.var)
 
     def _plot_portrait_comparison(self, refname, modname):
@@ -928,9 +921,11 @@ class BasicDiagnostics(Diagnostic):
                 R_masked = self._ref_data.copy()
 
                 M_masked.data.mask = np.logical_or(
-                    M_masked.data.mask, self._regions[self._regions.keys()[im]])
+                    M_masked.data.mask,
+                    self._regions[self._regions.keys()[im]])
                 R_masked.data.mask = np.logical_or(
-                    R_masked.data.mask, self._regions[self._regions.keys()[im]])
+                    R_masked.data.mask,
+                    self._regions[self._regions.keys()[im]])
 
                 M_pstat = self._p_stat(M_masked, self._ts)
                 R_pstat = self._p_stat(R_masked, self._ts)
@@ -939,10 +934,14 @@ class BasicDiagnostics(Diagnostic):
                 namerow = np.repeat(self._regions.keys()[im], M_pstat.shape[1])
                 M_pstat = np.vstack([M_pstat, namerow])
                 R_pstat = np.vstack([R_pstat, namerow])
-                onameM = self._plot_dir + os.sep + self._vartype.replace(
-                    " ", "_") + '_regionalized_ts_' + self.cfg.shape + '_' + modname + '_stat.csv'
-                onameR = self._plot_dir + os.sep + self._vartype.replace(
-                    " ", "_") + '_regionalized_ts_' + self.cfg.shape + '_' + refname + "_" + modname + '_stat.csv'
+                onameM = self._plot_dir + os.sep + \
+                    self._vartype.replace(" ", "_") + \
+                    '_regionalized_ts_' + self.cfg.shape + '_' + modname + \
+                    '_stat.csv'
+                onameR = self._plot_dir + os.sep + \
+                    self._vartype.replace(" ", "_") + \
+                    '_regionalized_ts_' + self.cfg.shape + '_' + refname + \
+                    "_" + modname + '_stat.csv'
                 if im == 0:
                     if os.path.exists(onameM):
                         os.remove(onameM)
@@ -952,12 +951,24 @@ class BasicDiagnostics(Diagnostic):
                     fiR = open(onameR, 'w')
                     try:
                         writer = csv.writer(fiM, quoting=csv.QUOTE_NONNUMERIC)
-                        writer.writerow(
-                            ('date', 'min', 'mean', 'max', 'sd', 'cov', 'count', 'region'))
+                        writer.writerow(('date',
+                                         'min',
+                                         'mean',
+                                         'max',
+                                         'sd',
+                                         'cov',
+                                         'count',
+                                         'region'))
                         writer.writerows(M_pstat.T)
                         writer = csv.writer(fiR, quoting=csv.QUOTE_NONNUMERIC)
-                        writer.writerow(
-                            ('date', 'min', 'mean', 'max', 'sd', 'cov', 'count', 'region'))
+                        writer.writerow(('date',
+                                         'min',
+                                         'mean',
+                                         'max',
+                                         'sd',
+                                         'cov',
+                                         'count',
+                                         'region'))
                         writer.writerows(R_pstat.T)
                     except:
                         print("Could not write to " +
@@ -997,20 +1008,18 @@ class BasicDiagnostics(Diagnostic):
                 ax.set_xlim(start, stop)
                 ax.grid()
 
-            f.savefig(self._get_output_rootname() +
-                      '_regionalized_smean_ts.' + self.output_type)
+            f_name = self._get_output_rootname() + \
+                '_regionalized_smean_ts.' + self.output_type
+            f.savefig(f_name)
             plt.close(f.number)
 
-            Dict = {'ESMValTool': {
-                'built': str(datetime.datetime.now()),
-                'tags': self._basetags + ['TimeS', 'reg', 'basic', self.modname],
-                'caption': str('Regionalized time series of spatial mean for ' + self.modname + ' and ' + self.refname + ' ' + self._vartype + '.'),
-                'block': '#ID' + 'TimeSreg' + self.var
-            }}
-
-            MD = METAdata("both", self._get_output_rootname() +
-                          '_regionalized_smean_ts.' + self.output_type, Dict)
-            MD.write()
+            ESMValMD("both",
+                     f_name,
+                     self._basetags + ['TimeS', 'reg', 'basic', self.modname],
+                     str('Regionalized time series of spatial mean for ' +
+                         self.modname + ' and ' + self.refname + ' ' +
+                         self._vartype + '.'),
+                     '#ID' + 'TimeSreg' + self.var)
 
     def _global_mean_timeseries(self, name):
         """ calculating mean of TS """
@@ -1020,28 +1029,21 @@ class BasicDiagnostics(Diagnostic):
 
             # mean of timeseries
             self._gmt_r_data = self._ref_data.copy()
-            if self._start_time == self._stop_time and self.var in ["baresoilFrac", "grassNcropFrac", "shrubNtreeFrac"]:
+            if self._start_time == self._stop_time and \
+                    self.var in ["baresoilFrac",
+                                 "grassNcropFrac",
+                                 "shrubNtreeFrac"]:
                 self._gmt_r_data.label = self.refname + \
                     " " + str(self._start_time)
             else:
                 self._gmt_r_data.label = self.refname + ' temporal mean'
             self._gmt_r_data.data = self._ref_data.timmean()
 
-            # timeseries of means
-#            self._gmt_r_ts=self._ref_data.data.mean(axis=1).mean(axis=1)[::-1] #global masked mean order is questionable
-# self._gmt_r_ts=[(self._ref_data.data[(self._ref_data.data.shape[0]-s-1),:,:]).mean()
-# for s in np.arange(0,self._ref_data.data.shape[0])] #setwise mean
-
         elif name == self.modname:
             # mean of timeseries
             self._gmt_m_data = self._mod_data.copy()
             self._gmt_m_data.label = self.modname + ' temporal mean'
             self._gmt_m_data.data = self._mod_data.timmean()
-
-            # timeseries of means
-#            self._gmt_m_ts=self._mod_data.data.mean(axis=1).mean(axis=1)[::-1] #global masked mean
-# self._gmt_m_ts=[(self._mod_data.data[(self._mod_data.data.shape[0]-s-1),:,:]).mean()
-# for s in np.arange(0,self._mod_data.data.shape[0])] #setwise mean
 
         else:
             assert False, 'data not expected'
@@ -1051,7 +1053,9 @@ class BasicDiagnostics(Diagnostic):
         plot global mean timeseries
         """
         # plot temporal agregated map
-        Map = SingleMap(self._gmt_r_data if name == self.refname else self._gmt_m_data,
+        Map = SingleMap(self._gmt_r_data
+                        if name == self.refname
+                        else self._gmt_m_data,
                         backend=self.plot_backend,
                         show_statistic=True,
                         stat_type='mean',
@@ -1074,32 +1078,34 @@ class BasicDiagnostics(Diagnostic):
                  drawparallels=True,
                  titlefontsize=self.plot_tfont
                  )
-        Map.figure.savefig(self._plot_dir + os.sep + self._vartype.replace(" ", "_") + '_' + name + '_gmt.' + self.output_type,
+        f_name = self._plot_dir + os.sep + self._vartype.replace(" ", "_") + \
+            '_' + name + '_gmt.' + self.output_type
+        Map.figure.savefig(f_name,
                            dpi=self.plot_dpi)
         plt.close()
 
-        Dict = {'ESMValTool': {
-            'built': str(datetime.datetime.now()),
-            'tags': self._basetags + ['gmt', 'basic', name],
-            'caption': str('Temporal mean of the ' + name + ' ' + self._vartype + ' data set.'),
-            'block': '#ID' + 'gmt' + self.var  # + name
-        }}
-
-        MD = METAdata("both", self._plot_dir + os.sep + self._vartype.replace(" ",
-                                                                              "_") + '_' + name + '_gmt.' + self.output_type, Dict)
-        MD.write()
+        ESMValMD("both",
+                 f_name,
+                 self._basetags + ['gmt', 'basic', name],
+                 str('Temporal mean of the ' + name + ' ' +
+                     self._vartype + ' data set.'),
+                 '#ID' + 'gmt' + self.var)
 
     def _calc_spatial_correlation(self, X, Y):
         """
         calculate spatial correlation between two 2D Data objects
         """
-        assert X.shape == Y.shape, 'ERROR: inconsistent shapes in percentile correlation analysis!'
+        assert X.shape == Y.shape, \
+            'ERROR: inconsistent shapes in percentile correlation analysis!'
         assert X.ndim == 2
-        # discussions for the correct answer are here: https://github.com/scipy/scipy/issues/3645
+        # discussions for the correct answer are here:
+        # https://github.com/scipy/scipy/issues/3645
         # depending on how you handle missing values especially in intermediate
         # results or degrees of freedom
 
-        # slope, intercept, r_value, p_value, std_err = stats.mstats.linregress(X.data.flatten(), Y.data.flatten()) #the original way
+        # slope, intercept, r_value, p_value, std_err = \
+        # stats.mstats.linregress(X.data.flatten(), Y.data.flatten())
+        # the original way
         # r_value=np.corrcoef(X.data.flatten(), Y.data.flatten())[0] #the value
         # that is expected (actually the right way. It's not missing values
         # within signals, it's just no value)
@@ -1113,7 +1119,10 @@ class BasicDiagnostics(Diagnostic):
         """
         should implement some trend analysis like in
 
-        Dorigo, W., R. deJeu, D. Chung, R. Parinussa, Y. Liu, W. Wagner, and D. Fernandez-Prieto (2012), Evaluating global trends (1988-2010) in harmonized multi-satellite surface soil moisture, Geophys. Res. Lett., 39, L18405, doi:10.1029/2012GL052988.
+        Dorigo, W., R. deJeu, D. Chung, R. Parinussa, Y. Liu, W. Wagner,
+        and D. Fernandez-Prieto (2012), Evaluating global trends (1988-2010)
+        in harmonized multi-satellite surface soil moisture,
+        Geophys. Res. Lett., 39, L18405, doi:10.1029/2012GL052988.
         """
 
         print('   trend analysis ...')
@@ -1144,7 +1153,7 @@ class BasicDiagnostics(Diagnostic):
 
     def _mapping_tau(self, dataX, dataY):
         """
-        Kendall's Tau correlation mapping        
+        Kendall's Tau correlation mapping
         """
 
         KT_corr = dataX.get_percentile(0)
@@ -1166,7 +1175,10 @@ class BasicDiagnostics(Diagnostic):
             """
             vs = v.shape
             half = vs[0] / 2
-            return stats.stats.kendalltau(v[np.arange(half)], v[np.arange(half) + half])
+            res = stats.stats.kendalltau(
+                    v[np.arange(half)], v[np.arange(half) + half]
+                    )
+            return res
 
         Kendall = np.apply_along_axis(__my_tau__, 0, dataXY)
         Kendall.shape = (Kendall.shape[0], shapeX[1], shapeX[2])
@@ -1184,7 +1196,8 @@ class BasicDiagnostics(Diagnostic):
         ax1 = f.add_subplot(121)
         ax2 = f.add_subplot(122)
 
-        def submap(data, ax, title, vmin, vmax, cmap, ctick={'ticks': None, 'labels': None}):
+        def submap(data, ax, title, vmin, vmax, cmap,
+                   ctick={'ticks': None, 'labels': None}):
             Map = SingleMap(data,
                             backend=self.plot_backend,
                             show_statistic=False,
@@ -1207,23 +1220,28 @@ class BasicDiagnostics(Diagnostic):
                      titlefontsize=self.plot_tfont)
 
         submap(corr, ax=ax1, title="correlation", vmin=-1, vmax=1, cmap='RdBu')
-        submap(pval, ax=ax2, title="p-value", vmin=0, vmax=1, cmap='summer', ctick={'ticks': np.arange(
-            0, 1.01, 0.1), 'labels': np.append(np.arange(0, 1, 0.1).astype('string'), '> 1.0')})
+        tick_def = np.arange(0, 1.01, 0.1)
+        submap(pval, ax=ax2, title="p-value", vmin=0, vmax=1, cmap='summer',
+               ctick={'ticks': tick_def,
+                      'labels': np.append(tick_def[:-1].astype('string'), '> 1.0')})
 
-        titlesup = "pixelwise Kendall's tau correlation between " + self.refname + " and " + self.modname + \
+        titlesup = "pixelwise Kendall's tau correlation between " + \
+            self.refname + " and " + self.modname + \
             " and p-value (" + str(self._start_time.year) + \
             "-" + str(self._stop_time.year) + ")"
 
-        oname = self._get_output_rootname() + "_Kendalls_tau" + '.' + self.output_type
+        oname = self._get_output_rootname() + "_Kendalls_tau" + \
+            '.' + self.output_type
 
         if 'anomalytrend' in self.cfg.__dict__.keys():
             if self.cfg.anomalytrend:
-                titlesup = "pixelwise Kendall's tau correlation between anomalies of " + self.refname + " and " + \
+                titlesup = "pixelwise Kendall's tau correlation " + \
+                    "between anomalies of " + self.refname + " and " + \
                     self.modname + \
                     " and p-value (" + str(self._start_time.year) + \
                     "-" + str(self._stop_time.year) + ")"
-                oname = self._get_output_rootname() + "_Kendalls_tau_anomaly" + \
-                    '.' + self.output_type
+                oname = self._get_output_rootname() + \
+                    "_Kendalls_tau_anomaly" + '.' + self.output_type
 
         f.suptitle(titlesup)
 
@@ -1234,15 +1252,14 @@ class BasicDiagnostics(Diagnostic):
         plt.close(f.number)  # close figure for memory reasons!
         del f
 
-        Dict = {'ESMValTool': {
-            'built': str(datetime.datetime.now()),
-            'tags': self._basetags + ['TCorr', 'basic', self.modname],
-            'caption': str('Pixelwise correlation of temporal trend between ' + self.modname + ' and ' + self.refname + ' ' + self._vartype + ' (left). The right panel describes the pattern of corresponding p-values.'),
-            'block': '#ID' + 'TCorr' + self.var
-        }}
-
-        MD = METAdata("both", oname, Dict)
-        MD.write()
+        ESMValMD("both",
+                 oname,
+                 self._basetags + ['TCorr', 'basic', self.modname],
+                 str('Pixelwise correlation of temporal trend between ' +
+                     self.modname + ' and ' + self.refname + ' ' +
+                     self._vartype + ' (left). The right panel describes ' +
+                     'the pattern of corresponding p-values.'),
+                 '#ID' + 'Tcorr' + self.var)
 
     def _plot_trend_maps(self, S, P, name):
         """
@@ -1254,7 +1271,8 @@ class BasicDiagnostics(Diagnostic):
             ax1 = f.add_subplot(121)
             ax2 = f.add_subplot(122)
 
-            def submap(data, ax, title, vmin, vmax, cmap, ctick={'ticks': None, 'labels': None}):
+            def submap(data, ax, title, vmin, vmax, cmap,
+                       ctick={'ticks': None, 'labels': None}):
                 Map = SingleMap(data,
                                 backend=self.plot_backend,
                                 show_statistic=True,
@@ -1302,12 +1320,21 @@ class BasicDiagnostics(Diagnostic):
                 ])
             mima = 10**np.floor(np.log10(var))
 
-            submap(S, ax=ax1, title="slope", vmin=-mima, vmax=+mima, cmap='RdBu', ctick={'ticks': np.linspace(-mima, +mima, 11), 'labels': np.append(
-                np.insert(np.linspace(-mima, +mima, 11).astype('string')[1:10], 0, '< ' + str(-mima)), '> ' + str(mima))})
-            submap(P, ax=ax2, title="p-value", vmin=0, vmax=1, cmap='summer', ctick={'ticks': np.arange(
-                0, 1.01, 0.1), 'labels': np.append(np.arange(0, 1, 0.1).astype('string'), '> 1.0')})
+            tick_def = np.linspace(-mima, +mima, 11)
+            submap(S, ax=ax1, title="slope",
+                   vmin=-mima, vmax=+mima, cmap='RdBu',
+                   ctick={'ticks': tick_def,
+                          'labels': np.append(np.insert(
+                                  tick_def.astype('string')[1:10],
+                                  0, '< ' + str(-mima)), '> ' + str(mima))})
+            tick_def = np.arange(0, 1.01, 0.1)
+            submap(P, ax=ax2, title="p-value", vmin=0, vmax=1, cmap='summer',
+                   ctick={'ticks': tick_def,
+                          'labels': np.append(tick_def.astype('string'),
+                                              '> 1.0')})
             f.suptitle(name + " pixelwise temporal trend and p-value (" +
-                       str(self._start_time.year) + "_" + str(self._stop_time.year) + ")")
+                       str(self._start_time.year) + "_" +
+                       str(self._stop_time.year) + ")")
 
             oname = self._plot_dir + os.sep + \
                 self._vartype.replace(" ", "_") + '_' + \
@@ -1319,21 +1346,23 @@ class BasicDiagnostics(Diagnostic):
             plt.close(f.number)  # close figure for memory reasons!
             del f
 
-            Dict = {'ESMValTool': {
-                'built': str(datetime.datetime.now()),
-                'tags': self._basetags + ['trend', 'basic', name],
-                'caption': str("Spatially distributed temporal trend of " + name + " and the p-values of these trends (right panel) for the years " + str(self._start_time.year) + " to " + str(self._stop_time.year) + ". The p-values higher than 1.0 are not shown seperately."),
-                'block': '#ID' + 'trend' + self.var
-            }}
-
-            MD = METAdata("both", oname, Dict)
-            MD.write()
+            ESMValMD("both",
+                     oname,
+                     self._basetags + ['trend', 'basic', name],
+                     str("Spatially distributed temporal trend of " + name +
+                         " and the p-values of these trends (right panel) " +
+                         "for the years " + str(self._start_time.year) +
+                         " to " + str(self._stop_time.year) +
+                         ". The p-values higher than 1.0 are not shown " +
+                         "seperately."),
+                     '#ID' + 'trend' + self.var)
 
         else:
             f = plt.figure(figsize=(10, 6))
             ax1 = f.add_subplot(111)
 
-            def submap(data, ax, title, vmin, vmax, cmap, ctick={'ticks': None, 'labels': None}):
+            def submap(data, ax, title, vmin, vmax, cmap,
+                       ctick={'ticks': None, 'labels': None}):
                 Map = SingleMap(data,
                                 backend=self.plot_backend,
                                 show_statistic=True,
@@ -1385,8 +1414,18 @@ class BasicDiagnostics(Diagnostic):
             M2 = (P.data > 0.05)
             S.data.mask = M1 + M2.data
 
-            submap(S, ax=ax1, title=name + " pixelwise temporal trend (threshold=0.05, " + str(self._start_time.year) + "-" + str(self._stop_time.year) + ")", vmin=-mima, vmax=+mima, cmap='RdBu',
-                   ctick={'ticks': np.linspace(-mima, +mima, 11), 'labels': np.append(np.insert(np.linspace(-mima, +mima, 11).astype('string')[1:10], 0, '< ' + str(-mima)), '> ' + str(mima))})
+            tick_def = np.linspace(-mima, +mima, 11)
+            submap(S, ax=ax1, title=name + " pixelwise temporal trend " +
+                   "(threshold=0.05, " + str(self._start_time.year) + "-" +
+                   str(self._stop_time.year) + ")",
+                   vmin=-mima, vmax=+mima, cmap='RdBu',
+                   ctick={'ticks': tick_def,
+                          'labels': np.append(
+                                  np.insert(
+                                          tick_def.astype('string')[1:10],
+                                          0,
+                                          '< ' + str(-mima)),
+                                  '> ' + str(mima))})
 
             oname = self._plot_dir + os.sep + \
                 self._vartype.replace(" ", "_") + '_' + \
@@ -1398,22 +1437,23 @@ class BasicDiagnostics(Diagnostic):
             plt.close(f.number)  # close figure for memory reasons!
             del f
 
-            Dict = {'ESMValTool': {
-                'built': str(datetime.datetime.now()),
-                'tags': self._basetags + ['trend', 'basic', name],
-                'caption': str("Spatially distributed temporal trend of " + name + " for the years " + str(self._start_time.year) + " to " + str(self._stop_time.year) + ". Values are only shown for trends with a p-value smaller than 0.05."),
-                'block': '#ID' + 'trend' + self.var
-            }}
-
-            MD = METAdata("both", oname, Dict)
-            MD.write()
+            ESMValMD("both",
+                     oname,
+                     self._basetags + ['trend', 'basic', name],
+                     str("Spatially distributed temporal trend of " + name +
+                         " for the years " + str(self._start_time.year) +
+                         " to " + str(self._stop_time.year) +
+                         ". Values are only shown for trends with a p-value " +
+                         "smaller than 0.05."),
+                     '#ID' + 'trend' + self.var)
 
     def _write_shape_statistics(self, data, diag, name):
         """
         write regionalized statistics
         """
-        oname = self._plot_dir + os.sep + self._vartype.replace(
-            " ", "_") + '_' + 'regionalized_' + self.cfg.shape + '_' + name + '_' + diag + '_stat.csv'
+        oname = self._plot_dir + os.sep + self._vartype.replace(" ", "_") + \
+            '_' + 'regionalized_' + self.cfg.shape + '_' + name + '_' + \
+            diag + '_stat.csv'
         if os.path.exists(oname):
             os.remove(oname)
         f = open(oname, 'w')
@@ -1437,77 +1477,6 @@ class BasicDiagnostics(Diagnostic):
         if asstring:
             L = ' '.join(L)
         return L, N
-#
-#    def _get_subdirectories(self, directory, asstring=True):
-#        """ returns list and number of directories in directory """
-#
-#        if directory[-1] != os.sep:
-#            directory += os.sep
-#
-#        L = glob.glob(directory)
-#        N = len(L)
-#        if asstring:
-#            L = ' '.join(L)
-#        return L, N
-#
-#    def _aggregate_obs_from_files(self, file_list):
-#        """ reads different obs files into one file """
-#        cdo=Cdo()
-#        oname=self._work_dir + os.sep + "temp" + os.sep + tempfile.NamedTemporaryFile().name.split('/')[-1]
-#        try:
-#            cdo.cat(input=file_list,output=oname,options = '-f nc4')
-#            return oname
-#        except OSError:
-#            fl=len(file_list)
-#            if fl>1:
-# print fl
-#                fhalf=file_list[0:int(math.floor(fl/2))]
-#                shalf=file_list[int(math.floor(fl/2)):fl]
-#                foname=self._aggregate_obs_from_files(fhalf)
-#                soname=self._aggregate_obs_from_files(shalf)
-#                oname=self._aggregate_obs_from_files([foname,soname])
-#                os.remove(foname)
-#                os.remove(soname)
-#                return oname
-#            else:
-#                print "package too small"
-#
-#    def _aggregate_timestep(self,infile,timestep,remove=True):
-#        """ aggregate infile to timestep """
-#        """ currenty only monthly """
-#        cdo=Cdo()
-#        oname=self._work_dir + os.sep + "temp" + os.sep + tempfile.NamedTemporaryFile().name.split('/')[-1]
-#        if timestep=="monthly":
-#            cdo.monmean(input=infile,output=oname,options='-f nc4 -b F32')
-#            if remove:
-#                os.remove(infile)
-#        else:
-#            assert False, "This timestep cannot be handled yet."
-#
-#        return oname
-#
-#    def _aggregate_specific_years(self,infile,times,remove=True):
-#        """ aggregate infile to times with mean and sd"""
-#
-#        cdo=Cdo()
-#        onameM=self._work_dir + os.sep + "temp" + os.sep + tempfile.NamedTemporaryFile().name.split('/')[-1]
-#        onameS=self._work_dir + os.sep + "temp" + os.sep + tempfile.NamedTemporaryFile().name.split('/')[-1]
-#        oname=self._work_dir + os.sep + "temp" + os.sep + tempfile.NamedTemporaryFile().name.split('/')[-1]
-#        tmpname=self._work_dir + os.sep + "temp" + os.sep + tempfile.NamedTemporaryFile().name.split('/')[-1]
-#        cdo.selyear(",".join([str(t) for t in times]),input=infile,output=tmpname,options='-f nc4 -b F32')
-#        cdo.timselmean(12,input=tmpname,output=onameM,options='-f nc4 -b F32')
-#        #cdo.timselstd(12,input=tmpname,output=onameS,options='-f nc4 -b F32')
-#        name=cdo.showname(input=onameM)
-#        cdo.setname(name[0] + "_std -timselstd,12",input=tmpname,output=onameS,options='-L -f nc4 -b F32')
-#        cdo.merge(input=[onameM,onameS],output=oname)
-#        if remove:
-#            os.remove(infile)
-#        os.remove(tmpname)
-#        os.remove(onameM)
-#        os.remove(onameS)
-#
-#        return oname
-#
 
     # double in ./reformat_scripts/obs/lib/python/preprocessing_basics.py
     def _aggregate_resolution(self, infile, resolution, remove=True):
@@ -1529,57 +1498,6 @@ class BasicDiagnostics(Diagnostic):
             os.remove(infile)
 
         return oname
-#
-#    def _select_variable(self,infile,variablename,remove=False):
-#        """ select variables from infile """
-#        cdo=Cdo()
-#        oname=self._work_dir + os.sep + "temp" + os.sep + tempfile.NamedTemporaryFile().name.split('/')[-1]
-#        cdo.selname(variablename,input=infile,output=oname,options='-f nc4 -b F32')
-#        if remove:
-#            os.remove(infile)
-#        return oname
-#
-#    def _sum_files(self,infiles,remove=True):
-#        """ sum up all infiles """
-#        cdo=Cdo()
-#        oname=self._work_dir + os.sep + "temp" + os.sep + tempfile.NamedTemporaryFile().name.split('/')[-1]
-#        cdo.enssum(input=" ".join(infiles),output=oname,options='-f nc4 -b F32')
-#        if remove:
-#            for ifi in infiles:
-#                os.remove(ifi)
-#        return oname
-#
-#    def _extract_variables(self,infile,variablenames,newvarname,remove=True):
-#        """ select, sum up and rename variable(s) from infile """
-#
-#        tmpname=self._work_dir + os.sep + "temp" + os.sep + tempfile.NamedTemporaryFile().name.split('/')[-1]
-#        oname=self._work_dir + os.sep + "temp" + os.sep + tempfile.NamedTemporaryFile().name.split('/')[-1]
-#        selfilenames=[]
-#
-#        stop=0
-#
-#        varnames=list(variablenames)
-#
-#        while len(varnames)>stop:
-#
-#            v=varnames[0]
-#            thisfile=self._select_variable(infile,v)
-#            selfilenames.insert(0,thisfile)
-#            varnames.remove(v)
-#
-#        thisfile=self._sum_files(selfilenames)
-#
-#        # adjust variable name and time axis
-#        cdo=Cdo()
-#        cdo.setname('_'.join(newvarname.split(" ")),input=thisfile,output=tmpname,options='-f nc4 -b F32')
-#        cdo.settaxis(infile.split("-")[-2]+"-01-01","00:00",input=tmpname,output=oname,options='-f nc4 -b F32')
-#        subprocess.call(['ncatted', '-O', '-a', 'units,' + '_'.join(newvarname.split(" ")) + ',c,c,%', oname])
-#
-#        if remove:
-#            os.remove(thisfile)
-#            os.remove(tmpname)
-#        return oname
-#
 
     def _z_transform(self, data):
         """ global z-transormation """
@@ -1593,19 +1511,22 @@ class BasicDiagnostics(Diagnostic):
 
         if self.overview:
 
-            if '_stat_m_data' in self.__dict__.keys() and '_stat_r_data' in self.__dict__.keys():
+            if '_stat_m_data' in self.__dict__.keys() and \
+                    '_stat_r_data' in self.__dict__.keys():
 
                 rootname = self._plot_dir + os.sep + \
                     self._vartype.replace(" ", "_") + '_' + \
                     self.refname + '_' + "all_models"
-                onameM = self._vartype.replace(
-                    " ", "_") + '_regionalized_ts_' + self.cfg.shape + '_' + "*" + '_stat.csv'
+                onameM = self._vartype.replace(" ", "_") + \
+                    '_regionalized_ts_' + self.cfg.shape + '_' + \
+                    "*" + '_stat.csv'
 
                 M_list_d, M_length = self._get_files_in_directory(
                     self._plot_dir + os.sep, onameM, False)
 
-                onameR = self._vartype.replace(
-                    " ", "_") + '_regionalized_ts_' + self.cfg.shape + '_' + self.refname + "_" + "*" + '_stat.csv'
+                onameR = self._vartype.replace(" ", "_") + \
+                    '_regionalized_ts_' + self.cfg.shape + '_' + \
+                    self.refname + "_" + "*" + '_stat.csv'
 
                 R_list_d, R_length = self._get_files_in_directory(
                     self._plot_dir + os.sep, onameR, False)
@@ -1634,8 +1555,6 @@ class BasicDiagnostics(Diagnostic):
                     a = [e[::, (2, 6)].astype(np.float) for e in a]
 
                     return [a, keys, ts]
-
-                # read=_file_to_arrays('/media/bmueller/Work/ESMVAL_res/work/output_plots_directory/sst/sea_surface_temperature_regionalized_ts_Seas_v_ESA-CCI_CMIP5_MPI-ESM-P_historical_r1i1p1_stat.csv')
 
                 M_list = [_file_to_arrays(csvfile) for csvfile in M_list_d]
                 R_list = [_file_to_arrays(csvfile) for csvfile in R_list_d]
@@ -1675,11 +1594,15 @@ class BasicDiagnostics(Diagnostic):
                     for im in range(len(R_list[1])):
                         ax = f.add_subplot(unit1, unit2, im + 1)
                         for li in range(M_length):
-                            #ax.plot(self._ts,M_list[li][0][R_order[im]][::,0], linestyle='-',color=colors[li],label="_".join(M_list_d[li].split("_")[-5:-1]),linewidth=2.0)
-                            ax.plot(self._ts, M_list[li][0][R_order[im]][::, 0], linestyle='-',
-                                    color=colors[li], label=M_list_d[li].split("_")[-2], linewidth=2.0)
-                        ax.plot(self._ts, R_list[0][R_order[im]], linestyle='-',
-                                alpha=0.95, color="k", label=self.refname, linewidth=2.0)
+                            ax.plot(self._ts,
+                                    M_list[li][0][R_order[im]][::, 0],
+                                    linestyle='-', color=colors[li],
+                                    label=M_list_d[li].split("_")[-2],
+                                    linewidth=2.0)
+                        ax.plot(self._ts,
+                                R_list[0][R_order[im]], linestyle='-',
+                                alpha=0.95, color="k", label=self.refname,
+                                linewidth=2.0)
                         plt.title(R_list[1][R_order[im]])
                         plt.gcf().autofmt_xdate()
                         if [im == (unit1 - 1) * unit2 + 1
@@ -1703,23 +1626,16 @@ class BasicDiagnostics(Diagnostic):
 
                         handles, labels = ax.get_legend_handles_labels()
 
-                    f.savefig(rootname + '_regionalized_smean_ts.' +
-                              self.output_type)
+                    f_name = rootname + '_regionalized_smean_ts.' + \
+                        self.output_type
+                    f.savefig(f_name)
                     plt.close(f.number)
 
-                    Dict = {'ESMValTool': {
-                                'built': str(datetime.datetime.now()),
-                                'tags': self._basetags +
-                                ['TimeS', 'overview', 'basic'] + labels,
-                                'caption': str('Time series of spatial mean \
-                                               for different regions. \
-                                               The multiple models \
-                                               are: ' + ", ".join(labels) +
-                                               '.'),
-                                'block': '#ID' + 'regov' + self.var
-                                }}
-
-                    MD = METAdata(
-                        "both", rootname + '_regionalized_smean_ts.' +
-                        self.output_type, Dict)
-                    MD.write()
+                    ESMValMD("both",
+                             f_name,
+                             self._basetags + ['TimeS', 'overview', 'basic'] +
+                             labels,
+                             str('Time series of spatial mean for different ' +
+                                 'regions. The multiple models are: ' +
+                                 ", ".join(labels) + '.'),
+                             '#ID' + 'regov' + self.var)
