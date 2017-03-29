@@ -22,19 +22,19 @@ The current version 1.0 is a hybrid form of the aforementioned approaches. If th
 .. TODO: I don't know why neither scaling nor setting the width does not work here.
 
 .. figure:: reporting_post_workflow.png
-   :width: 250 px
+   :width: 500 px
    :alt: Reporting service as a collector
 
    The reporting service (blue) implemented as collector for ESMValTool (red) output based on specific reporting namelists (A1)
 
 .. figure:: reporting_envi_workflow.png
-   :width: 250 px
+   :width: 500 px
    :alt: Reporting service as an environment
 
    The reporting service (blue) implemented as environment for ESMValTool (red) output distributing original namelists (A2)
 
 .. figure:: reporting_comb_workflow.png
-   :width: 250 px
+   :width: 500 px
    :alt: Reporting service as a hybrid
 
    The reporting service (blue) implemented as environment-collector-hybrid for ESMValTool (red) output reacting to specified namelists
@@ -79,8 +79,8 @@ The results from the directories, given by the namelist, are then chosen based o
 This information must fall within the start and stop time of the processing of ESMValTool's *main.py*.
 
 
-1) Specify METAdata
-~~~~~~~~~~~~~~~~~~~
+Specify METAdata
+~~~~~~~~~~~~~~~~
 
 The required METAdata is in basic xml format, hidden in the data description.
 If figures are written in a compatible image format, METAdata is added to the common entry "Image.ImageDescription". 
@@ -94,10 +94,12 @@ Setup for a python dictionary that can be transferred to xml/image metadata::
 
 	DICT={
 	      'ESMValTool':{ 			# mandatory dictonary titel
-    	      'built':'datetime',               # datetime string object for processing time
+    	      'built':'datetime',               # datetime string object for
+						# processing time
     	      'tags':['tag1','tag2','tag3'],    # list of various tags as strings
     	      'caption':'CAPTIONTEXT',		# one string object as caption
-    	      'block':'#123'        		# block specifyer for more structured reports
+    	      'block':'#123'        		# block specifyer for more
+						# structured reports
              }}
 
 Example for a python dictionary that can be transferred to xml/image metadata (from the overview plotting function in diagnostic.py):: 
@@ -115,8 +117,8 @@ Here, the tags are a dynamically built list based on namelist specific strings (
 Similarly, the blocks and captions are built based on the ESMValTool input.
 
 
-2) Specify namelist tags
-~~~~~~~~~~~~~~~~~~~~~~~~
+Specify namelist tags
+~~~~~~~~~~~~~~~~~~~~~
 
 Two new elements are introduced to the namelist as it is known from ESMValTool. 
 It is the intention to implement a full flexibile while least interferringn additional element to the current namelist structures.
@@ -132,9 +134,8 @@ A typical namelist looks somewhat like this:
 
 	<namelist>
 		<include href="./config_private_local.xml"/>
-
 	<namelist_summary>
-	###############################################################################
+	###########################################################################
 	namelist.xml
 
 	Description
@@ -146,32 +147,33 @@ A typical namelist looks somewhat like this:
 	References
 
 	This namelist is part of the ESMValTool
-	###############################################################################
+	###########################################################################
 	</namelist_summary>
 
 	<GLOBAL>
-	  <write_plots type="boolean">        True                      </write_plots>
-	  <write_netcdf type="boolean">       True                      </write_netcdf>
-	  <force_processing type="boolean">   False                     </force_processing>
-	  <wrk_dir type="path">               @{WORKPATH}               </wrk_dir>
-	  <plot_dir type="path">              @{PLOTPATH}      	        </plot_dir>
-	  <climo_dir type="path">             @{CLIMOPATH}       	</climo_dir>
-	  <write_plot_vars type="boolean">    True                      </write_plot_vars>
-	  <max_data_filesize type="integer">  100                       </max_data_filesize>
-	  <max_data_blocksize type="integer"> 500                       </max_data_blocksize>
-	  <output_file_type>                  png                       </output_file_type>
-	  <verbosity  type="integer">         1                         </verbosity>
-	  <debuginfo type="boolean">          False                     </debuginfo>
-	  <exit_on_warning  type="boolean">   True                      </exit_on_warning>
+	  <write_plots type="boolean">        True	   </write_plots>
+	  <write_netcdf type="boolean">       True         </write_netcdf>
+	  <force_processing type="boolean">   False        </force_processing>
+	  <wrk_dir type="path">               @{WORKPATH}  </wrk_dir>
+	  <plot_dir type="path">              @{PLOTPATH}  </plot_dir>
+	  <climo_dir type="path">             @{CLIMOPATH} </climo_dir>
+	  <write_plot_vars type="boolean">    True         </write_plot_vars>
+	  <max_data_filesize type="integer">  100          </max_data_filesize>
+	  <max_data_blocksize type="integer"> 500          </max_data_blocksize>
+	  <output_file_type>                  png          </output_file_type>
+	  <verbosity  type="integer">         1            </verbosity>
+	  <debuginfo type="boolean">          False        </debuginfo>
+	  <exit_on_warning  type="boolean">   True         </exit_on_warning>
 	  
-	  <tags> example, monthly, author 				</tags>		<!-- HERE -->
+	  <tags> example, monthly, author 		   </tags> <!-- HERE -->
   
 	</GLOBAL>
 
-
 	<MODELS>
 
-	  <model> CMIP5 Example	Amon historical r1i1p1 1990 2005  @{MODELPATH} 	</model>
+	  <model> 
+		CMIP5 Example	Amon historical r1i1p1 1990 2005  @{MODELPATH}
+	  </model>
 	
 	</MODELS>
 	<!--...-->
@@ -193,16 +195,24 @@ Tags should generally be used to add information the diagnostics by itself does 
 
 
 	    <diag>
-	        <description>  				Doing some analysis. 		</description>
-        	<variable_def_dir>      		./variable_defs/      		</variable_def_dir>
-        	<variable>     				var                             </variable>
-        	<field_type>                    	T2Ms                    	</field_type>
-        	<diag_script cfg="./nml/cfg.py">   	this_diagnostic.py              </diag_script>
-        	<launcher_arguments>               	[('execute_as_shell', False)]   </launcher_arguments>
+	        <description>  			 
+			Doing some analysis.          </description>
+        	<variable_def_dir>
+			./variable_defs/      	      </variable_def_dir>
+        	<variable>     			 
+			var                 	      </variable>
+        	<field_type>
+			T2Ms                          </field_type>
+        	<diag_script cfg="./nml/cfg.py"> 
+			this_diagnostic.py            </diag_script>
+        	<launcher_arguments>             
+			[('execute_as_shell', False)] </launcher_arguments>
         
-        	<tags> alternative_variable_name, surface 				</tags> 	<!-- HERE -->
+        	<tags> alternative_variable_name, surface  </tags> <!-- HERE -->
 
-        	<model> OBS dataset sat Example 1990 2005 @{OBSPATH}  		</model>
+        	<model> 
+			OBS dataset sat Example 1990 2005 @{OBSPATH} 
+		</model>
     	     </diag>
 
 	</DIAGNOSTICS>
@@ -215,8 +225,8 @@ Running the reporting service with above namelist will provide a one tab report 
 Additionally the ESMValTool output will be shown on the Home tab and
 
 
-3) Specify report namelist 
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+Specify report namelist 
+~~~~~~~~~~~~~~~~~~~~~~~
 
 Additionally, a new kind of namelist is introduced solely for reporting purpose.
 The main purpose of this namelist is, to provide tag (combinations) that define the resulting structure of the report and directories that can be searched for tagged output.
@@ -226,9 +236,8 @@ subdirectories have to be specified seperately.
 
 	<namelist>
 		<include href="./config_private_local.xml"/>
-
 	<namelist_summary>
-	###############################################################################
+	###########################################################################
 	report_namelist.xml
 
 	Description
@@ -240,7 +249,7 @@ subdirectories have to be specified seperately.
 	References
 
 	This namelist is part of the reporting service for the ESMValTool 
-	###############################################################################
+	###########################################################################
 	</namelist_summary>
 
 	<TAGS>
@@ -248,7 +257,8 @@ subdirectories have to be specified seperately.
 		<set> variable2 </set>
 		<set> TimeS 	</set> 	<!-- e.g., for time series plots-->
 		<set> reg 	</set> 	<!-- e.g., for regionalized plots-->
-		<set> land, reg	</set>	<!-- output with the combination of both "land" and "reg" tags -->
+		<set> land, reg	</set>	<!-- output with the combination-->
+					<!-- of both "land" and "reg" tags -->
 	</TAGS>
 
 	<FOLDERS>
@@ -259,8 +269,8 @@ subdirectories have to be specified seperately.
 	</namelist>
 
 
-4) Making use of the METAdata package 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Making use of the METAdata package 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 For providing meta data within the ESMValTool diagnostics, a METAdata package (./diag_scripts/lib/python/METAdata.py) is integrated within the ESMValTool. 
 Both ESMValTool and reporting service make use of this package.
@@ -286,12 +296,15 @@ A common call for the METAdata package in python diagnostics looks as follows::
 
 	Dict={'ESMValTool':{
 		    'built':str(datetime.datetime.now()),
-		    'tags':basetags + ['linear','basic'] + ['x:'+'-'.join(x),'y:'+'-'.join(y)],
-		    'caption':str('This is a simple example for x: ' + str(x) + ' and y: ' + str(y) + '.'),
+		    'tags':basetags + ['linear','basic'] + 
+			['x:'+'-'.join(x),'y:'+'-'.join(y)],
+		    'caption':str('This is a simple example for x: '
+			+ str(x) + ' and y: ' + str(y) + '.'),
 		    'block':'#ID'+'ExLin'
 		}}
 		
-	MD=METAdata("both",fig_name,Dict)	# "meta" and "xml" are options for specific meta data 
+	MD=METAdata("both",fig_name,Dict)	# "meta" and "xml" are options
+						# for specific meta data 
 						# (e.g. "xml" with csv files)
 	MD.write()
 
@@ -309,8 +322,8 @@ Examples
 For the examples, we use simplified ts/sst (sea surface temperature) data from CMIP5 and ESACCI, once regridded to 12x6 pixels and once additionally altered (12x6A).
 
 
-1) The collector reporting service (A1)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The collector reporting service (A1)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The reporting namelist looks as follows:
 
@@ -319,7 +332,7 @@ The reporting namelist looks as follows:
 	<namelist>
 	<include href="./config_private_local.xml"/>
 	<namelist_summary>
-	###############################################################################
+	###########################################################################
 	report_test.xml
 
 	Description
@@ -333,7 +346,7 @@ The reporting namelist looks as follows:
 	References
 
 	This namelist is part of the reporting service for the ESMValTool 
-	###############################################################################
+	###########################################################################
 	</namelist_summary>
 
 	<TAGS>
@@ -354,22 +367,22 @@ The results are gathered from PLOTPATH that is defined in the included config_pr
 The HOME tab is showing the ESMValTool logo, as there are no logs from the ESMValTool.
 
 .. figure:: reporting_post_home.png
-   :width: 250 px
+   :width: 500 px
    :alt: Reporting service as an environment, HOME tab
 
    The HOME tab showing the ESMValTool logo (center) and the namelist's name (right)
 
-The GMT tab shows results that were produced by the namelist below (see `The runtime environment reporting service (2)`_).
+The GMT tab shows results that were produced by the namelist below (see `The runtime environment reporting service (A2)`_).
 
 .. figure:: reporting_post_GMT.png
-   :width: 250 px
+   :width: 500 px
    :alt: Reporting service as an environment, GMT tab
 
    The GMT tab showing the ESMValTool results output (center) with the gmt tag (global mean time series); the rightmost column is empty within this version
 
 
-2) The runtime environment reporting service (A2)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The runtime environment reporting service (A2)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The GLOBAL and DIAGNOSTICS elements from the namelist look as follows: 
 
@@ -380,28 +393,32 @@ The GLOBAL and DIAGNOSTICS elements from the namelist look as follows:
 
 	<GLOBAL>
 
-  		<write_plots type="boolean">        True                      </write_plots>
-	  	<write_netcdf type="boolean">       True                      </write_netcdf>
-  		<force_processing type="boolean">   False                     </force_processing>
-	  	<wrk_dir type="path">               @{WORKPATH}               </wrk_dir>
-  		<plot_dir type="path">              @{PLOTPATH}/TEST/         </plot_dir>
-  		<climo_dir type="path">             @{CLIMOPATH}       	      </climo_dir>
-	  	<write_plot_vars type="boolean">    True                      </write_plot_vars>
-  		<max_data_filesize type="integer">  100                       </max_data_filesize>
-  		<max_data_blocksize type="integer"> 500                       </max_data_blocksize>
-  		<output_file_type>                  png                       </output_file_type>
-  		<verbosity  type="integer">         1                         </verbosity>
-	 	<debuginfo type="boolean">          False                     </debuginfo>
-  		<exit_on_warning  type="boolean">   True                      </exit_on_warning>
+  		<write_plots type="boolean">        True              </write_plots>
+	  	<write_netcdf type="boolean">       True              </write_netcdf>
+  		<force_processing type="boolean">   False             </force_processing>
+	  	<wrk_dir type="path">               @{WORKPATH}       </wrk_dir>
+  		<plot_dir type="path">              @{PLOTPATH}/TEST/ </plot_dir>
+  		<climo_dir type="path">             @{CLIMOPATH}      </climo_dir>
+	  	<write_plot_vars type="boolean">    True              </write_plot_vars>
+  		<max_data_filesize type="integer">  100               </max_data_filesize>
+  		<max_data_blocksize type="integer"> 500               </max_data_blocksize>
+  		<output_file_type>                  png               </output_file_type>
+  		<verbosity  type="integer">         1                 </verbosity>
+	 	<debuginfo type="boolean">          False             </debuginfo>
+  		<exit_on_warning  type="boolean">   True              </exit_on_warning>
   
-  		<tags> 				    example, monthly, ESACCI  </tags>
+  		<tags> 		example, monthly, ESACCI  	</tags>
   
 	</GLOBAL>
 
 	<MODELS>
 
-  		<model> CMIP5 	12x6 	MIP_VAR_DEF 	  historical 	r1i1p1 1991 2005  @{MODELPATH} </model>
-  		<model> CMIP5	12x6A	MIP_VAR_DEF	  historical	r1i1p1 1991 2005  @{MODELPATH} </model>
+  		<model> 
+		   CMIP5   12x6    MIP_VAR_DEF  historical   r1i1p1 1991 2005  @{MODELPATH} 
+		</model>
+  		<model> 
+		   CMIP5   12x6A   MIP_VAR_DEF  historical   r1i1p1 1991 2005  @{MODELPATH} 
+		</model>
 	
 	</MODELS>
 
@@ -437,7 +454,7 @@ The GLOBAL and DIAGNOSTICS elements from the namelist look as follows:
 			</tags>
         
         		<model> 	
-				OBS       ESACCI-SST 	sat    12x6  1992 2005  @{OBSPATH}  					
+				OBS  ESACCI-SST   sat   12x6  1992 2005  @{OBSPATH}  					
 			</model>
    		 </diag>
 
@@ -448,14 +465,14 @@ The GLOBAL and DIAGNOSTICS elements from the namelist look as follows:
 This will produce a HOME tab with the ESMValTool output and the namelist's name, and an AUTO_DIAG_001 tab, showing the results from the sea surface temperature analsysis together with the config declarations.
 
 .. figure:: reporting_envi_home.png
-   :width: 250 px
+   :width: 500 px
    :alt: Reporting service as a collector, Home tab
 
    The HOME tab showing the ESMValTool terminal output (center) and the namelist's name (right)
 
 
 .. figure:: reporting_envi_Auto_Diag.png
-   :width: 250 px
+   :width: 500 px
    :alt: Reporting service as a collector, Diag tab
 
    The diagnostic result tab (AUTO_DIAG_001) showing the ESMValTool results output (center) and the config file (right)
