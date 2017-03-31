@@ -136,8 +136,7 @@ class HTML_writer(object):
         subprocess.call(['mkdir','-p',ofolder])
         
         [subprocess.call(['ln','-sfn',f,ofolder]) for f in file_list] #gather images and xml into static folder
-        
-        #file_list=["/".join([ofolder,f.split("/")[-1]]) for f in file_list]
+
         file_list=self._get_img_files(ofolder)
         
         MD=METAdata()
@@ -148,8 +147,6 @@ class HTML_writer(object):
         
         file_list=[file_list[i] for i in index]
         blocks=[blocks[i] for i in index]
-        
-        print(blocks)
         
         breaks=self._similar_follower(blocks)
         
@@ -180,10 +177,7 @@ class HTML_writer(object):
             assert False, "This restrictor object is not of expected type! (Neither str, list or date!)"
         
         file_list=list(compress(file_list,actual_file_list))
-        
-#        if len(file_list)==0: #TODO: don't break, but produce empty site
-#            assert False, "No Files found with restrictor '" + str((", ").join(restrictor_or_time) if isinstance(restrictor_or_time,list) else restrictor_or_time) + "'!"
-        
+         
         return file_list
 
     def diag_html(self,name="tab",folder="./",add_cfg="config",restrictor=[""],host="0.0.0.0:5000",time=None):
