@@ -19,7 +19,7 @@ class DiagnosticTest(ESMValToolTest):
     """
     def __init__(self, **kwargs):
         xml_single = 'namelist_Reporting_TEST.xml'
-        xmlfile = os.path.dirname(os.path.realpath(__file__)) + os.sep + xml_single  # the realpath ensures that the file is also foudn wehn nosetests runs from an upper directory
+        xmlfile = os.path.dirname(os.path.realpath(__file__)) + os.sep + xml_single  # the realpath ensures that the file is also found when nosetests runs from an upper directory
         super(DiagnosticTest, self).__init__(nml=xmlfile, **kwargs)
 
     def get_field_definitions(self):

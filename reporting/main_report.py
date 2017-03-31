@@ -28,7 +28,7 @@ import xml_parsers
 from html_writer import HTML_writer
 
 # additional info
-version = "1.0 (alpha)"
+version = "0.1"
 authors = ["B. Mueller (LMU)", "b.mueller@iggf.geo.uni.muenchen.de"]
 
 # Check command arguments.

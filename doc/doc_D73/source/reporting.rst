@@ -85,12 +85,12 @@ Specify METAdata
 The required METAdata is in basic xml format, hidden in the data description.
 If figures are written in a compatible image format, METAdata is added to the common entry "Image.ImageDescription". 
 This functionality is provided by the GExiv2 package.
-Additionally and for other files, the same information is stored in a related invisible file.
-The format follows the simple rules: ".filename.fileextension.xml", e.g. for "thisimage.png" METAdata is stored in ".thisimage.png.xml".
+Additionally and for other files, the same information is stored in a related invisible xml file.
+The naming format follows the simple rules: ".filename.fileextension.xml", e.g. for "thisimage.png" METAdata is stored in ".thisimage.png.xml".
 
-The structure of the METAdata in it's current realization provides the processing time, user and diagnostic specific tags, a caption and a block identifier for better report structure.
+The structure of the METAdata in its current realization provides the processing time, user and diagnostic specific tags, a caption and a block identifier for better report structure.
 
-Setup for a python dictionary that can be transferred to xml/image metadata::
+Setup for a python dictionary that can be transferred to xml/image meta data::
 
 	DICT={
 	      'ESMValTool':{ 			# mandatory dictonary titel
@@ -102,7 +102,7 @@ Setup for a python dictionary that can be transferred to xml/image metadata::
 						# structured reports
              }}
 
-Example for a python dictionary that can be transferred to xml/image metadata (from the overview plotting function in diagnostic.py):: 
+Example for a python dictionary that can be transferred to xml/image meta data (from the overview plotting function in diagnostic.py):: 
 
 	DICT={
 	      'ESMValTool':{
@@ -115,6 +115,71 @@ Example for a python dictionary that can be transferred to xml/image metadata (f
 
 Here, the tags are a dynamically built list based on namelist specific strings (**self._basetag**), plot specific strings (**['TimeS','overview','basic']**), and data specific strings (**labels**).
 Similarly, the blocks and captions are built based on the ESMValTool input.
+
+To simplify calling the METAdata package in python diagnostics of the ESMValTool, a short wrapper was built. 
+This one-liner (*ESMValMD()*) needs to be called with meta data format, filename, tags, caption, and ID, reformats the input, and writes automatically::
+
+	ESMValMD("both",
+		 f_name,
+		 self._basetags + ['TimeS', 'overview', 'basic'] +
+		 labels,
+		 str('Time series of spatial mean for different ' +
+		     'regions. The multiple models are: ' +
+		     ", ".join(labels) + '.'),
+		 '#ID' + 'regov' + self.var)
+
+As ncl lacks the possibility to write meta data to an image file, additionally, a wrapper for this functionality is provided for ncl.
+Currently, two versions are available.
+The ncl diagnostic either writes the information needed within the *ESMValMD()* function into an ascii-text-file, that can be called by the *running_MD_for_ncl_with_file.py* wrapper through command line, or the information is provided to the *running_MD_for_ncl_from_command.py* wrapper by parser options.
+
+Here are examples, similar to the ones above, for an ncl script.::
+
+	undef("makestr")
+	function makestr(filename:string, type:string,\
+			 tags[*]:string, caption:string, id:numeric)
+	begin
+	    n = dimsizes(tags)
+	    str = new(5, string)
+	    str(0) = filename
+	    str(1) = type
+	    str(2) = ""
+	    do i = 0, n-2
+		str(2) = str(2) + tags(i) + ","
+	    end do
+	    str(2) = str(2) + tags(n-1)
+	    str(3) = caption
+	    str(4) = sprinti("%d", id)
+
+	    return str
+	end
+
+	begin
+
+	    filename = f_name
+	    type = "both"
+	    tags = array_append_record(\
+		   	array_append_record(\
+				basetags,\
+				(/"TimeS", "overview", "basic"/),\
+				0),\	
+		   	labels,0)
+	    caption = "Time series of spatial mean for " + \
+		      "different regions. The multiple " + \
+		      "models are: " + labels_str + "."
+	    id = "#ID" + "regov" + var
+
+	    mdstr = makestr(filename, type, tags, caption, id)
+	    ascii_file = filename + "_list.txt"
+	    asciiwrite(ascii_file, mdstr)
+	    delete(mdstr)
+
+	    system("python running_MD_for_ncl_with_file.py " + ascii_file)
+	end
+
+
+The ascii-text-file organizer *makestr()* is accessible via the ESMValTool ncl libraries.
+
+A list of currently used tags and further suggestions is shown in the `List of tags`_.
 
 
 Specify namelist tags

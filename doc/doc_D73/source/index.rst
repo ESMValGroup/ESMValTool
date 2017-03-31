@@ -13,8 +13,7 @@ Welcome to CRESCENDO D7.3's documentation!
    introduction
    testing
    reporting
-
-
+   tags
 
 Indices and tables
 ==================
