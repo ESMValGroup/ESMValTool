@@ -1,7 +1,6 @@
-Testing in ESMValTool
+Testing in the ESMValTool
 =====================
 
-This documentation briefly describes how testing of ESMValTool works. 
 
 Why testing?
 ------------
@@ -14,14 +13,15 @@ The overall objective of automated testing in the ESMValTool is to ensure that
 * ensure that the different software components (backend, diagnostics,
   plotting) results in correct results
   
-The following figure shows how testing integrates in the overall software development workflow. After a new feature has been implemented, tests should ensure that the altered code of the feature branch does not cause conflicts with the original version of the code. Once tests have passed sucessfully, the feature branch can be merged into the development or master branch.
+The following figure shows how testing integrates in the overall ESMValTool software development workflow. After a new feature has been implemented by a contributor, tests should ensure that the altered code of the feature branch does not cause any conflicts with the original version of the code. Once tests have passed sucessfully, the feature branch can be merged into the development or master branch.
+
   
 
 .. figure:: images/testing_workflow.png
    :scale: 50 %
    :alt: Testing in the continous integration (CI) workflow
 
-   The role of testing in the continous integration (CI) lifecyle of a software project
+   The role of testing in the continous integration (CI) lifecyle of the ESMValTool project
 
 
 Testing levels in ESMValTool
@@ -29,10 +29,10 @@ Testing levels in ESMValTool
 
 Testing is done on different levels within the ESMValTool
 
- * `unittests <https://en.wikipedia.org/wiki/Unit_testing>`_ are used to verify that small pieces of the ESMValTool software work correctly. This can comprise the test of specific functions, modules or classes
- * Testing of entire diagnostics are done to verify that a diagnostic produces the right output
+ * `unittests <https://en.wikipedia.org/wiki/Unit_testing>`_ are used to verify that small pieces of the ESMValTool software work correctly. This can comprise the test of specific functions, modules or classes.
+ * Testing of entire diagnostics are done to verify that a diagnostic produces the right output.
  
- When developing a new diagnostic for the ESMValTool or improve some other components of the ESMValTool framework, you should always consider to implement appropriate tests. You might implement tests after having implemented the code functionality, it might be however also worth to consider a more agile `test driven development cycle <https://en.wikipedia.org/wiki/Test-driven_development>`_.
+ When developing a new diagnostic for the ESMValTool or improve some other components of the ESMValTool framework, one should always consider to implement appropriate tests. One might implement tests after having implemented the code functionality, it might be however also worth to consider a more agile `test driven development cycle <https://en.wikipedia.org/wiki/Test-driven_development>`_.
  
  
 Unittesting in the ESMValTool
@@ -44,39 +44,39 @@ Test for individual pieces of code are currently implemented largely based on th
 How does the testing of diagnostics in ESMValTool work in principle?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The general concept of the testing framework is that it compares results of a diagnostic with reference data generated once with the same inputs for the same diagnostic. The following checks can be currently performed:
+The general concept of the testing framework is that it compares results of a diagnostic with reference information about expected output. The following checks can be currently performed:
 
 1. check if all output files are available (Filecheck)
-2. check that content of output files is the same (MD5 checksum check)
+2. check that content of output files is the same as expected
 3. check that output file sizes are greater than zero bytes
 4. check that acknowledgments are provided for each diagnostic with the processing
 
 The overall testing approach is currently based on the philosophy that
 
-a) testing should be fast to execute; this mainly depends on how fast your diagnostic is running with small datasets (e.g. no regridding if possible)
+a) testing should be fast to execute; this mainly depends on how fast the diagnostic is running with small datasets (e.g. no regridding if possible)
 b) should not require the user to download larger data volumes
 
-For that reason, the testing is largely based on synthetic data as an input which allows to control the input and thus also expected output of a specific diagnostic.
+For that reason, the testing is largely based on synthetic data as an input which allows to fully control the input and thus also expected output of a specific diagnostic.
 
 **What is needed?**
 
-* a namelist for your diagnostic tailored for your tests
-* a script that implements your test
+* a namelist for the diagnostic tailored for testing. 
+* a script that implements the test
 
 
 Getting started
 ---------------
 
-The steps required to sucessfully implement testing for the ESMValTool is described in the following.
+The steps required to sucessfully implement testing for the ESMValTool are described in the following.
 
 To be able to use the testing a number of prerequesites need to be fulfilled.
-These are typically already installed when the ESMValTool is installed using
-`conda <https://conda.io/>`_.
+These are typically already installed when the ESMValTool is installed properly.
+
 
 Prerequesite #1: install `easytest`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The ESMValTool testing facility is based on the python package `easytest <https://github.com/pygeo/easytest>`_ . If `easytest` is not installed yet on your machine yet, install it within seconds using the instructions provided `here <http://easytest.readthedocs.org/en/latest/>`_. There you find also the information on the types of tests supported so far. To use the `easytest` functionality for testing entire ESMValTool diagnostics only a few lines of code and reference data is needed. 
+The ESMValTool testing facility is based on the python package `easytest <https://github.com/pygeo/easytest>`_ . If `easytest` is not installed yet on your machine, install it within seconds using the instructions provided `here <http://easytest.readthedocs.org/en/latest/>`_. There you find also the information on the types of tests supported so far. To use the `easytest` functionality for testing entire ESMValTool diagnostics only a few lines of code are needed.
 
 Prerequesite #2: nosetests
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -86,7 +86,7 @@ Prerequesite #2: nosetests
 Prerequesite #3: install `dummydata`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The `dummydata <https://github.com/pygeo/dummydata>`_ package is required for the generation of synthetic datasets to be used within the testing. When the ESMValTool is installed via `conda` this will have been installed already automatically. Otherwise install the package like described in its documentation.
+The `dummydata <https://github.com/pygeo/dummydata>`_ package is required for the generation of synthetic datasets to be used within the testing. Install the package like described in its documentation.
 
 
 How to implement a test for a new diagnostic?
@@ -94,9 +94,9 @@ How to implement a test for a new diagnostic?
 
 Two cases should be always considered
 
-* ensure that your code or its individual components do the right thing. It is therefore highly recommended that you implement unittests for your code as much as you can (and want). This will ensure that the integritiy of your diagnostic code and if you get used to it you will find out that you will probably write faster and better code with testing. More details on how you can implement unittests is given either in the `tests` directory of the ESMValTool or can be also found in the documentation of the corresponding `unittest <https://docs.python.org/2/library/unittest.html>`_. Please look there or in the `tests` directory for examples how to implement tests for python code.
+* **ensure that your code or its individual components do the right thing**. It is therefore highly recommended that you implement unittests for your code as much as you can (and want). This will ensure the integrit of your diagnostic code. If you get used to it to implement unittests on a regular basis, you will find out that you will probably write faster and better code with testing. More details on how you can implement unittests is given either in the `tests` directory of the ESMValTool or can be also found in the documentation of the corresponding `unittest <https://docs.python.org/2/library/unittest.html>`_ python package. Please look there or in the `tests` directory for examples how to implement unittests for python code.
 
-* set up a test for the entire diagnostic. This test can be as complicated as you like. A template is provided that helps you to facilitate the test integration. This basic testing template will run your diagnostic with sample data and check if the diagnostic produces appropriate output files like you would expect. Based on this basic tests, you can then further implement new tests that check e.g. that specific results have been produced that you expect from the diagnostic with predefined input data. For this, the dummy data used for the testing can have different chanracteristics. Details are provided in the documentation of the `dummydata <https://github.com/pygeo/dummydata>`_ package.
+* **set up a test for the entire diagnostic**. This test can be as complicated as you like. A template is provided that helps you to facilitate the test integration. This basic testing template will run your diagnostic with sample data and check if the diagnostic produces appropriate output files like you would expect. Based on these basic tests, you can then further implement new tests that check e.g. that specific results have been produced that you expect from the diagnostic with predefined input data. For this, the dummy data used for the testing can have different chanracteristics. Details are provided in the documentation of the `dummydata <https://github.com/pygeo/dummydata>`_ package.
 
 To implement a test for a new diagnostic only a few steps are required, which are described in the following
 
@@ -125,10 +125,10 @@ First of all, have a look at the content of the test file. You will see that the
     class DiagnosticTest(ESMValToolTest):
         [...]
 
-    class TestDiagnostic(unittest.TestCase):
+    class TestDiagnostic(ESMValTestDiagnostic):
         [...]
 
-You now want to adapt this template for your needs. The objective should be that the test tests at least that your diagnostic always produces the files you expect it to produce. To achieve that we do the following:
+You now want to adapt this template for your needs. The objective should be that the test checks at least that your diagnostic always produces the files you expect it to produce. To achieve that we do the following:
 
 1. Change the name of the XML file::
 
@@ -157,36 +157,34 @@ The one or the other way, you have now a list of files that is produced by your 
 
 means that the files `test1.png`and `test2.png` are both expected to be located in the plotting directory generated by the diagnostics.
 
-Equally, you might produce a list of filenames via *ls [-a] > filenames.txt* and read that file. For this, the class `TestDiagnostic` already provides a convenient function. This function ensure also automatically, that e.g. trainling whitespaces are not considered to be part of the filename. Thus if you have a file which contains the reference filenames and looks as follows::
+Equally, you might produce a list of filenames via *ls [-a] > filenames.txt* and read that file. For this, the class `TestDiagnostic` already provides a convenient function. This function ensure also automatically, that e.g. trailing whitespaces are not considered to be part of the filename. Thus if you have a file which contains the reference filenames and looks as follows::
 
     filea.png
     fileb.png
     filcec.png
 
-you can just read the `reffile` list as follows::
+you can just read the `reffiles` list as follows::
 
     reffiles = self.read_reffiles('myreffiles.txt')
 
 The directories are specified by the following currently available shortcuts:
 
 * `plot` for the plotting directory
-* TODO
+* `work` for working directory
 
 Please note that it is irrelevant if your namelist specifies a specific output directory for plotting or working, as this will be overwritten by the testing routine anyway.
 
 Please note that the example file contains also examples how output files for different models could be easily processed.
 
 
-TODO example how it would work with subdirectories as part of the plotdir
+3. Step 3: Specify the data
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-3. Specify the data
-~~~~~~~~~~~~~~~~~~~
+The tests are currently designed to work most efficiently. This is why the default testing implementation is based on generated synthetic data of small size. The generation of such synthetic testing data is acomplished by using the the `dummydata <https://github.com/pygeo/dummydata>`_ package. For a detailed documentation of the capabilities of this package, see in its documentation.
 
-The tests are currently designed to work efficiently. This is why the default testing implementation is based on generated synthetic data. The generation of such synthetic testing data is acomplished by using the the `dummydata <https://github.com/pygeo/dummydata>`_ package. For a detailed documentation of the capabilities of this package, see in its documentation.
+What is important is, that you identify the variables (e.g. precipitation) that are expected as input within the diagnostic to be tested. You need to tell the class for testing which fields are supposed to be generated and which kind of characteristics they are expected to have.
 
-What is important is, that you identify the variables (e.g. precipitation) that are expected within the diagnostic to be tested. You need to tell the class for testing which fields are supposed to be generated and which kind of characteristics they are expected to have.
-
-If you have a look to the `get_field_definitions()`, you will recognize that a dictionary `r` is generated. This dictionary contains all relevant information that tells the testing routine how the test data should be generated.
+If you have a look to the `get_field_definitions()` function, you will recognize that a dictionary `r` is generated. This dictionary contains all relevant information that tells the testing routine how the test data should be generated.
 
 The most recent list of supported variables is provided within the `dummydata` package. Please have a look `there <https://github.com/pygeo/dummydata/blob/master/dummydata/meta.py#L7>`_ if you want to check which variables are supported. 
 
@@ -196,12 +194,12 @@ Examples for variables definitions::
     r.update({'pr' : {'method' : 'uniform', 'filename' : rpath + os.sep + '@{VAR_FILE}', 'ndim' : 2}})
     # generate a variable for surface soil moisture using random values
     r.update({'mrsos' : {'method' : 'uniform', 'filename' : rpath + os.sep + '@{VAR_FILE}', 'ndim' : 2}})
+    # generate a 3D variable for wind speed
+    r.update({'va' : {'method' : 'uniform', 'filename' : rpath + os.sep + '@{VAR_FILE}', 'ndim' : 3}})
 
-TODO add an example for a 3D variable and also for a variable with a constant value
 
 
-
-Step 3: copy the original namelist and adapt it for testing
+Step 4: Copy the original namelist and adapt it for testing
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Now it is time to copy the original namelist you want to test to the current directory. To enable a fast testing experience, you should adapt this namelist by in particular
@@ -210,7 +208,7 @@ a) reducing the number of models used
 b) reduce the number of observations used
 c) If your namelist contains an include statement to specify local directory configurations, remove these lines as work, plot and climo directories are set automatically by the testing environment.
 
-Step 4: run tests
+Step 5: Run tests
 ~~~~~~~~~~~~~~~~~
 
 Now we are ready to go to start the testing itself. For our example you simply start the test by::
@@ -224,7 +222,7 @@ If you have not installed `nosetests` you can also run the testing as::
 The following is happening when you are running the tests:
 
 - test data is generated and cached in a specific directory for reuse if needed
-- the namelist is copied into a temporary directory and content is changed with filenames for the syntetic test data. Options like e.g. the plotting directory are altered in this copy of the namelist.
+- the namelist is copied into a temporary directory and content is changed with filenames for the synthetic test data. Options like e.g. the plotting directory are altered in this copy of the namelist.
 - the namelist is executed with the test data as input, producing output
 - the output is verified against the list of expected output and output files are also checked for their content if requested
 
@@ -235,7 +233,7 @@ It would be really an exception if the tests would be exectuted without any erro
 
 To fix these errors, a sequential approach is recommended:
 
-1) run only the namelist without any testing. This is acomplished by commenting the test executing. Your script should look as follows::
+1) run only the namelist without any testing. This is acomplished by commenting the test execution. Your script should look as follows::
 
          T.run_nml()
          #T.run_tests(execute=False, graphics=None, checksum_files=None, files='all', check_size_gt_zero=True)
@@ -245,17 +243,17 @@ To fix these errors, a sequential approach is recommended:
               unittest.main()
 
 
-The namelist alone runs? If not and there are complaints that variables are missing, then add them following step 2) above. If a variable has not yet been defined within `dummydata package <https://github.com/pygeo/dummydata/blob/master/dummydata/meta.py#L7>`_ feel free to modify the dummydata routine by forking the dummydata repository, applying the appropriate changes and opening a pull request.
+The namelist alone runs? If not and there are complaints that variables are missing, then add them following step 2) above. If a variable has not yet been defined within `dummydata package <https://github.com/pygeo/dummydata/blob/master/dummydata/meta.py#L7>`_ feel free to modify the dummydata routine by forking the dummydata repository, applying the appropriate changes and opening a pull request to make changes also available for other users.
 
-If the namelist runs without testing, the continue with the next step
+If the namelist runs without testing, then continue with the next step
 
-2) run the test themselves, but do not check for sucess yet::
+2) run the tests themselves, but do not check for sucess yet::
 
          T.run_nml()
          T.run_tests(execute=False, graphics=None, checksum_files=None, files='all', check_size_gt_zero=True)
          #self.assertTrue(T.sucess)
 
-Look carefully at the output. Are there any error messages, that test could not be executed or that files are missing? Test run in general ... go ahead!
+Look carefully at the output. Are there any error messages, that tests could not be executed or that files are missing? Test run in general o.k.? ... go ahead!
 
 3) run tests with sucess check::
 
@@ -275,4 +273,4 @@ More advanced testing
 
 Like already said in the introduction, you could implement an arbitrary complexity for the testing. The above is only the very basic, but already sufficient at least to test that the diagnostic is working in a lightweight setup.
 
-One very usefull way to also test that the diagnostic produces the correct results would be to a) implement first of all unittest for the individual components of the diagnostic itself if possible and then b) generate synthetic test data with predefined properties. Currenty, `dummydata` support only random uniform fields and constant fields. Thus the first question would be, what kind of results you would expect if a constant field is used within the diagnostic (note that you can specify the constant value). Later on, one could also think about generating more complex input fields using `dummydata` like e.g. constants values for each latitude or similar things. If you have a good idea, then open an issue at the `dummydata <https://github.com/pygeo/dummydata>`_ repository.
+One very usefull way to also test that the diagnostic produces the correct results would be to a) implement first of all unittest for the individual components of the diagnostic itself if possible and then b) generate synthetic test data with predefined properties. Currently, `dummydata` supports generation of random uniform fields and constant fields. Thus the first question would be, what kind of results you would expect if a constant field is used within the diagnostic (note that you can specify the constant value). Later on, one could also think about generating more complex input fields using `dummydata` like e.g. constants values for each latitude or similar things. If you have a specific request, then open an issue at the `dummydata <https://github.com/pygeo/dummydata>`_ repository.
