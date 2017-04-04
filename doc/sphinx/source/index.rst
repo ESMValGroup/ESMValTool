@@ -12,6 +12,7 @@ Contents:
    :maxdepth: 2
 
    intro
+   install
 
    diag_scripts/index
    plot_scripts/index
