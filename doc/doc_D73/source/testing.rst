@@ -21,7 +21,7 @@ The following figure shows how testing integrates in the overall ESMValTool soft
    :scale: 75 %
    :alt: Testing in the continous integration (CI) workflow
 
-   The role of testing in the continous integration (CI) lifecyle of the ESMValTool project
+   The role of testing in the continuous integration (CI) lifecyle of the ESMValTool project
 
 
 Testing levels in ESMValTool
@@ -30,21 +30,21 @@ Testing levels in ESMValTool
 Testing is done on different levels within the ESMValTool:
 
  * `unittests <https://en.wikipedia.org/wiki/Unit_testing>`_ are used to verify that small pieces of the ESMValTool software work correctly. This can comprise the test of specific functions, modules or classes.
- * testing of entire diagnostics are done to verify that a diagnostic produces the right output.
+ * testing of entire diagnostics is done to verify that a diagnostic produces the right output.
  
- When developing a new diagnostic for the ESMValTool or improve some other components of the ESMValTool framework, one should always consider to implement appropriate tests. One might implement tests after having implemented the code functionality, it might be however also worth to consider a more agile `test driven development cycle <https://en.wikipedia.org/wiki/Test-driven_development>`_.
+When developing a new diagnostic for the ESMValTool or improve some other components of the ESMValTool framework, one should always consider to implement appropriate tests. It is possible to implement tests after having created the code fuctionality. Though, a more agile `test driven development cycle <https://en.wikipedia.org/wiki/Test-driven_development>`_ is worth consideration.
  
  
 Unittesting in the ESMValTool
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Test for individual pieces of code are currently implemented largely based on the python core library `unittest <https://docs.python.org/2/library/unittest.html>`_. Please look there or in the `tests` directory for examples how to implement tests for python code.
+Tests for individual pieces of code are currently implemented largely based on the python core library `unittest <https://docs.python.org/2/library/unittest.html>`_. Please look there or in the `tests` directory for examples how to implement tests for python code.
 
 
-How does the testing of diagnostics in ESMValTool work in principle?
+How does testing of diagnostics in ESMValTool work in principle?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The general concept of the testing framework is that it compares results of a diagnostic with reference information about expected output. The following checks can be currently performed:
+The general concept of the implemented testing framework is to compare results of a diagnostic with reference information about the expected output. The following checks can be currently performed:
 
 1. check if all output files are available (Filecheck)
 2. check that content of output files is the same as expected
@@ -60,8 +60,8 @@ For that reason, the testing is largely based on synthetic data as an input whic
 
 **What is needed?**
 
-* a namelist for the diagnostic tailored for testing. 
-* a script that implements the test
+* A namelist for the diagnostic tailored for testing. 
+* A script that implements the test(s).
 
 
 Getting started
@@ -70,7 +70,7 @@ Getting started
 The steps required to sucessfully implement testing for the ESMValTool are described in the following.
 
 To be able to use the testing a number of prerequesites need to be fulfilled.
-These are typically already installed when the ESMValTool is installed properly.
+These are typically already available when the ESMValTool is installed properly.
 
 
 Prerequesite #1: install `easytest`

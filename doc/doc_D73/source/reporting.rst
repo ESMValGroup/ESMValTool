@@ -120,71 +120,6 @@ Example for a python dictionary that can be transferred to xml/image meta data (
 Here, the tags are a dynamically built list based on namelist specific strings (**self._basetag**), plot specific strings (**['TimeS','overview','basic']**), and data specific strings (**labels**).
 Similarly, the blocks and captions are built based on the ESMValTool input.
 
-To simplify calling the METAdata package in python diagnostics of the ESMValTool, a short wrapper was built. 
-This one-liner (*ESMValMD()*) needs to be called with meta data format, filename, tags, caption, and ID, reformats the input, and writes automatically::
-
-	ESMValMD("both",
-		 f_name,
-		 self._basetags + ['TimeS', 'overview', 'basic'] +
-		 labels,
-		 str('Time series of spatial mean for different ' +
-		     'regions. The multiple models are: ' +
-		     ", ".join(labels) + '.'),
-		 '#ID' + 'regov' + self.var)
-
-As ncl lacks the possibility to write meta data to an image file, additionally, a wrapper for this functionality is provided for ncl.
-Currently, two versions are available.
-The ncl diagnostic either writes the information needed within the *ESMValMD()* function into an ascii-text-file, that can be called by the *running_MD_for_ncl_with_file.py* wrapper through command line, or the information is provided to the *running_MD_for_ncl_from_command.py* wrapper by parser options.
-
-Here are examples, similar to the ones above, for an ncl script.::
-
-	undef("makestr")
-	function makestr(filename:string, type:string,\
-			 tags[*]:string, caption:string, id:numeric)
-	begin
-	    n = dimsizes(tags)
-	    str = new(5, string)
-	    str(0) = filename
-	    str(1) = type
-	    str(2) = ""
-	    do i = 0, n-2
-		str(2) = str(2) + tags(i) + ","
-	    end do
-	    str(2) = str(2) + tags(n-1)
-	    str(3) = caption
-	    str(4) = sprinti("%d", id)
-
-	    return str
-	end
-
-	begin
-
-	    filename = f_name
-	    type = "both"
-	    tags = array_append_record(\
-		   	array_append_record(\
-				basetags,\
-				(/"TimeS", "overview", "basic"/),\
-				0),\	
-		   	labels,0)
-	    caption = "Time series of spatial mean for " + \
-		      "different regions. The multiple " + \
-		      "models are: " + labels_str + "."
-	    id = "#ID" + "regov" + var
-
-	    mdstr = makestr(filename, type, tags, caption, id)
-	    ascii_file = filename + "_list.txt"
-	    asciiwrite(ascii_file, mdstr)
-	    delete(mdstr)
-
-	    system("python running_MD_for_ncl_with_file.py " + ascii_file)
-	end
-
-
-The ascii-text-file organizer *makestr()* is accessible via the ESMValTool ncl libraries.
-
-A list of currently used tags and further suggestions is shown in the :ref:`Lotags`.
-
 
 Specify namelist tags
 ~~~~~~~~~~~~~~~~~~~~~
@@ -241,7 +176,7 @@ A typical namelist looks somewhat like this:
 	<MODELS>
 
 	  <model> 
-		CMIP5 Example	Amon historical r1i1p1 1990 2005  @{MODELPATH}
+		CMIP5 Example Amon historical r1i1p1 1990 2005 @{MODELPATH}
 	  </model>
 	
 	</MODELS>
@@ -382,7 +317,93 @@ First, a plotting function is called, then the figure is saved to a specific fil
 Afterwards a dictionary object is constructed that is describing the plot and, e.g., the input data.
 The last step is, to initialize a METAdata object, connected to the saved file ("name.png") and the describing dictionary, which is finally attatched to this file.
 
-There will be a wrapper for meta data to be written by ncl diagnostics within the next version. 
+To simplify calling the METAdata package in python diagnostics of the ESMValTool, a short wrapper was built. 
+This one-liner (*ESMValMD()*) needs to be called with meta data format, filename, tags, caption, and ID, reformats the input, and writes automatically::
+
+	ESMValMD("both",
+		 fig_name,
+		 basetags + ['linear','basic'] + 
+		 ['x:'+'-'.join(x),'y:'+'-'.join(y)],
+		 str('This is a simple example for x: '
+			 + str(x) + ' and y: ' + str(y) + '.')
+		 '#ID'+'ExLin')
+
+As ncl lacks the possibility to write meta data to an image file, additionally, a wrapper for this functionality is provided for ncl.
+Currently, two versions are available.
+The ncl diagnostic either writes the information needed within the *ESMValMD()* function into an ascii-text-file, that can be called by the *running_MD_for_ncl_with_file.py* wrapper through command line, or the information is provided to the *running_MD_for_ncl_from_command.py* wrapper by parser options.
+
+Here are examples, similar to the ones above, for an ncl script (based on the same variable names).::
+
+    undef("makestr")
+    function makestr(filename:string, type:string,\
+            tags[*]:string, caption:string, id:numeric)
+    begin
+        n = dimsizes(tags)
+        str = new(5, string)
+        str(0) = filename
+        str(1) = type
+        str(2) = ""
+        do i = 0, n-2
+        str(2) = str(2) + tags(i) + ","
+        end do
+        str(2) = str(2) + tags(n-1)
+        str(3) = caption
+        str(4) = sprinti("%d", id)
+
+        return str
+    end
+
+    begin
+        xstring = "x:"
+        do i = 0, dimsizes(x)-2
+        xstring = xstring + tostring(x(i)) + "-"
+        end do
+        xstring = xstring + tostring(x(dimsizes(x)-1))
+
+        ystring = "y:"
+        do i = 0, dimsizes(y)-2
+        ystring = ystring + tostring(y(i)) + "-"
+        end do
+        ystring = ystring + tostring(y(dimsizes(y)-1))
+
+        filename = fig_name
+        type = "both"
+        tags = array_append_record(\
+               basetags,\
+               (/"linear","basic",xstring,ystring/),\
+               0)	
+        caption = "This is a simple example for x: "
+              + tostring(x) + " and y: " + tostring(y) + "."
+        id = "#ID"+"ExLin"
+
+        ; write from ascii
+
+        mdstr = makestr(filename, type, tags, caption, id)
+        ascii_file = filename + "_list.txt"
+        asciiwrite(ascii_file, mdstr)
+        delete(mdstr)
+
+        system("python running_MD_for_ncl_with_file.py " + ascii_file)
+
+        ; or from command
+
+        tagstring = ""
+        do i = 0, dimsizes(tags)-2
+        tagstring = tagstring + tags(i) + ","
+        end do
+        tagstring = tagstring + tags(dimsizes(tags)-1)
+
+        system("python running_MD_for_ncl_from_command.py " + \
+               filename + \
+               " --dtype=" + type + " --tags=" + tagstring +  \
+               " --cap=" + caption + " --block=" + id)
+    end
+
+
+The ascii-text-file organizer *makestr()* is accessible via the ESMValTool ncl libraries.
+
+A list of currently used tags and further suggestions is shown in the :ref:`Lotags`.
+ 
 
 
 Examples
@@ -496,10 +517,10 @@ The GLOBAL and DIAGNOSTICS elements from the namelist look as follows:
     <MODELS>
 
     <model> 
-		CMIP5   12x6    MIP_VAR_DEF  historical   r1i1p1 1991 2005  @{MODELPATH} 
+        CMIP5 12x6 MIP_VAR_DEF historical r1i1p1 1991 2005 @{MODELPATH} 
     </model>
   	<model> 
-	    CMIP5   12x6A   MIP_VAR_DEF  historical   r1i1p1 1991 2005  @{MODELPATH} 
+        CMIP5 12x6II MIP_VAR_DEF historical r1i1p1 1991 2005 @{MODELPATH} 
     </model>
 	
     </MODELS>
@@ -536,7 +557,7 @@ The GLOBAL and DIAGNOSTICS elements from the namelist look as follows:
 			</tags>
         
         		<model> 	
-				OBS  ESACCI-SST   sat   12x6  1992 2005  @{OBSPATH}  					
+				OBS ESACCI-SST sat 12x6 1992 2005 @{OBSPATH}  					
 			</model>
    		 </diag>
 

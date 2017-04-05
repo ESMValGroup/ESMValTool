@@ -867,7 +867,7 @@ class BasicDiagnostics(Diagnostic):
 
         ESMValMD("xml",
                  oname,
-                 self._basetags + ['stattab', 'basic', name],
+                 self._basetags + ['TimeS', 'stattab', 'basic', name],
                  str('Statistics for ' + name + " " + self._vartype +
                      '. All statistics are based on the time dependent ' +
                      'counts and not normalized'),
@@ -1633,7 +1633,7 @@ class BasicDiagnostics(Diagnostic):
 
                     ESMValMD("both",
                              f_name,
-                             self._basetags + ['TimeS', 'overview', 'basic'] +
+                             self._basetags + ['TimeS', 'MultiMod', 'reg', 'basic'] +
                              labels,
                              str('Time series of spatial mean for different ' +
                                  'regions. The multiple models are: ' +
