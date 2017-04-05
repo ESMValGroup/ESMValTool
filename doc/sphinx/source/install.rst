@@ -1,5 +1,11 @@
+********************
 Software intallation
 ********************
+
+.. _prerequisites:
+
+Prerequisites
+=============
 
 The ESMValTool has the following software requirements (note that specific diagnostics might require additional software packages):
 
@@ -37,5 +43,18 @@ The ESMValTool has the following software requirements (note that specific diagn
 Obtaining the source code
 =========================
 
-The ESMValTool is available on GitHub at https://github.com/ESMValGroup/ESMValTool (see also section 12.1) The ESMValTool is released under the Apache License, version 2.0 and citation of the ESMValTool paper (“Software Documentation Paper”) is kindly requested upon use alongside with the software doi (doi:10.17874/ac8548f0315) and version number:
+The ESMValTool is available on GitHub at https://github.com/ESMValGroup/ESMValTool (see also :numref:`git_repository`). The ESMValTool is released under the Apache License, version 2.0 and citation of the ESMValTool paper (“Software Documentation Paper”) is kindly requested upon use alongside with the software doi (doi:10.17874/ac8548f0315) and version number:
+
+  *Eyring et al., ESMValTool (v1.0) – a community diagnostic and performance metrics tool for routine evaluation of Earth System Models in CMIP, Geosci. Model Dev., 9, 1747-1802, 2016.*
+
+Besides the above citation, users are kindly asked to register any journal articles (or other scientific documents) that use the software at the ESMValTool webpage (http://www.esmvaltool.org/). Citing the Software Documentation Paper and registering your paper(s) will serve to document the scientific impact of the Software, which is of vital importance for securing future funding. You should consider this an obligation if you have taken advantage of the ESMValTool, which represents the end product of considerable effort by the development team.
+
+**The ESMValTool will be further developed in a version controlled repository (see** :numref:`git_repository` **for details).** In addition to using the software, we would therefore like to encourage the community to join the Software Development Team and to contribute additional diagnostics and performance metrics or other software improvements. Contributing back the new diagnostics and performance metrics or other software improvements will help to enhance the capability of the Software, which is of vital importance for securing future funding. You should consider this an obligation if you have taken advantage of the Software, which represents a product of considerable effort by the development team.
+
+A wiki page (see :numref:`wiki` for details) that describes ongoing developments is available for the ESMValTool development team. Interested developers are welcome to contact the core development team (see :numref:`core_dev_team`).
+
+Software installation
+=====================
+
+The ESMValTool can be downloaded from GitHub (:numref:`git_repository`) to any local directory. While the ESMValTool itself does not need to be installed besides downloading/copying the ESMValTool directories to a local folder, it relies on specific software to be available on your system. Please see :numref:`prerequisites` for details.
 

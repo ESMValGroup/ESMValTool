@@ -3,19 +3,13 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to ESMValTool's documentation!
-======================================
-
-Contents:
-
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
-   intro
-   install
-
-   diag_scripts/index
-   plot_scripts/index
+   preface
+   known_issues
+   user_guide
+   developer_guide
 
 Indices and tables
 ==================
