@@ -21,7 +21,7 @@ import os
 # sys.path.insert(0, os.path.abspath('.'))
 
 # add custom extensions directory to python path
-sys.path.append(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'extensions'))
+#sys.path.append(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'extensions'))
 
 # -- General configuration ------------------------------------------------
 
@@ -243,7 +243,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'ESMValTool.tex', u'ESMValTool User\'s and Developer\'s Guide',
+  ('index', 'ESMValTool_Users_Guide.tex', u'ESMValTool User\'s and Developer\'s Guide',
    u'Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al.', 'manual'),
 ]
 
@@ -273,10 +273,10 @@ latex_toplevel_sectioning = "part"
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [
-    ('index', 'esmvaltool', u'ESMValTool Documentation',
-     [u'Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al.'], 1)
-]
+#man_pages = [
+#    ('index', 'esmvaltool', u'ESMValTool Documentation',
+#     [u'Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al.'], 1)
+#]
 
 # If true, show URL addresses after external links.
 #man_show_urls = False
@@ -287,11 +287,11 @@ man_pages = [
 # Grouping the document tree into Texinfo files. List of tuples
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
-texinfo_documents = [
-  ('index', 'ESMValTool', u'ESMValTool Documentation',
-   u'Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al.', 'ESMValTool', 'One line description of project.',
-   'Miscellaneous'),
-]
+#texinfo_documents = [
+##  ('index', 'ESMValTool', u'ESMValTool Documentation',
+#   u'Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al.', 'ESMValTool', 'One line #description of project.',
+#   'Miscellaneous'),
+#]
 
 # Documents to append as an appendix to all manuals.
 #texinfo_appendices = []
