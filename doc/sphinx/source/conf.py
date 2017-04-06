@@ -201,10 +201,43 @@ latex_elements = {
 #'pointsize': '10pt',
 
 # Additional stuff for the LaTeX preamble.
-#'preamble': '',
+'preamble': r'''
+   \makeatletter
+   \renewcommand{\maketitle}{
+     \newcommand{\MONTH}{%
+       \ifcase\the\month
+       \or January% 1
+       \or February% 2
+       \or March% 3
+       \or April% 4
+       \or May% 5
+       \or June% 6
+       \or July% 7
+       \or August% 8
+       \or September% 9
+       \or October% 10
+       \or November% 11
+       \or December% 12
+     \fi}
+     \begin{titlepage}
+     \begin{center}
+     \includegraphics[width=\textwidth]{../../source/figures/ESMValTool-logo.pdf}\par
+     \vspace{2cm}
+     {\Huge \bf \sffamily User's and Developer's Guide \par}
+     \vspace{1cm}
+     {\Large \sffamily \MONTH ~ \the\year \par}
+     \vspace{12cm}
+     Deutsches Zentrum f\"ur Luft- und Raumfahrt (DLR), Institut f\"ur Physik der Atmosph\"are, Oberpfaffenhofen, Germany \par
+     \vspace{0.5cm}
+     http://www.esmvaltool.org/ \par
+     \end{center}
+     \end{titlepage}
+     \clearpage
+   }
+   \makeatother'''
 }
 
-# latex_additional_files = ['title.cls']
+# latex_additional_files = []
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
