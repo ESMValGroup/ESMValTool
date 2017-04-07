@@ -5,9 +5,13 @@ Created on Mon Apr  4 13:02:38 2016
 @author: bmueller
 """
 
-from flask import Flask, render_template
 import subprocess
 import sys
+from optparse import OptionParser
+import datetime
+import os
+import xml.sax
+from flask import Flask, render_template
 
 main_ESMValTool = "../"
 
@@ -19,12 +23,8 @@ sys.path.append(main_ESMValTool+"/diag_scripts")
 # path to ESMVal REPORT python toolbox library
 sys.path.append("./lib")
 
-from optparse import OptionParser
-import datetime
-import projects
-import os
-import xml.sax
 import xml_parsers
+import projects
 from html_writer import HTML_writer
 
 # additional info
@@ -111,8 +111,8 @@ if case == "pre":
 
         requested_vars = currDiag.get_variables_list()
         requested_vars = list(
-                        diag_o.__dict__['var'] for diag_o in requested_vars
-                              )
+            diag_o.__dict__['var'] for diag_o in requested_vars
+            )
         var_list.extend(requested_vars)
 
         # Update currDiag-specific models
@@ -128,7 +128,13 @@ if case == "pre":
             project_info['RUNTIME']['derived_var'] = derived_var
             project_info['RUNTIME']['derived_field_type'] = derived_field
 
-        with open(main_ESMValTool + ".".join(project_info['RUNTIME']['currDiag'].diag_script_cfg.split(".")[1:])) as f:
+        thisfile = main_ESMValTool + \
+            ".".join(
+                project_info['RUNTIME']['currDiag'].
+                diag_script_cfg.split(".")[1:]
+                )
+
+        with open(thisfile) as f:
             cfg = f.readlines()
 
         Key = str(k0).zfill(3)
@@ -139,8 +145,9 @@ if case == "pre":
         # Diagnostic
         D.diag_html(DKEY, project_info['GLOBAL']['plot_dir'], cfg, [DKEY],
                     full_host,
-                    time=(timestamp-datetime.datetime.utcfromtimestamp(0)
-                          ).total_seconds()
+                    time=(timestamp -
+                          datetime.datetime.utcfromtimestamp(0)).
+                    total_seconds()
                     )
 
         Key_list.append({'key': DKEY, 'name': DKEY})
@@ -157,16 +164,16 @@ if case == "pre":
 elif case == "post":
 
     # Home
-    home_text = "THIS IS A TAG-NAMELIST GENERATED REPORT! \
-                THERE IS NO DIRECT LOG FROM THE ESMVaLTool!"
+    home_text = "THIS IS A TAG-NAMELIST GENERATED REPORT!" + \
+                "THERE IS NO DIRECT LOG FROM THE ESMVaLTool!"
     title_alt = 'ESMValTool'
-    ESMValTool_Image = '<figure><a \
-                    title=' + title_alt + '>\
-                    <img style="background-color:white;margin-left:auto; \
-                                margin-right:auto; display:block;" \
-                        alt=' + title_alt + ' \
-                        src="' + '../static/images/ESMValTool-logo.png\
-                        ' + '" width="2000"' + '></a></figure>'
+    ESMValTool_Image = '<figure><a ' + \
+        'title=' + title_alt + '>' + \
+        '<img style="background-color:white;margin-left:auto;' + \
+        'margin-right:auto; display:block;" ' + \
+        'alt=' + title_alt + \
+        ' src="' + '../static/images/ESMValTool-logo.png' + \
+        '" width="2000"' + '></a></figure>'
     D.home_html(left_box=home_text,
                 middle_box=ESMValTool_Image,
                 right_box=[project_info['RUNTIME']['xml_name']])
@@ -197,7 +204,6 @@ def home():
 
 @app.route('/<tagname>')
 def diagnostic(tagname):
-    print(tagname)
     return render_template(tagname+'.html')
 
 if __name__ == '__main__':
