@@ -1,7 +1,10 @@
 """
 Basic implementation for diagnostics into ESMValTool
 """
-# import code
+"""
+Used modules
+"""
+
 import numpy as np
 import os
 # import matplotlib
@@ -153,6 +156,12 @@ class Diagnostic(object):
         elif var == 'grassNcropFrac':
             self._vartype = 'grass and crop'
             self._ref_file = ref_file
+        elif var == 'alb':
+            self._vartype = 'albedo'
+            self._ref_file = ref_file
+        elif var == 'fAPAR':
+            self._vartype = 'fAPAR'
+            self._ref_file = ref_file
         else:
             assert False, 'This variable is not implemented yet!'
 
@@ -215,6 +224,18 @@ class Diagnostic(object):
 
         # compatible spatial masks
         self._check_mask()
+        self._ts=[x.date() for x in self._mod_data.date]
+        
+        if "climatologies" in self.cfg.__dict__.keys() and self.cfg.climatologies:
+            self._mts=list(set([int(x.month) for x in self._ts]))
+            if len(self._mts) is not 12:
+                self.cfg.climatologies=False
+                print('   time series to short; no calculation of climatologies ...')
+        
+        
+        if 'write_preprocessed_data' in self.cfg.__dict__.keys():
+            if self.cfg.write_preprocessed_data:
+                    self._save_p_data()
 
         self._ts = [x.date() for x in self._mod_data.date]
 
@@ -407,7 +428,11 @@ class BasicDiagnostics(Diagnostic):
               self.cfg.shape.upper())
         print('*****************************')
 
-    def write_data(self, plot=True):
+    def _load_regionalization_shape(self): #TODO remove from specific diagnostics
+        """ load shape data """
+        self._reg_shape = self._load_shape_generic(self._reg_file)
+
+    def write_data(self,plot=True):
         """ write data """
 
         if self.cfg.regionalization and self._regions is None:
@@ -486,6 +511,24 @@ class BasicDiagnostics(Diagnostic):
                 print 'No portrait comparison to write!'
         else:
             print 'No portrait comparison to write!'
+            
+        if '_climstat_r_data' in self.__dict__.keys():
+            self._write_climatologies_statistic(self.refname)
+        else:
+            print 'No reference climatologie stats to write!'
+        if '_climstat_m_data' in self.__dict__.keys():
+            self._write_climatologies_statistic(self.modname)
+        else:
+            print 'No model climatologie stats to write!'
+            
+        if '_clim_m_data' in self.__dict__.keys() and '_clim_r_data' in self.__dict__.keys():
+            if self.cfg.climatologies:
+                for month in self._mts:
+                    self._plot_climatologies(month)
+            else:
+                print 'No climatologies to write!'
+        else:
+            print 'No climatologies to write!'
 
     def _adjust_time_range(self, scale="month"):
         """
@@ -588,25 +631,27 @@ class BasicDiagnostics(Diagnostic):
     Diagnostics
     """
 
-    def run_diagnostic(self, globmeants=True, portrait=True,
-                       globmeandiff=True, trend=True):
+    def run_diagnostic(self):
         """
         running the diagnostics
         """
 
         self._write_basic_diagnostic_header()
 
-        if globmeants:
+        if "globmeants" in self.cfg.__dict__.keys() and self.cfg.globmeants:
             self._global_mean_timeseries(self.refname)
             self._global_mean_timeseries(self.modname)
-        if portrait:
+        if "portrait" in self.cfg.__dict__.keys() and self.cfg.portrait:
             self._portrait_statistic(self.refname)
-            self._portrait_statistic(self.modname)
-        if globmeandiff:
+            self._portrait_statistic(self.modname)                   
+        if "globmeandiff" in self.cfg.__dict__.keys() and self.cfg.globmeandiff:
             self._global_mean_difference()
-        if trend:
+        if "trend" in self.cfg.__dict__.keys() and self.cfg.trend:
             self._trend_analysis()
-
+        if "climatologies" in self.cfg.__dict__.keys() and self.cfg.climatologies:
+            self._climatologies_statistics(self.refname)
+            self._climatologies_statistics(self.modname)
+        
     def _write_basic_diagnostic_header(self):
         print('*****************************')
         print('Running diagnostics for %s' % self._vartype.upper())
@@ -617,6 +662,7 @@ class BasicDiagnostics(Diagnostic):
 
         print('   global mean difference ...')
 
+        # difference
         self._gmd_data = self._mod_data.copy()
         self._gmd_data.label = 'global_mean_difference' + \
             ' [' + self._ref_data.label + '-' + self._mod_data.label + ']'
@@ -629,11 +675,95 @@ class BasicDiagnostics(Diagnostic):
         ) - self._ref_data.timmean()) / self._ref_data.timmean()
         self._gmdr_data.unit = "-"
 
-    def _plot_global_mean_difference(self):
+    def _plot_global_mean_difference(self,month=None):
         """
         plot global mean difference
         """
-        Map = SingleMap(self._gmd_data,
+        if month is not None:
+            monthstr='_clim_M'+str(month).zfill(2)
+            monthtit=' (' + self._month_i2str(month) + ')'
+        else:
+            monthstr=''
+            monthtit=''
+            
+            
+        
+        
+        if '_gmdp_data' not in self.__dict__.keys():
+        
+            Map = SingleMap(self._gmd_data,
+                            backend=self.plot_backend,
+                            show_statistic=True,
+                            stat_type='mean',
+                            savefile=None,
+                            ax=None,
+                            show_unit=True)
+            Map.plot(title= self.modname + " - " + self.refname + ' global mean difference' + monthtit,
+                     show_zonal=False,
+                     show_histogram=False,
+                     show_timeseries=False,
+                     nclasses=self.plot_nclasses,
+                     colorbar_orientation=self.plot_cborientation,
+                     show_colorbar=self.plot_cbshow, 
+                     cmap='RdBu', 
+                     vmin=min(self.cfg.mima_globmeandiff),
+                     vmax=max(self.cfg.mima_globmeandiff), 
+                     proj_prop=self.cfg.projection, 
+                     ctick_prop={'ticks': None, 'labels': None},
+                     drawparallels=True,
+                     titlefontsize=self.plot_tfont)
+        
+            Map.figure.savefig(self._get_output_rootname() + monthstr + '_gmd.' + self.output_type,
+                               dpi=self.plot_dpi)
+                               
+            plt.close()
+            
+        else:
+            
+            f = plt.figure(figsize=(20,6))
+            ax1 = f.add_subplot(121)
+            ax2 = f.add_subplot(122)
+    
+            def submap(data,ax,cmap,vmin,vmax,ctick={'ticks': None, 'labels': None},title="",show_statistic=False):
+                Map = SingleMap(data,
+                            backend=self.plot_backend,
+                            show_statistic=show_statistic,
+                            stat_type='mean',
+                            savefile=None,
+                            ax=ax,
+                            show_unit=True)
+                Map.plot(title= title,
+                     show_zonal=False,
+                     show_histogram=False,
+                     show_timeseries=False,
+                     nclasses=self.plot_nclasses,
+                     colorbar_orientation=self.plot_cborientation,
+                     show_colorbar=self.plot_cbshow, 
+                     cmap=cmap, 
+                     vmin=vmin,
+                     vmax=vmax, 
+                     proj_prop=self.cfg.projection, 
+                     ctick_prop=ctick,
+                     drawparallels=True,
+                     titlefontsize=self.plot_tfont)  
+                     
+            
+            
+            submap(self._gmd_data,title="difference", vmin=min(self.cfg.mima_globmeandiff), vmax=max(self.cfg.mima_globmeandiff),ax=ax1,cmap='RdBu',show_statistic=True)
+            submap(self._gmdp_data,title="p-value",vmin=0,vmax=1, ax=ax2,cmap='summer')
+            f.suptitle(self.modname + " - " + self.refname + " global mean difference and p-value from Student's t-test (for differeing averages)" + monthtit)
+    
+            oname = self._get_output_rootname() + monthstr + '_gmd.' + self.output_type
+            if os.path.exists(oname):
+                os.remove(oname)
+            f.savefig(oname,dpi=self.plot_dpi)
+    
+            plt.close(f.number)  # close figure for memory reasons!
+            del f
+        
+        #and
+        
+        Map = SingleMap(self._gmdr_data,
                         backend=self.plot_backend,
                         show_statistic=True,
                         stat_type='mean',
@@ -641,21 +771,26 @@ class BasicDiagnostics(Diagnostic):
                         ax=None,
                         show_unit=True)
         Map.plot(title=self.modname + " - " + self.refname +
-                 ' global mean difference',
+                 ' relative global mean difference' + monthtit,
                  show_zonal=False,
                  show_histogram=False,
                  show_timeseries=False,
                  nclasses=self.plot_nclasses,
                  colorbar_orientation=self.plot_cborientation,
-                 show_colorbar=self.plot_cbshow,
-                 cmap='RdBu',
-                 vmin=min(self.cfg.mima_globmeandiff),
-                 vmax=max(self.cfg.mima_globmeandiff),
-                 proj_prop=self.cfg.projection,
+                 show_colorbar=self.plot_cbshow, 
+                 cmap='RdBu', 
+                 vmin=min(self.cfg.mima_globmeandiff_r),
+                 vmax=max(self.cfg.mima_globmeandiff_r), 
+                 proj_prop=self.cfg.projection, 
                  ctick_prop={'ticks': None, 'labels': None},
                  drawparallels=True,
                  titlefontsize=self.plot_tfont)
-        f_name = self._get_output_rootname() + '_gmd.' + self.output_type
+        if month is not None:
+            monthstr='_clim_M'+str(month).zfill(2)
+        else:
+            monthstr=''
+        f_name = self._get_output_rootname() + monthstr + \
+                 '_gmd.' + self.output_type
         Map.figure.savefig(f_name,
                            dpi=self.plot_dpi)
 
@@ -792,9 +927,8 @@ class BasicDiagnostics(Diagnostic):
                                  str(max(self.cfg.mima_globmeandiff_r))
                                  )})
             f.suptitle("")
-
-            oname = self._get_output_rootname() + '_4plots_gmd.' + \
-                self.output_type
+            
+            oname = self._get_output_rootname() + monthstr + '_4plots_gmd.' + self.output_type
             if os.path.exists(oname):
                 os.remove(oname)
             f.savefig(oname)
@@ -815,16 +949,24 @@ class BasicDiagnostics(Diagnostic):
     def _p_stat(self, D, ts):
         """ produce table """
 
-        _min_data = D.data.min(axis=(1, 2)).data
-        _mean_data = D.fldmean()  # data.mean(axis=1).mean(axis=1).data
-        _max_data = D.data.max(axis=(1, 2)).data
-
-        D2 = D.copy()
-        D2.data = D2.data**2
-        _std_data = np.sqrt((D2.fldmean() - _mean_data**2))
-
-        _cov_data = _std_data / _mean_data
-        _count = np.logical_not(D.data.mask).sum(axis=(1, 2))
+        if isinstance(D, GeoData):
+            _min_data=D.data.min(axis=(1,2)).data
+            _mean_data=D.fldmean()#data.mean(axis=1).mean(axis=1).data
+            _max_data=D.data.max(axis=(1,2)).data
+            D2=D.copy()
+            D2.data=D2.data**2
+            _std_data=np.sqrt((D2.fldmean()-_mean_data**2))
+            _count=np.logical_not(D.data.mask).sum(axis=(1,2))
+        else:
+            _min_data=D.min(axis=(1,2)).data
+            _mean_data=D.mean(axis=1).mean(axis=1).data
+            _max_data=D.max(axis=(1,2)).data
+            D2=D.copy()
+            D2=D2**2
+            _std_data=np.sqrt((D2.mean(axis=1).mean(axis=1).data-_mean_data**2))
+            _count=np.logical_not(D.mask).sum(axis=(1,2))
+            
+        _cov_data=_std_data/_mean_data
 
         return(np.vstack((ts,
                           _min_data,
@@ -838,8 +980,8 @@ class BasicDiagnostics(Diagnostic):
 
     def _portrait_statistic(self, name):
         """ calculating basic statistics """
-
-        print('   portrait statistics ...')
+        
+        print('   portrait statistics for ' + name + '...')
 
         if name == self.refname:
             self._stat_r_data = self._p_stat(self._ref_data, self._ts)
@@ -849,7 +991,21 @@ class BasicDiagnostics(Diagnostic):
         else:
             assert False, 'data not expected'
 
-    def _write_portrait_statistic(self, name):
+    def _climatologies_statistics(self,name):
+        """ calculating climatology statistics """
+        
+        print('   climatologies for ' + name + '...')
+            
+        if name == self.refname:
+            self._clim_r_data = self._ref_data.get_climatology(return_object=True)
+            self._climstat_r_data=self._p_stat(self._clim_r_data,self._mts)
+        elif name == self.modname:
+            self._clim_m_data = self._mod_data.get_climatology(return_object=True)
+            self._climstat_m_data=self._p_stat(self._clim_m_data,self._mts)       
+        else:
+            assert False, 'data not expected'
+            
+    def _write_portrait_statistic(self,name):
         """ writing portrait statistic as csv """
         oname = self._plot_dir + os.sep + \
             self._vartype.replace(" ", "_") + '_' + name + '_stat.csv'
@@ -864,7 +1020,7 @@ class BasicDiagnostics(Diagnostic):
                              self.refname else self._stat_m_data.T)
         finally:
             f.close()
-
+            
         ESMValMD("xml",
                  oname,
                  self._basetags + ['TimeS', 'stattab', 'basic', name],
@@ -872,11 +1028,138 @@ class BasicDiagnostics(Diagnostic):
                      '. All statistics are based on the time dependent ' +
                      'counts and not normalized'),
                  '#ID' + 'stattab' + self.var)
+        
+    def _write_climatologies_statistic(self,name):
+        """ writing portrait statistic as csv """
+        oname = self._plot_dir + os.sep + self._vartype.replace(" ","_") + '_' + name + '_climstat.csv'
+        if os.path.exists(oname):
+            os.remove(oname)
+        f=open(oname,'w')
+        try:
+            writer=csv.writer(f,quoting=csv.QUOTE_NONNUMERIC)
+            writer.writerow(('month' , 'min' , 'mean' , 'max' , 'sd' , 'cov','count')) 
+            writer.writerows(self._climstat_r_data.T if name == self.refname else self._climstat_m_data.T)
+        finally:
+            f.close()
+            
+    def _plot_climatologies(self,month):
+        """ plotting 4plots for climatologies/months """
+        
+        #save actual status
+        gmt_r_save=False
+        gmt_m_save=False
+        gmd_save=False
+        gmdr_save=False
+        ts_save=False
+        stat_m_save=False
+        stat_r_save=False
 
-    def _plot_portrait_comparison(self, refname, modname):
+        if '_gmt_r_data' in self.__dict__.keys():
+            gmt_r_save=True
+            _save_gmt_r_data=self._gmt_r_data.copy()
+        if '_gmt_m_data' in self.__dict__.keys():
+            gmt_m_save=True
+            _save_gmt_m_data=self._gmt_m_data.copy()
+        if '_gmd_data' in self.__dict__.keys():
+            gmd_save=True
+            _save_gmd_data=self._gmd_data.copy()
+        if '_gmdr_data' in self.__dict__.keys():
+            gmdr_save=True
+            _save_gmdr_data=self._gmdr_data.copy()
+        if '_gmdp_data' in self.__dict__.keys():
+            gmdp_save=True
+            _save_gmdp_data=self._gmdp_data.copy()
+        if '_ts' in self.__dict__.keys():
+            ts_save=True
+            _save_ts=list(self._ts)
+        if '_stat_m_data' in self.__dict__.keys():
+            stat_m_save=True
+            _save_stat_m_data=self._stat_m_data.copy()
+        if '_stat_r_data' in self.__dict__.keys():
+            stat_r_save=True
+            _save_stat_r_data=self._stat_r_data.copy()
+            
+            
+        time_select=self._clim_r_data.get_temporal_mask([month],mtype="monthly")
+        cdat=self._clim_r_data.copy()
+        cdat._apply_temporal_mask([not t for t in time_select])
+        self._gmt_r_data=self._clim_r_data.copy()
+        self._gmt_r_data.data=cdat.timmean()
+        self._gmt_r_data.label=self.refname + ' (' + self._month_i2str(month) + ')'
+        
+        time_select=self._clim_m_data.get_temporal_mask([month],mtype="monthly")
+        cdat=self._clim_m_data.copy()
+        cdat._apply_temporal_mask([not t for t in time_select])
+        self._gmt_m_data=self._clim_m_data.copy()
+        self._gmt_m_data.data=cdat.timmean()
+        self._gmt_m_data.label=self.modname + ' (' + self._month_i2str(month) + ')'
+        
+        self._gmd_data=self._gmt_m_data.copy()
+        self._gmd_data.data=self._gmt_m_data.data-self._gmt_r_data.data
+        
+        self._gmdr_data=self._gmt_m_data.copy()
+        self._gmdr_data.data=(self._gmt_m_data.data-self._gmt_r_data.data)/self._gmt_r_data.data
+        self._gmdr_data.unit="-"
+                             
+        self._ts=self._mts
+        self._stat_m_data=self._climstat_m_data
+        self._stat_r_data=self._climstat_r_data
+        
+        if self.cfg.globmeandiff:
+            self._gmdp_data=self._gmd_data.copy()
+            self._gmdp_data.label='p-values for global_mean_difference' + ' [' + self._ref_data.label + '-' + self._mod_data.label + ']'
+            sel_month_r=self._ref_data.copy()
+            sel_month_m=self._mod_data.copy()
+            sel_month_r._apply_temporal_mask(self._ref_data.get_temporal_mask([month]))
+            sel_month_m._apply_temporal_mask(self._mod_data.get_temporal_mask([month]))
+            self._gmdp_data.data=np.ma.masked_array(stats.ttest_rel(sel_month_m.data, sel_month_r.data,axis=0)[1],self._gmd_data.data.mask)
+            self._gmdp_data.unit="-"
+        else:
+            del self._gmdp_data
+        
+        self._plot_global_mean_difference(month=month)
+        
+        if month==12:
+            self._plot_portrait_comparison(self.refname,self.modname,clim=True)
+        
+        #clean-up
+        if gmt_r_save:
+            self._gmt_r_data=_save_gmt_r_data
+        else: 
+            del self._gmt_r_data
+        if gmt_m_save:
+            self._gmt_m_data=_save_gmt_m_data
+        else: 
+            del self._gmt_m_data
+        if gmd_save:
+            self._gmd_data=_save_gmd_data
+        else: 
+            del self._gmd_data
+        if gmdr_save:
+            self._gmdr_data=_save_gmdr_data
+        else: 
+            del self._gmdr_data
+        if gmdp_save:
+            self._gmdp_data=_save_gmdp_data
+        else: 
+            del self._gmdp_data
+        if ts_save:
+            self._ts=_save_ts
+        else: 
+            del self._ts
+        if stat_m_save:
+            self._stat_m_data=_save_stat_m_data
+        else: 
+            del self._stat_m_data
+        if stat_r_save:
+            self._stat_r_data=_save_stat_r_data
+        else: 
+            del self._stat_r_data
+            
+    def _plot_portrait_comparison(self,refname,modname,clim=False):  
         """ plotting portrait comparison """
-        # plot spatially aggregated ts
-        f = plt.figure()
+        #plot spatially aggregated ts
+        f = plt.figure(figsize=(8,5))
         f.suptitle(refname + " and " + modname + ' spatial mean', fontsize=14)
         ax = f.add_subplot("111")
         ax.plot(self._ts, self._stat_m_data[2],
@@ -892,12 +1175,22 @@ class BasicDiagnostics(Diagnostic):
         ymax = max(self.cfg.mima_ts)
         ax.set_ylim(ymin, ymax)
         start = self._ts[0]
-        start = start.replace(month=1, day=1)
-        stop = self._ts[-1]
-        stop = stop.replace(month=12, day=31) + datetime.timedelta(days=1)
+        if clim:
+            start=start
+        else:
+            start=start.replace(month=1,day=1)
+        stop=self._ts[-1]
+        if clim:
+            stop=stop
+        else:
+            stop=stop.replace(month=12,day=31)+datetime.timedelta(days=1)
         ax.set_xlim(start, stop)
         ax.grid()
-        f_name = self._get_output_rootname() + '_smean_ts.' + self.output_type
+        if clim:
+            climstr='_clim'
+        else:
+            climstr=''
+        f_name = self._get_output_rootname() + climstr + '_smean_ts.' + self.output_type
         f.savefig(f_name)
         plt.close(f.number)
 
@@ -911,14 +1204,18 @@ class BasicDiagnostics(Diagnostic):
         if self.cfg.regionalization:
             unit2 = math.ceil(np.sqrt(len(self._regions)))  # 2
             unit1 = math.ceil(len(self._regions) / unit2)
-            f = plt.figure(figsize=(30, 20))  # (15,40)
+            f = plt.figure(figsize=(6*unit2, 4*unit1))  # (15,40)
             f.suptitle(refname + " and " + modname +
                        ' spatial mean per region', fontsize=14)
             for im in np.arange(0, len(self._regions)):
                 ax = f.add_subplot(unit1, unit2, im + 1)
-
-                M_masked = self._mod_data.copy()
-                R_masked = self._ref_data.copy()
+              
+                if clim:
+                    M_masked=self._clim_m_data.copy()
+                    R_masked=self._clim_r_data.copy()
+                else:
+                    M_masked=self._mod_data.copy()
+                    R_masked=self._ref_data.copy()
 
                 M_masked.data.mask = np.logical_or(
                     M_masked.data.mask,
@@ -935,13 +1232,14 @@ class BasicDiagnostics(Diagnostic):
                 M_pstat = np.vstack([M_pstat, namerow])
                 R_pstat = np.vstack([R_pstat, namerow])
                 onameM = self._plot_dir + os.sep + \
-                    self._vartype.replace(" ", "_") + \
+                    self._vartype.replace(" ", "_") + climstr + \
                     '_regionalized_ts_' + self.cfg.shape + '_' + modname + \
                     '_stat.csv'
                 onameR = self._plot_dir + os.sep + \
-                    self._vartype.replace(" ", "_") + \
+                    self._vartype.replace(" ", "_") + climstr + \
                     '_regionalized_ts_' + self.cfg.shape + '_' + refname + \
                     "_" + modname + '_stat.csv'
+                    
                 if im == 0:
                     if os.path.exists(onameM):
                         os.remove(onameM)
@@ -1001,14 +1299,19 @@ class BasicDiagnostics(Diagnostic):
                 ymax = max(self.cfg.mima_mts)
                 ax.set_ylim(ymin, ymax)
                 start = self._ts[0]
-                start = start.replace(month=1, day=1)
-                stop = self._ts[-1]
-                stop = stop.replace(month=12, day=31) + \
-                    datetime.timedelta(days=1)
+                if clim:
+                    start=start
+                else:
+                    start=start.replace(month=1,day=1)
+                stop=self._ts[-1]
+                if clim:
+                    stop=stop
+                else:
+                    stop=stop.replace(month=12,day=31)+datetime.timedelta(days=1)
                 ax.set_xlim(start, stop)
                 ax.grid()
 
-            f_name = self._get_output_rootname() + \
+            f_name = self._get_output_rootname() + climstr + \
                 '_regionalized_smean_ts.' + self.output_type
             f.savefig(f_name)
             plt.close(f.number)
@@ -1318,8 +1621,8 @@ class BasicDiagnostics(Diagnostic):
                     np.abs(np.nanmin(self._Sr.data)), np.abs(
                         np.nanmax(self._Sr.data))
                 ])
-            mima = 10**np.floor(np.log10(var))
 
+            mima = 10**np.floor(np.log10(var))
             tick_def = np.linspace(-mima, +mima, 11)
             submap(S, ax=ax1, title="slope",
                    vmin=-mima, vmax=+mima, cmap='RdBu',
@@ -1342,8 +1645,7 @@ class BasicDiagnostics(Diagnostic):
             if os.path.exists(oname):
                 os.remove(oname)
             f.savefig(oname)
-
-            plt.close(f.number)  # close figure for memory reasons!
+            plt.close(f.number)
             del f
 
             ESMValMD("both",
@@ -1583,12 +1885,12 @@ class BasicDiagnostics(Diagnostic):
                     range(len(R_list[1])), key=lambda k: R_list[1][k])
 
                 if self.cfg.regionalization:
-                    unit2 = 2  # math.ceil(np.sqrt(len(R_list[1]))) #2
+                    unit2 = math.ceil(np.sqrt(len(R_list[1]))) # 2
                     unit1 = math.ceil(len(R_list[1]) / unit2)
                     # (10*unit2,4*unit1)) #(15,40)
                     f = plt.figure(figsize=(20, 40))
                     f.suptitle(self.refname + " and " + "models" +
-                               ' spatial mean per region', fontsize=14)
+                               " spatial mean per region", fontsize=14)
                     colors = cm.Set1(np.linspace(0, 1, M_length), 0.95)
                     # colors=cm.Set1(np.linspace(0,1,M_length))
                     for im in range(len(R_list[1])):
@@ -1623,7 +1925,6 @@ class BasicDiagnostics(Diagnostic):
                             month=12, day=31) + datetime.timedelta(days=1)
                         ax.set_xlim(start, stop)
                         ax.grid()
-
                         handles, labels = ax.get_legend_handles_labels()
 
                     f_name = rootname + '_regionalized_smean_ts.' + \
@@ -1639,3 +1940,26 @@ class BasicDiagnostics(Diagnostic):
                                  'regions. The multiple models are: ' +
                                  ", ".join(labels) + '.'),
                              '#ID' + 'regov' + self.var)
+
+    def _month_i2str(self,number):
+        m = [
+            'jan',
+            'feb',
+            'mar',
+            'apr',
+            'may',
+            'jun',
+            'jul',
+            'aug',
+            'sep',
+            'oct',
+            'nov',
+            'dec'
+            ]
+
+        try:
+            out = m[number-1]
+            out = out.capitalize()
+            return out
+        except:
+            raise ValueError('Not a month')

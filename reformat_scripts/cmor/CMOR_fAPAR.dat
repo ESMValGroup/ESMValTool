@@ -1,0 +1,27 @@
+SOURCE: CMIP5
+!============
+variable_entry:    fAPAR
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     fAPAR
+units:             -
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         Fraction of Absorbed Photosynthetically Active Radiation
+comment:           at the surface (to be compared with satellite measurements)
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          fAPAR
+type:              real
+positive:          up
+valid_min:         0.
+valid_max:         1.
+ok_min_mean_abs:   0.
+ok_max_mean_abs:   1.
+!----------------------------------
+!

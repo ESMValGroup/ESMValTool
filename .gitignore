@@ -1,5 +1,12 @@
+
+c
+*.pyc
+*.orig
+*.tmp
+config_private_BM_local.xml
 curr_trace_indent.txt
 ncl.interface
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
