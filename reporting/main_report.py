@@ -78,14 +78,14 @@ try:
                                              project_info['RUNTIME']['xml'],
                                              shell=True)
     case = "pre"
-except Exception, e:
-    ESMValTool_log = str(e.output)
+except Exception, TOOL_error:
+    ESMValTool_log = str(TOOL_error.output)
     case = "post"
 
 # run server
 app = Flask(__name__)
-host_add = "0.0.0.0"
-# host_add="141.84.50.139"
+# host_add = "0.0.0.0"
+host_add = "141.84.50.139"
 host_port = 5000
 full_host = host_add + ":" + str(host_port)
 
