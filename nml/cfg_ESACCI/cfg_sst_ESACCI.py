@@ -15,7 +15,7 @@ portrait = True
 globmeandiff =True
 mima_globmeandiff=[-10,10]
 mima_globmeandiff_r=[-0.03,0.03]
-trend = False
+trend = True
 anomalytrend =False
 trend_p=False
 

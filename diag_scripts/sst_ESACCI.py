@@ -84,7 +84,7 @@ def main(project_info):
                     model_filename=model_filelist[model.model_line.split()[1]]
                     reference_filename=model_filelist[project_info['RUNTIME']['currDiag'].variables[v].ref_model]
                 
-                    # copy old data to provide data that is needed again                                                                                                                                                           # copy old data to provide data that is needed again
+                    # copy old data to provide data that is needed again
                     D_old=copy(Diag)
                     
                     # initialize diagnostic
