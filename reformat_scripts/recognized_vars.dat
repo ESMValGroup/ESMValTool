@@ -244,3 +244,12 @@ alt_name =
 std_name=alb
 alt_name =
 
+std_name = baresoilFrac
+alt_name = 
+
+std_name = grassNcropFrac
+alt_name = 
+
+std_name = shrubNtreeFrac
+alt_name = 
+
