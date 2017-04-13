@@ -15,7 +15,7 @@ comment:           fraction of entire grid cell that is covered by bare soil.
 !----------------------------------
 ! Additional variable information:
 !----------------------------------
-dimensions:        longitude latitude time typebare
+dimensions:        longitude latitude time
 out_name:          baresoilFrac
 type:              real
 !----------------------------------
