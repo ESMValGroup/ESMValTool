@@ -221,7 +221,7 @@ class SeaSurfaceTemperatureDiagnostic(BasicDiagnostics):
         """ load sea surface temperature model data """
         edited = False
 
-        newfile = self._mod_file + ".T63built.nc"
+        newfile = self._mod_file + ".T85built.nc"
         newfile = newfile.split("/")
         newdir = (self._work_dir if self._work_dir[-1] ==
                   os.sep else self._work_dir + os.sep) + "AUX_Files_sst_ESACCI"
@@ -236,13 +236,14 @@ class SeaSurfaceTemperatureDiagnostic(BasicDiagnostics):
             lon = -1
         mod_info.close()
 
-        if not ((lat == 96 and lon == 192) or
-                (lat == 6 and lon == 12) or
-                (lat == 18 and lon == 36)):  # TODO add diffs
+        if not ((lat == 128 and lon == 256) or
+                (lat == 96 and lon == 192) or
+                (lat == 18 and lon == 36) or
+                (lat == 6 and lon == 12)):  # TODO add diffs
 
             if not os.path.exists(newfile):
                 tempfile = self._aggregate_resolution(
-                    self._mod_file, "T63", remove=False)
+                    self._mod_file, "T85", remove=False)
                 subprocess.call(["mkdir", newdir])
                 subprocess.call(['cp', tempfile, newfile])
                 os.remove(tempfile)
@@ -257,7 +258,7 @@ class SeaSurfaceTemperatureDiagnostic(BasicDiagnostics):
 
     def _load_observation_data(self):
         """ load obs data """
-        newfile = self._ref_file + ".T63built.nc"
+        newfile = self._ref_file + ".T85built.nc"
         newfile = newfile.split("/")
         newdir = (self._work_dir if self._work_dir[-1] ==
                   os.sep else self._work_dir + os.sep) + "AUX_Files_sst_ESACCI"
@@ -272,12 +273,13 @@ class SeaSurfaceTemperatureDiagnostic(BasicDiagnostics):
             lon = -1
         mod_info.close()
 
-        if not ((lat == 96 and lon == 192) or
-                (lat == 6 and lon == 12) or
-                (lat == 18 and lon == 36)):  # TODO add diffs
+        if not ((lat == 128 and lon == 256) or
+                (lat == 96 and lon == 192) or
+                (lat == 18 and lon == 36) or
+                (lat == 6 and lon == 12)):  # TODO add diffs
             if not os.path.exists(newfile):
                 tempfile = self._aggregate_resolution(
-                    self._ref_file, "T63", remove=False)
+                    self._ref_file, "T85", remove=False)
                 subprocess.call(["mkdir", newdir])
                 subprocess.call(['cp', tempfile, newfile])
                 os.remove(tempfile)

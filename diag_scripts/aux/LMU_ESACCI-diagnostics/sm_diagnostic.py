@@ -45,21 +45,21 @@ class SoilMoistureDiagnostic(BasicDiagnostics):
         """
         super(SoilMoistureDiagnostic, self).run_diagnostic()
 
-        self._specific_diag(percentile=self.cfg.percentile,
-                            anomaly=self.cfg.anomaly)
+        self._specific_diag()
 
-    def _specific_diag(self, percentile=True, anomaly=True):
+    def _specific_diag(self):
         """
         Diagnostic management
         """
 
-        if percentile:
+        if "percentile" in self.cfg.__dict__.keys() and self.cfg.percentile:
             self._percentile_comparison(
                 plist=np.arange(self.cfg.percentile_pars[0],
                                 self.cfg.percentile_pars[1] +
                                 0.1 * self.cfg.percentile_pars[2],
                                 self.cfg.percentile_pars[2]))
-        if anomaly:
+
+        if "anomaly" in self.cfg.__dict__.keys() and self.cfg.anomaly:
             self._anomaly_correlation()
 
     def write_data(self, plot=True):
@@ -344,24 +344,29 @@ class SoilMoistureDiagnostic(BasicDiagnostics):
         """ load soil moisture model data """
         edited = False
 
-        newfile = self._mod_file + ".T63built.nc"
+        newfile = self._mod_file + ".T85built.nc"
         newfile = newfile.split("/")
         newdir = (self._work_dir if self._work_dir[-1] ==
                   os.sep else self._work_dir + os.sep) + "AUX_Files_sm_ESACCI"
         newfile = newdir + os.sep + newfile[-1]
 
-        mod_info = Dataset(self._mod_file)
-        lat = mod_info.dimensions['lat'].size
-        lon = mod_info.dimensions['lon'].size
+        mod_info = Dataset(self._ref_file)
+        try:
+            lat = mod_info.dimensions['lat'].size
+            lon = mod_info.dimensions['lon'].size
+        except:  # regridding required in any case
+            lat = -1
+            lon = -1
         mod_info.close()
 
-        if not ((lat == 96 and lon == 192) or
-                (lat == 6 and lon == 12) or
-                (lat == 18 and lon == 36)):  # TODO add diffs
+        if not ((lat == 128 and lon == 256) or
+                (lat == 96 and lon == 192) or
+                (lat == 18 and lon == 36) or
+                (lat == 6 and lon == 12)):  # TODO add diffs
 
             if not os.path.exists(newfile):
                 tempfile = self._aggregate_resolution(
-                    self._mod_file, "T63", remove=False)
+                    self._mod_file, "T85", remove=False)
                 subprocess.call(["mkdir", newdir])
                 subprocess.call(['cp', tempfile, newfile])
                 os.remove(tempfile)
@@ -382,25 +387,30 @@ class SoilMoistureDiagnostic(BasicDiagnostics):
                 "_sm_", "_pr_").replace("_Lmon_", "_Amon_")
             self._mod_pr_file = "/".join(self._mod_pr_file)
 
-            newfile = self._mod_pr_file + ".T63built.nc"
+            newfile = self._mod_pr_file + ".T85built.nc"
             newfile = newfile.split("/")
             newdir = (self._work_dir
                       if self._work_dir[-1] == os.sep
                       else self._work_dir + os.sep) + "AUX_Files_sm_ESACCI"
             newfile = newdir + os.sep + newfile[-1]
 
-            mod_info = Dataset(self._mod_pr_file)
-            lat = mod_info.dimensions['lat'].size
-            lon = mod_info.dimensions['lon'].size
+            mod_info = Dataset(self._ref_file)
+            try:
+                lat = mod_info.dimensions['lat'].size
+                lon = mod_info.dimensions['lon'].size
+            except:  # regridding required in any case
+                lat = -1
+                lon = -1
             mod_info.close()
 
-            if not ((lat == 96 and lon == 192) or
-                    (lat == 6 and lon == 12) or
-                    (lat == 18 and lon == 36)):  # TODO add diffs
+            if not ((lat == 128 and lon == 256) or
+                    (lat == 96 and lon == 192) or
+                    (lat == 18 and lon == 36) or
+                    (lat == 6 and lon == 12)):  # TODO add diffs
 
                 if not os.path.exists(newfile):
                     tempfile = self._aggregate_resolution(
-                        self._mod_pr_file, "T63", remove=False)
+                        self._mod_pr_file, "T85", remove=False)
                     subprocess.call(["mkdir", newdir])
                     subprocess.call(['cp', tempfile, newfile])
                     os.remove(tempfile)
@@ -415,23 +425,28 @@ class SoilMoistureDiagnostic(BasicDiagnostics):
 
     def _load_observation_data(self):
         """ load obs data """
-        newfile = self._ref_file + ".T63built.nc"
+        newfile = self._ref_file + ".T85built.nc"
         newfile = newfile.split("/")
         newdir = (self._work_dir if self._work_dir[-1] ==
                   os.sep else self._work_dir + os.sep) + "AUX_Files_sm_ESACCI"
         newfile = newdir + os.sep + newfile[-1]
 
         mod_info = Dataset(self._ref_file)
-        lat = mod_info.dimensions['lat'].size
-        lon = mod_info.dimensions['lon'].size
+        try:
+            lat = mod_info.dimensions['lat'].size
+            lon = mod_info.dimensions['lon'].size
+        except:  # regridding required in any case
+            lat = -1
+            lon = -1
         mod_info.close()
 
-        if not ((lat == 96 and lon == 192) or
-                (lat == 6 and lon == 12) or
-                (lat == 18 and lon == 36)):  # TODO add diffs
+        if not ((lat == 128 and lon == 256) or
+                (lat == 96 and lon == 192) or
+                (lat == 18 and lon == 36) or
+                (lat == 6 and lon == 12)):  # TODO add diffs
             if not os.path.exists(newfile):
                 tempfile = self._aggregate_resolution(
-                    self._ref_file, "T63", remove=False)
+                    self._ref_file, "T85", remove=False)
                 subprocess.call(["mkdir", newdir])
                 subprocess.call(['cp', tempfile, newfile])
                 os.remove(tempfile)

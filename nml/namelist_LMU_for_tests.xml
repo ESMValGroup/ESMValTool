@@ -41,7 +41,7 @@ This namelist is part of the ESMValTool
 
 <DIAGNOSTICS>
 
-    <!--<diag>
+    <diag>
         <description>  															Doing ESACCI soil moisture analysis. 		</description>
         <variable_def_dir>                								./variable_defs/      							</variable_def_dir>
         <variable ref_model="ESACCI-SOILMOISTURE" MIP="Lmon">     sm                                        </variable>
@@ -95,7 +95,7 @@ This namelist is part of the ESMValTool
         <model> CMIP5 MPI-ESM-P Lmon historical r1i1p1 2002 2005 @{MODELPATH} </model>
   		  <model> CMIP5 MRI-ESM1 Lmon historical r1i1p1 2002 2005 @{MODELPATH} </model>
   		  <model> OBS GlobAlbedo sat fAPAR-online 2002 2005 @{OBSPATH} </model>
-    </diag>-->
+    </diag>
     
     
     <diag>
