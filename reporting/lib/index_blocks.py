@@ -28,7 +28,7 @@ def index_head(inputs):
         ' href="{{url_for("static",filename="css/styles.css")}}"' +
         ' media="screen" />',
         '<link rel="stylesheet" type="text/css"' +
-        ' href="{{url_for("static",filename="css/styles.css")}}"' +
+        ' href="{{url_for("static",filename="css/styles_print.css")}}"' +
         ' media="print" />',
         '</head>',
         '<body>',
