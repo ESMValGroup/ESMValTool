@@ -119,7 +119,7 @@ def _preprocess_observations(infiles, outfile, timestep, force=False):
             cdo.mergetime(input=file_list, output=tmp + "tmp1",
                           options='-f nc4 -b F32')
             # TODO discuss if mean or sum...
-            cdo.ymonsum(input="-chname,burned_area,burntArea " + tmp + "tmp1",
+            cdo.monmean(input="-chname,burned_area,burntArea " + tmp + "tmp1",
                         output=tmp + "tmp2", options='-f nc4 -b F32')
             cdo.gridarea(input=tmp + "tmp2", output=tmp + "tmp3",
                          options='-f nc4 -b F32')
@@ -127,7 +127,7 @@ def _preprocess_observations(infiles, outfile, timestep, force=False):
                     options='-f nc4 -b F32')
             cdo.chunit("m2,%", input=tmp + "tmp4", output=tmp + "tmp5",
                        options='-f nc4 -b F32')
-            cdo.mulc(100/2, input=tmp + "tmp5", output=outfile,
+            cdo.mulc(100, input=tmp + "tmp5", output=outfile,
                      options='-f nc4 -b F32')
 
         else:

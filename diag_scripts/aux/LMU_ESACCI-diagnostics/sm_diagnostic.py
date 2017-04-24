@@ -216,7 +216,8 @@ class SoilMoistureDiagnostic(BasicDiagnostics):
 
         submap(ref, ax=ax1, title=self.refname, vmin=0, vmax=1, cmap='Blues')
         submap(mod, ax=ax2, title=self.modname, vmin=0, vmax=1, cmap='Blues')
-        f.suptitle('Percentile: ' + str(p) + " (r=" + str(round(r, 2)) + ")")
+        f.suptitle('Percentile: ' + str(int(p*100)) + "% (r=" +
+                   str(round(r, 2)) + ")")
 
         oname = self._get_output_rootname() + '_percentile_' + \
             str(int(p * 100)).zfill(3) + '.' + self.output_type
@@ -254,8 +255,8 @@ class SoilMoistureDiagnostic(BasicDiagnostics):
         f.suptitle(self.refname + "-" + self.modname +
                    ' percentile spatial correlation', fontsize=14)
         ax = f.add_subplot(111)
-        ax.plot(p, r, linestyle='-', marker='d')
-        ax.set_xlabel('percentile')
+        ax.plot(p*100, r, linestyle='-', marker='d')
+        ax.set_xlabel('percentile [%]')
         ax.set_ylabel('correlation')
         ax.grid()
         ax.set_ylim(-1., 1.)
