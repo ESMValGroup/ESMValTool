@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from netCDF4 import Dataset
 from geoval.core.mapping import SingleMap
+from ESMValMD import ESMValMD
 from diagnostic import BasicDiagnostics
 
 
@@ -135,6 +136,12 @@ class SoilMoistureDiagnostic(BasicDiagnostics):
         finally:
             f.close()
 
+        ESMValMD("xml",
+                 oname,
+                 self._basetags,
+                 'TODO',  # TODO give caption
+                 '#ID' + 'TODO' + self.var)
+
     def _percentile_comparison(self, plist=np.arange(0.0, 1.01, 0.05),
                                plots=True):
         """
@@ -220,6 +227,12 @@ class SoilMoistureDiagnostic(BasicDiagnostics):
         plt.close(f.number)  # close figure for memory reasons!
         del f
 
+        ESMValMD("both",
+                 oname,
+                 self._basetags,
+                 'TODO',  # TODO give caption
+                 '#ID' + 'TODO' + self.var)
+
     def _plot_percentile_correlation(self, p, r):
         """
         plot correlation as function of percentile
@@ -248,6 +261,12 @@ class SoilMoistureDiagnostic(BasicDiagnostics):
         ax.set_ylim(-1., 1.)
         f.savefig(oname)
         plt.close(f.number)
+
+        ESMValMD("both",
+                 oname,
+                 self._basetags,
+                 'TODO',  # TODO give caption
+                 '#ID' + 'TODO' + self.var)
 
     def _anomaly_correlation(self):
         """
@@ -339,6 +358,12 @@ class SoilMoistureDiagnostic(BasicDiagnostics):
 
         plt.close(f.number)  # close figure for memory reasons!
         del f
+
+        ESMValMD("both",
+                 oname,
+                 self._basetags,
+                 'TODO',  # TODO give caption
+                 '#ID' + 'TODO' + self.var)
 
     def _load_model_data(self):
         """ load soil moisture model data """

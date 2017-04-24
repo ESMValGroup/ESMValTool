@@ -141,7 +141,6 @@ if case == "pre":
         k0 += 1
 
         DKEY = "Auto_Diag_"+Key
-
         # Diagnostic
         D.diag_html(DKEY, project_info['GLOBAL']['plot_dir'], cfg, [DKEY],
                     full_host,

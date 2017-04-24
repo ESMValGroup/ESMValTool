@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from netCDF4 import Dataset
 from geoval.core.mapping import SingleMap
+from ESMValMD import ESMValMD
 from diagnostic import BasicDiagnostics
 
 
@@ -192,6 +193,12 @@ class LandCoverDiagnostic(BasicDiagnostics):
 
         plt.close(f.number)  # close figure for memory reasons!
         del f
+
+        ESMValMD("both",
+                 oname,
+                 self._basetags,
+                 'TODO',  # TODO give caption
+                 '#ID' + 'TODO' + self.var)
 
     def _load_model_data(self):
         """ load all land cover model data """

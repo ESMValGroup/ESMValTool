@@ -72,6 +72,12 @@ class Diagnostic(object):
         self._changed = False
 
         self._basetags = []
+        self.reso = {"lat": 96, "lon": 192}
+        # self.reso = {"lat": 6, "lon": 12} #default for testing
+        self.resoLUT = {"128-256": "T85",
+                        "96-192": "T63",
+                        "18-36": "Automatic_Testing",
+                        "6-12": "C_Res_6_12"}
 
     def _get_output_rootname(self):
         """
@@ -159,6 +165,9 @@ class Diagnostic(object):
         elif var == 'fAPAR':
             self._vartype = 'fAPAR'
             self._ref_file = ref_file
+        elif var == 'burntArea':
+            self._vartype = 'burned area'
+            self._ref_file = ref_file
         else:
             assert False, 'This variable is not implemented yet!'
 
@@ -189,8 +198,8 @@ class Diagnostic(object):
         if not self._changed:
             self._start_time, self._stop_time = None, None
 
-        self._load_model_data()
         self._load_observation_data()
+        self._load_model_data()
 
         # compatible time range
         # if self._project_info['RUNTIME']['currDiag'].get_variables()[0] in
@@ -1039,7 +1048,7 @@ class BasicDiagnostics(Diagnostic):
                  self._basetags + ['TimeS', 'stattab', 'basic', name],
                  str('Statistics for ' + name + " " + self._vartype +
                      '. All statistics are based on the time dependent ' +
-                     'counts and not normalized'),
+                     'counts and not normalized.'),
                  '#ID' + 'stattab' + self.var)
 
     def _write_climatologies_statistic(self, name):
@@ -1819,10 +1828,14 @@ class BasicDiagnostics(Diagnostic):
             gridtype = "t63grid"
         elif resolution == "T85":
             gridtype = "t85grid"
+        elif resolution[0] == "C":
+            gridtype = "./diag_scripts/aux/LMU_ESACCI-diagnostics/" +\
+                    resolution + ".txt"
+            print("      Custom resolution recognized!")
         else:
             assert False, "This resolution cannot be handled yet."
 
-        cdo.remapcon(gridtype, input=infile, output=oname,
+        cdo.remapbil(gridtype, input=infile, output=oname,
                      options='-f nc4 -b F32')
 
         if remove:

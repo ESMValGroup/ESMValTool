@@ -1,11 +1,12 @@
-from diagnostic import BasicDiagnostics
 import os
-import numpy as np
+import subprocess
 import csv
+import numpy as np
 import matplotlib.pyplot as plt
 from geoval.core.mapping import SingleMap
 from netCDF4 import Dataset
-import subprocess
+from ESMValMD import ESMValMD
+from diagnostic import BasicDiagnostics
 
 
 class SeaSurfaceTemperatureDiagnostic(BasicDiagnostics):
@@ -47,10 +48,10 @@ class SeaSurfaceTemperatureDiagnostic(BasicDiagnostics):
 
         if percentile:
             self._percentile_comparison(plist=np.arange(
-                    self.cfg.percentile_pars[0],
-                    self.cfg.percentile_pars[1] +
-                    0.1 * self.cfg.percentile_pars[2],
-                    self.cfg.percentile_pars[2]))
+                self.cfg.percentile_pars[0],
+                self.cfg.percentile_pars[1] +
+                0.1 * self.cfg.percentile_pars[2],
+                self.cfg.percentile_pars[2]))
 
     def write_data(self, plot=True):
         """
@@ -107,6 +108,12 @@ class SeaSurfaceTemperatureDiagnostic(BasicDiagnostics):
             writer.writerows(zip(np.char.array(plist), np.array(self._r_list)))
         finally:
             f.close()
+
+        ESMValMD("xml",
+                 oname,
+                 self._basetags,
+                 '',  # TODO give caption
+                 '#ID' + 'PercAll' + self.var)
 
     def _percentile_comparison(self, plist=np.arange(0.0, 1.01, 0.05),
                                plots=True):
@@ -185,6 +192,15 @@ class SeaSurfaceTemperatureDiagnostic(BasicDiagnostics):
             os.remove(oname)
         f.savefig(oname)
 
+        ESMValMD("both",
+                 oname,
+                 self._basetags + ['perc', 'p'+str(p).zfill(3)],
+                 str('Percentile (p=' + str(p) + ') for ' + self.refname +
+                     ' and ' + self.modname + ' ' + self._vartype +
+                     '. Percentiles are not normalized for spatially equal ' +
+                     'counts.'),
+                 '#ID' + 'Perc' + str(int(p*100)).zfill(3) + self.var)
+
         plt.close(f.number)  # close figure for memory reasons!
         del f
 
@@ -216,6 +232,12 @@ class SeaSurfaceTemperatureDiagnostic(BasicDiagnostics):
         ax.set_ylim(-1., 1.)
         f.savefig(oname)
         plt.close(f.number)
+
+        ESMValMD("both",
+                 oname,
+                 self._basetags,
+                 'TODO',  # TODO give caption
+                 '#ID' + 'PercAll' + self.var)
 
     def _load_model_data(self):
         """ load sea surface temperature model data """
@@ -253,8 +275,8 @@ class SeaSurfaceTemperatureDiagnostic(BasicDiagnostics):
 
         # load data
         self._mod_data = self._load_cmip_generic(
-                self._mod_file_E if edited else self._mod_file,
-                self._project_info['RUNTIME']['currDiag'].get_variables()[0])
+            self._mod_file_E if edited else self._mod_file,
+            self._project_info['RUNTIME']['currDiag'].get_variables()[0])
 
     def _load_observation_data(self):
         """ load obs data """

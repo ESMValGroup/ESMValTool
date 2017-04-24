@@ -41,7 +41,5 @@ climatologies = True
 
 # flags for specific diagnostics
 
-# percentile parameters
-
 # plotting parameters
 projection = {'projection': 'robin', 'lon_0': 180., 'lat_0': 0.}

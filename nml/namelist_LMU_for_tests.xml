@@ -1,5 +1,5 @@
 <namelist>
-<include href="./config_private_BM_local.xml"/>
+<include href="/media/bmueller/Work/GIT/CMUG_fire/config_private_BM_local.xml"/>
 <namelist_summary>
 ###############################################################################
 namelist_LMU_for_tests.xml
@@ -32,6 +32,7 @@ This namelist is part of the ESMValTool
   <verbosity  type="integer">         1                         </verbosity>
   <debuginfo type="boolean">          False                     </debuginfo>
   <exit_on_warning  type="boolean">   True                      </exit_on_warning>
+  <tags>										  Testing_Namelist			 </tags>
 </GLOBAL>
 
 

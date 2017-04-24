@@ -1,6 +1,7 @@
 import os
 import subprocess
 from netCDF4 import Dataset
+from ESMValMD import ESMValMD
 from diagnostic import BasicDiagnostics
 
 
