@@ -77,9 +77,10 @@ class SeaSurfaceTemperatureDiagnostic(BasicDiagnostics):
 
             for p in np.arange(len(self._percentile_list)):
                 # generate map plots for percentiles
-                self._plot_percentile_maps(
-                    plist[p], self._percentile_list[p][0],
-                    self._percentile_list[p][1])
+                self._plot_percentile_maps(plist[p],
+                                           self._percentile_list[p][0],
+                                           self._percentile_list[p][1],
+                                           np.array(self._r_list)[p])
                 if self.cfg.regionalization:
                     self._percentile_list[p][0].get_shape_statistics(
                         self._regions)
@@ -151,7 +152,7 @@ class SeaSurfaceTemperatureDiagnostic(BasicDiagnostics):
             r_value, p_value = self._calc_spatial_correlation(pmod, pref)
             self._r_list.append(r_value)
 
-    def _plot_percentile_maps(self, p, mod, ref):
+    def _plot_percentile_maps(self, p, mod, ref, r):
         """
         plot percentile maps
         """
@@ -184,7 +185,8 @@ class SeaSurfaceTemperatureDiagnostic(BasicDiagnostics):
 
         submap(ref, ax=ax1, title=self.refname, vmin=0, vmax=1, cmap='Blues')
         submap(mod, ax=ax2, title=self.modname, vmin=0, vmax=1, cmap='Blues')
-        f.suptitle('Percentile: ' + str(p))
+        f.suptitle('Percentile: ' + str(int(p*100)) + "% (r=" +
+                   str(round(r, 2)) + ")")
 
         oname = self._get_output_rootname() + '_percentile_' + \
             str(int(p * 100)).zfill(3) + '.' + self.output_type
@@ -225,8 +227,8 @@ class SeaSurfaceTemperatureDiagnostic(BasicDiagnostics):
         f.suptitle(self.refname + "-" + self.modname +
                    ' percentile spatial correlation', fontsize=14)
         ax = f.add_subplot(111)
-        ax.plot(p, r, linestyle='-', marker='d')
-        ax.set_xlabel('percentile')
+        ax.plot(p*100, r, linestyle='-', marker='d')
+        ax.set_xlabel('percentile [%]')
         ax.set_ylabel('correlation')
         ax.grid()
         ax.set_ylim(-1., 1.)
@@ -237,17 +239,10 @@ class SeaSurfaceTemperatureDiagnostic(BasicDiagnostics):
                  oname,
                  self._basetags,
                  'TODO',  # TODO give caption
-                 '#ID' + 'PercAll' + self.var)
+                 '#ID' + 'TODO' + self.var)
 
     def _load_model_data(self):
-        """ load sea surface temperature model data """
-        edited = False
-
-        newfile = self._mod_file + ".T85built.nc"
-        newfile = newfile.split("/")
-        newdir = (self._work_dir if self._work_dir[-1] ==
-                  os.sep else self._work_dir + os.sep) + "AUX_Files_sst_ESACCI"
-        newfile = newdir + os.sep + newfile[-1]
+        """ load model data """
 
         mod_info = Dataset(self._mod_file)
         try:
@@ -258,33 +253,33 @@ class SeaSurfaceTemperatureDiagnostic(BasicDiagnostics):
             lon = -1
         mod_info.close()
 
-        if not ((lat == 128 and lon == 256) or
-                (lat == 96 and lon == 192) or
-                (lat == 18 and lon == 36) or
-                (lat == 6 and lon == 12)):  # TODO add diffs
+        if not (lat == self.reso["lat"] and lon == self.reso["lon"]):
+
+            grid = self.resoLUT[str(self.reso["lat"]) + "-" +
+                                str(self.reso["lon"])]
+
+            newfile = self._mod_file + "." + grid + "built.nc"
+            newfile = newfile.split("/")
+            newdir = (self._work_dir if self._work_dir[-1] ==
+                      os.sep else self._work_dir + os.sep) +\
+                "AUX_Files_sst_QA4ECV"
+            newfile = newdir + os.sep + newfile[-1]
 
             if not os.path.exists(newfile):
                 tempfile = self._aggregate_resolution(
-                    self._mod_file, "T85", remove=False)
+                    self._mod_file, grid, remove=False)
                 subprocess.call(["mkdir", newdir])
                 subprocess.call(['cp', tempfile, newfile])
                 os.remove(tempfile)
 
-            self._mod_file_E = newfile
-            edited = True
+            self._mod_file = newfile
 
         # load data
-        self._mod_data = self._load_cmip_generic(
-            self._mod_file_E if edited else self._mod_file,
-            self._project_info['RUNTIME']['currDiag'].get_variables()[0])
+        proj_var = self._project_info['RUNTIME']['currDiag'].get_variables()[0]
+        self._mod_data = self._load_cmip_generic(self._mod_file, proj_var)
 
     def _load_observation_data(self):
         """ load obs data """
-        newfile = self._ref_file + ".T85built.nc"
-        newfile = newfile.split("/")
-        newdir = (self._work_dir if self._work_dir[-1] ==
-                  os.sep else self._work_dir + os.sep) + "AUX_Files_sst_ESACCI"
-        newfile = newdir + os.sep + newfile[-1]
 
         mod_info = Dataset(self._ref_file)
         try:
@@ -295,23 +290,35 @@ class SeaSurfaceTemperatureDiagnostic(BasicDiagnostics):
             lon = -1
         mod_info.close()
 
-        if not ((lat == 128 and lon == 256) or
-                (lat == 96 and lon == 192) or
-                (lat == 18 and lon == 36) or
-                (lat == 6 and lon == 12)):  # TODO add diffs
+        reso = {"lat": lat, "lon": lon}
+
+        if str(lat) + "-" + str(lon) not in self.resoLUT.keys():
+
+            grid = self.resoLUT[str(self.reso["lat"]) + "-" +
+                                str(self.reso["lon"])]
+
+            newfile = self._ref_file + "." + grid + "built.nc"
+            newfile = newfile.split("/")
+            newdir = (self._work_dir if self._work_dir[-1] ==
+                      os.sep else self._work_dir + os.sep) +\
+                "AUX_Files_sst_QA4ECV"
+            newfile = newdir + os.sep + newfile[-1]
+
             if not os.path.exists(newfile):
                 tempfile = self._aggregate_resolution(
-                    self._ref_file, "T85", remove=False)
+                    self._ref_file, grid, remove=False)
                 subprocess.call(["mkdir", newdir])
                 subprocess.call(['cp', tempfile, newfile])
                 os.remove(tempfile)
 
             self._ref_file = newfile
 
+            reso = self.reso
+
+        self.reso = reso
+
         proj_var = self._project_info['RUNTIME']['currDiag'].get_variables()[0]
         if proj_var == "ts" or proj_var == 'tos':
-            self._ref_data = self._load_cci_generic(
-                self._ref_file,
-                self._project_info['RUNTIME']['currDiag'].get_variables()[0])
+            self._ref_data = self._load_cci_generic(self._ref_file, proj_var)
         else:
             assert False, 'Not supported yet'

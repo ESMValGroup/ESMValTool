@@ -72,12 +72,6 @@ class Diagnostic(object):
         self._changed = False
 
         self._basetags = []
-        self.reso = {"lat": 96, "lon": 192}
-        # self.reso = {"lat": 6, "lon": 12} #default for testing
-        self.resoLUT = {"128-256": "T85",
-                        "96-192": "T63",
-                        "18-36": "Automatic_Testing",
-                        "6-12": "C_Res_6_12"}
 
     def _get_output_rootname(self):
         """
@@ -297,6 +291,14 @@ class BasicDiagnostics(Diagnostic):
         super(BasicDiagnostics, self).__init__(**kwargs)
         self._plot_parameters()
 
+        self.reso = {"lat": 96, "lon": 192}
+        # self.reso = {"lat": 6, "lon": 12} #default for testing
+        self.resoLUT = {"128-256": "T85",
+                        "96-192": "T63",
+                        "32-64": "T21",
+                        "18-36": "Automatic_Testing",  # only used with testing
+                        "6-12": "C_Res_6_12"}
+
     def _plot_parameters(self):
         """
         set plotting parameters
@@ -383,8 +385,8 @@ class BasicDiagnostics(Diagnostic):
         """
         if isinstance(self._mod_data.data, np.ma.core.MaskedArray):
             if isinstance(self._ref_data.data, np.ma.core.MaskedArray):
-                mask = np.logical_or(
-                    self._ref_data.data.mask, self._mod_data.data.mask)
+                mask = np.logical_or(self._ref_data.data.mask,
+                                     self._mod_data.data.mask)
                 self._mod_data.data.mask = mask
                 self._ref_data.data.mask = mask
                 print "both sets have masks, common mask produced"
@@ -437,7 +439,6 @@ class BasicDiagnostics(Diagnostic):
               self.cfg.shape.upper())
         print('*****************************')
 
-    # TODO remove from specific diagnostics
     def _load_regionalization_shape(self):
         """ load shape data """
         self._reg_shape = self._load_shape_generic(self._reg_file)
@@ -1820,11 +1821,13 @@ class BasicDiagnostics(Diagnostic):
 
     # double in ./reformat_scripts/obs/lib/python/preprocessing_basics.py
     def _aggregate_resolution(self, infile, resolution, remove=True):
-        """ currenty only T63, T85 """
+        """ currenty only T63, T85 and custom"""
         cdo = Cdo()
         oname = self._work_dir + os.sep + "temp" + os.sep + \
             tempfile.NamedTemporaryFile().name.split('/')[-1]
-        if resolution == "T63":
+        if resolution == "T21":
+            gridtype = "t21grid"
+        elif resolution == "T63":
             gridtype = "t63grid"
         elif resolution == "T85":
             gridtype = "t85grid"
@@ -1835,7 +1838,7 @@ class BasicDiagnostics(Diagnostic):
         else:
             assert False, "This resolution cannot be handled yet."
 
-        cdo.remapbil(gridtype, input=infile, output=oname,
+        cdo.remapcon(gridtype, input=infile, output=oname,
                      options='-f nc4 -b F32')
 
         if remove:
@@ -1976,7 +1979,8 @@ class BasicDiagnostics(Diagnostic):
 
                     ESMValMD("both",
                              f_name,
-                             self._basetags + ['TimeS', 'MultiMod', 'reg', 'basic'] +
+                             self._basetags + ['TimeS', 'MultiMod',
+                                               'reg', 'basic'] +
                              labels,
                              str('Time series of spatial mean for different ' +
                                  'regions. The multiple models are: ' +

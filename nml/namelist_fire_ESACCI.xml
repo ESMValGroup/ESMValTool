@@ -23,7 +23,7 @@ This namelist is part of the ESMValTool
   <write_netcdf type="boolean">       True                      </write_netcdf>
   <force_processing type="boolean">   False                     </force_processing>
   <wrk_dir type="path">               @{WORKPATH}               </wrk_dir>
-  <plot_dir type="path">              @{PLOTPATH}     			 </plot_dir>
+  <plot_dir type="path">              @{PLOTPATH}/fire   		 </plot_dir>
   <climo_dir type="path">             @{CLIMOPATH}       		 </climo_dir>
   <write_plot_vars type="boolean">    True                      </write_plot_vars>
   <max_data_filesize type="integer">  100                       </max_data_filesize>

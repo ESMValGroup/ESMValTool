@@ -45,11 +45,15 @@ class FireDiagnostic(BasicDiagnostics):
         super(FireDiagnostic, self).write_data()
 
     def _load_model_data(self):
-        """ load albedo model data """
+        """ load model data """
 
         mod_info = Dataset(self._mod_file)
-        lat = mod_info.dimensions['lat'].size
-        lon = mod_info.dimensions['lon'].size
+        try:
+            lat = mod_info.dimensions['lat'].size
+            lon = mod_info.dimensions['lon'].size
+        except:  # regridding required in any case
+            lat = -1
+            lon = -1
         mod_info.close()
 
         if not (lat == self.reso["lat"] and lon == self.reso["lon"]):
@@ -74,16 +78,19 @@ class FireDiagnostic(BasicDiagnostics):
             self._mod_file = newfile
 
         # load data
-        self._mod_data = self._load_cmip_generic(
-                self._mod_file, self._project_info['RUNTIME']['currDiag'].
-                get_variables()[0])
+        proj_var = self._project_info['RUNTIME']['currDiag'].get_variables()[0]
+        self._mod_data = self._load_cmip_generic(self._mod_file, proj_var)
 
     def _load_observation_data(self):
         """ load obs data """
 
         mod_info = Dataset(self._ref_file)
-        lat = mod_info.dimensions['lat'].size
-        lon = mod_info.dimensions['lon'].size
+        try:
+            lat = mod_info.dimensions['lat'].size
+            lon = mod_info.dimensions['lon'].size
+        except:  # regridding required in any case
+            lat = -1
+            lon = -1
         mod_info.close()
 
         reso = {"lat": lat, "lon": lon}
@@ -113,10 +120,12 @@ class FireDiagnostic(BasicDiagnostics):
 
         self.reso = reso
 
-        if self._project_info['RUNTIME']['currDiag'].get_variables()[0] ==\
-                "burntArea":
-            self._ref_data = self._load_cci_generic(
-                self._ref_file, self._project_info['RUNTIME']['currDiag'].
-                get_variables()[0])
+        proj_var = self._project_info['RUNTIME']['currDiag'].get_variables()[0]
+        if proj_var == "burntArea":
+            self._ref_data = self._load_cci_generic(self._ref_file, proj_var)
         else:
             assert False, 'Not supported yet'
+
+        # cdo package does not provide correct scaling?!
+        # offline cdo provides correct scaling!
+        self._ref_data.data = self._ref_data.data * 100

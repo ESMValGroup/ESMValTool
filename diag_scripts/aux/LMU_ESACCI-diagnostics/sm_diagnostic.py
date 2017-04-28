@@ -368,15 +368,9 @@ class SoilMoistureDiagnostic(BasicDiagnostics):
 
     def _load_model_data(self):
         """ load soil moisture model data """
-        edited = False
+        orig_mod_file=self._mod_file
 
-        newfile = self._mod_file + ".T85built.nc"
-        newfile = newfile.split("/")
-        newdir = (self._work_dir if self._work_dir[-1] ==
-                  os.sep else self._work_dir + os.sep) + "AUX_Files_sm_ESACCI"
-        newfile = newdir + os.sep + newfile[-1]
-
-        mod_info = Dataset(self._ref_file)
+        mod_info = Dataset(self._mod_file)
         try:
             lat = mod_info.dimensions['lat'].size
             lon = mod_info.dimensions['lon'].size
@@ -385,42 +379,41 @@ class SoilMoistureDiagnostic(BasicDiagnostics):
             lon = -1
         mod_info.close()
 
-        if not ((lat == 128 and lon == 256) or
-                (lat == 96 and lon == 192) or
-                (lat == 18 and lon == 36) or
-                (lat == 6 and lon == 12)):  # TODO add diffs
+        if not (lat == self.reso["lat"] and lon == self.reso["lon"]):
+
+            grid = self.resoLUT[str(self.reso["lat"]) + "-" +
+                                str(self.reso["lon"])]
+
+            newfile = self._mod_file + "." + grid + "built.nc"
+            newfile = newfile.split("/")
+            newdir = (self._work_dir if self._work_dir[-1] ==
+                      os.sep else self._work_dir + os.sep) +\
+                "AUX_Files_sm_ESACCI"
+            newfile = newdir + os.sep + newfile[-1]
 
             if not os.path.exists(newfile):
                 tempfile = self._aggregate_resolution(
-                    self._mod_file, "T85", remove=False)
+                    self._mod_file, grid, remove=False)
                 subprocess.call(["mkdir", newdir])
                 subprocess.call(['cp', tempfile, newfile])
                 os.remove(tempfile)
 
-            self._mod_file_E = newfile
-            edited = True
+            self._mod_file = newfile
 
         # load data
         self._mod_data = self._load_cmip_generic(
-            self._mod_file_E if edited else self._mod_file,
-            self._project_info['RUNTIME']['currDiag'].get_variables()[0])
+                self._mod_file, self._project_info['RUNTIME']['currDiag'].
+                get_variables()[0])
 
         if self.cfg.anomaly:
 
-            self._mod_pr_file = self._mod_file
+            self._mod_pr_file = orig_mod_file
             self._mod_pr_file = self._mod_pr_file.split("/")
             self._mod_pr_file[-1] = self._mod_pr_file[-1].replace(
                 "_sm_", "_pr_").replace("_Lmon_", "_Amon_")
             self._mod_pr_file = "/".join(self._mod_pr_file)
 
-            newfile = self._mod_pr_file + ".T85built.nc"
-            newfile = newfile.split("/")
-            newdir = (self._work_dir
-                      if self._work_dir[-1] == os.sep
-                      else self._work_dir + os.sep) + "AUX_Files_sm_ESACCI"
-            newfile = newdir + os.sep + newfile[-1]
-
-            mod_info = Dataset(self._ref_file)
+            mod_info = Dataset(self._mod_pr_file)
             try:
                 lat = mod_info.dimensions['lat'].size
                 lon = mod_info.dimensions['lon'].size
@@ -429,14 +422,21 @@ class SoilMoistureDiagnostic(BasicDiagnostics):
                 lon = -1
             mod_info.close()
 
-            if not ((lat == 128 and lon == 256) or
-                    (lat == 96 and lon == 192) or
-                    (lat == 18 and lon == 36) or
-                    (lat == 6 and lon == 12)):  # TODO add diffs
+            if not (lat == self.reso["lat"] and lon == self.reso["lon"]):
+
+                grid = self.resoLUT[str(self.reso["lat"]) + "-" +
+                                    str(self.reso["lon"])]
+
+                newfile = self._mod_pr_file + "." + grid + "built.nc"
+                newfile = newfile.split("/")
+                newdir = (self._work_dir if self._work_dir[-1] ==
+                          os.sep else self._work_dir + os.sep) +\
+                    "AUX_Files_sm_ESACCI"
+                newfile = newdir + os.sep + newfile[-1]
 
                 if not os.path.exists(newfile):
                     tempfile = self._aggregate_resolution(
-                        self._mod_pr_file, "T85", remove=False)
+                        self._mod_pr_file, grid, remove=False)
                     subprocess.call(["mkdir", newdir])
                     subprocess.call(['cp', tempfile, newfile])
                     os.remove(tempfile)
@@ -444,18 +444,11 @@ class SoilMoistureDiagnostic(BasicDiagnostics):
                 self._mod_pr_file = newfile
 
             # load data
-            self._mod_pr_data = self._load_cmip_generic(self._mod_pr_file,
-                                                        "pr")
-
-        self._mod_file = self._mod_file_E
+            self._mod_pr_data = self._load_cmip_generic(
+                    self._mod_pr_file, "pr")
 
     def _load_observation_data(self):
         """ load obs data """
-        newfile = self._ref_file + ".T85built.nc"
-        newfile = newfile.split("/")
-        newdir = (self._work_dir if self._work_dir[-1] ==
-                  os.sep else self._work_dir + os.sep) + "AUX_Files_sm_ESACCI"
-        newfile = newdir + os.sep + newfile[-1]
 
         mod_info = Dataset(self._ref_file)
         try:
@@ -466,18 +459,32 @@ class SoilMoistureDiagnostic(BasicDiagnostics):
             lon = -1
         mod_info.close()
 
-        if not ((lat == 128 and lon == 256) or
-                (lat == 96 and lon == 192) or
-                (lat == 18 and lon == 36) or
-                (lat == 6 and lon == 12)):  # TODO add diffs
+        reso = {"lat": lat, "lon": lon}
+
+        if str(lat) + "-" + str(lon) not in self.resoLUT.keys():
+
+            grid = self.resoLUT[str(self.reso["lat"]) + "-" +
+                                str(self.reso["lon"])]
+
+            newfile = self._ref_file + "." + grid + "built.nc"
+            newfile = newfile.split("/")
+            newdir = (self._work_dir if self._work_dir[-1] ==
+                      os.sep else self._work_dir + os.sep) +\
+                "AUX_Files_sm_ESACCI"
+            newfile = newdir + os.sep + newfile[-1]
+
             if not os.path.exists(newfile):
                 tempfile = self._aggregate_resolution(
-                    self._ref_file, "T85", remove=False)
+                    self._ref_file, grid, remove=False)
                 subprocess.call(["mkdir", newdir])
                 subprocess.call(['cp', tempfile, newfile])
                 os.remove(tempfile)
 
             self._ref_file = newfile
+
+            reso = self.reso
+
+        self.reso = reso
 
         proj_var = self._project_info['RUNTIME']['currDiag'].get_variables()[0]
         if proj_var == "sm":

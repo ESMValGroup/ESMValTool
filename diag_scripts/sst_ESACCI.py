@@ -75,8 +75,6 @@ def main(project_info):
             model_filelist = ESMValProject(project_info).\
                 get_clim_model_filenames(variable=variable)
 
-            print([M.model_line for M in project_info['MODELS']])
-
             # only models are read
             for inc in range(len(project_info['MODELS'])):
 

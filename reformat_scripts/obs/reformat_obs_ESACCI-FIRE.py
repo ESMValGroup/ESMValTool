@@ -2,7 +2,7 @@
 
 """
 ###############################################################################
-## REFORMAT SCRIPT FOR THE ESACCI-LANDCOVER SATELLITE DATA
+## REFORMAT SCRIPT FOR THE ESACCI-FIRE SATELLITE DATA
 ###############################################################################
 ##
 ## Tier
@@ -118,16 +118,18 @@ def _preprocess_observations(infiles, outfile, timestep, force=False):
                 _get_files_in_directory(tmp, '*ESACCI*FIRE*fv4.1.nc', False)
             cdo.mergetime(input=file_list, output=tmp + "tmp1",
                           options='-f nc4 -b F32')
-            # TODO discuss if mean or sum...
-            cdo.monmean(input="-chname,burned_area,burntArea " + tmp + "tmp1",
-                        output=tmp + "tmp2", options='-f nc4 -b F32')
-            cdo.gridarea(input=tmp + "tmp2", output=tmp + "tmp3",
+            cdo.setctomiss(1.e33, input=tmp + "tmp1", output=tmp + "tmp2")
+            cdo.setctomiss(1.e20, input=tmp + "tmp2", output=tmp + "tmp3")
+            cdo.setctomiss(1.e38, input=tmp + "tmp3", output=tmp + "tmp4")
+            cdo.gridarea(input=tmp + "tmp4", output=tmp + "tmp5",
                          options='-f nc4 -b F32')
-            cdo.div(input=[tmp + "tmp2", tmp + "tmp3"], output=tmp + "tmp4",
+            cdo.div(input=[tmp + "tmp4", tmp + "tmp5"], output=tmp + "tmp6",
                     options='-f nc4 -b F32')
-            cdo.chunit("m2,%", input=tmp + "tmp4", output=tmp + "tmp5",
+            cdo.monsum(input="-chname,burned_area,burntArea " + tmp + "tmp6",
+                       output=tmp + "tmp7", options='-f nc4 -b F32')
+            cdo.chunit("m2,%", input=tmp + "tmp7", output=tmp + "tmp8",
                        options='-f nc4 -b F32')
-            cdo.mulc(100, input=tmp + "tmp5", output=outfile,
+            cdo.mulc(100, input=tmp + "tmp8", output=outfile,
                      options='-f nc4 -b F32')
 
         else:
