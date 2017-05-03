@@ -1,24 +1,24 @@
-# This is a config file for CCI data and CMIP5 fire data diagnostics
+# This is a config file for QA4ECV and CMIP5 data diagnostics
 
 # generell flags
-regionalization = True
+regionalization = False
 shape = "continents"
 shapeNames = 2  # column of the name values
 
 # flags for basic diagnostics
 globmeants = True
-mima_globmeants = [0, 1]
-cmap_globmeants = 'RdYlGn_r'  # 'YlGn_r'
-mima_ts = [0, 1]
+mima_globmeants = [0, 2.5]
+cmap_globmeants = 'gist_stern'  # 'YlGn_r'
+mima_ts = [0, 2.5]
 mima_mts = mima_ts
-portrait = True
-globmeandiff = True
-globmeandiff_p = True
-mima_globmeandiff = [-1, 1]
+portrait = False
+globmeandiff = False
+globmeandiff_p = False
+mima_globmeandiff = [-2.5, 2.5]
 mima_globmeandiff_r = [-1, 1]
-trend = True
-anomalytrend = True
-trend_p = True
+trend = False
+anomalytrend = False
+trend_p = False
 climatologies = True
 
 # flags for specific diagnostics

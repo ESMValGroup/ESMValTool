@@ -680,13 +680,14 @@ class BasicDiagnostics(Diagnostic):
         self._gmd_data = self._mod_data.copy()
         self._gmd_data.label = 'global_mean_difference' + \
             ' [' + self._ref_data.label + '-' + self._mod_data.label + ']'
-        self._gmd_data.data = self._mod_data.timmean() - \
-            self._ref_data.timmean()
+        self._gmd_data.data = self._mod_data.timmean(return_object=False) - \
+            self._ref_data.timmean(return_object=False)
         self._gmdr_data = self._mod_data.copy()
         self._gmdr_data.label = 'relative_global_mean_difference' + \
             ' [' + self._ref_data.label + '-' + self._mod_data.label + ']'
-        self._gmdr_data.data = (self._mod_data.timmean(
-        ) - self._ref_data.timmean()) / self._ref_data.timmean()
+        self._gmdr_data.data = (self._mod_data.timmean(return_object=False) -
+                                self._ref_data.timmean(return_object=False)) /\
+            self._ref_data.timmean(return_object=False)
         self._gmdr_data.unit = "-"
 
     def _plot_global_mean_difference(self, month=None):
@@ -820,7 +821,7 @@ class BasicDiagnostics(Diagnostic):
         ESMValMD("both",
                  f_name,
                  self._basetags + ['gmd', 'basic', self.modname],
-                 str('Global mean difference' +
+                 str('Global mean difference ' +
                      'of the time series between ' + self.modname +
                      ' and ' + self.refname + ' ' + self._vartype + '.'),
                  '#ID' + 'gmd' + self.var)
@@ -973,11 +974,12 @@ class BasicDiagnostics(Diagnostic):
 
         if isinstance(D, GeoData):
             _min_data = D.data.min(axis=(1, 2)).data
-            _mean_data = D.fldmean()  # data.mean(axis=1).mean(axis=1).data
+            _mean_data = D.fldmean(return_data=False)
             _max_data = D.data.max(axis=(1, 2)).data
             D2 = D.copy()
             D2.data = D2.data**2
-            _std_data = np.sqrt((D2.fldmean() - _mean_data**2))
+            _std_data = np.sqrt((D2.fldmean(return_data=False) -
+                                 _mean_data**2))
             _count = np.logical_not(D.data.mask).sum(axis=(1, 2))
         else:
             _min_data = D.min(axis=(1, 2)).data
@@ -1110,8 +1112,8 @@ class BasicDiagnostics(Diagnostic):
             [month], mtype="monthly")
         cdat = self._clim_r_data.copy()
         cdat._apply_temporal_mask([not t for t in time_select])
-        self._gmt_r_data = self._clim_r_data.copy()
-        self._gmt_r_data.data = cdat.timmean()
+#        self._gmt_r_data = self._clim_r_data.copy()
+        self._gmt_r_data = cdat.timmean(return_object=True)
         self._gmt_r_data.label = self.refname + \
             ' (' + self._month_i2str(month) + ')'
 
@@ -1119,8 +1121,8 @@ class BasicDiagnostics(Diagnostic):
             [month], mtype="monthly")
         cdat = self._clim_m_data.copy()
         cdat._apply_temporal_mask([not t for t in time_select])
-        self._gmt_m_data = self._clim_m_data.copy()
-        self._gmt_m_data.data = cdat.timmean()
+#        self._gmt_m_data = self._clim_m_data.copy()
+        self._gmt_m_data = cdat.timmean(return_object=True)
         self._gmt_m_data.label = self.modname + \
             ' (' + self._month_i2str(month) + ')'
 
@@ -1151,8 +1153,6 @@ class BasicDiagnostics(Diagnostic):
                                 sel_month_r.data, axis=0)[1],
                 self._gmd_data.data.mask)
             self._gmdp_data.unit = "-"
-        else:
-            del self._gmdp_data
 
         self._plot_global_mean_difference(month=month)
 
@@ -1179,8 +1179,6 @@ class BasicDiagnostics(Diagnostic):
             del self._gmdr_data
         if gmdp_save:
             self._gmdp_data = _save_gmdp_data
-        else:
-            del self._gmdp_data
         if ts_save:
             self._ts = _save_ts
         else:
@@ -1371,7 +1369,7 @@ class BasicDiagnostics(Diagnostic):
         if name == self.refname:
 
             # mean of timeseries
-            self._gmt_r_data = self._ref_data.copy()
+            self._gmt_r_data = self._ref_data.timmean(return_object=True)
             if self._start_time == self._stop_time and \
                     self.var in ["baresoilFrac",
                                  "grassNcropFrac",
@@ -1380,13 +1378,11 @@ class BasicDiagnostics(Diagnostic):
                     " " + str(self._start_time)
             else:
                 self._gmt_r_data.label = self.refname + ' temporal mean'
-            self._gmt_r_data.data = self._ref_data.timmean()
 
         elif name == self.modname:
             # mean of timeseries
-            self._gmt_m_data = self._mod_data.copy()
+            self._gmt_m_data = self._mod_data.timmean(return_object=True)
             self._gmt_m_data.label = self.modname + ' temporal mean'
-            self._gmt_m_data.data = self._mod_data.timmean()
 
         else:
             assert False, 'data not expected'
@@ -1850,7 +1846,8 @@ class BasicDiagnostics(Diagnostic):
         """ global z-transormation """
 
         data_o = data.copy()
-        data_o.data = (data_o.data - data_o.timmean()) / data_o.timvar()
+        data_o.data = (data_o.data - data_o.timmean(return_object=False)) /\
+            data_o.timvar(return_object=False)
 
         return data_o
 
