@@ -11,7 +11,7 @@ Git repository
 Workflow
 ========
 
-General do’s and don’ts
+General do's and don'ts
 =======================
 
 .. _wiki:
