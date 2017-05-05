@@ -7,6 +7,7 @@ import os
 # import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+import matplotlib.dates as mdates
 # from netCDF4 import Dataset
 
 # global installation
@@ -537,6 +538,10 @@ class BasicDiagnostics(Diagnostic):
             if self.cfg.climatologies:
                 for month in self._mts:
                     self._plot_climatologies(month)
+            else:
+                print 'No climatologies to write!'
+            if self.cfg.hovmoeller:
+                self._plot_hovmoeller_like()
             else:
                 print 'No climatologies to write!'
         else:
@@ -1391,7 +1396,7 @@ class BasicDiagnostics(Diagnostic):
         """
         plot global mean timeseries
         """
-        # plot temporal agregated map
+        # plot temporal aggregated map
         Map = SingleMap(self._gmt_r_data
                         if name == self.refname
                         else self._gmt_m_data,
@@ -1427,6 +1432,127 @@ class BasicDiagnostics(Diagnostic):
                  str('Temporal mean of the ' + name + ' ' +
                      self._vartype + ' data set.'),
                  '#ID' + 'gmt' + self.var)
+
+    def _plot_hovmoeller_like(self):
+        """
+        plot hovmoeller-like images for identification of model differences
+        """
+        self._hov_lat_mod_data = self._clim_m_data.get_zonal_mean(return_object=False, lat=True)
+
+        self._hov_lon_mod_data  = self._clim_m_data.get_zonal_mean(return_object=False, lat=False)
+
+        self._hov_lat_ref_data = self._clim_r_data.get_zonal_mean(return_object=False, lat=True)
+
+        self._hov_lon_ref_data  = self._clim_r_data.get_zonal_mean(return_object=False, lat=False)
+
+
+        # calculate lat dependent mod
+#        self._hov_lat_mod_data = self._clim_m_data.data.mean(axis=2)
+        # calculate lon dependent mod
+#        self._hov_lon_mod_data = self._clim_m_data.data.mean(axis=1)
+        d = self._hov_lon_mod_data.data.copy()
+        d = np.hstack((d[:, np.arange(0, d.shape[1]/2)+d.shape[1]/2-1],
+                       d[:, np.arange(0, d.shape[1]/2)]))
+        m = self._hov_lon_mod_data.mask.copy()
+        m = np.hstack((m[:, np.arange(0, m.shape[1]/2)+m.shape[1]/2-1],
+                       m[:, np.arange(0, m.shape[1]/2)]))
+        self._hov_lon_mod_data = np.ma.array(d, mask=m)
+        # calculate lat dependent ref
+#        self._hov_lat_ref_data = self._clim_r_data.data.mean(axis=2)
+        # calculate lon dependent ref
+#        self._hov_lon_ref_data = self._clim_r_data.data.mean(axis=1)
+        d = self._hov_lon_ref_data.data.copy()
+        d = np.hstack((d[:, np.arange(0, d.shape[1]/2)+d.shape[1]/2-1],
+                       d[:, np.arange(0, d.shape[1]/2)]))
+        m = self._hov_lon_ref_data.mask.copy()
+        m = np.hstack((m[:, np.arange(0, m.shape[1]/2)+m.shape[1]/2-1],
+                       m[:, np.arange(0, m.shape[1]/2)]))
+        self._hov_lon_ref_data = np.ma.array(d, mask=m)
+
+        # calculate lat dependent diff
+        self._hov_lat_diff_data = self._hov_lat_mod_data -\
+            self._hov_lat_ref_data
+        # calculate lon dependent diff
+        self._hov_lon_diff_data = self._hov_lon_mod_data -\
+            self._hov_lon_ref_data
+
+        fig = plt.figure(figsize=(20, 5))
+
+        ashape = self._hov_lon_ref_data.shape
+
+        a = fig.add_subplot(1, 3, 1)
+        imgplot = plt.imshow(self._hov_lon_mod_data,
+                             cmap=cm.get_cmap(self.cfg.cmap_globmeants, 10))
+        plt.ylabel('climatology [months]')
+        plt.yticks(range(0, 12), range(1, 13))
+        plt.xticks([-0.5, ashape[1]/4, ashape[1]/2,
+                    3*ashape[1]/4, ashape[1]-0.5],
+                   ["180 W", "90 W", "0", "90 E", "180 E"])
+        plt.axis('tight')
+        plt.colorbar(ticks=np.linspace(min(self.cfg.mima_hov),
+                                       max(self.cfg.mima_hov),
+                                       num=11))
+        imgplot.set_clim((min(self.cfg.mima_hov),
+                          max(self.cfg.mima_hov)))
+        ax = plt.gca()
+        ax.set_yticks(np.arange(-.5, 12, 1), minor=True)
+        ax.grid(which='minor', color='black', linestyle='-', linewidth=1)
+        a.set_title('MOD')
+
+        b = fig.add_subplot(1, 3, 3)
+        imgplot = plt.imshow(self._hov_lon_ref_data,
+                             cmap=cm.get_cmap(self.cfg.cmap_globmeants, 10))
+        plt.yticks(range(0, 12), range(1, 13))
+        plt.xticks([-0.5, ashape[1]/4, ashape[1]/2,
+                    3*ashape[1]/4, ashape[1]-0.5],
+                   ["180 W", "90 W", "0", "90 E", "180 E"])
+        plt.axis('tight')
+        plt.colorbar(ticks=np.linspace(min(self.cfg.mima_hov),
+                                       max(self.cfg.mima_hov),
+                                       num=11))
+        imgplot.set_clim((min(self.cfg.mima_hov),
+                          max(self.cfg.mima_hov)))
+        ax = plt.gca()
+        ax.set_yticks(np.arange(-.5, 12, 1), minor=True)
+        ax.grid(which='minor', color='black', linestyle='-', linewidth=1)
+        b.set_title('REF')
+
+        c = fig.add_subplot(1, 3, 2)
+        imgplot = plt.imshow(self._hov_lon_diff_data,
+                             cmap=cm.get_cmap('RdBu', 10))
+        plt.yticks(range(0, 12), range(1, 13))
+        plt.xticks([-0.5, ashape[1]/4, ashape[1]/2,
+                    3*ashape[1]/4, ashape[1]-0.5],
+                   ["180 W", "90 W", "0", "90 E", "180 E"])
+        plt.axis('tight')
+        plt.colorbar(ticks=np.linspace(min(self.cfg.mima_hovdiff),
+                                       max(self.cfg.mima_hovdiff),
+                                       num=11))
+        imgplot.set_clim((min(self.cfg.mima_hovdiff),
+                          max(self.cfg.mima_hovdiff)))
+        ax = plt.gca()
+        ax.set_yticks(np.arange(-.5, 12, 1), minor=True)
+        ax.grid(which='minor', color='black', linestyle='-', linewidth=1)
+        c.set_title('DIFF')
+        plt.xlabel('longitude [deg]')
+
+        f_name = self._plot_dir + os.sep + self._vartype.replace(" ", "_") + \
+            '_' + '_hov.' + self.output_type
+        imgplot.figure.savefig(f_name, dpi=self.plot_dpi)
+
+
+
+#        f_name = self._plot_dir + os.sep + self._vartype.replace(" ", "_") + \
+#            '_' + name + '_hov.' + self.output_type
+#
+#        plt.close()
+#
+#        ESMValMD("both",
+#                 f_name,
+#                 self._basetags + ['gmt', 'basic', name],
+#                 str('Temporal mean of the ' + name + ' ' +
+#                     self._vartype + ' data set.'),
+#                 '#ID' + 'gmt' + self.var)
 
     def _calc_spatial_correlation(self, X, Y):
         """
