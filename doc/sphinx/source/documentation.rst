@@ -60,20 +60,35 @@ When implementing a new diagnostic script or metrics set, it should be documente
 | **(feature branch)**      |                                                                          |
 +---------------------------+--------------------------------------------------------------------------+
 | ``1.`` Overview                                                                                      |
+|                                                                                                      |
 | . . . Insert text here                                                                               |
+|                                                                                                      |
 | ``2.`` Available Diagnostics                                                                         |
+|                                                                                                      |
 | . . . Insert text here                                                                               |
+|                                                                                                      |
 | ``3.`` Specific Routines                                                                             |
+|                                                                                                      |
 | . . . Contains a description of specific routines being developed for the given diagnostic that helps|
+|                                                                                                      |
 | . . . to identify common code (which should then go in the ``lib/``)                                 |
+|                                                                                                      |
 | ``4.`` Observations and Scripts (also see Model and observational data below)                        |
+|                                                                                                      |
 | . . . Insert text here                                                                               |
+|                                                                                                      |
 | ``5.`` Test Cases (see also Automated testing, section TODO:ref 7.9)                                 |
+|                                                                                                      |
 | . . . Insert text here                                                                               |
+|                                                                                                      |
 | ``6.`` References                                                                                    |
+|                                                                                                      |
 | . . . REF1                                                                                           |
+|                                                                                                      |
 | . . . REF2                                                                                           |
+|                                                                                                      |
 | . . . etc.                                                                                           |
+|                                                                                                      |
 | ``7.`` Sample Plots                                                                                  |
 +---------------------------+--------------------------------------------------------------------------+
 
