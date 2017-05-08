@@ -16,6 +16,5 @@ ESMValTool v1.0, see also
 Diagnostics and observational data sets newly implemented into the ESMValTool
 v1.1 are described in
 
-* Lauer et al., Benchmarking CMIP5 models with a subset of ESA CCI Phase 2 data using the ESMValTool, Remote Sens. Environ. (2017),
-`doi:10.1016/j.rse.2017.01.007 <http://dx.doi.org/10.1016/j.rse.2017.01.007>`_
+* Lauer et al., Benchmarking CMIP5 models with a subset of ESA CCI Phase 2 data using the ESMValTool, Remote Sens. Environ. (2017), `doi:10.1016/j.rse.2017.01.007 <http://dx.doi.org/10.1016/j.rse.2017.01.007>`_
 
