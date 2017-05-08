@@ -15,6 +15,12 @@ The Python ~workflow manager~ main.py will parse the namelist (namelist.xml) and
 6.	repeat previous steps until all diagnostics listed in the namelist are processed
 
 
+.. figure:: ./figures/figure_ESMValTool_controlflow.png
+   :scale: 30 %
+   :alt: xxxxx
+   
+   ESMValTool control flow.
+
 
 Figure 2 ESMValTool control flow.
 
