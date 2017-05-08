@@ -46,6 +46,8 @@ More on the <GLOBAL>-tag
 
 Table S1 summarizes the tags defined in the <GLOBAL> section of the namelist. Some of these tags (e.g., regridding_dir) are specific to some diagnostics and not generally defined in all namelists.
 
+
+
 **Table S1** Tags of the <GLOBAL> section of the namelist. Note that not all tags might be used by a diagnostic.
 
 +----------------------+----------+------------------------------------------------------------------------------------------------+
@@ -119,6 +121,8 @@ Example:
 
 The attribute id specifies a string that can be used to refer to the model in other places of the namelist. Table S3 gives a summary of valid attributes in <model>-tags.
 
+
+
 **Table S2** Project specifiers and corresponding arguments.
 
 +-------------------+------------+---------------+------------+------------+------------+------------+------------+------------+
@@ -154,6 +158,8 @@ The attribute id specifies a string that can be used to refer to the model in ot
 | obs4mips	    | Name	 | process level | ensemble   | start year | end year   | path	-    | -          |            |
 +-------------------+------------+---------------+------------+------------+------------+------------+------------+------------+
 
+
+
 **Table S3**  Optional attributes of the <model> tag.
 
 +-------+---------+------------------------------------------------------------------------------+
@@ -161,6 +167,7 @@ The attribute id specifies a string that can be used to refer to the model in ot
 +=======+=========+==============================================================================+
 | id	| String  | Define a name used to refer to the model data in other parts of the namelist |
 +-------+---------+------------------------------------------------------------------------------+
+
 
 
 **Table S4**  Optional attributes of the <variable> tag.
@@ -182,6 +189,9 @@ More on the <DIAGNOSTICS>-tag
 =============================
 
 Each <diag> entry refers to one or several scripts in the folder *diag_scripts/* complemented by a variable name (see Table S8 for a list of variables) and the corresponding (input) field type (see Table S7). Optionally the <diag>-tag may contain additional <model>-tags; these data sets will be processed only by the diagnostic(s) listed in the current <diag> entry. In this way it is possible to define a set of models to be analyzed by all diagnostics in the namelist (in the <MODELS> section) and a set of models to be analyzed only by specific diagnostics (in the <diag> section). Available <diag>-tags are listed in Table S5, their optional attributes in Table S6.
+
+
+
 
 **Table S5** Tags of the <diag> section within the <DIAGNOSTICS> section of the namelist. There are no default values.
 
@@ -213,6 +223,9 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 |                      |          |  the  |ones defined in the MODELS section (see above) but will be ignored by other <diag>-sections.             |
 +----------------------+----------+-----------------------------------------------------------------------------------------------------------------+
 
+
+
+
 **Table S6** Optional attributes of selected tags in the <diag> section. 
 
 +------------+----------+------------+--------------------------------------------------------------------------------------------------+
@@ -232,6 +245,9 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 +------------+----------+------------+--------------------------------------------------------------------------------------------------+
 | cfg	string	<diag_script>	Configuration file for the diagnostic script								|
 +------------+----------+------------+--------------------------------------------------------------------------------------------------+
+
+
+
 
 **Table S7** Field types.
 
@@ -270,6 +286,9 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 +-------+---------------------------------------------------------------------------------------------------------------+
 | TO3M	| Monthly-mean 3d ocean or sea ice data (longitude, latitude, model level, time:month)                          |
 +-------+---------------------------------------------------------------------------------------------------------------+
+
+
+
 
 **Table S8** Variable definition scripts.
 
@@ -365,17 +384,17 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 | lwpStderr.ncl            | Vertically integrated cloud water standard error (observations)                   |
 +--------------------------+-----------------------------------------------------------------------------------+
 | mlotst.ncl	           | Ocean mixed layer thickness                                                       |
-+------------------------------+-------------------------------------------------------------------------------+
++--------------------------+-----------------------------------------------------------------------------------+
 | mmraer.ncl	           | EMAC aerosol variable                                                             |
-+------------------------------+-------------------------------------------------------------------------------+
++--------------------------+-----------------------------------------------------------------------------------+
 | mmrbcfree.ncl	           | EMAC aerosol variable                                                             |
-+------------------------------+-------------------------------------------------------------------------------+
++--------------------------+-----------------------------------------------------------------------------------+
 | mmrbc.ncl	           | BC mass mixing ration                                                             |
-+------------------------------+-------------------------------------------------------------------------------+
++--------------------------+-----------------------------------------------------------------------------------+
 | mrro.ncl	           | Total runoff                                                                      |
-+------------------------------+-------------------------------------------------------------------------------+
++--------------------------+-----------------------------------------------------------------------------------+
 | mrso.ncl                 | Soil moisture content                                                             |
-+------------------------------+-------------------------------------------------------------------------------+
++--------------------------+-----------------------------------------------------------------------------------+
 | msftmyz.ncl	           | Ocean meridional overturning mass streamfunction                                  |
 +--------------------------+-----------------------------------------------------------------------------------+
 | MyVar.ncl	           | Template                                                                          |
