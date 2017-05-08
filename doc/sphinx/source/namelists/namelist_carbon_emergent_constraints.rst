@@ -1,5 +1,5 @@
-TEMPLATE FOR NAMELIST
-=====================
+Emergent constraints on carbon cycle feedbacks
+==============================================
 
 Overview
 --------
