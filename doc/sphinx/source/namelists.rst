@@ -113,7 +113,7 @@ The <model>-tag may also take the optional attribute ~id~:
 	*<model id=~string~>*
 
 Example:
-	*<model **id**="ERAINT"> OBS ERA-Interim reanaly 1 2003 2004 @{OBSPATH}/Tier3/ERA-Interim </model>*
+	*<model id="ERAINT"> OBS ERA-Interim reanaly 1 2003 2004 @{OBSPATH}/Tier3/ERA-Interim </model>*
 
 The attribute id specifies a string that can be used to refer to the model in other places of the namelist. Table S3 gives a summary of valid attributes in <model>-tags.
 
