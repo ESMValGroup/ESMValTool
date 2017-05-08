@@ -53,7 +53,7 @@ When implementing a new diagnostic script or metrics set, it should be documente
 |    Insert text here                                                                                  |
 | Specific Routines                                                                                    |
 |    Contains a description of specific routines being developed for the given diagnostic that helps to|
-|    identify common code (which should then go in the * lib/ *)                                         |
+|    identify common code (which should then go in the * lib/ *)                                       |
 | Observations and Scripts (also see Model and observational data below)                               |
 |    Insert text here                                                                                  |
 | Test Cases (see also Automated testing, section #TODO:ref 7.9)                                       |
