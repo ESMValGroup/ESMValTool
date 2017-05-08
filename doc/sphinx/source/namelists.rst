@@ -46,6 +46,7 @@ More on the <GLOBAL>-tag
 Table S1 summarizes the tags defined in the <GLOBAL> section of the namelist. Some of these tags (e.g., regridding_dir) are specific to some diagnostics and not generally defined in all namelists.
 
 **Table S1** Tags of the <GLOBAL> section of the namelist. Note that not all tags might be used by a diagnostic.
+
 +----------------------+----------+------------------------------------------------------------------------------------------------+
 | Name	               | Type	  | Description                                                                                    |
 +======================+==========+================================================================================================+
