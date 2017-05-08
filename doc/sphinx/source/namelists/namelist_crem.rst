@@ -61,10 +61,8 @@ References
 Example plots
 -------------
 
-TBD
-
 .. figure:: figures/crem/crem_error_metric.png
-   :scale: 50 %
+   :scale: 30 %
    :alt: xxxxx
 
    Cloud Regime Error Metrics (CREMpd) from William and Webb (2009) applied to those CMIP5 AMIP simulations with the required data in the archive. A perfect score with respect to ISCCP is zero; the dashed red line is an indication of observational uncertainty.
