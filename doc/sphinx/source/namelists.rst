@@ -22,7 +22,7 @@ The script *main.py* processes the information in the XML namelist to be used by
 
 Note that the coupling between the namelist and the diagnostic scripts is ~loose~. The Python workflow manager *main.py* passes all information in the namelist to the target diagnostic script, e.g., via intermediate files or environment variables, but it is up to the diagnostic script to act on that information.
 
-Basic structure of a namelist:
+Basic structure of a namelist::
  
 	**<GLOBAL>**
 	controls the general settings (see Table S1) ; see section 3.1, ~More on the <GLOBALS>-tag~ below for details
