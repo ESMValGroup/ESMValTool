@@ -24,15 +24,17 @@ Note that the coupling between the namelist and the diagnostic scripts is ~loose
 
 Basic structure of a namelist::
  
-	**<GLOBAL>**
+	<GLOBAL>
 	controls the general settings (see Table S1) ; see section 3.1, ~More on the <GLOBALS>-tag~ below for details
-	**</GLOBAL>**
-	**<MODELS>**
+	</GLOBAL>
+
+	<MODELS>
 	defines the models/observations and years to be processed and their pathnames; see the section 3.2, ~More on the <MODELS>-tag~ below for details
-	**</MODELS>**
-	**<DIAGNOSTIC>**
+	</MODELS>
+
+	<DIAGNOSTIC>
 	defines which diagnostics are run (see Table S5); each diagnostic is enclosed in an opening <diag> and closing </diag>-tag; see the section 0, ~More on the <DIAGNOSTICS>-tag~ below for details
-	**</DIAGNOSTIC>**
+	</DIAGNOSTIC>
 
 
 Please note that the ~loose coupling~ described above applies particularly to the settings defined in the two elements <GLOBAL> and <DIAGNOSTIC>.
