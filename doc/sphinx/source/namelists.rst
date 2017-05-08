@@ -17,6 +17,7 @@ The Python ~workflow manager~ main.py will parse the namelist (namelist.xml) and
 
 
 
+
 Figure 2 ESMValTool control flow.
 
 The script *main.py* processes the information in the XML namelist to be used by each of the supported programming languages (currently NCL, Python and R) used for the diagnostic scripts. This means that different diagnostics, even if implemented in different programming languages, can be called within the same namelist. Any changes to the settings of the namelist will passed to each diagnostic script.
@@ -96,25 +97,25 @@ Each data set is specified by a <model> line with the first entry of each model 
 	*<model> CMIP5 name mip experiment ensemble start-year end-year path </model>*
 
 * Optionally, the element *~mip~* can be replaced with *~MIP_VAR_DEF~* if the tag *~MIP~* is specified in the <variable> tag (see Table S4), e.g.:
-	*<variable MIP="cfDay"> rlut </variable>*
-	*<model> CMIP5_ETHZ MPI-ESM-LR MIP_VAR_DEF amip r1i1p1 1980 1985 @{MODELPATH}/ETHZ_CMIP5/ </model>*
+*<variable MIP="cfDay"> rlut </variable>*
+*<model> CMIP5_ETHZ MPI-ESM-LR MIP_VAR_DEF amip r1i1p1 1980 1985 @{MODELPATH}/ETHZ_CMIP5/ </model>*
 
-* The element ~experiment~ can be replaced with ~EXP_VAR_DEF~ if the tag ~EXP~ is specified in the <variable> tag (see Table S4), e.g.:
-	*<variable MIP="Omon" EXP="esmHistorical"> fgco2 </variable>*
-	*<model> CMIP5_ETHZ NorESM1-ME MIP_VAR_DEF EXP_VAR_DEF r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>*
+* The element ~experiment~ can be replaced with ~EXP_VAR_DEF~ if the tag ~EXP~ is specified in the <variable> tag (see Table S4), e.g.: *<variable MIP="Omon" EXP="esmHistorical"> fgco2 </variable>*; *<model> CMIP5_ETHZ NorESM1-ME MIP_VAR_DEF EXP_VAR_DEF r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>*
 
 The project specifier ~CMIP5~ will search for files in ~path~ with filenames matching the pattern
 
-	* *_mip_name_experiment_ensemble_* *
+	*_mip_name_experiment_ensemble_*
 
 Here, the leading asterisk is a placeholder for the variable, which is defined in the <DIAGNOSTICS>-tag (see below), the trailing asterisk is a placeholder for the start/end date of the data set. This naming convention conforms to the syntax used for CMIP5 DRS filenames (as implied by the project specifier name). By implementing their own project specifier classes into the Python code (*interface_scripts/projects.py*), the user can handle data sets that follow different file naming conventions or require additional information to be passed along in addition to the filename. Table S2 gives a summary of the available project specifiers and arguments to be used in each <model> line. 
 
-Note: Examples for the most commonly used project specifiers CMIP5, CMIP5_ETHZ, OBS, and obs4mips as well as downloading instructions and information on the required local directory structure for the model / observational data can be found in section 6.1.
+[Note: Examples for the most commonly used project specifiers CMIP5, CMIP5_ETHZ, OBS, and obs4mips as well as downloading instructions and information on the required local directory structure for the model / observational data can be found in section 6.1.]
+
 The <model>-tag may also take the optional attribute ~id~:
-<model id=~string~>
+
+	*<model id=~string~>*
 
 Example:
-<model id="ERAINT"> OBS ERA-Interim reanaly 1 2003 2004 @{OBSPATH}/Tier3/ERA-Interim </model>
+	*<model **id**="ERAINT"> OBS ERA-Interim reanaly 1 2003 2004 @{OBSPATH}/Tier3/ERA-Interim </model>*
 
 The attribute id specifies a string that can be used to refer to the model in other places of the namelist. Table S3 gives a summary of valid attributes in <model>-tags.
 
@@ -180,7 +181,7 @@ The attribute id specifies a string that can be used to refer to the model in ot
 More on the <DIAGNOSTICS>-tag
 =============================
 
-Each <diag> entry refers to one or several scripts in the folder diag_scripts/ complemented by a variable name (see Table S8 for a list of variables) and the corresponding (input) field type (see Table S7). Optionally the <diag>-tag may contain additional <model>-tags; these data sets will be processed only by the diagnostic(s) listed in the current <diag> entry. In this way it is possible to define a set of models to be analyzed by all diagnostics in the namelist (in the <MODELS> section) and a set of models to be analyzed only by specific diagnostics (in the <diag> section). Available <diag>-tags are listed in Table S5, their optional attributes in Table S6.
+Each <diag> entry refers to one or several scripts in the folder *diag_scripts/* complemented by a variable name (see Table S8 for a list of variables) and the corresponding (input) field type (see Table S7). Optionally the <diag>-tag may contain additional <model>-tags; these data sets will be processed only by the diagnostic(s) listed in the current <diag> entry. In this way it is possible to define a set of models to be analyzed by all diagnostics in the namelist (in the <MODELS> section) and a set of models to be analyzed only by specific diagnostics (in the <diag> section). Available <diag>-tags are listed in Table S5, their optional attributes in Table S6.
 
 **Table S5** Tags of the <diag> section within the <DIAGNOSTICS> section of the namelist. There are no default values.
 
@@ -612,12 +613,13 @@ Each <diag> entry refers to one or several scripts in the folder diag_scripts/ c
 | zg.ncl                   | Geopotential height							       |
 +--------------------------+-----------------------------------------------------------------------------------+
 
-Typically, all namelists are stored in the folder nml, the naming convention is namelist_xxx.xml with ~xxx~ being the name of the diagnostic and/or a description of the purpose of the namelist:
-	For papers
+Typically, all namelists are stored in the folder *nml*, the naming convention is *namelist_xxx.xml* with ~xxx~ being the name of the diagnostic and/or a description of the purpose of the namelist:
+	
+* **For papers **
 xxx = SurnameYearJournalabbreviation (e.g., stocker12jgr, stocker12sci1, stocker12sci2). 
-	For copies of reports that are not publicly available
+* ** For copies of reports that are not publicly available **
 xxx = OrgYearTitleabbrev (e.g., unep10water, unep11gap, roysoc09geoengineering).
-	For grouped sets of diagnostics and performance metrics that do not follow a published paper or report
+* ** For grouped sets of diagnostics and performance metrics that do not follow a published paper or report**
 xxx = an intuitive name describing the scientific topic (e.g., aerosol, MyDiag, SAMonsoon, SeaIce)
 
 
