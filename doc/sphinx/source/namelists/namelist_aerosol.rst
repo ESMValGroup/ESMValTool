@@ -1,5 +1,5 @@
-TEMPLATE FOR NAMELIST
-=====================
+Aerosol
+=======
 
 Overview
 --------
@@ -34,7 +34,33 @@ Diagnostics are stored in diag_scripts/
 User settings
 -------------
 
-TBD
+User setting files (cfg files) are stored in nml/cfg_aerosol/CMIP5/ and nml/cfg_aerosol/EMAC/:
+
+  **! NOTE ! The cfg files may contain hard coded pathnames (attribute “datapath”, see below) for the observational data that have to be set by the user!**
+  
+*(1)	aerosol_stations.ncl (AERONET, CASTNET, EANET, EMEP, IMPROVE)*
+  
+* cfg_aerosol_stations_AERONET.ncl
+* cfg_aerosol_stations_CASTNET.ncl
+* cfg_aerosol_stations_EANET.ncl
+* cfg_aerosol_stations_EMEP.ncl
+* cfg_aerosol_stations_IMPROVE.ncl
+* cfg_aerosol_tsline.ncl
+
+
+*(2)	aerosol_satellites.ncl (ESACCI, MISR, MODIS)*
+
+* satellite_ESACCI-AEROSOL.ncl
+* cfg_aerosol_satellite_MISR.ncl
+* cfg_aerosol_satellite_MODIS.ncl
+
+Required diag_script_info attributes
+
+* ref_model: name of reference data set (e.g., "ESACCI-AEROSOL")
+* styleset: style ("DEFAULT")
+* regrid_method: regridding method (coarsest, finest, ref)
+* range_option: time range option (0: model own time range, 1: intersection between models)
+
 
 
 Variables
