@@ -11,6 +11,8 @@ Standard template
 
 When implementing a new diagnostic script or metrics set, it should be documented on the ESMValTool development team wiki in the OPEN or PRIVATE Github repository (see section TODO:ref 12.4) starting from the standard template given below:
 
+.. tabularcolumns:: |p{4cm}|p{11cm}|
+
 +---------------------------+--------------------------------------------------------------------------+
 | **Title of diagnostic/performance metrict**                                                          |
 +===========================+==========================================================================+
@@ -21,16 +23,26 @@ When implementing a new diagnostic script or metrics set, it should be documente
 | **Date of documentation** | yyyy-mm-dd                                                               |
 +---------------------------+--------------------------------------------------------------------------+
 | **Name of standard**      | For Xyz the following naming conventions is used:                        |
-| **namelist (XyZ)**        | For papers                                                               |
-|                           | XyZ=SurnameYearJournalabbreviation (e.g., stocker12jgr, stocker12sci1,   |
-|                           | stocker12sci2).                                                          |
+| **namelist (XyZ)**        |                                                                          |
+|                           | For papers:                                                              |
+|                           |                                                                          |
+|                           | XyZ=SurnameYearJournalabbreviation                                       |
+|                           |                                                                          |
+|                           | (e.g., stocker12jgr,stocker12sci1,stocker12sci2).                        |
+|                           |                                                                          |
 |                           | For copies of reports that are not publicly available:                   |
-|                           | XyZ=OrgYearTitleabbrev (e.g., unep10water, unep11gap,                    |
-|                           | roysoc09geoengineering).                                                 |
+|                           |                                                                          |
+|                           | XyZ=OrgYearTitleabbrev                                                   |
+|                           |                                                                          |
+|                           | (e.g., unep10water, unep11gap,roysoc09geoengineering).                   |
+|                           |                                                                          |
+|                           |                                                                          |
 |                           | For grouped set of diagnostics and performance metrics that do not follow|
 |                           | a published paper or report:                                             |
-|                           | an intuitive name that describes the science theme (e.g., XyZ=aerosol,   |
-|                           | MyDiag, SAMonsoon, SeaIce)                                               |
+|                           |                                                                          |
+|                           | an intuitive name that describes the science theme                       |
+|                           |                                                                          |
+|                           | (e.g., XyZ=aerosol, MyDiag, SAMonsoon, SeaIce).                          |
 +---------------------------+--------------------------------------------------------------------------+
 | **User settings**         | list of all settings that have to be checked/changed by a user in order  |
 |                           | to run the diagnostic (e.g., pathnames, configuration files, color       |
@@ -47,22 +59,22 @@ When implementing a new diagnostic script or metrics set, it should be documente
 | **Link to git repository**| e.g., https://github.com/axel-lauer/ESMValTool/tree/cloud                |
 | **(feature branch)**      |                                                                          |
 +---------------------------+--------------------------------------------------------------------------+
-| Overview                                                                                             |
-|    Insert text here                                                                                  |
-| Available Diagnostics                                                                                |
-|    Insert text here                                                                                  |
-| Specific Routines                                                                                    |
-|    Contains a description of specific routines being developed for the given diagnostic that helps to|
-|    identify common code (which should then go in the * lib/ *)                                       |
-| Observations and Scripts (also see Model and observational data below)                               |
-|    Insert text here                                                                                  |
-| Test Cases (see also Automated testing, section #TODO:ref 7.9)                                       |
-|    Insert text here                                                                                  |
-| References                                                                                           |
-|    REF1:                                                                                             |
-|    REF2:                                                                                             |
-|    etc.                                                                                              |
-| Sample Plots                                                                                         |
+| ``1.`` Overview                                                                                      |
+| . . . Insert text here                                                                               |
+| ``2.`` Available Diagnostics                                                                         |
+| . . . Insert text here                                                                               |
+| ``3.`` Specific Routines                                                                             |
+| . . . Contains a description of specific routines being developed for the given diagnostic that helps|
+| . . . to identify common code (which should then go in the ``lib/``)                                 |
+| ``4.`` Observations and Scripts (also see Model and observational data below)                        |
+| . . . Insert text here                                                                               |
+| ``5.`` Test Cases (see also Automated testing, section TODO:ref 7.9)                                 |
+| . . . Insert text here                                                                               |
+| ``6.`` References                                                                                    |
+| . . . REF1                                                                                           |
+| . . . REF2                                                                                           |
+| . . . etc.                                                                                           |
+| ``7.`` Sample Plots                                                                                  |
 +---------------------------+--------------------------------------------------------------------------+
 
 Model and observational data
