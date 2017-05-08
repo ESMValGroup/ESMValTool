@@ -22,8 +22,8 @@ v1.1 are described in
 **TODO: inclulde references to all diagnostics here ???? perhaps as bullet list???**
 
 .. include:: namelists/namelist_aerosol.rst
+.. include:: namelists/namelist_catchment.rst
+.. include:: namelists/namelist_clouds.rst
 .. include:: namelists/namelist_crem.rst
 .. include:: namelists/namelist_diurnal.rst
 .. include:: namelists/namelist_carbon_emergent_constraints.rst
-.. include:: namelists/namelist_catchment.rst
-.. include:: namelists/namelist_clouds.rst

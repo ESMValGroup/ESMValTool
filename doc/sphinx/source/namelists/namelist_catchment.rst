@@ -74,27 +74,16 @@ References
 Example plots
 -------------
 
-.. _fig_catchment:
-.. figure:: ../../source/namelists/figures/catchment/fig_catchment_1.png
-  :width: 7cm
-.. figure:: ../../source/namelists/figures/catchment/fig_catchment_2.png
-  :width: 7cm
-.. figure:: ../../source/namelists/figures/catchment/fig_catchment_3.png
-  :width: 7cm
-.. figure:: ../../source/namelists/figures/catchment/fig_catchment_4.png
-  :width: 7cm
-.. figure:: ../../source/namelists/figures/catchment/fig_catchment_5.png
-  :width: 7cm
-
-
 +--------------------------------------------------------------------------+--------------------------------------------------------------------------+
 | .. image:: ../../source/namelists/figures/catchment/fig_catchment_1.png  | .. image:: ../../source/namelists/figures/catchment/fig_catchment_2.png  |
 +--------------------------------------------------------------------------+--------------------------------------------------------------------------+
 | .. image:: ../../source/namelists/figures/catchment/fig_catchment_3.png                                                                             |
 |    :width: 50%                                                                                                                                      |
+|    :align: center                                                                                                                                   |
 +--------------------------------------------------------------------------+--------------------------------------------------------------------------+
 | .. image:: ../../source/namelists/figures/catchment/fig_catchment_4.png  | .. image:: ../../source/namelists/figures/catchment/fig_catchment_5.png  |
-+-----------------------------------------------------------------------------------------------------------------------------------------------------+
++--------------------------------------------------------------------------+--------------------------------------------------------------------------+
+
 
 
 
