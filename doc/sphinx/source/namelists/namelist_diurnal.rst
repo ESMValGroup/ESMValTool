@@ -107,27 +107,27 @@ Example plots
 -------------
 
 
-.. figure:: figures/diurnal/fig1.png
+.. figure:: ../../source/namelists/figures/diurnal/fig1.png
    :scale: 30 %
    :alt: xxxxx
    
   
-.. figure:: figures/diurnal/fig2.png
+.. figure:: ../../source/namelists/figures/diurnal/fig2.png
    :scale: 30 %
    :alt: xxxxx
    
   
-.. figure:: figures/diurnal/fig3.png
+.. figure:: ../../source/namelists/figures/diurnal/fig3.png
    :scale: 30 %
    :alt: xxxxx
    
   
-.. figure:: figures/diurnal/fig4.png
+.. figure:: ../../source/namelists/figures/diurnal/fig4.png
    :scale: 30 %
    :alt: xxxxx
    
   
-.. figure:: figures/diurnal/fig5.png
+.. figure:: ../../source/namelists/figures/diurnal/fig5.png
    :scale: 30 %
    :alt: xxxxx
 
