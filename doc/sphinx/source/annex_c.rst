@@ -24,3 +24,5 @@ v1.1 are described in
 .. include:: namelists/namelist_aerosol.rst
 .. include:: namelists/namelist_crem.rst
 .. include:: namelists/namelist_diurnal.rst
+.. include:: namelists/namelist_carbon_emergent_constraints.rst
+
