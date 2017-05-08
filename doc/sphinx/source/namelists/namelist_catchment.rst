@@ -8,7 +8,7 @@ This diagnostic calculates biases of long-term climatological annual means
 of total runoff, precipitation and evapotranspiration for 12 large-scale
 catchments on different continents and climates. For total runoff, catchment
 averaged model values are compared to climatological GRDC station
-observations of river runoff (Duemenil Gates et al., 2000). Due to the
+observations of river runoff (Dümenil Gates et al., 2000). Due to the
 incompleteness of these station data, a year-to-year correspondence of data
 cannot be achieved in a generalized way, so that only climatological data
 are considered, such it has been done in Hagemann et al. (2013).
@@ -58,7 +58,7 @@ and are located in diag_scripts/aux/catchment_analysis/.
 References
 ----------
 
-* Duemenil Gates, L., S. Hagemann and C. Golz, 2000: Observed historical
+* Dümenil Gates, L., S. Hagemann and C. Golz, 2000: Observed historical
   discharge data from major rivers for climate model validation. Max Planck
   Institute for Meteorology Report 307, Hamburg, Germany.
 * Hagemann, S., A. Loew, A. Andersson, 2013: Combined evaluation of MPI-ESM
@@ -74,7 +74,14 @@ References
 Example plots
 -------------
 
-TBD
-
-
-
+.. _fig_catchment:
+.. figure:: ../../source/namelists/figures/catchment/fig_catchment_1.png
+  :width: 7cm
+.. figure:: ../../source/namelists/figures/catchment/fig_catchment_2.png
+  :width: 7cm
+.. figure:: ../../source/namelists/figures/catchment/fig_catchment_3.png
+  :width: 7cm
+.. figure:: ../../source/namelists/figures/catchment/fig_catchment_4.png
+  :width: 7cm
+.. figure:: ../../source/namelists/figures/catchment/fig_catchment_5.png
+  :width: 7cm
