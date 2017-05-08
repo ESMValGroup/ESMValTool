@@ -92,14 +92,32 @@ Example plots
 -------------
 
 
-.. figure:: figures/diurnal/fig1.png
+.. figure:: ../../source/namelists/figures/carbon_constraints/fig1.png
    :scale: 30 %
    :alt: xxxxx
    
    Time series of tropical (30°S - 30°N) mean near surface temperature (tas) change between year 30 and year 110 for the CMIP5 models simulated with prescribed CO2 (1%/yr CO2 increase) coupled simulation (1pctCO2).
+   
+   
+.. figure:: ../../source/namelists/figures/carbon_constraints/fig2.png
+   :scale: 30 %
+   :alt: xxxxx
+   
+   Correlations between the interannual variability of global co2flux (nbp+fgco2) and tropical temperature for the individual CMIP5 models using esmHistorical simulations, and for observations.
 
+.. figure:: ../../source/namelists/figures/carbon_constraints/fig3.png
+   :scale: 30 %
+   :alt: xxxxx
 
-
+   Carbon cycle-climate feedback of tropical land carbon vs. the sensitivity of co2flux to interannual temperature variability in the tropics (30°S-30°N). The red line shows the linear best fit of the regression together with the prediction error (orange shading) and the gray shading shows the observed range.
+   
+   
+   
+.. figure:: ../../source/namelists/figures/carbon_constraints/fig4.png
+   :scale: 30 %
+   :alt: xxxxx
+   
+   Probability Density Functions for the pure CMIP5 ensemble (black dashed) and after applying the observed constraint to the models (red solid)
 
 
 
