@@ -110,7 +110,7 @@ Here, the leading asterisk is a placeholder for the variable, which is defined i
 
 The <model>-tag may also take the optional attribute ~id~:
 
-	*<model id=~string~>*
+	*<model id=~string~>
 
 Example:
 	*<model id="ERAINT"> OBS ERA-Interim reanaly 1 2003 2004 @{OBSPATH}/Tier3/ERA-Interim </model>*
@@ -213,29 +213,29 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 
 **Table S6** Optional attributes of selected tags in the <diag> section. 
 
-+------------|----------|------------|--------------------------------------------------------------------------------------------------+
++------------+----------+------------+--------------------------------------------------------------------------------------------------+
 | Name       | Type     | Parent tag | Description            										|             
-+============|==========|============|==================================================================================================+
++============+==========+============+==================================================================================================+
 | ref_model  | string   | <variable> | Defines this data set as the reference data set within the diagnostic. The string ref_model 	|
 |            |          |            | refers to either the model name, as specified in Table S2, or the model attribute id as specified|
 |            |          |            | in Table S3. Note that because both model and observational data sets are specified via the 	|
 |            |          |            |<model>-tag any of them can be used as a reference data set. 					|
-+------------|----------|------------|--------------------------------------------------------------------------------------------------+
++------------+----------+------------+--------------------------------------------------------------------------------------------------+
 | exclude    | string	| <variable> | When using more than one variable corresponding to different observational data sets (e.g., 	|
 |            |          |            | precipitation and skin temperature), it is necessary to use this attribute to match which 	|
 |            |          |            | variable goes with which data set, e.g., pr with TRMM and ts with HadISST using,			|
 |            |          |            |             											|
 |            |          |            | <variable ref_model=~trmm~ exclude=~hadisst~>  pr ~						|
 |            |          |            | <variable ref_model=~hadisst~ exclude=~trmm~>  ts ~						|
-+------------|----------|------------|--------------------------------------------------------------------------------------------------+
++------------+----------+------------+--------------------------------------------------------------------------------------------------+
 | cfg	string	<diag_script>	Configuration file for the diagnostic script								|
-+------------|----------|------------|--------------------------------------------------------------------------------------------------+
++------------+----------+------------+--------------------------------------------------------------------------------------------------+
 
 **Table S7** Field types.
 
 +-------+---------------------------------------------------------------------------------------------------------------+
 | Name	| Description													|
-+=======|===============================================================================================================+
++=======+===============================================================================================================+
 | T2Ms	| Monthly-mean 2d atmosphere or land surface data (longitude, latitude, time:month)                             |                            
 +-------+---------------------------------------------------------------------------------------------------------------+
 | T3M	| Monthly-mean 3d atmosphere data (longitude, latitude, pressure, time:month)                                   |
