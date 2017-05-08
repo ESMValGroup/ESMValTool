@@ -62,24 +62,90 @@ Required diag_script_info attributes
 * range_option: time range option (0: model own time range, 1: intersection between models)
 
 
+*(3)	aerosol_profiles.ncl (ACCESS, ACCESS-2, Asmi11, CIRRUS, CONCERT, CR-AVE, DC3, HIPPO, IMPROVE, INCA, LACE, Putaud, SALTRACE, TC4, Texas, UCN-Pacific)*
+
+* cfg_aerosol_profiles_ACCESS.ncl
+* cfg_aerosol_profiles_ACCESS-2.ncl
+* cfg_aerosol_profiles_Asmi11.ncl
+* cfg_aerosol_profiles_CIRRUS.ncl
+* cfg_aerosol_profiles_CONCERT.ncl 
+* cfg_aerosol_profiles_CR-AVE.ncl
+* cfg_aerosol_profiles_DC3.ncl
+* cfg_aerosol_profiles_HIPPO.ncl
+* cfg_aerosol_stations_IMPROVE.ncl
+* cfg_aerosol_profiles_INCA.ncl
+* cfg_aerosol_profiles_LACE.ncl
+* cfg_aerosol_profiles_Putaud.ncl
+* cfg_aerosol_profiles_SALTRACE.ncl
+* cfg_aerosol_profiles_TC4.ncl
+* cfg_aerosol_profiles_Texas.ncl
+* cfg_aerosol_profiles_UCN-Pacific.ncl
+
+Required diag_script_info attributes
+
+* campaign: name of measurement campaign (e.g., INCA, LACE, Texas)
+* styleset: "DEFAULT"
+* **datapath: path for campaign data**
+* cc_threshold: cloud cover threshold (%)
+* summary_plot: create a summary with the median of all flights on a single plot
+* exclude_flights: exclude specific flights from the summary plot
 
 Variables
 ---------
 
-TBD
+**CMIP5**
+
+* sconcbc, sconcoa, sconcso4
+* od550aer, od550lt1aer, abs550aer, od870aer
+
+**EMAC**
+
+* conccnmode, conccnmodeSTP, diamcnmode, cl
+* conccnd5, conccnd10, conccnSTPd3, conccnSTPd5, conccnSTPd14, conccnSTPd120
+* mmrbc, mmraer, mmrbcfree
+* sconcso4, sconcno3, sconcnh4, sconcbc, sconcoa, sconcna, sconccl, sconcpm10, sconcpm2p5
+* od550aer
+
 
 
 Observations and Reformat Scripts
 ---------------------------------
 
-TBD
+*Note: (1) obs4mips data can be used directly without any preprocessing; (2) see headers of reformat scripts for non-obs4mips data for download instructions.*
 
+* AERONET (reformat_scripts/obs/reformat_obs_AERONET.ncl)
+* CASTNET (reformat_scripts/obs/reformat_obs_CASTNET.ncl)
+* EANET (reformat_scripts/obs/reformat_obs_EANET.ncl)
+* EMEP (reformat_scripts/obs/reformat_obs_EMEP.ncl)
+* IMPROVE (reformat_scripts/obs/reformat_obs_IMPROVE.ncl)
+* MODIS (obs4mips)
+* MISR (obs4mips)
+* ESACCI-AEROSOL (reformat_scripts/obs/reformat_obs_ESACCI-AEROSOL.ncl)
+* ACCESS (reformat_scripts/obs/reformat_obs_ACCESS.ncl)
+* ACCESS-2 (reformat_scripts/obs/reformat_obs_ACCESS-2.ncl)
+* Asmi11 (reformat_scripts/obs/reformat_obs_Asmi11.ncl)
+* CIRRUS (reformat_scripts/obs/reformat_obs_CIRRUS.ncl)
+* CONCERT (reformat_scripts/obs/reformat_obs_CONCERT.ncl)
+* CR-AVE (reformat_scripts/obs/reformat_obs_CR-AVE.ncl)
+* DC3 (reformat_scripts/obs/reformat_obs_DC3.ncl)
+* HIPPO (reformat_scripts/obs/reformat_obs_HIPPO.ncl)
+* INCA (reformat_scripts/obs/reformat_obs_INCA.ncl)
+* LACE (reformat_scripts/obs/reformat_obs_LACE.ncl)
+* Putaud (reformat_scripts/obs/reformat_obs_Putaud.ncl)
+* SALTRACE (reformat_scripts/obs/reformat_obs_SALTRACE.ncl)
+* TC4 (reformat_scripts/obs/reformat_obs_TC4.ncl)
+* Texas (reformat_scripts/obs/reformat_obs_Texas.ncl)
+* UCN-Pacific (reformat_scripts/obs/reformat_obs_UCN-Pacific.ncl)
 
 
 References
 ----------
 
-TBD
+* Aquila, V. et al., MADE-in: a new aerosol microphysics submodel for global simulation of insoluble particles and their mixing state. Geosci. Model Dev. 4 (2), 325-355 (2011).
+
+* Lauer, A. et al., Simulating aerosol microphysics with the EMAC/MADE GCM - Part I: Model description and comparisons with observations. Atmos. Chem. Phys. 5 (12), 3251-3276 (2005). 
+
+* Righi, M. et al.. The global impact of the transport sectors on atmospheric aerosol: Simulations for year 2000 emissions. Atmos. Chem. Phys. 13 (19), 9939-9970 (2013).
 
 
 Example plots
