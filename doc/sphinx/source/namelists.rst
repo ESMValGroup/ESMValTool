@@ -697,7 +697,7 @@ The user can define base path names in a namelist configuration file and refer t
             <description>root directory of auxiliary data</description>
          /usrpath>
       </pathCollection>
-</settings>
+   </settings>
 
 Inside the namelist file the configuration file can be included in the following way:
 
@@ -719,96 +719,101 @@ Standard header for the namelist
 ================================
 
 For the sake of documentation, standard headers are defined and applied to all namelists and scripts in the ESMValTool. This is a template of the standard header for the main namelist. The parts in red are the ones to be modified by the author.
-<namelist_summary>
-###############################################################################
-namelist_name.xml
 
-Description
-A one-sentence description of the namelist content and purpose.
+.. code-block:: xml
 
-Author(s)
-Name Surname (Affiliation, Country - e-mail@address)
-
-Contributor(s)
-Name Surname (Affiliation, Country - e-mail@address)
-
-Project(s)
-PROJECT-NAME
-
-Reference(s)
-Reference to the paper(s) considered by this namelist (if available).
-Author, N. et al., Journ. Abbrev., NN, P1-P2, doi: (YEAR)
-
-This namelist is part of the ESMValTool.
-###############################################################################
-</namelist_summary>
+   <namelist_summary>
+   ###############################################################################
+   namelist_name.xml
+   
+   Description
+   A one-sentence description of the namelist content and purpose.
+   
+   Author(s)
+   Name Surname (Affiliation, Country - e-mail@address)
+   
+   Contributor(s)
+   Name Surname (Affiliation, Country - e-mail@address)
+   
+   Project(s)
+   PROJECT-NAME 
+   
+   Reference(s)
+   Reference to the paper(s) considered by this namelist (if available).
+   Author, N. et al., Journ. Abbrev., NN, P1-P2, doi: (YEAR)
+   
+   This namelist is part of the ESMValTool.
+   ###############################################################################
+   </namelist_summary>
 
 
 
 Example namelist
 ================
 
-<namelist>
-<include href="config_private.xml"/>
-<namelist_summary>
-###############################################################################
-# namelist_clouds.xml
-#
-# Description
-# Diagnostics of clouds and hydrological cycle.
-# 
-# Author(s)
-# Axel Lauer (DLR, Germany - axel.lauer at dlr.de)
-# 
-# Contributor(s)
-# 
-# Project(s)
-# EMBRACE
-#
-# Reference(s)
-# 
-# This namelist is part of the ESMValTool.
-###############################################################################
-</namelist_summary>
+.. code-block:: xml
 
-<GLOBAL>
-    <write_plots type="boolean">               True              </write_plots>
-    <write_netcdf type="boolean">             True             </write_netcdf>
-    <force_processing type="boolean">     False             </force_processing>
-    <wrk_dir type="path">                             work/           </wrk_dir>
-    <plot_dir type="path">                            work/plots/ </plot_dir>
-    <climo_dir type="path">                         work/climo/ </climo_dir>
-    <max_data_filesize type="integer">      100               </max_data_filesize>
-    <verbosity  type="integer">                     1                   </verbosity>
-    <exit_on_warning  type="boolean">     False             </exit_on_warning>
-    <output_file_type>                                    ps                  </output_file_type>
-</GLOBAL>
+   <namelist>
+   <include href="config_private.xml"/>
+   <namelist_summary>
+   ###############################################################################
+   # namelist_clouds.xml
+   #
+   # Description
+   # Diagnostics of clouds and hydrological cycle.
+   # 
+   # Author(s)
+   # Axel Lauer (DLR, Germany - axel.lauer at dlr.de)
+   # 
+   # Contributor(s)
+   # 
+   # Project(s)
+   # EMBRACE
+   #
+   # Reference(s)
+   # 
+   # This namelist is part of the ESMValTool.
+   ###############################################################################
+   </namelist_summary>
+   
+   <GLOBAL>
+       <write_plots type="boolean">               True              </write_plots>
+       <write_netcdf type="boolean">             True             </write_netcdf>
+       <force_processing type="boolean">     False             </force_processing>
+       <wrk_dir type="path">                             work/           </wrk_dir>
+       <plot_dir type="path">                            work/plots/ </plot_dir>
+       <climo_dir type="path">                         work/climo/ </climo_dir>
+       <max_data_filesize type="integer">      100               </max_data_filesize>
+       <verbosity  type="integer">                     1                   </verbosity>
+       <exit_on_warning  type="boolean">     False             </exit_on_warning>
+       <output_file_type>                                    ps                     </output_file_type>
+   </GLOBAL>
+   
+   <MODELS>
+       <model>  CMIP5_ETHZ CESM1-CAM5   Amon  historical  r1i1p1  2000 2004  @{MODELPATH}/ETHZ_CMIP5/    </model>
+       <model>  CMIP5_ETHZ GFDL-ESM2G    Amon  historical  r1i1p1  2000 2004  @{MODELPATH}/ETHZ_CMIP5/   </model>
+       <model>  CMIP5_ETHZ MIROC5             Amon  historical  r1i1p1  2000 2004  @{MODELPATH}/ETHZ_CMIP5/   </model>
+       <model>  CMIP5_ETHZ MPI-ESM-MR    Amon  historical  r1i1p1  2000 2004  @{MODELPATH}/ETHZ_CMIP5/   </model>
+       <model>  CMIP5_ETHZ NorESM1-M      Amon  historical  r1i1p1  2000 2004  @{MODELPATH}/ETHZ_CMIP5/   </model>
+   </MODELS>
+   
+   <!
+          This is an example of a comment in XML
+    -->
 
-<MODELS>
-    <model>  CMIP5_ETHZ CESM1-CAM5   Amon  historical  r1i1p1  2000 2004  @{MODELPATH}/ETHZ_CMIP5/    </model>
-    <model>  CMIP5_ETHZ GFDL-ESM2G    Amon  historical  r1i1p1  2000 2004  @{MODELPATH}/ETHZ_CMIP5/   </model>
-    <model>  CMIP5_ETHZ MIROC5             Amon  historical  r1i1p1  2000 2004  @{MODELPATH}/ETHZ_CMIP5/   </model>
-    <model>  CMIP5_ETHZ MPI-ESM-MR    Amon  historical  r1i1p1  2000 2004  @{MODELPATH}/ETHZ_CMIP5/   </model>
-    <model>  CMIP5_ETHZ NorESM1-M      Amon  historical  r1i1p1  2000 2004  @{MODELPATH}/ETHZ_CMIP5/   </model>
-</MODELS>
-
-<!
-       This is an example of a comment in XML
- -->
-
-
-<!-- Please do not change anything below this line, 
-     unless you want to modify the standard diagnostic settings. -->
-<DIAGNOSTICS>
-    <diag>
-        <description> Cloud diagnostics</description>
-        <variable_def_dir>           ./variable_defs/        </variable_def_dir>
-        <variable>                             lwp                           </variable>
-        <field_type>                         T2Ms                        </field_type>
-        <diag_script_cfg_dir>      ./nml/cfg_clouds/     </diag_script_cfg_dir>
-        <model> OBS UWisc sat v2 1988 2007 @{OBSPATH}/UWisc </model>
-        <diag_script cfg="cfg_clouds.ncl">    clouds.ncl    </diag_script>
-    </diag>
-</DIAGNOSTICS>
-
-</namelist>
+   
+   <!-- Please do not change anything below this line, 
+        unless you want to modify the standard diagnostic settings. -->
+   <DIAGNOSTICS>
+       <diag>
+           <description> Cloud diagnostics</description>
+           <variable_def_dir>           ./variable_defs/        </variable_def_dir>
+           <variable>                             lwp                           </variable>
+           <field_type>                         T2Ms                        </field_type>
+           <diag_script_cfg_dir>      ./nml/cfg_clouds/     </diag_script_cfg_dir>
+           <model> OBS UWisc sat v2 1988 2007 @{OBSPATH}/UWisc </model>
+           <diag_script cfg="cfg_clouds.ncl">    clouds.ncl    </diag_script>
+       </diag>
+   </DIAGNOSTICS>
+   
+   </namelist>
