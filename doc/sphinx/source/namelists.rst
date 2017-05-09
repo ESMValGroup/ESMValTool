@@ -777,24 +777,24 @@ Example namelist
    </namelist_summary>
    
    <GLOBAL>
-       <write_plots type="boolean">       True         </write_plots>
-       <write_netcdf type="boolean">      True         </write_netcdf>
-       <force_processing type="boolean">  False        </force_processing>
-       <wrk_dir type="path">              work/        </wrk_dir>
-       <plot_dir type="path">             work/plots/  </plot_dir>
-       <climo_dir type="path">            work/climo/  </climo_dir>
-       <max_data_filesize type="integer"> 100          </max_data_filesize>
-       <verbosity  type="integer">        1            </verbosity>
-       <exit_on_warning  type="boolean">  False        </exit_on_warning>
-       <output_file_type>                 ps           </output_file_type>
+       <write_plots type="boolean">        True         </write_plots>
+       <write_netcdf type="boolean">       True         </write_netcdf>
+       <force_processing type="boolean">   False        </force_processing>
+       <wrk_dir type="path">               work/        </wrk_dir>
+       <plot_dir type="path">              work/plots/  </plot_dir>
+       <climo_dir type="path">             work/climo/  </climo_dir>
+       <max_data_filesize type="integer">  100          </max_data_filesize>
+       <verbosity  type="integer">         1            </verbosity>
+       <exit_on_warning  type="boolean">   False        </exit_on_warning>
+       <output_file_type>                  ps           </output_file_type>
    </GLOBAL>
    
    <MODELS>
        <model>  CMIP5_ETHZ CESM1-CAM5   Amon  historical  r1i1p1  2000 2004  @{MODELPATH}/ETHZ_CMIP5/    </model>
-       <model>  CMIP5_ETHZ GFDL-ESM2G    Amon  historical  r1i1p1  2000 2004  @{MODELPATH}/ETHZ_CMIP5/   </model>
-       <model>  CMIP5_ETHZ MIROC5             Amon  historical  r1i1p1  2000 2004  @{MODELPATH}/ETHZ_CMIP5/   </model>
-       <model>  CMIP5_ETHZ MPI-ESM-MR    Amon  historical  r1i1p1  2000 2004  @{MODELPATH}/ETHZ_CMIP5/   </model>
-       <model>  CMIP5_ETHZ NorESM1-M      Amon  historical  r1i1p1  2000 2004  @{MODELPATH}/ETHZ_CMIP5/   </model>
+       <model>  CMIP5_ETHZ GFDL-ESM2G   Amon  historical  r1i1p1  2000 2004  @{MODELPATH}/ETHZ_CMIP5/   </model>
+       <model>  CMIP5_ETHZ MIROC5       Amon  historical  r1i1p1  2000 2004  @{MODELPATH}/ETHZ_CMIP5/   </model>
+       <model>  CMIP5_ETHZ MPI-ESM-MR   Amon  historical  r1i1p1  2000 2004  @{MODELPATH}/ETHZ_CMIP5/   </model>
+       <model>  CMIP5_ETHZ NorESM1-M    Amon  historical  r1i1p1  2000 2004  @{MODELPATH}/ETHZ_CMIP5/   </model>
    </MODELS>
    
    <!
@@ -807,12 +807,12 @@ Example namelist
    <DIAGNOSTICS>
        <diag>
            <description> Cloud diagnostics</description>
-           <variable_def_dir>           ./variable_defs/        </variable_def_dir>
-           <variable>                             lwp                           </variable>
-           <field_type>                         T2Ms                        </field_type>
-           <diag_script_cfg_dir>      ./nml/cfg_clouds/     </diag_script_cfg_dir>
-           <model> OBS UWisc sat v2 1988 2007 @{OBSPATH}/UWisc </model>
-           <diag_script cfg="cfg_clouds.ncl">    clouds.ncl    </diag_script>
+           <variable_def_dir>     ./variable_defs/                            </variable_def_dir>
+           <variable>             lwp                                         </variable>
+           <field_type>           T2Ms                                        </field_type>
+           <diag_script_cfg_dir>  ./nml/cfg_clouds/                           </diag_script_cfg_dir>
+           <model>                OBS UWisc sat v2 1988 2007 @{OBSPATH}/UWisc </model>
+           <diag_script cfg="cfg_clouds.ncl">    clouds.ncl                   </diag_script>
        </diag>
    </DIAGNOSTICS>
    
