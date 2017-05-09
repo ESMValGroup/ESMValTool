@@ -231,6 +231,8 @@ case of derived variables, a function “calculate” calculating the derived
 variable must be defined in the script *<varname>.ncl* (TODO:ref see Table S8 for a list
 of currently available variable definition scripts).
 
+|
+
 **Remarks**
 
     #. For derived variables, a statement specifying the (standard, non-derived) variables required to calculate the derived variable is needed. In the example given below, this statement in the beginning of the NCL script looks like
@@ -271,10 +273,13 @@ of currently available variable definition scripts).
    variable_info@units = "W m-2"
 
    undef("calculate")
-   function calculate(index [1] : integer, variable [1] : string, field_type [1] : string)
-   ;;                 return_val [1] : logical
+   function calculate( index [1] : integer, \
+                       variable [1] : string, \
+                       field_type [1] : string )
+   ;;                  return_val [1] : logical
    ;; Arguments:
-   ;;    index - index to current infile defined in the 'interface_data/ncl.interface'-file
+   ;;    index - index to current infile defined in the 
+   ;;            'interface_data/ncl.interface'-file
    ;;    variable - Current variable as string
    ;;    field_type - string with field type classification
    ;; Return value:
