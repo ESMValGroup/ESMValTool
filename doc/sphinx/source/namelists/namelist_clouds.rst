@@ -36,7 +36,7 @@ User setting files (cfg files) are stored in nml/cfg_cloud/
 
         *Required diag_script_info attributes*
 
-        * grid: grid for regridding (coarsest, finest, ref, 1x1) in case calculation of the multi-model mean or difference plots are requested
+        * grid: grid for regridding (coarsest, finest, ref, 1°x1°) in case calculation of the multi-model mean or difference plots are requested
         * ref_model: name of reference data set
 
         *Optional diag_scipt_info attributes*
@@ -44,7 +44,7 @@ User setting files (cfg files) are stored in nml/cfg_cloud/
         * calcmm: calculate multi-model mean (True, False)
         * embracesetup: True = 2 plots per line, False = 4 plots per line (default)
         * showdiff: calculate and plot differences (True, False)
-        * timemean: time averaging, i.e. “seasonal” (DJF, MAM, JJA, SON), “annual” (annual mean)
+        * timemean: time averaging, i.e. "seasonal" (DJF, MAM, JJA, SON), "annual" (annual mean)
 
         *Required variable_info attributes*
 
@@ -68,7 +68,7 @@ User setting files (cfg files) are stored in nml/cfg_cloud/
 
         * ncdf: enable to output to netCDF; either use "default" or give a full file name
         * projection: map projection, e.g., Mollweide, Mercator (see http://www.ncl.ucar.edu/Document/Graphics/Resources/mp.shtml#mpProjection for available projections)
-        * timemean: time averaging, i.e. “seasonalclim” (DJF, MAM, JJA, SON), “annualclim” (annual mean)
+        * timemean: time averaging, i.e. "seasonalclim" (DJF, MAM, JJA, SON), "annualclim" (annual mean)
 
         *Required variable_info attributes*
 
@@ -86,7 +86,7 @@ User setting files (cfg files) are stored in nml/cfg_cloud/
         *Required diag_script_info attributes*
         
         * colormap: e.g., WhiteBlueGreenYellowRed, rainbow
-        * grid: grid for regridding (coarsest, finest, ref, 1x1) in case calculation of the multi-model mean is requested
+        * grid: grid for regridding (coarsest, finest, ref, 1°x1°) in case calculation of the multi-model mean is requested
         * models_to_skip: name(s) of data set(s) to be skipped when calculating the multi-model mean
         * projection: map projection, e.g., Mollweide, Mercator (see http://www.ncl.ucar.edu/Document/Graphics/Resources/mp.shtml#mpProjection for available projections)
         * ref_model: specifies model that should be taken as "reference" when regridding to "ref" (only required if grid = "ref")
@@ -115,7 +115,7 @@ User setting files (cfg files) are stored in nml/cfg_cloud/
         * models_to_skip: name(s) of data set(s) to be skipped when calculating the multi-model mean (usually all observations)
         * ncdf: enable to output to netCDF; either use "default" or give a full file name
         * styleset: "CMIP5", "DEFAULT"
-        * timemean: time averaging, i.e. “seasonalclim” (DJF, MAM, JJA, SON), “annualclim” (annual mean)
+        * timemean: time averaging, i.e. "seasonalclim" (DJF, MAM, JJA, SON), "annualclim" (annual mean)
 
         *Required variable_info attributes*
 
@@ -143,7 +143,7 @@ User setting files (cfg files) are stored in nml/cfg_cloud/
         * mask_ts_sea_ice: True = mask T < 272 K as sea ice (only for variable "ts"); False = no additional grid cells masked for variable "ts"
         * styleset: "CMIP5", "DEFAULT" (if not set, CLOUDS_TAYLOR will create a color table and symbols for plotting)
         * ref_model: name of reference data set (if this attribute is not set the variable attribute "ref_model" defined in the namelist is used; see below); note: if neither diag_script_info\@ref_model nor the variable attribute ref_model is set, an error message is issued
-        * timemean: time averaging, i.e. “seasonalclim” (DJF, MAM, JJA, SON), “annualclim” (annual mean)
+        * timemean: time averaging, i.e. "seasonalclim" (DJF, MAM, JJA, SON), "annualclim" (annual mean)
 
         *Optional variable attributes (defined in namelist)*
 
