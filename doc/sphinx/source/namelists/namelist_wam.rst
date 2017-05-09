@@ -30,7 +30,48 @@ Diagnostics are stored in diag_scripts/
 User settings
 -------------
 
-TBD
+User setting files (cfg files) are stored in nml/cfg_WAMonsoon/
+
+**(1) WAMonsoon_10W10E_1D_basic.ncl**
+
+*Required diag_script_info attributes*
+
+* latrange: min. and max. latitude for plot (2-elemen array)
+* lonrange: min. and max. longitude for plot (2-element array)
+* minmax: lower and upper limit of values in plot (2-element array)
+* season: season, typically "JJAS"
+
+*Optional diag_script attributes*
+
+* cn_levels_mean_basic: contour levels for mean plot (n-element array)
+* cn_levels_mean_diff_basic: contour levels for difference plot (n-element array)
+* cn_levels_stddev_basic: contour levels for standard deviation plot (n-element array)
+* cn_levels_stddev_diff_basic: contour levels for difference stdandard deviation plot (n-element array)
+* legendPos: position of legend (“TopRight”, “BottomRight”, “TopLeft”, “BottomLeft”)
+* multi_model_mean: calculate multi-model mean (“y”, “n”)
+* plottype_lbres: plot labelbar (True, False)
+* styleset: stylesheet to use ("CMIP5", “DEFAULT”)
+* x_gridlines: display gridline along x-axis (“y”, “n”)
+* y_gridlines: display gridline along y-axis (“y”, “n”)
+
+**(2) WAMonsoon_10W10E_3D_basic.ncl**
+
+*Required diag_script_info attributes*
+
+* cn_levels_mean_basic: contour levels for mean plot (n-element array)
+* cn_levels_mean_diff_basic: contour levels for difference plot (n-element array)
+* latrange: min. and max. latitude for plot (2-element array)
+* lonrange: min. and max. longitude for plot (2-element array)
+* levrange: max. and min. pressure (Pa) for plot (2-element array)
+* plottype_lbres: handle for labelbar settings (True, False)
+* season: season, typically "JJAS"
+* plot_stddev: switch for plotting stdandard deviation (True, False)
+* diff_colormap: filename and full path for colormap for difference plot, e.g., "diag_scripts/aux/WAMonsoon/cmap_difference_theta.rgb"
+
+*Optional diag_script_info attributes*
+* cn_levels_mean_basic: contour levels for mean plot (n-element array)
+* cn_levels_mean_diff_basic: contour levels for difference plot (n-element array)
+
 
 
 Variables
