@@ -22,7 +22,21 @@ Diagnostics are stored in diag_scripts/
 User settings
 -------------
 
-TBD
+User setting files (cfg files) are stored in nml/cfg_SPI/
+
+**(1) SPR.r**
+
+* begin.ref.year: first year of the reference period
+* end.ref.year: last year of the reference period
+* timescale: valid values are 3, 6 and 12 months
+* seasons: "ann", "djf", "mam", "jja", "son"
+* spi_colorbar_max: color bar range (= -spi_colorbar_max … +spi_colorbar_max)
+* my.colors: colors for contour plot, e.g., colorRampPalette(c("brown", "orange", "white", "lightblue", "blue"))
+* png_width: width of png image
+* png_height: height of png image
+* png_units: units of png dimensions ("px" = pixels, "in" = inches, "cm" = centimeters, "mm" = millimeters)
+* png_pointsize: the default size of plotted text in points (1/72 inch)
+* png_bg: background color, e.g., "white"
 
 
 Variables
