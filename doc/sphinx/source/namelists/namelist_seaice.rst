@@ -176,7 +176,7 @@ Example plots
 
 .. fig_seaice_3:
 .. figure:: ../../source/namelists/figures/seaice/figure_namelist_seaice_tsline-Arctic.png
-   :name: fig_seaice_tsline-Arctic
+   :name:  fig_seaice_tsline-Arctic
    :scale: 120%
 
    Timeseries (1960-2005) of September Arctic sea ice extent from different
@@ -190,5 +190,5 @@ Example plots
 .. figure:: ../../source/namelists/figures/seaice/figure_namelist_seaice_anncyc-Antarctic.png
    :scale: 120%
 
-   Same as TODO:ref Figure above, but for the annual cycle of Antarctic sea ice extent.
+   Same as :numref:`fig_seaice_tsline-Arctic`, but for the annual cycle of Antarctic sea ice extent.
 

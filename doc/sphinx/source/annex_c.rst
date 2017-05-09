@@ -40,4 +40,3 @@ v1.1 are described in
 .. include:: namelists/namelist_spi.rst
 .. include:: namelists/namelist_tropical_variability.rst
 .. include:: namelists/namelist_wam.rst
-
