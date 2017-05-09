@@ -107,7 +107,7 @@ Each data set is specified by a <model> line with the first entry of each model 
 
    *<model> CMIP5 name mip experiment ensemble start-year end-year path </model>*
 
-* Optionally, the element "mip" can be replaced with "MIP_VAR_DEF" if the tag "MIP" is specified in the <variable> tag (see Table S4), e.g.: 
+* Optionally, the element "*mip*" can be replaced with "MIP_VAR_DEF" if the tag "MIP" is specified in the <variable> tag (see Table S4), e.g.: 
    
    *<variable MIP="cfDay"> rlut </variable>*
 
