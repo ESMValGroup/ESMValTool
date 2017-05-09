@@ -647,7 +647,7 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 
 Typically, all namelists are stored in the folder *nml*, the naming convention is *namelist_xxx.xml* with ~xxx~ being the name of the diagnostic and/or a description of the purpose of the namelist::
 	
-1. For papers
+1. **For papers:**
 xxx = SurnameYearJournalabbreviation (e.g., stocker12jgr, stocker12sci1, stocker12sci2). 
 
 2. For copies of reports that are not publicly available
