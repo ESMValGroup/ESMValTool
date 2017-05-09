@@ -114,7 +114,7 @@ instructions.
 * NDP (vegetation carbon content)
 
   *Reformat scripts:* The reformat scripts for the following data sets
-  ** could not be included in the ESMValTool v1.1**: MTE, LAI3g, JMA-TRANSCOM,
+  **could not be included in the ESMValTool v1.1**: MTE, LAI3g, JMA-TRANSCOM,
   HSWD, and NDP. Please contact the author of this diagnostic package
   (A. Anav) for obtaining the reformat scripts.
 
@@ -131,15 +131,12 @@ References
 Example plots
 -------------
 
-+-----------------------------------------------------------------------------+-----------------------------------------------------------------------------+
-| .. image:: ../../source/namelists/figures/catchment/fig_carbon_cycle_1.png  | .. image:: ../../source/namelists/figures/catchment/fig_carbon_cycle_2.png  |
-+-----------------------------------------------------------------------------+-----------------------------------------------------------------------------+
-| .. image:: ../../source/namelists/figures/catchment/fig_carbon_cycle_3.png  | .. image:: ../../source/namelists/figures/catchment/fig_carbon_cycle_4.png  |
-+-----------------------------------------------------------------------------+-----------------------------------------------------------------------------+
-| .. image:: ../../source/namelists/figures/catchment/fig_carbon_cycle_5.png                                                                                |
-|    :width: 50%                                                                                                                                            |
-|    :align: center                                                                                                                                         |
-+-----------------------------------------------------------------------------+-----------------------------------------------------------------------------+
-
-
-
++--------------------------------------------------------------------------------+--------------------------------------------------------------------------------+
+| .. image:: ../../source/namelists/figures/carbon_cycle/fig_carbon_cycle_1.png  | .. image:: ../../source/namelists/figures/carbon_cycle/fig_carbon_cycle_2.png  |
++--------------------------------------------------------------------------------+--------------------------------------------------------------------------------+
+| .. image:: ../../source/namelists/figures/carbon_cycle/fig_carbon_cycle_3.png  | .. image:: ../../source/namelists/figures/carbon_cycle/fig_carbon_cycle_4.png  |
++--------------------------------------------------------------------------------+--------------------------------------------------------------------------------+
+| .. image:: ../../source/namelists/figures/carbon_cycle/fig_carbon_cycle_5.png                                                                                   |
+|    :width: 50%                                                                                                                                                  |
+|    :align: center                                                                                                                                               |
++--------------------------------------------------------------------------------+--------------------------------------------------------------------------------+  
