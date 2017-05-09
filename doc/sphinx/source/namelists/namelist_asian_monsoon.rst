@@ -41,59 +41,59 @@ TBD
 Example plots
 -------------
 
-.. figure:: ../../source/namelists/figures/southern_ocean/fig1.png
+.. figure:: ../../source/namelists/figures/south_asian_monsoon/fig1.png
    :scale: 50 %
    :alt: xxxx
    
 
-.. figure:: ../../source/namelists/figures/southern_ocean/fig2.png
+.. figure:: ../../source/namelists/figures/south_asian_monsoon/fig2.png
    :scale: 50 %
    :alt: xxxx
 
 
-.. figure:: ../../source/namelists/figures/southern_ocean/fig3.png
+.. figure:: ../../source/namelists/figures/south_asian_monsoon/fig3.png
    :scale: 50 %
    :alt: xxxx
 
 
-.. figure:: ../../source/namelists/figures/southern_ocean/fig4.png
-   :scale: 50 %
-   :alt: xxxx
-
-
-
-.. figure:: ../../source/namelists/figures/southern_ocean/fig5.png
-   :scale: 50 %
-   :alt: xxxx
-
-
-.. figure:: ../../source/namelists/figures/southern_ocean/fig6.png
-   :scale: 50 %
-   :alt: xxxx
-
-
-.. figure:: ../../source/namelists/figures/southern_ocean/fig7.png
+.. figure:: ../../source/namelists/figures/south_asian_monsoon/fig4.png
    :scale: 50 %
    :alt: xxxx
 
 
 
-.. figure:: ../../source/namelists/figures/southern_ocean/fig8.png
+.. figure:: ../../source/namelists/figures/south_asian_monsoon/fig5.png
    :scale: 50 %
    :alt: xxxx
 
 
-.. figure:: ../../source/namelists/figures/southern_ocean/fig9.png
+.. figure:: ../../source/namelists/figures/south_asian_monsoon/fig6.png
    :scale: 50 %
    :alt: xxxx
 
 
-.. figure:: ../../source/namelists/figures/southern_ocean/fig10.png
+.. figure:: ../../source/namelists/figures/south_asian_monsoon/fig7.png
+   :scale: 50 %
+   :alt: xxxx
+
+
+
+.. figure:: ../../source/namelists/figures/south_asian_monsoon/fig8.png
+   :scale: 50 %
+   :alt: xxxx
+
+
+.. figure:: ../../source/namelists/figures/south_asian_monsoon/fig9.png
+   :scale: 50 %
+   :alt: xxxx
+
+
+.. figure:: ../../source/namelists/figures/south_asian_monsoon/fig10.png
    :scale: 50 %
    :alt: xxxx
    
 
-.. figure:: ../../source/namelists/figures/southern_ocean/fig11.png
+.. figure:: ../../source/namelists/figures/south_asian_monsoon/fig11.png
    :scale: 50 %
    :alt: xxxx
 
