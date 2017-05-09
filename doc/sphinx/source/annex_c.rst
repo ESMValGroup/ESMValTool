@@ -28,12 +28,17 @@ v1.1 are described in
 .. include:: namelists/namelist_carbon_emergent_constraints.rst
 .. include:: namelists/namelist_esacci.rst
 .. include:: namelists/namelist_evapotranspiration.rst
+.. include:: namelists/namelist_ipccar5_ch9.rst
+.. include:: namelists/namelist_carbon_cycle.rst
 .. include:: namelists/namelist_marine_bgc.rst
+.. include:: namelists/namelist_MJO.rst
 .. include:: namelists/namelist_cvdp.rst
 .. include:: namelists/namelist_seaice.rst
+.. include:: namelists/namelist_ozone_climate.rst
 .. include:: namelists/namelist_ozone_precursors.rst
 .. include:: namelists/namelist_precip_sm.rst
 .. include:: namelists/namelist_perfmetrics.rst
+.. include:: namelists/namelist_seaice.rst
 .. include:: namelists/namelist_asian_monsoon.rst
 .. include:: namelists/namelist_southern_hemisphere.rst
 .. include:: namelists/namelist_southern_ocean.rst
