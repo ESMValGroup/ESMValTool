@@ -2,7 +2,7 @@
 work/*
 interface_data/*
 *.pyc
-doc/sphinx/build/*
 doc/sphinx/source/diag_scripts/**
 doc/sphinx/source/plot_scripts/**
-doc/sphinx/source/annex_c.rst
+doc/sphinx/build
+
