@@ -30,8 +30,140 @@ Diagnostics are stored in diag_scripts/
 User settings
 -------------
 
-TBD
+User setting files (cfg files) are stored in nml/cfg_WAMonsoon/
 
+**(1) WAMonsoon_10W10E_1D_basic.ncl**
+
+*Required diag_script_info attributes*
+
+* latrange: min. and max. latitude for plot (2-elemen array)
+* lonrange: min. and max. longitude for plot (2-element array)
+* minmax: lower and upper limit of values in plot (2-element array)
+* season: season, typically "JJAS"
+
+*Optional diag_script attributes*
+
+* cn_levels_mean_basic: contour levels for mean plot (n-element array)
+* cn_levels_mean_diff_basic: contour levels for difference plot (n-element array)
+* cn_levels_stddev_basic: contour levels for standard deviation plot (n-element array)
+* cn_levels_stddev_diff_basic: contour levels for difference stdandard deviation plot (n-element array)
+* legendPos: position of legend (“TopRight”, “BottomRight”, “TopLeft”, “BottomLeft”)
+* multi_model_mean: calculate multi-model mean (“y”, “n”)
+* plottype_lbres: plot labelbar (True, False)
+* styleset: stylesheet to use ("CMIP5", “DEFAULT”)
+* x_gridlines: display gridline along x-axis (“y”, “n”)
+* y_gridlines: display gridline along y-axis (“y”, “n”)
+
+**(2) WAMonsoon_10W10E_3D_basic.ncl**
+
+*Required diag_script_info attributes*
+
+* cn_levels_mean_basic: contour levels for mean plot (n-element array)
+* cn_levels_mean_diff_basic: contour levels for difference plot (n-element array)
+* latrange: min. and max. latitude for plot (2-element array)
+* lonrange: min. and max. longitude for plot (2-element array)
+* levrange: max. and min. pressure (Pa) for plot (2-element array)
+* plottype_lbres: handle for labelbar settings (True, False)
+* season: season, typically "JJAS"
+* plot_stddev: switch for plotting stdandard deviation (True, False)
+* diff_colormap: filename and full path for colormap for difference plot, e.g., "diag_scripts/aux/WAMonsoon/cmap_difference_theta.rgb"
+
+*Optional diag_script_info attributes*
+
+* cn_levels_mean_basic: contour levels for mean plot (n-element array)
+* cn_levels_mean_diff_basic: contour levels for difference plot (n-element array)
+
+**(3) WAMonsoon_autocorr.ncl**
+
+*Required diag_script_info attributes*
+
+* cn_levels_corr_basic: contour levels for correlation plot (n-element array)
+* cn_levels_corr_diff_basic: contour levels for correlation difference plot (n-element array)
+* latrange: min. and max. latitude for plot (2-elemen array)
+* lonrange: min. and max. longitude for plot (2-element array)
+* sahel_latrange: min. and max. latitude of “Sahel” region (2-element array)
+* sahel_lonrange: min. and max. longitude of “Sahel” region (2-element array)
+* season: season, typically "JJAS"
+* destgrid: destination grid for ESMF regridding ("1x1", "2.5x2.5")
+* styleset: stylesheet to use ("CMIP5", “DEFAULT”)
+* my_region: label for Monsoon region, e.g., “WA”
+* filter_hp: value for high pass filter
+* filter_type: “hp” = high pass filter, “bp” = band pass filter
+* filter_weights: filter weights
+* filter_min, filter_max: required for band pass filter only
+
+**(4) WAMonsoon_contour_basic.ncl**
+
+*Required diag_script_info attributes*
+
+* cn_levels_mean_basic: contour levels for mean plot (n-element array)
+* cn_levels_mean_diff_basic: contour levels for difference plot (n-element array)
+* latrange: min. and max. latitude for plot (2-element array)
+* lonrange: min. and max. longitude for plot (2-element array)
+* season: season, typically "JJAS"
+* my_region: label for Monsoon region, e.g., “WA”
+* plot_stddev: switch for plotting stdandard deviation (True, False)
+* cn_levels_stddev_basic: contour levels for standard deviation plot (only required if plot_stddev = True) (n-element array)
+* cn_levels_stddev_diff_basic: contour levels for standard deviation difference plot (only required if plot_stddev = True) (n-element array)
+* diff_colormap: filename and full pathname of colormap for difference plots, e.g., "diag_scripts/aux/WAMonsoon/cmap_difference.rgb"
+
+**(5) WAMonsoon_precip_IAV.ncl, WAMonsoon_precip_seasonal.ncl**
+
+*Required diag_script_info attributes*
+
+* cn_levels_mean_basic: contour levels for mean plot (n-element array)
+* cn_levels_mean_diff_basic: contour levels for difference plot (n-element array)
+* cn_levels_stddev_basic: contour levels for standard deviation plot (n-element array)
+* cn_levels_stddev_diff_basic: contour levels for difference stdandard deviation plot (n-element array)
+* diff_colormap: filename and full pathname of colormap for difference plots, e.g., "diag_scripts/aux/WAMonsoon/cmap_difference.rgb"
+* latrange_seasonal: min. and max. latitude of crop region for plot (2-element array)
+* lonrange_seasonal: min. and max. longitude of crop region for plot (2-element array)
+* season: season, typically "JJAS"
+* styleset: stylesheet to use ("CMIP5", “DEFAULT”)
+* multi_model_mean: calculate multi-model mean (“y”, “n”)
+* my_region: label for Monsoon region, e.g., “WA”
+* supporting_gridlines: display supporting grid line (“y”, “n”)
+
+**(6) WAMonsoon_isv_filtered.ncl**
+
+*Required diag_script_info attributes*
+
+* season: season, typically "JJAS"
+* destgrid: destination grid for ESMF regridding ("1x1", "2.5x2.5")
+* styleset: stylesheet to use ("CMIP5", “DEFAULT”)
+* latrange_basic: min. and max. latitude for plot (2-elemen array)
+* lonrange_basic: min. and max. longitude for plot (2-element array)
+* diff_colormap: filename and full pathname of colormap for difference plots, e.g., "diag_scripts/aux/WAMonsoon/cmap_difference.rgb"
+* cn_levels_stddev_basic: contour levels for standard deviation plot (n-element array)
+* cn_levels_stddev_diff_basic: contour levels for difference standard deviation plot (n-element array)
+* plot_norm: plot normalized stdandard deviation (True, False)
+* cn_levels_stddev_norm_basic: contour levels for normalized standard deviation plot (n-element array)
+* cn_levels_stddev_norm_diff_basic: contour levels for normalized standard deviation difference plot (n-element array)
+* sahel_latrange: min. and max. latitude of “Sahel” region (2-element array)
+* sahel_lonrange: min. and max. longitude of “Sahel” region (2-element array)
+* filter_type: “hp” = high pass filter, “bp” = band pass filter
+* filter_hp: value for high pass filter
+* filter_weights: filter weights
+* filter_min, filter_max: required for band pass filter only
+* my_region: label for Monsoon region, e.g., “WA”
+
+**(7) WAMonsoon_wind_basic.ncl**
+
+*Required diag_script_info attributes*
+
+styleset: stylesheet to use ("CMIP5", “DEFAULT”) 
+season: season, typically "JJAS"
+latrange_basic: min. and max. latitude for plot (2-element array)
+lonrange_basic: min. and max. longitude for plot (2-element array)
+cn_levels_mean_basic: contour levels for mean plot (n-element array)
+cn_levels_mean_diff_basic: contour levels for difference plot (n-element array)
+diff_colormap: filename and full pathname of colormap for difference plots, e.g., "diag_scripts/aux/WAMonsoon/cmap_difference_wind.rgb"
+cn_levels_stddev_basic: contour levels for standard deviation plot (n-element array) (if plot_stddev = True)
+cn_levels_stddev_diff_basic: contour levels for difference standard deviation plot (n-element array) (if plot_stddev = True)
+plottype_lbres: plot labelbar (True, False)
+my_region: label for Monsoon region, e.g., “WA”
+use_for_contour: switch for kind of contour (“speed”, “zonal” (ua), “meridional” (va))
+plot_stddev: plot standard deviation (True, False)
 
 Variables
 ---------
@@ -54,31 +186,65 @@ Variables
 Observations and Reformat Scripts
 ---------------------------------
 
-TBD
+Note: (1) obs4mips data can be used directly without any preprocessing; (2) see headers of reformat scripts for non-obs4mips data for download instructions.
 
-
+* ERA-Interim Reanalysis (tas, ua, va)
+  *Reformat script*: reformat_scripts/obs/reformat_obs_ERA-Interim.ncl
+* GPCP monthly (pr) – obs4mips
+* CERES-EBAF (TOA and derived surface radiation fluxes) – obs4mips
+* GPCP Version 1.2, daily and 1°x1° (pr) – obs4mips
+* Daily NOAA OLR
+  *Reformat script*: reformat_scripts/obs/reformat_obs_NOAA-PSD-Interp.ncl
 
 References
 ----------
 
-TBD
+* Cook, K. H. and E. K. Vizy, 2006: Coupled model simulations of the West African monsoon system: Twentieth- and twenty-first-century simulations. J. Climate, 19, 3681-3703.
+* Roehrig, R., D. Bouniol, F. Guichard, F. Hourdin, and J.-L. Redelsperger, 2013: The Present and Future of the West African Monsoon: A Process-Oriented Assessment of CMIP5 Simulations along the AMMA Transect. J. Climate, 26, 6471-6505. doi: http://dx.doi.org/10.1175/JCLI-D-12-00505.1.
 
 
 Example plots
 -------------
 
-TBD
+.. figure:: ../../source/namelists/figures/wam/fig1.png
+   :scale: 50 %
+   :alt: xxxx
 
+.. figure:: ../../source/namelists/figures/wam/fig2.png
+   :scale: 50 %
+   :alt: xxxx
 
+.. figure:: ../../source/namelists/figures/wam/fig3.png
+   :scale: 50 %
+   :alt: xxxx
 
+.. figure:: ../../source/namelists/figures/wam/fig4.png
+   :scale: 50 %
+   :alt: xxxx
 
+.. figure:: ../../source/namelists/figures/wam/fig5.png
+   :scale: 50 %
+   :alt: xxxx
 
+.. figure:: ../../source/namelists/figures/wam/fig6.png
+   :scale: 50 %
+   :alt: xxxx
 
+.. figure:: ../../source/namelists/figures/wam/fig7.png
+   :scale: 50 %
+   :alt: xxxx
 
+.. figure:: ../../source/namelists/figures/wam/fig8.png
+   :scale: 50 %
+   :alt: xxxx
 
+.. figure:: ../../source/namelists/figures/wam/fig9.png
+   :scale: 50 %
+   :alt: xxxx
 
-
-
+.. figure:: ../../source/namelists/figures/wam/fig10.png
+   :scale: 50 %
+   :alt: xxxx
 
 
 

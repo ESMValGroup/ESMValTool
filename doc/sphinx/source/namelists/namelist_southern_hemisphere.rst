@@ -43,7 +43,7 @@ Example plots
 
 TBD
 
-.. figure:: ../../source/namelists/figures/TBDNAMELIST/TBDFIG.png
+.. figure:: ../../source/namelists/figures/southern_hemisphere/fig1.png
    :scale: 50 %
    :alt: xxxx
    
