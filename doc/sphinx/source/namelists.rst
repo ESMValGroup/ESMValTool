@@ -645,7 +645,7 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 | zg.ncl                   | Geopotential height							       |
 +--------------------------+-----------------------------------------------------------------------------------+
 
-**Naming convention of namelists:**
+**Naming convention for ESMValTool namelists:**
 
 Typically, all namelists are stored in the folder *nml*, the naming convention is *namelist_xxx.xml* with ~xxx~ being the name of the diagnostic and/or a description of the purpose of the namelist::
 	
@@ -666,6 +666,9 @@ Namelist configuration file
 ===========================
 
 The user can define base path names in a namelist configuration file and refer to them in the actual namelist file. The configuration file such as, for instance, config_private.xml has the following structure:
+
+.. code-block::ncl
+
 <?xml version="1.0" encoding="UTF-8"?>
 <settings>
         <pathCollection>
