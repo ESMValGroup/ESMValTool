@@ -31,7 +31,7 @@ The script *main.py* processes the information in the XML namelist to be used by
 
 Note that the coupling between the namelist and the diagnostic scripts is "loose". The Python workflow manager *main.py* passes all information in the namelist to the target diagnostic script, e.g., via intermediate files or environment variables, but it is up to the diagnostic script to act on that information.
 
-Basic structure of a namelist::
+**Basic structure of a namelist**::
  
 	<GLOBAL>
 	controls the general settings (see Table S1) ; see section 3.1, ~More on the <GLOBALS>-tag~ below for details
@@ -46,7 +46,7 @@ Basic structure of a namelist::
 	</DIAGNOSTIC>
 
 
-Please note that the ~loose coupling~ described above applies particularly to the settings defined in the two elements <GLOBAL> and <DIAGNOSTIC>.
+Please note that the "loose coupling" described above applies particularly to the settings defined in the two elements <GLOBAL> and <DIAGNOSTIC>.
 
 
 
@@ -105,21 +105,23 @@ More on the <MODELS>-tag
 
 Each data set is specified by a <model> line with the first entry of each model line being the "project specifier" (see Table S2). The project specifier refers to a Python class that is used to parse the model line in the namelist. For example, a model line with the "CMIP5" specifier looks like:
 
-	*<model> CMIP5 name mip experiment ensemble start-year end-year path </model>*
+   *<model> CMIP5 name mip experiment ensemble start-year end-year path </model>*
 
 * Optionally, the element "mip" can be replaced with "MIP_VAR_DEF" if the tag "MIP" is specified in the <variable> tag (see Table S4), e.g.: 
    
-    **<variable MIP="cfDay"> rlut </variable>**
-    **<model> CMIP5_ETHZ MPI-ESM-LR MIP_VAR_DEF amip r1i1p1 1980 1985 @{MODELPATH}/ETHZ_CMIP5/ </model>**
+   **<variable MIP="cfDay"> rlut </variable>**
+
+   **<model> CMIP5_ETHZ MPI-ESM-LR MIP_VAR_DEF amip r1i1p1 1980 1985 @{MODELPATH}/ETHZ_CMIP5/ </model>**
 
 * The element "experiment" can be replaced with ~EXP_VAR_DEF~ if the tag ~EXP~ is specified in the <variable> tag (see Table S4), e.g.:
 
-    **<variable MIP="Omon" EXP="esmHistorical"> fgco2 </variable>**
-    **<model> CMIP5_ETHZ NorESM1-ME MIP_VAR_DEF EXP_VAR_DEF r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>**
+   **<variable MIP="Omon" EXP="esmHistorical"> fgco2 </variable>**
+
+   **<model> CMIP5_ETHZ NorESM1-ME MIP_VAR_DEF EXP_VAR_DEF r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>**
 
 The project specifier "CMIP5" will search for files in "path" with filenames matching the pattern
 
-    *_mip_name_experiment_ensemble_*
+   *_mip_name_experiment_ensemble_*
 
 Here, the leading asterisk is a placeholder for the variable, which is defined in the <DIAGNOSTICS>-tag (see below), the trailing asterisk is a placeholder for the start/end date of the data set. This naming convention conforms to the syntax used for CMIP5 DRS filenames (as implied by the project specifier name). By implementing their own project specifier classes into the Python code (*interface_scripts/projects.py*), the user can handle data sets that follow different file naming conventions or require additional information to be passed along in addition to the filename. Table S2 gives a summary of the available project specifiers and arguments to be used in each <model> line. 
 
