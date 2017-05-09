@@ -649,8 +649,10 @@ Typically, all namelists are stored in the folder *nml*, the naming convention i
 	
 1. For papers
 xxx = SurnameYearJournalabbreviation (e.g., stocker12jgr, stocker12sci1, stocker12sci2). 
+
 2. For copies of reports that are not publicly available
 xxx = OrgYearTitleabbrev (e.g., unep10water, unep11gap, roysoc09geoengineering).
+
 3. For grouped sets of diagnostics and performance metrics that do not follow a published paper or report
 xxx = an intuitive name describing the scientific topic (e.g., aerosol, MyDiag, SAMonsoon, SeaIce)
 
