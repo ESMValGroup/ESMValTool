@@ -1,4 +1,4 @@
-TEMPLATE FOR NAMELIST
+IPCC AR5 Chapter 9
 =====================
 
 Overview
@@ -22,13 +22,13 @@ The plots will be done based on a collection of individual namelists. The follow
 
 * Figure 9.28: Multi-year average aerosol optical depth (AOD) in comparison with satellite data.
 
-* Figure 9.29: Time series of global oceanic mean aerosol optical depth (AOD) from individual CMIP5 models-F¢ historical (1850-2005) and RCP 4.5 (2006-2010) simulations compared with MODIS and ESACCI-AEROSOL satellite data.
+* Figure 9.29: Time series of global oceanic mean aerosol optical depth (AOD) from individual CMIP5 models historical (1850-2005) and RCP 4.5 (2006-2010) simulations compared with MODIS and ESACCI-AEROSOL satellite data.
 
 * Figure 9.30: Composite diurnal cycle of precipitation averaged over land / ocean for different latitude bands / seasons (JuneJulyAugust (JJA), DecemberJanuaryFebruary (DJF), or their sum) at local time.
 
 * Figure 9.32: Monsoon precipitation intensity (upper panels) and monsoon precipitation domain (lower panels) for TRMM and an example of deviations from observations from three CMIP5 models (EC-Earth, HadGEM2-ES, and GFDL-ESM2M).
 
-* Figure 9.45: The carbon cycle-climate feedback (-F„LT) versus the short-term sensitivity of atmospheric CO2 to interannual temperature variability („IAV) in the tropics for CMIP5 models. The red line shows the best fit line across the CMIP5 simulations and the vertical dashed lines show the observed range of „IAV. (b) Probability distribution function (PDF) for „LT. The solid line is derived after applying the interannual variability (IAV) constraint to the models while the dashed line is the prior PDF derived purely from the models before applying the IAV constraint.-A
+* Figure 9.45: The carbon cycle-climate feedback (gamma\ :sub:`LT`\) versus the short-term sensitivity of atmospheric CO\ :sub:`2`\  to interannual temperature variability (gamma\ :sub:`IAV`\) in the tropics for CMIP5 models. The red line shows the best fit line across the CMIP5 simulations and the vertical dashed lines show the observed range of gamma\ :sub:`IAV`\. (b) Probability distribution function (PDF) for gamma\ :sub:`LT`\. The solid line is derived after applying the interannual variability (IAV) constraint to the models while the dashed line is the prior PDF derived purely from the models before applying the IAV constraint.
 
 
 
