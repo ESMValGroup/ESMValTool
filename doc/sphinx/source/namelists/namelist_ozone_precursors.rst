@@ -139,35 +139,70 @@ User setting files (cfg files) are stored in nml/cfg_righi15gmd/Emmons/ and nml/
 Variables
 ---------
 
-TBD
-
+    * vmro3 (monthly mean, time level latitude longitude)
+    * vmrnox (monthly mean, time level latitude longitude)
+    * vmrco (monthly mean, time level latitude longitude)
+    * vmrc2h4 (monthly mean, time level latitude longitude)
+    * vmrc2h6 (monthly mean, time level latitude longitude)
+    * vmrc3h6 (monthly mean, time level latitude longitude)
+    * vmrc3h8 (monthly mean, time level latitude longitude)
+    * vmrch3coch3 (monthly mean, time level latitude longitude)
+    * tropoz (monthly mean, time latitude longitude)
+    * toz (monthly mean, time latitude longitude)
+    * vmrco
+    * vmro3
+    
 
 Observations and Reformat Scripts
 ---------------------------------
 
-TBD
+*Note: (1) obs4mips data can be used directly without any preprocessing; (2) see headers of reformat scripts for non-obs4mips data for download instructions.*
 
+    * Total column ozone (toz): NIWA (Bodeker et al., 2005) and GTO-ECV (Loyola and Coldewey-Egbers, 2012; Loyola et al., 2009)
+
+    *Reformat scripts:*
+
+        * reformat_scripts/obs/reformat_obs_NIWA.ncl
+        * reformat_scripts/obs/reformat_obs_GTO-ECV.ncl
+
+    * Tropospheric column ozone (tropoz): MLS/OMI (Ziemke et al., 2006)
+      *Reformat script:* reformat_scripts/obs/reformat_obs_AURA-MLS-OMI.ncl
+
+    * Ozonesonde profiles: Tilmes et al. (2012)
+      *Reformat script:* reformat_scripts/obs/reformat_obs_Tilmes.ncl
+
+    * CO surface mixing ratios: GLOBALVIEW (2010)
+
+      *Reformat script:* reformat_scripts/obs/reformat_obs_GLOBALVIEW.ncl
+
+    * Trace gas in-situ campaign composite data: Emmons et al. (2000)
+
+      *Reformat script:* reformat_scripts/obs/reformat_obs_Emmons.ncl
 
 
 References
 ----------
 
-TBD
-
+    * Bodeker, G. E., Shiona, H., and Eskes, H.: Indicators of Antarctic ozone depletion, Atmos. Chem. Phys., 5, 2603-2615, doi: 10.5194/acp-5-2603-2005, 2005.
+    * Emmons, L. K., Hauglustaine, D. A., Müller, J.-F., Carroll, M. A., Brasseur, G. P., Brunner, D., Staehelin, J., Thouret, V., and Marenco, A.: Data composites of airborne observation of tropospheric ozone and its precursors, J. Geophys. Res., 105, 20497-20538, 2000.
+    * GLOBALVIEW-CO2: Cooperative Atmospheric Data Integration Project – Carbon Dioxide, CD-ROM, NOAA ESRL, Boulder, Colorado, available at: ftp://ftp.cmdl.noaa.gov (last access: 2 October 2014), 2010.
+    * Klinger, C., Quantitative evaluation of ozone and selected climate parameters in the chemistry-climate model EMAC, Master Thesis, Ludwig-Maximilians-Universität München, 2011.
+    * Loyola, D. and Coldewey-Egbers, M.: Multi-sensor data merging with stacked neural networks for the creation of satellite long-term climate data records, EURASIP J. Adv. Sig. Pr., 2012, 1-10, doi: 10.1186/1687-6180-2012-91, 2012.
+    * Loyola, D. G., Coldewey-Egbers, R. M., Dameris, M., Garny, H., Stenke, A., Van Roozendael, M., Lerot, C.,  Balis, D., and  Koukouli, M.: Global long-term monitoring of the ozone layer – a prerequisite for predictions, Int. J. Remote Sens., 30, 4295-4318, doi: 10.1080/01431160902825016, 2009.
+    * Righi, M., V. Eyring, K.-D Gottschaldt, C. Klinger, F. Frank, P. Jöckel, and I. Cionni, Quantitative evaluation of ozone and selected climate parameters in a set of EMAC simulations, Geosci. Model Dev., 8, 733-768, doi: 10.5194/gmd-8-733-2015, 2015.
+    * Tilmes, S., Lamarque, J.-F., Emmons, L. K., Conley, A., Schultz, M. G., Saunois, M., Thouret, V., Thompson, A. M., Oltmans, S. J., Johnson, B., and Tarasick, D.: Technical Note: Ozonesonde climatology between 1995 and 2011: description, evaluation and applications, Atmos. Chem. Phys., 12, 7475-7497, doi: 10.5194/acp-12-7475-2012, 2012.
+    * Ziemke, J. R., Chandra, S., Duncan, B. N., Froidevaux, L., Bhartia, P. K., Levelt, P. F., and Waters, J. W.: Tropospheric ozone determined from Aura OMI and MLS: Evaluation of measurements and comparison with the Global Modeling Initiative’s Chemical Transport Model, J. Geophys. Res., 111, D19303, doi: 10.1029/2006JD007089, 2006.
 
 Example plots
 -------------
 
-TBD
-
-.. figure:: ../../source/namelists/figures/TBDNAMELIST/TBDFIG.png
-   :scale: 50 %
-   :alt: xxxx
-   
-   CAPTION CAN GO HERE
-
-
-
++-----------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------+
+|.. image:: ../../source/namelists/figures/ozone_precursors/figure_namelist_precursors_trop_col_Oz.png            | .. image:: ../../source/namelists/figures/ozone_precursors/figure_namelist_precursors_trop_col_Oz_ref.png            |
++-----------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------+
+|.. image:: ../../source/namelists/figures/ozone_precursors/figure_namelist_precursors_trop_col_Oz_hovmoeller.png | .. image:: ../../source/namelists/figures/ozone_precursors/figure_namelist_precursors_trop_col_Oz_ref_hovmoeller.png |
++-----------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------+
+|.. image:: ../../source/namelists/figures/ozone_precursors/figure_namelist_precursors_Oz_plevel.png              | .. image:: ../../source/namelists/figures/ozone_precursors/figure_namelist_precursors_Oz_TS.png                      |
++-----------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------+
 
 
 

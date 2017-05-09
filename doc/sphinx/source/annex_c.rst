@@ -21,27 +21,195 @@ v1.1 are described in
 
 
 .. include:: namelists/namelist_aerosol.rst
+
+.. raw:: latex
+
+    \clearpage
+    \newpage 
+    \pagebreak 
+
 .. include:: namelists/namelist_catchment.rst
+
+.. raw:: latex
+
+    \clearpage
+    \newpage 
+    \pagebreak 
+
 .. include:: namelists/namelist_clouds.rst
+
+.. raw:: latex
+
+    \clearpage
+    \newpage 
+    \pagebreak
+
 .. include:: namelists/namelist_crem.rst
+
+.. raw:: latex
+
+    \clearpage
+    \newpage 
+    \pagebreak
+
 .. include:: namelists/namelist_diurnal.rst
+
+.. raw:: latex
+
+    \clearpage
+    \newpage 
+    \pagebreak
+
 .. include:: namelists/namelist_carbon_emergent_constraints.rst
+
+.. raw:: latex
+
+    \clearpage
+    \newpage 
+    \pagebreak
+
 .. include:: namelists/namelist_esacci.rst
+
+.. raw:: latex
+
+    \clearpage
+    \newpage 
+    \pagebreak
+
 .. include:: namelists/namelist_evapotranspiration.rst
+
+.. raw:: latex
+
+    \clearpage
+    \newpage 
+    \pagebreak
+
 .. include:: namelists/namelist_ipccar5_ch9.rst
+
+.. raw:: latex
+
+    \clearpage
+    \newpage 
+    \pagebreak
+
 .. include:: namelists/namelist_carbon_cycle.rst
+
+.. raw:: latex
+
+    \clearpage
+    \newpage 
+    \pagebreak
+
 .. include:: namelists/namelist_marine_bgc.rst
+
+.. raw:: latex
+
+    \clearpage
+    \newpage 
+    \pagebreak
+
 .. include:: namelists/namelist_MJO.rst
+
+.. raw:: latex
+
+    \clearpage
+    \newpage 
+    \pagebreak
+
 .. include:: namelists/namelist_cvdp.rst
+
+.. raw:: latex
+
+    \clearpage
+    \newpage 
+    \pagebreak
+
 .. include:: namelists/namelist_seaice.rst
+
+.. raw:: latex
+
+    \clearpage
+    \newpage 
+    \pagebreak
+
 .. include:: namelists/namelist_ozone_climate.rst
+
+.. raw:: latex
+
+    \clearpage
+    \newpage 
+    \pagebreak
+
 .. include:: namelists/namelist_ozone_precursors.rst
+
+.. raw:: latex
+
+    \clearpage
+    \newpage 
+    \pagebreak
+
 .. include:: namelists/namelist_precip_sm.rst
+
+.. raw:: latex
+
+    \clearpage
+    \newpage 
+    \pagebreak
+
 .. include:: namelists/namelist_perfmetrics.rst
+
+.. raw:: latex
+
+    \clearpage
+    \newpage 
+    \pagebreak
+
 .. include:: namelists/namelist_seaice.rst
+
+.. raw:: latex
+
+    \clearpage
+    \newpage 
+    \pagebreak
+
 .. include:: namelists/namelist_asian_monsoon.rst
+
+.. raw:: latex
+
+    \clearpage
+    \newpage 
+    \pagebreak
+
 .. include:: namelists/namelist_southern_hemisphere.rst
+
+.. raw:: latex
+
+    \clearpage
+    \newpage 
+    \pagebreak
+
 .. include:: namelists/namelist_southern_ocean.rst
+
+.. raw:: latex
+
+    \clearpage
+    \newpage 
+    \pagebreak
+
 .. include:: namelists/namelist_spi.rst
+
+.. raw:: latex
+
+    \clearpage
+    \newpage 
+    \pagebreak
+
 .. include:: namelists/namelist_tropical_variability.rst
+
+.. raw:: latex
+
+    \clearpage
+    \newpage 
+    \pagebreak
+
 .. include:: namelists/namelist_wam.rst
