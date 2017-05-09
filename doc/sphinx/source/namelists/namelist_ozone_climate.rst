@@ -70,11 +70,11 @@ User setting files (cfg files) are stored in nml/cfg_eyring13jgr
   * rgb_file: path + filename of color table (e.g.,
     "diag_scripts/lib/ncl/rgb/eyring_toz.rgb")
   * styleset: style set ("DEFAULT", "CMIP5")
-  * font: overrides default font (e.g., 21 ;
-     see www.ncl.ucar.edu/Document/Graphics/Resources/tx.shtml#txFont)
+  * font: overrides default font (e.g., 21 ; see
+    www.ncl.ucar.edu/Document/Graphics/Resources/tx.shtml#txFont)
   * range_option: 0 = as in nml, 1 = overlapping time period
   * lbLabelBarOn: plot a label bar (True, False)
-  * e13fig01_ = "True"
+  * e13fig01\_ = "True"
   * e13fig01_list_chem_mod: list of models in the group "chem"
     (array of strings, default = (/"All"/))
   * e13fig01_list_chem_mod_string: plotting label for group
@@ -117,6 +117,7 @@ User setting files (cfg files) are stored in nml/cfg_eyring13jgr
     strings, default = (/"None"/))
 
 * eyring13jgr_fig04.ncl
+
   *diag_script_info attributes*
 
   * styleset: style set ("DEFAULT", "CMIP5")
@@ -124,7 +125,7 @@ User setting files (cfg files) are stored in nml/cfg_eyring13jgr
     see www.ncl.ucar.edu/Document/Graphics/Resources/tx.shtml#txFont)
   * range_option: 0 = as in nml, 1 = overlapping time period
   * lbLabelBarOn: plot a label bar (True, False)
-  * e13fig04_ = "True"
+  * e13fig04\_ = "True"
   * e13fig04_list_chem_mod: list of models in the group "chem"
     (array of strings, default = (/"All"/))
   * e13fig04_list_chem_mod_string: plotting label for group "chem",
@@ -166,14 +167,14 @@ User setting files (cfg files) are stored in nml/cfg_eyring13jgr
     elements as "seasons" (see above)
   * e13fig06_YMin: min. y-values for plotting (n-element array, e.g.,
     (/260., 150./)); array is required to have the same number of elements
-     as "seasons" (see above)
+    as "seasons" (see above)
   * e13fig06_YMax: max. y-values for plotting (n-element array, e.g.,
     (/330., 500./)); array is required to have the same number of elements
     as "seasons" (see above)
   * list_chem_mod: list of models in the group "chem" (array of strings,
     default = (/"All"/)
   * list_nochem_mod: list of models in the group "nochem" (array of strings,
-     default = (/"None"/))
+    default = (/"None"/))
   * e13fig06_labels_exp_esp: specify experiment name (string: "True",
     "False"); only if e13fig06_mod_plot = “IMT” or “RAW”!
 
