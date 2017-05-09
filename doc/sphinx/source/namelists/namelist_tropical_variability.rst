@@ -24,7 +24,72 @@ Diagnostics are stored in diag_scripts/
 User settings
 -------------
 
-TBD
+User setting files (cfg files) are stored in nml/cfg_Tropical Variability/
+
+**(1) TropicalVariability.py, TropicalVariability_EQ.py, TropicalVariability_wind.py**
+
+*Settings for all diagnostics*
+
+* plot_equatorial: switch for equatorial plots (True, False)
+* plot_scatter: switch for scatter plots (True, False)
+* plot_zonal_means: switch for zonal mean plots (True, False)
+* plot_clouds: True, False
+* plot_fluxes: True, False
+* mask_unwanted_values: mask values (e.g., missing values) exceeding “mask_limit_low” and “mask_limit_high” (True, False)
+* mask_limit_low: lower threshold used for creating a mask (if “mask_unwanted_values” = True)
+* mask_limit_high: upper threshold used for creating a mask (if “mask_unwanted_values” = True)
+* plot_grid: provides a background grid for relavant plots (True, False)
+
+*Settings for equatorial mean plots with precipitation, temperature and winds*
+
+* areas: region to process ("Atlantic", "Indian", "Pacific"); each region is defined separately
+
+*Definition of regions (“areas”)*
+
+* lat_min: min. latitude of region
+* lat_max: max. latitude of region
+* lon_min: min. longitude of region
+* lon_max: max. longitude of region
+* prec_min: range of values for precipitation (min.)
+* prec_max: range of values for precipitation (max.)
+* temp_min: range of values for temperature/SST (min.)
+* temp_max: range of values for temperature/SST (max.)
+* wind_min: range of values for wind speed (min.)
+* wind_max: range of values for wind speed (max.)
+* div_min: range of values for divergence (min.)
+* div_max: range of values for divergence (max.)
+
+* Settings for temperature/precipitation scatter plots* 
+
+* areas: region to process (“West-Pacific”, “Central-Pacific”, “East-Pacific”)
+* seasons: season (annual DJF MAM JJA SON)
+* seasonal_limits: if you want to use your own limits (True) or let the code decide (False - values based on observations)
+
+*Definition of regions (“areas”) for scatter plots*
+
+* lat_min: min. latitude of region
+* lat_max: max. latitude of region
+* lon_min: min. longitude of region
+* lon_max: max. longitude of region
+* season_limits_annual: “seasonal” limits (annual means), 4 integer numbers giving 'min. temp.' 'max. temp.' 'min. precip.' 'max. precip.', e.g., 300 303 4 10
+* season_limits_DJF: same as season_limits_annual, but for Dec-Jan-Feb (DJF)
+* season_limits_MAM: same as season_limits_annual, but for Mar-Apr-May (MAM)
+* season_limits_JJA: same as season_limits_annual, but for Jun-Jul-Aug (JJA)
+* season_limits_SON: same as season_limits_annual, but for Sep-Oct-Nov (SON)
+
+*Definition of the seasons (each season defined separately)*
+* season_months: numbers of the months covered by the corresponding season, e.g., “12 1 2” for the season “DJF”
+
+*Settings for zonal means of SST and precipitation*
+
+* areas: region to process (Pacific Atlantic Indian)
+
+*Definition of the regions (“areas”)*
+
+* lat_min: min. latitude of region
+* lat_max: max. latitude of region
+* lon_min: min. longitude of region
+* lon_max: max. longitude of region
 
 
 Variables
