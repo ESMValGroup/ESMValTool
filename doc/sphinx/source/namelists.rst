@@ -647,11 +647,11 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 
 Typically, all namelists are stored in the folder *nml*, the naming convention is *namelist_xxx.xml* with ~xxx~ being the name of the diagnostic and/or a description of the purpose of the namelist::
 	
-1.	For papers
-	xxx = SurnameYearJournalabbreviation (e.g., stocker12jgr, stocker12sci1, stocker12sci2). 
-2. 	For copies of reports that are not publicly available
+1. For papers
+xxx = SurnameYearJournalabbreviation (e.g., stocker12jgr, stocker12sci1, stocker12sci2). 
+2. For copies of reports that are not publicly available
 xxx = OrgYearTitleabbrev (e.g., unep10water, unep11gap, roysoc09geoengineering).
-3.	For grouped sets of diagnostics and performance metrics that do not follow a published paper or report
+3. For grouped sets of diagnostics and performance metrics that do not follow a published paper or report
 xxx = an intuitive name describing the scientific topic (e.g., aerosol, MyDiag, SAMonsoon, SeaIce)
 
 
