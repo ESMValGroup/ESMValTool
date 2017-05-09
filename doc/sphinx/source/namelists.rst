@@ -667,45 +667,50 @@ Namelist configuration file
 
 The user can define base path names in a namelist configuration file and refer to them in the actual namelist file. The configuration file such as, for instance, config_private.xml has the following structure:
 
-.. code-block:: ncl
+.. code-block:: xml
 
    <?xml version="1.0" encoding="UTF-8"?>
-
-
-xxx
-<settings>
-        	<pathCollection>
-                	<usrpath category="userDirectory" type="output" id="WORKPATH">
-                        <path>./work/</path>
-                        <description>working directory</description>
-                </usrpath>
-                <usrpath category="userDirectory" type="output" id="PLOTPATH">
-                        <path>./work/plots/</path>
-                        <description>directory for output plots</description>
-                </usrpath>
-                <usrpath category="userDirectory" type="output" id="CLIMOPATH">
-                        <path>./work/climo/</path>
-                        <description>directory for output files</description>
-                </usrpath>
-                <usrpath category="simulation" type="input" id="MODELPATH">
-                        <path>/path/to/model/data/</path>
-                        <description>root directory of model data</description>
-                </usrpath>
-                <usrpath category="observation" type="input" id="OBSPATH">
-                        <path>/path/to/data/OBS/</path>
-                        <description>root directory of observational data</description>
-                </usrpath>
-                <usrpath category="auxiliary" type="input" id="AUXPATH">
-                        <path>/path/to/data/AUX/</path>
-                        <description>root directory of auxiliary data</description>
-                </usrpath>
-        </pathCollection>
+   <settings>
+      <pathCollection>
+         <usrpath category="userDirectory" type="output" id="WORKPATH">
+            <path>./work/</path>
+            <description>working directory</description>
+         </usrpath>
+         <usrpath category="userDirectory" type="output" id="PLOTPATH">
+            <path>./work/plots/</path>
+            <description>directory for output plots</description>
+         </usrpath>
+         <usrpath category="userDirectory" type="output" id="CLIMOPATH">
+            <path>./work/climo/</path>
+            <description>directory for output files</description>
+         </usrpath>
+         <usrpath category="simulation" type="input" id="MODELPATH">
+            <path>/path/to/model/data/</path>
+            <description>root directory of model data</description>
+         </usrpath>
+         <usrpath category="observation" type="input" id="OBSPATH">
+            <path>/path/to/data/OBS/</path>
+            <description>root directory of observational data</description>
+         </usrpath>
+         <usrpath category="auxiliary" type="input" id="AUXPATH">
+            <path>/path/to/data/AUX/</path>
+            <description>root directory of auxiliary data</description>
+         /usrpath>
+      </pathCollection>
 </settings>
 
 Inside the namelist file the configuration file can be included in the following way:
-<include href="config_private.xml"/>
+
+.. code-block:: xml
+
+   <include href="config_private.xml"/>
+
 and referred to with the syntax:
-@{id-of-the-usrpath}
+
+.. code-block:: xml
+
+   @{id-of-the-usrpath}
+
 Note: alternatively, explicitely defined pathnames can be used at any time.
 
 
