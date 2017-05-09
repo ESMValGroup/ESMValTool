@@ -54,9 +54,15 @@ Variables
 Observations and Reformat Scripts
 ---------------------------------
 
-TBD
+Note: (1) obs4mips data can be used directly without any preprocessing; (2) see headers of reformat scripts for non-obs4mips data for download instructions.
 
-
+* ERA-Interim Reanalysis (tas, ua, va)
+  *Reformat script*: reformat_scripts/obs/reformat_obs_ERA-Interim.ncl
+* GPCP monthly (pr) – obs4mips
+* CERES-EBAF (TOA and derived surface radiation fluxes) – obs4mips
+* GPCP Version 1.2, daily and 1°x1° (pr) – obs4mips
+* Daily NOAA OLR
+  *Reformat script*: reformat_scripts/obs/reformat_obs_NOAA-PSD-Interp.ncl
 
 References
 ----------
