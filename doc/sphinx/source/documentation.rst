@@ -60,37 +60,24 @@ When implementing a new diagnostic script or metrics set, it should be documente
 | **(feature branch)**      |                                                                          |
 +---------------------------+--------------------------------------------------------------------------+
 | ``1.`` Overview                                                                                      |
-|                                                                                                      |
 | . . . Insert text here                                                                               |
-|                                                                                                      |
 | ``2.`` Available Diagnostics                                                                         |
-|                                                                                                      |
 | . . . Insert text here                                                                               |
-|                                                                                                      |
 | ``3.`` Specific Routines                                                                             |
-|                                                                                                      |
 | . . . Contains a description of specific routines being developed for the given diagnostic that helps|
-|                                                                                                      |
 | . . . to identify common code (which should then go in the ``lib/``)                                 |
-|                                                                                                      |
 | ``4.`` Observations and Scripts (also see Model and observational data below)                        |
-|                                                                                                      |
 | . . . Insert text here                                                                               |
-|                                                                                                      |
 | ``5.`` Test Cases (see also Automated testing, section TODO:ref 7.9)                                 |
-|                                                                                                      |
 | . . . Insert text here                                                                               |
-|                                                                                                      |
 | ``6.`` References                                                                                    |
-|                                                                                                      |
 | . . . REF1                                                                                           |
-|                                                                                                      |
 | . . . REF2                                                                                           |
-|                                                                                                      |
 | . . . etc.                                                                                           |
-|                                                                                                      |
 | ``7.`` Sample Plots                                                                                  |
+| . . . Please insert sample plots for all plot types produced by the namelist                         |
 +---------------------------+--------------------------------------------------------------------------+
+
 
 Model and observational data
 ============================
@@ -98,6 +85,88 @@ Model and observational data
 Overview
 --------
 
+When possible, observations from the obs4MIPs/ana4MIPs archives are used in the model evaluation (see section TODO:ref 6.1).
+These data are freely available from the ESGF in the same format as the CMIP simulations and can be directly used in the ESMValTool using the obs4mips or ana4mips class in the namelist (see also section TODO:ref 6.2).
+
+Important links
+
+https://www.earthsystemcog.org/projects/obs4mips/satellite_data_products
+
+Nightly scan across nodes
+
+https://www.earthsystemcog.org/search/obs4mips/?template=obs4mips&limit=200
+
+Observational data sets not available in these archives need to be reformatted according to the CF/CMOR standard before they can be used.
+In this case a reference to the official URL is provided such that a user can get the latest version of the data set as well as a description and a script how to convert the data set to the format required by the ESMValTool. These conversion scripts are collected in *reformat_scripts/obs/reformat_obs_<NAME>.ncl*.
+The reformatting routines must be documented with a standard header providing all information required to retrieve and process the data, as well as their availability (Tier 1, Tier 2, or Tier 3).
+
+All observations are tiered as follows:
+    * Tier 1: data sets from the obs4MIPs and ana4MIPs archives
+    * Tier 2: other freely available data sets
+    * Tier 3: restricted data sets (e.g., license agreement required)
+
+For Tier 2 and 3 data, the developer shall also provide links and helper scripts through the reformatting routines, following the template for the standard header described in section for the reformatting routines.
+An example can be found here:
+
+.. centered::
+    *reformat_scripts/obs/reformat_obs_AURA-MLS-OMI.ncl*.
+
+An overview on the available reformatting scripts for Tier 2 and 3 data is given in TODO:ref Table S9.
+The reformatted observational data (Tier 2 and Tier 3) must be named according to the OBS class defintion, which considers the following naming convention:
+
+.. centered::
+    OBS_<name>_<case>_<ensemble>_<field>_<variable>_<YYY1M1>-<YYY2M2>.nc
+
+where:
+
+<name> is the name of the satellite, instrument, campaign, network, model, etc. (e.g., ERA-Interim, AERONET, AURA-MLS-OMI, etc.)
+
+<case> is the observation type (insitu, ground, sat, reanaly, campaign, etc.)
+
+<ensemble> is the version number, processing level or station code (for ground-based networks), use 1 if not available.
+
+It is also possible to split the output in multiple files, like in the CMIP5 class, e.g. _200101-200512.nc, 200601_201012.nc, 201101-201512.nc, etc. This is particularly useful for daily data, which are usually too large to be collected in a single file covering the whole time period.
+
 Standard header for the reformatting routines for observational data
 --------------------------------------------------------------------
+
+This is a template of the standard header for the reformat_obs routines.
+The parts in red are the ones to be modified by the author.
+The modification history is given in reverse chronological order (i.e., most recent on top) and the last entry always contains the written statement.
+The author of each entry in the modification history shall be indicated with the author tag, as given in the master reference file (*doc/MASTER_authors-refs-acknow.txt*), e.g., A_surn_na = surname, name.
+All lines should be limited to a maximum of 79 characters.
+
+.. code-block:: ncl
+
+    ;;#############################################################################
+    ;; REFORMAT SCRIPT FOR THE [OBSERVATION NAME] OBSERVATIONAL DATA
+    ;;#############################################################################
+    ;;
+    ;; Tier
+    ;;    [Information on data availability, possible options are:]
+    ;;    Tier 1: obs4MIPs or ana4MIPs
+    ;;    Tier 2: other freely-available data set
+    ;;    Tier 3: restricted data set
+    ;;
+    ;; Source
+    ;;    [URL to the data source or the reference]
+    ;;
+    ;; Last access
+    ;;    [YYYYMMDD]
+    ;;
+    ;; Download and processing instructions
+    ;;    [Short explanation on how to download and process the data]
+    ;;
+    ;; Caveats
+    ;;    [List possible caveats or limitations of this script]
+    ;;    [Features to-be-implemented shall also be mentioned here]
+    ;;
+    ;; Modification history
+    ;;    [YYYYMMDD-A_xxxx_yy: extended...]
+    ;;    [YYYYMMDD-A_xxxx_yy: written.]
+    ;;
+    ;; #############################################################################
+
+    load ...
+    load ...
 

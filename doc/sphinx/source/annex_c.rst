@@ -18,5 +18,23 @@ v1.1 are described in
 
 * Lauer et al., Benchmarking CMIP5 models with a subset of ESA CCI Phase 2 data using the ESMValTool, Remote Sens. Environ. (2017), `doi:10.1016/j.rse.2017.01.007 <http://dx.doi.org/10.1016/j.rse.2017.01.007>`_
 
-.. include:: namelists/namelist_template.rst
+
+
 .. include:: namelists/namelist_aerosol.rst
+.. include:: namelists/namelist_catchment.rst
+.. include:: namelists/namelist_clouds.rst
+.. include:: namelists/namelist_crem.rst
+.. include:: namelists/namelist_diurnal.rst
+.. include:: namelists/namelist_carbon_emergent_constraints.rst
+.. include:: namelists/namelist_esacci.rst
+.. include:: namelists/namelist_evapotranspiration.rst
+.. include:: namelists/namelist_marine_bgc.rst
+.. include:: namelists/namelist_cvdp.rst
+.. include:: namelists/namelist_precip_sm.rst
+.. include:: namelists/namelist_asian_monsoon.rst
+.. include:: namelists/namelist_southern_hemisphere.rst
+.. include:: namelists/namelist_southern_ocean.rst
+.. include:: namelists/namelist_spi.rst
+.. include:: namelists/namelist_tropical_variability.rst
+.. include:: namelists/namelist_wam.rst
+
