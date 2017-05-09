@@ -32,7 +32,7 @@ User setting files (cfg files) are stored in nml/cfg_et/
 
 *Required diag_script_info attributes*
 
-*  et_colormap: filename of color table
+* et_colormap: filename of color table
 * cn_levels_mean_basic: contour levels of absolute values (array)
 * cn_levels_mean_diff_basic: contour levels of differences
 * sftlf_cutoff: threshold for land sea mask (> 50  land grid cell)
@@ -56,13 +56,13 @@ Observations and Reformat Scripts
 *Note:* see also header of reformat script for downloading instructions.
 
 * The LandFlux-EVAL data set 
-(http://www.iac.ethz.ch/groups/seneviratne/research/LandFlux-EVAL).
-The data set is document in Mueller et al (2013). Download data at the
-above link, then follow the instructions in the reformat script available
-in the repository. The data set is free to use after registration but may
-not be redistributed.
+  (http://www.iac.ethz.ch/groups/seneviratne/research/LandFlux-EVAL).
+  The data set is document in Mueller et al (2013). Download data at the
+  above link, then follow the instructions in the reformat script available
+  in the repository. The data set is free to use after registration but may
+  not be redistributed.
 
-Reformat script: reformat_scripts/obs/reformat_obs_LandFlux-EVAL.ncl
+  Reformat script: reformat_scripts/obs/reformat_obs_LandFlux-EVAL.ncl
 
 
 
@@ -84,8 +84,17 @@ References
 Example plots
 -------------
 
-TBD
+.. figure::  ../../source/namelists/figures/evapotranspiration/fig_evapo_1.png
+   :align:   center
+   :width:   70%
 
+.. figure::  ../../source/namelists/figures/evapotranspiration/fig_evapo_2.png
+   :align:   center
+   :width:   70%
+   
+.. figure::  ../../source/namelists/figures/evapotranspiration/fig_evapo_3.png
+   :align:   center
+   :width:   50%
 
 
 
