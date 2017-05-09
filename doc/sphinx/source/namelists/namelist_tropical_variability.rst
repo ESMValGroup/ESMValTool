@@ -59,7 +59,7 @@ User setting files (cfg files) are stored in nml/cfg_Tropical Variability/
 * div_min: range of values for divergence (min.)
 * div_max: range of values for divergence (max.)
 
-* Settings for temperature/precipitation scatter plots* 
+*Settings for temperature/precipitation scatter plots* 
 
 * areas: region to process (“West-Pacific”, “Central-Pacific”, “East-Pacific”)
 * seasons: season (annual DJF MAM JJA SON)
@@ -78,6 +78,7 @@ User setting files (cfg files) are stored in nml/cfg_Tropical Variability/
 * season_limits_SON: same as season_limits_annual, but for Sep-Oct-Nov (SON)
 
 *Definition of the seasons (each season defined separately)*
+
 * season_months: numbers of the months covered by the corresponding season, e.g., “12 1 2” for the season “DJF”
 
 *Settings for zonal means of SST and precipitation*
