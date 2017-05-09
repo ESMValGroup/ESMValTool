@@ -19,7 +19,6 @@ v1.1 are described in
 * Lauer et al., Benchmarking CMIP5 models with a subset of ESA CCI Phase 2 data using the ESMValTool, Remote Sens. Environ. (2017), `doi:10.1016/j.rse.2017.01.007 <http://dx.doi.org/10.1016/j.rse.2017.01.007>`_
 
 
-**TODO: inclulde references to all diagnostics here ???? perhaps as bullet list???**
 
 .. include:: namelists/namelist_aerosol.rst
 .. include:: namelists/namelist_catchment.rst
@@ -28,4 +27,5 @@ v1.1 are described in
 .. include:: namelists/namelist_diurnal.rst
 .. include:: namelists/namelist_carbon_emergent_constraints.rst
 
+.. include:: namelists/namelist_tropical_variability.rst
 .. include:: namelists/namelist_wam.rst
