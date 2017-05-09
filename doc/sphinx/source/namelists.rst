@@ -790,7 +790,7 @@ Example namelist
    </GLOBAL>
    
    <MODELS>
-       <model>  CMIP5_ETHZ CESM1-CAM5   Amon  historical  r1i1p1  2000 2004  @{MODELPATH}/ETHZ_CMIP5/    </model>
+       <model>  CMIP5_ETHZ CESM1-CAM5   Amon  historical  r1i1p1  2000 2004  @{MODELPATH}/ETHZ_CMIP5/   </model>
        <model>  CMIP5_ETHZ GFDL-ESM2G   Amon  historical  r1i1p1  2000 2004  @{MODELPATH}/ETHZ_CMIP5/   </model>
        <model>  CMIP5_ETHZ MIROC5       Amon  historical  r1i1p1  2000 2004  @{MODELPATH}/ETHZ_CMIP5/   </model>
        <model>  CMIP5_ETHZ MPI-ESM-MR   Amon  historical  r1i1p1  2000 2004  @{MODELPATH}/ETHZ_CMIP5/   </model>
