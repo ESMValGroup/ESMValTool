@@ -61,24 +61,52 @@ TBD
 References
 ----------
 
-TBD
+* Cook, K. H. and E. K. Vizy, 2006: Coupled model simulations of the West African monsoon system: Twentieth- and twenty-first-century simulations. J. Climate, 19, 3681-3703.
+* Roehrig, R., D. Bouniol, F. Guichard, F. Hourdin, and J.-L. Redelsperger, 2013: The Present and Future of the West African Monsoon: A Process-Oriented Assessment of CMIP5 Simulations along the AMMA Transect. J. Climate, 26, 6471-6505. doi: http://dx.doi.org/10.1175/JCLI-D-12-00505.1.
 
 
 Example plots
 -------------
 
-TBD
+.. figure:: ../../source/namelists/figures/wam/fig1.png
+   :scale: 50 %
+   :alt: xxxx
 
+.. figure:: ../../source/namelists/figures/wam/fig2.png
+   :scale: 50 %
+   :alt: xxxx
 
+.. figure:: ../../source/namelists/figures/wam/fig3.png
+   :scale: 50 %
+   :alt: xxxx
 
+.. figure:: ../../source/namelists/figures/wam/fig4.png
+   :scale: 50 %
+   :alt: xxxx
 
+.. figure:: ../../source/namelists/figures/wam/fig5.png
+   :scale: 50 %
+   :alt: xxxx
 
+.. figure:: ../../source/namelists/figures/wam/fig6.png
+   :scale: 50 %
+   :alt: xxxx
 
+.. figure:: ../../source/namelists/figures/wam/fig7.png
+   :scale: 50 %
+   :alt: xxxx
 
+.. figure:: ../../source/namelists/figures/wam/fig8.png
+   :scale: 50 %
+   :alt: xxxx
 
+.. figure:: ../../source/namelists/figures/wam/fig9.png
+   :scale: 50 %
+   :alt: xxxx
 
-
-
+.. figure:: ../../source/namelists/figures/wam/fig10.png
+   :scale: 50 %
+   :alt: xxxx
 
 
 
