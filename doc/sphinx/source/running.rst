@@ -27,6 +27,14 @@ The following section gives a brief description of the steps required by a user 
 
 5. The output will be written to a subdirectory named like the diagnostics package (e.g., *MyDiag*) in the directories specified in the <GLOBAL> section of the namelist (see step 1 and also section 3.4). The default directories are: *work/MyDiag* for the NetCDF output and *work/plots/MyDiag* for the plot(s) (see also Figure 3). Acknowledgements and references are written to the file *work/refs-acknows_MyDiag.txt*.
 
+.. _fig_3:
+.. figure::  ../../source/figures/exemple_figure3.png
+   :align:   center
+   
+   **Figure 3** Example plot created by the toy diagnostic MyDiag showing the
+   5-year annual mean temperature at 200 hPa from the CMIP5 historical run
+   (r1i1p1) with the MPI-ESM-LR model.
+
 Available diagnostics and metrics
 =================================
 
@@ -230,10 +238,11 @@ An example reformat namelist file is listed below:
 A list of available data sets and their corresponding reformatting routines
 are given in Table S9.
 
-**Table S9** Observational data for use with the ESMValTool. See headers of the
-reformatting routines for downloading and processing instructions.
-
 .. tabularcolumns:: |p{1.8cm}|p{0.6cm}|p{2.3cm}|p{1.6cm}|p{1.5cm}|p{1.9cm}|p{4.2cm}|
+
+   **Table S9** Observational data for use with the ESMValTool. See headers of the
+   reformatting routines for downloading and processing instructions.
+
 
 +--------------------+---------+-------------------------------+---------------------+-------------+----------------+-------------------------------+
 | **Name**           |**Tier** |**Description**                | **Variables**       | **Type**    | **Time range** | **Script name**               |
