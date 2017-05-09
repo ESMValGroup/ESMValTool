@@ -36,23 +36,40 @@ Available Namelists and Diagnostics
 -----------------------------------
 
 Namelists are stored in nml/
-	namelist_flato13ipcc.xml
+
+* namelist_flato13ipcc.xml
+
 Diagnostics are stored in diag_scripts/
-	aerosol_satellite.ncl (Fig. 9.28: Multi-year average AOD in comparison with satellite data)
-	carbon_constraint.ncl (fig. 9.45: Emergent constraints on carbon cycle feedbacks)
-	carbon_corr_2var.ncl (fig. 9.45: Emergent constraints on carbon cycle feedbacks)
-	carbon_dummy.ncl (fig. 9.45: Emergent constraints on carbon cycle feedbacks)
-	clouds_bias.ncl (figs. 9.2 a,b + 9.4 a,b: Clouds)
-	clouds_ipcc.ncl (fig. 9.4: Clouds)
-	create_co2flux.ncl (fig. 9.45: Emergent constraints on carbon cycle feedbacks)
-	DiurnalCycle_box.ncl (fig. 9.30: Composite diurnal cycle of precipitation)
-	eyring13jgr_fig02.ncl (fig. 9.10: Ozone and associated climate impacts)
-	perfmetrics_grading.ncl (fig. 9.7: Performance metrics for essential climate parameters)
-	perfmetrics_grading_collect.ncl (fig. 9.7: Performance metrics for essential climate parameters)
-	perfmetrics_main.ncl (fig. 9.7: Performance metrics for essential climate parameters)
-	SAMonsoon_precip_domain.ncl (fig. 9.32: South Asian Summer Monsoon diagnostics)
-	SeaIce_tsline.ncl (fig. 9.24 a,b: Sea ice)
-	tsline.ncl (fig. 9.29: Aerosol; fig. 9.45: Emergent constraints on carbon cycle feedbacks)
+
+* aerosol_satellite.ncl (Fig. 9.28: Multi-year average AOD in comparison with satellite data)
+
+* carbon_constraint.ncl (fig. 9.45: Emergent constraints on carbon cycle feedbacks)
+
+* carbon_corr_2var.ncl (fig. 9.45: Emergent constraints on carbon cycle feedbacks)
+
+* carbon_dummy.ncl (fig. 9.45: Emergent constraints on carbon cycle feedbacks)
+
+* clouds_bias.ncl (figs. 9.2 a,b + 9.4 a,b: Clouds)
+
+* clouds_ipcc.ncl (fig. 9.4: Clouds)
+
+* create_co2flux.ncl (fig. 9.45: Emergent constraints on carbon cycle feedbacks)
+
+* DiurnalCycle_box.ncl (fig. 9.30: Composite diurnal cycle of precipitation)
+
+* eyring13jgr_fig02.ncl (fig. 9.10: Ozone and associated climate impacts)
+
+* perfmetrics_grading.ncl (fig. 9.7: Performance metrics for essential climate parameters)
+
+* perfmetrics_grading_collect.ncl (fig. 9.7: Performance metrics for essential climate parameters)
+
+* perfmetrics_main.ncl (fig. 9.7: Performance metrics for essential climate parameters)
+
+* SAMonsoon_precip_domain.ncl (fig. 9.32: South Asian Summer Monsoon diagnostics)
+
+* SeaIce_tsline.ncl (fig. 9.24 a,b: Sea ice)
+
+* tsline.ncl (fig. 9.29: Aerosol; fig. 9.45: Emergent constraints on carbon cycle feedbacks)
 
 
 
@@ -60,56 +77,92 @@ User settings
 -------------
 
 See individual diagnostics (Annex C):
-	Aerosol
-	Clouds
-	Emergent constraints on carbon cycle feedbacks
-	Ozone and associated climate impacts
-	Performance metrics for essential climate parameters
-	Sea ice
-	South Asian Summer Monsoon diagnostics
+
+* Aerosol
+
+* Clouds
+
+* Emergent constraints on carbon cycle feedbacks
+
+* Ozone and associated climate impacts
+
+* Performance metrics for essential climate parameters
+
+* Sea ice
+
+* South Asian Summer Monsoon diagnostics
 
 
 
 Variables
 ---------
 
-	co2 (atmos, monthly mean, longitude, latitude, plev, time)
-	fgco2 (ocean, monthly mean, longitude, latitude, time)
-	hus (atmos, monthly mean, longitude, latitude, level, time)
-	nbp (land, monthly mean, longitude, latitude, time)
-	od550aer (aero, monthly mean, longitude, latitude, time)
-	pr (atmos, 3-hr/monthly mean, longitude, latitude, time)
-	rlut, rlutcs (atmos, monthly mean, longitude, latitude, time)
-	rsut, rsutcs (atmos, monthly mean, longitude, latitude, time)
-	sic (ocean, monthly mean, longitude, latitude, time)
-	ta (atmos, monthly mean, longitude, latitude, level, time)
-	tas (atmos, monthly mean, longitude, latitude, time)
-	toz (atmos, monthly mean, longitude, latitude, time)
-	tro3 (atmos, monthly mean, longitude, latitude, level, time)
-	ua (atmos, monthly mean, longitude, latitude, level, time)
-	va (atmos, monthly mean, longitude, latitude, level, time)
-	zg (atmos, monthly mean, longitude, latitude, level, time)
+* co2 (atmos, monthly mean, longitude, latitude, plev, time)
+
+* fgco2 (ocean, monthly mean, longitude, latitude, time)
+
+* hus (atmos, monthly mean, longitude, latitude, level, time)
+
+* nbp (land, monthly mean, longitude, latitude, time)
+
+* od550aer (aero, monthly mean, longitude, latitude, time)
+
+* pr (atmos, 3-hr/monthly mean, longitude, latitude, time)
+
+* rlut, rlutcs (atmos, monthly mean, longitude, latitude, time)
+
+* rsut, rsutcs (atmos, monthly mean, longitude, latitude, time)
+
+* sic (ocean, monthly mean, longitude, latitude, time)
+
+* ta (atmos, monthly mean, longitude, latitude, level, time)
+
+* tas (atmos, monthly mean, longitude, latitude, time)
+
+* toz (atmos, monthly mean, longitude, latitude, time)
+
+* tro3 (atmos, monthly mean, longitude, latitude, level, time)
+
+* ua (atmos, monthly mean, longitude, latitude, level, time)
+
+* va (atmos, monthly mean, longitude, latitude, level, time)
+
+* zg (atmos, monthly mean, longitude, latitude, level, time)
 
 
 
 Observations and Reformat Scripts
 ---------------------------------
 
-Note: (1) obs4mips data can be used directly without any preprocessing; (2) see headers of reformat scripts for non-obs4mips data for download instructions.
-	AIRS L3 (hus  obs4mips)
-	CERES-EBAF (rlut, rlutcs, rsut, rsutcs  obs4mips)
-	CMAP (pr  reformat_scripts/obs/reformat_obs_CMAP.ncl)
-	ERA-Interim (tas, ta, ua, va, zg, hus  reformat_scripts/obs/reformat_obs_ERA-Interim.ncl)
-	ESACCI-AEROSOL (od550aer  reformat_scripts/obs/reformat_obs_ESACCI-AEROSOL.ncl)
-	GCP - Global carbon budget including land (nbp) and ocean (fgco2) carbon fluxes (reformat_scripts/obs/reformat_obs_GCP.ncl)
-	GPCP-SG (pr  obs4mips)
-	HadISST (sic  reformat_scripts/obs/reformat_obs_HadISST.ncl)
-	MERRA (pr  obs4mips)
-	MODIS-L3 (od550aer  obs4mips)
-	NCEP (tas, ta, ua, va, zg  reformat_scripts/obs/reformat_obs_NCEP.ncl)
-	NIWA (toz  reformat_scripts/obs/reformat_obs_NIWA.ncl)
-	NSIDC-NT (sic  reformat_scripts/obs/reformat_obs_NSIDC.ncl)
-	TRMM-3B42 (pr  reformat_scripts/obs/reformat_obs_TRMM-3B42-3hourly.ncl)
+*Note:* (1) obs4mips data can be used directly without any preprocessing; (2) see headers of reformat scripts for non-obs4mips data for download instructions.
+
+* AIRS L3 (hus  obs4mips)
+
+* CERES-EBAF (rlut, rlutcs, rsut, rsutcs  obs4mips)
+
+* CMAP (pr  reformat_scripts/obs/reformat_obs_CMAP.ncl)
+
+* ERA-Interim (tas, ta, ua, va, zg, hus  reformat_scripts/obs/reformat_obs_ERA-Interim.ncl)
+
+* ESACCI-AEROSOL (od550aer  reformat_scripts/obs/reformat_obs_ESACCI-AEROSOL.ncl)
+
+* GCP - Global carbon budget including land (nbp) and ocean (fgco2) carbon fluxes (reformat_scripts/obs/reformat_obs_GCP.ncl)
+
+* GPCP-SG (pr  obs4mips)
+
+* HadISST (sic  reformat_scripts/obs/reformat_obs_HadISST.ncl)
+
+* MERRA (pr  obs4mips)
+
+* MODIS-L3 (od550aer  obs4mips)
+
+* NCEP (tas, ta, ua, va, zg  reformat_scripts/obs/reformat_obs_NCEP.ncl)
+
+* NIWA (toz  reformat_scripts/obs/reformat_obs_NIWA.ncl)
+
+* NSIDC-NT (sic  reformat_scripts/obs/reformat_obs_NSIDC.ncl)
+
+* TRMM-3B42 (pr  reformat_scripts/obs/reformat_obs_TRMM-3B42-3hourly.ncl)
 
 
 
@@ -117,10 +170,13 @@ Note: (1) obs4mips data can be used directly without any preprocessing; (2) see 
 References
 ----------
 
-Adler, R. F., Huffman, G. J., Chang, A., Ferraro, R., Xie, P.-P., Janowiak, J., Rudolf, B., Schneider, U., Curtis, S., Bolvin, D., Gruber, A., Susskind, J., Arkin, P., and Nelkin, E.: The Version-2 Global Precipitation Climatology Project (GPCP) Monthly Precipitation Analysis (1979Present), J Hydrometeorol, 4, 1147-1167, 2003.
-Dee, D. P., Uppala, S. M., Simmons, A. J., Berrisford, P., Poli, P., Kobayashi, S., Andrae, U., Balmaseda, M. A., Balsamo, G., Bauer, P., Bechtold, P., Beljaars, A. C. M., van de Berg, L., Bidlot, J., Bormann, N., Delsol, C., Dragani, R., Fuentes, M., Geer, A. J., Haimberger, L., Healy, S. B., Hersbach, H., Holm, E. V., Isaksen, L., Kallberg, P., Kohler, M., Matricardi, M., McNally, A. P., Monge-Sanz, B. M., Morcrette, J. J., Park, B. K., Peubey, C., de Rosnay, P., Tavolato, C., Thepaut, J. N., and Vitart, F.: The ERA-Interim reanalysis: configuration and performance of the data assimilation system, Q J Roy Meteor Soc, 137, 553-597, 2011.
-Eyring, V., Righi, M., Lauer, A., Evaldsson, M., Wenzel, S., Jones, C., Anav, A., Andrews, O., Cionni, I., Davin, E. L., Deser, C., Ehbrecht, C., Friedlingstein, P., Gleckler, P., Gottschaldt, K.-D., Hagemann, S., Juckes, M., Kindermann, S., Krasting, J., Kunert, D., Levine, R., Loew, A., Mäkelä, J. Martin, G., Mason, E., Phillips, A. S., Read, S., Rio, C., Roehrig, R., Senftleben, D., Sterl, A., van Ulft, L. H., Walton, J., Wang, S., and Williams, K. D.: ESMValTool (v1.0)  a community diagnostic and performance metrics tool for routine evaluation of Earth System Models in CMIP, Geosci. Model Dev., 9, 1747-1802, doi: 10.5194/gmd-9-1747-2016, 2016.
-Flato, G., J. Marotzke, B. Abiodun, P. Braconnot, S.C. Chou, W. Collins, P. Cox, F. Driouech, S. Emori, V. Eyring, C. Forest, P. Gleckler, E. Guilyardi, C. Jakob, V. Kattsov, C. Reason and M. Rummukainen, 2013: Evaluation of Climate Models. In: Climate Change 2013: The Physical Science Basis. Contribution of Working Group I to the Fifth Assessment Report of the Intergovernmental Panel on Climate Change [Stocker, T.F., D. Qin, G.-K. Plattner, M. Tignor, S.K. Allen, J. Boschung, A. Nauels, Y. Xia, V. Bex and P.M. Midgley (eds.)]. Cambridge University Press, Cambridge, United Kingdom and New York, NY, USA.
+* Adler, R. F., Huffman, G. J., Chang, A., Ferraro, R., Xie, P.-P., Janowiak, J., Rudolf, B., Schneider, U., Curtis, S., Bolvin, D., Gruber, A., Susskind, J., Arkin, P., and Nelkin, E.: The Version-2 Global Precipitation Climatology Project (GPCP) Monthly Precipitation Analysis (1979Present), J Hydrometeorol, 4, 1147-1167, 2003.
+
+* Dee, D. P., Uppala, S. M., Simmons, A. J., Berrisford, P., Poli, P., Kobayashi, S., Andrae, U., Balmaseda, M. A., Balsamo, G., Bauer, P., Bechtold, P., Beljaars, A. C. M., van de Berg, L., Bidlot, J., Bormann, N., Delsol, C., Dragani, R., Fuentes, M., Geer, A. J., Haimberger, L., Healy, S. B., Hersbach, H., Holm, E. V., Isaksen, L., Kallberg, P., Kohler, M., Matricardi, M., McNally, A. P., Monge-Sanz, B. M., Morcrette, J. J., Park, B. K., Peubey, C., de Rosnay, P., Tavolato, C., Thepaut, J. N., and Vitart, F.: The ERA-Interim reanalysis: configuration and performance of the data assimilation system, Q J Roy Meteor Soc, 137, 553-597, 2011.
+
+* Eyring, V., Righi, M., Lauer, A., Evaldsson, M., Wenzel, S., Jones, C., Anav, A., Andrews, O., Cionni, I., Davin, E. L., Deser, C., Ehbrecht, C., Friedlingstein, P., Gleckler, P., Gottschaldt, K.-D., Hagemann, S., Juckes, M., Kindermann, S., Krasting, J., Kunert, D., Levine, R., Loew, A., Mäkelä, J. Martin, G., Mason, E., Phillips, A. S., Read, S., Rio, C., Roehrig, R., Senftleben, D., Sterl, A., van Ulft, L. H., Walton, J., Wang, S., and Williams, K. D.: ESMValTool (v1.0)  a community diagnostic and performance metrics tool for routine evaluation of Earth System Models in CMIP, Geosci. Model Dev., 9, 1747-1802, doi: 10.5194/gmd-9-1747-2016, 2016.
+
+* Flato, G., J. Marotzke, B. Abiodun, P. Braconnot, S.C. Chou, W. Collins, P. Cox, F. Driouech, S. Emori, V. Eyring, C. Forest, P. Gleckler, E. Guilyardi, C. Jakob, V. Kattsov, C. Reason and M. Rummukainen, 2013: Evaluation of Climate Models. In: Climate Change 2013: The Physical Science Basis. Contribution of Working Group I to the Fifth Assessment Report of the Intergovernmental Panel on Climate Change [Stocker, T.F., D. Qin, G.-K. Plattner, M. Tignor, S.K. Allen, J. Boschung, A. Nauels, Y. Xia, V. Bex and P.M. Midgley (eds.)]. Cambridge University Press, Cambridge, United Kingdom and New York, NY, USA.
 
 
 

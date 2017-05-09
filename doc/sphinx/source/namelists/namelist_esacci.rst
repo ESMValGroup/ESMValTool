@@ -1,4 +1,4 @@
-TEMPLATE FOR NAMELIST
+ESA CCI
 =====================
 
 Overview
