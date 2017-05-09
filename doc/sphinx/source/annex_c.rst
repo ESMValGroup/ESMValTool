@@ -30,6 +30,7 @@ v1.1 are described in
 .. include:: namelists/namelist_evapotranspiration.rst
 .. include:: namelists/namelist_marine_bgc.rst
 .. include:: namelists/namelist_cvdp.rst
+.. include:: namelists/namelist_precip_sm.rst
 .. include:: namelists/namelist_southern_hemisphere.rst
 .. include:: namelists/namelist_southern_ocean.rst
 .. include:: namelists/namelist_spi.rst
