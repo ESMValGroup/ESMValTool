@@ -667,11 +667,12 @@ Namelist configuration file
 
 The user can define base path names in a namelist configuration file and refer to them in the actual namelist file. The configuration file such as, for instance, config_private.xml has the following structure:
 
-.. code-block::ncl
-<?xml version="1.0" encoding="UTF-8"?>
-<settings>
-        <pathCollection>
-                <usrpath category="userDirectory" type="output" id="WORKPATH">
+..code-block::ncl
+
+	<?xml version="1.0" encoding="UTF-8"?>
+	<settings>
+        	<pathCollection>
+                	<usrpath category="userDirectory" type="output" id="WORKPATH">
                         <path>./work/</path>
                         <description>working directory</description>
                 </usrpath>
