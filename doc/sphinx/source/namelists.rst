@@ -3,10 +3,15 @@
 ESMValTool namelists
 ********************
 
-The ESMValTool namelists are the ~control centers~ acting as interfaces between the user and the various scripts and configuration files that make up the ESMValTool. A namelist specifies a list of diagnostics to run, global flags and a list of models and observations that are used within the diagnostics. Namelists are text files written in XML (EXtensible Markup Language) [XML]. As a simple text file, the XML-namelist can be easily modified by the user.
-For any given namelist *~namelist.xml~*, the ESMValTool is invoked from the command line via (see also section 6):
+The ESMValTool namelists are the "control centers" acting as interfaces between the user and the various scripts and configuration files that make up the ESMValTool. A namelist specifies a list of diagnostics to run, global flags and a list of models and observations that are used within the diagnostics. Namelists are text files written in XML (EXtensible Markup Language) [XML]. As a simple text file, the XML-namelist can be easily modified by the user.
+
+For any given namelist *"namelist.xml"*, the ESMValTool is invoked from the command line via (see also section 6)::
+
+	python main.py nml/namelist.xml
+
  
-The Python ~workflow manager~ main.py will parse the namelist (namelist.xml) and call all diagnostic scripts listed in the namelist. This sequence is schematically depicted in Figure 2 and involves the following steps:
+The Python "workflow manager" *main.py* will parse the namelist (namelist.xml) and call all diagnostic scripts listed in the namelist. This sequence is schematicallypython main.py nml/namelist.xml depicted in Figure 2 and involves the following steps:
+
 1.	parse the namelist
 2.	identify the input files on the file system
 3.	run an NCL script to check and reformat the input files
@@ -18,17 +23,15 @@ The Python ~workflow manager~ main.py will parse the namelist (namelist.xml) and
 .. figure:: ./figures/figure_ESMValTool_controlflow.png
    :scale: 30 %
    :alt: xxxxx
-   
-   ESMValTool control flow.
 
 
-Figure 2 ESMValTool control flow.
+**Figure 2** ESMValTool control flow.
 
 The script *main.py* processes the information in the XML namelist to be used by each of the supported programming languages (currently NCL, Python and R) used for the diagnostic scripts. This means that different diagnostics, even if implemented in different programming languages, can be called within the same namelist. Any changes to the settings of the namelist will passed to each diagnostic script.
 
-Note that the coupling between the namelist and the diagnostic scripts is ~loose~. The Python workflow manager *main.py* passes all information in the namelist to the target diagnostic script, e.g., via intermediate files or environment variables, but it is up to the diagnostic script to act on that information.
+Note that the coupling between the namelist and the diagnostic scripts is "loose". The Python workflow manager *main.py* passes all information in the namelist to the target diagnostic script, e.g., via intermediate files or environment variables, but it is up to the diagnostic script to act on that information.
 
-Basic structure of a namelist::
+**Basic structure of a namelist**::
  
 	<GLOBAL>
 	controls the general settings (see Table S1) ; see section 3.1, ~More on the <GLOBALS>-tag~ below for details
@@ -43,7 +46,7 @@ Basic structure of a namelist::
 	</DIAGNOSTIC>
 
 
-Please note that the ~loose coupling~ described above applies particularly to the settings defined in the two elements <GLOBAL> and <DIAGNOSTIC>.
+Please note that the "loose coupling" described above applies particularly to the settings defined in the two elements <GLOBAL> and <DIAGNOSTIC>.
 
 
 
@@ -100,19 +103,25 @@ Table S1 summarizes the tags defined in the <GLOBAL> section of the namelist. So
 More on the <MODELS>-tag
 ========================
 
-Each data set is specified by a <model> line with the first entry of each model line being the ~project specifier~ (see Table S2). The project specifier refers to a Python class that is used to parse the model line in the namelist. For example, a model line with the ~CMIP5~ specifier looks like:
+Each data set is specified by a <model> line with the first entry of each model line being the "project specifier" (see Table S2). The project specifier refers to a Python class that is used to parse the model line in the namelist. For example, a model line with the "CMIP5" specifier looks like:
 
-	*<model> CMIP5 name mip experiment ensemble start-year end-year path </model>*
+   *<model> CMIP5 name mip experiment ensemble start-year end-year path </model>*
 
-Optionally, the element *~mip~* can be replaced with *~MIP_VAR_DEF~* if the tag *~MIP~* is specified in the <variable> tag (see Table S4), e.g.: <variable MIP="cfDay"> rlut </variable>; <model> CMIP5_ETHZ MPI-ESM-LR MIP_VAR_DEF amip r1i1p1 1980 1985 @{MODELPATH}/ETHZ_CMIP5/ </model>
+* Optionally, the element "*mip*" can be replaced with "*MIP_VAR_DEF*" if the tag "MIP" is specified in the <variable> tag (see Table S4), e.g.: 
+   
+   *<variable **MIP**="cfDay"> rlut </variable>*
 
-The element ~experiment~ can be replaced with ~EXP_VAR_DEF~ if the tag ~EXP~ is specified in the <variable> tag (see Table S4), e.g.:
-	<variable MIP="Omon" EXP="esmHistorical"> fgco2 </variable>
-	<model> CMIP5_ETHZ NorESM1-ME MIP_VAR_DEF EXP_VAR_DEF r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
+   *<model> CMIP5_ETHZ MPI-ESM-LR **MIP_VAR_DEF** amip r1i1p1 1980 1985 @{MODELPATH}/ETHZ_CMIP5/ </model>*
 
-The project specifier ~CMIP5~ will search for files in ~path~ with filenames matching the pattern
+* The element "experiment" can be replaced with ~EXP_VAR_DEF~ if the tag ~EXP~ is specified in the <variable> tag (see Table S4), e.g.:
 
-	*_mip_name_experiment_ensemble_*
+   *<variable MIP="Omon" **EXP**="esmHistorical"> fgco2 </variable>*
+
+   *<model> CMIP5_ETHZ NorESM1-ME MIP_VAR_DEF **EXP_VAR_DEF** r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>*
+
+The project specifier "CMIP5" will search for files in "path" with filenames matching the pattern
+
+   *_mip_name_experiment_ensemble_*
 
 Here, the leading asterisk is a placeholder for the variable, which is defined in the <DIAGNOSTICS>-tag (see below), the trailing asterisk is a placeholder for the start/end date of the data set. This naming convention conforms to the syntax used for CMIP5 DRS filenames (as implied by the project specifier name). By implementing their own project specifier classes into the Python code (*interface_scripts/projects.py*), the user can handle data sets that follow different file naming conventions or require additional information to be passed along in addition to the filename. Table S2 gives a summary of the available project specifiers and arguments to be used in each <model> line. 
 

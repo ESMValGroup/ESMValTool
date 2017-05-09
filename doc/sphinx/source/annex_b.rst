@@ -169,10 +169,156 @@ Alternatively, type:
 Then an editor window will open, and you can type a long commit message. In order to inspect your changes you
 can use the gitk viewer (use man gitk for all options):
 
+.. code:: bash
 
+   gitk
+
+Or if you are in textmode only you can inspect your changes with (use man git-log for all options):
+
+.. code:: bash
+
+   git log
+
+To share your work and to have an online backup, push your local development to your fork at GitHub. **We strongly
+recommend doing this on a regular basis:**
+
+.. code:: bash
+
+   git push origin
+
+Once your development is finished, go to the GitHub website of your fork and initiate a pull request to the
+ESMValTool Core Development Team by clicking on the button "Pull request". Your changes will then be tested,
+discussed and then implemented into the *DEVELPOMENT BRANCH*.
+
+**Option 2: working with the ESMValTool GitHub Repositories without creating a fork**
+
+As a member of the ESMValTool development team you can create *FEATURE BRANCHES* in the OPEN as well as in the
+PRIVATE repository. We encourage all ESMValTool developers to use the following workflow for long-lived
+developments (>2 weeks).
+
+* Login to GitHub.com
+* On GitHub, go to the website of the ESMValTool repository (https://github.com/ESMValGroup/ESMValTool-private or https://github.com/ESMValGroup/ESMValTool)
+* Click on the button create *FEATURE BRANCH*
+* Select the *"DEVELOPMENT" BRANCH* and create a new feature branch for the diagnostic/feature you want to implement. Please follow the following naming convention for your new *FEATURE BRANCH*: <Project>_<myfeature>.
+
+.. figure::  ../../source/figures/git_branch_2.png
+
+* Click the button “Clone or Download” and copy the URL shown there
+* Open a terminal window and go to the folder where you would like to store your local copy of the ESMValTool source
+* Type git clone, and paste the URL:
+
+.. code:: bash
+
+   git clone <URL_FROM_CLIPBOARD>
+
+This will clone the ESMValTool repository at GitHub to a local folder.
+You can now query the status of your local working copy with:
+
+.. code:: bash
+
+   git status
+
+You will see that you are on a branch called master and your local working copy is up to date with the remote
+repository. With
+
+.. code:: bash
+
+   git branch --all
+
+you can list all available remote and local branches; now switch to your feature branch by:
+
+.. code:: bash
+
+   git checkout <NAME_OF_YOUR_FEATURE_BRANCH>
+
+You can now start coding. To check your current developments you can use the command
+
+.. code:: bash
+
+   git status
+
+You can add new files and folders that you want to have tracked by Git using:
+
+.. code:: bash
+
+   git add <NEW_FILE|FOLDER>
+
+To simply add all new files use:
+
+.. code:: bash
+
+   git add .
+
+It is recommended to commit your changes to your local working copy often via:
+
+.. code:: bash
+
+   git commit –am "YOUR COMMIT MESSAGE"
+
+Alternatively, type:
+
+.. code:: bash
+
+   git commit -a
+
+Then an editor window will open, and you can type a long commit message. In order to inspect your changes you
+can use the gitk viewer (use man gitk for all options):
+
+.. code:: bash
+
+   gitk
+
+Or if you are in textmode only you can inspect your changes with (use man git-log for all options):
+
+.. code:: bash
+
+   git log
+
+To share your work and to have an online backup, push your local development to your FEATURE BRANCH at GitHub.
+**We strongly recommend doing this on a regular basis**:
+
+.. code:: bash
+
+   git push origin <YOUR_FEATURE_BRANCH>
+
+Once your development is finished, go to the GitHub website of the ESMValTool repository and switch to your
+*FEATURE BRANCH*. You can then initiate a pull request for the *DEVELPOMENT BRANCH* to the ESMValTool Core
+Development Team by clicking on the button "Pull request". Your changes will then be tested, discussed and then
+implemented into the *DEVELPOMENT BRANCH*.
+
+General do's and don'ts
+=======================
+
+**Do's**
+
+* Create a *FEATURE BRANCH* (see section TODOref 12.1 for details) for developing the ESMValTool. The naming convention for *FEATURE BRANCHES* is <Project>_<myfeature>.
+* Try using self-explanatory names for new branches (avoid things like: "my_branch" or "my_development")
+* Comment your code as much as possible.
+* Use short but self-explanatory variable names (e.g., model_input and reference_input instead of xm and xr).
+* Consider a modular/functional programming style. This often makes code easier to read and deletes intermediate variables from memory immediately. If possible, separate diagnostic calculations from plotting routines.
+* Consider reusing or extending existing code (see plotting functions, general calculations). General-purpose code can be found in diag_scripts/lib/ and in plot_scripts/.
+* Comment all switches and parameters including a list of all possible settings/options in the header section of your code.
+* Use templates for namelists and diagnostics to ensure proper documentation (see section TODOref 7.1).
+* Keep your development branch updated regularly with the master/development branch.
+
+**Don't-s**
+
+* Do not use other programming languages than the ones currently supported (NCL, Python, R). If you want to use a programming language not yet used, please contact the ESMValTool core development team.
+* Avoid large (memory, disk space) intermediate results. Delete intermediate files/variables or see modular/functional programming style.
+* Do not use hard-coded pathnames or filenames.
 
 .. _wiki:
 
 ESMValTool development team wiki
 ================================
+
+The latest information on the ESMValTool and diagnostics under development can be found on the wiki of the OPEN
+and PRIVATE GitHub repository:
+
+* OPEN GitHub repository: https://github.com/ESMValGroup/ESMValTool/wiki
+* PRIVATE GitHub repository: https://github.com/ESMValGroup/ESMValTool-private/wiki
+
+All users and developers are strongly encouraged to frequently check the ESMValTool wiki for new information,
+contact data or observational data. Please contact the ESMValTool Core Development Team for access to the wiki
+(see section TODOref 9.2).
 
