@@ -26,7 +26,13 @@ v1.1 are described in
 .. include:: namelists/namelist_crem.rst
 .. include:: namelists/namelist_diurnal.rst
 .. include:: namelists/namelist_carbon_emergent_constraints.rst
+<<<<<<< HEAD
 .. include:: namelsits/namelsit_esacci.rst
+=======
+
+.. include:: namelists/namelist_southern_hemisphere.rst
+.. include:: namelists/namelist_southern_ocean.rst
+>>>>>>> origin/CRESCENDO_documentation
 .. include:: namelists/namelist_spi.rst
 .. include:: namelists/namelist_tropical_variability.rst
 .. include:: namelists/namelist_wam.rst
