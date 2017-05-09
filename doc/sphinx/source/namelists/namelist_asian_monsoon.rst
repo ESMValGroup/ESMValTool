@@ -33,7 +33,117 @@ Diagnostics are stored in diag_scripts/
 User settings
 -------------
 
-TBD
+User setting files (cfg files) are stored in nml/cfg_SAMonsoon/
+
+**(1) SAMonsoon_wind_basic.ncl**
+
+*Required diag_script_info attributes*
+
+* styleset: "CMIP5", “DEFAULT”
+* season: season in letters, e.g., "JJAS"
+* latrange_basic: min. and max. latitude of crop area (array)
+* lonrange_basic: min. and max. longitude of crop area (array)
+* cn_levels_mean_basic: contour levels for mean plots (array)
+* cn_levels_mean_diff_basic: contour levels for mean difference plots (array)
+* cn_levels_stddev_basic: contour levels for standard deviation plots (array)
+* cn_levels_stddev_diff_basic: contour levels for standard deviation difference plots (array) 
+* my_region: monsoon region (must be set to "SA")
+
+**(2) SAMonsoon_wind_seasonal.ncl, SAMonsoon_wind_IAV.ncl**
+
+*Required diag_sccript_info attributes*
+
+* styleset: "CMIP5", “DEFAULT”
+* season: season in letters, e.g., "JJAS"
+* multi_model_mean : calculate multi-model mean ("y", "n")
+
+**(3) SAMonsoon_precip_basic.ncl, SAMonsoon_precip_seasonal.ncl, SAMonsoon_precip.ncl, SAMonsoon_precip_domain.ncl, SAMonsoon_precip_basic_daily.ncl, SAMonsoon_precip_IAV.ncl, SAMonsoon_precip_propagation.ncl**
+
+*Required diag_script_info attributes*
+
+* season: season in letters, e.g., "JJAS"
+
+Settings specific for the precip basic plot_type
+
+* latrange_basic: min. and max. latitude (2-element array)
+* lonrange_basic: min. and max longitude (2-element array)
+* cn_levels_mean_basic: contour levels for mean plots (n-element array)
+* cn_levels_mean_diff_basic: contour levels for mean difference plots (n-element array)
+* cn_levels_stddev_basic: contour levels for standard deviation plots (n-element array)
+* cn_levels_stddev_diff_basic: contour levels for standard deviation difference plots (n-element array)
+* cn_levels_stddev_norm_basic (only SAMonsoon_precip_basic_daily.ncl): contour levels for standard deviation plots (n-element array)
+* cn_levels_stddev_norm_diff_basic (only SAMonsoon_precip_basic_daily.ncl): contour levels for standard deviation difference plots (n-element array)
+
+Settings specific for the precip seasonal plot_type (SAMonsoon_precip_seasonal.ncl)
+
+* latrange_seasonal: min. and max. latitude of crop area (2-element array)
+* lonrange_seasonal: min. and max. longitude of crop area (2-element array)
+* styleset: "CMIP5", "DEFAULT"
+* multi_model_mean : calculate multi-model mean ("y", "n")
+
+Settings shared by the precip global domain/intensity plot_type
+
+* summer_season: "MJJAS"
+* winter_season: "NDJFM"
+
+Settings specific for the precip global domain plot_type
+
+* latrange_global: min. and max. latitude (2-element array)
+* cn_levels_global_domain_mean: contour levels for global domain plots (array)
+* cn_levels_global_domain_diff: contour levels for global domain difference plots (array)
+* high_intensity_cutoff_mmday: cut-off for monsoon domain definition in mm day-1
+
+Settings specific for the precip intensity plots
+
+* cn_levels_intensity_mean: contor levels for intensity mean plots (n-element array)
+* cn_levels_intensity_diff: contor levels for intensity difference plots (n-element array)
+* abs_cmap: path and filename of color map for absolute values
+* diff_cmap: path and filename of color map for difference values
+* my_region: monsoon region (must be set to "SA")
+
+Settings specific for daily precipitation plots (SAMonsoon_precip_daily.ncl)
+
+* isv_latrange: min. and max. latitude of crop area (2-element array)
+* isv_lonrange: min. and max. latitude of crop area (2-element array)
+* bob_latrange: min. and max. latitude of crop area for Bay of Bengal (2-element array)
+* bob_lonrange = min. and max. longitude of crop area for Bay of Bengal (2-element array)
+* eio_latrange: min. and max. latitude of crop area for eastern equatorial Indian Ocean (2-element array)
+* eio_lonrange: min. and max. longitude of crop area for eastern equatorial Indian Ocean (2-element array)
+* filter_min: lower limit used for filtering
+* filter_max: upper limit used for filtering
+* filter_weights: number of filter weights to use
+
+Settings specific for daily propagation plots (SAMonsoon_precip_propagation.ncl)
+
+* prop_isv_latrange: min. and max. latitude of crop area (2-element array)
+* prop_isv_lonrange: min. and max. longitude of crop area (2-element array)
+* prop_lag_latrange: min. and max. latitude of crop area for lag computation along longitude (2-element array)
+* prop_lag_lonrange: min. and max. longitude of crop area for lag computation along latitude (2-element array)
+* prop_ref_latrange: min. and max. latitude of crop area for lag reference area (2-element array)
+* prop_ref_lonrange: min. and max. longitude of crop area for lag reference area (2-element array)
+* prop_filter_mxlag: size of lag
+* ihp: Lanczos switch for low/high band pass filter
+* nWgt: total number of weights for Lanczos
+* sigma: Lanczos sigma
+* min_days: min days in filtering
+* max_days: max day in filtering
+* fca: start frequency to compute Lanczos weights
+* fcb: end frequency to compute Lanczos weights
+
+**(4) SAMonsoon_teleconnections.ncl**
+
+*Required diag_script_info attributes*
+
+* monsoon_latrange: min. and max. latitude of crop area for Indian Monsoon (2-element array)
+* monsoon_lonrange: min. and max. longitude of crop area for Indian Monsoon (2-element array)
+* nino34_latrange: min. and max. latitude of Niño3.4 region (2-element array)
+* nino34_lonrange: min. and max. longitude of Niño3.4 region (2-element array)
+* tele_latrange: min. and max. latitude of crop area for overview area (2-element array)
+* tele_lonrange: min. and max. longitude of crop area for overview area (2-element array)
+* cn_levels_mean_basic: contour levels for mean plot (n-element array)
+* cn_levels_mean_diff_basic: contour levels for mean difference plot (n-element array)
+* cn_levels_stddev_basic: contour levels for standard deviation plot (n-element array)
+* cn_levels_stddev_diff_basic: contour levels for standard deviation difference plot (n-element array)
 
 
 Variables
