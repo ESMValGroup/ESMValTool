@@ -24,8 +24,7 @@ The Python "workflow manager" *main.py* will parse the namelist (namelist.xml) a
    :scale: 30 %
    :alt: xxxxx
 
-
-**Figure 2** ESMValTool control flow.
+   ESMValTool control flow.
 
 The script *main.py* processes the information in the XML namelist to be used by each of the supported programming languages (currently NCL, Python and R) used for the diagnostic scripts. This means that different diagnostics, even if implemented in different programming languages, can be called within the same namelist. Any changes to the settings of the namelist will passed to each diagnostic script.
 
