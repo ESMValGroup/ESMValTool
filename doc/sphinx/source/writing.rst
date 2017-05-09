@@ -5,7 +5,7 @@
 Writing a diagnostic script or a metrics set
 ********************************************
 
-TODO:ref (whole block)
+TODO:ref (whole section)
 
 The development of a new diagnostic (or set of diagnostics) requires the
 following steps before getting started:
@@ -15,6 +15,7 @@ following steps before getting started:
 	* Creating a standard namelist following the template described in section section 3.5.
 
 **General coding rules and conventions**
+
 	* Regular updates of the *FEATURE BRANCH* (see section 12) are strongly recommended in order to keep it synchronized with the *DEVELOPMENT BRANCH* (see section 12).
 	* Modularizing all diagnostic scripts as much as possible, using the general-purpose code in *lib/* and separating the diagnostic calculations from the plotting routines.
 	* Before creating new functions or procedures, it should be considered to use or extend the existing routines within *lib/*. Each header (see section 7.1) provides an overview of the already implemented functions and procedures.
@@ -164,7 +165,7 @@ For further details on the plotting functions, see the inline documentation in t
 Adding new variables
 ====================
 
-TODO:ref (whole section)
+TODO:ref (whole paragraph)
 
 Adding new variables requires changes to *reformat_scripts/recognized_vars.dat*
 (section 7.4.1) and possibly also to *reformat_scripts/recognized_units.dat*
@@ -306,7 +307,7 @@ Each standard variable (non-derived) also needs a configuration file indicating 
 
 **Example, reformat_scripts/cmor/CMOR_pr.dat**
 
-.. code-block:: dat
+.. code-block::
 
    SOURCE: CMIP5   
    !============
@@ -321,7 +322,8 @@ Each standard variable (non-derived) also needs a configuration file indicating 
    cell_methods:      time: mean
    cell_measures:     area: areacella
    long_name:         Precipitation
-   comment:           at surface; includes both liquid and solid phases from all types of clouds (both large-scale and convective)
+   comment:           at surface; includes both liquid and solid phases from  all types
+                      of clouds (both large-scale and convective)
    !----------------------------------
    ! Additional variable information:
    !----------------------------------
@@ -378,7 +380,7 @@ To use the NCL version of the PEP8-checker provided with the ESMValTool distribu
 
         |  $ cd util/ncl-checker
         |  $ python pep8.py <path-to-NCL-file> 
-
+ 
 The NCL-version is adaption of the Pyhton checker and works satisfactorily as
 long as one keeps in mind the false positives it finds due to language
 differences between Python and NCL. These false positives may be addressed in
@@ -396,9 +398,10 @@ Documentation of software
 TODO:ref (whole section)
 
 In order to ensure that all code can be maintained, all diagnostic packages must be well documented. It is the responsibility of the software developers to embed their documentation into the code and to provide a summary of their diagnostics (see section 7.8) on the ESMValTool development team wiki (see section 12.4). Documentation systems exist to organize embedded documentation into well structured, linked documents.
-	* *R:* documentation should follow CRAN guidance.
-	* *Python:* the Sphinx package allows embedded documentation to be assembled into indexed web pages (see section 7.8)
-	* *NCL and namelists:* a Sphinx extension has been developed to extract code documentation for NCL and namelists (see section 7.8)
+
+	* **R:** documentation should follow CRAN guidance.
+	* **Python:** the Sphinx package allows embedded documentation to be assembled into indexed web pages (see section 7.8)
+	* **NCL and namelists:** a Sphinx extension has been developed to extract code documentation for NCL and namelists (see section 7.8)
 
 
 
@@ -419,7 +422,8 @@ The function write_references (defined in *interface_scripts/messaging.ncl*) sho
 	e.g., A_###
 
 	D_xxx = diagnostics
-	e.g., D_righi15gmd = Righi et al., Geosci. Model Dev., 8, 733-768 doi:10.5194/gmd-8-733-2015, 2015.
+	e.g., D_righi15gmd = Righi et al., Geosci. Model Dev., 8, 733-768 doi:10.5194/gmd-8-
+          733-2015, 2015.
 	
 	E_xxx = observational data
 	e.g., E_era40 = ERA40
@@ -565,14 +569,17 @@ File: esmvaltooltest.py
            # 3) define here the location of the reference data directory
            #    note that it is expected that the directory has the same
            #    name as the namelist
-           refdir = esmval_dir + os.sep + os.path.splitext(nml_name)[0] + '/output/plots/'
+           refdir = esmval_dir + os.sep + os.path.splitext(nml_name)[0] + \
+                    '/output/plots/'
 
            # initialize the parent class
-           super(PerfMetricCMIP5Test,self).__init__(nml=nml, refdirectory=refdir, esmval_dir=esmval_dir)
+           super(PerfMetricCMIP5Test,self).__init__(nml=nml,
+                 refdirectory=refdir, esmval_dir=esmval_dir)
 
    # --------------------------------------------
 
    # This is how you run a test
    PT = PerfMetricCMIP5Test()  # create instance of test class
-   PT.run_nml()   # run the testing namelist
-   PT.run_tests(execute=False, graphics=None,       checksum_files='all',files='all')  # perform tests
+   PT.run_nml()  # run the testing namelist
+   PT.run_tests(execute=False, graphics=None,
+                checksum_files='all',files='all')  # perform tests
