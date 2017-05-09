@@ -26,19 +26,91 @@ Diagnostics are stored in diag_scripts/
 User settings
 -------------
 
-TBD
+User setting files (cfg files) are stored in nml/cfg_SouthernOcean/
+
+**(1) SouthernOcean_polcon.ncl, SouthernOcean_polcon_diff.ncl, SouthernOcean_vector_polcon_diff.ncl**
+
+* region: "Antarctic" (entire hemisphere will be evaluated)
+* month: "A" (A = annual mean, 3 = March, 9 = September)
+* styleset: "CMIP5", "DEFAULT"
+* max_vert: max. number of rows on a panel page (vertical)
+* max_hori: max. number of columns on a panel page (horizontal)
+* grid_min: min. contour value (default = -1.0)
+* grid_max: max. contour value (default = 1.0)
+* grid_step: step between contours (default = 0.2)
+* colormap: color table (from NCL distribution)
+* PanelLabelBar: use single label bar per page (True, False)
+* showunits: display units in figure title (True, False)
+* range_option: 0 = use each model's time range specified in namelist, 1 = use only intersection of all time ranges
+
+Setting specific to SouthernOcean_vector_polcon_diff.ncl
+
+* vcmagnitude: magnitude of vectors (larger value = shorter arrows)
+* vcmindist: controls density of vectors (larger value = less arrows)
+* vccolormod: color of vectors for current model
+* vccolorref: color of vectors for reference model
+
+**(2) SouthernOcean_areamean_vertconplot.ncl**
+
+*Required diag_script_info attributes*
+
+* region: name of region ("Southern Ocean")
+* West: western boundary of area
+* East: eastern boundary of area
+* South: southern boundary of area
+* North: northern boundary of area
+* styleset: plot style ("CMIP5", "DEFAULT")
+
+*Optional diag_script_info attributes*
+
+* grid_min: min. for plot scale
+* grid_max: max. for plot scale
+* grid_step: step size for plot scale
+* colormap: e.g., WhiteBlueGreenYellowRed, rainbow
+* dbg_plots: create additional plots for debugging purposes (True, False)
+
+**(3) SouthernOcean_transport.ncl**
+
+*Required diag_script_info attributes*
+
+* styleset: plot style ("CMIP5", "DEFAULT")
+* lon1: longitude of start of section
+* lat1: latitude of start of section
+* lon2: longitude of end of section
+* lat2: latitude of end of section
+* section_name: name used in title, e.g., "Drake passage"
 
 
 Variables
 ---------
 
-TBD
+* hfds (atmos, monthly mean, longitude latitude time) = hfls + hfss + rsns + rlns
+* mlotst (ocean, monthly mean, longitude latitude time)
+* so (ocean, monthly mean, longitude latitude olevel time)
+* sos (ocean, monthly mean, longitude latitude time)
+* tauu (atmos, monthly mean, longitude latitude time)
+* tauv (atmos, monthly mean, longitude latitude time)
+* to (ocean, monthly mean, longitude latitude olevel time)
+* tos (ocean, monthly mean, longitude latitude time)
+* uo (ocean, monthly mean, longitude latitude olevel time)
+* vo (ocean, monthly mean, longitude latitude olevel time)
+* wfpe (atmos, monthly mean, longitude latitude time) = pr + evspsbl
 
 
 Observations and Reformat Scripts
 ---------------------------------
 
-TBD
+**Note:** (1) obs4mips data can be used directly without any preprocessing; (2) see headers of reformat scripts for non-obs4mips data for download instructions.
+
+* Dong et al. (2008): Southern Ocean mixed-layer depth from Argo float profiles.
+  Reformat script: reformat_scripts/obs/reformat_obs_Dong08-ARGO-monthly.ncl.
+* ERA-Interim, global atmospheric ECMWF reanalysis: SST, wind stress, precipitation, evaporation, etc.
+ * Reformat scripts
+  * variables tos, tauu, tauv: reformat_scripts/obs/reformat_obs_ERA-Interim.ncl
+  * variables pr, evspsbl, hfls, hfss, rsns, rlns: reformat_scripts/obs/reformat_obs_ERA-Interim-surffluxes.ncl
+
+* World Ocean Atlas 2009: sea water temperature and salinity
+ * Reformat script: reformat_scipts/obs/reformat_obs_WOA09.ncl.
 
 
 
