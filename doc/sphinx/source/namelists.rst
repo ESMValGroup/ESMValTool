@@ -777,16 +777,16 @@ Example namelist
    </namelist_summary>
    
    <GLOBAL>
-       <write_plots type="boolean">               True              </write_plots>
-       <write_netcdf type="boolean">             True             </write_netcdf>
-       <force_processing type="boolean">     False             </force_processing>
-       <wrk_dir type="path">                             work/           </wrk_dir>
-       <plot_dir type="path">                            work/plots/ </plot_dir>
-       <climo_dir type="path">                         work/climo/ </climo_dir>
-       <max_data_filesize type="integer">      100               </max_data_filesize>
-       <verbosity  type="integer">                     1                   </verbosity>
-       <exit_on_warning  type="boolean">     False             </exit_on_warning>
-       <output_file_type>                                    ps                     </output_file_type>
+       <write_plots type="boolean">       True         </write_plots>
+       <write_netcdf type="boolean">      True         </write_netcdf>
+       <force_processing type="boolean">  False        </force_processing>
+       <wrk_dir type="path">              work/        </wrk_dir>
+       <plot_dir type="path">             work/plots/  </plot_dir>
+       <climo_dir type="path">            work/climo/  </climo_dir>
+       <max_data_filesize type="integer"> 100          </max_data_filesize>
+       <verbosity  type="integer">        1            </verbosity>
+       <exit_on_warning  type="boolean">  False        </exit_on_warning>
+       <output_file_type>                 ps           </output_file_type>
    </GLOBAL>
    
    <MODELS>
