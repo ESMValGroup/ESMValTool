@@ -1,12 +1,12 @@
 """
 ;;#############################################################################
-;; Soil Moisture Diagnostics
+;; Albedo Diagnostics
 ;; Author: Benjamin Mueller (LMU Munich, GER)
-;; ESA-CMUG project
+;; QA4ECV project
 ;;#############################################################################
 ;; Description
 ;;    Produces various general diagnostic plots and statistics for the
-;;    reference data sets of the ESACCI Project
+;;    reference data sets of the QA4ECV Project
 ;;
 ;; Required diag_script_info attributes (diagnostics specific)
 ;;    none
@@ -38,12 +38,12 @@ sys.path.append('./diag_scripts/aux/LMU_ESACCI-diagnostics/')
 
 from esmval_lib import ESMValProject
 
-# Import full diagnostic routines
-from sm_diagnostic import SoilMoistureDiagnostic
+# Import full diagnostic routine
+from alb_diagnostic import AlbedoDiagnostic
 
 
 def main(project_info):
-    print(">>>>>>>> sm_ESACCI.py is running! <<<<<<<<<<<<")
+    print('>>>>>>>> alb_QA4ECV.py is running! <<<<<<<<<<<<')
 
 # A_laue_ax+
     E = ESMValProject(project_info)
@@ -51,15 +51,16 @@ def main(project_info):
     verbosity = E.get_verbosity()
     diag_script = E.get_diag_script_name()
 
-    E.write_references(diag_script,              # diag script name
-                       ["A_muel_bn"],            # authors
-                       [""],                     # contributors
-                       [""],                     # diag_references
-                       ["E_esacci-sm"],          # obs_references
-                       ["P_cmug"],               # proj_references
-                       project_info,
-                       verbosity,
-                       False)
+# TODO Enter QA4ECV references
+#    E.write_references(diag_script,              # diag script name
+#                       ["A_muel_bn"],            # authors
+#                       [""],                     # contributors
+#                       [""],                     # diag_references
+#                       ["E_qa4ecv_albedo"],      # obs_references
+#                       ["P_qa4ecv"],             # proj_references
+#                       project_info,
+#                       verbosity,
+#                       False)
 # A_laue_ax-
 
     Diag = None
@@ -69,11 +70,10 @@ def main(project_info):
         # read variable
         variable = project_info['RUNTIME']['currDiag'].get_variables()[v]
 
-        # check if variable fits to diagnostics
-        if variable == 'sm':
+        if variable in ["alb"]:
 
-            model_filelist = ESMValProject(project_info).\
-                get_clim_model_filenames(variable=variable)
+            model_filelist = ESMValProject(
+                project_info).get_clim_model_filenames(variable=variable)
 
             # only models are read
             for inc in range(len(project_info['MODELS'])):
@@ -95,7 +95,8 @@ def main(project_info):
                     D_old = copy(Diag)
 
                     # initialize diagnostic
-                    Diag = SoilMoistureDiagnostic()
+                    Diag = AlbedoDiagnostic()
+
                     # provide project_info to diagnostic
                     Diag.set_info(project_info, model, variable,
                                   reference_filename, model_filename,
@@ -117,5 +118,5 @@ def main(project_info):
             print("   Overview for " + str(len(model_filelist)) + " models.")
             Diag.write_overview(project_info['GLOBAL']['write_plots'])
 
-    print(">>>>>>>> ENDED SUCESSFULLY!! <<<<<<<<<<<<")
+    print('>>>>>>>> ENDED SUCESSFULLY!! <<<<<<<<<<<<')
     print('')

@@ -1,6 +1,6 @@
 """
 ;;#############################################################################
-;; Soil Moisture Diagnostics
+;; Fire Diagnostics
 ;; Author: Benjamin Mueller (LMU Munich, GER)
 ;; ESA-CMUG project
 ;;#############################################################################
@@ -23,8 +23,7 @@
 ;; Caveats
 ;;
 ;; Modification history
-;;    20161128-A_laue_ax: added call to write_references
-;;    20160818-A_muel_bn: Routines written.
+;;    20170418-A_muel_bn: Routines written.
 ;;
 ;;#############################################################################
 """
@@ -39,27 +38,27 @@ sys.path.append('./diag_scripts/aux/LMU_ESACCI-diagnostics/')
 from esmval_lib import ESMValProject
 
 # Import full diagnostic routines
-from sm_diagnostic import SoilMoistureDiagnostic
+from fire_diagnostic import FireDiagnostic
 
 
 def main(project_info):
-    print(">>>>>>>> sm_ESACCI.py is running! <<<<<<<<<<<<")
+    print(">>>>>>>> fire_ESACCI.py is running! <<<<<<<<<<<<")
 
 # A_laue_ax+
-    E = ESMValProject(project_info)
-
-    verbosity = E.get_verbosity()
-    diag_script = E.get_diag_script_name()
-
-    E.write_references(diag_script,              # diag script name
-                       ["A_muel_bn"],            # authors
-                       [""],                     # contributors
-                       [""],                     # diag_references
-                       ["E_esacci-sm"],          # obs_references
-                       ["P_cmug"],               # proj_references
-                       project_info,
-                       verbosity,
-                       False)
+#    E = ESMValProject(project_info)
+#
+#    verbosity = E.get_verbosity()
+#    diag_script = E.get_diag_script_name()
+#
+#    E.write_references(diag_script,              # diag script name
+#                       ["A_muel_bn"],            # authors
+#                       [""],                     # contributors
+#                       [""],                     # diag_references
+#                       ["E_esacci-fire"],        # obs_references
+#                       ["P_cmug"],               # proj_references
+#                       project_info,
+#                       verbosity,
+#                       False)
 # A_laue_ax-
 
     Diag = None
@@ -70,7 +69,7 @@ def main(project_info):
         variable = project_info['RUNTIME']['currDiag'].get_variables()[v]
 
         # check if variable fits to diagnostics
-        if variable == 'sm':
+        if variable == 'burntArea':
 
             model_filelist = ESMValProject(project_info).\
                 get_clim_model_filenames(variable=variable)
@@ -95,7 +94,7 @@ def main(project_info):
                     D_old = copy(Diag)
 
                     # initialize diagnostic
-                    Diag = SoilMoistureDiagnostic()
+                    Diag = FireDiagnostic()
                     # provide project_info to diagnostic
                     Diag.set_info(project_info, model, variable,
                                   reference_filename, model_filename,

@@ -6,7 +6,7 @@ Created on Mon Jul 25 09:46:13 2016
 """
 
 import numpy as np
-import glob
+import fnmatch
 import os
 import subprocess
 from itertools import compress
@@ -33,10 +33,17 @@ class HTML_writer(object):
     def _get_files_in_directory(self, directory, pattern, asstring=True):
         """ returns list and number of files with pattern in directory """
 
-        if directory[-1] != os.sep:
-            directory += os.sep
+#        if directory[-1] != os.sep:
+#            directory += os.sep
+#
+#        L = glob.glob(directory + pattern)
+#        N = len(L)
 
-        L = glob.glob(directory + pattern)
+        L = []
+        for root, dirs, files in os.walk(directory):
+            for filename in fnmatch.filter(files, pattern):
+                L.append(os.path.join(root, filename))
+
         N = len(L)
 
         if asstring:
