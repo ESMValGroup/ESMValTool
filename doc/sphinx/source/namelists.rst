@@ -669,8 +669,10 @@ The user can define base path names in a namelist configuration file and refer t
 
 ..code-block::ncl
 
-	<?xml version="1.0" encoding="UTF-8"?>
-	<settings>
+   <?xml version="1.0" encoding="UTF-8"?>
+
+
+<settings>
         	<pathCollection>
                 	<usrpath category="userDirectory" type="output" id="WORKPATH">
                         <path>./work/</path>
