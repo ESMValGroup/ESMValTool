@@ -12,12 +12,12 @@ For any given namelist *"namelist.xml"*, the ESMValTool is invoked from the comm
  
 The Python "workflow manager" *main.py* will parse the namelist (namelist.xml) and call all diagnostic scripts listed in the namelist. This sequence is schematicallypython main.py nml/namelist.xml depicted in Figure 2 and involves the following steps:
 
-1.	parse the namelist
-2.	identify the input files on the file system
-3.	run an NCL script to check and reformat the input files
-4.	if needed, run a NCL script to compute derived variables such as, for instance, climate indices
-5.	run the diagnostic script (NCL/Python/R/etc.)
-6.	repeat previous steps until all diagnostics listed in the namelist are processed
+1.	Parse the namelist
+2.	Identify the input files on the file system
+3.	Run an NCL script to check and reformat the input files
+4.	If needed, run a NCL script to compute derived variables such as, for instance, climate indices
+5.	Run the diagnostic script (NCL/Python/R/etc.)
+6.	Repeat previous steps until all diagnostics listed in the namelist are processed
 
 
 .. figure:: ./figures/figure_ESMValTool_controlflow.png
@@ -125,7 +125,7 @@ The project specifier "CMIP5" will search for files in "path" with filenames mat
 
 Here, the leading asterisk is a placeholder for the variable, which is defined in the <DIAGNOSTICS>-tag (see below), the trailing asterisk is a placeholder for the start/end date of the data set. This naming convention conforms to the syntax used for CMIP5 DRS filenames (as implied by the project specifier name). By implementing their own project specifier classes into the Python code (*interface_scripts/projects.py*), the user can handle data sets that follow different file naming conventions or require additional information to be passed along in addition to the filename. Table S2 gives a summary of the available project specifiers and arguments to be used in each <model> line. 
 
-[Note: Examples for the most commonly used project specifiers CMIP5, CMIP5_ETHZ, OBS, and obs4mips as well as downloading instructions and information on the required local directory structure for the model / observational data can be found in section 6.1.]
+[**Note: Examples for the most commonly used project specifiers CMIP5, CMIP5_ETHZ, OBS, and obs4mips as well as downloading instructions and information on the required local directory structure for the model / observational data can be found in section 6.1.**]
 
 The <model>-tag may also take the optional attribute ~id~:
 
@@ -134,7 +134,7 @@ The <model>-tag may also take the optional attribute ~id~:
 Example:
 	*<model id="ERAINT"> OBS ERA-Interim reanaly 1 2003 2004 @{OBSPATH}/Tier3/ERA-Interim </model>*
 
-The attribute id specifies a string that can be used to refer to the model in other places of the namelist. Table S3 gives a summary of valid attributes in <model>-tags.
+The attribute *id* specifies a string that can be used to refer to the model in other places of the namelist. Table S3 gives a summary of valid attributes in <model>-tags.
 
 
 
@@ -645,56 +645,72 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 | zg.ncl                   | Geopotential height							       |
 +--------------------------+-----------------------------------------------------------------------------------+
 
-Typically, all namelists are stored in the folder *nml*, the naming convention is *namelist_xxx.xml* with ~xxx~ being the name of the diagnostic and/or a description of the purpose of the namelist:
+**Naming convention for ESMValTool namelists:**
+
+Typically, all namelists are stored in the folder *nml*, the naming convention is *namelist_xxx.xml* with ~xxx~ being the name of the diagnostic and/or a description of the purpose of the namelist::
 	
-**For papers **
-xxx = SurnameYearJournalabbreviation (e.g., stocker12jgr, stocker12sci1, stocker12sci2). 
+1. **For papers:**
 
-** For copies of reports that are not publicly available **
-xxx = OrgYearTitleabbrev (e.g., unep10water, unep11gap, roysoc09geoengineering).
+   xxx = SurnameYearJournalabbreviation (e.g., stocker12jgr, stocker12sci1, stocker12sci2). 
 
-** For grouped sets of diagnostics and performance metrics that do not follow a published paper or report**
-xxx = an intuitive name describing the scientific topic (e.g., aerosol, MyDiag, SAMonsoon, SeaIce)
+2. **For copies of reports that are not publicly available:**
+
+   xxx = OrgYearTitleabbrev (e.g., unep10water, unep11gap, roysoc09geoengineering).
+
+3. **For grouped sets of diagnostics and performance metrics that do not follow a published paper or report:** 
+
+   xxx = an intuitive name describing the scientific topic (e.g., aerosol, MyDiag, SAMonsoon, SeaIce)
 
 
 Namelist configuration file
 ===========================
 
 The user can define base path names in a namelist configuration file and refer to them in the actual namelist file. The configuration file such as, for instance, config_private.xml has the following structure:
-<?xml version="1.0" encoding="UTF-8"?>
-<settings>
-        <pathCollection>
-                <usrpath category="userDirectory" type="output" id="WORKPATH">
-                        <path>./work/</path>
-                        <description>working directory</description>
-                </usrpath>
-                <usrpath category="userDirectory" type="output" id="PLOTPATH">
-                        <path>./work/plots/</path>
-                        <description>directory for output plots</description>
-                </usrpath>
-                <usrpath category="userDirectory" type="output" id="CLIMOPATH">
-                        <path>./work/climo/</path>
-                        <description>directory for output files</description>
-                </usrpath>
-                <usrpath category="simulation" type="input" id="MODELPATH">
-                        <path>/path/to/model/data/</path>
-                        <description>root directory of model data</description>
-                </usrpath>
-                <usrpath category="observation" type="input" id="OBSPATH">
-                        <path>/path/to/data/OBS/</path>
-                        <description>root directory of observational data</description>
-                </usrpath>
-                <usrpath category="auxiliary" type="input" id="AUXPATH">
-                        <path>/path/to/data/AUX/</path>
-                        <description>root directory of auxiliary data</description>
-                </usrpath>
-        </pathCollection>
-</settings>
+
+.. code-block:: xml
+
+   <?xml version="1.0" encoding="UTF-8"?>
+   <settings>
+      <pathCollection>
+         <usrpath category="userDirectory" type="output" id="WORKPATH">
+            <path>./work/</path>
+            <description>working directory</description>
+         </usrpath>
+         <usrpath category="userDirectory" type="output" id="PLOTPATH">
+            <path>./work/plots/</path>
+            <description>directory for output plots</description>
+         </usrpath>
+         <usrpath category="userDirectory" type="output" id="CLIMOPATH">
+            <path>./work/climo/</path>
+            <description>directory for output files</description>
+         </usrpath>
+         <usrpath category="simulation" type="input" id="MODELPATH">
+            <path>/path/to/model/data/</path>
+            <description>root directory of model data</description>
+         </usrpath>
+         <usrpath category="observation" type="input" id="OBSPATH">
+            <path>/path/to/data/OBS/</path>
+            <description>root directory of observational data</description>
+         </usrpath>
+         <usrpath category="auxiliary" type="input" id="AUXPATH">
+            <path>/path/to/data/AUX/</path>
+            <description>root directory of auxiliary data</description>
+         /usrpath>
+      </pathCollection>
+   </settings>
 
 Inside the namelist file the configuration file can be included in the following way:
-<include href="config_private.xml"/>
+
+.. code-block:: xml
+
+   <include href="config_private.xml"/>
+
 and referred to with the syntax:
-@{id-of-the-usrpath}
+
+.. code-block:: xml
+
+   @{id-of-the-usrpath}
+
 Note: alternatively, explicitely defined pathnames can be used at any time.
 
 
@@ -703,96 +719,101 @@ Standard header for the namelist
 ================================
 
 For the sake of documentation, standard headers are defined and applied to all namelists and scripts in the ESMValTool. This is a template of the standard header for the main namelist. The parts in red are the ones to be modified by the author.
-<namelist_summary>
-###############################################################################
-namelist_name.xml
 
-Description
-A one-sentence description of the namelist content and purpose.
+.. code-block:: xml
 
-Author(s)
-Name Surname (Affiliation, Country - e-mail@address)
-
-Contributor(s)
-Name Surname (Affiliation, Country - e-mail@address)
-
-Project(s)
-PROJECT-NAME
-
-Reference(s)
-Reference to the paper(s) considered by this namelist (if available).
-Author, N. et al., Journ. Abbrev., NN, P1-P2, doi: (YEAR)
-
-This namelist is part of the ESMValTool.
-###############################################################################
-</namelist_summary>
+   <namelist_summary>
+   ###############################################################################
+   namelist_name.xml
+   
+   Description
+   A one-sentence description of the namelist content and purpose.
+   
+   Author(s)
+   Name Surname (Affiliation, Country - e-mail@address)
+   
+   Contributor(s)
+   Name Surname (Affiliation, Country - e-mail@address)
+   
+   Project(s)
+   PROJECT-NAME 
+   
+   Reference(s)
+   Reference to the paper(s) considered by this namelist (if available).
+   Author, N. et al., Journ. Abbrev., NN, P1-P2, doi: (YEAR)
+   
+   This namelist is part of the ESMValTool.
+   ###############################################################################
+   </namelist_summary>
 
 
 
 Example namelist
 ================
 
-<namelist>
-<include href="config_private.xml"/>
-<namelist_summary>
-###############################################################################
-# namelist_clouds.xml
-#
-# Description
-# Diagnostics of clouds and hydrological cycle.
-# 
-# Author(s)
-# Axel Lauer (DLR, Germany - axel.lauer at dlr.de)
-# 
-# Contributor(s)
-# 
-# Project(s)
-# EMBRACE
-#
-# Reference(s)
-# 
-# This namelist is part of the ESMValTool.
-###############################################################################
-</namelist_summary>
+.. code-block:: xml
 
-<GLOBAL>
-    <write_plots type="boolean">               True              </write_plots>
-    <write_netcdf type="boolean">             True             </write_netcdf>
-    <force_processing type="boolean">     False             </force_processing>
-    <wrk_dir type="path">                             work/           </wrk_dir>
-    <plot_dir type="path">                            work/plots/ </plot_dir>
-    <climo_dir type="path">                         work/climo/ </climo_dir>
-    <max_data_filesize type="integer">      100               </max_data_filesize>
-    <verbosity  type="integer">                     1                   </verbosity>
-    <exit_on_warning  type="boolean">     False             </exit_on_warning>
-    <output_file_type>                                    ps                  </output_file_type>
-</GLOBAL>
+   <namelist>
+   <include href="config_private.xml"/>
+   <namelist_summary>
+   ###############################################################################
+   # namelist_clouds.xml
+   #
+   # Description
+   # Diagnostics of clouds and hydrological cycle.
+   # 
+   # Author(s)
+   # Axel Lauer (DLR, Germany - axel.lauer at dlr.de)
+   # 
+   # Contributor(s)
+   # 
+   # Project(s)
+   # EMBRACE
+   #
+   # Reference(s)
+   # 
+   # This namelist is part of the ESMValTool.
+   ###############################################################################
+   </namelist_summary>
+   
+   <GLOBAL>
+       <write_plots type="boolean">        True         </write_plots>
+       <write_netcdf type="boolean">       True         </write_netcdf>
+       <force_processing type="boolean">   False        </force_processing>
+       <wrk_dir type="path">               work/        </wrk_dir>
+       <plot_dir type="path">              work/plots/  </plot_dir>
+       <climo_dir type="path">             work/climo/  </climo_dir>
+       <max_data_filesize type="integer">  100          </max_data_filesize>
+       <verbosity  type="integer">         1            </verbosity>
+       <exit_on_warning  type="boolean">   False        </exit_on_warning>
+       <output_file_type>                  ps           </output_file_type>
+   </GLOBAL>
+   
+   <MODELS>
+       <model>  CMIP5_ETHZ CESM1-CAM5   Amon  historical  r1i1p1  2000 2004  @{MODELPATH}/ETHZ_CMIP5/   </model>
+       <model>  CMIP5_ETHZ GFDL-ESM2G   Amon  historical  r1i1p1  2000 2004  @{MODELPATH}/ETHZ_CMIP5/   </model>
+       <model>  CMIP5_ETHZ MIROC5       Amon  historical  r1i1p1  2000 2004  @{MODELPATH}/ETHZ_CMIP5/   </model>
+       <model>  CMIP5_ETHZ MPI-ESM-MR   Amon  historical  r1i1p1  2000 2004  @{MODELPATH}/ETHZ_CMIP5/   </model>
+       <model>  CMIP5_ETHZ NorESM1-M    Amon  historical  r1i1p1  2000 2004  @{MODELPATH}/ETHZ_CMIP5/   </model>
+   </MODELS>
+   
+   <!
+          This is an example of a comment in XML
+    -->
 
-<MODELS>
-    <model>  CMIP5_ETHZ CESM1-CAM5   Amon  historical  r1i1p1  2000 2004  @{MODELPATH}/ETHZ_CMIP5/    </model>
-    <model>  CMIP5_ETHZ GFDL-ESM2G    Amon  historical  r1i1p1  2000 2004  @{MODELPATH}/ETHZ_CMIP5/   </model>
-    <model>  CMIP5_ETHZ MIROC5             Amon  historical  r1i1p1  2000 2004  @{MODELPATH}/ETHZ_CMIP5/   </model>
-    <model>  CMIP5_ETHZ MPI-ESM-MR    Amon  historical  r1i1p1  2000 2004  @{MODELPATH}/ETHZ_CMIP5/   </model>
-    <model>  CMIP5_ETHZ NorESM1-M      Amon  historical  r1i1p1  2000 2004  @{MODELPATH}/ETHZ_CMIP5/   </model>
-</MODELS>
-
-<!
-       This is an example of a comment in XML
- -->
-
-
-<!-- Please do not change anything below this line, 
-     unless you want to modify the standard diagnostic settings. -->
-<DIAGNOSTICS>
-    <diag>
-        <description> Cloud diagnostics</description>
-        <variable_def_dir>           ./variable_defs/        </variable_def_dir>
-        <variable>                             lwp                           </variable>
-        <field_type>                         T2Ms                        </field_type>
-        <diag_script_cfg_dir>      ./nml/cfg_clouds/     </diag_script_cfg_dir>
-        <model> OBS UWisc sat v2 1988 2007 @{OBSPATH}/UWisc </model>
-        <diag_script cfg="cfg_clouds.ncl">    clouds.ncl    </diag_script>
-    </diag>
-</DIAGNOSTICS>
-
-</namelist>
+   
+   <!-- Please do not change anything below this line, 
+        unless you want to modify the standard diagnostic settings. -->
+   <DIAGNOSTICS>
+       <diag>
+           <description> Cloud diagnostics</description>
+           <variable_def_dir>     ./variable_defs/                            </variable_def_dir>
+           <variable>             lwp                                         </variable>
+           <field_type>           T2Ms                                        </field_type>
+           <diag_script_cfg_dir>  ./nml/cfg_clouds/                           </diag_script_cfg_dir>
+           <model>                OBS UWisc sat v2 1988 2007 @{OBSPATH}/UWisc </model>
+           <diag_script cfg="cfg_clouds.ncl">    clouds.ncl                   </diag_script>
+       </diag>
+   </DIAGNOSTICS>
+   
+   </namelist>
