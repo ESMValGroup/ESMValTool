@@ -28,7 +28,7 @@ The plots will be done based on a collection of individual namelists. The follow
 
 * Figure 9.32: Monsoon precipitation intensity (upper panels) and monsoon precipitation domain (lower panels) for TRMM and an example of deviations from observations from three CMIP5 models (EC-Earth, HadGEM2-ES, and GFDL-ESM2M).
 
-* Figure 9.45: The carbon cycle-climate feedback (gammaLT) versus the short-term sensitivity of atmospheric CO2 to interannual temperature variability (gamma \ :sub:`IAV`\) in the tropics for CMIP5 models. The red line shows the best fit line across the CMIP5 simulations and the vertical dashed lines show the observed range of -F„IAV. (b) Probability distribution function (PDF) for gammaLT. The solid line is derived after applying the interannual variability (IAV) constraint to the models while the dashed line is the prior PDF derived purely from the models before applying the IAV constraint.-A
+* Figure 9.45: The carbon cycle-climate feedback (gamma  \ :sub:`LT`\) versus the short-term sensitivity of atmospheric CO \ :sub:`2`\ to interannual temperature variability (gamma \ :sub:`IAV`\) in the tropics for CMIP5 models. The red line shows the best fit line across the CMIP5 simulations and the vertical dashed lines show the observed range of gamma \ :sub:`IAV`\. (b) Probability distribution function (PDF) for gamma \ :sub:`LT`\. The solid line is derived after applying the interannual variability (IAV) constraint to the models while the dashed line is the prior PDF derived purely from the models before applying the IAV constraint.
 
 
 
