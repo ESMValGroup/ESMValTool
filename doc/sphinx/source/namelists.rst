@@ -12,12 +12,12 @@ For any given namelist *"namelist.xml"*, the ESMValTool is invoked from the comm
  
 The Python "workflow manager" *main.py* will parse the namelist (namelist.xml) and call all diagnostic scripts listed in the namelist. This sequence is schematicallypython main.py nml/namelist.xml depicted in Figure 2 and involves the following steps:
 
-1.	parse the namelist
-2.	identify the input files on the file system
-3.	run an NCL script to check and reformat the input files
-4.	if needed, run a NCL script to compute derived variables such as, for instance, climate indices
-5.	run the diagnostic script (NCL/Python/R/etc.)
-6.	repeat previous steps until all diagnostics listed in the namelist are processed
+1.	Parse the namelist
+2.	Identify the input files on the file system
+3.	Run an NCL script to check and reformat the input files
+4.	If needed, run a NCL script to compute derived variables such as, for instance, climate indices
+5.	Run the diagnostic script (NCL/Python/R/etc.)
+6.	Repeat previous steps until all diagnostics listed in the namelist are processed
 
 
 .. figure:: ./figures/figure_ESMValTool_controlflow.png
@@ -125,7 +125,7 @@ The project specifier "CMIP5" will search for files in "path" with filenames mat
 
 Here, the leading asterisk is a placeholder for the variable, which is defined in the <DIAGNOSTICS>-tag (see below), the trailing asterisk is a placeholder for the start/end date of the data set. This naming convention conforms to the syntax used for CMIP5 DRS filenames (as implied by the project specifier name). By implementing their own project specifier classes into the Python code (*interface_scripts/projects.py*), the user can handle data sets that follow different file naming conventions or require additional information to be passed along in addition to the filename. Table S2 gives a summary of the available project specifiers and arguments to be used in each <model> line. 
 
-[Note: Examples for the most commonly used project specifiers CMIP5, CMIP5_ETHZ, OBS, and obs4mips as well as downloading instructions and information on the required local directory structure for the model / observational data can be found in section 6.1.]
+[**Note: Examples for the most commonly used project specifiers CMIP5, CMIP5_ETHZ, OBS, and obs4mips as well as downloading instructions and information on the required local directory structure for the model / observational data can be found in section 6.1.**]
 
 The <model>-tag may also take the optional attribute ~id~:
 
@@ -134,7 +134,7 @@ The <model>-tag may also take the optional attribute ~id~:
 Example:
 	*<model id="ERAINT"> OBS ERA-Interim reanaly 1 2003 2004 @{OBSPATH}/Tier3/ERA-Interim </model>*
 
-The attribute id specifies a string that can be used to refer to the model in other places of the namelist. Table S3 gives a summary of valid attributes in <model>-tags.
+The attribute *id* specifies a string that can be used to refer to the model in other places of the namelist. Table S3 gives a summary of valid attributes in <model>-tags.
 
 
 
@@ -645,15 +645,13 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 | zg.ncl                   | Geopotential height							       |
 +--------------------------+-----------------------------------------------------------------------------------+
 
-Typically, all namelists are stored in the folder *nml*, the naming convention is *namelist_xxx.xml* with ~xxx~ being the name of the diagnostic and/or a description of the purpose of the namelist:
+Typically, all namelists are stored in the folder *nml*, the naming convention is *namelist_xxx.xml* with ~xxx~ being the name of the diagnostic and/or a description of the purpose of the namelist::
 	
-**For papers **
-xxx = SurnameYearJournalabbreviation (e.g., stocker12jgr, stocker12sci1, stocker12sci2). 
-
-** For copies of reports that are not publicly available **
+1.	For papers
+	xxx = SurnameYearJournalabbreviation (e.g., stocker12jgr, stocker12sci1, stocker12sci2). 
+2. 	For copies of reports that are not publicly available
 xxx = OrgYearTitleabbrev (e.g., unep10water, unep11gap, roysoc09geoengineering).
-
-** For grouped sets of diagnostics and performance metrics that do not follow a published paper or report**
+3.	For grouped sets of diagnostics and performance metrics that do not follow a published paper or report
 xxx = an intuitive name describing the scientific topic (e.g., aerosol, MyDiag, SAMonsoon, SeaIce)
 
 
