@@ -10,7 +10,8 @@ For any given namelist *"namelist.xml"*, the ESMValTool is invoked from the comm
 	python main.py nml/namelist.xml
 
  
-The Python ~workflow manager~ main.py will parse the namelist (namelist.xml) and call all diagnostic scripts listed in the namelist. This sequence is schematicallypython main.py nml/namelist.xml depicted in Figure 2 and involves the following steps:
+The Python "workflow manager" *main.py* will parse the namelist (namelist.xml) and call all diagnostic scripts listed in the namelist. This sequence is schematicallypython main.py nml/namelist.xml depicted in Figure 2 and involves the following steps:
+
 1.	parse the namelist
 2.	identify the input files on the file system
 3.	run an NCL script to check and reformat the input files
