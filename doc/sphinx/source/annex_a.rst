@@ -2,6 +2,7 @@ Annex A – More tables
 *********************
 
 .. _tab_direc_struc:
+
 .. table:: S10
 
    Table S10 Directory structure of the ESMValTool sorted by file type.
