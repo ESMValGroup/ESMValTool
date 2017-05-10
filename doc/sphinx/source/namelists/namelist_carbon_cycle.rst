@@ -15,8 +15,7 @@ This namelist reproduces most of the figures of Anav et al. (2013):
   (cSoil vs. cVeg)
 
 In addition, performance metrics are calculated for all variables using the
-performance metric diagnostics (see details in section "*Performance metrics
-for essential climate parameters*"). This however applies only to variables
+performance metric diagnostics (see details in section :numref:`nml_perfmetrics`). This however applies only to variables
 on a regular grid (i.e., not to fgco2), as irregular grids are not yet
 supported by the performance "*mwtr*".
 
@@ -35,10 +34,8 @@ Diagnostics are stored in diag_scripts/
 * CarbonCycle_MVI.ncl: calculate the model variability index (MVI),
   interannual variability (IAV) and mean, and draw them in a 3D scatter plot.
 * CarbonCycle_2vars.ncl: draw a scatter plot with two variables.
-* (perfmetrics_main.ncl): see section "*Performance metrics for essential
-  climate parameters*"
-* (perfmetrics_grading.ncl): see section "*Performance metrics for essential
-  climate parameters*"
+* (perfmetrics_main.ncl): see section :numref:`nml_perfmetrics`
+* (perfmetrics_grading.ncl): see section :numref:`nml_perfmetrics`
 
 
 User settings
@@ -81,7 +78,7 @@ User setting files (cfg files) are stored in nml/cfg_anav13jclim/
 
   *Diag_script_info attributes*
 
-  * see section "*Performance metrics for essential climate parameters*"
+  * see section :numref:`nml_perfmetrics`
 
 
 Variables
