@@ -35,6 +35,7 @@ following items should be checked:
 
 
 .. _std_nml:
+
 Standard template
 =================
 
@@ -99,7 +100,8 @@ scripts. The parts marked as *[text]* are the ones to be modified by the author.
    end
 	   
 	   
-.. _lib:	   
+.. _lib:
+
 Library functions
 =================
 
@@ -130,6 +132,7 @@ the header of the functions themselves (see :numref:`std_nml` for a template).
 
 
 .. _plot_func:
+
 Plotting functions
 ==================
 
@@ -159,6 +162,7 @@ For further details on the plotting functions, see the inline documentation in t
 
 
 .. _new_vars:
+
 Adding new variables
 ====================
 
@@ -173,6 +177,7 @@ in a file named *reformat_scripts/cmor/CMOR_<variable>.dat* (see :numref:`cmor`)
 
 
 .. _rec_vars:
+
 reformat_scripts/recognized_vars.dat
 ------------------------------------
 
@@ -197,6 +202,7 @@ the variable could not be found.
 
 
 .. _rec_units:
+
 reformat_scripts/recognized_units.dat
 -------------------------------------
 
@@ -218,6 +224,7 @@ two lines per unit:
 
 
 .. _var_def:
+
 variable_defs/varname.ncl
 -------------------------
 
@@ -301,6 +308,7 @@ of currently available variable definition scripts).
 
 
 .. _cmor:
+
 reformat_scripts/cmor/CMOR_variable.dat
 ---------------------------------------
 
@@ -339,6 +347,7 @@ Each standard variable (non-derived) also needs a configuration file indicating 
 
 
 .. _rules:
+
 Coding rules and standards
 ==========================
 
@@ -393,6 +402,7 @@ The code conventions for R should conform to the formatting produced by the R pa
 
 
 .. _doc_soft:
+
 Documentation of software
 =========================
 
@@ -405,6 +415,7 @@ In order to ensure that all code can be maintained, all diagnostic packages must
 
 
 .. _ack_log:
+
 The acknowledgements log file
 =============================
 
@@ -438,6 +449,7 @@ The function write_references (defined in *interface_scripts/messaging.ncl*) sho
 
 
 .. _source_doc:
+
 Documentation of source code
 ============================
 
@@ -473,6 +485,7 @@ them, as noted above.
 
 
 .. _auto_test:
+
 Automated testing
 =================
 
@@ -538,6 +551,7 @@ A summary of success and failures is provided as output.
 
 
 .. _test_imp:
+
 Example test implementation for a diagnostic
 --------------------------------------------
 
