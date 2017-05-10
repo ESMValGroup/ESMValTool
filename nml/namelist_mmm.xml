@@ -3,16 +3,21 @@
 <namelist_summary>
 ###############################################################################
 namelist_mmm.xml
-Calculates multi-model means over given models, years and variables.
 
 Description
+Calculates multi-model means over given models, years and variables.
 
 Author
 Axel Lauer (DLR, Germany - axel.lauer@dlr.de)
 
+Contributor(s)
+n/a
+
 Project
+n/a
 
 References
+n/a
 
 This namelist is part of the ESMValTool
 ###############################################################################
