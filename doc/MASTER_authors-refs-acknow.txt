@@ -2,6 +2,11 @@
 # diagnostics. Authors, diagnostics, observations and projects references
 # are identified by the tags "A", "D", "E" and "P", respectively.
 #
+# For reporting, the following additional namelist and diagnostic tags
+# are defined:
+# "R" = realm, "T" = theme
+# "DM" = domain, "PT" = plot type, "ST" = statistics
+#
 # Add new entries alphabetically (for authors) or at the end of the 
 # respective lists. Do not change the current entries!
 #
@@ -222,14 +227,14 @@ T_phys = physics
 
 ### DOMAIN (for reporting) ##########################################
 
-D_et = extra tropics
-D_global = global
-D_midlat = mid-latittudes
-D_nh = northern hemisphere
-D_polar = polar
-D_reg = regional
-D_sh = southern hemisphere
-D_trop = tropics
+DM_et = extra tropics
+DM_global = global
+DM_midlat = mid-latittudes
+DM_nh = northern hemisphere
+DM_polar = polar
+DM_reg = regional
+DM_sh = southern hemisphere
+DM_trop = tropics
 
 ### PLOT TYPE (for reporting) ######################################
 
