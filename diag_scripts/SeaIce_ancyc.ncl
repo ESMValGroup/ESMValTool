@@ -50,6 +50,8 @@ load "./diag_scripts/lib/ncl/set_operators.ncl"
 load "./plot_scripts/ncl/aux_plotting.ncl"
 load "./plot_scripts/ncl/xy_line.ncl"
 
+load "./diag_scripts/lib/ncl/meta_data.ncl"
+
 begin
     verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
     info_output("<<<<<<<< Entering " + diag_script, verbosity, 4)
@@ -402,6 +404,21 @@ begin
             debuginfo)
     xy_line(wks_area, val_area, val_area&month, val_area_stddev, res_area, \
             debuginfo)
+            
+    ;; Reporting
+    plot_fname = wks_ext@fullname
+    alltags = array_append_record(tags, (/"DM_polar", "PT_seas", "ST_mean", "ST_stddev"/), 0)
+    caption = "Annual cycle of sea ice extent"
+    id = "#idSeaIceAncycExtent"
+    ESMValMD(plot_fname, alltags, caption, id)
+    delete([/plot_fname, alltags, caption, id/])
+    
+    plot_fname = wks_area@fullname
+    alltags = array_append_record(tags, (/"DM_polar", "PT_seas", "ST_mean", "ST_stddev"/), 0)
+    caption = "Annual cycle of sea ice area"
+    id = "#idSeaIceAncycArea"
+    ESMValMD(plot_fname, alltags, caption, id)
+    delete([/plot_fname, alltags, caption, id/])
 
     info_output(" gv " + wks_ext@fullname + " &", verbosity, 1)
     info_output(" gv " + wks_area@fullname + " &", verbosity, 1)
