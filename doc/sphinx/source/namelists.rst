@@ -22,8 +22,8 @@ The Python "workflow manager" *main.py* will parse the namelist (namelist.xml) a
 
 .. figure:: ./figures/figure_ESMValTool_controlflow.png
    :scale: 90 %
-   :alt: xxxxx
-   :align: center
+   :alt: figure_ESMValTool_controlflow.png
+   :align: center
 
    ESMValTool control flow.
 
