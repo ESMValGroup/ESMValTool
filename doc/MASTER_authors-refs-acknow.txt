@@ -236,6 +236,7 @@ T_chem = chemistry
 T_clouds = clouds
 T_EC = emergent constraint
 T_ghg = greenhouse gases
+T_monsoon = monsoons
 T_phys = physics
 T_seaIce = sea ice
 T_varmodes = modes of variability
