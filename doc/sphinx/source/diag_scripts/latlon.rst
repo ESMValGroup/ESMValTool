@@ -131,3 +131,42 @@
       20140410-A_fran_fr: extended to midlat, equatorial and polar regions.
       20140129-A_fran_fr: written.
   
+.. function:: make_latlon2D(var[1]:string, index[1]:integer, data_pointer[1]:logical, field:numeric)
+
+   :param string var:             = name of the variable
+   :param integer index:           = see interface_scripts/data_handling.ncl
+   :param logical data_pointer:    = see interface_scripts/data_handling.ncl
+   :param numeric field:           = a numeric array of rank 3 (time, lon, lat) or rank 4 (time, [p]lev, lon, lat)
+
+   Return value:
+      the same field, but with 2D latitude and longitude
+  
+   Description:
+      Get 2d lat & lon coordinates for variables (see e.g.
+      http://www.ncl.ucar.edu/Applications/Scripts/ice_3.ncl)
+  
+   Modification history:
+      20141023-A_vanu_be: written based on code in SeaIce_polcon_diff
+  
+.. function:: cdo_remapdis(var[1]:string, field:numeric, index[1]:integer, data_pointer[1]:logical, dst_grid[1]:string, opt[1]:string)
+
+   :param string var:          = name of the variable
+   :param numeric field:        = a numeric array of rank 2 (lon, lat) or rank 3 (time, lon, lat), higher ranks not tested yet
+   :param integer index:        = index of current model in data_pointer
+   :param logical data_pointer: = see interface_scripts/data_handling.ncl
+   :param string dst_grid:     = path to file containing destination grid information
+   :param string opt:          = unused
+
+   Return value:
+      The field regridded to the destination grid specified in dst_grid
+  
+   Description:
+      Regrids the field to the destination field using the 
+        'cdo remapdis' distance-weighted interpolation method
+  
+   Caveats
+      Climate Data Operators (CDO) package must be installed on the system
+  
+   Modification history:
+      20170120-A_senf_da: written.
+  

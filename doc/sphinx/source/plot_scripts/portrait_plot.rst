@@ -23,6 +23,7 @@
    Caveats
   
    Modification history:
+      20151027-A_righ_ma: added option for displaying rankings.
       20140605-A_righ_ma: modified with flexible plot shapes.
       20140204-A_fran_fr: extended.
       20140114-A_righ_ma: written.

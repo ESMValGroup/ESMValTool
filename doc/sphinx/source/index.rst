@@ -15,7 +15,7 @@ Welcome to ESMValTool's documentation!
    developer_guide
 
    diag_scripts/index
-   plots_scripts/index
+   plot_scripts/index
 
 Indices and tables
 ==================

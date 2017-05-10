@@ -13,6 +13,7 @@
    Caveats
   
    Modification history:
+      20150511-A_laue_ax: added safe lower limits for panelling plot
       20150508-A_righ_ma: added lines/markers option.
       20150120-A_gott_kl: remove pre-existing file type suffix
       20140305-A_righ_ma: modified to plot always as epsi format.
@@ -24,7 +25,7 @@
       A string with the output file type
   
    Description
-      Provides a default, if file type is not explicitely specified
+      Provides a default, if file type is not explicitly specified
   
    Caveats
   
@@ -48,7 +49,7 @@
    Caveats:
   
    Modification history:
-      * 20141227-A_gott_kl written
+      20141227-A_gott_kl written.
   
 .. function:: panelling(wks, plots : graphic, nvert[1] : integer, nhori[1] : integer, pres_in[1] : logical)
 
@@ -81,7 +82,7 @@
    Caveats
   
    Modification history
-      * 20131104-A_gott_kl: written.
+      20131104-A_gott_kl: written.
   
 .. function:: get_outfile_name(diag_script[1] : string, add_specs[1] : string)
 
@@ -121,7 +122,7 @@
    Caveats
   
    Modification history
-      * 20131113-A_gott_kl: written.
+      20131113-A_gott_kl: written.
   
 .. function::  add_markers(wks[1] : graphic, plot[1] : graphic, res_in[1] : logical, xpos_in : numeric, ypos_in : numeric)
 
@@ -135,13 +136,53 @@
       Attaches polyline IDs as attributes to plot.
   
    Description:
-      Adds markers to an existing plot. If a horizontal (vertical) coordinate
+      Adds markers to an existing plot.
+  
+   Caveats:
+  
+   Modification history:
+      20140224-A_gott_kl: written for use with profile_plev.ncl in Emmons.ncl
+  
+.. function::  add_num_markers(wks[1] : graphic, plot[1] : graphic, res_in[1] : logical, xpos_in : numeric, ypos_in : numeric)
+
+   :param  graphic wks: valid workstation, e.g. created by get_wks
+   :param  graphic plot: plot identifier, e.g. created by gsn_*
+   :param  logical res_in: plot ressources that may override local function defaults
+   :param  numeric xpos_in: horizontal marker position(s), needs year as a coordinate
+   :param  numeric ypos_in: vertical marker position(s)
+
+   Return value
+      Attaches polytext IDs as attributes to plot.
+  
+   Description:
+      Adds markers to an existing plot, being the last two intagers of a year.
+      If a horizontal (vertical) coordinate
       has only one element, then this position is used for all markers.
   
    Caveats:
   
    Modification history:
-      * 20140224-A_gott_kl: written for use with profile_plev.ncl in Emmons.ncl
+      20150914-A_wenz_sa: written. 
+  
+.. function::  add_errorbar(wks[1] : graphic, plot[1] : graphic, res_in[1] : logical, xpos_in : numeric, ypos_in : numeric)
+
+   :param  graphic wks: valid workstation, e.g. created by get_wks
+   :param  graphic plot: plot identifier, e.g. created by gsn_*
+   :param  logical res_in: plot ressources that may override local function defaults
+   :param  numeric xpos_in: 2D array with horizontal marker position(s) and stddev's,
+   :param  numeric ypos_in: 2D array with vertical marker position(s) and stddev's
+
+   Return value
+      Attaches polytext IDs as attributes to plot.
+  
+   Description:
+      Adds error bars to an existing plot. If a horizontal (vertical) coordinate
+      has only one element, then this position is used for all markers.
+  
+   Caveats:
+  
+   Modification history:
+      20150914-A_wenz_sa: written. 
   
 .. function::  horizontal_whiskers(wks[1] : graphic, plot[1] : graphic, res_in[1] : logical, xmin_in : numeric, xmax_in : numeric, ypos_in: numeric)
 
@@ -169,4 +210,25 @@
   
    Modification history
       20140224-A_gott_kl: written.
+  
+.. function::  add_prediction_error(wks[1] : graphic, plot[1] : graphic, res_in[1] : logical, xpos_in : numeric, ypos_in : numeric)
+
+   :param  graphic wks: valid workstation, e.g. created by get_wks
+   :param  graphic plot: plot identifier, e.g. created by gsn_*
+   :param  logical res_in: plot ressources that may override local function defaults
+   :param  numeric xpos_in: array defining the x-position of the four corners
+   :param  numeric ypos_in: vertical marker position(s)
+
+   Return value
+      Attaches polytext IDs as attributes to plot.
+  
+   Description:
+      Adds markers to an existing plot, being the last two intagers of a year.
+      If a horizontal (vertical) coordinate
+      has only one element, then this position is used for all markers.
+  
+   Caveats:
+  
+   Modification history:
+      20150914-A_wenz_sa: written. 
   

@@ -27,38 +27,38 @@ User settings
 
 User setting files (cfg files) are stored in nml/cfg_carbon/
 
-#.	tsline (cfg_carbon_line.ncl, cfg_carbon_line_h.ncl)
+    #.	tsline (cfg_carbon_line.ncl, cfg_carbon_line_h.ncl)
 
-*Required diag_script_info attributes*
+        *Required diag_script_info attributes*
 
-* styleset: "CMIP5"
-* ts_minlat: minimum latitude for area-averaging
-* ts_maxlat: maximum latitude for area-averaging
-* ts_minlon: minimum longitude for area-averaging
-* ts_maxlon: maximum longitude for area-averaging
-* multi_model_mean: True for multi-model mean calculation
-* ts_maxyear: last year (time range)
-* ts_minyear: first year (time range)
-* time_avg: "yearly" (currently, only yearly is available)
-* ts_anomaly: calculates anomalies with respect to the first 10-year average (anom, noanom)
-* area_opper: type of area operation (average, sum)
+        * styleset: "CMIP5"
+        * ts_minlat: minimum latitude for area-averaging
+        * ts_maxlat: maximum latitude for area-averaging
+        * ts_minlon: minimum longitude for area-averaging
+        * ts_maxlon: maximum longitude for area-averaging
+        * multi_model_mean: True for multi-model mean calculation
+        * ts_maxyear: last year (time range)
+        * ts_minyear: first year (time range)
+        * time_avg: "yearly" (currently, only yearly is available)
+        * ts_anomaly: calculates anomalies with respect to the first 10-year average (anom, noanom)
+        * area_opper: type of area operation (average, sum)
 
-#.	ts_line (cfg_carbon_line_h.ncl)
+    #.	ts_line (cfg_carbon_line_h.ncl)
 
-Required diag_script_info attributes
+        Required diag_script_info attributes
 
-* ts_detrend: detrend time series (detr, nodetr)
+        * ts_detrend: detrend time series (detr, nodetr)
 
-#.	create_co2_flux.ncl, carbon_corr_2var.ncl
+    #.	create_co2_flux.ncl, carbon_corr_2var.ncl
 
-Required diag_script_info attributes
+        Required diag_script_info attributes
 
-* styleset: "CMIP5"
-* con_latrange: 2-element array of latitudes for time series plots if 2D or 3D
-* con_lonrange: 2-element array of pressure levels for time series plots if 2D or 3D
-* con_units: label string for units, e.g., "GtC/K"
-* pcBGC: label for CMIP5 experiment (for creating filename mask), e.g., "esmFixClim1"
-* reg_models: models to be included in emergent constraint (n-element array or (/"all"/)); **note: has to be consistent with the list of models specified in the namelist!**
+        * styleset: "CMIP5"
+        * con_latrange: 2-element array of latitudes for time series plots if 2D or 3D
+        * con_lonrange: 2-element array of pressure levels for time series plots if 2D or 3D
+        * con_units: label string for units, e.g., "GtC/K"
+        * pcBGC: label for CMIP5 experiment (for creating filename mask), e.g., "esmFixClim1"
+        * reg_models: models to be included in emergent constraint (n-element array or (/"all"/)); **note: has to be consistent with the list of models specified in the namelist!**
 
 
 

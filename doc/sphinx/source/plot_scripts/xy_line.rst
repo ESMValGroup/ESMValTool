@@ -25,7 +25,7 @@
       modifying the defaults!
   
    Modification history
-      * 20140214-A_gott_kl: written.
+      20140214-A_gott_kl: written.
   
 .. function:: aerosol_profile(wks_in[1], source_m, source_o, varname[1])
 
@@ -34,26 +34,63 @@
    :param integer source_o: observations data to be plotted or a NetCDF filename with data.
    :param integer varname: variable name in the file.
 
-   Source prototype
+   Source_m prototype
       source[*][*][*]
       source!0 = model
       source!1 = statistic
-      source!2 = plev or diam
+      source!2 = plev
+  
+   Source_o prototype
+      source[*][*][*]
+      source!0 = case
+      source!1 = statistic
+      source!2 = plev
   
    Return value
       A graphic variable.
   
    Description
-      Creates a plot of vertical profile (level vs. data) or size distribution
-      (data vs. diameter).
+      Creates a plot of vertical profile (level vs. data)
       Plots median, mean or both depending on availability of obervations.
   
    Caveats
   
    Modification history
-      20140917-A_righ_ma: renamed to aerosol_profile and extended to for plotting
-                       size distributions.
+      20161013_A_righ_ma: moved size distributions to a separate routine.
+      20140917-A_righ_ma: renamed to aerosol_profile and extended for plotting
+                          size distributions.
       20140705-A_righ_ma: written.
+  
+.. function:: aerosol_sizedist(wks_in[1], source_m, source_o, varname[1])
+
+   :param integer wks_in: workstations (graphic object or default will be used).
+   :param integer source_m: model data to be plotted or a NetCDF filename with data.
+   :param integer source_o: observations data to be plotted or a NetCDF filename with data.
+   :param integer varname: variable name in the file.
+
+   Source_m prototype
+      source[*][*][*]
+      source!0 = model
+      source!1 = statistic
+      source!2 = plev
+  
+   Source_o prototype
+      source[*][*][*]
+      source!0 = case
+      source!1 = statistic
+      source!2 = plev
+  
+   Return value
+      A graphic variable.
+  
+   Description
+      Creates a size distribution plot (data vs. diameter).
+      Plots median, mean or both depending on availability of obervations.
+  
+   Caveats
+  
+   Modification history
+      20161013-A_righ_ma: written based on aerosol_profile.
   
 .. function::  xy_line(wks[1], source, source_x, source_stddev, res_in : logical, debuginfo[1] : logical)
 
@@ -75,52 +112,13 @@
    Caveats
   
    Modification history
+      20150511_A_senf_da: modified legend
       20140109-A_senf_da: written.
   
-.. function:: timeseries_station(wks_in[1], source, varname[1]: string)
+.. function::  xy_line_anom(wks[1], source_mean, source, source_x, source_stddev, ref_start, ref_end, res_in : logical, res0_in : logical, debuginfo[1] : logical)
 
-   :param integer wks_in: workstations (graphic object or default will be used).
-   :param integer source: data to be plotted or a NetCDF filename with data. @stname: station name @stlat: station latitude @stlon: station longitude @stalt: station altitude
-   :param  string varname: variable name, needed for netCDF files with multiple variables
-
-   Source prototype
-      source[*][*]
-      source!0 = model
-      source!1 = time or year
-  
-   Return value
-      A graphic variable.
-  
-   Description
-      Creates a time series plot for station data.
-  
-   Caveats:
-      * selection of defaults for res almost arbitrary
-      * Please check results of all scripts that use this routine if
-        modifying the defaults!
-  
-   Modification history:
-      * 20140325 written by Mattia Righi
-  
-.. function:: cycle_plot(wks_in[1], source, varname[1] : string)
-
-   :param integer wks_in: workstations (graphic object or default will be used).
-   :param integer source: data to be plotted or a NetCDF filename with data.
-   :param  string varname: variable name in the file.
-
-   Source prototype
-      source[*,*]
-      source!0 = model
-      source!1 = month or season
-  
-   Return value
-      A graphic variable.
-  
-   Description
-      Draw an annual or seasonal cycle plot.
-  
-   Caveats
-  
-   Modification history
-      20131206-A_fran_fr: written.
-  
+   :param integer wks:  workstation, must be passed - no default used yet! * source:        data to be plotted (no netCDF input possible yet) * source_x:      x-axis of array to be plotted (e.g. source&time, ... ) * source_stddev: standard deviation of input, needed if diag_script_info@multi_model_mean is set to "y" * res_in:  diag_script-specific resources passed from diag_script * debuginfo:  description about diagnostic rendered onto plot  Source prototype  Description Defines default ressources, which are overridden by argument res. Creates an xy-plot, according to wks & res. Adds multi model mean and standard deviation if diag_script_info@multi_model_mean is set to "y".  Caveats  Modification history 20160822_A_bock_li: written  local funcname, scriptname, verbosity, res, res_in, res_stddev, source, \ source_x, source_stddev, wks, wks_in, colors, colors_mm, dashes, \ dashes_mm, thicks, thicks_mm, annots, annots_mm, avgstd, avgstd_mm, temp, \ plot, shading_plot, mm, lgres, nitems, lbid, amres, annoid, labels, \ psres, vpx, vph, vpy, vpw, bpres, tmborder begin  funcname = "xy_line_anom" scriptname = "plot_scripts/ncl/xy_line.ncl" verbosity  = stringtointeger(getenv("ESMValTool_verbosity")) enter_msg(scriptname, funcname, 4)  Select colors and other plotting attributes (see ./diag_scripts/lib/ncl/style.ncl) colors = project_style(diag_script_info, "colors") dashes = project_style(diag_script_info, "dashes") thicks = project_style(diag_script_info, "thicks") annots = project_style(diag_script_info, "annots") avgstd = project_style(diag_script_info, "avgstd")  Select colors and other plotting attributes for multi-model mean if (diag_script_info@multi_model_mean .eq. "y") then Project_style evaluates metadata of variable "models" temp = models  -> keep original "models" in "temp" and restore later copy_VarMeta(models, temp) delete(models)  Use "models" to pass on attribute names models = getvaratts(temp)  ; use "models" to pass on attribute names do i = 0, dimsizes(models) - 1 Define all original attributes again, but empty models@$models(i)$ = "" end do models@name = "model_mean"  See ./diag_scripts/lib/ncl/style.ncl colors_mmm = project_style(diag_script_info, "colors") dashes_mmm = project_style(diag_script_info, "dashes") thicks_mmm = project_style(diag_script_info, "thicks") annots_mmm = project_style(diag_script_info, "annots") avgstd_mmm = project_style(diag_script_info, "avgstd") delete(models) models = temp  ; restore original "models" copy_VarMeta(temp, models) delete(temp) end if  ;************************************************ ; plotting parameters ;************************************************ ;gsn_define_colormap(wks,"IPCC5") plot = new(1,graphic)  res0 = True res0@gsnDraw = False res0@gsnFrame = False                  ; don't advance frame yet res0@vpHeightF= 0.5                    ; change aspect ratio of plot res0@vpWidthF = 0.05
+   :param integer source_mean:) - 0.05 * (max(source_mean) - min(source_mean))
+   :param integer source:_mean) + 0.05 * (max(source_mean) - min(source_mean)) res0@trXMinF  =  0.                 ; min value on y-axis res0@trXMaxF  =  2.                  ; max value on y-axis res0@tmXTOn = False res0@tmXBOn = False res0@tmYLLabelsOn  = False res0@tmYRLabelsOn  = True res0@tmYRLabelFontHeightF = 0.016 res0@tmYLLabelFontHeightF = 0.016 res0@tiXAxisFontHeightF = 0.016 res0@tiYAxisFontHeightF = 0.016 res0@tiYAxisSide   = "Right" res0@tiYAxisAngleF = 90. res0@tiYAxisOn = True res0@pmLegendDisplayMode = "Never" res0@tmXBMajorOutwardLengthF = 0.006 res0@tmYLMajorOutwardLengthF = 0.006 res0@tmXBMinorOutwardLengthF = 0.003 res0@tmYLMinorOutwardLengthF = 0.003 res0@tmXBMajorLengthF = 0.006 res0@tmYLMajorLengthF = 0.006 res0@tmXBMinorLengthF = 0.003 res0@tmYLMinorLengthF = 0.003  res0@xyDashPatterns    = dashes res0@xyLineThicknesses = thicks ; make 2nd lines thicker res0@xyLineColors      = colors ; change line color  copy_VarMeta(res0_in, res0)  ; copy passed resources   res          = True                      ; plot mods desired res@gsnDraw  = False                  ; don't advance draw yet res@gsnFrame = False                  ; don't advance frame yet  res@vpXF     = 0.05                   ; start plot at x ndc coord res@vpYF     = 0.7                   ; start plot at x ndc coord res@vpHeightF= 0.4                    ; change aspect ratio of plot res@vpWidthF = 0.7 res@pmLegendDisplayMode = "Never" res@tmYRLabelFontHeightF = 0.016 res@tmYLLabelFontHeightF = 0.016 res@tiXAxisFontHeightF = 0.016 res@tiYAxisFontHeightF = 0.016 res@tmXBMajorOutwardLengthF = 0.006 res@tmYLMajorOutwardLengthF = 0.006 res@tmXBMinorOutwardLengthF = 0.003 res@tmYLMinorOutwardLengthF = 0.003 res@tmXBMajorLengthF = 0.006 res@tmYLMajorLengthF = 0.006 res@tmXBMinorLengthF = 0.003 res@tmYLMinorLengthF = 0.003  res@trYMinF  = min(source) - 0.05 * (max(source) - min(source)) res@trYMaxF  = max(source) + 0.05 * (max(source) - min(source)) res@tiYAxisOn = True res@tiXAxisString = "Year" res@gsnStringFontHeightF = 0.016  res@xyDashPatterns    = dashes res@xyLineThicknesses = thicks ; make 2nd lines thicker res@xyLineColors      = colors ; change line color  copy_VarMeta(res_in, res)  ; copy passed resources  ;*************************************** ; panel first two plots ;*************************************** 
+   :param integer source_x:,source,res) ; create plot  Add right panel with mean values in anomaly plot  var = fspan(0.,2.,3) mean = new((/dimsizes(source_mean),3/),float) mean(:,0) = source_mean(:) mean(:,1) = source_mean(:) mean(:,2) = source_mean(:)  plot2 = gsn_csm_xy (wks,var,mean,res0) ; create plot  Add multi model mean and stddev if (diag_script_info@multi_model_mean .eq. "y") then Stddev res_stddev = True copy_VarMeta(res, res_stddev) res_stddev@gsnXYFillColors = "LightGrey" delete(res_stddev@xyLineColors)  We don't want the line, so make it transparent. res_stddev@xyLineColor     = -1
+   :param integer source_stddev:(2:3, :),\ res_stddev) overlay(plot(0), shading_plot) mmm delete([/res@xyLineThicknesses, res@xyLineColors, res@xyDashPatterns/]) res@xyLineThicknesses = thicks_mmm res@xyLineColors      = colors_mmm res@xyDashPatterns    = dashes_mmm plot_mmm = gsn_csm_xy(wks, source_x, source_stddev(0, :), res) overlay(plot(0), plot_mmm)  mean_all = dim_avg_n(mean,0) delete([/res0@xyLineThicknesses, res0@xyLineColors, res0@xyDashPatterns/]) res0@xyLineThicknesses = thicks_mmm res0@xyLineColors      = colors_mmm res0@xyDashPatterns    = dashes_mmm plot2_mean = gsn_csm_xy (wks,var,mean_all,res0) overlay(plot2,plot2_mean)  end if  ;---------------------------------------------------------------------- ; Procedure to attach a box to the given plot, given the lower left ; corner, width, color, and opacity. ;---------------------------------------------------------------------- gsres                = True gsres@gsFillColor    = "yellow" ;11 gsres@gsFillOpacityF = 0.1

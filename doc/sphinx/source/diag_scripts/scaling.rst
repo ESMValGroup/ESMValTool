@@ -14,13 +14,9 @@
       the requested unit conversion is not available.
   
    Caveats
-      Covers only a few cases, to be extended.
-  
-   References
-  
-   Modification history:
-      20150216-A_righ_ma: written.
-  
+      This function shall be used to perform unit conversion before plotting.
+      For unit conversion to be performed before data processing within the
+      diagnostic (e.g., non-linear conversions), it is recommended to use
 .. function:: scalfac(u:numeric, digits[1]:numeric)
 
    :param numeric u: numeric field of any dimension containing the data to be scaled.

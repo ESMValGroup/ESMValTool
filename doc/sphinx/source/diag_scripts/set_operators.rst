@@ -105,3 +105,43 @@
   
    Modification history
   
+.. function:: relative_complement(array1[*], array2[*])
+
+   :param integer array1: an array
+   :param integer array2: another array
+
+   Return value
+      logical: True if there is a complemnet, in this case the complement
+                    itself is attached as '@array'
+               False  if there isn't a complement
+  
+   Description
+      Substracts all elements in array1 from array2 (array2 - array1)
+      See https://en.wikipedia.org/wiki/Complement_(set_theory)#Relative_complement
+      for further details and expected behaviour
+  
+   Caveats
+  
+   Reference
+  
+   Modification history
+  
+.. function:: set_symmetric_difference(array1[*], array2[*])
+
+   :param integer array1: an array
+   :param integer array2: another array
+
+   Return value
+      array: The symmetric difference of array1 and array2
+  
+   Description
+      Returns all elements only in array1 or only in array2
+      See "https://en.wikipedia.org/wiki/Symmetric_difference"
+      for furhter details and expected behaviour
+  
+   Caveats
+  
+   Reference
+  
+   Modification history
+  
