@@ -185,72 +185,72 @@ Example plots
 
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig1_ipccar5_ch9.png
-   :scale: 50 %
+   :scale: 60 %
    :alt: xxxx
    
    Resembling Flato et al. (2013), Fig. 9.2a,b (Eyring et al., 2016: Fig. 4).
 
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig2_ipccar5_ch9.png
-   :scale: 50 %
+   :scale: 60 %
    :alt: xxxx
    
    Resembling Flato et al. (2013), Fig. 9.4a,b (Eyring et al., 2016: Fig. 4).
 
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig3_ipccar5_ch9.png
-   :scale: 50 %
+   :scale: 60 %
    :alt: xxxx
    
    Resembling Flato et al. (2013), Fig. 9.5 (Eyring et al., 2016: Fig. 12).
 
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig4_ipccar5_ch9.png
-   :scale: 50 %
+   :scale: 60 %
    :alt: xxxx
    
    Resembling Flato et al. (2013), Fig. 9.7 (Eyring et al., 2016: Fig. 2).E
 
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig5_ipccar5_ch9.png
-   :scale: 50 %
+   :scale: 60 %
    :alt: xxxx
    
    Resembling Flato et al. (2013), Fig. 9.10 (Eyring et al., 2016: Fig. 25).
 
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig6_ipccar5_ch9.png
-   :scale: 50 %
+   :scale: 60 %
    :alt: xxxx
    
    Resembling Flato et al. (2013), Fig. 9.24 (Eyring et al., 2016: Fig. 17).
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig7_ipccar5_ch9.png
-   :scale: 50 %
+   :scale: 80 %
    :alt: xxxx
    
    Similar to Flato et al. (2013), Fig. 9.28.
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig8_ipccar5_ch9.png
-   :scale: 50 %
+   :scale: 60 %
    :alt: xxxx
    
    Resembling Flato et al. (2013), Fig. 9.29 (Eyring et al., 2016: Fig. 23).
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig9_ipccar5_ch9.png
-   :scale: 50 %
+   :scale: 80 %
    :alt: xxxx
    
    Similar to Flat et al. (2013), Fig. 9.30.
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig10_ipccar5_ch9.png
-   :scale: 50 %
+   :scale: 60 %
    :alt: xxxx
    
    Resembling Flato et al. (2013), Fig. 9.32 (Eyring et al., 2016: Fig. 5).
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig11_ipccar5_ch9.png
-   :scale: 50 %
+   :scale: 80 %
    :alt: xxxx
    
    Resembling Flato et al. (2013), Fig. 9.45 (Eyring et al., 2016: Fig. 26).
