@@ -39,33 +39,33 @@ User settings
 
 User setting files (cfg files) are stored in nml/cfg_DiurnalCycle/
 
-#.	namelist_DiurnalCycle_harmonic.xml
+    #.	namelist_DiurnalCycle_harmonic.xml
 
-*Required diag_script_info attributes*
+        *Required diag_script_info attributes*
 
-* season: season (DJF, MAM, JJA, SON)
-* destgrid: common grid for interpolation ("2.5x2.5")
-* latrange_basic: latitude range of box
-* lonrange_basic: longitude range of box
-* cn_levels_amplitude_basic: contour levels for amplitude plots
-* cn_levels_phase_basic: contour levels for phase plots
-* cn_levels_var_basic: contour levels for percentage of variance
-* styleset: "CMIP5", "DEFAULT"
-* my_region: label for region
+        * season: season (DJF, MAM, JJA, SON)
+        * destgrid: common grid for interpolation ("2.5x2.5")
+        * latrange_basic: latitude range of box
+        * lonrange_basic: longitude range of box
+        * cn_levels_amplitude_basic: contour levels for amplitude plots
+        * cn_levels_phase_basic: contour levels for phase plots
+        * cn_levels_var_basic: contour levels for percentage of variance
+        * styleset: "CMIP5", "DEFAULT"
+        * my_region: label for region
 
-#.	namelist_DiurnalCycle_box_pr.xml, namelist_DiurnalCycle_box_SFCflux.xml, namelist_DiurnalCycle_box_TOAflux.xml
+    #.	namelist_DiurnalCycle_box_pr.xml, namelist_DiurnalCycle_box_SFCflux.xml, namelist_DiurnalCycle_box_TOAflux.xml
 
-*Required diag_script_info attributes*
+        *Required diag_script_info attributes*
 
-* season: season (DJF, MAM, JJA, SON)
-* latrange: latitude range of box
-* lonrange: longitude range of box
-* styleset: "CMIP5", "DEFAULT"
-* box: label for region
-* multi_model_mean: calculate multi-model mean ("y", "n")
-* supporting_gridlines: display supporting gridline ("y", "n")
-* x_gridlines: display gridline along x-axis ("y", "n")
-* y_gridlines: display gridline along y-axis ("y", "n")
+        * season: season (DJF, MAM, JJA, SON)
+        * latrange: latitude range of box
+        * lonrange: longitude range of box
+        * styleset: "CMIP5", "DEFAULT"
+        * box: label for region
+        * multi_model_mean: calculate multi-model mean ("y", "n")
+        * supporting_gridlines: display supporting gridline ("y", "n")
+        * x_gridlines: display gridline along x-axis ("y", "n")
+        * y_gridlines: display gridline along y-axis ("y", "n")
 
 
 Variables

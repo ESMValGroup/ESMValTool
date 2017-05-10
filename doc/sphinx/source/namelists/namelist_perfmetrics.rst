@@ -32,7 +32,7 @@ User setting files (cfg files) are stored in nml/cfg_perfmetrics/CMIP5/
 
    1. perfmetrics_grading.ncl
 
-   *diag_script_info attributes*
+      *diag_script_info attributes*
 
       * MultiModelMean: calculate multi-model mean (True, False)
       * MultiModelMedian: calculate multi-model median (True, False)
@@ -41,13 +41,13 @@ User setting files (cfg files) are stored in nml/cfg_perfmetrics/CMIP5/
 
    2. perfmetrics_grading_collect.ncl
 
-   *Required diag_script_info attributes*
+      *Required diag_script_info attributes*
 
       * label_bounds: min and max of the labelbar
       * label_scale: bin width of the labelbar
       * disp_values: switch on/off the grading values on the plot
 
-   *Optional diag_script_info attributes*
+      *Optional diag_script_info attributes*
 
       * sort: sort models in alphabetic order (excluding multi-model mean)
       * title: plot title
@@ -55,7 +55,7 @@ User setting files (cfg files) are stored in nml/cfg_perfmetrics/CMIP5/
 
    3. perfmetrics_main.ncl
 
-   *diag_script_info attributes*
+      *diag_script_info attributes*
 
       * plot_type: plot type ("cycle" (time), "zonal" (plev, lat), "latlon" (lat, lon), "cycle_latlon" (time, lat, lon))
       * time_avg: time averaging ("monthlyclim", "seasonalclim")
@@ -73,7 +73,7 @@ User setting files (cfg files) are stored in nml/cfg_perfmetrics/CMIP5/
 
    4. perfmetrics_taylor.ncl
 
-   *Required diag_script_info attributes*
+      *Required diag_script_info attributes*
 
       * region: averaging region ("Global", "Tropics", "NH extratropics", "SH extratropics")
       * time_avg: time averaging ("monthlyclim", "seasonalclim")
@@ -82,7 +82,7 @@ User setting files (cfg files) are stored in nml/cfg_perfmetrics/CMIP5/
 
    5. perfmetrics_taylor_collect.ncl
 
-   *diag_script_info attributes*
+      *diag_script_info attributes*
 
       None.
 
@@ -116,8 +116,7 @@ Observations and reformat scripts
 References
 ----------
 
-* Gleckler, P. J., K. E. Taylor, and C. Doutriaux, Performance metrics for climate models, J. Geophys. Res., 113, D06104, doi: 10.1029/2007JD008972
-(2008).
+* Gleckler, P. J., K. E. Taylor, and C. Doutriaux, Performance metrics for climate models, J. Geophys. Res., 113, D06104, doi: 10.1029/2007JD008972 (2008).
 
 * Righi, M., Eyring, V., Klinger, C., Frank, F., Gottschaldt, K.-D., Jöckel, P., and Cionni, I.: Quantitative evaluation of oone and selected climate parameters in a set of EMAC simulations, Geosci. Model Dev., 8, 733, doi: 10.5194/gmd-8-733-2015 (2015).
 

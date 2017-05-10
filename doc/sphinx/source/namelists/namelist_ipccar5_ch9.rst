@@ -1,5 +1,5 @@
 IPCC AR5 Chapter 9
-=====================
+==================
 
 Overview
 --------
@@ -174,7 +174,7 @@ References
 
 * Dee, D. P., Uppala, S. M., Simmons, A. J., Berrisford, P., Poli, P., Kobayashi, S., Andrae, U., Balmaseda, M. A., Balsamo, G., Bauer, P., Bechtold, P., Beljaars, A. C. M., van de Berg, L., Bidlot, J., Bormann, N., Delsol, C., Dragani, R., Fuentes, M., Geer, A. J., Haimberger, L., Healy, S. B., Hersbach, H., Holm, E. V., Isaksen, L., Kallberg, P., Kohler, M., Matricardi, M., McNally, A. P., Monge-Sanz, B. M., Morcrette, J. J., Park, B. K., Peubey, C., de Rosnay, P., Tavolato, C., Thepaut, J. N., and Vitart, F.: The ERA-Interim reanalysis: configuration and performance of the data assimilation system, Q J Roy Meteor Soc, 137, 553-597, 2011.
 
-* Eyring, V., Righi, M., Lauer, A., Evaldsson, M., Wenzel, S., Jones, C., Anav, A., Andrews, O., Cionni, I., Davin, E. L., Deser, C., Ehbrecht, C., Friedlingstein, P., Gleckler, P., Gottschaldt, K.-D., Hagemann, S., Juckes, M., Kindermann, S., Krasting, J., Kunert, D., Levine, R., Loew, A., M‰kel‰, J. Martin, G., Mason, E., Phillips, A. S., Read, S., Rio, C., Roehrig, R., Senftleben, D., Sterl, A., van Ulft, L. H., Walton, J., Wang, S., and Williams, K. D.: ESMValTool (v1.0)  a community diagnostic and performance metrics tool for routine evaluation of Earth System Models in CMIP, Geosci. Model Dev., 9, 1747-1802, doi: 10.5194/gmd-9-1747-2016, 2016.
+* Eyring, V., Righi, M., Lauer, A., Evaldsson, M., Wenzel, S., Jones, C., Anav, A., Andrews, O., Cionni, I., Davin, E. L., Deser, C., Ehbrecht, C., Friedlingstein, P., Gleckler, P., Gottschaldt, K.-D., Hagemann, S., Juckes, M., Kindermann, S., Krasting, J., Kunert, D., Levine, R., Loew, A., M√§kel√§, J. Martin, G., Mason, E., Phillips, A. S., Read, S., Rio, C., Roehrig, R., Senftleben, D., Sterl, A., van Ulft, L. H., Walton, J., Wang, S., and Williams, K. D.: ESMValTool (v1.0)  a community diagnostic and performance metrics tool for routine evaluation of Earth System Models in CMIP, Geosci. Model Dev., 9, 1747-1802, doi: 10.5194/gmd-9-1747-2016, 2016.
 
 * Flato, G., J. Marotzke, B. Abiodun, P. Braconnot, S.C. Chou, W. Collins, P. Cox, F. Driouech, S. Emori, V. Eyring, C. Forest, P. Gleckler, E. Guilyardi, C. Jakob, V. Kattsov, C. Reason and M. Rummukainen, 2013: Evaluation of Climate Models. In: Climate Change 2013: The Physical Science Basis. Contribution of Working Group I to the Fifth Assessment Report of the Intergovernmental Panel on Climate Change [Stocker, T.F., D. Qin, G.-K. Plattner, M. Tignor, S.K. Allen, J. Boschung, A. Nauels, Y. Xia, V. Bex and P.M. Midgley (eds.)]. Cambridge University Press, Cambridge, United Kingdom and New York, NY, USA.
 
@@ -185,72 +185,72 @@ Example plots
 
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig1_ipccar5_ch9.png
-   :scale: 50 %
+   :scale: 60 %
    :alt: xxxx
    
    Resembling Flato et al. (2013), Fig. 9.2a,b (Eyring et al., 2016: Fig. 4).
 
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig2_ipccar5_ch9.png
-   :scale: 50 %
+   :scale: 60 %
    :alt: xxxx
    
    Resembling Flato et al. (2013), Fig. 9.4a,b (Eyring et al., 2016: Fig. 4).
 
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig3_ipccar5_ch9.png
-   :scale: 50 %
+   :scale: 60 %
    :alt: xxxx
    
    Resembling Flato et al. (2013), Fig. 9.5 (Eyring et al., 2016: Fig. 12).
 
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig4_ipccar5_ch9.png
-   :scale: 50 %
+   :scale: 60 %
    :alt: xxxx
    
    Resembling Flato et al. (2013), Fig. 9.7 (Eyring et al., 2016: Fig. 2).E
 
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig5_ipccar5_ch9.png
-   :scale: 50 %
+   :scale: 60 %
    :alt: xxxx
    
    Resembling Flato et al. (2013), Fig. 9.10 (Eyring et al., 2016: Fig. 25).
 
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig6_ipccar5_ch9.png
-   :scale: 50 %
+   :scale: 60 %
    :alt: xxxx
    
    Resembling Flato et al. (2013), Fig. 9.24 (Eyring et al., 2016: Fig. 17).
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig7_ipccar5_ch9.png
-   :scale: 50 %
+   :scale: 80 %
    :alt: xxxx
    
    Similar to Flato et al. (2013), Fig. 9.28.
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig8_ipccar5_ch9.png
-   :scale: 50 %
+   :scale: 60 %
    :alt: xxxx
    
    Resembling Flato et al. (2013), Fig. 9.29 (Eyring et al., 2016: Fig. 23).
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig9_ipccar5_ch9.png
-   :scale: 50 %
+   :scale: 80 %
    :alt: xxxx
    
    Similar to Flat et al. (2013), Fig. 9.30.
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig10_ipccar5_ch9.png
-   :scale: 50 %
+   :scale: 60 %
    :alt: xxxx
    
    Resembling Flato et al. (2013), Fig. 9.32 (Eyring et al., 2016: Fig. 5).
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig11_ipccar5_ch9.png
-   :scale: 50 %
+   :scale: 80 %
    :alt: xxxx
    
    Resembling Flato et al. (2013), Fig. 9.45 (Eyring et al., 2016: Fig. 26).

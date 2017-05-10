@@ -38,57 +38,57 @@ User setting files (cfg files) are stored in nml/cfg_aerosol/CMIP5/ and nml/cfg_
 
   **! NOTE ! The cfg files may contain hard coded pathnames (attribute “datapath”, see below) for the observational data that have to be set by the user!**
   
-#.	aerosol_stations.ncl (AERONET, CASTNET, EANET, EMEP, IMPROVE)
-  
-    * cfg_aerosol_stations_AERONET.ncl
-    * cfg_aerosol_stations_CASTNET.ncl
-    * cfg_aerosol_stations_EANET.ncl
-    * cfg_aerosol_stations_EMEP.ncl
-    * cfg_aerosol_stations_IMPROVE.ncl
-    * cfg_aerosol_tsline.ncl
+    #.	aerosol_stations.ncl (AERONET, CASTNET, EANET, EMEP, IMPROVE)
+      
+        * cfg_aerosol_stations_AERONET.ncl
+        * cfg_aerosol_stations_CASTNET.ncl
+        * cfg_aerosol_stations_EANET.ncl
+        * cfg_aerosol_stations_EMEP.ncl
+        * cfg_aerosol_stations_IMPROVE.ncl
+        * cfg_aerosol_tsline.ncl
 
 
-#.	aerosol_satellites.ncl (ESACCI, MISR, MODIS)
+    #.	aerosol_satellites.ncl (ESACCI, MISR, MODIS)
 
-    * satellite_ESACCI-AEROSOL.ncl
-    * cfg_aerosol_satellite_MISR.ncl
-    * cfg_aerosol_satellite_MODIS.ncl
+        * satellite_ESACCI-AEROSOL.ncl
+        * cfg_aerosol_satellite_MISR.ncl
+        * cfg_aerosol_satellite_MODIS.ncl
 
-    *Required diag_script_info attributes*
+        *Required diag_script_info attributes*
 
-    * ref_model: name of reference data set (e.g., "ESACCI-AEROSOL")
-    * styleset: style ("DEFAULT")
-    * regrid_method: regridding method (coarsest, finest, ref)
-    * range_option: time range option (0: model own time range, 1: intersection between models)
+        * ref_model: name of reference data set (e.g., "ESACCI-AEROSOL")
+        * styleset: style ("DEFAULT")
+        * regrid_method: regridding method (coarsest, finest, ref)
+        * range_option: time range option (0: model own time range, 1: intersection between models)
 
 
-#.	aerosol_profiles.ncl (ACCESS, ACCESS-2, Asmi11, CIRRUS, CONCERT, CR-AVE, DC3, HIPPO, IMPROVE, INCA, LACE, Putaud, SALTRACE, TC4, Texas, UCN-Pacific)
+    #.	aerosol_profiles.ncl (ACCESS, ACCESS-2, Asmi11, CIRRUS, CONCERT, CR-AVE, DC3, HIPPO, IMPROVE, INCA, LACE, Putaud, SALTRACE, TC4, Texas, UCN-Pacific)
 
-    * cfg_aerosol_profiles_ACCESS.ncl
-    * cfg_aerosol_profiles_ACCESS-2.ncl
-    * cfg_aerosol_profiles_Asmi11.ncl
-    * cfg_aerosol_profiles_CIRRUS.ncl
-    * cfg_aerosol_profiles_CONCERT.ncl 
-    * cfg_aerosol_profiles_CR-AVE.ncl
-    * cfg_aerosol_profiles_DC3.ncl
-    * cfg_aerosol_profiles_HIPPO.ncl
-    * cfg_aerosol_stations_IMPROVE.ncl
-    * cfg_aerosol_profiles_INCA.ncl
-    * cfg_aerosol_profiles_LACE.ncl
-    * cfg_aerosol_profiles_Putaud.ncl
-    * cfg_aerosol_profiles_SALTRACE.ncl
-    * cfg_aerosol_profiles_TC4.ncl
-    * cfg_aerosol_profiles_Texas.ncl
-    * cfg_aerosol_profiles_UCN-Pacific.ncl
+        * cfg_aerosol_profiles_ACCESS.ncl
+        * cfg_aerosol_profiles_ACCESS-2.ncl
+        * cfg_aerosol_profiles_Asmi11.ncl
+        * cfg_aerosol_profiles_CIRRUS.ncl
+        * cfg_aerosol_profiles_CONCERT.ncl 
+        * cfg_aerosol_profiles_CR-AVE.ncl
+        * cfg_aerosol_profiles_DC3.ncl
+        * cfg_aerosol_profiles_HIPPO.ncl
+        * cfg_aerosol_stations_IMPROVE.ncl
+        * cfg_aerosol_profiles_INCA.ncl
+        * cfg_aerosol_profiles_LACE.ncl
+        * cfg_aerosol_profiles_Putaud.ncl
+        * cfg_aerosol_profiles_SALTRACE.ncl
+        * cfg_aerosol_profiles_TC4.ncl
+        * cfg_aerosol_profiles_Texas.ncl
+        * cfg_aerosol_profiles_UCN-Pacific.ncl
 
-    *Required diag_script_info attributes*      
+        *Required diag_script_info attributes*      
 
-    * campaign: name of measurement campaign (e.g., INCA, LACE, Texas)
-    * styleset: "DEFAULT"
-    * **datapath: path for campaign data**
-    * cc_threshold: cloud cover threshold (%)
-    * summary_plot: create a summary with the median of all flights on a single plot
-    * exclude_flights: exclude specific flights from the summary plot
+        * campaign: name of measurement campaign (e.g., INCA, LACE, Texas)
+        * styleset: "DEFAULT"
+        * **datapath: path for campaign data**
+        * cc_threshold: cloud cover threshold (%)
+        * summary_plot: create a summary with the median of all flights on a single plot
+        * exclude_flights: exclude specific flights from the summary plot
 
 Variables
 ---------
@@ -155,12 +155,14 @@ Example plots
 | .. image::  ../../source/namelists/figures/aerosol/figure_namelist_aerosol_conc_SO4_ts.png             | .. image::  ../../source/namelists/figures/aerosol/figure_namelist_aerosol_conc_SO4_scatter.png             |
 +--------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------+
 
-+--------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------+
-| .. image::  ../../source/namelists/figures/aerosol/figure_namelist_aerosol_conc_SO4_spatial.png                                                                                                                      |
-|    :height: 7cm                                                                                                                                                                                                      |
-|    :align:  center                                                                                                                                                                                                   |
+.. image::  ../../source/namelists/figures/aerosol/figure_namelist_aerosol_conc_SO4_spatial.png
+   :height: 7cm 
+   :align:  center
+
 +--------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------+
 | .. image::  ../../source/namelists/figures/aerosol/figure_namelist_aerosol_conc_SO4_spatial_global.png | .. image::  ../../source/namelists/figures/aerosol/figure_namelist_aerosol_conc_SO4_spatial_global_diff.png |
++--------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------+
+
 +--------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------+
 | .. image::  ../../source/namelists/figures/aerosol/figure_namelist_aerosol_conc_SO4_plevel.png         | .. image::  ../../source/namelists/figures/aerosol/figure_namelist_aerosol_conc_SO4_size.png                |
 +--------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------+

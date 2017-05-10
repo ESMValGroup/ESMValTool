@@ -51,13 +51,13 @@ User setting files (cfg files) are stored in nml/cfg_CVDP/
 
      #.	cvdp_obs.ncl
 
-     *Required diag_script_info attributes*
+         *Required diag_script_info attributes*
 
-	* obs_ref: list of reference data sets (observations) (array)
+	     * obs_ref: list of reference data sets (observations) (array)
 
      #.	cvdp_driver.ncl (called by cvdp_atmos.ncl)
 
-     *The wrapper script cvdp_driver.ncl sets the user options for the CVDP.*
+         *The wrapper script cvdp_driver.ncl sets the user options for the CVDP.*
 
 
 
