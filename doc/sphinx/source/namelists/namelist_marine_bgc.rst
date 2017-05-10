@@ -112,11 +112,22 @@ References
 
 * Takahashi, T., Sutherland, S. C., Chipman, D. W., Goddard, J. G., Ho, C., Newberger, T., Sweeney, C., and Munro, D. R.: Climatological distributions of pH, pCO2, total CO2, alkalinity, and CaCO3 saturation in the global surface ocean, and temporal changes at selected locations, Mar. Chem., 164, 95-125, doi: 10.1016/j.marchem.2014.06.004, 2014.
 
+
+.. raw:: latex
+
+   \newpage
+
+
 Example plots
 -------------
 
+|
+
 .. figure:: ../../source/namelists/figures/marine_bgc/marine_bgc_fig_1.png
-   :width: 14cm
+   :width: 16cm
+
+|
+|
          
 +-----------------------------------------------------------------------------+----------------------------------------------------------------------------+
 | .. image :: ../../source/namelists/figures/marine_bgc/marine_bgc_fig_2a.png | .. image:: ../../source/namelists/figures/marine_bgc/marine_bgc_fig_2b.png |

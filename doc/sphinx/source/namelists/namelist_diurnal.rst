@@ -123,12 +123,10 @@ Example plots
    
   
 .. figure:: ../../source/namelists/figures/diurnal/fig4.png
-   :scale: 30 %
    :alt: xxxxx
    
   
 .. figure:: ../../source/namelists/figures/diurnal/fig5.png
-   :scale: 30 %
    :alt: xxxxx
 
 

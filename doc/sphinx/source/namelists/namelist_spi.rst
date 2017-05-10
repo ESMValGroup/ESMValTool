@@ -70,7 +70,7 @@ Example plots
 -------------
 
 .. figure:: ../../source/namelists/figures/spi/fig1.png
-   :scale: 50 %
+   :width: 16 cm
    :alt: xxxx
    
 

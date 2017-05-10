@@ -43,7 +43,7 @@ General options for all diagnostics
 * plot_flux_maps: True, False
 * plot_radiation_maps: True, False
 
-Common sub keys for all diagnostics (plot_): X_maps, X_averages, sub_areas
+Common sub keys for all diagnostics (plot\_): X_maps, X_averages, sub_areas
 
 * plot_lat_averages: True, False
 * plot_lon_averages: True, False
@@ -130,11 +130,11 @@ Note: (1) obs4mips data can be used directly without any preprocessing; (2) see 
 
 * CERES-EBAF (obs4mips)
 * WHOI-OAFlux
- * Reformat script: reformat_scripts/obs/reformat_obs_WHOI-OAFlux.ncl
-*CloudSat-L3
- * Reformat script: reformat_scripts/obs/reformat_obs_cloudsat.bash
+  *Reformat script:* reformat_scripts/obs/reformat_obs_WHOI-OAFlux.ncl
+* CloudSat-L3
+  *Reformat script:* reformat_scripts/obs/reformat_obs_cloudsat.bash
 * MODIS-L3-C6
- * Reformat script: reformat_scripts/obs/reformat_obs_MODIS-L3-C6.ncl
+  *Reformat script:* reformat_scripts/obs/reformat_obs_MODIS-L3-C6.ncl
 
 References
 ----------
@@ -146,7 +146,7 @@ Example plots
 -------------
 
 .. figure:: ../../source/namelists/figures/southern_hemisphere/fig1.png
-   :scale: 50 %
+   :width: 12 cm
    :alt: xxxx
    
 .. figure:: ../../source/namelists/figures/southern_hemisphere/fig2.png
@@ -154,15 +154,15 @@ Example plots
    :alt: xxxx
 
 .. figure:: ../../source/namelists/figures/southern_hemisphere/fig3.png
-   :scale: 50 %
+   :width: 10 cm
    :alt: xxxx
 
 .. figure:: ../../source/namelists/figures/southern_hemisphere/fig4.png
-   :scale: 50 %
+   :width: 10 cm
    :alt: xxxx
 
 .. figure:: ../../source/namelists/figures/southern_hemisphere/fig5.png
-   :scale: 50 %
+   :width: 10 cm
    :alt: xxxx
 
 

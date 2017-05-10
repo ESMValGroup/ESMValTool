@@ -131,31 +131,31 @@ Example plots
 -------------
 
 .. figure:: ../../source/namelists/figures/southern_ocean/fig1.png
-   :scale: 50 %
+   :width: 8 cm
    :alt: xxxx
  
 .. figure:: ../../source/namelists/figures/southern_ocean/fig2.png
-   :scale: 50 %
+   :width: 8 cm
    :alt: xxxx
 
 .. figure:: ../../source/namelists/figures/southern_ocean/fig3.png
-   :scale: 50 %
+   :width: 10 cm
    :alt: xxxx
 
 .. figure:: ../../source/namelists/figures/southern_ocean/fig4.png
-   :scale: 50 %
+   :width: 8 cm
    :alt: xxxx
 
 .. figure:: ../../source/namelists/figures/southern_ocean/fig5.png
-   :scale: 50 %
+   :width: 8 cm
    :alt: xxxx
 
 .. figure:: ../../source/namelists/figures/southern_ocean/fig6.png
-   :scale: 50 %
+   :width: 8 cm
    :alt: xxxx
 
 .. figure:: ../../source/namelists/figures/southern_ocean/fig7.png
-   :scale: 50 %
+   :width: 8 cm
    :alt: xxxx
 
 

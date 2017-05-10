@@ -218,13 +218,13 @@ Example plots
 
 
 .. figure:: ../../source/namelists/figures/south_asian_monsoon/fig7.png
-   :scale: 50 %
+   :width: 11cm
    :alt: xxxx
 
 
 
 .. figure:: ../../source/namelists/figures/south_asian_monsoon/fig8.png
-   :scale: 50 %
+   :width: 11cm
    :alt: xxxx
 
 

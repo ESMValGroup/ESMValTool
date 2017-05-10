@@ -207,7 +207,7 @@ Example plots
 -------------
 
 .. figure:: ../../source/namelists/figures/wam/fig1.png
-   :scale: 50 %
+   :width: 12cm
    :alt: xxxx
 
 .. figure:: ../../source/namelists/figures/wam/fig2.png
@@ -227,7 +227,7 @@ Example plots
    :alt: xxxx
 
 .. figure:: ../../source/namelists/figures/wam/fig6.png
-   :scale: 50 %
+   :width: 12 cm
    :alt: xxxx
 
 .. figure:: ../../source/namelists/figures/wam/fig7.png
@@ -239,11 +239,11 @@ Example plots
    :alt: xxxx
 
 .. figure:: ../../source/namelists/figures/wam/fig9.png
-   :scale: 50 %
+   :width: 12 cm
    :alt: xxxx
 
 .. figure:: ../../source/namelists/figures/wam/fig10.png
-   :scale: 50 %
+   :width: 12 cm
    :alt: xxxx
 
 

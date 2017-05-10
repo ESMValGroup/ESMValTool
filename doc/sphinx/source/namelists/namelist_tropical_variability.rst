@@ -124,7 +124,7 @@ Example plots
 
 
 .. figure:: ../../source/namelists/figures/tropical_variability/fig1.png
-   :scale: 50 %
+   :width: 10 cm 
    :alt: xxxx
    
 
@@ -134,7 +134,7 @@ Example plots
   
   
 .. figure:: ../../source/namelists/figures/tropical_variability/fig3.png
-   :scale: 50 %
+   :width: 10 cm
    :alt: xxxx
    
 
