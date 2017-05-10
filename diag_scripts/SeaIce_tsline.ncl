@@ -55,6 +55,8 @@ load "./diag_scripts/lib/ncl/style.ncl"
 load "./plot_scripts/ncl/aux_plotting.ncl"
 load "./plot_scripts/ncl/xy_line.ncl"
 
+load "./diag_scripts/lib/ncl/meta_data.ncl"
+
 begin
     verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
     info_output("<<<<<<<< Entering " + diag_script, verbosity, 4)
