@@ -4,7 +4,7 @@
 #
 # For reporting, the following additional namelist and diagnostic tags
 # are defined:
-# "R" = realm, "T" = theme
+# "R" = CMIP6 realm, "T" = theme
 # "DM" = domain, "PT" = plot type, "ST" = statistics
 #
 # Add new entries alphabetically (for authors) or at the end of the 
