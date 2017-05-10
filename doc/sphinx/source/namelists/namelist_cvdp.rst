@@ -27,7 +27,7 @@ been written to be able to run CVDP directly within the ESMValTool.
 
 
 
-Available Namelists and Diagnostics
+Available namelists and diagnostics
 -----------------------------------
 
 Namelists are stored in nml/
@@ -38,9 +38,9 @@ Diagnostics are stored in diag_scripts/
 
 *Wrapper scripts to run CVDP within the framework of the ESMValTool*
 
-	* cvdp_obs.ncl: run for each variable separately with observational data available; renames the ESMValTool output (observations) following the filename conventions of the CVDP and creates the CVDP namelist “namelist_obs”.
+	* cvdp_obs.ncl: run for each variable separately with observational data available; renames the ESMValTool output (observations) following the filename conventions of the CVDP and creates the CVDP namelist "namelist_obs".
 	* cvdp_ocean.ncl: renames the ESMValTool output (ocean variables) following the filename conventions of the CVDP.
-	* cvdp_atmos.ncl: renames the ESMValTool output (atmosphere variables) following the filename conventions of the CVDP and creates the CVDP namelist “namelist” containing the models. The script then runs the CVDP via a call to the wrapper script cvdp_driver.ncl.
+	* cvdp_atmos.ncl: renames the ESMValTool output (atmosphere variables) following the filename conventions of the CVDP and creates the CVDP namelist "namelist" containing the models. The script then runs the CVDP via a call to the wrapper script cvdp_driver.ncl.
 
 
 
@@ -49,13 +49,13 @@ User settings
 
 User setting files (cfg files) are stored in nml/cfg_CVDP/
 
-     (1)	cvdp_obs.ncl
+     #.	cvdp_obs.ncl
 
      *Required diag_script_info attributes*
 
 	* obs_ref: list of reference data sets (observations) (array)
 
-     (2)	cvdp_driver.ncl (called by cvdp_atmos.ncl)
+     #.	cvdp_driver.ncl (called by cvdp_atmos.ncl)
 
      *The wrapper script cvdp_driver.ncl sets the user options for the CVDP.*
 

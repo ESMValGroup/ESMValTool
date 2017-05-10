@@ -7,7 +7,7 @@ Overview
 For each month, the precipitation over the preceding TIMESCALE months, x, is summed. Then a two-parameter Gamma distribution of cumulative probability, Gammaα,β, is fitted to the strictly positive TIMESCALE month sums, such that the probability of a non-zero precipitation sum being below a certain value x corresponds to Gammaα,β(x). We estimate shape parameter α and scale parameter β with a maximum likelihood approach. If the estimation does not converge, α and β are approximated using empirical relations (Bordi et al., 2001). Accounting for TIMESCALE month periods of no precipitation, occurring at a frequency q, the total cumulative probability distribution of a precipitation sum below x, H(x), becomes H(x) = q + (1 - q) * Gammaα,β(x). In the last step, a precipitation sum x is assigned to its corresponding Standardized Precipitation Index (SPI) value by computing the quantile qN(0,1) of the standard normal distribution at probability H(x). The SPI of a precipitation sum x, thus, corresponds to the quantile of the standard normal distribution which is assigned by preserving the probability of the original precipitation sum, H(x).
 
 
-Available Namelists and Diagnostics
+Available namelists and diagnostics
 -----------------------------------
 
 Namelists are stored in nml/
@@ -24,7 +24,7 @@ User settings
 
 User setting files (cfg files) are stored in nml/cfg_SPI/
 
-**(1) SPR.r**
+#. SPR.r
 
 * begin.ref.year: first year of the reference period
 * end.ref.year: last year of the reference period
@@ -45,10 +45,10 @@ Variables
 * pr (atmos, monthly mean, longitude latitude time)
 
 
-Observations and Reformat Scripts
+Observations and reformat scripts
 ---------------------------------
 
-**Note:** (1) obs4mips data can be used directly without any preprocessing; (2) see headers of reformat scripts for non-obs4mips data for download instructions.
+**Note: (1) obs4mips data can be used directly without any preprocessing; (2) see headers of reformat scripts for non-obs4mips data for download instructions.**
 
 
 

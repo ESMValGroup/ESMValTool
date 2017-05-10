@@ -1,4 +1,4 @@
-Catchment Analysis
+Catchment analysis
 =====================
 
 Overview
@@ -20,7 +20,7 @@ GRDC river runoff.
 
 
 
-Available Namelists and Diagnostics
+Available namelists and diagnostics
 -----------------------------------
 
 Namelists are stored in nml/
@@ -45,7 +45,7 @@ Variables
 * evspsbl (atmos, annual mean, longitude latitude time)
 * pr (atmos, annual mean, longitude latitude time)
 
-Observations and Reformat Scripts
+Observations and reformat scripts
 ---------------------------------
 
 The observational data (big_catchments.nc) are provided with the ESMValTool

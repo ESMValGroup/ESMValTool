@@ -11,7 +11,7 @@ The diagnostic also facilitates the assessment of the bias of the multi-model me
 Interannual variability is estimated as the relative temporal standard deviation from multi-year timeseries of data with the temporal standard deviations calculated from monthly anomalies after subtracting the climatological mean seasonal cycle.
 
 
-Available Namelists and Diagnostics
+Available namelists and diagnostics
 -----------------------------------
 
 Namelists are stored in nml/
@@ -161,7 +161,7 @@ Variables
     * rsut, rsutcs (atmos, monthly mean, longitude latitude time)
 
 
-Observations and Reformat Scripts
+Observations and reformat scripts
 ---------------------------------
 
 *Note: (1) obs4mips data can be used directly without any preprocessing; (2) see headers of reformat scripts for non-obs4mips data for download instructions.*

@@ -8,7 +8,7 @@ The "precipitacion dependance on soil moisture diagnostic" is used for the analy
 et al. 2012. The script sm_pr_diag_nml.py provides the diagnostic on a regular 5°x5° grid for the land surface between 60°S and 60°N. In the output
 plots (see example :numref:`fig_precip_sm`) shading blue (red) indicates convective precipitation more likely over wetter (drier) soils.
 
-Available Namelists and Diagnostics
+Available namelists and diagnostics
 -----------------------------------
 
 Namelists are stored in nml/
@@ -56,7 +56,7 @@ Variables
 * pr - precipitation (atmos, 3hr, time latitude longtitude)
 * mrsos - moisture in upper portion of soil column (land, 3hr, time latitude longtitude)
 
-Observations and Reformat Scripts
+Observations and reformat scripts
 ---------------------------------
 
 None.

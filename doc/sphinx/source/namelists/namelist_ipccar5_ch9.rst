@@ -32,7 +32,7 @@ The plots will be done based on a collection of individual namelists. The follow
 
 
 
-Available Namelists and Diagnostics
+Available namelists and diagnostics
 -----------------------------------
 
 Namelists are stored in nml/
@@ -131,7 +131,7 @@ Variables
 
 
 
-Observations and Reformat Scripts
+Observations and reformat scripts
 ---------------------------------
 
 *Note:* (1) obs4mips data can be used directly without any preprocessing; (2) see headers of reformat scripts for non-obs4mips data for download instructions.

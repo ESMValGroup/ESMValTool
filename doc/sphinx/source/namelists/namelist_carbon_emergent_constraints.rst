@@ -7,7 +7,7 @@ Overview
 Figures from Wenzel et al. (2014) are reproduced with namelist_wenz14jgr.xml. Variables relevant for the carbon cycle-climate feedback such as near surface air temperature (tas), net biosphere productivity (nbp) and (fgco2) are analyzed for coupled (1pctCO2; here the carbon cycle is fully coupled to the climate response) and uncoupled (esmFixCLim1; here the carbon cycle is uncoupled to the climate response) simulations. The standard namelist includes a comparison of cumulated nbp from coupled and uncoupled simulations and includes a set of routines to diagnose the long-term carbon cycle-climate feedback parameter (GammaLT) from an ensemble of CMIP5 models. Also included in the namelist is a comparison of the interannual variability of nbp and fgco2 for historical simulations used to diagnose the observable sensitivity of CO2 to tropical temperature changes (GammaIAV). As a key figure of this namelist, the diagnosed values from the models GammaLT vs. GammaIAV are compared in a scatter plot constituting an emergent constraint.
 
 
-Available Namelists and Diagnostics
+Available namelists and diagnostics
 -----------------------------------
 
 Namelists are stored in nml/
@@ -27,7 +27,7 @@ User settings
 
 User setting files (cfg files) are stored in nml/cfg_carbon/
 
-(1)	tsline (cfg_carbon_line.ncl, cfg_carbon_line_h.ncl)
+#.	tsline (cfg_carbon_line.ncl, cfg_carbon_line_h.ncl)
 
 *Required diag_script_info attributes*
 
@@ -43,13 +43,13 @@ User setting files (cfg files) are stored in nml/cfg_carbon/
 * ts_anomaly: calculates anomalies with respect to the first 10-year average (anom, noanom)
 * area_opper: type of area operation (average, sum)
 
-(2)	ts_line (cfg_carbon_line_h.ncl)
+#.	ts_line (cfg_carbon_line_h.ncl)
 
 Required diag_script_info attributes
 
 * ts_detrend: detrend time series (detr, nodetr)
 
-(3)	create_co2_flux.ncl, carbon_corr_2var.ncl
+#.	create_co2_flux.ncl, carbon_corr_2var.ncl
 
 Required diag_script_info attributes
 
@@ -70,7 +70,7 @@ Variables
 * nbp (land, monthly mean, longitude latitude time)
 * fgco2 (ocean, monthly mean, longitude latitude time)
 
-Observations and Reformat Scripts
+Observations and reformat scripts
 ---------------------------------
 
 **Note:** (1) obs4mips data can be used directly without any preprocessing; (2) see headers of reformat scripts for non-obs4mips data for download instructions.

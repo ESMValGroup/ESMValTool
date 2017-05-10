@@ -1,5 +1,5 @@
 Evapotranspiration
-=====================
+==================
 
 Overview
 --------
@@ -11,7 +11,7 @@ evapotranspiration. An example of application of this diagnostic on CMIP5
 models is presented in Mueller and Seneviratne (2014).
 
 
-Available Namelists and Diagnostics
+Available namelists and diagnostics
 -----------------------------------
 
 Namelists are stored in nml/
@@ -50,7 +50,7 @@ Variables
 
 
 
-Observations and Reformat Scripts
+Observations and deformat scripts
 ---------------------------------
 
 *Note:* see also header of reformat script for downloading instructions.

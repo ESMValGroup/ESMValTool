@@ -12,7 +12,7 @@ Optionally, the analysis can be extended to include the diurnal cycle of radiati
 
 
 
-Available Namelists and Diagnostics
+Available namelists and diagnostics
 -----------------------------------
 
 Namelists are stored in nml/
@@ -39,7 +39,7 @@ User settings
 
 User setting files (cfg files) are stored in nml/cfg_DiurnalCycle/
 
-**(1)	namelist_DiurnalCycle_harmonic.xml**
+#.	namelist_DiurnalCycle_harmonic.xml
 
 *Required diag_script_info attributes*
 
@@ -53,7 +53,7 @@ User setting files (cfg files) are stored in nml/cfg_DiurnalCycle/
 * styleset: "CMIP5", "DEFAULT"
 * my_region: label for region
 
-**(2)	namelist_DiurnalCycle_box_pr.xml, namelist_DiurnalCycle_box_SFCflux.xml, namelist_DiurnalCycle_box_TOAflux.xml**
+#.	namelist_DiurnalCycle_box_pr.xml, namelist_DiurnalCycle_box_SFCflux.xml, namelist_DiurnalCycle_box_TOAflux.xml
 
 *Required diag_script_info attributes*
 
@@ -86,7 +86,7 @@ Variables
 
 
 
-Observations and Reformat Scripts
+Observations and reformat scripts
 ---------------------------------
 
 Note: (1) obs4mips data can be used directly without any preprocessing; (2) see headers of reformat scripts for non-obs4mips data for download instructions.

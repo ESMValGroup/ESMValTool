@@ -1,5 +1,5 @@
 ESA CCI
-=====================
+=======
 
 Overview
 --------
@@ -8,7 +8,7 @@ Namelist for creating the 20 figures from Lauer et al. (2017) using the European
 This namelist demonstrates the value of the ESA CCI data for model evaluation providing an overview on the possible applications of the new data to evaluating CMIP models.
 
 
-Available Namelists and Diagnostics
+Available namelists and diagnostics
 -----------------------------------
 
 Namelists are stored in nml/
@@ -90,7 +90,7 @@ Variables
 abs550aer, clt, cltStderr, grassNcropFrac, hus, LW_CRE, od550aer, od550aerStderr, od550lt1aer, od870aer, od870aerStderr, pr, rlut, rsut, shrubNtreeFrac, sic, sm, smStderr, SW_CRE, ta, tas, tos, toz, tozStderr, tro3prof, ts, tsStderr, ua, va, xco2, xco2Stderr, zg
 
 
-Observations and Reformat Scripts
+Observations and reformat scripts
 ---------------------------------
 
 *Note: (1) obs4mips data can be used directly without any preprocessing; (2) see headers of reformat scripts for non-obs4mips data for download instructions.*

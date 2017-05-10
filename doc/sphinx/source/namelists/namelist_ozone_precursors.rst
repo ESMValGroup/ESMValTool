@@ -9,7 +9,7 @@ This includes comparisons of simulated tropospheric ozone columns, seasonal cycl
 Model data are sampled for the same regions and the same time of year as the observations, monthly data are weighted according to the number of days in each month contributing to the respective campaign climatology. 
 
 
-Available Namelists and Diagnostics
+Available namelists and diagnostics
 -----------------------------------
 
 Namelists are stored in nml/
@@ -153,7 +153,7 @@ Variables
     * vmro3
     
 
-Observations and Reformat Scripts
+Observations and reformat scripts
 ---------------------------------
 
 *Note: (1) obs4mips data can be used directly without any preprocessing; (2) see headers of reformat scripts for non-obs4mips data for download instructions.*

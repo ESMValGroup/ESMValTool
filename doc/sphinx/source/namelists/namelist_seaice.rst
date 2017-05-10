@@ -8,14 +8,14 @@ Overview
 The sea ice diagnostics cover sea ice extent and concentration, but work is
 underway to include other variables and processes in future releases of the
 ESMValTool. Current diagnostics include time series of September (Arctic) and
-March (Antarctic) sea ice extent calculated as the total area (km2) of grid
+March (Antarctic) sea ice extent calculated as the total area (km\ :sup:`2`\) of grid
 cells with sea ice concentrations (sic) of at least 15%. Also included are the
 seasonal cycle of sea ice extent, polar stereographic contour and polar
 contour difference plots of Arctic and Antarctic sea ice concentrations.
 
 
 
-Available Namelists and Diagnostics
+Available namelists and diagnostics
 -----------------------------------
 
 Namelists are stored in nml/
@@ -124,7 +124,7 @@ Variables
 
 
 
-Observations and Reformat Scripts
+Observations and reformat scripts
 ---------------------------------
 
 *Note:* (1) obs4mips data can be used directly without any preprocessing; (2) see headers of reformat scripts for non-obs4mips data for download instructions.

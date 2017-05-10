@@ -1,4 +1,4 @@
-Southern Ocean
+Southern ocean
 ==============
 
 Overview
@@ -7,7 +7,7 @@ Overview
 These diagnostics include polar stereographic (difference) maps to compare the monthly/annual mean sea surface temperature, salinity and wind stress from ESMs with ERA-Interim data. Furthermore, there are scripts to plot the differences in the area mean vertical profiles of temperature and salinity between models and data from the World Ocean Atlas (Antonov et al., 2010; Locarnini et al., 2010). The ocean mixed layer thickness from models can be compared with that obtained from the Argo floats (Dong et al., 2008), again using polar stereographic (difference) maps. Finally, the Antarctic Circumpolar Current strength, as measured by water mass transport through the Drake Passage, is calculated using the same method as in the CDFTOOLS package (CDFtools). This diagnostic can be used to calculate the transport through other section as well, but is only available for EC-Earth/NEMO output for which all grid information is available.
 
 
-Available Namelists and Diagnostics
+Available namelists and diagnostics
 -----------------------------------
 
 Namelists are stored in nml/
@@ -97,10 +97,10 @@ Variables
 * wfpe (atmos, monthly mean, longitude latitude time) = pr + evspsbl
 
 
-Observations and Reformat Scripts
+Observations and reformat scripts
 ---------------------------------
 
-**Note:** (1) obs4mips data can be used directly without any preprocessing; (2) see headers of reformat scripts for non-obs4mips data for download instructions.
+**Note: (1) obs4mips data can be used directly without any preprocessing; (2) see headers of reformat scripts for non-obs4mips data for download instructions.**
 
 * Dong et al. (2008): Southern Ocean mixed-layer depth from Argo float profiles.
   Reformat script: reformat_scripts/obs/reformat_obs_Dong08-ARGO-monthly.ncl.

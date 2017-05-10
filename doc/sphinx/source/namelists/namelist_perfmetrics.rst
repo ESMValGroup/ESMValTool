@@ -10,7 +10,7 @@ understand and interpret the results. The namelist can be used to calculate perf
 hPa as in Gleckler et al., 2008) and in four regions (global, tropics 20°N-20°S, northern extratropics 20°-90°N, southern extratropics 20°-90°S). As
 an additional reference, we consider the Righi et al. (2015) paper.
 
-Available Namelists and Diagnostics
+Available namelists and diagnostics
 -----------------------------------
 
 Namelists are stored in nml/
@@ -99,7 +99,7 @@ Variables
 * va (atmos, monthly mean, longitude latitude lev time)
 * zg (atmos, monthly mean, longitude latitude lev time)
 
-Observations and Reformat Scripts
+Observations and reformat scripts
 ---------------------------------
 
 .. note:: (1) obs4mips data can be used directly without any preprocessing;

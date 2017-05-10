@@ -70,9 +70,6 @@ https://www.git-scm.com/docs/gittutorial are recommended.
 
    Schematic diagram of the ESMValTool GitHub repositories. *FEATURE BRANCHES* can only be created by members of the ESMValTool Development Team. The naming convention for *FEATURE BRANCHES* is <Project>_<myfeature>.
 
-General do's and don'ts
-=======================
-
 **Getting started**
 
 First make sure that you have Git installed on your development machine. You can ask your administrator for
@@ -286,10 +283,10 @@ Once your development is finished, go to the GitHub website of the ESMValTool re
 Development Team by clicking on the button "Pull request". Your changes will then be tested, discussed and then
 implemented into the *DEVELPOMENT BRANCH*.
 
-General do's and don'ts
+General do-s and don't-s
 =======================
 
-**Do's**
+**Do-s**
 
 * Create a *FEATURE BRANCH* (see section TODOref 12.1 for details) for developing the ESMValTool. The naming convention for *FEATURE BRANCHES* is <Project>_<myfeature>.
 * Try using self-explanatory names for new branches (avoid things like: "my_branch" or "my_development")

@@ -7,7 +7,7 @@ Overview
 TBD
 
 
-Available Namelists and Diagnostics
+Available namelists and diagnostics
 -----------------------------------
 
 TBD
@@ -25,7 +25,7 @@ Variables
 TBD
 
 
-Observations and Reformat Scripts
+Observations and reformat scripts
 ---------------------------------
 
 TBD

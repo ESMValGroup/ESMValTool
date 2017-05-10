@@ -17,7 +17,7 @@ differences in vertical ozone profiles between the 2090s and 2000s
 jet position ("fig. 11").
 
 
-Available Namelists and Diagnostics
+Available namelists and diagnostics
 -----------------------------------
 
 Namelists are stored in nml/
@@ -252,7 +252,7 @@ Variables
 * ua (atmos, monthly mean, longitude latitude lev time)
 
 
-Observations and Reformat Scripts
+Observations and reformat scripts
 ---------------------------------
 
 * Total column ozone (toz): NIWA (Bodeker et al., 2005)

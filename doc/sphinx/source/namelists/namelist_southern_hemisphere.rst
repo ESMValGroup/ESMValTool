@@ -1,4 +1,4 @@
-Southern Hemisphere
+Southern hemisphere
 ===================
 
 Overview
@@ -7,7 +7,7 @@ Overview
 The diagnostics compare model estimates of cloud, radiation and surface turbulent flux variables with suitable observational data sets. Seasonal mean maps of TOA, total and clear-sky, outgoing short wave (SW) and long wave (LW) radiation are constructed for the Southern Ocean region (30°S-65°S) comparing available model data with CERES-EBAF satellite observations (Loeb et al., 2005). Absolute values, model to satellite differences and total minus clear sky flux values are plotted through standard namelists. Combined with TOA radiation, seasonal mean maps of total cloud cover, vertically integrated cloud liquid water and cloud ice are also plotted with CloudSat data (Stephens et al., 2002) providing an observational constraint. Finally, seasonal mean maps of surface sensible and latent heat fluxes over the same region compare model estimates with the Woods Hole OAflux observations (Yu et al., 2008). For each of these quantities (TOA radiation, cloud and surface flux variables) climatological annual cycles are constructed using zonal means averaged separately over 3 latitude bands: (i) 30°S-65°S, the entire Southern Ocean, (ii) 30°S-45°S, the subtropical Southern Ocean, and (iii) 45°S-65°S, the mid-latitude Southern Ocean. Finally, annual means of each variable (models and observations) are constructed as zonal means, plotted over 30°S-65°S, and as latitudinal means (over 30°S-65°S) plotted around a longitude circle.
 
 
-Available Namelists and Diagnostics
+Available namelists and diagnostics
 -----------------------------------
 
 Namelists are stored in nml/
@@ -25,7 +25,7 @@ User settings
 
 User setting files (cfg files) are stored in nml/cfg_SouthernHemisphere/
 
-**(1) SouthernHemisphere.py and SouthernHemisphere_scatter.py**
+#. SouthernHemisphere.py and SouthernHemisphere_scatter.py
 
 *Diag_script_info attributes*
 
@@ -49,9 +49,9 @@ Common sub keys for all diagnostics (plot_): X_maps, X_averages, sub_areas
 * plot_lon_averages: True, False
 * plot_monthly_averages: True, False
 * plot_sub_areas: True, False
-* mask_unwanted_values: mask values (e.g., missing values) exceeding “mask_limit_low” and “mask_limit_high” (True, False)
-* mask_limit_low: lower threshold used for creating a mask (if “mask_unwanted_values” = True)
-* mask_limit_high: upper threshold used for creating a mask (if “mask_unwanted_values” = True)
+* mask_unwanted_values: mask values (e.g., missing values) exceeding "mask_limit_low" and "mask_limit_high" (True, False)
+* mask_limit_low: lower threshold used for creating a mask (if "mask_unwanted_values" = True)
+* mask_limit_high: upper threshold used for creating a mask (if "mask_unwanted_values" = True)
 
 Configuration for Southern Hemisphere maps and plots. All plots will be generated for all areas but only monthly averages for sub_areas. 
 
@@ -66,7 +66,7 @@ Definition of each area, e.g., [SouthernHemisphere_default]
 * lat_max: max. latitude
 * lon_min: min. longitude
 * lon_max: max. longitude
-* stride: color difference interval (how many units per color/shade); if set to 0, the stride is calculated automatically using “maxshades” (max. number of colors/shades)
+* stride: color difference interval (how many units per color/shade); if set to 0, the stride is calculated automatically using "maxshades" (max. number of colors/shades)
 * maxshades: max. number of colors/shades
 
 The contour_limits_* are contour map limits and are given by 3 or 5 integers (min, max, diff, [dev_min, dev_max]). The min and max values define the limits for model maps (and the clear sky (cs) variant). The diff value gives a range [-diff, diff] for difference maps of model - obs (and cs). The last range [dev_min, dev_max] is the range for model/obs - model/obs (cs).
@@ -123,7 +123,7 @@ Variables
 * rsutcs: top of atmosphere outgoing clear-sky shortwave radiation (atmos, monthly mean, time latitude longitude)
 
 
-Observations and Reformat Scripts
+Observations and reformat scripts
 ---------------------------------
 
 Note: (1) obs4mips data can be used directly without any preprocessing; (2) see headers of reformat scripts for non-obs4mips data for download instructions.

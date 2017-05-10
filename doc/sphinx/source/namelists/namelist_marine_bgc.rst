@@ -11,7 +11,7 @@ generate time series line and contour plots for climatological distributions and
 ("diff") relative to a chosen reference (observational) data set. Basic benchmarking statistics are also
 provided (bias, standard deviation, root mean squared error, correlation coefficient).
 
-Available Namelists and Diagnostics
+Available namelists and diagnostics
 -----------------------------------
 
 Namelists are stored in nml/
@@ -73,7 +73,7 @@ Variables
 * talk (ocnBgchem, monthly mean, longitude latitude time)
 * o2 (ocnBgchem, monthly mean, longitude latitude olevel time)
 
-Observations and Reformat Scripts
+Observations and reformat scripts
 ---------------------------------
 
 .. note:: (1) obs4mips data can be used directly without any preprocessing;

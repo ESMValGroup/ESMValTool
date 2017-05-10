@@ -37,7 +37,7 @@ produce cross-spectral plots to quantify the coherence and phase relationships
 between precipitation and u850.
 
 
-Available Namelists and Diagnostics
+Available namelists and diagnostics
 -----------------------------------
 
 Namelists are stored in nml/
@@ -72,7 +72,7 @@ Variables
 * va (atmos, daily mean, longitude latitude level time)
 
 
-Observations and Reformat Scripts
+Observations and reformat scripts
 ---------------------------------
 
 *Note:* (1) obs4mips data can be used directly without any preprocessing;

@@ -5,7 +5,7 @@ The ESMValTool core development team
 
 .. _core_dev_team:
 
-Main Contacts
+Main contacts
 =============
 
 A mailing list has been set up for all general and technical questions on the ESMValTool such as, for instance,
@@ -14,7 +14,7 @@ mailing list by sending an email to Listserv@dlr.de with the following text:
 
 .. centered:: *subscribe ESMValTool-Usr*
 
-Core Development Team
+Core development team
 =====================
 
 * **Veronika Eyring (DLR, Germany)**, veronika.eyring at dlr.de

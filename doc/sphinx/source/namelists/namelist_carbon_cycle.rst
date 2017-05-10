@@ -21,7 +21,7 @@ on a regular grid (i.e., not to fgco2), as irregular grids are not yet
 supported by the performance "*mwtr*".
 
 
-Available Namelists and Diagnostics
+Available namelists and diagnostics
 -----------------------------------
 
 Namelists are stored in nml/
@@ -97,7 +97,7 @@ Variables
 * fgco2 (omon, monthly mean, longitude latitude time)
 
 
-Observations and Reformat Scripts
+Observations and reformat scripts
 ---------------------------------
 
 *Note:* (1) obs4mips data can be used directly without any preprocessing;

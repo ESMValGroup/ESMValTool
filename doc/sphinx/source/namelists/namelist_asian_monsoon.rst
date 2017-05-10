@@ -39,7 +39,7 @@ User setting files (cfg files) are stored in nml/cfg_SAMonsoon/
 
 *Required diag_script_info attributes*
 
-* styleset: "CMIP5", “DEFAULT”
+* styleset: "CMIP5", "DEFAULT"
 * season: season in letters, e.g., "JJAS"
 * latrange_basic: min. and max. latitude of crop area (array)
 * lonrange_basic: min. and max. longitude of crop area (array)
@@ -53,7 +53,7 @@ User setting files (cfg files) are stored in nml/cfg_SAMonsoon/
 
 *Required diag_sccript_info attributes*
 
-* styleset: "CMIP5", “DEFAULT”
+* styleset: "CMIP5", "DEFAULT"
 * season: season in letters, e.g., "JJAS"
 * multi_model_mean : calculate multi-model mean ("y", "n")
 
