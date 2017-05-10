@@ -87,7 +87,7 @@ begin
     ;; Get environment variables
     file_type = getenv("ESMValTool_output_file_type")
     if(ismissing(file_type)) then
-        file_type = "PS"
+        file_type = "PNG"
     end if
 
     ;; Check field type
