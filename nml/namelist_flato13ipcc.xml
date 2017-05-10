@@ -2024,7 +2024,7 @@ This namelist is part of the ESMValTool
         <variable>            tas               </variable>
         <field_type>          T2Ms              </field_type>
         <diag_script_cfg_dir> ./nml/cfg_ipcc_ch9/ </diag_script_cfg_dir>
-        <tags> R_atmos, T_phys </tags>
+        <tags> R_atmos, T_phys, T_varmodes </tags>
 
         <model> CMIP5_ETHZ ACCESS1-0      Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
         <model> CMIP5_ETHZ ACCESS1-3      Amon historical r1i1p1 1870 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
@@ -2091,7 +2091,7 @@ This namelist is part of the ESMValTool
         <variable ref_model="HadISST"> ts                           </variable>
         <field_type>          T2Ms                                  </field_type>
         <diag_script_cfg_dir> ./nml/cfg_ipcc_ch9/                   </diag_script_cfg_dir>
-        <tags> R_atmos, R_ocean, T_phys </tags>
+        <tags> R_atmos, R_ocean, T_phys, T_varmodes </tags>
 
         <model> CMIP5_ETHZ ACCESS1-0      Amon historical r1i1p1 1980 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
         <model> CMIP5_ETHZ ACCESS1-3      Amon historical r1i1p1 1980 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
@@ -2144,7 +2144,7 @@ This namelist is part of the ESMValTool
         <variable ref_model="CMAP"> pr-mmday                        </variable>
         <field_type>          T2Ms                                  </field_type>
         <diag_script_cfg_dir> ./nml/cfg_ipcc_ch9/                   </diag_script_cfg_dir>
-        <tags> R_atmos, T_phys </tags>
+        <tags>                  R_atmos, T_phys                     </tags>
 
         <model> CMIP5_ETHZ ACCESS1-0      Amon historical r1i1p1 1980 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
         <model> CMIP5_ETHZ ACCESS1-3      Amon historical r1i1p1 1980 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
