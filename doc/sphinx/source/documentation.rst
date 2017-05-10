@@ -3,13 +3,15 @@
 Scientific documentation of a diagnostic script or metrics set
 **************************************************************
 
-An important part of the implementation of a new diagnostic script is the documentation of the diagnostic itself as well as the documentation of the observational data sets used on the ESMValTool development team wiki (see section TODO:ref 12.4 for details on the wiki, see also section TODO:ref 7 for general guidelines on documentation).
-The former should comply with the standard template for new diagnostics (see section TODO:ref 8.1 below) and the latter should include instructions how to download the observational data and, if necessary, scripts to convert it to the format required in ESMValTool, see section TODO:ref 8.2 below.
+An important part of the implementation of a new diagnostic script is the documentation of the diagnostic itself as well as the documentation of the observational data sets used on the ESMValTool development team wiki (see :numref:`wiki` for details on the wiki, see also :numref:`writing` for general guidelines on documentation).
+The former should comply with the standard template for new diagnostics (see section :numref:`std_diag` below) and the latter should include instructions how to download the observational data and, if necessary, scripts to convert it to the format required in ESMValTool, see section :numref:`mod_obs_data` below.
+
+.. _std_diag:
 
 Standard template
 =================
 
-When implementing a new diagnostic script or metrics set, it should be documented on the ESMValTool development team wiki in the OPEN or PRIVATE Github repository (see section TODO:ref 12.4) starting from the standard template given below:
+When implementing a new diagnostic script or metrics set, it should be documented on the ESMValTool development team wiki in the OPEN or PRIVATE Github repository (see :numref:`wiki`) starting from the standard template given below:
 
 .. tabularcolumns:: |p{4cm}|p{11cm}|
 
@@ -68,7 +70,7 @@ When implementing a new diagnostic script or metrics set, it should be documente
 | . . . to identify common code (which should then go in the ``lib/``)                                 |
 | ``4.`` Observations and Scripts (also see Model and observational data below)                        |
 | . . . Insert text here                                                                               |
-| ``5.`` Test Cases (see also Automated testing, section TODO:ref 7.9)                                 |
+| ``5.`` Test Cases (see also Automated testing, section :numref:`auto_test`)                          |
 | . . . Insert text here                                                                               |
 | ``6.`` References                                                                                    |
 | . . . REF1                                                                                           |
@@ -79,14 +81,16 @@ When implementing a new diagnostic script or metrics set, it should be documente
 +---------------------------+--------------------------------------------------------------------------+
 
 
+.. _mod_obs_data:
+
 Model and observational data
 ============================
 
 Overview
 --------
 
-When possible, observations from the obs4MIPs/ana4MIPs archives are used in the model evaluation (see section TODO:ref 6.1).
-These data are freely available from the ESGF in the same format as the CMIP simulations and can be directly used in the ESMValTool using the obs4mips or ana4mips class in the namelist (see also section TODO:ref 6.2).
+When possible, observations from the obs4MIPs/ana4MIPs archives are used in the model evaluation (see :numref:`diag_avail`).
+These data are freely available from the ESGF in the same format as the CMIP simulations and can be directly used in the ESMValTool using the obs4mips or ana4mips class in the namelist (see also section :numref:`mod_obs_run`).
 
 Important links
 
@@ -111,7 +115,7 @@ An example can be found here:
 .. centered::
     *reformat_scripts/obs/reformat_obs_AURA-MLS-OMI.ncl*.
 
-An overview on the available reformatting scripts for Tier 2 and 3 data is given in TODO:ref Table S9.
+An overview on the available reformatting scripts for Tier 2 and 3 data is given in :numref:`tab_obs_data`.
 The reformatted observational data (Tier 2 and Tier 3) must be named according to the OBS class defintion, which considers the following naming convention:
 
 .. centered::
