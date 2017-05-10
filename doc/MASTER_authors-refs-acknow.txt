@@ -194,6 +194,7 @@ E_weedon14waterresourres = WFDEI - Weedon et al., Water Resour. Res. 50, 2014
 ### PROJECTS REFERENCES ################################################
 
 P_climval = BMBF MiKlip Project ClimVal
+P_cmip6dicad = BMBF CMIP6 Project Germany
 P_cmug = ESA CMUG
 P_crescendo = EU H2020 project CRESCENDO
 P_dlrveu = DLR project VEU
