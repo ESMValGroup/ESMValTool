@@ -36,11 +36,14 @@ The following section gives a brief description of the steps required by a user 
    5-year annual mean temperature at 200 hPa from the CMIP5 historical run
    (r1i1p1) with the MPI-ESM-LR model.
 
+.. _diag_avail:
+
 Available diagnostics and metrics
 =================================
 
 An introduction to the available diagnostics and metrics packages implemented into the ESMValTool v1.1 including a description of the user settings, observational data used, references, and example plots is given in :numref:`annex_c`.
 
+.. _mod_obs_run:
 
 Model and observational data
 ============================
