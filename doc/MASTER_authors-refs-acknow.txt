@@ -226,6 +226,7 @@ T_clouds = clouds
 T_EC = emergent constraint
 T_ghg = greenhouse gases
 T_phys = physics
+T_seaIce = sea ice
 
 ### DOMAIN (for reporting) ##########################################
 
