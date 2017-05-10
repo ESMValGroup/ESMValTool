@@ -128,13 +128,17 @@ D_0001 = Please contact the author(s) to discuss acknowledgment or co-authorship
 D_0002 = Please acknowledge the project(s).
 D_anav13jclim = Anav et al., J. Clim., 26, 6801-6843, doi: http://dx.doi.org/10.1175/JCLI-D-12-00417.1, 2013.
 D_aquila11gmd = Aquila et al., Geosci. Model Dev. 4, 325-355, doi:10.5194/gmd-4-325-2011, 2011.
+D_bakker14essd, Bakker, D. C. E. et al., Earth Syst. Sci. Data, 6, 69-90, doi:10.5194/essd-6-69-2014, 2014.
+D_bianchi12gbc, Bianchi, D. et al., Global Biogeochem. Cy., 26, GB2009, doi:10.1029/2011GB004209, 2012.
 D_cionni11acp = Cionni et al., Atmos. Chem. Phys., 11, 11267-11292, doi:10.5194/acp-11-11267-2011, 2011.
 D_eyring06jgr = Eyring et al., J. Geophys. Res., 111, D22308, doi:10.1029/2006JD007327, 2006.
 D_eyring13jgr = Eyring et al., J. Geophys. Res., 118, 5029-5060, doi:10.1002/jgrd.50316, 2013.
 D_flato13ipcc = Flato, G. et al., Evaluation of climate models, in: Climate Change 2013: the Physical Science Basis, 2013.
 D_gleckler08jgr = Gleckler et al., J. Geophys. Res., 113, D06104, doi:10.1029/2007JD008972, 2008.
 D_hagemann13jadvmodelearthsyst = Hagemann et al., J. Adv. Model. Earth Syst., 5, doi:10.1029/2012MS000173, 2013.
+D_jones15james, J. Adv. Model. Earth Syst., 7, 1554–1575, doi:10.1002/2014MS000416, 2015.
 D_kim12grl = Kim and Yu, Geophys. Res. Lett., 39, L11704, doi:10.1029/2012GL052006, 2012.
+D_key04gbc = Key, R. M. et al., Global Biogeochem. Cy., 18, GB4031, doi:10.109/2004GB002247, 2004.
 D_lauer05acp = Lauer et al., Atmos. Chem. Phys., 5, 3251-3276, doi:10.5194/acp-5-3251-2005, 2005.
 D_lauer13jclim = Lauer and Hamilton, J. Climate, 26, 3823-3845, doi:10.1175/JCLI-D-12-00451.1, 2013.
 D_lauer17rse = Lauer et al., Remote Sens. Environ., in press, 2017.
@@ -142,10 +146,12 @@ D_li14jclim = Li and Xie, J. Climate, 27, 1765-1780, doi:http://dx.doi.org/10.11
 D_phillips14eos = Phillips, A. S. et al., EOS T. Am. Geophys. Un., 95, 453-455 (2
 D_righi13acp = Righi et al., Atmos. Chem. Phys., 13, 9939-9970, doi:10.5194/acp-13-9939-2013, 2013.
 D_righi15gmd = Righi et al., Geosci. Model Dev., 8, 733-768 doi:10.5194/gmd-8-733-2015, 2015.
+D_roedenbeck13os = Roedenbeck, C. et al., Ocean Sci., 9, 193-216, doi:10.5194/os-9-193-2013, 2013.
 D_sperber12asl = Sperber and Kim, Atmos. Sci. Lett., 13, 3, 187-193, doi:10.1002/asl.378, 2012.
-D_stroeve07grl = Stroeve, J. et al., Geophys. Res. Lett., 34, L09501, doi:10.1029/2007GL029703 (2007)
+D_stroeve07grl = Stroeve, J. et al., Geophys. Res. Lett., 34, L09501, doi:10.1029/2007GL029703, 2007.
+D_takahashi14marchem, Takahashi et al., Mar. Chem., 164, 95–125, doi:10.1016/j.marchem.2014.06.004, 2014.
 D_wenzel14jgr = Wenzel et al., J. Geophys. Res. Biogeosci., 119(5), doi:2013JG002591, 2014.
-D_Williams09climdyn = Williams and Webb, Clim. Dynam., 33, 141-157, doi:10.1007/s00382-008-0443-1, 2009.
+D_williams09climdyn = Williams and Webb, Clim. Dynam., 33, 141-157, doi:10.1007/s00382-008-0443-1, 2009.
 
 ### OBSERVATIONS REFERENCES ############################################
 
