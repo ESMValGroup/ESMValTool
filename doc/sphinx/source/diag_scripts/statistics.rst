@@ -22,6 +22,8 @@
       en.wikipedia.org/wiki/Weighted_arithmetic_mean#Weighted_sample_variance
   
    Modification history
+      20150511-A_laue_ax: modified routine "calculate_metric":
+                          added "no weigth" (nowgt) option
       20141215-A_righ_ma: written.
   
 .. function:: time_operations(field:numeric, y1[1]:integer, y2[1]:integer, oper[1]:string, opt[1]:string, l_wgt[1]:logical)
@@ -92,9 +94,9 @@
   
    Modification history
   
-.. function:: month_to_season_extended(indata[*][*][*]:float, season[1]:string)
+.. function:: month_to_season_extended(indata:float, season[1]:string)
 
-   :param float indata: a [lat][lon][time] array.
+   :param float indata: a [lat][lon][time] or. a [lat][lon][plev|[time] array
    :param string season: compute the average for this season.
 
    Return value
@@ -188,7 +190,7 @@
 
    :param numeric var: a 1-D or 2-D numerical array.
    :param numeric ref: a numerical array of the same dimensionality of var.
-   :param string metric: a string with the metric to calculate: "RMSD": root-mean square difference. "BIAS": mean bias. "stddev_ratio": ratio of standard deviations of var and ref (to be used in Taylor diagram). "correlation": pattern correlation for var and ref (to be used in Taylor diagram).
+   :param string metric: a string with the metric to calculate: "RMSD": root-mean square difference. "RMSDxy": root-mean square difference for each grid cell. "BIAS": mean bias. "stddev_ratio": ratio of standard deviations of var and ref (to be used in Taylor diagram). "correlation": pattern correlation for var and ref (to be used in Taylor diagram).
 
    Return value
       A scalar float representing the calculated grading metric.
@@ -205,7 +207,7 @@
 .. function:: normalize_metric(var:numeric, opt:string)
 
    :param numeric var: numerical array.
-   :param string opt: option determining the used normalization: "mean": normalization with mean. "median": normalization with median. "stddev_mean": normalization with substracting the mean and dividing by the standard deviation. "centered_median": substracting and dividing by the median.
+   :param string opt: option determining the used normalization: "max": normalization with max error. "mean": normalization with mean. "median": normalization with median. "stddev_mean": normalization with substracting the mean and dividing by the standard deviation. "centered_median": substracting and dividing by the median.
 
   
    Return value

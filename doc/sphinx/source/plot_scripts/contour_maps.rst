@@ -87,6 +87,8 @@
       Input via netCDF not yet implemented
   
    Modification history
+      20161220-A_laue_ax: added option to specificy plotting projection
+                          (via attribute data@projection)
       20140228-A_righ_ma: written.
   
 .. function::  add_markers_to_map(wks_in[1], plot[1]: graphic, lat[*]: numeric,  lon[*]: numeric, data[*]: numeric)

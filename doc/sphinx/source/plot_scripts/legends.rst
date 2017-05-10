@@ -23,6 +23,30 @@
         It will be saved in the outfile directory and returned as a workstation 
   
    Modification history:
-      * 20140326 written (Klaus-Dirk.Gottschaldt@dlr.de), 
-                 based on code by F. Frank
+      * 20140326 A_gott_kl: written (Klaus-Dirk.Gottschaldt@dlr.de), 
+                            based on code by F. Frank
+  
+.. function:: legend_markers(wks_in[1],  source,  varname[1] : string)
+
+
+       source: * data to be plotted, either passed directly or via netCDF file
+               * legend styles and strings are passed as attributes data@  
+       varname: variable name, needed for netCDF files with multiple variables
+  
+       The following attributes of the input data are evaluated:
+       source@diag_script: name(s) of the calling script(s) 
+       source@colors: vector of colors  
+       source@annots: vector of label strings
+       source@nrow: number of rows (optional)
+       source@ncol: number of columns (optional)
+  
+   Returns:
+        wks : Workstation with legend
+  
+   Description:
+      * creates an extra plot with a legend, specified by labels and line styles. 
+        It will be saved in the outfile directory and returned as a workstation 
+  
+   Modification history:
+      * 20140326 A_wenz_sa: written based on legend_lines
   

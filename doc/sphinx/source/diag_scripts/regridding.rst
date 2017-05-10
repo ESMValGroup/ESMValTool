@@ -69,6 +69,24 @@
   
    Modification history
   
+.. function:: is_regional(grid : numeric)
+
+   :param  numeric grid: input grid with lat/lon coordinates
+
+   Return value
+      logical indicitating whether it is a global (=.False.) or
+      regional grid (=.True.)
+  
+   Description
+      Run a test to estimate whether the grid at hand is global or
+      regional.
+  
+   Caveats
+  
+   Reference
+  
+   Modification history
+  
 .. function:: esmf_conserve_wrapper(source[*][*]:numeric, destination[*][*]:numeric)
 
 
@@ -90,6 +108,21 @@
    Description
       Interpolates rectangular grid source (high res) onto target grid
       (low res) using local area averages.
+  
+   Caveats
+  
+   References
+  
+   Modification history
+  
+.. function:: plev_lat_interp(source[*][*]:numeric, target[*][*]:numeric)
+
+
+   Return value
+  
+   Description
+      Interpolates plev/lat grid source (high res) onto target grid
+      (low res) using local linear interpolation
   
    Caveats
   
@@ -125,4 +158,33 @@
    References
   
    Modification history
+  
+.. function:: regrid_3D_to_rectilinear_grid(data_in:numeric, lon:numeric, lat:numeric, grid_resolution[1]:string, filename[1]:string, regular[1]:logical)
+
+   :param numeric data_in: 3D field array with imput data
+   :param numeric lon: array with longitudes
+   :param numeric lat: array with latitudes
+   :param string grid_resolution: grid resolution of destination grid
+   :param string filename: file name of model file
+   :param logical regular: defines grid type True: rectilinear False: curvilinear
+
+   Return value
+      An 3D array with new dimensions
+  
+   Description
+  
+   Caveats
+      It seems to not work properly with irregular grids.
+  
+   References
+  
+   Modification history
+      20151026_A_righ_ma: added warning for unavailable lat/lon vertices
+                          in input.
+      20151023_A_righ_ma: moved to regridding.ncl and renamed
+                          regrid_3D_data_to_global_rectilinear_grid -->
+                          regrid_3D_to_rectilinear_grid.
+      20150703_A_wenz_sa: moved to anav13jclim_func.ncl and adapted to
+                          ESMValTool structure.
+      201505??_A_anav_al: written.
   

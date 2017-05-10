@@ -1,4 +1,60 @@
 :mod:`monsoon_domain_panels`
 ============================
 .. function::  plot_precip_domain(cols[*]:integer, rows[*]:float, curr_idx[1]:integer, curr_page[1]:integer, res[1]:logical, storage_name[1]:string, storage_vault[1]:logical, wks[1]:graphic, di[1]:logical, plot_settings[1]:logical, valid_statistics[*]:string, debuginfo[1]:logical, figures_per_page[*]:integer, model_panel_placement[*]:integer, figure_panel_placement[*]:integer, plot_array[*]:graphic, type_specifier[1]:string, no_figures_on_this_page[1]:integer)
+
+   :param integer cols: number of columns for this panel plot
+   :param float rows: number of rows for this panel plot
+   :param integer curr_idx: current index
+   :param integer curr_page: current page (may be more than one)
+   :param logical res: valid ncl resources to apply to plot
+   :param string storage_name: name of first processed variable in the vault
+   :param logical storage_vault: handle/pointer to vault with all models
+   :param graphic wks: workstation
+   :param logical di: logical with diagnostic script info
+   :param logical plot_settings: logical with general plot_settings
+   :param string valid_statistics: valid statistics (to be computed if defined)
+   :param logical debuginfo: info to put onto plot in debug mode
+   :param integer figures_per_page: array with number of figures on each page
+   :param integer model_panel_placement: where to place respective model
+   :param integer figure_panel_placement: where to place respective figure on the page
+   :param graphic plot_array: plot handles/pointers
+   :param string type_specifier: kind of plot, 'mean' or 'stddev'
+   :param integer no_figures_on_this_page: no of figures on this page
+
+   Return value
+  
+   Description
+      Multipanel plot, plots all models on the current page. Top left entry
+      is always the reference model. Used for the global domain plots only.
+  
+   Caveats
+  
+   References
+  
+   Modification history
+      20150702-A_eval_ma: written.
+  
 .. function::  precip_domain(storage_vault [1] : logical, di [1] : logical, plot_settings [1] : logical, storage_name [1] : string, debuginfo [1] : logical, valid_statistics [*] : string, res [1] : logical)
+
+   :param  logical storage_vault: handle/pointer to vault with all models
+   :param  logical di: logical with diagnostic script info
+   :param  logical plot_settings: logical with general plot_settings
+   :param  string storage_name: name of first processed variable in the vault
+   :param  logical debuginfo: info to put onto plot in debug mode
+   :param  string valid_statistics: valid statistics (to be computed if defined)
+   :param  logical res: valid ncl resources to apply to plot
+
+   Return value
+  
+   Description
+      Determines how to place a number of contour plots in a grid across
+      multiple pages. Loop over pages and call plot_multipanel(...) for
+      each page to plot entries. Used for the domain plots only.
+  
+   Caveats
+  
+   References
+  
+   Modification history
+      20150702-A_eval_ma: written.
+  
