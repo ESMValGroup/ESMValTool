@@ -222,7 +222,7 @@ This namelist is part of the ESMValTool
     <variable>                          sic                        </variable>
     <field_type>                        T2Ms                       </field_type>
     <diag_script_cfg_dir>              ./nml/cfg_SeaIce/           </diag_script_cfg_dir>
-    <tags>                              R_seaIce, T_phys           </tags>
+    <tags>                              R_seaIce, T_seaIce         </tags>
 
     <model>  OBS_gridfile  NSIDC-NT  sat       NH        1979  2005  @{OBSPATH}/Tier2/NSIDC/
                            @{OBSPATH}/Tier2/NSIDC/OBS_NSIDC-NT_sat_NH_T2Ms_sic_197811-201312.nc  </model>
@@ -242,7 +242,7 @@ This namelist is part of the ESMValTool
     <variable>                          sic                        </variable>
     <field_type>                        T2Ms                       </field_type>
     <diag_script_cfg_dir>              ./nml/cfg_SeaIce/           </diag_script_cfg_dir>
-    <tags>                              R_seaIce, T_phys           </tags>
+    <tags>                              R_seaIce, T_seaIce         </tags>
 
     <model>  OBS_gridfile  NSIDC-NT  sat       SH        1979  2005  @{OBSPATH}/Tier2/NSIDC/
                            @{OBSPATH}/Tier2/NSIDC/OBS_NSIDC-NT_sat_SH_T2Ms_sic_197811-201312.nc  </model>
