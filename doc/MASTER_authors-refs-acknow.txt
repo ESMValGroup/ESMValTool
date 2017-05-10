@@ -246,6 +246,7 @@ PT_bar = bar chart
 PT_diurn = diurnal cycle
 PT_geo = geographical distribution
 PT_portrait = portrait diagram
+PT_polar = polar-stereographic plot
 PT_scatter = scatter plot
 PT_seas = seasonal cycle
 PT_size = size-distribution
