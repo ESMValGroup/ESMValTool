@@ -21,7 +21,7 @@ The Python "workflow manager" *main.py* will parse the namelist (namelist.xml) a
 
 
 .. figure:: ./figures/figure_ESMValTool_controlflow.png
-   :scale: 30 %
+   :scale: 80 %
    :alt: xxxxx
 
    ESMValTool control flow.
@@ -33,15 +33,15 @@ Note that the coupling between the namelist and the diagnostic scripts is "loose
 **Basic structure of a namelist**::
  
 	<GLOBAL>
-	controls the general settings (see Table S1) ; see section 3.1, ~More on the <GLOBALS>-tag~ below for details
+	controls the general settings (see Table S1) ; see section 3.1, "More on the <GLOBALS>-tag" below for details
 	</GLOBAL>
 
 	<MODELS>
-	defines the models/observations and years to be processed and their pathnames; see the section 3.2, ~More on the <MODELS>-tag~ below for details
+	defines the models/observations and years to be processed and their pathnames; see the section 3.2, "More on the <MODELS>-tag" below for details
 	</MODELS>
 
 	<DIAGNOSTIC>
-	defines which diagnostics are run (see Table S5); each diagnostic is enclosed in an opening <diag> and closing </diag>-tag; see the section 0, ~More on the <DIAGNOSTICS>-tag~ below for details
+	defines which diagnostics are run (see Table S5); each diagnostic is enclosed in an opening <diag> and closing </diag>-tag; see the section 0, "More on the <DIAGNOSTICS>-tag" below for details
 	</DIAGNOSTIC>
 
 
@@ -108,15 +108,15 @@ Each data set is specified by a <model> line with the first entry of each model 
 
 * Optionally, the element "*mip*" can be replaced with "*MIP_VAR_DEF*" if the tag "MIP" is specified in the <variable> tag (see Table S4), e.g.: 
    
-   *<variable **MIP**="cfDay"> rlut </variable>*
+   *<variable MIP="cfDay"> rlut </variable>*
 
-   *<model> CMIP5_ETHZ MPI-ESM-LR **MIP_VAR_DEF** amip r1i1p1 1980 1985 @{MODELPATH}/ETHZ_CMIP5/ </model>*
+   *<model> CMIP5_ETHZ MPI-ESM-LR MIP_VAR_DEF amip r1i1p1 1980 1985 @{MODELPATH}/ETHZ_CMIP5/ </model>*
 
-* The element "experiment" can be replaced with ~EXP_VAR_DEF~ if the tag ~EXP~ is specified in the <variable> tag (see Table S4), e.g.:
+* The element "experiment" can be replaced with "*EXP_VAR_DEF*" if the tag "*EXP*" is specified in the <variable> tag (see Table S4), e.g.:
 
-   *<variable MIP="Omon" **EXP**="esmHistorical"> fgco2 </variable>*
+   *<variable MIP="Omon" EXP="esmHistorical"> fgco2 </variable>*
 
-   *<model> CMIP5_ETHZ NorESM1-ME MIP_VAR_DEF **EXP_VAR_DEF** r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>*
+   *<model> CMIP5_ETHZ NorESM1-ME MIP_VAR_DEF EXP_VAR_DEF r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>*
 
 The project specifier "CMIP5" will search for files in "path" with filenames matching the pattern
 
