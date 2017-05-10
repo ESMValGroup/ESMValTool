@@ -20,7 +20,7 @@ EMBRACE
 Reference
 Bakker, D. C. E. et al., Earth Syst. Sci. Data, 6, 69-90, doi:10.5194/essd-6-69-2014 (2014)
 Bianchi, D. et al., Global Biogeochem. Cy., 26, GB2009, doi:10.1029/2011GB004209 (2012)
-Jones, S. D. et al., J. Adv. Model Earth Syst., in press (2015).
+Jones, S. D. et al., J. Adv. Model. Earth Syst., 7, 1554–1575, doi:10.1002/2014MS000416 (2015).
 Key, R. M. et al.,Global Biogeochem. Cy., 18, GB4031, doi:10.109/2004GB002247 (2004)
 Roedenbeck, C. et al., Ocean Sci., 9, 193-216, doi:10.5194/os-9-193-2013 (2013)
 Takahashi, T. et al., Mar. Chem., 164, 95–125, doi:10.1016/j.marchem.2014.06.004 (2014)
@@ -45,6 +45,7 @@ This namelist is part of the ESMValTool
   <verbosity  type="integer">                           1      </verbosity>    # >3 ... all output
   <exit_on_warning  type="boolean">                 False      </exit_on_warning>
   <output_file_type>                                   ps      </output_file_type>
+  <tags> D_bakker14essd, D_bianchi12gbc, D_jones15james, D_key04gbc, D_roedenbeck13os, D_takahashi14marchem, P_embrace </tags>
 </GLOBAL>
 
 <MODELS>
@@ -61,7 +62,8 @@ This namelist is part of the ESMValTool
     <field_type>                                TO2Ms       </field_type>
     <diag_script_cfg_dir>                ./nml/cfg_GO/      </diag_script_cfg_dir>
     <diag_script cfg="spco2Diag.ncl">   GO_tsline.ncl       </diag_script>
-
+    <tags>                   R_ocnBgchem, T_chem, T_bgch    </tags>
+  
     <model>        CMIP5       ref        monthly    ETH-SOM-FFN    reg       1998   2005   /gpfs/home/htp10fju/greenocean/ESMValTool_input/GO_testdata/spco2/                    </model>
     <model>        CMIP5       BNU-ESM    monthly    historical     r1i1p1    1998   2005   /gpfs/home/htp10fju/greenocean/ESMValTool_input/GO_testdata/spco2/                    </model>
     <model>        CMIP5       CanESM2    monthly    historical     r1i1p1    1998   2005   /gpfs/home/htp10fju/greenocean/ESMValTool_input/GO_testdata/spco2/                    </model>
@@ -76,7 +78,8 @@ This namelist is part of the ESMValTool
     <field_type>                                           TO2Ms     </field_type>
     <diag_script_cfg_dir>                           ./nml/cfg_GO/    </diag_script_cfg_dir>
     <diag_script cfg="spco2compmapDiag.ncl">     GO_comp_map.ncl     </diag_script>
-
+    <tags>                            R_ocnBgchem, T_chem, T_bgch    </tags>
+  
     <model>        CMIP5      ref        monthly     ETH-SOM-FFN    reg       1998   2005   /gpfs/home/htp10fju/greenocean/ESMValTool_input/GO_testdata/spco2/                     </model>
     <model>        CMIP5      BNU-ESM    monthly     historical     r1i1p1    1998   2005   /gpfs/home/htp10fju/greenocean/ESMValTool_input/GO_testdata/spco2/                     </model>
     <model>        CMIP5      CanESM2    monthly     historical     r1i1p1    1998   2005   /gpfs/home/htp10fju/greenocean/ESMValTool_input/GO_testdata/spco2/                     </model>
@@ -91,7 +94,8 @@ This namelist is part of the ESMValTool
     <field_type>                                        TO2Ms     </field_type>
     <diag_script_cfg_dir>                        ./nml/cfg_GO/    </diag_script_cfg_dir>
     <diag_script cfg="talkcompmapDiag.ncl">   GO_comp_map.ncl     </diag_script>
-   
+    <tags>                         R_ocnBgchem, T_chem, T_bgch    </tags>
+  
     <model>       CMIP5        ref           monthly    takahashi14    reg      2005   2005   /gpfs/home/htp10fju/greenocean/ESMValTool_input/GO_testdata/talk/                                    </model>
     <model>       CMIP5        CanESM2       monthly    historical     r1i1p1   2005   2005   /gpfs/home/htp10fju/greenocean/ESMValTool_input/GO_testdata/talk/                                    </model>
     <model>       CMIP5_fx     GFDL-ESM2M    monthly    historical     r1i1p1   2005   2005   /gpfs/home/htp10fju/scratch/talk/unproc/gfdl-esm2m/                    fx_acello_gfdl_esm2m_scratch  </model>
@@ -105,7 +109,8 @@ This namelist is part of the ESMValTool
     <field_type>                                       TO2M    </field_type>
     <diag_script_cfg_dir>                      ./nml/cfg_GO/   </diag_script_cfg_dir>
     <diag_script cfg="O2compmapDiag.ncl">   GO_comp_map.ncl    </diag_script>
-
+    <tags>                      R_ocnBgchem, T_chem, T_bgch    </tags>
+  
     <model> GO             woa2005      monthly   bianchi      reg      2005  2005  /gpfs/data/greenocean/ESMValTool_input/onelev_test/              null                    use_GO_reformat  </model>
     <model> GO_gridfile    GFDL-ESM2M   monthly   historical   r1i1p1   2001  2001  /gpfs/home/htp10fju/greenocean/ESMValTool_input/GO_testdata/o2/  fx_acello_gfdl_esm2m    use_GO_reformat  </model>
 </diag>
@@ -117,7 +122,8 @@ This namelist is part of the ESMValTool
     <field_type>                                       TO2Ms     </field_type>
     <diag_script_cfg_dir>                       ./nml/cfg_GO/    </diag_script_cfg_dir>
     <diag_script cfg="chlcompmapDiag.ncl">   GO_comp_map.ncl     </diag_script>
-
+    <tags>                        R_ocnBgchem, T_chem, T_bgch    </tags>
+  
      <model>       CMIP5       ref         monthly    seawifs       reg      2000  2005   /gpfs/home/htp10fju/greenocean/ESMValTool_input/GO_testdata/chl                      </model>
      <model>       CMIP5       CanESM2     monthly    historical    r1i1p1   2000  2005   /gpfs/home/htp10fju/greenocean/ESMValTool_input/GO_testdata/chl                      </model>
      <model>       CMIP5_fx    CMCC-CESM   monthly    historical    r1i1p1   2000  2005   /gpfs/home/htp10fju/greenocean/ESMValTool_input/GO_testdata/chl  fx_acello_cmcc_cesm </model>
