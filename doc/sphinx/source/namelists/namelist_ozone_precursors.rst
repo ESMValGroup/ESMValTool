@@ -22,11 +22,11 @@ Diagnostics are stored in diag_scripts/
     * ancyc_lat.ncl: annual cycle contour plots of zonal means.
     * Emmons.ncl: profiles of atmospheric trace gas mixing ratios, compared to the in-situ data climatologies of Emmons et al. (2000). Simulation data are sampled for the same regions and the same time of year as the observations. Monthly data are weighted according to the number of days in each month contributing to the respective campaign climatology. Note: simulation data are sampled according to the period specified in the namelist. Observational data may be from different years.
     * lat_lon.ncl: plots the geographical distribution of a variable (latitude-longitude plot).
-    * perfmetrics_grading.ncl: calculates grades according to a given metric with different options for normalization. It requires fields precalculated by perfmetrics_main.ncl (see TODO:ref Performance Metrics for Essential Climate Parameters).
-    * perfmetrics_grading_collect.ncl: collects results from metrics previously calculated by perfmetrics_grading.ncl and passes them to the plotting functions (see TODO:ref Performance Metrics for Essential Climate Parameters).
-    * perfmetrics_main.ncl: calculates and (optionally) plots annual/seasonal cycles, zonal means, lat-lon fields and time-lat-lon fields from input monthly 2-d or 3-d (“T2M”, “T3Ms”) data. The calculated fields can be also plotted as difference w.r.t. a given reference model. They are also used as input to calculate grading metrics (see perfmetrics_grading.ncl) (see TODO:ref Performance Metrics for Essential Climate Parameters).
-    * perfmetrics_taylor.ncl: calculates grades according to a given metric with different options for normalization. It requires fields precalculated by perfmetrics_main.ncl (see TODO:ref Performance Metrics for Essential Climate Parameters).
-    * perfmetrics_taylor_collect.ncl: collects results from metrics previously calculated by perfmetrics_taylor.ncl and passes them to the plotting functions (see TODO:ref Performance Metrics for Essential Climate Parameters).
+    * perfmetrics_grading.ncl: calculates grades according to a given metric with different options for normalization. It requires fields precalculated by perfmetrics_main.ncl (see :ref:`nml_perfmetrics`).
+    * perfmetrics_grading_collect.ncl: collects results from metrics previously calculated by perfmetrics_grading.ncl and passes them to the plotting functions (see :ref:`nml_perfmetrics`).
+    * perfmetrics_main.ncl: calculates and (optionally) plots annual/seasonal cycles, zonal means, lat-lon fields and time-lat-lon fields from input monthly 2-d or 3-d (“T2M”, “T3Ms”) data. The calculated fields can be also plotted as difference w.r.t. a given reference model. They are also used as input to calculate grading metrics (see perfmetrics_grading.ncl) (see :ref:`nml_perfmetrics`).
+    * perfmetrics_taylor.ncl: calculates grades according to a given metric with different options for normalization. It requires fields precalculated by perfmetrics_main.ncl (see :ref:`nml_perfmetrics`).
+    * perfmetrics_taylor_collect.ncl: collects results from metrics previously calculated by perfmetrics_taylor.ncl and passes them to the plotting functions (see :ref:`nml_perfmetrics`).
 
 
 User settings
@@ -134,7 +134,7 @@ User setting files (cfg files) are stored in nml/cfg_righi15gmd/Emmons/ and nml/
 
     #. perfmetrics_grading.ncl, perfmetrics_grading_collect.ncl, perfmetrics_main.ncl, perfmetrics_taylor.ncl, perfmetrics_taylor_collect.ncl
 
-       See "user settings" for TODO:ref Performance Metrics for Essential Climate Parameters.
+       See "user settings" for :ref:`nml_perfmetrics`.
 
 Variables
 ---------
