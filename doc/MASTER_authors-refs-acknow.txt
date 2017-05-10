@@ -196,3 +196,63 @@ P_dlrveu2 = DLR project VEU2
 P_embrace = EU FP7 project EMBRACE
 P_esmval = DLR project ESMVal
 
+### REALMS (for reporting) ############################################
+
+R_aerosol = aerosol
+R_atmos = atmosphere
+R_atmosChem = atmospheric chemistry
+R_land = land
+R_landIce = land ice
+R_ocean = ocean
+R_ocnBgchem = ocean biogeochemistry
+R_seaIce = sea ice
+
+### THEME (for reporting) ############################################
+
+T_aerosols = aerosols
+T_atmDyn = atmospheric dynamics
+T_bgchem = biogeochemistry
+T_bgphys = biogeophysics
+T_carbon = carbon cycle
+T_chem = chemistry
+T_clouds = clouds
+T_EC = emergent constraint
+T_ghg = greenhouse gases
+T_phys = physics
+
+### DOMAIN (for reporting) ##########################################
+
+D_et = extra tropics
+D_global = global
+D_midlat = mid-latittudes
+D_nh = northern hemisphere
+D_polar = polar
+D_reg = regional
+D_sh = southern hemisphere
+D_trop = tropics
+
+### PLOT TYPE (for reporting) ######################################
+
+PT_bar = bar chart
+PT_diurn = diurnal cycle
+PT_geo = geographical distribution
+PT_portrait = portrait diagram
+PT_scatter = scatter plot
+PT_seas = seasonal cycle
+PT_size = size-distribution
+PT_vert = vertical profile
+PT_taylor = taylor diagram
+PT_times = time series
+PT_zonal = zonal mean
+
+### STATISTICS (for reporting) #####################################
+
+ST_anomaly = anomaly
+ST_corr = correlation
+ST_diff = difference
+ST_eof = empirigal orthogonal function (EOF)
+ST_mean = mean
+ST_spectrum = spectrum
+ST_stddev = standard deviation
+ST_var = variability
+
