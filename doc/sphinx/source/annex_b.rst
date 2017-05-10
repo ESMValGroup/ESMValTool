@@ -29,7 +29,7 @@ There are two ESMValTool GitHub repositories available:
 
 All developments can be made in either of the two repositories. The creation of *FEATURE BRANCHES* (see below),
 however, is restricted to registered ESMValTool developers in both repositories. We encourage all developers to
-join the ESMValTool development team. Please contact the ESMValTool Core Development Team (section 9 TODOref) if you
+join the ESMValTool development team. Please contact the ESMValTool Core Development Team (:numref:`core_team`) if you
 want to join the ESMValTool development team.
 
 The PRIVATE GitHub repository offers a central protected environment for ESMValTool developers who would like to
@@ -40,7 +40,7 @@ development team but not to the entire public. The concept of a PRIVATE reposito
 to efficiently share code during the development across institutions and projects in a common repository without
 having the contributions immediately accessible to the public.
 
-The OPEN and the PRIVATE repository both contain the following kinds of branches (see also Figure 4 TODOref):
+The OPEN and the PRIVATE repository both contain the following kinds of branches (see also :numref:`fig_git`):
 
 * *MASTER BRANCH* (official releases),
 * *DEVELOPMENT BRANCH* (includes approved new contributions but version is not yet fully tested),
@@ -55,7 +55,7 @@ Workflow
 ========
 
 The *MASTER BRANCH* of the PRIVATE repository will be synchronized with the *MASTER BRANCH* of the OPEN repository
-in an automated manner. This ensures that they are identical at all times (see schematic in Figure 4 TODOref). The
+in an automated manner. This ensures that they are identical at all times (see schematic in :numref:`fig_git`). The
 recommended workflow for members of the ESMValTool development team is to create additional *FEATURE BRANCHES* in
 either the PUBLIC or the PRIVATE repository, see further instructions below.
 
@@ -284,18 +284,18 @@ Development Team by clicking on the button "Pull request". Your changes will the
 implemented into the *DEVELPOMENT BRANCH*.
 
 General do-s and don't-s
-=======================
+========================
 
 **Do-s**
 
-* Create a *FEATURE BRANCH* (see section TODOref 12.1 for details) for developing the ESMValTool. The naming convention for *FEATURE BRANCHES* is <Project>_<myfeature>.
+* Create a *FEATURE BRANCH* (see :numref:`git_repository` for details) for developing the ESMValTool. The naming convention for *FEATURE BRANCHES* is <Project>_<myfeature>.
 * Try using self-explanatory names for new branches (avoid things like: "my_branch" or "my_development")
 * Comment your code as much as possible.
 * Use short but self-explanatory variable names (e.g., model_input and reference_input instead of xm and xr).
 * Consider a modular/functional programming style. This often makes code easier to read and deletes intermediate variables from memory immediately. If possible, separate diagnostic calculations from plotting routines.
 * Consider reusing or extending existing code (see plotting functions, general calculations). General-purpose code can be found in diag_scripts/lib/ and in plot_scripts/.
 * Comment all switches and parameters including a list of all possible settings/options in the header section of your code.
-* Use templates for namelists and diagnostics to ensure proper documentation (see section TODOref 7.1).
+* Use templates for namelists and diagnostics to ensure proper documentation (see :numref:`std_nml`).
 * Keep your development branch updated regularly with the master/development branch.
 
 **Don't-s**
@@ -317,5 +317,5 @@ and PRIVATE GitHub repository:
 
 All users and developers are strongly encouraged to frequently check the ESMValTool wiki for new information,
 contact data or observational data. Please contact the ESMValTool Core Development Team for access to the wiki
-(see section TODOref 9.2).
+(see :numref:`core_dev_team`).
 
