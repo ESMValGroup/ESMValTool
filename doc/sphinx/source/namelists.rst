@@ -129,10 +129,8 @@ Here, the leading asterisk is a placeholder for the variable, which is defined i
 
 The <model>-tag may also take the optional attribute ~id~:
 
-	*<model id=~string~>
-
 Example:
-	*<model id="ERAINT"> OBS ERA-Interim reanaly 1 2003 2004 @{OBSPATH}/Tier3/ERA-Interim </model>*
+   *<model id="ERAINT"> OBS ERA-Interim reanaly 1 2003 2004 @{OBSPATH}/Tier3/ERA-Interim </model>*
 
 The attribute *id* specifies a string that can be used to refer to the model in other places of the namelist. Table S3 gives a summary of valid attributes in <model>-tags.
 
@@ -194,8 +192,8 @@ The attribute *id* specifies a string that can be used to refer to the model in 
 +-----------+----------+----------------------------------------------------------------------------------------------------------+
 | EXP	    | String   | Define a name used to the CMIP5 experiment, e.g.,                                                        |
 +-----------+----------+----------------------------------------------------------------------------------------------------------+
-| MIP	    | String   | Define a name used to refer to the CMIP5 data stream, e.g., ~Amon~, ~Omon~, ~day~, ~fx~; to be used in   |
-|           |          | combination with ~MIP_VAR_DEF~ replacing the CMIP5 stream in the definition of a <model> tag.            |
+| MIP	    | String   | Define a name used to refer to the CMIP5 data stream, e.g., "Amon", "Omon", "day", "fx"; to be used in   |
+|           |          | combination with "MIP_VAR_DEF" replacing the CMIP5 stream in the definition of a <model> tag.            |
 +-----------+----------+----------------------------------------------------------------------------------------------------------+
 | ref_model | String   | Define a reference model (model id)                                                                      |
 +-----------+----------+----------------------------------------------------------------------------------------------------------+
@@ -312,7 +310,7 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 +==========================+===================================================================================+
 | abs550aer	           | Absorption optical depth (550 nm)                                                 |
 +--------------------------+-----------------------------------------------------------------------------------+
-| albisccp.ncl	           | |ISCCP-like cloud albedo                                                          |
+| albisccp.ncl	           | ISCCP-like cloud albedo                                                          |
 +--------------------------+-----------------------------------------------------------------------------------+
 | baresoilFrac.ncl         | Fraction of bare soil (land cover variable)                                       |
 +--------------------------+-----------------------------------------------------------------------------------+
