@@ -10,7 +10,7 @@ of the structure.
 * Common namelist settings (e.g., models, year ranges, diagnostics) are
   usually stored in one place.
 * Less common settings may be hidden deeper in the directory structure (see
-  also :numref:`_config_files`).
+  also :numref:`config_files`).
 * Diagnostic scripts that can be used by namelist entries are also stored in
   one place and it generally possible to combine them in a modular way (e.g.,
   using the output of one routine as input for another).
