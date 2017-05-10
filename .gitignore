@@ -58,3 +58,4 @@ coverage.xml
 /tests/data/**
 /test_bash.sh
 /python_test_out.txt
+doc/sphinx/build
