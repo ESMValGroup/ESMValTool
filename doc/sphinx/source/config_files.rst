@@ -14,15 +14,16 @@ corresponding diagnostic (e.g., *cfg_aerosol/, cfg_perfmetrics/*). The suffix
 There might be more than one configuration script per diagnostic set. All
 cfg_* files for a diagnostic set need to be in the same folder specified by
 the <diag_script_cfg_dir> entry of the namelist (:emphasis:`nml/namelist_*.xml`) (see
-section TODO:ref 3.3 and Table S5).
+section :numref:`diag_tag` and :numref:`tab_diag_tags`).
 
 The configuration settings are specified as attributes of the variable
 "diag_script_info" (in NCL via "diag_script_info\@attribute = ...", see example
 below). In order to activate these attributes, "diag_script_info" must be set
 to "True".
 
-**Example (NCL)**::
+**Example (NCL)**
 
+.. code-block:: ncl
 	  diag_script_info = True
 
 	  diag_script_info@projection = "CylindricalEquidistant" ; map projection,
@@ -35,6 +36,7 @@ to "True".
 
 **Example (Python)**::
 
+.. code-block:: python
 	  class diag_script:
 	    def __init__(self):
 	      self.info = True
@@ -46,6 +48,7 @@ to "True".
 
 **Example (R)**::
 
+.. code-block:: R
 	  diag_script_info<-new()
 	  diag_script_info[["begin_ref_year"]]<-1970
 	  diag_script_info[["end_ref_year"]]<-2000
