@@ -37,6 +37,7 @@ This namelist is part of the ESMValTool
     <write_netcdf type="boolean">                  True     </write_netcdf>
     <read_from_vault type="boolean">               False    </read_from_vault>
     <force_processing type="boolean">              False    </force_processing>
+    <tags>    D_mueller14grl, D_mueller13hess, P_embrace    </tags>
 
 </GLOBAL>
 
