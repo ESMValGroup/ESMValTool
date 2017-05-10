@@ -5,12 +5,12 @@ ESMValTool namelists
 
 The ESMValTool namelists are the "control centers" acting as interfaces between the user and the various scripts and configuration files that make up the ESMValTool. A namelist specifies a list of diagnostics to run, global flags and a list of models and observations that are used within the diagnostics. Namelists are text files written in XML (EXtensible Markup Language) [XML]. As a simple text file, the XML-namelist can be easily modified by the user.
 
-For any given namelist *"namelist.xml"*, the ESMValTool is invoked from the command line via (see also section 6)::
+For any given namelist *"namelist.xml"*, the ESMValTool is invoked from the command line via (see also :numref:`running`)::
 
 	python main.py nml/namelist.xml
 
  
-The Python "workflow manager" *main.py* will parse the namelist (namelist.xml) and call all diagnostic scripts listed in the namelist. This sequence is schematicallypython main.py nml/namelist.xml depicted in Figure 2 and involves the following steps:
+The Python "workflow manager" *main.py* will parse the namelist (namelist.xml) and call all diagnostic scripts listed in the namelist. This sequence is schematicallypython main.py nml/namelist.xml depicted in :numref:`fig_controlflow` and involves the following steps:
 
 1.	Parse the namelist
 2.	Identify the input files on the file system
@@ -20,6 +20,7 @@ The Python "workflow manager" *main.py* will parse the namelist (namelist.xml) a
 6.	Repeat previous steps until all diagnostics listed in the namelist are processed
 
 
+.. _fig_controlflow:
 .. figure:: ./figures/figure_ESMValTool_controlflow.png
    :scale: 90 %
    :alt: figure_ESMValTool_controlflow.png
@@ -31,33 +32,36 @@ The script *main.py* processes the information in the XML namelist to be used by
 
 Note that the coupling between the namelist and the diagnostic scripts is "loose". The Python workflow manager *main.py* passes all information in the namelist to the target diagnostic script, e.g., via intermediate files or environment variables, but it is up to the diagnostic script to act on that information.
 
-**Basic structure of a namelist**::
+**Basic structure of a namelist**
  
-	<GLOBAL>
-	controls the general settings (see Table S1) ; see section 3.1, "More on the <GLOBALS>-tag" below for details
-	</GLOBAL>
+	**<GLOBAL>**
+	controls the general settings (see :numref:`tab_glob_tags`) ; see :numref:`glob_tag`, "More on the <GLOBALS>-tag" below for details
+	**</GLOBAL>**
 
-	<MODELS>
-	defines the models/observations and years to be processed and their pathnames; see the section 3.2, "More on the <MODELS>-tag" below for details
-	</MODELS>
+	**<MODELS>**
+	defines the models/observations and years to be processed and their pathnames; see :numref:`mod_tag`, "More on the <MODELS>-tag" below for details
+	**</MODELS>**
 
-	<DIAGNOSTIC>
-	defines which diagnostics are run (see Table S5); each diagnostic is enclosed in an opening <diag> and closing </diag>-tag; see the section 0, "More on the <DIAGNOSTICS>-tag" below for details
-	</DIAGNOSTIC>
+	**<DIAGNOSTIC>**
+	defines which diagnostics are run (see :numref:`tab_diag_tags`); each diagnostic is enclosed in an opening <diag> and closing </diag>-tag; see :numref:`diag_tag`, "More on the <DIAGNOSTICS>-tag" below for details
+	**</DIAGNOSTIC>**
 
 
 Please note that the "loose coupling" described above applies particularly to the settings defined in the two elements <GLOBAL> and <DIAGNOSTIC>.
 
 
+.. _glob_tag:
 
 More on the <GLOBAL>-tag
 ========================
 
-Table S1 summarizes the tags defined in the <GLOBAL> section of the namelist. Some of these tags (e.g., regridding_dir) are specific to some diagnostics and not generally defined in all namelists.
+:numref:`tab_glob_tags` summarizes the tags defined in the <GLOBAL> section of the namelist. Some of these tags (e.g., regridding_dir) are specific to some diagnostics and not generally defined in all namelists.
 
 
 
 **Table S1** Tags of the <GLOBAL> section of the namelist. Note that not all tags might be used by a diagnostic.
+
+.. _tab_glob_tags:
 
 +----------------------+----------+------------------------------------------------------------------------------------------------+
 | Name	               | Type	  | Description                                                                                    |
@@ -99,44 +103,47 @@ Table S1 summarizes the tags defined in the <GLOBAL> section of the namelist. So
 | wrk_dir              | string	  | Output path for data (netCDF, acknowledgements)                                                |
 +----------------------+----------+------------------------------------------------------------------------------------------------+
 
+.. _mod_tag:
 
 More on the <MODELS>-tag
 ========================
 
-Each data set is specified by a <model> line with the first entry of each model line being the "project specifier" (see Table S2). The project specifier refers to a Python class that is used to parse the model line in the namelist. For example, a model line with the "CMIP5" specifier looks like:
+Each data set is specified by a <model> line with the first entry of each model line being the "project specifier" (see :numref:`tab_proj_spec`). The project specifier refers to a Python class that is used to parse the model line in the namelist. For example, a model line with the "CMIP5" specifier looks like:
 
    *<model> CMIP5 name mip experiment ensemble start-year end-year path </model>*
 
-* Optionally, the element "*mip*" can be replaced with "*MIP_VAR_DEF*" if the tag "MIP" is specified in the <variable> tag (see Table S4), e.g.: 
+* Optionally, the element "*mip*" can be replaced with "*MIP_VAR_DEF*" if the tag "MIP" is specified in the <variable> tag (see :numref:`opt_att`), e.g.: 
    
-   *<variable MIP="cfDay"> rlut </variable>*
+   *<variable* **MIP** *="cfDay"> rlut </variable>*
 
-   *<model> CMIP5_ETHZ MPI-ESM-LR MIP_VAR_DEF amip r1i1p1 1980 1985 @{MODELPATH}/ETHZ_CMIP5/ </model>*
+   *<model> CMIP5_ETHZ MPI-ESM-LR MIP_VAR_DEF amip r1i1p1 1980 1985 \@{MODELPATH}/ETHZ_CMIP5/ </model>*
 
 * The element "experiment" can be replaced with "*EXP_VAR_DEF*" if the tag "*EXP*" is specified in the <variable> tag (see Table S4), e.g.:
 
-   *<variable MIP="Omon" EXP="esmHistorical"> fgco2 </variable>*
+   *<variable MIP="Omon"* **EXP** *="esmHistorical"> fgco2 </variable>*
 
-   *<model> CMIP5_ETHZ NorESM1-ME MIP_VAR_DEF EXP_VAR_DEF r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>*
+   *<model> CMIP5_ETHZ NorESM1-ME MIP_VAR_DEF* **EXP_VAR_DEF** *r1i1p1 1960 2005 \@{MODELPATH}/ETHZ_CMIP5 </model>*
 
 The project specifier "CMIP5" will search for files in "path" with filenames matching the pattern
 
    *_mip_name_experiment_ensemble_*
 
-Here, the leading asterisk is a placeholder for the variable, which is defined in the <DIAGNOSTICS>-tag (see below), the trailing asterisk is a placeholder for the start/end date of the data set. This naming convention conforms to the syntax used for CMIP5 DRS filenames (as implied by the project specifier name). By implementing their own project specifier classes into the Python code (*interface_scripts/projects.py*), the user can handle data sets that follow different file naming conventions or require additional information to be passed along in addition to the filename. Table S2 gives a summary of the available project specifiers and arguments to be used in each <model> line. 
+Here, the leading asterisk is a placeholder for the variable, which is defined in the <DIAGNOSTICS>-tag (see below), the trailing asterisk is a placeholder for the start/end date of the data set. This naming convention conforms to the syntax used for CMIP5 DRS filenames (as implied by the project specifier name). By implementing their own project specifier classes into the Python code (*interface_scripts/projects.py*), the user can handle data sets that follow different file naming conventions or require additional information to be passed along in addition to the filename. :numref:`tab_proj_spec` gives a summary of the available project specifiers and arguments to be used in each <model> line. 
 
-[**Note: Examples for the most commonly used project specifiers CMIP5, CMIP5_ETHZ, OBS, and obs4mips as well as downloading instructions and information on the required local directory structure for the model / observational data can be found in section 6.1.**]
+[**Note: Examples for the most commonly used project specifiers CMIP5, CMIP5_ETHZ, OBS, and obs4mips as well as downloading instructions and information on the required local directory structure for the model / observational data can be found in :numref:`diag_avail`.**]
 
-The <model>-tag may also take the optional attribute ~id~:
+The <model>-tag may also take the optional attribute "*id*":
 
 Example:
-   *<model id="ERAINT"> OBS ERA-Interim reanaly 1 2003 2004 @{OBSPATH}/Tier3/ERA-Interim </model>*
+   *<model* **id** *="ERAINT"> OBS ERA-Interim reanaly 1 2003 2004 @{OBSPATH}/Tier3/ERA-Interim </model>*
 
-The attribute *id* specifies a string that can be used to refer to the model in other places of the namelist. Table S3 gives a summary of valid attributes in <model>-tags.
+The attribute *id* specifies a string that can be used to refer to the model in other places of the namelist. :numref:`tab_mod_tags` gives a summary of valid attributes in <model>-tags.
 
 
 
 **Table S2** Project specifiers and corresponding arguments.
+
+.. _tab_proj_spec:
 
 +-------------------+------------+---------------+------------+------------+------------+------------+------------+------------+
 | project specifier | argument 1 | argument 2    | argument 3 | argument 4 | argument 5 | argument 6 | argument 7 | argument 8 |
@@ -175,6 +182,8 @@ The attribute *id* specifies a string that can be used to refer to the model in 
 
 **Table S3**  Optional attributes of the <model> tag.
 
+.. _tab_mod_tags:
+
 +-------+---------+------------------------------------------------------------------------------+
 | Name	| Type    | Description                                                                  |
 +=======+=========+==============================================================================+
@@ -184,6 +193,8 @@ The attribute *id* specifies a string that can be used to refer to the model in 
 
 
 **Table S4**  Optional attributes of the <variable> tag.
+
+.. _tab_opt_att:
 
 +-----------+----------+----------------------------------------------------------------------------------------------------------+
 | Name      | Type     | Description                                                                                              |
@@ -198,15 +209,20 @@ The attribute *id* specifies a string that can be used to refer to the model in 
 | ref_model | String   | Define a reference model (model id)                                                                      |
 +-----------+----------+----------------------------------------------------------------------------------------------------------+
 
+
+.. _diag_tag:
+
 More on the <DIAGNOSTICS>-tag
 =============================
 
-Each <diag> entry refers to one or several scripts in the folder *diag_scripts/* complemented by a variable name (see Table S8 for a list of variables) and the corresponding (input) field type (see Table S7). Optionally the <diag>-tag may contain additional <model>-tags; these data sets will be processed only by the diagnostic(s) listed in the current <diag> entry. In this way it is possible to define a set of models to be analyzed by all diagnostics in the namelist (in the <MODELS> section) and a set of models to be analyzed only by specific diagnostics (in the <diag> section). Available <diag>-tags are listed in Table S5, their optional attributes in Table S6.
+Each <diag> entry refers to one or several scripts in the folder *diag_scripts/* complemented by a variable name (see :numref:`tab_tab_var_def` for a list of variables) and the corresponding (input) field type (see :numref:`tab_fld_typ`). Optionally the <diag>-tag may contain additional <model>-tags; these data sets will be processed only by the diagnostic(s) listed in the current <diag> entry. In this way it is possible to define a set of models to be analyzed by all diagnostics in the namelist (in the <MODELS> section) and a set of models to be analyzed only by specific diagnostics (in the <diag> section). Available <diag>-tags are listed in :numref:`tab_diag_tags`, their optional attributes in :numref:`tab_diag_att`.
 
 
 
 
 **Table S5** Tags of the <diag> section within the <DIAGNOSTICS> section of the namelist. There are no default values.
+
+.. _tab_diag_tags:
 
 +----------------------+----------+-----------------------------------------------------------------------------------------------------------------+
 | Name	               | Type     | Description                                                                                                     |
@@ -241,6 +257,8 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 
 **Table S6** Optional attributes of selected tags in the <diag> section. 
 
+.. _tab_diag_att:
+
 +------------+----------+------------+--------------------------------------------------------------------------------------------------+
 | Name       | Type     | Parent tag | Description            										|             
 +============+==========+============+==================================================================================================+
@@ -263,6 +281,8 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 
 
 **Table S7** Field types.
+
+.. _tab_fld_typ:
 
 +-------+---------------------------------------------------------------------------------------------------------------+
 | Name	| Description													|
@@ -304,6 +324,8 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 
 
 **Table S8** Variable definition scripts.
+
+.. _tab_var_def:
 
 +--------------------------+-----------------------------------------------------------------------------------+
 | Script name              | Description                                                                       |
@@ -659,6 +681,7 @@ Typically, all namelists are stored in the folder *nml*, the naming convention i
 
    xxx = an intuitive name describing the scientific topic (e.g., aerosol, MyDiag, SAMonsoon, SeaIce)
 
+.. _nml_config:
 
 Namelist configuration file
 ===========================
@@ -712,6 +735,7 @@ and referred to with the syntax:
 Note: alternatively, explicitely defined pathnames can be used at any time.
 
 
+.. _header:
 
 Standard header for the namelist
 ================================
@@ -745,6 +769,7 @@ For the sake of documentation, standard headers are defined and applied to all n
    </namelist_summary>
 
 
+.. _ex_nml:
 
 Example namelist
 ================
