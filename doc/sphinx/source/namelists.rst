@@ -145,9 +145,9 @@ The attribute *id* specifies a string that can be used to refer to the model in 
 +===================+============+===============+============+============+============+============+============+============+
 | ana4mips	    | Name	 | table         | experiment | ensemble   | realm      | start year | end year   | path       |
 +-------------------+------------+---------------+------------+------------+------------+------------+------------+------------+
-| CCMVal            | name       | case-name     | ensemble   | start year | end year   |  path      | -          | -          |
-| CCMVal1           | name       | case-name     | ensemble   | start year | end year   |  path      | -          | -          |
-| CCMVal2	    | name       | case-name     | ensemble   | start year | end year   |  path      | -          | -          |
+| CCMVal            | name       | case-name     | ensemble   | start year | end year   |  path      | ---        | -          |
+| CCMVal1           | name       | case-name     | ensemble   | start year | end year   |  path      | ----       | -          |
+| CCMVal2	    | name       | case-name     | ensemble   | start year | end year   |  path      | ----       | -          |
 +-------------------+------------+---------------+------------+------------+------------+------------+------------+------------+
 | CMIP5             | name       | mip           | experiment | ensemble   | start year |  end year  | Path       | -          |
 | CMIP5_ETHZ        | name       | mip           | experiment | ensemble   | start year |  end year  | path       | -          |
