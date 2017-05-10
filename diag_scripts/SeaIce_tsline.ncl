@@ -90,7 +90,7 @@ begin
     ;; Get environment variables
     file_type = getenv("ESMValTool_output_file_type")
     if(ismissing(file_type)) then
-        file_type = "PS"
+        file_type = "PNG"
     end if
 
     ;; Check field type
@@ -452,11 +452,11 @@ begin
         ESMValMD(plot_fname, alltags, caption, id)
         delete([/plot_fname, alltags, caption, id/])
 
-        info_output(" gs " + wks_ext@fullname + " &", verbosity, 1)
-        info_output(" gs " + wks_area@fullname + " &", verbosity, 1)
+        info_output(" gv " + wks_ext@fullname + " &", verbosity, 1)
+        info_output(" gv " + wks_area@fullname + " &", verbosity, 1)
 
         if (diag_script_info@legend_outside) then
-            info_output(" gs " + wks_area@legendfile + ".epsi &", verbosity, 1)
+            info_output(" gv " + wks_area@legendfile + ".epsi &", verbosity, 1)
         end if
 
     end if  ; More than 1 time step
