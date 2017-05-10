@@ -215,7 +215,7 @@ The attribute *id* specifies a string that can be used to refer to the model in 
 More on the <DIAGNOSTICS>-tag
 =============================
 
-Each <diag> entry refers to one or several scripts in the folder *diag_scripts/* complemented by a variable name (see :numref:`tab_tab_var_def` for a list of variables) and the corresponding (input) field type (see :numref:`tab_fld_typ`). Optionally the <diag>-tag may contain additional <model>-tags; these data sets will be processed only by the diagnostic(s) listed in the current <diag> entry. In this way it is possible to define a set of models to be analyzed by all diagnostics in the namelist (in the <MODELS> section) and a set of models to be analyzed only by specific diagnostics (in the <diag> section). Available <diag>-tags are listed in :numref:`tab_diag_tags`, their optional attributes in :numref:`tab_diag_att`.
+Each <diag> entry refers to one or several scripts in the folder *diag_scripts/* complemented by a variable name (see :numref:`tab_var_def` for a list of variables) and the corresponding (input) field type (see :numref:`tab_fld_typ`). Optionally the <diag>-tag may contain additional <model>-tags; these data sets will be processed only by the diagnostic(s) listed in the current <diag> entry. In this way it is possible to define a set of models to be analyzed by all diagnostics in the namelist (in the <MODELS> section) and a set of models to be analyzed only by specific diagnostics (in the <diag> section). Available <diag>-tags are listed in :numref:`tab_diag_tags`, their optional attributes in :numref:`tab_diag_att`.
 
 
 
