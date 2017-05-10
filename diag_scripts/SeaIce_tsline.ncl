@@ -437,6 +437,20 @@ begin
         end if
         xy_line(wks_area, val_area, val_area&time, val_area_stddev, res_area, \
                 debuginfo)
+        
+        ;; Reporting
+        plot_fname = wks_ext@fullname
+        alltags = array_append_record(tags, (/"DM_polar", "PT_times", "ST_mean", "ST_stddev"/), 0)
+        caption = "Timeseries of sea ice extent"
+        id = "#idSeaIceTslineExtent"
+        ESMValMD(plot_fname, alltags, caption, id)
+        delete([/plot_fname, alltags, caption, id/])
+        plot_fname = wks_area@fullname
+        alltags = array_append_record(tags, (/"DM_polar", "PT_times", "ST_mean", "ST_stddev"/), 0)
+        caption = "Timeseries of sea ice area"
+        id = "#idSeaIceTslineArea"
+        ESMValMD(plot_fname, alltags, caption, id)
+        delete([/plot_fname, alltags, caption, id/])
 
         info_output(" gs " + wks_ext@fullname + " &", verbosity, 1)
         info_output(" gs " + wks_area@fullname + " &", verbosity, 1)
