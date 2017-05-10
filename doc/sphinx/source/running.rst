@@ -106,6 +106,7 @@ calculate the derived quantity are processed automatically.
 
 
 .. _obs_data:
+
 Observational / reanalysis data
 -------------------------------
 
@@ -167,6 +168,7 @@ details). If “variable” is a derived quantity, all variables needed to
 calculate the derived quantity are processed automatically.
 
 .. _dl_obs:
+
 Downloading and creating observational data sets
 ------------------------------------------------
 
@@ -246,6 +248,7 @@ are given in :numref:`tab_obs_data`.
    reformatting routines for downloading and processing instructions.
 
 .. _tab_obs_data:
+
 .. tabularcolumns:: |p{1.8cm}|p{0.6cm}|p{2.3cm}|p{1.6cm}|p{1.5cm}|p{1.9cm}|p{4.2cm}|
 
 +--------------------+---------+-------------------------------+---------------------+-------------+----------------+-------------------------------+
