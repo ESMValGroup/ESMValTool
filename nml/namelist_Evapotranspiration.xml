@@ -74,6 +74,7 @@ This namelist is part of the ESMValTool
     <variable_def_dir>                              ./variable_defs/   </variable_def_dir>
     <variable ref_model="LandFlux-EVAL">                         et    </variable>
     <field_type>                                               T2Ms    </field_type>
+    <tags>                                             R_land, T_phys  </tags>
 
     <diag_script_cfg_dir>                             ./nml/cfg_et    </diag_script_cfg_dir>
     <diag_script cfg="cfg_Evapotranspiration.ncl">   Evapotranspiration.ncl    </diag_script>
