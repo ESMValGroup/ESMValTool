@@ -1,3 +1,5 @@
+.. _nml_perfmetrics:
+
 Performance metrics for essential climate parameters
 ====================================================
 
