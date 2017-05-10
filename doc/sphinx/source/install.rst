@@ -1,6 +1,5 @@
-********************
-Software intallation
-********************
+Software installation
+*********************
 
 .. _prerequisites:
 
