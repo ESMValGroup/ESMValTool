@@ -145,32 +145,32 @@ The attribute *id* specifies a string that can be used to refer to the model in 
 +===================+============+===============+============+============+============+============+============+============+
 | ana4mips	    | Name	 | table         | experiment | ensemble   | realm      | start year | end year   | path       |
 +-------------------+------------+---------------+------------+------------+------------+------------+------------+------------+
-| CCMVal            | name       | case-name     | ensemble   | start year | end year   |  path      | ---        | -          |
-| CCMVal1           | name       | case-name     | ensemble   | start year | end year   |  path      | ----       | -          |
-| CCMVal2	    | name       | case-name     | ensemble   | start year | end year   |  path      | ----       | -          |
+| CCMVal            | name       | case-name     | ensemble   | start year | end year   |  path      |            |            |
+| CCMVal1           | name       | case-name     | ensemble   | start year | end year   |  path      |            |            |
+| CCMVal2	    | name       | case-name     | ensemble   | start year | end year   |  path      |            |            |
 +-------------------+------------+---------------+------------+------------+------------+------------+------------+------------+
-| CMIP5             | name       | mip           | experiment | ensemble   | start year |  end year  | Path       | -          |
-| CMIP5_ETHZ        | name       | mip           | experiment | ensemble   | start year |  end year  | path       | -          |
+| CMIP5             | name       | mip           | experiment | ensemble   | start year |  end year  | Path       |            |
+| CMIP5_ETHZ        | name       | mip           | experiment | ensemble   | start year |  end year  | path       |            |
 | CMIP5_gridfile    | name       | mip           | experiment | ensemble   | start year |  end year  | path       | gridfile   |
 | CMIP5_SMHI        | name       | mip           | experiment | ensemble   | start year |  end year  | frequency  | path       |
 +-------------------+------------+---------------+------------+------------+------------+------------+------------+------------+
-| ECEARTH	    | Name	 | experiment    | ensemble   | start year | end year   | path       | -          | -          |
+| ECEARTH	    | Name	 | experiment    | ensemble   | start year | end year   | path       |            |            |
 +-------------------+------------+---------------+------------+------------+------------+------------+------------+------------+
-| EMAC              | name	 | ensemble      | start year | end year   | path       | -          | -          | -          |
+| EMAC              | name	 | ensemble      | start year | end year   | path       |            |            |            |
 +-------------------+------------+---------------+------------+------------+------------+------------+------------+------------+
-| GO                | name       | table         | experiment | ensemble   | start year | end year   | path       | -          |
-| GO_gridfile       | name       | table         | experiment | ensemble   | start year | end year   | path       | -          |
+| GO                | name       | table         | experiment | ensemble   | start year | end year   | path       |            |
+| GO_gridfile       | name       | table         | experiment | ensemble   | start year | end year   | path       |            |
 +-------------------+------------+---------------+------------+------------+------------+------------+------------+------------+
 | MiKlip            | name       | table         | experiment | ensemble   | realm      | start yea  | end year   | path       |
 | MiKlip_baseline0  | name       | table         | experiment | ensemble   | realm      | start yea  | end year   | path       |
 +-------------------+------------+---------------+------------+------------+------------+------------+------------+------------+
-| OBS               | name       | case-name     | ensemble   | start year | end year   | Path       | -          | -          |
-| OBS_gridfile	    | name       | case-name     | ensemble   | start year | end year   | path       | gridfile   | -          |
+| OBS               | name       | case-name     | ensemble   | start year | end year   | Path       |            |            |
+| OBS_gridfile	    | name       | case-name     | ensemble   | start year | end year   | path       | gridfile   |            |
 |                   |            | (insitu,      |            |            |            |            |            |            |
 |                   |            | sat, ground   |            |            |            |            |            |            |
 |                   |            | reanaly)      |            |            |            |            |            |            |
 +-------------------+------------+---------------+------------+------------+------------+------------+------------+------------+
-| obs4mips	    | Name	 | process level | ensemble   | start year | end year   | path	-    | -          |            |
+| obs4mips	    | Name	 | process level | ensemble   | start year | end year   | path	     |            |            |
 +-------------------+------------+---------------+------------+------------+------------+------------+------------+------------+
 
 
