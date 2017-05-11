@@ -65,7 +65,7 @@ This namelist is part of the ESMValTool
     <model id="gpcp">  CMIP5    GPCP-1DD-V12    Amon           obs   r1i1p1   1997 2010     /nobackup/rossby18/sm_grini/Data/rossby14/Data/GPCP/GPCP-1DD-V12/GLOBAL/mon   </model>
     <model id="erai">  CMIP5          ERAINT    Amon    reanalysis   r1i1p1   1980 2004     /nobackup/rossby15/sm_grini/Data/ERAINT/GLOBAL/MM                             </model>
 
-    <tags>  R_atmos, T_atmDyn </tags>
+    <tags>  R_atmos, T_atmDyn, T_phys </tags>
 </diag>
 </DIAGNOSTICS>
 
