@@ -133,6 +133,7 @@ D_bakker14essd, Bakker, D. C. E. et al., Earth Syst. Sci. Data, 6, 69-90, doi:10
 D_bianchi12gbc, Bianchi, D. et al., Global Biogeochem. Cy., 26, GB2009, doi:10.1029/2011GB004209, 2012.
 D_cionni11acp = Cionni et al., Atmos. Chem. Phys., 11, 11267-11292, doi:10.5194/acp-11-11267-2011, 2011.
 D_dong08grl = Dong, S. et al., J. Geophys. Res., 113, C06013, doi:10.1029/2006JC004051 (2008)
+D_duemenil00mpimr: Duemenil Gates et al., Observed historical discharge data from major rivers for climate model validation. Max Planck Institute for Meteorology Report 307, Hamburg, Germany (2000)
 D_emmons00jgr = Emmons et al., J. Geophys. Res., 105, D16, 20497-20538, 2000.
 D_eyring06jgr = Eyring et al., J. Geophys. Res., 111, D22308, doi:10.1029/2006JD007327, 2006.
 D_eyring13jgr = Eyring et al., J. Geophys. Res., 118, 5029-5060, doi:10.1002/jgrd.50316, 2013.
@@ -161,6 +162,7 @@ D_stroeve07grl = Stroeve, J. et al., Geophys. Res. Lett., 34, L09501, doi:10.102
 D_taylor12 = Taylor et al., Nature, 489, 423-426, doi:10.1038/nature11377 (2012)
 D_takahashi14marchem, Takahashi et al., Mar. Chem., 164, 95–125, doi:10.1016/j.marchem.2014.06.004, 2014.
 D_webster92qjrms = Webster, P. J. and Yang, S. (1992), Monsoon and Enso: Selectively Interactive Systems. Q.J.R. Meteorol. Soc., 118: 877–926. doi:10.1002/qj.49711850705
+D_weedon14wrr = Weedon, G. P. et al., Water Resour. Res., 50, 7505–7514, doi:10.1002/2014WR015638 (2014)
 D_wenzel14jgr = Wenzel et al., J. Geophys. Res. Biogeosci., 119(5), doi:2013JG002591, 2014.
 D_williams09climdyn = Williams and Webb, Clim. Dynam., 33, 141-157, doi:10.1007/s00382-008-0443-1, 2009.
 
