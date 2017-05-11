@@ -269,28 +269,28 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 
 .. _tab_diag_att:
 
-+------------+----------+------------+--------------------------------------------------------------------------------------------------+
-| Name       | Type     | Parent tag | Description            										|             
-+============+==========+============+==================================================================================================+
-| ref_model  | string   | <variable> | Defines this data set as the reference data set within the diagnostic. The string ref_model 	|
-|            |          |            | refers to either the model name, as specified in Table S2, or the model attribute id as specified|
-|            |          |            | in Table S3. Note that because both model and observational data sets are specified via the 	|
-|            |          |            |<model>-tag any of them can be used as a reference data set. 					|
-+------------+----------+------------+--------------------------------------------------------------------------------------------------+
-| exclude    | string	| <variable> | When using more than one variable corresponding to different observational data sets (e.g., 	|
-|            |          |            | precipitation and skin temperature), it is necessary to use this attribute to match which 	|
-|            |          |            | variable goes with which data set, e.g., pr with TRMM and ts with HadISST using,			|
-|            |          |            |             											|
-|            |          |            | <variable ref_model=~trmm~ exclude=~hadisst~>  pr ~						|
-|            |          |            | <variable ref_model=~hadisst~ exclude=~trmm~>  ts ~						|
-+------------+----------+------------+--------------------------------------------------------------------------------------------------+
-| cfg	string	<diag_script>	Configuration file for the diagnostic script								|
-+------------+----------+------------+--------------------------------------------------------------------------------------------------+
++------------+----------+---------------+--------------------------------------------------------------------------------------------------+
+| Name       | Type     | Parent tag    | Description                                                                                      |
++============+==========+===============+==================================================================================================+
+| ref_model  | string   | <variable>    | Defines this data set as the reference data set within the diagnostic. The string ref_model      |
+|            |          |               | refers to either the model name, as specified in Table S2, or the model attribute id as specified|
+|            |          |               | in Table S3. Note that because both model and observational data sets are specified via the      |
+|            |          |               | <model>-tag any of them can be used as a reference data set.                                     |
++------------+----------+---------------+--------------------------------------------------------------------------------------------------+
+| exclude    | string   | <variable>    | When using more than one variable corresponding to different observational data sets (e.g.,      |
+|            |          |               | precipitation and skin temperature), it is necessary to use this attribute to match which        |
+|            |          |               | variable goes with which data set, e.g., pr with TRMM and ts with HadISST using,                 |
+|            |          |               |                                                                                                  |
+|            |          |               | <variable ref_model="trmm" exclude="hadisst">  pr ...                                            |
+|            |          |               | <variable ref_model="hadisst" exclude="trmm">  ts ...                                            |
++------------+----------+---------------+--------------------------------------------------------------------------------------------------+
+| cfg        | string   | <diag_script> | Configuration file for the diagnostic script                                                     |
++------------+----------+---------------+--------------------------------------------------------------------------------------------------+
 
 
 
 
-**Table S7** Field types.
+:numref:`tab_fld_typ` Field types.
 
 .. _tab_fld_typ:
 
@@ -333,34 +333,36 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 
 
 
-**Table S8** Variable definition scripts.
+:numref:`tab_var_def` Variable definition scripts.
+
 
 .. _tab_var_def:
+
 
 +--------------------------+-----------------------------------------------------------------------------------+
 | Script name              | Description                                                                       |
 +==========================+===================================================================================+
-| abs550aer	           | Absorption optical depth (550 nm)                                                 |
+| abs550aer.ncl            | Absorption optical depth (550 nm)                                                 |
 +--------------------------+-----------------------------------------------------------------------------------+
-| albisccp.ncl	           | ISCCP-like cloud albedo                                                          |
+| albisccp.ncl             | ISCCP-like cloud albedo                                                           |
 +--------------------------+-----------------------------------------------------------------------------------+
 | baresoilFrac.ncl         | Fraction of bare soil (land cover variable)                                       |
 +--------------------------+-----------------------------------------------------------------------------------+
-| chl.ncl	           | Chlorophyll mass concentration at the surface (ocean)                             |
+| chl.ncl                  | Chlorophyll mass concentration at the surface (ocean)                             |
 +--------------------------+-----------------------------------------------------------------------------------+
 | clivi.ncl                | Vertically integrated cloud ice                                                   |
 +--------------------------+-----------------------------------------------------------------------------------+
 | cl.ncl                   | Cloud area fraction (3d)                                                          |
 +--------------------------+-----------------------------------------------------------------------------------+
-| clt.ncl	           | Total cloud fraction                                                              |
+| clt.ncl                  | Total cloud fraction                                                              |
 +--------------------------+-----------------------------------------------------------------------------------+
-| cltisccp.ncl	           | ISCCP-like total cloud fraction                                                   |
+| cltisccp.ncl             | ISCCP-like total cloud fraction                                                   |
 +--------------------------+-----------------------------------------------------------------------------------+
 | cltStderr.ncl            | Standard error of total cloud fraction (observations)                             |
 +--------------------------+-----------------------------------------------------------------------------------+
 | clwvi.ncl                | Vertically integrated total cloud water (ice + liquid)                            |
 +--------------------------+-----------------------------------------------------------------------------------+
-| co2flux.ncl	           | Sum of land and ocean carbon fluxes                                               |
+| co2flux.ncl              | Sum of land and ocean carbon fluxes                                               |
 +--------------------------+-----------------------------------------------------------------------------------+
 | conccnd10.ncl            | EMAC aerosol variable                                                             |
 +--------------------------+-----------------------------------------------------------------------------------+
@@ -370,31 +372,31 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 +--------------------------+-----------------------------------------------------------------------------------+
 | conccnSTPd120.ncl        | EMAC aerosol variable                                                             |
 +--------------------------+-----------------------------------------------------------------------------------+
-| conccnSTPd14.nc          | EMAC aerosol variable                                                             |
+| conccnSTPd14.ncl         | EMAC aerosol variable                                                             |
 +--------------------------+-----------------------------------------------------------------------------------+
-| conccnSTPd3.	           | EMAC aerosol variable                                                             |
+| conccnSTPd3.ncl          | EMAC aerosol variable                                                             |
 +--------------------------+-----------------------------------------------------------------------------------+
-| conccnSTPd5.n	           | EMAC aerosol variable                                                             |
+| conccnSTPd5.ncl          | EMAC aerosol variable                                                             |
 +--------------------------+-----------------------------------------------------------------------------------+
-| conccnSTPmode.n          | EMAC aerosol variable                                                             |
+| conccnSTPmode.ncl        | EMAC aerosol variable                                                             |
 +--------------------------+-----------------------------------------------------------------------------------+
 | cropFrac.ncl             | Fraction of crop (land cover variable)                                            |
 +--------------------------+-----------------------------------------------------------------------------------+
 | cSoil.ncl                | Carbon mass in soil pool                                                          |
 +--------------------------+-----------------------------------------------------------------------------------+
-| cumnbp.nc                | Cumulated NBP                                                                     |
+| cumnbp.ncl               | Cumulated NBP                                                                     |
 +--------------------------+-----------------------------------------------------------------------------------+
-| cVeg.nc                  | Carbon mass in vegetation                                                         |
+| cVeg.ncl                 | Carbon mass in vegetation                                                         |
 +--------------------------+-----------------------------------------------------------------------------------+
-| diamcnmode.n             | EMAC aerosol variable                                                             |
+| diamcnmode.ncl           | EMAC aerosol variable                                                             |
 +--------------------------+-----------------------------------------------------------------------------------+
-| dos.nc                   | Degree of saturation                                                              |
+| dos.ncl                  | Degree of saturation                                                              |
 +--------------------------+-----------------------------------------------------------------------------------+
-| dosStderr.nc             | Degree of saturation standard error (observations)                                |
+| dosStderr.ncl            | Degree of saturation standard error (observations)                                |
 +--------------------------+-----------------------------------------------------------------------------------+
-| et.nc                    | Evapotranspiration                                                                |
+| et.ncl                   | Evapotranspiration                                                                |
 +--------------------------+-----------------------------------------------------------------------------------+
-| evspsbl.ncl	           | Evaporation                                                                       |
+| evspsbl.ncl              | Evaporation                                                                       |
 +--------------------------+-----------------------------------------------------------------------------------+
 | fgco2.ncl                | Surface downward CO2 flux (ocean)                                                 |
 +--------------------------+-----------------------------------------------------------------------------------+
@@ -402,19 +404,19 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 +--------------------------+-----------------------------------------------------------------------------------+
 | grassNcropFrac.ncl       | Fraction of grass + crop (land cover variable)                                    |
 +--------------------------+-----------------------------------------------------------------------------------+
-| gpp.ncl	           | Carbon mass flux out of atmosphere due to gross primary production on land        |
+| gpp.ncl                  | Carbon mass flux out of atmosphere due to gross primary production on land        |
 +--------------------------+-----------------------------------------------------------------------------------+
-| hfds.ncl	           | Downward heat flux at sea surface                                                 |
+| hfds.ncl                 | Downward heat flux at sea surface                                                 |
 +--------------------------+-----------------------------------------------------------------------------------+
-| hfls.ncl	           | Surface upward latent heat flux (includes both evaporation and sublimation)       |
-+--------------------------+-----------------------------------------------------------------------------------+  
+| hfls.ncl                 | Surface upward latent heat flux (includes both evaporation and sublimation)       |
++--------------------------+-----------------------------------------------------------------------------------+
 | hfss.ncl                 | Surface upward sensible heat flux                                                 |
 +--------------------------+-----------------------------------------------------------------------------------+
-| hus.ncl	           | Specific humidity                                                                 |
+| hus.ncl                  | Specific humidity                                                                 |
 +--------------------------+-----------------------------------------------------------------------------------+
-| huss.ncl	           | Surface specific humidity                                                         |
+| huss.ncl                 | Surface specific humidity                                                         |
 +--------------------------+-----------------------------------------------------------------------------------+
-| intpp.ncl	           | Carbon cycle variable                                                             |
+| intpp.ncl                | Carbon cycle variable                                                             |
 +--------------------------+-----------------------------------------------------------------------------------+
 | ita.ncl                  | Depth weighted temperature (ocean, 730 m)                                         |
 +--------------------------+-----------------------------------------------------------------------------------+
@@ -422,27 +424,27 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 +--------------------------+-----------------------------------------------------------------------------------+
 | lai.ncl                  | Leaf area index                                                                   |
 +--------------------------+-----------------------------------------------------------------------------------+
-| LW_CRE.ncl	           | Longwave cloud radiative forcing                                                  |
+| LW_CRE.ncl               | Longwave cloud radiative forcing                                                  |
 +--------------------------+-----------------------------------------------------------------------------------+
-| lwp.ncl	           | Vertically integrated cloud water (liquid only)                                   |
+| lwp.ncl                  | Vertically integrated cloud water (liquid only)                                   |
 +--------------------------+-----------------------------------------------------------------------------------+
 | lwpStderr.ncl            | Vertically integrated cloud water standard error (observations)                   |
 +--------------------------+-----------------------------------------------------------------------------------+
-| mlotst.ncl	           | Ocean mixed layer thickness                                                       |
+| mlotst.ncl               | Ocean mixed layer thickness                                                       |
 +--------------------------+-----------------------------------------------------------------------------------+
-| mmraer.ncl	           | EMAC aerosol variable                                                             |
+| mmraer.ncl               | EMAC aerosol variable                                                             |
 +--------------------------+-----------------------------------------------------------------------------------+
-| mmrbcfree.ncl	           | EMAC aerosol variable                                                             |
+| mmrbcfree.ncl            | EMAC aerosol variable                                                             |
 +--------------------------+-----------------------------------------------------------------------------------+
-| mmrbc.ncl	           | BC mass mixing ration                                                             |
+| mmrbc.ncl                | BC mass mixing ration                                                             |
 +--------------------------+-----------------------------------------------------------------------------------+
-| mrro.ncl	           | Total runoff                                                                      |
+| mrro.ncl                 | Total runoff                                                                      |
 +--------------------------+-----------------------------------------------------------------------------------+
 | mrso.ncl                 | Soil moisture content                                                             |
 +--------------------------+-----------------------------------------------------------------------------------+
-| msftmyz.ncl	           | Ocean meridional overturning mass streamfunction                                  |
+| msftmyz.ncl              | Ocean meridional overturning mass streamfunction                                  |
 +--------------------------+-----------------------------------------------------------------------------------+
-| MyVar.ncl	           | Template                                                                          |
+| MyVar.ncl                | Template                                                                          |
 +--------------------------+-----------------------------------------------------------------------------------+
 | nbp.ncl                  | Carbon mass flux out of atmosphere due to net biospheric production on land       |
 +--------------------------+-----------------------------------------------------------------------------------+
@@ -450,23 +452,23 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 +--------------------------+-----------------------------------------------------------------------------------+
 | o2.ncl                   | O2 (ocean)                                                                        |
 +--------------------------+-----------------------------------------------------------------------------------+
-| o2_onelev.ncl	           | O2 (ocean) on a single level                                                      |
+| o2_onelev.ncl            | O2 (ocean) on a single level                                                      |
 +--------------------------+-----------------------------------------------------------------------------------+
-| od550aer.ncl	           | Aerosol optical depth (550 nm)                                                    |
+| od550aer.ncl             | Aerosol optical depth (550 nm)                                                    |
 +--------------------------+-----------------------------------------------------------------------------------+
 | od550aerStderr.ncl       | Aerosol optical depth (550 nm) standard error (observations)                      |
 +--------------------------+-----------------------------------------------------------------------------------+
-| od550lt1aer	           | Fine mode aerosol optical depth (550 nm)                                          |
+| od550lt1aer.ncl          | Fine mode aerosol optical depth (550 nm)                                          |
 +--------------------------+-----------------------------------------------------------------------------------+
-| od870aer                 | Aerosol optical depth (870 nm)                                                    |
+| od870aer.ncl             | Aerosol optical depth (870 nm)                                                    |
 +--------------------------+-----------------------------------------------------------------------------------+
-| od870aerStderr           | Aerosol optical depth (870 nm) standard error (observations)                      |
+| od870aerStderr.ncl       | Aerosol optical depth (870 nm) standard error (observations)                      |
 +--------------------------+-----------------------------------------------------------------------------------+
 | pastureFrac.ncl          | Fraction pasture (land cover variable)                                            |
 +--------------------------+-----------------------------------------------------------------------------------+
 | pctisccp.ncl             | ISCCP-like cloud top height                                                       |
 +--------------------------+-----------------------------------------------------------------------------------+
-| prc-mmh                  | Convective precipitation in mm per hour                                           |
+| prc-mmh.ncl              | Convective precipitation in mm per hour                                           |
 +--------------------------+-----------------------------------------------------------------------------------+
 | pr-mmday.ncl             | Precipitation (total) in mm per day                                               |
 +--------------------------+-----------------------------------------------------------------------------------+
@@ -534,7 +536,7 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 +--------------------------+-----------------------------------------------------------------------------------+
 | sm.ncl                   | Volumetric moisture content of soil layer                                         |
 +--------------------------+-----------------------------------------------------------------------------------+
-| smStderr.ncl	           | Volumetric moisture content of soil layer standard error (observations)           |
+| smStderr.ncl             | Volumetric moisture content of soil layer standard error (observations)           |
 +--------------------------+-----------------------------------------------------------------------------------+
 | snc.ncl                  | Fraction of grid cell covered by snow on land                                     |
 +--------------------------+-----------------------------------------------------------------------------------+
@@ -550,17 +552,17 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 +--------------------------+-----------------------------------------------------------------------------------+
 | stratospheric_column.ncl | Stratospheric ozone column                                                        |
 +--------------------------+-----------------------------------------------------------------------------------+
-| SW_CRE.ncl	           | Shortwave cloud radiative forcing                                                 |
+| SW_CRE.ncl               | Shortwave cloud radiative forcing                                                 |
 +--------------------------+-----------------------------------------------------------------------------------+
 | talk.ncl                 | Total alkalinity (ocean)                                                          |
 +--------------------------+-----------------------------------------------------------------------------------+
 | ta.ncl                   | Air temperature                                                                   |
 +--------------------------+-----------------------------------------------------------------------------------+
-| tas.ncl                  | Near-surface air temperature                                                      |                        
+| tas.ncl                  | Near-surface air temperature                                                      |
 +--------------------------+-----------------------------------------------------------------------------------+
-| tas-degC.cnl             | Near-surface air temperature in degrees Centigrade                                |
+| tas-degC.ncl             | Near-surface air temperature in degrees Centigrade                                |
 +--------------------------+-----------------------------------------------------------------------------------+
-| tauu.ncl	           | Surface eastward wind stress                                                      |
+| tauu.ncl                 | Surface eastward wind stress                                                      |
 +--------------------------+-----------------------------------------------------------------------------------+
 | tauv.ncl                 | Surface northward wind stress                                                     |
 +--------------------------+-----------------------------------------------------------------------------------+
@@ -568,7 +570,7 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 +--------------------------+-----------------------------------------------------------------------------------+
 | theta-850.ncl            | Potential temperature at 850 hPa                                                  |
 +--------------------------+-----------------------------------------------------------------------------------+
-| theta.ncl                | Potential temperature                                                             |                       
+| theta.ncl                | Potential temperature                                                             |
 +--------------------------+-----------------------------------------------------------------------------------+
 | to.ncl                   | Sea water temperature                                                             |
 +--------------------------+-----------------------------------------------------------------------------------+
@@ -576,7 +578,7 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 +--------------------------+-----------------------------------------------------------------------------------+
 | total_column.ncl         | Total ozone column                                                                |
 +--------------------------+-----------------------------------------------------------------------------------+
-| toz.ncl	           | Total ozone column (alternative name)                                             |
+| toz.ncl                  | Total ozone column (alternative name)                                             |
 +--------------------------+-----------------------------------------------------------------------------------+
 | tozStderr.ncl            | Total ozone column standard error (observations)                                  |
 +--------------------------+-----------------------------------------------------------------------------------+
@@ -594,13 +596,13 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 +--------------------------+-----------------------------------------------------------------------------------+
 | tropospheric_column.ncl  | Tropospheric ozone column                                                         |
 +--------------------------+-----------------------------------------------------------------------------------+
-| tropoz.ncl	           | Tropospheric ozone column (alternative name)                                      |
+| tropoz.ncl               | Tropospheric ozone column (alternative name)                                      |
 +--------------------------+-----------------------------------------------------------------------------------+
 | ts.ncl                   | Skin temperature                                                                  |
 +--------------------------+-----------------------------------------------------------------------------------+
 | tsStderr.ncl             | Skin temperature standard error (observations)                                    |
 +--------------------------+-----------------------------------------------------------------------------------+
-| ua-1000.ncl	           | Wind u-component at 1000 hPa                                                      |
+| ua-1000.ncl              | Wind u-component at 1000 hPa                                                      |
 +--------------------------+-----------------------------------------------------------------------------------+
 | ua-200-850.ncl       	   | Wind u-component at 200 hPa and at 850 hPa (monsoon diagnostics)                  |
 +--------------------------+-----------------------------------------------------------------------------------+
@@ -608,7 +610,7 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 +--------------------------+-----------------------------------------------------------------------------------+
 | ua-700.ncl               | Wind u-component at 700 hPa                                                       |
 +--------------------------+-----------------------------------------------------------------------------------+
-| ua-850.nc                | Wind u-component at 850 hPa                                                       |
+| ua-850.ncl               | Wind u-component at 850 hPa                                                       |
 +--------------------------+-----------------------------------------------------------------------------------+
 | ua-925.ncl               | Wind u-component at 925 hPa                                                       |
 +--------------------------+-----------------------------------------------------------------------------------+
@@ -622,7 +624,7 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 +--------------------------+-----------------------------------------------------------------------------------+
 | va-700.ncl               | Wind v-component at 700 hPa                                                       |
 +--------------------------+-----------------------------------------------------------------------------------+
-| va-850.ncl               | Wind v-component at 850 hPa                                                       |                          
+| va-850.ncl               | Wind v-component at 850 hPa                                                       |
 +--------------------------+-----------------------------------------------------------------------------------+
 | va-925.ncl               | Wind v-component at 925 hPa                                                       |
 +--------------------------+-----------------------------------------------------------------------------------+
@@ -630,39 +632,39 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 +--------------------------+-----------------------------------------------------------------------------------+
 | vmrc2h4.ncl              | EMAC chemistry variable                                                           |
 +--------------------------+-----------------------------------------------------------------------------------+
-| vmrc2h6.ncl	           | EMAC chemistry variable                                                           |
+| vmrc2h6.ncl              | EMAC chemistry variable                                                           |
 +--------------------------+-----------------------------------------------------------------------------------+
-| vmrc3h6.ncl	           | EMAC chemistry variable                                                           |
+| vmrc3h6.ncl              | EMAC chemistry variable                                                           |
 +--------------------------+-----------------------------------------------------------------------------------+
 | vmrc3h8.ncl              | EMAC chemistry variable                                                           |
 +--------------------------+-----------------------------------------------------------------------------------+
 | vmrch3coch3.ncl          | EMAC chemistry variable                                                           |
 +--------------------------+-----------------------------------------------------------------------------------+
-| vmrco_alt.ncl            | EMAC chemistry variable							       |
+| vmrco_alt.ncl            | EMAC chemistry variable                                                           |
 +--------------------------+-----------------------------------------------------------------------------------+
-| vmrco_azr.ncl	           | EMAC chemistry variable							       |
+| vmrco_azr.ncl            | EMAC chemistry variable                                                           |
 +--------------------------+-----------------------------------------------------------------------------------+
-| vmrco_chr.ncl            | EMAC chemistry variable							       |
+| vmrco_chr.ncl            | EMAC chemistry variable                                                           |
 +--------------------------+-----------------------------------------------------------------------------------+
-| vmrco_eic.ncl	           | EMAC chemistry variable							       |
+| vmrco_eic.ncl            | EMAC chemistry variable                                                           |
 +--------------------------+-----------------------------------------------------------------------------------+
-| vmrco_gmi.ncl	           | EMAC chemistry variable							       |
+| vmrco_gmi.ncl            | EMAC chemistry variable                                                           |
 +--------------------------+-----------------------------------------------------------------------------------+
-| vmrco_hpb.ncl	           | EMAC chemistry variable							       |
+| vmrco_hpb.ncl            | EMAC chemistry variable                                                           |
 +--------------------------+-----------------------------------------------------------------------------------+
-| vmrco_lef.ncl	           | EMAC chemistry variable							       |
+| vmrco_lef.ncl            | EMAC chemistry variable                                                           |
 +--------------------------+-----------------------------------------------------------------------------------+
-| vmrco_mlo.ncl	           | EMAC chemistry variable							       |
+| vmrco_mlo.ncl            | EMAC chemistry variable                                                           |
 +--------------------------+-----------------------------------------------------------------------------------+
-| vmrco.ncl                | CO volume mixing ratio							       |
+| vmrco.ncl                | CO volume mixing ratio                                                            |
 +--------------------------+-----------------------------------------------------------------------------------+
-| vmrco_nwr.ncl	           | EMAC chemistry variable							       |
+| vmrco_nwr.ncl            | EMAC chemistry variable                                                           |
 +--------------------------+-----------------------------------------------------------------------------------+
-| vmrh2o.ncl               | EMAC chemistry variable							       |
+| vmrh2o.ncl               | EMAC chemistry variable                                                           |
 +--------------------------+-----------------------------------------------------------------------------------+
-| vmrnox.ncl               | NOx volume mixing ratio							       |
+| vmrnox.ncl               | NOx volume mixing ratio                                                           |
 +--------------------------+-----------------------------------------------------------------------------------+
-| vo.ncl                   | Sea water y velocity  							       |
+| vo.ncl                   | Sea water y velocity                                                              |
 +--------------------------+-----------------------------------------------------------------------------------+
 | wfpe-mmday.ncl           | Water flux from precipitation and evaporation in mm day-1                         |
 +--------------------------+-----------------------------------------------------------------------------------+
@@ -672,7 +674,7 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 +--------------------------+-----------------------------------------------------------------------------------+
 | xco2Stderr.ncl           | Column averaged CO2 mixing ratio standard error (observations)                    |
 +--------------------------+-----------------------------------------------------------------------------------+
-| zg.ncl                   | Geopotential height							       |
+| zg.ncl                   | Geopotential height                                                               |
 +--------------------------+-----------------------------------------------------------------------------------+
 
 **Naming convention for ESMValTool namelists:**
