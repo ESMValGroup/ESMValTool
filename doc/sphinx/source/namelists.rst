@@ -35,15 +35,21 @@ Note that the coupling between the namelist and the diagnostic scripts is "loose
 **Basic structure of a namelist**
  
 	**<GLOBAL>**
+	
 	controls the general settings (see :numref:`tab_glob_tags`) ; see :numref:`glob_tag`, "More on the <GLOBALS>-tag" below for details
+	
 	**</GLOBAL>**
 
 	**<MODELS>**
+	
 	defines the models/observations and years to be processed and their pathnames; see :numref:`mod_tag`, "More on the <MODELS>-tag" below for details
+	
 	**</MODELS>**
 
 	**<DIAGNOSTIC>**
+	
 	defines which diagnostics are run (see :numref:`tab_diag_tags`); each diagnostic is enclosed in an opening <diag> and closing </diag>-tag; see :numref:`diag_tag`, "More on the <DIAGNOSTICS>-tag" below for details
+	
 	**</DIAGNOSTIC>**
 
 
@@ -59,7 +65,7 @@ More on the <GLOBAL>-tag
 
 
 
-**Table S1** Tags of the <GLOBAL> section of the namelist. Note that not all tags might be used by a diagnostic.
+**:numref:`tab_glob_tags`** Tags of the <GLOBAL> section of the namelist. Note that not all tags might be used by a diagnostic.
 
 .. _tab_glob_tags:
 
