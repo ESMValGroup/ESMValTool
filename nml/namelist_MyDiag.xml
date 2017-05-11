@@ -48,7 +48,7 @@ This namelist is part of the ESMValTool
         <variable>            MyVar                </variable>
         <field_type>          T3M                  </field_type>
         <diag_script_cfg_dir> ./nml/cfg_MyDiag/    </diag_script_cfg_dir>
-        <tags>                R_MyRealm, T_MyTheme </tags>
+        <tags>                R_atmos, T_atmDyn, T_phys </tags>
         
         <diag_script cfg="cfg_MyDiag.ncl"> MyDiag.ncl  </diag_script>
     </diag>

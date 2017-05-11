@@ -265,6 +265,8 @@ begin
 
     ESMValMD(map@outfile, alltags, caption, id, variables(0), models@name(0), climofiles)
 
+    delete([/alltags, caption, id, climofiles/])
+
     ;;######################################################
     ;;# Separate output to a graphics file, Panelling      #
     ;;######################################################
