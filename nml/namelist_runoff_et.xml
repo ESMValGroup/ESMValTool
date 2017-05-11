@@ -73,6 +73,8 @@ This namelist is part of the ESMValTool
         <diag_script cfg="none_yet.py">   catchment_analysis_val.py      </diag_script>
 
         <launcher_arguments>    [('execute_as_shell', False)]  </launcher_arguments>
+      
+      <tags> R_atmos, R_land, T_phys, T_chem </tags>
     </diag>
 
 </DIAGNOSTICS>
