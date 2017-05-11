@@ -63,6 +63,7 @@ load "./diag_scripts/lib/ncl/style.ncl"
 load "./diag_scripts/lib/ncl/statistics.ncl"
 load "./plot_scripts/ncl/contour_maps.ncl"
 
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 begin
     ;;###########################################################
@@ -253,6 +254,16 @@ begin
     ;; Option 2: pass data via netCDF file
     ;;-> useful for non-NCL routines & metrics
 ;    map = contour_map("dummy_for_wks", ncdf_outfile,"default")
+
+    alltags = array_append_record(tags,\
+           (/"DM_glob", "PT_geo", "ST_mean"/), 0)
+    caption = "This is an example caption. Model: " + models@name(0) + \
+              ", variable: " + variables(0)
+    id = diag_script + "_example_id"
+    climofiles = interface_get_inpaths(imod) + "/" + \
+                 interface_get_infile(variables(0), field_types(0), imod)
+
+    ESMValMD(map@outfile, alltags, caption, id, variables(0), models@name(0), climofiles)
 
     ;;######################################################
     ;;# Separate output to a graphics file, Panelling      #

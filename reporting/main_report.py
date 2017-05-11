@@ -85,7 +85,7 @@ except Exception, TOOL_error:
 # run server
 app = Flask(__name__)
 # host_add = "0.0.0.0"
-host_add = "141.84.50.139"
+host_add = "127.0.0.1"
 host_port = 5000
 full_host = host_add + ":" + str(host_port)
 
