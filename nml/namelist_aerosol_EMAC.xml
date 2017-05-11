@@ -43,6 +43,7 @@ This namelist is part of the ESMValTool
   <verbosity  type="integer">         1                         </verbosity>
   <debuginfo type="boolean">          False                     </debuginfo>
   <exit_on_warning  type="boolean">   False                     </exit_on_warning>
+  <tags> D_aquila11gmd, D_lauer05acp, D_righi13acp, P_esmval, P_dlrveu </tags>
 </GLOBAL>
 
 
@@ -65,7 +66,8 @@ This namelist is part of the ESMValTool
         <variable>            cl                          </variable>
         <field_type>          T3I                         </field_type>
         <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/     </diag_script_cfg_dir>
-
+	<tags>                R_aerosol, T_aerosol        </tags>
+	    
         <diag_script cfg="cfg_aerosol_profiles_LACE.ncl"> aerosol_profiles.ncl  </diag_script>
     </diag>
 
@@ -76,7 +78,8 @@ This namelist is part of the ESMValTool
         <variable>            diamcnmode                  </variable>
         <field_type>          T2Is                        </field_type>
         <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/     </diag_script_cfg_dir>
-
+	<tags>                R_aerosol, T_aerosol        </tags>
+	    
         <diag_script cfg="cfg_aerosol_profiles_Putaud.ncl">  aerosol_profiles.ncl  </diag_script>
     </diag>
 
@@ -100,7 +103,8 @@ This namelist is part of the ESMValTool
         <variable>            cl                                       </variable>
         <field_type>          T3I                                      </field_type>
         <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/                  </diag_script_cfg_dir>
-
+	<tags>                R_aerosol, T_aerosol                     </tags>
+	    
         <diag_script cfg="cfg_aerosol_profiles_UCN-Pacific.ncl"> aerosol_profiles.ncl  </diag_script>
     </diag>
 
@@ -111,7 +115,8 @@ This namelist is part of the ESMValTool
         <variable>            cl                                       </variable>
         <field_type>          T3I                                      </field_type>
         <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/                  </diag_script_cfg_dir>
-
+	<tags>                R_aerosol, T_aerosol                     </tags>
+	    
         <diag_script cfg="cfg_aerosol_profiles_INCA.ncl"> aerosol_profiles.ncl  </diag_script>
     </diag>
 
@@ -122,7 +127,8 @@ This namelist is part of the ESMValTool
         <variable>            cl                                       </variable>
         <field_type>          T3I                                      </field_type>
         <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/                  </diag_script_cfg_dir>
-
+	<tags>                R_aerosol, T_aerosol                     </tags>
+	    
         <diag_script cfg="cfg_aerosol_profiles_INCA.ncl"> aerosol_profiles.ncl  </diag_script>
     </diag>
 
@@ -133,7 +139,8 @@ This namelist is part of the ESMValTool
         <variable>            cl                                       </variable>
         <field_type>          T3I                                      </field_type>
         <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/                  </diag_script_cfg_dir>
-
+	<tags>                R_aerosol, T_aerosol                     </tags>
+	    
         <diag_script cfg="cfg_aerosol_profiles_INCA.ncl"> aerosol_profiles.ncl  </diag_script>
     </diag>
 
@@ -144,7 +151,8 @@ This namelist is part of the ESMValTool
         <variable>            cl                                       </variable>
         <field_type>          T3I                                      </field_type>
         <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/                  </diag_script_cfg_dir>
-
+	<tags>                R_aerosol, T_aerosol                     </tags>
+	    
         <diag_script cfg="cfg_aerosol_profiles_ACCESS-2.ncl"> aerosol_profiles.ncl  </diag_script>
     </diag>
 
@@ -155,7 +163,8 @@ This namelist is part of the ESMValTool
         <variable>            cl                                       </variable>
         <field_type>          T3I                                      </field_type>
         <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/                  </diag_script_cfg_dir>
-
+	<tags>                R_aerosol, T_aerosol                     </tags>
+	    
         <diag_script cfg="cfg_aerosol_profiles_ACCESS-2.ncl"> aerosol_profiles.ncl  </diag_script>
     </diag>
 
@@ -166,7 +175,8 @@ This namelist is part of the ESMValTool
         <variable>            cl                                        </variable>
         <field_type>          T3I                                       </field_type>
         <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/                   </diag_script_cfg_dir>
-
+	<tags>                R_aerosol, T_aerosol                      </tags>
+	    
         <diag_script cfg="cfg_aerosol_profiles_ACCESS.ncl">   aerosol_profiles.ncl  </diag_script>
         <diag_script cfg="cfg_aerosol_profiles_CONCERT.ncl">  aerosol_profiles.ncl  </diag_script>
         <diag_script cfg="cfg_aerosol_profiles_CR-AVE.ncl">   aerosol_profiles.ncl  </diag_script>
@@ -185,7 +195,8 @@ This namelist is part of the ESMValTool
         <variable>            cl                                             </variable>
         <field_type>          T3I                                            </field_type>
         <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/                        </diag_script_cfg_dir>
-
+	<tags>                R_aerosol, T_aerosol                           </tags>
+	    
         <diag_script cfg="cfg_aerosol_profiles_Texas.ncl"> aerosol_profiles.ncl  </diag_script>
     </diag>
 
@@ -196,7 +207,8 @@ This namelist is part of the ESMValTool
         <variable>            cl                                                     </variable>
         <field_type>          T3I                                                    </field_type>
         <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/                                </diag_script_cfg_dir>
-
+	<tags>                R_aerosol, T_aerosol                                   </tags>
+	    
         <diag_script cfg="cfg_aerosol_profiles_CIRRUS.ncl"> aerosol_profiles.ncl  </diag_script>
     </diag>
 
@@ -208,7 +220,8 @@ This namelist is part of the ESMValTool
         <variable>            sconcso4                           </variable>
         <field_type>          T2Ms                               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/            </diag_script_cfg_dir>
-
+	<tags>                R_aerosol, T_aerosol               </tags>
+	    
         <diag_script cfg="cfg_aerosol_stations_CASTNET.ncl"> aerosol_stations.ncl  </diag_script>
         <diag_script cfg="cfg_aerosol_stations_EANET.ncl">   aerosol_stations.ncl  </diag_script>
         <diag_script cfg="cfg_aerosol_stations_EMEP.ncl">    aerosol_stations.ncl  </diag_script>
@@ -221,7 +234,8 @@ This namelist is part of the ESMValTool
         <variable>            sconcno3                           </variable>
         <field_type>          T2Ms                               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/            </diag_script_cfg_dir>
-
+	<tags>                R_aerosol, T_aerosol               </tags>
+	    
         <diag_script cfg="cfg_aerosol_stations_CASTNET.ncl"> aerosol_stations.ncl  </diag_script>
         <diag_script cfg="cfg_aerosol_stations_EANET.ncl">   aerosol_stations.ncl  </diag_script>
         <diag_script cfg="cfg_aerosol_stations_EMEP.ncl">    aerosol_stations.ncl  </diag_script>
@@ -234,7 +248,8 @@ This namelist is part of the ESMValTool
         <variable>            sconcnh4                           </variable>
         <field_type>          T2Ms                               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/            </diag_script_cfg_dir>
-
+	<tags>                R_aerosol, T_aerosol               </tags>
+	    
         <diag_script cfg="cfg_aerosol_stations_CASTNET.ncl"> aerosol_stations.ncl  </diag_script>
         <diag_script cfg="cfg_aerosol_stations_EANET.ncl">   aerosol_stations.ncl  </diag_script>
         <diag_script cfg="cfg_aerosol_stations_EMEP.ncl">    aerosol_stations.ncl  </diag_script>
@@ -247,7 +262,8 @@ This namelist is part of the ESMValTool
         <variable>            sconcbc                           </variable>
         <field_type>          T2Ms                              </field_type>
         <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/           </diag_script_cfg_dir>
-
+	<tags>                R_aerosol, T_aerosol              </tags>
+	    
         <diag_script cfg="cfg_aerosol_stations_IMPROVE.ncl"> aerosol_stations.ncl  </diag_script>
     </diag>
     
@@ -257,7 +273,8 @@ This namelist is part of the ESMValTool
         <variable>            sconcoa                            </variable>
         <field_type>          T2Ms                               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/            </diag_script_cfg_dir>
-
+	<tags>                R_aerosol, T_aerosol               </tags>
+	    
         <diag_script cfg="cfg_aerosol_stations_IMPROVE.ncl"> aerosol_stations.ncl  </diag_script>
     </diag>
     
@@ -267,7 +284,8 @@ This namelist is part of the ESMValTool
         <variable>            sconcpm10                           </variable>
         <field_type>          T2Ms                                </field_type>
         <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/             </diag_script_cfg_dir>
-
+	<tags>                R_aerosol, T_aerosol                </tags>
+	    
         <diag_script cfg="cfg_aerosol_stations_EMEP.ncl">    aerosol_stations.ncl  </diag_script>
         <diag_script cfg="cfg_aerosol_stations_IMPROVE.ncl"> aerosol_stations.ncl  </diag_script>
     </diag>
@@ -278,7 +296,8 @@ This namelist is part of the ESMValTool
         <variable>            sconcpm2p5                           </variable>
         <field_type>          T2Ms                                 </field_type>
         <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/              </diag_script_cfg_dir>
-
+	<tags>                R_aerosol, T_aerosol                 </tags>
+	    
         <diag_script cfg="cfg_aerosol_stations_EMEP.ncl">    aerosol_stations.ncl  </diag_script>
         <diag_script cfg="cfg_aerosol_stations_IMPROVE.ncl"> aerosol_stations.ncl  </diag_script>
     </diag>
@@ -289,7 +308,8 @@ This namelist is part of the ESMValTool
         <variable>            od550aer                        </variable>
         <field_type>          T2Ms                            </field_type>
         <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/         </diag_script_cfg_dir>
-
+	<tags>                R_aerosol, T_aerosol            </tags>
+	    
         <diag_script cfg="cfg_aerosol_stations_AERONET.ncl"> aerosol_stations.ncl  </diag_script>
     </diag>
 
@@ -301,7 +321,8 @@ This namelist is part of the ESMValTool
         <variable>             od550aer                              </variable>
         <field_type>           T2Ms                                  </field_type>
         <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/                </diag_script_cfg_dir>
-
+	<tags>                R_aerosol, T_aerosol                   </tags>
+	    
         <model> obs4mips  MODIS  L3     C5           2001 2012  @{OBSPATH}/Tier1 </model>
 
         <diag_script cfg="cfg_aerosol_satellite_MODIS.ncl"> aerosol_satellite.ncl  </diag_script>
@@ -313,7 +334,8 @@ This namelist is part of the ESMValTool
         <variable>            od550aer                              </variable>
         <field_type>          T2Ms                                  </field_type>
         <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/               </diag_script_cfg_dir>
-
+	<tags>                R_aerosol, T_aerosol                  </tags>
+	    
         <model> obs4mips  MISR   L3     F12_0022     2001 2012  @{OBSPATH}/Tier1 </model>
 
         <diag_script cfg="cfg_aerosol_satellite_MISR.ncl"> aerosol_satellite.ncl  </diag_script>
@@ -325,7 +347,8 @@ This namelist is part of the ESMValTool
         <variable>            od550aer                                        </variable>
         <field_type>          T2Ms                                            </field_type>
         <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/                         </diag_script_cfg_dir>
-
+	<tags>                R_aerosol, T_aerosol                            </tags>
+	    
 	<model>  OBS  ESACCI-AEROSOL   sat   SU-v4.21   1997  2011  @{OBSPATH}/Tier2/ESACCI-AEROSOL </model>
 
         <diag_script cfg="cfg_aerosol_satellite_ESACCI-AEROSOL.ncl"> aerosol_satellite.ncl  </diag_script>
