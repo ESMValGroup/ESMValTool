@@ -355,6 +355,7 @@ function project_style_GO(flag:string)
 ;;
 ;; Arguments:
 ;;    flag = string determining the type of array requested
+;;
 ;; Return value: array of dimsizes(models@name)
 ;;  * Definition of plot attributes; Returns arrays of dimsizes(models@name)
 ;;  * flag = "colors": returns an array of colors (either RGB triples or named colors)
@@ -364,8 +365,10 @@ function project_style_GO(flag:string)
 ;;  * flag = "avgstd": returns an array of flags
 ;;                     0 -> (model) takes part in calculation of mean & stddev
 ;;                     1 -> (obs/reanalysis) takes not part in calculation of mean & stddev
+;;
 ;; Description:
 ;;    * Definition of plot attributes: type depending on flag
+;;
 ;; Modification history:
 ;;    * 20130419 written (Klaus-Dirk.Gottschaldt@dlr.de)
 ;
