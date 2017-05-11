@@ -588,13 +588,15 @@ function select_region(region:string)
 ;;
 ;; Return value
 ;;    An array with the region boundary as (latmin, latmax, lonmin, lonmax)
-;;    with the name of the region as a string attribute @name.
+;;    with the name of the region as a string attribute @name and the domain
+;;    tag for reporting as a string attribute @DM_tag
 ;;
 ;; Description
 ;;    Translates a region specification into lat/lon boundaries and a region
 ;;    name as an attribute.
 ;;
 ;; Modification history
+;;    20170511-A_gier_be: Added DM_tag to output
 ;;    20141205-A_gott_kl: adjusted names to Righi et al. (2015).
 ;;    20140410-A_fran_fr: extended to midlat, equatorial and polar regions.
 ;;    20140129-A_fran_fr: written.
@@ -610,6 +612,7 @@ begin
     if (region.eq."Global") then
         region_array = (/-90., 90., 0., 360./)
         region_array@name = "Glob"
+        region_array@DM_tag = "DM_global"
         leave_msg(scriptname, funcname, 10)
         return(region_array)
     end if
@@ -617,6 +620,7 @@ begin
     if (region.eq."Tropics") then
         region_array = (/-20., 20., 0., 360./)
         region_array@name = "Trop"
+        region_array@DM_tag = "DM_trop"
         leave_msg(scriptname, funcname, 10)
         return(region_array)
     end if
@@ -624,6 +628,7 @@ begin
     if (region.eq."NH extratropics") then
         region_array = (/20., 90., 0., 360./)
         region_array@name = "NHext"
+        region_array@DM_tag = (/"DM_et", "DM_trop"/)
         leave_msg(scriptname, funcname, 10)
         return(region_array)
     end if
@@ -631,20 +636,23 @@ begin
     if (region.eq."SH extratropics") then
         region_array = (/-90., -20., 0., 360./)
         region_array@name = "SHext"
+        region_array@DM_tag = (/"DM_et", "DM_trop"/)
         leave_msg(scriptname, funcname, 10)
         return(region_array)
     end if
 
     if (region.eq."NH equatorial") then
         region_array = (/0., 30., 0., 360./)
-        region_array@name = "NHtrop"
+        region_array@name = "NHtrop"        
+        region_array@DM_tag = (/"DM_nh", "DM_trop"/)
         leave_msg(scriptname, funcname, 10)
         return(region_array)
     end if
 
     if (region.eq."SH equatorial") then
         region_array = (/-30., 0., 0., 360./)
-        region_array@name = "SHtrop"
+        region_array@name = "SHtrop"        
+        region_array@DM_tag = (/"DM_sh", "DM_trop"/)
         leave_msg(scriptname, funcname, 10)
         return(region_array)
     end if
@@ -652,6 +660,7 @@ begin
     if (region.eq."Northern Hemisphere") then
         region_array = (/20., 90., 0., 360./)
         region_array@name = "NH"
+        region_array@DM_tag = "DM_nh"
         leave_msg(scriptname, funcname, 10)
         return(region_array)
     end if
@@ -659,6 +668,7 @@ begin
     if (region.eq."Southern Hemisphere") then
         region_array = (/-90., -20., 0., 360./)
         region_array@name = "SH"
+        region_array@DM_tag = "DM_sh"
         leave_msg(scriptname, funcname, 10)
         return(region_array)
     end if
@@ -666,6 +676,7 @@ begin
     if (region.eq."NH midlatitudes") then
         region_array = (/35., 60., 0., 360./)
         region_array@name = "NHmidlat"
+        region_array@DM_tag = (/"DM_midlat", "DM_nh"/)
         leave_msg(scriptname, funcname, 10)
         return(region_array)
     end if
@@ -673,6 +684,7 @@ begin
     if (region.eq."SH midlatitudes") then
         region_array = (/-60., -35., 0., 360./)
         region_array@name = "SHmidlat"
+        region_array@DM_tag = (/"DM_midlat", "DM_sh"/)
         leave_msg(scriptname, funcname, 10)
         return(region_array)
     end if
@@ -680,6 +692,7 @@ begin
     if (region.eq."Arctic") then
         region_array = (/60., 90., 0., 360./)
         region_array@name = "NHpolar"
+        region_array@DM_tag = (/"DM_nh", "DM_polar"/)
         leave_msg(scriptname, funcname, 10)
         return(region_array)
     end if
@@ -687,6 +700,7 @@ begin
     if (region.eq."Antarctic") then
         region_array = (/-90., -60., 0., 360./)
         region_array@name = "SHpolar"
+        region_array@DM_tag = (/"DM_polar", "DM_sh"/)
         leave_msg(scriptname, funcname, 10)
         return(region_array)
     end if
@@ -694,6 +708,7 @@ begin
     if (region.eq."Equatorial") then
         region_array = (/-10., 10., 0., 360./)
         region_array@name = "EQ"
+        region_array@DM_tag = "DM_trop"
         leave_msg(scriptname, funcname, 10)
         return(region_array)
     end if
