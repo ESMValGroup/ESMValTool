@@ -147,6 +147,7 @@ D_lauer05acp = Lauer et al., Atmos. Chem. Phys., 5, 3251-3276, doi:10.5194/acp-5
 D_lauer13jclim = Lauer and Hamilton, J. Climate, 26, 3823-3845, doi:10.1175/JCLI-D-12-00451.1, 2013.
 D_lauer17rse = Lauer et al., Remote Sens. Environ., in press, 2017.
 D_li14jclim = Li and Xie, J. Climate, 27, 1765-1780, doi:http://dx.doi.org/10.1175/JCLI-D-13-00337.1, 2014.
+D_lin08jclim = Lin, J-L. et al., J. Climate, 21, 4541–4567, doi: 10.1175/2008JCLI1816.1, 2008.
 D_lloyd-hughes02jclim = Lloyd-Hughes, B. and Saunders, M. A., Int. J. Climatol., 22, 1571-1592, doi:10.1002/joc.846 (2002)
 D_locarini10usgov = Locarnini, R. A. et al., World Ocean Atlas 2009, Volume 1: Temperature. S. Levitus, Ed. NOAA Atlas NESDIS 68, U.S. Government Printing Office, Washington, D.C., 184 pp. (2010)
 D_mueller14grl = Mueller, B. and Seneviratne, S. I. Geophys. Res. Lett., 41, 128-134, doi:10.1002/2013GL058055 (2014)
