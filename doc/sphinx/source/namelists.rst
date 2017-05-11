@@ -228,44 +228,42 @@ More on the <DIAGNOSTICS>-tag
 Each <diag> entry refers to one or several scripts in the folder *diag_scripts/* complemented by a variable name (see :numref:`tab_var_def` for a list of variables) and the corresponding (input) field type (see :numref:`tab_fld_typ`). Optionally the <diag>-tag may contain additional <model>-tags; these data sets will be processed only by the diagnostic(s) listed in the current <diag> entry. In this way it is possible to define a set of models to be analyzed by all diagnostics in the namelist (in the <MODELS> section) and a set of models to be analyzed only by specific diagnostics (in the <diag> section). Available <diag>-tags are listed in :numref:`tab_diag_tags`, their optional attributes in :numref:`tab_diag_att`.
 
 
-
-
 :numref:`tab_diag_tabs` Tags of the <diag> section within the <DIAGNOSTICS> section of the namelist. There are no default values.
 
 .. _tab_diag_tags:
 
 +----------------------+----------+-----------------------------------------------------------------------------------------------------------------+
-| Name	               | Type     | Description                                                                                                     |
+| Name                 | Type     | Description                                                                                                     |
 +======================+==========+=================================================================================================================+
 | description          | string   | 1-line description / title of the diagnostic                                                                    |
 +----------------------+----------+-----------------------------------------------------------------------------------------------------------------+
 | variable_def_dir     | string   | Path for the variable-specific configuration file (usually variable_defs)                                       |
 +----------------------+----------+-----------------------------------------------------------------------------------------------------------------+
-| variable	           | string   | Variable name: a script with the same name (variable_defs/<variable>.ncl) defines the variable to process       |
+| variable             | string   | Variable name: a script with the same name (variable_defs/<variable>.ncl) defines the variable to process       |
 |                      |          | see Table S8 for a list of variables) including possible preprocessing (e.g., calculating derived variables).   |
 |                      |          | Variable scripts should be located in the local folder variable_defs and written in NCL. Even though the        |
 |                      |          | variable scripts are written in NCL all meta data defined in the scripts are passed on to the target diagnostic | 
 |                      |          | script regardless of the used language (via variable attributes). If multiple variables need to be passed on to |
 |                      |          | a diagnostic script, multiple <variable>-tags have to be defined.                                               |
 +----------------------+----------+-----------------------------------------------------------------------------------------------------------------+
-| field_type	       | string   | Type of input field (see Table S7) that can be used by the diagnostic scripts. If multiple <variable>-tags are  |
+| field_type           | string   | Type of input field (see Table S7) that can be used by the diagnostic scripts. If multiple <variable>-tags are  |
 |                      |          | defined a single (which is then applied to all) or an equal number of <field type>-tags has to be defined.      |
 +----------------------+----------+-----------------------------------------------------------------------------------------------------------------+
-| diag_script_cfg_dir  | string	  | Path for diagnostic script configuration file                                                                   |
+| diag_script_cfg_dir  | string   | Path for diagnostic script configuration file                                                                   |
 +----------------------+----------+-----------------------------------------------------------------------------------------------------------------+
-| diag_script	       | string	  | Name of diagnostic script; the script can be written in any language currently supported by ESMValTool (NCL, R  |
+| diag_script          | string   | Name of diagnostic script; the script can be written in any language currently supported by ESMValTool (NCL, R  |
 |                      |          | and Python) and has to be located in the local folder diag_scripts. The settings defined in the diagnostic      |
 |                      |          | script configuration file defined by the diag_script cfg attribute is loaded at the beginning of the diagnostic |
 |                      |          | script.                                                                                                         |
 +----------------------+----------+-----------------------------------------------------------------------------------------------------------------+
-| model (optional)     | string	  | Additional data sets specific for this <diag>-section. Data sets defined here will be processed in addition to  |
+| model (optional)     | string   | Additional data sets specific for this <diag>-section. Data sets defined here will be processed in addition to  |
 |                      |          | the ones defined in the MODELS section (see above) but will be ignored by other <diag>-sections.                |
 +----------------------+----------+-----------------------------------------------------------------------------------------------------------------+
 
 
 
 
-**Table S6** Optional attributes of selected tags in the <diag> section. 
+:numref:`tab_diag_att` Optional attributes of selected tags in the <diag> section. 
 
 .. _tab_diag_att:
 
