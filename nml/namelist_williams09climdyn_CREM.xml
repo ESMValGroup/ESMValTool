@@ -82,6 +82,8 @@ This namelist is part of the ESMValTool
         <diag_script cfg="ww09_CREM.conf"> ww09_ESMValTool.py </diag_script>
 
         <launcher_arguments> [('execute_as_shell', False)] </launcher_arguments>
+      
+      <tags> R_land, R_atmos, R_landIce, R_seaIce, T_clouds, T_phys, T_seaIce, T_chem </tags>
     </diag>
 
 </DIAGNOSTICS>
