@@ -19,6 +19,7 @@
 ;; Caveats
 ;;
 ;; Modification history
+;;    20170511-A_gier_be: added metadata to files
 ;;    20151130-A_laue_ax: corrected passing of file type from namelist to
 ;;                        plotting functions; moved call to write_references
 ;;                        to beginning of code
@@ -41,6 +42,7 @@ load "./diag_scripts/lib/ncl/style.ncl"
 load "./diag_scripts/lib/ncl/latlon.ncl"
 load "./diag_scripts/lib/ncl/statistics.ncl"
 load "./diag_scripts/aux/SAMonsoon/SAMonsoon.ncl"
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 load "./plot_scripts/ncl/scatterplot.ncl"
 
@@ -234,6 +236,23 @@ begin
     plot = scatterplot_markers(wks, data_arr, var0)
     draw(plot)
     frame(wks)
+    
+    ;; Attach Metadata to plot
+    alltags = array_append_record(tags, region@DM_tag, 0)
+    alltags := array_append_record(alltags,\
+           (/"PT_scatter", "ST_mean"/), 0)
+    caption = "Scatterplot for " + variables(0) + " and " + \
+              variables(1) + " over the period " + start_year + \
+              "-" + end_year
+    id = diag_script + "_example_id"
+    climofiles = interface_get_inpaths(imod) + "/" + \
+                 interface_get_infile(variables(0), field_types(0), imod)
+
+    ESMValMD(map@outfile, alltags, caption, id, variables(0), models@name(0), climofiles)
+
+    delete([/alltags, caption, id, climofiles/])
+
+    
 
     leave_msg(diag_script, "", 4)
 
