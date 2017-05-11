@@ -1,157 +1,149 @@
 """
-;;#############################################################################
-;; TropicalVariablity_wind.py
-;; Author: Jarmo Makela (FMI, Finland)
-;; EMBRACE project
-;;#############################################################################
-;; Description
-;;    This script is the diagnostics and plotting script for
-;;    Tropical Variability zonal means and scatterplots
-;;
-;; Required diag_script_info attributes (diagnostics specific)
-;;    plot_equatorial:      Switch for equatorial plots
-;;    plot_scatter:         Switch for scatter plots
-;;    plot_zonal_means:     Switch for zonal means plots
-;;    mask_unwanted_values: Mask values outside given range
-;;    mask_limit_low:       lower mask limit
-;;    mask_limit_high:      uppper mask limit
-;;    plot_grid:            provides a background grid for relavant plots
-;;
-;;    [equatorial]
-;;    areas:                One of "Atlantic" "Indian" "Pacific"
-;;
-;;    [equatorial_Atlantic]
-;;    lat_min:  Spatial extent
-;;    lat_max:  Spatial extent
-;;    lon_min:  Spatial extent
-;;    lon_max:  Spatial extent
-;;    prec_min: Range of values
-;;    prec_max: Range of values
-;;    temp_min: Range of values
-;;    temp_max: Range of values
-;;    wind_min: Range of values
-;;    wind_max: Range of values
-;;    div_min:  Range of values
-;;    div_max:  Range of values
-;;
-;;    [equatorial_Indian]
-;;    lat_min:  Spatial extent
-;;    lat_max:  Spatial extent
-;;    lon_min:  Spatial extent
-;;    lon_max:  Spatial extent
-;;    prec_min: Range of values
-;;    prec_max: Range of values
-;;    temp_min: Range of values
-;;    temp_max: Range of values
-;;    wind_min: Range of values
-;;    wind_max: Range of values
-;;    div_min:  Range of values
-;;    div_max:  Range of values
-;;
-;;    [equatorial_Pacific]
-;;    lat_min:  Spatial extent
-;;    lat_max:  Spatial extent
-;;    lon_min:  Spatial extent
-;;    lon_max:  Spatial extent
-;;    prec_min: Range of values
-;;    prec_max: Range of values
-;;    temp_min: Range of values
-;;    temp_max: Range of values
-;;    wind_min: Range of values
-;;    wind_max: Range of values
-;;    div_min:  Range of values
-;;    div_max:  Range of values
-;;
-;;    [scatter]
-;;    areas:           One of "West-Pacific" "Central-Pacific" "East-Pacific"
-;;    seasons:         One of "annual" "DJF" "MAM" "JJA" "SON"
-;;    seasonal_limits: True/False if you want to use your own limits
-;;
-;;    [scatter_West-Pacific]
-;;    lat_min:              Spatial extent for West-Pacific
-;;    lat_max:              Spatial extent for West-Pacific
-;;    lon_min:              Spatial extent for West-Pacific
-;;    lon_max:              Spatial extent for West-Pacific
-;;    season_limits_annual: Spatial extent for annual for West-Pacific
-;;    season_limits_DJF:    Spatial extent for DJF for West-Pacific
-;;    season_limits_MAM:    Spatial extent for MAM for West-Pacific
-;;    season_limits_JJA:    Spatial extent for JJA for West-Pacific
-;;    season_limits_SON:    Spatial extent for SON for West-Pacific
-;;
-;;    [scatter_Central-Pacific]
-;;    lat_min               Spatial extent for Central-Pacific
-;;    lat_max               Spatial extent for Central-Pacific
-;;    lon_min               Spatial extent for Central-Pacific
-;;    lon_max               Spatial extent for Central-Pacific
-;;    season_limits_annual  Spatial extent for annual for Central-Pacific
-;;    season_limits_DJF     Spatial extent for DJF for Central-Pacific
-;;    season_limits_MAM     Spatial extent for MAM for Central-Pacific
-;;    season_limits_JJA     Spatial extent for JJA for Central-Pacific
-;;    season_limits_SON     Spatial extent for SON for Central-Pacific
-;;
-;;    [scatter_East-Pacific]
-;;    lat_min                       Spatial extent for East-Pacific
-;;    lat_max                       Spatial extent for East-Pacific
-;;    lon_min                       Spatial extent for East-Pacific
-;;    lon_max                       Spatial extent for East-Pacific
-;;    season_limits_annual          Spatial extent for annual for East-Pacific
-;;    season_limits_DJF             Spatial extent for DJF for East-Pacific
-;;    season_limits_MAM             Spatial extent for MAM for East-Pacific
-;;    season_limits_JJA             Spatial extent for JJA for East-Pacific
-;;    season_limits_SON             Spatial extent for SON for East-Pacific
-;;
-;;    [scatter_season_DJF]
-;;    season_months: DJF months
-;;
-;;    [scatter_season_MAM]
-;;    season_months: MAM months
-;;
-;;    [scatter_season_JJA]
-;;    season_months: JJA months
-;;
-;;    [scatter_season_SON]
-;;    season_months: SON months
-;;
-;;    [zonal_means]
-;;    areas: One of "Pacific" "Atlantic" "Indian"
-;;
-;;    [zonal_means_Atlantic]
-;;    lat_min: Spatial extent for zonal mean in the Atlantic Ocean
-;;    lat_max: Spatial extent for zonal mean in the Atlantic Ocean
-;;    lon_min: Spatial extent for zonal mean in the Atlantic Ocean
-;;    lon_max: Spatial extent for zonal mean in the Atlantic Ocean
-;;
-;;    [zonal_means_Indian]
-;;    lat_min: Spatial extent for zonal mean in the Indian Ocean
-;;    lat_max: Spatial extent for zonal mean in the Indian Ocean
-;;    lon_min: Spatial extent for zonal mean in the Indian Ocean
-;;    lon_max: Spatial extent for zonal mean in the Indian Ocean
-;;
-;;    [zonal_means_Pacific]
-;;    lat_min: Spatial extent for zonal mean in the Pacific Ocean
-;;    lat_max: Spatial extent for zonal mean in the Pacific Ocean
-;;    lon_min: Spatial extent for zonal mean in the Pacific Ocean
-;;    lon_max: Spatial extent for zonal mean in the Pacific Ocean
-;;
-;; Optional diag_script_info attributes (diagnostic specific)
-;;
-;; Required variable_info attributes (variable specific)
-;;    long_name: Name displayed in plot
-;;    units:     Units
-;;
-;; Optional variable_info attributes (variable specific)
-;;
-;; Caveats
-;;    See TODO in 'esmval_lib' about hardcoded CMIP5 project class
-;;    assumptions.
-;;
-;; Modification history
-;;    20151029-A_laue_ax: added output of acknowledgements + processed files
-;;                        to log-file
-;;    20150115-A_maek_ja: written
-;;
-;; #############################################################################
+This script is the diagnostics and plotting script for
+Tropical Variability zonal means and scatterplots
+
+Author: Jarmo Makela (FMI, Finland)
+EMBRACE project
+Description
+
+Required diag_script_info attributes (diagnostics specific)
+   plot_equatorial:      Switch for equatorial plots
+   plot_scatter:         Switch for scatter plots
+   plot_zonal_means:     Switch for zonal means plots
+   mask_unwanted_values: Mask values outside given range
+   mask_limit_low:       lower mask limit
+   mask_limit_high:      uppper mask limit
+   plot_grid:            provides a background grid for relavant plots
+
+   [equatorial]
+   areas:                One of "Atlantic" "Indian" "Pacific"
+
+   [equatorial_Atlantic]
+   lat_min:  Spatial extent
+   lat_max:  Spatial extent
+   lon_min:  Spatial extent
+   lon_max:  Spatial extent
+   prec_min: Range of values
+   prec_max: Range of values
+   temp_min: Range of values
+   temp_max: Range of values
+   wind_min: Range of values
+   wind_max: Range of values
+   div_min:  Range of values
+   div_max:  Range of values
+
+   [equatorial_Indian]
+   lat_min:  Spatial extent
+   lat_max:  Spatial extent
+   lon_min:  Spatial extent
+   lon_max:  Spatial extent
+   prec_min: Range of values
+   prec_max: Range of values
+   temp_min: Range of values
+   temp_max: Range of values
+   wind_min: Range of values
+   wind_max: Range of values
+   div_min:  Range of values
+   div_max:  Range of values
+
+   [equatorial_Pacific]
+   lat_min:  Spatial extent
+   lat_max:  Spatial extent
+   lon_min:  Spatial extent
+   lon_max:  Spatial extent
+   prec_min: Range of values
+   prec_max: Range of values
+   temp_min: Range of values
+   temp_max: Range of values
+   wind_min: Range of values
+   wind_max: Range of values
+   div_min:  Range of values
+   div_max:  Range of values
+
+   [scatter]
+   areas:           One of "West-Pacific" "Central-Pacific" "East-Pacific"
+   seasons:         One of "annual" "DJF" "MAM" "JJA" "SON"
+   seasonal_limits: True/False if you want to use your own limits
+
+   [scatter_West-Pacific]
+   lat_min:              Spatial extent for West-Pacific
+   lat_max:              Spatial extent for West-Pacific
+   lon_min:              Spatial extent for West-Pacific
+   lon_max:              Spatial extent for West-Pacific
+   season_limits_annual: Spatial extent for annual for West-Pacific
+   season_limits_DJF:    Spatial extent for DJF for West-Pacific
+   season_limits_MAM:    Spatial extent for MAM for West-Pacific
+   season_limits_JJA:    Spatial extent for JJA for West-Pacific
+   season_limits_SON:    Spatial extent for SON for West-Pacific
+
+   [scatter_Central-Pacific]
+   lat_min               Spatial extent for Central-Pacific
+   lat_max               Spatial extent for Central-Pacific
+   lon_min               Spatial extent for Central-Pacific
+   lon_max               Spatial extent for Central-Pacific
+   season_limits_annual  Spatial extent for annual for Central-Pacific
+   season_limits_DJF     Spatial extent for DJF for Central-Pacific
+   season_limits_MAM     Spatial extent for MAM for Central-Pacific
+   season_limits_JJA     Spatial extent for JJA for Central-Pacific
+   season_limits_SON     Spatial extent for SON for Central-Pacific
+
+   [scatter_East-Pacific]
+   lat_min                       Spatial extent for East-Pacific
+   lat_max                       Spatial extent for East-Pacific
+   lon_min                       Spatial extent for East-Pacific
+   lon_max                       Spatial extent for East-Pacific
+   season_limits_annual          Spatial extent for annual for East-Pacific
+   season_limits_DJF             Spatial extent for DJF for East-Pacific
+   season_limits_MAM             Spatial extent for MAM for East-Pacific
+   season_limits_JJA             Spatial extent for JJA for East-Pacific
+   season_limits_SON             Spatial extent for SON for East-Pacific
+
+   [scatter_season_DJF]
+   season_months: DJF months
+
+   [scatter_season_MAM]
+   season_months: MAM months
+
+   [scatter_season_JJA]
+   season_months: JJA months
+
+   [scatter_season_SON]
+   season_months: SON months
+
+   [zonal_means]
+   areas: One of "Pacific" "Atlantic" "Indian"
+
+   [zonal_means_Atlantic]
+   lat_min: Spatial extent for zonal mean in the Atlantic Ocean
+   lat_max: Spatial extent for zonal mean in the Atlantic Ocean
+   lon_min: Spatial extent for zonal mean in the Atlantic Ocean
+   lon_max: Spatial extent for zonal mean in the Atlantic Ocean
+
+   [zonal_means_Indian]
+   lat_min: Spatial extent for zonal mean in the Indian Ocean
+   lat_max: Spatial extent for zonal mean in the Indian Ocean
+   lon_min: Spatial extent for zonal mean in the Indian Ocean
+   lon_max: Spatial extent for zonal mean in the Indian Ocean
+
+   [zonal_means_Pacific]
+   lat_min: Spatial extent for zonal mean in the Pacific Ocean
+   lat_max: Spatial extent for zonal mean in the Pacific Ocean
+   lon_min: Spatial extent for zonal mean in the Pacific Ocean
+   lon_max: Spatial extent for zonal mean in the Pacific Ocean
+
+Optional diag_script_info attributes (diagnostic specific)
+
+Required variable_info attributes (variable specific)
+   long_name: Name displayed in plot
+   units:     Units
+
+Optional variable_info attributes (variable specific)
+
+Caveats
+   See TODO in 'esmval_lib' about hardcoded CMIP5 project class
+   assumptions.
 """
+
 # Basic Python packages
 import ConfigParser
 import sys
@@ -175,8 +167,15 @@ import matplotlib.pyplot as plt
 import netCDF4 as nc
 
 def main(project_info):
-    """Diagnostics and plotting script for Tropical Variability.
-    We use ts as a proxy for Sea Surface Temperature. """
+    """
+    Diagnostics and plotting script for Tropical Variability.
+    We use ts as a proxy for Sea Surface Temperature.
+
+    Parameters
+    ----------
+    project_info : dict
+        Dictionary for project information
+    """
 
     # ESMValProject provides some easy methods to access information in
     # project_info but you can also access it directly (as in main.py)
@@ -224,7 +223,16 @@ def main(project_info):
 # E. style functions are in the general python file esmval_lib.py
 
 def get_scatterplot_limits(modelconfig, config_file, area, season):
-    """Returns area specific seasonal limits for scatterplotting. """
+    """
+    Returns area specific seasonal limits for scatterplotting.
+
+    Parameters
+    ----------
+    modelconfig : xxxx
+    config_file : xxxxxxx
+    area : xxxxx
+    season : xxxx
+    """
     area_key = 'scatter_' + area
     season_key = 'season_limits_' + season
     limits = []
@@ -255,7 +263,15 @@ def get_scatterplot_limits(modelconfig, config_file, area, season):
 
 
 def get_scatterplot_values(modelconfig, season, data):
-    """Extracts the values to plot from all model specific values. """
+    """
+    Extracts the values to plot from all model specific values.
+    
+    Parameters
+    ----------
+    modelconfig : xxxxx
+    season : xxxxx
+    data : xxxxx
+    """
     season_key = 'scatter_season_' + season
 
     # We transform monthly values to yearly means or just take the monthly ones
@@ -278,9 +294,16 @@ def get_scatterplot_values(modelconfig, season, data):
 
 
 def process_equatorial_means(E, modelconfig):
-    """This script preprocessess equatorial means for precipitation and
+    """
+    This script preprocessess equatorial means for precipitation and
     temperature - the data is extracted and saved to a temporary npy-file.
-    Plotting and the wind processing are in TropicalVariability_EQ.py. """
+    Plotting and the wind processing are in TropicalVariability_EQ.py.
+    
+    Parameters 
+    ----------
+    E : xxxx
+    modelconfig : xxxxx
+    """
     experiment = 'equatorial'
     datakeys = E.get_currVars()
     work_dir = E.get_work_dir()
@@ -318,8 +341,15 @@ def process_equatorial_means(E, modelconfig):
 
 
 def process_scatterplot(E, modelconfig):
-    """Main script for scatterplots. Outputs model specific scatterplots with
-    specified observations. Also prints out comparable statistics. """
+    """
+    Main script for scatterplots. Outputs model specific scatterplots with
+    specified observations. Also prints out comparable statistics.
+    
+    Parameters
+    ----------
+    E : xxxx
+    modelconfig : xxxxx
+    """
     experiment = 'scatter'
     config_file = E.get_configfile()
     datakeys = E.get_currVars()
