@@ -40,6 +40,7 @@ This namelist is part of the ESMValTool
   <verbosity  type="integer">         2                         </verbosity>
   <debuginfo type="boolean">          False                     </debuginfo>
   <exit_on_warning  type="boolean">   True                      </exit_on_warning>
+  <tags>                              P_embrace, D_hagemann13jadvmodelearthsyst, D_weedon14wrr,  D_duemnill00mpimr </tags>
 </GLOBAL>
 
 
