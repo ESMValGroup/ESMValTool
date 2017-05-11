@@ -161,7 +161,8 @@ D_roedenbeck13os = Roedenbeck, C. et al., Ocean Sci., 9, 193-216, doi:10.5194/os
 D_sperber12asl = Sperber and Kim, Atmos. Sci. Lett., 13, 3, 187-193, doi:10.1002/asl.378, 2012.
 D_stroeve07grl = Stroeve, J. et al., Geophys. Res. Lett., 34, L09501, doi:10.1029/2007GL029703, 2007.
 D_taylor12 = Taylor et al., Nature, 489, 423-426, doi:10.1038/nature11377 (2012)
-D_takahashi14marchem, Takahashi et al., Mar. Chem., 164, 95–125, doi:10.1016/j.marchem.2014.06.004, 2014.
+D_takahashi14marchem = Takahashi et al., Mar. Chem., 164, 95–125, doi:10.1016/j.marchem.2014.06.004, 2014.
+D_wang99bams = Wang, B. and Z. Fan, Bull. Amer. Meteor. Soc., 80, 629-638, doi:10.1175/1520-0477(1999)080&lt;0629:COSASM&gt;2.0.CO;2 (1999)
 D_webster92qjrms = Webster, P. J. and Yang, S., Q.J.R. Meteorol. Soc., 118: 877–926. doi:10.1002/qj.49711850705
 D_weedon14wrr = Weedon, G. P. et al., Water Resour. Res., 50, 7505–7514, doi:10.1002/2014WR015638 (2014)
 D_wenzel14jgr = Wenzel et al., J. Geophys. Res. Biogeosci., 119(5), doi:2013JG002591, 2014.
