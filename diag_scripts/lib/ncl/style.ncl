@@ -354,7 +354,7 @@ undef("project_style_GO")
 function project_style_GO(flag:string)
 ;;
 ;; Arguments:
-;;    flag = string determining the type of array requested
+;;    flag: string determining the type of array requested
 ;;
 ;; Return value: array of dimsizes(models@name)
 ;;  * Definition of plot attributes; Returns arrays of dimsizes(models@name)
@@ -544,7 +544,7 @@ function gsnColorRange(lower:numeric,
 ;;            or cooling and red means warm or warming.
 ;;    color_end: The number of colors in colormap (ex. 97 for BlRe, 253 for
 ;;               BlueRed).
-;;    center_color = Color value on the left of the "center" value (see above).
+;;    center_color: Color value on the left of the "center" value (see above).
 ;;
 ;; Description
 ;;    Sets the gsnSpreadXXX resources necessary to correctly span a two-color
