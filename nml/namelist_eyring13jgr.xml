@@ -43,6 +43,7 @@ This namelist is part of the ESMValTool
   <force_calc type="boolean">             False         </force_calc>
   <force_gradecalc type="boolean">        False         </force_gradecalc>
   <force_taylorcalc type="boolean">       False         </force_taylorcalc>
+  <tags>                P_esmval, D_eyring13jgr         </tags>
 </GLOBAL>
 
 <MODELS>
@@ -86,6 +87,8 @@ This namelist is part of the ESMValTool
        <model> OBS NIWA reanaly 1 1986 2005 @{OBSPATH}/Tier3/NIWA/ </model>
 
        <diag_script cfg="cfg_eyring13jgr_fig01.ncl"> eyring13jgr_fig01.ncl </diag_script>
+
+       <tags> R_atmos, T_ghg, T_chem </tags>
    </diag>
 
    <diag>
@@ -94,6 +97,7 @@ This namelist is part of the ESMValTool
          <variable>                    toz            </variable>
          <field_type>                  T2Ms           </field_type>
          <diag_script_cfg_dir> ./nml/cfg_eyring13jgr/ </diag_script_cfg_dir>
+         <tags> R_atmos, T_ghg, T_chem </tags>
 
          <model> CMIP5_ETHZ bcc-csm1-1     Amon historical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
          <model> CMIP5_ETHZ bcc-csm1-1-m   Amon historical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
@@ -133,6 +137,7 @@ This namelist is part of the ESMValTool
         <variable>                  tropoz            </variable>
     	<field_type>                T2Ms              </field_type>
     	<diag_script_cfg_dir> ./nml/cfg_eyring13jgr/  </diag_script_cfg_dir>
+      <tags>                 R_atmos, T_chem, T_ghg </tags>
 
         <model> CMIP5_ETHZ bcc-csm1-1     Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
         <model> CMIP5_ETHZ bcc-csm1-1-m   Amon historical r1i1p1 2000 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
@@ -178,6 +183,7 @@ This namelist is part of the ESMValTool
         <field_type>               T2Ms              </field_type>
         <diag_script_cfg_dir> ./nml/cfg_eyring13jgr/ </diag_script_cfg_dir>
         <diag_script cfg="cfg_eyring13jgr_fig06.ncl"> eyring13jgr_fig06.ncl </diag_script>
+        <tags>                     R_atmos, T_ghg, T_chem </tags>
 
         <model> CMIP5_ETHZ CCSM4          Amon historical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
         <model> CMIP5_ETHZ GFDL-CM3       Amon historical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
@@ -207,6 +213,7 @@ This namelist is part of the ESMValTool
        <variable>                    tro3            </variable>
        <field_type>                 T3M              </field_type>
        <diag_script_cfg_dir> ./nml/cfg_eyring13jgr/  </diag_script_cfg_dir>
+       <tags> R_atmos, T_ghg, T_chem </tags>
 
        <model> CMIP5_ETHZ CCSM4      Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
        <model> CMIP5_ETHZ GFDL-CM3   Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
@@ -233,6 +240,7 @@ This namelist is part of the ESMValTool
        <variable>                tro3               </variable>
        <field_type>                T3M              </field_type>
        <diag_script_cfg_dir> ./nml/cfg_eyring13jgr/ </diag_script_cfg_dir>
+       <tags> R_atmos, T_ghg, T_chem </tags>
 
        <model> CMIP5_ETHZ CCSM4          Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
        <model> CMIP5_ETHZ GFDL-CM3       Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
@@ -264,6 +272,7 @@ This namelist is part of the ESMValTool
        <variable>                    ta             </variable>
        <field_type>                 T3M             </field_type>
        <diag_script_cfg_dir> ./nml/cfg_eyring13jgr/ </diag_script_cfg_dir>
+       <tags> R_atmos, T_phys </tags>
 
        <model> CMIP5_ETHZ CCSM4          Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
        <model> CMIP5_ETHZ GFDL-CM3       Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
@@ -295,6 +304,7 @@ This namelist is part of the ESMValTool
        <variable>                tro3               </variable>
        <field_type>                T3M              </field_type>
        <diag_script_cfg_dir> ./nml/cfg_eyring13jgr/ </diag_script_cfg_dir>
+       <tags> R_atmos, T_chem, T_ghg </tags>
 
        <model> CMIP5_ETHZ CCSM4          Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
        <model> CMIP5_ETHZ GFDL-CM3       Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
@@ -326,6 +336,7 @@ This namelist is part of the ESMValTool
        <variable>                  ta               </variable>
        <field_type>                T3M              </field_type>
        <diag_script_cfg_dir> ./nml/cfg_eyring13jgr/ </diag_script_cfg_dir>
+       <tags> R_atmos, T_phys  </tags>
 
        <model> CMIP5_ETHZ CCSM4          Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
        <model> CMIP5_ETHZ GFDL-CM3       Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
@@ -357,6 +368,7 @@ This namelist is part of the ESMValTool
        <variable>                  ua               </variable>
        <field_type>                T3M              </field_type>
        <diag_script_cfg_dir> ./nml/cfg_eyring13jgr/ </diag_script_cfg_dir>
+       <tags> R_atmos, T_atmDyn </tags>
 
        <model> CMIP5_ETHZ CCSM4          Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
        <model> CMIP5_ETHZ GFDL-CM3       Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
@@ -388,6 +400,7 @@ This namelist is part of the ESMValTool
        <variable>                  ta               </variable>
        <field_type>                T3M              </field_type>
        <diag_script_cfg_dir> ./nml/cfg_eyring13jgr/ </diag_script_cfg_dir>
+       <tags> R_atmos, T_phys </tags>
 
        <model> CMIP5_ETHZ CCSM4          Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
        <model> CMIP5_ETHZ GFDL-CM3       Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
@@ -420,6 +433,7 @@ This namelist is part of the ESMValTool
          <variable>                tro3               </variable>
          <field_type>                T3M              </field_type>
          <diag_script_cfg_dir> ./nml/cfg_eyring13jgr/ </diag_script_cfg_dir>
+         <tags> R_atmos, T_phys, T_ghg, T_chem </tags>
 
          <model> CMIP5_ETHZ bcc-csm1-1     Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
          <model> CMIP5_ETHZ bcc-csm1-1-m   Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
@@ -510,6 +524,7 @@ This namelist is part of the ESMValTool
          <variable>                tro3               </variable>
          <field_type>                T3M              </field_type>
          <diag_script_cfg_dir> ./nml/cfg_eyring13jgr/ </diag_script_cfg_dir>
+         <tags> R_atmos, T_phys, T_chem, T_ghg </tags>
 
          <model> CMIP5_ETHZ bcc-csm1-1     Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
          <model> CMIP5_ETHZ bcc-csm1-1-m   Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
@@ -600,6 +615,7 @@ This namelist is part of the ESMValTool
          <variable>                tro3               </variable>
          <field_type>                T3M              </field_type>
          <diag_script_cfg_dir> ./nml/cfg_eyring13jgr/ </diag_script_cfg_dir>
+         <tags> R_atmos, T_atmDyn, T_ghg, T_chem </tags>
 
          <model> CMIP5_ETHZ bcc-csm1-1     Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
          <model> CMIP5_ETHZ bcc-csm1-1-m   Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
@@ -690,6 +706,7 @@ This namelist is part of the ESMValTool
         <variable>                   ta               </variable>
         <field_type>                 T3M              </field_type>
         <diag_script_cfg_dir> ./nml/cfg_eyring13jgr/  </diag_script_cfg_dir>
+        <tags> R_atmos, T_atmDyn, T_phys </tags>
 
          <model> CMIP5_ETHZ bcc-csm1-1     Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
          <model> CMIP5_ETHZ bcc-csm1-1-m   Amon historical r1i1p1 1979 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
