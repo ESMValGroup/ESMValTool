@@ -121,6 +121,7 @@ This namelist is part of the ESMValTool
     <variable ref_model="ERAINT">   theta-850             </variable>
     <field_type>                    T2Ms                 </field_type>
     <diag_script_cfg_dir>         ./nml/cfg_WAMonsoon/   </diag_script_cfg_dir>
+    <tags> R_atmos, T_atmDyn </tags>
 
     <diag_script cfg="cfg_WAMonsoon_10W10E_theta850.ncl">   WAMonsoon_10W10E_1D_basic.ncl  </diag_script>
 
