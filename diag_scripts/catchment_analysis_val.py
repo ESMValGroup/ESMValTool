@@ -1,5 +1,11 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+"""
+The diagnostics calculates water balance components for different
+catchments and compares the results against observations.
+"""
+
+
+
+
 """
 ;;#############################################################################
 ;; catchment_analysis_val.py
@@ -9,9 +15,7 @@
 ;; EMBRACE project
 ;;#############################################################################
 ;; Description
-;;    The diagnostics calculates water balance components for different
-;;    catchments and compares the results against observations.
-;;
+;
 ;; Required diag_script_info attributes (diagnostics specific)
 ;;
 ;; Optional diag_script_info attributes (diagnostic specific)
