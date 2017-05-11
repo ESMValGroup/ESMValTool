@@ -32,6 +32,7 @@ This namelist is part of the ESMValTool
     <exit_on_warning  type="boolean">     False          </exit_on_warning>
     <output_file_type>                       ps          </output_file_type>
     <force_calc type="boolean">           False          </force_calc>
+    <tags>                                               </tags>
 </GLOBAL>
 
 <MODELS>
