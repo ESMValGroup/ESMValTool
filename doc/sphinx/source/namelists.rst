@@ -67,7 +67,9 @@ More on the <GLOBAL>-tag
 
 :numref:`tab_glob_tags` Tags of the <GLOBAL> section of the namelist. Note that not all tags might be used by a diagnostic.
 
+
 .. _tab_glob_tags:
+
 
 +----------------------+----------+------------------------------------------------------------------------------------------------+
 | Name	               | Type	  | Description                                                                                    |
@@ -147,7 +149,8 @@ The attribute *id* specifies a string that can be used to refer to the model in 
 
 
 
-**Table S2** Project specifiers and corresponding arguments.
+:numref:`tab_proj_spec` Project specifiers and corresponding arguments.
+
 
 .. _tab_proj_spec:
 
