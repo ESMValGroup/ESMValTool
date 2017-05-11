@@ -147,7 +147,8 @@ The attribute *id* specifies a string that can be used to refer to the model in 
 
 
 
-**Table S2** Project specifiers and corresponding arguments.
+:numref:`tab_proj_spec` Project specifiers and corresponding arguments.
+
 
 .. _tab_proj_spec:
 
