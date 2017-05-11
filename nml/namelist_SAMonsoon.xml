@@ -7,7 +7,7 @@ Description
 South Asian Monsoon diagnostics implemented from the UKMET Monsoon suite
 
 Authors
-Ricard Levine (UKMET, Great Britain - Richard.Levine@metoffice.gov.uk)
+Richard Levine (UKMET, Great Britain - Richard.Levine@metoffice.gov.uk)
 Martin Evaldsson (SMHI, Sweden - Martin.Evaldsson@smhi.se)
 
 Contributor
@@ -45,7 +45,8 @@ This namelist is part of the ESMValTool
   <write_netcdf type="boolean">           True         </write_netcdf>
   <read_from_vault type="boolean">        False        </read_from_vault>
   <force_processing type="boolean">       False        </force_processing>
-</GLOBAL>
+  <tags>                     D_phillips14eos, D_lin08jclim,  P_embrace  </tags>
+  </GLOBAL>
 
 <MODELS>
     <model> CMIP5  CNRM-CM5      Amon  historical  r1i1p1   1980  2004  /nobackup/rossby15/sm_grini/Data/CMIP5/CNRM-CM5/r1i1p1/historical/mon      </model>
