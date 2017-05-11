@@ -160,6 +160,7 @@ D_sperber12asl = Sperber and Kim, Atmos. Sci. Lett., 13, 3, 187-193, doi:10.1002
 D_stroeve07grl = Stroeve, J. et al., Geophys. Res. Lett., 34, L09501, doi:10.1029/2007GL029703, 2007.
 D_taylor12 = Taylor et al., Nature, 489, 423-426, doi:10.1038/nature11377 (2012)
 D_takahashi14marchem, Takahashi et al., Mar. Chem., 164, 95–125, doi:10.1016/j.marchem.2014.06.004, 2014.
+D_webster92qjrms = Webster, P. J. and Yang, S. (1992), Monsoon and Enso: Selectively Interactive Systems. Q.J.R. Meteorol. Soc., 118: 877–926. doi:10.1002/qj.49711850705
 D_wenzel14jgr = Wenzel et al., J. Geophys. Res. Biogeosci., 119(5), doi:2013JG002591, 2014.
 D_williams09climdyn = Williams and Webb, Clim. Dynam., 33, 141-157, doi:10.1007/s00382-008-0443-1, 2009.
 
