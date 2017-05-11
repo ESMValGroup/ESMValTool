@@ -52,7 +52,8 @@ begin
 
     m_tags = "M_" + modelnames
     v_tags = "V_" + varnames
-    tags_plus = array_append_record(tags, (/m_tags, v_tags/), 0)
+    tags_plus  = array_append_record(tags, m_tags, 0)
+    tags_plus := array_append_record(tags_plus, v_tags, 0)
     delete(m_tags)
     delete(v_tags)
 
