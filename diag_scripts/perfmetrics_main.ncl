@@ -22,7 +22,7 @@
 ;;                    missing values in the time coordinate
 ;;    draw_plots: switch on/off plots drawing
 ;;    plot_diff: switch on/off difference plots
-;;    plot_stddev: plot standard deviation
+;;    dev: plot standard deviation
 ;;    legend_outside: save legend in a separate file
 ;;    styleset: as in lib/ncl/style.ncl functions
 ;;    t_test: calculate t-test in difference plots
@@ -109,6 +109,7 @@ load "./plot_scripts/ncl/xy_line.ncl"
 load "./plot_scripts/ncl/zonalmean_profile.ncl"
 load "./plot_scripts/ncl/contour_maps.ncl"
 load "./diag_scripts/aux/perfmetrics/aux_perfmetrics.ncl"
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 begin
 
@@ -986,6 +987,7 @@ begin
             draw(plot)
             frame(wks)
             info_output(" gv " + outfile + "." + file_type, verbosity, 1)
+            PT_tag = "PT_times"
         end if
 
         ;; Plot - Zonal mean case
@@ -1016,6 +1018,7 @@ begin
                 frame(wks)
                 info_output(" gv " + outfile + "." + file_type, \
                             verbosity, 1)
+                PT_tag = "PT_zonal"
                 delete(var@res_cnLevels)
                 delete(wks)
                 delete(plot)
@@ -1118,13 +1121,14 @@ begin
                 frame(wks)
                 info_output(" gv " + outfile + "." + file_type, \
                             verbosity, 1)
+                PT_tag = "PT_geo"
                 delete(var@res_cnLevels)
                 delete(wks)
                 delete(plot)
 
                 ;; Difference plot to the reference
                 if (imod.ne.ref_ind) then
-                    if (diag_script_info@plot_diff) then
+                    if (diag_script_info@_diff) then
                         var = var_diff(imod, :, :)
                         outfile = output_dir + diag_script_base + "_" + \
                             modelnames(imod) + "-" + modelnames(ref_ind) + \
@@ -1202,6 +1206,20 @@ begin
 
         end if
     end if
+    
+    ;; tag for plots
+    alltags = array_append_record(tags,\
+           (/region@DM_tag, PT_tag, (/"ST_stddev", "ST_mean", "ST_anomaly"/), 0)
+    caption = "This is an example caption. Model: " + models@name(0) + \
+              ", variable: " + variables(0)
+    id = diag_script + "_example_id"
+    climofiles = interface_get_inpaths(imod) + "/" + \
+                 interface_get_infile(variables(0), field_types(0), imod)
+
+    ESMValMD(map@outfile, alltags, caption, id, variables(0), models@name(0), climofiles)
+
+    delete([/alltags, caption, id, climofiles/])
+
 
     leave_msg(diag_script, "", 4)
 
