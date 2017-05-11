@@ -41,6 +41,7 @@ This namelist is part of the ESMValTool
     <verbosity  type="integer">                                   1     </verbosity>
     <exit_on_warning  type="boolean">                         False     </exit_on_warning>
     <output_file_type>                                           ps     </output_file_type>
+    <tags>  D_antonov10usgov, D_dong08grl, D_locarini10usgov, P_embrace </tags>
 </GLOBAL>
 
 <MODELS>
@@ -56,6 +57,7 @@ This namelist is part of the ESMValTool
         <field_type>                                              TO2Ms    </field_type>
         <diag_script_cfg_dir>                   ./nml/cfg_SouthernOcean/   </diag_script_cfg_dir>
         <diag_script cfg="cfg_SouthernOcean_tos.ncl"> SouthernOcean_polcon.ncl    </diag_script>
+        <tags>                                           R_ocean, T_phys   </tags>
 
         <model>  OBS         ERA-Interim    reanaly   1                     2000  2005    /nobackup/users/ulft/EMBRACE/ESMVal/obs/ERA-Interim/CMORized                      </model>
         <model>  CMIP5       HadGEM2-ES     Omon      historical   r1i1p1   2000  2005    /nobackup_1/users/ulft/CMIP5/ESMdiag                                              </model>
@@ -69,7 +71,8 @@ This namelist is part of the ESMValTool
         <field_type>                                                        TO2Ms   </field_type>
         <diag_script_cfg_dir>                             ./nml/cfg_SouthernOcean/  </diag_script_cfg_dir>
         <diag_script cfg="cfg_SouthernOcean_tos_diff.ncl"> SouthernOcean_polcon_diff.ncl   </diag_script>
-
+        <tags>                                           R_ocean, T_phys   </tags>
+        
         <model>  OBS         ERA-Interim    reanaly    1                    2000  2005    /nobackup/users/ulft/EMBRACE/ESMVal/obs/ERA-Interim/CMORized                      </model>
         <model>  CMIP5       HadGEM2-ES     Omon       historical r1i1p1    2000  2005    /nobackup_1/users/ulft/CMIP5/ESMdiag                                              </model>
         <model>  CMIP5_fx    MPI-ESM-LR     Omon      historical   r2i1p1   2000  2005    /nobackup_1/users/ulft/CMIP5/ESMdiag                             fx_acello_mpi    </model>
@@ -82,7 +85,8 @@ This namelist is part of the ESMValTool
         <field_type>                                              TO2Ms   </field_type>
         <diag_script_cfg_dir>                   ./nml/cfg_SouthernOcean/  </diag_script_cfg_dir>
         <diag_script cfg="cfg_SouthernOcean_sos.ncl"> SouthernOcean_polcon.ncl   </diag_script>
-
+        <tags>                                           R_ocean, T_phys  </tags>
+        
         <model>  OBS         WOA09-monthly    insitu    1                     0     0       /nobackup/users/ulft/EMBRACE/ESMVal/obs/WOA09-monthly/CMORized                    </model>
         <model>  CMIP5       HadGEM2-ES       Omon      historical   r1i1p1   2000  2005    /nobackup_1/users/ulft/CMIP5/ESMdiag                                              </model>
         <model>  CMIP5_fx    MPI-ESM-LR       Omon      historical   r2i1p1   2000  2005    /nobackup_1/users/ulft/CMIP5/ESMdiag                             fx_acello_mpi    </model>
@@ -95,7 +99,8 @@ This namelist is part of the ESMValTool
         <field_type>                                           TO2Ms   </field_type>
         <diag_script_cfg_dir>                ./nml/cfg_SouthernOcean/  </diag_script_cfg_dir>
         <diag_script cfg="cfg_SouthernOcean_sos_diff.ncl"> SouthernOcean_polcon_diff.ncl    </diag_script>
-
+        <tags>                                       R_ocean, T_phys   </tags>
+        
         <model>  OBS    WOA09-monthly    insitu    1    0    0    /nobackup/users/ulft/EMBRACE/ESMVal/obs/WOA09-monthly/CMORized </model>
     </diag>
 
@@ -106,7 +111,8 @@ This namelist is part of the ESMValTool
         <field_type>                                                 TO2Ms    </field_type>
         <diag_script_cfg_dir>                      ./nml/cfg_SouthernOcean/   </diag_script_cfg_dir>
         <diag_script cfg="cfg_SouthernOcean_mlotst.ncl"> SouthernOcean_polcon.ncl    </diag_script>
-
+        <tags>                                             R_ocean, T_phys    </tags>
+        
         <model>  OBS         Dong08-ARGO-monthly    insitu    1                     0     0       /nobackup/users/ulft/EMBRACE/ESMVal/obs/Dong08-ARGO-monthly/CMORized                      </model>
         <model>  CMIP5_fx    MPI-ESM-LR             Omon      historical   r1i1p1   2000  2005    /nobackup_1/users/ulft/CMIP5/ESMdiag                                     fx_acello_mpi    </model>
     </diag>
@@ -118,7 +124,8 @@ This namelist is part of the ESMValTool
         <field_type>                                            TO2Ms    </field_type>
         <diag_script_cfg_dir>                 ./nml/cfg_SouthernOcean/   </diag_script_cfg_dir>
         <diag_script cfg="cfg_SouthernOcean_mlotst_diff.ncl"> SouthernOcean_polcon_diff.ncl </diag_script>
-
+        <tags>                                          _ocean, T_phys   </tags>
+        
         <model>  OBS       Dong08-ARGO-monthly    insitu   1                   0     0       /nobackup/users/ulft/EMBRACE/ESMVal/obs/Dong08-ARGO-monthly/CMORized                     </model>
         <model>  CMIP5_fx  MPI-ESM-LR             Omon     historical   r1i1p1 2000  2005    /nobackup_1/users/ulft/CMIP5/ESMdiag                                    fx_acello_mpi    </model>
     </diag>
@@ -130,7 +137,8 @@ This namelist is part of the ESMValTool
         <field_type>                                        T2Ms    </field_type>
         <diag_script_cfg_dir>            ./nml/cfg_SouthernOcean/   </diag_script_cfg_dir>
         <diag_script cfg="cfg_SouthernOcean_wfpe-mmday_diff.ncl"> SouthernOcean_polcon_diff.ncl </diag_script>
-
+        <tags>                                    R_ocean, T_phys   </tags>
+        
         <model>  OBS    ERA-Interim    reanaly    1    2000  2005    /nobackup/users/ulft/EMBRACE/ESMVal/obs/ERA-Interim/CMORized </model>
     </diag>
 
@@ -141,7 +149,8 @@ This namelist is part of the ESMValTool
         <field_type>                                       T2Ms    </field_type>
         <diag_script_cfg_dir>           ./nml/cfg_SouthernOcean/   </diag_script_cfg_dir>
         <diag_script cfg="cfg_SouthernOcean_hfds_diff.ncl"> SouthernOcean_polcon_diff.ncl </diag_script>
-
+        <tags>                                   R_ocean, T_phys   </tags>
+        
         <model>  OBS    ERA-Interim    reanaly    1    2000  2005   /nobackup/users/ulft/EMBRACE/ESMVal/obs/ERA-Interim/CMORized </model>
     </diag>
 
@@ -152,7 +161,8 @@ This namelist is part of the ESMValTool
         <field_type>                                           TO2Ms    </field_type>
         <diag_script_cfg_dir>                ./nml/cfg_SouthernOcean/   </diag_script_cfg_dir>
         <diag_script cfg="cfg_SouthernOcean_tauu_tauv_diff.ncl"> SouthernOcean_polcon_diff.ncl </diag_script>
-
+        <tags>                                       R_ocean, T_phys    </tags>
+        
         <model>  OBS    ERA-Interim    reanaly    1    2000  2005    /nobackup/users/ulft/EMBRACE/ESMVal/obs/ERA-Interim/CMORized </model>
     </diag>
 
@@ -163,7 +173,8 @@ This namelist is part of the ESMValTool
         <field_type>                                            TO2Ms    </field_type>
         <diag_script_cfg_dir>                 ./nml/cfg_SouthernOcean/   </diag_script_cfg_dir>
         <diag_script cfg="cfg_SouthernOcean_tauu_tauv_diff.ncl"> SouthernOcean_polcon_diff.ncl </diag_script>
-
+        <tags>                                         R_ocean, T_phys   </tags>
+        
         <model>  OBS    ERA-Interim    reanaly    1    2000  2005    /nobackup/users/ulft/EMBRACE/ESMVal/obs/ERA-Interim/CMORized </model>
     </diag>
 
@@ -176,7 +187,8 @@ This namelist is part of the ESMValTool
         <field_type>                                   TO2Ms    </field_type>
         <diag_script_cfg_dir>        ./nml/cfg_SouthernOcean/   </diag_script_cfg_dir>
         <diag_script cfg="cfg_SouthernOcean_tauw_diff.ncl"> SouthernOcean_vector_polcon_diff.ncl </diag_script>
-
+        <tags>                               R_ocean, T_phys    </tags>
+        
         <model>  OBS    ERA-Interim    reanaly    1    2000   2005    /nobackup/users/ulft/EMBRACE/ESMVal/obs/ERA-Interim/CMORized </model>
     </diag>
 
@@ -187,7 +199,8 @@ This namelist is part of the ESMValTool
         <field_type>                                  T3M    </field_type>
         <diag_script_cfg_dir>      ./nml/cfg_SouthernOcean/  </diag_script_cfg_dir>
         <diag_script cfg="cfg_SouthernOcean_to.ncl"> SouthernOcean_areamean_vertconplot.ncl </diag_script>
-
+        <tags>                             R_ocean, T_phys   </tags>
+        
         <model>  OBS    WOA09-monthly    insitu    1    0    0    /nobackup/users/ulft/EMBRACE/ESMVal/obs/WOA09-monthly/CMORized </model>
     </diag>
 
@@ -198,7 +211,8 @@ This namelist is part of the ESMValTool
         <field_type>                                 T3M    </field_type>
         <diag_script_cfg_dir>    ./nml/cfg_SouthernOcean/   </diag_script_cfg_dir>
         <diag_script cfg="cfg_SouthernOcean_so.ncl"> SouthernOcean_areamean_vertconplot.ncl </diag_script>
-
+        <tags>                           R_ocean, T_phys    </tags>
+        
         <model>  OBS    WOA09-monthly    insitu    1    0    0    /nobackup/users/ulft/EMBRACE/ESMVal/obs/WOA09-monthly/CMORized </model>
     </diag>
 
@@ -210,6 +224,7 @@ This namelist is part of the ESMValTool
         <field_type>                                  T3M    </field_type>
         <diag_script_cfg_dir>     ./nml/cfg_SouthernOcean/   </diag_script_cfg_dir>
         <diag_script cfg="cfg_SouthernOcean_transport.ncl"> SouthernOcean_transport.ncl </diag_script>
+        <tags>                            R_ocean, T_phys    </tags>
     </diag>
 </DIAGNOSTICS>
 
