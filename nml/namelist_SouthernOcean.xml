@@ -120,11 +120,11 @@ This namelist is part of the ESMValTool
     <diag>
         <description> Southern Ocean Mixed Layer Thickness difference    </description>
         <variable_def_dir>                            ./variable_defs/   </variable_def_dir>
-        <variable ref_model="Dong08-ARGO-monthly">             mlotst    </variable>
-        <field_type>                                            TO2Ms    </field_type>
+        <field_type>                                        <variable ref_model="Dong08-ARGO-monthly">             mlotst    </variable>
+            TO2Ms    </field_type>
         <diag_script_cfg_dir>                 ./nml/cfg_SouthernOcean/   </diag_script_cfg_dir>
         <diag_script cfg="cfg_SouthernOcean_mlotst_diff.ncl"> SouthernOcean_polcon_diff.ncl </diag_script>
-        <tags>                                          _ocean, T_phys   </tags>
+        <tags>                                          R_ocean, T_phys   </tags>
         
         <model>  OBS       Dong08-ARGO-monthly    insitu   1                   0     0       /nobackup/users/ulft/EMBRACE/ESMVal/obs/Dong08-ARGO-monthly/CMORized                     </model>
         <model>  CMIP5_fx  MPI-ESM-LR             Omon     historical   r1i1p1 2000  2005    /nobackup_1/users/ulft/CMIP5/ESMdiag                                    fx_acello_mpi    </model>
