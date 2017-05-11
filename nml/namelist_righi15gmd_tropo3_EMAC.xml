@@ -74,6 +74,8 @@ This namelist is part of the ESMValTool
 
         <diag_script cfg="cfg_righi15gmd_fig14.ncl">      ancyc_lat.ncl      </diag_script>
         <diag_script cfg="cfg_righi15gmd_fig13.ncl">      lat_lon.ncl      </diag_script>
+        
+        <tags> R_atmosChem, T_ghg, T_chem </tags>
     </diag>
     <diag>
         <description> fig 9: total column ozone plot </description>
@@ -86,6 +88,8 @@ This namelist is part of the ESMValTool
         <model> OBS  GTO-ECV sat  1 1998 2010  @{OBSPATH}/Tier3/GTO-ECV/ </model>
 
         <diag_script cfg="cfg_righi15gmd_fig10.ncl">      ancyc_lat.ncl      </diag_script>
+        
+        <tags> R_atmosChem, T_ghg, T_chem </tags>
     </diag>
 
 <!--################################################################################################################# -->
@@ -132,6 +136,8 @@ This namelist is part of the ESMValTool
         <field_type>          T2Ms                          </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
         <diag_script cfg="cfg_perfmetrics_taylor_collect.ncl">  perfmetrics_taylor_collect.ncl </diag_script>
+        
+        <tags> R_atmosChem, T_ghg, T_chem </tags>
     </diag>
 
     <diag>
@@ -182,6 +188,8 @@ This namelist is part of the ESMValTool
 
         <diag_script cfg="cfg_perfmetrics_grading_RMSD_collect_O3.ncl">  perfmetrics_grading_collect.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_taylor_collect.ncl">  perfmetrics_taylor_collect.ncl </diag_script>
+        
+        <tags> R_atmosChem, T_ghg, T_chem </tags>
     </diag>
 
 <!--################################################################################################################# -->
@@ -251,6 +259,8 @@ This namelist is part of the ESMValTool
         <field_type>          T2Ms                          </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
         <diag_script cfg="cfg_perfmetrics_grading_BIAS_collect_O3.ncl">  perfmetrics_grading_collect.ncl </diag_script>
+        
+        <tags> R_atmosChem, T_ghg, T_chem </tags>
     </diag>
 
 <!--################################################################################################################# -->
@@ -342,6 +352,8 @@ This namelist is part of the ESMValTool
 
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
         <diag_script cfg="cfg_perfmetrics_taylor_collect.ncl">  perfmetrics_taylor_collect.ncl </diag_script>
+        
+        <tags> R_atmosChem, T_ghg, T_chem, T_carbon </tags>
     </diag>
 
     <diag>
@@ -411,6 +423,8 @@ This namelist is part of the ESMValTool
 
         <diag_script cfg="cfg_perfmetrics_grading_RMSD_collect_CO.ncl">  perfmetrics_grading_collect.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_taylor_collect.ncl">  perfmetrics_taylor_collect.ncl </diag_script>
+        
+        <tags> R_atmosChem, T_ghg, T_chem, T_carbon </tags>
     </diag>
 
 <!--################################################################################################################# -->
@@ -550,6 +564,8 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
 
         <diag_script cfg="cfg_perfmetrics_grading_BIAS_collect_CO.ncl">  perfmetrics_grading_collect.ncl </diag_script>
+        
+        <tags> R_atmosChem, T_ghg, T_chem, T_carbon </tags>
     </diag>
 
 <!--################################################################################################################# -->
@@ -636,6 +652,8 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
         <diag_script cfg="cfg_perfmetrics_grading_RMSD_collect_Tilmes.ncl">  perfmetrics_grading_collect.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_taylor_collect.ncl">  perfmetrics_taylor_collect.ncl </diag_script>
+        
+        <tags> R_atmosChem, T_ghg, T_chem </tags>
     </diag>
 
 <!--################################################################################################################# -->
@@ -702,6 +720,8 @@ This namelist is part of the ESMValTool
         <field_type>          T1M                           </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
         <diag_script cfg="cfg_perfmetrics_grading_BIAS_collect_Tilmes.ncl">  perfmetrics_grading_collect.ncl </diag_script>
+        
+        <tags> R_atmosChem, T_ghg, T_chem </tags>
     </diag>
 
 </DIAGNOSTICS>
