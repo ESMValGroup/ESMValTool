@@ -1431,20 +1431,25 @@ class BasicDiagnostics(Diagnostic):
                  self._basetags + ['gmt', 'basic', name],
                  str('Temporal mean of the ' + name + ' ' +
                      self._vartype + ' data set.'),
-                 '#ID' + 'gmt' + self.var)
+                 '#ID' + 'gmt' + self.var,
+                 (self._mod_file if name in self._mod_file else self._ref_file)
+                 )
 
     def _plot_hovmoeller_like(self):
         """
         plot hovmoeller-like images for identification of model differences
         """
-        self._hov_lat_mod_data = self._clim_m_data.get_zonal_mean(return_object=False, lat=True)
+        self._hov_lat_mod_data = \
+            self._clim_m_data.get_zonal_mean(return_object=False, lat=True)
 
-        self._hov_lon_mod_data  = self._clim_m_data.get_zonal_mean(return_object=False, lat=False)
+        self._hov_lon_mod_data = \
+            self._clim_m_data.get_zonal_mean(return_object=False, lat=False)
 
-        self._hov_lat_ref_data = self._clim_r_data.get_zonal_mean(return_object=False, lat=True)
+        self._hov_lat_ref_data = \
+            self._clim_r_data.get_zonal_mean(return_object=False, lat=True)
 
-        self._hov_lon_ref_data  = self._clim_r_data.get_zonal_mean(return_object=False, lat=False)
-
+        self._hov_lon_ref_data = \
+            self._clim_r_data.get_zonal_mean(return_object=False, lat=False)
 
         # calculate lat dependent mod
 #        self._hov_lat_mod_data = self._clim_m_data.data.mean(axis=2)
@@ -1539,8 +1544,6 @@ class BasicDiagnostics(Diagnostic):
         f_name = self._plot_dir + os.sep + self._vartype.replace(" ", "_") + \
             '_' + '_hov.' + self.output_type
         imgplot.figure.savefig(f_name, dpi=self.plot_dpi)
-
-
 
 #        f_name = self._plot_dir + os.sep + self._vartype.replace(" ", "_") + \
 #            '_' + name + '_hov.' + self.output_type

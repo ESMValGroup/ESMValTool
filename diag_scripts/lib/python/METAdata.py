@@ -6,6 +6,8 @@ Created on Fri Dec 16 15:43:30 2016
 """
 import xml.etree.ElementTree as XMLT
 import xml.dom.minidom as XMLPP
+import netCDF4 as nc
+import os
 
 
 class METAdata(object):
@@ -64,6 +66,9 @@ class METAdata(object):
             self.__data_dict__ = dictionary
         else:
             assert False, "Input is not a dictionary!"
+
+        if "DataIDs" in self.__data_dict__['ESMValTool'].keys():
+            self.__get_DataIDs__()
 
     def set_file(self, modfile):
         if isinstance(modfile, (unicode, str)):
@@ -259,6 +264,39 @@ class METAdata(object):
              for subbranch in branch.getchildren()]
 
         return {branch.tag: val}
+
+    def __get_DataIDs__(self):
+
+        def __ID_hunter__(file_list):
+
+            new_list = []
+            for f in file_list:
+                if os.path.isfile(f):
+                    try:
+                        DataInfo = nc.Dataset(f)
+                        ti = "tracking_id"
+                        if ti in DataInfo.__dict__.keys():
+                            new_list.append(getattr(DataInfo, ti))
+
+                        elif "infile_0000" in DataInfo.__dict__.keys():
+                            infiles = [t for t in DataInfo.__dict__.keys() if
+                                       t.split("_")[0] == "infile"]
+                            infiles = [getattr(DataInfo, i_f) for
+                                       i_f in infiles]
+                            new_list.extend(__ID_hunter__(infiles))
+
+                        else:
+                            assert False, \
+                                "There is header information missing!" + \
+                                "Either tracking_id or infile_**** needed."
+                    except:
+                        new_list.append("NO ID found.")
+
+            return new_list
+
+        self.__data_dict__['ESMValTool']['DataIDs'] = \
+            __ID_hunter__(
+                    self.__data_dict__['ESMValTool']['DataIDs'].split(","))
 
 # USAGE
 

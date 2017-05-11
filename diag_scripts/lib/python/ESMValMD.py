@@ -12,10 +12,11 @@ import datetime
 class ESMValMD(METAdata):
 
     def __init__(self, dtype="xml", modfile=None, tags=['tag'],
-                 caption='caption', blockID="#ID", directwrite=True, **kwargs):
+                 caption='caption', blockID="#ID",
+                 DataIDs="NO ID found.", directwrite=True, **kwargs):
         super(ESMValMD, self).__init__(**kwargs)
 
-        self._make_dict(tags, caption, blockID)
+        self._make_dict(tags, caption, blockID, DataIDs)
 
         self.set_type(dtype)
 
@@ -24,12 +25,13 @@ class ESMValMD(METAdata):
         if directwrite:
             self.write()
 
-    def _make_dict(self, tags, caption, blockID):
+    def _make_dict(self, tags, caption, blockID, DataIDs):
         DICT = {'ESMValTool': {
                 'built': str(datetime.datetime.utcnow()),
                 'tags': tags,
                 'caption': caption,
-                'block': blockID
+                'block': blockID,
+                'DataIDs': DataIDs
                 }}
         self.set_dict(DICT)
 
@@ -46,11 +48,13 @@ class nclFileMD(ESMValMD):
             tags = file_lines[2].split(",")
             caption = file_lines[3]
             blockID = file_lines[4]
+            DataIDs = file_lines[5]
 
         super(nclFileMD, self).__init__(
                 dtype=dtype,
                 modfile=file_name,
                 tags=tags,
                 caption=caption,
-                blockID=blockID
+                blockID=blockID,
+                DataIDs=DataIDs
                 )

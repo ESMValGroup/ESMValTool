@@ -3052,7 +3052,6 @@ def write_data_interface(executable, project_info):
     currInterface = vars(data_interface)[suffix.title() + '_data_interface'](project_info)
     currInterface.write_data_to_interface()
 
-
 def run_executable(string_to_execute,
                    project_info,
                    verbosity,
