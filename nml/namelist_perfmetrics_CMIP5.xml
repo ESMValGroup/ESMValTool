@@ -41,6 +41,7 @@ This namelist is part of the ESMValTool
     <force_calc type="boolean">              False         </force_calc>
     <force_gradecalc type="boolean">         False         </force_gradecalc>
     <force_taylorcalc type="boolean">        False         </force_taylorcalc>
+    <tags>               P_esmval, D_gleckler08jgr         </tags>
 </GLOBAL>
 
 <MODELS>
