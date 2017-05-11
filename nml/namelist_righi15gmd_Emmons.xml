@@ -34,6 +34,7 @@ This namelist is part of the ESMValTool
     <verbosity  type="integer">               1      </verbosity>
     <exit_on_warning  type="boolean">     False      </exit_on_warning>
     <output_file_type>                       ps      </output_file_type>
+    <tags>                    P_esmval, D_righi15gmd </tags>
 </GLOBAL>
 
 <MODELS>
