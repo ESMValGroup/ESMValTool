@@ -18,4 +18,3 @@ For the developer's guide (Part II), it is assumed that the user/developer is al
 .. raw:: latex
 
     \clearpage
-

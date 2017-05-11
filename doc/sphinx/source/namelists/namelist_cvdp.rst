@@ -1,8 +1,6 @@
 NCAR's Climate Variability Diagnostics Package (CVDP)
 =====================================================
 
-
-
 Overview
 --------
 
