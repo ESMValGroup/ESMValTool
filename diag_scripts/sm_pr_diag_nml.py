@@ -94,10 +94,7 @@ import sample_events as se
 
 def main(project_info):
     """
-    ;; Description
-    ;;    Main fuction
-    ;;    Call all callable fuctions to
-    ;;    read CMIP5 data, compute and plot diagnostic
+    Call all callable fuctions to read CMIP5 data, compute and plot diagnostic
     """
 
     E = ESMValProject(project_info)
@@ -202,26 +199,21 @@ def main(project_info):
 
 
 def coord_change(cubelist):
-
     """
-    ;; Arguments
-    ;;    cubelist: list
-    ;;          list of iris cubes
-    ;;
-    ;; Return cubelist
-    ;;    list of rolled iris cubes
-    ;;
-    ;; Description
-    ;;    Roll iris cubes with longitude 0-360 to -180-180.
-    ;;
+    Roll iris cubes with longitude 0-360 to -180-180.
+    
+    Parameters
+    ----------
+    cubelist : list
+        list of iris cubes
+    
+    Returns
+    -------
+        list of rolled iris cubes
     """
-
     if cubelist[0].coord('longitude').points[0] >= 0:
-
         newcubelist = []
-
         for cube in cubelist:
-
             lon = cube.coord('longitude')
             londim = cube.coord_dims(lon)[0]
             cube.data = np.roll(cube.data, len(lon.points) // 2, axis=londim)
@@ -232,11 +224,8 @@ def coord_change(cubelist):
             #    lon.bounds -= 180.
 
             newcubelist.append(cube)
-
         return newcubelist
-
     else:
-
         return cubelist
 
 
@@ -244,50 +233,49 @@ def get_monthly_input(project_info, mn, time, lon, lat,
                       time_bnds_1, pr, sm, fileout,
                       samplefileout, model,
                       verbosity):
-
     """
-    ;; Arguments
-    ;;    mn: int
-    ;;          month, values from 1 to 12
-    ;;    time: iris cube coords
-    ;;          time info of cube
-    ;;    lon: array [lon]
-    ;;          longitude
-    ;;    lat: array [lat]
-    ;;          latitude
-    ;;    time_bnds_1: float
-    ;;          first time_bnd of time series
-    ;;    pr: iris cube [time, lat, lon]
-    ;;          3-hourly precipitation time series
-    ;;    sm: iris cube [time, lat, lon]
-    ;;          3-hourly soil moisture time series
-    ;;    fileout: dir
-    ;;          output directory
-    ;;    samplefileout: dir
-    ;;          temporary outpout directory used by fortran routines
-    ;;
-    ;; Return
-    ;;    prbef: array [year, day time steps (=8), lat, lon]
-    ;;          3-hourly precipitation in the previous day
-    ;;    smbef: array [year, day time steps (=8), lat, lon]
-    ;;          3-hourly soil moisture in the previous day
-    ;;    praf: array [year, day time steps (=8), lat, lon]
-    ;;          3-hourly precipitation in the following day
-    ;;    smaft: array [year, day time steps (=8), lat, lon]
-    ;;          3-hourly soil moisture in the following day
-    ;;    monthlypr: array [year, days in month * day time steps, lat, lon]
-    ;;          3-hourly precipitation in month mn for the whole analysis period
-    ;;    monthlysm: array [year, days in month * day time steps, lat, lon]
-    ;;          3-hourly soil moisture in month mn for the whole analysis period
-    ;;    days_per_year: int
-    ;;          number of days per year 
-    ;;
-    ;; Description
-    ;;    Prepare monthly input data for fortran routines
-    ;;
+    Prepare monthly input data for fortran routines
+
+    Parameters
+    ----------
+    mn: int
+        month, values from 1 to 12
+    time: iris cube coords
+        time info of cube
+    lon: array [lon]
+        longitude
+    lat: array [lat]
+        latitude
+    time_bnds_1: float
+        first time_bnd of time series
+    pr : iris cube [time, lat, lon]
+        3-hourly precipitation time series
+    sm: iris cube [time, lat, lon]
+        3-hourly soil moisture time series
+    fileout: dir
+        output directory
+    samplefileout: dir
+        temporary outpout directory used by fortran routines
+    
+    Returns
+    -------
+    prbef: array [year, day time steps (=8), lat, lon]
+        3-hourly precipitation in the previous day
+    smbef: array [year, day time steps (=8), lat, lon]
+        3-hourly soil moisture in the previous day
+    praf: array [year, day time steps (=8), lat, lon]
+        3-hourly precipitation in the following day
+    smaft: array [year, day time steps (=8), lat, lon]
+        3-hourly soil moisture in the following day
+    monthlypr: array [year, days in month * day time steps, lat, lon]
+        3-hourly precipitation in month mn for the whole analysis period
+    monthlysm: array [year, days in month * day time steps, lat, lon]
+        3-hourly soil moisture in month mn for the whole analysis period
+    days_per_year: int
+        number of days per year 
     """
 
-    import projects
+    #import projects
     E = ESMValProject(project_info)
     verbosity = E.get_verbosity()
 
@@ -299,8 +287,6 @@ def get_monthly_input(project_info, mn, time, lon, lat,
     currProject = getattr(vars()['projects'], model.split_entries()[0])()
 
     model_info = model.split_entries()
-
-
 
     # --------------------------------------
     # Get grid and calendar info
@@ -506,31 +492,27 @@ def get_monthly_input(project_info, mn, time, lon, lat,
     return prbef, smbef, praft, smaft, monthlypr, monthlysm, days_per_year
 
 
-
-
 def get_p_val(in_dir):
-
     """ 
-    ;; Arguments
-    ;;    in_dir: dir
-    ;;          directory with intermediary files from fortran routines
-    ;;
-    ;; Return 
-    ;;    xs: array [lon]
-    ;;          regridding coordinates
-    ;;    ys: array [lat]
-    ;;          regridding coordinates
-    ;;    p_vals: list
-    ;;          p_values of 5x5 deg grid-boxes
-    ;;
-    ;; Description
-    ;;    Computes percentiles (p_values) of "preference for afternoon 
-    ;;    precipitation over soil moisture anomalies" as in Fig.3 of
-    ;;    Taylor et al. 2012, doi:10.1038/nature11377
-    ;;
-    ;; NOTE:
-    ;; Change shuffle_times for a quicker run
-    ;;
+    Computes percentiles (p_values) of "preference for afternoon 
+    precipitation over soil moisture anomalies" as in Fig.3 of
+    Taylor et al. 2012, doi:10.1038/nature11377
+    
+    Change shuffle_times for a quicker run
+    
+    Paramerters
+    -----------
+    in_dir: dir
+        directory with intermediary files from fortran routines
+    
+    Returns
+    -------
+    xs: array [lon]
+        regridding coordinates
+    ys: array [lat]
+        regridding coordinates
+    p_vals: list
+        p_values of 5x5 deg grid-boxes
     """
 
     # Find gridboxes (xs, ys) with events
@@ -637,28 +619,27 @@ def get_p_val(in_dir):
     return xs, ys, p_vals
 
 
-
-
 def get_smclim(sm, lon, time):
-
     """
-    ;; Arguments
-    ;;    sm: iris cube [time, lat, lon]
-    ;;          3-hourly soil moisture time series
-    ;;    lon: array [lon]
-    ;;          longitude in degrees east
-    ;;    time: iris cube coords
-    ;;          time info of cube
-    ;;
-    ;; Return
-    ;;    var_2d : array[month, lat, lon]
-    ;;          monthly sm climalogy
-    ;;          NOTE:
-    ;;          Month 0 for climatologies = month in which files start
-    ;;          ex. start on 199812010300, month 0 = Dec
-    ;; Description
-    ;;    Compute monthly soil moisture climatology at local solar time 6:00 am
-    ;;
+    Compute monthly soil moisture climatology at local solar time 6:00 am
+    
+    NOTE:
+        Month 0 for climatologies = month in which files start
+        ex. start on 199812010300, month 0 = Dec
+
+    Parameters
+    ----------
+    sm: iris cube [time, lat, lon]
+        3-hourly soil moisture time series
+    lon: array [lon]
+        longitude in degrees east
+    time: iris cube coords
+        time info of cube
+   
+    Returns
+    -------
+    var_2d : array[month, lat, lon]
+        monthly sm climalogy
     """
 
     data_start_time = (time[0].points[0] - int(time[0].points[0])) * 24
@@ -807,7 +788,7 @@ def get_topo(project_info, longi, lati, model):
     ;;    Computes topography information
     ;;
     """
-    import projects
+    #import projects
     E = ESMValProject(project_info)
     verbosity = E.get_verbosity()
 

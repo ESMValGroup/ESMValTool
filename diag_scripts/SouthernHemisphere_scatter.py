@@ -142,7 +142,14 @@ from mpl_toolkits.basemap import Basemap
 import netCDF4 as nc
 
 def main(project_info):
-    """Diagnostics and plotting script for Southern Hemisphere radiation."""
+    """
+    Diagnostics and plotting script for Southern Hemisphere radiation.
+
+    Parameters
+    ----------
+    project_info : dict
+        project information
+    """
 
     # ESMValProject provides some easy methods to access information in
     # project_info but you can also access it directly (as in main.py)
@@ -186,7 +193,19 @@ def calculate_scatterplot_values(modelconfig,
                                  cloud,
                                  radiation,
                                  bins=''):
-    """Calculate cloud vs radiation scatterplot values from input."""
+    """
+    Calculate cloud vs radiation scatterplot values from input.
+    
+    Parameters
+    ----------
+    modelconfig : xxxx
+    area : xxxx
+    cl_key : xxxxx
+    cloud : xxxx
+    radiation : xxx
+    bins : str
+        xxxx
+    """
     # Check if limits are already defined
     if (len(bins) > 0):
         nbins = len(bins) - 1
@@ -226,7 +245,17 @@ def calculate_scatterplot_values(modelconfig,
 
 
 def interpolate_3d(data, lats, lons, target_lats, target_lons):
-    """Interpolate time/lat/lon grid to specific lat/lon coordinates."""
+    """
+    Interpolate time/lat/lon grid to specific lat/lon coordinates.
+    
+    Parameters
+    ----------
+    data : xxxx
+    lats : xxx
+    lons : xxxx
+    target_lats : xxxx
+    target_lons : xxx
+    """
     new_data = np.zeros((data.shape[0], len(target_lats), len(target_lons)))
     for time in xrange(data.shape[0]):
         new_data[time] = interpolate_data_grid(data[time, :, :],
@@ -238,8 +267,18 @@ def interpolate_3d(data, lats, lons, target_lats, target_lons):
 
 
 def interpolate_data_grid(data, lats, lons, target_lats, target_lons):
-    """Interpolates the data values to a specific lat/lon grid.
-    This function should only be used for 2D arrays (no time indeces etc.)"""
+    """
+    Interpolates the data values to a specific lat/lon grid.
+    This function should only be used for 2D arrays (no time indeces etc.)
+    
+    Parameters
+    ----------
+    data : xxxx
+    lats : xxxx
+    lons : xxxx
+    target_lats : xxxx
+    target_lons : xxxx
+    """
 
     # First check if the coordinates are the same, otherwise interpolate
     if (np.array_equal(lats, target_lats)

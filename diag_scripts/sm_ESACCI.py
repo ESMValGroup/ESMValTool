@@ -1,33 +1,12 @@
 """
 Soil Moisture Diagnostics
 
-Author
-------
-    Benjamin Mueller (LMU Munich, GER)
-    ESA-CMUG project
+Author: Benjamin Mueller (LMU Munich, GER)
+Project: ESA-CMUG project
 
-Description
------------
 Produces various general diagnostic plots and statistics for the 
 reference data sets of the ESACCI Project
 
-Required diag_script_info attributes (diagnostics specific)
-    none
-
-Optional diag_script_info attributes (diagnostic specific)
-    none
-
-Required variable_info attributes (variable specific)
-    none
-
-Optional variable_info attributes (variable specific)
-    none
-
-Caveats
-
-Modification history
-    20161128-A_laue_ax: added call to write_references
-    20160818-A_muel_bn: Routines written.
 """
 
 # Basic Python packages
@@ -43,6 +22,10 @@ from esmval_lib import ESMValProject
 from sm_diagnostic import SoilMoistureDiagnostic
 
 def main(project_info):
+    """
+    project_info : dict
+        dictionary with project info
+    """
     print(">>>>>>>> sm_ESACCI.py is running! <<<<<<<<<<<<")
 
 # A_laue_ax+
