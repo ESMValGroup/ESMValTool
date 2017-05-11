@@ -273,6 +273,7 @@ procedure plot_three_by_one_diff(wks [1]:graphic,
 ;;      storage_name: name of first processed variable in the vault
 ;;         debuginfo: info to put onto plot in debug mode
 ;;     storage_vault: handle/pointer to vault with all models/variables
+;;               ref: reference
 ;;           idx_mod: index of current model
 ;;
 ;; Return value
@@ -754,7 +755,7 @@ procedure plot_three_by_one_vector(wks [1]:graphic,
 ;;                di: logical with diagnostic script info
 ;;     plot_settings: logical with general plot_settings
 ;;  valid_statistics: valid statistics (to be computed if defined)
-;;      storage_name: name of first processed variable in the vault
+;;     storage_names: name of first processed variable in the vault
 ;;         debuginfo: info to put onto plot in debug mode
 ;;     storage_vault: handle/pointer to vault with all models/variables
 ;;            ua_ref: ua wind reference model/obs
@@ -976,7 +977,7 @@ procedure three_by_one_vector(storage_vault [1] : logical,
 ;;     storage_vault: handle/pointer to vault with all models
 ;;                di: logical with diagnostic script info
 ;;     plot_settings: logical with general plot_settings
-;;      storage_name: name of first processed variable in the vault
+;;     storage_names: name of first processed variable in the vault
 ;;         debuginfo: info to put onto plot in debug mode
 ;;  valid_statistics: valid statistics (to be computed if defined)
 ;;               res: valid ncl resources to apply to plot
@@ -1598,7 +1599,7 @@ procedure plot_multipanel_vector(cols[*]:integer,
 ;;                       curr_idx: current index
 ;;                      curr_page: current page (may be more than one)
 ;;                            res: valid ncl resources to apply to plot
-;;                   storage_name: name of first processed variable in the vault
+;;                  storage_names: name of first processed variable in the vault
 ;;                  storage_vault: handle/pointer to vault with all models
 ;;                            wks: workstation
 ;;                             di: logical with diagnostic script info
@@ -1881,7 +1882,7 @@ procedure multipanel_vector(storage_vault [1] : logical,
 ;;                  storage_vault: handle/pointer to vault with all models
 ;;                             di: logical with diagnostic script info
 ;;                  plot_settings: logical with general plot_settings
-;;                   storage_name: name of first processed variable in the vault
+;;                  storage_names: name of first processed variable in the vault
 ;;                      debuginfo: info to put onto plot in debug mode
 ;;               valid_statistics: valid statistics (to be computed if defined)
 ;;                            res: valid ncl resources to apply to plot
