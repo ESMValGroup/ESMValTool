@@ -21,9 +21,8 @@ The configuration settings are specified as attributes of the variable
 below). In order to activate these attributes, "diag_script_info" must be set
 to "True".
 
-**Example (NCL)**
+**Example (NCL)**::
 
-.. code-block:: ncl
 	  diag_script_info = True
 
 	  diag_script_info@projection = "CylindricalEquidistant" ; map projection,
@@ -36,7 +35,6 @@ to "True".
 
 **Example (Python)**::
 
-.. code-block:: python
 	  class diag_script:
 	    def __init__(self):
 	      self.info = True
@@ -48,7 +46,6 @@ to "True".
 
 **Example (R)**::
 
-.. code-block:: R
 	  diag_script_info<-new()
 	  diag_script_info[["begin_ref_year"]]<-1970
 	  diag_script_info[["end_ref_year"]]<-2000
