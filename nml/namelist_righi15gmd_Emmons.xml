@@ -55,6 +55,8 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/Emmons/ </diag_script_cfg_dir>
 
         <diag_script cfg="cfg_righi15gmd_fig16_0.ncl"> Emmons.ncl </diag_script>
+        
+        <tags> R_atmosChem, T_ghg, T_chem </tags>
     </diag>
 
     <diag>
@@ -67,6 +69,8 @@ This namelist is part of the ESMValTool
         <diag_script cfg="cfg_righi15gmd_fig17_0.ncl"> Emmons.ncl </diag_script>
         <diag_script cfg="cfg_righi15gmd_fig17_1.ncl"> Emmons.ncl </diag_script>
         <diag_script cfg="cfg_righi15gmd_fig17_2.ncl"> Emmons.ncl </diag_script>
+        
+        <tags> R_atmosChem, T_ghg, T_chem </tags>
     </diag>
 
     <diag>
@@ -78,6 +82,8 @@ This namelist is part of the ESMValTool
 
         <diag_script cfg="cfg_righi15gmd_fig19_0.ncl"> Emmons.ncl </diag_script>
         <diag_script cfg="cfg_righi15gmd_fig19_1.ncl"> Emmons.ncl </diag_script>
+        
+        <tags> R_atmosChem, T_ghg, T_chem, T_carbon </tags>
     </diag>
 
     <diag>
@@ -89,6 +95,8 @@ This namelist is part of the ESMValTool
 
         <diag_script cfg="cfg_righi15gmd_figS15_0.ncl"> Emmons.ncl </diag_script>
         <diag_script cfg="cfg_righi15gmd_figS15_1.ncl"> Emmons.ncl </diag_script>
+        
+        <tags> R_atmosChem, T_ghg, T_chem, T_carbon </tags>
     </diag>
 
     <diag>
@@ -100,6 +108,8 @@ This namelist is part of the ESMValTool
 
         <diag_script cfg="cfg_righi15gmd_figS16_0.ncl"> Emmons.ncl </diag_script>
         <diag_script cfg="cfg_righi15gmd_figS16_1.ncl"> Emmons.ncl </diag_script>
+        
+        <tags> R_atmosChem, T_ghg, T_chem, T_carbon </tags>
     </diag>
 
     <diag>
@@ -112,6 +122,8 @@ This namelist is part of the ESMValTool
         <diag_script cfg="cfg_righi15gmd_figS17_0.ncl"> Emmons.ncl </diag_script>
         <diag_script cfg="cfg_righi15gmd_figS17_1.ncl"> Emmons.ncl </diag_script>
         <diag_script cfg="cfg_righi15gmd_figS17_2.ncl"> Emmons.ncl </diag_script>
+        
+        <tags> R_atmosChem, T_ghg, T_chem, T_carbon </tags>
     </diag>
 
     <diag>
@@ -123,6 +135,8 @@ This namelist is part of the ESMValTool
 
         <diag_script cfg="cfg_righi15gmd_figS18_0.ncl"> Emmons.ncl </diag_script>
         <diag_script cfg="cfg_righi15gmd_figS18_1.ncl"> Emmons.ncl </diag_script>
+        
+        <tags> R_atmosChem, T_ghg, T_chem, T_carbon </tags>
     </diag>
 
     <diag>
@@ -133,6 +147,8 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/Emmons/ </diag_script_cfg_dir>
 
         <diag_script cfg="cfg_righi15gmd_figS19_0.ncl"> Emmons.ncl </diag_script>
+        
+        <tags> R_atmosChem, T_ghg, T_chem, T_carbon </tags>
     </diag>
 
 </DIAGNOSTICS>
