@@ -168,7 +168,9 @@ Annex A – More tables
 
 
 .. _workflow_reformat:
-Workflow of reformat routines.
+
+Workflow of reformat routines
+-----------------------------
 
 **Control flow of reformat_default**
 
