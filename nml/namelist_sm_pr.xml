@@ -65,7 +65,9 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir>                          ./nml/cfg_sm_pr                </diag_script_cfg_dir>
         <diag_script cfg="cfg_sm_pr.conf">              sm_pr_diag_nml.py             </diag_script>
         <launcher_arguments>    [('execute_as_shell', False)]                         </launcher_arguments>
-    </diag>
+    
+        <tags> R_land, R_atmos, T_chem </tags>
+  </diag>
 </DIAGNOSTICS>
 
 </namelist>
