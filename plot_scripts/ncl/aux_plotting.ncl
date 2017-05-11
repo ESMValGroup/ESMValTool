@@ -222,7 +222,7 @@ procedure copy_VarAtt_sel(var1, var2, sel: string)
 ;;    var1: variable of any type and dimension with source attributes 
 ;;    var2: variable of any type and dimension, shall receive selected 
 ;;          attributes from var1  
-;;    sel: string (or list of strings) that specify the BEGINNING letters
+;;    sel: string (or list of strings) that specify the starting letters
 ;;         of the attributes to copy  
 ;;
 ;; Return value
@@ -375,7 +375,7 @@ function get_plot_dir()
 ;;    A string root path for plots
 ;;
 ;; Description
-;;    Provides a default, if plot_dir is not explicitely specified
+;;    Provides a default, if plot_dir is not explicitly specified
 ;;
 ;; Caveats
 ;;
@@ -415,7 +415,7 @@ function get_outfile_name(diag_script[1] : string,
 ;;
 ;; Description
 ;;    Fetches file_type, plot_dir, diag_script_base, output_dir via other
-;;    scripts
+;;    scripts.
 ;;    Fetches string with additional elements specified within diag script
 ;;
 ;; Caveats
@@ -461,7 +461,7 @@ function get_wks(wks_in,
 ;; Arguments
 ;;    wks_in: dummy or graphic object
 ;;    diag_script: name of diagnostic script
-;;    add_specs: own specificactions to be added to file name, i.e. variable
+;;    add_specs: own specifications to be added to file name, i.e. variable
 ;;               name, etc. - needed for function get_outfile_name
 ;;
 ;; Return value
@@ -586,7 +586,7 @@ procedure add_num_markers(wks[1] : graphic,
 ;;    Attaches polytext IDs as attributes to plot.
 ;;
 ;; Description:
-;;    Adds markers to an existing plot, being the last two intagers of a year.
+;;    Adds markers to an existing plot, being the last two integers of a year.
 ;;    If a horizontal (vertical) coordinate
 ;;    has only one element, then this position is used for all markers.
 ;;
@@ -903,7 +903,7 @@ procedure add_prediction_error(wks[1] : graphic,
 ;;    Attaches polytext IDs as attributes to plot.
 ;;
 ;; Description:
-;;    Adds markers to an existing plot, being the last two intagers of a year.
+;;    Adds markers to an existing plot, being the last two integers of a year.
 ;;    If a horizontal (vertical) coordinate
 ;;    has only one element, then this position is used for all markers.
 ;;

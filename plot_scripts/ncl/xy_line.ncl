@@ -1823,12 +1823,16 @@ procedure xy_line_anom(wks[1],
 ;;
 ;; Arguments:
 ;;    * wks:  workstation, must be passed - no default used yet!
+;;    * source_mean:   source_mean
 ;;    * source:        data to be plotted (no netCDF input possible yet)
 ;;    * source_x:      x-axis of array to be plotted (e.g. source&time, ... )
 ;;    * source_stddev: standard deviation of input, needed if
 ;;                     diag_script_info@multi_model_mean is set to "y"
-;;    * res_in:  diag_script-specific resources passed from diag_script
-;;    * debuginfo:  description about diagnostic rendered onto plot
+;;    * ref_start:     ref_start
+;;    * ref_end:       ref_end
+;;    * res_in:        diag_script-specific resources passed from diag_script
+;;    * res0_in:       res0_in
+;;    * debuginfo:     description about diagnostic rendered onto plot
 ;;
 ;; Source prototype
 ;;
