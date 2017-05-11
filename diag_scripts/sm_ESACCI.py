@@ -1,32 +1,33 @@
 """
-;;#############################################################################
-;; Soil Moisture Diagnostics
-;; Author: Benjamin Mueller (LMU Munich, GER)
-;; ESA-CMUG project
-;;#############################################################################
-;; Description
-;;    Produces various general diagnostic plots and statistics for the 
-;;    reference data sets of the ESACCI Project
-;;
-;; Required diag_script_info attributes (diagnostics specific)
-;;    none
-;;
-;; Optional diag_script_info attributes (diagnostic specific)
-;;    none
-;;
-;; Required variable_info attributes (variable specific)
-;;    none
-;;
-;; Optional variable_info attributes (variable specific)
-;;    none
-;;
-;; Caveats
-;;
-;; Modification history
-;;    20161128-A_laue_ax: added call to write_references
-;;    20160818-A_muel_bn: Routines written.
-;;
-;;#############################################################################
+Soil Moisture Diagnostics
+
+Author
+------
+    Benjamin Mueller (LMU Munich, GER)
+    ESA-CMUG project
+
+Description
+-----------
+Produces various general diagnostic plots and statistics for the 
+reference data sets of the ESACCI Project
+
+Required diag_script_info attributes (diagnostics specific)
+    none
+
+Optional diag_script_info attributes (diagnostic specific)
+    none
+
+Required variable_info attributes (variable specific)
+    none
+
+Optional variable_info attributes (variable specific)
+    none
+
+Caveats
+
+Modification history
+    20161128-A_laue_ax: added call to write_references
+    20160818-A_muel_bn: Routines written.
 """
 
 # Basic Python packages
