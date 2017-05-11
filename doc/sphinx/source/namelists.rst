@@ -65,7 +65,7 @@ More on the <GLOBAL>-tag
 
 
 
-**:numref:`tab_glob_tags`** Tags of the <GLOBAL> section of the namelist. Note that not all tags might be used by a diagnostic.
+:numref:`tab_glob_tags` Tags of the <GLOBAL> section of the namelist. Note that not all tags might be used by a diagnostic.
 
 .. _tab_glob_tags:
 
