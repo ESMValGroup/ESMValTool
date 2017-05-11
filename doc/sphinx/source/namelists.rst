@@ -67,9 +67,11 @@ More on the <GLOBAL>-tag
 
 :numref:`tab_glob_tags` Tags of the <GLOBAL> section of the namelist. Note that not all tags might be used by a diagnostic.
 
-
 .. _tab_glob_tags:
 
+.. table:: 
+
+	Tags of the <GLOBAL> section of the namelist. Note that not all tags might be used by a diagnostic.
 
 +----------------------+----------+------------------------------------------------------------------------------------------------+
 | Name	               | Type	  | Description                                                                                    |
@@ -151,7 +153,6 @@ The attribute *id* specifies a string that can be used to refer to the model in 
 
 :numref:`tab_proj_spec` Project specifiers and corresponding arguments.
 
-
 .. _tab_proj_spec:
 
 +-------------------+------------+---------------+------------+------------+------------+------------+------------+------------+
@@ -189,7 +190,7 @@ The attribute *id* specifies a string that can be used to refer to the model in 
 
 
 
-**Table S3**  Optional attributes of the <model> tag.
+:numref:`tab_mod_tags` Optional attributes of the <model> tag.
 
 .. _tab_mod_tags:
 
@@ -201,7 +202,7 @@ The attribute *id* specifies a string that can be used to refer to the model in 
 
 
 
-**Table S4**  Optional attributes of the <variable> tag.
+:numref:`tab_opt_att` Optional attributes of the <variable> tag.
 
 .. _tab_opt_att:
 
@@ -229,7 +230,7 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 
 
 
-**Table S5** Tags of the <diag> section within the <DIAGNOSTICS> section of the namelist. There are no default values.
+:numref:`tab_diag_tabs` Tags of the <diag> section within the <DIAGNOSTICS> section of the namelist. There are no default values.
 
 .. _tab_diag_tags:
 
@@ -240,7 +241,7 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 +----------------------+----------+-----------------------------------------------------------------------------------------------------------------+
 | variable_def_dir     | string   | Path for the variable-specific configuration file (usually variable_defs)                                       |
 +----------------------+----------+-----------------------------------------------------------------------------------------------------------------+
-| variable	       | string   | Variable name: a script with the same name (variable_defs/<variable>.ncl) defines the variable to process       |
+| variable	           | string   | Variable name: a script with the same name (variable_defs/<variable>.ncl) defines the variable to process       |
 |                      |          | see Table S8 for a list of variables) including possible preprocessing (e.g., calculating derived variables).   |
 |                      |          | Variable scripts should be located in the local folder variable_defs and written in NCL. Even though the        |
 |                      |          | variable scripts are written in NCL all meta data defined in the scripts are passed on to the target diagnostic | 
@@ -258,7 +259,7 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 |                      |          | script.                                                                                                         |
 +----------------------+----------+-----------------------------------------------------------------------------------------------------------------+
 | model (optional)     | string	  | Additional data sets specific for this <diag>-section. Data sets defined here will be processed in addition to  |
-|                      |          |  the  |ones defined in the MODELS section (see above) but will be ignored by other <diag>-sections.             |
+|                      |          | the ones defined in the MODELS section (see above) but will be ignored by other <diag>-sections.                |
 +----------------------+----------+-----------------------------------------------------------------------------------------------------------------+
 
 
