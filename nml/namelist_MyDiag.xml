@@ -32,6 +32,7 @@ This namelist is part of the ESMValTool
     <verbosity  type="integer">               1         </verbosity>
     <exit_on_warning  type="boolean">      True         </exit_on_warning>
     <output_file_type>                       ps         </output_file_type>
+    <tags>                            P_embrace         </tags>
 </GLOBAL>
 
 <MODELS>
@@ -47,7 +48,8 @@ This namelist is part of the ESMValTool
         <variable>            MyVar                </variable>
         <field_type>          T3M                  </field_type>
         <diag_script_cfg_dir> ./nml/cfg_MyDiag/    </diag_script_cfg_dir>
-
+        <tags>                R_MyRealm, T_MyTheme </tags>
+        
         <diag_script cfg="cfg_MyDiag.ncl"> MyDiag.ncl  </diag_script>
     </diag>
 </DIAGNOSTICS>
