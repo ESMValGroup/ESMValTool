@@ -20,12 +20,12 @@ load "./diag_scripts/lib/ncl/regridding.ncl"
 
 ;#######################################################################
 undef("Cond_PDF")
-function Cond_PDF(xfit[*]:numeric,   \ ; x-values (from regressionline y=a*x+b)
-                  yfit[*]:numeric,   \ ; y-values (from regressionline y=a*x+b)
-                  Xval[*]:numeric,   \ ; x-values (from models)
-                  Yval[*]:numeric,   \ ; y-values (from models)
-                  MSE[*]:numeric,    \ ; mean sqaured error of regressionline
-                  obs_std[*]:numeric \ ; conditional values
+function Cond_PDF(xfit[*]:numeric,   
+                  yfit[*]:numeric,   
+                  Xval[*]:numeric,   
+                  Yval[*]:numeric,   
+                  MSE[*]:numeric,    
+                  obs_std[*]:numeric 
                   )
 ;;
 ;; Arguments:
@@ -33,7 +33,7 @@ function Cond_PDF(xfit[*]:numeric,   \ ; x-values (from regressionline y=a*x+b)
 ;;  * yfit    : y-values (from regressionline y=a*x+b)
 ;;  * Xval    : x-values (from models)
 ;;  * Yval    : y-values (from models)
-;;  * MSE     : mean sqaured error of regressionline
+;;  * MSE     : mean squared error of regressionline
 ;;  * obs_std : conditional values
 ;;
 ;; Description:
@@ -128,9 +128,9 @@ end
 
 ;########################################################################
 undef("seas_cycle")
-function seas_cycle(\;Xann[*]:numeric, \ ; x-values annual
-                   Xdata[*]:numeric, \ ; x-values monthly
-                   Ydata[*]:numeric, \ ; y-values 
+function seas_cycle(\;Xann[*]:numeric, 
+                   Xdata[*]:numeric, 
+                   Ydata[*]:numeric, 
                      opt[1]:string)
 ;;
 ;; Author: Sabrina Wenzel (DLR, Germany)
