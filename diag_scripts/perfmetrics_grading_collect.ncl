@@ -242,8 +242,8 @@ begin
 
         ;; Define outfile name
         outfile_plot = output_dir + name + "_" + diags
+        ST_tag = (/"ST_mean", "ST_diff"/)
         if (isatt(data_all, "metric")) then
-            ST_tag = (/"ST_mean", "ST_rmsd"/)
             outfile_plot = outfile_plot + "_" + data_all@metric
             if (data_all@metric .eq. "RMSD") then
                 ST_tag := (/"ST_mean", "ST_rmsd"/)
