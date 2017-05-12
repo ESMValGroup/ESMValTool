@@ -48,7 +48,7 @@ class HTML_writer(object):
                 print(L)
             for filename in fnmatch.filter(files, pattern):
                 L.append(os.path.join(root, filename))
-                print(l)
+                print(L)
 
         N = len(L)
 
