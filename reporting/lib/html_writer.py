@@ -42,9 +42,9 @@ class HTML_writer(object):
         L = []
         for root, dirs, files in os.walk(directory):
             for l_directory in dirs:
-                subL, subN = self._get_files_in_directory(os.path.join(root, l_directory),pattern)
+                subL, subN = self._get_files_in_directory(os.path.join(root, l_directory),pattern,asstring=False)
                 print(subL)
-                L.append(subL)
+                L.extend(subL)
                 print(L)
             for filename in fnmatch.filter(files, pattern):
                 L.append(os.path.join(root, filename))
