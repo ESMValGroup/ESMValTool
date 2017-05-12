@@ -243,7 +243,11 @@ begin
         ;; Define outfile name
         outfile_plot = output_dir + name + "_" + diags
         if (isatt(data_all, "metric")) then
+            ST_tag = (/"ST_mean", "ST_rmsd"/)
             outfile_plot = outfile_plot + "_" + data_all@metric
+            if (data_all@metric .eq. "RMSD") then
+                ST_tag := (/"ST_mean", "ST_rmsd"/)
+            end if 
         end if
         outfile_plot = outfile_plot + "_grading"    
 
@@ -255,7 +259,7 @@ begin
         plot@outfile = outfile_plot + file_type
         
         alltags = array_append_record(tags,\
-           (/"DM_glob", "PT_portrait", "ST_mean", "ST_diff"/), 0)
+           (/"DM_glob", "PT_portrait", ST_tag/), 0)
         caption = "Similar to Figure 3 od Gleckler et al. (2008). Model: " + models@name(0) + \
               ", variable: " + variables(0)
         id = diag_script + "_example_id"
