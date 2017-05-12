@@ -121,13 +121,19 @@ end
 
 ;########################################################################
 undef("seas_cycle")
-function seas_cycle(\;Xann[*]:numeric, 
-                   Xdata[*]:numeric, 
-                   Ydata[*]:numeric, 
-                     opt[1]:string)
+function seas_cycle(Xdata[*]:numeric, 
+                    Ydata[*]:numeric, 
+                      opt[1]:string)
 ;;
-;; Author: Sabrina Wenzel (DLR, Germany)
-;;
+;; Arguments:
+;;  Xdata = 1-D array of x-values monthly
+;;  Ydata = 1-D array of y-values 
+;;  opt   = possible options: 
+;;         'amplitude' only calculates the relative amplitude of the cycle
+;;         'integral'  only calculates the integral over growing season
+;;         'phase'     only calculates the phase of the cycle
+;;         'all'       calculates all
+;;                                           
 ;; Description:
 ;;  * analyses the sasonal cycle of an de-trendet periodic timeseries eg CO2
 ;;    - calculates the relative seasonal amplitude of the timeseries
@@ -141,16 +147,7 @@ function seas_cycle(\;Xann[*]:numeric,
 ;;    SEAS_CYC@Yday = Y values of phase (zero crossing)
 ;;    SEAS_CYC@Yintg = Y values of integral for growing season
 ;;    SEAS_CYC@Yintd = Y values of integral for dormant season
-;;
-;; Arguments:
-;;  Xdata = 1-D array of x-values monthly
-;;  Ydata = 1-D array of y-values 
-;;  opt   = possible options: 
-;;         'amplitude' only calculates the relative amplitude of the cycle
-;;         'integral'  only calculates the integral over growing season
-;;         'phase'     only calculates the phase of the cycle
-;;         'all'       calculates all
-;;                                                                      
+;;                           
 ;; Modification history:
 ;;    * 20140218 written by S. Wenzel (sabrina.wenzel@dlr.de)
 ;;
