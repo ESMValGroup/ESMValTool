@@ -21,7 +21,7 @@ function obs_model_timeseries(ymin_mod[1]:integer,
 ;;
 ;; Arguments
 ;;    ymin_mod: models start date.
-;;    ymax_ref: models end data.
+;;    ymax_mod: models end data.
 ;;    data: model data.
 ;;    variable: variable to read
 ;;
