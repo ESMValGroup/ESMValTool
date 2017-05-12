@@ -29,12 +29,12 @@ function Cond_PDF(xfit[*]:numeric,
                   )
 ;;
 ;; Arguments:
-;;  * xfit    : x-values (from regressionline y=a*x+b)
-;;  * yfit    : y-values (from regressionline y=a*x+b)
-;;  * Xval    : x-values (from models)
-;;  * Yval    : y-values (from models)
-;;  * MSE     : mean squared error of regressionline
-;;  * obs_std : conditional values
+;;  * xfit    : 1-D array of the X variable (from regressionline y=a*x+b)
+;;  * yfit    : 1-D array of the Y variable (from regressionline y=a*x+b)
+;;  * Xval    : 1-D array of the X variable (from models)
+;;  * Yval    : 1-D array of the Y variable (from models)
+;;  * MSE     : 1-D array of the mean squared error of regressionline
+;;  * obs_std : 1-D array of the conditional values
 ;;
 ;; Description:
 ;;  * calculates the normal (Py_pr) and conditional dirstibution (Py) following
@@ -44,14 +44,7 @@ function Cond_PDF(xfit[*]:numeric,
 ;;    PDF@y     = X values of distribution
 ;;    PDF@Py    = Y values of normal distribution
 ;;    PDF@Py_pr = Y values of conditional distribution
-;;
-;; Arguments:
-;;  xfit = 1-D array of the X variable (from regressionline y=a*x+b)  
-;;  yfit = 1-D array of the Y variable (from regressionline y=a*x+b)  
-;;  Xval = 1-D array of the Y variable                                
-;;  Yval = 1-D array of the Y variable                                
-;;  MSE  =  1-D array of the mean sqaured error of regressionline      
-;;  obs_std = 1-D array of the conditional values                     
+;;           
 ;;                                                                      
 ;; Modification history:
 ;;    * 20140128 written by S. Wenzel (sabrina.wenzel@dlr.de)
