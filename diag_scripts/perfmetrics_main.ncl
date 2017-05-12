@@ -68,6 +68,7 @@
 ;;          and a warning is issued.
 ;;
 ;; Modification history
+;;    20170512_A_rett_ri: added tags
 ;;    20161220_A_laue_ax: added option to set map projection for lat-lon plots
 ;;                        (diag_script_info@projection)
 ;;                        added option to choose how to plot t-test results:
@@ -109,6 +110,7 @@ load "./plot_scripts/ncl/xy_line.ncl"
 load "./plot_scripts/ncl/zonalmean_profile.ncl"
 load "./plot_scripts/ncl/contour_maps.ncl"
 load "./diag_scripts/aux/perfmetrics/aux_perfmetrics.ncl"
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 begin
@@ -984,6 +986,7 @@ begin
             var_all@res_tiMainString = var_all@res_tiMainString + \
                 location + altitude
             plot = cycle_plot(wks, var_all, var0)
+            plot@outfile = outfile_plot + file_type
             draw(plot)
             frame(wks)
             info_output(" gv " + outfile + "." + file_type, verbosity, 1)
@@ -1003,7 +1006,7 @@ begin
                 climofiles(imod) = interface_get_inpaths(imod) + "/" + \
                     interface_get_infile(variables(0), field_types(0), imod)
             end do
-            ESMValMD(map@outfile, alltags, caption, id, variables, climofiles)
+            ESMValMD(plot@outfile, alltags, caption, id, variables, climofiles)
             delete([/alltags, caption, id, climofiles/])
          end if
 
@@ -1031,6 +1034,7 @@ begin
                     gsn_define_colormap(wks, "amwg_blueyellowred")
                 end if
                 plot = zonalmean_profile(wks, var, var0)
+                plot@outfile = outfile_plot + file_type
                 draw(plot)
                 frame(wks)
                 info_output(" gv " + outfile + "." + file_type, \
@@ -1048,7 +1052,7 @@ begin
                 id = diag_script + "_example_id"   
                 climofiles(imod) = interface_get_inpaths(imod) + "/" + \
                         interface_get_infile(variables(0), field_types(0), imod)
-                ESMValMD(map@outfile, alltags, caption, id, variables, climofiles)
+                ESMValMD(plot@outfile, alltags, caption, id, variables, climofiles)
                 delete([/alltags, caption, id, climofiles/])                            
 
                 delete(var@res_cnLevels)
@@ -1080,6 +1084,7 @@ begin
                         wks = gsn_open_wks(file_type, outfile)
                         gsn_merge_colormaps(wks, "temp_19lev", "gray70")
                         plot = zonalmean_profile(wks, var, var0)
+                        plot@outfile = outfile_plot + file_type
                 
                         ; add stippling for statistically significant grid cells
                         var = var_sig(imod, :, :)
@@ -1117,7 +1122,7 @@ begin
                         id = diag_script + "_example_id"   
                         climofiles(imod) = interface_get_inpaths(imod) + "/" + \
                                interface_get_infile(variables(0), field_types(0), imod)
-                        ESMValMD(map@outfile, alltags, caption, id, variables, climofiles)
+                        ESMValMD(plot@outfile, alltags, caption, id, variables, climofiles)
                         delete([/alltags, caption, id, climofiles/])  
                         
                         info_output(" gv " + outfile + "." + file_type, \
@@ -1165,6 +1170,7 @@ begin
                     gsn_define_colormap(wks, "amwg_blueyellowred")
                 end if
                 plot = contour_map_ce(wks, var, var0)
+                plot@outfile = outfile_plot + file_type
                 draw(plot)
                 frame(wks)
                         
@@ -1180,7 +1186,7 @@ begin
                 id = diag_script + "_example_id"   
                 climofiles(imod) = interface_get_inpaths(imod) + "/" + \
                      interface_get_infile(variables(0), field_types(0), imod)
-                ESMValMD(map@outfile, alltags, caption, id, variables, climofiles)
+                ESMValMD(plot@outfile, alltags, caption, id, variables, climofiles)
                 delete([/alltags, caption, id, climofiles/])  
                 
                 info_output(" gv " + outfile + "." + file_type, \
@@ -1229,7 +1235,8 @@ begin
                         wks = gsn_open_wks(file_type, outfile)
                         gsn_merge_colormaps(wks, "temp_19lev", "gray70")
                         plot = contour_map_ce(wks, var, var0)
-
+                        plot@outfile = outfile_plot + file_type
+                        
                         ; add stippling/masking of statistically significant/not-significant grid cells
 
                         res2 = True
@@ -1270,7 +1277,7 @@ begin
                         id = diag_script + "_example_id"   
                         climofiles(imod) = interface_get_inpaths(imod) + "/" + \
                                interface_get_infile(variables(0), field_types(0), imod)
-                        ESMValMD(map@outfile, alltags, caption, id, variables, climofiles)
+                        ESMValMD(plot@outfile, alltags, caption, id, variables, climofiles)
                         delete([/alltags, caption, id, climofiles/])  
                         
                         info_output(" gv " + outfile + "." + file_type, \
