@@ -139,9 +139,13 @@ class HTML_writer(object):
 
     def make_IMG_list(self, folder, name, restrictor, host, time=None):
         "produce list of image files for html"
+
+        print(folder)
         file_list = self._get_img_files(folder)
+        print(file_list)
 
         file_list = self.correct_file_list(file_list, name, restrictor)
+        print(file_list)
 
         if time is not None:
             file_list = self.correct_file_list(file_list, name, time)
