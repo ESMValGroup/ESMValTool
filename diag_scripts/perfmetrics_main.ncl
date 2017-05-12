@@ -1000,7 +1000,11 @@ begin
             end if 
             plot_fname = wks@fullname
             alltags = array_append_record(tags,\
-                      (/region@DM_tag, "PT_times", ST_tag, variables, models@name/), 0)
+                (/region@DM_tag/), 0)
+            alltags := array_append_record(alltags,\
+                (/"PT_geo"/), 0)
+            alltags := array_append_record(alltags,\
+                (/ST_tag/), 0)                      
             caption = "Cycle plot. Models: " + models@name + \
                       ", variable: " + variables(0) + \
                       ", start year: " + start_year + \
@@ -1052,7 +1056,11 @@ begin
                 end if                 
                 plot_fname = wks@fullname
                 alltags = array_append_record(tags,\
-                          (/region@DM_tag, "PT_zonal", ST_tag, variables, models@name/), 0)
+                    (/region@DM_tag/), 0)
+                alltags = array_append_record(alltags,\
+                    (/"PT_zonal"/), 0)
+                alltags = array_append_record(alltags,\
+                    (/ST_tag/), 0)                
                 caption = "Cycle plot. Models: " + models@name + \
                           ", variable: " + variables(0) + \
                           ", start year: " + start_year + \
@@ -1127,7 +1135,11 @@ begin
                         end if 
                         plot_fname = wks@fullname
                         alltags = array_append_record(tags,\
-                              (/region@DM_tag, "PT_zonal", ST_tag, variables, models@name/), 0)
+                            (/region@DM_tag/), 0)
+                        alltags := array_append_record(alltags,\
+                            (/"PT_zonal"/), 0)
+                        alltags := array_append_record(alltags,\
+                            (/ST_tag/), 0)                              
                         caption = "Cycle plot. Models: " + models@name + \
                               ", variable: " + variables(0) + \
                               ", start year: " + start_year + \
@@ -1196,7 +1208,11 @@ begin
                 end if 
                 plot_fname = wks@fullname
                 alltags = array_append_record(tags,\
-                    (/region@DM_tag, "PT_geo", ST_tag, variables, models@name/), 0)
+                    (/region@DM_tag/), 0)
+                alltags := array_append_record(alltags,\
+                    (/"PT_geo"/), 0)
+                alltags := array_append_record(alltags,\
+                    (/ST_tag/), 0)                    
                 caption = "Cycle plot. Models: " + models@name + \
                     ", variable: " + variables(0) + \
                     ", start year: " + start_year + \
@@ -1292,7 +1308,11 @@ begin
                         end if 
                         plot_fname = wks@fullname
                         alltags = array_append_record(tags,\
-                              (/region@DM_tag, "PT_geo", ST_tag, variables, models@name/), 0)
+                            (/region@DM_tag/), 0)
+                        alltags := array_append_record(alltags,\
+                            (/"PT_geo"/), 0)
+                        alltags := array_append_record(alltags,\
+                            (/ST_tag/), 0)
                         caption = "Cycle plot. Models: " + models@name + \
                               ", variable: " + variables(0) + \
                               ", start year: " + start_year + \
