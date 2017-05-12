@@ -260,7 +260,7 @@ begin
         
         alltags = array_append_record(tags,\
            (/"DM_glob", "PT_portrait", ST_tag/), 0)
-        caption = "Similar to Figure 3 od Gleckler et al. (2008). Model: " + models@name(0) + \
+        caption = "Similar to Figure 3 od Gleckler et al. (2008). Model: " + models@name + \
               ", variable: " + variables(0)
         id = diag_script + "_example_id"
         climofiles = new(/dimsizes(models@name)/)
@@ -268,7 +268,7 @@ begin
             climofiles(imod) = interface_get_inpaths(imod) + "/" + \
                  interface_get_infile(variables(0), field_types(0), imod)
         end do
-        ESMValMD(plot@outfile, alltags, caption, id, variables(0), models@name(0), climofiles)
+        ESMValMD(plot@outfile, alltags, caption, id, variables(0), models@name, climofiles)
 
         delete([/alltags, caption, id, climofiles/])
 
