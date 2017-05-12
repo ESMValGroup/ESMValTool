@@ -992,7 +992,10 @@ begin
             info_output(" gv " + outfile + "." + file_type, verbosity, 1)
 
             ;; tagging
-            ST_tag = (/"ST_mean", "ST_avg"/)   
+            ST_tag = (/"ST_mean", "ST_avg"/) 
+            if (var_all@metric .eq. "RMSD") then
+                ST_tag := (/"ST_mean", "ST_rmsd"/)
+            end if 
             plot_fname = wks@fullname
             alltags = array_append_record(tags,\
                       (/region@DM_tag, "PT_times", ST_tag, variables, models@name/), 0)
@@ -1041,7 +1044,10 @@ begin
                             verbosity, 1)
                             
                 ;; tagging
-                ST_tag = (/"ST_mean", "ST_avg"/)   
+                ST_tag = (/"ST_mean", "ST_avg"/)
+                if (var_all@metric .eq. "RMSD") then
+                    ST_tag := (/"ST_mean", "ST_rmsd"/)
+                end if                 
                 plot_fname = wks@fullname
                 alltags = array_append_record(tags,\
                           (/region@DM_tag, "PT_zonal", ST_tag, variables, models@name/), 0)
@@ -1111,7 +1117,10 @@ begin
                         frame(wks)
                         
                         ;; tagging
-                        ST_tag = (/"ST_mean", "ST_avg", "ST_diff"/)   
+                        ST_tag = (/"ST_mean", "ST_avg", "ST_diff"/)  
+                        if (var_all@metric .eq. "RMSD") then
+                            ST_tag := (/"ST_mean", "ST_diff", "ST_avg", "ST_rmsd"/)
+                        end if 
                         plot_fname = wks@fullname
                         alltags = array_append_record(tags,\
                               (/region@DM_tag, "PT_zonal", ST_tag, variables, models@name/), 0)
@@ -1175,7 +1184,10 @@ begin
                 frame(wks)
                         
                 ;; tagging
-                ST_tag = (/"ST_mean", "ST_avg"/)   
+                ST_tag = (/"ST_mean", "ST_avg"/)
+                if (var_all@metric .eq. "RMSD") then
+                    ST_tag := (/"ST_mean", "ST_avg", "ST_rmsd"/)
+                end if 
                 plot_fname = wks@fullname
                 alltags = array_append_record(tags,\
                     (/region@DM_tag, "PT_geo", ST_tag, variables, models@name/), 0)
@@ -1266,7 +1278,10 @@ begin
                         frame(wks)
                         
                         ;; tagging
-                        ST_tag = (/"ST_mean", "ST_avg", "ST_diff"/)   
+                        ST_tag = (/"ST_mean", "ST_avg", "ST_diff"/)
+                        if (var_all@metric .eq. "RMSD") then
+                            ST_tag := (/"ST_mean", "ST_avg", "ST_diff", "ST_rmsd"/)
+                        end if 
                         plot_fname = wks@fullname
                         alltags = array_append_record(tags,\
                               (/region@DM_tag, "PT_geo", ST_tag, variables, models@name/), 0)
