@@ -49,7 +49,6 @@ def writeTimeStamp(filePointer):
           ' on ' + now.strftime("%Y-%m-%d %H:%M:%S") +'\n\n')
 
 
-
 def makeParamDetails(params):
     
     ''' Create a list of parameter names and types from the params string.  '''
@@ -263,6 +262,7 @@ def parseFile(inFileName, outFileName):
     inp.close()
     oup.close()    
 
+
 def processFiles():
     
     ''' Does all the processing for the files.  (This is all in a single routine for ease of switching 
@@ -275,45 +275,72 @@ def processFiles():
         print "% python scripts/process_ncl_docs.py"
         sys.exit()
 
+    # Make an index file for all the technical routines.
+    techFilePointer = openFile("source/technical_routines.rst", "w")
+    if techFilePointer is None:
+        return
+
+    # Write a comment to the file to show it's been automatically generated.
+    writeTimeStamp(techFilePointer)
+
+    # Write the preamble to the file.
+    techFilePointer.write('ESMValTool technical routines\n')
+    techFilePointer.write('=============================\n')
+    techFilePointer.write('.. toctree:: \n')
+    techFilePointer.write('   :maxdepth: 3 \n\n')
+    techFilePointer.write('   autodoc/diag_scripts\n')
+
     # List the directories containing input files, then loop over them.
-    inDirs = ["../../diag_scripts/lib/ncl/", "../../plot_scripts/ncl/"]
-    for inDir in inDirs:
+    # NB This would be better done using a dictionary.
+    inDirs = ["diag_scripts/aux/aerosol", "diag_scripts/aux/carbon", "diag_scripts/lib/ncl", "plot_scripts/ncl"]
+    labels = ["Auxillary aerosol", "Auxillary carbon", "Diagnostic scripts library", "Plot scripts library"]
+    names  = ["aux_aerosol", "aux_carbon", "diag_scripts_lib", "plot_scripts_lib"]
+    for i in range(len(inDirs)):
 
-        # Get the useful part of the name of the input directory (we assume full name
-        # is ../../../foo/bar, where foo is the useful part of the name).
-        dirName = inDir.split('/')[2]
+        # Get the location of this directory, its name, and its label.
+        inDir    = "../../" + inDirs[i] + "/"
+        dirName  = names[i]
+        dirLabel = labels[i]
 
+        print "Processing ", dirLabel
+
+        # Form the output directory name from the input directory name, then make it if necessary.
+        outDir = "source/" + dirName + '/'
+        if not os.path.exists(outDir):
+            os.makedirs(outDir)
+            
         # Make an index file for this directory, and open it.
-        indexFile = "source/" + dirName + "/index.rst"
-        oup = openFile(indexFile, "w")
-        if oup is None:
+        indexFile = outDir + "/index.rst"
+        indexFilePointer = openFile(indexFile, "w")
+        if indexFilePointer is None:
             return
 
         # Write a comment to the file to show it's been automatically generated.
-        writeTimeStamp(oup)
+        writeTimeStamp(indexFilePointer)
 
         # Write the preamble to the file.
-        oup.write('NCL ' + dirName + ' library' + '\n')
-        oup.write("=" * (12+len(dirName)) + '\n\n')
-        oup.write('Contents: \n\n')
-        oup.write('.. toctree:: \n')
-        oup.write('   :maxdepth: 2 \n\n')
+        indexFilePointer.write('NCL ' + dirLabel + '\n')
+        indexFilePointer.write("=" * (4+len(dirLabel)) + '\n\n')
+        indexFilePointer.write('Contents: \n\n')
+        indexFilePointer.write('.. toctree:: \n')
+        indexFilePointer.write('   :maxdepth: 2 \n\n')
 
-        # Form the output directory name from the input directory name.
-        outDir = "source/" + dirName + '/'
+        # Now enter this filename into the technical routines file.
+        techFilePointer.write('   ' + dirName + '/index\n')
 
         # Find all the ncl files in the input directory, and loop over them.
+        print inDir
         inFiles = glob.glob(inDir + '*.ncl')
         print inFiles
         for nclFile in inFiles:
             print "Processing " + nclFile
             fileName = os.path.basename(nclFile).replace('.ncl', '')
-            oup.write('   ' + fileName + '\n')
+            indexFilePointer.write('   ' + fileName + '\n')
             rstFile = outDir + os.path.basename(nclFile).replace('.ncl', '.rst')
             parseFile(nclFile, rstFile)
 
         # Close the index file.
-        oup.close()
+        indexFilePointer.close()
 
 
 if __name__ == '__main__':
