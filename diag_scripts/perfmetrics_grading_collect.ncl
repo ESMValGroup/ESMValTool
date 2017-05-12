@@ -31,6 +31,7 @@
 ;; Caveats
 ;;
 ;; Modification history
+;;    20170512-A_rett_ri: tagging
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;;                        of the code
 ;;    20150325-A_laue_ax: modified reference tags used for acknowledgements
@@ -51,6 +52,7 @@ load "./interface_scripts/messaging.ncl"
 load "./diag_scripts/lib/ncl/style.ncl"
 
 load "./plot_scripts/ncl/portrait_plot.ncl"
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 begin
 
@@ -118,7 +120,6 @@ begin
                 delete(data_temp)
                 data_temp = temp
                 delete(temp)
-
             end if
 
             if (.not.isdefined("data_all")) then
@@ -244,17 +245,34 @@ begin
         if (isatt(data_all, "metric")) then
             outfile_plot = outfile_plot + "_" + data_all@metric
         end if
-        outfile_plot = outfile_plot + "_grading"
+        outfile_plot = outfile_plot + "_grading"    
 
         ;; Create workspace
         wks = gsn_open_wks(file_type, outfile_plot)
 
         ;; Call plotting function
         plot = portrait_plot(wks, data_all, "grade")
+        plot@outfile = outfile_plot + file_type
+        
+        alltags = array_append_record(tags,\
+           (/"DM_glob", "PT_portrait", "ST_mean", "ST_diff"/), 0)
+        caption = "Similar to Figure 3 od Gleckler et al. (2008). Model: " + models@name(0) + \
+              ", variable: " + variables(0)
+        id = diag_script + "_example_id"
+        climofiles = new(/dimsizes(models@name)/)
+        do imod = 0, dimsizes(models@name) -1
+            climofiles(imod) = interface_get_inpaths(imod) + "/" + \
+                 interface_get_infile(variables(0), field_types(0), imod)
+        end do
+        ESMValMD(plot@outfile, alltags, caption, id, variables(0), models@name(0), climofiles)
+
+        delete([/alltags, caption, id, climofiles/])
+
+        
 
         info_output(" gv " + outfile_plot + "." + file_type, verbosity, 1)
 
-    end if
+    end if 
 
     ;; Remove temporary grading list
     system("rm -f " + temp_dir)
