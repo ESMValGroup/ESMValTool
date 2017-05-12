@@ -294,4 +294,5 @@ ST_mean = mean
 ST_spectrum = spectrum
 ST_stddev = standard deviation
 ST_var = variability
+ST_rmsd = rmsd
 
