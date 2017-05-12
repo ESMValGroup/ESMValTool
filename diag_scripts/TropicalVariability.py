@@ -229,9 +229,13 @@ def get_scatterplot_limits(modelconfig, config_file, area, season):
     Parameters
     ----------
     modelconfig : xxxx
+        xxxx
     config_file : xxxxxxx
+        xxxx
     area : xxxxx
+        xxx
     season : xxxx
+        xxxx
     """
     area_key = 'scatter_' + area
     season_key = 'season_limits_' + season
@@ -269,8 +273,11 @@ def get_scatterplot_values(modelconfig, season, data):
     Parameters
     ----------
     modelconfig : xxxxx
+        xxx
     season : xxxxx
+        xxx
     data : xxxxx
+        xxxx
     """
     season_key = 'scatter_season_' + season
 
@@ -302,7 +309,9 @@ def process_equatorial_means(E, modelconfig):
     Parameters 
     ----------
     E : xxxx
+        xxxx
     modelconfig : xxxxx
+        xxxx
     """
     experiment = 'equatorial'
     datakeys = E.get_currVars()
@@ -348,7 +357,9 @@ def process_scatterplot(E, modelconfig):
     Parameters
     ----------
     E : xxxx
+        xxxx
     modelconfig : xxxxx
+        xxxx
     """
     experiment = 'scatter'
     config_file = E.get_configfile()
@@ -555,8 +566,17 @@ def process_scatterplot(E, modelconfig):
 
 
 def process_zonal_means(E, modelconfig):
-    """Main script for plotting zonal means. Outputs variable specific plots
-    containing all models for that variable (including observations). """
+    """
+    Main script for plotting zonal means. Outputs variable specific plots
+    containing all models for that variable (including observations).
+    
+    Parameters
+    ----------
+    E : xxx
+        xxxx
+    modelconfig : xxx
+        xxxx
+    """
     experiment = 'zonal_means'
     datakeys = E.get_currVars()
     plot_dir = E.get_plot_dir()

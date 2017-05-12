@@ -1,23 +1,26 @@
 """
-*********************************************************************
- dummy_python.py
-*********************************************************************
- PYTHON script
- dummy_python.py
- alexander.loew@mpimet.mpg.de, February 2014
-*********************************************************************
- This script is a dummy python script template for
- diagnostics implemented in python
+This script is a dummy python script template for
+diagnostics implemented in python
 
- ensure to define a main() routine in your script as this is
- important for the calling routine interface
+ensure to define a main() routine in your script as this is
+important for the calling routine interface
 
-*********************************************************************
+The docstrings should follow the convention used by the NUMPY project
+https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt
+
 """
 
 #from esmval_lib import ESMValProject
 
 def main(project_info):
+    """
+    This is the main routine
+
+    Parameters
+    ----------
+    project_info : dict
+        Dicrtionary with project information
+    """
     print('Hello, here is the dummy routine from the direct python interface!')
 
     # create instance of a wrapper that allows easy access to data
