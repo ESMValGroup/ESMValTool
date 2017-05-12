@@ -1,11 +1,9 @@
 # This is a config file for CCI data and CMIP5 soil moisture diagnostics
 
 # generell flags
-regionalization = False
+regionalization = True
 shape = "continents"
 shapeNames = 2  # column of the name values
-# start_year = 1988
-# stop_year = 2000
 
 # flags for basic diagnostics
 globmeants = True

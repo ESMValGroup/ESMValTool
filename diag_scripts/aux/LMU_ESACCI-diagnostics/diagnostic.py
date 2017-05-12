@@ -4,6 +4,7 @@ Basic implementation for diagnostics into ESMValTool
 # used modules
 import numpy as np
 import os
+import pdb
 # import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -114,6 +115,7 @@ class Diagnostic(object):
         self._plot_dir = plot_dir
         self.E = E
 # A_laue_ax-
+
         self._work_dir = project_info.get('GLOBAL')['wrk_dir']
         self._climo_dir = project_info.get('GLOBAL')['climo_dir']
         self._mod_line = model.split_entries()
@@ -1986,6 +1988,8 @@ class BasicDiagnostics(Diagnostic):
 
             if '_stat_m_data' in self.__dict__.keys() and \
                     '_stat_r_data' in self.__dict__.keys():
+                    # and \
+                    # self.cfg.regionalization:
 
                 rootname = self._plot_dir + os.sep + \
                     self._vartype.replace(" ", "_") + '_' + \
@@ -2031,6 +2035,8 @@ class BasicDiagnostics(Diagnostic):
 
                 M_list = [_file_to_arrays(csvfile) for csvfile in M_list_d]
                 R_list = [_file_to_arrays(csvfile) for csvfile in R_list_d]
+
+                print(R_list_d)
 
                 def _R_arrays_aggregate(modlist):
                     ret_a = []

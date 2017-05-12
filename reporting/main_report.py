@@ -134,8 +134,10 @@ if case == "pre":
                 diag_script_cfg.split(".")[1:]
                 )
 
-        with open(thisfile) as f:
-            cfg = f.readlines()
+#        with open(thisfile) as f:
+#            cfg = f.readlines()
+
+        cfg = thisfile
 
         Key = str(k0).zfill(3)
         k0 += 1
