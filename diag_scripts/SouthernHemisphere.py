@@ -206,7 +206,9 @@ def process_clouds(E, modelconfig):
     Parameters
     ----------
     E : xxxx
+        xxxxx
     modelconfig : xxxx
+        xxxxxx
     """
 
     experiment = 'SouthernHemisphere'
@@ -263,7 +265,9 @@ def process_fluxes(E, modelconfig):
     Parameters
     ----------
     E : xxxx
+        xxxxx
     modelconfig : xxxx
+        xxxxx
     """
     experiment = 'SouthernHemisphere'
     specifier = 'flux'
@@ -299,7 +303,9 @@ def process_radiation(E, modelconfig):
     Parameters
     ----------
     E : xxxx
+        xxxxx
     modelconfig : xxxxxx
+        xxxxx
     """
     experiment = 'SouthernHemisphere'
     specifier = 'radiation'
@@ -342,8 +348,11 @@ def extract_seasonal_mean_values(modelconfig, data, experiment, season):
     Parameters
     ----------
     modelconfig : xxxx
+        xxxx
     data : xxx
+        xxxx
     experiment : xxxxx
+        xxxx
     """
     season_key = experiment + '_season_' + season
     data_shape = data.shape
@@ -376,9 +385,13 @@ def get_contour_config(modelconfig, config_file, area_key, datakey):
     Parameters
     ----------
     modelconfig : xxxx
+        xxxxx
     config_file : xxxxx
+        xxxx
     area_key : xxxx
+        xxxxx
     datakey : xxxxx
+        xxxx
     """
     contour_key = 'contour_limits_' + datakey
     if   (datakey in ['clt', 'clivi', 'clwvi']):
@@ -451,10 +464,15 @@ def interpolate_data_grid(data, lats, lons, target_lats, target_lons):
     Parameters
     ----------
     data : xxxxx
+        xxxx
     lats : xxxxxx
+        xxxxx
     lons : xxxx
+        xxxx
     target_lats : xxxxx
+        xxxx
     target_lons : xxxxx
+        xxx
     """
 
     # First check if the coordinates are the same, otherwise interpolate
@@ -497,10 +515,15 @@ def process_mean_plots(E, modelconfig, datakey, orientation, mean_name):
     Parameters
     ----------
     E : xxxxx
+        xxxx
     modelconfig : xxxx
+        xxx
     datakey : xxxxx
+        xxx
     orientation : xxxxx
+        xxx
     mean_name : xxxx
+        xxxx
     """
     experiment = 'SouthernHemisphere'
     plot_dir = E.get_plot_dir()
@@ -814,9 +837,13 @@ def process_radiation_maps(E, modelconfig, datakey, specifier):
     Parameters
     ----------
     E : xxxxx
+        xxx
     modelconfig : xxxxx
+        xxxx
     datakey : xxxx
+        xxxx
     specifier : xxxxx
+        xxxxx
     """
 
     config_file = E.get_configfile()
@@ -1051,7 +1078,9 @@ def separate_list(inlist, rule):
     Parameters
     ----------
     inlist : xxxx
+        xxxx
     rule : xxxxx
+        xxxxx
     """
 
     lrule = len(rule)
@@ -1072,9 +1101,13 @@ def process_simple_maps(E, modelconfig, datakey, specifier):
     Parameters
     ----------
     E : xxxxx
+        xxxx
     modelconfig : xxxxxx
+        xxxx
     datakey : xxxxx
+        xxxx
     specifier : xxxxx
+        xxxx
     """
     config_file = E.get_configfile()
     experiment = 'SouthernHemisphere'
