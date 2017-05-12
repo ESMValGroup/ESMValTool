@@ -982,6 +982,8 @@ begin
                 ptype + "_" + time_avg + "_" + level + region_name
             wks = gsn_open_wks(file_type, outfile)
             wks@legendfile = outfile + "_legend"
+            wks@fullname = diag_script_base + "_" + var0 + "_" + \
+                ptype + "_" + time_avg + "_" + level + region_name 
             var_all@res_tiMainString = varstring
             var_all@res_tiMainString = var_all@res_tiMainString + \
                 location + altitude
@@ -1035,6 +1037,8 @@ begin
                 var@res_gsnLeftString = var@long_name + " [" + \
                     format_units(var@units) + "]"
                 wks = gsn_open_wks(file_type, outfile)
+                wks@fullname = modelnames(imod) + "_" + var0 + "_" + ptype + "_" + \
+                    time_avg + "_" + level + region_name
                 if (isatt(variable_info, "zonal_ref_cmap")) then
                     gsn_define_colormap(wks, variable_info@zonal_ref_cmap)
                 else
@@ -1098,6 +1102,9 @@ begin
                         var@res_cnMissingValFillColor = "gray70"
                         var@res_gsnSpreadColorEnd = -2
                         wks = gsn_open_wks(file_type, outfile)
+                        wks@fullname = modelnames(imod) + "-" + modelnames(ref_ind) + \
+                            "_" + var0 + "_" + ptype + "_" + \
+                            time_avg + "_" + level + region_name
                         gsn_merge_colormaps(wks, "temp_19lev", "gray70")
                         plot = zonalmean_profile(wks, var, var0)
                         plot@outfile = outfile + file_type
@@ -1189,6 +1196,8 @@ begin
                     end if
                 end if
                 wks = gsn_open_wks(file_type, outfile)
+                wks@fullname = modelnames(imod) + "_" + var0 + "_" + ptype + "_" + \
+                    time_avg + "_" + level + region_name
                 if (isatt(variable_info, "map_ref_cmap")) then
                     gsn_define_colormap(wks, variable_info@map_ref_cmap)
                 else
@@ -1267,6 +1276,9 @@ begin
                             end if
                         end if
                         wks = gsn_open_wks(file_type, outfile)
+                        wks@fullname = modelnames(imod) + "-" + modelnames(ref_ind) + \
+                            "_" + var0 + "_" + ptype + "_" + \
+                            time_avg + "_" + level + region_name
                         gsn_merge_colormaps(wks, "temp_19lev", "gray70")
                         plot = contour_map_ce(wks, var, var0)
                         plot@outfile = outfile + file_type
