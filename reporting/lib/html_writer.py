@@ -43,9 +43,12 @@ class HTML_writer(object):
         for root, dirs, files in os.walk(directory):
             for l_directory in dirs:
                 subL, subN = self._get_files_in_directory(os.path.join(root, l_directory),pattern)
+                print(subL)
                 L.append(subL)
+                print(L)
             for filename in fnmatch.filter(files, pattern):
                 L.append(os.path.join(root, filename))
+                print(l)
 
         N = len(L)
 
@@ -143,12 +146,9 @@ class HTML_writer(object):
     def make_IMG_list(self, folder, name, restrictor, host, time=None):
         "produce list of image files for html"
 
-        print(folder)
         file_list = self._get_img_files(folder)
-        print(file_list)
 
         file_list = self.correct_file_list(file_list, name, restrictor)
-        print(file_list)
 
         if time is not None:
             file_list = self.correct_file_list(file_list, name, time)
