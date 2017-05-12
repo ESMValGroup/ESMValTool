@@ -29,6 +29,7 @@ class METAdata(object):
         self.__modfile__ = modfile
 
         self.tags = None
+        self.DataIDs = None
 
     def set_type(self, dtype):
         """
@@ -290,7 +291,9 @@ class METAdata(object):
                                 "There is header information missing!" + \
                                 "Either tracking_id or infile_**** needed."
                     except:
-                        new_list.append("NO ID found.")
+                        new_list.append("NO ID found in file " + f + "!")
+                else:
+                    new_list.append(f)
 
             return new_list
 

@@ -1,7 +1,7 @@
 # This is a config file for CCI data and CMIP5 soil moisture diagnostics
 
 # generell flags
-regionalization = True
+regionalization = False
 shape = "continents"
 shapeNames = 2  # column of the name values
 # start_year = 1988
@@ -21,6 +21,9 @@ trend = True
 anomalytrend = True
 trend_p = True
 climatologies = True
+hovmoeller = False
+mima_hov = [0, 1]
+mima_hovdiff = [-1, 1]
 
 # flags for specific diagnostics
 percentile = True
