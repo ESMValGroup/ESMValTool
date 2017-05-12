@@ -986,7 +986,7 @@ begin
             var_all@res_tiMainString = var_all@res_tiMainString + \
                 location + altitude
             plot = cycle_plot(wks, var_all, var0)
-            plot@outfile = outfile_plot + file_type
+            plot@outfile = outfile + file_type
             draw(plot)
             frame(wks)
             info_output(" gv " + outfile + "." + file_type, verbosity, 1)
@@ -1035,7 +1035,7 @@ begin
                     gsn_define_colormap(wks, "amwg_blueyellowred")
                 end if
                 plot = zonalmean_profile(wks, var, var0)
-                plot@outfile = outfile_plot + file_type
+                plot@outfile = outfile + file_type
                 draw(plot)
                 frame(wks)
                 info_output(" gv " + outfile + "." + file_type, \
@@ -1088,7 +1088,7 @@ begin
                         wks = gsn_open_wks(file_type, outfile)
                         gsn_merge_colormaps(wks, "temp_19lev", "gray70")
                         plot = zonalmean_profile(wks, var, var0)
-                        plot@outfile = outfile_plot + file_type
+                        plot@outfile = outfile + file_type
                 
                         ; add stippling for statistically significant grid cells
                         var = var_sig(imod, :, :)
@@ -1177,7 +1177,7 @@ begin
                     gsn_define_colormap(wks, "amwg_blueyellowred")
                 end if
                 plot = contour_map_ce(wks, var, var0)
-                plot@outfile = outfile_plot + file_type
+                plot@outfile = outfile + file_type
                 draw(plot)
                 frame(wks)
                         
@@ -1245,7 +1245,7 @@ begin
                         wks = gsn_open_wks(file_type, outfile)
                         gsn_merge_colormaps(wks, "temp_19lev", "gray70")
                         plot = contour_map_ce(wks, var, var0)
-                        plot@outfile = outfile_plot + file_type
+                        plot@outfile = outfile + file_type
                         
                         ; add stippling/masking of statistically significant/not-significant grid cells
 
@@ -1306,9 +1306,6 @@ begin
 
         end if
     end if
-    
-    
-
 
     leave_msg(diag_script, "", 4)
 
