@@ -20,6 +20,11 @@ load "./interface_scripts/messaging.ncl"
 undef("toy_weights")
 function toy_weights(start[2], final[2], time:numeric)
 ;;
+;; Arguments: (will be converted to long)
+;;  * start:  (/start month, start day/); will be converted to integer
+;;  * final:  (/final month, final day/); will be converted to integer
+;;  * time: time axis of the model data
+;;
 ;; Description:
 ;;  * toy_weights = time of year weights
 ;;  * creates a mask for the obs period
@@ -32,10 +37,6 @@ function toy_weights(start[2], final[2], time:numeric)
 ;;  * vector of dimsizes(t), with one weighting value for each element of t
 ;;  * type float, but values are essentially # of days, i.e. integers
 ;;
-;; Arguments: (will be converted to long)
-;;  * start:  (/start month, start day/); will be converted to integer
-;;  * final:  (/final month, final day/); will be converted to integer
-;;  * time: time axis of the model data
 ;;
 ;; Caveats:
 ;;  * processing of daily data not tested yet
@@ -164,6 +165,10 @@ end
 undef("poi")
 function poi(yyyy_dat[2], yyyy_poi[2])
 ;;
+;; Arguments: (will be converted to long)
+;;    yyyy_poi = (/year min,year max/) of the period of interest
+;;    yyyy_dat = (/year min,year max/) of the (data) to check
+;;
 ;; Description:
 ;;  * poi = period of interest
 ;;  * checks if the period described by yyyy_dat
@@ -178,10 +183,6 @@ function poi(yyyy_dat[2], yyyy_poi[2])
 ;;  * string array containing all true statements from the following list:
 ;;    contained / center / overlap / encloses / outside
 ;;    (e.g. "contained" implies "center" and "overlap")
-;;
-;; Arguments: (will be converted to long)
-;;    yyyy_poi = (/year min,year max/) of the period of interest
-;;    yyyy_dat = (/year min,year max/) of the (data) to check
 ;;
 ;; Caveats:
 ;;
@@ -253,15 +254,15 @@ end
 undef("get_period")
 function get_period(period_in[1]:string)
 ;;
+;; Arguments:
+;;  * period_in: string of the form "yyyy/mm/dd-yyyy/mm/dd"
+;;
 ;; Description:
 ;;  * splits the input string into yyyy, mm, dd
 ;;  * for start and end time
 ;;
 ;; Return value:
 ;;  * string array (3,2)
-;;
-;; Arguments:
-;;  * period_in: string of the form "yyyy/mm/dd-yyyy/mm/dd"
 ;;
 ;; Caveats:
 ;;  * very specific
