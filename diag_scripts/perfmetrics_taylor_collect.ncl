@@ -18,6 +18,7 @@
 ;; Caveats
 ;;
 ;; Modification history
+;;    20170512-A_rett_ri: tagging
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;;                        of the code
 ;;    20150325-A_laue_ax: modified reference tags used for acknowledgements
@@ -35,6 +36,7 @@ load "./interface_scripts/data_handling.ncl"
 load "./interface_scripts/messaging.ncl"
 
 load "./plot_scripts/ncl/taylor_plot.ncl"
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 begin
 
@@ -139,7 +141,31 @@ begin
 
         ;; Plot
         plot  = taylor_plot(wks, data_all, "var")
-
+        
+        ;; tagging
+        ST_tag = (/"ST_mean", "ST_stddev", "ST_corr"/)
+        outfile_plot = outfile_plot + "_" + data_all@metric
+        if (data_all@metric .eq. "RMSD") then
+            ST_tag := array_append_record(ST_tag, (/"ST_rmsd"/),0)
+        else if (data_all@metric .eq. "BIAS") then
+            ST_tag := array_append_record(ST_tag, (/"ST_diff"/),0)
+        end if 
+        end if
+        
+        plot@outfile = outfile_plot + file_type
+        
+        alltags = array_append_record(tags,\
+           (/"DM_glob", "PT_taylor", ST_tag/), 0)
+        caption = "Similar to Figure 10 of Gleckler et al. (2008). Model: " + models@name + \
+              ", variable: " + variables(0)
+        id = diag_script + "_example_id"
+        climofiles = new(/dimsizes(models@name)/)
+        do imod = 0, dimsizes(models@name) -1
+            climofiles(imod) = interface_get_inpaths(imod) + "/" + \
+                 interface_get_infile(variables(0), field_types(0), imod)
+        end do
+        ESMValMD(plot@outfile, alltags, caption, id, variables(0), models@name, climofiles)
+        delete([/alltags, caption, id, climofiles/])
         info_output(" gv " + outfile_plot + "." + file_type, verbosity, 1)
     end if
 
