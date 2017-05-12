@@ -292,9 +292,9 @@ def processFiles():
 
     # List the directories containing input files, then loop over them.
     # NB This would be better done using a dictionary.
-    inDirs = ["diag_scripts/aux/aerosol", "diag_scripts/aux/carbon", "diag_scripts/lib/ncl", "plot_scripts/ncl"]
-    labels = ["Auxillary aerosol", "Auxillary carbon", "Diagnostic scripts library", "Plot scripts library"]
-    names  = ["aux_aerosol", "aux_carbon", "diag_scripts_lib", "plot_scripts_lib"]
+    inDirs = ["diag_scripts/aux/aerosol", "diag_scripts/aux/carbon", "diag_scripts/aux/Emmons", "diag_scripts/lib/ncl", "plot_scripts/ncl"]
+    labels = ["Auxillary aerosol", "Auxillary carbon", "Auxillary Emmons", "Diagnostic scripts library", "Plot scripts library"]
+    names  = ["aux_aerosol", "aux_carbon", "aux_emmons", "diag_scripts_lib", "plot_scripts_lib"]
     for i in range(len(inDirs)):
 
         # Get the location of this directory, its name, and its label.
