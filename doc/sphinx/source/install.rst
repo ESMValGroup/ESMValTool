@@ -17,6 +17,8 @@ The ESMValTool has the following software requirements (note that specific diagn
 
   conda install --channel https://conda.anaconda.org/Clyde_Fare scientificpython
 
+  conda install hdf4
+
   conda install netcdf4
 
   conda install --channel https://conda.anaconda.org/auto cdo
