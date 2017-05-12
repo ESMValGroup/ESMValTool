@@ -1008,7 +1008,6 @@ begin
                 climofiles(imod) = interface_get_inpaths(imod) + "/" + \
                     interface_get_infile(variables(0), field_types(0), imod)
             end do
-            ESMValMD(plot@outfile, alltags, caption, id, variables, climofiles)
             delete([/alltags, caption, id, climofiles/])
          end if
 
