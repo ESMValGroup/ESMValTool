@@ -166,8 +166,8 @@ undef("poi")
 function poi(yyyy_dat[2], yyyy_poi[2])
 ;;
 ;; Arguments: (will be converted to long)
-;;    yyyy_poi = (/year min,year max/) of the period of interest
 ;;    yyyy_dat = (/year min,year max/) of the (data) to check
+;;    yyyy_poi = (/year min,year max/) of the period of interest
 ;;
 ;; Description:
 ;;  * poi = period of interest
