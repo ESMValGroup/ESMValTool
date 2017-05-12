@@ -993,8 +993,10 @@ begin
 
             ;; tagging
             ST_tag = (/"ST_mean", "ST_avg"/) 
-            if (var_all@metric .eq. "RMSD") then
-                ST_tag := (/"ST_mean", "ST_rmsd"/)
+            if (isatt(var_all, "metric")) then
+                if (var_all@metric .eq. "RMSD") then
+                    ST_tag := (/"ST_mean", "ST_rmsd"/)
+                end if
             end if 
             plot_fname = wks@fullname
             alltags = array_append_record(tags,\
@@ -1187,7 +1189,7 @@ begin
                         
                 ;; tagging
                 ST_tag = (/"ST_mean", "ST_avg"/)
-                if (isatt(var_all, "metric") then
+                if (isatt(var_all, "metric")) then
                     if (var_all@metric .eq. "RMSD") then
                         ST_tag := (/"ST_mean", "ST_avg", "ST_rmsd"/)
                     end if
