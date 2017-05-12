@@ -1056,7 +1056,7 @@ begin
                 id = diag_script + "_example_id"   
                 climofiles(imod) = interface_get_inpaths(imod) + "/" + \
                         interface_get_infile(variables(0), field_types(0), imod)
-                ESMValMD(plot@outfile, alltags, caption, id, variables, climofiles)
+                ESMValMD(plot@outfile, alltags, caption, id, variables, modesl@name(imod), climofiles)
                 delete([/alltags, caption, id, climofiles/])                            
 
                 delete(var@res_cnLevels)
@@ -1129,7 +1129,7 @@ begin
                         id = diag_script + "_example_id"   
                         climofiles(imod) = interface_get_inpaths(imod) + "/" + \
                                interface_get_infile(variables(0), field_types(0), imod)
-                        ESMValMD(plot@outfile, alltags, caption, id, variables, climofiles)
+                        ESMValMD(plot@outfile, alltags, caption, id, variables, modesl@name(imod), climofiles)
                         delete([/alltags, caption, id, climofiles/])  
                         
                         info_output(" gv " + outfile + "." + file_type, \
@@ -1196,7 +1196,7 @@ begin
                 id = diag_script + "_example_id"   
                 climofiles(imod) = interface_get_inpaths(imod) + "/" + \
                      interface_get_infile(variables(0), field_types(0), imod)
-                ESMValMD(plot@outfile, alltags, caption, id, variables, climofiles)
+                ESMValMD(plot@outfile, alltags, caption, id, variables, modesl@name(imod), climofiles)
                 delete([/alltags, caption, id, climofiles/])  
                 
                 info_output(" gv " + outfile + "." + file_type, \
@@ -1290,7 +1290,7 @@ begin
                         id = diag_script + "_example_id"   
                         climofiles(imod) = interface_get_inpaths(imod) + "/" + \
                                interface_get_infile(variables(0), field_types(0), imod)
-                        ESMValMD(plot@outfile, alltags, caption, id, variables, climofiles)
+                        ESMValMD(plot@outfile, alltags, caption, id, variables, modesl@name(imod), climofiles)
                         delete([/alltags, caption, id, climofiles/])  
                         
                         info_output(" gv " + outfile + "." + file_type, \
