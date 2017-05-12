@@ -1004,7 +1004,6 @@ begin
                       ", start year: " + start_year + \
                       ", end year: " + end_year
             id = diag_script + "_example_id"   
-            climofiles = new(/dimsizes(models@name)/)
             do imod = 0, dimsizes(models@name) -1
                 climofiles(imod) = interface_get_inpaths(imod) + "/" + \
                     interface_get_infile(variables(0), field_types(0), imod)
