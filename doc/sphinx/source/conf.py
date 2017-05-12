@@ -21,6 +21,7 @@ import os
 sys.path.insert(0, os.path.abspath('../../../'))
 sys.path.insert(0, os.path.abspath('../../../diag_scripts/lib/python'))
 sys.path.insert(0, os.path.abspath('../../../diag_scripts/aux/LMU_ESACCI-diagnostics'))
+sys.path.insert(0, os.path.abspath('../../../diag_scripts/aux/catchment_analysis'))
 sys.path.insert(0, os.path.abspath('../../../interface_scripts'))
 
 

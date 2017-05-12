@@ -1,53 +1,49 @@
 """
-;;#############################################################################
-;; PRECIPITATION DEPENDANCE ON SOIL MOISTURE DIAGNOSTIC
-;; Authors:     Belen Gallego-Elvira (CEH, UK, belgal@nerc.ac.uk)
-;;              Chris Taylor (CEH, UK, cmt@ceh.ac.uk)
-;;              Luis Garcia-Carreras (University of Leeds,
-;;                                    L.Garcia-Carreras@leeds.ac.uk)
-;; EMBRACE project
-;;#############################################################################
-;;
-;; Description
-;;    This script computes and plot the diagnostic "preference for afternoon
-;;    precipitation over soil moisture anomalies" as in Fig.3 of
-;;    Taylor et al. 2012, doi:10.1038/nature11377
-;;
-;;
-;; Required diag_script_info attributes (diagnostics specific)
-;;    att1: short description
-;;          keep the indentation if more lines are needed
-;;    att2: short description
-;;
-;; Optional diag_script_info attributes (diagnostic specific)
-;;    att1: short description
-;;    att2: short description
-;;
-;; Required variable_info attributes (variable specific)
-;;    att1: short description
-;;    att2: short description
-;;
-;; Optional variable_info attributes (variable specific)
-;;    att1: short description
-;;    att2: short description
-;;
-;; Caveats
-;;    List possible caveats or limitations of this diagnostic
-;;    
-;;    Long run times for long time series or/and high resolution models
-;;    The code assumes that the time series starts in January
-;;
-;;    Features to-be-implemented shall also be mentioned here
-;;    A better performance version, faster and more flexible
-;;    is currently being implemented
-;;
-;; Modification history
-;;    YYYYMMDD-A_xxxx_yy: extended...
-;;    YYYYMMDD-A_xxxx_yy: bug-fixed...
-;;    YYYYMMDD-A_xxxx_yy: adapted to...
-;;    YYYYMMDD-A_xxxx_yy: written.
-;;
-;;#############################################################################
+PRECIPITATION DEPENDANCE ON SOIL MOISTURE DIAGNOSTIC
+Authors:     Belen Gallego-Elvira (CEH, UK, belgal@nerc.ac.uk)
+             Chris Taylor (CEH, UK, cmt@ceh.ac.uk)
+             Luis Garcia-Carreras (University of Leeds,
+                                   L.Garcia-Carreras@leeds.ac.uk)
+EMBRACE project
+
+Description
+   This script computes and plot the diagnostic "preference for afternoon
+   precipitation over soil moisture anomalies" as in Fig.3 of
+   Taylor et al. 2012, doi:10.1038/nature11377
+
+
+Required diag_script_info attributes (diagnostics specific)
+   att1: short description
+         keep the indentation if more lines are needed
+   att2: short description
+
+Optional diag_script_info attributes (diagnostic specific)
+   att1: short description
+   att2: short description
+
+Required variable_info attributes (variable specific)
+   att1: short description
+   att2: short description
+
+Optional variable_info attributes (variable specific)
+   att1: short description
+   att2: short description
+
+Caveats
+   List possible caveats or limitations of this diagnostic
+   
+   Long run times for long time series or/and high resolution models
+   The code assumes that the time series starts in January
+
+   Features to-be-implemented shall also be mentioned here
+   A better performance version, faster and more flexible
+   is currently being implemented
+
+Modification history
+   YYYYMMDD-A_xxxx_yy: extended...
+   YYYYMMDD-A_xxxx_yy: bug-fixed...
+   YYYYMMDD-A_xxxx_yy: adapted to...
+   YYYYMMDD-A_xxxx_yy: written.
 """
 
 
@@ -95,6 +91,11 @@ import sample_events as se
 def main(project_info):
     """
     Call all callable fuctions to read CMIP5 data, compute and plot diagnostic
+    
+    Parameters
+    ----------
+    project_info : dict
+        project information
     """
 
     E = ESMValProject(project_info)
@@ -771,22 +772,22 @@ def get_smclim(sm, lon, time):
 
 
 def get_topo(project_info, longi, lati, model):
-
     """ 
-    ;; Arguments
-    ;;    in_dir: dir
-    ;;          directory with input file "topo_var_5x5.gra"
-    ;;    longi: array [lon]
-    ;;          longitude in degrees east
-    ;;    lati: array [lat]
-    ;;          latitude
-    ;; Return 
-    ;;    topo: array [lat, lon]
-    ;;          topography ranges in model grid
-    ;;
-    ;; Description
-    ;;    Computes topography information
-    ;;
+    computes topography information
+    
+    Parameters
+    ----------
+    in_dir: dir
+        directory with input file "topo_var_5x5.gra"
+    longi: array [lon]
+        longitude in degrees east
+    lati: array [lat]
+        latitude
+
+    Returns
+    -------
+    topo: array [lat, lon]
+        topography ranges in model grid
     """
     #import projects
     E = ESMValProject(project_info)
@@ -852,15 +853,13 @@ def get_topo(project_info, longi, lati, model):
 
 
 def plot_diagnostic(fileout, plot_dir, project_info, model):
-
     """
-    ;; Arguments
-    ;;    fileout: dir
-    ;;          directory to save the plot
-    ;;
-    ;; Description
-    ;;    Plot diagnostic and save .png plot
-    ;;
+    Plot diagnostic and save PNG plot
+    
+    Parameters
+    ----------
+    fileout: dir
+        directory to save the plot
     """
     import projects
     E = ESMValProject(project_info)
@@ -935,32 +934,30 @@ def plot_diagnostic(fileout, plot_dir, project_info, model):
 
 
 def read_pr_sm_topo(project_info, model):
-
     """
-    ;; Arguments
-    ;;    project_info: dictionary
-    ;;          all info from namelist
-    ;;
-    ;; Return
-    ;;    pr: iris cube [time, lat, lon]
-    ;;          precipitation time series
-    ;;    sm: iris cube [time, lat, lon]
-    ;;          soil moisture time series
-    ;;    topo: array [lat, lon]
-    ;;          topography
-    ;;    lon: array [lon]
-    ;;          longitude
-    ;;    lat: array [lat]
-    ;;          latitude
-    ;;    time: iris cube coords
-    ;;          time info of cube
-    ;;    time_bnds_1: float
-    ;;          first time_bnd of time series
-    ;;
-    ;;
-    ;; Description
-    ;;    Read cmip5 input data for computing the diagnostic
-    ;;
+    Read cmip5 input data for computing the diagnostic
+
+    Parameters
+    ----------
+    project_info: dictionary
+        all info from namelist
+   
+    Returns
+    -------
+    pr: iris cube [time, lat, lon]
+        precipitation time series
+    sm: iris cube [time, lat, lon]
+        soil moisture time series
+    topo: array [lat, lon]
+        topography
+    lon: array [lon]
+        longitude
+    lat: array [lat]
+        latitude
+    time: iris cube coords
+        time info of cube
+    time_bnds_1: float
+        first time_bnd of time series
     """
     
     import projects
@@ -1169,14 +1166,12 @@ def read_pr_sm_topo(project_info, model):
 
 def removeleap(var_array, utimedate):
     """ 
-    ;; Arguments
-    ;;    var_array : ndarray
-    ;;
-    ;;    utimedate : netcdftime object     
-    ;;
-    ;; Description
-    ;;    Removes 29-feb from leap years
-    ;;
+    Removes 29-feb from leap years
+
+    Parameters
+    ----------
+    var_array : ndarray
+        utimedate : netcdftime object     
     """
 
     datesrange = range(0, var_array.shape[0])
@@ -1198,20 +1193,20 @@ def removeleap(var_array, utimedate):
 def write_nc(fileout, xs, ys, p_vals, project_info, model):
 
     """ 
-    ;; Arguments
-    ;;    fileout: dir
-    ;;          directory to save output
-    ;;    xs: array [lon]
-    ;;          regridding coordinates
-    ;;    ys: array [lat]
-    ;;          regridding coordinates
-    ;;    p_vals: list
-    ;;          p_values of 5x5 deg grid-boxes
-    ;;
-    ;; Description
-    ;;    Save netCDF file with diagnostic in a regular 5x5 deg grid 
-    ;;
+    Save netCDF file with diagnostic in a regular 5x5 deg grid 
+
+    Parameters
+    ----------
+    fileout: dir
+        directory to save output
+    xs: array [lon]
+        regridding coordinates
+    ys: array [lat]
+        regridding coordinates
+    p_vals: list
+        p_values of 5x5 deg grid-boxes
     """
+
     import projects
     E = ESMValProject(project_info)
     verbosity = E.get_verbosity()
