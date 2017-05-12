@@ -191,10 +191,15 @@ def calculate_scatterplot_values(modelconfig,
     Parameters
     ----------
     modelconfig : xxxx
+        xxxx
     area : xxxx
+        xxxx
     cl_key : xxxxx
+        xxx
     cloud : xxxx
+        xxx
     radiation : xxx
+        xxxx
     bins : str
         xxxx
     """
@@ -243,10 +248,15 @@ def interpolate_3d(data, lats, lons, target_lats, target_lons):
     Parameters
     ----------
     data : xxxx
+        xxx
     lats : xxx
+        xxxxx
     lons : xxxx
+        xxxx
     target_lats : xxxx
+        xxx
     target_lons : xxx
+        xxxx
     """
     new_data = np.zeros((data.shape[0], len(target_lats), len(target_lons)))
     for time in xrange(data.shape[0]):
@@ -266,10 +276,15 @@ def interpolate_data_grid(data, lats, lons, target_lats, target_lons):
     Parameters
     ----------
     data : xxxx
+        xxxx
     lats : xxxx
+        xxx
     lons : xxxx
+        xxx
     target_lats : xxxx
+        xxx
     target_lons : xxxx
+        xxx
     """
 
     # First check if the coordinates are the same, otherwise interpolate
@@ -312,7 +327,9 @@ def process_scatter(E, modelconfig):
     Parameters
     ----------
     E : xxxx
+        xxx
     modelconfig : xxxx
+        xxxx
     """
     config_file = E.get_configfile()
     experiment = 'SouthernHemisphere'
