@@ -22,10 +22,12 @@ sys.path.append(main_ESMValTool+"/diag_scripts")
 
 # path to ESMVal REPORT python toolbox library
 sys.path.append("./lib")
+sys.path.append("./utils")
 
 import xml_parsers
 import projects
 from html_writer import HTML_writer
+from report_cleanup import cleanup_report
 
 # additional info
 version = "0.1"
@@ -69,6 +71,12 @@ project_info['RUNTIME']['in_refs'] = in_refs
 
 # Current working directory
 project_info['RUNTIME']['cwd'] = os.getcwd()
+
+# cleanup directories
+do_print = False
+template_dir = './templates/'
+image_dir = './static/images/'
+cleanup_report(template_dir, image_dir, do_print)
 
 # try to process the data
 try:
