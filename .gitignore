@@ -1,0 +1,6 @@
+.idea/
+*.py[cod]
+build/
+htmlcov/
+.coverage
+
