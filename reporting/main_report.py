@@ -22,10 +22,12 @@ sys.path.append(main_ESMValTool+"/diag_scripts")
 
 # path to ESMVal REPORT python toolbox library
 sys.path.append("./lib")
+sys.path.append("./utils")
 
 import xml_parsers
 import projects
 from html_writer import HTML_writer
+from report_cleanup import cleanup_report
 
 # additional info
 version = "0.1"
@@ -70,6 +72,12 @@ project_info['RUNTIME']['in_refs'] = in_refs
 # Current working directory
 project_info['RUNTIME']['cwd'] = os.getcwd()
 
+# cleanup directories
+do_print = False
+template_dir = './templates/'
+image_dir = './static/images/'
+cleanup_report(template_dir, image_dir, do_print)
+
 # try to process the data
 try:
     timestamp = datetime.datetime.utcnow()
@@ -84,7 +92,6 @@ except Exception, TOOL_error:
 
 # run server
 app = Flask(__name__)
-# host_add = "0.0.0.0"
 host_add = "127.0.0.1"
 host_port = 5000
 full_host = host_add + ":" + str(host_port)
@@ -134,8 +141,8 @@ if case == "pre":
                 diag_script_cfg.split(".")[1:]
                 )
 
-        # with open(thisfile) as f:
-        #     cfg = f.readlines()
+#        with open(thisfile) as f:
+#            cfg = f.readlines()
 
         cfg = thisfile
 
@@ -143,7 +150,6 @@ if case == "pre":
         k0 += 1
 
         DKEY = "Auto_Diag_"+Key
-
         # Diagnostic
         D.diag_html(DKEY, project_info['GLOBAL']['plot_dir'], cfg, [DKEY],
                     full_host,
