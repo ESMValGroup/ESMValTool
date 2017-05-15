@@ -109,7 +109,7 @@ class CMORCheck(object):
         self.frequency = frequency
         self.automatic_fixes = automatic_fixes
 
-    def check(self):
+    def check_metadata(self):
         """
         Checks the data. Raises CMORCheckError if an error is found.
         """
@@ -119,7 +119,24 @@ class CMORCheck(object):
         self._check_dim_names()
         self._check_coords()
         self._check_time_coord()
+
+        if self.has_errors():
+            msg = 'There were errors in variable {0}:\n {1}'
+            msg = msg.format(self.cube.var_name, '\n '.join(self._errors))
+            raise CMORCheckError(msg)
+
+    def check_data(self):
+        """
+        Checks the data. Raises CMORCheckError if an error is found.
+        """
         self._check_data_range()
+
+        # Check units
+        attr = 'units'
+        if self._cmor.var[attr]:
+            if str(self.cube.units) != self._cmor.var[attr]:
+                self.cube.convert_units(self._cmor.var[attr])
+
 
         if self.has_errors():
             msg = 'There were errors in variable {0}:\n {1}'
@@ -147,10 +164,9 @@ class CMORCheck(object):
         # Check units
         attr = 'units'
         if self._cmor.var[attr]:
-            if str(self.cube.units) != self._cmor.var[attr]:
-                self.report_error(self._attr_msg, self.cube.var_name, attr,
-                                  self._cmor.var[attr],
-                                  self.cube.units)
+            if not self.cube.units.is_convertible(self._cmor.var[attr]):
+                self.report_error('Variable {0} units () can not be converted to {2}',
+                                  self.cube.var_name, self._cmor.var[attr], self.cube.units)
 
         # Check other variable attributes that match entries in cube.attributes
         attrs = ['positive']
@@ -329,6 +345,9 @@ class CMORCheck(object):
         if not coord.units.is_time_reference():
             self.report_error(self._does_msg, var_name,
                               'have time reference units')
+        else:
+            coord.convert_units(cf_units.Unit('days since 1950-01-01 00:00:00',
+                                              calendar=coord.units.calendar))
 
         if self.frequency:
             tol = 0.001
@@ -360,6 +379,8 @@ class CMORCheck(object):
                     msg = '{}: Frequency {} does not match input data'
                     self.report_error(msg, var_name, self.frequency)
                     break
+
+
 
     def has_errors(self):
         return len(self._errors) > 0
