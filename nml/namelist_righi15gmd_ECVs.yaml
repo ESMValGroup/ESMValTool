@@ -1,316 +1,230 @@
-<namelist>
-<include href="./config_private.xml"/>
-<namelist_summary>
 ###############################################################################
-namelist_righi15gmd_ECVs.xml
-
-Description
-This namelist produces figures 1 to 9, and S2 to S12 of Righi et al. (2015)
-
-Authors
-Franziska Frank (DLR, Germany - franziska.frank@dlr.de)
-Mattia Righi (DLR, Germany - mattia.righi@dlr.de)
-Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
-
-Project
-DLR ESMVal
-
-References
-Righi et al., Geosci. Model Dev., 8, 733-768 10.5194/gmd-8-733-2015 (2015)
-Gleckler et al., J. Geophys. Res., 113, D06104, doi: 10.1029/2007JD008972 (2008)
-
-This namelist is part of the ESMValTool
+# namelist_righi15gmd_ECVs.xml
+#
+# Description
+# This namelist produces figures 1 to 9, and S2 to S12 of Righi et al. (2015)
+#
+# Authors
+# Franziska Frank (DLR, Germany - franziska.frank@dlr.de)
+# Mattia Righi (DLR, Germany - mattia.righi@dlr.de)
+# Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
+#
+# Project
+# DLR ESMVal
+#
+# References
+# Righi et al., Geosci. Model Dev., 8, 733-768 10.5194/gmd-8-733-2015 (2015)
+# Gleckler et al., J. Geophys. Res., 113, D06104, doi: 10.1029/2007JD008972
+# (2008)
+#
+# This namelist is part of the ESMValTool
 ###############################################################################
-</namelist_summary>
 
-<GLOBAL>
-  <write_plots type="boolean">              True         </write_plots>
-  <write_netcdf type="boolean">             True         </write_netcdf>
-  <force_processing type="boolean">        False         </force_processing>
-  <wrk_dir type="path">                    @{WORKPATH}   </wrk_dir>
-  <plot_dir type="path">                   @{PLOTPATH}   </plot_dir>
-  <climo_dir type="path">                  @{CLIMOPATH}  </climo_dir>
-  <write_plot_vars type="boolean">          True         </write_plot_vars>
-  <max_data_filesize type="integer">         100         </max_data_filesize>
-  <max_data_blocksize type="integer">        500         </max_data_blocksize>
-  <verbosity  type="integer">                  1         </verbosity>
-  <exit_on_warning  type="boolean">        False         </exit_on_warning>
-  <!-- Use epsi for correct bounding boxes, ps for transparent shadings -->
-  <output_file_type>                          ps         </output_file_type>
-  <force_calc type="boolean">              False         </force_calc>
-  <force_gradecalc type="boolean">         False         </force_gradecalc>
-  <force_taylorcalc type="boolean">        False         </force_taylorcalc>
-</GLOBAL>
+GLOBAL:
+  config_file:       config_private_DLR-PA2
+  write_plots:       True
+  write_netcdf:      True
+  verbosity:         1
+  exit_on_warning:   False
+  output_file_type:  ps
 
-<MODELS>
-    <model> EMAC   EVAL2      1  1999 2009  @{MODELPATH}/EMAC/EVAL2/     </model>
-    <model> EMAC   QCTM       1  1999 2007  @{MODELPATH}/EMAC/QCTM/      </model>
-    <model> EMAC   TS2000     1  2001 2010  @{MODELPATH}/EMAC/TS2000/    </model>
-    <model> EMAC   ACCMIP     1  2001 2010  @{MODELPATH}/EMAC/ACCMIP/    </model>
-</MODELS>
+MODELS:
+  - {name: EVAL2,   project: EMAC,  ensemble: 1,  start: 1999,  end: 2009,  path: /modelpath/}
+  - {name: QCTM,    project: EMAC,  ensemble: 1,  start: 1999,  end: 2007,  path: /modelpath/}
+  - {name: TS2000,  project: EMAC,  ensemble: 1,  start: 2001,  end: 2010,  path: /modelpath/}
 
-<DIAGNOSTICS>
 
-<!-- ### ANNUAL CYCLE PLOTS (Figs. 1, 8, S4, S6, S8) ########################################################################### -->
+PREPROCESS:
+  select_level:    None
+  target_grid:     None
+  regrid_scheme:   None
+  mask_fillvalues: True
+  mask_landocean:  None
+  multimodel_mean: False
 
-<diag>
-  <description> Temperature                          </description>
-  <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable ref_model="ERA-Interim,NCEP">  ta        </variable>
-  <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
+DIAGNOSTICS:
 
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_glob.ncl">   perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_200_glob.ncl">   perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_30_glob.ncl">    perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_5_glob.ncl">     perfmetrics_main.ncl </diag_script>
+# ANNUAL CYCLE PLOTS (Figs. 1, 8, S4, S6, S8)
 
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_trop.ncl">   perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_200_trop.ncl">   perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_30_trop.ncl">    perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_5_trop.ncl">     perfmetrics_main.ncl </diag_script>
+  DIAG_tacycle:
+    description: Temperature
+    variable: {name: ta, ref_model: ["ERA-Interim", "NCEP"], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 200}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_glob.ncl}
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_trop.ncl}
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_NHExt.ncl}
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_SHExt.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
 
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_NHExt.ncl">  perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_200_NHExt.ncl">  perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_30_NHExt.ncl">   perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_5_NHExt.ncl">    perfmetrics_main.ncl </diag_script>
 
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_200_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_30_SHExt.ncl">   perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_5_SHExt.ncl">    perfmetrics_main.ncl </diag_script>
-</diag>
+  DIAG_uacycle:
+    description: Eastward wind
+    variable: {name: ua, ref_model: ["ERA-Interim", "NCEP"], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 200}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_glob.ncl}
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_trop.ncl}
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_NHExt.ncl}
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_SHExt.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
 
-<diag>
-  <description> Eastward wind                        </description>
-  <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable ref_model="ERA-Interim,NCEP">  ua        </variable>
-  <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
+  DIAG_vacycle:
+    description: Northward wind
+    variable: {name: va, ref_model: ["ERA-Interim", "NCEP"], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 200}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_glob.ncl}
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_trop.ncl}
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_NHExt.ncl}
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_SHExt.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
 
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_glob.ncl">   perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_200_glob.ncl">   perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_30_glob.ncl">    perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_5_glob.ncl">     perfmetrics_main.ncl </diag_script>
 
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_trop.ncl">   perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_200_trop.ncl">   perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_30_trop.ncl">    perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_5_trop.ncl">     perfmetrics_main.ncl </diag_script>
+  DIAG_zgcycle:
+    description: Geopotential height
+    variable: {name: zg, ref_model: ["ERA-Interim", "NCEP"], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 500}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_glob.ncl}
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_trop.ncl}
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_NHExt.ncl}
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_SHExt.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
 
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_NHExt.ncl">  perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_200_NHExt.ncl">  perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_30_NHExt.ncl">   perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_5_NHExt.ncl">    perfmetrics_main.ncl </diag_script>
 
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_200_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_30_SHExt.ncl">   perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_5_SHExt.ncl">    perfmetrics_main.ncl </diag_script>
-</diag>
+  DIAG_huscycle:
+    description: Specific humidity
+    variable: {name: hus, ref_model: ["AIRS", "ERA-Interim"], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 400}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_glob.ncl}
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_trop.ncl}
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_NHExt.ncl}
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_SHExt.ncl}
+    additional_models:
+      - {name: AIRS,  project: obs4mips,  level: L3,  version: RetStd-v5,  start: 2003,  end: 2010,  path: /obspath/}
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
 
-<diag>
-  <description> Northward wind                       </description>
-  <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable ref_model="ERA-Interim,NCEP">  va        </variable>
-  <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
+# ADDITIONAL DIAGNOSTICS FOR TEMPERATURE AND STRATOSPHERIC WATER VAPOUR (Figs. 3, 4)
 
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_glob.ncl">   perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_200_glob.ncl">   perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_30_glob.ncl">    perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_5_glob.ncl">     perfmetrics_main.ncl </diag_script>
+  DIAG_ta100:
+    description: Temperature
+    variable: {name: ta, ref_model: "ERA-Interim", field: T3M}
+    preprocess:
+      select_level: 100
+    scripts:
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_trop.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
 
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_trop.ncl">   perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_200_trop.ncl">   perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_30_trop.ncl">    perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_5_trop.ncl">     perfmetrics_main.ncl </diag_script>
 
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_NHExt.ncl">  perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_200_NHExt.ncl">  perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_30_NHExt.ncl">   perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_5_NHExt.ncl">    perfmetrics_main.ncl </diag_script>
+  DIAG_h2o:
+    description: Water vapour
+    variable: {name: vmrh2o, ref_model: "HALOE", field: T3M}
+    preprocess:
+      - {select_level: 100}
+      - {select_level: 200}
+    scripts:
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_trop.ncl}
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_SHExt.ncl}
+    additional_models:
+      - {name: HALOE,  project: OBS,  type: sat,  version: 1, start: 1991,  end: 2002,  path: /obspath/}
 
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_200_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_30_SHExt.ncl">   perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_5_SHExt.ncl">    perfmetrics_main.ncl </diag_script>
-</diag>
 
-<diag>
-  <description> Geopotential height                  </description>
-  <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable ref_model="ERA-Interim,NCEP">  zg        </variable>
-  <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
 
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
+# ZONAL MEAN PLOTS (Figs. 2, 9, S2, S3, S5, S7, S9)
 
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_glob.ncl">   perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_500_glob.ncl">   perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_30_glob.ncl">    perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_5_glob.ncl">     perfmetrics_main.ncl </diag_script>
+  DIAG_tazonal:
+    description: Temperature
+    variable: {name: ta, ref_model: ["ERA-Interim", "NCEP"], field: T3M}
+    scripts:
+      - {script: perfmetrics_main,  file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_zonal_annualclim_all_glob.ncl}
+      - {script: perfmetrics_main,  file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_zonal_DJF_all_glob.ncl}
+      - {script: perfmetrics_main,  file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_zonal_MAM_all_glob.ncl}
+      - {script: perfmetrics_main,  file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_zonal_JJA_all_glob.ncl}
+      - {script: perfmetrics_main,  file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_zonal_SON_all_glob.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+                        
+  DIAG_uazonal:
+    description: Eastward wind
+    variable: {name: ua, ref_model: ["ERA-Interim", "NCEP"], field: T3M}
+    scripts:
+      - {script: perfmetrics_main,  file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_zonal_DJF_all_glob.ncl}
+      - {script: perfmetrics_main,  file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_zonal_JJA_all_glob.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+                        
+  DIAG_vazonal:
+    description: Northward wind
+    variable: {name: va, ref_model: ["ERA-Interim", "NCEP"], field: T3M}
+    scripts:
+      - {script: perfmetrics_main,  file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_zonal_annualclim_all_glob.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
 
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_trop.ncl">   perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_500_trop.ncl">   perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_30_trop.ncl">    perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_5_trop.ncl">     perfmetrics_main.ncl </diag_script>
+  DIAG_zgzonal:
+    description: Geopotential height
+    variable: {name: zg, ref_model: ["ERA-Interim", "NCEP"], field: T3M}
+    scripts:
+      - {script: perfmetrics_main,  file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_zonal_annualclim_all_glob.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
 
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_NHExt.ncl">  perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_500_NHExt.ncl">  perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_30_NHExt.ncl">   perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_5_NHExt.ncl">    perfmetrics_main.ncl </diag_script>
+  DIAG_huszonal:
+    description: Specific humidity
+    variable: {name: hus, ref_model: ["AIRS", "ERA-Interim"], field: T3M}
+    scripts:
+      - {script: perfmetrics_main,  file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_zonal_annualclim_all_glob.ncl}
+    additional_models:
+      - {name: AIRS,  project: obs4mips,  level: L3,  version: RetStd-v5,  start: 2003,  end: 2010,  path: /obspath/}
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
 
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_500_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_30_SHExt.ncl">   perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_5_SHExt.ncl">    perfmetrics_main.ncl </diag_script>
-</diag>
 
-<diag>
-  <description> Specific humidity                    </description>
-  <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable ref_model="AIRS,ERA-Interim">  hus       </variable>
-  <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
+# LAT-LON PLOTS (Figs. S10, S11, S12)
 
-  <model> obs4mips AIRS        L3  	RetStd-v5   2003  2010  @{OBSPATH}/Tier1             </model>
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
-
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_glob.ncl">   perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_400_glob.ncl">   perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_30_glob.ncl">    perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_5_glob.ncl">     perfmetrics_main.ncl </diag_script>
-
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_trop.ncl">   perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_400_trop.ncl">   perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_30_trop.ncl">    perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_5_trop.ncl">     perfmetrics_main.ncl </diag_script>
-
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_NHExt.ncl">  perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_400_NHExt.ncl">  perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_30_NHExt.ncl">   perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_5_NHExt.ncl">    perfmetrics_main.ncl </diag_script>
-
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_850_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_400_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_30_SHExt.ncl">   perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_5_SHExt.ncl">    perfmetrics_main.ncl </diag_script>
-</diag>
-
-<!-- ### ADDITIONAL DIAGNOSTICS FOR TEMPERATURE AND STRATOSPHERIC WATER VAPOUR (Figs. 3, 4) #################################### -->
-
-<diag>
-  <description> Temperature                          </description>
-  <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable ref_model="ERA-Interim">  ta             </variable>
-  <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
-
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
-
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_100_trop.ncl">   perfmetrics_main.ncl </diag_script>
-</diag>
-
-<diag>
-  <description> Water vapour                         </description>
-  <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable ref_model="HALOE">  vmrh2o               </variable>
-  <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
-
-  <model> OBS 	HALOE       sat         1           1991  2002 	@{OBSPATH}/Tier2/HALOE       </model>
-
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_200_SHExt.ncl">  perfmetrics_main.ncl </diag_script>
-  <diag_script cfg="cfg_perfmetrics_cycle_monthlyclim_100_trop.ncl">   perfmetrics_main.ncl </diag_script>
-</diag>
-
-<!-- ### ZONAL MEAN PLOTS (Figs. 2, 9, S2, S3, S5, S7, S9) ##################################################################### -->
+  DIAG_rlutcslatlon:
+    description: Outgoing LW radiation (clearsky)
+    variable: {name: rlutcs, ref_model: ["SRB", "CERES-EBAF"], field: T2Ms}
 
 <diag>
-  <description> Temperature                          </description>
-  <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable ref_model="ERA-Interim,NCEP">  ta        </variable>
-  <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
-
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
-
-  <diag_script cfg="cfg_perfmetrics_zonal_annualclim_all_glob.ncl"> perfmetrics_main.ncl  </diag_script>
-  <diag_script cfg="cfg_perfmetrics_zonal_DJF_all_glob.ncl">        perfmetrics_main.ncl  </diag_script>
-  <diag_script cfg="cfg_perfmetrics_zonal_MAM_all_glob.ncl">        perfmetrics_main.ncl  </diag_script>
-  <diag_script cfg="cfg_perfmetrics_zonal_JJA_all_glob.ncl">        perfmetrics_main.ncl  </diag_script>
-  <diag_script cfg="cfg_perfmetrics_zonal_SON_all_glob.ncl">        perfmetrics_main.ncl  </diag_script>
-</diag>
-
-<diag>
-  <description> Eastward wind                        </description>
-  <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable ref_model="ERA-Interim,NCEP">  ua        </variable>
-  <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
-
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
-
-  <diag_script cfg="cfg_perfmetrics_zonal_DJF_all_glob.ncl">        perfmetrics_main.ncl  </diag_script>
-  <diag_script cfg="cfg_perfmetrics_zonal_JJA_all_glob.ncl">        perfmetrics_main.ncl  </diag_script>
-</diag>
-
-<diag>
-  <description> Northward wind                       </description>
-  <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable ref_model="ERA-Interim,NCEP">  va        </variable>
-  <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
-
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
-
-  <diag_script cfg="cfg_perfmetrics_zonal_annualclim_all_glob.ncl"> perfmetrics_main.ncl  </diag_script>
-</diag>
-
-<diag>
-  <description> Geopotential height                  </description>
-  <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable ref_model="ERA-Interim,NCEP">  zg        </variable>
-  <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
-
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
-  <model> OBS 	NCEP        reanaly 	1	    1996  2005 	@{OBSPATH}/Tier2/NCEP        </model>
-
-  <diag_script cfg="cfg_perfmetrics_zonal_annualclim_all_glob.ncl"> perfmetrics_main.ncl  </diag_script>
-</diag>
-
-<diag>
-  <description> Specific humidity                    </description>
-  <variable_def_dir>    ./variable_defs/             </variable_def_dir>
-  <variable ref_model="AIRS,ERA-Interim">  hus       </variable>
-  <field_type>          T3M                          </field_type>
-  <diag_script_cfg_dir> ./nml/cfg_righi15gmd/ECVs/   </diag_script_cfg_dir>
-
-  <model> obs4mips AIRS        L3  	RetStd-v5   2003  2010  @{OBSPATH}/Tier1             </model>
-  <model> OBS 	ERA-Interim reanaly     1           1996  2005 	@{OBSPATH}/Tier3/ERA-Interim </model>
-
-  <diag_script cfg="cfg_perfmetrics_zonal_annualclim_all_glob.ncl"> perfmetrics_main.ncl  </diag_script>
-</diag>
-
-<!-- ### LAT-LON PLOTS (Figs. S10, S11, S12) ################################################################################### -->
-
-<diag>
-  <description> Outgoing LW radiation (clearsky)     </description>
+  <description>      </description>
   <variable_def_dir>    ./variable_defs/             </variable_def_dir>
   <variable ref_model="SRB,CERES-EBAF">  rlutcs      </variable>
   <field_type>          T2Ms                         </field_type>
