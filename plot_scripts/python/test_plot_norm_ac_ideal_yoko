@@ -1,0 +1,23 @@
+#!/usr/bin/ksh
+
+var=pr
+area=radiation
+region=summary_global
+cntl=HadGEM2-A
+expt=test
+obs=obs2
+period=
+
+#metrics=~ytsushima/csv_${var}/$region
+metrics=~/ESMValTool/work/AutoAssess_radiation_rms_summary/$region
+ometrics=~/ESMValTool/plot_scripts/python/$area
+
+plot_norm_ac=~ytsushima/ESMValTool/plot_scripts/python/plot_norm_ac_ideal.py
+
+python2.7 $plot_norm_ac --plot=test.png                              \
+                        --exp=${expt} --ctl=${cntl}                  \
+                        --file_obs=${ometrics}_${obs}_cmipname.csv            \
+                        --file_exp=${metrics}_${expt}.csv   \
+                        --file_ctl=${metrics}_${cntl}.csv
+
+exit
