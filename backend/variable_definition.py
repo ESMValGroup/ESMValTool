@@ -46,7 +46,7 @@ class VariablesInfo(object):
                     frequency = ''
 
                 for var_name, var_data in table_data['variable_entry'].items():
-                    var = Variable()
+                    var = Variable(var_name)
                     var.read_json(var_data)
                     var.frequency = frequency
                     for dimension in var.dimensions:
@@ -74,82 +74,10 @@ class VariablesInfo(object):
             return None
 
 
-class CMORTable(object):
-    """
-    Handles information from the CMOR tables
-    """
-
-    # Dictionary to map CMIP5 variable names to CMIP6
-
-
-    # Dictionary to map CMIP5 table names to CMIP6
-    _CMIP_5to6_table = {
-        'OImon': 'SImon'
-    }
-
-    def __init__(self, table, var_name):
-        table = self._translate_table_name(table)
-        var_name = self._translate_var_name(var_name)
-        cwd = os.path.dirname(os.path.realpath(__file__))
-        self._cmor_folder = os.path.join(cwd, 'cmip6-cmor-tables', 'Tables')
-        self._cmor_file = 'CMIP6_{}.json'.format(table)
-        self._load_variable_information(var_name)
-
-    def _translate_table_name(self, table):
-        if table in self._CMIP_5to6_table:
-            table = self._CMIP_5to6_table[table]
-        return table
-
-    def _translate_var_name(self, var_name):
-        if var_name in self._CMIP_5to6_varname:
-            var_name = self._CMIP_5to6_varname[var_name]
-        return var_name
-
-    def _load_coord_information(self):
-        table_file = os.path.join(self._cmor_folder, 'CMIP6_coordinate.json')
-        with open(table_file) as inf:
-            json_data = inf.read()
-        self._coord = json.loads(json_data)
-
-        # Fill up coordinate axes with CMOR metadata
-        self.coords = {}
-        for var_name in self.var['dimensions'].split():
-            if var_name in self._generic_levels:
-                coord = 'generic_level'
-                axis = 'Z'
-            else:
-                coord = self._coord['axis_entry'][var_name]
-                axis = coord['axis']
-                if not axis:
-                    axis = 'none'
-
-            if axis not in self.coords:
-                self.coords[axis] = coord
-                # Don't look here!
-                if axis == 'T':
-                    units = u'days since 1850-1-1 00:00:00'
-                    self.coords[axis]['units'] = units
-
-    def _load_variable_information(self, var_name):
-        table_file = os.path.join(self._cmor_folder,
-                                  self._cmor_file)
-        with open(table_file) as inf:
-            json_data = inf.read()
-        self._var = json.loads(json_data)
-        self._generic_levels = self._get_generic_levels()
-        self.var = self._var['variable_entry'][var_name]
-        self._load_coord_information()
-
-    def get_frequency(self):
-        return self._var['Header']['frequency']
-
-    def _get_generic_levels(self):
-        return self._var['Header']['generic_levels'].split()
-
-
 class Variable(object):
 
-    def __init__(self):
+    def __init__(self, short_name):
+        self.short_name = short_name
         self.standard_name = ''
         self.long_name = ''
         self.units = ''
@@ -160,6 +88,9 @@ class Variable(object):
 
         self.dimensions = []
         self.coordinates = {}
+
+        self.derived = False
+        self.required_vars = []
 
         self._json_data = None
 
@@ -174,6 +105,7 @@ class Variable(object):
         self.positive = self._read_json_variable('positive')
 
         self.dimensions = self._read_json_variable('dimensions').split()
+
 
     def _read_json_variable(self, var_name):
         if var_name not in self._json_data:

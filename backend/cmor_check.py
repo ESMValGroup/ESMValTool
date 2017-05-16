@@ -1,6 +1,7 @@
 import numpy as np
 import iris
 import iris.exceptions
+import iris.coord_categorisation
 import os
 import warnings
 import cf_units
@@ -60,6 +61,8 @@ class CMORCheck(object):
             msg = 'There were errors in variable {0}:\n {1}'
             msg = msg.format(self.cube.var_name, '\n '.join(self._errors))
             raise CMORCheckError(msg)
+        
+        self._add_auxiliar_time_coordinates()
 
 
     def check_data(self):
@@ -281,6 +284,8 @@ class CMORCheck(object):
         else:
             coord.convert_units(cf_units.Unit('days since 1950-01-01 00:00:00',
                                               calendar=coord.units.calendar))
+            coord.units = cf_units.Unit(coord.units.name,
+                                        self._simplify_calendars(coord.units.calendar))
 
         if self.frequency:
             tol = 0.001
@@ -313,6 +318,19 @@ class CMORCheck(object):
                     self.report_error(msg, var_name, self.frequency)
                     break
 
+    CALENDARS = [['standard', 'gregorian'],
+                 ['proleptic_gregorian'],
+                 ['noleap', '365_day'],
+                 ['all_leap', '366_day'],
+                 ['360_day'],
+                 ['julian'],
+                 ['none']]
+
+    def _simplify_calendars(self, calendar):
+        for calendar_type in CMORCheck.CALENDARS:
+            if calendar in calendar_type:
+                return calendar_type[0]
+
     def has_errors(self):
         return len(self._errors) > 0
 
@@ -332,6 +350,17 @@ class CMORCheck(object):
             print('WARNING: {0}'.format(msg))
         else:
             self._warnings.append(msg)
+
+    def _add_auxiliar_time_coordinates(self):
+        coords = [coord.name() for coord in self.cube.aux_coords]
+        if 'day_of_month' not in coords:
+            iris.coord_categorisation.add_day_of_month(self.cube, 'time')
+        if 'day_of_year' not in coords:
+            iris.coord_categorisation.add_day_of_year(self.cube, 'time')
+        if 'month_number' not in coords:
+            iris.coord_categorisation.add_month_number(self.cube, 'time')
+        if 'year' not in coords:
+            iris.coord_categorisation.add_year(self.cube, 'time')
 
 
 class CMORCheckError(Exception):
@@ -442,7 +471,7 @@ def main():
             # Concatenate data to single cube, i.e. merge time series
             cube = cubes.concatenate_cube()
             # Create checker for loaded cube
-            checker = CMORCheck(cube, variables_info.get_variable(table, cube.var_name),
+            checker = CMORCheck(cube, table, variables_info,
                                 automatic_fixes=True)  # ,
             #                     fail_on_error=True)
             # Run checks

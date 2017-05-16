@@ -10,12 +10,13 @@ Unit tests for the CMORCheck class.
 import os
 import unittest
 import json
+import sys
 
 # Third-party imports
-import datetime
 import numpy
 import iris
 import iris.coords
+import iris.coord_categorisation
 from cf_units import Unit
 from backend.variable_definition import VariablesInfo
 
@@ -50,6 +51,13 @@ class TestCMORCheckErrorReporting(unittest.TestCase):
         checker.report_warning('New error: {}', 'something failed')
         self.assertTrue(checker.has_warnings())
 
+    def test_report_warning_with_fail_error(self):
+        checker = CMORCheck(self.cube, self.table, self.variables_info, fail_on_error=True)
+        sys.stdout.truncate(0)
+        checker.report_warning('New error: {}', 'something failed')
+        output = sys.stdout.getvalue().strip()  # because stdout is an StringIO instance
+        self.assertEquals(output, 'WARNING: New error: something failed')
+
 
 class TestCMORCheckGoodCube(unittest.TestCase):
 
@@ -61,6 +69,34 @@ class TestCMORCheckGoodCube(unittest.TestCase):
 
     def test_check(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
+        checker = CMORCheck(cube, self.table, self.variables_info)
+        checker.check_metadata()
+        checker.check_data()
+
+    def test_check_with_month_number(self):
+        cube = self.cube_creator.get_cube(self.table, self.varid)
+        iris.coord_categorisation.add_month_number(cube, 'time')
+        checker = CMORCheck(cube, self.table, self.variables_info)
+        checker.check_metadata()
+        checker.check_data()
+
+    def test_check_with_day_of_month(self):
+        cube = self.cube_creator.get_cube(self.table, self.varid)
+        iris.coord_categorisation.add_day_of_month(cube, 'time')
+        checker = CMORCheck(cube, self.table, self.variables_info)
+        checker.check_metadata()
+        checker.check_data()
+
+    def test_check_with_day_of_year(self):
+        cube = self.cube_creator.get_cube(self.table, self.varid)
+        iris.coord_categorisation.add_day_of_year(cube, 'time')
+        checker = CMORCheck(cube, self.table, self.variables_info)
+        checker.check_metadata()
+        checker.check_data()
+
+    def test_check_with_year(self):
+        cube = self.cube_creator.get_cube(self.table, self.varid)
+        iris.coord_categorisation.add_year(cube, 'time')
         checker = CMORCheck(cube, self.table, self.variables_info)
         checker.check_metadata()
         checker.check_data()
