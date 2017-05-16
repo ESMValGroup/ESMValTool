@@ -1,0 +1,7 @@
+*.py[co]
+
+# Created by editiors
+*~
+\#*
+\.\#*
+*.swp

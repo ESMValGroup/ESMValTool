@@ -1,149 +1,315 @@
+"""
+A package for performing horizontal regridding, and vertical level extraction
+or vertical level interpolation.
+
+"""
+
 from __future__ import (absolute_import, division, print_function)
 from six.moves import (filter, input, map, range, zip)  # noqa
 import six
 
+from copy import deepcopy
 from glob import glob
 import os
+import re
 
 import iris
-import iris.coords
-import iris.coord_systems
-import iris.cube
-import iris.fileformats.pp
 import numpy as np
 import stratify
 
 
+# Regular expression to parse a "MxN" cell-specification.
+_CELL_SPEC = re.compile(r'''\A
+                            \s*(?P<dx>\d+(\.\d+)?)\s*
+                            x
+                            \s*(?P<dy>\d+(\.\d+)?)\s*
+                            \Z
+                         ''', re.IGNORECASE | re.VERBOSE)
+
+
+# Default fill-value.
+_MDI = 1e+20
+
+
+# A cached stock of standard horizontal target grids.
+_cache = dict()
+
+
 # Supported horizontal regridding schemes.
-_schemes = dict(linear=iris.analysis.Linear(),
-                nearest=iris.analysis.Nearest(),
-                areaweighted=iris.analysis.AreaWeighted(),
-                unstructurednearest=iris.analysis.UnstructuredNearest())
+schemes = dict(linear=iris.analysis.Linear(),
+               nearest=iris.analysis.Nearest(),
+               areaweighted=iris.analysis.AreaWeighted(),
+               unstructurednearest=iris.analysis.UnstructuredNearest())
 
 
-def _stock_1x1():
-    """Generate a 1 degree by 1 degree global stock cube."""
+def _stock_cube(spec):
+    """
+    Create a global cube with M degree-east by N degree-north regular grid
+    cells.
+
+    The longitude range is from 0 to 360 degrees. The latitude range is from
+    -90 to 90 degrees. Each cell grid point is calculated as the mid-point of
+    the associated MxN cell.
+
+    Paramaters
+    ----------
+    spec : str
+        Specifies the 'MxN' degree cell-specification for the global grid.
+
+    Returns
+    -------
+        A :class:`~iris.cube.Cube`.
+
+    """
+    # Parse the MxN cell specification string.
+    cell_match = _CELL_SPEC.match(spec)
+    if cell_match is None:
+        emsg = 'Invalid MxN cell specification for stock cube, got {!r}.'
+        raise ValueError(emsg.format(spec))
+
+    cell_group = cell_match.groupdict()
+    dx = float(cell_group['dx'])
+    dy = float(cell_group['dy'])
+    mid_dx, mid_dy = dx / 2, dy / 2
+
     cs = iris.coord_systems.GeogCS(iris.fileformats.pp.EARTH_RADIUS)
 
-    ydata = np.linspace(-89.5, 89.5, 180)
+    ydata = np.linspace(-90.0 + mid_dy, 90.0 - mid_dy, 180.0 / dy)
     lats = iris.coords.DimCoord(ydata,
                                 standard_name='latitude',
                                 units='degrees_north',
                                 coord_system=cs)
+    lats.guess_bounds()
 
-    xdata = np.linspace(0.5, 359.5, 360)
+    xdata = np.linspace(mid_dx, 360.0 - mid_dx, 360.0 / dx)
     lons = iris.coords.DimCoord(xdata,
                                 standard_name='longitude',
                                 units='degrees_east',
                                 coord_system=cs)
+    lons.guess_bounds()
 
     shape = (ydata.size, xdata.size)
+    dummy = np.empty(shape, dtype=np.dtype('int8'))
     coords = [(lats, 0), (lons, 1)]
-    cube = iris.cube.Cube(np.zeros(shape),
-                          dim_coords_and_dims=coords)
+    cube = iris.cube.Cube(dummy, dim_coords_and_dims=coords)
+
     return cube
 
 
-# Cache a stock of standard horizontal target grids.
-# XXX: This is only for horizontal grids at the moment
-#      we need to extend this concept to include standard
-#      vertical pressure levels (perhaps).
-_cache = {'1x1': _stock_1x1()}
+def regrid(src_cube, tgt_grid, scheme):
+    """
+    Perform horizontal regridding.
 
+    Parameters
+    ----------
+    src_cube : cube
+        The source cube to be regridded.
+    tgt_cube : cube or str
+        The cube that specifies the target or reference grid for the regridding
+        operation. Alternatively, a string cell specification may be provided,
+        of the form 'MxN', which specifies the extent of the cell, longitude by
+        latitude (degrees) for a global, regular target grid.
+    scheme : str
+        The regridding scheme to perform, see `regrid.schemes`.
 
-def _vinterp(src_cube, tgt_grid):
-    # Default to no interpolation and pass-thru the original source cube.
-    result = src_cube
+    Returns
+    -------
+    cube
 
-    # Get the target grid pressure coordinate, if available.
-    tgt_plev = tgt_grid.coords('air_pressure')
+    See Also
+    --------
+    vinterp : Perform vertical regridding.
 
-    if tgt_plev:
-        # Unpack the target pressure coordinate.
-        tgt_plev, = tgt_plev
-        tgt_plev_shape = tgt_plev.shape
-        tgt_plev_units = tgt_plev.units
+    """
+    if tgt_grid is None and scheme is None:
+        # nop
+        return src_cube
 
-        # Get the source cube pressure coordinate, if available.
-        src_plev = src_cube.coords('air_pressure')
+    if tgt_grid is None:
+        emsg = 'A target grid must be specified for horizontal regridding.'
+        raise ValueError(emsg)
 
-        if src_plev:
-            # Unpack the source pressure coordinate.
-            src_plev, = src_plev
-            # Get the source cube pressure coordinate points.
-            src_plev_points = src_plev.points
+    if scheme is None:
+        emsg = 'A scheme must be specified for horizontal regridding.'
+        raise ValueError(emsg)
 
-            # Perform unit conversion if necessary, but CMOR checking
-            # should have caught this hopefully!
-            if src_plev.units != tgt_plev_units:
-                src_plev_points = src_plev.units.convert(src_plev_points,
-                                                         tgt_plev_units)
+    if schemes.get(scheme.lower()) is None:
+        emsg = 'Unknown regridding scheme, got {!r}.'
+        raise ValueError(emsg.format(scheme))
 
-            if src_plev.shape == tgt_plev_shape and \
-               np.allclose(src_plev_points, tgt_plev.points):
-                # Don't perform vertical interpolation if the target and
-                # source pressure coordinates are "similar" enough.
-                return result
+    if isinstance(tgt_grid, six.string_types):
+        # Generate a target grid from the provided cell-specification,
+        # and cache the resulting stock cube for later use.
+        tgt_grid = _cache.setdefault(tgt_grid, _stock_cube(tgt_grid))
+    elif not isinstance(tgt_grid, iris.cube.Cube):
+        emsg = 'Expecting a cube or cell-specification, got {!r}.'
+        raise ValueError(emsg.format(tgt_grid))
 
-            # Determine the source axis for vertical interpolation.
-            z_axis, = src_cube.coord_dims(src_plev)
-            x_axis, = src_cube.coord_dims(src_cube.coord(axis='x'))
-            y_axis, = src_cube.coord_dims(src_cube.coord(axis='y'))
-
-            # Broadcast the 1d source pressure coordinate to fully describe
-            # the spatial extent that will be interpolated.
-            axes = (z_axis, y_axis, x_axis)
-            min_axis, max_axis = min(axes), max(axes)
-            reshape = [1] * (max_axis - min_axis + 1)
-            broadcast_shape = [None] * len(reshape)
-            for i in range(min_axis, max_axis+1):
-                offset, N = i - min_axis, src_cube.shape[i]
-                if i == z_axis:
-                    reshape[offset] = N
-                broadcast_shape[offset] = N
-
-            src_plev_reshape = src_plev_points.reshape(reshape)
-            src_plev_broadcast = np.broadcast_to(src_plev_reshape,
-                                                 broadcast_shape)
-
-            # Now perform the actual vertical interpolation.
-            new_data = stratify.interpolate(tgt_plev.points,
-                                            src_plev_broadcast,
-                                            src_cube.data,
-                                            axis=z_axis)
-
-            result = tgt_grid.copy(data=new_data)
+    # Perform the horizontal regridding.
+    result = src_cube.regrid(tgt_grid, schemes[scheme])
 
     return result
 
 
-def regrid(src_cube, tgt_grid, scheme):
-    if scheme is None:
-        if tgt_grid is not None:
-            emsg = 'Target grid must be None if no scheme is given.'
-            raise ValueError(emsg)
-        return src_cube
+def _create_cube(src_cube, data, levels):
+    """
+    Generate a new cube with the interpolated data.
 
-    if isinstance(scheme, six.string_types):
-        scheme = scheme.lower()
+    The resultant cube is seeded with `src_cube` metadata and coordinates,
+    excluding any source coordinates that span the associated vertical
+    dimension. The `levels` of interpolation are used along with the
+    associated source cube vertical coordinate metadata to add a new
+    vertical coordinate to the resultant cube.
 
-    if _scheme.get(scheme) is None:
-        emsg = 'Unknown regridding scheme, got {!r}.'
-        raise ValueError(emsg.format(scheme))
+    Parameters
+    ----------
+    src_cube : cube
+        The source cube that was vertically interpolated.
+    data : array
+        The payload resulting from interpolating the source cube
+        over the specified levels.
+    levels : array
+        The vertical levels of interpolation.
 
-    if tgt_grid is None:
-        raise ValueError('Target grid must not be None.')
-    elif tgt_grid == '1x1':
-        tgt_grid = _cache[tgt_grid]
-    elif not isinstance(tgt_grid, iris.cube.Cube):
-        emsg = 'Expecting a {!r} instance or "1x1", got {!r}.'
-        raise ValueError(emsg.format(iris.cube.Cube.__name__,
-                                     type(tgt_grid)))
+    Returns
+    -------
+    cube
 
-    # Perform horizontal regridding.
-    cube = src_cube.regrid(tgt_grid, _schemes[scheme])
+    .. note::
 
-    # Perform vertical regridding.
-    result_cube = _vinterp(cube, tgt_cube)
+        If there is only one level of interpolation, the resultant cube
+        will be collapsed over the associated vertical dimension, and a
+        scalar vertical coordinate will be added.
 
-    return result_cube
+    """
+    # Get the source cube vertical coordinate and associated dimension.
+    src_levels = src_cube.coord(axis='z', dim_coords=True)
+    z_dim, = src_cube.coord_dims(src_levels)
+
+    # Construct the resultant cube with the interpolated data
+    # and the source cube metadata.
+    kwargs = deepcopy(src_cube.metadata)._asdict()
+    result = iris.cube.Cube(data, **kwargs)
+
+    # Add the appropriate coordinates to the cube, excluding
+    # any coordinates that span the z-dimension of interpolation.
+    for coord in src_cube.dim_coords:
+        [dim] = src_cube.coord_dims(coord)
+        if dim != z_dim:
+            result.add_dim_coord(coord.copy(), dim)
+
+    for coord in src_cube.aux_coords:
+        dims = src_cube.coord_dims(coord)
+        if z_dim not in dims:
+            result.add_aux_coord(coord.copy(), dims)
+
+    for coord in src_cube.derived_coords:
+        dims = src_cube.coord_dims(coord)
+        if z_dim not in dims:
+            result.add_aux_coord(coord.copy(), dims)
+
+    # Construct the new vertical coordinate for the interpolated
+    # z-dimension, using the associated source coordinate metadata.
+    kwargs = deepcopy(src_levels._as_defn())._asdict()
+
+    try:
+        coord = iris.coords.DimCoord(levels, **kwargs)
+        result.add_dim_coord(coord, z_dim)
+    except ValueError:
+        coord = iris.coords.AuxCoord(levels, **kwargs)
+        result.add_aux_coord(coord, z_dim)
+
+    # Collapse the z-dimension for the scalar case.
+    if coord.shape == (1,):
+        slicer = [slice(None)] * result.ndim
+        slicer[z_dim] = 0
+        result = result[tuple(slicer)]
+
+    return result
+
+
+def vinterp(src_cube, levels):
+    """
+    Perform vertical interpolation.
+
+    Paramaters
+    ----------
+    src_cube : cube
+        The source cube to be vertically interpolated.
+    levels : array
+        One or more target levels for the vertical interpolation. Assumed
+        to be in the same S.I. units of the source cube vertical dimension
+        coordinate.
+
+    Returns
+    -------
+    cube
+
+    See Also
+    --------
+    regrid : Perform horizontal regridding.
+
+    """
+    # Default to no interpolation and pass-thru the original source cube.
+    result = src_cube
+
+    if levels is not None:
+        # Ensure we have a non-scalar array of levels.
+        levels = np.array(levels, ndmin=1)
+
+        # Get the source cube vertical coordinate, if available.
+        src_levels = src_cube.coord(axis='z', dim_coords=True)
+
+        # Don't perform vertial interploation if the source and
+        # target values are "similar" enough.
+        if src_levels.shape == levels.shape and \
+           np.allclose(src_levels.points, levels):
+            return result
+
+        # Determine whether we can simply extract the target levels,
+        # if they *all* exist in the source cube, otherwise
+        # perform vertical interpolation.
+        if set(levels).issubset(set(src_levels.points)):
+            name = src_levels.name()
+            coord_values = {name: lambda cell: cell.point in set(levels)}
+            constraint = iris.Constraint(coord_values=coord_values)
+            result = src_cube.extract(constraint)
+        else:
+            # Determine the source axis for vertical interpolation.
+            z_axis, = src_cube.coord_dims(src_levels)
+
+            # Broadcast the 1d source cube vertical coordinate to fully
+            # describe the spatial extent that will be interpolated.
+            broadcast_shape = src_cube.shape[z_axis:]
+            reshape = [1] * len(broadcast_shape)
+            reshape[0] = src_cube.shape[z_axis]
+            src_levels_reshaped = src_levels.points.reshape(reshape)
+            src_levels_broadcast = np.broadcast_to(src_levels_reshaped,
+                                                   broadcast_shape)
+
+            # Now perform the actual vertical interpolation.
+            new_data = stratify.interpolate(levels,
+                                            src_levels_broadcast,
+                                            src_cube.data,
+                                            axis=z_axis,
+                                            interpolation='linear',
+                                            extrapolation='nan')
+
+            # Determine whether we need to fill any extrapolated NaN values.
+            mask = np.isnan(new_data)
+
+            if np.any(mask):
+                # Check the fill-value is appropriate for the result dtype.
+                try:
+                    [fill_value] = np.array([_MDI], dtype=new_data.dtype)
+                except OverflowError:
+                    emsg = 'Fill value of {!r} invalid for result {!r}.'
+                    raise ValueError(emsg.format(_MDI, new_data.dtype))
+
+                # Replace the NaN values with the fill-value.
+                new_data[mask] = fill_value
+
+            # Construct the resulting cube with the interpolated data.
+            result = _create_cube(src_cube, new_data, levels)
+
+    return result
