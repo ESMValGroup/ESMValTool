@@ -159,7 +159,7 @@ This namelist is part of the ESMValTool
         <variable_def_dir>    ./variable_defs/   </variable_def_dir>
         <variable>            LW_CRE           </variable>
         <field_type>          T2Ms               </field_type>
-        <model id="obs"> obs4mips CERES-EBAF L3B Ed2-7 2001 2012 @{OBSPATH}/Tier1/ </model>
+        <model id="obs"> obs4mips CERES-EBAF L3B Ed2-7 2001 2011 @{OBSPATH}/Tier1/ </model>
         <diag_script_cfg_dir> ./nml/cfg_AutoAssess  </diag_script_cfg_dir>
         <diag_script cfg="AutoAssess_radiation_rms.conf"> AutoAssess_radiation_rms.py </diag_script>
         <launcher_arguments>    [('execute_as_shell', False)]               </launcher_arguments>
@@ -173,7 +173,7 @@ This namelist is part of the ESMValTool
         <variable_def_dir>    ./variable_defs/   </variable_def_dir>
         <variable>            rsns           </variable>
         <field_type>          T2Ms               </field_type>
-        <model id="obs"> obs4mips CERES-EBAF L3B Ed2-7 2001 2012 @{OBSPATH}/Tier1/ </model>
+        <model id="obs"> obs4mips CERES-EBAF L3B Ed2-7 2001 2011 @{OBSPATH}/Tier1/ </model>
         <diag_script_cfg_dir> ./nml/cfg_AutoAssess  </diag_script_cfg_dir>
         <diag_script cfg="AutoAssess_radiation_rms.conf"> AutoAssess_radiation_rms.py </diag_script>
         <launcher_arguments>    [('execute_as_shell', False)]               </launcher_arguments>
@@ -188,7 +188,7 @@ This namelist is part of the ESMValTool
         <variable>            rlns           </variable>
         <field_type>          T2Ms               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_AutoAssess  </diag_script_cfg_dir>
-        <model id="obs"> obs4mips CERES-EBAF L3B Ed2-7 2001 2012 @{OBSPATH}/Tier1/ </model>
+        <model id="obs"> obs4mips CERES-EBAF L3B Ed2-7 2001 2011 @{OBSPATH}/Tier1/ </model>
         <diag_script cfg="AutoAssess_radiation_rms.conf"> AutoAssess_radiation_rms.py </diag_script>
         <launcher_arguments>    [('execute_as_shell', False)]               </launcher_arguments>
     </diag>
