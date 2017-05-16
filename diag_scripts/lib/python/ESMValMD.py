@@ -29,12 +29,12 @@ class ESMValMD(METAdata):
 
     def _make_dict(self, tags, caption, blockID, DataIDs):
         DICT = {'ESMValTool': {
-                'built': str(datetime.datetime.utcnow()),
-                'tags': tags,
-                'caption': caption,
-                'block': blockID,
-                'DataIDs': DataIDs
-                }}
+            'built': str(datetime.datetime.utcnow()),
+            'tags': tags,
+            'caption': caption,
+            'block': blockID,
+            'DataIDs': DataIDs
+            }}
         self.set_dict(DICT)
 
 
@@ -44,7 +44,7 @@ class nclFileMD(ESMValMD):
 
         with open(MDfile, 'rU') as f:
             file_lines = f.readlines()
-            file_lines = [l.split()[0] for l in file_lines]
+            file_lines = [l.strip() for l in file_lines]
             try:
                 file_name = file_lines[0]
             except:
@@ -74,10 +74,10 @@ class nclFileMD(ESMValMD):
                 DataIDs = "No IDs found!"
 
         super(nclFileMD, self).__init__(
-                dtype=dtype,
-                modfile=file_name,
-                tags=tags,
-                caption=caption,
-                blockID=blockID,
-                DataIDs=DataIDs
-                )
+            dtype=dtype,
+            modfile=file_name,
+            tags=tags,
+            caption=caption,
+            blockID=blockID,
+            DataIDs=DataIDs
+        )
