@@ -2,88 +2,13 @@ import numpy as np
 import iris
 import iris.exceptions
 import os
-import json
 import warnings
 import cf_units
 
+from backend.variable_definition import VariablesInfo
+
 iris.FUTURE.cell_datetime_objects = True
 iris.FUTURE.netcdf_promote = True
-
-
-class CMORTable(object):
-    """
-    Handles information from the CMOR tables
-    """
-
-    # Dictionary to map CMIP5 variable names to CMIP6
-    _CMIP_5to6_varname = {
-        'sic': 'siconc',
-        'tro3': 'o3',
-    }
-
-    # Dictionary to map CMIP5 table names to CMIP6
-    _CMIP_5to6_table = {
-        'OImon': 'SImon'
-    }
-
-    def __init__(self, table, var_name):
-        table = self._translate_table_name(table)
-        var_name = self._translate_var_name(var_name)
-        cwd = os.path.dirname(os.path.realpath(__file__))
-        self._cmor_folder = os.path.join(cwd, 'cmip6-cmor-tables', 'Tables')
-        self._cmor_file = 'CMIP6_{}.json'.format(table)
-        self._load_variable_information(var_name)
-
-    def _translate_table_name(self, table):
-        if table in self._CMIP_5to6_table:
-            table = self._CMIP_5to6_table[table]
-        return table
-
-    def _translate_var_name(self, var_name):
-        if var_name in self._CMIP_5to6_varname:
-            var_name = self._CMIP_5to6_varname[var_name]
-        return var_name
-
-    def _load_coord_information(self):
-        table_file = os.path.join(self._cmor_folder, 'CMIP6_coordinate.json')
-        with open(table_file) as inf:
-            json_data = inf.read()
-        self._coord = json.loads(json_data)
-
-        # Fill up coordinate axes with CMOR metadata
-        self.coords = {}
-        for var_name in self.var['dimensions'].split():
-            if var_name in self._generic_levels:
-                coord = 'generic_level'
-                axis = 'Z'
-            else:
-                coord = self._coord['axis_entry'][var_name]
-                axis = coord['axis']
-                if not axis:
-                    axis = 'none'
-
-            if axis not in self.coords:
-                self.coords[axis] = coord
-                # Don't look here!
-                if axis == 'T':
-                    units = u'days since 1850-1-1 00:00:00'
-                    self.coords[axis]['units'] = units
-
-    def _load_variable_information(self, var_name):
-        table_file = os.path.join(self._cmor_folder,
-                                  self._cmor_file)
-        with open(table_file) as inf:
-            json_data = inf.read()
-        self._var = json.loads(json_data)
-        self._generic_levels = self._get_generic_levels()
-        self.var = self._var['variable_entry'][var_name]
-        self._load_coord_information()
-
-    def get_frequency(self):
-        return self._var['Header']['frequency']
-
-    def _get_generic_levels(self):
-        return self._var['Header']['generic_levels'].split()
 
 
 class CMORCheck(object):
@@ -98,16 +23,22 @@ class CMORCheck(object):
     _vals_msg = '{}: has values {} {}'
     _contain_msg = '{}: does not contain {} {}'
 
-    def __init__(self, cube, table, frequency=None, fail_on_error=False,
+    def __init__(self, cube, table, variables_info, frequency=None, fail_on_error=False,
                  automatic_fixes=False):
+        var_info = variables_info.get_variable(table, cube.var_name)
+        if var_info is None:
+            raise CMORCheckError('Variable {0} was not recognized'.format(cube.var_name))
+
         self.cube = cube
         self._failerr = fail_on_error
         self._errors = list()
-        self._cmor = CMORTable(table, self.cube.var_name)
+        self._warnings = list()
+        self._cmor_var = var_info
         if frequency is None:
-            frequency = self._cmor.get_frequency()
+            frequency = self._cmor_var.frequency
         self.frequency = frequency
         self.automatic_fixes = automatic_fixes
+
 
     def check_metadata(self):
         """
@@ -120,10 +51,16 @@ class CMORCheck(object):
         self._check_coords()
         self._check_time_coord()
 
+        if self.has_warnings():
+            msg = 'There were warnings in variable {0}:\n {1}'
+            msg = msg.format(self.cube.var_name, '\n '.join(self._warnings))
+            print(msg)
+
         if self.has_errors():
             msg = 'There were errors in variable {0}:\n {1}'
             msg = msg.format(self.cube.var_name, '\n '.join(self._errors))
             raise CMORCheckError(msg)
+
 
     def check_data(self):
         """
@@ -132,11 +69,9 @@ class CMORCheck(object):
         self._check_data_range()
 
         # Check units
-        attr = 'units'
-        if self._cmor.var[attr]:
-            if str(self.cube.units) != self._cmor.var[attr]:
-                self.cube.convert_units(self._cmor.var[attr])
-
+        if self._cmor_var.units:
+            if str(self.cube.units) != self._cmor_var.units:
+                self.cube.convert_units(self._cmor_var.units)
 
         if self.has_errors():
             msg = 'There were errors in variable {0}:\n {1}'
@@ -154,49 +89,45 @@ class CMORCheck(object):
     def _check_var_metadata(self):
 
         # Check standard_name
-        attr = 'standard_name'
-        if self._cmor.var[attr]:
-            if self.cube.standard_name != self._cmor.var[attr]:
-                self.report_error(self._attr_msg, self.cube.var_name, attr,
-                                  self._cmor.var[attr],
-                                  self.cube.standard_name)
+        if self._cmor_var.standard_name:
+            if self.cube.standard_name != self._cmor_var.standard_name:
+                self.report_error(self._attr_msg, self.cube.var_name, 'standard_name',
+                                  self._cmor_var.standard_name, self.cube.standard_name)
 
         # Check units
         attr = 'units'
-        if self._cmor.var[attr]:
-            if not self.cube.units.is_convertible(self._cmor.var[attr]):
+        if self._cmor_var.units:
+            if not self.cube.units.is_convertible(self._cmor_var.units):
                 self.report_error('Variable {0} units () can not be converted to {2}',
-                                  self.cube.var_name, self._cmor.var[attr], self.cube.units)
+                                  self.cube.var_name, self._cmor_var.units, self.cube.units)
 
         # Check other variable attributes that match entries in cube.attributes
-        attrs = ['positive']
+        attrs = ('positive',)
         for attr in attrs:
-            if self._cmor.var[attr]:
-                if self.cube.attributes[attr] != self._cmor.var[attr]:
+            attr_value = getattr(self._cmor_var, attr)
+            if attr_value:
+                if self.cube.attributes[attr] != attr_value:
                     self.report_error(self._attr_msg, self.cube.var_name, attr,
-                                      self._cmor.var[attr],
-                                      self.cube.attributes[attr])
+                                      attr_value, self.cube.attributes[attr])
 
     def _check_data_range(self):
         # Check data is not less than valid_min
-        attr = 'valid_min'
-        if self._cmor.var[attr]:
-            valid_min = float(self._cmor.var[attr])
+        if self._cmor_var.valid_max:
+            valid_min = float(self._cmor_var.valid_max)
             if np.any(self.cube.data < valid_min):
                 self.report_error(self._vals_msg, self.cube.var_name,
-                                  '< {} ='.format(attr), valid_min)
+                                  '< {} ='.format('valid_min'), valid_min)
         # Check data is not greater than valid_max
-        attr = 'valid_max'
-        if self._cmor.var[attr]:
-            valid_max = float(self._cmor.var[attr])
+        if self._cmor_var.valid_max:
+            valid_max = float(self._cmor_var.valid_max)
             if np.any(self.cube.data > valid_max):
                 self.report_error(self._vals_msg, self.cube.var_name,
-                                  '> {} ='.format(attr), valid_max)
+                                  '> {} ='.format('valid_max'), valid_max)
 
     def _check_rank(self):
         # Count rank, excluding scalar dimensions
         rank = 0
-        for (axis, cmor) in self._cmor.coords.items():
+        for (axis, cmor) in self._cmor_var.coordinates.items():
             if cmor == 'generic_level' or not cmor['value']:
                 rank += 1
         # Extract dimension coordinates from cube
@@ -207,7 +138,7 @@ class CMORCheck(object):
                               'match coordinate rank')
 
     def _check_dim_names(self):
-        for (axis, cmor) in self._cmor.coords.items():
+        for (axis, cmor) in self._cmor_var.coordinates.items():
             if axis == 'none':
                 axis = None
             if cmor == 'generic_level':
@@ -242,7 +173,7 @@ class CMORCheck(object):
                     self.report_error(self._does_msg, var_name, 'exist')
 
     def _check_coords(self):
-        for (axis, cmor) in self._cmor.coords.items():
+        for (axis, cmor) in self._cmor_var.coordinates.items():
             if axis == 'none':
                 axis = None
 
@@ -262,6 +193,8 @@ class CMORCheck(object):
                 self._check_coord(cmor, coord, var_name)
 
     def _check_coord(self, cmor, coord, var_name):
+        if coord.var_name == 'time':
+            return
         # Check units
         attr = 'units'
         if cmor[attr]:
@@ -303,8 +236,8 @@ class CMORCheck(object):
             coord_points = list(coord.points)
             for point in cmor_points:
                 if point not in coord_points:
-                    self.report_error(self._contain_msg, var_name, str(point),
-                                      str(coord.units))
+                    self.report_warning(self._contain_msg, var_name, str(point),
+                                        str(coord.units))
 
         l_fix_coord_value = False
 
@@ -380,10 +313,11 @@ class CMORCheck(object):
                     self.report_error(msg, var_name, self.frequency)
                     break
 
-
-
     def has_errors(self):
         return len(self._errors) > 0
+
+    def has_warnings(self):
+        return len(self._warnings) > 0
 
     def report_error(self, message, *args):
         msg = message.format(*args)
@@ -392,14 +326,21 @@ class CMORCheck(object):
         else:
             self._errors.append(msg)
 
+    def report_warning(self, message, *args):
+        msg = message.format(*args)
+        if self._failerr:
+            print('WARNING: {0}'.format(msg))
+        else:
+            self._warnings.append(msg)
+
 
 class CMORCheckError(Exception):
     pass
 
 
 def main():
-    # data_folder = '/Users/nube/esmval_data'
-    data_folder = '/home/paul/ESMValTool/data'
+    data_folder = '/Users/nube/esmval_data'
+    # data_folder = '/home/paul/ESMValTool/data'
     example_datas = [
         ('ETHZ_CMIP5/historical/Amon/ps/GFDL-ESM2G/r1i1p1', 'ps', 'Amon'),
         ('ETHZ_CMIP5/historical/Amon/ps/MIROC5/r1i1p1', 'ps', 'Amon'),
@@ -413,15 +354,15 @@ def main():
         ('ETHZ_CMIP5/historical/OImon/sic/EC-EARTH/r1i1p1', 'sic', 'SImon'),
         ('ETHZ_CMIP5/historical/OImon/sic/HadCM3/r1i1p1', 'sic', 'SImon'),
         ('ETHZ_CMIP5/historical/OImon/sic/MRI-ESM1/r1i1p1', 'sic', 'SImon'),
-        ('CMIP6/1pctCO2/Amon/ua/MPI-ESM-LR/r1i1p1f1', 'ua', 'Amon'),
-        ('CMIP6/1pctCO2/Amon/tas/MPI-ESM-LR/r1i1p1f1', 'tas', 'Amon'),
-        ('CMIP6/1pctCO2/day/tas/MPI-ESM-LR/r1i1p1f1', 'tas', 'day'),
-        ('CMIP6/1pctCO2/day/pr/MPI-ESM-LR/r1i1p1f1', 'pr', 'day'),
-        ('CMIP6/1pctCO2/cfDay/hur/MPI-ESM-LR/r1i1p1f1', 'hur', 'CFday'),
-        ('CMIP6/1pctCO2/LImon/snw/MPI-ESM-LR/r1i1p1f1', 'snw', 'LImon'),
-        ('CMIP6/1pctCO2/Lmon/cropFrac/MPI-ESM-LR/r1i1p1f1', 'cropFrac',
-         'Lmon'),
-        ('CMIP6/1pctCO2/Oyr/co3/MPI-ESM-LR/r1i1p1f1', 'co3', 'Oyr'),
+        # ('CMIP6/1pctCO2/Amon/ua/MPI-ESM-LR/r1i1p1f1', 'ua', 'Amon'),
+        # ('CMIP6/1pctCO2/Amon/tas/MPI-ESM-LR/r1i1p1f1', 'tas', 'Amon'),
+        # ('CMIP6/1pctCO2/day/tas/MPI-ESM-LR/r1i1p1f1', 'tas', 'day'),
+        # ('CMIP6/1pctCO2/day/pr/MPI-ESM-LR/r1i1p1f1', 'pr', 'day'),
+        # ('CMIP6/1pctCO2/cfDay/hur/MPI-ESM-LR/r1i1p1f1', 'hur', 'CFday'),
+        # ('CMIP6/1pctCO2/LImon/snw/MPI-ESM-LR/r1i1p1f1', 'snw', 'LImon'),
+        # ('CMIP6/1pctCO2/Lmon/cropFrac/MPI-ESM-LR/r1i1p1f1', 'cropFrac',
+        #  'Lmon'),
+        # ('CMIP6/1pctCO2/Oyr/co3/MPI-ESM-LR/r1i1p1f1', 'co3', 'Oyr'),
         ]
 
     def get_attr_from_field(ncfield, attr):
@@ -475,7 +416,7 @@ def main():
             #                                             attr)
             #         if attrval is not None:
             #             coord.attributes[attr] = attrval
-
+    variables_info = VariablesInfo()
     for (example_data, var_name, table) in example_datas:
         print('\n' + example_data)
 
@@ -501,10 +442,12 @@ def main():
             # Concatenate data to single cube, i.e. merge time series
             cube = cubes.concatenate_cube()
             # Create checker for loaded cube
-            checker = CMORCheck(cube, table, automatic_fixes=True)  # ,
+            checker = CMORCheck(cube, variables_info.get_variable(table, cube.var_name),
+                                automatic_fixes=True)  # ,
             #                     fail_on_error=True)
             # Run checks
-            checker.check()
+            checker.check_metadata()
+            checker.check_data()
 
         except (iris.exceptions.ConstraintMismatchError,
                 iris.exceptions.ConcatenateError,

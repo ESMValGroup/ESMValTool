@@ -17,6 +17,7 @@ import numpy
 import iris
 import iris.coords
 from cf_units import Unit
+from backend.variable_definition import VariablesInfo
 
 # Local imports
 from backend.cmor_check import CMORCheck, CMORCheckError
@@ -30,17 +31,24 @@ class TestCMORCheckErrorReporting(unittest.TestCase):
         self.varid = "tas"
         self.table = 'Amon'
         self.cube = CubeCreator().get_cube(self.table, self.varid)
+        self.variables_info = VariablesInfo()
 
     def test_report_error(self):
-        checker = CMORCheck(self.cube, self.table,)
+        checker = CMORCheck(self.cube, self.table, self.variables_info,)
         self.assertFalse(checker.has_errors())
         checker.report_error('New error: {}', 'something failed')
         self.assertTrue(checker.has_errors())
 
     def test_fail_on_error(self):
-        checker = CMORCheck(self.cube, self.table, fail_on_error=True)
+        checker = CMORCheck(self.cube, self.table, self.variables_info, fail_on_error=True)
         with self.assertRaises(CMORCheckError):
             checker.report_error('New error: {}', 'something failed')
+
+    def test_report_warning(self):
+        checker = CMORCheck(self.cube, self.table, self.variables_info)
+        self.assertFalse(checker.has_errors())
+        checker.report_warning('New error: {}', 'something failed')
+        self.assertTrue(checker.has_warnings())
 
 
 class TestCMORCheckGoodCube(unittest.TestCase):
@@ -49,42 +57,43 @@ class TestCMORCheckGoodCube(unittest.TestCase):
         self.varid = "tas"
         self.table = "Amon"
         self.cube_creator = CubeCreator()
+        self.variables_info = VariablesInfo()
 
     def test_check(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
-        checker = CMORCheck(cube, self.table)
+        checker = CMORCheck(cube, self.table, self.variables_info)
         checker.check_metadata()
         checker.check_data()
 
     def test_check_with_unit_conversion(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
         cube.units = 'degC'
-        checker = CMORCheck(cube, self.table)
+        checker = CMORCheck(cube, self.table, self.variables_info)
         checker.check_metadata()
         checker.check_data()
 
     def test_check_with_ocean_levels(self):
         cube = self.cube_creator.get_cube('Omon', 'uo')
-        checker = CMORCheck(cube, 'Omon')
+        checker = CMORCheck(cube, 'Omon', self.variables_info)
         checker.check_metadata()
         checker.check_data()
 
     def test_check_with_band(self):
         cube = self.cube_creator.get_cube('Amon', 'cl')
-        checker = CMORCheck(cube, 'Amon')
+        checker = CMORCheck(cube, 'Amon', self.variables_info)
         checker.check_metadata()
         checker.check_data()
 
     def test_check_with_postive_attributte(self):
         cube = self.cube_creator.get_cube(self.table, 'tauu')
-        checker = CMORCheck(cube, self.table)
+        checker = CMORCheck(cube, self.table, self.variables_info)
         checker.check_metadata()
         checker.check_data()
 
     def test_check_with_var_and_table_correction(self):
-        cube = self.cube_creator.get_cube('SImon', 'siconc')
-        cube.var_name = 'sic'
-        checker = CMORCheck(cube, 'OImon')
+        cube = self.cube_creator.get_cube('AERmon', 'o3')
+        cube.var_name = 'tro3'
+        checker = CMORCheck(cube, 'AERmon', self.variables_info)
         checker.check_metadata()
         checker.check_data()
 
@@ -95,17 +104,18 @@ class TestCMORCheckBadCube(unittest.TestCase):
         self.varid = "ta"
         self.table = "Amon"
         self.cube_creator = CubeCreator()
+        self.variables_info = VariablesInfo()
 
     def test_invalid_rank(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
-        checker = CMORCheck(cube, self.table)
+        checker = CMORCheck(cube, self.table, self.variables_info)
         cube.remove_coord('latitude')
         with self.assertRaises(CMORCheckError):
             checker.check_metadata()
 
     def test_non_increasing(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
-        checker = CMORCheck(cube, self.table)
+        checker = CMORCheck(cube, self.table, self.variables_info)
         coord = cube.coord('latitude')
         values = numpy.linspace(coord.points[-1], coord.points[0],
                                 len(coord.points))
@@ -115,7 +125,7 @@ class TestCMORCheckBadCube(unittest.TestCase):
 
     def test_non_decreasing(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
-        checker = CMORCheck(cube, self.table)
+        checker = CMORCheck(cube, self.table, self.variables_info)
         coord = cube.coord('air_pressure')
         values = numpy.linspace(coord.points[-1], coord.points[0],
                                 len(coord.points))
@@ -126,14 +136,14 @@ class TestCMORCheckBadCube(unittest.TestCase):
     def test_not_correct_lons(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
         cube = cube.intersection(longitude=(-180., 180.))
-        checker = CMORCheck(cube, self.table)
+        checker = CMORCheck(cube, self.table, self.variables_info)
         with self.assertRaises(CMORCheckError):
             checker.check_metadata()
 
     def test_not_correct_lons_automatic_fix(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
         cube = cube.intersection(longitude=(-180., 180.))
-        checker = CMORCheck(cube, self.table, automatic_fixes=True)
+        checker = CMORCheck(cube, self.table, self.variables_info, automatic_fixes=True)
         checker.check_metadata()
 
     def test_not_valid_min(self):
@@ -142,7 +152,7 @@ class TestCMORCheckBadCube(unittest.TestCase):
         values = numpy.linspace(coord.points[0]-1, coord.points[-1],
                                 len(coord.points))
         self._update_coordinate_values(cube, coord, values, 1)
-        checker = CMORCheck(cube, self.table)
+        checker = CMORCheck(cube, self.table, self.variables_info)
         with self.assertRaises(CMORCheckError):
             checker.check_metadata()
 
@@ -152,7 +162,7 @@ class TestCMORCheckBadCube(unittest.TestCase):
         values = numpy.linspace(coord.points[0], coord.points[-1]+1,
                                 len(coord.points))
         self._update_coordinate_values(cube, coord, values, 1)
-        checker = CMORCheck(cube, self.table)
+        checker = CMORCheck(cube, self.table, self.variables_info)
         with self.assertRaises(CMORCheckError):
             checker.check_metadata()
 
@@ -168,26 +178,26 @@ class TestCMORCheckBadCube(unittest.TestCase):
     def test_bad_units(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
         cube.coord('latitude').units = 'degrees_n'
-        checker = CMORCheck(cube, self.table)
+        checker = CMORCheck(cube, self.table, self.variables_info)
         with self.assertRaises(CMORCheckError):
             checker.check_metadata()
 
     def test_bad_time(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
-        checker = CMORCheck(cube, self.table)
+        checker = CMORCheck(cube, self.table, self.variables_info)
         cube.coord('time').units = 'days'
         with self.assertRaises(CMORCheckError):
             checker.check_metadata()
 
     def test_bad_time_automatic_fix(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
-        checker = CMORCheck(cube, self.table, automatic_fixes=True)
+        checker = CMORCheck(cube, self.table, self.variables_info, automatic_fixes=True)
         cube.coord('time').units = 'days since 1950-1-1 00:00:00'
         checker.check_metadata()
 
     def test_bad_time_automatic_fix_failed(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
-        checker = CMORCheck(cube, self.table, automatic_fixes=True)
+        checker = CMORCheck(cube, self.table, self.variables_info, automatic_fixes=True)
         cube.coord('time').units = 'K'
         with self.assertRaises(CMORCheckError):
             checker.check_metadata()
@@ -195,92 +205,91 @@ class TestCMORCheckBadCube(unittest.TestCase):
     def test_bad_standard_name(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
         cube.coord('time').standard_name = 'region'
-        checker = CMORCheck(cube, self.table)
+        checker = CMORCheck(cube, self.table, self.variables_info)
         with self.assertRaises(CMORCheckError):
             checker.check_metadata()
 
     def test_bad_data_units(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
         cube.units = 'hPa'
-        checker = CMORCheck(cube, self.table)
+        checker = CMORCheck(cube, self.table, self.variables_info)
         with self.assertRaises(CMORCheckError):
             checker.check_metadata()
 
     def test_bad_data_standard_name(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
         cube.standard_name = 'wind_speed'
-        checker = CMORCheck(cube, self.table)
+        checker = CMORCheck(cube, self.table, self.variables_info)
         with self.assertRaises(CMORCheckError):
             checker.check_metadata()
 
     def test_bad_data_var_name(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
         cube.var_name = 'wind_speed'
-        with self.assertRaises(KeyError):
-            checker = CMORCheck(cube, self.table)
+        with self.assertRaises(CMORCheckError):
+            checker = CMORCheck(cube, self.table, self.variables_info)
             checker.check_metadata()
 
     def test_bad_postive_attributte(self):
         cube = self.cube_creator.get_cube(self.table, 'tauu')
         cube.attributes['positive'] = 'up'
-        checker = CMORCheck(cube, self.table)
+        checker = CMORCheck(cube, self.table, self.variables_info)
         with self.assertRaises(CMORCheckError):
             checker.check_metadata()
 
     def test_bad_standard_name_generic_level_attributte(self):
         cube = self.cube_creator.get_cube('Omon', 'uo')
         cube.coord('depth').standard_name = None
-        checker = CMORCheck(cube, 'Omon')
+        checker = CMORCheck(cube, 'Omon', self.variables_info)
         with self.assertRaises(CMORCheckError):
             checker.check_metadata()
 
     def test_bad_axis_generic_level_attribute(self):
         cube = self.cube_creator.get_cube('Omon', 'uo')
         cube.coord('depth').attributes['positive'] = ''
-        checker = CMORCheck(cube, 'Omon')
+        checker = CMORCheck(cube, 'Omon', self.variables_info)
         with self.assertRaises(CMORCheckError):
             checker.check_metadata()
 
     def test_bad_frequency_day(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
-        checker = CMORCheck(cube, self.table, frequency='day')
+        checker = CMORCheck(cube, self.table, self.variables_info, frequency='day')
         with self.assertRaises(CMORCheckError):
             checker.check_metadata()
 
     def test_bad_frequency_subhr(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
-        checker = CMORCheck(cube, self.table, frequency='subhr')
+        checker = CMORCheck(cube, self.table, self.variables_info, frequency='subhr')
         with self.assertRaises(CMORCheckError):
             checker.check_metadata()
 
     def test_bad_frequency_dec(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
-        checker = CMORCheck(cube, self.table, frequency='dec')
+        checker = CMORCheck(cube, self.table, self.variables_info, frequency='dec')
         with self.assertRaises(CMORCheckError):
             checker.check_metadata()
 
     def test_bad_frequency_yr(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
-        checker = CMORCheck(cube, self.table, frequency='yr')
+        checker = CMORCheck(cube, self.table, self.variables_info, frequency='yr')
         with self.assertRaises(CMORCheckError):
             checker.check_metadata()
 
     def test_bad_frequency_mon(self):
-        cube = self.cube_creator.get_cube(self.table, self.varid,
-                                          frequency='day')
-        checker = CMORCheck(cube, self.table)
+        cube = self.cube_creator.get_cube('day', 'clt')
+        checker = CMORCheck(cube, self.table, self.variables_info, frequency='mon')
         with self.assertRaises(CMORCheckError):
             checker.check_metadata()
 
     def test_bad_frequency_hourly(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
-        checker = CMORCheck(cube, self.table, frequency='3hr')
+        checker = CMORCheck(cube, self.table, self.variables_info, frequency='3hr')
         with self.assertRaises(CMORCheckError):
             checker.check_metadata()
 
     def test_bad_frequency_not_supported(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
-        checker = CMORCheck(cube, self.table, frequency='wrong_freq')
+        checker = CMORCheck(cube, self.table, self.variables_info, frequency='wrong_freq')
         with self.assertRaises(CMORCheckError):
             checker.check_metadata()
 
@@ -289,7 +298,7 @@ class TestCMORCheckBadCube(unittest.TestCase):
 
     # def test_data_not_valid_max(self):
     #     cube = _create_good_cube(self.varid)
-    #     checker = CMORCheck(cube, self.table)
+    #     checker = CMORCheck(cube, self.table, self.variables_info)
     #     cube.data[0] = 100000000000
     #     checker.check_metadata()
     #     with self.assertRaises(CMORCheckError):
@@ -297,7 +306,7 @@ class TestCMORCheckBadCube(unittest.TestCase):
     #
     # def test_data_not_valid_min(self):
     #     cube = _create_good_cube(self.varid)
-    #     checker = CMORCheck(cube, self.table)
+    #     checker = CMORCheck(cube, self.table, self.variables_info)
     #     cube.data[0] = -100000000000
     #     checker.check_metadata()
     #     with self.assertRaises(CMORCheckError):
