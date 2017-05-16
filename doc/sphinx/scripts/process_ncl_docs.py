@@ -103,10 +103,16 @@ def processParams(params, inp, oup):
         if pname in line:
             
             # Get the text in the line which follows the first occurrence (reading from the left) 
-            # of the parameter name, then strip trailing spaces (including the CR).
+            # of the parameter name, then strip leading and trailing spaces (including the CR).
             pdesc = line.split(pname, 1)[1]
-            pdesc = pdesc.rstrip()
-                                          
+            pdesc = pdesc.strip()
+
+            # The description could start with a separator like = or - or *, which we don't want because
+            # it looks untidy (a dash is added as part of the formatting of the .rst when the
+            # documentation is made).  Check for that here, and remove it if necessary.
+            if pdesc[0] in '=-*':
+                pdesc = pdesc[1:]
+                                         
             # The description could continue on the following lines, which need to be concatenated
             # together.  For all except the last parameter, the end of the description is signaled 
             # by the name of the next parameter.  For the last (or maybe the only) parameter, it's 
@@ -133,9 +139,9 @@ def processParams(params, inp, oup):
                     pdesc += " " + line.replace(';;', '  ', 1).strip()                 
                     line = inp.next()
 
-            # Ensure the description starts with a colon.
+            # Ensure the description starts with a colon (followed by at least one space).
             if pdesc[0] != ':':
-                pdesc = ':' + pdesc             
+                pdesc = ': ' + pdesc             
             
             # Write out the complete description of this parameter. 
             oup.write('   :param ' + paramDetails[pname] + ' ' + pname + pdesc + '\n') 
