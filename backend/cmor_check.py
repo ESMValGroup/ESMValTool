@@ -98,7 +98,6 @@ class CMORCheck(object):
                                   self._cmor_var.standard_name, self.cube.standard_name)
 
         # Check units
-        attr = 'units'
         if self._cmor_var.units:
             if not self.cube.units.is_convertible(self._cmor_var.units):
                 self.report_error('Variable {0} units () can not be converted to {2}',

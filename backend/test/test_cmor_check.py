@@ -28,11 +28,15 @@ MIP_TABLE_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)),
 
 class TestCMORCheckErrorReporting(unittest.TestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        super(TestCMORCheckErrorReporting, cls).setUpClass()
+        cls.variables_info = VariablesInfo()
+
     def setUp(self):
         self.varid = "tas"
         self.table = 'Amon'
         self.cube = CubeCreator().get_cube(self.table, self.varid)
-        self.variables_info = VariablesInfo()
 
     def test_report_error(self):
         checker = CMORCheck(self.cube, self.table, self.variables_info,)
@@ -61,11 +65,15 @@ class TestCMORCheckErrorReporting(unittest.TestCase):
 
 class TestCMORCheckGoodCube(unittest.TestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        super(TestCMORCheckGoodCube, cls).setUpClass()
+        cls.variables_info = VariablesInfo()
+
     def setUp(self):
         self.varid = "tas"
         self.table = "Amon"
         self.cube_creator = CubeCreator()
-        self.variables_info = VariablesInfo()
 
     def test_check(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
@@ -136,11 +144,15 @@ class TestCMORCheckGoodCube(unittest.TestCase):
 
 class TestCMORCheckBadCube(unittest.TestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        super(TestCMORCheckBadCube, cls).setUpClass()
+        cls.variables_info = VariablesInfo()
+
     def setUp(self):
         self.varid = "ta"
         self.table = "Amon"
         self.cube_creator = CubeCreator()
-        self.variables_info = VariablesInfo()
 
     def test_invalid_rank(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
