@@ -11,8 +11,10 @@ Created on Fri May 12 10:13:39 2017
 
 @author: bmueller
 """
-
-from path import path
+try:
+    from path import path
+except:
+    from path import Path as path
 
 
 def cleanup_report(template_dir, image_dir, do_print):
