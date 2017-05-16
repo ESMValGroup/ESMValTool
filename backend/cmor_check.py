@@ -129,8 +129,8 @@ class CMORCheck(object):
     def _check_rank(self):
         # Count rank, excluding scalar dimensions
         rank = 0
-        for (axis, cmor) in self._cmor_var.coordinates.items():
-            if cmor == 'generic_level' or not cmor['value']:
+        for (axis, coordinate) in self._cmor_var.coordinates.items():
+            if coordinate.generic_level or not coordinate.value:
                 rank += 1
         # Extract dimension coordinates from cube
         dim_coords = self.cube.coords(dim_coords=True)
@@ -140,14 +140,14 @@ class CMORCheck(object):
                               'match coordinate rank')
 
     def _check_dim_names(self):
-        for (axis, cmor) in self._cmor_var.coordinates.items():
+        for (axis, coordinate) in self._cmor_var.coordinates.items():
             if axis == 'none':
                 axis = None
-            if cmor == 'generic_level':
+            if coordinate.generic_level:
                 var_name = 'generic_level'
                 if self.cube.coords(axis=axis, dim_coords=True):
-                    coord = self.cube.coord(axis=axis, dim_coords=True)
-                    if not coord.standard_name:
+                    cube_coord = self.cube.coord(axis=axis, dim_coords=True)
+                    if not cube_coord.standard_name:
                         self.report_error(self._does_msg, var_name,
                                           'have standard_name')
                     # Test for units that match standard_name?
@@ -160,59 +160,54 @@ class CMORCheck(object):
                 else:
                     self.report_error(self._does_msg, var_name, 'exist')
             else:
-                var_name = cmor['out_name']
                 # Check for var_name in cube coordinates
                 #  Don't insist on dim_coords as could be scalar
                 #  Cannot use axis as a keyword as Iris has stripped this out
                 #   and made it impossible to re-add
-                if self.cube.coords(var_name=var_name):  # , axis=axis):
-                    coord = self.cube.coord(var_name=var_name)  # , axis=axis)
-                    attr = 'standard_name'
-                    if coord.standard_name != cmor[attr]:
-                        self.report_error(self._attr_msg, var_name, attr,
-                                          cmor[attr], coord.standard_name)
-                else:
-                    self.report_error(self._does_msg, var_name, 'exist')
+                try:
+                    cube_coord = self.cube.coord(var_name=coordinate.out_name)  # , axis=axis)
+                    if cube_coord.standard_name != coordinate.standard_name:
+                        self.report_error(self._attr_msg, coordinate.out_name, 'standard_name',
+                                          coordinate.standard_name, cube_coord.standard_name)
+                except iris.exceptions.CoordinateNotFoundError:
+                    self.report_error(self._does_msg, coordinate.name, 'exist')
 
     def _check_coords(self):
-        for (axis, cmor) in self._cmor_var.coordinates.items():
-            if axis == 'none':
-                axis = None
-
+        for (axis, coordinate) in self._cmor_var.coordinates.items():
             # Cannot check generic_level coords as no CMOR information
             #  Do we want to do a basic check for units, etc.?
-            if cmor != 'generic_level':
-                var_name = cmor['out_name']
+            if coordinate.generic_level:
+                continue
+            var_name = coordinate.out_name
 
-                # Get coordinate var_name as it exists!
-                try:
-                    coord = self.cube.coord(var_name=var_name,
-                                            dim_coords=True)  # ,
-                    #                        axis=axis)
-                except iris.exceptions.CoordinateNotFoundError:
-                    continue
+            # Get coordinate var_name as it exists!
+            try:
+                coord = self.cube.coord(var_name=var_name,
+                                        dim_coords=True)  # ,
+                #                        axis=axis)
+            except iris.exceptions.CoordinateNotFoundError:
+                continue
 
-                self._check_coord(cmor, coord, var_name)
+            self._check_coord(coordinate, coord, var_name)
 
     def _check_coord(self, cmor, coord, var_name):
         if coord.var_name == 'time':
             return
         # Check units
-        attr = 'units'
-        if cmor[attr]:
-            if str(coord.units) != cmor[attr]:
+        if cmor.units:
+            if str(coord.units) != cmor.units:
                 fixed = False
                 if self.automatic_fixes:
                     try:
-                        new_unit = cf_units.Unit(cmor[attr],
+                        new_unit = cf_units.Unit(cmor.units,
                                                  coord.units.calendar)
                         coord.convert_units(new_unit)
                         fixed = True
                     except ValueError:
                         pass
                 if not fixed:
-                    self.report_error(self._attr_msg, var_name, attr,
-                                      cmor[attr], coord.units)
+                    self.report_error(self._attr_msg, var_name, 'units',
+                                      cmor.units, coord.units)
         self._check_coord_monotonicity_and_direction(cmor, coord, var_name)
         self._check_coord_values(cmor, coord, var_name)
 
@@ -221,20 +216,19 @@ class CMORCheck(object):
         if not coord.is_monotonic():
             self.report_error(self._is_msg, var_name, 'monotonic')
 
-        if cmor['stored_direction']:
-            attrval = 'increasing'
-            if cmor['stored_direction'] == attrval:
+        if cmor.stored_direction:
+            if cmor.stored_direction == 'increasing':
                 if coord.points[0] > coord.points[1]:
-                    self.report_error(self._is_msg, var_name, attrval)
-            attrval = 'decreasing'
-            if cmor['stored_direction'] == attrval:
-                if coord.points[0] < coord.points[1]:
-                    self.report_error(self._is_msg, var_name, attrval)
+                    self.report_error(self._is_msg, var_name, 'increasing')
 
-    def _check_coord_values(self, cmor, coord, var_name):
+            elif cmor.stored_direction == 'decreasing':
+                if coord.points[0] < coord.points[1]:
+                    self.report_error(self._is_msg, var_name, 'decreasing')
+
+    def _check_coord_values(self, coord_info, coord, var_name):
         # Check requested coordinate values exist in coord.points
-        if cmor['requested']:
-            cmor_points = [float(val) for val in cmor['requested']]
+        if coord_info.requested:
+            cmor_points = [float(val) for val in coord_info.requested]
             coord_points = list(coord.points)
             for point in cmor_points:
                 if point not in coord_points:
@@ -244,27 +238,25 @@ class CMORCheck(object):
         l_fix_coord_value = False
 
         # Check coordinate value ranges
-        attr = 'valid_min'
-        if cmor[attr]:
-            valid_min = float(cmor[attr])
+        if coord_info.valid_min:
+            valid_min = float(coord_info.valid_min)
             if np.any(coord.points < valid_min):
-                if cmor['standard_name'] == 'longitude' and \
+                if coord_info.standard_name == 'longitude' and \
                         self.automatic_fixes:
                     l_fix_coord_value = True
                 else:
                     self.report_error(self._vals_msg, var_name,
-                                      '< {} ='.format(attr), valid_min)
+                                      '< {} ='.format('valid_min'), valid_min)
 
-        attr = 'valid_max'
-        if cmor[attr]:
-            valid_max = float(cmor[attr])
+        if coord_info.valid_max:
+            valid_max = float(coord_info.valid_max)
             if np.any(coord.points > valid_max):
-                if cmor['standard_name'] == 'longitude' and \
+                if coord_info.standard_name == 'longitude' and \
                         self.automatic_fixes:
                     l_fix_coord_value = True
                 else:
                     self.report_error(self._vals_msg, var_name,
-                                      '> {} ='.format(attr), valid_max)
+                                      '> {} ='.format('valid_max'), valid_max)
 
         if l_fix_coord_value:
             lon_extent = iris.coords.CoordExtent(coord, 0.0, 360., True, False)
