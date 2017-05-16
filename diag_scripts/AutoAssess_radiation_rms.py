@@ -171,6 +171,18 @@ def main(project_info):
     diag_script = E.get_diag_script_name()
     print 'diag_script', diag_script
 
+# A_laue_ax+
+    res = E.write_references(diag_script,              # diag script name
+                             ["A_tsus_yo"],            # authors
+                             ["A_read_si"],            # contributors
+                             [""],                     # diag_references
+                             [""],                     # obs_references
+                             ["P_cmug"],               # proj_references
+                             project_info,
+                             verbosity,
+                             False)
+# A_laue_ax-
+
     # Load some extra data needed for the grids and land fractions used in the RMS calculations
     print 'Loading supplementary data'
     extras_dict=vm.read_info_file(
@@ -187,7 +199,8 @@ def main(project_info):
     for datakey in datakeys:
         print 'datakey', datakey
         # Decide on an output directory for your CSV files
-        work_dir = os.path.join(code_dir,'../work/')
+        #work_dir = os.path.join(code_dir,'../work/')
+        work_dir = E.get_work_dir()
         if not os.path.exists(work_dir): os.mkdir(work_dir)
         print 'work_dir', work_dir
         summary_dir = os.path.join(work_dir,'AutoAssess_radiation_rms_summary')
@@ -205,6 +218,10 @@ def main(project_info):
         #if not os.path.exists(csv_dir): os.mkdir(csv_dir)
 
         cube_mon_obs=iris.load_cube(obs_loc)
+        # A-laue_ax+
+        E.add_to_filelist(obs_loc)
+        # A-laue_ax-
+
         # supermean
         obs_variable = cube_mon_obs.collapsed(['time'], iris.analysis.MEAN)
         # We want to put this into a dictionary for passing to perform_equation
@@ -218,6 +235,10 @@ def main(project_info):
             rms_list = rms.start(model_id,model_id)
 
             cube_mon_model=iris.load_cube(models[model])
+            # A-laue_ax+
+            E.add_to_filelist(models[model])
+            # A-laue_ax-
+
             # supermean
             exper_variable = cube_mon_model.collapsed(['time'], iris.analysis.MEAN)
 
