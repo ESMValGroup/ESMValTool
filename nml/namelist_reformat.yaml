@@ -27,7 +27,7 @@ MODELS:
 # Each block below is used for testing the project classes in projects.py
 
   # CMIP5
-  - {name: ACCESS1-0,          project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1998,  end: 2004,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: ACCESS1-0,          project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1998,  end: 2004,  path: /modelpath/CMIP5/}
 
   # EMAC
 #   - {name: EVAL2,  project: EMAC,  ensemble: 1,  start: 1999,  end: 2008, path: /modelpath/EMAC/EVAL2/}

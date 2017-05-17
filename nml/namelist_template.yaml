@@ -15,9 +15,9 @@ GLOBAL:
 #    force_taylorcalc:  False # this goes away
 
 MODELS:
-    - {name: ACCESS1-0,  project: CMIP5_ETHZ,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /models/ETHZ_CMIP5}
-    - {name: BNU-ESM,    project: CMIP5_ETHZ,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /models/ETHZ_CMIP5}
-    - {name: CanCM4,     project: CMIP5_ETHZ,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /models/ETHZ_CMIP5}
+    - {name: ACCESS1-0,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /models/CMIP5}
+    - {name: BNU-ESM,    project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /models/CMIP5}
+    - {name: CanCM4,     project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /models/CMIP5}
 
 PREPROCESS:
     select_level:    None

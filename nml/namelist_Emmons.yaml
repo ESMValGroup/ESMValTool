@@ -26,7 +26,7 @@ GLOBAL:
 
 
 MODELS:
-  - {name: MPI-ESM-LR,  project: CMIP5_ETHZ,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2001,  end: 2001,  path: /modelpath/ETHZ_CMIP5}
+  - {name: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2001,  end: 2001,  path: /modelpath/CMIP5}
 
 
 PREPROCESS:

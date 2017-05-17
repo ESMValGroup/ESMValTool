@@ -24,56 +24,56 @@ GLOBAL:
 
 
 MODELS:
-  - {name: ACCESS1-0,        project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: ACCESS1-3,        project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: bcc-csm1-1,       project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: bcc-csm1-1-m,     project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: BNU-ESM,          project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: CanCM4,           project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: CanESM2,          project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: CCSM4,            project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: CESM1-BGC,        project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: CESM1-CAM5,       project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-# BROKEN - {name: CESM1-CAM5-1-FV2, project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: CESM1-FASTCHEM,   project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: CESM1-WACCM,      project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: CMCC-CESM,        project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: CMCC-CM,          project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: CMCC-CMS,         project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-#  - {name: CNRM-CM5-2,       project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: CNRM-CM5,         project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: CSIRO-Mk3-6-0,    project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: ACCESS1-0,        project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: ACCESS1-3,        project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: bcc-csm1-1,       project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: bcc-csm1-1-m,     project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: BNU-ESM,          project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: CanCM4,           project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: CanESM2,          project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: CCSM4,            project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: CESM1-BGC,        project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: CESM1-CAM5,       project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+# BROKEN - {name: CESM1-CAM5-1-FV2, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: CESM1-FASTCHEM,   project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: CESM1-WACCM,      project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: CMCC-CESM,        project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: CMCC-CM,          project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: CMCC-CMS,         project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+#  - {name: CNRM-CM5-2,       project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: CNRM-CM5,         project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: CSIRO-Mk3-6-0,    project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
 # Time dimension broken for ensemble r1i1p1 of EC-EARTH -> using ensemble r6i1p1 instead
-  - {name: EC-EARTH,         project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r6i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: FGOALS-g2,        project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: FIO-ESM,          project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: GFDL-CM2p1,       project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: GFDL-CM3,         project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: GFDL-ESM2G,       project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: GFDL-ESM2M,       project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: GISS-E2-H,        project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: GISS-E2-H-CC,     project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: GISS-E2-R,        project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: GISS-E2-R-CC,     project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: HadCM3,           project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-# NO FILES  - {name: HadGEM2-A0,       project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-# BROKEN    - {name: HadGEM2-CC,       project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-# BROKEN    - {name: HadGEM2-ES,       project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: inmcm4,           project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: IPSL-CM5A-LR,     project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: IPSL-CM5A-MR,     project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: IPSL-CM5B-LR,     project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: MIROC4h,          project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: MIROC5,           project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: MIROC-ESM,        project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: MIROC-ESM-CHEM,   project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: MPI-ESM-LR,       project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: MPI-ESM-MR,       project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: MPI-ESM-P,        project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: MRI-CGCM3,        project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: MRI-ESM1,         project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: NorESM1-M,        project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: NorESM1-ME,       project: ETHZ_CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: EC-EARTH,         project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r6i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: FGOALS-g2,        project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: FIO-ESM,          project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: GFDL-CM2p1,       project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: GFDL-CM3,         project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: GFDL-ESM2G,       project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: GFDL-ESM2M,       project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: GISS-E2-H,        project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: GISS-E2-H-CC,     project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: GISS-E2-R,        project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: GISS-E2-R-CC,     project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: HadCM3,           project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+# NO FILES  - {name: HadGEM2-A0,       project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+# BROKEN    - {name: HadGEM2-CC,       project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+# BROKEN    - {name: HadGEM2-ES,       project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: inmcm4,           project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: IPSL-CM5A-LR,     project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: IPSL-CM5A-MR,     project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: IPSL-CM5B-LR,     project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: MIROC4h,          project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: MIROC5,           project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: MIROC-ESM,        project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: MIROC-ESM-CHEM,   project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: MPI-ESM-LR,       project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: MPI-ESM-MR,       project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: MPI-ESM-P,        project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: MRI-CGCM3,        project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: MRI-ESM1,         project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: NorESM1-M,        project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: NorESM1-ME,       project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
 
 
 PREPROCESS:

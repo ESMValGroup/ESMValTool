@@ -32,18 +32,18 @@ GLOBAL:
 MODELS:
 # Models which do not provide all variables are defined within each diag block block
 # MR: HERE WE NEED TO IMPLEMENT A WAY TO REPLACE mip WITH VARIABLE-SPECIFIC mip (e.g., USE * AS A WILDCARD)
-  - {name: CanESM2,         project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble:  r1i1p1,  start: 1986,  end: 2005,   path: /modelpath/ETHZ_CMIP5}
-  - {name: GFDL-ESM2G,      project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble:  r1i1p1,  start: 1986,  end: 2005,   path: /modelpath/ETHZ_CMIP5}
-  - {name: GFDL-ESM2M,      project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble:  r1i1p1,  start: 1986,  end: 2005,   path: /modelpath/ETHZ_CMIP5}
-  - {name: HadGEM2-CC,      project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble:  r1i1p1,  start: 1986,  end: 2004,   path: /modelpath/ETHZ_CMIP5}
-  - {name: HadGEM2-ES,      project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble:  r1i1p1,  start: 1986,  end: 2004,   path: /modelpath/ETHZ_CMIP5}
-  - {name: IPSL-CM5A-LR,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble:  r1i1p1,  start: 1986,  end: 2005,   path: /modelpath/ETHZ_CMIP5}
-  - {name: IPSL-CM5A-MR,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble:  r1i1p1,  start: 1986,  end: 2005,   path: /modelpath/ETHZ_CMIP5}
-  - {name: IPSL-CM5B-LR,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble:  r1i1p1,  start: 1986,  end: 2005,   path: /modelpath/ETHZ_CMIP5}
-  - {name: MIROC-ESM-CHEM,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble:  r1i1p1,  start: 1986,  end: 2005,   path: /modelpath/ETHZ_CMIP5}
-  - {name: MPI-ESM-LR,      project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble:  r1i1p1,  start: 1986,  end: 2005,   path: /modelpath/ETHZ_CMIP5}
-  - {name: MPI-ESM-MR,      project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble:  r1i1p1,  start: 1986,  end: 2005,   path: /modelpath/ETHZ_CMIP5}
-  - {name: NorESM1-ME,      project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble:  r1i1p1,  start: 1986,  end: 2005,   path: /modelpath/ETHZ_CMIP5}
+  - {name: CanESM2,         project: CMIP5,  mip: *,  exp: historical,  ensemble:  r1i1p1,  start: 1986,  end: 2005,   path: /modelpath/CMIP5}
+  - {name: GFDL-ESM2G,      project: CMIP5,  mip: *,  exp: historical,  ensemble:  r1i1p1,  start: 1986,  end: 2005,   path: /modelpath/CMIP5}
+  - {name: GFDL-ESM2M,      project: CMIP5,  mip: *,  exp: historical,  ensemble:  r1i1p1,  start: 1986,  end: 2005,   path: /modelpath/CMIP5}
+  - {name: HadGEM2-CC,      project: CMIP5,  mip: *,  exp: historical,  ensemble:  r1i1p1,  start: 1986,  end: 2004,   path: /modelpath/CMIP5}
+  - {name: HadGEM2-ES,      project: CMIP5,  mip: *,  exp: historical,  ensemble:  r1i1p1,  start: 1986,  end: 2004,   path: /modelpath/CMIP5}
+  - {name: IPSL-CM5A-LR,    project: CMIP5,  mip: *,  exp: historical,  ensemble:  r1i1p1,  start: 1986,  end: 2005,   path: /modelpath/CMIP5}
+  - {name: IPSL-CM5A-MR,    project: CMIP5,  mip: *,  exp: historical,  ensemble:  r1i1p1,  start: 1986,  end: 2005,   path: /modelpath/CMIP5}
+  - {name: IPSL-CM5B-LR,    project: CMIP5,  mip: *,  exp: historical,  ensemble:  r1i1p1,  start: 1986,  end: 2005,   path: /modelpath/CMIP5}
+  - {name: MIROC-ESM-CHEM,  project: CMIP5,  mip: *,  exp: historical,  ensemble:  r1i1p1,  start: 1986,  end: 2005,   path: /modelpath/CMIP5}
+  - {name: MPI-ESM-LR,      project: CMIP5,  mip: *,  exp: historical,  ensemble:  r1i1p1,  start: 1986,  end: 2005,   path: /modelpath/CMIP5}
+  - {name: MPI-ESM-MR,      project: CMIP5,  mip: *,  exp: historical,  ensemble:  r1i1p1,  start: 1986,  end: 2005,   path: /modelpath/CMIP5}
+  - {name: NorESM1-ME,      project: CMIP5,  mip: *,  exp: historical,  ensemble:  r1i1p1,  start: 1986,  end: 2005,   path: /modelpath/CMIP5}
 
 PREPROCESS:
   select_level:    None
@@ -65,13 +65,13 @@ DIAGNOSTICS:
       - {script: CarbonCycle_MVI.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_MVI_NH.ncl}
       - {script: CarbonCycle_MVI.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_MVI_SH.ncl}
     additional_models:
-      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: bcc-csm1-1,    project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: bcc-csm1-1-m,  project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: inmcm4,        project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
       
       
@@ -85,13 +85,13 @@ DIAGNOSTICS:
       - {script: CarbonCycle_MVI.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_MVI_NH.ncl}
       - {script: CarbonCycle_MVI.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_MVI_SH.ncl}
     additional_models:
-      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: bcc-csm1-1,    project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: bcc-csm1-1-m,  project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: inmcm4,        project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
       
       
@@ -107,11 +107,11 @@ DIAGNOSTICS:
       - {script: CarbonCycle_main.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_main_NH.ncl}
       - {script: CarbonCycle_main.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_main_SH.ncl}
     additional_models:
-      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: inmcm4,        project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: JMA-TRANSCOM,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/JMA-TRANSCOM/}
       
       
@@ -128,11 +128,11 @@ DIAGNOSTICS:
       - {script: CarbonCycle_MVI.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_MVI_NH.ncl}
       - {script: CarbonCycle_MVI.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_MVI_SH.ncl}
     additional_models:      
-      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: bcc-csm1-1,    project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: inmcm4,        project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: MTE,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/MTE/}
       
 
@@ -148,11 +148,11 @@ DIAGNOSTICS:
       - {script: CarbonCycle_main.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_main_NH.ncl}
       - {script: CarbonCycle_main.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_main_SH.ncl}
     additional_models:
-      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: bcc-csm1-1,    project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: inmcm4,        project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: MTE,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/MTE/}
 
 
@@ -168,12 +168,12 @@ DIAGNOSTICS:
       - {script: CarbonCycle_MVI.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_MVI_NH.ncl}
       - {script: CarbonCycle_MVI.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_MVI_SH.ncl}
     additional_models:
-      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: bcc-csm1-1,    project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: inmcm4,        project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: LAI3g,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/LAI3g/}
       
 
@@ -189,12 +189,12 @@ DIAGNOSTICS:
       - {script: CarbonCycle_main.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_main_NH.ncl}
       - {script: CarbonCycle_main.ncl,  file: ./nml/cfg_anav13jclim/cfg_anav_main_SH.ncl}
     additional_models:
-      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: bcc-csm1-1,    project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: inmcm4,        project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: LAI3g,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/LAI3g/}
       
 
@@ -211,10 +211,10 @@ DIAGNOSTICS:
       - {script: CarbonCycle_2vars.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_cSoil-cVeg_NH.ncl}
       - {script: CarbonCycle_2vars.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_cSoil-cVeg_SH.ncl}
     additional_models:
-      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: bcc-csm1-1,    project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: inmcm4,        project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: NDP,   project: OBS,  type: ground,  version: 017b,  start: 2000,  end: 2000,  path: /obspath/Tier2/NDP/}
       - {name: HWSD,  project: OBS,  type: ground,  version: 1,     start: 2000,  end: 2000,  path: /obspath/Tier2/HWSD/}
 
@@ -230,8 +230,8 @@ DIAGNOSTICS:
   #     - {script: CarbonCycle_main.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_main_NH.ncl}
   #     - {script: CarbonCycle_main.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_main_SH.ncl}
   #    additional_models:
-  #      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-  #      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  #      - {name: bcc-csm1-1,    project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+  #      - {name: MIROC-ESM,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
   #      - {name: JMA-TRANSCOM,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/JMA-TRANSCOM/}
 
     
@@ -249,13 +249,13 @@ DIAGNOSTICS:
       - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
       - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
     additional_models:
-      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: bcc-csm1-1,    project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: bcc-csm1-1-m,  project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: inmcm4,        project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
       
 
@@ -271,13 +271,13 @@ DIAGNOSTICS:
       - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
       - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
     additional_models:
-      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: bcc-csm1-1,    project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: bcc-csm1-1-m,  project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: inmcm4,        project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
 
 
@@ -293,11 +293,11 @@ DIAGNOSTICS:
       - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
       - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
     additional_models:
-      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: bcc-csm1-1,    project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: inmcm4,        project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: MTE,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/MTE/}
 
 
@@ -313,11 +313,11 @@ DIAGNOSTICS:
       - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
       - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
     additional_models:
-      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: bcc-csm1-1,    project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: inmcm4,        project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: MTE,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/MTE/}
 
 
@@ -333,12 +333,12 @@ DIAGNOSTICS:
       - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
       - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
     additional_models:
-      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: bcc-csm1-1,    project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: inmcm4,        project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: LAI3g,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/LAI3g/}
 
 
@@ -354,11 +354,11 @@ DIAGNOSTICS:
       - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
       - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
     additional_models:
-      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: inmcm4,        project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: JMA-TRANSCOM,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/JMA-TRANSCOM/}
       
           
@@ -382,13 +382,13 @@ DIAGNOSTICS:
       - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl}
       - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl}
     additional_models:
-      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: bcc-csm1-1,    project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: bcc-csm1-1-m,  project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: inmcm4,        project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
       
 
@@ -404,13 +404,13 @@ DIAGNOSTICS:
       - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl}
       - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl}
     additional_models:
-      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: bcc-csm1-1,    project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: bcc-csm1-1-m,  project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: inmcm4,        project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
 
 
@@ -426,11 +426,11 @@ DIAGNOSTICS:
       - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl}
       - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl}
     additional_models:
-      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: bcc-csm1-1,    project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: inmcm4,        project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: MTE,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/MTE/}
 
 
@@ -446,11 +446,11 @@ DIAGNOSTICS:
       - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl}
       - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl}
     additional_models:
-      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: bcc-csm1-1,    project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: inmcm4,        project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: MTE,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/MTE/}
 
 
@@ -466,12 +466,12 @@ DIAGNOSTICS:
       - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl}
       - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl}
     additional_models:
-      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: bcc-csm1-1,    project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: inmcm4,        project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: LAI3g,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/LAI3g/}
 
 
@@ -487,11 +487,11 @@ DIAGNOSTICS:
       - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl}
       - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl}
     additional_models:
-      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: inmcm4,        project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: JMA-TRANSCOM,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/JMA-TRANSCOM/}
       
           
@@ -514,13 +514,13 @@ DIAGNOSTICS:
       - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl}
       - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl}
     additional_models:
-      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: bcc-csm1-1,    project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: bcc-csm1-1-m,  project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: inmcm4,        project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
       
 
@@ -536,13 +536,13 @@ DIAGNOSTICS:
       - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl}
       - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl}
     additional_models:
-      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: bcc-csm1-1,    project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: bcc-csm1-1-m,  project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: inmcm4,        project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
 
 
@@ -558,11 +558,11 @@ DIAGNOSTICS:
       - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl}
       - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl}
     additional_models:
-      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: bcc-csm1-1,    project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: inmcm4,        project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: MTE,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/MTE/}
 
 
@@ -578,11 +578,11 @@ DIAGNOSTICS:
       - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl}
       - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl}
     additional_models:
-      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: bcc-csm1-1,    project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: inmcm4,        project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: MTE,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/MTE/}
 
 
@@ -598,12 +598,12 @@ DIAGNOSTICS:
       - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl}
       - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl}
     additional_models:
-      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: bcc-csm1-1,    project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: inmcm4,        project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: LAI3g,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/LAI3g/}
 
 
@@ -619,11 +619,11 @@ DIAGNOSTICS:
       - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl}
       - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl}
     additional_models:
-      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: inmcm4,        project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: JMA-TRANSCOM,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/JMA-TRANSCOM/}
       
           
@@ -646,13 +646,13 @@ DIAGNOSTICS:
       - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl}
       - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl}
     additional_models:
-      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: bcc-csm1-1,    project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: bcc-csm1-1-m,  project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: inmcm4,        project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
       
 
@@ -668,13 +668,13 @@ DIAGNOSTICS:
       - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl}
       - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl}
     additional_models:
-      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: bcc-csm1-1,    project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: bcc-csm1-1-m,  project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: inmcm4,        project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
 
 
@@ -690,11 +690,11 @@ DIAGNOSTICS:
       - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl}
       - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl}
     additional_models:
-      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: bcc-csm1-1,    project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: inmcm4,        project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: MTE,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/MTE/}
 
 
@@ -710,11 +710,11 @@ DIAGNOSTICS:
       - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl}
       - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl}
     additional_models:
-      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: bcc-csm1-1,    project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: inmcm4,        project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: MTE,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/MTE/}
 
 
@@ -730,12 +730,12 @@ DIAGNOSTICS:
       - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl}
       - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl}
     additional_models:
-      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: bcc-csm1-1,    project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: inmcm4,        project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: LAI3g,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/LAI3g/}
 
 
@@ -751,11 +751,11 @@ DIAGNOSTICS:
       - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl}
       - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl}
     additional_models:
-      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: inmcm4,        project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: JMA-TRANSCOM,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/JMA-TRANSCOM/}
       
           

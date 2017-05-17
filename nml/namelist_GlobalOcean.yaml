@@ -56,9 +56,9 @@ DIAGNOSTICS:
     scripts:
       - {script: GO_tsline.ncl, file: ./nml/cgf_GO/spco2Diag.ncl}
     additional_models:
-      - {name: BNU-ESM,  project: CMIP5_ETHZ,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 1998:  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: CanESM2,  project: CMIP5_ETHZ,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 1998:  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: inmcm4,   project: CMIP5_ETHZ,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 1998:  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: BNU-ESM,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 1998:  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: CanESM2,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 1998:  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: inmcm4,   project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 1998:  end: 2005,  path: /modelpath/CMIP5/}
       - {name: ETH-SOM-FFN,  project: OBS,  type: ocean,  version: 1,  start: 1998,  end: 2005, path: /obspath/Tier2/ETH-SOM-FFN/}
     # MR: need to find a way to read in fx file (use class standard paths, avoid extra class). Not clear what the nml is doing here.
 
@@ -70,9 +70,9 @@ DIAGNOSTICS:
     scripts:
       - {script: GO_comp_map.ncl, file: ./nml/cfg_GO/spco2compmapDiag.ncl}
     additional_models:
-      - {name: BNU-ESM,  project: CMIP5_ETHZ,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 1998:  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: CanESM2,  project: CMIP5_ETHZ,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 1998:  end: 2005,  path: /modelpa
-      - {name: inmcm4,   project: CMIP5_ETHZ,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 1998:  end: 2005,  path: /modelpa
+      - {name: BNU-ESM,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 1998:  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: CanESM2,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 1998:  end: 2005,  path: /modelpa
+      - {name: inmcm4,   project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 1998:  end: 2005,  path: /modelpa
       - {name: ETH-SOM-FFN,  project: OBS,  type: ocean,  version: 1,  start: 1998,  end: 2005, path: /obspath/Tier2/ETH-SOM-FFN/}
     # MR: need to find a way to read in fx file (use class standard paths, avoid extra class). Not clear what the nml is doing here.
 
@@ -84,9 +84,9 @@ DIAGNOSTICS:
     scripts:
       - {script: GO_comp_map.ncl, file: ./nml/cfg_GO/talkcompmapDiag.ncl}
     additional_models:
-      - {name: CanESM2,     project: CMIP5_ETHZ,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 2005,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: GFDL-ESM2M,  project: CMIP5_ETHZ,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 2005,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: MRI-ESM1,    project: CMIP5_ETHZ,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 2005,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CanESM2,     project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 2005,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: GFDL-ESM2M,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 2005,  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: MRI-ESM1,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 2005,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: takahashi14,  project: OBS,  type: ocean,  version: 1,  start: 2005,  end: 2005, path:  /obspath/Tier2/ETH-SOM-FFN/}
     # MR: need to find a way to read in fx file (use class standard paths, avoid extra class). Not clear what the nml is doing here.
 
@@ -98,7 +98,7 @@ DIAGNOSTICS:
     scripts:
       - {script: GO_comp_map.ncl, file: ./nml/cfg_GO/O2compmapDiag.ncl}
     additional_models:
-      - {name: GFDL-ESM2M,  project: CMIP5_ETHZ,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 2001,  end: 2001,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: GFDL-ESM2M,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 2001,  end: 2001,  path: /modelpath/CMIP5/}
       - {name: woa2005,  project: OBS,  type: bianchi, version: reg,  start: 2005,  end: 2005, path:  /obspath/Tier2/woa2005/}
     # MR: need to find a way to read in fx file (use class standard paths, avoid extra class). Not clear what the nml is doing here.
 
@@ -109,6 +109,6 @@ DIAGNOSTICS:
     scripts:
       - {script: GO_comp_map.ncl, file: ./nml/cfg_GO/chlcompmapDiag.ncl}
     additional_models:
-      - {name: CanESM2,    project: CMIP5_ETHZ,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 2000:  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      - {name: CMCC-CESM,  project: CMIP5_ETHZ,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 2000:  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CanESM2,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 2000:  end: 2005,  path: /modelpath/CMIP5/}
+      - {name: CMCC-CESM,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 2000:  end: 2005,  path: /modelpath/CMIP5/}
       - {name: SeaWIFS,  project: OBS,  type: ocean,  version: 1,  start: 2000,  end: 2005,  path: /obspath/Tier2/SeaWIFS/}

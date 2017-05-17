@@ -23,8 +23,8 @@ GLOBAL:
 
   
 MODELS:
-  - {name: CNRM-AM-PRE6,  project: ETHZ_CMIP5,  mip: 3hr,  exp: amip,  ensmble: r1i1p1,  start: 2004,  end: 2004,  path: /modelpath/ETHZ_CMIP5/}
-  - {name: MPIESM-1-1,    project: ETHZ_CMIP5,  mip: 3hr,  exp: amip,  ensmble: r1i1p1,  start: 2004,  end: 2004,  path: /modelpath/ETHZ_CMIP5/}
+  - {name: CNRM-AM-PRE6,  project: CMIP5,  mip: 3hr,  exp: amip,  ensmble: r1i1p1,  start: 2004,  end: 2004,  path: /modelpath/CMIP5/}
+  - {name: MPIESM-1-1,    project: CMIP5,  mip: 3hr,  exp: amip,  ensmble: r1i1p1,  start: 2004,  end: 2004,  path: /modelpath/CMIP5/}
 
 
 PREPROCESS:

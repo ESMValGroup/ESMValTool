@@ -24,10 +24,10 @@ GLOBAL:
 
 
 MODELS:
-  - {name: CMRN-CM5,      project: ETHZ_CMIP5,  mip: 3hr,  exp: amip,  ensemble: r1i1p1,  start: 2004, end: 2004,  path: /modelpath/ETHZ_CMIP5}
-  - {name: HadGEM-A,      project: ETHZ_CMIP5,  mip: 3hr,  exp: amip,  ensemble: r1i1p1,  start: 2004, end: 2004,  path: /modelpath/ETHZ_CMIP5}
-  - {name: EC-EARTH,      project: ETHZ_CMIP5,  mip: 3hr,  exp: amip,  ensemble: r1i1p1,  start: 2004, end: 2004,  path: /modelpath/ETHZ_CMIP5}
-  - {name: IPSL-CM5A-LR,  project: ETHZ_CMIP5,  mip: 3hr,  exp: amip,  ensemble: r1i1p1,  start: 2004, end: 2004,  path: /modelpath/ETHZ_CMIP5}
+  - {name: CMRN-CM5,      project: CMIP5,  mip: 3hr,  exp: amip,  ensemble: r1i1p1,  start: 2004, end: 2004,  path: /modelpath/CMIP5}
+  - {name: HadGEM-A,      project: CMIP5,  mip: 3hr,  exp: amip,  ensemble: r1i1p1,  start: 2004, end: 2004,  path: /modelpath/CMIP5}
+  - {name: EC-EARTH,      project: CMIP5,  mip: 3hr,  exp: amip,  ensemble: r1i1p1,  start: 2004, end: 2004,  path: /modelpath/CMIP5}
+  - {name: IPSL-CM5A-LR,  project: CMIP5,  mip: 3hr,  exp: amip,  ensemble: r1i1p1,  start: 2004, end: 2004,  path: /modelpath/CMIP5}
 
 
 PREPROCESS:
