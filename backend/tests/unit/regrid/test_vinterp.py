@@ -112,7 +112,7 @@ class Test(tests.Test):
         # Check the _create_cube kwargs ...
         self.assertEqual(kwargs, dict())
 
-    def test_interpolation__with_extrapolated_NaN_filling(self):
+    def test_interpolation__extrapolated_NaN_filling(self):
         new_data = np.array([0, np.nan])
         levels = [0.5, 1.5]
         scheme = 'nearest'
