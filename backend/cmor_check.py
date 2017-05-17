@@ -283,14 +283,13 @@ class CMORCheck(object):
 
         if self.frequency:
             tol = 0.001
-            if self.frequency == 'dec':
-                target_interval = (3600 - tol, 3660 + tol)
-            elif self.frequency == 'yr':
-                target_interval = (360 - tol, 366 + tol)
-            elif self.frequency == 'mon':
-                target_interval = (28 - tol, 31 + tol)
-            elif self.frequency == 'day':
-                target_interval = (1 - tol, 1 + tol)
+            intervals = {'dec': (3600, 3660),
+                         'yr': (360, 366),
+                         'mon': (28, 31),
+                         'day': (1,1)}
+            if self.frequency in intervals:
+                interval = intervals[self.frequency]
+                target_interval = (interval[0] - tol, interval[1] + tol)
             elif self.frequency.endswith('hr'):
 
                 frequency = self.frequency[:-2]

@@ -25,7 +25,8 @@ class VariablesInfo(object):
                 continue
             self._load_table(json_file)
 
-    def _get_cmor_path(self, cmor_tables_path):
+    @staticmethod
+    def _get_cmor_path(cmor_tables_path):
         if not cmor_tables_path:
             cwd = os.path.dirname(os.path.realpath(__file__))
             cmor_tables_path = os.path.join(cwd, 'cmip6-cmor-tables')
@@ -75,7 +76,8 @@ class VariablesInfo(object):
 
     def _load_coordinates(self):
         self.coords = {}
-        for json_file in glob.glob(os.path.join(self._cmor_folder, '*coordinate*.json')):
+        for json_file in glob.glob(os.path.join(self._cmor_folder,
+                                                '*coordinate*.json')):
             with open(json_file) as inf:
                 table_data = json.loads(inf.read())
                 for coord_name in table_data['axis_entry'].keys():
@@ -88,11 +90,12 @@ class VariablesInfo(object):
             return self.tables[table][short_name]
         except KeyError:
             if short_name in VariablesInfo._CMIP_5to6_varname:
-                return self.get_variable(table,
-                                         VariablesInfo._CMIP_5to6_varname[short_name])
+                new_short_name = VariablesInfo._CMIP_5to6_varname[short_name]
+                return self.get_variable(table, new_short_name)
             return None
 
-    def _is_table(self, table_data):
+    @staticmethod
+    def _is_table(table_data):
         if 'variable_entry' not in table_data:
             return False
         if 'Header' not in table_data:

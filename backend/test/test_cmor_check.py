@@ -11,6 +11,8 @@ import json
 import sys
 
 # Third-party imports
+from StringIO import StringIO
+
 import numpy
 import iris
 import iris.coords
@@ -43,7 +45,8 @@ class TestCMORCheckErrorReporting(unittest.TestCase):
         self.assertTrue(checker.has_errors())
 
     def test_fail_on_error(self):
-        checker = CMORCheck(self.cube, self.table, self.variables_info, fail_on_error=True)
+        checker = CMORCheck(self.cube, self.table, self.variables_info,
+                            fail_on_error=True)
         with self.assertRaises(CMORCheckError):
             checker.report_error('New error: {}', 'something failed')
 
@@ -54,10 +57,12 @@ class TestCMORCheckErrorReporting(unittest.TestCase):
         self.assertTrue(checker.has_warnings())
 
     def test_report_warning_with_fail_error(self):
-        checker = CMORCheck(self.cube, self.table, self.variables_info, fail_on_error=True)
-        sys.stdout.truncate(0)
+        checker = CMORCheck(self.cube, self.table, self.variables_info,
+                            fail_on_error=True)
+        sys.stdout = StringIO()
         checker.report_warning('New error: {}', 'something failed')
-        output = sys.stdout.getvalue().strip()  # because stdout is an StringIO instance
+        output = sys.stdout.getvalue().strip()
+        sys.stdout = sys.__stdout__
         self.assertEquals(output, 'WARNING: New error: something failed')
 
 
@@ -189,7 +194,8 @@ class TestCMORCheckBadCube(unittest.TestCase):
     def test_not_correct_lons_automatic_fix(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
         cube = cube.intersection(longitude=(-180., 180.))
-        checker = CMORCheck(cube, self.table, self.variables_info, automatic_fixes=True)
+        checker = CMORCheck(cube, self.table, self.variables_info,
+                            automatic_fixes=True)
         checker.check_metadata()
 
     def test_not_valid_min(self):
@@ -212,7 +218,8 @@ class TestCMORCheckBadCube(unittest.TestCase):
         with self.assertRaises(CMORCheckError):
             checker.check_metadata()
 
-    def _update_coordinate_values(self, cube, coord, values, position):
+    @staticmethod
+    def _update_coordinate_values(cube, coord, values, position):
         cube.remove_coord(coord)
         new_coord = iris.coords.DimCoord(values,
                                          standard_name=coord.standard_name,
@@ -237,13 +244,15 @@ class TestCMORCheckBadCube(unittest.TestCase):
 
     def test_bad_time_automatic_fix(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
-        checker = CMORCheck(cube, self.table, self.variables_info, automatic_fixes=True)
+        checker = CMORCheck(cube, self.table, self.variables_info,
+                            automatic_fixes=True)
         cube.coord('time').units = 'days since 1950-1-1 00:00:00'
         checker.check_metadata()
 
     def test_bad_time_automatic_fix_failed(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
-        checker = CMORCheck(cube, self.table, self.variables_info, automatic_fixes=True)
+        checker = CMORCheck(cube, self.table, self.variables_info,
+                            automatic_fixes=True)
         cube.coord('time').units = 'K'
         with self.assertRaises(CMORCheckError):
             checker.check_metadata()
@@ -299,43 +308,50 @@ class TestCMORCheckBadCube(unittest.TestCase):
 
     def test_bad_frequency_day(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
-        checker = CMORCheck(cube, self.table, self.variables_info, frequency='day')
+        checker = CMORCheck(cube, self.table, self.variables_info,
+                            frequency='day')
         with self.assertRaises(CMORCheckError):
             checker.check_metadata()
 
     def test_bad_frequency_subhr(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
-        checker = CMORCheck(cube, self.table, self.variables_info, frequency='subhr')
+        checker = CMORCheck(cube, self.table, self.variables_info,
+                            frequency='subhr')
         with self.assertRaises(CMORCheckError):
             checker.check_metadata()
 
     def test_bad_frequency_dec(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
-        checker = CMORCheck(cube, self.table, self.variables_info, frequency='dec')
+        checker = CMORCheck(cube, self.table, self.variables_info,
+                            frequency='dec')
         with self.assertRaises(CMORCheckError):
             checker.check_metadata()
 
     def test_bad_frequency_yr(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
-        checker = CMORCheck(cube, self.table, self.variables_info, frequency='yr')
+        checker = CMORCheck(cube, self.table, self.variables_info,
+                            frequency='yr')
         with self.assertRaises(CMORCheckError):
             checker.check_metadata()
 
     def test_bad_frequency_mon(self):
         cube = self.cube_creator.get_cube('day', 'clt')
-        checker = CMORCheck(cube, self.table, self.variables_info, frequency='mon')
+        checker = CMORCheck(cube, self.table, self.variables_info,
+                            frequency='mon')
         with self.assertRaises(CMORCheckError):
             checker.check_metadata()
 
     def test_bad_frequency_hourly(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
-        checker = CMORCheck(cube, self.table, self.variables_info, frequency='3hr')
+        checker = CMORCheck(cube, self.table, self.variables_info,
+                            frequency='3hr')
         with self.assertRaises(CMORCheckError):
             checker.check_metadata()
 
     def test_bad_frequency_not_supported(self):
         cube = self.cube_creator.get_cube(self.table, self.varid)
-        checker = CMORCheck(cube, self.table, self.variables_info, frequency='wrong_freq')
+        checker = CMORCheck(cube, self.table, self.variables_info,
+                            frequency='wrong_freq')
         with self.assertRaises(CMORCheckError):
             checker.check_metadata()
 
@@ -373,6 +389,8 @@ class CubeCreator(object):
         :param table: variable's table
         :param var_name: variable's name
         :param set_time_units: time units to use
+        :param frequency: optional frequency to use instead of the one
+         defined at te table
         :return:
         """
         # Get a specification and build a cube from it.
@@ -427,7 +445,8 @@ class CubeCreator(object):
 
         return cube
 
-    def _construct_scalar_coord(self, coord_spec):
+    @staticmethod
+    def _construct_scalar_coord(coord_spec):
         return iris.coords.AuxCoord(float(coord_spec['value']),
                                     standard_name=coord_spec["standard_name"],
                                     long_name=coord_spec["long_name"],
@@ -496,7 +515,8 @@ class CubeCreator(object):
                                      )
         return coord
 
-    def _get_values(self, dim_spec):
+    @staticmethod
+    def _get_values(dim_spec):
         valid_min = dim_spec['valid_min']
         if valid_min:
             valid_min = float(valid_min)
@@ -533,7 +553,8 @@ class CubeCreator(object):
 
         return values
 
-    def _get_time_values(self, dim_spec):
+    @staticmethod
+    def _get_time_values(dim_spec):
         frequency = dim_spec['frequency']
         if frequency == 'mon':
             delta = 30
@@ -547,7 +568,8 @@ class CubeCreator(object):
         end = start + delta * 20
         return numpy.arange(start, end, step=delta)
 
-    def _safely_join_dicts(self, d1, d2):
+    @staticmethod
+    def _safely_join_dicts(d1, d2):
         """
         Returns a join of two dictionaries but raises exception
         if repeated keys found."
@@ -566,7 +588,7 @@ class CubeCreator(object):
         return d
 
     def _parse_mip_table(self, table_name, get_var=None):
-        "Reads MIP table and returns a dictionary."
+        """Reads MIP table and returns a dictionary."""
         table_path = os.path.join(MIP_TABLE_DIR,
                                   'CMIP6_{}.json'.format(table_name))
         d = json.load(open(table_path))
