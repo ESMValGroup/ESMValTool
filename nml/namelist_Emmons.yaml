@@ -45,5 +45,5 @@ DIAGNOSTICS:
     variables:
       - {name: tro3,  field: T3M}
     scripts:
-     - {script: Emmons.ncl,  file: ./nml/cfg_Emmons/cfg_Emmons.ncl}
+     - {script: Emmons.ncl,  cfg_file: ./nml/cfg_Emmons/cfg_Emmons.ncl}
     # MR: add observations here (?)

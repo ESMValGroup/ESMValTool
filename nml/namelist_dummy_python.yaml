@@ -42,7 +42,7 @@ DIAGNOSTICS:
     variables:
       - {name: ta,  field: T3M}
     scripts:
-      - {script: dummy_python.py, file: none_yet.py}
+      - {script: dummy_python.py, cfg_file: none_yet.py}
       # MR: do we need launcher arguments here?
 
 
@@ -51,5 +51,5 @@ DIAGNOSTICS:
     variables:
       - {name: ta,  field: T3M}
     settings:
-      - {script: dummy_python_external.py, file: none_yet.py}
+      - {script: dummy_python_external.py, cfg_file: none_yet.py}
       # MR: do we need launcher arguments here?

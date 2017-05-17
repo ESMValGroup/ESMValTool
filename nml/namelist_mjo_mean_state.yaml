@@ -46,7 +46,7 @@ DIAGNOSTICS:
     - {name: pr-mmday,  ref_model: GPCP-1DD,  exclude_model: ERA-Interim,  field: T2Ms}
     - {name: ua-850,  ref_model: ERA-Interim,  exclude_model: GPCP-1DD,  field: T2Ms}
   scripts:
-    - {script: mjo_precip_u850_basic_month.ncl,  file: ./nml/cfg_mjo/cfg_mjo_precip_u850.ncl}
+    - {script: mjo_precip_u850_basic_month.ncl,  cfg_file: ./nml/cfg_mjo/cfg_mjo_precip_u850.ncl}
   additional_models:
     - {name: GPCP-1DD,  project: obs4mips,  level: L3,  version: v1.2,  start: 2001,  end: 2008,  path: /obspath/Tier1/GPCP-1DD/}
     - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1980,  end: 2004,  path. /obspath/Tier3/ERA-Interim/}

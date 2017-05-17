@@ -60,7 +60,7 @@ DIAGNOSTICS:
       - {name: diamcnmode,  field: T3I}
       - {name: cl,          field: T3I}
     scripts:
-      - {script: aerosol_profiles.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_LACE.ncl}
+      - {script: aerosol_profiles.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_LACE.ncl}
 
 
   DIAG_Putaud:
@@ -69,7 +69,7 @@ DIAGNOSTICS:
       - {name: conccnmode,  field: T2Is}
       - {name: diamcnmode,  field: T2Is}
     scripts:
-      - {script: aerosol_profiles.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_Putaud.ncl}
+      - {script: aerosol_profiles.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_Putaud.ncl}
 
 
   DIAG_Asmi:
@@ -78,7 +78,7 @@ DIAGNOSTICS:
       - {name: conccnSTPmode,  field: T2Is}
       - {name: diamcnmode,     field: T2Is}
     scripts:
-      - {script: aerosol_profiles.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_Asmi11.ncl}
+      - {script: aerosol_profiles.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_Asmi11.ncl}
       
 
   DIAG_UCN:
@@ -87,7 +87,7 @@ DIAGNOSTICS:
       - {name: conccnSTPd3,  field: T3I}
       - {name: cl,           field: T3I}
     scripts:
-      - {script: aerosol_profiles.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_UCN-Pacific.ncl}
+      - {script: aerosol_profiles.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_UCN-Pacific.ncl}
 
       
   DIAG_INCA5:
@@ -96,7 +96,7 @@ DIAGNOSTICS:
       - {name: conccnSTPd5,  field: T3I}
       - {name: cl,           field: T3I}
     scripts:
-      - {script: aerosol_profiles.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_INCA.ncl}
+      - {script: aerosol_profiles.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_INCA.ncl}
       
 
   DIAG_INCA14:
@@ -105,7 +105,7 @@ DIAGNOSTICS:
       - {name: conccnSTPd14,  field: T3I}
       - {name: cl,            field: T3I}
     scripts:
-      - {script: aerosol_profiles.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_INCA.ncl}
+      - {script: aerosol_profiles.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_INCA.ncl}
 
       
   DIAG_INCA120:
@@ -114,7 +114,7 @@ DIAGNOSTICS:
       - {name: conccnSTPd120,  field: T3I}
       - {name: cl,             field: T3I}
     scripts:
-      - {script: aerosol_profiles.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_INCA.ncl}
+      - {script: aerosol_profiles.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_INCA.ncl}
       
 
   DIAG_ACCESS5:
@@ -123,7 +123,7 @@ DIAGNOSTICS:
       - {name: conccnd5,  field: T3I}
       - {name: cl,        field: T3I}
     scripts:
-      - {script: aerosol_profiles.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_ACCESS-2.ncl}
+      - {script: aerosol_profiles.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_ACCESS-2.ncl}
       
 
   DIAG_ACCESS10:
@@ -132,7 +132,7 @@ DIAGNOSTICS:
       - {name: conccnd10,  field: T3I}
       - {name: cl,         field: T3I}
     scripts:
-      - {script: aerosol_profiles.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_ACCESS-2.ncl}
+      - {script: aerosol_profiles.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_ACCESS-2.ncl}
       
 
   DIAG_BC:
@@ -141,15 +141,15 @@ DIAGNOSTICS:
       - {name: mmrbc,  field: T3I}
       - {name: cl,     field: T3I}
     scripts:
-      - {script: aerosol_profile.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_ACCESS.ncl}
-      - {script: aerosol_profile.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_CONCERT.ncl}
-      - {script: aerosol_profile.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_CR-AVE.ncl}
-      - {script: aerosol_profile.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_DC3.ncl}
-      - {script: aerosol_profile.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_HIPPO.ncl}
-      - {script: aerosol_profile.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_SALTRACE1.ncl}
-      - {script: aerosol_profile.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_SALTRACE2.ncl}
-      - {script: aerosol_profile.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_TC4.ncl}
-      - {script: aerosol_profile.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_Texas.ncl}
+      - {script: aerosol_profile.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_ACCESS.ncl}
+      - {script: aerosol_profile.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_CONCERT.ncl}
+      - {script: aerosol_profile.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_CR-AVE.ncl}
+      - {script: aerosol_profile.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_DC3.ncl}
+      - {script: aerosol_profile.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_HIPPO.ncl}
+      - {script: aerosol_profile.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_SALTRACE1.ncl}
+      - {script: aerosol_profile.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_SALTRACE2.ncl}
+      - {script: aerosol_profile.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_TC4.ncl}
+      - {script: aerosol_profile.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_Texas.ncl}
 
       
   DIAG_MASS:
@@ -158,7 +158,7 @@ DIAGNOSTICS:
       - {name: mmraer,  field: T3I}
       - {name: cl,      field: T3I}
     scripts:
-      - {script: aerosol_profiles.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_Texas.ncl}
+      - {script: aerosol_profiles.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_Texas.ncl}
 
       
   DIAG_BCFREE:
@@ -167,7 +167,7 @@ DIAGNOSTICS:
       - {name: mmrbcfree,  field: T3I}
       - {name: cl,         field: T3I}
     scripts:
-      - {script: aerosol_profiles.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_CIRRUS.ncl}
+      - {script: aerosol_profiles.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_CIRRUS.ncl}
     
 
   DIAG_SO4:
@@ -175,10 +175,10 @@ DIAGNOSTICS:
     variables:
       - {name: sconcso4,  field: T2Ms}
     scripts:
-      - {script: aerosol_stations.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_CASTNET.ncl}
-      - {script: aerosol_stations.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_EANET.ncl}
-      - {script: aerosol_stations.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_EMEP.ncl}
-      - {script: aerosol_stations.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_IMPROVE.ncl}
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_CASTNET.ncl}
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_EANET.ncl}
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_EMEP.ncl}
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_IMPROVE.ncl}
 
 
   DIAG_NO3:
@@ -186,10 +186,10 @@ DIAGNOSTICS:
     variables:
       - {name: sconcno3,  field: T2Ms}
     scripts:
-      - {script: aerosol_stations.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_CASTNET.ncl}
-      - {script: aerosol_stations.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_EANET.ncl}
-      - {script: aerosol_stations.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_EMEP.ncl}
-      - {script: aerosol_stations.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_IMPROVE.ncl}
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_CASTNET.ncl}
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_EANET.ncl}
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_EMEP.ncl}
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_IMPROVE.ncl}
     
 
   DIAG_NH4:
@@ -197,10 +197,10 @@ DIAGNOSTICS:
     variables:
       - {name: sconcnh4,  field: T2Ms}
     scripts:
-      - {script: aerosol_stations.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_CASTNET.ncl}
-      - {script: aerosol_stations.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_EANET.ncl}
-      - {script: aerosol_stations.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_EMEP.ncl}
-      - {script: aerosol_stations.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_IMPROVE.ncl}
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_CASTNET.ncl}
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_EANET.ncl}
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_EMEP.ncl}
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_IMPROVE.ncl}
       
 
   DIAG_BC:
@@ -208,7 +208,7 @@ DIAGNOSTICS:
     variables:
       - {name: sconcno3,  field: T2Ms}
     scripts:
-      - {script: aerosol_stations.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_IMPROVE.ncl}
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_IMPROVE.ncl}
       
 
   DIAG_OA:
@@ -216,7 +216,7 @@ DIAGNOSTICS:
     variables:
       - {name: sconcoa,  field: T2Ms}
     scripts:
-      - {script: aerosol_stations.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_IMPROVE.ncl}
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_IMPROVE.ncl}
       
       
   DIAG_PM10:
@@ -224,8 +224,8 @@ DIAGNOSTICS:
     variables:
       - {name: sconcpm10,  field: T2Ms}
     scripts:
-      - {script: aerosol_stations.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_EMEP.ncl}
-      - {script: aerosol_stations.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_IMPROVE.ncl}
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_EMEP.ncl}
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_IMPROVE.ncl}
       
 
   DIAG_PM2p5:
@@ -233,8 +233,8 @@ DIAGNOSTICS:
     variables:
       - {name: sconcpm2p5,  field: T2Ms}
     scripts:
-      - {script: aerosol_stations.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_EMEP.ncl}
-      - {script: aerosol_stations.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_IMPROVE.ncl}
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_EMEP.ncl}
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_IMPROVE.ncl}
       
 
   DIAG_AOD1:
@@ -242,7 +242,7 @@ DIAGNOSTICS:
     variables:
       - {name: od550aer,  field: T2Ms}
     scripts:
-      - {script: aerosol_stations.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_AERONET.ncl}
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_AERONET.ncl}
 
 
   DIAG_AOD2:
@@ -253,7 +253,7 @@ DIAGNOSTICS:
       target_grid:    ref_model
       regrid_scheme:  linear
     scripts:
-      - {script: aerosol_satellite.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_satellite_MODIS.ncl}
+      - {script: aerosol_satellite.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_satellite_MODIS.ncl}
     additional_models:
       - {name: MODIS,  project: obs4mips,  level: L3,  version: C5,  start: 2001,  end: 2012, path: /obspath/Tier1/}
 
@@ -266,7 +266,7 @@ DIAGNOSTICS:
       target_grid:    ref_model
       regrid_scheme:  linear
     scripts:
-      - {script: aerosol_satellite.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_satellite_MISR.ncl}
+      - {script: aerosol_satellite.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_satellite_MISR.ncl}
     additional_models:
       - {name: MISR,  project: obs4mips,  level: L3,  version: F12_0022,  start: 2001,  end: 2012, path: /obspath/Tier1/}
       
@@ -279,7 +279,7 @@ DIAGNOSTICS:
       target_grid:    ref_model
       regrid_scheme:  linear
     scripts:
-      - {script: aerosol_satellite.ncl, file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_satellite_ESACCI-AEROSOL.ncl}
+      - {script: aerosol_satellite.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_satellite_ESACCI-AEROSOL.ncl}
     additional_model:
       - {name: ESACCI-AEROSOL,  project: OBS,  type: sat,  version: SU-v4.21,  start: 1997,  end: 2011, path: /obspath/Tier2/ESACCI-AEROSOL}
       

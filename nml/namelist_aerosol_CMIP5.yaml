@@ -51,7 +51,7 @@ DIAGNOSTICS:
     variables:
       - {name: sconcbc, field: T2Ms}
     scripts:
-      - {script: aerosol_stations.ncl, file: ./nml/cfg_aerosol/CMIP5/cfg_aerosol_stations_IMPROVE.ncl}
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/CMIP5/cfg_aerosol_stations_IMPROVE.ncl}
     additional_models:
       - {name: ACCESS1-0,       project: CMIP5,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980   end: 2015,  path: /modelpath/CMIP5/}
       - {name: ACCESS1-3,       project: CMIP5,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/CMIP5/}
@@ -78,7 +78,7 @@ DIAGNOSTICS:
     variables:
       - {name: sconcoa,  field: T2Ms}
     scripts:
-      - {script: aerosol_stations.ncl, file: ./nml/cfg_aerosol/CMIP5/cfg_aerosol_stations_IMPROVE.ncl}
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/CMIP5/cfg_aerosol_stations_IMPROVE.ncl}
     additional_models:
       - {name: CSIRO-Mk3-6-0,    project: CMIP5,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,   end: 2015,  path: /modelpath/CMIP5/}
       - {name: GFDL-ESM2G,       project: CMIP5,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,   end: 2015,  path: /modelpath/CMIP5/}
@@ -96,10 +96,10 @@ DIAGNOSTICS:
     variables:
       - {name: sconcso4,  field: T2Ms}
     scripts:
-      - {script: aerosol_stations.ncl, file: ./nml/cfg_aerosol/CMIP5/cfg_aerosol_stations_CASTNET.ncl}
-      - {script: aerosol_stations.ncl, file: ./nml/cfg_aerosol/CMIP5/cfg_aerosol_stations_EANET.ncl}
-      - {script: aerosol_stations.ncl, file: ./nml/cfg_aerosol/CMIP5/cfg_aerosol_stations_EMEP.ncl}
-      - {script: aerosol_stations.ncl, file: ./nml/cfg_aerosol/CMIP5/cfg_aerosol_stations_IMPROVE.ncl}
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/CMIP5/cfg_aerosol_stations_CASTNET.ncl}
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/CMIP5/cfg_aerosol_stations_EANET.ncl}
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/CMIP5/cfg_aerosol_stations_EMEP.ncl}
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/CMIP5/cfg_aerosol_stations_IMPROVE.ncl}
     additional_models:
       - {name: ACCESS1-0,        project: CMIP5,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/CMIP5/}
       - {name: ACCESS1-3,        project: CMIP5,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/CMIP5/}
@@ -126,7 +126,7 @@ DIAGNOSTICS:
     variables:
       - {name: od550aer,  field: T2Ms}
     scripts:
-      - {script: aerosol_stations.ncl,  file: ./nml/cfg_aerosol/CMIP5/cfg_aerosol_stations_AERONET.ncl}
+      - {script: aerosol_stations.ncl,  cfg_file: ./nml/cfg_aerosol/CMIP5/cfg_aerosol_stations_AERONET.ncl}
     additional_models:
       - {name: ACCESS1-0,        project: CMIP5,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/CMIP5/}
       - {name: ACCESS1-3,        project: CMIP5,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2015,  path: /modelpath/CMIP5/}
@@ -157,7 +157,7 @@ DIAGNOSTICS:
     preprocess:
       multimodel_mean: True
     scripts:
-      - {script: aerosol_tsline.ncl, file: ./nml/cfg_aerosol/CMIP5/cfg_aerosol_tsline.ncl}
+      - {script: aerosol_tsline.ncl, cfg_file: ./nml/cfg_aerosol/CMIP5/cfg_aerosol_tsline.ncl}
     additional_models:
       - {name: ACCESS1-0,        project: CMIP5,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1850,  end: 2015,  path: /modelpath/CMIP5/}
       - {name: ACCESS1-3,        project: CMIP5,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1850,  end: 2015,  path: /modelpath/CMIP5/}
@@ -196,7 +196,7 @@ DIAGNOSTICS:
       multimodel_mean:   True
       multimodel_median: True
     scripts:
-      - {script: aerosol_satellite.ncl, file: ./nml/cfg_aerosol/CMIP5/cfg_aerosol_satellite_MODIS.ncl}
+      - {script: aerosol_satellite.ncl, cfg_file: ./nml/cfg_aerosol/CMIP5/cfg_aerosol_satellite_MODIS.ncl}
     additional_models:
       - {name: ACCESS1-0,         project: CMIP5,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: ACCESS1-3,         project: CMIP5,  mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2005,  path: /modelpath/CMIP5/}

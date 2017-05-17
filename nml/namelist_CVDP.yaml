@@ -55,7 +55,7 @@ DIAGNOSTICS:
     variables:
       - {name: ts,  field: T2Ms}
     scripts:
-      - {script: cvdp_obs.ncl, file: ./nml/cfg_CVDP/cfg_cvdp.ncl}
+      - {script: cvdp_obs.ncl, cfg_file: ./nml/cfg_CVDP/cfg_cvdp.ncl}
     additional_models:
       - {name: HadISST,  project: OBS,  type: reanaly,  version: 1,  start: 1900,  end: 2005,  path: /obspath/Tier2/HadISST}
 
@@ -65,7 +65,7 @@ DIAGNOSTICS:
     variables:
       - {name: psl,  field: T2Ms}
     scripts:
-      - {script: cvdp_obs.ncl, file: ./nml/cfg_CVDP/cfg_cvdp.ncl}
+      - {script: cvdp_obs.ncl, cfg_file: ./nml/cfg_CVDP/cfg_cvdp.ncl}
     additional_models:
       - {name: IFS-Cy31r2,  project: ana4mips,  mip: Amon,  type: reanalyses,  start: 1984,  end: 2005,  path: /obspath/Tier1/}
 
@@ -75,7 +75,7 @@ DIAGNOSTICS:
     variables:
       - {name: tas,  field: T2Ms}
     scripts:
-      - {script: cvdp_obs.ncl, file: ./nml/cfg_CVDP/cfg_cvdp.ncl}
+      - {script: cvdp_obs.ncl, cfg_file: ./nml/cfg_CVDP/cfg_cvdp.ncl}
     additional_models:
       - {name: NCEP,  project: OBS,  type: reanaly,  version: 1,  start: 1984,  end: 2005,  path: /obspath/Tier2/NCEP}
     
@@ -85,7 +85,7 @@ DIAGNOSTICS:
     variables:
       - {name: pr,  field: T2Ms}
     scripts:
-      - {script: cvdp_obs.ncl, file: ./nml/cfg_CVDP/cfg_cvdp.ncl}
+      - {script: cvdp_obs.ncl, cfg_file: ./nml/cfg_CVDP/cfg_cvdp.ncl}
     additional_models:
       - {name: GPCP-SG,  project: obs4mips,  level: L3,  version: 2.2,  start: 1984,  end: 2005,  path: /obspath/Tier2/NCEP}
 
@@ -95,7 +95,7 @@ DIAGNOSTICS:
    #   variables:
    #     - {name: snowdp,  field: T2Ms}
    #   scripts:
-   #     - {script: cvdp_obs.ncl, file: ./nml/cfg_CVDP/cfg_cvdp.ncl}
+   #     - {script: cvdp_obs.ncl, cfg_file: ./nml/cfg_CVDP/cfg_cvdp.ncl}
      
 
 # OCEAN MODELS PREPROCESSING ###########################################################################################
@@ -105,7 +105,7 @@ DIAGNOSTICS:
   #   variables:
   #     - {name: snd,  field: T2Ms}
   #   scripts:
-  #     - {script: cvdp_ocean.ncl, file: ./nml/cfg_CVDP/cdf_cvdp.ncl}
+  #     - {script: cvdp_ocean.ncl, cfg_file: ./nml/cfg_CVDP/cdf_cvdp.ncl}
   #   additional_models:
   #     - {name: MPI-ESM_LR,  project: CMIP5,  mip: OImon,  exp: historical,  ensemble: r1i1p1,  start: 1900,  end: 2005,  path: /modelpath/CMIP5/}
 
@@ -114,7 +114,7 @@ DIAGNOSTICS:
     variables:
       - {name: msfzmyz,  field: T3Mz}
     scripts:
-      - {script: cvdp_ocean.ncl, file: ./nml/cfg_CVDP/cvdp_ocean.ncl}
+      - {script: cvdp_ocean.ncl, cfg_file: ./nml/cfg_CVDP/cvdp_ocean.ncl}
     additional_models:
       - {name: CanESM2,         project: CMIP5, mip: Omon,   exp: historical,  ensemble: r1i1p1  start: 1900,  end: 2005,  exp: /modelpath/CMIP5/}
       - {name: CCSM4,           project: CMIP5, mip: Omon,   exp: historical,  ensemble: r2i1p1  start: 1900,  end: 2005,  exp: /modelpath/CMIP5/}
@@ -141,7 +141,7 @@ DIAGNOSTICS:
       - {name: tas,  exclude_model: ersst,  field: T2Ms}
       - {name: pr,   exclude_model: ersst,  field: T2Ms}
     scripts:
-      - {script: cvdp_atmos.ncl, file: ./nml/cfg_CVDP/cfg_cvdp.ncl} # this will also call cvdp_driver.ncl
+      - {script: cvdp_atmos.ncl, cfg_file: ./nml/cfg_CVDP/cfg_cvdp.ncl} # this will also call cvdp_driver.ncl
     additional_models:
       - {name: ACCESS1-0,       mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1900,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: ACCESS1-3,       mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1900,  end: 2005,  path: /modelpath/CMIP5/}

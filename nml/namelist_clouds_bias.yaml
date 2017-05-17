@@ -94,7 +94,7 @@ DIAGNOSTICS:
     variables:
       - {name: pr-mmday,  field: T2Ms}
     scripts:
-      - {script: cloud_bias.ncl, file: ./nml/cfg_clouds/cfg_clouds_bias.ncl}
+      - {script: cloud_bias.ncl, cfg_file: ./nml/cfg_clouds/cfg_clouds_bias.ncl}
     additional_models:
       - {name: GPCP-SG,  project: obs4mips,  level: L3,  version: C5,  start: 2001,  end: 2012,  path: /obspath/Tier1/}
 
@@ -103,6 +103,6 @@ DIAGNOSTICS:
     variables:
       - {name: tas-degC,  field: T2Ms}
     scripts:
-      - {script: cloud_bias.ncl, file: ./nml/cfg_clouds/cfg_clouds_bias.ncl}
+      - {script: cloud_bias.ncl, cfg_file: ./nml/cfg_clouds/cfg_clouds_bias.ncl}
     additional_models:
       - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1980,  end: 2005,  path: /obspath/Tier3/ERA-Interim/}

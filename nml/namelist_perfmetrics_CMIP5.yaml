@@ -50,22 +50,22 @@ DIAGNOSTICS:
     description: Temperature
     variable: {name: ta,  ref_model: [ERA-Interim,NCEP],  field: T3M}
     settings:
-      file: cfg_perfmetrics_cycle_monthlyclim_850_glob.ncl
-      file: cfg_perfmetrics_cycle_monthlyclim_200_glob.ncl
-      file: cfg_perfmetrics_cycle_monthlyclim_30_glob.ncl
-      file: cfg_perfmetrics_cycle_monthlyclim_5_glob.ncl
+      cfg_file: cfg_perfmetrics_cycle_monthlyclim_850_glob.ncl
+      cfg_file: cfg_perfmetrics_cycle_monthlyclim_200_glob.ncl
+      cfg_file: cfg_perfmetrics_cycle_monthlyclim_30_glob.ncl
+      cfg_file: cfg_perfmetrics_cycle_monthlyclim_5_glob.ncl
     script: perfmetrics_main.ncl
     settings:
-      file: cfg_perfmetrics_zonal_annualclim_all_glob.ncl
-      file: cfg_perfmetrics_grading_RMSD_850_glob.ncl
-      file: cfg_perfmetrics_grading_RMSD_200_glob.ncl
+      cfg_file: cfg_perfmetrics_zonal_annualclim_all_glob.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_850_glob.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_200_glob.ncl
     script: perfmetrics_main.ncl
     settings:
-      file: cfg_perfmetrics_grading_RMSD_850_glob.ncl
-      file: cfg_perfmetrics_grading_RMSD_200_glob.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_850_glob.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_200_glob.ncl
     script: perfmetrics_grading.ncl
     settings:
-      file: cfg_perfmetrics_grading_RMSD_850_glob.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_850_glob.ncl
     script: perfmetrics_taylor.ncl
     model: {name: ACCESS1-0,          mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
     model: {name: ACCESS1-3,          mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
@@ -127,12 +127,12 @@ DIAGNOSTICS:
     description: Eastward wind
     variable: {name: ua,  ref_model: [ERA-Interim,NCEP],  field: T3M}
     settings:
-      file: cfg_perfmetrics_grading_RMSD_850_glob.ncl
-      file: cfg_perfmetrics_grading_RMSD_200_glob.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_850_glob.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_200_glob.ncl
     script: perfmetrics_main.ncl
     settings:
-      file: cfg_perfmetrics_grading_RMSD_850_glob.ncl
-      file: cfg_perfmetrics_grading_RMSD_200_glob.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_850_glob.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_200_glob.ncl
     script: perfmetrics_grading.ncl
     model: {name: ACCESS1-0,          mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
     model: {name: ACCESS1-3,          mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
@@ -192,12 +192,12 @@ DIAGNOSTICS:
     description: Northward wind
     variable: {name: va,  ref_model: [ERA-Interim,NCEP],  field: T3M}
     settings:
-      file: cfg_perfmetrics_grading_RMSD_850_glob.ncl
-      file: cfg_perfmetrics_grading_RMSD_200_glob.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_850_glob.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_200_glob.ncl
     script: perfmetrics_main.ncl
     settings:
-      file: cfg_perfmetrics_grading_RMSD_850_glob.ncl
-      file: cfg_perfmetrics_grading_RMSD_200_glob.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_850_glob.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_200_glob.ncl
     script: perfmetrics_grading.ncl
     model: {name: ACCESS1-0,          mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
     model: {name: ACCESS1-3,          mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
@@ -256,10 +256,10 @@ DIAGNOSTICS:
     description: Geopotential height
     variable: {name: zg,  ref_model: [ERA-Interim,NCEP],  field: T3M}
     settings:
-      file: cfg_perfmetrics_grading_RMSD_500_glob.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_500_glob.ncl
     script: perfmetrics_main.ncl
     settings:
-      file: cfg_perfmetrics_grading_RMSD_500_glob.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_500_glob.ncl
     script: perfmetrics_grading.ncl
     model: {name: ACCESS1-0,          mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
     model: {name: ACCESS1-3,          mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
@@ -317,10 +317,10 @@ DIAGNOSTICS:
     description: Specific humidity
     variable: {name: hus,  ref_model: [AIRS,ERA-Interim],  field: T3M}
     settings:
-      file: cfg_perfmetrics_grading_RMSD_400_glob.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_400_glob.ncl
     script: perfmetrics_main.ncl
     settings:
-      file: cfg_perfmetrics_grading_RMSD_400_glob.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_400_glob.ncl
     script: perfmetrics_grading.ncl
     model: {name: ACCESS1-0,          mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2010,  path: /modelpath/CMIP5/}
     model: {name: ACCESS1-3,          mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2010,  path: /modelpath/CMIP5/}
@@ -371,11 +371,11 @@ DIAGNOSTICS:
     description: Near-surface temperature
     variable: {name: tas,  ref_model: [ERA-Interim,NCEP],  field: T2Ms}
     settings:
-      file: cfg_perfmetrics_latlon_annualclim_all_glob.ncl
-      file: cfg_perfmetrics_grading_RMSD_all_glob.ncl
+      cfg_file: cfg_perfmetrics_latlon_annualclim_all_glob.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_all_glob.ncl
     script: perfmetrics_main.ncl
     settings:
-      file: cfg_perfmetrics_grading_RMSD_all_glob.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_all_glob.ncl
     script: perfmetrics_grading.ncl
     model: {name: ACCESS1-0,          mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
     model: {name: ACCESS1-3,          mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
@@ -436,10 +436,10 @@ DIAGNOSTICS:
     description: Sea-surface (skin) temperature
     variable: {name: ts,  ref_model: [ESACCI-SST,HadISST],  field: T2Ms}
     settings:
-      file: cfg_perfmetrics_grading_RMSD_all_glob_ts.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_all_glob_ts.ncl
     script: perfmetrics_main.ncl
     settings:
-      file: cfg_perfmetrics_grading_RMSD_all_glob_ts.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_all_glob_ts.ncl
     script: perfmetrics_grading.ncl
     model: {name: ACCESS1-0,          mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1992,  end: 2010,  path: /modelpath/CMIP5/}
     model: {name: ACCESS1-3,          mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1992,  end: 2010,  path: /modelpath/CMIP5/}
@@ -492,10 +492,10 @@ DIAGNOSTICS:
     description: Precipitations
     variable: {name: pr,  ref_model: [GPCP-SG],  field: T2Ms}
     settings:
-      file: cfg_perfmetrics_grading_RMSD_all_glob.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_all_glob.ncl
     script: perfmetrics_main.ncl
     settings:
-      file: cfg_perfmetrics_grading_RMSD_all_glob.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_all_glob.ncl
     script: perfmetrics_grading.ncl
     model: {name: ACCESS1-0,          mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
     model: {name: ACCESS1-3,          mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
@@ -554,11 +554,11 @@ DIAGNOSTICS:
     description: Total cloud cover
     variable: {name: clt,  ref_model: [ESACCI-CLOUD,PATMOS],  field: T2Ms}
     settings:
-      file: cfg_perfmetrics_latlon_annualclim_all_glob.ncl
-      file: cfg_perfmetrics_grading_RMSD_all_glob.ncl
+      cfg_file: cfg_perfmetrics_latlon_annualclim_all_glob.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_all_glob.ncl
     script: perfmetrics_main.ncl
     settings:
-      file: cfg_perfmetrics_grading_RMSD_all_glob.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_all_glob.ncl
     script: perfmetrics_grading.ncl
     model: {name: ACCESS1-0,          mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
     model: {name: ACCESS1-3,          mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2005,  path: /modelpath/CMIP5/}
@@ -611,10 +611,10 @@ DIAGNOSTICS:
     description: Longwave radiation
     variable: {name: rlut,  ref_model: [CERES-EBAF],  field: T2Ms}
     settings:
-      file: cfg_perfmetrics_grading_RMSD_all_glob.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_all_glob.ncl
     script: perfmetrics_main.ncl
     settings:
-      file: cfg_perfmetrics_grading_RMSD_all_glob.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_all_glob.ncl
     script: perfmetrics_grading.ncl
     model: {name: ACCESS1-0,          mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2001,  end: 2012,  path: /modelpath/CMIP5/}
     model: {name: ACCESS1-3,          mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2001,  end: 2012,  path: /modelpath/CMIP5/}
@@ -666,10 +666,10 @@ DIAGNOSTICS:
     description: Shortwave radiation
     variable: {name: rsut,  ref_model: [CERES-EBAF],  field: T2Ms}
     settings:
-      file: cfg_perfmetrics_grading_RMSD_all_glob.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_all_glob.ncl
     script: perfmetrics_main.ncl
     settings:
-      file: cfg_perfmetrics_grading_RMSD_all_glob.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_all_glob.ncl
     script: perfmetrics_grading.ncl
     model: {name: ACCESS1-0,          mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2001,  end: 2012,  path: /modelpath/CMIP5/}
     model: {name: ACCESS1-3,          mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2001,  end: 2012,  path: /modelpath/CMIP5/}
@@ -718,11 +718,11 @@ DIAGNOSTICS:
     description: Longwave cloud forcing
     variable: {name: LW_CRE,  ref_model: CERES-EBAF,  field: T2Ms}
     settings:
-      file: cfg_perfmetrics_latlon_annualclim_all_glob.ncl
-      file: cfg_perfmetrics_grading_RMSD_all_glob.ncl
+      cfg_file: cfg_perfmetrics_latlon_annualclim_all_glob.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_all_glob.ncl
     script: perfmetrics_main.ncl
     settings:
-      file: cfg_perfmetrics_grading_RMSD_all_glob.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_all_glob.ncl
     script: perfmetrics_grading.ncl
     model: {name: ACCESS1-0,          mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2001,  end: 2012,  path: /modelpath/CMIP5/}
     model: {name: ACCESS1-3,          mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2001,  end: 2012,  path: /modelpath/CMIP5/}
@@ -771,11 +771,11 @@ DIAGNOSTICS:
     description: Shortwave cloud frocing
     variable: {name: SW_CRE,  ref_model: CERES-EBAF,  field: T2Ms}
     settings:
-      file: cfg_perfmetrics_latlon_annualclim_all_glob.ncl
-      file: cfg_perfmetrics_grading_RMSD_all_glob.ncl
+      cfg_file: cfg_perfmetrics_latlon_annualclim_all_glob.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_all_glob.ncl
     script: perfmetrics_main.ncl
     settings:
-      file: cfg_perfmetrics_grading_RMSD_all_glob.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_all_glob.ncl
     script: perfmetrics_grading.ncl
     model: {name: ACCESS1-0,          mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2001,  end: 2012,  path: /modelpath/CMIP5/}
     model: {name: ACCESS1-3,          mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2001,  end: 2012,  path: /modelpath/CMIP5/}
@@ -822,10 +822,10 @@ DIAGNOSTICS:
     description: Aerosol optical depth 550 nm
     variable: {name: od550aer,  ref_model: [ESACCI-AEROSOL,MODIS],  field: T2Ms}
     settings:
-      file: cfg_perfmetrics_grading_RMSD_all_glob_aero.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_all_glob_aero.ncl
     script: perfmetrics_main.ncl
     settings:
-      file: cfg_perfmetrics_grading_RMSD_all_glob_aero.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_all_glob_aero.ncl
     script: perfmetrics_grading.ncl
     # CCSM4, IPSL-CM5A-LR, IPSL-CM5A-MR, MPI-ESM-LR and MPI-ESM-MR are excluded since they use concentration-driven aerosol
     model: {name: ACCESS1-0,          mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 2003,  end: 2011,  path: /modelpath/CMIP5/}
@@ -857,10 +857,10 @@ DIAGNOSTICS:
     description: Aerosol optical depth 870 nm
     variable: {name: od870aer,  ref_model: [ESACCI-AEROSOL],  field: T2Ms}
     settings:
-      file: cfg_perfmetrics_grading_RMSD_all_glob_aero.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_all_glob_aero.ncl
     script: perfmetrics_main.ncl
     settings:
-      file: cfg_perfmetrics_grading_RMSD_all_glob_aero.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_all_glob_aero.ncl
     script: perfmetrics_grading.ncl
     # CCSM4, IPSL-CM5A-LR, IPSL-CM5A-MR, MPI-ESM-LR and MPI-ESM-MR are excluded since they use concentration-driven aerosol
     model: {name: ACCESS1-0,          mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1997,  end: 2011,  path: /modelpath/CMIP5/}
@@ -883,10 +883,10 @@ DIAGNOSTICS:
     description: Absorption optical depth 550 nm
     variable: {name: abs550aer,  ref_model: [ESACCI-AEROSOL],  field: T2Ms}
     settings:
-      file: cfg_perfmetrics_grading_RMSD_all_glob_aero.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_all_glob_aero.ncl
     script: perfmetrics_main.ncl
     settings:
-      file: cfg_perfmetrics_grading_RMSD_all_glob_aero.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_all_glob_aero.ncl
     script: perfmetrics_grading.ncl
     # CCSM4, IPSL-CM5A-LR, IPSL-CM5A-MR, MPI-ESM-LR and MPI-ESM-MR are excluded since they use concentration-driven aerosol
     model: {name: CSIRO-Mk3-6-0,      mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1997,  end: 2011,  path: /modelpath/CMIP5/}
@@ -909,10 +909,10 @@ DIAGNOSTICS:
     description: Fine mode optical depth 550 nm
     variable: {name: od550lt1aer,  ref_model: [ESACCI-AEROSOL],  field: T2Ms}
     settings:
-      file: cfg_perfmetrics_grading_RMSD_all_glob_aero.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_all_glob_aero.ncl
     script: perfmetrics_main.ncl
     settings:
-      file: cfg_perfmetrics_grading_RMSD_all_glob_aero.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_all_glob_aero.ncl
     script: perfmetrics_grading.ncl
     # CCSM4, IPSL-CM5A-LR, IPSL-CM5A-MR, MPI-ESM-LR and MPI-ESM-MR are excluded since they use concentration-driven aerosol
     model: {name: CSIRO-Mk3-6-0,      mip: aero,  exp: historical,  ensemble: r1i1p1,  start: 1997,  end: 2011,  path: /modelpath/CMIP5/}
@@ -934,12 +934,12 @@ DIAGNOSTICS:
     description: Total column ozone
     variable: {name: toz,  ref_model: [ESACCI-OZONE,NIWA],  field: T2Ms}
     settings:
-      file: cfg_perfmetrics_grading_RMSD_all_glob_toz.ncl
-      file: cfg_perfmetrics_grading_RMSD_all_SHpolar_toz.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_all_glob_toz.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_all_SHpolar_toz.ncl
     script: perfmetrics_main.ncl
     settings:
-      file: cfg_perfmetrics_grading_RMSD_all_glob_toz.ncl
-      file: cfg_perfmetrics_grading_RMSD_all_SHpolar_toz.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_all_glob_toz.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_all_SHpolar_toz.ncl
     script: perfmetrics_grading.ncl
     # Only CESM1-FASTCHEM, CESM1-WACCM, CNRM-CM5, GFDL-CM3, GISS-E2-H,(p2/p3), GISS-E2-R,(p2/p3), MIROC-ESM-CHEM include interactive ozone chemistry
     model: {name: CESM1-WACCM,        mip: Amon,  exp: historical,  ensemble: r2i1p1,  start: 1997 2010  @{MODELPATH}CMIP5/}
@@ -957,10 +957,10 @@ DIAGNOSTICS:
     description: Sea-ice concentration
     variable: {name: sic,  ref_model: [NSIDC-NT,ESACCI-SSMI],  field: T2Ms}
     settings:
-      file: cfg_perfmetrics_grading_RMSD_all_NHpolar_sic.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_all_NHpolar_sic.ncl
     script: perfmetrics_main.ncl
     settings:
-      file: cfg_perfmetrics_grading_RMSD_all_NHpolar_sic.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_all_NHpolar_sic.ncl
     scripts: perfmetrics_grading.ncl
     model: {name: ACCESS1-0,         mip: OImon,  exp: historical,  ensemble: r1i1p1,  start: 1992 2008  @{MODELPATH}/CMIP5/}
     model: {name: ACCESS1-3,         mip: OImon,  exp: historical,  ensemble: r1i1p1,  start: 1992 2008  @{MODELPATH}/CMIP5/}
@@ -1013,12 +1013,12 @@ DIAGNOSTICS:
     description: Sea-ice concentration
     variable: {name: sic,  ref_model: [NSIDC-NT,ESACCI-SSMI],  field: T2Ms}
     settings:
-      file: ./nml/cfg_perfmetrics/CMIP5/
+      cfg_file: ./nml/cfg_perfmetrics/CMIP5/
     settings:
-      file: cfg_perfmetrics_grading_RMSD_all_SHpolar_sic.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_all_SHpolar_sic.ncl
     script: perfmetrics_main.ncl
     settings:
-      file: cfg_perfmetrics_grading_RMSD_all_SHpolar_sic.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_all_SHpolar_sic.ncl
     scripts: perfmetrics_grading.ncl
     model: {name: ACCESS1-0,         mip: OImon,  exp: historical,  ensemble: r1i1p1,  start: 1992 2008  @{MODELPATH}/CMIP5/}
     model: {name: ACCESS1-3,         mip: OImon,  exp: historical,  ensemble: r1i1p1,  start: 1992 2008  @{MODELPATH}/CMIP5/}
@@ -1071,10 +1071,10 @@ DIAGNOSTICS:
     description: Soil moisture
     variable: {name: sm,  ref_model: [ESACCI-SOILMOISTURE],  field: T2Ms}
     settings:
-      file: cfg_perfmetrics_grading_RMSD_all_glob_sm.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_all_glob_sm.ncl
     script: perfmetrics_main.ncl
     settings:
-      file: cfg_perfmetrics_grading_RMSD_all_glob_sm.ncl
+      cfg_file: cfg_perfmetrics_grading_RMSD_all_glob_sm.ncl
     script: perfmetrics_grading.ncl
     model: {name: ACCESS1-0,         mip: Lmon,   exp: historical,  ensemble: r1i1p1,  start: 1988 2005  @{MODELPATH}/CMIP5/}
     model: {name: ACCESS1-3,         mip: Lmon,   exp: historical,  ensemble: r1i1p1,  start: 1988 2005  @{MODELPATH}/CMIP5/}
@@ -1114,10 +1114,10 @@ DIAGNOSTICS:
 #     description: Soli moisture
 #     variable: {name: dos,  ref_model: [ESACCI-SOILMOISTURE],  field: T2Ms}
 #     settings:
-#       file: cfg_perfmetrics_grading_RMSD_all_glob_dos.ncl
+#       cfg_file: cfg_perfmetrics_grading_RMSD_all_glob_dos.ncl
 #     script: perfmetrics_main.ncl
 #     settings:
-#       file: cfg_perfmetrics_grading_RMSD_all_glob_dos.ncl
+#       cfg_file: cfg_perfmetrics_grading_RMSD_all_glob_dos.ncl
 #     script: perfmetrics_grading.ncl
 #     model: {name: MIROC-ESM,          mip: Lmon,  exp: historical,  ensemble: r1i1p1,  start: 1988 2008  @{MODELPATH}/CMIP5/}
 #     model: {name: MIROC-ESM-CHEM,     mip: Lmon,  exp: historical,  ensemble: r1i1p1,  start: 1988 2008  @{MODELPATH}/CMIP5/}
@@ -1130,7 +1130,7 @@ DIAGNOSTICS:
 - diag:
     description: Portrait diagram
     settings:
-      file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_grading_collect.ncl
+      cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_grading_collect.ncl
     script: perfmetrics_grading_collect.ncl
     
 
@@ -1138,5 +1138,5 @@ DIAGNOSTICS:
 - diag:
     description: Taylor diagram
     settings:
-      file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_taylor_collect.ncl
+      cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_taylor_collect.ncl
     script: perfmetrics_taylor_collect.ncl

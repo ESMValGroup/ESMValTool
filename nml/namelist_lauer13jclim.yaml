@@ -92,7 +92,7 @@ DIAGNOSTICS:
     variables:
       - {name: lwp,  field: T2Ms}
     scripts:
-      - {script: clouds.ncl,  file: ./nml/cfg_clouds/cfg_clouds.ncl}
+      - {script: clouds.ncl,  cfg_file: ./nml/cfg_clouds/cfg_clouds.ncl}
     additional_models:
       - {name: UWisc,  project: OBS,  type: sat,  version: v2,  start: 1988,  end: 2007,  path: /obspath/Tier3/UWisc}
 
@@ -102,7 +102,7 @@ DIAGNOSTICS:
     variables:
       - {name: clt,  field: T2Ms}
     scripts:
-      - {script: clouds.ncl, file: ./nml/cfg_clouds/cfg_clouds.ncl}
+      - {script: clouds.ncl, cfg_file: ./nml/cfg_clouds/cfg_clouds.ncl}
     additional_models:
       - {name: MODIS,  project: obs4mips,  level: L3,  version: C5,  start: 2001,  end: 2010,  path: /obspath/Tier1/}
 
@@ -112,7 +112,7 @@ DIAGNOSTICS:
     variables:
       - {name: pr-mmday,  field: T2Ms}
     scripts:
-      - {script: clouds.ncl, file: ./nml/cfg_clouds/cfg_clouds.ncl}
+      - {script: clouds.ncl, cfg_file: ./nml/cfg_clouds/cfg_clouds.ncl}
     additional_models:
       - {name: GPCP-SG,  project: obs4mips,  level: L3,  version: v2.2,  start: 1986,  end: 2005,  path: /obspath/Tier1/}
 
@@ -122,7 +122,7 @@ DIAGNOSTICS:
    #   variables:
    #     - {name: clivi,  field: T2Ms}
    #   scripts:
-   #     - {script: clouds.ncl, file: ./nml/cfg_clouds/cfg_clouds.ncl}
+   #     - {script: clouds.ncl, cfg_file: ./nml/cfg_clouds/cfg_clouds.ncl}
    #   model: {name: MODIS-CFMIP,  project: OBS,  type: sat,  version: v2,  start: 2003,  end: 2014,  path: /obspath/Tier2/MODIS-CFMIP}
 
 
@@ -131,7 +131,7 @@ DIAGNOSTICS:
     variables:
       - {name: SW_CRE,  field: T2Ms}
     scripts:
-      file: ./nml/cfg_clouds/cfg_clouds.ncl
+      cfg_file: ./nml/cfg_clouds/cfg_clouds.ncl
     script: clouds.ncl
     additional_models:
       - {name: CERES-EBAF,  project: obs4mips,   level: L3B,  version: Ed2-7,  start: 2001,  end: 2012,  path: /obspath/Tier1/}
@@ -142,7 +142,7 @@ DIAGNOSTICS:
     variables:
       - {name: LW_CRE,  field: T2Ms}
     scripts:
-      - {script: clouds.ncl, file: ./nml/cfg_clouds/cfg_clouds.ncl}
+      - {script: clouds.ncl, cfg_file: ./nml/cfg_clouds/cfg_clouds.ncl}
     additional_models:
       - {name: CERES-EBAF,  project: obs4mips,   level: L3B,  version: Ed2-7,  start: 2001,  end: 2012,  path: /obspath/Tier1/}
     
@@ -150,7 +150,7 @@ DIAGNOSTICS:
     description: Cloud diagnostics
     variables: {name: NET_CRE,  field: T2Ms}
     scripts:
-      - {script: clouds.ncl, file: ./nml/cfg_clouds/cfg_clouds.ncl}
+      - {script: clouds.ncl, cfg_file: ./nml/cfg_clouds/cfg_clouds.ncl}
     additional_models:
       - {name: CERES-EBAF,  project: obs4mips,   level: L3B,  version: Ed2-7,  start: 2001,  end: 2012,  path: /obspath/Tier1/}
 
@@ -163,7 +163,7 @@ DIAGNOSTICS:
     variables:
       - {name: clt,  field: T2Ms}
     scripts:
-      - {script: clouds_taylor.ncl, file: ./nml/cfg_clouds/cfg_clouds_taylor.ncl}
+      - {script: clouds_taylor.ncl, cfg_file: ./nml/cfg_clouds/cfg_clouds_taylor.ncl}
     additional_models:
       - {name: MODIS,  project: obs4mips,   level: L3,  version: C5,  start: 2001,  end: 2010,  path: /obspath/Tier1/}
 
@@ -173,7 +173,7 @@ DIAGNOSTICS:
     variables:
       - {name: lwp,  field: T2Ms}
     scripts:
-      - {script: clouds_taylor.ncl, file: ./nml/cfg_clouds/cfg_clouds_taylor.ncl}
+      - {script: clouds_taylor.ncl, cfg_file: ./nml/cfg_clouds/cfg_clouds_taylor.ncl}
     additional_models:
       - {name: UWisc,  project: OBS,  type: sat,  version: v2,  start: 1988,  end: 2007,  path: /obspath/Tier3/UWisc}
 
@@ -183,7 +183,7 @@ DIAGNOSTICS:
     variables:
       - {name: SW_CRE,  field: T2Ms}
     scripts:
-      - {script: clouds_taylor.ncl, file: ./nml/cfg_clouds/cfg_clouds_taylor.ncl}
+      - {script: clouds_taylor.ncl, cfg_file: ./nml/cfg_clouds/cfg_clouds_taylor.ncl}
     additional_models:
       - {name: CERES-EBAF,  project: obs4mips,   level: L3B,  version: Ed2-7,  start: 2001,  end: 2012,  path: /obspath/Tier1/}
 
@@ -193,7 +193,7 @@ DIAGNOSTICS:
     variables:
       - {name: LW_CRE,  field: T2Ms}
     scripts:
-      - {script: clouds_taylor.ncl, file: ./nml/cfg_clouds/cfg_clouds_taylor.ncl}
+      - {script: clouds_taylor.ncl, cfg_file: ./nml/cfg_clouds/cfg_clouds_taylor.ncl}
     additional_models:
       - {name: CERES-EBAF,  project: obs4mips,   level: L3B,  version: Ed2-7,  start: 2001,  end: 2012,  path: /obspath/Tier1/}
 
@@ -203,7 +203,7 @@ DIAGNOSTICS:
   #   variables:
   #     - {name: clivi,  field: T2Ms}
   #   scripts:
-  #     file: ./nml/cfg_clouds/cfg_clouds_taylor.ncl
+  #     cfg_file: ./nml/cfg_clouds/cfg_clouds_taylor.ncl
   #   script: clouds_taylor.ncl
   #   model: {name: MODIS-CFMIP,  project: OBS,  type: sat,  version: v2,  start: 2003,  end: 2014,  path: /obspath/Tier2/MODIS-CFMIP}
 
@@ -213,7 +213,7 @@ DIAGNOSTICS:
     variables:
       - {name: pr-mmday,  field: T2Ms}
     scripts:
-      - {script: clouds_taylor.ncl, file: ./nml/cfg_clouds/cfg_clouds_taylor.ncl}
+      - {script: clouds_taylor.ncl, cfg_file: ./nml/cfg_clouds/cfg_clouds_taylor.ncl}
     additional_models:
       - {name: GPCP-SG,  project: obs4mips,  level: L3,  version: v2.2,  start: 1986,  end: 2005,  path: /obspath/Tier1/}
 
@@ -227,7 +227,7 @@ DIAGNOSTICS:
     variables:
       - {name: lwp,  field: T2Ms}
     scripts:
-      - {script: clouds_interannual.ncl, file: ./nml/cfg_clouds/cfg_clouds_interannual.ncl}
+      - {script: clouds_interannual.ncl, cfg_file: ./nml/cfg_clouds/cfg_clouds_interannual.ncl}
     additional_models:
       - {name: UWisc,  project: OBS,  type: sat,  version: v2,  start: 1988,  end: 2007,  path: /obspath/Tier3/UWisc}
 
@@ -237,7 +237,7 @@ DIAGNOSTICS:
     variables:
       - {name: clt,  field: T2Ms}
     scripts:
-      - {script: clouds_interannual.ncl, file: ./nml/cfg_clouds/cfg_clouds_interannual.ncl}
+      - {script: clouds_interannual.ncl, cfg_file: ./nml/cfg_clouds/cfg_clouds_interannual.ncl}
     additional_models:
       - {name: MODIS,  project: obs4mips,  level: L3,  version: C5,  start: 2001,  end: 2010,  path: /obspath/Tier1/}
 
@@ -247,7 +247,7 @@ DIAGNOSTICS:
     variables:
       - {name: SW_CRE,  field: T2Ms}
     scripts:
-      - {script: clouds_interannual.ncl, file: ./nml/cfg_clouds/cfg_clouds_interannual.ncl}
+      - {script: clouds_interannual.ncl, cfg_file: ./nml/cfg_clouds/cfg_clouds_interannual.ncl}
     additional_models:
       - {name: CERES-EBAF,  project: obs4mips,   level: L3B,  version: Ed2-7,  start: 2001,  end: 2012,  path: /obspath/Tier1/}
 
@@ -257,7 +257,7 @@ DIAGNOSTICS:
     variables:
       - {name: LW_CRE,  field: T2Ms}
     scripts:
-      - {script: clouds_interannual.ncl, file: ./nml/cfg_clouds/cfg_clouds_interannual.ncl}
+      - {script: clouds_interannual.ncl, cfg_file: ./nml/cfg_clouds/cfg_clouds_interannual.ncl}
     additional_models:
       - {name: CERES-EBAF,  project: obs4mips,   level: L3B,  version: Ed2-7,  start: 2001,  end: 2012,  path: /obspath/Tier1/}
 
@@ -267,7 +267,7 @@ DIAGNOSTICS:
     variables:
       - {name: NET_CRE,  field: T2Ms}
     scripts:
-      - {script: clouds_interannual.ncl, file: ./nml/cfg_clouds/cfg_clouds_interannual.ncl}
+      - {script: clouds_interannual.ncl, cfg_file: ./nml/cfg_clouds/cfg_clouds_interannual.ncl}
     additional_models:
       - {name: CERES-EBAF,  project: obs4mips,   level: L3B,  version: Ed2-7,  start: 2001,  end: 2012,  path: /obspath/Tier1/}
 
@@ -277,7 +277,7 @@ DIAGNOSTICS:
   #   variables:
   #     - {name: clivi,  field: T2Ms}
   #   scripts:
-  #     file: ./nml/cfg_clouds/cfg_clouds_interannual.ncl
+  #     cfg_file: ./nml/cfg_clouds/cfg_clouds_interannual.ncl
   #   script: clouds_interannual.ncl
   #   model: {name: MODIS-CFMIP,  project: OBS,  type: sat,  version: v2,  start: 2003,  end: 2014,  path: /obspath/Tier2/MODIS-CFMIP}
 
@@ -287,6 +287,6 @@ DIAGNOSTICS:
     variables:
       - {name: pr-mmday,  field: T2Ms}
     scripts:
-      - {script: clouds_interannual.ncl, file: ./nml/cfg_clouds/cfg_clouds_interannual.ncl}
+      - {script: clouds_interannual.ncl, cfg_file: ./nml/cfg_clouds/cfg_clouds_interannual.ncl}
     additional_models:
       - {name: GPCP-SG,  project: obs4mips,  level: L3,  version: v2.2,  start: 1986,  end: 2005,  path: /obspath/Tier1/}

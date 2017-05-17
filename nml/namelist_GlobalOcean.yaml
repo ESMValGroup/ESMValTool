@@ -54,7 +54,7 @@ DIAGNOSTICS:
     variables:
       - {name: spco2,  ref_model: ETH-SOM-FFN,  field: TO2Ms}
     scripts:
-      - {script: GO_tsline.ncl, file: ./nml/cgf_GO/spco2Diag.ncl}
+      - {script: GO_tsline.ncl, cfg_file: ./nml/cgf_GO/spco2Diag.ncl}
     additional_models:
       - {name: BNU-ESM,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 1998:  end: 2005,  path: /modelpath/CMIP5/}
       - {name: CanESM2,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 1998:  end: 2005,  path: /modelpath/CMIP5/}
@@ -68,7 +68,7 @@ DIAGNOSTICS:
     variables:
       - {name: spco2,  ref_model: ETH-SOM-FFN, field: T2OMs}
     scripts:
-      - {script: GO_comp_map.ncl, file: ./nml/cfg_GO/spco2compmapDiag.ncl}
+      - {script: GO_comp_map.ncl, cfg_file: ./nml/cfg_GO/spco2compmapDiag.ncl}
     additional_models:
       - {name: BNU-ESM,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 1998:  end: 2005,  path: /modelpath/CMIP5/}
       - {name: CanESM2,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 1998:  end: 2005,  path: /modelpa
@@ -82,7 +82,7 @@ DIAGNOSTICS:
     variables:
       - {name: talk,  ref_model: takahashi14,  field: TO2Ms}
     scripts:
-      - {script: GO_comp_map.ncl, file: ./nml/cfg_GO/talkcompmapDiag.ncl}
+      - {script: GO_comp_map.ncl, cfg_file: ./nml/cfg_GO/talkcompmapDiag.ncl}
     additional_models:
       - {name: CanESM2,     project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 2005,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: GFDL-ESM2M,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 2005,  end: 2005,  path: /modelpath/CMIP5/}
@@ -96,7 +96,7 @@ DIAGNOSTICS:
     variables:
       - {name: o2_onelev,  ref_model: woa2005,  field: TO2M}
     scripts:
-      - {script: GO_comp_map.ncl, file: ./nml/cfg_GO/O2compmapDiag.ncl}
+      - {script: GO_comp_map.ncl, cfg_file: ./nml/cfg_GO/O2compmapDiag.ncl}
     additional_models:
       - {name: GFDL-ESM2M,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 2001,  end: 2001,  path: /modelpath/CMIP5/}
       - {name: woa2005,  project: OBS,  type: bianchi, version: reg,  start: 2005,  end: 2005, path:  /obspath/Tier2/woa2005/}
@@ -107,7 +107,7 @@ DIAGNOSTICS:
     description: Contour map diagnostic for surface ocean chl
     variables: {name: chl,  ref_model: SeaWIFS,  field: TO2Ms}
     scripts:
-      - {script: GO_comp_map.ncl, file: ./nml/cfg_GO/chlcompmapDiag.ncl}
+      - {script: GO_comp_map.ncl, cfg_file: ./nml/cfg_GO/chlcompmapDiag.ncl}
     additional_models:
       - {name: CanESM2,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 2000:  end: 2005,  path: /modelpath/CMIP5/}
       - {name: CMCC-CESM,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 2000:  end: 2005,  path: /modelpath/CMIP5/}

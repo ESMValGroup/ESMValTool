@@ -51,7 +51,7 @@ DIAGNOSTICS:
     variables:
       - {name: toz,  field: T2Ms}
     scripts:
-      - {script: eyring13jgr_fig01.ncl, file: ./nml/cfg_eyring13jgr/cfg_eyring13jgr_fig01.ncl}
+      - {script: eyring13jgr_fig01.ncl, cfg_file: ./nml/cfg_eyring13jgr/cfg_eyring13jgr_fig01.ncl}
     additional_models:
       - {name: bcc-csm1-1,      project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: bcc-csm1-1-m,    project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/CMIP5/}
@@ -87,7 +87,7 @@ DIAGNOSTICS:
     variables:
       - {name: toz,  field: T2Ms}
     scripts:
-      - {script: eyring13jgr_fig02.ncl, file: ./nml/cfg_eyring13jgr/cfg_eyring13jgr_fig02.ncl}
+      - {script: eyring13jgr_fig02.ncl, cfg_file: ./nml/cfg_eyring13jgr/cfg_eyring13jgr_fig02.ncl}
     additional_models:
       - {name: bcc-csm1-1,      project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1960,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: bcc-csm1-1-m,    project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1960,  end: 2005,  path: /modelpath/CMIP5/}
@@ -124,7 +124,7 @@ DIAGNOSTICS:
     variables:
       - {name: tropoz,  field: T2Ms}
     scripts:
-      - {script: eyring13jgr_fig04.ncl, file: ./nml/cfg_eyring13jgr/cfg_eyring13jgr_fig04.ncl}
+      - {script: eyring13jgr_fig04.ncl, cfg_file: ./nml/cfg_eyring13jgr/cfg_eyring13jgr_fig04.ncl}
     additional_models:
       - {name: bcc-csm1-1,      project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: bcc-csm1-1-m,    project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/CMIP5/}
@@ -161,7 +161,7 @@ DIAGNOSTICS:
     variables:
       - {name: toz,  field: T2Ms}
     scripts:
-      - {script: eyring13jgr_fig06.ncl, file: ./nml/cfg_eyring13jgr/cfg_eyring13jgr_fig06.ncl}
+      - {script: eyring13jgr_fig06.ncl, cfg_file: ./nml/cfg_eyring13jgr/cfg_eyring13jgr_fig06.ncl}
     additional_models:
       - {name: CCSM4,           project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1960,  end: 2005, path: /modelpath/CMIP5/}
       - {name: GFDL-CM3,        project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1960,  end: 2005, path: /modelpath/CMIP5/}
@@ -190,7 +190,7 @@ DIAGNOSTICS:
     variables:
       - {name: tro3,  field: T3M}
     scripts:
-      - {script: eyring13jgr_fig07.ncl, file: ./nml/cfg_eyring13jgr/cfg_eyring13jgr_fig07.ncl}
+      - {script: eyring13jgr_fig07.ncl, cfg_file: ./nml/cfg_eyring13jgr/cfg_eyring13jgr_fig07.ncl}
     additional_models:
       - {name: CCSM4,       project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1979,  end: 2005, path: /modelpath/CMIP5/}
       - {name: GFDL-CM3,    project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1979,  end: 2005, path: /modelpath/CMIP5/}
@@ -214,7 +214,7 @@ DIAGNOSTICS:
     variables:
       - {name: tro3,  field: T3M}
     scripts:
-      - {script: eyring13jgr_fig10.ncl, file: ./nml/cfg_eyring13jgr/cfg_eyring13jgr_fig10a.ncl}
+      - {script: eyring13jgr_fig10.ncl, cfg_file: ./nml/cfg_eyring13jgr/cfg_eyring13jgr_fig10a.ncl}
     additional_models:
       - {name: CCSM4,           project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1979,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: GFDL-CM3,        project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1979,  end: 2005,  path: /modelpath/CMIP5/}
@@ -243,7 +243,7 @@ DIAGNOSTICS:
     variables:
       - {name: ta,  field: T3M}
     scripts:
-      - {script: eyring13jgr_fig10.ncl, file: ./nml/cfg_eyring13jgr/cfg_eyring13jgr_fig10b.ncl}
+      - {script: eyring13jgr_fig10.ncl, cfg_file: ./nml/cfg_eyring13jgr/cfg_eyring13jgr_fig10b.ncl}
     additional_models:
       - {name: CCSM4,           project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1979,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: GFDL-CM3,        project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1979,  end: 2005,  path: /modelpath/CMIP5/}
@@ -272,7 +272,7 @@ DIAGNOSTICS:
     variables:
       - {name: tro3,  field: T3M}
     scripts:
-      - {script: eyring13jgr_fig10.ncl, file: ./nml/cfg_eyring13jgr/cfg_eyring13jgr_fig10c.ncl}
+      - {script: eyring13jgr_fig10.ncl, cfg_file: ./nml/cfg_eyring13jgr/cfg_eyring13jgr_fig10c.ncl}
     additional_models:
       - {name: CCSM4,           project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1979,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: GFDL-CM3,        project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1979,  end: 2005,  path: /modelpath/CMIP5/}
@@ -301,7 +301,7 @@ DIAGNOSTICS:
     variables:
       - {name: tro3,  field: T3M}
     scripts:
-      - {script: script: eyring13jgr_fig10.ncl, file: ./nml/cfg_eyring13jgr/cfg_eyring13jgr_fig10d.ncl}
+      - {script: script: eyring13jgr_fig10.ncl, cfg_file: ./nml/cfg_eyring13jgr/cfg_eyring13jgr_fig10d.ncl}
     additional_models:
       - {name: CCSM4,           project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1979,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: GFDL-CM3,        project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1979,  end: 2005,  path: /modelpath/CMIP5/}
@@ -330,7 +330,7 @@ DIAGNOSTICS:
     variables:
       - {name: ua,  field: T3M}
     scripts:
-      - {script: eyring13jgr_fig10.ncl, file: ./nml/cfg_eyring13jgr/cfg_eyring13jgr_fig10e.ncl}
+      - {script: eyring13jgr_fig10.ncl, cfg_file: ./nml/cfg_eyring13jgr/cfg_eyring13jgr_fig10e.ncl}
     additional_models:
       - {name: CCSM4,           project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1979,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: GFDL-CM3,        project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1979,  end: 2005,  path: /modelpath/CMIP5/}
@@ -359,7 +359,7 @@ DIAGNOSTICS:
     variables:
       - {name: ta,  field: T3M}
     scripts:
-      - {script: eyring13jgr_fig10.ncl, file: ./nml/cfg_eyring13jgr/cfg_eyring13jgr_fig10f.ncl}
+      - {script: eyring13jgr_fig10.ncl, cfg_file: ./nml/cfg_eyring13jgr/cfg_eyring13jgr_fig10f.ncl}
     additional_models:
       - {name: CCSM4,           project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1979,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: GFDL-CM3,        project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1979,  end: 2005,  path: /modelpath/CMIP5/}
@@ -389,7 +389,7 @@ DIAGNOSTICS:
       - {name: ta,    field: T3M}
       - {name: tro3,  field: T3M}
     scripts:
-      - {script: eyring13jgr_fig11.ncl, file: ./nml/cfg_eyring13jgr/cfg_eyring13jgr_fig11a.ncl}
+      - {script: eyring13jgr_fig11.ncl, cfg_file: ./nml/cfg_eyring13jgr/cfg_eyring13jgr_fig11a.ncl}
     additional_models:
       - {name: bcc-csm1-1,      project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1979,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: bcc-csm1-1-m,    project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1979,  end: 2005,  path: /modelpath/CMIP5/}
@@ -477,7 +477,7 @@ DIAGNOSTICS:
       - {name: ta,    field: T3M}
       - {name: tro3,  field: T3M}
     scripts:
-      - {script: eyring13jgr_fig11.ncl, file: ./nml/cfg_eyring13jgr/cfg_eyring13jgr_fig11b.ncl}
+      - {script: eyring13jgr_fig11.ncl, cfg_file: ./nml/cfg_eyring13jgr/cfg_eyring13jgr_fig11b.ncl}
     additional_models:
       - {name: bcc-csm1-1,      project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1979,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: bcc-csm1-1-m,    project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1979,  end: 2005,  path: /modelpath/CMIP5/}
@@ -565,7 +565,7 @@ DIAGNOSTICS:
       - {name: ua,    field: T3M}
       - {name: tro3,  field: T3M}
     scripts:
-      - {script: eyring13jgr_fig11.ncl, file: ./nml/cfg_eyring13jgr/cfg_eyring13jgr_fig11c.ncl}
+      - {script: eyring13jgr_fig11.ncl, cfg_file: ./nml/cfg_eyring13jgr/cfg_eyring13jgr_fig11c.ncl}
     additional_models:
       - {name: bcc-csm1-1,      project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1979,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: bcc-csm1-1-m,    project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1979,  end: 2005,  path: /modelpath/CMIP5/}
@@ -653,7 +653,7 @@ DIAGNOSTICS:
       - {name: ua,  field: T3M}
       - {name: ta,  field: T3M}
     scripts:
-      - {script: eyring13jgr_fig11.ncl, file: ./nml/cfg_eyring13jgr/cfg_eyring13jgr_fig11d.ncl}
+      - {script: eyring13jgr_fig11.ncl, cfg_file: ./nml/cfg_eyring13jgr/cfg_eyring13jgr_fig11d.ncl}
     additional_models:
       - {name: bcc-csm1-1,      project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1979,  end: 2005,  path: /modelpath/CMIP5/}
       - {name: bcc-csm1-1-m,    project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 1979,  end: 2005,  path: /modelpath/CMIP5/}

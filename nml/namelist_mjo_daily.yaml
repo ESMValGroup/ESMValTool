@@ -56,7 +56,7 @@ DIAGNOSTICS:
     variables:
       - {name: pr-mmday,  ref_model: GPCP-1DD,  field: T2Ds}
     scripts:
-      - {script: mjo_univariate_eof.ncl, file: ./nml/cfg_mjo/cfg_mjo_daily_propagation.ncl}
+      - {script: mjo_univariate_eof.ncl, cfg_file: ./nml/cfg_mjo/cfg_mjo_daily_propagation.ncl}
     additional_models:
       - {name: GFDL-ESM2M,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2004,  path: /modelpath/CMIP5/}
       - {name: CanESM2,     project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2004,  path: /modelpath/CMIP5/}
@@ -68,7 +68,7 @@ DIAGNOSTICS:
     variables:
       - {name: pr-mmday,  ref_model: GPCP-1DD,  field: T2Ds}
     scripts:
-      - {script: mjo_wave_freq.ncl,  file: ./nml/cfg_mjo/cfg_mjo_wave_freq.ncl}
+      - {script: mjo_wave_freq.ncl,  cfg_file: ./nml/cfg_mjo/cfg_mjo_wave_freq.ncl}
     additional_models:
       - {name: GFDL-ESM2M,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2004,  path: /modelpath/CMIP5/}
       - {name: CanESM2,     project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2004,  path: /modelpath/CMIP5/}
@@ -81,7 +81,7 @@ DIAGNOSTICS:
       - {name: pr-mmday,  ref_model: GPCP-1DD,  exclude_model: NCEP,  field: T2Ds}
       - {name: ua-850,  ref_model: NCEP,  exclude_model: GPCP-1DD, field: T2Ds}
     scripts:
-      - {script: mjo_precip_u850-200_propagation.ncl,  file: ./nml/cfg_mjo/cfg_mjo_daily_propagation.ncl}
+      - {script: mjo_precip_u850-200_propagation.ncl,  cfg_file: ./nml/cfg_mjo/cfg_mjo_daily_propagation.ncl}
     additional_models:
       - {name: GFDL-ESM2M,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2004,  path: /modelpath/CMIP5/}
       - {name: CanESM2,     project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2004,  path: /modelpath/CMIP5/}
@@ -95,7 +95,7 @@ DIAGNOSTICS:
       - {name: pr-mmday,  ref_model: GPCP-1DD,  exclude_model: NCEP,  field: T2Ds}
       - {name: ua-850,  ref_model: NCEP,  exclude_model: GPCP-1DD, field: T2Ds}
     scripts:
-      - {script: mjo_precip_uwnd_variance.ncl,  file: ./nml/cfg_mjo/cfg_mjo_daily_propagation.ncl}
+      - {script: mjo_precip_uwnd_variance.ncl,  cfg_file: ./nml/cfg_mjo/cfg_mjo_daily_propagation.ncl}
     additional_models:
       - {name: GFDL-ESM2M,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2004,  path: /modelpath/CMIP5/}
       - {name: CanESM2,     project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2004,  path: /modelpath/CMIP5/}
@@ -109,7 +109,7 @@ DIAGNOSTICS:
       - {name: rlut,  ref_model: NOAA-PSD-Interp,  exclude_model: NCEP,  field: T2Ds}
       - {name: ua-850,  ref_model: NCEP,  exclude_model: NOAA-PSD-Interp,  field: T2Ds}
     scripts:
-      - {script: mjo_olr_u850-200_cross_spectra.ncl, file: ./nml/cfg_mjo/cfg_mjo_daily_propagation.ncl}
+      - {script: mjo_olr_u850-200_cross_spectra.ncl, cfg_file: ./nml/cfg_mjo/cfg_mjo_daily_propagation.ncl}
     additional_models:
       - {name: NOAA-PSD-Interp,  project: OBS,  type: ground,  version: 1,  start: 2001,  end: 2008,  path: /obspath/Tier2/NOAA-PSD-Interp}
       - {name: NCEP,  project: OBS,  type: reanaly,  version: 1,  start: 2001,  end: 2008,  path: /obspath/Tier2/NCEP/}
@@ -121,7 +121,7 @@ DIAGNOSTICS:
       - {name: rlut,  ref_model: NOAA-PSD-Interp,  exclude_model: NCEP,  field: T2Ds}
       - {name: ua-850-200,  ref_model: NCEP,  exclude_model: NOAA-PSD-Interp,  field: T2Ds}
     scripts:
-      - {script: mjo_olr_u850_200_ceof.ncl, file: ./nml/cfg_mjo/cfg_mjo_daily_propagation.ncl}
+      - {script: mjo_olr_u850_200_ceof.ncl, cfg_file: ./nml/cfg_mjo/cfg_mjo_daily_propagation.ncl}
     additional_models:
       - {name: NOAA-PSD-Interp,  project: OBS,  type: ground,  version: 1,  start: 2001,  end: 2008,  path: /obspath/Tier2/NOAA-PSD-Interp}
       - {name: NCEP,  project: OBS,  type: reanaly,  version: 1,  start: 2001,  end: 2008,  path: /obspath/Tier2/NCEP/}
@@ -134,7 +134,7 @@ DIAGNOSTICS:
       - {name: ua-850,  ref_model: NCEP,  exclude_model: NOAA-PSD-Interp,  field: T2Ds}    
       - {name: va-850,  ref_model: NCEP,  exclude_model: NOAA-PSD-Interp,  field: T2Ds}
     scripts:
-      - {script:  mjo_olr_uv850_ceof_life_cycle.ncl,  file: ./nml/cfg_mjo/cfg_mjo_daily_propagation.ncl}
+      - {script:  mjo_olr_uv850_ceof_life_cycle.ncl,  cfg_file: ./nml/cfg_mjo/cfg_mjo_daily_propagation.ncl}
     additional_models:
       - {name: NOAA-PSD-Interp,  project: OBS,  type: ground,  version: 1,  start: 2001,  end: 2008,  path: /obspath/Tier2/NOAA-PSD-Interp}
       - {name: NCEP,  project: OBS,  type: reanaly,  version: 1,  start: 2001,  end: 2008,  path: /obspath/Tier2/NCEP/}

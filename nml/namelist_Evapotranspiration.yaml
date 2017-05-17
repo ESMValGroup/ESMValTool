@@ -62,4 +62,4 @@ DIAGNOSTICS:
     variables:
       - {name: et,  ref_model: LandFlux-EVAL,  field: T2Ms}
     scripts:
-      - {script: Evapotranspiration.ncl, file: ./nml/cfg_et/cfg_Evapotranspiration.ncl}
+      - {script: Evapotranspiration.ncl, cfg_file: ./nml/cfg_et/cfg_Evapotranspiration.ncl}
