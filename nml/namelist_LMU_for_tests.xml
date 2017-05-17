@@ -1,5 +1,5 @@
 <namelist>
-<include href="/media/bmueller/Work/GIT/CMUG_fire/config_private_BM_local.xml"/>
+<include href="./config_private_BM_local.xml"/>
 <namelist_summary>
 ###############################################################################
 namelist_LMU_for_tests.xml

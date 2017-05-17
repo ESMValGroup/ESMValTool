@@ -51,7 +51,19 @@ input_xml_full_path = args[0]
 Project = xml_parsers.namelistHandler()
 parser = xml.sax.make_parser()
 parser.setContentHandler(Project)
+
+# Current working directory adjustments depending on namelist
+CWD = os.getcwd()
+os.chdir(main_ESMValTool)
+if input_xml_full_path.split(os.sep)[0] == \
+    (main_ESMValTool[:-1] if main_ESMValTool[-1] == os.sep
+     else main_ESMValTool):
+    input_xml_full_path = input_xml_full_path[1:]
+else:
+    input_xml_full_path = CWD + input_xml_full_path[2:]
+
 parser.parse(input_xml_full_path)
+os.chdir(CWD)
 
 # Project_info is a dictionary with all info from the namelist.
 project_info = Project.project_info
@@ -70,7 +82,7 @@ in_refs = os.path.join(os.getcwd(), 'doc/MASTER_authors-refs-acknow.txt')
 project_info['RUNTIME']['in_refs'] = in_refs
 
 # Current working directory
-project_info['RUNTIME']['cwd'] = os.getcwd()
+project_info['RUNTIME']['cwd'] = CWD
 
 # cleanup directories
 do_print = False
@@ -85,6 +97,7 @@ try:
                                              " && python " + "main.py " +
                                              project_info['RUNTIME']['xml'],
                                              shell=True)
+
     case = "pre"
 except Exception, TOOL_error:
     ESMValTool_log = str(TOOL_error.output)
