@@ -61,7 +61,7 @@ DIAGNOSTICS:
     additional_models:
       - {name: GFDL-ESM2M,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2004,  path: /modelpath/CMIP5/}
       - {name: CanESM2,     project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2004,  path: /modelpath/CMIP5/}
-      - {name: GPCP-1DD,  project: obs4mips,  level: L3, version: v1.2,  start: 2001,  end: 2008,  path: /obspath/Tier1/GPCP-1DD/}
+      - {name: GPCP-1DD,  project: obs4mips,  level: L3,  version: v1.2,  start: 2001,  end: 2008,  path: /obspath/Tier1/GPCP-1DD/}
 
       
   DIAG_prWAVE:
@@ -73,7 +73,7 @@ DIAGNOSTICS:
     additional_models:
       - {name: GFDL-ESM2M,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2004,  path: /modelpath/CMIP5/}
       - {name: CanESM2,     project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2004,  path: /modelpath/CMIP5/}
-      - {name: GPCP-1DD,  project: obs4mips,  level: L3, version: v1.2,  start: 2001,  end: 2008,  path: /obspath/Tier1/GPCP-1DD/}
+      - {name: GPCP-1DD,  project: obs4mips,  level: L3,  version: v1.2,  start: 2001,  end: 2008,  path: /obspath/Tier1/GPCP-1DD/}
 
       
   DIAG_prLAG:
@@ -86,7 +86,7 @@ DIAGNOSTICS:
     additional_models:
       - {name: GFDL-ESM2M,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2004,  path: /modelpath/CMIP5/}
       - {name: CanESM2,     project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2004,  path: /modelpath/CMIP5/}
-      - {name: GPCP-1DD,  project: obs4mips,  level: L3, version: v1.2,  start: 2001,  end: 2008,  path: /obspath/Tier1/GPCP-1DD/}
+      - {name: GPCP-1DD,  project: obs4mips,  level: L3,  version: v1.2,  start: 2001,  end: 2008,  path: /obspath/Tier1/GPCP-1DD/}
       - {name: NCEP,  project: OBS,  type: reanaly,  version: 1,  start: 2001,  end: 2008,  path: /obspath/Tier2/NCEP/}
 
       
@@ -100,7 +100,7 @@ DIAGNOSTICS:
     additional_models:
       - {name: GFDL-ESM2M,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2004,  path: /modelpath/CMIP5/}
       - {name: CanESM2,     project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2004,  path: /modelpath/CMIP5/}
-      - {name: GPCP-1DD,  project: obs4mips,  level: L3, version: v1.2,  start: 2001,  end: 2008,  path: /obspath/Tier1/GPCP-1DD/}
+      - {name: GPCP-1DD,  project: obs4mips,  level: L3,  version: v1.2,  start: 2001,  end: 2008,  path: /obspath/Tier1/GPCP-1DD/}
       - {name: NCEP,  project: OBS,  type: reanaly,  version: 1,  start: 2001,  end: 2008,  path: /obspath/Tier2/NCEP/}
 
   
