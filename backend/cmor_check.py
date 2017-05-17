@@ -3,11 +3,8 @@ import iris
 import iris.coords
 import iris.exceptions
 import iris.coord_categorisation
-import os
-import warnings
 import cf_units
 
-from backend.variable_info import VariablesInfo
 
 iris.FUTURE.cell_datetime_objects = True
 iris.FUTURE.netcdf_promote = True
@@ -25,12 +22,8 @@ class CMORCheck(object):
     _vals_msg = '{}: has values {} {}'
     _contain_msg = '{}: does not contain {} {}'
 
-    def __init__(self, cube, table, variables_info, frequency=None,
+    def __init__(self, cube, var_info, frequency=None,
                  fail_on_error=False, automatic_fixes=False):
-        var_info = variables_info.get_variable(table, cube.var_name)
-        if var_info is None:
-            raise CMORCheckError('Variable {0} was not '
-                                 'recognized'.format(cube.var_name))
 
         self.cube = cube
         self._failerr = fail_on_error
@@ -118,8 +111,8 @@ class CMORCheck(object):
 
     def _check_data_range(self):
         # Check data is not less than valid_min
-        if self._cmor_var.valid_max:
-            valid_min = float(self._cmor_var.valid_max)
+        if self._cmor_var.valid_min:
+            valid_min = float(self._cmor_var.valid_min)
             if np.any(self.cube.data < valid_min):
                 self.report_error(self._vals_msg, self.cube.var_name,
                                   '< {} ='.format('valid_min'), valid_min)
@@ -145,22 +138,13 @@ class CMORCheck(object):
 
     def _check_dim_names(self):
         for (axis, coordinate) in self._cmor_var.coordinates.items():
-            if axis == 'none':
-                axis = None
             if coordinate.generic_level:
                 var_name = 'generic_level'
-                if self.cube.coords(axis=axis, dim_coords=True):
-                    cube_coord = self.cube.coord(axis=axis, dim_coords=True)
+                if self.cube.coords(axis, dim_coords=True):
+                    cube_coord = self.cube.coord(axis, dim_coords=True)
                     if not cube_coord.standard_name:
                         self.report_error(self._does_msg, var_name,
                                           'have standard_name')
-                    # Test for units that match standard_name?
-                    # Check for attributes that must exist for a generic_level
-                    attrs = []  # 'positive']
-                    for attr in attrs:
-                        if attr not in self.cube.attributes:
-                            self.report_error(self._does_msg, var_name,
-                                              'have {}'.format(attr))
                 else:
                     self.report_error(self._does_msg, var_name, 'exist')
             else:
@@ -281,35 +265,34 @@ class CMORCheck(object):
             coord.units = cf_units.Unit(coord.units.name,
                                         simplified_cal)
 
-        if self.frequency:
-            tol = 0.001
-            intervals = {'dec': (3600, 3660),
-                         'yr': (360, 366),
-                         'mon': (28, 31),
-                         'day': (1,1)}
-            if self.frequency in intervals:
-                interval = intervals[self.frequency]
-                target_interval = (interval[0] - tol, interval[1] + tol)
-            elif self.frequency.endswith('hr'):
+        tol = 0.001
+        intervals = {'dec': (3600, 3660),
+                     'yr': (360, 366),
+                     'mon': (28, 31),
+                     'day': (1,1)}
+        if self.frequency in intervals:
+            interval = intervals[self.frequency]
+            target_interval = (interval[0] - tol, interval[1] + tol)
+        elif self.frequency.endswith('hr'):
 
-                frequency = self.frequency[:-2]
-                if frequency == 'sub':
-                    frequency = 1.0 / 24
-                    target_interval = (-tol, frequency + tol)
-                else:
-                    frequency = float(frequency) / 24
-                    target_interval = (frequency - tol, frequency + tol)
+            frequency = self.frequency[:-2]
+            if frequency == 'sub':
+                frequency = 1.0 / 24
+                target_interval = (-tol, frequency + tol)
             else:
-                msg = '{}: Frequency {} not supported by checker'
+                frequency = float(frequency) / 24
+                target_interval = (frequency - tol, frequency + tol)
+        else:
+            msg = '{}: Frequency {} not supported by checker'
+            self.report_error(msg, var_name, self.frequency)
+            return
+        for i in range(len(coord.points)-1):
+            interval = coord.points[i + 1] - coord.points[i]
+            if (interval < target_interval[0] or
+               interval > target_interval[1]):
+                msg = '{}: Frequency {} does not match input data'
                 self.report_error(msg, var_name, self.frequency)
-                return
-            for i in range(len(coord.points)-1):
-                interval = coord.points[i + 1] - coord.points[i]
-                if (interval < target_interval[0] or
-                   interval > target_interval[1]):
-                    msg = '{}: Frequency {} does not match input data'
-                    self.report_error(msg, var_name, self.frequency)
-                    break
+                break
 
     CALENDARS = [['standard', 'gregorian'],
                  ['proleptic_gregorian'],
@@ -362,6 +345,10 @@ class CMORCheckError(Exception):
 
 
 def main():
+    import warnings
+    import os
+    from backend.variable_info import VariablesInfo
+
     data_folder = '/Users/nube/esmval_data'
     # data_folder = '/home/paul/ESMValTool/data'
     example_datas = [
@@ -449,9 +436,8 @@ def main():
             # Concatenate data to single cube, i.e. merge time series
             cube = cubes.concatenate_cube()
             # Create checker for loaded cube
-            checker = CMORCheck(cube, table, variables_info,
-                                automatic_fixes=True)  # ,
-            #                     fail_on_error=True)
+            var_info = variables_info.get_variable(table, var_name)
+            checker = CMORCheck(cube, var_info, automatic_fixes=True)
             # Run checks
             checker.check_metadata()
             checker.check_data()

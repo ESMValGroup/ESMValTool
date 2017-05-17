@@ -41,15 +41,8 @@ class VariablesInfo(object):
             name = header['table_id'][6:]
             self.tables[name] = {}
 
-            if 'generic_levels' in header:
-                generic_levels = header['generic_levels'].split()
-            else:
-                generic_levels = ()
-
-            if 'frequency' in header:
-                frequency = header['frequency']
-            else:
-                frequency = ''
+            generic_levels = header['generic_levels'].split()
+            frequency = header['frequency']
 
             for var_name, var_data in raw_data['variable_entry'].items():
                 var = VariableInfo(var_name)
@@ -71,8 +64,7 @@ class VariablesInfo(object):
             if not axis:
                 axis = 'none'
 
-            if axis not in self.coords:
-                var.coordinates[axis] = coord
+            var.coordinates[axis] = coord
 
     def _load_coordinates(self):
         self.coords = {}
@@ -99,8 +91,6 @@ class VariablesInfo(object):
         if 'variable_entry' not in table_data:
             return False
         if 'Header' not in table_data:
-            return False
-        if 'table_id' not in table_data['Header']:
             return False
         return True
 
@@ -153,9 +143,6 @@ class VariableInfo(JsonInfo):
 
         self.dimensions = self._read_json_variable('dimensions').split()
 
-    def compute(self):
-        pass
-
 
 class CoordinateInfo(JsonInfo):
 
@@ -167,6 +154,7 @@ class CoordinateInfo(JsonInfo):
         self.axis = ""
         self.value = ""
         self.standard_name = ""
+        self.long_name = ""
         self.out_name = ""
         self.var_name = ""
         self.units = ""
@@ -183,6 +171,7 @@ class CoordinateInfo(JsonInfo):
         self.out_name = self._read_json_variable('out_name')
         self.var_name = self._read_json_variable('var_name')
         self.standard_name = self._read_json_variable('standard_name')
+        self.long_name = self._read_json_variable('long_name')
         self.units = self._read_json_variable('units')
         self.stored_direction = self._read_json_variable('stored_direction')
         self.valid_min = self._read_json_variable('valid_min')
@@ -191,6 +180,3 @@ class CoordinateInfo(JsonInfo):
         self.requested = self._read_json_list_variable('requested')
 
 
-if __name__ == '__main__':
-    var_info = VariablesInfo()
-    pass
