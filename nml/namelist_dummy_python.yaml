@@ -15,16 +15,12 @@
 ###############################################################################
 
 GLOBAL:
+  config_file:       config_private_DLR-PA2
   write_plots:       True
   write_netcdf:      True
-#  wrk_dir:           ./work/    # this goes to config file
-#  plot_dir:          ./plots/   # this goes to config file
-#  preproc_dir:       ./preproc/ # this goes to config file
   verbosity:         1
   exit_on_warning:   False
   output_file_type:  ps
-  max_data_filesize:   100 # this goes to config file
-  max_data_blocksize:  500 # this goes to config file
 
 
 MODELS:
@@ -42,19 +38,19 @@ PREPROCESS:
   
 DIAGNOSTICS:
 
-- diag:
+  DIAG1:
     description: some minimum example using python for diagnostic from a direct script
-    variable: {name: ta,  field: T3M}
-    settings:
-      file: none_yet.py
-    script: dummy_python.py
-    # MR: do we need launcher arguments here?
+    variables:
+      - {name: ta,  field: T3M}
+    scripts:
+      - {script: dummy_python.py, file: none_yet.py}
+      # MR: do we need launcher arguments here?
 
 
-- diag:
+  DIAG2:
     description: another example using python just by calling an external python script
-    variable: {name: ta,  field: T3M}
+    variables:
+      - {name: ta,  field: T3M}
     settings:
-      file: none_yet.py
-    script: dummy_python_external.py
-    # MR: do we need launcher arguments here?
+      - {script: dummy_python_external.py, file: none_yet.py}
+      # MR: do we need launcher arguments here?

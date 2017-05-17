@@ -22,21 +22,14 @@
 ###############################################################################
 
 GLOBAL:
+  config_file:       config_private_DLR-PA2
   write_plots:       True
   write_netcdf:      True
-#    force_processing:  False # this goes away
-#    wrk_dir:           ./work/    # this goes to config file
-#    plot_dir:          ./plots/   # this goes to config file
-#    preproc_dir:       ./preproc/ # this goes to config file
   verbosity:         1
   exit_on_warning:   False
   output_file_type:  ps
-  max_data_filesize:   100 # this goes to config file
-  max_data_blocksize:  500 # this goes to config file
-#    force_calc:        False # this goes away
-#    force_gradecalc:   False # this goes away
-#    force_taylorcalc:  False # this goes away
 
+  
 MODELS:
 # Models which do not provide all variables are defined within each diag block block
 # MR: HERE WE NEED TO IMPLEMENT A WAY TO REPLACE mip WITH VARIABLE-SPECIFIC mip (e.g., USE * AS A WILDCARD)
@@ -63,960 +56,711 @@ PREPROCESS:
   
 DIAGNOSTICS:
 
-  - diag:
-      description: MVI scatter plot surface temperature (Figure 1)
-      variable: {name: tas-degC, field: T2Ms, mip: Amon}
-      settings:
-        file: ./nml/cfg_anav13jclim/cfg_anav_MVI_glob.ncl
-        file: ./nml/cfg_anav13jclim/cfg_anav_MVI_trop.ncl
-        file: ./nml/cfg_anav13jclim/cfg_anav_MVI_NH.ncl
-        file: ./nml/cfg_anav13jclim/cfg_anav_MVI_SH.ncl
-      script: CarbonCycle_MVI.ncl
-      model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
-
+  DIAG_taMVI:
+    description: MVI scatter plot surface temperature (Figure 1)
+    variables:
+      - {name: tas-degC, field: T2Ms, mip: Amon}
+    scripts:
+      - {script: CarbonCycle_MVI.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_MVI_glob.ncl}
+      - {script: CarbonCycle_MVI.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_MVI_trop.ncl
+      - {script: CarbonCycle_MVI.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_MVI_NH.ncl}
+      - {script: CarbonCycle_MVI.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_MVI_SH.ncl}
+    additional_models:
+      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
       
-  - diag:
-      description: MVI scatter plot precipitation (Figure 2)
-      variable: {name: pr-mmday, field: T2Ms, mip: Amon}
-      settings:
-        file: ./nml/cfg_anav13jclim/cfg_anav_MVI_glob.ncl
-        file: ./nml/cfg_anav13jclim/cfg_anav_MVI_trop.ncl
-        file: ./nml/cfg_anav13jclim/cfg_anav_MVI_NH.ncl
-        file: ./nml/cfg_anav13jclim/cfg_anav_MVI_SH.ncl
-      script: CarbonCycle_MVI.ncl
-      model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
-
       
-  - diag:
-      description: Error bar and sasonal cycle plots NBP (Figures 6 and 7)
-      variable: {name: nbp,  field: T2Ms,  mip: Lmon}
-      preprocess:
-        mask_landocean: land
-      settings:
-        file: ./nml/cfg_anav13jclim/cfg_anav_main_glob.ncl
-        file: ./nml/cfg_anav13jclim/cfg_anav_main_trop.ncl
-        file: ./nml/cfg_anav13jclim/cfg_anav_main_NH.ncl
-        file: ./nml/cfg_anav13jclim/cfg_anav_main_SH.ncl
-      script: CarbonCycle_main.ncl
-      model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: JMA-TRANSCOM,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/JMA-TRANSCOM/}
-
+  DIAG_prMVI:
+    description: MVI scatter plot precipitation (Figure 2)
+    variables:
+      - {name: pr-mmday, field: T2Ms, mip: Amon}
+    scripts:
+      - {script: CarbonCycle_MVI.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_MVI_glob.ncl}
+      - {script: CarbonCycle_MVI.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_MVI_trop.ncl}
+      - {script: CarbonCycle_MVI.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_MVI_NH.ncl}
+      - {script: CarbonCycle_MVI.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_MVI_SH.ncl}
+    additional_models:
+      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
       
-  - diag:
-      description: MVI scatter plot gpp (Figure 8)
-      variable: {name: gpp,  field: T2Ms,  mip: Lmon}
-      settings:
-      preprocess:
-        mask_landocean: land
-        file: ./nml/cfg_anav13jclim/cfg_anav_MVI_glob.ncl
-        file: ./nml/cfg_anav13jclim/cfg_anav_MVI_trop.ncl
-        file: ./nml/cfg_anav13jclim/cfg_anav_MVI_NH.ncl
-        file: ./nml/cfg_anav13jclim/cfg_anav_MVI_SH.ncl
-      script: CarbonCycle_MVI.ncl
-      model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: MTE,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/MTE/}
+      
+  DIAG_mainNBP:
+    description: Error bar and sasonal cycle plots NBP (Figures 6 and 7)
+    variables:
+      - {name: nbp,  field: T2Ms,  mip: Lmon}
+    preprocess:
+      mask_landocean: land
+    scripts:
+      - {script: CarbonCycle_main.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_main_glob.ncl}
+      - {script: CarbonCycle_main.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_main_trop.ncl}
+      - {script: CarbonCycle_main.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_main_NH.ncl}
+      - {script: CarbonCycle_main.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_main_SH.ncl}
+    additional_models:
+      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: JMA-TRANSCOM,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/JMA-TRANSCOM/}
+      
+      
+  DIAG_MVIGPP:
+    description: MVI scatter plot gpp (Figure 8)
+    variables:
+      - {name: gpp,  field: T2Ms,  mip: Lmon}
+    scripts:
+    preprocess:
+      mask_landocean: land
+    scripts:
+      - {script: CarbonCycle_MVI.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_MVI_glob.ncl}
+      - {script: CarbonCycle_MVI.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_MVI_trop.ncl}
+      - {script: CarbonCycle_MVI.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_MVI_NH.ncl}
+      - {script: CarbonCycle_MVI.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_MVI_SH.ncl}
+    additional_models:      
+      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: MTE,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/MTE/}
+      
+
+  DIAG_mainGPP:
+    description: Seasonal cycle plot gpp (Figure 9)
+    variables:
+      - {name: gpp,  field: T2Ms,  mip: Lmon}
+    preprocess:
+      mask_landocean: land
+    scripts:
+      - {script: CarbonCycle_main.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_main_glob.ncl}
+      - {script: CarbonCycle_main.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_main_trop.ncl}
+      - {script: CarbonCycle_main.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_main_NH.ncl}
+      - {script: CarbonCycle_main.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_main_SH.ncl}
+    additional_models:
+      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: MTE,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/MTE/}
 
 
-  - diag:
-      description: Seasonal cycle plot gpp (Figure 9)
-      variable: {name: gpp,  field: T2Ms,  mip: Lmon}
-      preprocess:
-        mask_landocean: land
-      settings:
-        file: ./nml/cfg_anav13jclim/cfg_anav_main_glob.ncl
-        file: ./nml/cfg_anav13jclim/cfg_anav_main_trop.ncl
-        file: ./nml/cfg_anav13jclim/cfg_anav_main_NH.ncl
-        file: ./nml/cfg_anav13jclim/cfg_anav_main_SH.ncl
-      script: CarbonCycle_main.ncl
-      model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: MTE,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/MTE/}
+  DIAG_MVILAI:
+    description: MVI scatter plot LAI (Figure 10)
+    variables:
+      - {name: lai,  field: T2Ms,  mip: Lmon}
+    preprocess:
+      mask_landocean: land
+    scripts:
+      - {script: CarbonCycle_MVI.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_MVI_glob.ncl}
+      - {script: CarbonCycle_MVI.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_MVI_trop.ncl}
+      - {script: CarbonCycle_MVI.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_MVI_NH.ncl}
+      - {script: CarbonCycle_MVI.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_MVI_SH.ncl}
+    additional_models:
+      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: LAI3g,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/LAI3g/}
+      
 
+  DIAG_mainLAI:
+    description: Seasonal cycle plot LAI (Figure 11)
+    variables:
+      - {name: lai,  field: T2Ms,  mip: Lmon}
+    preprocess:
+      mask_landocean: land
+    scripts:
+      - {script: CarbonCycle_main.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_main_glob.ncl}
+      - {script: CarbonCycle_main.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_main_trop.ncl}
+      - {script: CarbonCycle_main.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_main_NH.ncl}
+      - {script: CarbonCycle_main.ncl,  file: ./nml/cfg_anav13jclim/cfg_anav_main_SH.ncl}
+    additional_models:
+      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: LAI3g,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/LAI3g/}
+      
 
-  - diag:
-      description: MVI scatter plot LAI (Figure 10)
-      variable: {name: lai,  field: T2Ms,  mip: Lmon}
-      preprocess:
-        mask_landocean: land
-      settings:
-        file: ./nml/cfg_anav13jclim/cfg_anav_MVI_glob.ncl
-        file: ./nml/cfg_anav13jclim/cfg_anav_MVI_trop.ncl
-        file: ./nml/cfg_anav13jclim/cfg_anav_MVI_NH.ncl
-        file: ./nml/cfg_anav13jclim/cfg_anav_MVI_SH.ncl
-      script: CarbonCycle_MVI.ncl
-      model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: LAI3g,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/LAI3g/}
-
-
-  - diag:
-      description: Seasonal cycle plot LAI (Figure 11)
-      variable: {name: lai,  field: T2Ms,  mip: Lmon}
-      preprocess:
-        mask_landocean: land
-      settings:
-        file: ./nml/cfg_anav13jclim/cfg_anav_main_glob.ncl
-        file: ./nml/cfg_anav13jclim/cfg_anav_main_trop.ncl
-        file: ./nml/cfg_anav13jclim/cfg_anav_main_NH.ncl
-        file: ./nml/cfg_anav13jclim/cfg_anav_main_SH.ncl
-      script: CarbonCycle_main.ncl
-      model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: LAI3g,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/LAI3g/}
-
-
-  - diag:
-      description: Two-variable scatter plot cSoil-cVeg (Figure 12)
-      variable: {name: cSoil,  ref_model: HWSD,  exclude_model: NDP,   field: T2Ms}
-      variable: {name: cVeg,   ref_model: NDP,   exclude_model: HWSD,  field: T2Ms}
-      preprocess:
-        mask_landocean: land
-      settings:
-        file: ./nml/cfg_anav13jclim/cfg_anav_cSoil-cVeg_glob.ncl
-        file: ./nml/cfg_anav13jclim/cfg_anav_cSoil-cVeg_trop.ncl
-        file: ./nml/cfg_anav13jclim/cfg_anav_cSoil-cVeg_NH.ncl
-        file: ./nml/cfg_anav13jclim/cfg_anav_cSoil-cVeg_SH.ncl
-      script: CarbonCycle_2vars.ncl
-      model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-      model: {name: NDP,   project: OBS,  type: ground,  version: 017b,  start: 2000,  end: 2000,  path: /obspath/Tier2/NDP/}
-      model: {name: HWSD,  project: OBS,  type: ground,  version: 1,     start: 2000,  end: 2000,  path: /obspath/Tier2/HWSD/}
+  DIAG_scatter2:
+    description: Two-variable scatter plot cSoil-cVeg (Figure 12)
+    variables:
+     - {name: cSoil,  ref_model: HWSD,  exclude_model: NDP,   field: T2Ms}
+     - {name: cVeg,   ref_model: NDP,   exclude_model: HWSD,  field: T2Ms}
+    preprocess:
+      mask_landocean: land
+    scripts:
+      - {script: CarbonCycle_2vars.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_cSoil-cVeg_glob.ncl}
+      - {script: CarbonCycle_2vars.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_cSoil-cVeg_trop.ncl}
+      - {script: CarbonCycle_2vars.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_cSoil-cVeg_NH.ncl}
+      - {script: CarbonCycle_2vars.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_cSoil-cVeg_SH.ncl}
+    additional_models:
+      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: NDP,   project: OBS,  type: ground,  version: 017b,  start: 2000,  end: 2000,  path: /obspath/Tier2/NDP/}
+      - {name: HWSD,  project: OBS,  type: ground,  version: 1,     start: 2000,  end: 2000,  path: /obspath/Tier2/HWSD/}
 
 
 # THIS DIAGNOSTIC DOES NOT SUPPORT IRREGULAR GRIDS YET
-# - diag:
-#     description: Error bas and seasonal cycle plots fgco2 (Figure 14 and 15)
-#     variable: {name: fgco2,  mip: Omon,  field: T2Ms}
-#     settings:
-#       file: ./nml/cfg_anav13jclim/cfg_anav_main_glob.ncl
-#       file: ./nml/cfg_anav13jclim/cfg_anav_main_trop.ncl
-#       file: ./nml/cfg_anav13jclim/cfg_anav_main_NH.ncl
-#       file: ./nml/cfg_anav13jclim/cfg_anav_main_SH.ncl
-#     script: CarbonCycle_main.ncl
-#     model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-#     model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-#     model: {name: JMA-TRANSCOM,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/JMA-TRANSCOM/}
+  # DIAG_mainFGCO2:
+  #   description: Error bas and seasonal cycle plots fgco2 (Figure 14 and 15)
+  #   variables:
+  #     - {name: fgco2,  mip: Omon,  field: T2Ms}
+  #   scripts:
+  #     - {script: CarbonCycle_main.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_main_glob.ncl}
+  #     - {script: CarbonCycle_main.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_main_trop.ncl}
+  #     - {script: CarbonCycle_main.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_main_NH.ncl}
+  #     - {script: CarbonCycle_main.ncl, file: ./nml/cfg_anav13jclim/cfg_anav_main_SH.ncl}
+  #    additional_models:
+  #      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  #      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+  #      - {name: JMA-TRANSCOM,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/JMA-TRANSCOM/}
 
-# GRADING GLOBAL
+    
+# GRADING GLOBAL #######################################################################################################
 
-- diag:
+  DIAG_gradtasglob:
     description: Grading precalculations
-    variable: {name: tas,  ref_model: CRU,  mip: Amon,  field: T2Ms}
+    variables:
+     - {name: tas,  ref_model: CRU,  mip: Amon,  field: T2Ms}
     preprocess:
       target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl
-    script: perfmetrics_main.ncl
-    model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
-
-
-- diag:
-    description: Grading calculations
-    variable: {name: tas,  ref_model: CRU,  mip: Amon,  field: T2Ms}
-    preprocess:
-      target_grid:    ref_model
-      regrid_scheme:  linear
-      mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl
-    script: perfmetrics_grading.ncl
-    model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
-
-
-- diag:
-    description: Grading precalculations
-    variable: {name: pr,  ref_model: CRU,  mip: Amon,  field: T2Ms}
-    preprocess:
-      target_grid:    ref_model
-      regrid_scheme:  linear
-      mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl
-    script: perfmetrics_main.ncl
-    model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
-
-
-- diag:
-    description: Grading calculations
-    variable: {name: pr,  ref_model: CRU,  mip: Amon,  field: T2Ms}
-    preprocess:
-      target_grid:    ref_model
-      regrid_scheme:  linear
-      mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl
-    script: perfmetrics_grading.ncl
-    model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
-
-
-- diag:
-    description: Grading precalculations
-    variable: {name: gpp,  ref_model: MTE,  mip: Lmon,  field: T2Ms}
-    preprocess:
-      target_grid:    ref_model
-      regrid_scheme:  linear
-      mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl
-    script: perfmetrics_main.ncl
-    model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MTE,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/MTE/}
-
-
-- diag:
-    description: Grading calculations
-    variable: {name: gpp,  ref_model: MTE,  mip: Lmon,  field: T2Ms}
-    preprocess:
-      target_grid:    ref_model
-      regrid_scheme:  linear
-      mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl
-    script: perfmetrics_grading.ncl
-    model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MTE,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/MTE/}
-
-
-- diag:
-    description: Grading precalculations
-    variable: {name: lai,  ref_model: LAI3g,  mip: Lmon,  field: T2Ms}
-    preprocess:
-      target_grid:    ref_model
-      regrid_scheme:  linear
-      mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl
-    script: perfmetrics_main.ncl
-    model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: LAI3g,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/LAI3g/}
-
-
-- diag:
-    description: Grading calculations
-    variable: {name: lai,  ref_model: LAI3g,  mip: Lmon,  field: T2Ms}
-    preprocess:
-      target_grid:    ref_model
-      regrid_scheme:  linear
-      mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl
-    script: perfmetrics_grading.ncl
-    model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: LAI3g,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/LAI3g/}
-
-
-- diag:
-    description: Grading precalculations
-    variable: {name: nbp,  ref_model: JMA-TRANSCOM,  mip: Lmon,  field: T2Ms}
-    preprocess:
-      target_grid:    ref_model
-      regrid_scheme:  linear
-      mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl
-    script: perfmetrics_main.ncl
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: JMA-TRANSCOM,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/JMA-TRANSCOM/}
-
-
-- diag:
-    description: Grading calculations
-    variable: {name: nbp,  ref_model: JMA-TRANSCOM,  mip: Lmon,  field: T2Ms}
-    preprocess:
-      target_grid:    ref_model
-      regrid_scheme:  linear
-      mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl
-    script: perfmetrics_grading.ncl
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: JMA-TRANSCOM,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/JMA-TRANSCOM/}
-
+    scripts:
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
+      - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
+    additional_models:
+      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
       
-- diag:
-    description: Portrait diagram
-    settings: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_collect.ncl
-    script: perfmetrics_grading_collect.ncl
 
-# GRADING TROPICS
-
-- diag:
+  DIAG_gradprglob:
     description: Grading precalculations
-    variable: {name: tas,  ref_model: CRU,  mip: Amon,  field: T2Ms}
+    variables:
+     - {name: pr,  ref_model: CRU,  mip: Amon,  field: T2Ms}
     preprocess:
       target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl
-    script: perfmetrics_main.ncl
-    model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
+    scripts:
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
+      - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
+    additional_models:
+      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
 
 
-- diag:
-    description: Grading calculations
-    variable: {name: tas,  ref_model: CRU,  mip: Amon,  field: T2Ms}
-    preprocess:
-      target_grid:    ref_model
-      regrid_scheme:  linear
-      mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl
-    script: perfmetrics_grading.ncl
-    model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
-
-
-- diag:
+  DIAG_gradGPPglob:
     description: Grading precalculations
-    variable: {name: pr,  ref_model: CRU,  mip: Amon,  field: T2Ms}
+    variables:
+      - {name: gpp,  ref_model: MTE,  mip: Lmon,  field: T2Ms}
     preprocess:
       target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl
-    script: perfmetrics_main.ncl
-    model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
+    scripts:
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
+      - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
+    additional_models:
+      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: MTE,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/MTE/}
 
 
-- diag:
+  DIAG_gradMTEglob:
     description: Grading calculations
-    variable: {name: pr,  ref_model: CRU,  mip: Amon,  field: T2Ms}
+    variables:
+      - {name: gpp,  ref_model: MTE,  mip: Lmon,  field: T2Ms}
     preprocess:
       target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl
-    script: perfmetrics_grading.ncl
-    model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
+    scripts:
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
+      - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
+    additional_models:
+      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: MTE,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/MTE/}
 
 
-- diag:
+  DIAG_gradLAIglob:
     description: Grading precalculations
-    variable: {name: gpp,  ref_model: MTE,  mip: Lmon,  field: T2Ms}
+    variables:
+     - {name: lai,  ref_model: LAI3g,  mip: Lmon,  field: T2Ms}
     preprocess:
       target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl
-    script: perfmetrics_main.ncl
-    model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MTE,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/MTE/}
+    scripts:
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
+      - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
+    additional_models:
+      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: LAI3g,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/LAI3g/}
 
 
-- diag:
-    description: Grading calculations
-    variable: {name: gpp,  ref_model: MTE,  mip: Lmon,  field: T2Ms}
-    preprocess:
-      target_grid:    ref_model
-      regrid_scheme:  linear
-      mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl
-    script: perfmetrics_grading.ncl
-    model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MTE,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/MTE/}
-
-
-- diag:
+  DIAG_gradNBPglob:
     description: Grading precalculations
-    variable: {name: lai,  ref_model: LAI3g,  mip: Lmon,  field: T2Ms}
+    variables:
+      - {name: nbp,  ref_model: JMA-TRANSCOM,  mip: Lmon,  field: T2Ms}
     preprocess:
       target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl
-    script: perfmetrics_main.ncl
-    model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: LAI3g,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/LAI3g/}
-
-
-- diag:
-    description: Grading calculations
-    variable: {name: lai,  ref_model: LAI3g,  mip: Lmon,  field: T2Ms}
-    preprocess:
-      target_grid:    ref_model
-      regrid_scheme:  linear
-      mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl
-    script: perfmetrics_grading.ncl
-    model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: LAI3g,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/LAI3g/}
-
-
-- diag:
-    description: Grading precalculations
-    variable: {name: nbp,  ref_model: JMA-TRANSCOM,  mip: Lmon,  field: T2Ms}
-    preprocess:
-      target_grid:    ref_model
-      regrid_scheme:  linear
-      mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl
-    script: perfmetrics_main.ncl
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: JMA-TRANSCOM,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/JMA-TRANSCOM/}
-
-
-- diag:
-    description: Grading calculations
-    variable: {name: nbp,  ref_model: JMA-TRANSCOM,  mip: Lmon,  field: T2Ms}
-    preprocess:
-      target_grid:    ref_model
-      regrid_scheme:  linear
-      mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl
-    script: perfmetrics_grading.ncl
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: JMA-TRANSCOM,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/JMA-TRANSCOM/}
-
+    scripts:
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
+      - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_glob.ncl}
+    additional_models:
+      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: JMA-TRANSCOM,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/JMA-TRANSCOM/}
       
-- diag:
+          
+  DIAG_portraitglob:
     description: Portrait diagram
-    settings: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_collect.ncl
-    script: perfmetrics_grading_collect.ncl
+    scripts:
+      - {script: perfmetrics_grading_collect.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_collect.ncl}
+    
 
+# GRADING TROPICS ######################################################################################################
 
-# GRADING NH
-
-- diag:
+  DIAG_gradtastrop:
     description: Grading precalculations
-    variable: {name: tas,  ref_model: CRU,  mip: Amon,  field: T2Ms}
+    variables:
+     - {name: tas,  ref_model: CRU,  mip: Amon,  field: T2Ms}
     preprocess:
       target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl
-    script: perfmetrics_main.ncl
-    model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
-
-
-- diag:
-    description: Grading calculations
-    variable: {name: tas,  ref_model: CRU,  mip: Amon,  field: T2Ms}
-    preprocess:
-      target_grid:    ref_model
-      regrid_scheme:  linear
-      mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl
-    script: perfmetrics_grading.ncl
-    model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
-
-
-- diag:
-    description: Grading precalculations
-    variable: {name: pr,  ref_model: CRU,  mip: Amon,  field: T2Ms}
-    preprocess:
-      target_grid:    ref_model
-      regrid_scheme:  linear
-      mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl
-    script: perfmetrics_main.ncl
-    model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
-
-
-- diag:
-    description: Grading calculations
-    variable: {name: pr,  ref_model: CRU,  mip: Amon,  field: T2Ms}
-    preprocess:
-      target_grid:    ref_model
-      regrid_scheme:  linear
-      mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl
-    script: perfmetrics_grading.ncl
-    model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
-
-
-- diag:
-    description: Grading precalculations
-    variable: {name: gpp,  ref_model: MTE,  mip: Lmon,  field: T2Ms}
-    preprocess:
-      target_grid:    ref_model
-      regrid_scheme:  linear
-      mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl
-    script: perfmetrics_main.ncl
-    model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MTE,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/MTE/}
-
-
-- diag:
-    description: Grading calculations
-    variable: {name: gpp,  ref_model: MTE,  mip: Lmon,  field: T2Ms}
-    preprocess:
-      target_grid:    ref_model
-      regrid_scheme:  linear
-      mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl
-    script: perfmetrics_grading.ncl
-    model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MTE,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/MTE/}
-
-
-- diag:
-    description: Grading precalculations
-    variable: {name: lai,  ref_model: LAI3g,  mip: Lmon,  field: T2Ms}
-    preprocess:
-      target_grid:    ref_model
-      regrid_scheme:  linear
-      mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl
-    script: perfmetrics_main.ncl
-    model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: LAI3g,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/LAI3g/}
-
-
-- diag:
-    description: Grading calculations
-    variable: {name: lai,  ref_model: LAI3g,  mip: Lmon,  field: T2Ms}
-    preprocess:
-      target_grid:    ref_model
-      regrid_scheme:  linear
-      mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl
-    script: perfmetrics_grading.ncl
-    model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: LAI3g,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/LAI3g/}
-
-
-- diag:
-    description: Grading precalculations
-    variable: {name: nbp,  ref_model: JMA-TRANSCOM,  mip: Lmon,  field: T2Ms}
-    preprocess:
-      target_grid:    ref_model
-      regrid_scheme:  linear
-      mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl
-    script: perfmetrics_main.ncl
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: JMA-TRANSCOM,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/JMA-TRANSCOM/}
-
-
-- diag:
-    description: Grading calculations
-    variable: {name: nbp,  ref_model: JMA-TRANSCOM,  mip: Lmon,  field: T2Ms}
-    preprocess:
-      target_grid:    ref_model
-      regrid_scheme:  linear
-      mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl
-    script: perfmetrics_grading.ncl
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: JMA-TRANSCOM,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/JMA-TRANSCOM/}
-
+    scripts:
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl}
+      - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl}
+    additional_models:
+      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
       
-- diag:
-    description: Portrait diagram
-    settings: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_collect.ncl
-    script: perfmetrics_grading_collect.ncl
 
-# GRADING SH
-
-- diag:
+  DIAG_gradprtrop:
     description: Grading precalculations
-    variable: {name: tas,  ref_model: CRU,  mip: Amon,  field: T2Ms}
+    variables:
+     - {name: pr,  ref_model: CRU,  mip: Amon,  field: T2Ms}
     preprocess:
       target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl
-    script: perfmetrics_main.ncl
-    model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
+    scripts:
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl}
+      - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl}
+    additional_models:
+      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
 
 
-- diag:
-    description: Grading calculations
-    variable: {name: tas,  ref_model: CRU,  mip: Amon,  field: T2Ms}
-    preprocess:
-      target_grid:    ref_model
-      regrid_scheme:  linear
-      mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl
-    script: perfmetrics_grading.ncl
-    model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
-
-
-- diag:
+  DIAG_gradGPPtrop:
     description: Grading precalculations
-    variable: {name: pr,  ref_model: CRU,  mip: Amon,  field: T2Ms}
+    variables:
+      - {name: gpp,  ref_model: MTE,  mip: Lmon,  field: T2Ms}
     preprocess:
       target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl
-    script: perfmetrics_main.ncl
-    model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
+    scripts:
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl}
+      - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl}
+    additional_models:
+      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: MTE,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/MTE/}
 
 
-- diag:
+  DIAG_gradMTEtrop:
     description: Grading calculations
-    variable: {name: pr,  ref_model: CRU,  mip: Amon,  field: T2Ms}
+    variables:
+      - {name: gpp,  ref_model: MTE,  mip: Lmon,  field: T2Ms}
     preprocess:
       target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl
-    script: perfmetrics_grading.ncl
-    model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
+    scripts:
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl}
+      - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl}
+    additional_models:
+      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: MTE,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/MTE/}
 
 
-- diag:
+  DIAG_gradLAItrop:
     description: Grading precalculations
-    variable: {name: gpp,  ref_model: MTE,  mip: Lmon,  field: T2Ms}
+    variables:
+     - {name: lai,  ref_model: LAI3g,  mip: Lmon,  field: T2Ms}
     preprocess:
       target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl
-    script: perfmetrics_main.ncl
-    model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MTE,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/MTE/}
+    scripts:
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl}
+      - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl}
+    additional_models:
+      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: LAI3g,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/LAI3g/}
 
 
-- diag:
-    description: Grading calculations
-    variable: {name: gpp,  ref_model: MTE,  mip: Lmon,  field: T2Ms}
-    preprocess:
-      target_grid:    ref_model
-      regrid_scheme:  linear
-      mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl
-    script: perfmetrics_grading.ncl
-    model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MTE,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/MTE/}
-
-
-- diag:
+  DIAG_gradNBPtrop:
     description: Grading precalculations
-    variable: {name: lai,  ref_model: LAI3g,  mip: Lmon,  field: T2Ms}
+    variables:
+      - {name: nbp,  ref_model: JMA-TRANSCOM,  mip: Lmon,  field: T2Ms}
     preprocess:
       target_grid:    ref_model
       regrid_scheme:  linear
       mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl
-    script: perfmetrics_main.ncl
-    model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: LAI3g,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/LAI3g/}
-
-
-- diag:
-    description: Grading calculations
-    variable: {name: lai,  ref_model: LAI3g,  mip: Lmon,  field: T2Ms}
-    preprocess:
-      target_grid:    ref_model
-      regrid_scheme:  linear
-      mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl
-    script: perfmetrics_grading.ncl
-    model: {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: LAI3g,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/LAI3g/}
-
-
-- diag:
-    description: Grading precalculations
-    variable: {name: nbp,  ref_model: JMA-TRANSCOM,  mip: Lmon,  field: T2Ms}
-    preprocess:
-      target_grid:    ref_model
-      regrid_scheme:  linear
-      mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl
-    script: perfmetrics_main.ncl
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: JMA-TRANSCOM,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/JMA-TRANSCOM/}
-
-
-- diag:
-    description: Grading calculations
-    variable: {name: nbp,  ref_model: JMA-TRANSCOM,  mip: Lmon,  field: T2Ms}
-    preprocess:
-      target_grid:    ref_model
-      regrid_scheme:  linear
-      mask_fillvalue: True
-    settings:
-      file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl
-    script: perfmetrics_grading.ncl
-    model: {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: JMA-TRANSCOM,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/JMA-TRANSCOM/}
-
+    scripts:
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl}
+      - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_trop.ncl}
+    additional_models:
+      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: JMA-TRANSCOM,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/JMA-TRANSCOM/}
       
-- diag:
+          
+  DIAG_portraittrop:
     description: Portrait diagram
-    settings: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_collect.ncl
-    script: perfmetrics_grading_collect.ncl
+    scripts:
+      - {script: perfmetrics_grading_collect.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_collect.ncl}
+
+# GRADING NH ###########################################################################################################
+
+  DIAG_gradtasNH:
+    description: Grading precalculations
+    variables:
+     - {name: tas,  ref_model: CRU,  mip: Amon,  field: T2Ms}
+    preprocess:
+      target_grid:    ref_model
+      regrid_scheme:  linear
+      mask_fillvalue: True
+    scripts:
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl}
+      - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl}
+    additional_models:
+      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
+      
+
+  DIAG_gradprNH:
+    description: Grading precalculations
+    variables:
+     - {name: pr,  ref_model: CRU,  mip: Amon,  field: T2Ms}
+    preprocess:
+      target_grid:    ref_model
+      regrid_scheme:  linear
+      mask_fillvalue: True
+    scripts:
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl}
+      - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl}
+    additional_models:
+      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
+
+
+  DIAG_gradGPPNH:
+    description: Grading precalculations
+    variables:
+      - {name: gpp,  ref_model: MTE,  mip: Lmon,  field: T2Ms}
+    preprocess:
+      target_grid:    ref_model
+      regrid_scheme:  linear
+      mask_fillvalue: True
+    scripts:
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl}
+      - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl}
+    additional_models:
+      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: MTE,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/MTE/}
+
+
+  DIAG_gradMTENH:
+    description: Grading calculations
+    variables:
+      - {name: gpp,  ref_model: MTE,  mip: Lmon,  field: T2Ms}
+    preprocess:
+      target_grid:    ref_model
+      regrid_scheme:  linear
+      mask_fillvalue: True
+    scripts:
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl}
+      - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl}
+    additional_models:
+      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: MTE,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/MTE/}
+
+
+  DIAG_gradLAINH:
+    description: Grading precalculations
+    variables:
+     - {name: lai,  ref_model: LAI3g,  mip: Lmon,  field: T2Ms}
+    preprocess:
+      target_grid:    ref_model
+      regrid_scheme:  linear
+      mask_fillvalue: True
+    scripts:
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl}
+      - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl}
+    additional_models:
+      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: LAI3g,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/LAI3g/}
+
+
+  DIAG_gradNBPNH:
+    description: Grading precalculations
+    variables:
+      - {name: nbp,  ref_model: JMA-TRANSCOM,  mip: Lmon,  field: T2Ms}
+    preprocess:
+      target_grid:    ref_model
+      regrid_scheme:  linear
+      mask_fillvalue: True
+    scripts:
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl}
+      - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_NH.ncl}
+    additional_models:
+      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: JMA-TRANSCOM,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/JMA-TRANSCOM/}
+      
+          
+  DIAG_portraitNH:
+    description: Portrait diagram
+    scripts:
+      - {script: perfmetrics_grading_collect.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_collect.ncl}
+
+# GRADING SH ###########################################################################################################
+
+  DIAG_gradtasSH:
+    description: Grading precalculations
+    variables:
+     - {name: tas,  ref_model: CRU,  mip: Amon,  field: T2Ms}
+    preprocess:
+      target_grid:    ref_model
+      regrid_scheme:  linear
+      mask_fillvalue: True
+    scripts:
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl}
+      - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl}
+    additional_models:
+      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
+      
+
+  DIAG_gradprSH:
+    description: Grading precalculations
+    variables:
+     - {name: pr,  ref_model: CRU,  mip: Amon,  field: T2Ms}
+    preprocess:
+      target_grid:    ref_model
+      regrid_scheme:  linear
+      mask_fillvalue: True
+    scripts:
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl}
+      - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl}
+    additional_models:
+      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: bcc-csm1-1-m,  project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CRU,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/CRU/}
+
+
+  DIAG_gradGPPSH:
+    description: Grading precalculations
+    variables:
+      - {name: gpp,  ref_model: MTE,  mip: Lmon,  field: T2Ms}
+    preprocess:
+      target_grid:    ref_model
+      regrid_scheme:  linear
+      mask_fillvalue: True
+    scripts:
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl}
+      - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl}
+    additional_models:
+      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: MTE,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/MTE/}
+
+
+  DIAG_gradMTESH:
+    description: Grading calculations
+    variables:
+      - {name: gpp,  ref_model: MTE,  mip: Lmon,  field: T2Ms}
+    preprocess:
+      target_grid:    ref_model
+      regrid_scheme:  linear
+      mask_fillvalue: True
+    scripts:
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl}
+      - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl}
+    additional_models:
+      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: MTE,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/MTE/}
+
+
+  DIAG_gradLAISH:
+    description: Grading precalculations
+    variables:
+     - {name: lai,  ref_model: LAI3g,  mip: Lmon,  field: T2Ms}
+    preprocess:
+      target_grid:    ref_model
+      regrid_scheme:  linear
+      mask_fillvalue: True
+    scripts:
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl}
+      - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl}
+    additional_models:
+      - {name: bcc-csm1-1,    project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: LAI3g,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier2/LAI3g/}
+
+
+  DIAG_gradNBPSH:
+    description: Grading precalculations
+    variables:
+      - {name: nbp,  ref_model: JMA-TRANSCOM,  mip: Lmon,  field: T2Ms}
+    preprocess:
+      target_grid:    ref_model
+      regrid_scheme:  linear
+      mask_fillvalue: True
+    scripts:
+      - {script: perfmetrics_main.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl}
+      - {script: perfmetrics_grading.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_RMSD_SH.ncl}
+    additional_models:
+      - {name: BNU-ESM,       project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CESM1-BGC,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: inmcm4,        project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: MIROC-ESM,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: NorESM1-M,     project: CMIP5_ETHZ,  mip: *,  exp: historical,  ensemble: r1i1p1,  start: 1986,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: JMA-TRANSCOM,  project: OBS,  type: reanaly,  version: 1,  start: 1986,  end: 2005,  path: /obspath/Tier3/JMA-TRANSCOM/}
+      
+          
+  DIAG_portraitSH:
+    description: Portrait diagram
+    scripts:
+      - {script: perfmetrics_grading_collect.ncl, file: ./nml/cfg_anav13jclim/cfg_perfmetrics_grading_collect.ncl}

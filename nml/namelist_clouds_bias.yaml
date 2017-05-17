@@ -16,17 +16,12 @@
 ###############################################################################
 
 GLOBAL:
+  config_file:       config_private_DLR-PA2
   write_plots:       True
   write_netcdf:      True
-#    force_processing:  False # this goes away
-#    wrk_dir:           ./work/    # this goes to config file
-#    plot_dir:          ./plots/   # this goes to config file
-#    preproc_dir:       ./preproc/ # this goes to config file
   verbosity:         1
   exit_on_warning:   False
   output_file_type:  ps
-#    max_data_filesize:   100 # this goes to config file
-#    max_data_blocksize:  500 # this goes to config file
 
 
 MODELS:
@@ -95,18 +90,20 @@ DIAGNOSTICS:
 
 # multi model mean and multi model mean bias
   
-  - diag:
-      description: IPCC AR5 Ch. 9, Fig. 9.4 (precipitation)
-      variable: {name: pr-mmday,  field: T2Ms}
-      settings:
-        file:   ./nml/cfg_clouds/cfg_clouds_bias.ncl
-      script: cloud_bias.ncl
-      model: {name: GPCP-SG,  project: obs4mips,  level: L3,  version: C5,  start: 2001,  end: 2012,  path: /obspath/Tier1/}
+  DIAG_pr:
+    description: IPCC AR5 Ch. 9, Fig. 9.4 (precipitation)
+    variables:
+      - {name: pr-mmday,  field: T2Ms}
+    scripts:
+      - {script: cloud_bias.ncl, file: ./nml/cfg_clouds/cfg_clouds_bias.ncl}
+    additional_models:
+      - {name: GPCP-SG,  project: obs4mips,  level: L3,  version: C5,  start: 2001,  end: 2012,  path: /obspath/Tier1/}
 
-  - diag:
-      description: IPCC AR5 Ch. 9, Fig. 9.2 (2-m temperature)
-      variable: {name: tas-degC,  field: T2Ms}
-      settings:
-        file:   ./nml/cfg_clouds/cfg_clouds_bias.ncl
-      script: cloud_bias.ncl
-      model: {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1980,  end: 2005,  path: /obspath/Tier3/ERA-Interim/}
+  DIAG_tas:
+    description: IPCC AR5 Ch. 9, Fig. 9.2 (2-m temperature)
+    variables:
+      - {name: tas-degC,  field: T2Ms}
+    scripts:
+      - {script: cloud_bias.ncl, file: ./nml/cfg_clouds/cfg_clouds_bias.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1980,  end: 2005,  path: /obspath/Tier3/ERA-Interim/}

@@ -46,67 +46,70 @@ MODELS:
 
 PREPROCESS:
 
-
 # MR: need to find a way to read in fx file (use class standard paths, avoid extra class). Not clear what the nml is doing here with AUXILIARIES
   
 DIAGNOSTICS:
 
-- diag:
+  DIAG_spco2ts:
     description: Time series for spco2
-    variable: {name: spco2,  ref_model: ETH-SOM-FFN,  field: TO2Ms}
-    settings:
-      file: ./nml/cgf_GO/spco2Diag.ncl
-    script: GO_tsline.ncl
-    model: {name: BNU-ESM,  project: CMIP5_ETHZ,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 1998:  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CanESM2,  project: CMIP5_ETHZ,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 1998:  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: inmcm4,   project: CMIP5_ETHZ,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 1998:  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: ETH-SOM-FFN,  project: OBS,  type: ocean,  version: 1,  start: 1998,  end: 2005, path: /obspath/Tier2/ETH-SOM-FFN/}
+    variables:
+      - {name: spco2,  ref_model: ETH-SOM-FFN,  field: TO2Ms}
+    scripts:
+      - {script: GO_tsline.ncl, file: ./nml/cgf_GO/spco2Diag.ncl}
+    additional_models:
+      - {name: BNU-ESM,  project: CMIP5_ETHZ,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 1998:  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CanESM2,  project: CMIP5_ETHZ,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 1998:  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: inmcm4,   project: CMIP5_ETHZ,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 1998:  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: ETH-SOM-FFN,  project: OBS,  type: ocean,  version: 1,  start: 1998,  end: 2005, path: /obspath/Tier2/ETH-SOM-FFN/}
     # MR: need to find a way to read in fx file (use class standard paths, avoid extra class). Not clear what the nml is doing here.
 
 
-- diag:
+  DIAG_spco2cont:
     description: Contour map diagnostic for surface ocean pCO2
-    variable: {name: spco2,  ref_model: ETH-SOM-FFN, field: T2OMs}
-    settings:
-      file: ./nml/cfg_GO/spco2compmapDiag.ncl
-    script: GO_comp_map.ncl
-    model: {name: BNU-ESM,  project: CMIP5_ETHZ,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 1998:  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CanESM2,  project: CMIP5_ETHZ,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 1998:  end: 2005,  path: /modelpa
-    model: {name: inmcm4,   project: CMIP5_ETHZ,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 1998:  end: 2005,  path: /modelpa
-    model: {name: ETH-SOM-FFN,  project: OBS,  type: ocean,  version: 1,  start: 1998,  end: 2005, path: /obspath/Tier2/ETH-SOM-FFN/}
+    variables:
+      - {name: spco2,  ref_model: ETH-SOM-FFN, field: T2OMs}
+    scripts:
+      - {script: GO_comp_map.ncl, file: ./nml/cfg_GO/spco2compmapDiag.ncl}
+    additional_models:
+      - {name: BNU-ESM,  project: CMIP5_ETHZ,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 1998:  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CanESM2,  project: CMIP5_ETHZ,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 1998:  end: 2005,  path: /modelpa
+      - {name: inmcm4,   project: CMIP5_ETHZ,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 1998:  end: 2005,  path: /modelpa
+      - {name: ETH-SOM-FFN,  project: OBS,  type: ocean,  version: 1,  start: 1998,  end: 2005, path: /obspath/Tier2/ETH-SOM-FFN/}
     # MR: need to find a way to read in fx file (use class standard paths, avoid extra class). Not clear what the nml is doing here.
 
 
-- diag:
+  DIAG_talkcont:
     description: Contour map diagnostic for surface ocean Total Alkalinity
-    variable: {name: talk,  ref_model: takahashi14,  field: TO2Ms}
-    settings:
-      file: ./nml/cfg_GO/talkcompmapDiag.ncl
-    script: GO_comp_map.ncl
-    model: {name: CanESM2,     project: CMIP5_ETHZ,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 2005,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: GFDL-ESM2M,  project: CMIP5_ETHZ,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 2005,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: MRI-ESM1,    project: CMIP5_ETHZ,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 2005,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: takahashi14,  project: OBS,  type: ocean,  version: 1,  start: 2005,  end: 2005, path:  /obspath/Tier2/ETH-SOM-FFN/}
+    variables:
+      - {name: talk,  ref_model: takahashi14,  field: TO2Ms}
+    scripts:
+      - {script: GO_comp_map.ncl, file: ./nml/cfg_GO/talkcompmapDiag.ncl}
+    additional_models:
+      - {name: CanESM2,     project: CMIP5_ETHZ,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 2005,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: GFDL-ESM2M,  project: CMIP5_ETHZ,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 2005,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: MRI-ESM1,    project: CMIP5_ETHZ,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 2005,  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: takahashi14,  project: OBS,  type: ocean,  version: 1,  start: 2005,  end: 2005, path:  /obspath/Tier2/ETH-SOM-FFN/}
     # MR: need to find a way to read in fx file (use class standard paths, avoid extra class). Not clear what the nml is doing here.
 
 
-- diag:
+  DIAG_o2cont:
     description: Contour map diagnostic for ocean interior dissolved oxygen concentration
-    variable: {name: o2_onelev,  ref_model: woa2005,  field: TO2M}
-    settings:
-      file: ./nml/cfg_GO/O2compmapDiag.ncl
-    script: GO_comp_map.ncl
-    model: {name: GFDL-ESM2M,  project: CMIP5_ETHZ,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 2001,  end: 2001,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: woa2005,  project: OBS,  type: bianchi, version: reg,  start: 2005,  end: 2005, path:  /obspath/Tier2/woa2005/}
+    variables:
+      - {name: o2_onelev,  ref_model: woa2005,  field: TO2M}
+    scripts:
+      - {script: GO_comp_map.ncl, file: ./nml/cfg_GO/O2compmapDiag.ncl}
+    additional_models:
+      - {name: GFDL-ESM2M,  project: CMIP5_ETHZ,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 2001,  end: 2001,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: woa2005,  project: OBS,  type: bianchi, version: reg,  start: 2005,  end: 2005, path:  /obspath/Tier2/woa2005/}
     # MR: need to find a way to read in fx file (use class standard paths, avoid extra class). Not clear what the nml is doing here.
 
 
-- diag:
+  DIAG_chlcont:
     description: Contour map diagnostic for surface ocean chl
-    variable: {name: chl,  ref_model: SeaWIFS,  field: TO2Ms}
-    settings:
-      file: ./nml/cfg_GO/chlcompmapDiag.ncl
-    script: GO_comp_map.ncl
-    model: {name: CanESM2,    project: CMIP5_ETHZ,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 2000:  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: CMCC-CESM,  project: CMIP5_ETHZ,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 2000:  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
-    model: {name: SeaWIFS,  project: OBS,  type: ocean,  version: 1,  start: 2000,  end: 2005,  path: /obspath/Tier2/SeaWIFS/}
+    variables: {name: chl,  ref_model: SeaWIFS,  field: TO2Ms}
+    scripts:
+      - {script: GO_comp_map.ncl, file: ./nml/cfg_GO/chlcompmapDiag.ncl}
+    additional_models:
+      - {name: CanESM2,    project: CMIP5_ETHZ,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 2000:  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: CMCC-CESM,  project: CMIP5_ETHZ,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 2000:  end: 2005,  path: /modelpath/ETHZ_CMIP5/}
+      - {name: SeaWIFS,  project: OBS,  type: ocean,  version: 1,  start: 2000,  end: 2005,  path: /obspath/Tier2/SeaWIFS/}
