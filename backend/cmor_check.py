@@ -1,12 +1,13 @@
 import numpy as np
 import iris
+import iris.coords
 import iris.exceptions
 import iris.coord_categorisation
 import os
 import warnings
 import cf_units
 
-from backend.variable_definition import VariablesInfo
+from backend.variable_info import VariablesInfo
 
 iris.FUTURE.cell_datetime_objects = True
 iris.FUTURE.netcdf_promote = True
@@ -24,11 +25,12 @@ class CMORCheck(object):
     _vals_msg = '{}: has values {} {}'
     _contain_msg = '{}: does not contain {} {}'
 
-    def __init__(self, cube, table, variables_info, frequency=None, fail_on_error=False,
-                 automatic_fixes=False):
+    def __init__(self, cube, table, variables_info, frequency=None,
+                 fail_on_error=False, automatic_fixes=False):
         var_info = variables_info.get_variable(table, cube.var_name)
         if var_info is None:
-            raise CMORCheckError('Variable {0} was not recognized'.format(cube.var_name))
+            raise CMORCheckError('Variable {0} was not '
+                                 'recognized'.format(cube.var_name))
 
         self.cube = cube
         self._failerr = fail_on_error
@@ -39,7 +41,6 @@ class CMORCheck(object):
             frequency = self._cmor_var.frequency
         self.frequency = frequency
         self.automatic_fixes = automatic_fixes
-
 
     def check_metadata(self):
         """
@@ -63,7 +64,6 @@ class CMORCheck(object):
             raise CMORCheckError(msg)
         
         self._add_auxiliar_time_coordinates()
-
 
     def check_data(self):
         """
@@ -94,14 +94,18 @@ class CMORCheck(object):
         # Check standard_name
         if self._cmor_var.standard_name:
             if self.cube.standard_name != self._cmor_var.standard_name:
-                self.report_error(self._attr_msg, self.cube.var_name, 'standard_name',
-                                  self._cmor_var.standard_name, self.cube.standard_name)
+                self.report_error(self._attr_msg, self.cube.var_name,
+                                  'standard_name',
+                                  self._cmor_var.standard_name,
+                                  self.cube.standard_name)
 
         # Check units
         if self._cmor_var.units:
             if not self.cube.units.is_convertible(self._cmor_var.units):
-                self.report_error('Variable {0} units () can not be converted to {2}',
-                                  self.cube.var_name, self._cmor_var.units, self.cube.units)
+                self.report_error('Variable {0} units () can not be '
+                                  'converted to {2}',
+                                  self.cube.var_name, self._cmor_var.units,
+                                  self.cube.units)
 
         # Check other variable attributes that match entries in cube.attributes
         attrs = ('positive',)
@@ -160,15 +164,13 @@ class CMORCheck(object):
                 else:
                     self.report_error(self._does_msg, var_name, 'exist')
             else:
-                # Check for var_name in cube coordinates
-                #  Don't insist on dim_coords as could be scalar
-                #  Cannot use axis as a keyword as Iris has stripped this out
-                #   and made it impossible to re-add
                 try:
-                    cube_coord = self.cube.coord(var_name=coordinate.out_name)  # , axis=axis)
+                    cube_coord = self.cube.coord(var_name=coordinate.out_name)
                     if cube_coord.standard_name != coordinate.standard_name:
-                        self.report_error(self._attr_msg, coordinate.out_name, 'standard_name',
-                                          coordinate.standard_name, cube_coord.standard_name)
+                        self.report_error(self._attr_msg, coordinate.out_name,
+                                          'standard_name',
+                                          coordinate.standard_name,
+                                          cube_coord.standard_name)
                 except iris.exceptions.CoordinateNotFoundError:
                     self.report_error(self._does_msg, coordinate.name, 'exist')
 
@@ -232,8 +234,8 @@ class CMORCheck(object):
             coord_points = list(coord.points)
             for point in cmor_points:
                 if point not in coord_points:
-                    self.report_warning(self._contain_msg, var_name, str(point),
-                                        str(coord.units))
+                    self.report_warning(self._contain_msg, var_name,
+                                        str(point), str(coord.units))
 
         l_fix_coord_value = False
 
@@ -275,8 +277,9 @@ class CMORCheck(object):
         else:
             coord.convert_units(cf_units.Unit('days since 1950-01-01 00:00:00',
                                               calendar=coord.units.calendar))
+            simplified_cal = self._simplify_calendars(coord.units.calendar)
             coord.units = cf_units.Unit(coord.units.name,
-                                        self._simplify_calendars(coord.units.calendar))
+                                        simplified_cal)
 
         if self.frequency:
             tol = 0.001
@@ -317,7 +320,8 @@ class CMORCheck(object):
                  ['julian'],
                  ['none']]
 
-    def _simplify_calendars(self, calendar):
+    @staticmethod
+    def _simplify_calendars(calendar):
         for calendar_type in CMORCheck.CALENDARS:
             if calendar in calendar_type:
                 return calendar_type[0]
@@ -385,13 +389,6 @@ def main():
         # ('CMIP6/1pctCO2/Oyr/co3/MPI-ESM-LR/r1i1p1f1', 'co3', 'Oyr'),
         ]
 
-    def get_attr_from_field(ncfield, attr):
-        attrs = ncfield.cf_attrs()
-        attr_val = [value for (key, value) in attrs if key == attr]
-        if attr_val:
-            return attr_val[0]
-        return None
-
     def get_attr_from_field_coord(ncfield, coord_name, attr):
         if coord_name is not None:
             attrs = ncfield.cf_group[coord_name].cf_attrs()
@@ -427,15 +424,6 @@ def main():
                                                   'units')
                 if units is not None:
                     coord.units = units
-            # Iris removes several attributes, attempting to re-add them
-            # attrs = ['axis']
-            # for attr in attrs:
-            #     if attr not in coord.attributes:
-            #         attrval = get_attr_from_field_coord(field,
-            #                                             coord.var_name,
-            #                                             attr)
-            #         if attrval is not None:
-            #             coord.attributes[attr] = attrval
     variables_info = VariablesInfo()
     for (example_data, var_name, table) in example_datas:
         print('\n' + example_data)

@@ -23,7 +23,7 @@ class VariablesInfo(object):
             print('json_file: {}'.format(json_file))
             if 'CV_test' in json_file or 'grids' in json_file:
                 continue
-            self.load_table(json_file)
+            self._load_table(json_file)
 
     def _get_cmor_path(self, cmor_tables_path):
         if not cmor_tables_path:
@@ -31,7 +31,7 @@ class VariablesInfo(object):
             cmor_tables_path = os.path.join(cwd, 'cmip6-cmor-tables')
         return cmor_tables_path
 
-    def load_table(self, json_file):
+    def _load_table(self, json_file):
         with open(json_file) as inf:
             raw_data = json.loads(inf.read())
             if not self._is_table(raw_data):
@@ -51,7 +51,7 @@ class VariablesInfo(object):
                 frequency = ''
 
             for var_name, var_data in raw_data['variable_entry'].items():
-                var = Variable(var_name)
+                var = VariableInfo(var_name)
                 var.frequency = frequency
                 var.read_json(var_data)
                 self._assign_dimensions(var, generic_levels)
@@ -60,7 +60,7 @@ class VariablesInfo(object):
     def _assign_dimensions(self, var, generic_levels):
         for dimension in var.dimensions:
             if dimension in generic_levels:
-                coord = Coordinate(dimension)
+                coord = CoordinateInfo(dimension)
                 coord.generic_level = True
                 coord.axis = 'Z'
             else:
@@ -79,7 +79,7 @@ class VariablesInfo(object):
             with open(json_file) as inf:
                 table_data = json.loads(inf.read())
                 for coord_name in table_data['axis_entry'].keys():
-                    coord = Coordinate(coord_name)
+                    coord = CoordinateInfo(coord_name)
                     coord.read_json(table_data['axis_entry'][coord_name])
                     self.coords[coord_name] = coord
 
@@ -117,10 +117,10 @@ class JsonInfo(object):
         return self._json_data[var_name]
 
 
-class Variable(JsonInfo):
+class VariableInfo(JsonInfo):
 
     def __init__(self, short_name):
-        super(Variable, self).__init__()
+        super(VariableInfo, self).__init__()
         self.short_name = short_name
         self.standard_name = ''
         self.long_name = ''
@@ -154,10 +154,10 @@ class Variable(JsonInfo):
         pass
 
 
-class Coordinate(JsonInfo):
+class CoordinateInfo(JsonInfo):
 
     def __init__(self, name):
-        super(Coordinate, self).__init__()
+        super(CoordinateInfo, self).__init__()
         self.name = name
         self.generic_level = False
 

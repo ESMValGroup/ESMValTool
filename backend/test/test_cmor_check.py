@@ -1,6 +1,4 @@
 """
-test_cmor_check.py
-==================
 
 Unit tests for the CMORCheck class.
 
@@ -18,7 +16,7 @@ import iris
 import iris.coords
 import iris.coord_categorisation
 from cf_units import Unit
-from backend.variable_definition import VariablesInfo
+from backend.variable_info import VariablesInfo
 
 # Local imports
 from backend.cmor_check import CMORCheck, CMORCheckError
