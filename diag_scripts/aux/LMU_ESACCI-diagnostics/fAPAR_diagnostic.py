@@ -1,5 +1,5 @@
 import os
-import subprocess
+import shutil
 from netCDF4 import Dataset
 from ESMValMD import ESMValMD
 from diagnostic import BasicDiagnostics
@@ -71,8 +71,9 @@ class fAPARDiagnostic(BasicDiagnostics):
             if not os.path.exists(newfile):
                 tempfile = self._aggregate_resolution(
                     self._mod_file, grid, remove=False)
-                subprocess.call(["mkdir", newdir])
-                subprocess.call(['cp', tempfile, newfile])
+                if not os.path.exists(newdir):
+                    os.makedirs(newdir)
+                shutil.copy2(tempfile, newfile)
                 os.remove(tempfile)
 
             self._mod_file = newfile
@@ -111,8 +112,9 @@ class fAPARDiagnostic(BasicDiagnostics):
             if not os.path.exists(newfile):
                 tempfile = self._aggregate_resolution(
                     self._ref_file, grid, remove=False)
-                subprocess.call(["mkdir", newdir])
-                subprocess.call(['cp', tempfile, newfile])
+                if not os.path.exists(newdir):
+                    os.makedirs(newdir)
+                shutil.copy2(tempfile, newfile)
                 os.remove(tempfile)
 
             self._ref_file = newfile

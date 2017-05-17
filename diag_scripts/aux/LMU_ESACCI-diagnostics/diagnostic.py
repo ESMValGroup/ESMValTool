@@ -83,7 +83,7 @@ class Diagnostic(object):
 
         name_parts = self._mod_file.split("/")[-1].split(".")[0].split("_")
         self.modname = "_".join(name_parts[i] for i in [0, 3, 2, 4])
-        self.refname = "ESACCI"  # self._ref_type
+        self.refname = "ESA_CCI"  # self._ref_type
 
         return self._plot_dir + os.sep + self._vartype.replace(" ", "_") + \
             '_' + self.refname + '_' + self.modname
@@ -1950,8 +1950,12 @@ class BasicDiagnostics(Diagnostic):
     def _aggregate_resolution(self, infile, resolution, remove=True):
         """ currenty only T63, T85 and custom"""
         cdo = Cdo()
-        oname = self._work_dir + os.sep + "temp" + os.sep + \
-            tempfile.NamedTemporaryFile().name.split('/')[-1]
+
+        odir = self._work_dir + os.sep + "temp" + os.sep
+        if not os.path.exists(odir):
+            os.makedirs(odir)
+        oname = odir + tempfile.NamedTemporaryFile().name.split('/')[-1]
+
         if resolution == "T21":
             gridtype = "t21grid"
         elif resolution == "T63":
