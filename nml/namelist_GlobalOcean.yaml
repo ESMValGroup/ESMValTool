@@ -32,7 +32,6 @@
 ###############################################################################
 
 GLOBAL:
-  config_file:       config_private
   write_plots:       True
   write_netcdf:      True
   verbosity:         1
