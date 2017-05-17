@@ -1,6 +1,7 @@
 from auxiliary import xmlTagError, error, info
 from model import AllModels, Model
 from fx_file import AllFXfiles, FX_file, FX_file_exception
+from esgf_config import ESGFConfig, ESGFConfigException
 from diagdef import AllDiagnostics, Diagnostic
 import diagdef
 import os
@@ -38,7 +39,7 @@ class GLOBAL(Nml_base):
                 project_info = int(project_info)
 
             elif attributes.values()[0] == "path":
-		if project_info[0] not in "@": 
+		if project_info[0] not in "@":
 	                project_info = os.path.abspath(project_info)
             else:
                 raise TypeError("Invalid value for attributes")
@@ -76,6 +77,31 @@ class AUXILIARIES(Nml_base):
                 msg = "fx_file entry '" + str.strip() +\
                       "' has no 'id' attribute."
                 raise FX_file_exception(msg)
+
+
+class ESGF(Nml_base):
+    """
+    This section is for ESGF config information.
+    All information is currently held entirely in the ESGF config file,
+    so this section may be unneccesary. I'm keeping it, for now, in case
+    namelist specific config information is required.
+    """
+    def __init__(self):
+       Nml_base.__init__(self)
+
+       self.project_info = {}
+       # self.project_info becomes project_info['ESGF'] in the main program.
+
+    def add_nml_entry(self, name, string, attribute):
+        """
+        Process namelist entry
+        :param name: tag name of XML element
+        :param string: content of XML element ('str' in the other classes)
+        :param attribute: any attribute(s) given inside start tag
+        """
+        # Get path to ESGF config file
+        if name == 'config_file':
+            self.project_info['config_file'] = string.strip()
 
 
 class DIAGNOSTICS(Nml_base):

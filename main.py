@@ -24,6 +24,7 @@
 # 2010-12-14  HS   added termination call when error occurs with reformat
 # 2012-06-08  HS   set environment variable (OPTIONS_FILE) if
 #                  namelist.global_vars.write_plot_vars is defined
+# 2015-06-26  SR   Added optional <ESGF> section quality check and print
 # 2015-06-30  a_laue_ax: added ESMValTool version
 
 import sys
@@ -136,6 +137,46 @@ timestamp_format = "%Y-%m-%d --  %H:%M:%S"
 print_header(project_info, options.reformat)
 info("Starting the Earth System Model Evaluation Tool v" + version + " at time: "
      + timestamp1.strftime(timestamp_format) + "...", verbosity, 1)
+
+# Load ESGF config info (if specified in namelist)
+print project_info['ESGF']
+if 'ESGF' in project_info and 'config_file' in project_info['ESGF']:
+    esgf_config_file = project_info['ESGF']['config_file']
+    if os.path.isfile(esgf_config_file):
+        info("Loading ESGF config file", verbosity, 2)
+        esgf_config_handler = xml_parsers.ESGFConfigHandler()
+        parser = xml.sax.make_parser()
+        parser.setContentHandler(esgf_config_handler)
+        parser.parse(esgf_config_file)
+        esgf_config = esgf_config_handler.current_tag.config
+        esgf_config.config_file_name = esgf_config_file
+        info("ESGF config file loaded", verbosity, 2)
+
+        # Summary of ESGF config info (if exists) to std-out
+        info('', verbosity, 3)
+        info('Summary of ESGF config information:',\
+            verbosity, 3)
+        msg = str(esgf_config)
+        for msg_line in msg.split('\n'):
+            info(msg_line, verbosity, 3)
+        info("", verbosity, 3)
+
+        # Perform quality check on ESGF config
+        projects.ESGF.quality_check(esgf_config)
+        info("ESGF config file passed quality check.", verbosity, 2)
+
+        # Store ESGF config in project_info
+        project_info['ESGF']['config'] = esgf_config
+
+        # Also, add fullpath of namelist file to
+        # ESGF section of project info, so it can be
+        # included in report/console output
+        project_info['ESGF']['namelist_fullpath']\
+            = input_xml_full_path
+
+    else:
+        msg = "Cannot find ESGF config file '%s'" % esgf_config_file
+        raise IOError(msg)
 
 # Loop over all diagnostics defined in project_info and
 # create/prepare netCDF files for each variable
