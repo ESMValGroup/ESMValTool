@@ -38,7 +38,7 @@
   </DIAGNOSTICS>
 
   <ESGF>
-    <config_file> ./nml/to_be_checked/esgf_config.xml </config_file>
+    <config_file> ./esgf_config.xml </config_file>
   </ESGF>
 
 </namelist>
