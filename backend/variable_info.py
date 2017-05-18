@@ -1,15 +1,28 @@
+"""
+Classes to read variable information from CMIP6 tables and make it easily
+available for the other components of ESMValTool
+"""
 import os
 import json
 import glob
 
 
-class VariablesInfo(object):
+class CMIP6_info(object):
+
     _CMIP_5to6_varname = {
         'sic': 'siconc',
         'tro3': 'o3',
     }
 
     def __init__(self, cmor_tables_path=None):
+        """
+        Class to read CMIP6-like data request
+        
+        Parameters
+        ----------
+        cmor_tables_path: basestring
+            Path to the folder containing the Tables folder with the json files
+        """
 
         cmor_tables_path = self._get_cmor_path(cmor_tables_path)
 
@@ -78,11 +91,27 @@ class VariablesInfo(object):
                     self.coords[coord_name] = coord
 
     def get_variable(self, table, short_name):
+        """
+        Search and return the variable info
+        
+        Parameters
+        ----------
+        table: basestring
+            Table name
+        short_name: basestring
+            Variable's short name
+        
+        Returns
+        -------
+        VariableInfo
+            Returns the VariableInfo object for the requested variable if 
+            found, returns None if not
+        """
         try:
             return self.tables[table][short_name]
         except KeyError:
-            if short_name in VariablesInfo._CMIP_5to6_varname:
-                new_short_name = VariablesInfo._CMIP_5to6_varname[short_name]
+            if short_name in CMIP6_info._CMIP_5to6_varname:
+                new_short_name = CMIP6_info._CMIP_5to6_varname[short_name]
                 return self.get_variable(table, new_short_name)
             return None
 
@@ -97,22 +126,62 @@ class VariablesInfo(object):
 
 class JsonInfo(object):
     def __init__(self):
+        """
+        Base class fo the info classes to provide common utility methods to
+        read json variables
+        """
         self._json_data = None
 
-    def _read_json_variable(self, var_name):
-        if var_name not in self._json_data:
-            return ''
-        return str(self._json_data[var_name])
+    def _read_json_variable(self, parameter):
+        """
+        Reads a json parameter in json_data
+        
+        Parameters
+        ----------
+        parameter: str
+            parameter to read
 
-    def _read_json_list_variable(self, var_name):
-        if var_name not in self._json_data:
+        Returns
+        -------
+        str
+            Option's value or empty string if parameter is not present
+
+        """
+        if parameter not in self._json_data:
+            return ''
+        return str(self._json_data[parameter])
+
+    def _read_json_list_variable(self, parameter):
+        """
+        Reads a json list parameter in json_data
+
+        Parameters
+        ----------
+        parameter: str
+            parameter to read
+
+        Returns
+        -------
+        str
+            Option's value or empty list if parameter is not present
+
+        """
+        if parameter not in self._json_data:
             return []
-        return self._json_data[var_name]
+        return self._json_data[parameter]
 
 
 class VariableInfo(JsonInfo):
 
     def __init__(self, short_name):
+        """
+        Class to read and store variable information
+
+        Parameters
+        ----------
+        short_name: str
+            variable's short name
+        """
         super(VariableInfo, self).__init__()
         self.short_name = short_name
         self.standard_name = ''
@@ -132,6 +201,19 @@ class VariableInfo(JsonInfo):
         self._json_data = None
 
     def read_json(self, json_data):
+        """
+        Reads variable information from json. 
+
+        Non-present options will be set to empty
+
+        Parameters
+        ----------
+        json_data: dict
+            dictionary created by the json reader containing 
+            variable information
+
+
+        """
         self._json_data = json_data
 
         self.standard_name = self._read_json_variable('standard_name')
@@ -147,6 +229,14 @@ class VariableInfo(JsonInfo):
 class CoordinateInfo(JsonInfo):
 
     def __init__(self, name):
+        """
+        Class to read and store coordinate information
+        
+        Parameters
+        ----------
+        name: str
+            coordinate's name
+        """
         super(CoordinateInfo, self).__init__()
         self.name = name
         self.generic_level = False
@@ -164,6 +254,19 @@ class CoordinateInfo(JsonInfo):
         self.valid_max = ""
 
     def read_json(self, json_data):
+        """
+        Reads coordinate information from json. 
+        
+        Non-present options will be set to empty
+        
+        Parameters
+        ----------
+        json_data: dict
+            dictionary created by the json reader containing 
+            coordinate information
+
+
+        """
         self._json_data = json_data
 
         self.axis = self._read_json_variable('axis')
