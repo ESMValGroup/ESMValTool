@@ -92,16 +92,13 @@ def _stock_cube(spec):
 
     mid_dx, mid_dy = dx / 2, dy / 2
 
-    cs = iris.coord_systems.GeogCS(iris.fileformats.pp.EARTH_RADIUS)
-
     # Construct the latitude coordinate, with bounds.
     ydata = np.linspace(_LAT_MIN + mid_dy,
                         _LAT_MAX - mid_dy,
                         _LAT_RANGE / dy)
     lats = iris.coords.DimCoord(ydata,
                                 standard_name='latitude',
-                                units='degrees_north',
-                                coord_system=cs)
+                                units='degrees_north')
     lats.guess_bounds()
 
     # Construct the longitude coordinate, with bounds.
@@ -110,8 +107,7 @@ def _stock_cube(spec):
                         _LON_RANGE / dx)
     lons = iris.coords.DimCoord(xdata,
                                 standard_name='longitude',
-                                units='degrees_east',
-                                coord_system=cs)
+                                units='degrees_east')
     lons.guess_bounds()
 
     # Construct the resultant stock cube, with dummy data.
@@ -168,6 +164,13 @@ def regrid(src_cube, tgt_grid, scheme):
         # Generate a target grid from the provided cell-specification,
         # and cache the resulting stock cube for later use.
         tgt_grid = _cache.setdefault(tgt_grid, _stock_cube(tgt_grid))
+        # Align the target grid coordinate system to the source
+        # coordinate system.
+        src_cs = src_cube.coord_system()
+        xcoord = tgt_grid.coord(axis='x', dim_coords=True)
+        ycoord = tgt_grid.coord(axis='y', dim_coords=True)
+        xcoord.coord_system = src_cs
+        ycoord.coord_system = src_cs
     elif not isinstance(tgt_grid, iris.cube.Cube):
         emsg = 'Expecting a cube or cell-specification, got {}.'
         raise ValueError(emsg.format(type(tgt_grid)))

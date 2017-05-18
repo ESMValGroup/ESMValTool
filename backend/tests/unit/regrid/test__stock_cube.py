@@ -30,10 +30,6 @@ class Test(tests.Test):
                                           _LON_MAX - mid_dx,
                                           _LON_RANGE / dx)
 
-        # Check the stock cube coordinate-system creation.
-        radius = iris.fileformats.pp.EARTH_RADIUS
-        self.mock_GeogCS.assert_called_once_with(radius)
-
         # Check the stock cube coordinates.
         self.assertEqual(self.mock_DimCoord.call_count, 2)
         call_lats, call_lons = self.mock_DimCoord.call_args_list
@@ -42,16 +38,14 @@ class Test(tests.Test):
         [args], kwargs = call_lats
         self.assertArrayEqual(args, expected_lat_points)
         expected_lat_kwargs = dict(standard_name='latitude',
-                                   units='degrees_north',
-                                   coord_system=self.GeogCS)
+                                   units='degrees_north')
         self.assertEqual(kwargs, expected_lat_kwargs)
 
         # Check the longitude coordinate creation.
         [args], kwargs = call_lons
         self.assertArrayEqual(args, expected_lon_points)
         expected_lon_kwargs = dict(standard_name='longitude',
-                                   units='degrees_east',
-                                   coord_system=self.GeogCS)
+                                   units='degrees_east')
         self.assertEqual(kwargs, expected_lon_kwargs)
 
         # Check that the coordinate guess_bounds method has been called.
@@ -76,11 +70,7 @@ class Test(tests.Test):
         self.mock_coord = mock.Mock(spec=iris.coords.DimCoord)
         self.mock_DimCoord = self.patch('iris.coords.DimCoord',
                                         return_value=self.mock_coord)
-        self.GeogCS = mock.sentinel.GeogCS
-        self.mock_GeogCS = self.patch('iris.coord_systems.GeogCS',
-                                      return_value=self.GeogCS)
-        self.mocks = [self.mock_Cube, self.mock_coord,
-                      self.mock_DimCoord, self.mock_GeogCS]
+        self.mocks = [self.mock_Cube, self.mock_coord, self.mock_DimCoord]
 
     def test_invalid_cell_spec__alpha(self):
         emsg = 'Invalid MxN cell specification'
