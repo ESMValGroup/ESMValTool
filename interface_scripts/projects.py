@@ -8,7 +8,10 @@ import re
 import glob
 import datetime
 
-from esgf_search import ESGFSearch
+try:
+    from esgf_search import ESGFSearch
+except ImportError:
+    info("No esgf pyclient installed",1,1)
 
 
 class Project:

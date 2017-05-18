@@ -139,7 +139,6 @@ info("Starting the Earth System Model Evaluation Tool v" + version + " at time: 
      + timestamp1.strftime(timestamp_format) + "...", verbosity, 1)
 
 # Load ESGF config info (if specified in namelist)
-print project_info['ESGF']
 if 'ESGF' in project_info and 'config_file' in project_info['ESGF']:
     esgf_config_file = project_info['ESGF']['config_file']
     if os.path.isfile(esgf_config_file):
