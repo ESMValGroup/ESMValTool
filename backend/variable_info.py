@@ -104,7 +104,7 @@ class CMIP6Info(object):
         Returns
         -------
         VariableInfo
-            Returns the VariableInfo object for the requested variable if 
+            Returns the VariableInfo object for the requested variable if
             found, returns None if not
         """
         try:
@@ -258,7 +258,7 @@ class CoordinateInfo(JsonInfo):
         Parameters
         ----------
         json_data: dict
-            dictionary created by the json reader containing 
+            dictionary created by the json reader containing
             coordinate information
         """
         self._json_data = json_data
@@ -273,7 +273,4 @@ class CoordinateInfo(JsonInfo):
         self.stored_direction = self._read_json_variable('stored_direction')
         self.valid_min = self._read_json_variable('valid_min')
         self.valid_max = self._read_json_variable('valid_max')
-
         self.requested = self._read_json_list_variable('requested')
-
-

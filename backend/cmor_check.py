@@ -69,10 +69,10 @@ class CMORCheck(object):
         Checks the cube metadata, performing all the tests that do not require
         to have the data in memory
 
-        It will also report some warnings in case of minor errors and 
+        It will also report some warnings in case of minor errors and
         homogenize some data:
             - Equivalent calendars will all default to the same name
-            - Auxiliary coordinates year, month_number, day_of_month and 
+            - Auxiliary coordinates year, month_number, day_of_month and
                 day_of_year will be added for the time axis
 
         Raises
@@ -113,7 +113,7 @@ class CMORCheck(object):
 
         Assumes that metadata is correct, so you must call check_metadata prior
         to this.
-        
+
         It will also report some warnings in case of minor errors
 
         Raises
