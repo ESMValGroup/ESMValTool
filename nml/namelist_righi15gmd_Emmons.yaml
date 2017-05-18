@@ -1,0 +1,117 @@
+###############################################################################
+# namelist_righi15gmd_Emmons.xml
+# 
+# Description
+# This namelist produces figures 16, 17, 19, S15, S16, S17, S18, S19 of 
+# Righi et al. (2015)
+# 
+# Author
+# Klaus-Dirk Gottschaldt (DLR, Germany - klaus-dirk.gottschaldt@dlr.de)
+# 
+# Project
+# DLR ESMVal
+# 
+# References
+# Righi et al., Geosci. Model Dev., 8, 733-768 10.5194/gmd-8-733-2015 (2015)
+# 
+# This namelist is part of the ESMValTool
+###############################################################################
+
+GLOBAL:
+  write_plots:       True
+  write_netcdf:      True
+  verbosity:         1
+  exit_on_warning:   False
+  output_file_type:  ps
+  
+
+MODELS:
+  - {name: EVAL2,      project: EMAC,  ensemble: 1,  start: 1999,  end: 2009,  path: /modelpath/}
+  - {name: QCTM,       project: EMAC,  ensemble: 1,  start: 1999,  end: 2007,  path: /modelpath/}
+  - {name: TS2000,     project: EMAC,  ensemble: 1,  start: 2001,  end: 2010,  path: /modelpath/}
+  - {name: ACCMIP,     project: EMAC,  ensemble: 1,  start: 2001,  end: 2010,  path: /modelpath/}
+  - {name: ACCMIP-S1,  project: EMAC,  ensemble: 1,  start: 2001,  end: 2010,  path: /modelpath/}
+  - {name: ACCMIP-S2,  project: EMAC,  ensemble: 1,  start: 2001,  end: 2010,  path: /modelpath/}
+  
+
+PREPROCESS:
+  select_level:    None
+  target_grid:     None
+  regrid_scheme:   None
+  mask_fillvalues: True
+  mask_landocean:  None
+  multimodel_mean: False
+
+
+DIAGNOSTICS:
+  
+  DIAG_Fig16:
+    description: Emmons profiles: fig 16 of Righi et al., 2014
+    variables:
+      - {name: Emmons.ncl, tro3, field: T3M}
+    scripts:
+      - {name: Emmons.ncl, cfg_file: ./nml/cfg_righi15gmd/Emmons/cfg_righi15gmd_fig16_0.ncl}
+
+      
+  DIAG_Fig17:
+    description: Emmons profiles: fig 17 of Righi et al., 2014
+    variables:
+      - {name: Emmons.ncl, vmrnox, field: T3M}
+    scripts:
+      - {name: Emmons.ncl, cfg_file: ./nml/cfg_righi15gmd/Emmons/cfg_righi15gmd_fig17_0.ncl}
+      - {name: Emmons.ncl, cfg_file: ./nml/cfg_righi15gmd/Emmons/cfg_righi15gmd_fig17_1.ncl}
+      - {name: Emmons.ncl, cfg_file: ./nml/cfg_righi15gmd/Emmons/cfg_righi15gmd_fig17_2.ncl}
+
+      
+  DIAG_Fig19:
+    description: Emmons profiles: fig 19 of Righi et al., 2014
+    variables:
+      - {name: Emmons.ncl, vmrco, field: T3M}
+    scripts:
+      - {name: Emmons.ncl, cfg_file: ./nml/cfg_righi15gmd/Emmons/cfg_righi15gmd_fig19_0.ncl}
+      - {name: Emmons.ncl, cfg_file: ./nml/cfg_righi15gmd/Emmons/cfg_righi15gmd_fig19_1.ncl}
+
+      
+  DIAG_FigS15:
+    description: Emmons profiles: fig S15 of Righi et al., 2014
+    variables:
+      - {name: Emmons.ncl, vmrc2h4, field: T3M}
+    scripts:
+      - {name: Emmons.ncl, cfg_file: ./nml/cfg_righi15gmd/Emmons/cfg_righi15gmd_figS15_0.ncl}
+      - {name: Emmons.ncl, cfg_file: ./nml/cfg_righi15gmd/Emmons/cfg_righi15gmd_figS15_1.ncl}
+
+      
+  DIAG_FigS16:
+    description: Emmons profiles: fig S16 of Righi et al., 2014
+    variables:
+      - {name: Emmons.ncl, vmrc2h6, field: T3M}
+    scripts:
+      - {name: Emmons.ncl, cfg_file: ./nml/cfg_righi15gmd/Emmons/cfg_righi15gmd_figS16_0.ncl}
+      - {name: Emmons.ncl, cfg_file: ./nml/cfg_righi15gmd/Emmons/cfg_righi15gmd_figS16_1.ncl}
+
+      
+  DIAG_FigS17:
+    description: Emmons profiles: fig S17 of Righi et al., 2014
+    variables:
+      - {name: Emmons.ncl, vmrc3h6, field: T3M}
+    scripts:
+      - {name: Emmons.ncl, cfg_file: ./nml/cfg_righi15gmd/Emmons/cfg_righi15gmd_figS17_0.ncl}
+      - {name: Emmons.ncl, cfg_file: ./nml/cfg_righi15gmd/Emmons/cfg_righi15gmd_figS17_1.ncl}
+      - {name: Emmons.ncl, cfg_file: ./nml/cfg_righi15gmd/Emmons/cfg_righi15gmd_figS17_2.ncl}
+
+      
+  DIAG_FigS18:
+    description: Emmons profiles: fig S18 of Righi et al., 2014
+    variables:
+      - {name: Emmons.ncl, vmrc3h8, field: T3M}
+    scripts:
+      - {name: Emmons.ncl, cfg_file: ./nml/cfg_righi15gmd/Emmons/cfg_righi15gmd_figS18_0.ncl}
+      - {name: Emmons.ncl, cfg_file: ./nml/cfg_righi15gmd/Emmons/cfg_righi15gmd_figS18_1.ncl}
+
+      
+  DIAG_FigS19:
+    description: Emmons profiles: fig S19 of Righi et al., 2014
+    variables:
+      - {name: Emmons.ncl, vmrch3coch3, field: T3M}
+    scripts:
+      - {name: Emmons.ncl, cfg_file: ./nml/cfg_righi15gmd/Emmons/cfg_righi15gmd_figS19_0.ncl}

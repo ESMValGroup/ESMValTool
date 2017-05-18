@@ -27,10 +27,12 @@ GLOBAL:
   exit_on_warning:   False
   output_file_type:  ps
 
+
 MODELS:
   - {name: EVAL2,   project: EMAC,  ensemble: 1,  start: 1999,  end: 2009,  path: /modelpath/}
   - {name: QCTM,    project: EMAC,  ensemble: 1,  start: 1999,  end: 2007,  path: /modelpath/}
   - {name: TS2000,  project: EMAC,  ensemble: 1,  start: 2001,  end: 2010,  path: /modelpath/}
+  - {name: ACCMIP,  project: EMAC,  ensemble: 1,  start: 2001,  end: 2010,  path: /modelpath/}
 
 
 PREPROCESS:
