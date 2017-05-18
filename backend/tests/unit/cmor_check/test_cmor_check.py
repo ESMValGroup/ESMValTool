@@ -111,10 +111,11 @@ class TestCMORCheck(unittest.TestCase):
     def test_report_warning_with_fail_error(self):
         checker = CMORCheck(self.cube, self.var_info,
                             fail_on_error=True)
+        stdout = sys.stdout
         sys.stdout = StringIO()
         checker.report_warning('New error: {}', 'something failed')
         output = sys.stdout.getvalue().strip()
-        sys.stdout = sys.__stdout__
+        sys.stdout = stdout
         self.assertEquals(output, 'WARNING: New error: something failed')
 
     def test_check(self):
