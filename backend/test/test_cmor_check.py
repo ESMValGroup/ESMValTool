@@ -355,7 +355,6 @@ class TestCMORCheck(unittest.TestCase):
         with self.assertRaises(CMORCheckError):
             checker.check_data()
 
-
     def get_cube(self, var_info,
                  set_time_units="days since 1850-1-1 00:00:00",
                  frequency=None):
@@ -422,7 +421,6 @@ class TestCMORCheck(unittest.TestCase):
                                     var_name=coord_spec.out_name,
                                     units=coord_spec.units,
                                     attributes=None)
-
 
     def _create_coord_from_spec(self, coord_spec, set_time_units, frequency):
         if coord_spec.units.startswith("days since "):

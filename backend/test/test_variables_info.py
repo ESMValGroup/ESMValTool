@@ -132,4 +132,3 @@ class TestCoordinateInfo(unittest.TestCase):
         info = CoordinateInfo('var')
         info.read_json({'requested': value})
         self.assertEqual(info.requested, value)
-

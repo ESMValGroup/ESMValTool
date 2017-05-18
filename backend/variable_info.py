@@ -200,14 +200,14 @@ class VariableInfo(JsonInfo):
 
     def read_json(self, json_data):
         """
-        Reads variable information from json. 
+        Reads variable information from json.
 
         Non-present options will be set to empty
 
         Parameters
         ----------
         json_data: dict
-            dictionary created by the json reader containing 
+            dictionary created by the json reader containing
             variable information
         """
         self._json_data = json_data
@@ -251,7 +251,7 @@ class CoordinateInfo(JsonInfo):
 
     def read_json(self, json_data):
         """
-        Reads coordinate information from json. 
+        Reads coordinate information from json.
 
         Non-present options will be set to empty
 

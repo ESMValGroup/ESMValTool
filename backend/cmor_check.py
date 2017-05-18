@@ -26,7 +26,7 @@ class CMORCheck(object):
                  fail_on_error=False, automatic_fixes=False):
         """
         Class used to check the CMOR-compliance of the data.
-        It can also fix some minor errors and does some minor data 
+        It can also fix some minor errors and does some minor data
         homogeneization:
 
         Parameters
@@ -38,7 +38,7 @@ class CMORCheck(object):
         frequency: str
             Expected frequency for the data
         fail_on_error: bool
-            If true, CMORCheck stops on the first error. If false, it collects 
+            If true, CMORCheck stops on the first error. If false, it collects
             all possible errors before stopping
         automatic_fixes: bool
             If True, CMORCheck will try to apply automatic fixes for any
@@ -91,7 +91,7 @@ class CMORCheck(object):
 
         self.report_warnings()
         self.report_errors()
-        
+
         self._add_auxiliar_time_coordinates()
 
     def report_errors(self):
@@ -109,7 +109,7 @@ class CMORCheck(object):
     def check_data(self):
         """
         Checks the cube data, performing all the tests that require
-        to have the data in memory. 
+        to have the data in memory.
 
         Assumes that metadata is correct, so you must call check_metadata prior
         to this.
@@ -368,12 +368,11 @@ class CMORCheck(object):
     def has_errors(self):
         """
         Checks if there are reported errors
-        
+
         Returns
         -------
         bool:
             True if there are pending errors, False otherwise
-
         """
         return len(self._errors) > 0
 
@@ -385,7 +384,6 @@ class CMORCheck(object):
         -------
         bool:
             True if there are pending warnings, False otherwise
-
         """
         return len(self._warnings) > 0
 
@@ -400,7 +398,7 @@ class CMORCheck(object):
         ----------
         message: str: unicode
             Message for the error
-        *args: 
+        *args:
             arguments to format the message string
         """
         msg = message.format(*args)
@@ -411,7 +409,7 @@ class CMORCheck(object):
 
     def report_warning(self, message, *args):
         """
-        Reports a warning. 
+        Reports a warning.
 
         If fail_on_error is set to True, logs it automatically.
         If fail_on_error is set to False, stores it for later reports
@@ -420,7 +418,7 @@ class CMORCheck(object):
         ----------
         message: str: unicode
             Message for the warning
-        *args: 
+        *args:
             arguments to format the message string
         """
         msg = message.format(*args)
