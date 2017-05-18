@@ -1,6 +1,14 @@
-.idea/
 *.py[cod]
 build/
 htmlcov/
 .coverage
 
+
+# Created by editors
+*~
+\#*
+\.\#*
+*.swp
+
+# Created by PyCharm
+.idea/
