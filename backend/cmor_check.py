@@ -69,8 +69,8 @@ class CMORCheck(object):
         Checks the cube metadata, performing all the tests that do not require
         to have the data in memory
         
-        It will also report some warnings in case of minor errors and homogenize
-        some data:
+        It will also report some warnings in case of minor errors and 
+        homogenize some data:
             - Equivalent calendars will all default to the same name
             - Auxiliary coordinates year, month_number, day_of_month and 
                 day_of_year will be added for the time axis
@@ -165,8 +165,9 @@ class CMORCheck(object):
             attr_value = getattr(self._cmor_var, attr)
             if attr_value:
                 if self._cube.attributes[attr] != attr_value:
-                    self.report_error(self._attr_msg, self._cube.var_name, attr,
-                                      attr_value, self._cube.attributes[attr])
+                    self.report_error(self._attr_msg, self._cube.var_name,
+                                      attr, attr_value,
+                                      self._cube.attributes[attr])
 
     def _check_data_range(self):
         # Check data is not less than valid_min
@@ -326,7 +327,7 @@ class CMORCheck(object):
         intervals = {'dec': (3600, 3660),
                      'yr': (360, 366),
                      'mon': (28, 31),
-                     'day': (1,1)}
+                     'day': (1, 1)}
         if self.frequency in intervals:
             interval = intervals[self.frequency]
             target_interval = (interval[0] - tol, interval[1] + tol)
@@ -453,7 +454,7 @@ class CMORCheckError(Exception):
 def main():
     import warnings
     import os
-    from backend.variable_info import CMIP6_info
+    from backend.variable_info import CMIP6Info
 
     data_folder = '/Users/nube/esmval_data'
     # data_folder = '/home/paul/ESMValTool/data'
@@ -516,7 +517,7 @@ def main():
                                                   'units')
                 if units is not None:
                     coord.units = units
-    variables_info = CMIP6_info()
+    variables_info = CMIP6Info()
     for (example_data, var_name, table) in example_datas:
         print('\n' + example_data)
 

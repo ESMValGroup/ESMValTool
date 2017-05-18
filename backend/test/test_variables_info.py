@@ -7,19 +7,19 @@ Unit tests for the variable_info module.
 import unittest
 import os
 
-from backend.variable_info import VariableInfo, CoordinateInfo, CMIP6_info
+from backend.variable_info import VariableInfo, CoordinateInfo, CMIP6Info
 
 
 class TestVariablesInfo(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.variables_info = CMIP6_info()
+        cls.variables_info = CMIP6Info()
 
     def test_constructor_optional_parameter(self):
         cwd = os.path.dirname(os.path.realpath(__file__))
         cmor_tables_path = os.path.join(cwd, '..', '..', 'cmip6-cmor-tables')
-        CMIP6_info(cmor_tables_path)
+        CMIP6Info(cmor_tables_path)
 
     def test_get_variable_tas(self):
         var = self.variables_info.get_variable('Amon', 'tas')

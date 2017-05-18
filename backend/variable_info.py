@@ -7,7 +7,7 @@ import json
 import glob
 
 
-class CMIP6_info(object):
+class CMIP6Info(object):
 
     _CMIP_5to6_varname = {
         'sic': 'siconc',
@@ -110,8 +110,8 @@ class CMIP6_info(object):
         try:
             return self.tables[table][short_name]
         except KeyError:
-            if short_name in CMIP6_info._CMIP_5to6_varname:
-                new_short_name = CMIP6_info._CMIP_5to6_varname[short_name]
+            if short_name in CMIP6Info._CMIP_5to6_varname:
+                new_short_name = CMIP6Info._CMIP_5to6_varname[short_name]
                 return self.get_variable(table, new_short_name)
             return None
 
