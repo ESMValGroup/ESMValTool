@@ -1,7 +1,8 @@
-class Namelist(object):
+class Namelist(yaml.YAMLObject):
     """
     Class to hold the information from the namelist
     """
+    yaml_tag = u'!Namelist'
     def __init__(self):
         self.__name__       = "Namelist" 
         self.write_plots    = None
