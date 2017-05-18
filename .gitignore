@@ -1,7 +1,14 @@
-*.py[co]
+*.py[cod]
+build/
+htmlcov/
+.coverage
 
-# Created by editiors
+
+# Created by editors
 *~
 \#*
 \.\#*
 *.swp
+
+# Created by PyCharm
+.idea/

@@ -1,6 +1,8 @@
 import logging
 import projects
 from auxiliary import info, error, print_header, ncl_version_check
+import os
+import iris
 
 # class PreProcessor(object):
 
@@ -17,7 +19,7 @@ def load_variable(variable, model):
 
     cube = fix_data_format(cube)
 
-    # perhaps also have a "thougouh" check mode at some point
+    # perhaps also have a "thorough" check mode at some point
     # will produce an exception
     format_check(cube)
 
