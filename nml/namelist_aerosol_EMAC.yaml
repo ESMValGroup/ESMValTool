@@ -31,20 +31,15 @@
 GLOBAL:
   write_plots:       True
   write_netcdf:      True
-#  wrk_dir:           ./work/    # this goes to config file
-#  plot_dir:          ./plots/   # this goes to config file
-#  preproc_dir:       ./preproc/ # this goes to config file
   verbosity:         1
   exit_on_warning:   False
   output_file_type:  ps
-  max_data_filesize:   100 # this goes to config file
-  max_data_blocksize:  500 # this goes to config file
 
   
 MODELS:
-  - {name: MADE-REF,    project: EMAC,  ensemble: 1,  start: 1999,  end: 2001, path: /modelpath/}
-  - {name: MADEin-REF,  project: EMAC,  ensemble: 1,  start: 1999,  end: 2001, path: /modelpath/}
-  - {name: MAD3E-REF,   project: EMAC,  ensemble: 1,  start: 1999,  end: 2001, path: /modelpath/}
+  - {name: MADE-REF,    project: EMAC,  ensemble: 1,  start: 1999,  end: 2001,  path: /modelpath/EMAC/}
+  - {name: MADEin-REF,  project: EMAC,  ensemble: 1,  start: 1999,  end: 2001,  path: /modelpath/EMAC/}
+  - {name: MAD3E-REF,   project: EMAC,  ensemble: 1,  start: 1999,  end: 2001,  path: /modelpath/EMAC/}
 
   
 PREPROCESS:
@@ -57,207 +52,234 @@ PREPROCESS:
 
   
 DIAGNOSTICS:
-  - diag:
-      description: Aerosol size distribution
-      variable: {name: conccnmode,  field: T3I}
-      variable: {name: diamcnmode,  field: T3I}
-      variable: {name: cl,          field: T3I}
-      settings:
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_LACE.ncl
-      script: aerosol_profiles.ncl
+  
+  DIAG_LACE:
+    description: Aerosol size distribution
+    variables:
+      - {name: conccnmode,  field: T3I}
+      - {name: diamcnmode,  field: T3I}
+      - {name: cl,          field: T3I}
+    scripts:
+      - {script: aerosol_profiles.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_LACE.ncl}
 
-  - diag:
-      description: Aerosol size distribution
-      variable: {name: conccnmode,  field: T2Is}
-      variable: {name: diamcnmode,  field: T2Is}
-      settings:
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_Putaud.ncl
-      script: aerosol_profiles.ncl
 
-  - diag:
-      description: Aerosol size distribution
-      variable: {name: conccnSTPmode,  field: T2Is}
-      variable: {name: diamcnmode,     field: T2Is}
-      settings:
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_Asmi11.ncl
-      script: aerosol_profiles.ncl
+  DIAG_Putaud:
+    description: Aerosol size distribution
+    variables:
+      - {name: conccnmode,  field: T2Is}
+      - {name: diamcnmode,  field: T2Is}
+    scripts:
+      - {script: aerosol_profiles.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_Putaud.ncl}
 
-  - diag:
-      description: Vertical profile of number concentration
-      variable: {name: conccnSTPd3,  field: T3I}
-      variable: {name: cl,           field: T3I}
-      settings:
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_UCN-Pacific.ncl
-      script: aerosol_profiles.ncl
 
-  - diag:
-      description: Vertical profile of number concentration
-      variable: {name: conccnSTPd5,  field: T3I}
-      variable: {name: cl,           field: T3I}
-      settings:
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_INCA.ncl
-      script: aerosol_profiles.ncl
-
-  - diag:
-      description: Vertical profile of number concentration
-      variable: {name: conccnSTPd14,  field: T3I}
-      variable: {name: cl,            field: T3I}
-      settings:
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_INCA.ncl
-      script: aerosol_profiles.ncl
-
-  - diag:
-      description: Vertical profile of number concentration
-      variable: {name: conccnSTPd120,  field: T3I}
-      variable: {name: cl,             field: T3I}
-      settings:
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_INCA.ncl
-      script: aerosol_profiles.ncl
-
-  - diag:
-      description: Vertical profile of number concentration
-      variable: {name: conccnd5,  field: T3I}
-      variable: {name: cl,        field: T3I}
-      settings:
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_ACCESS-2.ncl
-      script: aerosol_profiles.ncl
-
-  - diag:
-      description: Vertical profile of number concentration
-      variable: {name: conccnd10,  field: T3I}
-      variable: {name: cl,         field: T3I}
-      settings:
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_ACCESS-2.ncl
-      script: aerosol_profiles.ncl
-
-  - diag:
-      description: Vertical profile of BC concentration
-      variable: {name: mmrbc,  field: T3I}
-      variable: {name: cl,     field: T3I}
-      settings: # MR: this would need to be called multiple times for each cfg file
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_ACCESS.ncl
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_CONCERT.ncl
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_CR-AVE.ncl
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_DC3.ncl
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_HIPPO.ncl
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_SALTRACE1.ncl
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_SALTRACE2.ncl
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_TC4.ncl
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_Texas.ncl
-      script: aerosol_profiles.ncl
-
-  - diag:
-      description: Vertical profile of aerosol mass concentration
-      variable: {name: mmraer,  field: T3I}
-      variable: {name: cl,      field: T3I}
-      settings:
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_Texas.ncl
-      script: aerosol_profiles.ncl
-
-  - diag:
-      description: Vertical profile of BC-free aerosol concentration
-      variable: {name: mmrbcfree,  field: T3I}
-      variable: {name: cl,         field: T3I}
-      settings:
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_CIRRUS.ncl
-      script: aerosol_profiles.ncl
-
-  - diag:
-      description: Surface-level concentration of SO4
-      variable: {name: sconcso4,  field: T2Ms}
-      settings:
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_CASTNET.ncl
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_EANET.ncl
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_EMEP.ncl
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_IMPROVE.ncl
-      script: aerosol_stations.ncl
-
-  - diag:
-      description: Surface-level concentration of NO3
-      variable: {name: sconcno3,  field: T2Ms}
-      settings:
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_CASTNET.ncl
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_EANET.ncl
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_EMEP.ncl
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_IMPROVE.ncl
-      script: aerosol_stations.ncl
-
-  - diag:
-      description: Surface-level concentration of NH4
-      variable: {name: sconcnh4,  field: T2Ms}
-      settings:
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_CASTNET.ncl
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_EANET.ncl
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_EMEP.ncl
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_IMPROVE.ncl
-      script: aerosol_stations.ncl
-
-  - diag:
-      description: Surface-level concentration of BC
-      variable: {name: sconcno3,  field: T2Ms}
-      settings:
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_IMPROVE.ncl
-      script: aerosol_stations.ncl
-
-  - diag:
-      description: Surface-level concentration of OA
-      variable: {name: sconcoa,  field: T2Ms}
-      settings:
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_IMPROVE.ncl
-      script: aerosol_stations.ncl
+  DIAG_Asmi:
+    description: Aerosol size distribution
+    variables:
+      - {name: conccnSTPmode,  field: T2Is}
+      - {name: diamcnmode,     field: T2Is}
+    scripts:
+      - {script: aerosol_profiles.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_Asmi11.ncl}
       
-  - diag:
-      description: Surface-level concentration of PM10
-      variable: {name: sconcpm10,  field: T2Ms}
-      settings:
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_EMEP.ncl
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_IMPROVE.ncl
-      script: aerosol_stations.ncl
 
-  - diag:
-      description: Surface-level concentration of PM2.5
-      variable: {name: sconcpm2p5,  field: T2Ms}
-      settings:
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_EMEP.ncl
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_IMPROVE.ncl
-      script: aerosol_stations.ncl
+  DIAG_UCN:
+    description: Vertical profile of number concentration
+    variables:
+      - {name: conccnSTPd3,  field: T3I}
+      - {name: cl,           field: T3I}
+    scripts:
+      - {script: aerosol_profiles.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_UCN-Pacific.ncl}
 
-  - diag:
-      description: Aerosol optical depth at 550 nm
-      variable: {name: od550aer,  field: T2Ms}
-      settings:
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_AERONET.ncl
-      script: aerosol_stations.ncl
-
-  - diag:
-      description: Aerosol optical depth at 550 nm vs. MODIS
-      variable: {name: od550aer,  field: T2Ms}
-      preprocess:
-        target_grid:    ref_model
-        regrid_scheme:  linear
-      settings:
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_satellite_MODIS.ncl
-      model: {name: MODIS,  project: obs4mips,  level: L3,  version: C5,  start: 2001,  end: 2012, path: /obspath/Tier1/}
-      script: aerosol_satellite.ncl
       
-  - diag:
-      description: Aerosol optical depth at 550 nm vs. MISR
-      variable: {name: od550aer,  field: T2Ms}
-      preprocess:
-        target_grid:    ref_model
-        regrid_scheme:  linear
-      settings:
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_satellite_MODIS.ncl
-      model: {name: MISR,  project: obs4mips,  level: L3,  version: F12_0022,  start: 2001,  end: 2012, path: /obspath/Tier1/}
-      script: aerosol_satellite.ncl
+  DIAG_INCA5:
+    description: Vertical profile of number concentration
+    variables:
+      - {name: conccnSTPd5,  field: T3I}
+      - {name: cl,           field: T3I}
+    scripts:
+      - {script: aerosol_profiles.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_INCA.ncl}
+      
 
-  - diag:
-      description: Aerosol optical depth at 550 nm vs. ESACCI
-      variable: {name: od550aer,  field: T2Ms}
-      preprocess:
-        target_grid:    ref_model
-        regrid_scheme:  linear
-      settings:
-        file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_satellite_ESACCI-AEROSOL.ncl
-      model: {name: ESACCI-AEROSOL,  project: OBS,  type: sat,,  version: SU-v4.21,  start: 1997,  end: 2011, path: /obspath/Tier2/ESACCI-AEROSOL}
-      script: aerosol_satellite.ncl
+  DIAG_INCA14:
+    description: Vertical profile of number concentration
+    variables:
+      - {name: conccnSTPd14,  field: T3I}
+      - {name: cl,            field: T3I}
+    scripts:
+      - {script: aerosol_profiles.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_INCA.ncl}
+
+      
+  DIAG_INCA120:
+    description: Vertical profile of number concentration
+    variables:
+      - {name: conccnSTPd120,  field: T3I}
+      - {name: cl,             field: T3I}
+    scripts:
+      - {script: aerosol_profiles.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_INCA.ncl}
+      
+
+  DIAG_ACCESS5:
+    description: Vertical profile of number concentration
+    variables:
+      - {name: conccnd5,  field: T3I}
+      - {name: cl,        field: T3I}
+    scripts:
+      - {script: aerosol_profiles.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_ACCESS-2.ncl}
+      
+
+  DIAG_ACCESS10:
+    description: Vertical profile of number concentration
+    variables:
+      - {name: conccnd10,  field: T3I}
+      - {name: cl,         field: T3I}
+    scripts:
+      - {script: aerosol_profiles.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_ACCESS-2.ncl}
+      
+
+  DIAG_BC:
+    description: Vertical profile of BC concentration
+    variables:
+      - {name: mmrbc,  field: T3I}
+      - {name: cl,     field: T3I}
+    scripts:
+      - {script: aerosol_profile.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_ACCESS.ncl}
+      - {script: aerosol_profile.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_CONCERT.ncl}
+      - {script: aerosol_profile.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_CR-AVE.ncl}
+      - {script: aerosol_profile.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_DC3.ncl}
+      - {script: aerosol_profile.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_HIPPO.ncl}
+      - {script: aerosol_profile.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_SALTRACE1.ncl}
+      - {script: aerosol_profile.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_SALTRACE2.ncl}
+      - {script: aerosol_profile.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_TC4.ncl}
+      - {script: aerosol_profile.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_Texas.ncl}
+
+      
+  DIAG_MASS:
+    description: Vertical profile of aerosol mass concentration
+    variables:
+      - {name: mmraer,  field: T3I}
+      - {name: cl,      field: T3I}
+    scripts:
+      - {script: aerosol_profiles.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_Texas.ncl}
+
+      
+  DIAG_BCFREE:
+    description: Vertical profile of BC-free aerosol concentration
+    variables:
+      - {name: mmrbcfree,  field: T3I}
+      - {name: cl,         field: T3I}
+    scripts:
+      - {script: aerosol_profiles.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_profiles_CIRRUS.ncl}
+    
+
+  DIAG_SO4:
+    description: Surface-level concentration of SO4
+    variables:
+      - {name: sconcso4,  field: T2Ms}
+    scripts:
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_CASTNET.ncl}
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_EANET.ncl}
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_EMEP.ncl}
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_IMPROVE.ncl}
+
+
+  DIAG_NO3:
+    description: Surface-level concentration of NO3
+    variables:
+      - {name: sconcno3,  field: T2Ms}
+    scripts:
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_CASTNET.ncl}
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_EANET.ncl}
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_EMEP.ncl}
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_IMPROVE.ncl}
+    
+
+  DIAG_NH4:
+    description: Surface-level concentration of NH4
+    variables:
+      - {name: sconcnh4,  field: T2Ms}
+    scripts:
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_CASTNET.ncl}
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_EANET.ncl}
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_EMEP.ncl}
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_IMPROVE.ncl}
+      
+
+  DIAG_BC:
+    description: Surface-level concentration of BC
+    variables:
+      - {name: sconcno3,  field: T2Ms}
+    scripts:
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_IMPROVE.ncl}
+      
+
+  DIAG_OA:
+    description: Surface-level concentration of OA
+    variables:
+      - {name: sconcoa,  field: T2Ms}
+    scripts:
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_IMPROVE.ncl}
+      
+      
+  DIAG_PM10:
+    description: Surface-level concentration of PM10
+    variables:
+      - {name: sconcpm10,  field: T2Ms}
+    scripts:
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_EMEP.ncl}
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_IMPROVE.ncl}
+      
+
+  DIAG_PM2p5:
+    description: Surface-level concentration of PM2.5
+    variables:
+      - {name: sconcpm2p5,  field: T2Ms}
+    scripts:
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_EMEP.ncl}
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_IMPROVE.ncl}
+      
+
+  DIAG_AOD1:
+    description: Aerosol optical depth at 550 nm
+    variables:
+      - {name: od550aer,  field: T2Ms}
+    scripts:
+      - {script: aerosol_stations.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_stations_AERONET.ncl}
+
+
+  DIAG_AOD2:
+    description: Aerosol optical depth at 550 nm vs. MODIS
+    variables:
+      - {name: od550aer, field: T2Ms}
+    preprocess:
+      target_grid:    ref_model
+      regrid_scheme:  linear
+    scripts:
+      - {script: aerosol_satellite.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_satellite_MODIS.ncl}
+    additional_models:
+      - {name: MODIS,  project: obs4mips,  level: L3,  version: C5,  start: 2001,  end: 2012, path: /obspath/Tier1/}
+
+      
+  DIAG_AOD3:
+    description: Aerosol optical depth at 550 nm vs. MISR
+    variables:
+      - {name: od550aer, field: T2Ms}
+    preprocess:
+      target_grid:    ref_model
+      regrid_scheme:  linear
+    scripts:
+      - {script: aerosol_satellite.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_satellite_MISR.ncl}
+    additional_models:
+      - {name: MISR,  project: obs4mips,  level: L3,  version: F12_0022,  start: 2001,  end: 2012, path: /obspath/Tier1/}
+      
+
+  DIAG_AOD4:
+    description: Aerosol optical depth at 550 nm vs. ESACCI
+    variables:
+      - {name: od550aer,  field: T2Ms}
+    preprocess:
+      target_grid:    ref_model
+      regrid_scheme:  linear
+    scripts:
+      - {script: aerosol_satellite.ncl, cfg_file: ./nml/cfg_aerosol/EMAC/cfg_aerosol_satellite_ESACCI-AEROSOL.ncl}
+    additional_model:
+      - {name: ESACCI-AEROSOL,  project: OBS,  type: sat,  version: SU-v4.21,  start: 1997,  end: 2011, path: /obspath/Tier2/ESACCI-AEROSOL}
+      

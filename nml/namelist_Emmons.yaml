@@ -20,18 +20,13 @@
 GLOBAL:
   write_plots:       True
   write_netcdf:      True
-#  wrk_dir:           ./work/    # this goes to config file
-#  plot_dir:          ./plots/   # this goes to config file
-#  preproc_dir:       ./preproc/ # this goes to config file
   verbosity:         1
   exit_on_warning:   False
   output_file_type:  ps
-  max_data_filesize:   100 # this goes to config file
-  max_data_blocksize:  500 # this goes to config file
 
 
 MODELS:
-  - {name: MPI-ESM-LR,  project: CMIP5_ETHZ,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2001,  end: 2001,  path: /modelpath/ETHZ_CMIP5}
+  - {name: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2001,  end: 2001,  path: /modelpath/CMIP5}
 
 
 PREPROCESS:
@@ -45,10 +40,10 @@ PREPROCESS:
 
 DIAGNOSTICS:
 
-- diag:
+  DIAG:
     description: Vertical profile of trace gases
-    variable: {name: tro3,  field: T3M}
-    settings:
-      file: ./nml/cfg_Emmons/cfg_Emmons.ncl
-    script: Emmons.ncl
+    variables:
+      - {name: tro3,  field: T3M}
+    scripts:
+     - {script: Emmons.ncl,  cfg_file: ./nml/cfg_Emmons/cfg_Emmons.ncl}
     # MR: add observations here (?)

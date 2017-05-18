@@ -1,0 +1,140 @@
+###############################################################################
+# namelist_mjo_daily.xml
+
+# Description
+# The MJO diagnostics are developed by the US CLIVAR MJO Working Group
+# The majority of scripts are based on example scripts
+# at http://ncl.ucar.edu/Applications/mjoclivar.shtml
+# This namelist is configured for monthly diagnostics
+#
+# Authors
+# Shiyu Wang (SMHI, Sweden - Shiyu.Wang@smhi.se)
+#
+# Contributor
+# Martin Evaldsson (SMHI, Sweden - Martin.Evaldsson@smhi.se)
+# 
+# Project
+# EMBRACE
+#
+# References
+# CLIVAR Madden-Julian Oscillation Working Group, J. Climate, 22, 3006–3030,
+# doi: http://dx.doi.org/10.1175/2008JCLI2731.1 (2009)
+#
+# Kim, D. et al., J. Climate, 22, 6413–6436, doi:10.1175/2009JCLI3063.1 (2009)
+# 
+# This namelist is part of the ESMValTool
+###############################################################################
+
+GLOBAL:
+  write_plots:       True
+  write_netcdf:      True
+  verbosity:         1
+  exit_on_warning:   False
+  output_file_type:  ps
+  show_debuginfo:    True
+  read_from_vault:   False
+
+  
+MODELS:
+  - {name: MPI-ESM-LR,    project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start: 1980, end: 2004,  path: /modelpath/CMIP5/}
+  - {name: IPSL-CM5A-LR,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start: 1980, end: 2004,  path: /modelpath/CMIP5/}
+
+
+PREPROCESS:
+  select_level:    None
+  target_grid:     None
+  regrid_scheme:   None
+  mask_fillvalues: None
+  mask_landocean:  None
+  multimodel_mean: False
+  
+  
+DIAGNOSTICS:
+
+  DIAG_prEOF:
+    description: EOF analysis for precipitation/olr/u850/u200 on daily basis
+    variables:
+      - {name: pr-mmday,  ref_model: GPCP-1DD,  field: T2Ds}
+    scripts:
+      - {script: mjo_univariate_eof.ncl, cfg_file: ./nml/cfg_mjo/cfg_mjo_daily_propagation.ncl}
+    additional_models:
+      - {name: GFDL-ESM2M,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2004,  path: /modelpath/CMIP5/}
+      - {name: CanESM2,     project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2004,  path: /modelpath/CMIP5/}
+      - {name: GPCP-1DD,  project: obs4mips,  level: L3,  version: v1.2,  start: 2001,  end: 2008,  path: /obspath/Tier1/GPCP-1DD/}
+
+      
+  DIAG_prWAVE:
+    description: Wave Spectra analysis for precip or olr or u850 or u200 on daily basis
+    variables:
+      - {name: pr-mmday,  ref_model: GPCP-1DD,  field: T2Ds}
+    scripts:
+      - {script: mjo_wave_freq.ncl,  cfg_file: ./nml/cfg_mjo/cfg_mjo_wave_freq.ncl}
+    additional_models:
+      - {name: GFDL-ESM2M,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2004,  path: /modelpath/CMIP5/}
+      - {name: CanESM2,     project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2004,  path: /modelpath/CMIP5/}
+      - {name: GPCP-1DD,  project: obs4mips,  level: L3,  version: v1.2,  start: 2001,  end: 2008,  path: /obspath/Tier1/GPCP-1DD/}
+
+      
+  DIAG_prLAG:
+    description: Lead/lag correlation  bet. precip and u850 or u200 on daily resolution
+    variables:
+      - {name: pr-mmday,  ref_model: GPCP-1DD,  exclude_model: NCEP,  field: T2Ds}
+      - {name: ua-850,  ref_model: NCEP,  exclude_model: GPCP-1DD, field: T2Ds}
+    scripts:
+      - {script: mjo_precip_u850-200_propagation.ncl,  cfg_file: ./nml/cfg_mjo/cfg_mjo_daily_propagation.ncl}
+    additional_models:
+      - {name: GFDL-ESM2M,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2004,  path: /modelpath/CMIP5/}
+      - {name: CanESM2,     project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2004,  path: /modelpath/CMIP5/}
+      - {name: GPCP-1DD,  project: obs4mips,  level: L3,  version: v1.2,  start: 2001,  end: 2008,  path: /obspath/Tier1/GPCP-1DD/}
+      - {name: NCEP,  project: OBS,  type: reanaly,  version: 1,  start: 2001,  end: 2008,  path: /obspath/Tier2/NCEP/}
+
+      
+  DIAG_prua:
+    description: 20-100day bandpass filtered variance for precip and u850 or u200 on daily resolution
+    variables:
+      - {name: pr-mmday,  ref_model: GPCP-1DD,  exclude_model: NCEP,  field: T2Ds}
+      - {name: ua-850,  ref_model: NCEP,  exclude_model: GPCP-1DD, field: T2Ds}
+    scripts:
+      - {script: mjo_precip_uwnd_variance.ncl,  cfg_file: ./nml/cfg_mjo/cfg_mjo_daily_propagation.ncl}
+    additional_models:
+      - {name: GFDL-ESM2M,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2004,  path: /modelpath/CMIP5/}
+      - {name: CanESM2,     project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start: 1980,  end: 2004,  path: /modelpath/CMIP5/}
+      - {name: GPCP-1DD,  project: obs4mips,  level: L3,  version: v1.2,  start: 2001,  end: 2008,  path: /obspath/Tier1/GPCP-1DD/}
+      - {name: NCEP,  project: OBS,  type: reanaly,  version: 1,  start: 2001,  end: 2008,  path: /obspath/Tier2/NCEP/}
+
+  
+  DIAG_rlutuaSPECTRA:
+    description: coherence-squared and phase relationships in wavenumber-frequency space for precip or olr and u850 or u200 on daily resolution
+    variables:
+      - {name: rlut,  ref_model: NOAA-PSD-Interp,  exclude_model: NCEP,  field: T2Ds}
+      - {name: ua-850,  ref_model: NCEP,  exclude_model: NOAA-PSD-Interp,  field: T2Ds}
+    scripts:
+      - {script: mjo_olr_u850-200_cross_spectra.ncl, cfg_file: ./nml/cfg_mjo/cfg_mjo_daily_propagation.ncl}
+    additional_models:
+      - {name: NOAA-PSD-Interp,  project: OBS,  type: ground,  version: 1,  start: 2001,  end: 2008,  path: /obspath/Tier2/NOAA-PSD-Interp}
+      - {name: NCEP,  project: OBS,  type: reanaly,  version: 1,  start: 2001,  end: 2008,  path: /obspath/Tier2/NCEP/}
+
+
+  DIAG_rlutua_CEOF:
+    description: multi vari CEOF for precip or olr and u850, U200 on daily resolution
+    variables:
+      - {name: rlut,  ref_model: NOAA-PSD-Interp,  exclude_model: NCEP,  field: T2Ds}
+      - {name: ua-850-200,  ref_model: NCEP,  exclude_model: NOAA-PSD-Interp,  field: T2Ds}
+    scripts:
+      - {script: mjo_olr_u850_200_ceof.ncl, cfg_file: ./nml/cfg_mjo/cfg_mjo_daily_propagation.ncl}
+    additional_models:
+      - {name: NOAA-PSD-Interp,  project: OBS,  type: ground,  version: 1,  start: 2001,  end: 2008,  path: /obspath/Tier2/NOAA-PSD-Interp}
+      - {name: NCEP,  project: OBS,  type: reanaly,  version: 1,  start: 2001,  end: 2008,  path: /obspath/Tier2/NCEP/}
+
+
+  DIAG_rlutuava:
+    description: MJO life cycle based CEOF PC index (dependency: must be run after 'mjo_olr_u850_200_ceof.ncl')
+    variables:
+      - {name: rlut,  ref_model: NOAA-PSD-Interp,  exclude_model: NCEP,  field: T2Ds}
+      - {name: ua-850,  ref_model: NCEP,  exclude_model: NOAA-PSD-Interp,  field: T2Ds}    
+      - {name: va-850,  ref_model: NCEP,  exclude_model: NOAA-PSD-Interp,  field: T2Ds}
+    scripts:
+      - {script:  mjo_olr_uv850_ceof_life_cycle.ncl,  cfg_file: ./nml/cfg_mjo/cfg_mjo_daily_propagation.ncl}
+    additional_models:
+      - {name: NOAA-PSD-Interp,  project: OBS,  type: ground,  version: 1,  start: 2001,  end: 2008,  path: /obspath/Tier2/NOAA-PSD-Interp}
+      - {name: NCEP,  project: OBS,  type: reanaly,  version: 1,  start: 2001,  end: 2008,  path: /obspath/Tier2/NCEP/}

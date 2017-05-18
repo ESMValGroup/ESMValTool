@@ -22,17 +22,11 @@
 ###############################################################################
 
 GLOBAL:
-  write_plots:       True
-  write_netcdf:      True
-#  wrk_dir:           ./work/    # this goes to config file
-#  plot_dir:          ./plots/   # this goes to config file
-#  preproc_dir:       ./preproc/ # this goes to config file
-#  regrid_dir:        ./regrid/  # this goes to config file
-  verbosity:         1
-  exit_on_warning:   False
-  output_file_type:  png
-  max_data_filesize:   100 # this goes to config file
-  max_data_blocksize:  500 # this goes to config file
+  write_plots:          True
+  write_netcdf:         True
+  verbosity:            1
+  exit_on_warning:      False
+  output_file_type:     png
   read_from_vault type: False
   show_debuginfo:       False
 
@@ -63,9 +57,9 @@ PREPROCESS:
 
 DIAGNOSTICS:
   
-- diag:
+  DIAG:
     description: Simple evotranspiration plots using the LandFlux-Eval data set
-    variable: {name: et,  ref_model: LandFlux-EVAL,  field: T2Ms}
-    settings:
-      file: ./nml/cfg_et/cfg_Evapotranspiration.ncl
-    script: Evapotranspiration.ncl
+    variables:
+      - {name: et,  ref_model: LandFlux-EVAL,  field: T2Ms}
+    scripts:
+      - {script: Evapotranspiration.ncl, cfg_file: ./nml/cfg_et/cfg_Evapotranspiration.ncl}
