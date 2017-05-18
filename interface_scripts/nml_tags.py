@@ -1,7 +1,7 @@
 from auxiliary import xmlTagError, error, info
 from model import AllModels, Model
 from fx_file import AllFXfiles, FX_file, FX_file_exception
-from esgf_config import ESGFConfig, ESGFConfigException
+# from esgf_config import ESGFConfig, ESGFConfigException
 from diagdef import AllDiagnostics, Diagnostic
 import diagdef
 import os
@@ -39,8 +39,8 @@ class GLOBAL(Nml_base):
                 project_info = int(project_info)
 
             elif attributes.values()[0] == "path":
-		if project_info[0] not in "@":
-	                project_info = os.path.abspath(project_info)
+                if project_info[0] not in "@":
+                    project_info = os.path.abspath(project_info)
             else:
                 raise TypeError("Invalid value for attributes")
 
@@ -54,15 +54,15 @@ class MODELS(Nml_base):
 
     def add_nml_entry(self, name, str, attributes):
         self.project_info.append(Model(str.strip(),
-                                       attributes,
-                                       diag_specific_model=False))
+            attributes,
+            diag_specific_model=False))
 
 
 class AUXILIARIES(Nml_base):
     def __init__(self):
         Nml_base.__init__(self)
         self.project_info = {"FX_files": AllFXfiles()}
-        ## Other types of entry could be added to AUXILIARIES
+        # Other types of entry could be added to AUXILIARIES
 
     def add_nml_entry(self, name, str, attribute):
         if name == "fx_file":
@@ -75,7 +75,7 @@ class AUXILIARIES(Nml_base):
                 self.project_info["FX_files"].append(fx)
             else:
                 msg = "fx_file entry '" + str.strip() +\
-                      "' has no 'id' attribute."
+                        "' has no 'id' attribute."
                 raise FX_file_exception(msg)
 
 
@@ -87,10 +87,10 @@ class ESGF(Nml_base):
     namelist specific config information is required.
     """
     def __init__(self):
-       Nml_base.__init__(self)
+        Nml_base.__init__(self)
 
-       self.project_info = {}
-       # self.project_info becomes project_info['ESGF'] in the main program.
+        self.project_info = {}
+        # self.project_info becomes project_info['ESGF'] in the main program.
 
     def add_nml_entry(self, name, string, attribute):
         """
@@ -141,24 +141,24 @@ class DIAGNOSTICS(Nml_base):
 
         elif name == 'model':
             self.diag_specific_models.append(Model(string.strip(),
-                                                   attributes,
-                                                   diag_specific_model=True))
+                attributes,
+                diag_specific_model=True))
         elif name == 'diag':
             ## These two should arrays of the same length as the
             ## number of variables
             self.extend_array_to_match_length("field_type", len(self.variable))
             self.extend_array_to_match_length("diag_script_cfg_dir",
-                                              len(self.diag_script))
+                    len(self.diag_script))
 
             self.diag_tags.append(diagdef.Diag_tag(",".join(self.variable),
-                                                   self.variable_def_dir,
-                                                   ",".join(self.field_type),
-                                                   self.var_attributes,
-                                                   self.diag_script,
-                                                   self.diag_script_cfg_dir,
-                                                   self.diag_script_cfg,
-                                                   self.diag_specific_models,
-                                                   self.launcher_arguments))
+                self.variable_def_dir,
+                ",".join(self.field_type),
+                self.var_attributes,
+                self.diag_script,
+                self.diag_script_cfg_dir,
+                self.diag_script_cfg,
+                self.diag_specific_models,
+                self.launcher_arguments))
             self.reset_temp_diag_storage()
 
         elif name == 'description':
@@ -183,9 +183,9 @@ class DIAGNOSTICS(Nml_base):
 
         if ext_var_len != other_array_length:
             raise xmlTagError("Number of variables vs fields/cfg-files do not match: "
-                              + str(ext_var_len)
-                              + " != "
-                              + str(other_array_length))
+                    + str(ext_var_len)
+                    + " != "
+                    + str(other_array_length))
 
     def closing_tag(self, str, attributes):
         all_diags = []
@@ -197,7 +197,7 @@ class DIAGNOSTICS(Nml_base):
             launch_args = curr_diag_tag.get_launcher_args()
 
             diags = [Diagnostic(var, var_def_dir, field, var_attr, diag_script, cfg, model, launch_args)
-                     for diag_script, cfg, model in curr_diag_tag]
+                    for diag_script, cfg, model in curr_diag_tag]
 
             all_diags.extend(diags)
 
@@ -223,6 +223,6 @@ class REFORMAT(Nml_base):
         self.project_info = {}
 
     def add_nml_entry(self, name, string, attributes):
-	if attributes['id'] in self.project_info.keys():
-		error('Duplicate usage of reformat_script id: {0}'.format(attributes['id']))
+        if attributes['id'] in self.project_info.keys():
+            error('Duplicate usage of reformat_script id: {0}'.format(attributes['id']))
         self.project_info[attributes['id']] = string.strip()

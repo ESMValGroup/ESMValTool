@@ -278,7 +278,7 @@ class ESGFNodeConfig(object):
             msg = "Dataset path '%s' contains " % dataset_path +\
                   'contains unfilled placeholders. ' +\
                   'Placeholders are text inside square brackets.'
-            raise ESGFConfigException(mesg)
+            raise ESGFConfigException(msg)
 
         # If not, return path
         else:
@@ -325,7 +325,7 @@ class ESGFNodeConfig(object):
         # If doesn't contain version placeholder, return None
         else:
             msg = 'Path template %s contains no ' % temp +\
-                  "version placeholder '%s'" % version
+                  "version placeholder"
             raise ESGFConfigException(msg)
 
     @classmethod

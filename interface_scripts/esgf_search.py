@@ -3,13 +3,8 @@
 # 2015-11-10  SR
 # 2015-11-26  SR - Switch to dummy X509 cert
 
-from os import path as os_path
-from os import environ as os_environ
-from sys import path as sys_path
-from getpass import getpass
-import urllib2
 
-from pyesgf.search import SearchConnection as ESGFSearchConnection 
+from pyesgf.search import SearchConnection as ESGFSearchConnection
 
 
 class ESGFSearchException(Exception):
@@ -41,17 +36,17 @@ class ESGFSearch:
             elif con == "time_freq":
                 constraints["time_frequency"] = constraints.pop("time_freq")
 
-        connection = ESGFSearchConnection(\
+        connection = ESGFSearchConnection(
             self.config.search_service_url,
             distrib=distrib)
         datasets = self._get_datasets(connection, **constraints)
         num_matches = len(datasets)
         self.info("num_matches = %s" % num_matches)
 
-        #TODO: Handle num_matches, test each facet individually
+        # TODO: Handle num_matches, test each facet individually
         #      then in sequence
 
-        # If a unambiguous dataset match is found, return download URLs 
+        # If a unambiguous dataset match is found, return download URLs
         # of files in dataset
         if num_matches == 1:
 
@@ -64,8 +59,8 @@ class ESGFSearch:
                 download_urls,
                 model_str)
 
-        # If no matches, try to determine which facets are causing 
-        # the problem 
+        # If no matches, try to determine which facets are causing
+        # the problem
         elif num_matches == 0:
 
             num_matches_by_facet = {}
@@ -73,7 +68,7 @@ class ESGFSearch:
             # Loop through the constraints, getting hit count for each facet
             for facet_name in constraints:
                 facet_value = constraints[facet_name]
-                single_constraint = {facet_name : facet_value}
+                single_constraint = {facet_name: facet_value}
                 num_matches_by_facet[facet_name]\
                     = self._get_num_matches(connection, **single_constraint)
 
@@ -144,7 +139,7 @@ class ESGFSearch:
             facet_value = constraints[facet_name]
             num_matches = num_matches_by_facet[facet_name]
             result += "%s = '%s' matches %i datasets\n"\
-                %(facet_name, facet_value, num_matches)
+                % (facet_name, facet_value, num_matches)
             if num_matches == 0:
                 at_least_one_facet_value_has_no_ESGF_match = True
 
@@ -173,7 +168,8 @@ class ESGFSearch:
                  "<model> %s </model>" % model_str +\
                  "\n\nFor your information, the matching ESGF datasets are:\n"
 
-        # Loop through each dataset, reporting the dataset id and number of files
+        # Loop through each dataset, reporting the dataset id and number of
+        # files
         result += "-----------"
         for match_num, dataset in enumerate(datasets):
             result += "\nMatch {0}".format(match_num+1) +\
@@ -182,7 +178,7 @@ class ESGFSearch:
             result += "\nURLS ="
             files = dataset.file_context().search(**constraints)
             for url_num, f in enumerate(files):
-                result += "\n{0}:{1}".format(url_num+1,f.download_url)
+                result += "\n{0}:{1}".format(url_num+1, f.download_url)
             result += "\n-----------"
 
         return result

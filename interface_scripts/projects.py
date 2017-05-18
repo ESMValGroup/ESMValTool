@@ -11,7 +11,7 @@ import datetime
 try:
     from esgf_search import ESGFSearch
 except ImportError:
-    info("No esgf pyclient installed",1,1)
+    info("No esgf pyclient installed", 1, 1)
 
 
 class Project:
@@ -187,7 +187,7 @@ class Project:
         msd = self.get_model_sections(model)
 
         # For ESGF coupling, 'dir' doesn't exist, so need to add dummy key
-        if not 'dir' in msd:
+        if 'dir' not in msd:
             msd['dir'] = 'If_this_appears_in_a_path_see_get_cf_sections'
 
         return msd['project'],\
@@ -2944,6 +2944,7 @@ class OneFile(Project):
     def get_dict_key(self, model, mip, exp):
         return "dummy_key"
 
+
 class ESGF_data_set_not_found(Exception):
     """
     Provides a controlled way to abort if data set not found
@@ -2967,15 +2968,15 @@ class ESGF_data_set_not_found(Exception):
             namelist_fullpath = project_info['ESGF']['namelist_fullpath']
         except:
             namelist_fullpath = "Namelist file path not available"
-        report = open(esgf_config.report_fullpath,"w")
+        report = open(esgf_config.report_fullpath, "w")
         header = "#####################################\n" +\
                  "#      ESMValTool ESGF coupling     #\n" +\
                  "#       Missing dataset report      #\n" +\
                  "#####################################\n\n"
         footer = "---End of report---"
-        report.write("%s%s\n\nnamelist = %s\n\n"\
+        report.write("%s%s\n\nnamelist = %s\n\n"
             % (header, timestamp, namelist_fullpath))
-        report.write("Report text\n-----------\n%s%s"\
+        report.write("Report text\n-----------\n%s%s"
             % (result, footer))
         report.close()
 
@@ -2983,6 +2984,7 @@ class ESGF_data_set_not_found(Exception):
               % esgf_config.report_fullpath
 
         exit(1)
+
 
 class ESGF:
     """
@@ -3009,7 +3011,7 @@ class ESGF:
         # and at least one <cache_template>
         if local_node:
             node_cache_root = local_node.root
-            if node_cache_root == None:
+            if node_cache_root is None:
                 msg = 'No node_cache_root specified for local node in ' +\
                       '<ESGF> config section'
                 raise RuntimeError(msg)
@@ -3113,7 +3115,7 @@ class ESGF:
             # (including activty report from get_local_path)
             else:
                 pass
-                #result += 'No matching dataset found in local ' +\
+                # result += 'No matching dataset found in local ' +\
                 #           'ESGF node replica pool.\n\n'
 
         # If no ESGF node defined, add message for missing dataset report
@@ -3146,12 +3148,12 @@ class ESGF:
                 return user_cache_path
             else:
                 pass
-                #result += "No dataset found in user cache.\n\n"
+                # result += "No dataset found in user cache.\n\n"
 
             # Otherwise, try to search for dataset on ESGF
             # If ESGF search option switched off, add message
             # to missing dataset report, and exit
-            if esgf_config.search_ESGF == False:
+            if esgf_config.search_ESGF is False:
                 result += "No local dataset found, " +\
                           "and ESGF config file '%s' "\
                           % esgf_config.config_file_name +\
