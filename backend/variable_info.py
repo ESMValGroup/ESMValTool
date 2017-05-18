@@ -17,7 +17,7 @@ class CMIP6Info(object):
     def __init__(self, cmor_tables_path=None):
         """
         Class to read CMIP6-like data request
-        
+
         Parameters
         ----------
         cmor_tables_path: basestring
@@ -93,14 +93,14 @@ class CMIP6Info(object):
     def get_variable(self, table, short_name):
         """
         Search and return the variable info
-        
+
         Parameters
         ----------
         table: basestring
             Table name
         short_name: basestring
             Variable's short name
-        
+
         Returns
         -------
         VariableInfo
@@ -135,7 +135,7 @@ class JsonInfo(object):
     def _read_json_variable(self, parameter):
         """
         Reads a json parameter in json_data
-        
+
         Parameters
         ----------
         parameter: str
@@ -145,7 +145,6 @@ class JsonInfo(object):
         -------
         str
             Option's value or empty string if parameter is not present
-
         """
         if parameter not in self._json_data:
             return ''
@@ -164,7 +163,6 @@ class JsonInfo(object):
         -------
         str
             Option's value or empty list if parameter is not present
-
         """
         if parameter not in self._json_data:
             return []
@@ -211,8 +209,6 @@ class VariableInfo(JsonInfo):
         json_data: dict
             dictionary created by the json reader containing 
             variable information
-
-
         """
         self._json_data = json_data
 
@@ -231,7 +227,7 @@ class CoordinateInfo(JsonInfo):
     def __init__(self, name):
         """
         Class to read and store coordinate information
-        
+
         Parameters
         ----------
         name: str
@@ -256,16 +252,14 @@ class CoordinateInfo(JsonInfo):
     def read_json(self, json_data):
         """
         Reads coordinate information from json. 
-        
+
         Non-present options will be set to empty
-        
+
         Parameters
         ----------
         json_data: dict
             dictionary created by the json reader containing 
             coordinate information
-
-
         """
         self._json_data = json_data
 

@@ -28,7 +28,7 @@ class CMORCheck(object):
         Class used to check the CMOR-compliance of the data.
         It can also fix some minor errors and does some minor data 
         homogeneization:
-        
+
         Parameters
         ----------
         cube: iris.cube.Cube:
@@ -43,16 +43,16 @@ class CMORCheck(object):
         automatic_fixes: bool
             If True, CMORCheck will try to apply automatic fixes for any
             detected error, if possible
-            
+
         Attributes
         ----------
-        
+
         frequency: str
             Expected frequency for the data
         automatic_fixes: bool
             If True, CMORCheck will try to apply automatic fixes for any
             detected error, if possible
-        
+
         """
         self._cube = cube
         self._failerr = fail_on_error
@@ -68,13 +68,13 @@ class CMORCheck(object):
         """
         Checks the cube metadata, performing all the tests that do not require
         to have the data in memory
-        
+
         It will also report some warnings in case of minor errors and 
         homogenize some data:
             - Equivalent calendars will all default to the same name
             - Auxiliary coordinates year, month_number, day_of_month and 
                 day_of_year will be added for the time axis
-        
+
         Raises
         ------
         CMORCheckException:
@@ -110,19 +110,18 @@ class CMORCheck(object):
         """
         Checks the cube data, performing all the tests that require
         to have the data in memory. 
-        
+
         Assumes that metadata is correct, so you must call check_metadata prior
         to this.
         
         It will also report some warnings in case of minor errors
-        
+
         Raises
         ------
         CMORCheckException:
             If errors are found. If fail_on_error attribute is set to True,
             raises as soon as an error if defected. If set to False, it perform
             all checks and the raises.
-            
         """
         self._check_data_range()
 
@@ -392,7 +391,7 @@ class CMORCheck(object):
 
     def report_error(self, message, *args):
         """
-        Reports an error. 
+        Reports an error.
 
         If fail_on_error is set to True, raises automatically.
         If fail_on_error is set to False, stores it for later reports
@@ -403,7 +402,6 @@ class CMORCheck(object):
             Message for the error
         *args: 
             arguments to format the message string
-
         """
         msg = message.format(*args)
         if self._failerr:
@@ -414,17 +412,16 @@ class CMORCheck(object):
     def report_warning(self, message, *args):
         """
         Reports a warning. 
-        
+
         If fail_on_error is set to True, logs it automatically.
         If fail_on_error is set to False, stores it for later reports
-        
+
         Parameters
         ----------
         message: str: unicode
             Message for the warning
         *args: 
             arguments to format the message string
-
         """
         msg = message.format(*args)
         if self._failerr:
