@@ -17,6 +17,7 @@ except ImportError:
 class Project:
     """ @brief Base class for all ESMValTool projects
     """
+
     def __init__(self):
         self.add_specifier = {}
 
@@ -85,8 +86,8 @@ class Project:
             in the AUXILIARIES namelist section.
         """
         if not "fx_file_ID" in self.model_specifiers:
-            msg = "This class doesn't support specifing fx-files,"\
-                   + " check interface_scripts/projects.py"
+            msg = "This class doesn't support specifing fx-files," \
+                  + " check interface_scripts/projects.py"
             raise exceptions.RuntimeError(msg)
 
         indata_root = self.get_data_root()
@@ -108,8 +109,8 @@ class Project:
             in the AUXILIARIES namelist section.
         """
         if not "fx_file_ID" in self.model_specifiers:
-            msg = "This class doesn't support specifing fx-files,"\
-                   + " check interface_scripts/projects.py"
+            msg = "This class doesn't support specifing fx-files," \
+                  + " check interface_scripts/projects.py"
             raise exceptions.RuntimeError(msg)
 
         fx_files = self.get_fx_files(project_info)
@@ -119,8 +120,8 @@ class Project:
 
         # Find this grid file within project_info
         if not fx_ID in project_info["AUXILIARIES"]["FX_files"]:
-            msg = "fx_file_ID '" + fx_ID +\
-                  "' not found in any <fx_file> entry within " +\
+            msg = "fx_file_ID '" + fx_ID + \
+                  "' not found in any <fx_file> entry within " + \
                   "<AUXILIARIES> section of namelist."
             raise exceptions.RuntimeError(msg)
 
@@ -190,12 +191,12 @@ class Project:
         if 'dir' not in msd:
             msd['dir'] = 'If_this_appears_in_a_path_see_get_cf_sections'
 
-        return msd['project'],\
-            msd['name'],\
-            msd['ensemble'],\
-            msd['start_year'],\
-            msd['end_year'],\
-            msd['dir']
+        return msd['project'], \
+               msd['name'], \
+               msd['ensemble'], \
+               msd['start_year'], \
+               msd['end_year'], \
+               msd['dir']
 
     def get_model_name(self, model):
         return self.get_model_subsection(model, "name")
@@ -392,6 +393,7 @@ class OBS_gridfile(OBS):
     """ @brief Follows the DLR directory structure for OBS data,
                + explicit gridfile
     """
+
     def __init__(self):
         OBS.__init__(self)
 
@@ -540,6 +542,7 @@ class obs4mips(Project):
 class ana4mips(Project):
     """ @brief Class defining the specific characteristics of the CMIP5 project
     """
+
     def __init__(self):
         Project.__init__(self)
 
@@ -668,6 +671,7 @@ class ana4mips(Project):
 class CMIP5(Project):
     """ @brief Class defining the specific characteristics of the CMIP5 project
     """
+
     def __init__(self):
         Project.__init__(self)
 
@@ -924,6 +928,7 @@ class CMIP5_gridfile(CMIP5):
 class CMIP5_fx(CMIP5):
     """ @brief Class handling a fx-file handler on the <model>-tag line
     """
+
     def __init__(self):
         CMIP5.__init__(self)
         ## The names of the space separated entries in the XML-file <model> tag
@@ -1040,6 +1045,7 @@ class CMIP5_SMHI(CMIP5):
 class CMIP5_ETHZ(CMIP5):
     """ @brief Follows the ETH directory structure for input data
     """
+
     def __init__(self):
         CMIP5.__init__(self)
 
@@ -1104,7 +1110,7 @@ class CMIP5_ETHZ(CMIP5):
                                'r0i0p0')
 
         areafile = 'areacello_fx_' + msd["name"] + "_" + msd["experiment"] \
-            + "_r0i0p0.nc"
+                   + "_r0i0p0.nc"
 
         return os.path.join(areadir, areafile)
 
@@ -1129,7 +1135,7 @@ class CMIP5_ETHZ(CMIP5):
                                'r0i0p0')
 
         maskfile = 'mrsofc_fx_' + msd["name"] + "_" + msd["experiment"] \
-            + "_r0i0p0.nc"
+                   + "_r0i0p0.nc"
 
         return os.path.join(maskdir, maskfile)
 
@@ -1154,7 +1160,7 @@ class CMIP5_ETHZ(CMIP5):
                                'r0i0p0')
 
         maskfile = 'sftlf_fx_' + msd["name"] + "_" + msd["experiment"] \
-            + "_r0i0p0.nc"
+                   + "_r0i0p0.nc"
 
         return os.path.join(maskdir, maskfile)
 
@@ -1179,14 +1185,16 @@ class CMIP5_ETHZ(CMIP5):
                                'r0i0p0')
 
         maskfile = 'sftof_fx_' + msd["name"] + "_" + msd["experiment"] \
-            + "_r0i0p0.nc"
+                   + "_r0i0p0.nc"
 
         return os.path.join(maskdir, maskfile)
+
 
 class MiKlip(Project):
     """ @brief Follows the MiKlip directory structure for input data
                for baseline 1
     """
+
     def __init__(self):
         Project.__init__(self)
 
@@ -1362,6 +1370,7 @@ class MiKlip_baseline0(MiKlip):
     """ @brief Follows the MiKlip directory structure for input data
                + fx file for baseline 0
     """
+
     def __init__(self):
         MiKlip.__init__(self)
 
@@ -1452,15 +1461,15 @@ class MiKlip_baseline0(MiKlip):
         # msd = model_section_dictionary
         msd = self.get_model_sections(model)
 
-        areafile = 'areacello_fx_'\
-                   + msd["name"]\
+        areafile = 'areacello_fx_' \
+                   + msd["name"] \
                    + "_" + msd["experiment"] \
                    + "_r0i0p0.nc"
 
         version = 'v20120529'
         if ('historical' in msd["experiment"] or 'rcp' in msd["experiment"]):
             version = 'v20111006'
-        if('MPI-ESM-MR' in msd["name"]):
+        if ('MPI-ESM-MR' in msd["name"]):
             version = 'v20120608'
             if ('historical' in msd["experiment"] or 'rcp' in msd["experiment"]):
                 version = 'v20120503'
@@ -1483,6 +1492,7 @@ class CMIP5_DKRZ(MiKlip):
               that in turn follows ESGF data organisation.
               + fx file
     """
+
     def __init__(self):
         MiKlip.__init__(self)
 
@@ -1533,7 +1543,7 @@ class CMIP5_DKRZ(MiKlip):
                                     msd["realm"],
                                     msd["mip"],
                                     msd["ensemble"])
-        list_versions = glob.glob(version_path+'/*')
+        list_versions = glob.glob(version_path + '/*')
         list_versions.sort()
         version = os.path.basename(list_versions[-1])
 
@@ -1576,8 +1586,8 @@ class CMIP5_DKRZ(MiKlip):
         # msd = model_section_dictionary
         msd = self.get_model_sections(model)
 
-        areafile = 'areacello_fx_'\
-                   + msd["name"]\
+        areafile = 'areacello_fx_' \
+                   + msd["name"] \
                    + "_" + msd["experiment"] \
                    + "_r0i0p0.nc"
 
@@ -1590,7 +1600,7 @@ class CMIP5_DKRZ(MiKlip):
                                     'ocean',
                                     'fx',
                                     'r0i0p0')
-        list_versions = glob.glob(version_path+'/*')
+        list_versions = glob.glob(version_path + '/*')
         list_versions.sort()
         version = os.path.basename(list_versions[-1])
 
@@ -1611,6 +1621,7 @@ class CMIP5_DKRZ(MiKlip):
 class O3_Cionni(Project):
     """ @brief Class defining the specific characteristics of the CMIP5 project
     """
+
     def __init__(self):
         Project.__init__(self)
 
@@ -1681,12 +1692,12 @@ class O3_Cionni(Project):
         msd = self.get_model_sections(model)
         msd = self.rewrite_mip_exp(msd, mip, exp)
 
-        indir = msd["dir"]+ 'final_' + msd['experiment']
+        indir = msd["dir"] + 'final_' + msd['experiment']
 
         variable = self.get_project_variable_name(model, variable)
 
         infile = '_'.join([variable,
-                           msd['experiment'],]) + '.nc'
+                           msd['experiment'], ]) + '.nc'
 
         if (not os.path.isfile(os.path.join(indir, infile))):
             infile = '_'.join(['Ozone_CMIP5_ACC_SPARC_*',
@@ -1725,9 +1736,11 @@ class O3_Cionni(Project):
 
         return outfile
 
+
 class CCMVal(Project):
     """ @brief Defining the specific characteristics of the CCMVal project
     """
+
     def __init__(self):
         Project.__init__(self)
 
@@ -1852,6 +1865,7 @@ class CCMVal(Project):
 class CCMVal1(CCMVal):
     """ @brief Defining the specific characteristics of the CCMVal1 project
     """
+
     def __init__(self):
         CCMVal.__init__(self)
 
@@ -1861,6 +1875,7 @@ class CCMVal1(CCMVal):
 class CCMVal2(CCMVal):
     """ @brief Defining the specific characteristics of the CCMVal2 project
     """
+
     def __init__(self):
         CCMVal.__init__(self)
 
@@ -1870,6 +1885,7 @@ class CCMVal2(CCMVal):
 class EMAC(CCMVal):
     """ @brief Defining the specific characteristics of the EMAC model output
     """
+
     def __init__(self):
         CCMVal.__init__(self)
 
@@ -1972,6 +1988,7 @@ class ECEARTH(CMIP5):
     """ @brief Class defining the specific characteristics of the ECEARTH
                project
     """
+
     def __init__(self):
         Project.__init__(self)
 
@@ -2060,11 +2077,11 @@ class ECEARTH(CMIP5):
         infile = os.path.join('*',
                               'Output',
                               '_'.join([msd['name'],
-                                       'MM',
-                                       '*',
-                                       '*',
-                                       'grid',
-                                       '*']) + '.nc')
+                                        'MM',
+                                        '*',
+                                        '*',
+                                        'grid',
+                                        '*']) + '.nc')
 
         return indir, infile
 
@@ -2157,17 +2174,18 @@ class ECEARTH(CMIP5):
         msd = self.get_model_sections(model)
 
         # no support for ensemble in EC-Earth, yet
-        return msd['project'],\
-            msd['name'],\
-            msd['ensemble'],\
-            msd['start_year'],\
-            msd['end_year'],\
-            msd['dir']
+        return msd['project'], \
+               msd['name'], \
+               msd['ensemble'], \
+               msd['start_year'], \
+               msd['end_year'], \
+               msd['dir']
 
 
 class GFDL(Project):
     """ @brief Defining the specific characteristics of the GFDL model output
     """
+
     def __init__(self):
         Project.__init__(self)
 
@@ -2275,6 +2293,7 @@ class GFDL(Project):
 class GO(CCMVal):
     """ @brief Class defining the specific characteristics of the GO project
     """
+
     def __init__(self):
         CCMVal.__init__(self)
 
@@ -2326,12 +2345,12 @@ class GO(CCMVal):
         """
         # msd = model_section_dictionary
         msd = self.get_model_sections(model)
-        return msd['project'],\
-            msd['name'],\
-            msd['resolution'],\
-            msd['start_year'],\
-            msd['end_year'],\
-            msd['dir']
+        return msd['project'], \
+               msd['name'], \
+               msd['resolution'], \
+               msd['start_year'], \
+               msd['end_year'], \
+               msd['dir']
 
     def get_figure_file_names(self, project_info, model, mip, exp):
         """ @brief Returns the full path used for intermediate data storage
@@ -2412,10 +2431,10 @@ class GO(CCMVal):
             routines and in climate.ncl
         """
         msd = self.get_model_sections(model)
-     # Overide some model lines with settings from the variable attributes
+        # Overide some model lines with settings from the variable attributes
         msd = self.rewrite_mip_exp(msd, mip, exp)
 
-        outdir = self.get_cf_outpath(project_info,  model)
+        outdir = self.get_cf_outpath(project_info, model)
 
         outfile = '_'.join([msd['project'],
                             msd['case_name'],
@@ -2453,7 +2472,7 @@ class GO_gridfile(GO):
                                  "fx_file_ID",
                                  "which_reformat"]
 
- #       self.add_specifier['case_name'] = 'case_name'
+        #       self.add_specifier['case_name'] = 'case_name'
 
     def get_cf_areafile(self, project_info, model):
         """ @brief Returns the path to the areacello file
@@ -2480,15 +2499,15 @@ class GO_gridfile(GO):
 
 class JSBACH(Project):
     def __init__(self):
-        #~ super(JSBACH, self).__init__()  # does not work, as Project itself
-                                           # is an old-style class (http://stackoverflow.com/questions/9698614/super-raises-typeerror-must-be-type-not-classobj-for-new-style-class)
+        # ~ super(JSBACH, self).__init__()  # does not work, as Project itself
+        # is an old-style class (http://stackoverflow.com/questions/9698614/super-raises-typeerror-must-be-type-not-classobj-for-new-style-class)
         Project.__init__(self)
         self.model_specifiers = ["project",
                                  "experiment",
                                  "dir",
                                  "which_reformat"]
-        #~ self.model_specifiers = ["project", "name", "case_name", "ensemble",
-                                 #~ "start_year", "end_year", "dir"]
+        # ~ self.model_specifiers = ["project", "name", "case_name", "ensemble",
+        # ~ "start_year", "end_year", "dir"]
         self.basename = 'JSBACH'
 
     def get_model_name(self, model):
@@ -2525,7 +2544,7 @@ class JSBACH(Project):
 
         # msd = model_section_dictionary
         msd = self.get_model_sections(model)
-        #~ msd = self.rewrite_mip_exp(msd, mip, exp)
+        # ~ msd = self.rewrite_mip_exp(msd, mip, exp)
 
         indir = msd["dir"]
         if indir[-1] != os.sep:
@@ -2556,16 +2575,16 @@ class JSBACH(Project):
         msd = self.get_model_sections(model)
 
         # Overide some model lines with settings from the variable attributes
-        #~ msd = self.rewrite_mip_exp(msd, mip, exp)
+        # ~ msd = self.rewrite_mip_exp(msd, mip, exp)
 
-        #~ outfile = '_'.join([msd['project'],
-                            #~ msd['mip'],
-                            #~ msd['experiment'],
-                            #~ msd['name'],
-                            #~ msd['ensemble'],
-                            #~ field,
-                            #~ variable,
-                            #~ msd['start_year']]) + '-' + msd['end_year'] + '.nc'
+        # ~ outfile = '_'.join([msd['project'],
+        # ~ msd['mip'],
+        # ~ msd['experiment'],
+        # ~ msd['name'],
+        # ~ msd['ensemble'],
+        # ~ field,
+        # ~ variable,
+        # ~ msd['start_year']]) + '-' + msd['end_year'] + '.nc'
         outfile = 'dummy.nc'
 
         return outfile
@@ -2574,8 +2593,8 @@ class JSBACH(Project):
         """
         overwrites same function of master class
         """
-        #~ project, name, ensemble, start_year, end_year, dir\
-            #~ = currProject.get_cf_sections(model)
+        # ~ project, name, ensemble, start_year, end_year, dir\
+        # ~ = currProject.get_cf_sections(model)
 
         msd = self.get_model_sections(model)
 
@@ -2594,11 +2613,13 @@ class JSBACH(Project):
     def get_dict_key(self, model, mip, exp):
         return "dummy_key"
 
+
 ###added by Cionni Irene,ENEA,Italy irene.cionni@enea.it########################
 
 class CCMI(Project):
     """ @brief Class defining the specific characteristics of the CMIP5 project
     """
+
     def __init__(self):
         Project.__init__(self)
 
@@ -2622,7 +2643,7 @@ class CCMI(Project):
             scripts to refer to a specific dataset, see e.g., the variable
             'cn' in 'interface_scripts/read_data.ncl'
         """
-    # msd = model_section_dictionary
+        # msd = model_section_dictionary
         msd = self.get_model_sections(model)
         msd = self.rewrite_mip_exp(msd, mip, exp)
 
@@ -2741,6 +2762,8 @@ class CCMI(Project):
                             msd['start_year']]) + '-' + msd['end_year'] + '.nc'
 
         return outfile
+
+
 #############################
 class CCMI_gridfile(CCMI):
     def __init__(self):
@@ -2764,10 +2787,12 @@ class CCMI_gridfile(CCMI):
         """
         return self.get_model_subsection(model, "gridfile")
 
+
 ############
 class CCMI_DLR(CCMI):
     """ @brief Follows the ETH directory structure for input data
     """
+
     def __init__(self):
         CCMI.__init__(self)
 
@@ -2832,14 +2857,17 @@ class CCMI_DLR(CCMI):
                                'r0i0p0')
 
         areafile = 'areacello_fx_' + msd["name"] + "_" + msd["experiment"] \
-            + "_r0i0p0.nc"
+                   + "_r0i0p0.nc"
 
         return os.path.join(areadir, areafile)
+
+
 ########end add by Cionni Irene,ENEA,Italy irene.cionni@enea.it#################
 
 class OneFile(Project):
     """simple project class intended to pass the filename of one file directly
     to the diagnostics routine"""
+
     def __init__(self):
         Project.__init__(self)
         self.model_specifiers = ["project", "experiment", "dir",
@@ -2873,7 +2901,7 @@ class OneFile(Project):
 
         # msd = model_section_dictionary
         msd = self.get_model_sections(model)
-        #~ msd = self.rewrite_mip_exp(msd, mip, exp)
+        # ~ msd = self.rewrite_mip_exp(msd, mip, exp)
 
         indir = msd["dir"]
         if indir[-1] != os.sep:
@@ -2901,18 +2929,18 @@ class OneFile(Project):
         msd = self.get_model_sections(model)
 
         # Overide some model lines with settings from the variable attributes
-        #~ msd = self.rewrite_mip_exp(msd, mip, exp)
+        # ~ msd = self.rewrite_mip_exp(msd, mip, exp)
 
-        #~ outfile = '_'.join([msd['project'],
-                            #~ msd['mip'],
-                            #~ msd['experiment'],
-                            #~ msd['name'],
-                            #~ msd['ensemble'],
-                            #~ field,
-                            #~ variable,
-                            #~ msd['start_year']]) + '-' + msd['end_year'] +
-                            #'.nc'
-        #outfile = 'dummy.nc'
+        # ~ outfile = '_'.join([msd['project'],
+        # ~ msd['mip'],
+        # ~ msd['experiment'],
+        # ~ msd['name'],
+        # ~ msd['ensemble'],
+        # ~ field,
+        # ~ variable,
+        # ~ msd['start_year']]) + '-' + msd['end_year'] +
+        # '.nc'
+        # outfile = 'dummy.nc'
         indir = msd["dir"]
         if indir[-1] != os.sep:
             indir += os.sep
@@ -2924,8 +2952,8 @@ class OneFile(Project):
         """
         overwrites same function of master class
         """
-        #~ project, name, ensemble, start_year, end_year, dir\
-            #~ = currProject.get_cf_sections(model)
+        # ~ project, name, ensemble, start_year, end_year, dir\
+        # ~ = currProject.get_cf_sections(model)
 
         msd = self.get_model_sections(model)
 
@@ -2953,11 +2981,12 @@ class ESGF_data_set_not_found(Exception):
     exception. For now, it just cleanly exits the code, with
     return code 1 to indicate code not successful.
     """
+
     def __init__(self, result, model_str, esgf_config, project_info):
 
         # Note 'print' used here as 'info' function is not defined
-        print "\nESMValTool failed as no valid path " +\
-              "to data on local system " +\
+        print "\nESMValTool failed as no valid path " + \
+              "to data on local system " + \
               "for this model entry in namelist:\n"
         print "<model> %s </model> " % model_str
         print "\nFurther info: %s" % result
@@ -2969,18 +2998,18 @@ class ESGF_data_set_not_found(Exception):
         except:
             namelist_fullpath = "Namelist file path not available"
         report = open(esgf_config.report_fullpath, "w")
-        header = "#####################################\n" +\
-                 "#      ESMValTool ESGF coupling     #\n" +\
-                 "#       Missing dataset report      #\n" +\
+        header = "#####################################\n" + \
+                 "#      ESMValTool ESGF coupling     #\n" + \
+                 "#       Missing dataset report      #\n" + \
                  "#####################################\n\n"
         footer = "---End of report---"
         report.write("%s%s\n\nnamelist = %s\n\n"
-            % (header, timestamp, namelist_fullpath))
+                     % (header, timestamp, namelist_fullpath))
         report.write("Report text\n-----------\n%s%s"
-            % (result, footer))
+                     % (result, footer))
         report.close()
 
-        print "This information also sent to file: %s"\
+        print "This information also sent to file: %s" \
               % esgf_config.report_fullpath
 
         exit(1)
@@ -3012,12 +3041,12 @@ class ESGF:
         if local_node:
             node_cache_root = local_node.root
             if node_cache_root is None:
-                msg = 'No node_cache_root specified for local node in ' +\
+                msg = 'No node_cache_root specified for local node in ' + \
                       '<ESGF> config section'
                 raise RuntimeError(msg)
 
             if len(local_node.path_templates) == 0:
-                msg = 'No cache_templates specified for local node ' +\
+                msg = 'No cache_templates specified for local node ' + \
                       local_node.node_name() + ' in <ESGF> config section'
                 raise RuntimeError(msg)
 
@@ -3025,7 +3054,7 @@ class ESGF:
         report_fullpath = esgf_config.report_fullpath
         report_dir = os.path.dirname(report_fullpath)
         if not os.path.isdir(report_dir):
-            msg = "Directory '%s', specified to " % report_dir +\
+            msg = "Directory '%s', specified to " % report_dir + \
                   "hold ESGF coupling report, does not exist"
             raise RuntimeError(msg)
 
@@ -3061,8 +3090,8 @@ class ESGF:
         try:
             esgf_config = project_info['ESGF']['config']
         except:
-            msg = 'Unable to access ESGF config information. ' +\
-                  'This may be due to the ommission of ESGF config ' +\
+            msg = 'Unable to access ESGF config information. ' + \
+                  'This may be due to the ommission of ESGF config ' + \
                   'information in the namelist, or an internal error.'
             raise ValueError(msg)
 
@@ -3093,20 +3122,20 @@ class ESGF:
             # Using 'pop' here as ptid needs to be removed from msd
             ptid = msd.pop('ptid')
         else:
-            msg = 'Cannot find path template id in model ' +\
+            msg = 'Cannot find path template id in model ' + \
                   'section dictionary: %s' % msd
             raise exceptions.RuntimeError(msg)
 
         # Determine if path exists to local copy of file
         # in ESGF node replica pool
         if local_node:
-            local_node_path, activity =\
+            local_node_path, activity = \
                 ESGF._get_local_path(local_node, msd, ptid)
             result += "%s\n\n" % activity
 
             # If path to local node found, use it
             if local_node_path:
-                msg = 'Using dataset in local replica pool: %s'\
+                msg = 'Using dataset in local replica pool: %s' \
                       % local_node_path
                 ESGF.info(msg)
                 return local_node_path
@@ -3120,7 +3149,7 @@ class ESGF:
 
         # If no ESGF node defined, add message for missing dataset report
         else:
-            result += 'No local ESGF node specified in ESGF config file, ' +\
+            result += 'No local ESGF node specified in ESGF config file, ' + \
                       'so cannot search for dataset in node replica pool.\n\n'
             local_node_path = None
 
@@ -3132,7 +3161,7 @@ class ESGF:
 
             # If no user cache, add message for missing dataset report
             if not user_cache:
-                result += 'No user cache specified in ESGF config file, ' +\
+                result += 'No user cache specified in ESGF config file, ' + \
                           'so cannot search for dataset in user cache.\n\n'
                 user_cache_path = None
             else:
@@ -3142,7 +3171,7 @@ class ESGF:
 
             # If valid path found in user cache, use this
             if user_cache_path:
-                msg = 'Using dataset in user cache: %s'\
+                msg = 'Using dataset in user cache: %s' \
                       % user_cache_path
                 ESGF.info(msg)
                 return user_cache_path
@@ -3154,14 +3183,14 @@ class ESGF:
             # If ESGF search option switched off, add message
             # to missing dataset report, and exit
             if esgf_config.search_ESGF is False:
-                result += "No local dataset found, " +\
-                          "and ESGF config file '%s' "\
-                          % esgf_config.config_file_name +\
-                          "specifies no ESGF search, " +\
-                          "so ESMValTool cannot continue. " +\
-                          "Suggest re-run ESMValTool:\n\na) with " +\
-                          "ESGF search enabled, or \n\nb) with " +\
-                          "the dataset required in the " +\
+                result += "No local dataset found, " + \
+                          "and ESGF config file '%s' " \
+                          % esgf_config.config_file_name + \
+                          "specifies no ESGF search, " + \
+                          "so ESMValTool cannot continue. " + \
+                          "Suggest re-run ESMValTool:\n\na) with " + \
+                          "ESGF search enabled, or \n\nb) with " + \
+                          "the dataset required in the " + \
                           "correct place in the user cache.\n\n"
                 raise ESGF_data_set_not_found(
                     result,
@@ -3206,7 +3235,7 @@ class ESGF:
                           for modelpart in self.model_specifiers]
         model_sect_dict = dict(zip(self.model_specifiers, model_sections))
         if 'dir' not in model_sect_dict:
-               model_sect_dict['dir'] = 'If_this_appears_in_a_path_see_get_model_sections'
+            model_sect_dict['dir'] = 'If_this_appears_in_a_path_see_get_model_sections'
 
         return model_sect_dict
 
@@ -3231,9 +3260,9 @@ class ESGF:
             # Check version_path is a valid directory,
             # if not return None
             if not os.path.isdir(version_path):
-                activity += 'Path to version-level directory %s '\
-                            % version_path +\
-                            'is invalid, so dataset cannot ' +\
+                activity += 'Path to version-level directory %s ' \
+                            % version_path + \
+                            'is invalid, so dataset cannot ' + \
                             'be retrieved from this local source.'
                 return None, activity
 
@@ -3243,8 +3272,8 @@ class ESGF:
 
             # Check if this failed (i.e. version_dir==None)
             if not version_dir:
-                activity += 'Unable to determine valid version directory ' +\
-                            "for version specified as 'latest' " +\
+                activity += 'Unable to determine valid version directory ' + \
+                            "for version specified as 'latest' " + \
                             'Dataset cannot be retrieved from this local source.'
                 return None, activity
 
@@ -3252,15 +3281,15 @@ class ESGF:
             # version directory
             else:
                 msd['version'] = version_dir
-                #search_for_local_path = True
+                # search_for_local_path = True
 
-        # If version is not 'latest', then assume we're okay to proceed
-        #else:
-            #search_for_local_path = True
+                # If version is not 'latest', then assume we're okay to proceed
+                # else:
+                # search_for_local_path = True
 
         # If we're okay to search for local path, determine the
         # path using the appropriate cache template
-        #if search_for_local_path:
+        # if search_for_local_path:
 
         # Determine the path using the appropriate cache template
         # Here we use the model sections to replace the
@@ -3270,13 +3299,13 @@ class ESGF:
         # Issue warning if path has any unfilled placeholders,
         # and return None to indicate no valid path found
         if node.has_placeholders(dataset_path):
-            activity = "Dataset path '%s' has unfilled placeholders."\
-                  % dataset_path
+            activity = "Dataset path '%s' has unfilled placeholders." \
+                       % dataset_path
             return None, activity
 
         # Check the path exists, if not return None
         if not os.path.isdir(dataset_path):
-            activity += "Dataset path '%s' does not exist."\
+            activity += "Dataset path '%s' does not exist." \
                         % dataset_path
             return None, activity
 
@@ -3306,28 +3335,28 @@ class ESGF:
                 # Otherwise, try to determine the latest version directory
 
                 # List everything in version_path
-                dir_contents=os.listdir(version_path)
+                dir_contents = os.listdir(version_path)
 
                 # Select any candidates for a version directory
                 # i.e. anything that is a directory and contains 'v'
                 # followed by a digit in its name
                 version_dirs = []
                 for candidate in dir_contents:
-                    if os.path.isdir(os.path.join(version_path, candidate)) and\
-                        re.findall(r'^v[0-9]', candidate) is not []:
-                            version_dirs.append(candidate)
+                    if os.path.isdir(os.path.join(version_path, candidate)) and \
+                                    re.findall(r'^v[0-9]', candidate) is not []:
+                        version_dirs.append(candidate)
 
                 # Try to interpret version number as a date
                 # for each candidate.
                 # If no matches, or interpretation fails,
                 # do nothing and leave version string as it is.
-                latest_date = datetime.date(1900,1,1)
+                latest_date = datetime.date(1900, 1, 1)
                 best_candidate = None
                 for candidate in version_dirs:
                     try:
                         # Convert the 8 digits to datetime object,
                         # and also convert from datetime to date
-                        version_date = datetime.datetime\
+                        version_date = datetime.datetime \
                             .strptime(candidate[1:9], '%Y%m%d').date()
 
                         # Compare datetime object to date
@@ -3351,7 +3380,7 @@ class ESGF:
 
                         # Extract numeric digits from direct
                         # Shouldn't need 'try' block here
-                        version_num = int(filter(str.isdigit,candidate))
+                        version_num = int(filter(str.isdigit, candidate))
 
                         # Compare datetime object to date
                         if version_num > highest_version:
@@ -3368,8 +3397,8 @@ class ESGF_CMIP5(ESGF, CMIP5):
     """
     ESGF enabled equivalent of CMIP5 project class
     """
-    def __init__(self):
 
+    def __init__(self):
         # Call CMIP5.__init__, which in turn calls Project.__init__
         CMIP5.__init__(self)
 
@@ -3389,7 +3418,7 @@ class ESGF_CMIP5(ESGF, CMIP5):
                                  'version',
                                  'start_year',
                                  'end_year',
-                                 'ptid'] # ptid short for path template id
+                                 'ptid']  # ptid short for path template id
 
         # All ESGF facets relevant to this project.
         # Note: the 'project' facet is specified explicitly further on
@@ -3435,21 +3464,21 @@ class ESGF_CMIP5(ESGF, CMIP5):
                                   model,
                                   variable,
                                   self.ESGF_facet_names,
-                                  ESGF_project = 'CMIP5')
+                                  ESGF_project='CMIP5')
 
         # Get model sections, as python dictionary
         msd = self.get_model_sections(model)
 
         infile = '_'.join([variable,
                            msd['mip'],
-                           msd['model'], # in CMIP5 class this was 'name'
+                           msd['model'],  # in CMIP5 class this was 'name'
                            msd['experiment'],
                            msd['ensemble']]) + '.nc'
 
         if (not os.path.isfile(os.path.join(indir, infile))):
             infile = '_'.join([variable,
                                msd['mip'],
-                               msd['model'], # in CMIP5 class this was 'name'
+                               msd['model'],  # in CMIP5 class this was 'name'
                                msd['experiment'],
                                msd['ensemble']]) + '*.nc'
 
@@ -3473,8 +3502,8 @@ class ESGF_CMIP5_fx(ESGF_CMIP5):
        Note this class uses the new AUXILLIARY namelist section
        C
     """
-    def __init__(self):
 
+    def __init__(self):
         # Call parent class __init__
         ESGF_CMIP5.__init__(self)
 
@@ -3565,7 +3594,7 @@ def run_executable(string_to_execute,
                    project_info,
                    verbosity,
                    exit_on_warning,
-                   launcher_arguments=None,write_di=True):
+                   launcher_arguments=None, write_di=True):
     """ @brief Executes script/binary
         @param executable String pointing to the script/binary to execute
         @param project_info Current namelist in dictionary format
@@ -3578,7 +3607,7 @@ def run_executable(string_to_execute,
     """
 
     if write_di:
-	write_data_interface(string_to_execute, project_info)
+        write_data_interface(string_to_execute, project_info)
 
     suffix = os.path.splitext(string_to_execute)[1][1:]
     currLauncher = vars(launchers)[suffix + '_launcher']()

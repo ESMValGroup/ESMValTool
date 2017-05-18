@@ -54,8 +54,8 @@ class MODELS(Nml_base):
 
     def add_nml_entry(self, name, str, attributes):
         self.project_info.append(Model(str.strip(),
-            attributes,
-            diag_specific_model=False))
+                                       attributes,
+                                       diag_specific_model=False))
 
 
 class AUXILIARIES(Nml_base):
@@ -74,8 +74,8 @@ class AUXILIARIES(Nml_base):
                 fx = FX_file(attribute['id'], str.strip())
                 self.project_info["FX_files"].append(fx)
             else:
-                msg = "fx_file entry '" + str.strip() +\
-                        "' has no 'id' attribute."
+                msg = "fx_file entry '" + str.strip() + \
+                      "' has no 'id' attribute."
                 raise FX_file_exception(msg)
 
 
@@ -86,6 +86,7 @@ class ESGF(Nml_base):
     so this section may be unneccesary. I'm keeping it, for now, in case
     namelist specific config information is required.
     """
+
     def __init__(self):
         Nml_base.__init__(self)
 
@@ -141,24 +142,24 @@ class DIAGNOSTICS(Nml_base):
 
         elif name == 'model':
             self.diag_specific_models.append(Model(string.strip(),
-                attributes,
-                diag_specific_model=True))
+                                                   attributes,
+                                                   diag_specific_model=True))
         elif name == 'diag':
             ## These two should arrays of the same length as the
             ## number of variables
             self.extend_array_to_match_length("field_type", len(self.variable))
             self.extend_array_to_match_length("diag_script_cfg_dir",
-                    len(self.diag_script))
+                                              len(self.diag_script))
 
             self.diag_tags.append(diagdef.Diag_tag(",".join(self.variable),
-                self.variable_def_dir,
-                ",".join(self.field_type),
-                self.var_attributes,
-                self.diag_script,
-                self.diag_script_cfg_dir,
-                self.diag_script_cfg,
-                self.diag_specific_models,
-                self.launcher_arguments))
+                                                   self.variable_def_dir,
+                                                   ",".join(self.field_type),
+                                                   self.var_attributes,
+                                                   self.diag_script,
+                                                   self.diag_script_cfg_dir,
+                                                   self.diag_script_cfg,
+                                                   self.diag_specific_models,
+                                                   self.launcher_arguments))
             self.reset_temp_diag_storage()
 
         elif name == 'description':
@@ -183,9 +184,9 @@ class DIAGNOSTICS(Nml_base):
 
         if ext_var_len != other_array_length:
             raise xmlTagError("Number of variables vs fields/cfg-files do not match: "
-                    + str(ext_var_len)
-                    + " != "
-                    + str(other_array_length))
+                              + str(ext_var_len)
+                              + " != "
+                              + str(other_array_length))
 
     def closing_tag(self, str, attributes):
         all_diags = []
@@ -197,7 +198,7 @@ class DIAGNOSTICS(Nml_base):
             launch_args = curr_diag_tag.get_launcher_args()
 
             diags = [Diagnostic(var, var_def_dir, field, var_attr, diag_script, cfg, model, launch_args)
-                    for diag_script, cfg, model in curr_diag_tag]
+                     for diag_script, cfg, model in curr_diag_tag]
 
             all_diags.extend(diags)
 
@@ -216,6 +217,7 @@ class namelist_summary(Nml_base):
 class namelist:
     def __init__(self):
         pass
+
 
 class REFORMAT(Nml_base):
     def __init__(self):
