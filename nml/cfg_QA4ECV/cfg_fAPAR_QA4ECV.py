@@ -20,7 +20,7 @@ trend = True
 anomalytrend = True
 trend_p = True
 climatologies = True
-hovmoeller = False
+hovmoeller = True
 mima_hov = [0, 1]
 mima_hovdiff = [-1, 1]
 

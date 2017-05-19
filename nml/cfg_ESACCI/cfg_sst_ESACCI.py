@@ -20,9 +20,9 @@ trend = True
 anomalytrend = True
 trend_p = True
 climatologies = True
-hovmoeller = False
-mima_hov = [0, 1]
-mima_hovdiff = [-1, 1]
+hovmoeller = True
+mima_hov = [255, 305]
+mima_hovdiff = [-10, 10]
 
 # flags for specific diagnostics
 percentile = True

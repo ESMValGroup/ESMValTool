@@ -139,6 +139,18 @@ This namelist is part of the ESMValTool
         <model> CMIP5 MPI-ESM-MR Lmon historical r1i1p1 2000 2005 @{MODELPATH} </model>
   		  <model> OBS ESACCI-LANDCOVER sat L4-LCCS-Map-300m-P5Y-aggregated-0.083333Deg 2000 2005 @{OBSPATH} </model>
     </diag>
+    
+    <diag>
+        <description>  															Doing ESACCI fire analysis. 		</description>
+        <variable_def_dir>                								./variable_defs/      							</variable_def_dir>
+        <variable ref_model="ESACCI-FIRE">     							burntArea                                 </variable>
+        <field_type>                      								T2Ms                                      </field_type>
+        <diag_script cfg="./nml/cfg_ESACCI/cfg_fire_ESACCI.py">   fire_ESACCI.py                    			</diag_script>
+        <launcher_arguments>               								[('execute_as_shell', False)]             </launcher_arguments>
+        
+        <model> CMIP5 MPI-ESM-MR Lmon historical r1i1p1 2005 2005 @{MODELPATH} </model>
+        <model> OBS ESACCI-FIRE sat L4-BA-MERIS-fv4.1 2005 2005 @{OBSPATH} </model>
+    </diag>
 
 </DIAGNOSTICS>
 
