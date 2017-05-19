@@ -15,6 +15,7 @@ import re
 
 import iris
 from iris.analysis import AreaWeighted, Linear, Nearest, UnstructuredNearest
+from numpy import ma
 import numpy as np
 import stratify
 
@@ -80,12 +81,12 @@ def _stock_cube(spec):
     dx = float(cell_group['dx'])
     dy = float(cell_group['dy'])
 
-    if (_LON_RANGE % dx) != 0:
+    if (np.trunc(_LON_RANGE / dx) * dx) != _LON_RANGE:
         emsg = ('Invalid longitude delta in MxN cell specification '
                 'for stock cube, got {!r}.')
         raise ValueError(emsg.format(dx))
 
-    if (_LAT_RANGE % dy) != 0:
+    if (np.trunc(_LAT_RANGE / dy) * dy) != _LAT_RANGE:
         emsg = ('Invalid latitude delta in MxN cell specification '
                 'for stock cube, got {!r}.')
         raise ValueError(emsg.format(dy))
@@ -174,6 +175,16 @@ def regrid(src_cube, tgt_grid, scheme):
     elif not isinstance(tgt_grid, iris.cube.Cube):
         emsg = 'Expecting a cube or cell-specification, got {}.'
         raise ValueError(emsg.format(type(tgt_grid)))
+
+    # Unstructured regridding requires x2 2d spatial coordinates,
+    # so ensure to purge any 1d native spatial dimension coordinates
+    # for the regridder.
+    if scheme == 'unstructured_nearest':
+        for axis in ['x', 'y']:
+            coords = src_cube.coords(axis=axis, dim_coords=True)
+            if coords:
+                [coord] = coords
+                src_cube.remove_coord(coord)
 
     # Perform the horizontal regridding.
     result = src_cube.regrid(tgt_grid, horizontal_schemes[scheme])
@@ -358,6 +369,14 @@ def vinterp(src_cube, levels, scheme):
             if np.any(mask):
                 # Replace the NaN values with the fill-value.
                 new_data[mask] = _MDI
+
+            # Ensure that any spatial mask is re-applied.
+            if ma.isMaskedArray(src_cube.data):
+                slicer = tuple([0] * (z_axis + 1))
+                # Assume that the spatial mask is invariant.
+                mask = src_cube.data.mask[slicer]
+                mask = np.broadcast_to(mask, new_data.shape)
+                new_data = ma.array(new_data, mask=mask)
 
             # Construct the resulting cube with the interpolated data.
             result = _create_cube(src_cube, new_data, levels)

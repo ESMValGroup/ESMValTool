@@ -23,33 +23,46 @@ class Test(tests.Test):
             spec = tgt_grid
             self.assertIn(spec, _cache)
             self.assertEqual(_cache[spec], self.tgt_grid)
+            self.coord_system.asset_called_once()
             expected_calls = [mock.call(axis='x', dim_coords=True),
                               mock.call(axis='y', dim_coords=True)]
             self.assertEqual(self.tgt_grid_coord.mock_calls, expected_calls)
-            self.mock_regrid.assert_called_once_with(self.tgt_grid,
-                                                     expected_scheme)
+            self.regrid.assert_called_once_with(self.tgt_grid, expected_scheme)
         else:
-            self.mock_regrid.assert_called_once_with(tgt_grid,
-                                                     expected_scheme)
+            if scheme == 'unstructured_nearest':
+                expected_calls = [mock.call(axis='x', dim_coords=True),
+                                  mock.call(axis='y', dim_coords=True)]
+                self.assertEqual(self.coords.mock_calls, expected_calls)
+                expected_calls = [mock.call(self.coord), mock.call(self.coord)]
+                self.assertEqual(self.remove_coord.mock_calls, expected_calls)
+            self.regrid.assert_called_once_with(tgt_grid, expected_scheme)
 
         # Reset the mocks to enable multiple calls per test-case.
         for mocker in self.mocks:
             mocker.reset_mock()
 
     def setUp(self):
-        self.src_cube = iris.cube.Cube(0)
+        self.coord_system = mock.Mock(return_value=None)
+        self.coord = mock.sentinel.coord
+        self.coords = mock.Mock(return_value=[self.coord])
+        self.remove_coord = mock.Mock()
+        self.regridded_cube = mock.sentinel.regridded_cube
+        self.regrid = mock.Mock(return_value=self.regridded_cube)
+        self.src_cube = mock.Mock(spec=iris.cube.Cube,
+                                  coord_system=self.coord_system,
+                                  coords=self.coords,
+                                  remove_coord=self.remove_coord,
+                                  regrid=self.regrid)
         self.tgt_grid_coord = mock.Mock()
         self.tgt_grid = mock.Mock(spec=iris.cube.Cube,
                                   coord=self.tgt_grid_coord)
         self.regrid_schemes = ['linear', 'nearest', 'area_weighted',
                                'unstructured_nearest']
-        self.regridded_cube = mock.sentinel.regridded_cube
-        self.mock_regrid = self.patch('iris.cube.Cube.regrid',
-                                      return_value=self.regridded_cube)
         self.mock_stock = self.patch('backend.regrid._stock_cube',
                                      side_effect=lambda arg: self.tgt_grid)
-        self.mocks = [self.mock_regrid, self.mock_stock,
-                      self.tgt_grid_coord, self.tgt_grid]
+        self.mocks = [self.coord_system, self.coords, self.regrid,
+                      self.src_cube, self.tgt_grid_coord, self.tgt_grid,
+                      self.mock_stock]
 
     def test_nop(self):
         cube = mock.sentinel.cube

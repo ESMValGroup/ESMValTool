@@ -85,7 +85,7 @@ class Test(tests.Test):
     def test_invalid_cell_spec__longitude(self):
         emsg = 'Invalid longitude delta in MxN cell specification'
         with self.assertRaisesRegexp(ValueError, emsg):
-            stock_cube('1.2x1')
+            stock_cube('1.3x1')
 
     def test_invalid_cell_spec__latitude(self):
         emsg = 'Invalid latitude delta in MxN cell specification'

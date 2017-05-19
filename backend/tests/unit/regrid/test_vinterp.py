@@ -8,6 +8,7 @@ from six.moves import (filter, input, map, range, zip)  # noqa
 import six  # noqa
 
 import mock
+from numpy import ma
 import numpy as np
 import unittest
 
@@ -18,10 +19,11 @@ from backend.regrid import _MDI, vertical_schemes, vinterp
 
 class Test(tests.Test):
     def setUp(self):
-        shape = (3, 2, 1)
-        self.z = shape[0]
+        self.shape = (3, 2, 1)
+        self.z = self.shape[0]
         self.dtype = np.dtype('int8')
-        data = np.arange(np.prod(shape), dtype=self.dtype).reshape(shape)
+        data = np.arange(np.prod(self.shape),
+                         dtype=self.dtype).reshape(self.shape)
         self.cube = _make_cube(data, dtype=self.dtype)
         self.created_cube = mock.sentinel.created_cube
         self.mock_create_cube = self.patch('backend.regrid._create_cube',
@@ -139,6 +141,42 @@ class Test(tests.Test):
         self.assertArrayEqual(args[0], self.cube)
         new_data[np.isnan(new_data)] = _MDI
         self.assertArrayEqual(args[1], new_data)
+        self.assertArrayEqual(args[2], levels)
+        # Check the _create_cube kwargs ...
+        self.assertEqual(kwargs, dict())
+
+    def test_interpolation__masked(self):
+        new_data = np.empty(self.shape)
+        levels = np.array([0.5, 1.5])
+        scheme = 'linear'
+        mask = [[[1], [0]], [[1], [0]], [[1], [0]]]
+        masked = ma.empty(self.shape)
+        masked.mask = mask
+        cube = _make_cube(masked, dtype=self.dtype)
+        with mock.patch('stratify.interpolate',
+                        return_value=new_data) as mocker:
+            result = vinterp(cube, levels, scheme)
+            self.assertEqual(result, self.created_cube)
+            args, kwargs = mocker.call_args
+            # Check the stratify.interpolate args ...
+            self.assertEqual(len(args), 3)
+            self.assertArrayEqual(args[0], levels)
+            pts = cube.coord(axis='z', dim_coords=True).points
+            src_levels_broadcast = np.broadcast_to(pts.reshape(self.z, 1, 1),
+                                                   cube.shape)
+            self.assertArrayEqual(args[1], src_levels_broadcast)
+            self.assertArrayEqual(args[2], cube.data)
+            # Check the stratify.interpolate kwargs ...
+            self.assertEqual(kwargs, dict(axis=0,
+                                          interpolation=scheme,
+                                          extrapolation='nan'))
+        args, kwargs = self.mock_create_cube.call_args
+        # Check the _create_cube args ...
+        self.assertEqual(len(args), 3)
+        self.assertArrayEqual(args[0], cube)
+        self.assertArrayEqual(args[1], new_data)
+        self.assertTrue(ma.isMaskedArray(args[1]))
+        self.assertArrayEqual(args[1].mask, mask)
         self.assertArrayEqual(args[2], levels)
         # Check the _create_cube kwargs ...
         self.assertEqual(kwargs, dict())
