@@ -1,4 +1,4 @@
-#!/usr/bin/ksh
+#!/usr/bin/csh
 # This is a plotting script for AutoAssess radiation summary plot.
 # Preparation for input file: 
 # summary files are in directories work/'variable-name' (e.g. work/rlut) under ESMValTool.
@@ -6,17 +6,17 @@
 # %cat */summary_global_'model'.csv > summary_global_'model'_all.csv (e.g. 'model'=MPI-ESM-LR)
 # Input file should contain error values from more than one variable. Otherwise this program fails.
 
-area=radiation
-region=summary_global
-cntl=HadGEM2-A
-expt=MPI-ESM-LR
-obs=obs2
-period=ANN
-metrics=~/esmvaltool/work/AutoAssess_radiation_rms_summary/$region
-ometrics=~/esmvaltool/plot_scripts/python/AutoAssess_radiation_summary/$area
-outdir=~/esmvaltool/work/AutoAssess_radiation_rms_summary
+set area=radiation
+set region=summary_global
+set cntl=NorESM1-M
+set expt=MPI-ESM-LR
+set obs=obs2
+set period=ANN
+set metrics=../../../work/AutoAssess_radiation_rms_summary/$region
+set ometrics=./$area
+set outdir=../../../work/AutoAssess_radiation_rms_summary
 
-plot_norm_ac=~/esmvaltool/plot_scripts/python/AutoAssess_radiation_summary/plot_norm_ac_ideal.py
+set plot_norm_ac=./plot_norm_ac_ideal.py
 
 python2.7 $plot_norm_ac --plot=${outdir}/AutoAssess_radiation_summary.png                              \
                         --exp=${expt} --ctl=${cntl}                  \
