@@ -274,3 +274,133 @@ class CoordinateInfo(JsonInfo):
         self.valid_min = self._read_json_variable('valid_min')
         self.valid_max = self._read_json_variable('valid_max')
         self.requested = self._read_json_list_variable('requested')
+
+
+class CMIP5Info(object):
+
+    def __init__(self, cmor_tables_path=None):
+        """
+        Class to read CMIP5-like data request
+
+        Parameters
+        ----------
+        cmor_tables_path: basestring
+            Path to the folder containing the Tables folder with the json files
+        """
+
+        cmor_tables_path = self._get_cmor_path(cmor_tables_path)
+
+        self._cmor_folder = os.path.join(cmor_tables_path, 'Tables')
+
+        self.tables = {}
+
+        for table_file in glob.glob(os.path.join(self._cmor_folder, '*')):
+            if '_grids' in table_file:
+                continue
+            print (table_file)
+            self._load_table(table_file)
+
+    @staticmethod
+    def _get_cmor_path(cmor_tables_path):
+        if not cmor_tables_path:
+            cwd = os.path.dirname(os.path.realpath(__file__))
+            cmor_tables_path = os.path.join(cwd, 'cmip5-cmor-tables')
+        return cmor_tables_path
+
+    def _load_table(self, table_file):
+        coords = {}
+        table_name = ''
+        frequency = ''
+
+        with open(table_file) as self._current_table:
+            self._read_line()
+            while True:
+                key, value = self._last_line_read
+                if key == 'table_id':
+                    table_name = value[len('Table '):]
+                    self.tables[table_name] = {}
+                elif key == 'frequency':
+                    frequency = value
+                elif key == 'generic_levels':
+                    for dim in value.split(' '):
+                        coord = CoordinateInfo(dim)
+                        coord.generic_level = True
+                        coord.axis = 'Z'
+                        coords[dim] = coord
+                elif key == 'axis_entry':
+                    coords[value] = self._read_coordinate(value)
+                    continue
+                elif key == 'variable_entry':
+                    variable = self._read_variable(value)
+                    variable.frequency = frequency
+                    for dim in variable.dimensions:
+                        variable.coordinates[dim] = coords[dim]
+                    self.tables[table_name][value] = variable
+                    continue
+                if not self._read_line():
+                    return
+
+    def _read_line(self):
+        line = self._current_table.readline()
+        if line == '':
+            return False
+        if line.startswith('!'):
+            return self._read_line()
+        line = line.replace('\n', '')
+        if '!' in line:
+            line = line[:line.index('!')]
+        line = line.strip()
+        if not line:
+            self._last_line_read = ('', '')
+        else:
+            index = line.index(':')
+            self._last_line_read = (line[:index].strip(),
+                                    line[index+1:].strip())
+        return True
+
+    def _read_coordinate(self, value):
+        coord = CoordinateInfo(value)
+        while self._read_line():
+            key, value = self._last_line_read
+            if key in ('variable_entry', 'axis_entry'):
+                return coord
+            if key == 'requested':
+                coord.requested = value.split(' ')
+                continue
+            if hasattr(coord, key):
+                setattr(coord, key, value)
+
+    def _read_variable(self, value):
+        var = VariableInfo(value)
+        while self._read_line():
+            key, value = self._last_line_read
+            if key in ('variable_entry', 'axis_entry'):
+                return var
+            if key == 'dimensions':
+                var.dimensions = value.split(' ')
+                continue
+            if hasattr(var, key):
+                setattr(var, key, value)
+        return var
+
+    def get_variable(self, table, short_name):
+        """
+        Search and return the variable info
+
+        Parameters
+        ----------
+        table: basestring
+            Table name
+        short_name: basestring
+            Variable's short name
+
+        Returns
+        -------
+        VariableInfo
+            Returns the VariableInfo object for the requested variable if
+            found, returns None if not
+        """
+        try:
+            return self.tables[table][short_name]
+        except KeyError:
+            return None

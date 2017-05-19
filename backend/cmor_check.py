@@ -449,7 +449,7 @@ class CMORCheckError(Exception):
 def main():
     import warnings
     import os
-    from backend.variable_info import CMIP6Info
+    from backend.variable_info import CMIP5Info
 
     data_folder = '/Users/nube/esmval_data'
     # data_folder = '/home/paul/ESMValTool/data'
@@ -463,9 +463,9 @@ def main():
         ('ETHZ_CMIP5/historical/Amon/tro3/GFDL-ESM2G/r1i1p1', 'tro3', 'Amon'),
         ('ETHZ_CMIP5/historical/Amon/tro3/MIROC5/r1i1p1', 'tro3', 'Amon'),
         ('ETHZ_CMIP5/historical/Amon/tro3/MIROC-ESM/r1i1p1', 'tro3', 'Amon'),
-        ('ETHZ_CMIP5/historical/OImon/sic/EC-EARTH/r1i1p1', 'sic', 'SImon'),
-        ('ETHZ_CMIP5/historical/OImon/sic/HadCM3/r1i1p1', 'sic', 'SImon'),
-        ('ETHZ_CMIP5/historical/OImon/sic/MRI-ESM1/r1i1p1', 'sic', 'SImon'),
+        ('ETHZ_CMIP5/historical/OImon/sic/EC-EARTH/r1i1p1', 'sic', 'OImon'),
+        ('ETHZ_CMIP5/historical/OImon/sic/HadCM3/r1i1p1', 'sic', 'OImon'),
+        ('ETHZ_CMIP5/historical/OImon/sic/MRI-ESM1/r1i1p1', 'sic', 'OImon'),
         # ('CMIP6/1pctCO2/Amon/ua/MPI-ESM-LR/r1i1p1f1', 'ua', 'Amon'),
         # ('CMIP6/1pctCO2/Amon/tas/MPI-ESM-LR/r1i1p1f1', 'tas', 'Amon'),
         # ('CMIP6/1pctCO2/day/tas/MPI-ESM-LR/r1i1p1f1', 'tas', 'day'),
@@ -512,7 +512,7 @@ def main():
                                                   'units')
                 if units is not None:
                     coord.units = units
-    variables_info = CMIP6Info()
+    variables_info = CMIP5Info()
     for (example_data, var_name, table) in example_datas:
         print('\n' + example_data)
 
