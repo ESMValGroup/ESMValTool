@@ -2,4 +2,4 @@
 
 # Test runner script for ESMValtool. This should eventually go into
 # setup.py once this is available. For now a oneliner using pytest
-pytest tests/*.py --junit-xml=test-reports
+pytest tests/*.py --junit-xml=test-reports/report.xml
