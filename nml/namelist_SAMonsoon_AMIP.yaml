@@ -123,5 +123,7 @@ DIAGNOSTICS:
       - {name: pr-mmday, ref_model: TRMM, exclude_model: HadISST, field: T2Ms}
       - {name: ts,       ref_model: HadISST, exclude_model: TRMM, field: T2Ms}
     scripts:
+      - {name: SAMonsoon_teleconnections.ncl, cfg_file: ./nml/cfg_SAMonsoon/cfg_SAMonsoon_tele.ncl}
+    additional_models:
       - {name: TRMM,     project: OBS,  type: sat,      version: 3B42-v7,  start: 1998,  end: 2009,  path: /obspath/Tier2/TRMM-3B42/}
       - {name: HadISST,  project: OBS,  type: reanaly,  version: 1,        start: 1998,  end: 2009,  path: /obspath/Tier2/HadISST/}
