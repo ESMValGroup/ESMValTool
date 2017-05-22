@@ -1,3 +1,13 @@
-Settings: 
-- tag1
-- tag2
+--- !Namelist
+GLOBAL: 
+  write_plots: True
+PREPROCESS:
+  pptag1: True
+MODELS:
+- models1
+- models2
+- models3
+DIAGNOSTICS:
+- diag1
+- diag2
+- diag3

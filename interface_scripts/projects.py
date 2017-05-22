@@ -5,6 +5,7 @@ import os
 import launchers
 import pdb
 import re
+import glob
 
 
 class Project:
@@ -1465,6 +1466,137 @@ class MiKlip_baseline0(MiKlip):
                                'areacello')
 
         return os.path.join(areadir, areafile)
+
+
+class CMIP5_DKRZ(MiKlip):
+    """@brief Follows the DKRZ directory structure for input data
+              that in turn follows ESGF data organisation.
+              + fx file
+    """
+    def __init__(self):
+        MiKlip.__init__(self)
+
+        # The names of the space separated entries in the XML-file <model> tag
+        # lines
+        self.model_specifiers = ["project",
+                                 "institute",
+                                 "name",
+                                 "mip",
+                                 "experiment",
+                                 "ensemble",
+                                 "realm",
+                                 "start_year",
+                                 "end_year",
+                                 "dir"]
+
+    def get_cf_infile(self, project_info, model, field, variable, mip, exp):
+        """ @brief Returns the path to the input file used in reformat
+            @param project_info Current namelist in dictionary format
+            @param model One of the <model>-tags in the XML namelist file
+            @param field The field (see tutorial.pdf for available fields)
+            @param variable The variable
+                            (defaults to the variable in project_info)
+            @return Two strings (input directory and input file)
+            This function looks for the input file to use in the
+            reformat routines
+        """
+        # msd = model_section_dictionary
+        msd = self.get_model_sections(model)
+        msd = self.rewrite_mip_exp(msd, mip, exp)
+
+        if ('6hr' in msd["mip"]):
+            mip = '6hr'
+        if ('day' in msd["mip"]):
+            mip = 'day'
+        if ('mon' in msd["mip"]):
+            mip = 'mon'
+        if ('yr' in msd["mip"]):
+            mip = 'yr'
+        if ('clim' in msd["mip"]):
+            mip = 'monClim'
+
+        version_path = os.path.join(msd["dir"],
+                                    msd["institute"],
+                                    msd["name"],
+                                    msd["experiment"],
+                                    mip,
+                                    msd["realm"],
+                                    msd["mip"],
+                                    msd["ensemble"])
+        list_versions = glob.glob(version_path+'/*')
+        list_versions.sort()
+        version = os.path.basename(list_versions[-1])
+
+        indir = os.path.join(msd["dir"],
+                             msd["institute"],
+                             msd["name"],
+                             msd["experiment"],
+                             mip,
+                             msd["realm"],
+                             msd["mip"],
+                             msd["ensemble"],
+                             version,
+                             variable)
+        print(indir)
+
+        infile = "_".join([variable,
+                           msd["mip"],
+                           msd["name"],
+                           msd["experiment"],
+                           msd["ensemble"]]) + ".nc"
+
+        if (not os.path.isfile(os.path.join(indir, infile))):
+            infile = "_".join([variable,
+                               msd["mip"],
+                               msd["name"],
+                               msd["experiment"],
+                               msd["ensemble"]]) + "*.nc"
+
+        return indir, infile
+
+    def get_cf_areafile(self, project_info, model):
+        """ @brief Returns the path to the areacello file
+                   used for ocean variables
+            @param project_info Current namelist in dictionary format
+            @param model One of the <model>-tags in the XML namelist file
+            @return A string (areafile path)
+
+            This function looks for the areafile of the ocean grid
+        """
+        # msd = model_section_dictionary
+        msd = self.get_model_sections(model)
+
+        areafile = 'areacello_fx_'\
+                   + msd["name"]\
+                   + "_" + msd["experiment"] \
+                   + "_r0i0p0.nc"
+
+        # Will sellect the newest version
+        version_path = os.path.join(msd["dir"],
+                                    msd["institute"],
+                                    msd["name"],
+                                    msd["experiment"],
+                                    'fx',
+                                    'ocean',
+                                    'fx',
+                                    'r0i0p0')
+        list_versions = glob.glob(version_path+'/*')
+        list_versions.sort()
+        version = os.path.basename(list_versions[-1])
+
+        areadir = os.path.join(msd["dir"],
+                               msd["institute"],
+                               msd["name"],
+                               msd["experiment"],
+                               'fx',
+                               'ocean',
+                               'fx',
+                               'r0i0p0',
+                               version,
+                               'areacello')
+
+        return os.path.join(areadir, areafile)
+
 
 class O3_Cionni(Project):
     """ @brief Class defining the specific characteristics of the CMIP5 project

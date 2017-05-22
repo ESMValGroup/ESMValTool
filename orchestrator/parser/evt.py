@@ -1,17 +1,25 @@
+import yaml
+
 class Namelist(yaml.YAMLObject):
     """
     Class to hold the information from the namelist
     """
     yaml_tag = u'!Namelist'
-    def __init__(self):
+    def __init__(self,GLOBAL, PREPROCESS, MODLES, DIAGNOSTICS):
         self.__name__       = "Namelist" 
-        self.write_plots    = None
-        self.verbosity      = None
-        self.exit_on_warning = None
-        self.ouput_file_type = None
-        self.models         = None # sould be []
-        self.preprocess     = None # sould be {}
-        self.diagnostics    = None # sould be {}
+        self.GLOBAL         = GLOBAL
+        self.MODELS         = MODLES
+        self.PREPROCESS     = PREPROCESS
+        self.DIAGNOSTICS    = DIAGNOSTICS
+
+    def __repr__(self):
+        return '{0}(settings={1}, preprocess={2}, \
+               models={3}, diagnostics={4})'.format(
+                self.__class__.__name__,
+                self.GLOBAL,
+                self.PREPROCESS,
+                self.MODELS,
+                self.DIAGNOSTICS)
 
 class Config(object):
     """
