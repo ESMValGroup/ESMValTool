@@ -5,11 +5,11 @@
 # South Asian Monsoon diagnostics implemented from the UKMET Monsoon suite
 # 
 # Authors
-# Ricard Levine (UKMET, Great Britain - Richard.Levine@metoffice.gov.uk)
-# Martin Evaldsson (SMHI, Sweden - Martin.Evaldsson@smhi.se)
+# Ricard Levine (UKMET, UK)
+# Martin Evaldsson (SMHI, Sweden)
 # 
 # Contributor
-# Gill Martin (UKMET, Great Britain - Gill.Martin@metoffice.gov.uk)
+# Gill Martin (UKMET, UK)
 # 
 # Project
 # EMBRACE
@@ -40,6 +40,7 @@ GLOBAL:
   show_debuginfo:    True
   read_from_vault:   False
 
+  
 MODELS:
   - {name: CNRM-CM5,      mip: Amon,  exp: historical,  ensemble: r1i1p1,   start: 1980,  end: 2004,  path: /obspath/CMIP5/}
   - {name: HadGEM2-ES,    mip: Amon,  exp: historical,  ensemble: r1i1p1,   start: 1980,  end: 2004,  path: /obspath/CMIP5/}
@@ -119,5 +120,5 @@ DIAGNOSTICS:
     scripts:
       - {name: SAMonsoon_teleconnections.ncl, cfg_file: ./nml/cfg_SAMonsoon/cfg_SAMonsoon_tele.ncl}
     additional_model:
-      - {name: GPCP-1DD,  project: obs4mips,  level: L3,  version: v1.2,     start: 1998,  end: 2010,  path: /obspath/Tier1/}
-      - {name: TRMM,      project: OBS,       type: sat,  version: 3B42-v7,  start: 1998,  end: 2010,  path: /obspath/Tier2/TRMM-3B42/}
+      - {name: TRMM,     project: OBS,  type: sat,      version: 3B42-v7,  start: 1998,  end: 2010,  path: /obspath/Tier2/TRMM-3B42/}
+      - {name: HadISST,  project: OBS,  type: reanaly,  version: 1,        start: 1998,  end: 2010,  path: /obspath/Tier2/TRMM-3B42/}

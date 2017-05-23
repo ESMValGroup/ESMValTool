@@ -1,0 +1,56 @@
+###############################################################################
+# namelist_sm_pr.xml
+# 
+# Description
+# Diagnostic preference for afternoon precipitation over soil moisture
+# anomalies
+# 
+# Author(s)
+# Belen Gallego-Elvira (CEH, UK)
+# Chris Taylor (CEH, UK)
+# 
+# Contributor(s)
+# Luis Garcia-Carreras (University of Leeds, UK)
+# 
+# Project(s)
+# EMBRACE
+# 
+# Reference(s)
+# Taylor et al., Nature, 489, 423-426, doi:10.1038/nature11377 (2012)
+# 
+# This namelist is part of the ESMValTool
+###############################################################################
+
+GLOBAL:
+  write_plots:       True
+  write_netcdf:      True
+  verbosity:         1
+  exit_on_warning:   False
+  output_file_type:  ps
+
+
+MODELS:
+  - {name: IPSL-CM5A-MR,  project: CMIP5,  mip: 3hr,  exp: historical,  ensemble: r2i1p1,  start: 1996,  end: 2001,  path: /modelpath/CMIP5}
+  - {name: HadGEM2-ES,    project: CMIP5,  mip: 3hr,  exp: historical,  ensemble: r2i1p1,  start: 1996,  end: 2001,  path: /modelpath/CMIP5}
+  - {name: INMCM4,        project: CMIP5,  mip: 3hr,  exp: historical,  ensemble: r1i1p1,  start: 1996,  end: 2001,  path: /modelpath/CMIP5}
+# fx file: diag_scripts/aux/PR-SM/topo_var_5x5.gra !?
+
+
+PREPROCESS:
+  select_level:    None
+  target_grid:     None
+  regrid_scheme:   None
+  mask_fillvalues: None
+  mask_landocean:  None
+  multimodel_mean: False
+
+  
+DIAGNOSTICS:
+
+  DIAG:
+    description:  Preference for afternoon precipitation over soil moisture
+    variables:
+      - {name: pr,  field: T2Is}
+      - {name: mrsos, field: T2Is}
+    scripts:
+      - {name: sm_pr_diag_nml.py,  cfg_file: ./nml/cfg_sm_pr/cfg_sm_pr.conf}
