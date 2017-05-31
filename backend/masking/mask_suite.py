@@ -80,7 +80,7 @@ def maskgeometry(shapefilename, att, argv):
     contour.attributes['name'] == 'land_mass'
 
     """
-    
+
     import cartopy.io.shapereader as shpreader
     reader = shpreader.Reader(shapefilename)
     contours = reader.records()
@@ -169,8 +169,8 @@ use with cube aggregation functions such as :meth:`~iris.cube.Cube.collapsed`,
 :meth:`~iris.cube.Cube.aggregated_by` or
 :meth:`~iris.cube.Cube.rolling_window`.
 
-In this case, we have a time sequence of measurements (time unit dt), and we want to calculate how many times N 
-the measurements exceed a certain threshold R over a sliding window dT (multiple of dt). The threshold could be 0 
+In this case, we have a time sequence of measurements (time unit dt), and we want to calculate how many times N
+the measurements exceed a certain threshold R over a sliding window dT (multiple of dt). The threshold could be 0
 for any unwanted value for instance.
 
 """
@@ -238,7 +238,9 @@ def mask_cube_counts(mycube, value_threshold, counts_threshold, window_size):
 
     mask = counts_windowed_cube.data > counts_threshold
     mask.astype(np.int)
-    masked_cube = mycube*mask
+    # preserving the original cube metadata
+    masked_cube = mycube.copy()
+    masked_cube.data = mycube.data*mask
     return counts_windowed_cube, mask, masked_cube
 
 """
