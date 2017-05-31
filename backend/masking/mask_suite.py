@@ -224,6 +224,36 @@ def count_spells(data, threshold, axis, spell_length):
     spell_point_counts = np.sum(full_windows, axis=axis, dtype=int)
     return spell_point_counts
 
+def window_counts(mycube, value_threshold, window_size, pctile):
+    """
+    Function that returns a flat array containing
+    the number of data points within a time window `window_size'
+    per grid point that satify a condition
+    value > value_threshold.
+    It also returns statistical measures for the flat array
+    window_counts[0] = array
+    window_counts[1] = mean(array)
+    window_counts[2] = std(array)
+    window_counts[3] = percentile(array, pctile)
+    """
+    
+    # Make an aggregator from the user function.
+    SPELL_COUNT = Aggregator('spell_count',
+                             count_spells,
+                             units_func=lambda units: 1)
+
+    # Calculate the statistic.
+    counts_windowed_cube = cube.collapsed('time', SPELL_COUNT,
+                                          threshold=value_threshold,
+                                          spell_length=window_size)
+
+    #if one wants to print the whole array
+    #np.set_printoptions(threshold=np.nan)
+    r = counts_windowed_cube.data.flatten()
+    meanr = np.mean(r)
+    stdr = np.std(r)
+    prcr = np.percentile(r, pctile)
+    return r,meanr,stdr,prcr
 
 def mask_cube_counts(mycube, value_threshold, counts_threshold, window_size):
     # Make an aggregator from the user function.
@@ -242,6 +272,17 @@ def mask_cube_counts(mycube, value_threshold, counts_threshold, window_size):
     masked_cube = mycube.copy()
     masked_cube.data = mycube.data*mask
     return counts_windowed_cube, mask, masked_cube
+
+def mask_threshold(mycube, threshold):
+    """
+    Takes a MINIMUM value `threshold'
+    and removes by masking off anything that's below it in the cube data
+    """
+    import numpy.ma as ma
+    mcube = mycube.copy()
+    # apply masking for threshold of MINIMUM value threshold
+    mcube.data = ma.masked_less(mycube.data, threshold)
+    return mcube
 
 """
 
