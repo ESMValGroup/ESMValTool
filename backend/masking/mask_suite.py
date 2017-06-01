@@ -62,12 +62,12 @@ print(masked_cube_simple(cube, 'latitude', 10, 20, 300))
 def cube_shape(mycube):
     """
 
-    Function that convers a cube into a shapely MultiPoint geometry
+    Function that converts a cube into a shapely MultiPoint geometry
 
     """
     import shapely.geometry as sg
-    lon = newcube.coord('longitude')
-    lat = newcube.coord('latitude')
+    lon = mycube.coord('longitude')
+    lat = mycube.coord('latitude')
     region = sg.MultiPoint(zip(lon.points.flat, lat.points.flat))
     return region
 
@@ -112,8 +112,8 @@ def mask_2d(mycube, geom):
         this_point = Point(this_lon, this_lat)
         mask[i] = this_point.within(geom)
 
-    cube.data = mask
-    return cube
+    mycube.data = mask
+    return mycube
 
 """
 
@@ -174,13 +174,9 @@ the measurements exceed a certain threshold R over a sliding window dT (multiple
 for any unwanted value for instance.
 
 """
-import matplotlib.pyplot as plt
 import numpy as np
-
 import iris
 from iris.analysis import Aggregator
-import iris.plot as iplt
-import iris.quickplot as qplt
 from iris.util import rolling_window
 
 
@@ -236,14 +232,14 @@ def window_counts(mycube, value_threshold, window_size, pctile):
     window_counts[2] = std(array)
     window_counts[3] = percentile(array, pctile)
     """
-    
+
     # Make an aggregator from the user function.
     SPELL_COUNT = Aggregator('spell_count',
                              count_spells,
                              units_func=lambda units: 1)
 
     # Calculate the statistic.
-    counts_windowed_cube = cube.collapsed('time', SPELL_COUNT,
+    counts_windowed_cube = mycube.collapsed('time', SPELL_COUNT,
                                           threshold=value_threshold,
                                           spell_length=window_size)
 
@@ -262,7 +258,7 @@ def mask_cube_counts(mycube, value_threshold, counts_threshold, window_size):
                              units_func=lambda units: 1)
 
     # Calculate the statistic.
-    counts_windowed_cube = cube.collapsed('time', SPELL_COUNT,
+    counts_windowed_cube = mycube.collapsed('time', SPELL_COUNT,
                                           threshold=value_threshold,
                                           spell_length=window_size)
 
