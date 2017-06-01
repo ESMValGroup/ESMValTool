@@ -301,4 +301,32 @@ qplt.contourf(meth3[0,:,:], cmap='RdYlBu_r')
 plt.gca().coastlines()
 iplt.show()
 
+################
+file1 = '/home/users/valeriu/sdt/data/cmip5/output1/MPI-M/MPI-ESM-LR/historical/mon/atmos/Amon/r1i1p1/v20120315/tro3/tro3_Amon_MPI-ESM-LR_historical_r1i1p1_200001-200512.nc'
+cube1 = iris.load_cube(file1)
+file2 = iris.sample_data_path('E1_north_america.nc')
+cube2 = iris.load_cube(file2)
+r1 = window_counts(cube1,280,1,95)
+r2 = window_counts(cube2,280,1,95)
+q1 = mask_cube_counts(cube1, 280, 50, 5)
+q2 = mask_cube_counts(cube2, 280, 220, 5)
+q3 = regrid(q2[2],'30x30','linear')
+if q3.data.any()!=0. and q3.data.any()<280.:
+    print('fuck!')
+plt.hist(r1[0],histtype='step',log=True,label='tro3')
+plt.hist(r2[0],histtype='step',log=True,label='temp NAm')
+###########
+plt.hist(q1[0].data.flatten(),histtype='step',log=True,label='tro3')
+plt.hist(q2[0].data.flatten(),histtype='step',log=True,label='temp NAm')
+plt.title('Number of data points per LON-LAT gridpoint\nthat in a 5 year window have Temperature > 280K and are more than 50')
+plt.xlabel('# of data points')
+plt.ylabel('# of LON-LAT gridpoints')
+plt.legend()
+plt.grid()
+plt.show()
+##########
+qplt.contourf(q3[0,:,:], cmap='RdYlBu_r')
+plt.gca().coastlines()
+iplt.show()
+
 """
