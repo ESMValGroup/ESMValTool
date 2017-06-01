@@ -213,7 +213,12 @@ def count_spells(data, threshold, axis, spell_length):
     # Threshold the data to find the 'significant' points.
     data_hits = data>threshold
     # Make an array with data values "windowed" along the time axis.
-    hit_windows = rolling_window(data_hits, window=spell_length, axis=axis)
+    ###############################################################
+    # WARNING: default step is = window size i.e. no overlapping
+    # if you want overlapping windows set the step to be m*spell_length
+    # where m is a float
+    ###############################################################
+    hit_windows = rolling_window(data_hits, window=spell_length, step=spell_length, axis=axis)
     # Find the windows "full of True-s" (along the added 'window axis').
     full_windows = np.all(hit_windows, axis=axis+1)
     # Count points fulfilling the condition (along the time axis).
