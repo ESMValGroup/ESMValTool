@@ -44,3 +44,24 @@ def seasonal_mean(mycube):
     spans_three_months = lambda time: (time.bound[1] - time.bound[0]) == 2160
     three_months_bound = iris.Constraint(time=spans_three_months)
     return annual_seasonal_mean.extract(three_months_bound)
+
+# operate along a trajectory line
+from iris.analysis import trajectory
+def trajectory_cube(mycube, long1, long2, lat1, lat2, plong1, plong2, plat1, plat2,samplecounts):
+    """
+    Function that subsets a cube on a box (long1,long2,lat1,lat2)
+    then creates a trajectory with waypoints (plong1,plong2,plat1, plat2),
+    populates it with samplecounts number of points
+    and subsets the cube along the trajectory
+    """
+    sublon = iris.Constraint(longitude=lambda cell: float(long1) <= cell <= float(long2))
+    sublat = iris.Constraint(latitude=lambda cell: float(lat1) <= cell <= float(lat2))
+    wspd_subset = mycube.extract(sublon & sublat)
+    pnts = [{'longitude': float(plong1), 'latitude': float(plat1)}, {'longitude': float(plong2), 'latitude': float(plat2)}]
+    traj = trajectory.Trajectory(pnts, sample_count=int(samplecounts))
+    lon = [d['longitude'] for d in traj.sampled_points]
+    lat = [d['latitude'] for d in traj.sampled_points]
+    sampled_points = [('longitude', lon),('latitude', lat)]
+    section = trajectory.interpolate(wspd_subset, sampled_points)
+    lon, lat = wspd_subset.coord('longitude').points, wspd_subset.coord('latitude').points
+    return section, lon, lat
