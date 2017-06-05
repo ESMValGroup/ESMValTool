@@ -94,25 +94,28 @@ def mask_2d(mycube, geom):
     This function masks off any given 2D geometry geom
     and keeps only the values that fall in geom, nulling
     everything else in mycube
+    WARNING: as of now this function works with cubes that have time as coord
+    it is adusted to save time and loop over only lon-lat points
 
     """
 
     import iris
     import numpy as np
     from shapely.geometry import Point
-    mask = np.ones(mycube.data.shape)
+    ccube = mycube.collapsed('time', iris.analysis.MEAN)
+    mask = np.ones(ccube.data.shape)
     p = -1
-    for i in np.ndindex(mycube.data.shape):
+    for i in np.ndindex(ccube.data.shape):
         if i[0] != p:
             print i[0],
             p = i[0]
-        this_cube = mycube[i]
+        this_cube = ccube[i]
         this_lat = this_cube.coord('latitude').points[0]
         this_lon = this_cube.coord('longitude').points[0] - 360
         this_point = Point(this_lon, this_lat)
         mask[i] = this_point.within(geom)
 
-    mycube.data = mask
+    mycube.data = mycube.data*mask
     return mycube
 
 """
