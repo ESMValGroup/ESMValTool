@@ -2,6 +2,7 @@
 # MASKING
 # V.Predoi, University of Reading, May 2017
 ########################################################################
+import iris
 
 def masked_cube_simple(mycube, slicevar, v1, v2, threshold):
     """
@@ -11,7 +12,6 @@ def masked_cube_simple(mycube, slicevar, v1, v2, threshold):
     arguments: cube, variable, min value, max value, threshold
 
     """
-    import iris
     import numpy.ma as ma
     coord_names = [coord.name() for coord in mycube.coords()]
     if slicevar in coord_names:
@@ -38,7 +38,6 @@ def masked_cube_lonlat(mycube, lon1, lon2, lat1, lat2, threshold):
     arguments: cube, min value, max value, where value=(lon, lat), threshold
 
     """
-    import iris
     import numpy.ma as ma
     cubeslice = mycube.extract(iris.Constraint(longitude = lambda v: lon1 <= v.point <= lon2, latitude = lambda v: lat1 <= v.point <= lat2))
     if cubeslice is not None:
@@ -49,15 +48,6 @@ def masked_cube_lonlat(mycube, lon1, lon2, lat1, lat2, threshold):
     else:
         print('NOT masking the cube')
         return mycube
-
-"""
-
-Example test code:
-cube = iris.load_cube(iris.sample_data_path('air_temp.pp'))
-print(masked_cube_lonlat(cube, 10, 20, 10, 20, 300))
-print(masked_cube_simple(cube, 'latitude', 10, 20, 300))
-
-"""
 
 def cube_shape(mycube):
     """
@@ -98,8 +88,6 @@ def mask_2d(mycube, geom):
     it is adusted to save time and loop over only lon-lat points
 
     """
-
-    import iris
     import numpy as np
     from shapely.geometry import Point
     ccube = mycube.collapsed('time', iris.analysis.MEAN)
@@ -117,37 +105,6 @@ def mask_2d(mycube, geom):
 
     mycube.data = mycube.data*mask
     return mycube
-
-"""
-
-Example test code using a natural_earth shapefile:
-
-import iris
-import numpy as np
-import cartopy.io.shapereader as shpreader
-from cartopy.mpl.patch import geos_to_path
-from shapely.geometry import Point
-import cartopy.crs as ccrs
-import matplotlib as mpl
-mpl.use('Agg')
-import matplotlib.pyplot as plt
-import iris.plot as iplt
-
-shpfilename = shpreader.natural_earth(resolution='110m',
-                                      category='cultural',
-                                      name='admin_0_countries')
-Canada_geom = maskgeometry(shpfilename, 'name', 'Canada')
-cube = iris.load_cube(iris.sample_data_path('air_temp.pp'))
-masked_cube = mask_2d(cube,Canada_geom)
-# plot the masked area
-ax = plt.axes(projection=ccrs.PlateCarree(central_longitude=0))
-ax.coastlines(resolution='110m')
-mesh2 = iplt.pcolormesh(masked_cube, cmap='seismic')
-plt.colorbar(mesh2, orientation='horizontal', label='s-1', format='%.1e')
-plt.title('Masked cube on Canada')
-plt.savefig('Canada.png')
-
-"""
 
 def polygon_shape(xlist, ylist):
     """
@@ -178,7 +135,6 @@ for any unwanted value for instance.
 
 """
 import numpy as np
-import iris
 from iris.analysis import Aggregator
 from iris.util import rolling_window
 
@@ -287,54 +243,3 @@ def mask_threshold(mycube, threshold):
     # apply masking for threshold of MINIMUM value threshold
     mcube.data = ma.masked_less(mycube.data, threshold)
     return mcube
-
-"""
-
-# example cube and plot
-file_path = iris.sample_data_path('E1_north_america.nc')
-cube = iris.load_cube(file_path)
-periods = mask_cube_counts(cube,280,40,200)[0]
-print('counts cube original', periods.data, periods.data.shape)
-# let's check for counts more than 40
-print('Building a mask that asks for at least 40 counts per data point')
-meth1 = mask_cube_counts(cube,280,40,200)[1]
-print('mask', meth1, meth1.shape)
-print('Masked original cube keeping at least 40 counts per data point')
-meth2 = mask_cube_counts(cube,280,40,200)[1]
-print('masked cube', meth2, meth2.shape)
-print('Masked orig cube for at least 40 counts per data point')
-meth3 = mask_cube_counts(cube,280,40,200)[2]
-print('masked orig cube', meth3.data, meth3.data.shape)
-qplt.contourf(meth3[0,:,:], cmap='RdYlBu_r')
-plt.gca().coastlines()
-iplt.show()
-
-################
-file1 = '/home/users/valeriu/sdt/data/cmip5/output1/MPI-M/MPI-ESM-LR/historical/mon/atmos/Amon/r1i1p1/v20120315/tro3/tro3_Amon_MPI-ESM-LR_historical_r1i1p1_200001-200512.nc'
-cube1 = iris.load_cube(file1)
-file2 = iris.sample_data_path('E1_north_america.nc')
-cube2 = iris.load_cube(file2)
-r1 = window_counts(cube1,280,1,95)
-r2 = window_counts(cube2,280,1,95)
-q1 = mask_cube_counts(cube1, 280, 50, 5)
-q2 = mask_cube_counts(cube2, 280, 220, 5)
-q3 = regrid(q2[2],'30x30','linear')
-if q3.data.any()!=0. and q3.data.any()<280.:
-    print('fuck!')
-plt.hist(r1[0],histtype='step',log=True,label='tro3')
-plt.hist(r2[0],histtype='step',log=True,label='temp NAm')
-###########
-plt.hist(q1[0].data.flatten(),histtype='step',log=True,label='tro3')
-plt.hist(q2[0].data.flatten(),histtype='step',log=True,label='temp NAm')
-plt.title('Number of data points per LON-LAT gridpoint\nthat in a 5 year window have Temperature > 280K and are more than 50')
-plt.xlabel('# of data points')
-plt.ylabel('# of LON-LAT gridpoints')
-plt.legend()
-plt.grid()
-plt.show()
-##########
-qplt.contourf(q3[0,:,:], cmap='RdYlBu_r')
-plt.gca().coastlines()
-iplt.show()
-
-"""
