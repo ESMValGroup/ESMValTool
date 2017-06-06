@@ -2,10 +2,9 @@
  # TIME AND AREA OPERATIONS
  # V.Predoi, University of Reading, May 2017
 ########################################################################
+import iris
 
 # slice cube over a restricted time period
-import datetime
-import iris.unit
 def time_slice(mycube,yr1,mo1,d1,yr2,mo2,d2):
     """
     Function that returns a subset of the original cube (slice)
@@ -14,6 +13,8 @@ def time_slice(mycube,yr1,mo1,d1,yr2,mo2,d2):
     time_slice(cube,2006,2,2,2010,1,1) or time_slice(cube,'2006','2','2','2010','1','1');
     Returns a cube
     """
+    import datetime
+    import iris.unit
     myDate1 = datetime.datetime(int(yr1),int(mo1),int(d1))
     myDate2 = datetime.datetime(int(yr2),int(mo2),int(d2))
     t1 = mycube.coord('time').units.date2num(myDate1)
@@ -76,7 +77,6 @@ def zonal_means(mycube, coord1, mean_type):
     return result
 
 # get the area average
-import iris.analysis.cartography
 def area_average(mycube, coord1, coord2):
     """
     Function that determines the area average
@@ -84,6 +84,7 @@ def area_average(mycube, coord1, coord2):
     usually 'longitude' and 'latitude' but depends on the cube);
     Returns a cube
     """
+    import iris.analysis.cartography
     mycube.coord(coord1).guess_bounds()
     mycube.coord(coord2).guess_bounds()
     grid_areas = iris.analysis.cartography.area_weights(mycube)
@@ -91,13 +92,13 @@ def area_average(mycube, coord1, coord2):
     return result
 
 # get the seasonal mean
-import iris.coord_categorisation
 def seasonal_mean(mycube):
     """
     Function to compute seasonal means with MEAN
     Chunks time in 3-month periods and computes means over them;
     Returns a cube
     """
+    import iris.coord_categorisation
     iris.coord_categorisation.add_season(mycube, 'time', name='clim_season')
     iris.coord_categorisation.add_season_year(mycube, 'time', name='season_year')
     annual_seasonal_mean = mycube.aggregated_by(['clim_season', 'season_year'], iris.analysis.MEAN)
@@ -106,7 +107,6 @@ def seasonal_mean(mycube):
     return annual_seasonal_mean.extract(three_months_bound)
 
 # operate along a trajectory line
-from iris.analysis import trajectory
 def trajectory_cube(mycube, long1, long2, lat1, lat2, plong1, plong2, plat1, plat2,samplecounts):
     """
     Function that subsets a cube on a box (long1,long2,lat1,lat2)
@@ -114,6 +114,7 @@ def trajectory_cube(mycube, long1, long2, lat1, lat2, plong1, plong2, plat1, pla
     populates it with samplecounts number of points
     and subsets the cube along the trajectory
     """
+    from iris.analysis import trajectory
     sublon = iris.Constraint(longitude=lambda cell: float(long1) <= cell <= float(long2))
     sublat = iris.Constraint(latitude=lambda cell: float(lat1) <= cell <= float(lat2))
     wspd_subset = mycube.extract(sublon & sublat)
