@@ -1,5 +1,5 @@
 import os
-import subprocess
+import shutil
 import csv
 import numpy as np
 import matplotlib.pyplot as plt
@@ -268,8 +268,9 @@ class SeaSurfaceTemperatureDiagnostic(BasicDiagnostics):
             if not os.path.exists(newfile):
                 tempfile = self._aggregate_resolution(
                     self._mod_file, grid, remove=False)
-                subprocess.call(["mkdir", newdir])
-                subprocess.call(['cp', tempfile, newfile])
+                if not os.path.exists(newdir):
+                    os.makedirs(newdir)
+                shutil.copy2(tempfile, newfile)
                 os.remove(tempfile)
 
             self._mod_file = newfile
@@ -307,8 +308,9 @@ class SeaSurfaceTemperatureDiagnostic(BasicDiagnostics):
             if not os.path.exists(newfile):
                 tempfile = self._aggregate_resolution(
                     self._ref_file, grid, remove=False)
-                subprocess.call(["mkdir", newdir])
-                subprocess.call(['cp', tempfile, newfile])
+                if not os.path.exists(newdir):
+                    os.makedirs(newdir)
+                shutil.copy2(tempfile, newfile)
                 os.remove(tempfile)
 
             self._ref_file = newfile

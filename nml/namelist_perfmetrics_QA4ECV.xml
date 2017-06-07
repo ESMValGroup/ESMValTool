@@ -1,0 +1,116 @@
+<namelist>
+<include href="./config_private_BM_local.xml"/>
+<namelist_summary>
+###############################################################################
+namelist_perfmetrics_CMIP5.xml
+
+Description
+Namelist for plotting the performance metrics for the CMIP5 models. It 
+considers temperature, zonal and meridional wind, geopotential height, surface
+temperature, precipitation, TOA SW and LW radiation, SW and LW cloud radiative
+effects, and aerosol optical depth
+
+Authors
+Franziska Frank (DLR, Germany - franziska.frank@dlr.de)
+Mattia Righi (DLR, Germany - mattia.righi@dlr.de)
+Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
+
+Project
+DLR ESMVal
+
+Reference
+Gleckler et al., J. Geophys. Res., 113, D06104, doi: 10.1029/2007JD008972 (2008)
+
+This namelist is part of the ESMValTool
+###############################################################################
+</namelist_summary>
+
+<GLOBAL>
+    <write_plots type="boolean">              True         </write_plots>
+    <write_netcdf type="boolean">             True         </write_netcdf>
+    <force_processing type="boolean">        False         </force_processing>
+    <wrk_dir type="path">                    @{WORKPATH}   </wrk_dir>
+    <plot_dir type="path">                   @{PLOTPATH}   </plot_dir>
+    <climo_dir type="path">                  @{CLIMOPATH}  </climo_dir>
+    <write_plot_vars type="boolean">          True         </write_plot_vars>
+    <max_data_filesize type="integer">         100         </max_data_filesize>
+    <max_data_blocksize type="integer">        500         </max_data_blocksize>
+    <verbosity  type="integer">                  1         </verbosity>
+    <exit_on_warning  type="boolean">        False         </exit_on_warning>
+    <output_file_type>                          ps         </output_file_type>
+    <force_calc type="boolean">              False         </force_calc>
+    <force_gradecalc type="boolean">         False         </force_gradecalc>
+    <force_taylorcalc type="boolean">        False         </force_taylorcalc>
+</GLOBAL>
+
+<MODELS>
+
+<!-- MODELS AND OBSERVATIONS ARE SPECIFIC TO EACH VARIABLE AND DEFINED IN THE DIAG SECTIONS BELOW -->
+
+</MODELS>
+
+<DIAGNOSTICS>
+
+<!-- ### Albedo: grading ################################################ -->
+<diag>
+    <description>          Albedo		                 </description>
+    <variable_def_dir>     ./variable_defs/             </variable_def_dir>
+    <variable ref_model="GlobAlbedo">  alb         </variable>
+    <field_type>           T2Ms                          </field_type>
+    <diag_script_cfg_dir>  ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
+
+  <model> CMIP5 		ACCESS1-0 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <model> CMIP5 		ACCESS1-3 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <!--<model> CMIP5 		CMCC-CESM 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>-->
+  <!--<model> CMIP5 		CMCC-CM 					Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>-->
+  <!--<model> CMIP5 		CMCC-CMS					Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>-->
+  <!--<model> CMIP5 		CNRM-CM5 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>-->
+  <!--<model> CMIP5 		CNRM-CM5-2 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>-->
+  <model> CMIP5 		GFDL-CM2p1 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <model> CMIP5 		GFDL-CM3 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <model> CMIP5 		GFDL-ESM2G 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <model> CMIP5 		GFDL-ESM2M 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <model> CMIP5 		GISS-E2-H 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <model> CMIP5 		GISS-E2-H-CC			Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <model> CMIP5 		GISS-E2-R				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <model> CMIP5 		GISS-E2-R-CC			Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <!--<model> CMIP5 		HadCM3 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>-->
+  <!--<model> CMIP5 		HadGEM2-CC 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>-->
+  <!--<model> CMIP5 		HadGEM2-ES 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>-->
+  <model> CMIP5 		inmcm4 					Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <model> CMIP5 		IPSL-CM5A-LR 			Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <model> CMIP5 		IPSL-CM5A-MR			Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <model> CMIP5 		IPSL-CM5B-LR			Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <model> CMIP5 		MPI-ESM-LR 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <model> CMIP5 		MPI-ESM-MR 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <model> CMIP5 		MPI-ESM-P 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <model> CMIP5 		MRI-ESM1 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <model> CMIP5 		NorESM1-M 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <model> CMIP5 		NorESM1-ME 				Amon 	  historical 			r1i1p1 1998 2005  @{MODELPATH} </model>
+  <model> OBS        GlobAlbedo				sat				white-online 		 1998 2005  @{OBSPATH}  </model>
+
+    <!-- Taylor and grading precalculations -->
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob.ncl">       perfmetrics_main.ncl          </diag_script>
+    <diag_script cfg="cfg_perfmetrics_grading_RMSD_all_glob.ncl">       perfmetrics_grading.ncl       </diag_script>
+  
+</diag>
+
+
+<!-- ### COLLECT AND PLOT PREVIOUSLY CALCULATED GRADINGS ######################################################################################## -->
+<diag>
+    <description>          Portrait diagram             </description>
+    <variable_def_dir>     ./variable_defs/             </variable_def_dir>
+    <variable>             alb                           </variable>
+    <field_type>           T2Ms                          </field_type>
+    <diag_script_cfg_dir>  ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
+
+    <!-- Dummy entry -->
+    <model> OBS        GlobAlbedo				sat				white-online 		 1998 2005  @{OBSPATH}  </model>
+
+    <!-- Grading plot -->
+    <diag_script cfg="cfg_perfmetrics_grading_collect.ncl">    perfmetrics_grading_collect.ncl         </diag_script>
+</diag>
+
+
+</DIAGNOSTICS>
+</namelist>

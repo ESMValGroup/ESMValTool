@@ -241,3 +241,18 @@ alt_name =
 std_name = xco2
 alt_name = 
 
+std_name=alb
+alt_name =
+
+std_name = baresoilFrac
+alt_name = 
+
+std_name = grassNcropFrac
+alt_name = 
+
+std_name = shrubNtreeFrac
+alt_name = 
+
+std_name = burntArea
+alt_name = 
+

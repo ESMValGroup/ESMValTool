@@ -1,16 +1,16 @@
 <namelist>
-<include href="./config_private_BM_local.xml"/>
+<include href="/media/bmueller/Work/GIT/CMUG_fire/config_private_BM_local.xml"/>
 <namelist_summary>
 ###############################################################################
-namelist_sm_ESACCI.xml
+namelist_fire_ESACCI.xml
 
 Description
 
 Author
-Alexander Loew (LMU, Germany - alexander.loew@lmu.de)
+Benjamin Mueller (LMU, Germany - b.mueller@iggf.geo.uni-muenchen.de)
 
 Project
-ESA CCI CMUG
+CRESCENDO CMUG QA4ECV
 
 References
 
@@ -23,43 +23,37 @@ This namelist is part of the ESMValTool
   <write_netcdf type="boolean">       True                      </write_netcdf>
   <force_processing type="boolean">   False                     </force_processing>
   <wrk_dir type="path">               @{WORKPATH}               </wrk_dir>
-  <plot_dir type="path">              @{PLOTPATH}/sm/     			 </plot_dir>
+  <plot_dir type="path">              @{PLOTPATH}/fire   		 </plot_dir>
   <climo_dir type="path">             @{CLIMOPATH}       		 </climo_dir>
   <write_plot_vars type="boolean">    True                      </write_plot_vars>
   <max_data_filesize type="integer">  100                       </max_data_filesize>
   <max_data_blocksize type="integer"> 500                       </max_data_blocksize>
-  <output_file_type>                  pdf                       </output_file_type>
+  <output_file_type>                  png                       </output_file_type>
   <verbosity  type="integer">         1                         </verbosity>
   <debuginfo type="boolean">          False                     </debuginfo>
   <exit_on_warning  type="boolean">   True                      </exit_on_warning>
-  <tags>                              P_cmug       				 </tags>
+  <tags>										  Fire_Namelist			 </tags>
 </GLOBAL>
 
 
 <MODELS>
-   <!--<model> CMIP5 		IPSL-CM5A-MR 			MIP_VAR_DEF 	  historical 			r1i1p1 1988 2005  @{MODELPATH} </model>-->
-  <model> CMIP5 		CNRM-CM5 				MIP_VAR_DEF 	  historical 			r1i1p1 1988 2005  @{MODELPATH} </model>
-  <model> OBS        ESACCI-SOILMOISTURE 	sat     	 		  L3S-SSMV-COMBINED  		 1988 2005  @{OBSPATH}  </model>
-  <!--        <model> CMIP5 IPSL-CM5A-MR Lmon historical r1i1p1 1850 2005  /media/bmueller/Work/ESMVAL_res/work/CMIP5 </model> -->
-  <!--        <model> CMIP5 IPSL-CM5A-MR Lmon historical r1i1p1 1850 2005  /media/bmueller/Work/ESMVAL_res/work/CMIP5 </model> -->
 </MODELS>
 
 
 <DIAGNOSTICS>
 
-
     <diag>
-        <description>  															Doing ESACCI soil moisture analysis. 		</description>
+        <description>  															Doing ESACCI fire analysis. 		</description>
         <variable_def_dir>                								./variable_defs/      							</variable_def_dir>
-        <variable ref_model="ESACCI-SOILMOISTURE" MIP="Lmon">     sm                                        </variable>
-        <variable exclude="ESACCI-SOILMOISTURE" MIP="Amon">    	pr                                        </variable>
+        <variable ref_model="ESACCI-FIRE">     							burntArea                                 </variable>
         <field_type>                      								T2Ms                                      </field_type>
-        <diag_script cfg="./nml/cfg_ESACCI/cfg_sm_ESACCI.py">   	sm_ESACCI.py                    				</diag_script>
+        <diag_script cfg="./nml/cfg_ESACCI/cfg_min.py">   fire_ESACCI.py                    			</diag_script>
         <launcher_arguments>               								[('execute_as_shell', False)]             </launcher_arguments>
-      
-      <tags> R_atmos, R_land, T_phys, E_esacci-sm  </tags>
+        
+        <model> CMIP5 MPI-ESM-MR Lmon historical r1i1p1 2005 2005 @{MODELPATH} </model>
+        <model> OBS ESACCI-FIRE sat L4-BA-MERIS-fv4.1 2005 2005 @{OBSPATH} </model>
     </diag>
-
+    
 </DIAGNOSTICS>
 
 </namelist>

@@ -4,6 +4,7 @@ Basic implementation for diagnostics into ESMValTool
 # used modules
 import numpy as np
 import os
+import pdb
 # import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -14,6 +15,7 @@ import matplotlib.dates as mdates
 from geoval.core.data import GeoData
 from geoval.core.mapping import SingleMap
 import extended_data
+from easyhov import easyhov_diff
 from esmval_lib import ESMValProject
 from ESMValMD import ESMValMD
 # from GeoData_mapping import *
@@ -82,7 +84,7 @@ class Diagnostic(object):
 
         name_parts = self._mod_file.split("/")[-1].split(".")[0].split("_")
         self.modname = "_".join(name_parts[i] for i in [0, 3, 2, 4])
-        self.refname = "ESACCI"  # self._ref_type
+        self.refname = self._ref_type
 
         return self._plot_dir + os.sep + self._vartype.replace(" ", "_") + \
             '_' + self.refname + '_' + self.modname
@@ -114,6 +116,7 @@ class Diagnostic(object):
         self._plot_dir = plot_dir
         self.E = E
 # A_laue_ax-
+
         self._work_dir = project_info.get('GLOBAL')['wrk_dir']
         self._climo_dir = project_info.get('GLOBAL')['climo_dir']
         self._mod_line = model.split_entries()
@@ -1439,7 +1442,65 @@ class BasicDiagnostics(Diagnostic):
                  self._basetags + ['DM_global', 'ST_mean', name],
                  str('Temporal mean of the ' + name + ' ' +
                      self._vartype + ' data set.'),
-                 '#ID' + 'gmt' + self.var)
+                 '#ID' + 'gmt' + self.var,
+                 (self._mod_file if name in self._mod_file else self._ref_file)
+                 )
+
+    def _plot_hovmoeller_like(self):
+        """
+        plot hovmoeller-like plots for identification of model differences
+        """
+
+        CliDiff = easyhov_diff()
+
+        l_type = "lat"
+        CliDiff.settype(l_type)
+        CliDiff.setdata([self._mod_data, self._ref_data])
+        HOV = CliDiff.plot(minhov=min(self.cfg.mima_hov),
+                           maxhov=max(self.cfg.mima_hov),
+                           mindiff=min(self.cfg.mima_hovdiff),
+                           maxdiff=max(self.cfg.mima_hovdiff),
+                           cmap=self.cfg.cmap_globmeants,
+                           cmapdiff='RdBu',
+                           titles=[self.modname,
+                                   "difference",
+                                   self.refname],
+                           unit="[" + self._mod_data.unit + "]")
+        HOV.set_size_inches(20, 5)
+
+        f_name = self._get_output_rootname() + \
+            '_' + l_type + '_hov.' + self.output_type
+        HOV.savefig(f_name, dpi=self.plot_dpi)
+
+        l_type = "lon"
+        CliDiff.settype(l_type)
+        HOV = CliDiff.plot(minhov=min(self.cfg.mima_hov),
+                           maxhov=max(self.cfg.mima_hov),
+                           mindiff=min(self.cfg.mima_hovdiff),
+                           maxdiff=max(self.cfg.mima_hovdiff),
+                           cmap=self.cfg.cmap_globmeants,
+                           cmapdiff='RdBu',
+                           titles=[self.modname,
+                                   "difference",
+                                   self.refname],
+                           unit="[" + self._mod_data.unit + "]")
+        HOV.set_size_inches(20, 5)
+
+        f_name = self._get_output_rootname() + \
+            '_' + l_type + '_hov.' + self.output_type
+        HOV.savefig(f_name, dpi=self.plot_dpi)
+
+#        f_name = self._plot_dir + os.sep + self._vartype.replace(" ", "_") + \
+#            '_' + name + '_hov.' + self.output_type
+#
+#        plt.close()
+#
+#        ESMValMD("both",
+#                 f_name,
+#                 self._basetags + ['gmt', 'basic', name],
+#                 str('Temporal mean of the ' + name + ' ' +
+#                     self._vartype + ' data set.'),
+#                 '#ID' + 'hov' + self.var)
 
     def _plot_hovmoeller_like(self):
         """
@@ -1962,8 +2023,12 @@ class BasicDiagnostics(Diagnostic):
     def _aggregate_resolution(self, infile, resolution, remove=True):
         """ currenty only T63, T85 and custom"""
         cdo = Cdo()
-        oname = self._work_dir + os.sep + "temp" + os.sep + \
-            tempfile.NamedTemporaryFile().name.split('/')[-1]
+
+        odir = self._work_dir + os.sep + "temp" + os.sep
+        if not os.path.exists(odir):
+            os.makedirs(odir)
+        oname = odir + tempfile.NamedTemporaryFile().name.split('/')[-1]
+
         if resolution == "T21":
             gridtype = "t21grid"
         elif resolution == "T63":
@@ -2000,6 +2065,8 @@ class BasicDiagnostics(Diagnostic):
 
             if '_stat_m_data' in self.__dict__.keys() and \
                     '_stat_r_data' in self.__dict__.keys():
+                    # and \
+                    # self.cfg.regionalization:
 
                 rootname = self._plot_dir + os.sep + \
                     self._vartype.replace(" ", "_") + '_' + \
@@ -2045,6 +2112,8 @@ class BasicDiagnostics(Diagnostic):
 
                 M_list = [_file_to_arrays(csvfile) for csvfile in M_list_d]
                 R_list = [_file_to_arrays(csvfile) for csvfile in R_list_d]
+
+                print(R_list_d)
 
                 def _R_arrays_aggregate(modlist):
                     ret_a = []

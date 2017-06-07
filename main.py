@@ -77,16 +77,17 @@ parser.parse(input_xml_full_path)
 # Project_info is a dictionary with all info from the namelist.
 project_info = Project.project_info
 
-#bn_muel++
-#add namelist to tags
+# bn_muel++
+# add namelist to tags
 if 'GLOBAL' not in project_info.keys():
     assert False, "This is a reporting namelist!"
 
 if "tags" in project_info.get('GLOBAL').keys():
-    project_info.get('GLOBAL')['tags'].append(input_xml_full_path.split('/')[-1])
+    project_info.get('GLOBAL')['tags'].\
+        append(input_xml_full_path.split('/')[-1])
 else:
-    project_info.get('GLOBAL')['tags']=[input_xml_full_path.split('/')[-1]]
-#bn_muel++
+    project_info.get('GLOBAL')['tags'] = [input_xml_full_path.split('/')[-1]]
+# bn_muel++
 
 if options.reformat:
     if 'REFORMAT' not in project_info.keys():
@@ -147,20 +148,21 @@ info("Starting the Earth System Model Evaluation Tool v" + version + " at time: 
 
 # Loop over all diagnostics defined in project_info and
 # create/prepare netCDF files for each variable
-DiagCounter=1
+DiagCounter = 1
 
 for currDiag in project_info['DIAGNOSTICS']:
-    
-    #bn_muel++
+
+    # bn_muel++
     if "tags" in currDiag.__dict__.keys():
-        GlobalTags=list(project_info.get('GLOBAL')['tags'])
-        if len(currDiag.__dict__['tags'])>0:
-            more_tags=currDiag.__dict__['tags'][0].split(",") + ["Auto_Diag_"+str(DiagCounter).zfill(3)]
+        GlobalTags = list(project_info.get('GLOBAL')['tags'])
+        if len(currDiag.__dict__['tags']) > 0:
+            more_tags = currDiag.__dict__['tags'][0].split(",") + \
+                ["Auto_Diag_" + str(DiagCounter).zfill(3)]
         else:
-            more_tags=["Auto_Diag_"+str(DiagCounter).zfill(3)]
+            more_tags = ["Auto_Diag_" + str(DiagCounter).zfill(3)]
         project_info.get('GLOBAL')['tags'].extend(more_tags)
-        DiagCounter+=1
-    #bn_muel++
+        DiagCounter += 1
+    # bn_muel++
 
     # Are the requested variables derived from other, more basic, variables?
     requested_vars = currDiag.get_variables_list()
@@ -228,7 +230,7 @@ for currDiag in project_info['DIAGNOSTICS']:
                             verbosity,
                             exit_on_warning,
                             launcher_arguments=currDiag.get_launcher_arguments())
-    
+
     #bn_muel++
     if "tags" in currDiag.__dict__.keys():
         project_info.get('GLOBAL')['tags'] = list(GlobalTags)
