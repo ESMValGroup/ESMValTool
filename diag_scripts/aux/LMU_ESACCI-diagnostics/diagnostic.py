@@ -8,7 +8,7 @@ import pdb
 # import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
-import matplotlib.dates as mdates
+#import matplotlib.dates as mdates
 # from netCDF4 import Dataset
 
 # global installation
@@ -828,7 +828,8 @@ class BasicDiagnostics(Diagnostic):
 
         ESMValMD("both",
                  f_name,
-                 self._basetags + ['DM_global', 'ST_diff', 'ST_mean', 'PT_geo', self.modname, self.refname],
+                 self._basetags + ['DM_global', 'ST_diff', 'ST_mean', 'PT_geo',
+                                   self.modname, self.refname],
                  str('Global mean difference ' +
                      'of the time series between ' + self.modname +
                      ' and ' + self.refname + ' ' + self._vartype + '.'),
@@ -969,7 +970,8 @@ class BasicDiagnostics(Diagnostic):
 
             ESMValMD("both",
                      oname,
-                     self._basetags + ['DM_global', 'ST_diff', 'ST_mean', 'PT_geo', self.modname, self.refname],
+                     self._basetags + ['DM_global', 'ST_diff', 'ST_mean',
+                                       'PT_geo', self.modname, self.refname],
                      str('Global mean time series for ' + self.modname +
                          ' and ' + self.refname + ' ' + self._vartype +
                          ' (upper row). Additionally, differences are shown ' +
@@ -1056,7 +1058,8 @@ class BasicDiagnostics(Diagnostic):
 
         ESMValMD("xml",
                  oname,
-                 self._basetags + ['DM_global', 'ST_mean', 'ST_stddev', 'ST_range', name],
+                 self._basetags + ['DM_global', 'ST_mean', 'ST_stddev',
+                                   'ST_range', name],
                  str('Statistics for ' + name + " " + self._vartype +
                      '. All statistics are based on the time dependent ' +
                      'counts and not normalized.'),
@@ -1080,10 +1083,11 @@ class BasicDiagnostics(Diagnostic):
 
         ESMValMD("xml",
                  oname,
-                 self._basetags + ['DM_global', 'ST_mean', 'ST_stddev', 'ST_range', name],
-                 str('Statistics for climatology of ' + name + " " + self._vartype +
-                     '. All statistics are based on the time dependent ' +
-                     'counts and not normalized.'),
+                 self._basetags + ['DM_global', 'ST_mean', 'ST_stddev',
+                                   'ST_range', name],
+                 str('Statistics for climatology of ' + name + " " +
+                     self._vartype + '. All statistics are based on the ' +
+                     'time dependent counts and not normalized.'),
                  '#ID' + 'stattab' + self.var)
 
     def _plot_climatologies(self, month):
@@ -1249,7 +1253,8 @@ class BasicDiagnostics(Diagnostic):
 
         ESMValMD("both",
                  f_name,
-                 self._basetags + ['DM_global', 'PT_times', 'ST_mean', self.refname, self.modname],
+                 self._basetags + ['DM_global', 'PT_times', 'ST_mean',
+                                   self.refname, self.modname],
                  str('Time series of spatial mean for ' + self.modname +
                      ' and ' + self.refname + ' ' + self._vartype + '.'),
                  '#ID' + 'TimeS' + self.var)
@@ -1372,7 +1377,8 @@ class BasicDiagnostics(Diagnostic):
 
             ESMValMD("both",
                      f_name,
-                     self._basetags + ['DM_reg', 'PT_times', 'ST_mean', self.refname, self.modname],
+                     self._basetags + ['DM_reg', 'PT_times', 'ST_mean',
+                                       self.refname, self.modname],
                      str('Regionalized time series of spatial mean for ' +
                          self.modname + ' and ' + self.refname + ' ' +
                          self._vartype + '.'),
@@ -1448,9 +1454,8 @@ class BasicDiagnostics(Diagnostic):
 
     def _plot_hovmoeller_like(self):
         """
-        plot hovmoeller-like plots for identification of model differences
+        plot hovmoeller-like images for identification of model differences
         """
-
         CliDiff = easyhov_diff()
 
         l_type = "lat"
@@ -1472,6 +1477,15 @@ class BasicDiagnostics(Diagnostic):
             '_' + l_type + '_hov.' + self.output_type
         HOV.savefig(f_name, dpi=self.plot_dpi)
 
+        ESMValMD("both",
+                 f_name,
+                 self._basetags + ['DM_global', 'ST_mean', 'ST_diff',
+                                   'PT_zonal', self.modname, self.refname],
+                 str('Climatological/latitudinal Hovmoeller plots and ' +
+                     'difference of the ' + self.modname + ' and ' +
+                     self.refname + ' ' + self._vartype + ' data sets.'),
+                 '#ID' + 'hov' + self.var)
+
         l_type = "lon"
         CliDiff.settype(l_type)
         HOV = CliDiff.plot(minhov=min(self.cfg.mima_hov),
@@ -1490,138 +1504,13 @@ class BasicDiagnostics(Diagnostic):
             '_' + l_type + '_hov.' + self.output_type
         HOV.savefig(f_name, dpi=self.plot_dpi)
 
-#        f_name = self._plot_dir + os.sep + self._vartype.replace(" ", "_") + \
-#            '_' + name + '_hov.' + self.output_type
-#
-#        plt.close()
-#
-#        ESMValMD("both",
-#                 f_name,
-#                 self._basetags + ['gmt', 'basic', name],
-#                 str('Temporal mean of the ' + name + ' ' +
-#                     self._vartype + ' data set.'),
-#                 '#ID' + 'hov' + self.var)
-
-    def _plot_hovmoeller_like(self):
-        """
-        plot hovmoeller-like images for identification of model differences
-        """
-        self._hov_lat_mod_data = \
-            self._clim_m_data.get_zonal_mean(return_object=False, lat=True)
-
-        self._hov_lon_mod_data = \
-            self._clim_m_data.get_zonal_mean(return_object=False, lat=False)
-
-        self._hov_lat_ref_data = \
-            self._clim_r_data.get_zonal_mean(return_object=False, lat=True)
-
-        self._hov_lon_ref_data = \
-            self._clim_r_data.get_zonal_mean(return_object=False, lat=False)
-
-        # calculate lat dependent mod
-#        self._hov_lat_mod_data = self._clim_m_data.data.mean(axis=2)
-        # calculate lon dependent mod
-#        self._hov_lon_mod_data = self._clim_m_data.data.mean(axis=1)
-        d = self._hov_lon_mod_data.data.copy()
-        d = np.hstack((d[:, np.arange(0, d.shape[1]/2)+d.shape[1]/2-1],
-                       d[:, np.arange(0, d.shape[1]/2)]))
-        m = self._hov_lon_mod_data.mask.copy()
-        m = np.hstack((m[:, np.arange(0, m.shape[1]/2)+m.shape[1]/2-1],
-                       m[:, np.arange(0, m.shape[1]/2)]))
-        self._hov_lon_mod_data = np.ma.array(d, mask=m)
-        # calculate lat dependent ref
-#        self._hov_lat_ref_data = self._clim_r_data.data.mean(axis=2)
-        # calculate lon dependent ref
-#        self._hov_lon_ref_data = self._clim_r_data.data.mean(axis=1)
-        d = self._hov_lon_ref_data.data.copy()
-        d = np.hstack((d[:, np.arange(0, d.shape[1]/2)+d.shape[1]/2-1],
-                       d[:, np.arange(0, d.shape[1]/2)]))
-        m = self._hov_lon_ref_data.mask.copy()
-        m = np.hstack((m[:, np.arange(0, m.shape[1]/2)+m.shape[1]/2-1],
-                       m[:, np.arange(0, m.shape[1]/2)]))
-        self._hov_lon_ref_data = np.ma.array(d, mask=m)
-
-        # calculate lat dependent diff
-        self._hov_lat_diff_data = self._hov_lat_mod_data -\
-            self._hov_lat_ref_data
-        # calculate lon dependent diff
-        self._hov_lon_diff_data = self._hov_lon_mod_data -\
-            self._hov_lon_ref_data
-
-        fig = plt.figure(figsize=(20, 5))
-
-        ashape = self._hov_lon_ref_data.shape
-
-        a = fig.add_subplot(1, 3, 1)
-        imgplot = plt.imshow(self._hov_lon_mod_data,
-                             cmap=cm.get_cmap(self.cfg.cmap_globmeants, 10))
-        plt.ylabel('climatology [months]')
-        plt.yticks(range(0, 12), range(1, 13))
-        plt.xticks([-0.5, ashape[1]/4, ashape[1]/2,
-                    3*ashape[1]/4, ashape[1]-0.5],
-                   ["180 W", "90 W", "0", "90 E", "180 E"])
-        plt.axis('tight')
-        plt.colorbar(ticks=np.linspace(min(self.cfg.mima_hov),
-                                       max(self.cfg.mima_hov),
-                                       num=11))
-        imgplot.set_clim((min(self.cfg.mima_hov),
-                          max(self.cfg.mima_hov)))
-        ax = plt.gca()
-        ax.set_yticks(np.arange(-.5, 12, 1), minor=True)
-        ax.grid(which='minor', color='black', linestyle='-', linewidth=1)
-        a.set_title('MOD')
-
-        b = fig.add_subplot(1, 3, 3)
-        imgplot = plt.imshow(self._hov_lon_ref_data,
-                             cmap=cm.get_cmap(self.cfg.cmap_globmeants, 10))
-        plt.yticks(range(0, 12), range(1, 13))
-        plt.xticks([-0.5, ashape[1]/4, ashape[1]/2,
-                    3*ashape[1]/4, ashape[1]-0.5],
-                   ["180 W", "90 W", "0", "90 E", "180 E"])
-        plt.axis('tight')
-        plt.colorbar(ticks=np.linspace(min(self.cfg.mima_hov),
-                                       max(self.cfg.mima_hov),
-                                       num=11))
-        imgplot.set_clim((min(self.cfg.mima_hov),
-                          max(self.cfg.mima_hov)))
-        ax = plt.gca()
-        ax.set_yticks(np.arange(-.5, 12, 1), minor=True)
-        ax.grid(which='minor', color='black', linestyle='-', linewidth=1)
-        b.set_title('REF')
-
-        c = fig.add_subplot(1, 3, 2)
-        imgplot = plt.imshow(self._hov_lon_diff_data,
-                             cmap=cm.get_cmap('RdBu', 10))
-        plt.yticks(range(0, 12), range(1, 13))
-        plt.xticks([-0.5, ashape[1]/4, ashape[1]/2,
-                    3*ashape[1]/4, ashape[1]-0.5],
-                   ["180 W", "90 W", "0", "90 E", "180 E"])
-        plt.axis('tight')
-        plt.colorbar(ticks=np.linspace(min(self.cfg.mima_hovdiff),
-                                       max(self.cfg.mima_hovdiff),
-                                       num=11))
-        imgplot.set_clim((min(self.cfg.mima_hovdiff),
-                          max(self.cfg.mima_hovdiff)))
-        ax = plt.gca()
-        ax.set_yticks(np.arange(-.5, 12, 1), minor=True)
-        ax.grid(which='minor', color='black', linestyle='-', linewidth=1)
-        c.set_title('DIFF')
-        plt.xlabel('longitude [deg]')
-
-        f_name = self._plot_dir + os.sep + self._vartype.replace(" ", "_") + \
-            '_' + '_hov.' + self.output_type
-        imgplot.figure.savefig(f_name, dpi=self.plot_dpi)
-
-#        f_name = self._plot_dir + os.sep + self._vartype.replace(" ", "_") + \
-#            '_' + name + '_hov.' + self.output_type
-#
-#        plt.close()
-#
         ESMValMD("both",
                  f_name,
-                 self._basetags + ['DM_global', 'ST_mean', 'ST_diff', 'PT_zonal', self.modname, self.refname],
-                 str('Climatological Hovmoeller plots and difference of the ' + self.modname + ' and ' + self.refname + ' ' +
-                     self._vartype + ' data sets.'),
+                 self._basetags + ['DM_global', 'ST_mean', 'ST_diff',
+                                   'PT_zonal', self.modname, self.refname],
+                 str('Climatological/longitudinal Hovmoeller plots and ' +
+                     'difference of the ' + self.modname + ' and ' +
+                     self.refname + ' ' + self._vartype + ' data sets.'),
                  '#ID' + 'hov' + self.var)
 
     def _calc_spatial_correlation(self, X, Y):
@@ -1788,7 +1677,8 @@ class BasicDiagnostics(Diagnostic):
 
         ESMValMD("both",
                  oname,
-                 self._basetags + ['DM_global', 'PT_geo', 'ST_corr', self.refname, self.modname],
+                 self._basetags + ['DM_global', 'PT_geo', 'ST_corr',
+                                   self.refname, self.modname],
                  str('Pixelwise correlation of temporal trend between ' +
                      self.modname + ' and ' + self.refname + ' ' +
                      self._vartype + ' (left). The right panel describes ' +
@@ -1881,7 +1771,8 @@ class BasicDiagnostics(Diagnostic):
 
             ESMValMD("both",
                      oname,
-                     self._basetags + ['DM_global', 'PT_geo', 'ST_trend', name],
+                     self._basetags + ['DM_global', 'PT_geo', 'ST_trend',
+                                       name],
                      str("Spatially distributed temporal trend of " + name +
                          " and the p-values of these trends (right panel) " +
                          "for the years " + str(self._start_time.year) +
