@@ -54,7 +54,7 @@ A_mass_fr = Massonnet, Francois (Spain)
 A_mart_gi = Martin, Gill (MetOffice, UK - gill.martin 'at' metoffice.gov.uk)
 A_mell_fe = Mello, Felipe (INPE, Brazil)
 A_mohi_da = Dalvi, Mohit (MetOffice, UK - mohit.dalvi 'at' metoffice.gov.uk)
-A_muel_bn = Muller, Ben (LMU, Germany)
+A_muel_bn = Mueller, Benjamin (LMU, Germany)
 A_niku_gr = Nikulin, Grigory (SMHI, Sweden - grigory.nikulin 'at' smhi.se)
 A_nobr_pa = Nobre, Paulo (INPE, Brazil) 
 A_oliv_ar = Oliveira, Arildo (INPE, Brazil)
@@ -230,6 +230,7 @@ P_dlrveu = DLR project VEU
 P_dlrveu2 = DLR project VEU2
 P_embrace = EU FP7 project EMBRACE
 P_esmval = DLR project ESMVal
+P_qa4ecv = QA4ECV
 
 ### CMIP6 REALMS (for reporting) #####################################
 
@@ -295,4 +296,6 @@ ST_spectrum = spectrum
 ST_stddev = standard deviation
 ST_var = variability
 ST_rmsd = rmsd
+ST_range = range of values
+ST_trend = temporal trend
 

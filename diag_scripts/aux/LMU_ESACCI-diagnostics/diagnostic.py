@@ -825,7 +825,7 @@ class BasicDiagnostics(Diagnostic):
 
         ESMValMD("both",
                  f_name,
-                 self._basetags + ['gmd', 'basic', self.modname],
+                 self._basetags + ['DM_global', 'ST_diff', 'ST_mean', 'PT_geo', self.modname, self.refname],
                  str('Global mean difference ' +
                      'of the time series between ' + self.modname +
                      ' and ' + self.refname + ' ' + self._vartype + '.'),
@@ -966,7 +966,7 @@ class BasicDiagnostics(Diagnostic):
 
             ESMValMD("both",
                      oname,
-                     self._basetags + ['4plot', 'basic', self.modname],
+                     self._basetags + ['DM_global', 'ST_diff', 'ST_mean', 'PT_geo', self.modname, self.refname],
                      str('Global mean time series for ' + self.modname +
                          ' and ' + self.refname + ' ' + self._vartype +
                          ' (upper row). Additionally, differences are shown ' +
@@ -1053,7 +1053,7 @@ class BasicDiagnostics(Diagnostic):
 
         ESMValMD("xml",
                  oname,
-                 self._basetags + ['TimeS', 'stattab', 'basic', name],
+                 self._basetags + ['DM_global', 'ST_mean', 'ST_stddev', 'ST_range', name],
                  str('Statistics for ' + name + " " + self._vartype +
                      '. All statistics are based on the time dependent ' +
                      'counts and not normalized.'),
@@ -1074,6 +1074,14 @@ class BasicDiagnostics(Diagnostic):
                              self.refname else self._climstat_m_data.T)
         finally:
             f.close()
+
+        ESMValMD("xml",
+                 oname,
+                 self._basetags + ['DM_global', 'ST_mean', 'ST_stddev', 'ST_range', name],
+                 str('Statistics for climatology of ' + name + " " + self._vartype +
+                     '. All statistics are based on the time dependent ' +
+                     'counts and not normalized.'),
+                 '#ID' + 'stattab' + self.var)
 
     def _plot_climatologies(self, month):
         """ plotting 4plots for climatologies/months """
@@ -1238,7 +1246,7 @@ class BasicDiagnostics(Diagnostic):
 
         ESMValMD("both",
                  f_name,
-                 self._basetags + ['TimeS', 'basic', self.modname],
+                 self._basetags + ['DM_global', 'PT_times', 'ST_mean', self.refname, self.modname],
                  str('Time series of spatial mean for ' + self.modname +
                      ' and ' + self.refname + ' ' + self._vartype + '.'),
                  '#ID' + 'TimeS' + self.var)
@@ -1361,7 +1369,7 @@ class BasicDiagnostics(Diagnostic):
 
             ESMValMD("both",
                      f_name,
-                     self._basetags + ['TimeS', 'reg', 'basic', self.modname],
+                     self._basetags + ['DM_reg', 'PT_times', 'ST_mean', self.refname, self.modname],
                      str('Regionalized time series of spatial mean for ' +
                          self.modname + ' and ' + self.refname + ' ' +
                          self._vartype + '.'),
@@ -1428,7 +1436,7 @@ class BasicDiagnostics(Diagnostic):
 
         ESMValMD("both",
                  f_name,
-                 self._basetags + ['gmt', 'basic', name],
+                 self._basetags + ['DM_global', 'ST_mean', name],
                  str('Temporal mean of the ' + name + ' ' +
                      self._vartype + ' data set.'),
                  '#ID' + 'gmt' + self.var)
@@ -1548,12 +1556,12 @@ class BasicDiagnostics(Diagnostic):
 #
 #        plt.close()
 #
-#        ESMValMD("both",
-#                 f_name,
-#                 self._basetags + ['gmt', 'basic', name],
-#                 str('Temporal mean of the ' + name + ' ' +
-#                     self._vartype + ' data set.'),
-#                 '#ID' + 'gmt' + self.var)
+        ESMValMD("both",
+                 f_name,
+                 self._basetags + ['DM_global', 'ST_mean', 'ST_diff', 'PT_zonal', self.modname, self.refname],
+                 str('Climatological Hovmoeller plots and difference of the ' + self.modname + ' and ' + self.refname + ' ' +
+                     self._vartype + ' data sets.'),
+                 '#ID' + 'hov' + self.var)
 
     def _calc_spatial_correlation(self, X, Y):
         """
@@ -1719,7 +1727,7 @@ class BasicDiagnostics(Diagnostic):
 
         ESMValMD("both",
                  oname,
-                 self._basetags + ['TCorr', 'basic', self.modname],
+                 self._basetags + ['DM_global', 'PT_geo', 'ST_corr', self.refname, self.modname],
                  str('Pixelwise correlation of temporal trend between ' +
                      self.modname + ' and ' + self.refname + ' ' +
                      self._vartype + ' (left). The right panel describes ' +
@@ -1812,7 +1820,7 @@ class BasicDiagnostics(Diagnostic):
 
             ESMValMD("both",
                      oname,
-                     self._basetags + ['trend', 'basic', name],
+                     self._basetags + ['DM_global', 'PT_geo', 'ST_trend', name],
                      str("Spatially distributed temporal trend of " + name +
                          " and the p-values of these trends (right panel) " +
                          "for the years " + str(self._start_time.year) +
@@ -1903,7 +1911,7 @@ class BasicDiagnostics(Diagnostic):
 
             ESMValMD("both",
                      oname,
-                     self._basetags + ['trend', 'basic', name],
+                     self._basetags + ['DM_global', 'PT_geo', 'ST_trend', name],
                      str("Spatially distributed temporal trend of " + name +
                          " for the years " + str(self._start_time.year) +
                          " to " + str(self._stop_time.year) +
@@ -1929,6 +1937,14 @@ class BasicDiagnostics(Diagnostic):
                 writer.writerow(stat)
         finally:
             f.close()
+
+        ESMValMD("xml",
+                 oname,
+                 self._basetags + ['DM_reg', 'ST_mean', 'ST_stddev', 'ST_range', name],
+                 str('Statistics for ' + name + " regional " + self._vartype +
+                     '. All statistics are based on the time dependent ' +
+                     'counts and not normalized.'),
+                 '#ID' + 'stattabreg' + self.var)
 
     def _get_files_in_directory(self, directory, pattern, asstring=True):
         """ returns list and number of files with pattern in directory """
@@ -2103,8 +2119,8 @@ class BasicDiagnostics(Diagnostic):
 
                     ESMValMD("both",
                              f_name,
-                             self._basetags + ['TimeS', 'MultiMod',
-                                               'reg', 'basic'] +
+                             self._basetags + ['DM_reg', 'PT_times',
+                                               'ST_mean'] +
                              labels,
                              str('Time series of spatial mean for different ' +
                                  'regions. The multiple models are: ' +
