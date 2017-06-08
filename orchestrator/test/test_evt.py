@@ -1,7 +1,7 @@
 import pytest
 import yaml
 import os
-from evt import Namelist
+from parser.evt import Namelist
 
 TESTDATA_DIR = os.path.join(
     os.path.dirname(os.path.realpath(__file__)),
@@ -35,7 +35,7 @@ def test_load_namelist():
 
 
 def test_load_namelist_full():
-    s = file('{}/namelist_test004.yml'.format(TESTDATA_DIR), 'r')
+    s = file('{}/namelist_test005.yml'.format(TESTDATA_DIR), 'r')
     n = yaml.load(s)
     assert isinstance(n, Namelist)
     assert n.GLOBAL["write_plots"] == True
@@ -44,7 +44,10 @@ def test_load_namelist_full():
     assert n.GLOBAL["exit_on_warning"] == False
     assert n.GLOBAL["output_file_type"] == "ps"
     assert 'select_level' in n.PREPROCESS.keys()
-    assert n.MODELS is None
-    assert isinstance(n.DIAGNOSTICS, list)
-    print( n.DIAGNOSTICS[0].keys()) # the keys need to be unique
+    assert isinstance(n.MODELS, list)
+    assert isinstance(n.DIAGNOSTICS, dict)
+    for k, v in n.DIAGNOSTICS.items():
+        assert 'description' in v
+        assert 'requires' in v
+        assert 'scripts' in v
     assert False

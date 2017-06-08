@@ -54,6 +54,7 @@ PREPROCESS:
 DIAGNOSTICS:
 
   DIAG_ta850:
+    requires:
     description: temperature annual cycle at 850 hPa
     variable: {name: ta, ref_model: ["ERA-Interim", "NCEP"], field: T3M}
     preprocess:
@@ -69,6 +70,7 @@ DIAGNOSTICS:
 
 
   DIAG_ta200:
+    requires:
     description: temperature annual cycle at 200 hPa
     variable: {name: ta, ref_model: ["ERA-Interim", "NCEP"], field: T3M}
     preprocess:
@@ -84,6 +86,7 @@ DIAGNOSTICS:
 
 
   DIAG_taZONAL:
+    requires:
     description: temperature zonal mean
     variable: {name: ta, ref_model: ["ERA-Interim", "NCEP"], field: T3M}
     settings:
@@ -96,6 +99,7 @@ DIAGNOSTICS:
 
 
   DIAG_GRADING:  # This diag does not require variables nor models
+    requires: [DIAG_ta850, DIAG_ta200, DIAG_taZONAL]
     description: collect and plot previously calculated gradings
     settings:
       file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_grading_collect.ncl
@@ -103,6 +107,7 @@ DIAGNOSTICS:
 
 
   DIAG_TAYLOR:  # This diag does not require variables nor models
+    requires: [DIAG_ta850, DIAG_ta200, DIAG_taZONAL]
     description: collect and plot previously calculated Taylor metrics
     settings:
       file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_taylor_collect.ncl
