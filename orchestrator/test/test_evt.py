@@ -48,6 +48,5 @@ def test_load_namelist_full():
     assert isinstance(n.DIAGNOSTICS, dict)
     for k, v in n.DIAGNOSTICS.items():
         assert 'description' in v
-        assert 'requires' in v
         assert 'scripts' in v
     assert False

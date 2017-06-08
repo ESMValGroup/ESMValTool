@@ -54,15 +54,14 @@ PREPROCESS:
 DIAGNOSTICS:
 
   DIAG_ta850:
-    requires:
     description: temperature annual cycle at 850 hPa
     variable: {name: ta, ref_model: ["ERA-Interim", "NCEP"], field: T3M}
     preprocess:
       select_level: 850
     scripts:
-      - {script: perfmetrics_main.ncl,     file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_cycle_monthlyclim_850_glob.ncl}
-      - {script: perfmetrics_grading.ncl,  file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_grading_RMSD_850_glob.ncl}
-      - {script: perfmetrics_taylor.ncl,   file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_taylor_RMSD_850_glob.ncl}
+      - {script: perfmetrics_main.ncl,     cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_cycle_monthlyclim_850_glob.ncl}
+      - {script: perfmetrics_grading.ncl,  cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_grading_RMSD_850_glob.ncl}
+      - {script: perfmetrics_taylor.ncl,   cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_taylor_RMSD_850_glob.ncl}
     additional_models:
       - {name: GFDL-ESM2G, project: CMIP5_ETHZ,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2002,  path: /modelpath/}
       - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 2000,  end: 2002,  path: /obspath/Tier3/ERA-Interim/}
@@ -70,15 +69,14 @@ DIAGNOSTICS:
 
 
   DIAG_ta200:
-    requires:
     description: temperature annual cycle at 200 hPa
     variable: {name: ta, ref_model: ["ERA-Interim", "NCEP"], field: T3M}
     preprocess:
       select_level: 200
     scripts:
-      - {script: perfmetrics_main.ncl,     file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_cycle_monthlyclim_200_glob.ncl}
-      - {script: perfmetrics_grading.ncl,  file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_grading_RMSD_200_glob.ncl}
-      - {script: perfmetrics_taylor.ncl,   file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_taylor_RMSD_200_glob.ncl}
+      - {script: perfmetrics_main.ncl,     cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_cycle_monthlyclim_200_glob.ncl}
+      - {script: perfmetrics_grading.ncl,  cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_grading_RMSD_200_glob.ncl}
+      - {script: perfmetrics_taylor.ncl,   cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_taylor_RMSD_200_glob.ncl}
     additional_models:
       - {name: GFDL-ESM2G, project: CMIP5_ETHZ,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2002,  path: /modelpath/}
       - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 2000,  end: 2002,  path: /obspath/Tier3/ERA-Interim/}
@@ -86,12 +84,10 @@ DIAGNOSTICS:
 
 
   DIAG_taZONAL:
-    requires:
     description: temperature zonal mean
     variable: {name: ta, ref_model: ["ERA-Interim", "NCEP"], field: T3M}
-    settings:
-      file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_zonal_annualclim_all_glob.ncl
-    script:  perfmetrics_main.ncl
+    scripts:
+      - {script: perfmetrics_main.ncl,     cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_zonal_annualclim_all_glob.ncl}
     additional_models:
       - {name: GFDL-ESM2G, project: CMIP5_ETHZ,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2002,  path: /modelpath/}
       - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 2000,  end: 2002,  path: /obspath/Tier3/ERA-Interim/}
@@ -101,14 +97,12 @@ DIAGNOSTICS:
   DIAG_GRADING:  # This diag does not require variables nor models
     requires: [DIAG_ta850, DIAG_ta200, DIAG_taZONAL]
     description: collect and plot previously calculated gradings
-    settings:
-      file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_grading_collect.ncl
-    script: perfmetrics_grading_collect.ncl
+    scripts:
+      - {script: perfmetrics_grading_collect.ncl,     cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_grading_collect.ncl}
 
 
   DIAG_TAYLOR:  # This diag does not require variables nor models
     requires: [DIAG_ta850, DIAG_ta200, DIAG_taZONAL]
     description: collect and plot previously calculated Taylor metrics
-    settings:
-      file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_taylor_collect.ncl
-    script: perfmetrics_taylor_collect.ncl
+    scripts:
+      - {script: perfmetrics_taylor_collect.ncl,     cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_taylor_collect.ncl}
