@@ -43,8 +43,8 @@ _LON_RANGE = _LON_MAX - _LON_MIN
 _cache = dict()
 
 # Supported horizontal regridding schemes.
-horizontal_schemes = dict(linear=Linear(),
-                          nearest=Nearest(),
+horizontal_schemes = dict(linear=Linear(extrapolation_mode='mask'),
+                          nearest=Nearest(extrapolation_mode='mask'),
                           area_weighted=AreaWeighted(),
                           unstructured_nearest=UnstructuredNearest())
 

@@ -68,24 +68,28 @@ def _make_cube(data, aux_coord=True, dim_coord=True, dtype=None):
         cube.add_dim_coord(_make_vcoord(z, dtype=dtype), 0)
 
     # Create a synthetic test latitude coordinate.
-    data = np.arange(y, dtype=dtype)
-    cs = iris.coord_systems.GeogCS(123)
+    data = np.arange(y, dtype=dtype) + 1
+    cs = iris.coord_systems.GeogCS(iris.fileformats.pp.EARTH_RADIUS)
     kwargs = dict(standard_name='latitude',
                   long_name='Latitude',
                   var_name='lat', units='degrees_north',
                   attributes=dict(latitude='attribute'),
                   coord_system=cs)
     ycoord = DimCoord(data, **kwargs)
+    if data.size > 1:
+        ycoord.guess_bounds()
     cube.add_dim_coord(ycoord, 1)
 
     # Create a synthetic test longitude coordinate.
-    data = np.arange(x, dtype=dtype)
+    data = np.arange(x, dtype=dtype) + 1
     kwargs = dict(standard_name='longitude',
                   long_name='Longitude',
                   var_name='lon', units='degrees_east',
                   attributes=dict(longitude='attribute'),
                   coord_system=cs)
     xcoord = DimCoord(data, **kwargs)
+    if data.size > 1:
+        xcoord.guess_bounds()
     cube.add_dim_coord(xcoord, 2)
 
     # Create a synthetic test 2d auxiliary coordinate
