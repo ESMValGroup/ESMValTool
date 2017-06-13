@@ -185,7 +185,7 @@ class CMORCheck(object):
     def _check_rank(self):
         # Count rank, excluding scalar dimensions
         rank = 0
-        for coordinate in [items[1] for items in self._cmor_var.coordinates]:
+        for coordinate in self._cmor_var.coordinates.values():
             if coordinate.generic_level or not coordinate.value:
                 rank += 1
         # Extract dimension coordinates from cube
