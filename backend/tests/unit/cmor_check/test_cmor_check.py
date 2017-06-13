@@ -475,8 +475,8 @@ class TestCMORCheck(unittest.TestCase):
         if dim_spec.requested:
             requested = [float(val) for val in dim_spec.requested]
             requested.sort(reverse=decreasing)
-            for j in range(len(requested)):
-                values[j] = requested[j]
+            for j, request in enumerate(requested):
+                values[j] = request
             if decreasing:
                 extra_values = numpy.linspace(len(requested), valid_min,
                                               20 - len(requested))

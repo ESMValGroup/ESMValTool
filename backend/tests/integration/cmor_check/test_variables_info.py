@@ -41,8 +41,8 @@ class TestCMIP5Info(unittest.TestCase):
 
     def test_constructor_optional_parameter(self):
         cwd = os.path.dirname(os.path.realpath(__file__))
-        cmor_tables_path = os.path.join(cwd, '..', '..', 'cmip6-cmor-tables')
-        CMIP6Info(cmor_tables_path)
+        cmor_tables_path = os.path.join(cwd, '..', '..', 'cmip5-cmor-tables')
+        CMIP5Info(cmor_tables_path)
 
     def test_get_variable_tas(self):
         var = self.variables_info.get_variable('Amon', 'tas')
