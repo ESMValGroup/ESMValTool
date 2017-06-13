@@ -122,7 +122,8 @@ class TestCMORCheck(unittest.TestCase):
         self._check_cube()
 
     def _check_cube(self, automatic_fixes=False):
-        checker = CMORCheck(self.cube, self.var_info, automatic_fixes=automatic_fixes)
+        checker = CMORCheck(self.cube, self.var_info,
+                            automatic_fixes=automatic_fixes)
         checker.check_metadata()
         checker.check_data()
 
@@ -156,7 +157,9 @@ class TestCMORCheck(unittest.TestCase):
         self._check_fails_in_metadata()
 
     def _check_fails_in_metadata(self, automatic_fixes=False, frequency=None):
-        checker = CMORCheck(self.cube, self.var_info, automatic_fixes=automatic_fixes, frequency=frequency)
+        checker = CMORCheck(self.cube, self.var_info,
+                            automatic_fixes=automatic_fixes,
+                            frequency=frequency)
         with self.assertRaises(CMORCheckError):
             checker.check_metadata()
 
@@ -308,8 +311,7 @@ class TestCMORCheck(unittest.TestCase):
         """
         Creates a cube based on a specification
 
-        :param table: variable's table
-        :param var_name: variable's name
+        :param var_info: variable's info
         :param set_time_units: time units to use
         :param frequency: optional frequency to use instead of the one
          defined at te table
