@@ -138,12 +138,15 @@ class SoilMoistureDiagnostic(BasicDiagnostics):
 
         ESMValMD("xml",
                  oname,
-                 self._basetags,
-                 'TODO',  # TODO give caption
-                 '#ID' + 'TODO' + self.var)
+                 self._basetags + ['DM_global', self.refname,
+                                   self.modname, 'ST_corr', 'ST_perc'],
+                 'Development of global pattern correlation values over ' +
+                 'different percentile levels for ' + self.refname + ' and ' +
+                 self.modname + ' ' + self._vartype + ' data.',
+                 '#ID' + 'devcorrperctab' + self.var,
+                 ','.join(self._infiles))
 
-    def _percentile_comparison(self, plist=np.arange(0.0, 1.01, 0.05),
-                               plots=True):
+    def _percentile_comparison(self, plist=np.arange(0.0, 1.01, 0.05)):
         """
         calculate percentiles for model and observational dataset
         and compare these
@@ -153,8 +156,6 @@ class SoilMoistureDiagnostic(BasicDiagnostics):
         plist : list
             list of percentile values to analyze. A value of e.g. 0.05
             corresponds to a 5% percentile
-        plots : bool
-            specifies if map plots should be made
 
         References
         ----------
@@ -172,10 +173,11 @@ class SoilMoistureDiagnostic(BasicDiagnostics):
             pmod = self._mod_data.get_percentile(p)  # model percentile map
             pref = self._ref_data.get_percentile(p)  # ref data percentile map
 
-            # TODO I cannot find the error... THIS IS HARDCODED CRAP!
+            # TODO I cannot find the error... data behaves weird
+            # THIS IS HARDCODED!
             perc_mask = ((pmod.data.data > 1.5) & (pref.data.data > 1.5))
-            pref.data.mask = perc_mask
-            pmod.data.mask = perc_mask
+            pref.data.mask = pref.data.mask | perc_mask
+            pmod.data.mask = pmod.data.mask | perc_mask
 
             self._percentile_list.append([pmod, pref])
 
@@ -230,9 +232,14 @@ class SoilMoistureDiagnostic(BasicDiagnostics):
 
         ESMValMD("both",
                  oname,
-                 self._basetags,
-                 'TODO',  # TODO give caption
-                 '#ID' + 'TODO' + self.var)
+                 self._basetags + ['DM_global', 'PT_geo', self.refname,
+                                   self.modname, 'ST_perc'],
+                 'Comparison of global patterns of ' + self._vartype +
+                 ' for ' + str(int(p * 100)) + 'th-percentile of ' +
+                 self.refname + ' and ' + self.modname + ' data. ' +
+                 'The spatial correlation (r) is noted in the title.',
+                 '#ID' + 'perc' + str(int(p * 100)).zfill(3) + self.var,
+                 ','.join(self._infiles))
 
     def _plot_percentile_correlation(self, p, r):
         """
@@ -265,9 +272,13 @@ class SoilMoistureDiagnostic(BasicDiagnostics):
 
         ESMValMD("both",
                  oname,
-                 self._basetags,
-                 'TODO',  # TODO give caption
-                 '#ID' + 'TODO' + self.var)
+                 self._basetags + ['DM_global', 'PT_pro', self.refname,
+                                   self.modname, 'ST_corr', 'ST_perc'],
+                 'Development of global pattern correlation values over ' +
+                 'different percentile levels for ' + self.refname + ' and ' +
+                 self.modname + ' ' + self._vartype + ' data.',
+                 '#ID' + 'devcorrperc' + self.var,
+                 ','.join(self._infiles))
 
     def _anomaly_correlation(self):
         """
@@ -362,9 +373,18 @@ class SoilMoistureDiagnostic(BasicDiagnostics):
 
         ESMValMD("both",
                  oname,
-                 self._basetags,
-                 'TODO',  # TODO give caption
-                 '#ID' + 'TODO' + self.var)
+                 self._basetags + ['pr', 'ST_anomaly', 'ST_correlation',
+                                   'DM_global', 'PT_geo', self.refname,
+                                   self.modname],
+                 'Pixelwise anomaly correlation with precipitation for ' +
+                 self.modname + ' and ' + self.refname + ' ' + self._vartype +
+                 ' data. The left column shows reference data and the right ' +
+                 'column shows model data, while top row shows correlation ' +
+                 'values and bottom row shows p-values, accordingly. The ' +
+                 'p-values higher than 1.0 are not shown separately.',
+                 '#ID' + 'ACorr' + self.var + 'pr',
+                 ','.join([f for f in self._allfiles if "Shapefiles" not in f])
+                 )
 
     def _load_model_data(self):
         """ load soil moisture model data """

@@ -1,4 +1,4 @@
-# Full list of authors and references for the currently implemented 
+﻿# Full list of authors and references for the currently implemented 
 # diagnostics. Authors, diagnostics, observations and projects references
 # are identified by the tags "A", "D", "E" and "P", respectively.
 #
@@ -284,13 +284,14 @@ PT_vert = vertical profile
 PT_taylor = taylor diagram
 PT_times = time series
 PT_zonal = zonal mean
+PT_pro = profile (any other kind of line chart)
 
 ### STATISTICS (for reporting) #####################################
 
 ST_anomaly = anomaly
 ST_corr = correlation
 ST_diff = difference
-ST_eof = empirigal orthogonal function (EOF)
+ST_eof = empirical orthogonal function (EOF)
 ST_mean = mean
 ST_spectrum = spectrum
 ST_stddev = standard deviation
@@ -298,4 +299,6 @@ ST_var = variability
 ST_rmsd = rmsd
 ST_range = range of values
 ST_trend = temporal trend
+ST_clim = climatology
+ST_perc = percentiles
 
