@@ -24,7 +24,7 @@ mima_hov = [0, 100]
 mima_hovdiff = [-100, 100]
 
 # flags for specific diagnostics
-single_years = True  # TODO rename variable
+single_years = True
 mima_single_year = [-100, 100]
 std_factor = 4
 
