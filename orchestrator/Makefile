@@ -1,6 +1,6 @@
 .PHONY: test
 help:
-	@echo 'Makefile for teh YAML Parser'
+	@echo 'Makefile for the YAML Parser'
 	@echo ''
 	@echo 'help:	Show this message'
 	@echo 'test:	Run test suite'
