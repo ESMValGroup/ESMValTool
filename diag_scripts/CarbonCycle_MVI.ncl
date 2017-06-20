@@ -401,6 +401,32 @@ begin
     plot = scatterplot3D(wks, data_arr, var0, levs)
     draw(plot)
     frame(wks)
+    
+    ;; Attach Metadata to plot
+    xml_name = getenv("ESMValTool_xml_name")
+    suffix = get_file_suffix(xml_name, 0)
+    base_name = str_sub_str(xml_name, suffix, "")
+    
+    alltags = array_append_record(tags, region@DM_tag, 0)
+    alltags := array_append_record(alltags,\
+           (/"PT_scatter", "PT_zonal", "ST_mean", "ST_trend", \
+             "ST_clim", "ST_var"/), 0)
+    caption =  "Scatterplot for multiyear average " + variables(0) + \
+               " in x axis, its linear trend in y axis, and MVI." + \
+               " Like Anav et al. Fig 1 bottom"
+    id = diag_script + "_" + base_name
+    climofiles = new(dimsizes(models@name) * dimsizes(variables), string)
+    do n_var = 0, dimsizes(variables) - 1
+        do imod = 0, dimsizes(models@name) - 1
+            climofiles(n_var * dimsizes(models@name) + imod) = \
+                        interface_get_inpaths(imod) + "/" + \
+                        interface_get_infile(variables(n_var), field_types(n_var), imod)
+        end do
+    end do
+
+    ESMValMD(plot@outfile, alltags, caption, id, variables, models@name, climofiles)
+
+    delete([/alltags, caption, id, climofiles/])    
     delete(data_arr)
 
     leave_msg(diag_script, "", 2)
