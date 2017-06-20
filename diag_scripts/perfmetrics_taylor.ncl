@@ -50,6 +50,7 @@ load "./diag_scripts/lib/ncl/statistics.ncl"
 load "./diag_scripts/lib/ncl/latlon.ncl"
 load "./diag_scripts/lib/ncl/style.ncl"
 load "./diag_scripts/aux/perfmetrics/aux_perfmetrics.ncl"
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 begin
 
