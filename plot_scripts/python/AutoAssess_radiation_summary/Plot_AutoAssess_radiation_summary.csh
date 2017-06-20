@@ -18,10 +18,10 @@ set outdir=../../../work/AutoAssess_radiation_rms_summary
 
 set plot_norm_ac=./plot_norm_ac_ideal.py
 
-python2.7 $plot_norm_ac --plot=${outdir}/AutoAssess_radiation_summary.png                              \
-                        --exp=${expt} --ctl=${cntl}                  \
-                        --file_obs=${ometrics}_${obs}_cmipname_${period}.csv            \
-                        --file_exp=${metrics}_${expt}_all.csv   \
+python2.7 $plot_norm_ac --plot=${outdir}/AutoAssess_radiation_summary.png      \
+                        --exp=${expt} --ctl=${cntl}                            \
+                        --file_obs=${ometrics}_${obs}_cmipname_${period}.csv   \
+                        --file_exp=${metrics}_${expt}_all.csv                  \
                         --file_ctl=${metrics}_${cntl}_all.csv
 
 exit
