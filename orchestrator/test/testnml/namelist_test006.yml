@@ -44,21 +44,21 @@ MODELS:
   - {name: CMCC-CESM,  project: CMIP5_ETHZ,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2002,  path: /modelpath/}
 
 PREPROCESS:
-  select_level:    None
-  target_grid:     ref_model
-  regrid_scheme:   linear
-  mask_fillvalues: True
-  mask_landocean:  None
-  multimodel_mean: True
+    - {id: pp1, select_level: None, target_grid: ref_model, regrid_scheme: linear, mask_fillvalues: True, mask_landocean: None, multimodel_mean: True}
+    - {id: pp2, select_level: 850, target_grid: ref_model, regrid_scheme: linear, mask_fillvalues: True, mask_landocean: None, multimodel_mean: True}
+
 
 DIAGNOSTICS:
 
     !Diagnostic
         id: DIAG_ta850
+        tags: [R_aerosol, R_atmos ]
         description: temperature annual cycle at 850 hPa
-        variable: {name: ta, ref_model: ["ERA-Interim", "NCEP"], field: T3M}
-        preprocess:
-        select_level: 850
+        variables: 
+            - {name: ta, ref_model: ["ERA-Interim", "NCEP"], field: T3M, }
+            - {name: ua, ref_model: ["ERA-Interim", "NCEP"], field: T3M, preproc:  pp1}
+            - {name: ua, ref_model: ["ERA-Interim", "NCEP"], field: T3M, preproc:  pp3}
+            - {name: pr, ref_model: ["ERA-Interim", "NCEP"], field: T3M, preproc:  pp2}
         scripts:
           - {script: perfmetrics_main.ncl,     cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_cycle_monthlyclim_850_glob.ncl}
           - {script: perfmetrics_grading.ncl,  cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_grading_RMSD_850_glob.ncl}
@@ -68,11 +68,11 @@ DIAGNOSTICS:
           - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 2000,  end: 2002,  path: /obspath/Tier3/ERA-Interim/}
           - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 2000,  end: 2002,  path: /obspath/Tier2/NCEP/}
 
-
+    # temperature annual cycle at 200 hPa
     !Diagnostic
         id: DIAG_ta200
-        description: temperature annual cycle at 200 hPa
-        variable: {name: ta, ref_model: ["ERA-Interim", "NCEP"], field: T3M}
+        variables: 
+          - {name: ta, ref_model: ["ERA-Interim", "NCEP"], field: T3M, preproc_setting:  XYZ}
         preprocess:
           select_level: 200
         scripts:
