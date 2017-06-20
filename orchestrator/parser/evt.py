@@ -39,6 +39,12 @@ class Diagnostic(object):
 
     def __init__(self):
         self.__name__ = "Diagnostic"
+        self.id = None
+        self.variable = None
+        self.description = None
+        self.preprocess = None
+        self.scripts = None
+        self.additional_models = None
 
 
 class Variable(object):
