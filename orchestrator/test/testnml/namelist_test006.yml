@@ -46,16 +46,16 @@ MODELS:
 PREPROCESS:
     - {id: pp1, select_level: None, target_grid: ref_model, regrid_scheme: linear, mask_fillvalues: True, mask_landocean: None, multimodel_mean: True}
     - {id: pp2, select_level: 850, target_grid: ref_model, regrid_scheme: linear, mask_fillvalues: True, mask_landocean: None, multimodel_mean: True}
+    - {id: pp3, select_level: 200, target_grid: ref_model, regrid_scheme: linear, mask_fillvalues: True, mask_landocean: None, multimodel_mean: True}
 
 
 DIAGNOSTICS:
 
+    # temperature annual cycle at 850 hPa
     !Diagnostic
         id: DIAG_ta850
         tags: [R_aerosol, R_atmos ]
-        description: temperature annual cycle at 850 hPa
         variables: 
-            - {name: ta, ref_model: ["ERA-Interim", "NCEP"], field: T3M, }
             - {name: ua, ref_model: ["ERA-Interim", "NCEP"], field: T3M, preproc:  pp1}
             - {name: ua, ref_model: ["ERA-Interim", "NCEP"], field: T3M, preproc:  pp3}
             - {name: pr, ref_model: ["ERA-Interim", "NCEP"], field: T3M, preproc:  pp2}
@@ -85,9 +85,9 @@ DIAGNOSTICS:
           - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 2000,  end: 2002,  path: /obspath/Tier2/NCEP/}
     
 
+    # temperature zonal mean
     !Diagnostic
         id: DIAG_taZONAL
-        description: temperature zonal mean
         variable: {name: ta, ref_model: ["ERA-Interim", "NCEP"], field: T3M}
         scripts:
           - {script: perfmetrics_main.ncl,     cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_zonal_annualclim_all_glob.ncl}
@@ -97,17 +97,17 @@ DIAGNOSTICS:
           - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 2000,  end: 2002,  path: /obspath/Tier2/NCEP/}
     
     # This diag does not require variables nor models
+    # collect and plot previously calculated gradings
     !Diagnostic
         id: DIAG_GRADING
         requires: [DIAG_ta850, DIAG_ta200, DIAG_taZONAL]
-        description: collect and plot previously calculated gradings
         scripts:
           - {script: perfmetrics_grading_collect.ncl,     cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_grading_collect.ncl}
     
     # This diag does not require variables nor models
+    # collect and plot previously calculated Taylor metrics
     !Diagnostic
         id: DIAG_TAYLOR
         requires: [DIAG_ta850, DIAG_ta200, DIAG_taZONAL]
-        description: collect and plot previously calculated Taylor metrics
         scripts:
           - {script: perfmetrics_taylor_collect.ncl,     cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_taylor_collect.ncl}
