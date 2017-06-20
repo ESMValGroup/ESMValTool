@@ -302,4 +302,5 @@ ST_range = range of values
 ST_trend = temporal trend
 ST_clim = climatology
 ST_perc = percentiles
+ST_median = median
 
