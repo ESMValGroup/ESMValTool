@@ -272,6 +272,7 @@ DM_trop = tropics
 
 ### PLOT TYPE (for reporting) ######################################
 
+PT_errorbar = error bar plot
 PT_bar = bar chart
 PT_diurn = diurnal cycle
 PT_geo = geographical distribution
