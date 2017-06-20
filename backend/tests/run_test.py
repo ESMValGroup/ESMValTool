@@ -5,11 +5,12 @@ Script to run the tests and generating the code coverage report
 import coverage
 import unittest
 import os
-cov = coverage.Coverage(omit='test/*')
+work_path = os.path.abspath('.')
+cov = coverage.Coverage(omit=os.path.join(work_path, '*'))
 cov.set_option("run:branch", True)
 
 cov.start()
-suite = unittest.TestLoader().discover('test')
+suite = unittest.TestLoader().discover('.')
 unittest.TextTestRunner(verbosity=2).run(suite)
 cov.stop()
 
