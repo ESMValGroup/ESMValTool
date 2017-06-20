@@ -1,5 +1,5 @@
 from mocking import io, backend
-inpath="workflow/test/testdata/DummyM3.nc"
+inpath="test/testdata/DummyM3.nc"
 outpath="/tmp/testEVT/"
 
 cb = io.get_cube(inpath)
