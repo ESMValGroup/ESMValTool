@@ -50,6 +50,7 @@ load "./diag_scripts/lib/ncl/statistics.ncl"
 load "./diag_scripts/lib/ncl/latlon.ncl"
 load "./diag_scripts/lib/ncl/style.ncl"
 load "./diag_scripts/aux/perfmetrics/aux_perfmetrics.ncl"
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 begin
 
@@ -206,7 +207,7 @@ begin
             delete(tmp)
         end do
 
-        ;; Get the index of the reference/alternative model
+        ;; Get the index of the FpFerence/alternative model
         refs_ind = get_ref_model_idx(models, var_attr_ref(0))
         l_altern = dimsizes(refs_ind).gt.1
       
