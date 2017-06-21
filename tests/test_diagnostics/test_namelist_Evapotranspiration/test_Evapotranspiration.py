@@ -60,8 +60,8 @@ class TestDiagnostic(ESMValTestDiagnostic):
 
         T = ETTest(files=reffiles, subdirectory = 'catchment_analysis_val')  # provide subdirectory within plot_dir
         T.run_nml()
-        #~ T.run_tests(execute=False, graphics=None, checksum_files=None, files='all', check_size_gt_zero=True)
-        #~ self.assertTrue(T.sucess)
+        T.run_tests(execute=False, graphics=None, checksum_files=None, files='all', check_size_gt_zero=True)
+        self.assertTrue(T.sucess)
 
 if __name__ == "__main__":
     unittest.main()
