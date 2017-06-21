@@ -33,7 +33,7 @@
 ;;    none
 ;;
 ;; Modification history
-;;    20170620-A_laue_ax: Added tags for reporting
+;;    20170620-A_laue_ax: added tags for reporting
 ;;    20160901-A_laue_ax: added regridding option 1 deg x 1 deg
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;;                        of the code
