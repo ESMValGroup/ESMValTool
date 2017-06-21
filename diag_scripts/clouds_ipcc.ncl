@@ -93,12 +93,14 @@ begin
 
     timemean = "annualclim"  ; default
     numseas = 1              ; default
-    season = (/"DJF", "MAM", "JJA", "SON"/)
+    season = (/"annual"/)
 
     if (isatt(diag_script_info, "timemean")) then
         timemean = diag_script_info@timemean
         if (timemean.eq."seasonalclim") then
             numseas = 4
+            delete(season)
+            season = (/"DJF", "MAM", "JJA", "SON"/)
         end if
     end if
 

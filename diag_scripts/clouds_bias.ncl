@@ -36,6 +36,7 @@
 ;;    none
 ;;
 ;; Modification history
+;;    20170620-A_laue_ax: added tags for reporting
 ;;    20160901-A_laue_ax: added regridding option 1 deg x 1 deg
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;;                        of the code
@@ -52,6 +53,8 @@ load "./diag_scripts/lib/ncl/style.ncl"
 load "./diag_scripts/aux/perfmetrics/aux_perfmetrics.ncl"
 
 load "./plot_scripts/ncl/contour_maps.ncl"
+
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 begin
 
@@ -82,12 +85,14 @@ begin
 
     timemean = "annualclim"  ; default
     numseas = 1              ; default
-    season = (/"DJF", "MAM", "JJA", "SON"/)
+    season = (/"annual"/)
 
     if (isatt(diag_script_info, "timemean")) then
         timemean = diag_script_info@timemean
         if (timemean.eq."seasonalclim") then
             numseas = 4
+            delete(season)
+            season = (/"DJF", "MAM", "JJA", "SON"/)
         end if
     end if
 end
@@ -325,7 +330,7 @@ begin
 
     mm_ind = 0  ; index of multi-model mean
     dim_MOD = dim_MOD + 1
-    modelsatname = array_append_record((/"multi-model mean"/), \
+    modelsatname = array_append_record((/"multi-model-mean"/), \
                                        models@name, 0)
     delete(models@name)
     models@name = modelsatname
@@ -421,6 +426,17 @@ begin
     ; ========================================================================
 
     if (getenv("ESMValTool_write_plots").eq.True) then
+
+        climofiles = new(dim_MOD - 1, string)  ; dim_MOD = number of models + 1 (i.e. models + multi-model-mean)
+
+        do ii = 0, dim_MOD - 2  ; loop only over individual models (skip multi-model-mean)
+            climofiles(ii) = \
+                interface_get_inpaths(ii) + "/" \
+                + interface_get_infile(variables(0), field_types(0), ii)
+        end do
+
+        alltags = array_append_record(tags, (/"PT_geo", "ST_clim", "ST_diff", "DM_global"/), 0)
+
         ; create outfile directory
 
         plot_dir = getenv("ESMValTool_plot_dir")
@@ -485,12 +501,6 @@ begin
             ; function in ~/interface_scripts/auxiliary.ncl
             ncdf_outfile = ncdf_write(diff, diag_script_info@ncdf)
         end if
-
-        ; --------------------------------------------------------------------
-        ; create workspace
-
-        wks = get_wks("dummy_for_wks", diag_script, var0)
-;        drawNDCGrid(wks) ; debugging option
 
         plots = new((/4, numseas/), graphic)
 
@@ -633,8 +643,17 @@ begin
         pres@gsnPanelYWhiteSpacePercent = 5
         pres@gsnPanelXWhiteSpacePercent = 5
 
-        if (numseas.gt.1) then
-            do is = 0, numseas - 1
+        do is = 0, numseas - 1
+            ; --------------------------------------------------------------------
+            ; create workspace
+
+            if (isvar("wks")) then
+                delete(wks)
+            end if
+
+            wks = get_wks("dummy_for_wks", diag_script, var0 + "_" + season(is))
+
+            if (numseas.gt.1) then
                 pres@txString = season(is)
                 plots(0, is) = contour_map(wks, data(mm_ind, is, :, :), var0)
                 plots(1, is) = contour_map(wks, diff(is, :, :), var0)
@@ -646,21 +665,37 @@ begin
                 end if
                 gsn_panel(wks, plots(plotind, is), plotsperline, pres)
 ;                outfile = panelling(wks, plots(:, is), 1, 2, pres)
-            end do
-        else
-            plots(0, 0) = contour_map(wks, data(mm_ind, :, :), var0)
-            plots(1, 0) = contour_map(wks, diff, var0)
+            else
+                plots(0, 0) = contour_map(wks, data(mm_ind, :, :), var0)
+                plots(1, 0) = contour_map(wks, diff, var0)
+                if (plot_abs_diff) then
+                    plots(2, 0) = contour_map(wks, absdiff, var0)
+                end if
+                if (plot_rel_diff) then
+                    plots(3, 0) = contour_map(wks, reldiff, var0)
+                end if
+                gsn_panel(wks, plots(plotind, 0), plotsperline, pres)
+;                outfile = panelling(wks, plots(:, 0), 1, 2, pres)
+            end if
+
+            info_output(" Wrote " + wks@fullname, verbosity, 1)
+
+            ; add meta data to plot (for reporting)
+
+            caption = "Multi model values, from top left to bottom right: mean, bias"
             if (plot_abs_diff) then
-                plots(2, 0) = contour_map(wks, absdiff, var0)
+                caption = caption + ", absolute error"
             end if
             if (plot_rel_diff) then
-                plots(3, 0) = contour_map(wks, reldiff, var0)
+                caption = caption + ", relative error"
             end if
-            gsn_panel(wks, plots(plotind, 0), plotsperline, pres)
-;            outfile = panelling(wks, plots(:, 0), 1, 2, pres)
-        end if
+            caption = caption + " for variable " + variables(0) \
+                      + " (" + season(is) + "), reference = " + models@name(ref_ind) + "."
+            id = diag_script + "_" + variables(0) + "_" + season(is)
 
-        info_output(" Wrote " + wks@fullname, verbosity, 1)
+            ESMValMD(wks@fullname, alltags, caption, id, variables(0), models@name, climofiles)
+
+        end do ; is-loop (seasons)
     end if
 
     info_output(">>>>>>>> Leaving " + diag_script, verbosity, 4)
