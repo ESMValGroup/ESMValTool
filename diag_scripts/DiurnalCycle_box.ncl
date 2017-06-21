@@ -515,7 +515,7 @@ begin
           plot_settings@aux_filename_info, -1)
     
     alltags = array_append_record(tags,\
-           (/"PT_diurn", "DM_region"/), 0)
+           (/"PT_diurn", "DM_reg"/), 0)
     caption = "Mean Diurnal Cycle for " + variables(0) 
     id = diag_script + "_" + base_name
     climofiles = new(dimsizes(models@name) * dimsizes(variables), string)
