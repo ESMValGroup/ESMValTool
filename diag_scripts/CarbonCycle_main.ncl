@@ -57,6 +57,7 @@ load "./diag_scripts/lib/ncl/latlon.ncl"
 load "./diag_scripts/lib/ncl/regridding.ncl"
 load "./diag_scripts/lib/ncl/statistics.ncl"
 load "./diag_scripts/lib/ncl/scaling.ncl"
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 load "./plot_scripts/ncl/xy_line.ncl"
 load "./plot_scripts/ncl/scatterplot.ncl"
@@ -307,7 +308,7 @@ begin
             end do
         end do
 
-        ESMValMD(plot@outfile, alltags, caption, id, variables, models@name, climofiles)
+        ESMValMD(outfile, alltags, caption, id, variables, models@name, climofiles)
 
         delete([/alltags, caption, id, climofiles/])
         delete(plot)
@@ -377,7 +378,7 @@ begin
             end do
         end do
 
-        ESMValMD(plot@outfile, alltags, caption, id, variables, models@name, climofiles)
+        ESMValMD(outfile, alltags, caption, id, variables, models@name, climofiles)
 
         delete([/alltags, caption, id, climofiles/])
         
@@ -447,7 +448,7 @@ begin
             end do
         end do
 
-        ESMValMD(plot@outfile, alltags, caption, id, variables, models@name, climofiles)
+        ESMValMD(outfile, alltags, caption, id, variables, models@name, climofiles)
 
         delete([/alltags, caption, id, climofiles/])
 
