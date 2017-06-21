@@ -964,7 +964,7 @@ begin
             delete(climofilesx)
         end if
 
-        alltags = array_append_record(tags, (/"PT_taylor", "DM_global"/), 0)
+        alltags = array_append_record(tags, (/"PT_taylor", "DM_global", "ST_clim"/), 0)
 
         ; create outfile directory
         plot_dir = getenv("ESMValTool_plot_dir")
@@ -1155,7 +1155,7 @@ begin
 
             caption = "Taylor diagram for variable " + variables(0) + " (" + season(is) \
                       + "), reference = " + models@name(ref_ind) + "."
-            id = diag_script + "_" + season(is)
+            id = diag_script + "_" + variables(0) + "_" + season(is)
 
             ESMValMD(wks@fullname, alltags, caption, id, variables(0), models@name, climofiles)
 

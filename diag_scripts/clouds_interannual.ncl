@@ -80,7 +80,7 @@ begin
     ; define diagnostic specific tags
     ; ###############################
 
-    diag_tags = (/"PT_geo", "DM_global"/)
+    diag_tags = (/"PT_geo", "DM_global", "ST_clim", "ST_var"/)
 
     ; ###########################################
     ; # references                              #
@@ -615,7 +615,7 @@ begin
 
         alltags = array_append_record(tags, diag_tags, 0)
         caption = "Interannual variability of variable " + variables(0) + "."
-        id = diag_script + "_all_models"
+        id = diag_script + "_" + variables(0) + "_all_models"
 
         if (flag_mean) then
             nm = dim_MOD - 1

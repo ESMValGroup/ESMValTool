@@ -43,6 +43,7 @@
 ;;    my lead to unexpected or undefined results.
 ;;
 ;; Modification history
+;;    20170620-A_laue_ax: added tags for reporting
 ;;    20160920-A_laue_ax: added optional shading of observational uncertainties
 ;;                        to the zonal mean plot
 ;;    20160901-A_laue_ax: added regridding option 1 deg x 1 deg
@@ -60,6 +61,8 @@ load "./diag_scripts/lib/ncl/style.ncl"
 load "./diag_scripts/aux/perfmetrics/aux_perfmetrics.ncl"
 
 load "./plot_scripts/ncl/contour_maps.ncl"
+
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 begin
 
@@ -468,7 +471,7 @@ begin
 
     mm_ind = 0  ; index of multi-model mean
     dim_MOD = dim_MOD + 1
-    modelsatname = array_append_record((/"multi-model mean"/), \
+    modelsatname = array_append_record((/"multi-model-mean"/), \
                                        models@name, 0)
     delete(models@name)
     models@name = modelsatname
@@ -688,6 +691,26 @@ begin
     ; ========================================================================
 
     if (getenv("ESMValTool_write_plots").eq.True) then
+
+        climofiles = new(dim_MOD - 1, string)  ; dim_MOD = number of models + 1 (i.e. models + multi-model-mean)
+
+        do ii = 0, dim_MOD - 2  ; loop only over individual models (skip multi-model-mean)
+            climofiles(ii) = \
+                interface_get_inpaths(ii) + "/" \
+                + interface_get_infile(variables(0), field_types(0), ii)
+        end do
+
+        if (dim_VAR.gt.1) then  ; is an error estimate present?
+            climofilesx = array_append_record(climofiles, \
+                interface_get_inpaths(0) + "/" + \
+                interface_get_infile(variables(1), field_types(1), 0), 0)
+            delete(climofiles)
+            climofiles = climofilesx
+            delete(climofilesx)
+        end if
+
+        alltags = array_append_record(tags, (/"PT_geo", "PT_zonal", "ST_clim", "DM_global"/), 0)
+
         ; create outfile directory
 
         plot_dir = getenv("ESMValTool_plot_dir")
@@ -778,118 +801,119 @@ begin
             ncdf_outfile = ncdf_write(diff, diag_script_info@ncdf)
         end if
 
-        ; --------------------------------------------------------------------
-        ; create workspace
-
-        wks = get_wks("dummy_for_wks", diag_script, var0)
-;        drawNDCGrid(wks) ; debugging option
-
         plots = new((/2, numseas/), graphic)
 
-        ; --------------------------------------------------------------------
-        ; plot contour map
+        do is = 0, numseas - 1
 
-        diff@res_gsnDraw         = False  ; Do not draw yet
-        diff@res_gsnFrame        = False  ; Don't advance frame.
+            ; --------------------------------------------------------------------
+            ; create workspace
 
-        diff@res_lbTitleString   = "~F8~D~F21~" + variable_info@long_name + \
-                                   " (" + variable_info@units + ")"
-        diff@res_lbTitlePosition      = "Bottom"
-        diff@res_lbLabelFontHeightF   = 0.015
-        diff@res_lbAutoManage         = False
-;        diff@res_lbTopMarginF         = 0.1
-        diff@res_lbTitleFontHeightF   = 0.015
+            if (isvar("wks")) then
+                delete(wks)
+            end if
 
-        ; plot contour map
+            wks = get_wks("dummy_for_wks", diag_script, var0 + "_" + season(is))
+;            drawNDCGrid(wks) ; debugging option
 
-        if (numseas.gt.1) then
-            do is = 0, numseas - 1
-                plots(0, is) = contour_map(wks, diff(is, :, :), var0)
-            end do
-        else
-            plots(0, 0) = contour_map(wks, diff, var0)
-        end if
+            ; --------------------------------------------------------------------
+            ; plot contour map
 
-        ; --------------------------------------------------------------------
-        ; plot zonal means
+            diff@res_gsnDraw         = False  ; Do not draw yet
+            diff@res_gsnFrame        = False  ; Don't advance frame.
 
-        lat = (/zonalmean&lat/)
+            diff@res_lbTitleString   = "~F8~D~F21~" + variable_info@long_name + \
+                                       " (" + variable_info@units + ")"
+            diff@res_lbTitlePosition      = "Bottom"
+            diff@res_lbLabelFontHeightF   = 0.015
+            diff@res_lbAutoManage         = False
+;            diff@res_lbTopMarginF         = 0.1
+            diff@res_lbTitleFontHeightF   = 0.015
 
-        ; the attribute "long_name" will be used as title string for the x-axis
+            ; plot contour map
 
-        lat@long_name = "Latitude"
-        lat@units = "degrees_north"
+            if (numseas.gt.1) then
+                 plots(0, is) = contour_map(wks, diff(is, :, :), var0)
+            else
+                plots(0, 0) = contour_map(wks, diff, var0)
+            end if
 
-        ; the attribute "long_name" will be used as title string for the y-axis
+            ; --------------------------------------------------------------------
+            ; plot zonal means
 
-        zonalmean@long_name = zonalmean@long_name + " (" + \
-                              zonalmean@units + ")"
+            lat = (/zonalmean&lat/)
 
-        linethickness          = new(dim_MOD, float)
-        linecolor              = new(dim_MOD, string)
-        linedash               = new(dim_MOD, integer)
+            ; the attribute "long_name" will be used as title string for the x-axis
 
-        n = dimsizes(model_ind_woref) - 1
+            lat@long_name = "Latitude"
+            lat@units = "degrees_north"
 
-        ; settings for all models that have been used to calculate the
-        ; multi-model mean (= first entries in "zonalmean")
+            ; the attribute "long_name" will be used as title string for the y-axis
 
-        linethickness(0:n)      = 1.0     
-        linecolor(0:n)          = "(/0.5, 0.5, 0.5/)"
-        linedash                = 0
-;        linedash(n+1:dim_MOD-1) = 0
+            zonalmean@long_name = zonalmean@long_name + " (" + \
+                                  zonalmean@units + ")"
 
-        ; for all other models, styleset defined in config file is
-        ; used (if defined), otherwise use default values
+            linethickness          = new(dim_MOD, float)
+            linecolor              = new(dim_MOD, string)
+            linedash               = new(dim_MOD, integer)
 
-        if (isatt(diag_script_info, "styleset")) then
-            colortab     = project_style(diag_script_info, "colors")
-            dashtab      = project_style(diag_script_info, "dashes")
-            thicknesstab = project_style(diag_script_info, "thicks")
-            do i = n + 1, dim_MOD - 1
-                if (isdefined("idx")) then
-                    delete(idx)
-                end if
-                idx = ind(models@name.eq.zonalmean&model(i))
-                if (all(ismissing(idx))) then
-                else
-                    linecolor(i) = colortab(idx(0))
-                    linethickness(i) = thicknesstab(idx(0))
-                    linedash(i) = dashtab(idx(0))
-                end if
-            end do
-        else
-            linethickness(n+1:dim_MOD-1) = 4.0     ; reference data set(s) (observations)
-            linethickness(mm_ind)  = 4.0           ; multi-model mean
-            linecolor(n+1:dim_MOD-1) = "Black"     ; reference data set
-            linecolor(mm_ind)          = "Red"     ; multi-model mean
-        end if
+            n = dimsizes(model_ind_woref) - 1
 
-        res                    = True
-        res@xyDashPattern      = linedash
-        res@xyMonoLineColor    = False
-        res@xyLineThicknesses  = linethickness
-        res@xyLineColors       = linecolor
-;        res@tiMainString       = "...title..."      ; add title
-        res@tmXBLabelFontHeightF = 0.023
-        res@tmYLLabelFontHeightF = 0.023
-        res@gsnDraw            = False  ; Do not draw yet
-        res@gsnFrame           = False  ; Don't advance frame.
+            ; settings for all models that have been used to calculate the
+            ; multi-model mean (= first entries in "zonalmean")
 
-        ; this controls the size and location of the second plot
+            linethickness(0:n)      = 1.0     
+            linecolor(0:n)          = "(/0.5, 0.5, 0.5/)"
+            linedash                = 0
+;            linedash(n+1:dim_MOD-1) = 0
 
-        res@vpWidthF           = 0.6
-        res@vpHeightF          = 0.475
+            ; for all other models, styleset defined in config file is
+            ; used (if defined), otherwise use default values
 
-        if (numseas.gt.1) then
-            do is = 0, numseas - 1
+            if (isatt(diag_script_info, "styleset")) then
+                colortab     = project_style(diag_script_info, "colors")
+                dashtab      = project_style(diag_script_info, "dashes")
+                thicknesstab = project_style(diag_script_info, "thicks")
+                do i = n + 1, dim_MOD - 1
+                    if (isdefined("idx")) then
+                        delete(idx)
+                    end if
+                    idx = ind(models@name.eq.zonalmean&model(i))
+                    if (all(ismissing(idx))) then
+                    else
+                        linecolor(i) = colortab(idx(0))
+                        linethickness(i) = thicknesstab(idx(0))
+                        linedash(i) = dashtab(idx(0))
+                    end if
+                end do
+            else
+                linethickness(n+1:dim_MOD-1) = 4.0     ; reference data set(s) (observations)
+                linethickness(mm_ind)  = 4.0           ; multi-model mean
+                linecolor(n+1:dim_MOD-1) = "Black"     ; reference data set
+                linecolor(mm_ind)          = "Red"     ; multi-model mean
+            end if
+
+            res                    = True
+            res@xyDashPattern      = linedash
+            res@xyMonoLineColor    = False
+            res@xyLineThicknesses  = linethickness
+            res@xyLineColors       = linecolor
+;            res@tiMainString       = "...title..."      ; add title
+            res@tmXBLabelFontHeightF = 0.023
+            res@tmYLLabelFontHeightF = 0.023
+            res@gsnDraw            = False  ; Do not draw yet
+            res@gsnFrame           = False  ; Don't advance frame.
+
+            ; this controls the size and location of the second plot
+
+            res@vpWidthF           = 0.6
+            res@vpHeightF          = 0.475
+
+            if (numseas.gt.1) then
                 plots(1, is) = gsn_csm_xy(wks, lat, zonalmean(:, is, :), res)
-            end do
-            if (isdefined("err_zm")) then
-                y = new((/2, dimsizes(err_zm&lat)/), float)
-                res@gsnXYFillColors = "(/1.0, 0.8, 0.8/)"
-                res@xyLineColors(:) = "transparent"
-                do is = 0, numseas - 1
+                if (isdefined("err_zm")) then
+                    y = new((/2, dimsizes(err_zm&lat)/), float)
+                    res@gsnXYFillColors = "(/1.0, 0.8, 0.8/)"
+                    res@xyLineColors(:) = "transparent"
                     do imod = 0, dim_MOD - 1
                         erridx = ind(err_zm&model.eq.zonalmean&model(imod))
                         if (.not.all(ismissing(erridx))) then
@@ -899,44 +923,46 @@ begin
                             overlay(plots(1, is), errorshade)
                         end if
                     end do
-                end do
+                end if
+            else
+                plots(1, 0) = gsn_csm_xy(wks, lat, zonalmean, res)
+
+                if (isdefined("err_zm")) then
+                    y = new((/2, dimsizes(err_zm&lat)/), float)
+                    res@gsnXYFillColors = "(/1.0, 0.8, 0.8/)"
+                    res@xyLineColors(:) = "transparent"
+                    do imod = 0, dim_MOD - 1
+                        erridx = ind(err_zm&model.eq.zonalmean&model(imod))
+                        if (.not.all(ismissing(erridx))) then
+                            y(0, :) = zonalmean(imod, :) - err_zm(erridx, :)
+                            y(1, :) = zonalmean(imod, :) + err_zm(erridx, :)
+                            errorshade = gsn_csm_xy(wks, err_zm&lat, y, res)
+                            overlay(plots(1, 0), errorshade)
+                        end if
+                    end do
+                end if
             end if
-        else
-            plots(1, 0) = gsn_csm_xy(wks, lat, zonalmean, res)
 
-            if (isdefined("err_zm")) then
-                y = new((/2, dimsizes(err_zm&lat)/), float)
-                res@gsnXYFillColors = "(/1.0, 0.8, 0.8/)"
-                res@xyLineColors(:) = "transparent"
-                do imod = 0, dim_MOD - 1
-                    erridx = ind(err_zm&model.eq.zonalmean&model(imod))
-                    if (.not.all(ismissing(erridx))) then
-                        y(0, :) = zonalmean(imod, :) - err_zm(erridx, :)
-                        y(1, :) = zonalmean(imod, :) + err_zm(erridx, :)
-                        errorshade = gsn_csm_xy(wks, err_zm&lat, y, res)
-                        overlay(plots(1, 0), errorshade)
-                    end if
-                end do
-            end if
-        end if
+            ; --------------------------------------------------------------------
 
-        ; --------------------------------------------------------------------
+            pres                    = True
+            pres@gsnPanelCenter     = False
+            pres@gsnPanelXF         = (/0.075, 0.625/)  ; hor. pos. of sub-plots
+            pres@txString = season(is)
 
-        pres                    = True
-        pres@gsnPanelCenter     = False
-        pres@gsnPanelXF         = (/0.075, 0.625/)  ; hor. pos. of sub-plots
+            outfile = panelling(wks, plots(:, is), 1, 2, pres)
+            info_output(" Wrote " + wks@fullname, verbosity, 1)
 
-        if (numseas.gt.1) then
-            do is = 0, numseas - 1
-                pres@txString = season(is)
-                outfile = panelling(wks, plots(:, is), 1, 2, pres)
-            end do
-        else
-            outfile = panelling(wks, plots(:, 0), 1, 2, pres)
-        end if
+            ; add meta data to plot (for reporting)
 
-        info_output(" Wrote " + wks@fullname, verbosity, 1)
-    end if
+            caption = "Multi model mean bias (left) and zonal averages (right) for variable " + variables(0) \
+                      + " (" + season(is) + "), reference = " + models@name(ref_ind) + "."
+            id = diag_script + "_" + variables(0) + "_" + season(is)
+
+            ESMValMD(wks@fullname, alltags, caption, id, variables(0), models@name, climofiles)
+
+        end do ; is-loop (seasons)
+    end if ; if create plots
 
     info_output(">>>>>>>> Leaving " + diag_script, verbosity, 4)
 
