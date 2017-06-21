@@ -112,9 +112,13 @@ class SeaSurfaceTemperatureDiagnostic(BasicDiagnostics):
 
         ESMValMD("xml",
                  oname,
-                 self._basetags,
-                 '',  # TODO give caption
-                 '#ID' + 'PercAll' + self.var)
+                 self._basetags + ['DM_global', self.refname,
+                                   self.modname, 'ST_corr', 'ST_perc'],
+                 'Development of global pattern correlation values over ' +
+                 'different percentile levels for ' + self.refname + ' and ' +
+                 self.modname + ' ' + self._vartype + ' data.',
+                 '#ID' + 'devcorrperctab' + self.var,
+                 ','.join(self._infiles))
 
     def _percentile_comparison(self, plist=np.arange(0.0, 1.01, 0.05),
                                plots=True):
@@ -194,17 +198,19 @@ class SeaSurfaceTemperatureDiagnostic(BasicDiagnostics):
             os.remove(oname)
         f.savefig(oname)
 
-        ESMValMD("both",
-                 oname,
-                 self._basetags + ['perc', 'p'+str(p).zfill(3)],
-                 str('Percentile (p=' + str(p) + ') for ' + self.refname +
-                     ' and ' + self.modname + ' ' + self._vartype +
-                     '. Percentiles are not normalized for spatially equal ' +
-                     'counts.'),
-                 '#ID' + 'Perc' + str(int(p*100)).zfill(3) + self.var)
-
         plt.close(f.number)  # close figure for memory reasons!
         del f
+
+        ESMValMD("both",
+                 oname,
+                 self._basetags + ['DM_global', 'PT_geo', self.refname,
+                                   self.modname, 'ST_perc'],
+                 'Comparison of global patterns of ' + self._vartype +
+                 ' for ' + str(int(p * 100)) + 'th-percentile of ' +
+                 self.refname + ' and ' + self.modname + ' data. ' +
+                 'The spatial correlation (r) is noted in the title.',
+                 '#ID' + 'perc' + str(int(p * 100)).zfill(3) + self.var,
+                 ','.join(self._infiles))
 
     def _plot_percentile_correlation(self, p, r):
         """
@@ -237,9 +243,13 @@ class SeaSurfaceTemperatureDiagnostic(BasicDiagnostics):
 
         ESMValMD("both",
                  oname,
-                 self._basetags,
-                 'TODO',  # TODO give caption
-                 '#ID' + 'TODO' + self.var)
+                 self._basetags + ['DM_global', 'PT_pro', self.refname,
+                                   self.modname, 'ST_corr', 'ST_perc'],
+                 'Development of global pattern correlation values over ' +
+                 'different percentile levels for ' + self.refname + ' and ' +
+                 self.modname + ' ' + self._vartype + ' data.',
+                 '#ID' + 'devcorrperc' + self.var,
+                 ','.join(self._infiles))
 
     def _load_model_data(self):
         """ load model data """
