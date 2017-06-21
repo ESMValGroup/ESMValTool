@@ -35,16 +35,16 @@ class RunTests(object):
                 self.valid_diagnostics.append(d)
             else:
                 self.missing_diagnostics.append(d)
+        self.valid_diagnostics.append('python_dummy')
+        assert len(self.missing_diagnostics) + len(self.valid_diagnostics) == len(self.diagnostics) + 1
 
-        assert len(self.missing_diagnostics) + len(self.valid_diagnostics) == len(self.diagnostics)
+
+    def _get_test_dir(self, d):
+        return os.path.dirname(os.path.abspath(__file__)) + os.sep + 'test_diagnostics' + os.sep + 'test_' + os.path.splitext(d)[0]
 
     def _test_exists(self, d):
-        cd = os.path.dirname(os.path.abspath(__file__)) + os.sep + 'test_diagnostics' + os.sep + 'test_' + os.path.splitext(d)[0]
-        fname = cd + os.sep +  d
-        print fname
+        fname = self._get_test_dir(d) + os.sep +  d
         return os.path.exists(fname)
-
-
 
     def _get_diagnostic_list(self):
         nml_dir = self._get_nml_dir()
@@ -62,9 +62,12 @@ class RunTests(object):
         # supposed to run the tests for the backend
         print('Backend tests not integrated yet')
 
-    def test_diagnostics(self):
+    def test_diagnostics(self, ignore=[]):
+        self.results = {}
         for d in self.valid_diagnostics:
-            self._test_diagnostic(d)
+            if d not in ignore:
+                r = self._test_diagnostic(d)
+                self.results.update({d : r})
 
     def _test_diagnostic(self, d):
         """
@@ -76,13 +79,38 @@ class RunTests(object):
             name of diagnostic file (namelist filename)
         """
         print('Testing diagnostic: ' + d)
+        
+        # at the moment, the command line is used to launch the test. At a later stage this could
+        # be done differently, also replacing nosetests with pytest would be a good idea
+        cmd = 'nosetests ' + self._get_test_dir(d)
+        print(cmd)
+        r = os.system(cmd)
+        if r == 0:
+            return True
+        else:
+            return False
+
+    def print_results(self):
+        print('')
+        print('*********')
+        print('Results of diagnostic testing')
+        for d in self.results.keys():
+            print(d, self.results[d])
 
 
 
 def main():
     R = RunTests()
-    #R.test_diagnostics()
+
+    ignore=[]
+    ignore.append('namelist_Evapotranspiration.xml')  # NCL errors happen!
+
+
+    R.test_diagnostics(ignore=ignore)
     #R.test_core()
+    R.print_results()
+
+
 
 if __name__ == '__main__':
     main()
