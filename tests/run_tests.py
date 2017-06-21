@@ -83,7 +83,6 @@ class RunTests(object):
         # at the moment, the command line is used to launch the test. At a later stage this could
         # be done differently, also replacing nosetests with pytest would be a good idea
         cmd = 'nosetests ' + self._get_test_dir(d)
-        print(cmd)
         r = os.system(cmd)
         if r == 0:
             return True
@@ -97,20 +96,28 @@ class RunTests(object):
         for d in self.results.keys():
             print(d, self.results[d])
 
+    def check_assert(self):
+        """
+        issue assert in case that tests failed
+        """
+        for d in self.results.keys():
+            if not self.results[d]:
+                assert False, 'Some diagnostics failed!'
 
 
 def main():
     R = RunTests()
 
+    # specify here currently diagnostics that should be irgnore for testing
+    # if doing so, always specify a reason why this is done
     ignore=[]
-    ignore.append('namelist_Evapotranspiration.xml')  # NCL errors happen!
+    #ignore.append('namelist_Evapotranspiration.xml')  # NCL errors happen!
 
 
     R.test_diagnostics(ignore=ignore)
     #R.test_core()
     R.print_results()
-
-
+    R.check_assert()
 
 if __name__ == '__main__':
     main()
