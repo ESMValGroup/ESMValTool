@@ -38,6 +38,7 @@
 ;;     will be used for the calculations
 ;;
 ;; Modification history
+;;    20170622-A_laue_ax: added add tags for reporting
 ;;    20170310-A_laue_ax: written.
 ;;
 ;;#############################################################################
@@ -57,6 +58,8 @@ load "./diag_scripts/lib/ncl/latlon.ncl"
 load "./diag_scripts/lib/ncl/statistics.ncl"
 
 load "./plot_scripts/ncl/xy_line.ncl"
+
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 begin
 
@@ -81,6 +84,15 @@ begin
         data = read_data(imod, var0, field_type0)
     end do
 
+    climofiles = new(dim_MOD, string)
+
+    do ii = 0, dim_MOD - 1
+        climofiles(ii) = \
+            interface_get_inpaths(ii) + "/" \
+            + interface_get_infile(variables(0), field_types(0), ii)
+    end do
+
+    alltags = array_append_record(tags, (/"PT_geo", "ST_eof", "DM_reg"/), 0)
 end
 
 begin
@@ -499,6 +511,16 @@ begin
     frame(wks)             ; advance frame after extra line drawn       
 
     ; ===========================================================================================
+
+    ; add meta data to plot (for reporting)
+
+    caption = "(a, b) The two leading Empirical Orthogonal Functions (EOFs) of variable " + variables(0) \
+              + " (" + models@name(idx_ref) + "). The scatterplot (c) shows the maximum positive correlation " \
+              + "between the resulting MJO Principal Components and the time lag at which it occurred for all" \
+              + " winters (November to March). Similar to IPCC AR5, fig. 9.31."
+    id = diag_script + "_" + variables(0)
+
+    ESMValMD(outfile, alltags, caption, id, variables(0), models@name, climofiles)
 
     leave_msg(diag_script, "", 2)
 
