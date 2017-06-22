@@ -38,7 +38,7 @@
 ;;     will be used for the calculations
 ;;
 ;; Modification history
-;;    20170622-A_laue_ax: added add tags for reporting
+;;    20170622-A_laue_ax: added tags for reporting
 ;;    20170310-A_laue_ax: written.
 ;;
 ;;#############################################################################
