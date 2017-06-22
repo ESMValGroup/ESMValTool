@@ -27,6 +27,7 @@
 ;;     none
 ;;
 ;; Modification history
+;;    20170622-A_laue_ax: added add tags for reporting
 ;;    20170307-A_laue_ax: written.
 ;;
 ;;#############################################################################
@@ -42,6 +43,8 @@ load "./diag_scripts/lib/ncl/latlon.ncl"
 load "./diag_scripts/lib/ncl/statistics.ncl"
 
 load "./plot_scripts/ncl/xy_line.ncl"
+
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 begin
 
@@ -66,6 +69,16 @@ begin
         data = read_data(imod, var0, field_type0)
     end do
 
+    climofiles = new(dim_MOD, string)
+
+    do ii = 0, dim_MOD - 1
+        climofiles(ii) = \
+            interface_get_inpaths(ii) + "/" \
+            + interface_get_infile(variables(0), field_types(0), ii)
+    end do
+
+    alltags = array_append_record(tags, (/"PT_scatter", "ST_anomaly", "ST_stddev", "DM_reg"/), 0)
+    allmodelnames = array_append_record(models@name, (/"multi-model-mean"/), 0)
 end
 
 begin
@@ -209,7 +222,7 @@ begin
         annual_mean!0 = "model"
 
         annual_mean&model = models@name(pid)
-        annual_mean&model(0) = "multi-model mean"
+        annual_mean&model(0) = "multi-model-mean"
         ; from IPCC ch. 9 fig. 9.36 it seems that "multi-model mean" is *not* the temporal
         ; standard deviation of the multi-model mean time series (mmm(:, ireg))
         ; but rather simply the average of the temporal standard deviations
@@ -269,6 +282,16 @@ begin
 
         draw(plot)
         frame(wks)
+
+        ; add meta data to plot (for reporting)
+
+        caption = variables(0) + " anomaly standard deviation over " + region(ireg) + " region." \
+                  + " Reference data set shown as dashed line: " + models@name(idx_ref) + "." \
+                  + " Similar to IPCC AR5, fig. 9.36."
+        id = diag_script + "_" + variables(0) + "_" + region(ireg)
+
+        ESMValMD(outfile, alltags, caption, id, variables(0), allmodelnames, climofiles)
+
         delete(plot)
         delete(wks)
         delete(data_arr)
