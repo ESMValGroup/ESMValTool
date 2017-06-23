@@ -36,6 +36,7 @@
 ;;    Multi-model mean to be implemented.
 ;;
 ;; Modification history
+;;    20170623-A_laue_ax: added tags for reporting
 ;;    20160905-A-Bock_li: implemented multi-model mean and variable refence 
 ;;                        period for anomaly with refence mean value.
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
@@ -61,6 +62,8 @@ load "./diag_scripts/lib/ncl/style.ncl"
 
 load "./plot_scripts/ncl/xy_line.ncl"
 
+load "./diag_scripts/lib/ncl/meta_data.ncl"
+
 begin
 
     verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
@@ -81,7 +84,6 @@ begin
     do idx_mod = 0, dim_MOD - 1
         data = read_data(idx_mod, var0, field_type0)
     end do
-
 end
 
 ; Load var_info
@@ -134,7 +136,6 @@ begin
         exit_if_missing_atts(diag_script_info, \
                              array_append_record(req_atts1, req_atts2, 0))
     end if
-
 
     ;; Time averaging
     if (isatt(diag_script_info, "time_avg")) then
@@ -237,8 +238,6 @@ begin
     else  ; initialize anyway, because both are needed as arguments of xy_line
         model_arr_stddev = 0
     end if
-
-
 
     ;; Loop over models
     do imod = 0, dim_MOD - 1
@@ -496,11 +495,59 @@ begin
         xy_line(wks, model_arr, model_arr&time, model_arr_stddev, res, False)
     end if
 
-    info_output(" gv " + wks@fullname + " &", verbosity, 1)
+; A_laue_ax+
+    ; add meta data to plot (for reporting)
 
-    ;; References
-    write_references(diag_script, "A_cion_ir", (/"A_righ_ma","A_wenz_sa"/), "D_0001", \
-                     "", "P_esmval")
+    climofiles = new(dim_MOD, string)
+
+    do ii = 0, dim_MOD - 1
+        climofiles(ii) = \
+            interface_get_inpaths(ii) + "/" \
+            + interface_get_infile(variables(0), field_types(0), ii)
+    end do
+
+    domain = "DM_reg"
+
+    if ((field_type0.eq."T3M").or.(field_type0.eq."T2Ms")) then
+        if ((diag_script_info@ts_minlat.eq.-90.).and. \
+            (diag_script_info@ts_maxlat.eq.90.).and.  \
+            (diag_script_info@ts_minlon.eq.0.).and. \
+            (diag_script_info@ts_maxlon.eq.360.)) then
+            domain = "DM_glob"
+        end if
+    else
+        if ((diag_script_info@ts_minlat.eq.-90.).and. \
+            (diag_script_info@ts_maxlat.eq.90.)) then
+            domain = "DM_glob"
+        end if
+    end if
+
+    if (anom .eq. "anom") then
+        stat = "ST_anomaly"
+        captionadd = "anomalies"
+    else
+        stat = "ST_mean"
+        captionadd = "means"
+    end if
+
+    alltags = array_append_record(tags, (/"PT_time", stat, domain/), 0)
+
+    if (diag_script_info@multi_model_mean.eq."y") then
+        allmodelnames = array_append_record(models@name, (/"multi-model-mean"/), 0)
+    else
+        allmodelnames = models@name
+    end if
+
+    caption = "Time series of the " + captionadd + " for variable " + variables(0) \
+              + ", similar to IPCC AR5, fig. 9.8."
+
+    id = diag_script + "_" + variables(0)
+
+    ESMValMD(wks@fullname, alltags, caption, id, variables(0), allmodelnames, climofiles)
+; A_laue_ax-
+
+    info_output(" wrote " + wks@fullname + " &", verbosity, 1)
+
     info_output("<<<<<<<< Leaving " + diag_script, verbosity, 4)
 
 end
