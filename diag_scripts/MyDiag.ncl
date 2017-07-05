@@ -119,8 +119,9 @@ begin
         MyParam = variable_info@MyDiag_title
         info_output(" MyParam = " + MyParam, verbosity, 5)
     else
-        error_msg("f", diag_script, "", "missing variable attribute " + \
-                  "'MyDiag_title'")
+;        error_msg("f", diag_script, "", "missing variable attribute " + \
+;                  "'MyDiag_title'")
+        MyParam = ""
     end if
 
     ;;###########################################
@@ -196,7 +197,7 @@ begin
     data1@res_tiMainString      = MyParam  ; Main title
     data1@res_gsnLeftString     = annots(imod)
     data1@res_gsnRightString    = variable_info@long_name + " in " \
-                                                          + variable_info@units
+                                                          + data1@units
     ;; Specified in ./nml/cfg_MyDiag/cfg_MyDiag.ncl
     data1@res_mpProjection      = diag_script_info@projection
     ;; Set explicit contour levels
@@ -223,6 +224,8 @@ begin
     end if
     if(isatt(variable_info, "units")) then
         data1@var_units     = variable_info@units
+    else
+        data1@var_units     = ""
     end if
 
     ;;###########################################
