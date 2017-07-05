@@ -196,8 +196,10 @@ begin
     ;; Annotation
     data1@res_tiMainString      = MyParam  ; Main title
     data1@res_gsnLeftString     = annots(imod)
-    data1@res_gsnRightString    = variable_info@long_name + " in " \
-                                                          + data1@units
+    data1@res_gsnRightString    = variable_info@long_name
+    if (isatt(variable_info, "units")) then
+        data1@res_gsnRightString = data1@res_gsnRightString + " in " + variable_info@units
+    end if
     ;; Specified in ./nml/cfg_MyDiag/cfg_MyDiag.ncl
     data1@res_mpProjection      = diag_script_info@projection
     ;; Set explicit contour levels
