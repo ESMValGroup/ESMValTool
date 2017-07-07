@@ -369,9 +369,12 @@ begin
 
             ; Do not process data if already processed
 
-            if (isfilepresent(regr_path) .and. \
-                getenv("ESMValTool_force_calc").eq."False") then
+            force = getenv("ESMValTool_force_calc")
+            if (ismissing(force)) then
+                force = "False"
+            end if
 
+            if (isfilepresent(regr_path) .and. force.eq."False") then
                 info_output("Reading in file = " + regr_path, verbosity, 1)
                 var_hreg = ncdf_read(regr_path, var0)
             else
