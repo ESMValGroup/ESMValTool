@@ -310,8 +310,13 @@ begin
                                      imod, diag_script, opt)
 
             ;; Do not process data if already processed
-            if (isfilepresent(regr_path) .and. \
-                getenv("ESMValTool_force_calc").eq."False") then
+
+            force = getenv("ESMValTool_force_calc")
+            if (ismissing(force)) then
+                force = "False"
+            end if
+
+            if (isfilepresent(regr_path) .and. force.eq."False") then
                 pre_var = ncdf_read(regr_path, variables(ivar))
                 dnames = getVarDimNames(pre_var)
             else
