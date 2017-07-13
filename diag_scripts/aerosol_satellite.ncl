@@ -31,6 +31,8 @@
 ;;    Fig. 9.28 are used by default.
 ;;
 ;; Modification history
+;;    20170707-A_laue_ax: code changes for reporting: all plots are written to
+;;                        individual files (no multi-page files), tags are added
 ;;    20160817-A_righ_ma: added multi-model statistics
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;;                        of the code
@@ -50,6 +52,8 @@ load "./diag_scripts/lib/ncl/style.ncl"
 load "./diag_scripts/lib/ncl/regridding.ncl"
 
 load "./plot_scripts/ncl/contour_maps.ncl"
+
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 begin
     verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
@@ -96,22 +100,34 @@ end
 begin
 
     ;; File type
-    valid_types = (/"PS", "ps", "PDF", "pdf"/)  ; Support for multiple pages
+;    valid_types = (/"PS", "ps", "PDF", "pdf"/)  ; Support for multiple pages
     file_type = getenv("ESMValTool_output_file_type")
     if (ismissing(file_type)) then
         file_type = "PS"
     end if
-    if (dimsizes(models@name) .gt. 1.and.all(file_type .ne. valid_types)) then
-        info_output(file_type + " format does not support multiple pages, " \
-                    + "switching to ps", verbosity, 1)
-        file_type = "PS"
-    end if
+;    if (dimsizes(models@name) .gt. 1.and.all(file_type .ne. valid_types)) then
+;        info_output(file_type + " format does not support multiple pages, " \
+;                    + "switching to ps", verbosity, 1)
+;        file_type = "PS"
+;    end if
 
     ;; Check for reference model
     refID = ind(models@name.eq.diag_script_info@ref_model)
     if (ismissing(refID)) then
         error_msg("f", diag_script, "", "cannot determine reference model")
     end if
+
+    ; -------------------------------------------------------------------------------
+    ; collect information for adding meta data to plots (for reporting)
+
+    climofiles = new(dim_MOD, string)
+    do ii = 0, dim_MOD - 1
+        climofiles(ii) = interface_get_inpaths(ii) + "/" \
+            + interface_get_infile(variables(0), field_types(0), ii)
+    end do
+
+    ttags = array_append_record(tags, (/"PT_geo", "ST_clim", "DM_global"/), 0)
+    ; -------------------------------------------------------------------------------
 
     ;; Determine time range (years) of all models
     if (.not.isatt(diag_script_info, "range_option")) then
@@ -202,8 +218,6 @@ begin
     plot_dir = getenv("ESMValTool_plot_dir")
     output_dir = get_output_dir(plot_dir, basename(diag_script))
 
-    plot_abs = output_dir + diag_script_info@ref_model + "_absolute_" + var0
-    wksabs = gsn_open_wks(file_type, plot_abs)
     if (isatt(variable_info, "colortable_abs")) then
         cmap_abs = variable_info@colortable_abs
     else
@@ -211,8 +225,6 @@ begin
             read_colormap_file("diag_scripts/lib/ncl/rgb/ipcc-od550aer.rgb")
     end if
 
-    plot_diff = output_dir + diag_script_info@ref_model + "_difference_" + var0
-    wksdiff = gsn_open_wks(file_type, plot_diff)
     if (isatt(variable_info, "colortable_diff")) then
         cmap_diff = variable_info@colortable_diff
     else
@@ -222,6 +234,11 @@ begin
     end if
 
     do mID = 0, dimsizes(models@name) - 1
+
+        plot_abs = output_dir + diag_script_info@ref_model + "_" + models@name(mID) + "_absolute_" + var0
+        wksabs = gsn_open_wks(file_type, plot_abs)
+        plot_diff = output_dir + diag_script_info@ref_model + "_" + models@name(mID) + "_difference_" + var0
+        wksdiff = gsn_open_wks(file_type, plot_diff)
 
         var = output(mID, :, :)
         var@res_cnFillMode = "CellFill"
@@ -236,6 +253,16 @@ begin
         draw(plot)
         frame(wksabs)
 
+        ; -------------------------------------------------------------------------------
+        ; add meta data to plot (for reporting)
+        caption = "Mean " + variables(0) + " from " + models@name(mID) + "."
+        id = diag_script + "_" + variables(0)
+        alltags = array_append_record(ttags, "ST_mean", 0)
+        ESMValMD(plot_abs + "." + file_type, alltags, caption, id, variables(0), \
+                 models@name(mID), climofiles(mID))
+        delete(alltags)
+        ; -------------------------------------------------------------------------------
+
         if (mID .ne. refID) then
             var = output(mID, :, :) - output(refID, :, :)
             var@res_tiMainString = var0 + " (" + annots(mID) + " - " + \
@@ -247,11 +274,32 @@ begin
             delete(var@res_cnFillColors)
             draw(plot)
             frame(wksdiff)
+
+            ; -------------------------------------------------------------------------------
+            ; add meta data to plot (for reporting)
+            caption = variables(0) + " " + models@name(mID) + " - " + models@name(refID) + "."
+            id = diag_script + "_" + variables(0)
+            alltags = array_append_record(ttags, "ST_diff", 0)
+            idx = (/mID, refID/)
+            ESMValMD(plot_diff + "." + file_type, alltags, caption, id, variables(0), \
+                     models@name(idx), climofiles(idx))
+            delete(idx)
+            delete(alltags)
+            ; -------------------------------------------------------------------------------
+
         end if
+
+        delete(wksabs)
+        delete(wksdiff)
 
     end do
 
     if (isdefined("MM_mean")) then
+        plot_abs = output_dir + diag_script_info@ref_model + "_MMmean_absolute_" + var0
+        wksabs = gsn_open_wks(file_type, plot_abs)
+        plot_diff = output_dir + diag_script_info@ref_model + "_MMmean_difference_" + var0
+        wksdiff = gsn_open_wks(file_type, plot_diff)
+
         MM_mean@res_cnFillMode = "CellFill"
         MM_mean@res_cnLinesOn = False
         MM_mean@res_cnLevelSelectionMode = "ExplicitLevels"
@@ -264,6 +312,19 @@ begin
         draw(plot)
         frame(wksabs)
 
+        ; -------------------------------------------------------------------------------
+        ; add meta data to plot (for reporting)
+        caption = "Multi-model mean " + variables(0) + "."
+        id = diag_script + "_" + variables(0)
+        alltags = array_append_record(ttags, "ST_mean", 0)
+        idxtmp = ispan(0, dim_MOD - 1, 1)
+        idx_models_only = ind(idxtmp.ne.refID)
+        ESMValMD(plot_abs + "." + file_type, alltags, caption, id, variables(0), \
+                 models@name(idx_models_only), climofiles(idx_models_only))
+        delete(alltags)
+        delete(idxtmp)
+        ; -------------------------------------------------------------------------------
+
         MM_mean = MM_mean - output(refID, :, :)
         MM_mean@res_tiMainString = var0 + \
             " (multi-model-mean - " + annots(refID) + ")"
@@ -274,9 +335,27 @@ begin
         delete(MM_mean@res_cnFillColors)
         draw(plot)
         frame(wksdiff)
+
+        delete(wksabs)
+        delete(wksdiff)
+
+        ; -------------------------------------------------------------------------------
+        ; add meta data to plot (for reporting)
+        caption = variables(0) + " multi-model mean - " + models@name(refID) + "."
+        id = diag_script + "_" + variables(0)
+        alltags = array_append_record(ttags, "ST_diff", 0)
+        ESMValMD(plot_diff + "." + file_type, alltags, caption, id, variables(0), \
+                 models@name, climofiles)
+        delete(alltags)
+        ; -------------------------------------------------------------------------------
     end if
 
     if (isdefined("MM_median")) then
+        plot_abs = output_dir + diag_script_info@ref_model + "_MMmedian_absolute_" + var0
+        wksabs = gsn_open_wks(file_type, plot_abs)
+        plot_diff = output_dir + diag_script_info@ref_model + "_MMmedian_difference_" + var0
+        wksdiff = gsn_open_wks(file_type, plot_diff)
+
         MM_median@res_cnFillMode = "CellFill"
         MM_median@res_cnLinesOn = False
         MM_median@res_cnLevelSelectionMode = "ExplicitLevels"
@@ -289,6 +368,16 @@ begin
         draw(plot)
         frame(wksabs)
 
+        ; -------------------------------------------------------------------------------
+        ; add meta data to plot (for reporting)
+        caption = "Multi-model median " + variables(0) + "."
+        id = diag_script + "_" + variables(0)
+        alltags = array_append_record(ttags, "ST_mean", 0)
+        ESMValMD(plot_abs + "." + file_type, alltags, caption, id, variables(0), \
+                 models@name(idx_models_only), climofiles(idx_models_only))
+        delete(alltags)
+        ; -------------------------------------------------------------------------------
+
         MM_median = MM_median - output(refID, :, :)
         MM_median@res_tiMainString = var0 + \
             " (multi-model-median - " + annots(refID) + ")"
@@ -299,10 +388,23 @@ begin
         delete(MM_median@res_cnFillColors)
         draw(plot)
         frame(wksdiff)
+
+        delete(wksabs)
+        delete(wksdiff)
+
+        ; -------------------------------------------------------------------------------
+        ; add meta data to plot (for reporting)
+        caption = variables(0) + " multi-model median - " + models@name(refID) + "."
+        id = diag_script + "_" + variables(0)
+        alltags = array_append_record(ttags, "ST_diff", 0)
+        ESMValMD(plot_diff + "." + file_type, alltags, caption, id, variables(0), \
+                 models@name, climofiles)
+        delete(alltags)
+        ; -------------------------------------------------------------------------------
     end if
 
-    info_output("gv " + plot_abs + "." + file_type, verbosity, 1)
-    info_output("gv " + plot_diff + "." + file_type, verbosity, 1)
+;    info_output("gv " + plot_abs + "." + file_type, verbosity, 1)
+;    info_output("gv " + plot_diff + "." + file_type, verbosity, 1)
 
     leave_msg(diag_script, "", 2)
 
