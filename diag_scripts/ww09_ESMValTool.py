@@ -23,6 +23,7 @@
 ;; Caveats
 ;;
 ;; Modification history
+;;    20170713-A_laue_ax: added tagging (for reporting)
 ;;    20151117-A_laue_ax: added parameters for call to "write_references"
 ;;    20151113-A_laue_ax: added creation of directory for plots if needed
 ;;                        (code was crashing if directory does not exist)
@@ -40,16 +41,17 @@ import sys   # debug
 import os
 
 import ConfigParser
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.ndimage.interpolation import map_coordinates as interp2d
 from netCDF4 import Dataset
-#from scipy.io import netcdf as nc
 
 # ESMValTool defined Python packages
 from esmval_lib import ESMValProject
 from auxiliary import info
-
+from ESMValMD import ESMValMD
 
 def main(project_info):
 
@@ -100,9 +102,27 @@ def main(project_info):
     fn_snc = get_climo_filenames(E, variable='snc')
     fn_sic = get_climo_filenames(E, variable='sic')
 
+    climofiles = []
+    climofiles.append(','.join(fn_alb))
+    climofiles.append(','.join(fn_pct))
+    climofiles.append(','.join(fn_clt))
+    climofiles.append(','.join(fn_su))
+    climofiles.append(','.join(fn_suc))
+    climofiles.append(','.join(fn_lu))
+    climofiles.append(','.join(fn_luc))
+    climofiles.append(','.join(fn_sic))
+
+    vartags = ['V_albisccp', 'V_pctisccp', 'V_cltisccp', 'V_rsut', 'V_rsutcs',
+               'V_rlut', 'V_rlutcs', 'V_sic']
+
     if not fn_snc:
         print("no data for variable snc found, using variable snw instead")
         fn_snw = get_climo_filenames(E, variable='snw')
+        climofiles.append(','.join(fn_snw))
+        vartags.append('V_snw')
+    else:
+        climofiles.append(','.join(fn_snc))
+        vartags.append('V_snc')
 
     # loop over models and calulate CREM
 
@@ -151,8 +171,23 @@ def main(project_info):
     if not os.path.exists(plot_dir):
         os.makedirs(plot_dir)
 
-    plt.savefig(plot_dir + 'ww09_metric_multimodel.' + plot_type)
-    print("Wrote " + plot_dir + "ww09_metric_multimodel." + plot_type)
+    oname = plot_dir + 'ww09_metric_multimodel.' + plot_type
+    plt.savefig(oname)
+
+    # add meta data to plot (for reporting)
+
+    modeltags = models
+    for i in range(nummod):
+        modeltags[i] = 'M_' + models[i]
+
+    ESMValMD("both",
+             oname,
+             ",".join(['DM_global', 'PT_bar', ','.join(modeltags), ','.join(vartags)]),
+             'Cloud Regime Error Metric (CREM) following Williams and Webb (2009, Clim. Dyn.).',
+             ['#ID_ww09_crem'],
+             ",".join(climofiles))
+
+    print("Wrote " + oname)
 
 
 def get_climo_filenames(E, variable):
