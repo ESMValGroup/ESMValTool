@@ -6,3 +6,7 @@
 interface_data/curr_trace_indent.txt
 interface_data/*.tmp
 
+#pycharm
+.idea
+#pytest
+orchestrator/.cache
