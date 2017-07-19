@@ -51,7 +51,7 @@ def calc_lwp(cubes):
                   'MIROC-ESM', 'CSIRO-Mk3-6-0', 'MPI-ESM-MR', 'MPI-ESM-LR',
                   'MPI-ESM-P']
     if (project in ["CMIP5", "CMIP5_ETHZ"] and model in BAD_MODELS) or \
-       (project == 'OBS' and model == 'UWisc'):
+        (project == 'OBS' and model == 'UWisc'):
             print("INFO: assuming that variable clwvi from {} model {} "
                   "contains only liquid water".format(project, model))
             lwp_cube = clwvi_cube
@@ -193,7 +193,6 @@ def _p_level_widths(array):
         # numba would otherwise initialise it to 0 and
         # hide bugs that would occur in raw Python
         bounds_width = np.NAN
-
         if np.isnan(val):
             bounds_width = 0
         else:

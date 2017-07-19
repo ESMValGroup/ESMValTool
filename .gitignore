@@ -1,8 +1,8 @@
+*~
 *.py[cod]
 build/
 htmlcov/
 .coverage
-
 
 # Created by editors
 *~
@@ -10,5 +10,12 @@ htmlcov/
 \.\#*
 *.swp
 
+# Temporary files in interface
+interface_data/curr_trace_indent.txt
+interface_data/*.tmp
+
 # Created by PyCharm
 .idea/
+
+#pytest
+orchestrator/.cache

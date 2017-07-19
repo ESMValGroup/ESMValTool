@@ -1,0 +1,127 @@
+###############################################################################
+# namelist_SouthernHemisphere.xml
+# 
+# Description
+# Namelist for the diagnostics of Southern Hemisphere clouds, radiation and
+# fluxes
+# 
+# Author
+# Jarmo Makela (FMI, Finland)
+# 
+# Contributors
+# Martin Evaldsson (SMHI, Sweden)
+# Ralf Doescher (SMHI, Sweden)
+# Colin Jones (MetOffice, UK)
+# Ulrika Willen (SMHI, Sweden)
+# 
+# Project
+# EMBRACE
+# 
+# Reference
+# 
+# This namelist is part of the ESMVal tool
+###############################################################################
+
+GLOBAL:
+  write_plots:       True
+  write_netcdf:      True
+  verbosity:         1
+  exit_on_warning:   False
+  output_file_type:  png
+
+MODELS:
+# Models and observations are given below within each diag-block
+
+PREPROCESS:
+  select_level:    None
+  target_grid:     None
+  regrid_scheme:   None
+  mask_fillvalues: None
+  mask_landocean:  None
+  multimodel_mean: False
+
+DIAGNOSTICS:
+
+  DIAG_radiation:
+    description: Diagnostics for Southern Hemisphere radiation
+    variables:
+      - {name: rlut,    field: T2Ms}
+      - {name: rlutcs,  field: T2Ms}
+      - {name: rsut,    field: T2Ms}
+      - {name: rsutcs,  field: T2Ms}
+      - {name: rlds,    field: T2Ms}
+      - {name: rldscs,  field: T2Ms}
+      - {name: rsds,    field: T2Ms}
+      - {name: rsdscs,  field: T2Ms}
+    scripts:
+      - {name: SouthernHemisphere.py, cfg_file: ./nml/cfg_SouthernHemisphereSouthernHemisphere.conf}
+    additional_models:
+      - {name: HadGEM2-ES,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/}
+      - {name: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/}
+      - {name: NorESM1-M,   project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/}
+      - {name: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start: 2000,  end: 2005,  path: /obspath/Tier1/CERES-EBAF/}
+
+
+  DIAG_fluxes:
+    description: Diagnostics for Southern Hemisphere fluxes
+    variables:
+      - {name: hfls, field: T2Ms}
+      - {name: hfss, field: T2Ms}
+    scripts:
+      - {name: SouthernHemisphere.py, cfg_file: ./nml/cfg_SouthernHemisphereSouthernHemisphere.conf}
+    additional_models:
+      - {name: CanESM2,     project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/}
+      - {name: MPI-ESM-MR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/}
+      - {name: WHOI-OAFlux,  project: OBS,  type: ocean,  version: 1,  start: 2000,  end: 2005,  path: /obspath/Tier2/WHOI-OAFlux}
+
+
+  DIAG_totalcloudcover:
+    description: Diagnostics for Southern Hemisphere cloud cover
+    variables:
+      - {name: clt, field: T2Ms}
+    scripts:
+      - {name: SouthernHemisphere.py, cfg_file: ./nml/cfg_SouthernHemisphere/SouthernHemisphere.conf}
+    additional_models:
+      - {name: CanESM2,     project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/}
+      - {name: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/}
+      - {name: CloudSat-L3,  project: obs4mips,  level: obs4MIPs,  version: v2.0,  start: 2000,  end: 2005,  path: /obspath/Tier1/CloudSat-L3}
+
+
+  DIAG_lwp:
+    description: Diagnostics for Southern Hemisphere liquid water path
+    variables:
+      - {name: clivi,  field: T2Ms}
+    scripts:
+      - {name: SouthernHemisphere.py, cfg_file: ./nml/cfg_SouthernHemisphere}
+    additional_models:
+      - {name: CanESM2,     project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/}
+      - {name: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/}
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 2000,  end: 2005,  path: /modelpath/}
+
+
+  DIAG_sic:
+    description: Diagnostics for Southern Hemisphere ice water path
+    variables:
+      - {name: clwvi,  field: T2Ms}
+    scripts:
+      - {name: SouthernHemisphere.py, cfg_file: ./nml/cfg_SouthernHemisphere}
+    additional_models:
+      - {name: CanESM2,     project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/}
+      - {name: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/}
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 2000,  end: 2005,  path: /modelpath/}
+
+
+  DIAG_cloudrad:
+    description: Diagnostics for Southern Hemisphere radiation
+    variables:
+      - {name: clt,  ref_model: CloudSat-L3, exclude_model: CERES-EBAF,  field: T2Ms}
+      - {name: rlut, ref_model: CERES-EBAF,  exclude_model: CloudSat-L3, field: T2Ms}
+      - {name: rsut, ref_model: CERES-EBAF,  exclude_model: CloudSat-L3, field: T2Ms}
+      - {name: rlds, ref_model: CERES-EBAF,  exclude_model: CloudSat-L3, field: T2Ms}
+      - {name: rsds, ref_model: CERES-EBAF,  exclude_model: CloudSat-L3, field: T2Ms}
+    scripts:
+      - {name: SouthernHemisphere_scatter.py, cfg_file: ./nml/cfg_SouthernHemisphere/SouthernHemisphere.conf}
+    additional_models:
+      - {name: CanESM2,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/}
+      - {name: CloudSat-L3,  project: obs4mips,  level: obs4MIPs,  version: v2.0,  start: 2000,  end: 2005,  path: /obspath/Tier1/CloudSat-L3}
+      - {name: CERES-EBAF,   project: obs4mips,  level: L3B,  version: Ed2-7,  start: 2000,  end: 2005,  path: /obspath/Tier1/CERES-EBAF/}

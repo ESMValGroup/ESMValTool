@@ -5,8 +5,6 @@ import os
 import iris
 
 # class PreProcessor(object):
-
-
 def load_variable(variable, model):
 
     file = Projects.get_cf_infile(model, variable)
@@ -42,13 +40,11 @@ def is_derived(variable, model):
 def get_target_grid(diagnostic, variable):
     pass
 
-
 def preprocess(project_info):
     logging.info("preprocessing")
 
     for diagnostic in project_info['DIAGNOSTICS']:
         # fetch and check preprocess options
-
         variables = []
         for variable in variables:
 
@@ -152,3 +148,4 @@ def preprocess(project_info):
             projects.run_executable(executable, project_info, verbosity,
                                     exit_on_warning)
         project_info['RUNTIME']['derived_var'] = "Undefined"
+

@@ -19,7 +19,6 @@ from numpy import ma
 import numpy as np
 import stratify
 
-
 # Regular expression to parse a "MxN" cell-specification.
 _CELL_SPEC = re.compile(r'''\A
                             \s*(?P<dx>\d+(\.\d+)?)\s*
