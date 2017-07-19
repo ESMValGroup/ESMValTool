@@ -1,4 +1,6 @@
-[submodule "backend/cmor/cmip6-cmor-tables"]
+[submodule "backend/cmip6-cmor-tables"]
 	path = backend/cmip6-cmor-tables
 	url = https://github.com/ESMValGroup/cmip6-cmor-tables.git
-
+[submodule "backend/cmip5-cmor-tables"]
+	path = backend/cmip5-cmor-tables
+	url = https://github.com/PCMDI/cmip5-cmor-tables.git

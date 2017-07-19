@@ -13,6 +13,8 @@ Contents:
 
    intro
 
+   codedoc/main
+
    diag_scripts/index
    plot_scripts/index
 
