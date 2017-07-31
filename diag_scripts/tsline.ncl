@@ -284,14 +284,14 @@ begin
                     end if
                     end if
                     end if
-                else if (diag_script_info@ts_maxlat@ts_maxlat.lt.1 .and. diag_script_info@ts_maxlat@ts_maxlat.gt.-50) then
+                else if (diag_script_info@ts_maxlat.lt.1 .and. diag_script_info@ts_maxlat.gt.-50) then
                     if (diag_script_info@ts_minlat.eq.-90) then
                         DM_tag = "DM_sh"
                     else if (diag_script_info@ts_minlat.gt.-30) then
                         DM_tag = "DM_trop"
                     end if
                     end if
-                else if (diag_script_info@ts_maxlat@ts_maxlat.lt.-49) then
+                else if (diag_script_info@ts_maxlat.lt.-49) then
                     if (diag_script_info@ts_minlat.eq.-90) then
                         DM_tag = "DM_polar"
                     else 
