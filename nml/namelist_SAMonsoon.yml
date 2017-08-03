@@ -1,0 +1,124 @@
+###############################################################################
+# namelist_SAMonsoon.xml
+# 
+# Description
+# South Asian Monsoon diagnostics implemented from the UKMET Monsoon suite
+# 
+# Authors
+# Ricard Levine (UKMET, UK)
+# Martin Evaldsson (SMHI, Sweden)
+# 
+# Contributor
+# Gill Martin (UKMET, UK)
+# 
+# Project
+# EMBRACE
+# 
+# References
+# Sperber, K. R. et al., Clim. Dyn. 41, 2711-2744,
+# doi:10.1007/s00382-012-1607-6 (2013)
+# Lin, J.-L.  et al., J. Climate, 21, 4541-4567, doi: 10.1175/2008JCLI1816.1
+# (2008)
+# Webster, P.J. and Yang, S., J. Roy. Meteor. Soc., 118, 877-926,
+# doi:10.1002/qj.49711850705 (1992)
+# Goswami, B. N. et al., Quart. J. Roy. Meteor. Soc., 125, 611-633,
+# doi:10.1002/qj.49712555412 (1999)
+# Wang, B. and Z. Fan, Bull. Amer. Meteor. Soc., 80, 629-638,
+# doi:10.1175/1520-0477(1999)080<0629:COSASM>2.0.CO;2 (1999)
+# Wang, B. et al., Clim. Dyn., 39, 1123-1135, doi:10.1007/s00382-011-1266-z
+# (2011)
+# 
+# This namelist is part of the ESMValTool
+###############################################################################
+
+GLOBAL:
+  write_plots:       True
+  write_netcdf:      True
+  verbosity:         1
+  exit_on_warning:   False
+  output_file_type:  png
+  show_debuginfo:    True
+  read_from_vault:   False
+
+  
+MODELS:
+  - {name: CNRM-CM5,      mip: Amon,  exp: historical,  ensemble: r1i1p1,   start: 1980,  end: 2004,  path: /obspath/CMIP5/}
+  - {name: HadGEM2-ES,    mip: Amon,  exp: historical,  ensemble: r1i1p1,   start: 1980,  end: 2004,  path: /obspath/CMIP5/}
+  - {name: IPSL-CM5A-MR,  mip: Amon,  exp: historical,  ensemble: r1i1p1,   start: 1980,  end: 2004,  path: /obspath/CMIP5/}
+  - {name: MPI-ESM-LR,    mip: Amon,  exp: historical,  ensemble: r1i1p1,   start: 1980,  end: 2004,  path: /obspath/CMIP5/}
+  - {name: GFDL-ESM2M,    mip: Amon,  exp: historical,  ensemble: r1i1p1,   start: 1980,  end: 2004,  path: /obspath/CMIP5/}
+  - {name: MIROC5,        mip: Amon,  exp: historical,  ensemble: r1i1p1,   start: 1980,  end: 2004,  path: /obspath/CMIP5/}
+  - {name: EC-EARTH,      mip: Amon,  exp: historical,  ensemble: r12i1p1,  start: 1980,  end: 2004,  path: /obspath/CMIP5/}
+
+
+PREPROCESS:
+  select_level:      None
+  target_grid:       None
+  regrid_scheme:     None
+  mask_fillvalues:   False
+  mask_landocean:    None
+  multimodel_mean:   False
+  multimodel_median: False
+
+  
+DIAGNOSTICS:
+
+  DIAG_200:
+    description: Mean/stddev wind contour and vector plots at 200 hPa </description>
+    variables:
+      - {name: ua-200, ref_model: ERA-Interim, field: T2Ms}
+      - {name: va-200, field: T2Ms}
+    scripts:
+      - {name: SAMonsoon_wind_basic.ncl, cfg_file: ./nml/cfg_SAMonsoon/cfg_SAMonsoon_wind_basic_200mb.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1998,  end: 2004,  path: /obspath/Tier3/ERA-Interim/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1998,  end: 2004,  path: /obspath/Tier2/NCEP/}
+
+
+  DIAG_850:
+    description: Mean/stddev wind contour and vector plots at 850 hPa </description>
+    variables:
+      - {name: ua-850, ref_model: ERA-Interim, field: T2Ms}
+      - {name: va-850, field: T2Ms}
+    scripts:
+      - {name: SAMonsoon_wind_basic.ncl, cfg_file: ./nml/cfg_SAMonsoon/cfg_SAMonsoon_wind_basic_850mb.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1998,  end: 2004,  path: /obspath/Tier3/ERA-Interim/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1998,  end: 2004,  path: /obspath/Tier2/NCEP/}
+
+      
+  DIAG_200-850:
+    description: Seasonal variability for wind + Monsoon index plots </description>
+    variables:
+      - {name: ua-200-850, ref_model: ERA-Interim, field: T2Ms}
+      - {name: va-200-850, ref_model: ERA-Interim, field: T2Ms}
+    scripts:
+      - {name: SAMonsoon_wind_seasonal.ncl, cfg_file: ./nml/cfg_SAMonsoon/cfg_SAMonsoon_wind_seasonal.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1998,  end: 2004,  path: /obspath/Tier3/ERA-Interim/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1998,  end: 2004,  path: /obspath/Tier2/NCEP/}      
+
+  DIAG_pr:
+    description: Mean/stddev precip contour plots, seasonal variability, global intensity region plots
+    variables:
+      - {name: pr-mmday, ref_model: TRMM, field: T2Ds}
+    scripts:
+      - {name: SAMonsoon_precip_basic.ncl,     cfg_file: ./nml/cfg_SAMonsoon/cfg_SAMonsoon_precip.ncl}
+      - {name: SAMonsoon_precip_seasonal.ncl,  cfg_file: ./nml/cfg_SAMonsoon/cfg_SAMonsoon_precip.ncl}
+      - {name: SAMonsoon_precip_domain.ncl,    cfg_file: ./nml/cfg_SAMonsoon/cfg_SAMonsoon_precip.ncl}
+    additional_models:
+      - {name: TRMM,         project: OBS,       type: sat,          version: 3B42-v7,  start: 1998,  end: 2010,  path: /obspath/Tier2/TRMM-3B42/}
+      - {name: GPCP-1DD,     project: obs4mips,  level: L3,          version: v1.2,     start: 1998,  end: 2010,  path: /obspath/Tier1/}
+      - {name: CMAP,         project: OBS,       type: mergedanaly,  version: 1,        start: 1980,  end: 2004,  path: /obspath/Tier2/CMAP/}
+      - {name: ERA-Interim,  project: OBS,       type: reanaly,      version: 1,        start: 1980,  end: 2004,  path: /obspath/Tier3/ERa-Interim/}
+      - {name: MERRA,        project: ana4mips,  mip: Amon,          type: reanalysis,  start: 1980,  end: 2004,  path: /obspath/TIer1/}
+
+  DIAG_tele:
+    variables:
+      - {name: pr-mmday, ref_model: TRMM, exclude_model: HadISST, field: T2Ms}
+      - {name: ts,       ref_model: HadISST, exclude_model: TRMM, field: T2Ms}
+    scripts:
+      - {name: SAMonsoon_teleconnections.ncl, cfg_file: ./nml/cfg_SAMonsoon/cfg_SAMonsoon_tele.ncl}
+    additional_model:
+      - {name: TRMM,     project: OBS,  type: sat,      version: 3B42-v7,  start: 1998,  end: 2010,  path: /obspath/Tier2/TRMM-3B42/}
+      - {name: HadISST,  project: OBS,  type: reanaly,  version: 1,        start: 1998,  end: 2010,  path: /obspath/Tier2/TRMM-3B42/}

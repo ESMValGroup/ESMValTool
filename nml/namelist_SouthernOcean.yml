@@ -1,0 +1,204 @@
+###############################################################################
+# namelist_SouthernOcean.xml
+#
+# Description
+# Diagnostics addressing ocean variables (sea water temperature, salinity,
+# ocean mixed layer thickness, wind stress and the Antarctic Circumpolar
+# Current strength) between models and, if available, with observations
+
+# Author
+# Bert van Ulft (KNMI, Netherlands)
+
+# Project
+# EMBRACE
+
+# References
+# Antonov, J. I. et al., World Ocean Atlas 2009, Volume 2: Salinity. S.
+# Levitus, Ed. NOAA Atlas NESDIS 69, U.S. Government Printing Office,
+# Washington, D.C., 184 pp. (2010)
+# Dong, S. et al., J. Geophys. Res., 113, C06013, doi:10.1029/2006JC004051
+# (2008)
+# Locarnini, R. A. et al., World Ocean Atlas 2009, Volume 1: Temperature. S.
+# Levitus, Ed. NOAA Atlas NESDIS 68, U.S. Government Printing Office,
+# Washington, D.C., 184 pp. (2010)
+# World Ocean Atlas 2009: https://www.nodc.noaa.gov/OC5/WOA09/pr_woa09.html
+#
+# This namelist is part of the ESMValTool
+###############################################################################
+
+GLOBAL:
+  write_plots:       True
+  write_netcdf:      True
+  verbosity:         1
+  exit_on_warning:   False
+  output_file_type:  ps
+
+
+MODELS:
+  - {name: ECEARTH,    ORCA1    historic    no_ensemble    2000   2005    /nobackup/users/ulft/EMBRACE/ESMVal/ORCA_files # ?????????????
+
+
+PREPROCESS:
+  select_level:    None
+  target_grid:     None
+  regrid_scheme:   None
+  mask_fillvalues: None
+  mask_landocean:  None
+  multimodel_mean: False
+
+
+### MR: ADD FIX FILES!
+  
+
+DIAGNOSTICS:
+
+  DIAG_sst:
+    description: Southern Ocean Sea Surface Temperature
+    variables:
+      - {name: tos, ref_model: ERA-Interim, field: TO2Ms}
+    scripts:
+      - {name: SouthernOcean_polcon.ncl, cfg_file: ./nml/cfg_SouthernOcean/cfg_SouthernOcean_tos.ncl}
+      - {name: SouthernOcean_polcon.ncl, cfg_file: ./nml/cfg_SouthernOcean/cfg_SouthernOcean_tos_diff.ncl}
+    additional_model:
+      - {model: HadGEM2-ES,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/CMIP5}
+      - {model: MIP-ESM-LR,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r2i1p1,  start: 2000,  end: 2005,  path: /modelpath/CMIP5}
+      - {model: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 2000,  end: 2005,  path: /obspath/Tier3/ERA-Interim}
+
+
+  DIAG_sos:
+    description: Southern Ocean Sea Surface Salinity
+    variables:
+      - {name: sos, ref_model: ERA-Interim, field: TO2Ms}
+    scripts:
+      - {name: SouthernOcean_polcon.ncl, cfg_file: ./nml/cfg_SouthernOcean/cfg_SouthernOcean_sos.ncl}
+      - {name: SouthernOcean_polcon.ncl, cfg_file: ./nml/cfg_SouthernOcean/cfg_SouthernOcean_sos_diff.ncl}
+    additional_model:
+      - {model: HadGEM2-ES,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/CMIP5}
+      - {model: MIP-ESM-LR,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r2i1p1,  start: 2000,  end: 2005,  path: /modelpath/CMIP5}
+      - {model: WOA09-monthly,  project: OBS,  type: insitu,  version: 1,  start: 0,  end: 0,  path: /obspath/Tier2/WOA09-monthly/}
+
+
+
+
+    <diag>
+        <description>                 Southern Ocean Mixed Layer Thickness    </description>
+        <variable_def_dir>                                 ./variable_defs/   </variable_def_dir>
+        <variable>                                                  mlotst    </variable>
+        <field_type>                                                 TO2Ms    </field_type>
+        <diag_script_cfg_dir>                      ./nml/cfg_SouthernOcean/   </diag_script_cfg_dir>
+        <diag_script cfg="cfg_SouthernOcean_mlotst.ncl"> SouthernOcean_polcon.ncl    </diag_script>
+
+        <model>  OBS         Dong08-ARGO-monthly    insitu    1                     0     0       /nobackup/users/ulft/EMBRACE/ESMVal/obs/Dong08-ARGO-monthly/CMORized                      </model>
+        <model>  CMIP5_fx    MPI-ESM-LR             Omon      historical   r1i1p1   2000  2005    /nobackup_1/users/ulft/CMIP5/ESMdiag                                     fx_acello_mpi    </model>
+    </diag>
+
+    <diag>
+        <description> Southern Ocean Mixed Layer Thickness difference    </description>
+        <variable_def_dir>                            ./variable_defs/   </variable_def_dir>
+        <variable ref_model="Dong08-ARGO-monthly">             mlotst    </variable>
+        <field_type>                                            TO2Ms    </field_type>
+        <diag_script_cfg_dir>                 ./nml/cfg_SouthernOcean/   </diag_script_cfg_dir>
+        <diag_script cfg="cfg_SouthernOcean_mlotst_diff.ncl"> SouthernOcean_polcon_diff.ncl </diag_script>
+
+        <model>  OBS       Dong08-ARGO-monthly    insitu   1                   0     0       /nobackup/users/ulft/EMBRACE/ESMVal/obs/Dong08-ARGO-monthly/CMORized                     </model>
+        <model>  CMIP5_fx  MPI-ESM-LR             Omon     historical   r1i1p1 2000  2005    /nobackup_1/users/ulft/CMIP5/ESMdiag                                    fx_acello_mpi    </model>
+    </diag>
+
+    <diag>
+        <description> Southern Ocean Water Flux (P+E) Difference    </description>
+        <variable_def_dir>                       ./variable_defs/   </variable_def_dir>
+        <variable ref_model="ERA-Interim">            wfpe-mmday    </variable>
+        <field_type>                                        T2Ms    </field_type>
+        <diag_script_cfg_dir>            ./nml/cfg_SouthernOcean/   </diag_script_cfg_dir>
+        <diag_script cfg="cfg_SouthernOcean_wfpe-mmday_diff.ncl"> SouthernOcean_polcon_diff.ncl </diag_script>
+
+        <model>  OBS    ERA-Interim    reanaly    1    2000  2005    /nobackup/users/ulft/EMBRACE/ESMVal/obs/ERA-Interim/CMORized </model>
+    </diag>
+
+    <diag>
+        <description> Southern Ocean Total Heat Flux Difference    </description>
+        <variable_def_dir>                      ./variable_defs/   </variable_def_dir>
+        <variable ref_model="ERA-Interim">                 hfds    </variable>
+        <field_type>                                       T2Ms    </field_type>
+        <diag_script_cfg_dir>           ./nml/cfg_SouthernOcean/   </diag_script_cfg_dir>
+        <diag_script cfg="cfg_SouthernOcean_hfds_diff.ncl"> SouthernOcean_polcon_diff.ncl </diag_script>
+
+        <model>  OBS    ERA-Interim    reanaly    1    2000  2005   /nobackup/users/ulft/EMBRACE/ESMVal/obs/ERA-Interim/CMORized </model>
+    </diag>
+
+    <diag>
+        <description> Southern Ocean Eastward Wind Stress Difference    </description>
+        <variable_def_dir>                           ./variable_defs/   </variable_def_dir>
+        <variable ref_model="ERA-Interim">                      tauu    </variable>
+        <field_type>                                           TO2Ms    </field_type>
+        <diag_script_cfg_dir>                ./nml/cfg_SouthernOcean/   </diag_script_cfg_dir>
+        <diag_script cfg="cfg_SouthernOcean_tauu_tauv_diff.ncl"> SouthernOcean_polcon_diff.ncl </diag_script>
+
+        <model>  OBS    ERA-Interim    reanaly    1    2000  2005    /nobackup/users/ulft/EMBRACE/ESMVal/obs/ERA-Interim/CMORized </model>
+    </diag>
+
+    <diag>
+        <description> Southern Ocean Northward Wind Stress Difference    </description>
+        <variable_def_dir>                            ./variable_defs/   </variable_def_dir>
+        <variable ref_model="ERA-Interim">                       tauv    </variable>
+        <field_type>                                            TO2Ms    </field_type>
+        <diag_script_cfg_dir>                 ./nml/cfg_SouthernOcean/   </diag_script_cfg_dir>
+        <diag_script cfg="cfg_SouthernOcean_tauu_tauv_diff.ncl"> SouthernOcean_polcon_diff.ncl </diag_script>
+
+        <model>  OBS    ERA-Interim    reanaly    1    2000  2005    /nobackup/users/ulft/EMBRACE/ESMVal/obs/ERA-Interim/CMORized </model>
+    </diag>
+
+    <diag>
+        <description>  Southern Ocean Wind Stress Difference    </description>
+        <variable_def_dir>                   ./variable_defs/   </variable_def_dir>
+        <variable ref_model="ERA-Interim">              tauw    </variable>
+        <variable>                                      tauu    </variable>
+        <variable>                                      tauv    </variable>
+        <field_type>                                   TO2Ms    </field_type>
+        <diag_script_cfg_dir>        ./nml/cfg_SouthernOcean/   </diag_script_cfg_dir>
+        <diag_script cfg="cfg_SouthernOcean_tauw_diff.ncl"> SouthernOcean_vector_polcon_diff.ncl </diag_script>
+
+        <model>  OBS    ERA-Interim    reanaly    1    2000   2005    /nobackup/users/ulft/EMBRACE/ESMVal/obs/ERA-Interim/CMORized </model>
+    </diag>
+
+    <diag>
+        <description>          Southern Ocean Temperature    </description>
+        <variable_def_dir>                ./variable_defs/   </variable_def_dir>
+        <variable ref_model="WOA09-monthly">           to    </variable>
+        <field_type>                                  T3M    </field_type>
+        <diag_script_cfg_dir>      ./nml/cfg_SouthernOcean/  </diag_script_cfg_dir>
+        <diag_script cfg="cfg_SouthernOcean_to.ncl"> SouthernOcean_areamean_vertconplot.ncl </diag_script>
+
+        <model>  OBS    WOA09-monthly    insitu    1    0    0    /nobackup/users/ulft/EMBRACE/ESMVal/obs/WOA09-monthly/CMORized </model>
+    </diag>
+
+    <diag>
+        <description>            Southern Ocean Salinity    </description>
+        <variable_def_dir>               ./variable_defs/   </variable_def_dir>
+        <variable>                                    so    </variable>
+        <field_type>                                 T3M    </field_type>
+        <diag_script_cfg_dir>    ./nml/cfg_SouthernOcean/   </diag_script_cfg_dir>
+        <diag_script cfg="cfg_SouthernOcean_so.ncl"> SouthernOcean_areamean_vertconplot.ncl </diag_script>
+
+        <model>  OBS    WOA09-monthly    insitu    1    0    0    /nobackup/users/ulft/EMBRACE/ESMVal/obs/WOA09-monthly/CMORized </model>
+    </diag>
+
+    <diag>
+        <description>            Southern Ocean Transport    </description>
+        <variable_def_dir>                ./variable_defs/   </variable_def_dir>
+        <variable>                                     uo    </variable>
+        <variable>                                     vo    </variable>
+        <field_type>                                  T3M    </field_type>
+        <diag_script_cfg_dir>     ./nml/cfg_SouthernOcean/   </diag_script_cfg_dir>
+        <diag_script cfg="cfg_SouthernOcean_transport.ncl"> SouthernOcean_transport.ncl </diag_script>
+    </diag>
+</DIAGNOSTICS>
+
+<AUXILIARIES>
+    <fx_file id="fx_acello_mpi">   /nobackup_1/users/ulft/CMIP5/ESMdiag/areacello_fx_MPI-ESM-LR_xxx_r0i0p0.nc                     </fx_file>
+    <fx_file id="nemo_lsm_file">   /nobackup/users/ulft/EMBRACE/ESMVal/ORCA_files/lsm_fx_ORCA1_SouthernOcean-NEMO_r0i0p0.nc       </fx_file>
+    <fx_file id="nemo_lsm3d_file"> /nobackup/users/ulft/EMBRACE/ESMVal/ORCA_files/lsm3d_fx_ORCA1_SouthernOcean-NEMO_r0i0p0.nc     </fx_file>
+    <fx_file id="nemo_zgrid_file"> /nobackup/users/ulft/EMBRACE/ESMVal/ORCA_files/mesh_zgr.nc                                     </fx_file>
+    <fx_file id="nemo_hgrid_file"> /nobackup/users/ulft/EMBRACE/ESMVal/ORCA_files/mesh_hgr.nc                                     </fx_file>
+</AUXILIARIES>
+</namelist>

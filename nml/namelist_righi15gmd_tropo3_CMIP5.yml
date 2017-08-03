@@ -1,0 +1,228 @@
+###############################################################################
+# namelist_righi15gmd_tropo3.xml
+# 
+# Description
+# This namelist produces figures 9, 11-15, 18 of Righi et al. (2015)
+# 
+# Author
+# Klaus-Dirk Gottschaldt (DLR, Germany)
+# 
+# Contributors
+# Franziska Frank (DLR, Germany)
+# Mattia Righi (DLR, Germany)
+# Veronika Eyring (DLR, Germany)
+# 
+# Project
+# DLR ESMVal
+# 
+# References
+# Righi et al., Geosci. Model Dev., 8, 733-768 10.5194/gmd-8-733-2015 (2015)
+# 
+# This namelist is part of the ESMValTool
+###############################################################################
+
+GLOBAL:
+  write_plots:       True
+  write_netcdf:      True
+  verbosity:         1
+  exit_on_warning:   False
+  output_file_type:  ps
+
+  
+MODELS:
+  - {name: bcc-csm1-1,      project: CMIP5,  mip: Amon,  exp: historical, ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: bcc-csm1-1-m,    project: CMIP5,  mip: Amon,  exp: historical, ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: BNU-ESM,         project: CMIP5,  mip: Amon,  exp: historical, ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: CanESM2,         project: CMIP5,  mip: Amon,  exp: historical, ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: CCSM4,           project: CMIP5,  mip: Amon,  exp: historical, ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: CESM1-FASTCHEM,  project: CMIP5,  mip: Amon,  exp: historical, ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: CESM1-WACCM,     project: CMIP5,  mip: Amon,  exp: historical, ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: CNRM-CM5,        project: CMIP5,  mip: Amon,  exp: historical, ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: CNRM-CM5-2,      project: CMIP5,  mip: Amon,  exp: historical, ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: CSIRO-Mk3-6-0,   project: CMIP5,  mip: Amon,  exp: historical, ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: FGOALS-g2,       project: CMIP5,  mip: Amon,  exp: historical, ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: GFDL-CM3,        project: CMIP5,  mip: Amon,  exp: historical, ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: GFDL-ESM2G,      project: CMIP5,  mip: Amon,  exp: historical, ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: GFDL-ESM2M,      project: CMIP5,  mip: Amon,  exp: historical, ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: GISS-E2-R,       project: CMIP5,  mip: Amon,  exp: historical, ensemble: r1i1p2,  start: 2000,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: IPSL-CM5A-LR,    project: CMIP5,  mip: Amon,  exp: historical, ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: IPSL-CM5A-MR,    project: CMIP5,  mip: Amon,  exp: historical, ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: IPSL-CM5B-LR,    project: CMIP5,  mip: Amon,  exp: historical, ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: MIROC4h,         project: CMIP5,  mip: Amon,  exp: historical, ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: MIROC5,          project: CMIP5,  mip: Amon,  exp: historical, ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: MIROC-ESM,       project: CMIP5,  mip: Amon,  exp: historical, ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: MIROC-ESM-CHEM,  project: CMIP5,  mip: Amon,  exp: historical, ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: MPI-ESM-LR,      project: CMIP5,  mip: Amon,  exp: historical, ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: MPI-ESM-MR,      project: CMIP5,  mip: Amon,  exp: historical, ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: MPI-ESM-P,       project: CMIP5,  mip: Amon,  exp: historical, ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/CMIP5/}
+  - {name: MRI-ESM1,        project: CMIP5,  mip: Amon,  exp: historical, ensemble: r1i1p1,  start: 2000,  end: 2005,  path: /modelpath/CMIP5/}
+
+
+PREPROCESS:
+  select_level:    None
+  target_grid:     None
+  regrid_scheme:   None
+  mask_fillvalues: True
+  mask_landocean:  None
+  multimodel_mean: False
+
+
+DIAGNOSTICS:
+
+
+# Fig. 10, 13, 14 ######################################################################################################
+
+  DIAG_tropozmap:
+    description: Fig 13 and 14: tropospheric column ozone plots
+    variables:
+      - {name: tropoz, ref_model: AURA-MLS-OMI, field: T2Ms}
+    scripts:
+      - {name: ancyc_lat.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_righi15gmd_fig14.ncl}
+      - {name: lat_lon.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_righi15gmd_fig13.ncl}
+    additional_models:
+      - {name: AURA-MLS-OMI,  project: OBS,  type: sat,  version: 1,  start: 2005,  end: 2012,  path: /obspath/Tier2/AURA-MLS-OMI/}
+
+      
+  DIAG_tozmap:
+    description: Fig 9: total column ozone plot
+    variables:
+      - {name: toz, field: T2Ms}
+    scripts:
+      - {name: ancyc_lat, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_righi15gmd_fig10.ncl}
+    additional_models:
+      - {name: NIWA,     project: OBS,  type: reanaly,  version: 1,  start: 1998,  end: 2010,  path: /obspath/Tier3/NIWA/}
+      - {name: GTO-ECV,  project: OBS,  type: sat,      version: 1,  start: 1998,  end: 2010,  path: /obspath/Tier3/GTO-ECV/}
+
+      
+# Fig. 11 (top-left) and Fig 12 (top- and bottom-left) #################################################################
+
+  DIAG_tropozrmsd:
+    description: RMSD grading for portrait plot and Taylor plot for tropoz
+    variables:
+      - {name: tropoz, ref_model: AURA-MLS-OMI, field: T2Ms}
+    scripts:
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_SH_Midlat.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_SH_Midlat.ncl}
+      - {name: perfmetrics_taylor.ncl,  cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_SH_Midlat.ncl}
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_NH_Midlat.ncl
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_NH_Midlat.ncl
+      - {name: perfmetrics_taylor.ncl,  cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_NH_Midlat.ncl
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_trop.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_trop.ncl}
+      - {name: perfmetrics_taylor.ncl,  cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_trop.ncl}
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_glob.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_glob.ncl}
+      - {name: perfmetrics_taylor.ncl,  cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_glob.ncl}
+    additional_models:
+      - {name: AURA-MLS-OMI,  project: OBS,  type: sat,  ensemble: 1,  start: 2005,  end: 2012,  obs: /obspath/Tier2/AURA-MLS-OMI/}
+
+      
+  DIAG_tropoztalorcollect:
+    description: Taylor plot collect
+    scripts:
+      - {name: perfmetrics_taylor_collect.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_taylor_collect.ncl}
+
+      
+  DIAG_tozrmsd:
+    description: RMSD grading for portrait plot and Taylor plot for toz
+    variables:
+      - {name: toz, ref_model: [NIWA,GTO-ECV],  field: T2Ms}
+    scripts:
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_SH_Polar.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_SH_Polar.ncl}
+      - {name: perfmetrics_taylor.ncl,  cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_SH_Polar.ncl}
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_NH_Polar.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_NH_Polar.ncl}
+      - {name: perfmetrics_taylor.ncl,  cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_NH_Polar.ncl}
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_SH_Midlat.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_SH_Midlat.ncl}
+      - {name: perfmetrics_taylor.ncl,  cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_SH_Midlat.ncl}
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_NH_Midlat.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_NH_Midlat.ncl}
+      - {name: perfmetrics_taylor.ncl,  cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_NH_Midlat.ncl}
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_trop.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_trop.ncl}
+      - {name: perfmetrics_taylor.ncl,  cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_trop.ncl}
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_glob.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_glob.ncl}
+      - {name: perfmetrics_taylor.ncl,  cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_glob.ncl}
+    additional_models:
+      - {name: NIWA,     project: OBS,  type: reanaly,  version: 1,  start: 1998,  end: 2010,  path: /obspath/Tier3/NIWA}
+      - {name: GWO-ECV,  project: OBS,  type: sat,      version: 1,  start: 1998,  end: 2010,  path: /obspath/Tier3/GTO-ECV}
+
+      
+  DIAG_tozrmsdcollect:
+    description: RMSD grading and Taylor plot collect
+    scripts:
+      - {name: perfmetrics_grading_collect.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_collect_O3.ncl}
+      - {name: perfmetrics_taylor_collect.ncl,  cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_taylor_collect.ncl}
+
+
+# Fig. 11 (bottom left) ################################################################################################
+
+  DIAG_tropozmap:
+    description: Fig 13 and 14: tropospheric column ozone plots
+    variables:
+      - {name: tropoz, ref_model: AURA-MLS-OMI, field: T2Ms}
+    scripts:
+      - {name: ancyc_lat.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_righi15gmd_fig14.ncl}
+      - {name: lat_lon.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_righi15gmd_fig13.ncl}
+    additional_models:
+      - {name: AURA-MLS-OMI,  project: OBS,  type: sat,  version: 1,  start: 2005,  end: 2012,  path: /obspath/Tier2/AURA-MLS-OMI/}
+
+      
+  DIAG_tozmap:
+    description: fig 9: total column ozone plot
+    variables:
+      - {name: toz, field: T2Ms}
+    scripts:
+      - {name: ancyc_lat, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_righi15gmd_fig10.ncl}
+    additional_models:
+      - {name: NIWA,     project: OBS,  type: reanaly,  version: 1,  start: 1998,  end: 2010,  path: /obspath/Tier3/NIWA/}
+      - {name: GTO-ECV,  project: OBS,  type: sat,      version: 1,  start: 1998,  end: 2010,  path: /obspath/Tier3/GTO-ECV/}
+
+      
+# Fig. 11 (top-left) and Fig 12 (top- and bottom-left) #################################################################
+
+  DIAG_tropozbias:
+    description: BIAS grading for portrait plot for tropoz
+    variables:
+      - {name: tropoz, ref_model: AURA-MLS-OMI, field: T2Ms}
+    scripts:
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_SH_Midlat.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_SH_Midlat.ncl}
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_NH_Midlat.ncl
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_NH_Midlat.ncl
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_trop.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_trop.ncl}
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_glob.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_glob.ncl}
+    additional_models:
+      - {name: AURA-MLS-OMI,  project: OBS,  type: sat,  ensemble: 1,  start: 2005,  end: 2012,  obs: /obspath/Tier2/AURA-MLS-OMI/}
+
+      
+  DIAG_tozbias:
+    description: BIAS grading for portrait plot and Taylor plot for toz
+    variables:
+      - {name: toz, ref_model: [NIWA,GTO-ECV],  field: T2Ms}
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_SH_Polar.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_SH_Polar.ncl}
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_NH_Polar.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_NH_Polar.ncl}
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_SH_Midlat.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_SH_Midlat.ncl}
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_NH_Midlat.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_NH_Midlat.ncl}
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_trop.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_trop.ncl}
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_glob.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_glob.ncl}
+    additional_models:
+      - {name: NIWA,     project: OBS,  type: reanaly,  version: 1,  start: 1998,  end: 2010,  path: /obspath/Tier3/NIWA}
+      - {name: GWO-ECV,  project: OBS,  type: sat,      version: 1,  start: 1998,  end: 2010,  path: /obspath/Tier3/GTO-ECV}
+
+      
+  DIAG_biascollect:
+    description: BIAS grading plot collect
+    scripts:
+      - {name: perfmetrics_grading_collect.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_collect_O3.ncl}

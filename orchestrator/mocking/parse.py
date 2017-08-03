@@ -1,0 +1,3 @@
+"""
+get instructions from namelist
+"""
