@@ -1,0 +1,67 @@
+!Namelist
+
+  GLOBAL:
+    write_plots:       True
+    write_netcdf:      True
+#    force_processing:  False # this goes away
+    wrk_dir:           ./work/    # this goes to config file
+    plot_dir:          ./plots/   # this goes to config file
+    climo_dir:       ./preproc/ # this goes to config file
+    verbosity:         1
+    exit_on_warning:   False
+    output_file_type:  ps
+#    max_data_filesize:   100 # not needed
+#    max_data_blocksize:  500 # not needed
+#    force_calc:        False # not needed?
+#    force_gradecalc:   False # not needed?
+#    force_taylorcalc:  False # not needed?
+
+  MODELS:
+    - {name: bcc-csm1-1, project: CMIP5_ETHZ,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2002,  path: /modelpath/}
+    - {name: CMCC-CESM,  project: CMIP5_ETHZ,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2002,  path: /modelpath/}
+
+  PREPROCESS:
+    select_level:    None
+    target_grid:     ref_model
+    regrid_scheme:   linear
+    mask_fillvalues: True
+    mask_landocean:  None
+    multimodel_mean: True
+
+  CONFIG:
+    var_def_scripts: ./variable_defs
+  
+  DIAGNOSTICS:
+    DIAG_ta850:
+      !Diagnostic
+      id: DIAG_ta850
+      description: temperature annual cycle at 850 hPa
+      variable: {name: ta, ref_model: ["ERA-Interim", "NCEP"], field: T3M}
+      preprocess:
+        id: H_850
+        select_level: 850
+      scripts:
+        - {script: perfmetrics_main.ncl,     cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_cycle_monthlyclim_850_glob.ncl}
+        - {script: perfmetrics_grading.ncl,  cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_grading_RMSD_850_glob.ncl}
+        - {script: perfmetrics_taylor.ncl,   cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_taylor_RMSD_850_glob.ncl}
+      additional_models:
+        - {name: GFDL-ESM2G, project: CMIP5_ETHZ,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2002,  path: /modelpath/}
+        - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 2000,  end: 2002,  path: /obspath/Tier3/ERA-Interim/}
+        - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 2000,  end: 2002,  path: /obspath/Tier2/NCEP/}
+
+    DIAG_ta200:
+      !Diagnostic
+      id: DIAG_ta200
+      description: temperature annual cycle at 200 hPa
+      variable: {name: ta, ref_model: ["ERA-Interim", "NCEP"], field: T3M}
+      preprocess:
+        id: H_200
+        select_level: 200
+      scripts:
+        - {script: perfmetrics_main.ncl,     cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_cycle_monthlyclim_200_glob.ncl}
+        - {script: perfmetrics_grading.ncl,  cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_grading_RMSD_200_glob.ncl}
+        - {script: perfmetrics_taylor.ncl,   cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_taylor_RMSD_200_glob.ncl}
+      additional_models:
+        - {name: GFDL-ESM2G, project: CMIP5_ETHZ,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2002,  path: /modelpath/}
+        - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 2000,  end: 2002,  path: /obspath/Tier3/ERA-Interim/}
+        - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 2000,  end: 2002,  path: /obspath/Tier2/NCEP/}
