@@ -28,16 +28,16 @@ class Namelist(yaml.YAMLObject):
 
 class Diagnostic(yaml.YAMLObject):
     yaml_tag = u'!Diagnostic'
-    def __init__(self, id, description, variable, preprocess, scripts, additional_models):
+    def __init__(self, id, description, variables, preprocess, scripts, additional_models):
         self.id = id
         self.description = description
-        self.variable = variable
+        self.variables = variables
         self.preprocess = preprocess
         self.scripts = scripts
         self.additional_models = additional_models
     def __repr__(self):
         return "%s(id=%r, description=%r, variable=%r, preprocess=%r, scripts=%r, additional_models=%r)" % (
-            self.__class__.__name__, self.id, self.description, self.variable, self.preprocess, self.scripts, self.additional_models)
+            self.__class__.__name__, self.id, self.description, self.variables, self.preprocess, self.scripts, self.additional_models)
 
 class Parser():
     def load_namelist(self, param_file):

@@ -36,7 +36,9 @@
       !Diagnostic
       id: DIAG_ta850
       description: temperature annual cycle at 850 hPa
-      variable: {name: ta, ref_model: ["ERA-Interim", "NCEP"], field: T3M}
+      variables: 
+        - {name: ta, ref_model: ["ERA-Interim", "NCEP"], field: T3M}
+        - {name: pr, ref_model: ["ERA-Interim", "NCEP"], field: T3M}
       preprocess:
         id: H_850
         select_level: 850

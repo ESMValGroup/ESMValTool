@@ -42,6 +42,7 @@ import os
 import pdb
 import reformat
 from yaml_parser import Parser as Ps
+import preprocess as pp
 
 # Define ESMValTool version
 version = "1.1.0"
@@ -146,29 +147,33 @@ for c in project_info['DIAGNOSTICS']:
     currDiag = project_info['DIAGNOSTICS'][c]
 
     # Are the requested variables derived from other, more basic, variables?
-    requested_vars = currDiag.get_variables_list()
+    requested_vars = currDiag.variables
 
     # Update currDiag-specific models
-    project_info['MODELS'] = projects.remove_diag_specific_models(
-        project_info['MODELS'])
-    diag_specific_models = currDiag.get_diag_models()
-    projects.add_model(project_info, diag_specific_models)
+    #project_info['MODELS'] = projects.remove_diag_specific_models(
+    #    project_info['MODELS'])
+    #diag_specific_models = project_info_0.MODELS
+    #projects.add_model(project_info, diag_specific_models)
 
     # Prepare/reformat model data for each model
     for model in project_info['MODELS']:
-        currProject = getattr(vars()['projects'], model.split_entries()[0])()
-        model_name = currProject.get_model_name(model)
-        project_name = currProject.get_project_name(model)
+        #currProject = model['project']
+        model_name = model['name']
+        project_name = model['project']
         info("", verbosity, 1)
         info("MODEL = " + model_name + " (" + project_name + ")", verbosity, 1)
 
         # variables needed for target variable, according to variable_defs
-        variable_defs_base_vars = currDiag.add_base_vars_fields(requested_vars, model)
+        var_def_dir = project_info_0.CONFIG['var_def_scripts']
+
+        # start calling preprocess
+        op = pp.Diag()
+        variable_defs_base_vars = op.add_base_vars_fields(requested_vars, model, var_def_dir)
         # if not all variable_defs_base_vars are available, try to fetch
         # the target variable directly (relevant for derived variables)
-        base_vars = currDiag.select_base_vars(variable_defs_base_vars,
+        base_vars = op.select_base_vars(variable_defs_base_vars,
                                               model,
-                                              currProject,
+                                              currDiag,
                                               project_info)
 
         # process base variables
