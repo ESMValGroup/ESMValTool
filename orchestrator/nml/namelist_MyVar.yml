@@ -1,0 +1,65 @@
+!Namelist
+
+  GLOBAL:
+    write_plots:       True
+    write_netcdf:      True
+    force_processing:  True # this goes away
+    wrk_dir:           ./test_output/work/    # this goes to config file
+    plot_dir:          ./test_output/plots/   # this goes to config file
+    climo_dir:       ./test_output/preproc/ # this goes to config file
+    verbosity:         1
+    exit_on_warning:   False
+    output_file_type:  pdf
+    max_data_filesize:   100 # not needed
+#    max_data_blocksize:  500 # not needed
+#    force_calc:        False # not needed?
+#    force_gradecalc:   False # not needed?
+#    force_taylorcalc:  False # not needed?
+
+  MODELS:
+    - {name: MPI-ESM-LR, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2002,  path: ./test_data, gridfile: "None"}
+    - {name: MPI-ESM-LR, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2002,  path: ./test_data, gridfile: "None"}
+
+  PREPROCESS:
+    select_level:    None
+    target_grid:     ref_model
+    regrid_scheme:   linear
+    mask_fillvalues: True
+    mask_landocean:  None
+    multimodel_mean: True
+
+  CONFIG:
+    var_def_scripts: ./variable_defs
+    var_only_case: 0
+  
+  DIAGNOSTICS:
+    DIAG_shit_1:
+      !Diagnostic
+      id: MyDiagShit1
+      description: tutorial diagnostic
+      variables: 
+        - {name: ta, ref_model: ['CMIP5'], field: T3M, only: "None"}
+      preprocess:
+        id: shitter1
+        select_level: 850
+      scripts:
+        - {script: MyDiag_test_ta.ncl,     cfg_file: ./nml/cfg_MyDiag/cfg_MyDiag.ncl}
+      additional_models:
+        - {name: GFDL-ESM2G, project: CMIP5_ETHZ,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2002,  path: /test_data/}
+        - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 2000,  end: 2002,  path: /obspath/Tier3/ERA-Interim/}
+        - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 2000,  end: 2002,  path: /obspath/Tier2/NCEP/}
+    DIAG_shit_2:
+      !Diagnostic
+      id: MyDiagShit2
+      description: tutorial diagnostic
+      variables:
+        - {name: pr,  ref_model: ['CMIP5'],  field: T2Ms, only: "None"}
+      preprocess:
+        id: shitter2
+        select_level: 850
+      scripts:
+        - {script: MyDiag_test_pr.ncl,     cfg_file: ./nml/cfg_MyDiag/cfg_MyDiag.ncl}
+      additional_models:
+        - {name: GFDL-ESM2G, project: CMIP5_ETHZ,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2002,  path: /test_data/}
+        - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 2000,  end: 2002,  path: /obspath/Tier3/ERA-Interim/}
+        - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 2000,  end: 2002,  path: /obspath/Tier2/NCEP/}

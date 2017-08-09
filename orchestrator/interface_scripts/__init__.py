@@ -1,0 +1,3 @@
+"""
+init for interface scripts
+"""
