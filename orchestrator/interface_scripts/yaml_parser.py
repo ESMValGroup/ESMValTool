@@ -49,14 +49,9 @@ class Parser():
         s = file(param_file, 'r')
         n = yaml.load(s)
         print('yaml_parser PY: We have loaded %s parameter file...' % param_file)
-        assert isinstance(n, Namelist)
-        #assert n.GLOBAL["write_plots"] == True
-        #assert n.GLOBAL["write_netcdf"] == True
-        #assert n.GLOBAL["verbosity"] == 1
-        #assert n.GLOBAL["exit_on_warning"] == False
-        #assert n.GLOBAL["output_file_type"] == "ps"
-        assert 'select_level' in n.PREPROCESS.keys()
-        assert isinstance(n.MODELS, list)
-        assert isinstance(n.DIAGNOSTICS, dict)
+        # some conditioning, add more in the future?
+        if not isinstance(n, Namelist): raise Exception( "Namelist malformed" )
+        if not isinstance(n.MODELS, list): raise Exception( "MODELS is not a list" )
+        if not isinstance(n.DIAGNOSTICS, dict): raise Exception( "DIAGNOSTICS is not a dictionary" )
         print('yaml_parser PY: We have %i diagnostics to do! Starting the main code now...' % len(n.DIAGNOSTICS))
         return n

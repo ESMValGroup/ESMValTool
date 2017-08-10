@@ -15,7 +15,6 @@ from optparse import OptionParser
 import datetime
 import os
 import pdb
-import reformat
 from yaml_parser import Parser as Ps
 import preprocess as pp
 
@@ -27,14 +26,14 @@ os.environ['0_ESMValTool_version'] = version
 ncl_version_check()
 
 # Check command arguments.
-usage = "%prog nml/namelist-file.xml"
+usage = "%prog nml/namelist-file.yml"
 description = """ESMValTool - Earth System Model Evaluation Tool.
 For further help, check the doc/-folder for pdfs and references therein."""
 
 parser = OptionParser(usage=usage, description=description)
-parser.add_option("-r", "--reformat",
+parser.add_option("-p", "--preprocess",
                   action="store_true", dest="reformat", default=False,
-                  help="run reformat scripts for the observations according to namelist")
+                  help="run a suite of data preprocessing scripts for the models/observations according to namelist")
 options, args = parser.parse_args()
 if len(args) == 0:
     parser.print_help()
@@ -61,22 +60,6 @@ project_info['DIAGNOSTICS'] = project_info_0.DIAGNOSTICS
 project_info['PREPROCESS'] = project_info_0.PREPROCESS
 project_info['CONFIG'] = project_info_0.CONFIG
 
-if options.reformat:
-	if 'REFORMAT' not in project_info.keys():
-		error('No REFORMAT tag specified in {0}'.format(input_xml_full_path))
-	if len(project_info['REFORMAT']) == 0:
-		info('No reformat script specified',1,1)
-        print_header({}, options.reformat)
-	for k,v in project_info['REFORMAT'].iteritems():
-		if not os.path.exists(v):
-			error('Path {0} does not exist'.format(v))
-		pp.run_executable(v,
-	                          project_info,
-	                          1,
-	                          False,
-	                          write_di=False)
-	sys.exit(0)
-
 # Additional entries to 'project_info'. The 'project_info' construct
 # is one way by which Python passes on information to the NCL-routines.
 project_info['RUNTIME'] = {}
@@ -96,7 +79,7 @@ if not os.path.isdir(wrk_dir):
     mkd = 'mkdir -p ' + wrk_dir
     proc = subprocess.Popen(mkd, stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
-    info('Created work directory ' + wrk_dir, verbosity, required_verbosity=1)
+    info(' >>> main.py >>> Created work directory ' + wrk_dir, verbosity, required_verbosity=1)
 
 # Prepare writing of references/acknowledgementes to file
 refs_acknows_file = str.replace(input_xml_file, "namelist_", "refs-acknows_")
@@ -117,7 +100,7 @@ timestamp1 = datetime.datetime.now()
 timestamp_format = "%Y-%m-%d --  %H:%M:%S"
 
 print_header(project_info, options.reformat)
-info("Starting the Earth System Model Evaluation Tool v" + version + " at time: "
+info(" >>> main.py >>> Starting the Earth System Model Evaluation Tool v" + version + " at time: "
      + timestamp1.strftime(timestamp_format) + "...", verbosity, 1)
 
 # Loop over all diagnostics defined in project_info and
@@ -133,8 +116,8 @@ for c in project_info['DIAGNOSTICS']:
         #currProject = model['project']
         model_name = model['name']
         project_name = model['project']
-        info("", verbosity, 1)
-        info("MODEL = " + model_name + " (" + project_name + ")", verbosity, 1)
+        info(" >>> main.py >>> ", verbosity, 1)
+        info(" >>> main.py >>> MODEL = " + model_name + " (" + project_name + ")", verbosity, 1)
 
         # variables needed for target variable, according to variable_defs
         var_def_dir = project_info_0.CONFIG['var_def_scripts']
@@ -154,11 +137,11 @@ for c in project_info['DIAGNOSTICS']:
             if project_info_0.CONFIG['var_only_case'] > 0:
                 if op.id_is_explicitly_excluded(base_var, model):
                     continue
-            info("VARIABLE = " + base_var.name + " (" + base_var.field + ")",
+            info(" >>> main.py >>> VARIABLE = " + base_var.name + " (" + base_var.field + ")",
                  verbosity, 1)
 
             # Rewrite netcdf to expected input format.
-            info("Calling cmor_reformat.py to check/reformat model data",
+            info(" >>> main.py >>> Calling preprocessing.cmor_reformat() to check/reformat model data",
                  verbosity, 2)
             pp.cmor_reformat(project_info, base_var, model, currDiag)
 
@@ -174,9 +157,10 @@ for c in project_info['DIAGNOSTICS']:
         project_info['RUNTIME']['derived_var'] = derived_var
         project_info['RUNTIME']['derived_field_type'] = derived_field
 
+        # this is hardcoded, maybe make it an option
         executable = "./interface_scripts/derive_var.ncl"
-        info("", verbosity, required_verbosity=1)
-        info("Calling " + executable + " for '" + derived_var + "'",
+        info(" >>> main.py >>> ", verbosity, required_verbosity=1)
+        info(" >>> main.py >>> Calling " + executable + " for '" + derived_var + "'",
              verbosity, required_verbosity=1)
         pp.run_executable(executable, project_info, verbosity,
                           exit_on_warning)
@@ -185,9 +169,9 @@ for c in project_info['DIAGNOSTICS']:
     executable = "./diag_scripts/" + currDiag.scripts[0]['script']
 
     configfile = currDiag.scripts[0]['cfg_file']
-    info("", verbosity, required_verbosity=1)
-    info("Running diag_script: " + executable, verbosity, required_verbosity=1)
-    info("with configuration file: " + configfile, verbosity,
+    info(" >>> main.py >>> ", verbosity, required_verbosity=1)
+    info(" >>> main.py >>> Running diag_script: " + executable, verbosity, required_verbosity=1)
+    info(" >>> main.py >>> with configuration file: " + configfile, verbosity,
          required_verbosity=1)
 
     pp.run_executable(executable,
@@ -201,13 +185,13 @@ del(os.environ['0_ESMValTool_version'])
 
 #End time timing
 timestamp2 = datetime.datetime.now()
-info("", verbosity, 1)
-info("Ending the Earth System Model Evaluation Tool v" + version + " at time: "
+info(" >>> main.py >>> ", verbosity, 1)
+info(" >>> main.py >>> Ending the Earth System Model Evaluation Tool v" + version + " at time: "
      + timestamp2.strftime(timestamp_format), verbosity, 1)
-info("Time for running namelist was: " + str(timestamp2 - timestamp1), verbosity, 1)
+info(" >>> main.py >>> Time for running namelist was: " + str(timestamp2 - timestamp1), verbosity, 1)
 
 # Remind the user about reference/acknowledgement file
-info("", verbosity, 1)
-info("For the required references/acknowledgements of these diagnostics see: ",
+info(" >>> main.py >>> ", verbosity, 1)
+info(" >>> main.py >>> For the required references/acknowledgements of these diagnostics see: ",
      verbosity, 1)
-info(out_refs, verbosity, 1)
+info(" >>> main.py >>> " + out_refs, verbosity, 1)

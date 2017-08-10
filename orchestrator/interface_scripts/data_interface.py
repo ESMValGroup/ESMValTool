@@ -11,98 +11,7 @@ import os
 import pdb
 import re
 from auxiliary import info
-
-########################################################
-### setting some tools functionality
-########################################################
-
-def get_figure_file_names(project_info, model):
-    """ @brief Returns names for plots
-        @param project_info Current namelist in dictionary format
-        @param some model from namelist
-    """
-    return "_".join([model['project'], model['name'], model['mip'], model['exp'], model['ensemble'],
-                     str(model['start'])]) + "-" + str(model['end'])
-
-def get_cf_fullpath(project_info, model, field, variable, mip, exp):
-    """ @brief Returns the path (only) to the output file used in reformat
-            @param project_info Current namelist in dictionary format
-            @param model One of the <model>-tags in the XML namelist file
-            @param field The field (see tutorial.pdf for available fields)
-            @param variable The variable (defaults to the variable in
-                            project_info)
-            @return A string (output path)
-
-            This function specifies the full output path (directory + file) to
-            the outupt file to use in the reformat routines and in climate.ncl
-    """
-    outdir = get_cf_outpath(project_info, model)
-    outfile = get_cf_outfile(project_info, model, field, variable,
-                                  mip, exp)
-
-    return os.path.join(outdir, outfile)
-    # see below for internal functions
-
-def get_cf_outpath(project_info, model):
-    """ @brief Returns the path (only) to the output file used in reformat
-            @param project_info Current namelist in dictionary format
-            @param model One of the <model>-tags in the XML namelist file
-            @return A string (output path)
-
-            This function specifies the output path (only) to the outupt file
-            to use in the reformat routines and in climate.ncl
-    """
-    outdir = project_info['GLOBAL']['climo_dir']
-    return outdir
-
-def get_cf_outfile(project_info, model, field, variable, mip, exp):
-    """ @brief Returns the path and output file used in reformat
-            @param variable Current variable
-            @param climo_dir Where processed (reformatted) input files reside
-            @param model One of the <model>-tags in the XML namelist file
-            @param field The field (see tutorial.pdf for available fields)
-            @param variable The variable (defaults to the variable in
-                            project_info)
-            @return A string (output path)
-
-            This function specifies the output file to use in reformat
-            and in climate.ncl
-    """
-
-    # model_section_dictionary
-    outdir = get_cf_outpath(project_info, model)
-
-    outfile = '_'.join([model['project'],
-                        model['name'],
-                        model['ensemble'],
-                        field,
-                        variable,
-                        str(model['start'])]) + '-' + str(model['end']) + '.nc'
-
-    return outfile
-
-def get_dict_key(model):
-    """ @brief Returns a unique key based on the model entries provided.
-            @param model One of the <model>-tags in the XML namelist file
-            @return A string
-
-            This function creates and returns a key used in a number of NCL
-            scripts to refer to a specific dataset, see e.g., the variable
-            'cn' in 'interface_scripts/read_data.ncl'
-    """
-
-    dict_key = "_".join([model['project'],
-                         model['name'],
-                         model['mip'],
-                         model['exp'],
-                         model['ensemble'],
-                         str(model['start']),
-                         str(model['end'])])
-    return dict_key
-
-###############################################################
-### done with tools functionality
-###############################################################
+import preprocess as pp
 
 class ESMValTool_interface(object):
     def __init__(self):
@@ -128,12 +37,6 @@ class ESMValTool_interface(object):
             yield interface_object
 
 def get_diag_value(di, projinfomodels, projinfoconfig, v):
-    #curr_entry = getattr(currDiag, "get_" + var)()
-    #vars = ["diag_script", "diag_script_cfg",
-    #                "variables", "field_types",
-    #                "var_attr_mip", "var_attr_exp",
-    #                "var_attr_ref", "var_attr_exclude",
-    #                "variable_def_dir"]
     if v == 'diag_script':
         currentry = [s['script'] for s in di.scripts]
     elif v == 'diag_script_cfg':
@@ -256,21 +159,12 @@ class Data_interface(object):
         for model in project_info['MODELS']:
             currProject = model
 
-            figfiles_suffix.append(get_figure_file_names(project_info, model))
+            figfiles_suffix.append(pp.get_figure_file_names(project_info, model))
 
             # Get reformatted infiles
-            infile_fullpaths.append(get_cf_fullpath(project_info, model,
-                                                                field="${FIELD}",
-                                                                variable="${VARIABLE}",
-                                                                mip=self.mip,
-                                                                exp=self.exp))
-
-            infiles.append(get_cf_outfile(project_info, model,
-                                                      field="${FIELD}",
-                                                      variable="${VARIABLE}",
-                                                      mip=self.mip,
-                                                      exp=self.exp))
-            infile_paths.append(get_cf_outpath(project_info, model))
+            infile_fullpaths.append(pp.get_cf_fullpath(project_info, model, field="${FIELD}", variable="${VARIABLE}"))
+            infiles.append(pp.get_cf_outfile(model, field="${FIELD}", variable="${VARIABLE}"))
+            infile_paths.append(pp.get_cf_outpath(project_info, model))
 
         return figfiles_suffix,\
             infiles,\
@@ -278,7 +172,7 @@ class Data_interface(object):
             infile_paths
 
     def get_modelinfo(self, project_info):
-        """ @brief Extracts the <model>-tag info from the xml-namelists
+        """ @brief Extracts the <model>-tag info from the namelists
             @param project_info Current namelist in dictionary format
                                 environment variables
 
@@ -286,15 +180,20 @@ class Data_interface(object):
             into Python arrays such that they can be written to file more
             easily.
         """
-        model_specifiers = []
-        for model in project_info['MODELS']:
-            a = model.keys()
-            for m in a:
-                model_specifiers.append(m)
+        # condition: keys for all models are the same !!!
+        model_specifiers = project_info['MODELS'][0].keys()
+
+        # this is a bit hacky
+        # but makes sure the key - val order stays fixed
         models = []
         for model in project_info['MODELS']:
-            a = model.values()
-            models.append(a)
+            mdls = []
+            a = model.keys()
+            for k in a:
+                b = model[k]
+                mdls.append(b)
+            models.append(mdls)
+
         model_ids = []
         for model in project_info['MODELS']:
             if "id" in model.keys():
@@ -310,7 +209,7 @@ class Data_interface(object):
             else:
                 model_skips.append("None")
 
-        return list(set(model_specifiers)), models, model_ids, model_skips
+        return model_specifiers, models, model_ids, model_skips
 
     def reparse_variable_info(self, variable, variable_def_dir):
         """ @brief Repackages the variable_info to a Python list-list structure
@@ -366,8 +265,6 @@ class Data_interface(object):
         for section_key in ['GLOBAL', 'RUNTIME', 'TEMPORARY']:
             if section_key in project_info.keys():
                 for key in project_info[section_key]:
-                    #info("writing key to env. variable, key=" + key,
-                    #     verbosity, required_verbosity=1)
                     # Check and fail on duplicate entries
                     if "ESMValTool_" + key in os.environ:
                         raise writeProjinfoError("Environment variable "
@@ -411,8 +308,7 @@ class Ncl_data_interface(Data_interface):
         for model in project_info['MODELS']:
             currProject = model
 
-            self.interface.dict_keys.append(get_dict_key(model))
-
+            self.interface.dict_keys.append(pp.get_dict_key(model))
         # Remove the diag_script_cfg entry if it is not NCL code (e.g., R, python, etc..)
         class_prefix = re.search("([a-zA-Z]*)_.*", self.__class__.__name__).group(1).lower()
         class_regex = re.compile(class_prefix + '$')

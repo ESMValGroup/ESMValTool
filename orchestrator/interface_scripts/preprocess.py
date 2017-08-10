@@ -16,9 +16,12 @@ from auxiliary import info, error, print_header, ncl_version_check
 import exceptions
 import launchers
 
-###################################################
-### a few Functionalities first
-###################################################
+#######################################################
+### This script contains basic functionalities
+### It contains all variables to call other
+### more specialized modules for prerocessing purposes
+########################################################
+
 def write_data_interface(executable, project_info):
     """ @brief Write Python data structures to target script format interface
         @param executable String pointing to the script/binary to execute
@@ -59,6 +62,92 @@ def run_executable(string_to_execute,
                          verbosity,
                          exit_on_warning)
 
+def get_figure_file_names(project_info, model):
+    """ @brief Returns names for plots
+        @param project_info Current namelist in dictionary format
+        @param some model from namelist
+    """
+    return "_".join([model['project'], model['name'], model['mip'], model['exp'], model['ensemble'],
+                     str(model['start'])]) + "-" + str(model['end'])
+
+def get_cf_fullpath(project_info, model, field, variable):
+    """ @brief Returns the path (only) to the output file used in reformat
+            @param project_info Current namelist in dictionary format
+            @param model One of the <model>-tags in the XML namelist file
+            @param field The field (see tutorial.pdf for available fields)
+            @param variable The variable (defaults to the variable in
+
+            This function specifies the full output path (directory + file) to
+            the outupt file to use in the reformat routines and in climate.ncl
+    """
+    outdir = get_cf_outpath(project_info, model)
+    outfile = get_cf_outfile(model, field, variable)
+    return os.path.join(outdir, outfile)
+
+def get_cf_outpath(project_info, model):
+    """ @brief Returns the path (only) to the output file used in reformat
+            @param project_info Current namelist in dictionary format
+            @param model One of the <model>-tags in the XML namelist file
+            @return A string (output path)
+
+            Standard path: dir_output/climo_dir/projectname/projectname_expname_ens_field_var_yrstart-yrend.nc
+    """
+    outdir1 = project_info['GLOBAL']['climo_dir']
+    outdir2 = model['project']
+    # let's check if directories exists, if not create them
+    if not os.path.isdir(outdir1):
+        mkd = 'mkdir -p ' + project_info['GLOBAL']['climo_dir']
+        proc = subprocess.Popen(mkd, stdout=subprocess.PIPE, shell=True)
+        (out, err) = proc.communicate()
+    if not os.path.isdir(os.path.join(outdir1, outdir2)):
+        mkd = 'mkdir -p ' + os.path.join(outdir1, outdir2)
+        proc = subprocess.Popen(mkd, stdout=subprocess.PIPE, shell=True)
+        (out, err) = proc.communicate()
+    return os.path.join(outdir1, outdir2)
+
+def get_cf_outfile(model, field, variable):
+    """ @brief Returns the path and output file used in reformat
+            @param variable Current variable
+            @param climo_dir Where processed (reformatted) input files reside
+            @param model One of the <model>-tags in the XML namelist file
+            @param field The field (see tutorial.pdf for available fields)
+            @param variable The variable (defaults to the variable in
+                            project_info)
+            @return A string (output path)
+
+            This function specifies the output file to use in reformat
+            and in climate.ncl
+    """
+    outfile = '_'.join([model['project'],
+                        model['name'],
+                        model['mip'],
+                        model['exp'],
+                        model['ensemble'],
+                        field,
+                        variable,
+                        str(model['start'])]) + '-' + str(model['end']) + '.nc'
+
+    return outfile
+
+def get_dict_key(model):
+    """ @brief Returns a unique key based on the model entries provided.
+            @param model One of the <model>-tags in the yaml namelist file
+            @return A string
+
+            This function creates and returns a key used in a number of NCL
+            scripts to refer to a specific dataset, see e.g., the variable
+            'cn' in 'interface_scripts/read_data.ncl'
+    """
+
+    dict_key = "_".join([model['project'],
+                         model['name'],
+                         model['mip'],
+                         model['exp'],
+                         model['ensemble'],
+                         str(model['start']),
+                         str(model['end'])])
+    return dict_key
+
 def get_cmip_cf_infile(project_info, currentDiag, model):
     """@brief Path to input netCDF files for models
        @param project_info all info dictionary
@@ -68,6 +157,7 @@ def get_cmip_cf_infile(project_info, currentDiag, model):
        and operates on a single diagnostic
        Returns a dictionary {var1:[model_data], var2:[model_data], ...}
     """
+    # FIXME introduce functionality to glob multiple nc files !!!
     verbosity = project_info['GLOBAL']['verbosity']
     # get variables
     data_files = {}
@@ -90,30 +180,26 @@ def get_cmip_cf_infile(project_info, currentDiag, model):
         for fpath in fpaths[0:-1]:
             if os.path.exists(fpath.strip()):
                 infiles.append(fpath.strip())
-                info("Using file " + fpath.strip(), verbosity, required_verbosity=1)
+                info(" >>> preprocess.py >>> Using file " + fpath.strip(), verbosity, required_verbosity=1)
             else:
                 fi = rootdir + '/' + infile_id
-                info("Could not find file type " + fi, verbosity, required_verbosity=1)
+                info(" >>> preprocess.py >>> Could not find file type " + fi, verbosity, required_verbosity=1)
         data_files[var['name']] = infiles
+        if len(infiles) > 1:
+            # get pp.glob to glob the files into one single file
+            import preprocessing_tools as pt
+            info(" >>> preprocess.py >>> Found multiple netCDF files for current diagnostic, attempting to glob them", verbosity, required_verbosity=1)
+            standard_name = rootdir + '/' + '_'.join([var['name'], model['mip'],
+                                                     model['exp'],
+                                                     model['name'],
+                                                     model['ensemble']]) + '_GLOB.nc'
+            globs = pt.glob(infiles, standard_name)
+            if pt.glob(data_files[var['name']], standard_name) == 1:
+                data_files[var['name']] = [standard_name]
+            else:
+                data_files[var['name']] = infiles
+                info(" >>> preprocess.py >>> Could not glob files, keeping a list of files", verbosity, required_verbosity=1)
     return data_files
-
-# ./preproc/CMIP5/CMIP5_MPI-ESM-LR_r1i1p1_${FIELD}_${VARIABLE}_2000-2002.nc
-def get_cmip_cf_outfile(project_info, currentDiag, variable_name, variable_field):
-    """
-    This func sets the reformatted file name
-    """
-    # get models
-    outfiles = []
-    all_models = project_info['MODELS']
-    for dictmodel in all_models:
-        rootdir = dictmodel['project'] + '/'
-        outfile_id = '_'.join([dictmodel['project'],
-                               dictmodel['name'],
-                               dictmodel['ensemble'],
-                               variable_field,
-                               variable_name]) + '_' + str(dictmodel['start']) + '-' + str(dictmodel['end']) + '.nc'
-        outfiles.append(outfile_id)
-    return list(set(outfiles))
 
 def get_cf_areafile(project_info, model):
     """ @brief Returns the path to the areacello file
@@ -141,18 +227,12 @@ def cmor_reformat(project_info, variable, model, currentDiag):
     os.environ['__ESMValTool_base_var'] = variable.name
 
     # Build input and output file names
-    # FIXME this instance fetches a single file, it should be an instance of glob(netCDF files)
+    # FIXME - when globbing fails, we are looking only at a single (first) file currently
     infiles = get_cmip_cf_infile(project_info, currentDiag, model)[variable.name][0]
-    outfilename = get_cmip_cf_outfile(project_info, currentDiag, variable.name, variable.field)[0]
-    info('Reformatted file name: ' + outfilename, verbosity, required_verbosity=1)
-    # let's check if directory exists, if not create one
-    if not os.path.isdir(project_info['GLOBAL']['climo_dir']):
-        mkd = 'mkdir -p ' + project_info['GLOBAL']['climo_dir']
-        proc = subprocess.Popen(mkd, stdout=subprocess.PIPE, shell=True)
-        (out, err) = proc.communicate()
-        info('Created directory ' + project_info['GLOBAL']['climo_dir'], verbosity, required_verbosity=1)
-    fullpath = project_info['GLOBAL']['climo_dir'] + outfilename
-    info('Reformatted target: ' + fullpath, verbosity, required_verbosity=1)
+    outfilename = get_cf_outfile(model, variable.field, variable.name)
+    info(' >>> preprocess.py >>> Reformatted file name: ' + outfilename, verbosity, required_verbosity=1)
+    fullpath = get_cf_fullpath(project_info, model, variable.field, variable.name)
+    info(' >>> preprocess.py >>> Reformatted target: ' + fullpath, verbosity, required_verbosity=1)
 
     # Area file name for ocean grids
     areafile_path = get_cf_areafile(project_info, model)
@@ -183,9 +263,10 @@ def cmor_reformat(project_info, variable, model, currentDiag):
     #    fx_file_path = currProject.get_cf_fx_file(project_info, model)
     # end FIXME
 
-    info("project is " + model['project'], verbosity, required_verbosity=1)
-    info("ensemble is " + model['ensemble'], verbosity, required_verbosity=1)
-    info("dir is " + 'DIR', verbosity, required_verbosity=1)
+    info(" >>> preprocess.py >>> Project is " + model['project'], verbosity, required_verbosity=1)
+    info(" >>> preprocess.py >>> Ensemble is " + model['ensemble'], verbosity, required_verbosity=1)
+    info(" >>> preprocess.py >>> Full IN path is " + infiles, verbosity, required_verbosity=1)
+    info(" >>> preprocess.py >>> Full OUT path is " + fullpath, verbosity, required_verbosity=1)
 
     # Check if the current project has a specific reformat routine,
     # otherwise use default
@@ -200,6 +281,7 @@ def cmor_reformat(project_info, variable, model, currentDiag):
 
     # Set enviroment variables
     project_info['TEMPORARY'] = {}
+    # hardcoded to keep things tight; could be an option to namelist
     project_info['TEMPORARY']['indir_path'] = '.'
     project_info['TEMPORARY']['outfile_fullpath'] = fullpath
     project_info['TEMPORARY']['infile_path'] = infiles
@@ -241,7 +323,7 @@ def cmor_reformat(project_info, variable, model, currentDiag):
     if ((not os.path.isfile(project_info['TEMPORARY']['outfile_fullpath']))
             or project_info['GLOBAL']['force_processing']):
 
-        info("  Calling " + reformat_script + " to check/reformat model data",
+        info("  >>> preprocess.py >>>  Calling " + reformat_script + " to check/reformat model data",
              verbosity,
              required_verbosity=1)
 
@@ -256,6 +338,10 @@ def cmor_reformat(project_info, variable, model, currentDiag):
     del(project_info['TEMPORARY'])
 
 
+###################################################################################
+### a few definititory functions needed
+###################################################################################
+# variable class
 class Var:
     """
     changed from original class diagdef.Var
@@ -276,6 +362,7 @@ class Var:
         else:
             self.fld0 = fld0
 
+# diagnostics class
 class Diag:
     """
     changed from original diagdef.Diag
@@ -342,7 +429,7 @@ class Diag:
             infiles = get_cmip_cf_infile(project_info, currentDiag, model)[base_var.name]
 
             if len(infiles) == 0:
-                info(" No input files found for " + base_var.name +
+                info("  >>> preprocess.py >>> No input files found for " + base_var.name +
                      " (" + base_var.field + ")", verbosity, 1)
 
                 base_var.var = base_var.var0
@@ -355,7 +442,7 @@ class Diag:
                     raise exceptions.IOError(2, "No input files found in ",
                                              infile)
                 else:
-                    info(" Using " + base_var.name + " (" + base_var.field +
+                    info("  >>> preprocess.py >>> Using " + base_var.name + " (" + base_var.field +
                          ")", verbosity, 1)
                     base_vars = [base_var]
                     break  # discard other base vars
