@@ -35,6 +35,7 @@
 ;#     * masking missing values is only implemented for 2-dim fields          #
 ;#                                                                            #
 ;# Modification history:                                                      #
+;#    20170807-A_bock_ls: added tags for reporting
 ;#    20160929-A_laue_ax: added optional masking of missing values before     #
 ;#                        calculating averages                                #
 ;#    20160826-A_laue_ax: added ensemble member to model name in legend if    #
@@ -58,6 +59,7 @@ load "./diag_scripts/lib/ncl/set_operators.ncl"
 load "./diag_scripts/lib/ncl/statistics.ncl"
 load "./diag_scripts/lib/ncl/latlon.ncl"
 load "./diag_scripts/lib/ncl/style.ncl"
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 ; A_laue_ax+
 load "$NCARG_ROOT/lib/ncarg/nclscripts/contrib/calendar_decode2.ncl"
@@ -436,6 +438,9 @@ begin
             "o", "p", "q", "o", "s", "t", "u", "v", "w", "x", "y", "z"/)
     iobs2 = 0
 
+    ;; tagging
+    DM_tag = new(dimsizes(season) , string)
+
     do ipan = 0, dimsizes(season) - 1  ; panel loop
         month=(/"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", \
                 "SEP", "OCT", "NOV", "DEC"/)
@@ -560,6 +565,9 @@ begin
                                       toint(models@end_year(imod)), "average",  \
                                       "yearly", True)
             end if
+
+            ; tagging
+            ST_tag = "ST_mean"
 
             if (imod.ge.1) then
                 if (models@project(imod).ne."OBS") then   
@@ -694,6 +702,35 @@ begin
         else
             latstring2 = -latrange(ipan,1) + "S"
         end if
+
+        ;; tagging
+        if (latrange(ipan, 1).eq.90) then
+            if(latrange(ipan, 0).eq.-90) then
+                DM_tag(ipan) = "DM_global"
+            else if (latrange(ipan, 0).gt.-1 .and. latrange(ipan, 0).lt.60) then
+                DM_tag(ipan) = "DM_nh"
+            else if (latrange(ipan, 0).gt.59) then
+                DM_tag(ipan) = "DM_polar"
+            end if
+            end if
+            end if
+        else if (latrange(ipan, 1).lt.1 .and. latrange(ipan, 1).gt.-50) then
+            if (latrange(ipan, 0).eq.-90) then
+                DM_tag(ipan) = "DM_sh"
+            else if (latrange(ipan, 0).gt.-30) then
+                DM_tag(ipan) = "DM_trop"
+            end if
+            end if
+        else if (latrange(ipan, 1).lt.-49) then
+            if (latrange(ipan, 0).eq.-90) then
+                DM_tag(ipan) = "DM_polar"
+            else
+                DM_tag(ipan) = "DM_reg"
+            end if
+        end if
+        end if
+        end if
+ 
 
         res = True  ; plot mods desired
         res@tiYAxisString = variable_info@units  ; add units title
@@ -875,6 +912,34 @@ begin
     end if
 
     frame(wks)
+
+    ;; Attach Metadata to plot
+    xml_name = getenv("ESMValTool_xml_name")
+    suffix = get_file_suffix(xml_name, 0)
+    base_name = str_sub_str(xml_name, suffix, "")
+
+    alltags = array_append_record(tags, DM_tag, 0)
+    alltags := array_append_record(alltags, ST_tag, 0)
+    alltags := array_append_record(alltags,\
+           (/"PT_times"/), 0)
+    caption = "Time series of area-weighted "  + variables(0) + \
+               " over given domains and seasons" + \
+               ", similar to IPCC AR5, fig. 9.10 and Eyring et al., JGR, 2013, fig. 2."
+
+    id = diag_script + "_" + variables(0)
+
+    do imod = 0, dimsizes(models@name) - 1
+            climofiles = interface_get_inpaths(imod) + "/" + \
+                 interface_get_infile(variables(0), field_types(0), imod)
+    end do
+
+    print(output_file_path)
+    print(id)
+
+    ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles)
+
+    delete([/alltags, caption, id, climofiles, DM_tag, ST_tag, imod/])
+
 
     info_output(">>>>>>>> Leaving " + diag_script, verbosity, 4)
 end
