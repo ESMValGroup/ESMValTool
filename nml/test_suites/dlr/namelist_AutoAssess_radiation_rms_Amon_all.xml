@@ -60,7 +60,7 @@ This namelist is part of the ESMValTool
         <variable_def_dir>    ./variable_defs/   </variable_def_dir>
         <variable>            rtnt           </variable>
         <field_type>          T2Ms               </field_type>
-        <model id="obs"> obs4mips CERES-EBAF L3B Ed2-7 2001 2012 @{OBSPATH}/Tier1/ </model>
+        <model id="obs"> obs4mips CERES-EBAF L3B Ed2-7 2001 2005 @{OBSPATH}/Tier1/ </model>
         <diag_script_cfg_dir> ./nml/cfg_AutoAssess  </diag_script_cfg_dir>
         <diag_script cfg="AutoAssess_radiation_rms.conf"> AutoAssess_radiation_rms.py </diag_script>
         <launcher_arguments>    [('execute_as_shell', False)]               </launcher_arguments>
@@ -74,7 +74,7 @@ This namelist is part of the ESMValTool
         <variable_def_dir>    ./variable_defs/   </variable_def_dir>
         <variable>            rsnt           </variable>
         <field_type>          T2Ms               </field_type>
-        <model id="obs"> obs4mips CERES-EBAF L3B Ed2-7 2001 2012 @{OBSPATH}/Tier1/ </model>
+        <model id="obs"> obs4mips CERES-EBAF L3B Ed2-7 2001 2005 @{OBSPATH}/Tier1/ </model>
         <diag_script_cfg_dir> ./nml/cfg_AutoAssess  </diag_script_cfg_dir>
         <diag_script cfg="AutoAssess_radiation_rms.conf"> AutoAssess_radiation_rms.py </diag_script>
         <launcher_arguments>    [('execute_as_shell', False)]               </launcher_arguments>
@@ -88,7 +88,7 @@ This namelist is part of the ESMValTool
         <variable_def_dir>    ./variable_defs/   </variable_def_dir>
         <variable>            rsut           </variable>
         <field_type>          T2Ms               </field_type>
-        <model id="obs"> obs4mips CERES-EBAF L3B Ed2-7 2001 2012 @{OBSPATH}/Tier1/ </model>
+        <model id="obs"> obs4mips CERES-EBAF L3B Ed2-7 2001 2005 @{OBSPATH}/Tier1/ </model>
         <diag_script_cfg_dir> ./nml/cfg_AutoAssess  </diag_script_cfg_dir>
         <diag_script cfg="AutoAssess_radiation_rms.conf"> AutoAssess_radiation_rms.py </diag_script>
         <launcher_arguments>    [('execute_as_shell', False)]               </launcher_arguments>
@@ -102,7 +102,7 @@ This namelist is part of the ESMValTool
         <variable_def_dir>    ./variable_defs/   </variable_def_dir>
         <variable>            rlut           </variable>
         <field_type>          T2Ms               </field_type>
-        <model id="obs"> obs4mips CERES-EBAF L3B Ed2-7 2001 2012 @{OBSPATH}/Tier1/ </model>
+        <model id="obs"> obs4mips CERES-EBAF L3B Ed2-7 2001 2005 @{OBSPATH}/Tier1/ </model>
         <diag_script_cfg_dir> ./nml/cfg_AutoAssess  </diag_script_cfg_dir>
         <diag_script cfg="AutoAssess_radiation_rms.conf"> AutoAssess_radiation_rms.py </diag_script>
         <launcher_arguments>    [('execute_as_shell', False)]               </launcher_arguments>
@@ -116,7 +116,7 @@ This namelist is part of the ESMValTool
         <variable_def_dir>    ./variable_defs/   </variable_def_dir>
         <variable>            rsutcs           </variable>
         <field_type>          T2Ms               </field_type>
-        <model id="obs"> obs4mips CERES-EBAF L3B Ed2-7 2001 2012 @{OBSPATH}/Tier1/ </model>
+        <model id="obs"> obs4mips CERES-EBAF L3B Ed2-7 2001 2005 @{OBSPATH}/Tier1/ </model>
         <diag_script_cfg_dir> ./nml/cfg_AutoAssess  </diag_script_cfg_dir>
         <diag_script cfg="AutoAssess_radiation_rms.conf"> AutoAssess_radiation_rms.py </diag_script>
         <launcher_arguments>    [('execute_as_shell', False)]               </launcher_arguments>
@@ -144,7 +144,7 @@ This namelist is part of the ESMValTool
         <variable_def_dir>    ./variable_defs/   </variable_def_dir>
         <variable>            SW_CRE           </variable>
         <field_type>          T2Ms               </field_type>
-        <model id="obs"> obs4mips CERES-EBAF L3B Ed2-7 2001 2012 @{OBSPATH}/Tier1/ </model>
+        <model id="obs"> obs4mips CERES-EBAF L3B Ed2-7 2001 2005 @{OBSPATH}/Tier1/ </model>
         <diag_script_cfg_dir> ./nml/cfg_AutoAssess  </diag_script_cfg_dir>
         <diag_script cfg="AutoAssess_radiation_rms.conf"> AutoAssess_radiation_rms.py </diag_script>
         <launcher_arguments>    [('execute_as_shell', False)]               </launcher_arguments>
@@ -158,7 +158,7 @@ This namelist is part of the ESMValTool
         <variable_def_dir>    ./variable_defs/   </variable_def_dir>
         <variable>            LW_CRE           </variable>
         <field_type>          T2Ms               </field_type>
-        <model id="obs"> obs4mips CERES-EBAF L3B Ed2-7 2001 2011 @{OBSPATH}/Tier1/ </model>
+        <model id="obs"> obs4mips CERES-EBAF L3B Ed2-7 2001 2005 @{OBSPATH}/Tier1/ </model>
         <diag_script_cfg_dir> ./nml/cfg_AutoAssess  </diag_script_cfg_dir>
         <diag_script cfg="AutoAssess_radiation_rms.conf"> AutoAssess_radiation_rms.py </diag_script>
         <launcher_arguments>    [('execute_as_shell', False)]               </launcher_arguments>
@@ -172,7 +172,7 @@ This namelist is part of the ESMValTool
         <variable_def_dir>    ./variable_defs/   </variable_def_dir>
         <variable>            rsns           </variable>
         <field_type>          T2Ms               </field_type>
-        <model id="obs"> obs4mips CERES-EBAF L3B Ed2-7 2001 2011 @{OBSPATH}/Tier1/ </model>
+        <model id="obs"> obs4mips CERES-EBAF L3B Ed2-7 2001 2005 @{OBSPATH}/Tier1/ </model>
         <diag_script_cfg_dir> ./nml/cfg_AutoAssess  </diag_script_cfg_dir>
         <diag_script cfg="AutoAssess_radiation_rms.conf"> AutoAssess_radiation_rms.py </diag_script>
         <launcher_arguments>    [('execute_as_shell', False)]               </launcher_arguments>
@@ -187,7 +187,7 @@ This namelist is part of the ESMValTool
         <variable>            rlns           </variable>
         <field_type>          T2Ms               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_AutoAssess  </diag_script_cfg_dir>
-        <model id="obs"> obs4mips CERES-EBAF L3B Ed2-7 2001 2011 @{OBSPATH}/Tier1/ </model>
+        <model id="obs"> obs4mips CERES-EBAF L3B Ed2-7 2001 2005 @{OBSPATH}/Tier1/ </model>
         <diag_script cfg="AutoAssess_radiation_rms.conf"> AutoAssess_radiation_rms.py </diag_script>
         <launcher_arguments>    [('execute_as_shell', False)]               </launcher_arguments>
     </diag>
@@ -214,7 +214,7 @@ This namelist is part of the ESMValTool
         <variable_def_dir>    ./variable_defs/   </variable_def_dir>
         <variable>            prw           </variable>
         <field_type>          T2Ms               </field_type>
-        <model id="obs"> obs4mips SSMI-MERIS L3 v1-00 2003 2008 @{OBSPATH}/Tier1/ </model>
+        <model id="obs"> obs4mips SSMI-MERIS L3 v1-00 2003 2005 @{OBSPATH}/Tier1/ </model>
 <!--        <model id="obs"> obs4mips    SSMI  L3  RSS     1988  2006 /group_workspaces/jasmin/esmeval/cma/clim_obs/ </model>-->
         <diag_script_cfg_dir> ./nml/cfg_AutoAssess  </diag_script_cfg_dir>
         <diag_script cfg="AutoAssess_radiation_rms.conf"> AutoAssess_radiation_rms.py </diag_script>
@@ -230,7 +230,7 @@ This namelist is part of the ESMValTool
         <variable_def_dir>    ./variable_defs/   </variable_def_dir>
         <variable>            pr           </variable>
         <field_type>          T2Ms               </field_type>
-        <model id="pr_obs"> obs4mips GPCP-SG L3 v2.2 2001 2009 @{OBSPATH}/Tier1/ </model>
+        <model id="pr_obs"> obs4mips GPCP-SG L3 v2.2 2001 2005 @{OBSPATH}/Tier1/ </model>
         <diag_script_cfg_dir> ./nml/cfg_AutoAssess  </diag_script_cfg_dir>
         <diag_script cfg="AutoAssess_radiation_rms.conf"> AutoAssess_radiation_rms.py </diag_script>
         <launcher_arguments>    [('execute_as_shell', False)]               </launcher_arguments>
