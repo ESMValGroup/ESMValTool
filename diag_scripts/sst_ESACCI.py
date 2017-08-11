@@ -43,6 +43,7 @@ from sst_diagnostic import SeaSurfaceTemperatureDiagnostic
 
 
 def main(project_info):
+    import projects
     print(">>>>>>>> sst_ESACCI.py is running! <<<<<<<<<<<<")
 
 # A_laue_ax+
@@ -93,7 +94,6 @@ def main(project_info):
 
                     # copy old data to provide data that is needed again
                     D_old = copy(Diag)
-
                     # initialize diagnostic
                     Diag = SeaSurfaceTemperatureDiagnostic()
                     # provide project_info to diagnostic

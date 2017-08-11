@@ -84,9 +84,8 @@ begin
                      (/"D_lauer05acp", "D_aquila11gmd"/), \  ; diag_ref
                      (/"E_access2", "E_cirrus", "E_concert", "E_cr-ave", \
                        "E_dc3", "E_hippo", "E_inca", "E_lace1", "E_lace2", \
-                       "E_saltrace1", "E_saltrace2", "E_samum1", \
-                       "E_samum2", "E_tc4", "E_texas", \
-                       "E_ucnpacific"/), \  ; obs_ref
+                       "E_oct-ave", "E_saltrace1", "E_saltrace2", "E_samum1", \
+                       "E_samum2", "E_tc4", "E_ucnpacific"/), \  ; obs_ref
                      (/"P_esmval", "P_dlrveu", "P_dlrveu2"/))  ; proj_acknow
 
     ;; Check for valid fields

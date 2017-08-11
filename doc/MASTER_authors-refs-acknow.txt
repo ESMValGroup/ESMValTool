@@ -1,4 +1,4 @@
-﻿# Full list of authors and references for the currently implemented 
+# Full list of authors and references for the currently implemented 
 # diagnostics. Authors, diagnostics, observations and projects references
 # are identified by the tags "A", "D", "E" and "P", respectively.
 #

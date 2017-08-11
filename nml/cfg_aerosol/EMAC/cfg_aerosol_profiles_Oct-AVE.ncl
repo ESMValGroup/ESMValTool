@@ -2,7 +2,7 @@
 diag_script_info = True
 
 ; Selected campaign
-diag_script_info@campaign = "Texas"
+diag_script_info@campaign = "Oct-AVE"
 
 ; Style
 diag_script_info@styleset = "DEFAULT"

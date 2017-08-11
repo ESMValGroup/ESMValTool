@@ -73,6 +73,7 @@ This namelist is part of the ESMValTool
 <!--   <reformat_script id="NIWA">                    ./reformat_scripts/obs/reformat_obs_NIWA.ncl                    </reformat_script> -->
 <!--   <reformat_script id="NOAA-PSD-Interp">         ./reformat_scripts/obs/reformat_obs_NOAA-PSD-Interp.ncl         </reformat_script> -->
 <!--   <reformat_script id="NSIDC">                   ./reformat_scripts/obs/reformat_obs_NSIDC.ncl                   </reformat_script> -->
+<!--   <reformat_script id="Oct-AVE">                 ./reformat_scripts/obs/reformat_obs_Oct-AVE.ncl                 </reformat_script> -->
 <!--   <reformat_script id="Putaud">                  ./reformat_scripts/obs/reformat_obs_Putaud.ncl                  </reformat_script> -->
 <!--   <reformat_script id="SALTRACE">                ./reformat_scripts/obs/reformat_obs_SALTRACE.ncl                </reformat_script> -->
 <!--   <reformat_script id="SeaWIFS">                 ./reformat_scripts/obs/reformat_obs_SeaWIFS.csh                 </reformat_script> -->
@@ -80,7 +81,6 @@ This namelist is part of the ESMValTool
 <!--   <reformat_script id="SRB">                     ./reformat_scripts/obs/reformat_obs_SRB.ncl                     </reformat_script> -->
 <!--   <reformat_script id="takahashi14">             ./reformat_scripts/obs/reformat_obs_takahashi14.csh             </reformat_script> -->
 <!--   <reformat_script id="TC4">                     ./reformat_scripts/obs/reformat_obs_TC4.ncl                     </reformat_script> -->
-<!--   <reformat_script id="Texas">                   ./reformat_scripts/obs/reformat_obs_Texas.ncl                   </reformat_script> -->
 <!--   <reformat_script id="Tilmes">                  ./reformat_scripts/obs/reformat_obs_Tilmes.ncl                  </reformat_script> -->
 <!--   <reformat_script id="TRMM-3B42-3hourly">       ./reformat_scripts/obs/reformat_obs_TRMM-3B42-3hourly.ncl       </reformat_script> -->
 <!--   <reformat_script id="TRMM-3B42-daily">         ./reformat_scripts/obs/reformat_obs_TRMM-3B42-daily.ncl         </reformat_script> -->
