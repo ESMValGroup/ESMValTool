@@ -15,6 +15,7 @@ import auxiliary
 from auxiliary import info, error, print_header, ncl_version_check
 import exceptions
 import launchers
+from regrid import regrid as rg
 
 #######################################################
 ### This script contains basic functionalities
@@ -157,7 +158,6 @@ def get_cmip_cf_infile(project_info, currentDiag, model):
        and operates on a single diagnostic
        Returns a dictionary {var1:[model_data], var2:[model_data], ...}
     """
-    # FIXME introduce functionality to glob multiple nc files !!!
     verbosity = project_info['GLOBAL']['verbosity']
     # get variables
     data_files = {}
@@ -185,6 +185,8 @@ def get_cmip_cf_infile(project_info, currentDiag, model):
                 fi = rootdir + '/' + infile_id
                 info(" >>> preprocess.py >>> Could not find file type " + fi, verbosity, required_verbosity=1)
         data_files[var['name']] = infiles
+        if len(infiles) == 0:
+            info(" >>> preprocess.py >>> Could not find any data files for " + model['name'], verbosity, required_verbosity=1)
         if len(infiles) > 1:
             # get pp.glob to glob the files into one single file
             import preprocessing_tools as pt
@@ -193,12 +195,14 @@ def get_cmip_cf_infile(project_info, currentDiag, model):
                                                      model['exp'],
                                                      model['name'],
                                                      model['ensemble']]) + '_GLOB.nc'
-            globs = pt.glob(infiles, standard_name)
-            if pt.glob(data_files[var['name']], standard_name) == 1:
+            globs = pt.glob(infiles, standard_name, verbosity)
+            if globs == 1:
                 data_files[var['name']] = [standard_name]
             else:
                 data_files[var['name']] = infiles
                 info(" >>> preprocess.py >>> Could not glob files, keeping a list of files", verbosity, required_verbosity=1)
+    # VP-FIXME-question it is easy to implement a 'read-from-file' (cache file) functionality here
+    # if people consider this to be useful (e.g. could use cmip5datafinder as a lookup data module)
     return data_files
 
 def get_cf_areafile(project_info, model):
@@ -209,9 +213,14 @@ def get_cf_areafile(project_info, model):
     areafile = 'areacello_fx_' + model["name"] + "_" + model["exp"] + \
                "_r0i0p0.nc"
 
-    return os.path.join(areadir, areafile)
+    return os.path.join(areadir, areafile) 
 
-def cmor_reformat(project_info, variable, model, currentDiag):
+####################################################################################################################################
+
+def preprocess(project_info, variable, model, currentDiag):
+    ##############################################
+    # Initialize all needed files and variables
+    ##############################################
     model_name = model['name']
     project_name = model['project']
     #project_basename = currProject.get_project_basename()
@@ -221,52 +230,161 @@ def cmor_reformat(project_info, variable, model, currentDiag):
     verbosity = project_info["GLOBAL"]["verbosity"]
     exit_on_warning = project_info['GLOBAL'].get('exit_on_warning', False)
 
-    # Variable put in environment to be used for the (optional)
-    # wildcard syntax in the model path, ".../${VARIABLE}/..."
-    # in the namelist
+    # Variable put in environment
     os.environ['__ESMValTool_base_var'] = variable.name
 
     # Build input and output file names
-    # FIXME - when globbing fails, we are looking only at a single (first) file currently
-    infiles = get_cmip_cf_infile(project_info, currentDiag, model)[variable.name][0]
+    infileslist = get_cmip_cf_infile(project_info, currentDiag, model)[variable.name]
+    # VP-FIXME-question : the code can glob multiple files, but how to handle the case when globbing fails; currently
+    # the diagnostic is run on only the first file
+    if len(infileslist) == 1: 
+        infiles = infileslist[0]
+    else:
+        info(" >>> preprocess.py >>> Found multiple netCDF files for current diagnostic", verbosity, required_verbosity=1)
+        info(" >>> preprocess.py >>> netCDF globbing has failed", verbosity, required_verbosity=1)
+        info(" >>> preprocess.py >>> Running diagnostic ONLY on the first file", verbosity, required_verbosity=1)
+        infiles = infileslist[0]
     outfilename = get_cf_outfile(model, variable.field, variable.name)
     info(' >>> preprocess.py >>> Reformatted file name: ' + outfilename, verbosity, required_verbosity=1)
     fullpath = get_cf_fullpath(project_info, model, variable.field, variable.name)
     info(' >>> preprocess.py >>> Reformatted target: ' + fullpath, verbosity, required_verbosity=1)
 
-    # Area file name for ocean grids
-    areafile_path = get_cf_areafile(project_info, model)
-
-    # Land-mask file name for land variables
-    # start FIXME get these funcs from projects
-    #lmaskfile_path = get_cf_lmaskfile(project_info, model)
-    #omaskfile_path = get_cf_omaskfile(project_info, model)
-    # Porosity file name for land variables
-    #porofile_path = get_cf_porofile(project_info, model)
-    # end FIXME
-
-    # Additional grid file names for ocean grids, if available (ECEARTH)
-    # start FIXME these should be part of namelist
-    #hgridfile_path = False
-    #zgridfile_path = False
-    #lsmfile_path = False
-    #if hasattr(currProject, "get_cf_hgridfile"):
-    #    hgridfile_path = currProject.get_cf_hgridfile(project_info, model)
-    #if hasattr(currProject, "get_cf_zgridfile"):
-    #    zgridfile_path = currProject.get_cf_zgridfile(project_info, model)
-    #if hasattr(currProject, "get_cf_lsmfile"):
-    #    lsmfile_path = \
-    #        currProject.get_cf_lsmfile(project_info, model, variable.fld)
-    # General fx file name entry
-    #fx_file_path = False
-    #if hasattr(currProject, "get_cf_fx_file"):
-    #    fx_file_path = currProject.get_cf_fx_file(project_info, model)
-    # end FIXME
-
+    # initialize the environment variables dictionary
+    project_info['TEMPORARY'] = {}
+    # indir is hardcoded to keep things tight; could be an option to namelist
+    project_info['TEMPORARY']['indir_path'] = '.'
+    project_info['TEMPORARY']['outfile_fullpath'] = fullpath
+    project_info['TEMPORARY']['infile_path'] = infiles
+    project_info['TEMPORARY']['start_year'] = model['start']
+    project_info['TEMPORARY']['end_year'] = model['end']
+    project_info['TEMPORARY']['ensemble'] = model['ensemble']
+    project_info['TEMPORARY']['variable'] = variable.name
+    project_info['TEMPORARY']['field'] = variable.field
+    info(' >>> preprocess.py >>> Gathering runtime variables:', verbosity, required_verbosity=1)
     info(" >>> preprocess.py >>> Project is " + model['project'], verbosity, required_verbosity=1)
+    info(" >>> preprocess.py >>> Model is " + model['name'], verbosity, required_verbosity=1)
     info(" >>> preprocess.py >>> Ensemble is " + model['ensemble'], verbosity, required_verbosity=1)
     info(" >>> preprocess.py >>> Full IN path is " + infiles, verbosity, required_verbosity=1)
     info(" >>> preprocess.py >>> Full OUT path is " + fullpath, verbosity, required_verbosity=1)
+
+###############################################################################################################
+#################### The Big Mean PREPROCESS Machine ##########################################################
+###############################################################################################################
+    # Starting to look at preprocessing needs
+    info(' >>> preprocess.py >>> Looking at (namelist) PREPROCESS section now', verbosity, required_verbosity=1)
+    prp = project_info['PREPROCESS']
+    ##########################################################################
+    # VP-FIXME-question : Mattia have a look at this and decide what is needed
+    # Tentative PREPROCESS keys 
+    # select_level:    None
+    # target_grid:     ref_model
+    # regrid_scheme:   linear
+    # mask_fillvalues: True
+    # mask_landocean:  None
+    # multimodel_mean: True
+    for k in prp.keys():
+        if k == 'select_level':
+            if prp[k] is not 'None':
+                select_level = prp[k]
+        if k == 'regrid':
+            if prp[k] is not False:
+                regrid = True
+        if k == 'target_grid':
+            if prp[k] is not 'None':
+                target_grid = prp[k]
+        if k == 'regrid_scheme':
+            if prp[k] is not 'None':
+                regrid_scheme = prp[k]
+        if k == 'mask_fillvalues':
+            if prp[k] is not False:
+                mask_fillvalues = True
+        if k == 'multimodel_mean':
+            if prp[k] is not False:
+                regrid_scheme = True
+        if k == 'gridfile':
+            if prp[k] is not 'None':
+                areafile_path = prp[k]
+                if areafile_path is not None:
+                    project_info['TEMPORARY']['areafile_path'] = areafile_path
+        if k == 'mask_landocean':
+            # names and paths are taken from old projects.py
+            # VP-FIXME-question : change?
+            if prp[k] is not 'None': 
+                lmaskdir = os.path.join(model["path"],
+                                       model["exp"],
+                                       'fx',
+                                       'sftlf',
+                                       model["name"],
+                                       'r0i0p0')
+                lmaskfile = 'sftlf_fx_' + model["name"] + "_" + model["exp"] + "_r0i0p0.nc"
+                lmaskfile_path = os.path.join(lmaskdir, lmaskfile)
+                if lmaskfile_path is not None:
+                    project_info['TEMPORARY']['lmaskfile_path'] = lmaskfile_path
+                omaskdir = model['path']
+                omaskfile = 'sftof_fx_' + model["name"] + "_" + model["exp"] + "_r0i0p0.nc"
+                omaskfile_path = os.path.join(omaskdir, omaskfile)
+                if omaskfile_path is not None:
+                    project_info['TEMPORARY']['omaskfile_path'] = omaskfile_path
+        if k == 'porofile':
+            if prp[k] is not 'None':
+                pormaskdir = os.path.join(model["path"],
+                                          model["exp"],
+                                          'fx',
+                                          'mrsofc',
+                                          model["name"],
+                                          'r0i0p0')
+                pormaskfile = 'mrsofc_fx_' + model["name"] + "_" + model["exp"] + "_r0i0p0.nc"
+                porofile_path = os.path.join(maskdir, maskfile)
+                if porofile_path is not None:
+                    project_info['TEMPORARY']['porofile_path'] = porofile_path
+
+    # VP-FIXME-question : do we need these still?
+    # if so, easily initialized in namelist file
+    hgridfile_path = False
+    zgridfile_path = False
+    lsmfile_path = False
+    fx_file_path = False
+    indata_root = 'probably/set/this/to/a/common/fx/stuff/directory'
+    for k in prp.keys():
+        if k == 'get_cf_hgridfile':
+            if prp[k] is not 'None':
+                filepath = fx_files['nemo_hgrid_file'].get_fullpath()
+                hgridfile_path = os.path.join(indata_root, filepath)
+                if hgridfile_path is not None:
+                    project_info['TEMPORARY']['hgridfile_path'] = hgridfile_path
+        if k == 'get_cf_zgridfile':
+            if prp[k] is not 'None':
+                filepath = fx_files['nemo_zgrid_file'].get_fullpath()
+                zgridfile_path = os.path.join(indata_root, filepath)
+                if zgridfile_path is not None:
+                    project_info['TEMPORARY']['zgridfile_path'] = zgridfile_path
+        if k == 'get_cf_lsmfile':
+            if prp[k] is not 'None':
+                zgrid_path = fx_files['nemo_zgrid_file'].get_fullpath()
+                if variable.field == "T3M":
+                    filepath = fx_files['nemo_lsm3d_file'].get_fullpath()
+                else:
+                    filepath = fx_files['nemo_lsm_file'].get_fullpath()
+                lsmfile_path = os.path.join(indata_root, filepath)
+                if lsmfile_path is not None:
+                    project_info['TEMPORARY']['lsmfile_path'] = lsmfile_path
+        if k == 'get_fx_files':
+            if prp[k] is not 'None':
+                curr_fx = project_info["AUXILIARIES"]["FX_files"].fx_files
+                new_fx = {}
+                for key in curr_fx:
+                    new_fx[key] = os.path.join(indata_root, curr_fx[key].get_fullpath())
+                fx_file_path = os.path.abspath(new_fx)
+                if fx_file_path:
+                    project_info['TEMPORARY']['fx_file_path'] = fx_file_path
+
+    # Specialy McSpecial cases
+    if 'realm' in model.keys():
+        project_info['TEMPORARY']['realm'] = model["realm"]
+    if 'shift_year' in model.keys():
+        project_info['TEMPORARY']['shift_year'] = model["shift_year"]
+    if 'case_name' in model.keys():
+        project_info['TEMPORARY']['case_name'] = model["case_name"]
 
     # Check if the current project has a specific reformat routine,
     # otherwise use default
@@ -279,47 +397,8 @@ def cmor_reformat(project_info, variable, model, currentDiag):
                                    which_reformat,
                                    "reformat_" + which_reformat + "_main.ncl")
 
-    # Set enviroment variables
-    project_info['TEMPORARY'] = {}
-    # hardcoded to keep things tight; could be an option to namelist
-    project_info['TEMPORARY']['indir_path'] = '.'
-    project_info['TEMPORARY']['outfile_fullpath'] = fullpath
-    project_info['TEMPORARY']['infile_path'] = infiles
-    #project_info['TEMPORARY']['areafile_path'] = areafile_path
-    #project_info['TEMPORARY']['lmaskfile_path'] = lmaskfile_path
-    #project_info['TEMPORARY']['omaskfile_path'] = omaskfile_path
-    #project_info['TEMPORARY']['porofile_path'] = porofile_path
-    project_info['TEMPORARY']['start_year'] = model['start']
-    project_info['TEMPORARY']['end_year'] = model['end']
-    project_info['TEMPORARY']['ensemble'] = model['ensemble']
-    project_info['TEMPORARY']['variable'] = variable.name
-    project_info['TEMPORARY']['field'] = variable.field
 
-    # FX file path
-    # start FIXME add these in namelist
-    #if fx_file_path:
-    #    project_info['TEMPORARY']['fx_file_path'] = fx_file_path
-    # end FIXME
-
-    # Special cases
-    # start FIXME - address these with correct variables
-    #if 'realm' in currProject.get_model_sections(model):
-    #    project_info['TEMPORARY']['realm'] = \
-    #        currProject.get_model_sections(model)["realm"]
-    #if 'shift_year' in currProject.get_model_sections(model):
-    #    project_info['TEMPORARY']['shift_year'] = \
-    #        currProject.get_model_sections(model)["shift_year"]
-    #if 'case_name' in currProject.get_model_sections(model):
-    #    project_info['TEMPORARY']['case_name'] = \
-    #        currProject.get_model_sections(model)["case_name"]
-    #if hgridfile_path and zgridfile_path:
-    #    project_info['TEMPORARY']['hgridfile_path'] = hgridfile_path
-    #    project_info['TEMPORARY']['zgridfile_path'] = zgridfile_path
-    #if lsmfile_path:
-    #    project_info['TEMPORARY']['lsmfile_path'] = lsmfile_path
-    # end FIXME
-
-    # Execute the ncl reformat script
+    ################## 0. CMOR_REFORMAT (still ncl, VP-FIXME-question : are we using something else for this? ##############
     if ((not os.path.isfile(project_info['TEMPORARY']['outfile_fullpath']))
             or project_info['GLOBAL']['force_processing']):
 
@@ -335,8 +414,41 @@ def cmor_reformat(project_info, variable, model, currentDiag):
         if (not os.path.isfile(project_info['TEMPORARY']['outfile_fullpath'])):
             raise exceptions.IOError(2, "Expected reformatted file isn't available: ",
                                      project_info['TEMPORARY']['outfile_fullpath'])
-    del(project_info['TEMPORARY'])
 
+    #################### 1. REGRID ####################################################
+    if regrid is True and target_grid is not None:
+        import iris
+        info("  >>> preprocess.py >>>  Calling regrid to regrid model data onto " + target_grid + " grid",
+                 verbosity,
+                 required_verbosity=1)
+        # get regrid source cube
+        if os.path.isfile(project_info['TEMPORARY']['outfile_fullpath']):
+            src_cube = iris.load_cube(project_info['TEMPORARY']['outfile_fullpath'])
+        else:
+            src_cube = infiles
+        # try return a cube for regrid target
+        # target_grid - could be a netCDF file or string model
+        # descriptor
+        try:
+            tgt_grid = iris.load_cube(target_grid)
+        except (OSError, iris.exceptions.IrisError) as exc:
+            info(" >>> preprocessing_tools.py >>> Target " + target_grid + " is not a netCDF file", "", verbosity)
+            pass
+            if target_grid == 'ref_model':
+                ref_model_list = currentDiag.variables['ref_model']
+                # VP-FIXME-question : how to deal with these?
+
+        # regrid
+        if regrid_scheme:
+            rgc = rg(src_cube, tgt_grid, regrid_scheme)
+        else:
+            info(' >>> preprocess.py >>> No regrid scheme specified, assuming linear', verbosity, required_verbosity=1)
+            rgc = rg(src_cube, tgt_grid, 'linear')
+        
+        iris.save(rgc, project_info['TEMPORARY']['outfile_fullpath'])
+
+    ############ FINISH all PREPROCESSING and delete environment
+    del(project_info['TEMPORARY'])
 
 ###################################################################################
 ### a few definititory functions needed

@@ -3,11 +3,14 @@
 ########################################################################
 import iris
 import numpy as np
+from auxiliary import info
+
 
 #########################################################################
 # FILE OPERATIONS
 #########################################################################
-def glob(file_list, fname):
+# merge multiple files assigned to a same diagnostic and variable
+def glob(file_list, fname, verbosity):
     """
     Function that takes a list of nc files and globs them into a single one
     """
@@ -17,9 +20,10 @@ def glob(file_list, fname):
         concatenated = c.concatenate()
         try:
             iris.save(concatenated, fname)
+            info(" >>> preprocessing_tools.py >>> Successfully concatenated cubes", "", verbosity)
             return 1
         except (OSError, iris.exceptions.IrisError) as exc:
-            print('Can not save merged cube!', exc) 
+            info(" >>> preprocessing_tools.py >>> Could not save concatenated cube, keeping a list of files ", exc, verbosity)
             pass
             return 0
     except iris.exceptions.ConcatenateError as exc:
@@ -27,8 +31,12 @@ def glob(file_list, fname):
         for cube in cl:
             error_message += cube.summary(shorten=True) + '\n'
         pass
+        info(" >>> preprocessing_tools.py >>> Could not concatenate cubes, keeping a list of files ", error_message, verbosity)
         return 0
 
+############################################################################
+# MASKING
+############################################################################
 def masked_cube_simple(mycube, slicevar, v1, v2, threshold):
     """
 

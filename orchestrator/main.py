@@ -31,9 +31,9 @@ description = """ESMValTool - Earth System Model Evaluation Tool.
 For further help, check the doc/-folder for pdfs and references therein."""
 
 parser = OptionParser(usage=usage, description=description)
-parser.add_option("-p", "--preprocess",
-                  action="store_true", dest="reformat", default=False,
-                  help="run a suite of data preprocessing scripts for the models/observations according to namelist")
+parser.add_option("-d", "--dummy",
+                  action="store_true", dest="dummy", default=False,
+                  help="dummy: does nothing")
 options, args = parser.parse_args()
 if len(args) == 0:
     parser.print_help()
@@ -99,7 +99,7 @@ project_info['RUNTIME']['cwd'] = os.getcwd()
 timestamp1 = datetime.datetime.now()
 timestamp_format = "%Y-%m-%d --  %H:%M:%S"
 
-print_header(project_info, options.reformat)
+print_header(project_info)
 info(" >>> main.py >>> Starting the Earth System Model Evaluation Tool v" + version + " at time: "
      + timestamp1.strftime(timestamp_format) + "...", verbosity, 1)
 
@@ -141,9 +141,9 @@ for c in project_info['DIAGNOSTICS']:
                  verbosity, 1)
 
             # Rewrite netcdf to expected input format.
-            info(" >>> main.py >>> Calling preprocessing.cmor_reformat() to check/reformat model data",
+            info(" >>> main.py >>> Calling preprocessing to check/reformat model data, and apply preprocessing steps",
                  verbosity, 2)
-            pp.cmor_reformat(project_info, base_var, model, currDiag)
+            pp.preprocess(project_info, base_var, model, currDiag)
 
     vardicts = currDiag.variables
     variables = []
