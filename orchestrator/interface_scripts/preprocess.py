@@ -149,7 +149,7 @@ def get_dict_key(model):
                          str(model['end'])])
     return dict_key
 
-def get_cmip_cf_infile(project_info, currentDiag, model):
+def get_cmip_cf_infile(project_info, currentDiag, model, currentVarName):
     """@brief Path to input netCDF files for models
        @param project_info all info dictionary
        @param currDiag(dict) current diagnostic
@@ -180,7 +180,8 @@ def get_cmip_cf_infile(project_info, currentDiag, model):
         for fpath in fpaths[0:-1]:
             if os.path.exists(fpath.strip()):
                 infiles.append(fpath.strip())
-                info(" >>> preprocess.py >>> Using file " + fpath.strip(), verbosity, required_verbosity=1)
+                if currentVarName == var['name']:
+                    info(" >>> preprocess.py >>> Using file " + fpath.strip(), verbosity, required_verbosity=1)
             else:
                 fi = rootdir + '/' + infile_id
                 info(" >>> preprocess.py >>> Could not find file type " + fi, verbosity, required_verbosity=1)
@@ -205,6 +206,57 @@ def get_cmip_cf_infile(project_info, currentDiag, model):
     # if people consider this to be useful (e.g. could use cmip5datafinder as a lookup data module)
     return data_files
 
+def get_obs_cf_infile(project_info, currentDiag, obs_model, currentVarName):
+    """@brief Function that returns the observation file for regridding
+       Returns a full path dictionary keyed on variable name
+       namelist field type: {name: ERA-Interim,  project: OBS,  type: reanaly,  
+       version: 1,  start: 2000,  end: 2002,  path: /obspath/Tier3/ERA-Interim/}
+       path type: test_data/OBS/Tier3/ERA-Interim/OBS_ERA-Interim_reanaly_1_T3M_ta_200001-200212.nc
+    """
+    verbosity = project_info['GLOBAL']['verbosity']
+    # get variables
+    data_files = {}
+    variables = currentDiag.variables
+    for var in variables:
+        infiles = []
+        # specify path completely
+        rootdir = obs_model['path']
+        # use standard convention for CMIP file naming
+        infile_id = '*' + '_'.join([obs_model['project'], obs_model['name'],
+                                    obs_model['type'], str(obs_model['version']),
+                                    var['field'], var['name']]) + '_*.nc*'
+        # look for files: get paths
+        srch = 'ls ' + rootdir + '/' + infile_id
+        proc = subprocess.Popen(srch, stdout=subprocess.PIPE, shell=True)
+        (out, err) = proc.communicate()
+        fpaths = out.split('\n')
+        # last element of ls will always be an empty string
+        for fpath in fpaths[0:-1]:
+            if os.path.exists(fpath.strip()):
+                infiles.append(fpath.strip())
+                if currentVarName == var['name']:
+                    info(" >>> preprocess.py >>> Using OBS file for regridding " + fpath.strip(), verbosity, required_verbosity=1)
+            else:
+                fi = rootdir + '/' + infile_id
+                info(" >>> preprocess.py >>> Could not find OBS file type " + fi, verbosity, required_verbosity=1)
+        data_files[var['name']] = infiles
+        if len(infiles) == 0:
+            info(" >>> preprocess.py >>> Could not find any OBS data files for " + obs_model['name'], verbosity, required_verbosity=1)
+        if len(infiles) > 1:
+            # get pp.glob to glob the files into one single file
+            import preprocessing_tools as pt
+            info(" >>> preprocess.py >>> Found multiple OBS netCDF files for current diagnostic, attempting to glob them", verbosity, required_verbosity=1)
+            standard_name = rootdir + '/' + '_'.join([obs_model['project'], obs_model['name'],
+                                                     obs_model['type'], obs_model['version'],
+                                                     var['name'], var['field']]) + '_GLOB.nc'
+            globs = pt.glob(infiles, standard_name, verbosity)
+            if globs == 1:
+                data_files[var['name']] = [standard_name]
+            else:
+                data_files[var['name']] = infiles
+                info(" >>> preprocess.py >>> Could not glob files, keeping a list of files", verbosity, required_verbosity=1)
+    return data_files
+
 def get_cf_areafile(project_info, model):
     """ @brief Returns the path to the areacello file
         This function looks for the areafile of the ocean grid
@@ -218,70 +270,22 @@ def get_cf_areafile(project_info, model):
 ####################################################################################################################################
 
 def preprocess(project_info, variable, model, currentDiag):
-    ##############################################
-    # Initialize all needed files and variables
-    ##############################################
-    model_name = model['name']
-    project_name = model['project']
-    #project_basename = currProject.get_project_basename()
-    project_info['RUNTIME']['model'] = model_name
-    project_info['RUNTIME']['project'] = project_name
-    project_info['RUNTIME']['project_basename'] = 'OBS'
-    verbosity = project_info["GLOBAL"]["verbosity"]
-    exit_on_warning = project_info['GLOBAL'].get('exit_on_warning', False)
-
-    # Variable put in environment
-    os.environ['__ESMValTool_base_var'] = variable.name
-
-    # Build input and output file names
-    infileslist = get_cmip_cf_infile(project_info, currentDiag, model)[variable.name]
-    # VP-FIXME-question : the code can glob multiple files, but how to handle the case when globbing fails; currently
-    # the diagnostic is run on only the first file
-    if len(infileslist) == 1: 
-        infiles = infileslist[0]
-    else:
-        info(" >>> preprocess.py >>> Found multiple netCDF files for current diagnostic", verbosity, required_verbosity=1)
-        info(" >>> preprocess.py >>> netCDF globbing has failed", verbosity, required_verbosity=1)
-        info(" >>> preprocess.py >>> Running diagnostic ONLY on the first file", verbosity, required_verbosity=1)
-        infiles = infileslist[0]
-    outfilename = get_cf_outfile(model, variable.field, variable.name)
-    info(' >>> preprocess.py >>> Reformatted file name: ' + outfilename, verbosity, required_verbosity=1)
-    fullpath = get_cf_fullpath(project_info, model, variable.field, variable.name)
-    info(' >>> preprocess.py >>> Reformatted target: ' + fullpath, verbosity, required_verbosity=1)
-
-    # initialize the environment variables dictionary
-    project_info['TEMPORARY'] = {}
-    # indir is hardcoded to keep things tight; could be an option to namelist
-    project_info['TEMPORARY']['indir_path'] = '.'
-    project_info['TEMPORARY']['outfile_fullpath'] = fullpath
-    project_info['TEMPORARY']['infile_path'] = infiles
-    project_info['TEMPORARY']['start_year'] = model['start']
-    project_info['TEMPORARY']['end_year'] = model['end']
-    project_info['TEMPORARY']['ensemble'] = model['ensemble']
-    project_info['TEMPORARY']['variable'] = variable.name
-    project_info['TEMPORARY']['field'] = variable.field
-    info(' >>> preprocess.py >>> Gathering runtime variables:', verbosity, required_verbosity=1)
-    info(" >>> preprocess.py >>> Project is " + model['project'], verbosity, required_verbosity=1)
-    info(" >>> preprocess.py >>> Model is " + model['name'], verbosity, required_verbosity=1)
-    info(" >>> preprocess.py >>> Ensemble is " + model['ensemble'], verbosity, required_verbosity=1)
-    info(" >>> preprocess.py >>> Full IN path is " + infiles, verbosity, required_verbosity=1)
-    info(" >>> preprocess.py >>> Full OUT path is " + fullpath, verbosity, required_verbosity=1)
 
 ###############################################################################################################
 #################### The Big Mean PREPROCESS Machine ##########################################################
 ###############################################################################################################
+
     # Starting to look at preprocessing needs
+    verbosity = project_info["GLOBAL"]["verbosity"]
     info(' >>> preprocess.py >>> Looking at (namelist) PREPROCESS section now', verbosity, required_verbosity=1)
+    # initialize the environment variables dictionary
+    project_info['TEMPORARY'] = {}
+    # key in the prperocess
     prp = project_info['PREPROCESS']
-    ##########################################################################
-    # VP-FIXME-question : Mattia have a look at this and decide what is needed
-    # Tentative PREPROCESS keys 
-    # select_level:    None
-    # target_grid:     ref_model
-    # regrid_scheme:   linear
-    # mask_fillvalues: True
-    # mask_landocean:  None
-    # multimodel_mean: True
+    #############################################################################
+    ### PRERQUISITES: GET THE PARAMETERS From config file
+    #############################################################################
+    # VP-FIXME-question : these can be adjusted by simply changin the yaml config
     for k in prp.keys():
         if k == 'select_level':
             if prp[k] is not 'None':
@@ -386,6 +390,56 @@ def preprocess(project_info, variable, model, currentDiag):
     if 'case_name' in model.keys():
         project_info['TEMPORARY']['case_name'] = model["case_name"]
 
+
+    ######################################################################
+    ### ENVIRONMENT VARIABLES
+    # Initialize all needed files and variables (Leon: EEEvvryboooodyyy!!!) 
+    #######################################################################
+    model_name = model['name']
+    project_name = model['project']
+    project_info['RUNTIME']['model'] = model_name
+    project_info['RUNTIME']['project'] = project_name
+    project_info['RUNTIME']['project_basename'] = 'OBS'
+    exit_on_warning = project_info['GLOBAL'].get('exit_on_warning', False)
+
+    # Variable put in environment
+    os.environ['__ESMValTool_base_var'] = variable.name
+
+    # Build input and output file names
+    infileslist = get_cmip_cf_infile(project_info, currentDiag, model, variable.name)[variable.name]
+    # VP-FIXME-question : the code can glob multiple files, but how to handle the case when globbing fails; currently
+    # the diagnostic is run on only the first file
+    if len(infileslist) == 1:
+        infiles = infileslist[0]
+    else:
+        info(" >>> preprocess.py >>> Found multiple netCDF files for current diagnostic", verbosity, required_verbosity=1)
+        info(" >>> preprocess.py >>> netCDF globbing has failed", verbosity, required_verbosity=1)
+        info(" >>> preprocess.py >>> Running diagnostic ONLY on the first file", verbosity, required_verbosity=1)
+        infiles = infileslist[0]
+    outfilename = get_cf_outfile(model, variable.field, variable.name)
+    info(' >>> preprocess.py >>> Reformatted file name: ' + outfilename, verbosity, required_verbosity=1)
+    fullpath = get_cf_fullpath(project_info, model, variable.field, variable.name)
+    info(' >>> preprocess.py >>> Reformatted target: ' + fullpath, verbosity, required_verbosity=1)
+
+    # indir is hardcoded to keep things tight; could be an option to namelist
+    project_info['TEMPORARY']['indir_path'] = '.'
+    project_info['TEMPORARY']['outfile_fullpath'] = fullpath
+    project_info['TEMPORARY']['infile_path'] = infiles
+    project_info['TEMPORARY']['start_year'] = model['start']
+    project_info['TEMPORARY']['end_year'] = model['end']
+    project_info['TEMPORARY']['ensemble'] = model['ensemble']
+    project_info['TEMPORARY']['variable'] = variable.name
+    project_info['TEMPORARY']['field'] = variable.field
+    info(' >>> preprocess.py >>> Gathering runtime variables:', verbosity, required_verbosity=1)
+    info(" >>> preprocess.py >>> Project is " + model['project'], verbosity, required_verbosity=1)
+    info(" >>> preprocess.py >>> Model is " + model['name'], verbosity, required_verbosity=1)
+    info(" >>> preprocess.py >>> Ensemble is " + model['ensemble'], verbosity, required_verbosity=1)
+    info(" >>> preprocess.py >>> Full IN path is " + infiles, verbosity, required_verbosity=1)
+    info(" >>> preprocess.py >>> Full OUT path is " + fullpath, verbosity, required_verbosity=1)
+
+    ################## START CHANGING STUFF ###########################################
+
+    ################## 0. CMOR_REFORMAT (still ncl, VP-FIXME-question : are we using something else for this? ##############
     # Check if the current project has a specific reformat routine,
     # otherwise use default
     if (os.path.isdir("reformat_scripts/" + model['project'])):
@@ -396,9 +450,6 @@ def preprocess(project_info, variable, model, currentDiag):
     reformat_script = os.path.join("reformat_scripts",
                                    which_reformat,
                                    "reformat_" + which_reformat + "_main.ncl")
-
-
-    ################## 0. CMOR_REFORMAT (still ncl, VP-FIXME-question : are we using something else for this? ##############
     if ((not os.path.isfile(project_info['TEMPORARY']['outfile_fullpath']))
             or project_info['GLOBAL']['force_processing']):
 
@@ -418,6 +469,7 @@ def preprocess(project_info, variable, model, currentDiag):
     #################### 1. REGRID ####################################################
     if regrid is True and target_grid is not None:
         import iris
+        tgt_grids = []
         info("  >>> preprocess.py >>>  Calling regrid to regrid model data onto " + target_grid + " grid",
                  verbosity,
                  required_verbosity=1)
@@ -427,25 +479,37 @@ def preprocess(project_info, variable, model, currentDiag):
         else:
             src_cube = infiles
         # try return a cube for regrid target
-        # target_grid - could be a netCDF file or string model
-        # descriptor
+        # target_grid - could simply be a netCDF file or string model
+        # descriptor eg 'ref_model'; currently netCDF and ref_model labels are implemented
         try:
-            tgt_grid = iris.load_cube(target_grid)
-        except (OSError, iris.exceptions.IrisError) as exc:
+            tgt_grid_cube = iris.load_cube(target_grid)
+            tgt_grids.append(tgt_grid_cube)
+        except (IOError, iris.exceptions.IrisError) as exc:
             info(" >>> preprocessing_tools.py >>> Target " + target_grid + " is not a netCDF file", "", verbosity)
             pass
+            # ref_model regrid string descriptor
             if target_grid == 'ref_model':
-                ref_model_list = currentDiag.variables['ref_model']
-                # VP-FIXME-question : how to deal with these?
+                additional_models_dicts = currentDiag.additional_models
+                ref_model_list = currentDiag.variables[0]['ref_model']
+                # VP-FIXME-question : get observation files for regridding
+                # multiple ref_models = multiple regridding right? (as currently implemented)
+                for ref_model in ref_model_list:
+                    for obs_model in additional_models_dicts:
+                        if obs_model['name'] == ref_model:
+                            info(' >>> preprocess.py >>> Regridding on ref_model ' + ref_model, verbosity, required_verbosity=1)
+                            tgt_nc_grid = get_obs_cf_infile(project_info, currentDiag, obs_model, variable.name)[variable.name][0]
+                            tgt_grid_cube = iris.load_cube(tgt_nc_grid)
+                            tgt_grids.append(tgt_grid_cube)
 
         # regrid
-        if regrid_scheme:
-            rgc = rg(src_cube, tgt_grid, regrid_scheme)
-        else:
-            info(' >>> preprocess.py >>> No regrid scheme specified, assuming linear', verbosity, required_verbosity=1)
-            rgc = rg(src_cube, tgt_grid, 'linear')
-        
-        iris.save(rgc, project_info['TEMPORARY']['outfile_fullpath'])
+        for tc in tgt_grids:
+            if regrid_scheme:
+                rgc = rg(src_cube, tc, regrid_scheme)
+            else:
+                info(' >>> preprocess.py >>> No regrid scheme specified, assuming linear', verbosity, required_verbosity=1)
+                rgc = rg(src_cube, tc, 'linear')
+            # save-append to outfile fullpath list to be further processed
+            iris.save(rgc, project_info['TEMPORARY']['outfile_fullpath'])
 
     ############ FINISH all PREPROCESSING and delete environment
     del(project_info['TEMPORARY'])
@@ -538,7 +602,7 @@ class Diag:
 
             # first try: use base variables provided by variable_defs script
             os.environ['__ESMValTool_base_var'] = base_var.name
-            infiles = get_cmip_cf_infile(project_info, currentDiag, model)[base_var.name]
+            infiles = get_cmip_cf_infile(project_info, currentDiag, model, base_var.name)[base_var.name]
 
             if len(infiles) == 0:
                 info("  >>> preprocess.py >>> No input files found for " + base_var.name +
@@ -548,7 +612,7 @@ class Diag:
                 base_var.fld = base_var.fld0
 
                 # try again with input variable = base variable (non derived)
-                infile = get_cmip_cf_infile(project_info, currentDiag, model)[base_var.name]
+                infile = get_cmip_cf_infile(project_info, currentDiag, model, base_var.name)[base_var.name]
 
                 if len(infile) == 0:
                     raise exceptions.IOError(2, "No input files found in ",

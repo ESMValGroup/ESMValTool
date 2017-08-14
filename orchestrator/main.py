@@ -17,6 +17,7 @@ import os
 import pdb
 from yaml_parser import Parser as Ps
 import preprocess as pp
+import copy
 
 # Define ESMValTool version
 version = "2.0.0"
@@ -157,28 +158,35 @@ for c in project_info['DIAGNOSTICS']:
         project_info['RUNTIME']['derived_var'] = derived_var
         project_info['RUNTIME']['derived_field_type'] = derived_field
 
-        # this is hardcoded, maybe make it an option
-        executable = "./interface_scripts/derive_var.ncl"
-        info(" >>> main.py >>> ", verbosity, required_verbosity=1)
-        info(" >>> main.py >>> Calling " + executable + " for '" + derived_var + "'",
-             verbosity, required_verbosity=1)
-        pp.run_executable(executable, project_info, verbosity,
-                          exit_on_warning)
-    project_info['RUNTIME']['derived_var'] = "Undefined"
+        # iteration over diagnostics for each variable
+        scrpts = copy.deepcopy(currDiag.scripts)
+        for i in range(len(currDiag.scripts)):
 
-    executable = "./diag_scripts/" + currDiag.scripts[0]['script']
+            # because the NCL environment is dumb, it is important to
+            # tell the environment which diagnostic script to use
+            project_info['RUNTIME']['currDiag'].scripts = [scrpts[i]]
 
-    configfile = currDiag.scripts[0]['cfg_file']
-    info(" >>> main.py >>> ", verbosity, required_verbosity=1)
-    info(" >>> main.py >>> Running diag_script: " + executable, verbosity, required_verbosity=1)
-    info(" >>> main.py >>> with configuration file: " + configfile, verbosity,
-         required_verbosity=1)
+            # this is hardcoded, maybe make it an option
+            executable = "./interface_scripts/derive_var.ncl"
+            info(" >>> main.py >>> ", verbosity, required_verbosity=1)
+            info(" >>> main.py >>> Calling " + executable + " for '" + derived_var + "'",
+                 verbosity, required_verbosity=1)
+            pp.run_executable(executable, project_info, verbosity,
+                              exit_on_warning)
 
-    pp.run_executable(executable,
-                      project_info,
-                      verbosity,
-                      exit_on_warning,
-                      launcher_arguments=None)
+            # run diagnostics
+            executable = "./diag_scripts/" + scrpts[i]['script']
+            configfile = scrpts[i]['cfg_file']
+            info(" >>> main.py >>> ", verbosity, required_verbosity=1)
+            info(" >>> main.py >>> Running diag_script: " + executable, verbosity, required_verbosity=1)
+            info(" >>> main.py >>> with configuration file: " + configfile, verbosity,
+                 required_verbosity=1)
+            pp.run_executable(executable,
+                              project_info,
+                              verbosity,
+                              exit_on_warning,
+                              launcher_arguments=None)
+            
 
 # delete environment variable
 del(os.environ['0_ESMValTool_version'])

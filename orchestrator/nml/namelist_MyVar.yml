@@ -22,7 +22,9 @@
 
   PREPROCESS:
     select_level:    None
+    regrid:          True
     target_grid:     ref_model
+#    target_grid:     test_data/ta_Amon_MPI-ESM-LR_historical_r1i1p1_200001-200512.nc
     regrid_scheme:   linear
     mask_fillvalues: True
     mask_landocean:  None
@@ -38,28 +40,31 @@
       id: MyDiagShit1
       description: tutorial diagnostic
       variables: 
-        - {name: ta, ref_model: ['CMIP5'], field: T3M, only: "None"}
+        - {name: ta, ref_model: ['ERA-Interim','NCEP'], field: T3M, only: "None"}
+        - {name: pr,  ref_model: ['ERA-Interim','NCEP'],  field: T2Ms, only: "None"}
       preprocess:
         id: shitter1
         select_level: 850
       scripts:
         - {script: MyDiag_test_ta.ncl,     cfg_file: ./nml/cfg_MyDiag/cfg_MyDiag.ncl}
+        - {script: MyDiag_test_ta.ncl,     cfg_file: ./nml/cfg_MyDiag/cfg_MyDiag.ncl}
       additional_models:
         - {name: GFDL-ESM2G, project: CMIP5_ETHZ,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2002,  path: /test_data/}
-        - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 2000,  end: 2002,  path: /obspath/Tier3/ERA-Interim/}
-        - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 2000,  end: 2002,  path: /obspath/Tier2/NCEP/}
+        - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 2000,  end: 2002,  path: ./test_data/OBS/Tier3/ERA-Interim}
+        - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 2000,  end: 2002,  path: ./test_data/OBS/Tier2/NCEP}
     DIAG_shit_2:
       !Diagnostic
       id: MyDiagShit2
       description: tutorial diagnostic
       variables:
-        - {name: pr,  ref_model: ['CMIP5'],  field: T2Ms, only: "None"}
+        - {name: pr,  ref_model: ['ERA-Interim'],  field: T2Ms, only: "None"}
       preprocess:
         id: shitter2
         select_level: 850
       scripts:
         - {script: MyDiag_test_pr.ncl,     cfg_file: ./nml/cfg_MyDiag/cfg_MyDiag.ncl}
+        - {script: MyDiag_test_pr.ncl,     cfg_file: ./nml/cfg_MyDiag/cfg_MyDiag.ncl}
       additional_models:
         - {name: GFDL-ESM2G, project: CMIP5_ETHZ,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2002,  path: /test_data/}
-        - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 2000,  end: 2002,  path: /obspath/Tier3/ERA-Interim/}
+        - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 2000,  end: 2002,  path: ./test_data/OBS/Tier3/ERA-Interim}
         - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 2000,  end: 2002,  path: /obspath/Tier2/NCEP/}
