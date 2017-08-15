@@ -85,6 +85,24 @@ def get_cf_fullpath(project_info, model, field, variable):
     outfile = get_cf_outfile(model, field, variable)
     return os.path.join(outdir, outfile)
 
+def get_regridded_cf_fullpath(project_info, model, field, variable, regrid_target_name):
+    """ @brief Returns the path (only) to the output file used in reformat AFTER regridding
+            @param project_info Current namelist in dictionary format
+            @param model One of the <model>-tags in the XML namelist file
+            @param field The field (see tutorial.pdf for available fields)
+            @param variable The variable (defaults to the variable in
+
+            This function specifies the full output path (directory + file) to
+            the outupt file to use in the reformat routines and in climate.ncl
+    """
+    outdir = get_cf_outpath(project_info, model) + '/REGRIDDED_ON_' + regrid_target_name
+    if not os.path.isdir(outdir):
+        mkd = 'mkdir -p ' + outdir
+        proc = subprocess.Popen(mkd, stdout=subprocess.PIPE, shell=True)
+        (out, err) = proc.communicate()
+    outfile = 'REGRIDDED_' + get_cf_outfile(model, field, variable)
+    return os.path.join(outdir, outfile)
+
 def get_cf_outpath(project_info, model):
     """ @brief Returns the path (only) to the output file used in reformat
             @param project_info Current namelist in dictionary format
@@ -191,7 +209,8 @@ def get_cmip_cf_infile(project_info, currentDiag, model, currentVarName):
         if len(infiles) > 1:
             # get pp.glob to glob the files into one single file
             import preprocessing_tools as pt
-            info(" >>> preprocess.py >>> Found multiple netCDF files for current diagnostic, attempting to glob them", verbosity, required_verbosity=1)
+            info(" >>> preprocess.py >>> Found multiple netCDF files for current diagnostic, attempting to glob them; variable: " + var['name'], 
+                 verbosity, required_verbosity=1)
             standard_name = rootdir + '/' + '_'.join([var['name'], model['mip'],
                                                      model['exp'],
                                                      model['name'],
@@ -418,6 +437,7 @@ def preprocess(project_info, variable, model, currentDiag):
         infiles = infileslist[0]
     outfilename = get_cf_outfile(model, variable.field, variable.name)
     info(' >>> preprocess.py >>> Reformatted file name: ' + outfilename, verbosity, required_verbosity=1)
+    # get full outpaths - original cmorized files that are preserved all through the process 
     fullpath = get_cf_fullpath(project_info, model, variable.field, variable.name)
     info(' >>> preprocess.py >>> Reformatted target: ' + fullpath, verbosity, required_verbosity=1)
 
@@ -442,6 +462,7 @@ def preprocess(project_info, variable, model, currentDiag):
     ################## 0. CMOR_REFORMAT (still ncl, VP-FIXME-question : are we using something else for this? ##############
     # Check if the current project has a specific reformat routine,
     # otherwise use default
+    # the cmor reformat is applied only once per variable
     if (os.path.isdir("reformat_scripts/" + model['project'])):
         which_reformat = model['project']
     else:
@@ -466,15 +487,20 @@ def preprocess(project_info, variable, model, currentDiag):
             raise exceptions.IOError(2, "Expected reformatted file isn't available: ",
                                      project_info['TEMPORARY']['outfile_fullpath'])
 
-    #################### 1. REGRID ####################################################
+    #################### 1. MASK AND TIME-AREA OPERATIONA   ####################################################
+
+    #################### 2. REGRID ####################################################
     if regrid is True and target_grid is not None:
+        # we will regrid according to whatever regridding scheme and reference grids are needed
+        # and create new regridded files from the original cmorized/masked ones
+        # but preserving thos files (optionally)
         import iris
-        tgt_grids = []
         info("  >>> preprocess.py >>>  Calling regrid to regrid model data onto " + target_grid + " grid",
                  verbosity,
                  required_verbosity=1)
-        # get regrid source cube
+        # first let's see if the regrid source is a simple netCDF file (cube)
         if os.path.isfile(project_info['TEMPORARY']['outfile_fullpath']):
+            info(' >>> preprocess.py >>> Preparing to regrid ' + project_info['TEMPORARY']['outfile_fullpath'], verbosity, required_verbosity=1)
             src_cube = iris.load_cube(project_info['TEMPORARY']['outfile_fullpath'])
         else:
             src_cube = infiles
@@ -483,33 +509,43 @@ def preprocess(project_info, variable, model, currentDiag):
         # descriptor eg 'ref_model'; currently netCDF and ref_model labels are implemented
         try:
             tgt_grid_cube = iris.load_cube(target_grid)
-            tgt_grids.append(tgt_grid_cube)
+            if regrid_scheme:
+                rgc = rg(src_cube, tgt_regrid_cube, regrid_scheme)
+            else:
+                info(' >>> preprocess.py >>> No regrid scheme specified, assuming linear', verbosity, required_verbosity=1)
+                rgc = rg(src_cube, tgt_regrid_cube, 'linear')
+            # save-append to outfile fullpath list to be further processed
+            iris.save(rgc, project_info['TEMPORARY']['outfile_fullpath'])
         except (IOError, iris.exceptions.IrisError) as exc:
             info(" >>> preprocessing_tools.py >>> Target " + target_grid + " is not a netCDF file", "", verbosity)
             pass
+            # continue to see what regridding we need
             # ref_model regrid string descriptor
+            project_info['RUNTIME']['regridtarget'] = []
             if target_grid == 'ref_model':
                 additional_models_dicts = currentDiag.additional_models
-                ref_model_list = currentDiag.variables[0]['ref_model']
-                # VP-FIXME-question : get observation files for regridding
-                # multiple ref_models = multiple regridding right? (as currently implemented)
-                for ref_model in ref_model_list:
-                    for obs_model in additional_models_dicts:
-                        if obs_model['name'] == ref_model:
-                            info(' >>> preprocess.py >>> Regridding on ref_model ' + ref_model, verbosity, required_verbosity=1)
-                            tgt_nc_grid = get_obs_cf_infile(project_info, currentDiag, obs_model, variable.name)[variable.name][0]
-                            tgt_grid_cube = iris.load_cube(tgt_nc_grid)
-                            tgt_grids.append(tgt_grid_cube)
-
-        # regrid
-        for tc in tgt_grids:
-            if regrid_scheme:
-                rgc = rg(src_cube, tc, regrid_scheme)
-            else:
-                info(' >>> preprocess.py >>> No regrid scheme specified, assuming linear', verbosity, required_verbosity=1)
-                rgc = rg(src_cube, tc, 'linear')
-            # save-append to outfile fullpath list to be further processed
-            iris.save(rgc, project_info['TEMPORARY']['outfile_fullpath'])
+                # identify the current variable
+                for var in currentDiag.variables:
+                    if var['name'] == variable.name:
+                        ref_model_list = var['ref_model']
+                        for ref_model in ref_model_list:
+                            for obs_model in additional_models_dicts:
+                                if obs_model['name'] == ref_model:
+                                    # add to environment variable
+                                    project_info['RUNTIME']['regridtarget'].append(ref_model)
+                                    info(' >>> preprocess.py >>> Regridding on ref_model ' + ref_model, verbosity, required_verbosity=1)
+                                    tgt_nc_grid = get_obs_cf_infile(project_info, currentDiag, obs_model, variable.name)[variable.name][0]
+                                    tgt_grid_cube = iris.load_cube(tgt_nc_grid)
+                                    if regrid_scheme:
+                                        rgc = rg(src_cube, tgt_grid_cube, regrid_scheme)
+                                    else:
+                                        info(' >>> preprocess.py >>> No regrid scheme specified, assuming linear', verbosity, required_verbosity=1)
+                                        rgc = rg(src_cube, tgt_grid_cube, 'linear')
+                                    # save specifically named regridded file
+                                    newlyRegriddedCube = iris.save(rgc, get_regridded_cf_fullpath(project_info, model, variable.field, variable.name, ref_model))
+                                    newlyRegriddedFilePath = get_regridded_cf_fullpath(project_info, model, variable.field, variable.name, ref_model)
+                                    newlyRegriddedCube = iris.save(rgc, newlyRegriddedFilePath)
+                                    info(' >>> preprocess.py >>> Running diagnostic on ' + newlyRegriddedFilePath, verbosity, required_verbosity=1)
 
     ############ FINISH all PREPROCESSING and delete environment
     del(project_info['TEMPORARY'])

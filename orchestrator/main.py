@@ -48,7 +48,6 @@ Project = Ps()
 
 # Project_info is a dictionary with all info from the namelist.
 project_info_0 = Project.load_namelist(yml_path)
-#print(project_info_0)
 verbosity = project_info_0.GLOBAL['verbosity']
 climo_dir = project_info_0.GLOBAL['climo_dir']
 exit_on_warning = project_info_0.GLOBAL.get('exit_on_warning', False)
@@ -64,6 +63,9 @@ project_info['CONFIG'] = project_info_0.CONFIG
 # Additional entries to 'project_info'. The 'project_info' construct
 # is one way by which Python passes on information to the NCL-routines.
 project_info['RUNTIME'] = {}
+
+# tell the environment about regridding
+project_info['RUNTIME']['regridtarget'] = []
 
 # Input xml path/file
 project_info['RUNTIME']['xml'] = yml_path
@@ -155,6 +157,7 @@ for c in project_info['DIAGNOSTICS']:
 
     project_info['RUNTIME']['currDiag'] = currDiag
     for derived_var, derived_field in zip(variables, field_types):
+
         project_info['RUNTIME']['derived_var'] = derived_var
         project_info['RUNTIME']['derived_field_type'] = derived_field
 

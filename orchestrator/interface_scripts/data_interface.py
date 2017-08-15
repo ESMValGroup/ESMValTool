@@ -162,7 +162,13 @@ class Data_interface(object):
             figfiles_suffix.append(pp.get_figure_file_names(project_info, model))
 
             # Get reformatted infiles
-            infile_fullpaths.append(pp.get_cf_fullpath(project_info, model, field="${FIELD}", variable="${VARIABLE}"))
+            if len(project_info['RUNTIME']['regridtarget']) == 0:
+                # no regridding
+                infile_fullpaths.append(pp.get_cf_fullpath(project_info, model, field="${FIELD}", variable="${VARIABLE}"))
+            else:
+                rgtargets = project_info['RUNTIME']['regridtarget']
+                for rgtarget in rgtargets:
+                    infile_fullpaths.append(pp.get_regridded_cf_fullpath(project_info, model, field="${FIELD}", variable="${VARIABLE}", regrid_target_name=rgtarget))
             infiles.append(pp.get_cf_outfile(model, field="${FIELD}", variable="${VARIABLE}"))
             infile_paths.append(pp.get_cf_outpath(project_info, model))
 

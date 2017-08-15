@@ -18,7 +18,7 @@
 
   MODELS:
     - {name: MPI-ESM-LR, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2002,  path: ./test_data, gridfile: "None"}
-    - {name: MPI-ESM-LR, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2002,  path: ./test_data, gridfile: "None"}
+    - {name: bcc-csm1-1, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2002,  path: ./test_data, gridfile: "None"}
 
   PREPROCESS:
     select_level:    None
@@ -41,13 +41,12 @@
       description: tutorial diagnostic
       variables: 
         - {name: ta, ref_model: ['ERA-Interim','NCEP'], field: T3M, only: "None"}
-        - {name: pr,  ref_model: ['ERA-Interim','NCEP'],  field: T2Ms, only: "None"}
       preprocess:
         id: shitter1
         select_level: 850
       scripts:
         - {script: MyDiag_test_ta.ncl,     cfg_file: ./nml/cfg_MyDiag/cfg_MyDiag.ncl}
-        - {script: MyDiag_test_ta.ncl,     cfg_file: ./nml/cfg_MyDiag/cfg_MyDiag.ncl}
+        - {script: MyDiag_test_ta_no2.ncl,     cfg_file: ./nml/cfg_MyDiag/cfg_MyDiag.ncl}
       additional_models:
         - {name: GFDL-ESM2G, project: CMIP5_ETHZ,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2002,  path: /test_data/}
         - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 2000,  end: 2002,  path: ./test_data/OBS/Tier3/ERA-Interim}
@@ -62,7 +61,6 @@
         id: shitter2
         select_level: 850
       scripts:
-        - {script: MyDiag_test_pr.ncl,     cfg_file: ./nml/cfg_MyDiag/cfg_MyDiag.ncl}
         - {script: MyDiag_test_pr.ncl,     cfg_file: ./nml/cfg_MyDiag/cfg_MyDiag.ncl}
       additional_models:
         - {name: GFDL-ESM2G, project: CMIP5_ETHZ,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2002,  path: /test_data/}
