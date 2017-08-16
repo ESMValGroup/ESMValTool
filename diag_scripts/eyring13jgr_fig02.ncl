@@ -35,7 +35,7 @@
 ;#     * masking missing values is only implemented for 2-dim fields          #
 ;#                                                                            #
 ;# Modification history:                                                      #
-;#    20170807-A_bock_ls: added tags for reporting
+;#    20170807-A_bock_ls: added tags for reporting                            #
 ;#    20160929-A_laue_ax: added optional masking of missing values before     #
 ;#                        calculating averages                                #
 ;#    20160826-A_laue_ax: added ensemble member to model name in legend if    #
@@ -566,9 +566,6 @@ begin
                                       "yearly", True)
             end if
 
-            ; tagging
-            ST_tag = "ST_mean"
-
             if (imod.ge.1) then
                 if (models@project(imod).ne."OBS") then   
                     if (models@experiment(imod).ne.models@experiment(imod - 1)) then
@@ -704,29 +701,30 @@ begin
         end if
 
         ;; tagging
+        DM_tag(ipan) = "DM_reg"
         if (latrange(ipan, 1).eq.90) then
             if(latrange(ipan, 0).eq.-90) then
                 DM_tag(ipan) = "DM_global"
-            else if (latrange(ipan, 0).gt.-1 .and. latrange(ipan, 0).lt.60) then
-                DM_tag(ipan) = "DM_nh"
-            else if (latrange(ipan, 0).gt.59) then
+            else if (latrange(ipan, 0).eq.60) then
                 DM_tag(ipan) = "DM_polar"
+            else if (latrange(ipan, 0).eq.0) then
+                DM_tag(ipan) = "DM_nh"
             end if
             end if
             end if
-        else if (latrange(ipan, 1).lt.1 .and. latrange(ipan, 1).gt.-50) then
-            if (latrange(ipan, 0).eq.-90) then
-                DM_tag(ipan) = "DM_sh"
-            else if (latrange(ipan, 0).gt.-30) then
+        else if (latrange(ipan, 1).eq.30) then
+            if (latrange(ipan, 0).eq.30.) then
                 DM_tag(ipan) = "DM_trop"
             end if
-            end if
-        else if (latrange(ipan, 1).lt.-49) then
+        else if (latrange(ipan, 1).eq.0) then
             if (latrange(ipan, 0).eq.-90) then
-                DM_tag(ipan) = "DM_polar"
-            else
-                DM_tag(ipan) = "DM_reg"
+                DM_tag(ipan) = "DM_sh"
             end if
+        else if (latrange(ipan, 1).eq.-60) then
+            if (latrange(ipan, 0).eq.-90.) then
+                DM_tag(ipan) = "DM_polar"
+            end if
+        end if
         end if
         end if
         end if
@@ -919,9 +917,8 @@ begin
     base_name = str_sub_str(xml_name, suffix, "")
 
     alltags = array_append_record(tags, DM_tag, 0)
-    alltags := array_append_record(alltags, ST_tag, 0)
-    alltags := array_append_record(alltags,\
-           (/"PT_times"/), 0)
+    alltags := array_append_record(alltags, (/"ST_mean", "PT_times"/), 0)
+
     caption = "Time series of area-weighted "  + variables(0) + \
                " over given domains and seasons" + \
                ", similar to IPCC AR5, fig. 9.10 and Eyring et al., JGR, 2013, fig. 2."
@@ -933,12 +930,9 @@ begin
                  interface_get_infile(variables(0), field_types(0), imod)
     end do
 
-    print(output_file_path)
-    print(id)
-
     ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles)
 
-    delete([/alltags, caption, id, climofiles, DM_tag, ST_tag, imod/])
+    delete([/alltags, caption, id, climofiles, DM_tag, imod/])
 
 
     info_output(">>>>>>>> Leaving " + diag_script, verbosity, 4)
