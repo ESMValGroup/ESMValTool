@@ -1,6 +1,24 @@
 ESMValTool v2.0.0
 =================
 
+Basic analysis structure (current: 16 August 2017)
+==================================================
+
+User runs python main.py nml/namelist_whatever.yml
+
+* main.py calls yaml_parser to parse the namelist; also initiates project_info dictionary;
+* main.py -> preprocess.py
+* preprocess.py finds data files (if multiple data files per model call to preprocessing_tools.py to iris concatenate them)
+* preprocess.py establishes environment variables (model, project, variable etc)
+* preprocess.py calls reformat.ncl
+* preprocess.py calls derive_var.ncl
+* preprocess.py does regridding (via regrid.py) if wanted
+* main.py calls diagnostic script
+
+Major benefit of current code structure: everything dealing with preprocessing can be done externally of diagnostic 
+script (via preprocess.py and associated libraries) OR via diagnostic script; preprocess.py will be strong enough to act as
+a diagnostic on its own.
+
 Code changed compared to previous release
 =========================================
 
