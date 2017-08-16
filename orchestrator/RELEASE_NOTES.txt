@@ -1,0 +1,27 @@
+ESMValTool v2.0.0
+=================
+
+Code changed compared to previous release
+=========================================
+
+Current /interface_scripts
+
+* auxiliary.ncl - unchanged
+* auxiliary.py - minor changes to screen output
+* constants.ncl - unchanged
+* data_handling.ncl - unchanged
+* data_interface.py - major changes (complete restructuring to allow yaml parser to work)
+* derive_var.ncl - unchanged
+* fx_file.py - unchanged (but probably will be purged)
+* launchers.py - single change to the ncl style file location
+* messaging.ncl - unchanged
+* preprocessing_tools.py - NEW: contains a lot of preprocessing functions (masking, globbing, time-area operations)
+* preprocess.py - NEW: contains basic tools (get file paths etc) and preprocess steps (call to cmor reformat, masking, regridding)
+* regrid.py - NEW: contains regridding and level selection functions (Bill Little)
+* write_header.ncl - unchanged
+* write_references.ncl - unchanged
+* yaml_parser.py - NEW: yaml parser functional
+
+In current directory:
+
+* main.py - major changes and simplifications (wrapper that calls all the under the hood functionalities)
