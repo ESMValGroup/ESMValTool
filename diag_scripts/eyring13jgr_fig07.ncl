@@ -714,14 +714,15 @@ begin
 
     caption = "Differences in vertically resolved " + variables(0) \
                + " between the " + period1(0) + "s and " + period2(0) + \
-               "s for the RCP simulations" + 
+               "s for the RCP simulations " + 
                "over given domains and seasons" + \
                ", similar to Eyring et al., JGR, 2013, fig. 7."
 
     id = diag_script + "_" + variables(0)
 
+    climofiles = new(dim_MOD, string)
     do imod = 0, dimsizes(models@name) - 1
-            climofiles = interface_get_inpaths(imod) + "/" + \
+            climofiles(imod) = interface_get_inpaths(imod) + "/" + \
                  interface_get_infile(variables(0), field_types(0), imod)
     end do
 

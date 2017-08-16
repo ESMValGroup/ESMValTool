@@ -286,6 +286,7 @@ PT_taylor = taylor diagram
 PT_times = time series
 PT_zonal = zonal mean
 PT_pro = profile (any other kind of line chart)
+PT_other = other plot types
 
 ### STATISTICS (for reporting) #####################################
 
