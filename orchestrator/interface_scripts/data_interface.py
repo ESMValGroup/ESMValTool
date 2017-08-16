@@ -204,6 +204,8 @@ class Data_interface(object):
         for model in project_info['MODELS']:
             if "id" in model.keys():
                 model_ids.append(model['id'])
+            if "ref" in model.keys():
+                model_ids.append(model['ref'])
             else:
                 model_ids.append("None")
         

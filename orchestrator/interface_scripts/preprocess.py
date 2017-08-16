@@ -69,7 +69,7 @@ def get_figure_file_names(project_info, model):
         @param some model from namelist
     """
     return "_".join([model['project'], model['name'], model['mip'], model['exp'], model['ensemble'],
-                     str(model['start'])]) + "-" + str(model['end'])
+                     str(model['start_year'])]) + "-" + str(model['end_year'])
 
 def get_cf_fullpath(project_info, model, field, variable):
     """ @brief Returns the path (only) to the output file used in reformat
@@ -100,7 +100,7 @@ def get_regridded_cf_fullpath(project_info, model, field, variable, regrid_targe
         mkd = 'mkdir -p ' + outdir
         proc = subprocess.Popen(mkd, stdout=subprocess.PIPE, shell=True)
         (out, err) = proc.communicate()
-    outfile = 'REGRIDDED_' + get_cf_outfile(model, field, variable)
+    outfile = get_cf_outfile(model, field, variable)
     return os.path.join(outdir, outfile)
 
 def get_cf_outpath(project_info, model):
@@ -144,7 +144,7 @@ def get_cf_outfile(model, field, variable):
                         model['ensemble'],
                         field,
                         variable,
-                        str(model['start'])]) + '-' + str(model['end']) + '.nc'
+                        str(model['start_year'])]) + '-' + str(model['end_year']) + '.nc'
 
     return outfile
 
@@ -163,8 +163,8 @@ def get_dict_key(model):
                          model['mip'],
                          model['exp'],
                          model['ensemble'],
-                         str(model['start']),
-                         str(model['end'])])
+                         str(model['start_year']),
+                         str(model['end_year'])])
     return dict_key
 
 def get_cmip_cf_infile(project_info, currentDiag, model, currentVarName):
@@ -215,7 +215,15 @@ def get_cmip_cf_infile(project_info, currentDiag, model, currentVarName):
                                                      model['exp'],
                                                      model['name'],
                                                      model['ensemble']]) + '_GLOB.nc'
-            globs = pt.glob(infiles, standard_name, verbosity)
+            # glob only if the GLOB.nc file doesnt exist
+            if os.path.exists(standard_name) is False:
+                globs = pt.glob(infiles, standard_name, verbosity)
+                info(" >>> preprocess.py >>> Globbing files now...",
+                     verbosity, required_verbosity=1)
+            else:
+                info(" >>> preprocess.py >>> Found GLOB file: " + standard_name,
+                     verbosity, required_verbosity=1)
+                globs = 1
             if globs == 1:
                 data_files[var['name']] = [standard_name]
             else:
@@ -310,8 +318,7 @@ def preprocess(project_info, variable, model, currentDiag):
             if prp[k] is not 'None':
                 select_level = prp[k]
         if k == 'regrid':
-            if prp[k] is not False:
-                regrid = True
+            regrid = prp[k]
         if k == 'target_grid':
             if prp[k] is not 'None':
                 target_grid = prp[k]
@@ -445,8 +452,8 @@ def preprocess(project_info, variable, model, currentDiag):
     project_info['TEMPORARY']['indir_path'] = '.'
     project_info['TEMPORARY']['outfile_fullpath'] = fullpath
     project_info['TEMPORARY']['infile_path'] = infiles
-    project_info['TEMPORARY']['start_year'] = model['start']
-    project_info['TEMPORARY']['end_year'] = model['end']
+    project_info['TEMPORARY']['start_year'] = model['start_year']
+    project_info['TEMPORARY']['end_year'] = model['end_year']
     project_info['TEMPORARY']['ensemble'] = model['ensemble']
     project_info['TEMPORARY']['variable'] = variable.name
     project_info['TEMPORARY']['field'] = variable.field
