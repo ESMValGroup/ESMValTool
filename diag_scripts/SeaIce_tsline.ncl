@@ -422,13 +422,14 @@ begin
     alltags = array_append_record(tags, (/"DM_polar", "PT_seas", "ST_mean", "ST_stddev"/), 0)
     caption = "Timeseries of sea ice extent. TODO: Problem with OBS* classes: for OBS* classes, interface_get_infile already returns path + file! Reason yet unknown."
     id = "#idSeaIceTslineExtent"
-    ESMValMD(plot_fname, alltags, caption, id, var0, models@name, climofiles)
+    contrib_authors = (/"A_gott_kl", "A_hueb_mi", "A_eval_ma", "A_brae_me", "A_senf_da"/)
+    ESMValMD(plot_fname, alltags, caption, id, var0, models@name, climofiles, diag_script, contrib_authors)
     delete([/plot_fname, alltags, caption, id/])
     plot_fname = wks_area@fullname
     alltags = array_append_record(tags, (/"DM_polar", "PT_seas", "ST_mean", "ST_stddev"/), 0)
     caption = "Timeseries of sea ice area. TODO: Problem with OBS* classes: for OBS* classes, interface_get_infile already returns path + file! Reason yet unknown."
     id = "#idSeaIceTslineArea"
-    ESMValMD(plot_fname, alltags, caption, id, var0, models@name, climofiles)
+    ESMValMD(plot_fname, alltags, caption, id, var0, models@name, climofiles, diag_script, contrib_authors)
     delete([/plot_fname, alltags, caption, id/])
 
     info_output(" gv " + wks_ext@fullname + " &", verbosity, 1)
