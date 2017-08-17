@@ -667,8 +667,9 @@ begin
         end do
         climofiles := array_append_record(climofiles, files2use, 0)
         modnames = array_append_record(models@name, camp_loc, 0)
+        contrib_authors = "A_gott_kl"
 
-        ESMValMD(outfile, alltags, caption, id, variables, modnames, climofiles)
+        ESMValMD(outfile, alltags, caption, id, variables, modnames, climofiles, diag_script, contrib_authors)
 
         delete([/alltags, caption, id, climofiles/])
         delete(files2use)
