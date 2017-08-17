@@ -346,7 +346,9 @@ begin
 
         id = diag_script + "_" + variables(0)
 
-        ESMValMD(output_file_path, alltags, caption, id, variables(0), allmodelnames, climofiles)
+        contrib_authors = "A_cion_ir"
+
+        ESMValMD(output_file_path, alltags, caption, id, variables(0), allmodelnames, climofiles, diag_script, contrib_authors)
 
         delete([/alltags, caption, id, climofiles, allmodelnames/])
 
@@ -720,7 +722,9 @@ begin
 
     id = diag_script + "_" + variables(0)
 
-    ESMValMD(output_file_path1, alltags, caption, id, variables(0), allmodelnames, climofiles)
+    contrib_authors = "A_cion_ir"
+
+    ESMValMD(output_file_path1, alltags, caption, id, variables(0), allmodelnames, climofiles, diag_script, contrib_authors)
 
     ;***********************************************************************
     ;********plot diff *****************************************************

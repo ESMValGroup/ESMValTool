@@ -740,7 +740,9 @@ begin
         end if
     end do
 
-    ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles)
+    contrib_authors = "A_cion_ir"
+
+    ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
 
     delete([/alltags, caption, id, climofiles, DM_tag, imod/])
 
