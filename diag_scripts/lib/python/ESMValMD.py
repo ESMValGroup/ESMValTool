@@ -9,14 +9,21 @@ from METAdata import METAdata
 import datetime
 import string
 import random
-
+import sys
+import os
 
 class ESMValMD(METAdata):
 
     def __init__(self, dtype="xml", modfile=None, tags=['tag'],
                  caption='caption', blockID="#ID",
-                 DataIDs="NO IDs found.", directwrite=True, **kwargs):
+                 DataIDs="NO IDs found.", diag_name=None, contrib_authors=None,
+                 directwrite=True, **kwargs):
         super(ESMValMD, self).__init__(**kwargs)
+
+        self.provenance = None
+        self.diag_name = diag_name
+        self.contrib_authors = contrib_authors
+        self.set_provenance()
 
         self._make_dict(tags, caption, blockID, DataIDs)
 
@@ -27,13 +34,27 @@ class ESMValMD(METAdata):
         if directwrite:
             self.write()
 
+    def set_provenance(self):
+        d = {}
+        d['Software_versions'] = {}
+        if '0_ESMValTool_version' in os.environ.keys():
+            d['Software_versions']['ESMValTool'] = os.environ['0_ESMValTool_version']
+        d['Software_versions']['Python'] = sys.version
+        #de = {}
+        #for t in dict(os.environ).iteritems():
+        #    de[str(t[0])] = str(t[1])
+        #d['Environment'] = de
+        d['Diag_name'] = self.diag_name
+        d['Contrib_authors'] = self.contrib_authors
+        self.provenance = d
+
     def _make_dict(self, tags, caption, blockID, DataIDs):
         DICT = {'ESMValTool': {
             'built': str(datetime.datetime.utcnow()),
             'tags': tags,
             'caption': caption,
             'block': blockID,
-            'DataIDs': DataIDs
+            'DataIDs': DataIDs , 'Provenance': self.provenance
             }}
         self.set_dict(DICT)
 
@@ -72,6 +93,14 @@ class nclFileMD(ESMValMD):
                 DataIDs = file_lines[5]
             except:
                 DataIDs = "No IDs found!"
+            try:
+                diag_name = file_lines[6]
+            except:
+                diag_name = "No diagnostic name found!"
+            try:
+                contrib_authors = file_lines[7]
+            except:
+                contrib_authors = "No contributing authors found!"
 
         super(nclFileMD, self).__init__(
             dtype=dtype,
@@ -79,5 +108,7 @@ class nclFileMD(ESMValMD):
             tags=tags,
             caption=caption,
             blockID=blockID,
-            DataIDs=DataIDs
+            DataIDs=DataIDs,
+            diag_name=diag_name,
+            contrib_authors=contrib_authors
         )

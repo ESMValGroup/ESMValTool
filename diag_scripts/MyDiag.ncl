@@ -268,7 +268,7 @@ begin
     climofiles = interface_get_inpaths(imod) + "/" + \
                  interface_get_infile(variables(0), field_types(0), imod)
 
-    ESMValMD(map@outfile, alltags, caption, id, variables(0), models@name(0), climofiles)
+    ESMValMD(map@outfile, alltags, caption, id, variables(0), models@name(0), climofiles, "MYDIAG","AUTHOR1, AUTHOR2")
 
     delete([/alltags, caption, id, climofiles/])
 
