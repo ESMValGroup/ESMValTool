@@ -33,6 +33,7 @@
 ;;    Multi-model mean to be implemented.
 ;;
 ;; Modification history
+;;    20170810-A_bock_ls: added tags for reporting
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;;                        of the code
 ;;    20150622-A_wenz_sa: added optional anomaly calculation, choice of 
@@ -55,6 +56,8 @@ load "./diag_scripts/lib/ncl/latlon.ncl"
 load "./diag_scripts/lib/ncl/style.ncl"
 
 load "./plot_scripts/ncl/xy_line.ncl"
+
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 begin
 
@@ -272,38 +275,6 @@ begin
             procmod = dim_avg_Wrap(tmp(:, {maxlev:minlev}))
             delete(tmp)
                                           
-            ;; tagging
-            if (diag_script_info@ts_minlon.eq.0 .and. diag_script_info@ts_max_lon.eq.360) then
-                if(diag_script_info@ts_maxlat.eq.90) then
-                    if (diag_script_info@ts_minlat.eq.-90) then
-                        DM_tag = "DM_global"
-                    else if (diag_script_info@ts_minlat.gt.-1 .and. diag_script_info@ts_minlat.lt.60) then
-                        DM_tag = "DM_nh"
-                    else if (diag_script_info@ts_minlat.gt.59) then
-                        DM_tag = "DM_polar"
-                    end if
-                    end if
-                    end if
-                else if (diag_script_info@ts_maxlat@ts_maxlat.lt.1 .and. diag_script_info@ts_maxlat@ts_maxlat.gt.-50) then
-                    if (diag_script_info@ts_minlat.eq.-90) then
-                        DM_tag = "DM_sh"
-                    else if (diag_script_info@ts_minlat.gt.-30) then
-                        DM_tag = "DM_trop"
-                    end if
-                    end if
-                else if (diag_script_info@ts_maxlat@ts_maxlat.lt.-49) then
-                    if (diag_script_info@ts_minlat.eq.-90) then
-                        DM_tag = "DM_polar"
-                    else 
-                        DM_tag = "DM_reg"
-                    end if
-                end if
-                end if
-                end if
-            else 
-                DM_tag = "DM_reg"
-            end if
-            
         end if
 
         ;; time, lat, lon
@@ -314,38 +285,6 @@ begin
                                       diag_script_info@ts_maxlon, area_opper, \
                                       True)
                                       
-            ;; tagging
-            if (diag_script_info@ts_minlon.eq.0 .and. diag_script_info@ts_max_lon.eq.360) then
-                if(diag_script_info@ts_maxlat.eq.90) then
-                    if (diag_script_info@ts_minlat.eq.-90) then
-                        DM_tag = "DM_global"
-                    else if (diag_script_info@ts_minlat.gt.-1 .and. diag_script_info@ts_minlat.lt.60) then
-                        DM_tag = "DM_nh"
-                    else if (diag_script_info@ts_minlat.gt.59) then
-                        DM_tag = "DM_polar"
-                    end if
-                    end if
-                    end if
-                else if (diag_script_info@ts_maxlat@ts_maxlat.lt.1 .and. diag_script_info@ts_maxlat@ts_maxlat.gt.-50) then
-                    if (diag_script_info@ts_minlat.eq.-90) then
-                        DM_tag = "DM_sh"
-                    else if (diag_script_info@ts_minlat.gt.-30) then
-                        DM_tag = "DM_trop"
-                    end if
-                    end if
-                else if (diag_script_info@ts_maxlat@ts_maxlat.lt.-49) then
-                    if (diag_script_info@ts_minlat.eq.-90) then
-                        DM_tag = "DM_polar"
-                    else 
-                        DM_tag = "DM_reg"
-                    end if
-                end if
-                end if
-                end if
-            else 
-                DM_tag = "DM_reg"
-            end if
-            
         end if
 
         ;; time, lev, lat
@@ -353,9 +292,6 @@ begin
             error_msg("f", diag_script, "", \
                       "field type T2Mz not yet implemented")
                       
-            ;; tagging
-            DM_tag = "DM_reg"
-            
         end if
 
         ;; time, lat
@@ -363,17 +299,11 @@ begin
             error_msg("f", diag_script, "", \
                       "field type T1Ms not yet implemented")
                       
-            ;; tagging
-            DM_tag = "DM_reg"
-            
         end if
 
         ;; time
         if (field_type0.eq."T0M") then
             procmod = A0_timavg
-            
-            ;; tagging
-            DM_tag = "DM_reg"
             
         end if
 
@@ -391,9 +321,6 @@ begin
             procmod = tmp
             delete(tmp)
             
-            ; tagging
-            ST_tag = "ST_detrend"
-            
         else
             detr = "nodetr"
         end if
@@ -402,14 +329,6 @@ begin
         if (isatt(diag_script_info, "ts_anomaly")) then
             anom = diag_script_info@ts_anomaly
             procmod = procmod - avg(procmod(0:9))
-            
-            ; tagging
-            if (ismissing(ST_tag)) then
-                ST_tag = "ST_anomaly"
-            else 
-                ST_tag := array_append_record(ST_tag, "ST_anomaly", 0)
-            end if
-            
         else
             anom = "noanom"
         end if
@@ -475,13 +394,6 @@ begin
             model_arr = tmp_mmm
             models@name = tmpm
             delete([/tmp_mmm,tmpm/])
-            
-            ; tagging
-            if (ismissing(ST_tag)) then
-                ST_tag = "ST_mean"
-            else 
-                ST_tag := array_append_record(ST_tag, "ST_mean", 0)
-            end if
             
         end if
     end if
@@ -556,23 +468,51 @@ begin
     suffix = get_file_suffix(xml_name, 0)
     base_name = str_sub_str(xml_name, suffix, "")
     
-    alltags = array_append_record(DM_tag, ST_tag, 0)
-    alltags := array_append_record(alltags,\
-           (/"PT_times"/), 0)
-    caption = "Time series for " + variables(0) + \
-              " over the period " + start_year + \
-              "-" + end_year
-    id = diag_script + "_" + base_name
+    if (diag_script_info@multi_model_mean.eq."y") then
+        allmodelnames = array_append_record(models@name, (/"multi-model-mean"/), 0)
+    else
+        allmodelnames = models@name
+    end if 
+
+        domain = "DM_reg"
+
+    if ((field_type0.eq."T3M").or.(field_type0.eq."T2Ms")) then
+        if ((diag_script_info@ts_minlat.eq.-90.).and. \
+            (diag_script_info@ts_maxlat.eq.90.).and.  \
+            (diag_script_info@ts_minlon.eq.0.).and. \
+            (diag_script_info@ts_maxlon.eq.360.)) then
+            domain = "DM_glob"
+        end if
+    else
+        if ((diag_script_info@ts_minlat.eq.-90.).and. \
+            (diag_script_info@ts_maxlat.eq.90.)) then
+            domain = "DM_glob"
+        end if
+    end if
+
+    if (anom .eq. "anom") then
+        stat = "ST_anomaly"
+        captionadd = "anomalies"
+    else
+        stat = "ST_mean"
+        captionadd = "means"
+    end if
+
+    ;alltags = array_append_record(tags, DM_tag, 0)
+    alltags = array_append_record(tags, (/domain, stat, "PT_times"/), 0)
+
+    caption = "Time series of the " + captionadd + " for variable " + variables(0) \
+                + " over the period " + start_year + "-" + end_year
+
+    id = diag_script + "_" + variables(0)
     
-    do imod = 0, dimsizes(models@name) - 1
-            climofiles = interface_get_inpaths(imod) + "/" + \
-                 interface_get_infile(variables(0), field_types(0), imod)
+    climofiles = new(dim_MOD, string)
+    do ii = 0, dim_MOD-1
+            climofiles(ii) = interface_get_inpaths(ii) + "/" + \
+                 interface_get_infile(variables(0), field_types(0), ii)
     end do
 
-    ESMValMD(plot@outfile, alltags, caption, id, variables, models@name, climofiles)
-
-    delete([/alltags, caption, id, climofiles, DM_tag, ST_tag, imod/])
-
+    ESMValMD(wks@fullname, alltags, caption, id, variables(0), allmodelnames, climofiles)
 
 ;    ;; References
 ;    write_references(diag_script, "A_cion_ir", (/"A_righ_ma","A_wenz_sa"/), "D_0001", \

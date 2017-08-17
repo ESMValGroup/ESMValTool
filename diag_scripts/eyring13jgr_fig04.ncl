@@ -38,6 +38,7 @@
 ;# Caveats:                                                                   #
 ;#                                                                            #
 ;# Modification history:                                                      #
+;#    20170811-A_bock_ls: added tags for reporting                            #
 ;#    20160916-A-laue_ax: added option to subtract global mean before         #
 ;#                        plotting (--> anomalies)                            #
 ;#    20151208-A-laue_ax: code clean-up, moved call to write_references to    #
@@ -58,6 +59,8 @@ load "./diag_scripts/lib/ncl/latlon.ncl"
 load "./diag_scripts/lib/ncl/regridding.ncl"
 load "./diag_scripts/lib/ncl/style.ncl"
 load "./diag_scripts/lib/ncl/ensemble.ncl"
+
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 ;; fetch general parameters
 begin
@@ -328,6 +331,25 @@ begin
 ; A_laue_ax-
         print("gv " + output_file_path + "." + file_type)
 
+        ; add meta data to plot (for reporting)
+
+        climofiles = interface_get_inpaths(idx_mod) + "/" \
+            + interface_get_infile(variables(0), field_types(0), idx_mod)
+
+        alltags = array_append_record(tags, (/"DM_global", "ST_mean", "ST_clim", "PT_geo"/), 0)
+
+        allmodelnames = models@name(idx_mod)
+
+        caption = "Climatological mean annual mean of " + variables(0) \
+              + " averaged between " + y1(idx_mod) + " and " + y2(idx_mod) \
+              + ", similar to Eyring et al., JGR, 2013, fig. 4."
+
+        id = diag_script + "_" + variables(0)
+
+        ESMValMD(output_file_path, alltags, caption, id, variables(0), allmodelnames, climofiles)
+
+        delete([/alltags, caption, id, climofiles, allmodelnames/])
+
         ;; clean up
         delete([/wks, A2, A3, time_mean/])
     end do  ; idx_MOD, for plotting
@@ -402,6 +424,10 @@ begin
     else
         res@tiMainString = "MMM_chem"
     end if
+
+    ;just one panel plot at the end
+    res@gsnDraw  = False                          ; don't draw  
+    res@gsnFrame = False                          ; don't advance frame 
 
     res@tiMainFontHeightF = 0.03
     res@gsnLeftString = variable_info@short_name + \
@@ -674,6 +700,27 @@ begin
     resP = True
     gsn_panel(wks1, map_p(0:ip - 1), (/1, ip/), resP) 
     print("gv " + output_file_path1 + "." + file_type)
+
+    ; add meta data to plot (for reporting)
+
+    climofiles = new(dim_MOD, string)
+    do ii = 0, dim_MOD - 1
+        climofiles(ii) = \
+            interface_get_inpaths(ii) + "/" \
+            + interface_get_infile(variables(0), field_types(0), ii)
+    end do
+
+    alltags = array_append_record(tags, (/"DM_global", "ST_mean", "ST_clim", "PT_geo"/), 0)
+
+    allmodelnames = array_append_record(models@name, (/"multi-model-mean"/), 0)
+
+    caption = "Multi-model climatological mean annual mean of " + variables(0) \
+          + " averaged between " + models@start_year(0) + " and " + models@end_year(0) \
+          + ", similar to Eyring et al., JGR, 2013, fig. 4."
+
+    id = diag_script + "_" + variables(0)
+
+    ESMValMD(output_file_path1, alltags, caption, id, variables(0), allmodelnames, climofiles)
 
     ;***********************************************************************
     ;********plot diff *****************************************************
