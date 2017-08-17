@@ -567,7 +567,9 @@ begin
                 end do
             end if
 
-            ESMValMD(maps@outfile, alltags, caption, id, variables(0), models@name(imod), climofiles)
+            contrib_authors = "A_laue_ax"
+
+            ESMValMD(maps@outfile, alltags, caption, id, variables(0), models@name(imod), climofiles, diag_script, contrib_authors)
 
             delete([/alltags, caption, id, climofiles/])
 
@@ -633,7 +635,9 @@ begin
                 interface_get_infile(variables(0), field_types(0), ii)
         end do
 
-        ESMValMD(outfile, alltags, caption, id, variables(0), models@name, climofiles)
+        contrib_authors = "A_laue_ax"
+
+        ESMValMD(outfile, alltags, caption, id, variables(0), models@name, climofiles, diag_script, contrib_authors)
 
         delete([/alltags, caption, id, climofiles/])
 

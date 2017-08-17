@@ -890,7 +890,9 @@ begin
                       + " (" + season(is) + ")."
         id = diag_script + "_" + variables(0) + "_" + season(is)
 
-        ESMValMD(outfile(is), alltags, caption, id, variables(0), models@name, climofiles)
+        contrib_authors = "A_laue_ax"
+
+        ESMValMD(outfile(is), alltags, caption, id, variables(0), models@name, climofiles, diag_script, contrib_authors)
     end do
 
     ; ===================================================================================
@@ -1226,7 +1228,9 @@ begin
                       + " (" + season(is) + "), reference = " + models@name(ref_ind) + "."
             id = diag_script + "_" + variables(0) + "_diff_" + season(is)
 
-            ESMValMD(outfile(is), difftags, caption, id, variables(0), models@name, climofiles)
+            contrib_authors = "A_laue_ax"
+
+            ESMValMD(outfile(is), difftags, caption, id, variables(0), models@name, climofiles, diag_script, contrib_authors)
         end do
 
     end if  ; if flag_diff

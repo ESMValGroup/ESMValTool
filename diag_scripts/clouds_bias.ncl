@@ -696,7 +696,9 @@ begin
                       + " (" + season(is) + "), reference = " + models@name(ref_ind) + "."
             id = diag_script + "_" + variables(0) + "_" + season(is)
 
-            ESMValMD(wks@fullname, alltags, caption, id, variables(0), models@name, climofiles)
+            contrib_authors = "A_laue_ax"
+
+            ESMValMD(wks@fullname, alltags, caption, id, variables(0), models@name, climofiles, diag_script, contrib_authors)
 
         end do ; is-loop (seasons)
     end if
