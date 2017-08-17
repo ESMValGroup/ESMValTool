@@ -399,8 +399,9 @@ begin
            (/"PT_diurn", "PT_geo", "ST_mean", "ST_corr"/), 0)
     caption = di@season + " - amplitude" + plot_settings@part_of_header
     id = diag_script + "_" + base_name + "-amplitude"
+    contrib_authors = "A_rio_ca"
 
-    ESMValMD(plot_outfile, alltags, caption, id, variables, models@name, climofiles)
+    ESMValMD(plot_outfile, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
 
     delete([/alltags, caption, id/])
 
@@ -420,8 +421,9 @@ begin
            (/"PT_diurn", "PT_geo", "ST_mean", "ST_corr"/), 0)
     caption = di@season + " - phase" + plot_settings@part_of_header
     id = diag_script + "_" + base_name + "-phase"
+    contrib_authors = "A_rio_ca"
 
-    ESMValMD(plot_outfile, alltags, caption, id, variables, models@name, climofiles)
+    ESMValMD(plot_outfile, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
 
     delete([/alltags, caption, id/])
 
@@ -441,8 +443,9 @@ begin
            (/"PT_diurn", "PT_geo", "ST_mean", "ST_corr"/), 0)
     caption = di@season + " - var" + plot_settings@part_of_header
     id = diag_script + "_" + base_name + "-var"
+    contrib_authors = "A_rio_ca"
 
-    ESMValMD(plot_outfile, alltags, caption, id, variables, models@name, climofiles)
+    ESMValMD(plot_outfile, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
 
     delete([/alltags, caption, id, climofiles/])
 

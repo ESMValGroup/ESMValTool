@@ -340,8 +340,9 @@ begin
     caption = "Maximum entropy power spectra of variable " + variables(0) + " averaged over the NINO3 region" \
               + " (5N to 5S, 150W to 90W), similar to IPCC AR5, fig. 9.35."
     id = diag_script + "_" + variables(0)
+    contrib_authors = "A_laue_ax"
 
-    ESMValMD(outfile, alltags, caption, id, variables(0), models@name, climofiles)
+    ESMValMD(outfile, alltags, caption, id, variables(0), models@name, climofiles, diag_script, contrib_authors)
 
 end
 

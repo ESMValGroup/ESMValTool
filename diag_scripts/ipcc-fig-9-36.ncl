@@ -289,8 +289,9 @@ begin
                   + " Reference data set shown as dashed line: " + models@name(idx_ref) + "." \
                   + " Similar to IPCC AR5, fig. 9.36."
         id = diag_script + "_" + variables(0) + "_" + region(ireg)
+        contrib_authors = "A_laue_ax"
 
-        ESMValMD(outfile, alltags, caption, id, variables(0), allmodelnames, climofiles)
+        ESMValMD(outfile, alltags, caption, id, variables(0), allmodelnames, climofiles, diag_script, contrib_authors)
 
         delete(plot)
         delete(wks)

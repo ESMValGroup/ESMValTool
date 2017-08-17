@@ -525,7 +525,9 @@ begin
 
         id = diag_script + "_" + variables(0)
 
-        ESMValMD(wks@fullname, alltags, caption, id, variables(0), allmodelnames, climofiles)
+        contrib_authors = "A_laue_ax"
+
+        ESMValMD(wks@fullname, alltags, caption, id, variables(0), allmodelnames, climofiles, diag_script, contrib_authors)
 
         info_output(" Wrote " + wks@fullname, verbosity, 1)
     end if

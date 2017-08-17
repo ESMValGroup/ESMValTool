@@ -258,8 +258,9 @@ begin
         caption = "Mean " + variables(0) + " from " + models@name(mID) + "."
         id = diag_script + "_" + variables(0)
         alltags = array_append_record(ttags, "ST_mean", 0)
+        contrib_authors = (/"A_righ_ma", "A_kais_ch"/)
         ESMValMD(plot_abs + "." + file_type, alltags, caption, id, variables(0), \
-                 models@name(mID), climofiles(mID))
+                 models@name(mID), climofiles(mID), diag_script, contrib_authors)
         delete(alltags)
         ; -------------------------------------------------------------------------------
 
@@ -281,8 +282,9 @@ begin
             id = diag_script + "_" + variables(0)
             alltags = array_append_record(ttags, "ST_diff", 0)
             idx = (/mID, refID/)
+            contrib_authors = (/"A_righ_ma", "A_kais_ch"/) 
             ESMValMD(plot_diff + "." + file_type, alltags, caption, id, variables(0), \
-                     models@name(idx), climofiles(idx))
+                     models@name(idx), climofiles(idx), diag_script, contrib_authors)
             delete(idx)
             delete(alltags)
             ; -------------------------------------------------------------------------------
@@ -319,8 +321,9 @@ begin
         alltags = array_append_record(ttags, "ST_mean", 0)
         idxtmp = ispan(0, dim_MOD - 1, 1)
         idx_models_only = ind(idxtmp.ne.refID)
+        contrib_authors = (/"A_righ_ma", "A_kais_ch"/)
         ESMValMD(plot_abs + "." + file_type, alltags, caption, id, variables(0), \
-                 models@name(idx_models_only), climofiles(idx_models_only))
+                 models@name(idx_models_only), climofiles(idx_models_only), diag_script, contrib_authors)
         delete(alltags)
         delete(idxtmp)
         ; -------------------------------------------------------------------------------
@@ -344,8 +347,9 @@ begin
         caption = variables(0) + " multi-model mean - " + models@name(refID) + "."
         id = diag_script + "_" + variables(0)
         alltags = array_append_record(ttags, "ST_diff", 0)
+        contrib_authors = (/"A_righ_ma", "A_kais_ch"/)
         ESMValMD(plot_diff + "." + file_type, alltags, caption, id, variables(0), \
-                 models@name, climofiles)
+                 models@name, climofiles, diag_script, contrib_authors)
         delete(alltags)
         ; -------------------------------------------------------------------------------
     end if
@@ -373,8 +377,9 @@ begin
         caption = "Multi-model median " + variables(0) + "."
         id = diag_script + "_" + variables(0)
         alltags = array_append_record(ttags, "ST_mean", 0)
+        contrib_authors = (/"A_righ_ma", "A_kais_ch"/)
         ESMValMD(plot_abs + "." + file_type, alltags, caption, id, variables(0), \
-                 models@name(idx_models_only), climofiles(idx_models_only))
+                 models@name(idx_models_only), climofiles(idx_models_only), diag_script, contrib_authors)
         delete(alltags)
         ; -------------------------------------------------------------------------------
 
@@ -397,8 +402,9 @@ begin
         caption = variables(0) + " multi-model median - " + models@name(refID) + "."
         id = diag_script + "_" + variables(0)
         alltags = array_append_record(ttags, "ST_diff", 0)
+        contrib_authors = (/"A_righ_ma", "A_kais_ch"/) 
         ESMValMD(plot_diff + "." + file_type, alltags, caption, id, variables(0), \
-                 models@name, climofiles)
+                 models@name, climofiles, diag_script, contrib_authors)
         delete(alltags)
         ; -------------------------------------------------------------------------------
     end if
