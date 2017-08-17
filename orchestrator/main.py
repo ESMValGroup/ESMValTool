@@ -321,7 +321,9 @@ for c in project_info['DIAGNOSTICS']:
             # Rewrite netcdf to expected input format.
             info(" >>> main.py >>> Calling preprocessing to check/reformat model data, and apply preprocessing steps",
                  verbosity, 2)
-            pp.preprocess(project_info, base_var, model, currDiag)
+            # for backwards compatibility we can revert to ncl reformatting
+            # by changing cmor_reformat_type = 'ncl'
+            pp.preprocess(project_info, base_var, model, currDiag, cmor_reformat_type = 'py')
 
     vardicts = currDiag.variables
     variables = []

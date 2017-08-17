@@ -16,6 +16,7 @@ from auxiliary import info, error, print_header, ncl_version_check
 import exceptions
 import launchers
 from regrid import regrid as rg
+import iris
 
 #######################################################
 ### This script contains basic functionalities
@@ -294,9 +295,35 @@ def get_cf_areafile(project_info, model):
 
     return os.path.join(areadir, areafile) 
 
+# a couple functions needed by cmor reformatting (the new python one)
+def get_attr_from_field_coord(ncfield, coord_name, attr):
+    if coord_name is not None:
+        attrs = ncfield.cf_group[coord_name].cf_attrs()
+        attr_val = [value for (key, value) in attrs if key == attr]
+        if attr_val:
+            return attr_val[0]
+    return None
+
+# Use this callback to fix anything Iris tries to break!
+# noinspection PyUnusedLocal
+def merge_callback(raw_cube, field, filename):
+    # Remove attributes that cause issues with merging and concatenation
+    for attr in ['creation_date', 'tracking_id', 'history']:
+        if attr in raw_cube.attributes:
+            del raw_cube.attributes[attr]
+    for coord in raw_cube.coords():
+        # Iris chooses to change longitude and latitude units to degrees
+        #  regardless of value in file, so reinstating file value
+        if coord.standard_name in ['longitude', 'latitude']:
+            units = get_attr_from_field_coord(field,
+                                              coord.var_name,
+                                              'units')
+            if units is not None:
+                coord.units = units
+
 ####################################################################################################################################
 
-def preprocess(project_info, variable, model, currentDiag):
+def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
 
 ###############################################################################################################
 #################### The Big Mean PREPROCESS Machine ##########################################################
@@ -309,10 +336,11 @@ def preprocess(project_info, variable, model, currentDiag):
     project_info['TEMPORARY'] = {}
     # key in the prperocess
     prp = project_info['PREPROCESS']
+
     #############################################################################
     ### PRERQUISITES: GET THE PARAMETERS From config file
     #############################################################################
-    # VP-FIXME-question : these can be adjusted by simply changin the yaml config
+    # VP-FIXME-question : these can be adjusted by simply changing the yaml config
     for k in prp.keys():
         if k == 'select_level':
             if prp[k] is not 'None':
@@ -466,33 +494,85 @@ def preprocess(project_info, variable, model, currentDiag):
 
     ################## START CHANGING STUFF ###########################################
 
-    ################## 0. CMOR_REFORMAT (still ncl, VP-FIXME-question : are we using something else for this? ##############
+    ################## 0. CMOR_REFORMAT (NCL version) ##############
+    # Legacy code that will be purged in the future
     # Check if the current project has a specific reformat routine,
     # otherwise use default
     # the cmor reformat is applied only once per variable
-    if (os.path.isdir("reformat_scripts/" + model['project'])):
-        which_reformat = model['project']
-    else:
-        which_reformat = 'default'
+    if cmor_reformat_type == 'ncl':
+        if (os.path.isdir("reformat_scripts/" + model['project'])):
+            which_reformat = model['project']
+        else:
+            which_reformat = 'default'
+    
+        reformat_script = os.path.join("reformat_scripts",
+                                       which_reformat,
+                                       "reformat_" + which_reformat + "_main.ncl")
+        if ((not os.path.isfile(project_info['TEMPORARY']['outfile_fullpath']))
+                or project_info['GLOBAL']['force_processing']):
 
-    reformat_script = os.path.join("reformat_scripts",
-                                   which_reformat,
-                                   "reformat_" + which_reformat + "_main.ncl")
-    if ((not os.path.isfile(project_info['TEMPORARY']['outfile_fullpath']))
-            or project_info['GLOBAL']['force_processing']):
+            info("  >>> preprocess.py >>>  Calling " + reformat_script + " to check/reformat model data",
+                 verbosity,
+                 required_verbosity=1)
 
-        info("  >>> preprocess.py >>>  Calling " + reformat_script + " to check/reformat model data",
-             verbosity,
-             required_verbosity=1)
+            run_executable(reformat_script, project_info, verbosity,
+                           exit_on_warning)
+        if 'NO_REFORMAT' in reformat_script:
+            pass
+        else:
+            if (not os.path.isfile(project_info['TEMPORARY']['outfile_fullpath'])):
+                raise exceptions.IOError(2, "Expected reformatted file isn't available: ",
+                                         project_info['TEMPORARY']['outfile_fullpath'])
 
-        run_executable(reformat_script, project_info, verbosity,
-                       exit_on_warning)
-    if 'NO_REFORMAT' in reformat_script:
-        pass
-    else:
-        if (not os.path.isfile(project_info['TEMPORARY']['outfile_fullpath'])):
-            raise exceptions.IOError(2, "Expected reformatted file isn't available: ",
-                                     project_info['TEMPORARY']['outfile_fullpath'])
+    ################## 0. CMOR_REFORMAT (NCL version) ##############
+    # New code: cmor_check.py (by Javier Vegas)
+    if cmor_reformat_type == 'py':
+        # needed imports
+        from cmor_check import CMORCheck as CC
+        from cmor_check import CMORCheckError as CCE
+        import warnings
+        from variable_info import CMIP5Info
+
+        variables_info = CMIP5Info()
+
+        var_name = variable.name
+        table = model['mip'] 
+
+
+        try:
+            # Load cubes for requested variable in given files
+            # remember naming conbentions 
+            # IN: infiles
+            # OUT: project_info['TEMPORARY']['outfile_fullpath']
+            files = infiles
+            with warnings.catch_warnings():
+                warnings.filterwarnings('ignore',
+                                        'Missing CF-netCDF measure variable',
+                                        UserWarning)
+                warnings.filterwarnings('ignore',
+                                        'Missing CF-netCDF boundary variable',
+                                        UserWarning)
+                def cube_var_name(raw_cube):
+                    return raw_cube.var_name == var_name
+                var_cons = iris.Constraint(cube_func=cube_var_name)
+                # force single cube; this function defaults a list of cubes
+                reft_cube = iris.load(files, var_cons, callback=merge_callback)[0]
+
+            # Concatenate data to single cube, i.e. merge time series
+            # cube = cubes.concatenate_cube()
+            # Create checker for loaded cube
+            var_info = variables_info.get_variable(table, var_name)
+            checker = CC(reft_cube, var_info, automatic_fixes=True)
+            # Run checks
+            checker.check_metadata()
+            checker.check_data()
+            # save reformatted cube
+            iris.save(reft_cube, project_info['TEMPORARY']['outfile_fullpath'])
+
+        except (iris.exceptions.ConstraintMismatchError,
+                iris.exceptions.ConcatenateError,
+                CCE) as ex:
+            print(ex)
 
     #################### 1. MASK AND TIME-AREA OPERATIONA   ####################################################
 
@@ -501,7 +581,6 @@ def preprocess(project_info, variable, model, currentDiag):
         # we will regrid according to whatever regridding scheme and reference grids are needed
         # and create new regridded files from the original cmorized/masked ones
         # but preserving thos files (optionally)
-        import iris
         info("  >>> preprocess.py >>>  Calling regrid to regrid model data onto " + target_grid + " grid",
                  verbosity,
                  required_verbosity=1)
