@@ -37,6 +37,7 @@
 ;# Caveats:                                                                   #
 ;#                                                                            #
 ;# Modification history:                                                      #
+;#    * 20170817-A_bock_ls: added tags for reporting                          #
 ;#    * 20151210-A-laue_ax: code clean-up, added call to write_references     #
 ;#    * 201510??-A-cion_ir: written                                           #
 ;#                                                                            #
@@ -56,6 +57,8 @@ load "./diag_scripts/lib/ncl/latlon.ncl"
 load "./diag_scripts/lib/ncl/regridding.ncl"
 load "./diag_scripts/lib/ncl/style.ncl"
 load "./diag_scripts/lib/ncl/ensemble.ncl"
+
+load "./diag_scripts/lib/ncl/meta_data.ncl" 
 
 ;************************************************
 
@@ -204,6 +207,9 @@ begin
     if (isatt(diag_script_info, "e13fig11_V1_lev")) then
         V1_lev = toint(diag_script_info@e13fig11_V1_lev)
     end if
+
+    ;; tagging
+    DM_tag = new(dimsizes(season_V0) , string)
 
     ;-----------------------------------------------------------------------------
     do ipan = 0, dimsizes(season_V0) - 1  ; panel loop
@@ -554,6 +560,35 @@ begin
             end if
         end if
 
+        ;; tagging
+        DM_tag(ipan) = "DM_reg"
+        if (latrange_V0(ipan, 1).eq.90) then
+            if(latrange_V0(ipan, 0).eq.-90) then
+                DM_tag(ipan) = "DM_global"
+            else if (latrange_V0(ipan, 0).eq.60) then
+                DM_tag(ipan) = "DM_polar"
+            else if (latrange_V0(ipan, 0).eq.0) then
+                DM_tag(ipan) = "DM_nh"
+            end if
+            end if
+            end if
+        else if (latrange_V0(ipan, 1).eq.30) then
+            if (latrange_V0(ipan, 0).eq.30.) then
+                DM_tag(ipan) = "DM_trop"
+            end if
+        else if (latrange_V0(ipan, 1).eq.0) then
+            if (latrange_V0(ipan, 0).eq.-90) then
+                DM_tag(ipan) = "DM_sh"
+            end if
+        else if (latrange_V0(ipan, 1).eq.-60) then
+            if (latrange_V0(ipan, 0).eq.-90.) then
+                DM_tag(ipan) = "DM_polar"
+            end if
+        end if
+        end if
+        end if
+        end if
+
         if (season_V0.eq."yearly") then
             season_l_V0 = "ANN"
         else
@@ -643,7 +678,9 @@ begin
     lbres@lbPerimOn          = False
     xpos = (/0.05, 0.25, 0.45, 0.65/)
     index_p = (/6, 4, 7/)
-    labels_1 = (/"CMIP5 all", "nochem CMIP5", "chem CMIP5", "CCMVal-2"/)
+    index_p = (/6, 7, 7/)
+;    labels_1 = (/"CMIP5 all", "nochem CMIP5", "chem CMIP5", "CCMVal-2"/)
+    labels_1 = (/"nochem CMIP5", "chem CMIP5","CCMVal-2"/)
 
     mkres               = True         ; Marker resources
 
@@ -673,8 +710,40 @@ begin
     pan@gsnPaperOrientation = "portrait" 
     pan@gsnPanelXWhiteSpacePercent = 5
     pan@gsnPanelYWhiteSpacePercent = 10
-    gsn_panel(wks, plot, (/3, 2/), pan)   ; panel plot               
+;    gsn_panel(wks, plot, (/3, 2/), pan)   ; panel plot               
+    gsn_panel(wks, plot, (/dimsizes(season_V0), 1/), pan)  ; panel plot
     frame(wks)
+
+    ;; Attach Metadata to plot
+    xml_name = getenv("ESMValTool_xml_name")
+    suffix = get_file_suffix(xml_name, 0)
+    base_name = str_sub_str(xml_name, suffix, "")
+
+    alltags = array_append_record(tags, DM_tag, 0)
+    alltags := array_append_record(alltags, (/"ST_trend", "PT_scatter"/), 0)
+
+    caption = "Trend relationship between " + variables(0) + " and " +\
+               variables(1) + " over given domains, levels and seasons" + \
+               ", similar to Eyring et al., JGR, 2013, fig. 11."
+
+    id = diag_script + "_" + variables(0) + "_" + variables(1)
+
+    climo_dim = dim_EXP*(dimsizes(list_nochem_mod)+dimsizes(list_chem_mod))
+    climofiles = new(climo_dim, string)
+    ii=0
+    do imod = 0, dimsizes(models@name) - 1
+        if ((any(models@name(imod).eq.list_nochem_mod)) .or. \
+            (any(models@name(imod).eq.list_chem_mod))) then
+            climofiles(ii) = interface_get_inpaths(imod) + "/" + \
+                 interface_get_infile(variables(0), field_types(0), imod)
+            ii=ii+1
+        end if
+    end do
+
+    ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles)
+
+    delete([/alltags, caption, id, climofiles, DM_tag, imod/])
+
 
     ;--------------------------------------------------
 
