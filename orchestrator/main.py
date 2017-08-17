@@ -10,14 +10,15 @@ contact: valeriu.predoi@ncas.ac.uk
 import sys
 sys.path.append("./interface_scripts")
 import subprocess
+import getopt
 from auxiliary import info, error, print_header, ncl_version_check
-from optparse import OptionParser
 import datetime
 import os
 import pdb
 from yaml_parser import Parser as Ps
 import preprocess as pp
 import copy
+import ConfigParser
 
 # Define ESMValTool version
 version = "2.0.0"
@@ -26,39 +27,213 @@ os.environ['0_ESMValTool_version'] = version
 # Check NCL version
 ncl_version_check()
 
-# Check command arguments.
-usage = "%prog nml/namelist-file.yml"
-description = """ESMValTool - Earth System Model Evaluation Tool.
-For further help, check the doc/-folder for pdfs and references therein."""
+# print usage
+def usage():
+    msg = """ 
+              -----------------------------------------------------------
+              ------------------- Starting ESMValTool -------------------
+              -----------------------------------------------------------
+              python main.py [OPTIONS]
+              ESMValTool - Earth System Model Evaluation Tool.
+              You can run with these command-line options:
 
-parser = OptionParser(usage=usage, description=description)
-parser.add_option("-d", "--dummy",
-                  action="store_true", dest="dummy", default=False,
-                  help="dummy: does nothing")
-options, args = parser.parse_args()
-if len(args) == 0:
-    parser.print_help()
-    sys.exit(0)
+              -h --help             [HELP]     Print help message and exit.
+              -n --namelist-file    [REQUIRED] Namelist file.
+              -c --config-file      [REQUIRED] Configuration file. 
 
-# Get command arguments.
-yml_path = args[0]
+              For further help, check the doc/-folder for pdfs 
+              and references therein. Have fun!
+              -------------------------------------------------------------
+
+    """
+    print >> sys.stderr, msg
+
+# class to hold information for configuration
+class configFile:
+    """
+    Class to hold info from the configuration file (if present)
+    """
+    def s2b(self, s):
+        """
+        convert a string to boolean arg
+        """
+        if s == 'True':
+            return True
+        elif s == 'False':
+            return False
+        else:
+            raise ValueError
+
+    def get_par_file(self, params_file):
+        """
+        Gets the params file
+        """
+        # ---- Check the params_file exists
+        if not os.path.isfile(params_file):
+            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> non existent configuration file: "
+            sys.exit(1)
+        cp = ConfigParser.ConfigParser()
+        cp.read(params_file)
+        return cp
+
+    # parse GLOBAL section
+    # the beauty of ConfigParser is that
+    # one can add sections, so here is
+    # where you define them
+    def GLOBAL(self, params_file):
+        """
+        Function to build dictionary containing
+        the GLOBAL attributes. Takes ConfigParser object cp
+        """
+        cp = self.get_par_file(params_file)
+        GLOB = {}
+        if cp.has_option('GLOBAL','ini-version') :
+            ini_version = int(cp.get('GLOBAL','ini-version'))
+            GLOB['ini-version'] = ini_version
+        if cp.has_option('GLOBAL','write_plots') :
+            write_plots = self.s2b(cp.get('GLOBAL','write_plots'))
+            GLOB['write_plots'] = write_plots
+        else:
+            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no write_plots in config "
+            GLOB['write_plots'] = False
+        if cp.has_option('GLOBAL','write_netcdf') :
+            write_netcdf = self.s2b(cp.get('GLOBAL','write_netcdf'))
+            GLOB['write_netcdf'] = write_netcdf
+        else:
+            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no write_netcdf in config "
+            GLOB['write_netcdf'] = False
+        if cp.has_option('GLOBAL','verbosity') :
+            verbosity = int(cp.get('GLOBAL','verbosity'))
+            GLOB['verbosity'] = verbosity
+        else:
+            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no verbosity in config "
+            GLOB['verbosity'] = 1
+        if cp.has_option('GLOBAL','exit_on_warning') :
+            eow = self.s2b(cp.get('GLOBAL','exit_on_warning'))
+            GLOB['exit_on_warning'] = eow
+        else:
+            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no exit_on_warning in config "
+            GLOB['exit_on_warning'] = False
+        if cp.has_option('GLOBAL','output_file_type') :
+            output_type = cp.get('GLOBAL','output_file_type')
+            GLOB['output_file_type'] = output_type
+        else:
+            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no output_file_type in config "
+            GLOB['output_file_type'] = 'ps'
+        if cp.has_option('GLOBAL','climo_dir') :
+            climo_dir = cp.get('GLOBAL','climo_dir')
+            GLOB['climo_dir'] = climo_dir
+        else:
+            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no climo_dir in config "
+            GLOB['climo_dir'] = '.'
+        if cp.has_option('GLOBAL','wrk_dir') :
+            work_dir = cp.get('GLOBAL','wrk_dir')
+            GLOB['wrk_dir'] = work_dir
+        else:
+            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no wrk_dir in config "
+            GLOB['wrk_dir'] = '.'
+        if cp.has_option('GLOBAL','plot_dir') :
+            plot_dir = cp.get('GLOBAL','plot_dir')
+            GLOB['plot_dir'] = plot_dir
+        else:
+            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no plot_dir in config "
+            GLOB['plot_dir'] = '.'
+        if cp.has_option('GLOBAL','max_data_filesize') :
+            mdf = int(cp.get('GLOBAL','max_data_filesize'))
+            GLOB['max_data_filesize'] = mdf
+        else:
+            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no max_data_filesize in config "
+            GLOB['max_data_filesize'] = 100
+        if cp.has_option('GLOBAL','force_processing') :
+            fop = self.s2b(cp.get('GLOBAL','force_processing'))
+            GLOB['force_processing'] = fop
+        else:
+            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no force_processing in config "
+            GLOB['force_processing'] = True
+        if cp.has_option('GLOBAL','preprocess_id') :
+            preprocess_id = cp.get('GLOBAL','preprocess_id')
+            GLOB['preprocess_id'] = preprocess_id
+        else:
+            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no preprocess_id in config "
+            GLOB['preprocess_id'] = 'Default'
+        return GLOB
+
+# start parsing command line args
+# options initialize and descriptor
+namelist_file    = None
+config_file      = None
+preprocess_id    = None
+
+shortop = "hp:n:c:"
+# ---- Long form.
+longop = [
+   "help",
+   "namelist-file=",
+   "config-file="]
+
+# get command line arguments
+try:
+  opts, args = getopt.getopt(sys.argv[1:], shortop, longop)
+except getopt.GetoptError:
+  usage()
+  sys.exit(1)
+
+command_string = 'python main.py '
+
+# parse options
+for o, a in opts:
+    if o in ("-h", "--help"):
+        usage()
+        sys.exit(0)
+    elif o in ("-n", "--namelist-file"):
+        namelist_file = a
+        command_string = command_string + ' -n ' + a
+    elif o in ("-c", "--config-file"):
+        config_file = a
+        command_string = command_string + ' -c ' + a
+    else:
+        print >> sys.stderr, "Unknown option:", o
+        usage()
+        sys.exit(1)
+
+# condition options
+if not namelist_file:
+    print >> sys.stderr, "PY  ERROR:  >>> main.py >>> No namelist file specified."
+    print >> sys.stderr, "PY  ERROR:  >>> main.py >>> Use --namelist-file to specify it."
+    sys.exit(1)
+if not config_file:
+    print >> sys.stderr, "PY  ERROR:  >>> main.py >>> No configuration file specified."
+    print >> sys.stderr, "PY  ERROR:  >>> main.py >>> Use --config-file to specify it."
+    sys.exit(1)
+
+# Get namelis file
+yml_path = namelist_file
 
 # Parse input namelist into project_info-dictionary.
 Project = Ps()
 
+# Parse config file into GLOBAL_DICT info_dictionary
+confFileClass = configFile()
+GLOBAL_DICT = confFileClass.GLOBAL(config_file)
+
 # Project_info is a dictionary with all info from the namelist.
 project_info_0 = Project.load_namelist(yml_path)
-verbosity = project_info_0.GLOBAL['verbosity']
-climo_dir = project_info_0.GLOBAL['climo_dir']
-exit_on_warning = project_info_0.GLOBAL.get('exit_on_warning', False)
+verbosity = GLOBAL_DICT['verbosity']
+climo_dir = GLOBAL_DICT['climo_dir']
+exit_on_warning = GLOBAL_DICT.get('exit_on_warning', False)
 
 # Project_info is a dictionary with all info from the namelist.
 project_info = {}
-project_info['GLOBAL'] = project_info_0.GLOBAL
+project_info['GLOBAL'] = GLOBAL_DICT
 project_info['MODELS'] = project_info_0.MODELS
 project_info['DIAGNOSTICS'] = project_info_0.DIAGNOSTICS
-project_info['PREPROCESS'] = project_info_0.PREPROCESS
+# this will have to be purget at some point in the future
 project_info['CONFIG'] = project_info_0.CONFIG
+
+# identify which Preprocess to perfom
+preprocess_id = 'Preprocess_' + GLOBAL_DICT['preprocess_id']
+info('>>> main.py >>> Preprocess type: ' + preprocess_id, verbosity, required_verbosity=1)
+project_info['PREPROCESS'] = project_info_0.PREPROCESS[preprocess_id]
 
 # Additional entries to 'project_info'. The 'project_info' construct
 # is one way by which Python passes on information to the NCL-routines.

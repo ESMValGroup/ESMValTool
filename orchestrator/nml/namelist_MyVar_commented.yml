@@ -5,6 +5,7 @@
 # Master name of namelist
 !Namelist
 
+#############################################################################################
 # GLOBAL section
   GLOBAL:
     write_plots:       True
@@ -21,6 +22,7 @@
 #    force_calc:        False # not used
 #    force_gradecalc:   False # not used
 #    force_taylorcalc:  False # not used
+################### This whole section has moved in config.ini ###############################
 
   # code loops through each of the models (of course :P)
   # if regridding needs to be done by external diagnostic, 'ref: model_name_to_regrid_on' can be added as dictionary key
@@ -28,15 +30,29 @@
     - {name: MPI-ESM-LR, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002,  path: ./test_data, gridfile: "None"}
     - {name: bcc-csm1-1, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002,  path: ./test_data, gridfile: "None"}
 
+  # PREPROCESS can now be sectioned in different instances
+  # identified in main.py and adjacent modules by their tag names:
+  # here Preprocess_Default and Preprocess_Type1
+  # these names are initiated from config.ini
   PREPROCESS:
-    select_level:    None
-    regrid:          True #or False
-    target_grid:     ref_model # this indicator is recognized by preprocess.py to start regridding on additional models below
-#    target_grid:     code can do a simple regridding on a specified netCDF file eg test_data/ta_Amon_MPI-ESM-LR_historical_r1i1p1_200001-200512.nc
-    regrid_scheme:   linear
-    mask_fillvalues: True
-    mask_landocean:  None
-    multimodel_mean: True
+    Preprocess_Default:
+      select_level:    None
+      regrid:          True
+      target_grid:     ref_model
+#     target_grid:     test_data/ta_Amon_MPI-ESM-LR_historical_r1i1p1_200001-200512.nc
+      regrid_scheme:   linear
+      mask_fillvalues: True
+      mask_landocean:  None
+      multimodel_mean: True
+    Preprocess_Type1:
+      select_level:    None
+      regrid:          False
+      target_grid:     ref_model
+#     target_grid:     test_data/ta_Amon_MPI-ESM-LR_historical_r1i1p1_200001-200512.nc
+      regrid_scheme:   linear
+      mask_fillvalues: True
+      mask_landocean:  None
+      multimodel_mean: True
 
   CONFIG:
     var_def_scripts: ./variable_defs
