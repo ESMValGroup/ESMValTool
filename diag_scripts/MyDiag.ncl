@@ -267,8 +267,9 @@ begin
     id = diag_script + "_example_id"
     climofiles = interface_get_inpaths(imod) + "/" + \
                  interface_get_infile(variables(0), field_types(0), imod)
+    contrib_authors = (/"A_gott_kl", "A_eval_ma"/)
 
-    ESMValMD(map@outfile, alltags, caption, id, variables(0), models@name(0), climofiles, "MYDIAG","AUTHOR1, AUTHOR2")
+    ESMValMD(map@outfile, alltags, caption, id, variables(0), models@name(0), climofiles, diag_script, contrib_authors)
 
     delete([/alltags, caption, id, climofiles/])
 

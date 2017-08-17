@@ -22,7 +22,7 @@ procedure ESMValMD(filename:string,
                   modelnames[*],
                   infiles[*],
                   diag_name:string,
-                  contrib_authors:string)
+                  contrib_authors[*]:string)
 ;;
 ;; Arguments
 ;;    filename: file name of the figure (including path)
@@ -33,7 +33,7 @@ procedure ESMValMD(filename:string,
 ;;    modelnames: list of model names
 ;;    infiles: list of input files (= climo files)
 ;;    diag_name: name of diagnostic
-;;    contib_authors: contributing authors
+;;    contib_authors: list of contributing authors
 ;;
 ;; Description
 ;;    Creates meta data string and calls Python function to write meta data to
@@ -80,7 +80,13 @@ begin
     end do
     str(5) = str(5) + infiles(n - 1)
     str(6) = diag_name
-    str(7) = contrib_authors
+
+    n = dimsizes(contrib_authors)
+    str(7) = ""
+    do i = 0, n - 2
+        str(7) = str(7) + contrib_authors(i) + ","
+    end do
+    str(7) = str(7) + contrib_authors(n - 1)
 
     ascii_file = filename + "_list.txt"
     asciiwrite(ascii_file, str)
