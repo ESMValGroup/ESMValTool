@@ -73,7 +73,7 @@ begin
     info_output("++++++++++++++++++++++++++++++++++++++++++", verbosity, 1)
 
     ;; References
-    write_references(diag_script, "A_cion_ir", (/"A_righ_ma","A_wenz_sa"/), "D_0001", \
+    write_references(diag_script, "A_cion_ir", (/"A_righ_ma","A_wenz_sa","A_bock_ls"/), "D_0001", \
                      "", "P_esmval")
 
     dim_MOD = dimsizes(models@name)
@@ -543,7 +543,9 @@ begin
 
     id = diag_script + "_" + variables(0)
 
-    ESMValMD(wks@fullname, alltags, caption, id, variables(0), allmodelnames, climofiles)
+    contrib_authors = (/"A_cion_ir", "A_righ_ma","A_wenz_sa","A_bock_ls"/)
+
+    ESMValMD(wks@fullname, alltags, caption, id, variables(0), allmodelnames, climofiles, diag_script, contrib_authors)
 ; A_laue_ax-
 
     info_output(" wrote " + wks@fullname + " &", verbosity, 1)

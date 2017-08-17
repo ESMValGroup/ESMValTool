@@ -512,7 +512,9 @@ begin
                  interface_get_infile(variables(0), field_types(0), ii)
     end do
 
-    ESMValMD(wks@fullname, alltags, caption, id, variables(0), allmodelnames, climofiles)
+    contrib_authors = (/"A_cion_ir", "A_righ_ma","A_wenz_sa"/)
+
+    ESMValMD(wks@fullname, alltags, caption, id, variables(0), allmodelnames, climofiles, diag_script, contrib_authors)
 
 ;    ;; References
 ;    write_references(diag_script, "A_cion_ir", (/"A_righ_ma","A_wenz_sa"/), "D_0001", \

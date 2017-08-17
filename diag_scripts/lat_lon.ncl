@@ -388,7 +388,9 @@ begin
             end if
         end if
 
-        ESMValMD(output_file_path, alltags, caption, id, variables(0), modelnames, climofiles)
+        contrib_authors = "A_gott_kl"
+
+        ESMValMD(output_file_path, alltags, caption, id, variables(0), modelnames, climofiles, diag_script, contrib_authors)
 
         delete([/alltags, caption, id, modelnames, climofiles/])
 

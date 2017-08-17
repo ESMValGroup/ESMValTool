@@ -27,6 +27,7 @@ A_loew_al = Loew, Alexander (LMU, Germany - alexander.loew 'at' lmu.de)
 ### Development team
 A_anav_al = Anav, Alessandro (Univ. of Exeter, UK - a.anav 'at' exeter.ac.uk)
 A_andr_ol = Andrews, Oliver (Tyndall Centre, UK - oliverdandrews 'at' googlemail.com)
+A_bock_ls = Bock, Lisa (DLR, Germany - lisa.bock 'at' dlr.de)^M
 A_chen_ja = Chen, Jack (NCAR, USA - cchen 'at' ucar.edu)
 A_cion_ir = Cionni, Irene (ENEA, Italy - irene.cionni 'at' enea.it)
 A_davi_ed = Davin, Edouard Leopold (ETH, CH, edouard.davin 'at' env.ethz.ch)
