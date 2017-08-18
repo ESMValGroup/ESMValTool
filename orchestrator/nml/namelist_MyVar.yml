@@ -12,8 +12,9 @@
 #     target_grid:     test_data/ta_Amon_MPI-ESM-LR_historical_r1i1p1_200001-200512.nc
       regrid_scheme:   linear
       mask_fillvalues: True
-      mask_landocean:  None
+      mask_landocean:  True
       multimodel_mean: True
+      save_intermediary_cubes: True
     Preprocess_Type1:
       select_level:    None
       regrid:          False
@@ -21,8 +22,9 @@
 #     target_grid:     test_data/ta_Amon_MPI-ESM-LR_historical_r1i1p1_200001-200512.nc
       regrid_scheme:   linear
       mask_fillvalues: True
-      mask_landocean:  None
+      mask_landocean:  True
       multimodel_mean: True
+      save_intermediary_cubes: True
 
   CONFIG:
     var_def_scripts: ./variable_defs

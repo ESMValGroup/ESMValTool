@@ -1,0 +1,29 @@
+Code date    |    Issues
+------------------------------------------------------------------------------------
+18/08/2017   | Noticed that cmor_check.py doesn't actually perform time gating on 
+             | the input netCDF file-extracted cube (Javier, have a look at
+             | interface_scripts/cmor_check.py and interface_scripts/preprocess.py)
+             | Current code fails regridding with MemoryError if input time ccord
+             | is much bigger than the regrid target time coord
+             | (this is fixed by pt.time_slice()) that needs to be used anyway
+
+Full error message:
+Traceback (most recent call last):
+  File "main.py", line 327, in <module>
+    pp.preprocess(project_info, base_var, model, currDiag, cmor_reformat_type = 'py')
+  File "./interface_scripts/preprocess.py", line 659, in preprocess
+    rgc = rg(src_cube, tgt_grid_cube, regrid_scheme)
+  File "./interface_scripts/regrid.py", line 189, in regrid
+    result = src_cube.regrid(tgt_grid, horizontal_schemes[scheme])
+  File "/group_workspaces/jasmin/ncas_cms/valeriu/anaconda2/lib/python2.7/site-packages/iris/cube.py", line 3840, in regrid
+    return regridder(self)
+  File "/group_workspaces/jasmin/ncas_cms/valeriu/anaconda2/lib/python2.7/site-packages/iris/analysis/_regrid.py", line 534, in __call__
+    self._method, self._extrapolation_mode)
+  File "/group_workspaces/jasmin/ncas_cms/valeriu/anaconda2/lib/python2.7/site-packages/iris/analysis/_regrid.py", line 248, in _regrid
+    x_dim)
+  File "/group_workspaces/jasmin/ncas_cms/valeriu/anaconda2/lib/python2.7/site-packages/iris/analysis/_interpolation.py", line 96, in extend_circular_coord_and_data
+    data = extend_circular_data(data, coord_dim)
+  File "/group_workspaces/jasmin/ncas_cms/valeriu/anaconda2/lib/python2.7/site-packages/iris/analysis/_interpolation.py", line 107, in extend_circular_data
+    axis=coord_dim)
+MemoryError
+------------------------------------------------------------------------------------

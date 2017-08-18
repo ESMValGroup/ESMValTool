@@ -17,6 +17,7 @@ import exceptions
 import launchers
 from regrid import regrid as rg
 import iris
+import preprocessing_tools as pt
 
 #######################################################
 ### This script contains basic functionalities
@@ -209,7 +210,6 @@ def get_cmip_cf_infile(project_info, currentDiag, model, currentVarName):
             info(" >>> preprocess.py >>> Could not find any data files for " + model['name'], verbosity, required_verbosity=1)
         if len(infiles) > 1:
             # get pp.glob to glob the files into one single file
-            import preprocessing_tools as pt
             info(" >>> preprocess.py >>> Found multiple netCDF files for current diagnostic, attempting to glob them; variable: " + var['name'], 
                  verbosity, required_verbosity=1)
             standard_name = rootdir + '/' + '_'.join([var['name'], model['mip'],
@@ -272,7 +272,6 @@ def get_obs_cf_infile(project_info, currentDiag, obs_model, currentVarName):
             info(" >>> preprocess.py >>> Could not find any OBS data files for " + obs_model['name'], verbosity, required_verbosity=1)
         if len(infiles) > 1:
             # get pp.glob to glob the files into one single file
-            import preprocessing_tools as pt
             info(" >>> preprocess.py >>> Found multiple OBS netCDF files for current diagnostic, attempting to glob them", verbosity, required_verbosity=1)
             standard_name = rootdir + '/' + '_'.join([obs_model['project'], obs_model['name'],
                                                      obs_model['type'], obs_model['version'],
@@ -340,7 +339,15 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
     #############################################################################
     ### PRERQUISITES: GET THE PARAMETERS From config file
     #############################################################################
-    # VP-FIXME-question : these can be adjusted by simply changing the yaml config
+
+    # initialize variables
+    regrid = False
+    save_intermediary_cubes = False
+    mask_fillvalues = False
+    multimodel_mean = False
+    mask_landocean = False
+
+    # parse dictionary
     for k in prp.keys():
         if k == 'select_level':
             if prp[k] is not 'None':
@@ -358,16 +365,19 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
                 mask_fillvalues = True
         if k == 'multimodel_mean':
             if prp[k] is not False:
-                regrid_scheme = True
+                multimodel_mean = True
         if k == 'gridfile':
             if prp[k] is not 'None':
                 areafile_path = prp[k]
                 if areafile_path is not None:
                     project_info['TEMPORARY']['areafile_path'] = areafile_path
+        if k == 'save_intermediary_cubes':
+            save_intermediary_cubes = prp[k]
+         
         if k == 'mask_landocean':
-            # names and paths are taken from old projects.py
-            # VP-FIXME-question : change?
-            if prp[k] is not 'None': 
+
+            if prp[k] is not False: 
+                mask_landocean = True
                 lmaskdir = os.path.join(model["path"],
                                        model["exp"],
                                        'fx',
@@ -477,7 +487,7 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
     info(' >>> preprocess.py >>> Reformatted target: ' + fullpath, verbosity, required_verbosity=1)
 
     # indir is hardcoded to keep things tight; could be an option to namelist
-    project_info['TEMPORARY']['indir_path'] = '.'
+    project_info['TEMPORARY']['indir_path'] = project_info['GLOBAL']['run_directory']
     project_info['TEMPORARY']['outfile_fullpath'] = fullpath
     project_info['TEMPORARY']['infile_path'] = infiles
     project_info['TEMPORARY']['start_year'] = model['start_year']
@@ -524,7 +534,7 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
                 raise exceptions.IOError(2, "Expected reformatted file isn't available: ",
                                          project_info['TEMPORARY']['outfile_fullpath'])
 
-    ################## 0. CMOR_REFORMAT (NCL version) ##############
+    ################## 0. CMOR_REFORMAT (PY version) ##############
     # New code: cmor_check.py (by Javier Vegas)
     if cmor_reformat_type == 'py':
         # needed imports
@@ -556,50 +566,101 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
                     return raw_cube.var_name == var_name
                 var_cons = iris.Constraint(cube_func=cube_var_name)
                 # force single cube; this function defaults a list of cubes
-                reft_cube = iris.load(files, var_cons, callback=merge_callback)[0]
+                reft_cube_0 = iris.load(files, var_cons, callback=merge_callback)[0]
 
-            # Concatenate data to single cube, i.e. merge time series
-            # cube = cubes.concatenate_cube()
+
+            # apply time gating so we minimize cube size
+            yr1 = int(model['start_year'])
+            yr2 = int(model['end_year'])
+            reft_cube = pt.time_slice(reft_cube_0, yr1,1,1, yr2,12,31)
+
             # Create checker for loaded cube
             var_info = variables_info.get_variable(table, var_name)
             checker = CC(reft_cube, var_info, automatic_fixes=True)
             # Run checks
             checker.check_metadata()
             checker.check_data()
+
             # save reformatted cube
-            iris.save(reft_cube, project_info['TEMPORARY']['outfile_fullpath'])
+            # saving the cube allows for more steps to be performed
+            # on the (un)regridded files
+            if save_intermediary_cubes is True:
+                default_save = project_info['TEMPORARY']['outfile_fullpath']
+                cmor_save = default_save.strip('.nc') + '_cmor.nc'
+                iris.save(reft_cube, cmor_save)
 
         except (iris.exceptions.ConstraintMismatchError,
                 iris.exceptions.ConcatenateError,
                 CCE) as ex:
             print(ex)
 
-    #################### 1. MASK AND TIME-AREA OPERATIONA   ####################################################
+    #################### 1. MASK ####################################################
+    # Land Mask via fx file
+    if mask_landocean is True:
+        if os.path.isfile(lmaskfile_path):
+            info("  >>> preprocess.py >>>  Using mask file  " + lmaskfile_path, verbosity, required_verbosity=1)
+            l_mask = iris.load_cube(lmaskfile_path)
 
-    #################### 2. REGRID ####################################################
+            if cmor_reformat_type == 'ncl':
+                src_cube = iris.load_cube(project_info['TEMPORARY']['outfile_fullpath'])
+                src_cube = pt.fx_mask(src_cube, l_mask)
+                iris.save(src_cube, project_info['TEMPORARY']['outfile_fullpath'])
+
+            if cmor_reformat_type == 'py':
+                reft_cube = pt.fx_mask(reft_cube, l_mask)
+                if save_intermediary_cubes is True:
+                    default_save = project_info['TEMPORARY']['outfile_fullpath']
+                    cmor_mask_save = default_save.strip('.nc') + '_cmor_mask.nc'
+                    iris.save(reft_cube, cmor_mask_save)
+            
+        else:
+            info("  >>> preprocess.py >>>  Could not find mask file  " + lmaskfile, verbosity, required_verbosity=1)
+
+    #################### 2. TIME/AREA OPS #################################################
+
+    #################### FINAL. REGRID ####################################################
     if regrid is True and target_grid is not None:
+
         # we will regrid according to whatever regridding scheme and reference grids are needed
         # and create new regridded files from the original cmorized/masked ones
-        # but preserving thos files (optionally)
+        # but preserving thos original files (optionally)
         info("  >>> preprocess.py >>>  Calling regrid to regrid model data onto " + target_grid + " grid",
                  verbosity,
                  required_verbosity=1)
-        # first let's see if the regrid source is a simple netCDF file (cube)
-        if os.path.isfile(project_info['TEMPORARY']['outfile_fullpath']):
-            info(' >>> preprocess.py >>> Preparing to regrid ' + project_info['TEMPORARY']['outfile_fullpath'], verbosity, required_verbosity=1)
-            src_cube = iris.load_cube(project_info['TEMPORARY']['outfile_fullpath'])
-        else:
-            src_cube = infiles
+
+        # let's first perform the backwards compatible check on the type
+        # of cmor_reformat
+        if cmor_reformat_type == 'ncl':
+            # first let's see if the regrid source is a simple netCDF file (cube)
+            if os.path.isfile(project_info['TEMPORARY']['outfile_fullpath']):
+                info(' >>> preprocess.py >>> Preparing to regrid ' + project_info['TEMPORARY']['outfile_fullpath'], verbosity, required_verbosity=1)
+                src_cube = iris.load_cube(project_info['TEMPORARY']['outfile_fullpath'])
+            # no cmor_reformat was done so we just take the original files
+            else:
+                src_cube = iris.load_cube(infiles)
+
+        # get the floating cube from cmor_check.py above
+        elif cmor_reformat_type == 'py':
+            src_cube = reft_cube
+
+        info(' >>> preprocess.py >>> Source cube to be regridded --->', verbosity, required_verbosity=1)
+        print(src_cube)
         # try return a cube for regrid target
-        # target_grid - could simply be a netCDF file or string model
+        # target_grid = could simply be a netCDF file or string model
         # descriptor eg 'ref_model'; currently netCDF and ref_model labels are implemented
         try:
             tgt_grid_cube = iris.load_cube(target_grid)
+            info(' >>> preprocess.py >>> Target regrid cube summary --->', verbosity, required_verbosity=1)
+            print(tgt_grid_cube)
             if regrid_scheme:
                 rgc = rg(src_cube, tgt_regrid_cube, regrid_scheme)
             else:
                 info(' >>> preprocess.py >>> No regrid scheme specified, assuming linear', verbosity, required_verbosity=1)
                 rgc = rg(src_cube, tgt_regrid_cube, 'linear')
+
+            info(' >>> preprocess.py >>> Regridded cube summary --->', verbosity, required_verbosity=1)
+            print(rgc)
+
             # save-append to outfile fullpath list to be further processed
             iris.save(rgc, project_info['TEMPORARY']['outfile_fullpath'])
         except (IOError, iris.exceptions.IrisError) as exc:
@@ -614,7 +675,11 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
                 for var in currentDiag.variables:
                     if var['name'] == variable.name:
                         ref_model_list = var['ref_model']
-                        for ref_model in ref_model_list:
+                        
+                        # check if the ref_model list is populated
+                        if len(ref_model_list) > 0:
+                            # always regrid only on the first ref_model         
+                            ref_model = ref_model_list[0]
                             for obs_model in additional_models_dicts:
                                 if obs_model['name'] == ref_model:
                                     # add to environment variable
@@ -622,16 +687,27 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
                                     info(' >>> preprocess.py >>> Regridding on ref_model ' + ref_model, verbosity, required_verbosity=1)
                                     tgt_nc_grid = get_obs_cf_infile(project_info, currentDiag, obs_model, variable.name)[variable.name][0]
                                     tgt_grid_cube = iris.load_cube(tgt_nc_grid)
+
+                                    info(' >>> preprocess.py >>> Target regrid cube summary --->', verbosity, required_verbosity=1)
+                                    print(tgt_grid_cube)
+
                                     if regrid_scheme:
                                         rgc = rg(src_cube, tgt_grid_cube, regrid_scheme)
                                     else:
                                         info(' >>> preprocess.py >>> No regrid scheme specified, assuming linear', verbosity, required_verbosity=1)
                                         rgc = rg(src_cube, tgt_grid_cube, 'linear')
-                                    # save specifically named regridded file
+                                    info(' >>> preprocess.py >>> Regridded cube summary --->', verbosity, required_verbosity=1)
+                                    print(rgc)
+
+                                    # save specifically named regridded file to be used by external diagnostic
                                     newlyRegriddedCube = iris.save(rgc, get_regridded_cf_fullpath(project_info, model, variable.field, variable.name, ref_model))
                                     newlyRegriddedFilePath = get_regridded_cf_fullpath(project_info, model, variable.field, variable.name, ref_model)
                                     newlyRegriddedCube = iris.save(rgc, newlyRegriddedFilePath)
                                     info(' >>> preprocess.py >>> Running diagnostic on ' + newlyRegriddedFilePath, verbosity, required_verbosity=1)
+
+                        # otherwise don't do anything
+                        else:
+                            info(' >>> preprocess.py >>> No regridding model specified in variables[ref_model]. Skipping regridding.', verbosity, required_verbosity=1)  
 
     ############ FINISH all PREPROCESSING and delete environment
     del(project_info['TEMPORARY'])

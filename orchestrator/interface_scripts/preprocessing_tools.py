@@ -37,6 +37,11 @@ def glob(file_list, fname, verbosity):
 ############################################################################
 # MASKING
 ############################################################################
+def fx_mask(mycube, fx):
+    masked_cube = mycube.copy()
+    masked_cube.data = mycube.data*fx.data / 100.
+    return masked_cube
+
 def masked_cube_simple(mycube, slicevar, v1, v2, threshold):
     """
 
@@ -297,7 +302,7 @@ def time_slice(mycube,yr1,mo1,d1,yr2,mo2,d2):
     myDate2 = datetime.datetime(int(yr2),int(mo2),int(d2))
     t1 = mycube.coord('time').units.date2num(myDate1)
     t2 = mycube.coord('time').units.date2num(myDate2)
-    myConstraint = iris.Constraint(time=lambda t: t.point > t1 and t.point < t2)
+    myConstraint = iris.Constraint(time=lambda t: t1 < mycube.coord('time').units.date2num(t.point) and t2 > mycube.coord('time').units.date2num(t.point))
     cubeslice = mycube.extract(myConstraint)
     return cubeslice
 

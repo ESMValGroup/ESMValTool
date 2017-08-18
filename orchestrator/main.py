@@ -156,6 +156,13 @@ class configFile:
         else:
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no preprocess_id in config "
             GLOB['preprocess_id'] = 'Default'
+        if cp.has_option('GLOBAL','run_directory') :
+            run_directory = cp.get('GLOBAL','run_directory')
+            GLOB['run_directory'] = run_directory
+        else:
+            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no run_directory in config "
+            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> assuming .  "
+            GLOB['run_directory'] = '.'
         return GLOB
 
 # start parsing command line args
@@ -230,6 +237,13 @@ project_info['DIAGNOSTICS'] = project_info_0.DIAGNOSTICS
 # this will have to be purget at some point in the future
 project_info['CONFIG'] = project_info_0.CONFIG
 
+# if run_directory exists, don't overwrite it
+if os.path.isdir(project_info['GLOBAL']['run_directory']):
+    mvd = 'mv ' + project_info['GLOBAL']['run_directory'] + ' ' + project_info['GLOBAL']['run_directory'] + '_old'
+    proc = subprocess.Popen(mvd, stdout=subprocess.PIPE, shell=True)
+    (out, err) = proc.communicate()
+    info(' >>> main.py >>> Renamed existent run directory to ' + project_info['GLOBAL']['run_directory'] + '_old', verbosity, required_verbosity=1)
+
 # identify which Preprocess to perfom
 preprocess_id = 'Preprocess_' + GLOBAL_DICT['preprocess_id']
 info('>>> main.py >>> Preprocess type: ' + preprocess_id, verbosity, required_verbosity=1)
@@ -252,7 +266,7 @@ in_refs = os.path.join(os.getcwd(), 'doc/MASTER_authors-refs-acknow.txt')
 project_info['RUNTIME']['in_refs'] = in_refs
 
 # Create refs-acknows file in workdir (delete if existing)
-wrk_dir = project_info['GLOBAL']['wrk_dir']
+wrk_dir = os.path.join(project_info['GLOBAL']['run_directory'], project_info['GLOBAL']['wrk_dir'])
 if not os.path.isdir(wrk_dir):
     mkd = 'mkdir -p ' + wrk_dir
     proc = subprocess.Popen(mkd, stdout=subprocess.PIPE, shell=True)
@@ -323,6 +337,7 @@ for c in project_info['DIAGNOSTICS']:
                  verbosity, 2)
             # for backwards compatibility we can revert to ncl reformatting
             # by changing cmor_reformat_type = 'ncl'
+            # for python cmor_check one, use cmor_reformat_type = 'py' 
             pp.preprocess(project_info, base_var, model, currDiag, cmor_reformat_type = 'py')
 
     vardicts = currDiag.variables
