@@ -32,12 +32,13 @@ class CMIP6Info(object):
         self.tables = {}
 
         self._load_coordinates()
-
         for json_file in glob.glob(os.path.join(self._cmor_folder, '*.json')):
-            print('json_file: {}'.format(json_file))
-            if 'CV_test' in json_file or 'grids' in json_file:
-                continue
-            self._load_table(json_file)
+            try:
+                if 'CV_test' in json_file or 'grids' in json_file:
+                    continue
+                self._load_table(json_file)
+            except Exception as x:
+                pass
 
     @staticmethod
     def _get_cmor_path(cmor_tables_path):
@@ -56,11 +57,17 @@ class CMIP6Info(object):
             self.tables[name] = {}
 
             generic_levels = header['generic_levels'].split()
-            frequency = header['frequency']
+            if 'frequency' in header:
+                frequency = header['frequency']
+            else:
+                frequency = None
 
             for var_name, var_data in raw_data['variable_entry'].items():
                 var = VariableInfo(var_name)
-                var.frequency = frequency
+                if frequency in var_data:
+                    var.frequency = var_data['frequency']
+                else:
+                    var.frequency = frequency
                 var.read_json(var_data)
                 self._assign_dimensions(var, generic_levels)
                 self.tables[name][var_name] = var
