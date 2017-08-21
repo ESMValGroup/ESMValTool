@@ -27,3 +27,10 @@ Traceback (most recent call last):
     axis=coord_dim)
 MemoryError
 ------------------------------------------------------------------------------------
+21/08/2017   | In diag_scripts/perfmetrics_grading.ncl line 218:
+             |   if (rank.eq.3) then
+             |       median = models_only(0:0, :, :)
+             |       median(0, :, :) = dim_median_n(models_only, 0)
+             |   end if
+             | Diagnostic is not working for < 3 models!!
+-------------------------------------------------------------------------------------

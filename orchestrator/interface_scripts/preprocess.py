@@ -345,7 +345,9 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
     save_intermediary_cubes = False
     mask_fillvalues = False
     multimodel_mean = False
-    mask_landocean = False
+    mask_land = False
+    mask_ocean = False
+    mask_poro = False
 
     # parse dictionary
     for k in prp.keys():
@@ -373,11 +375,12 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
                     project_info['TEMPORARY']['areafile_path'] = areafile_path
         if k == 'save_intermediary_cubes':
             save_intermediary_cubes = prp[k]
+         
+        # land (keeps only land regions)
+        if k == 'mask_land':
 
-        if k == 'mask_landocean':
-
-            if prp[k] is not False:
-                mask_landocean = True
+            if prp[k] is not False: 
+                mask_land = True
                 lmaskdir = os.path.join(model["path"],
                                        model["exp"],
                                        'fx',
@@ -386,6 +389,12 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
                                        'r0i0p0')
                 lmaskfile = 'sftlf_fx_' + model["name"] + "_" + model["exp"] + "_r0i0p0.nc"
                 lmaskfile_path = os.path.join(lmaskdir, lmaskfile)
+
+        # ocean (keeps only ocean regions)
+        if k == 'mask_ocean':
+
+            if prp[k] is not False:
+                mask_ocean = True
                 if lmaskfile_path is not None:
                     project_info['TEMPORARY']['lmaskfile_path'] = lmaskfile_path
                 omaskdir = model['path']
@@ -393,8 +402,12 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
                 omaskfile_path = os.path.join(omaskdir, omaskfile)
                 if omaskfile_path is not None:
                     project_info['TEMPORARY']['omaskfile_path'] = omaskfile_path
-        if k == 'porofile':
-            if prp[k] is not 'None':
+
+        # poro (keeps only poro regions)
+        if k == 'mask_poro':
+
+            if prp[k] is not False:
+                mask_poro = True
                 pormaskdir = os.path.join(model["path"],
                                           model["exp"],
                                           'fx',
@@ -402,7 +415,7 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
                                           model["name"],
                                           'r0i0p0')
                 pormaskfile = 'mrsofc_fx_' + model["name"] + "_" + model["exp"] + "_r0i0p0.nc"
-                porofile_path = os.path.join(maskdir, maskfile)
+                porofile_path = os.path.join(pormaskdir, pormaskfile)
                 if porofile_path is not None:
                     project_info['TEMPORARY']['porofile_path'] = porofile_path
 
@@ -590,14 +603,19 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
                 cmor_save = default_save.strip('.nc') + '_cmor.nc'
                 iris.save(reft_cube, cmor_save)
 
+            # save to default path (this file will change with
+            # every iteration of preprocess step)
+            iris.save(reft_cube, project_info['TEMPORARY']['outfile_fullpath'])
+
         except (iris.exceptions.ConstraintMismatchError,
                 iris.exceptions.ConcatenateError,
                 CCE) as ex:
             print(ex)
 
-    #################### 1. MASK ####################################################
-    # Land Mask via fx file
-    if mask_landocean is True:
+    #################### 1. LAND/OCEAN/PORO MASK VIA sftlf/sftof/mrsofc FILE ####################################################
+
+    # Land Mask
+    if mask_land is True:
         if os.path.isfile(lmaskfile_path):
             info("  >>> preprocess.py >>>  Using mask file  " + lmaskfile_path, verbosity, required_verbosity=1)
             l_mask = iris.load_cube(lmaskfile_path)
@@ -611,11 +629,66 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
                 reft_cube = pt.fx_mask(reft_cube, l_mask)
                 if save_intermediary_cubes is True:
                     default_save = project_info['TEMPORARY']['outfile_fullpath']
-                    cmor_mask_save = default_save.strip('.nc') + '_cmor_mask.nc'
+                    cmor_mask_save = default_save.strip('.nc') + '_cmor_land-mask.nc'
                     iris.save(reft_cube, cmor_mask_save)
 
+                # save to default path (this file will change with
+                # every iteration of preprocess step)
+                iris.save(reft_cube, project_info['TEMPORARY']['outfile_fullpath'])            
+
         else:
-            info("  >>> preprocess.py >>>  Could not find mask file  " + lmaskfile, verbosity, required_verbosity=1)
+            info("  >>> preprocess.py >>>  Could not find LAND mask file  " + lmaskfile, verbosity, required_verbosity=1)
+
+
+    # Ocean Mask
+    if mask_ocean is True:
+        if os.path.isfile(omaskfile_path):
+            info("  >>> preprocess.py >>>  Using OCEAN mask file  " + omaskfile_path, verbosity, required_verbosity=1)
+            o_mask = iris.load_cube(omaskfile_path)
+
+            if cmor_reformat_type == 'ncl':
+                src_cube = iris.load_cube(project_info['TEMPORARY']['outfile_fullpath'])
+                src_cube = pt.fx_mask(src_cube, o_mask)
+                iris.save(src_cube, project_info['TEMPORARY']['outfile_fullpath'])
+
+            if cmor_reformat_type == 'py':
+                reft_cube = pt.fx_mask(reft_cube, o_mask)
+                if save_intermediary_cubes is True:
+                    default_save = project_info['TEMPORARY']['outfile_fullpath']
+                    cmor_mask_save = default_save.strip('.nc') + '_cmor_ocean-mask.nc'
+                    iris.save(reft_cube, cmor_mask_save)
+
+                # save to default path (this file will change with
+                # every iteration of preprocess step)
+                iris.save(reft_cube, project_info['TEMPORARY']['outfile_fullpath'])
+
+        else:
+            info("  >>> preprocess.py >>>  Could not find OCEAN mask file  " + omaskfile, verbosity, required_verbosity=1)
+
+    # Poro Mask
+    if mask_poro is True:
+        if os.path.isfile(pormaskfile_path):
+            info("  >>> preprocess.py >>>  Using PORO mask file  " + pormaskfile_path, verbosity, required_verbosity=1)
+            por_mask = iris.load_cube(pormaskfile_path)
+
+            if cmor_reformat_type == 'ncl':
+                src_cube = iris.load_cube(project_info['TEMPORARY']['outfile_fullpath'])
+                src_cube = pt.fx_mask(src_cube, por_mask)
+                iris.save(src_cube, project_info['TEMPORARY']['outfile_fullpath'])
+
+            if cmor_reformat_type == 'py':
+                reft_cube = pt.fx_mask(reft_cube, por_mask)
+                if save_intermediary_cubes is True:
+                    default_save = project_info['TEMPORARY']['outfile_fullpath']
+                    cmor_mask_save = default_save.strip('.nc') + '_cmor_poro-mask.nc'
+                    iris.save(reft_cube, cmor_mask_save)
+
+                # save to default path (this file will change with
+                # every iteration of preprocess step)
+                iris.save(reft_cube, project_info['TEMPORARY']['outfile_fullpath'])
+
+        else:
+            info("  >>> preprocess.py >>>  Could not find OCEAN mask file  " + omaskfile, verbosity, required_verbosity=1)
 
     #################### 2. TIME/AREA OPS #################################################
 
@@ -646,6 +719,7 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
 
         info(' >>> preprocess.py >>> Source cube to be regridded --->', verbosity, required_verbosity=1)
         print(src_cube)
+
         # try return a cube for regrid target
         # target_grid = could simply be a netCDF file or string model
         # descriptor eg 'ref_model'; currently netCDF and ref_model labels are implemented

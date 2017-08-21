@@ -150,12 +150,14 @@ class configFile:
         else:
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no force_processing in config "
             GLOB['force_processing'] = True
-        if cp.has_option('GLOBAL','preprocess_id') :
-            preprocess_id = cp.get('GLOBAL','preprocess_id')
-            GLOB['preprocess_id'] = preprocess_id
-        else:
-            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no preprocess_id in config "
-            GLOB['preprocess_id'] = 'Default'
+        # preprocess_id can be moved in config.ini
+        # should we want to 
+        #if cp.has_option('GLOBAL','preprocess_id') :
+        #    preprocess_id = cp.get('GLOBAL','preprocess_id')
+        #    GLOB['preprocess_id'] = preprocess_id
+        #else:
+        #    print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no preprocess_id in config "
+        #    GLOB['preprocess_id'] = 'Default'
         if cp.has_option('GLOBAL','run_directory') :
             run_directory = cp.get('GLOBAL','run_directory')
             GLOB['run_directory'] = run_directory
@@ -244,10 +246,10 @@ if os.path.isdir(project_info['GLOBAL']['run_directory']):
     (out, err) = proc.communicate()
     info(' >>> main.py >>> Renamed existent run directory to ' + project_info['GLOBAL']['run_directory'] + '_old', verbosity, required_verbosity=1)
 
-# identify which Preprocess to perfom
-preprocess_id = 'Preprocess_' + GLOBAL_DICT['preprocess_id']
-info('>>> main.py >>> Preprocess type: ' + preprocess_id, verbosity, required_verbosity=1)
-project_info['PREPROCESS'] = project_info_0.PREPROCESS[preprocess_id]
+# identify which Preprocess to perfom from config.ini (optional)
+#preprocess_id = 'Preprocess_' + GLOBAL_DICT['preprocess_id']
+#info('>>> main.py >>> Preprocess type: ' + preprocess_id, verbosity, required_verbosity=1)
+#project_info['PREPROCESS'] = project_info_0.PREPROCESS[preprocess_id]
 
 # Additional entries to 'project_info'. The 'project_info' construct
 # is one way by which Python passes on information to the NCL-routines.
@@ -335,9 +337,18 @@ for c in project_info['DIAGNOSTICS']:
             # Rewrite netcdf to expected input format.
             info(" >>> main.py >>> Calling preprocessing to check/reformat model data, and apply preprocessing steps",
                  verbosity, 2)
-            # for backwards compatibility we can revert to ncl reformatting
+            # REFORMAT: for backwards compatibility we can revert to ncl reformatting
             # by changing cmor_reformat_type = 'ncl'
             # for python cmor_check one, use cmor_reformat_type = 'py' 
+            # PREPROCESS ID: extracted from variable dictionary
+            if hasattr(base_var, 'preproc_id'):
+                try:
+                    preprocess_id = 'Preprocess_' + base_var.preproc_id
+                    info('>>> main.py >>> Preprocess type: ' + preprocess_id, verbosity, required_verbosity=1)
+                    project_info['PREPROCESS'] = project_info_0.PREPROCESS[preprocess_id]
+                except AttributeError:
+                    info('>>> main.py >>> Preprocess type not specified in variable information. Using Default', verbosity, required_verbosity=1)
+                    project_info['PREPROCESS'] = 'Preprocess_Default'
             pp.preprocess(project_info, base_var, model, currDiag, cmor_reformat_type = 'py')
 
     vardicts = currDiag.variables
