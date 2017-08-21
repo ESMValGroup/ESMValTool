@@ -278,16 +278,14 @@ begin
     suffix = get_file_suffix(xml_name, 0)
     base_name = str_sub_str(xml_name, suffix, "")
 
-    caption = "Global intensity of variable "  + variables(0) + \
-               " over given seasons (summer=" \
-               + di@summer_season + " and winter=" + di@winter_season + ")"
-
     contrib_authors = (/"A_eval_ma", "A_levi_ri", "A_mart_gi"/)
     diag_script_base = basename(diag_script)
     output_dir = get_output_dir(plot_dir, diag_script_base)
 
     do idx_mod = 0, dim_MOD - 1
-        alltags = array_append_record(tags, (/"DM_trop", "ST_clim", "PT_geo"/), 0)
+        caption = "Intensity of variable "  + variables(0) + \
+               " over given seasons (" + di@season + ")"
+        alltags = array_append_record(tags, (/"DM_reg", "ST_clim", "PT_geo"/), 0)
         climofiles = new(2, string)
         climofiles(0) = interface_get_inpaths(idx_mod) + "/" + \
                  interface_get_infile(variables(0), field_types(0), idx_mod)
@@ -304,6 +302,8 @@ begin
 
         ESMValMD(output_file_path, alltags, caption, id, variables, allmodelnames, climofiles, diag_script, contrib_authors)
 
+        caption = "Standard deviation of variable "  + variables(0) + \
+               " over given seasons (" + di@season + ")"
         alltags = array_append_record(tags, (/"DM_trop", "ST_stddev", "PT_geo"/), 0)
         id = diag_script + "_stddev_" + variables(0)
         aux_filename_info = di@season + "-stddev"
