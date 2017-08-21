@@ -1,6 +1,6 @@
 """
 New module to enable ESMValToolKit to deal with
-the new yaml parser and simplified interface_scripts 
+the new yaml parser and simplified interface_scripts
 toolbox. Author: Valeriu Predoi, University of Reading,
 Initial version: August 2017
 contact: valeriu.predoi@ncas.ac.uk
@@ -210,7 +210,7 @@ def get_cmip_cf_infile(project_info, currentDiag, model, currentVarName):
             info(" >>> preprocess.py >>> Could not find any data files for " + model['name'], verbosity, required_verbosity=1)
         if len(infiles) > 1:
             # get pp.glob to glob the files into one single file
-            info(" >>> preprocess.py >>> Found multiple netCDF files for current diagnostic, attempting to glob them; variable: " + var['name'], 
+            info(" >>> preprocess.py >>> Found multiple netCDF files for current diagnostic, attempting to glob them; variable: " + var['name'],
                  verbosity, required_verbosity=1)
             standard_name = rootdir + '/' + '_'.join([var['name'], model['mip'],
                                                      model['exp'],
@@ -237,7 +237,7 @@ def get_cmip_cf_infile(project_info, currentDiag, model, currentVarName):
 def get_obs_cf_infile(project_info, currentDiag, obs_model, currentVarName):
     """@brief Function that returns the observation file for regridding
        Returns a full path dictionary keyed on variable name
-       namelist field type: {name: ERA-Interim,  project: OBS,  type: reanaly,  
+       namelist field type: {name: ERA-Interim,  project: OBS,  type: reanaly,
        version: 1,  start: 2000,  end: 2002,  path: /obspath/Tier3/ERA-Interim/}
        path type: test_data/OBS/Tier3/ERA-Interim/OBS_ERA-Interim_reanaly_1_T3M_ta_200001-200212.nc
     """
@@ -292,7 +292,7 @@ def get_cf_areafile(project_info, model):
     areafile = 'areacello_fx_' + model["name"] + "_" + model["exp"] + \
                "_r0i0p0.nc"
 
-    return os.path.join(areadir, areafile) 
+    return os.path.join(areadir, areafile)
 
 # a couple functions needed by cmor reformatting (the new python one)
 def get_attr_from_field_coord(ncfield, coord_name, attr):
@@ -470,7 +470,7 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
 
     ######################################################################
     ### ENVIRONMENT VARIABLES
-    # Initialize all needed files and variables (Leon: EEEvvryboooodyyy!!!) 
+    # Initialize all needed files and variables (Leon: EEEvvryboooodyyy!!!)
     #######################################################################
     model_name = model['name']
     project_name = model['project']
@@ -495,7 +495,7 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
         infiles = infileslist[0]
     outfilename = get_cf_outfile(model, variable.field, variable.name)
     info(' >>> preprocess.py >>> Reformatted file name: ' + outfilename, verbosity, required_verbosity=1)
-    # get full outpaths - original cmorized files that are preserved all through the process 
+    # get full outpaths - original cmorized files that are preserved all through the process
     fullpath = get_cf_fullpath(project_info, model, variable.field, variable.name)
     info(' >>> preprocess.py >>> Reformatted target: ' + fullpath, verbosity, required_verbosity=1)
 
@@ -527,7 +527,7 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
             which_reformat = model['project']
         else:
             which_reformat = 'default'
-    
+
         reformat_script = os.path.join("reformat_scripts",
                                        which_reformat,
                                        "reformat_" + which_reformat + "_main.ncl")
@@ -559,12 +559,12 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
         variables_info = CMIP5Info()
 
         var_name = variable.name
-        table = model['mip'] 
+        table = model['mip']
 
 
         try:
             # Load cubes for requested variable in given files
-            # remember naming conbentions 
+            # remember naming conbentions
             # IN: infiles
             # OUT: project_info['TEMPORARY']['outfile_fullpath']
             files = infiles
@@ -581,17 +581,18 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
                 # force single cube; this function defaults a list of cubes
                 reft_cube_0 = iris.load(files, var_cons, callback=merge_callback)[0]
 
+            # Check metadata before any preprocessing starts
+            var_info = variables_info.get_variable(table, var_name)
+            checker = CC(reft_cube_0, var_info, automatic_fixes=True)
+            checker.check_metadata()
 
             # apply time gating so we minimize cube size
             yr1 = int(model['start_year'])
             yr2 = int(model['end_year'])
             reft_cube = pt.time_slice(reft_cube_0, yr1,1,1, yr2,12,31)
 
-            # Create checker for loaded cube
-            var_info = variables_info.get_variable(table, var_name)
+            # Check data after time (and maybe lat-lon slicing)
             checker = CC(reft_cube, var_info, automatic_fixes=True)
-            # Run checks
-            checker.check_metadata()
             checker.check_data()
 
             # save reformatted cube
@@ -749,10 +750,10 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
                 for var in currentDiag.variables:
                     if var['name'] == variable.name:
                         ref_model_list = var['ref_model']
-                        
+
                         # check if the ref_model list is populated
                         if len(ref_model_list) > 0:
-                            # always regrid only on the first ref_model         
+                            # always regrid only on the first ref_model
                             ref_model = ref_model_list[0]
                             for obs_model in additional_models_dicts:
                                 if obs_model['name'] == ref_model:
@@ -781,7 +782,7 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
 
                         # otherwise don't do anything
                         else:
-                            info(' >>> preprocess.py >>> No regridding model specified in variables[ref_model]. Skipping regridding.', verbosity, required_verbosity=1)  
+                            info(' >>> preprocess.py >>> No regridding model specified in variables[ref_model]. Skipping regridding.', verbosity, required_verbosity=1)
 
     ############ FINISH all PREPROCESSING and delete environment
     del(project_info['TEMPORARY'])
