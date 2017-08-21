@@ -2,6 +2,7 @@
 
   MODELS:
     - {name: MPI-ESM-LR, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002,  path: ./test_data, gridfile: "None", ref: "ERA-Interim"}
+    - {name: MPI-ESM-MR, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002,  path: ./test_data, gridfile: "None", ref: "ERA-Interim"}
     - {name: bcc-csm1-1, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002,  path: ./test_data, gridfile: "None", ref: "ERA-Interim"}
 
   PREPROCESS:
@@ -9,12 +10,26 @@
       select_level:    None
       regrid:          False
       target_grid:     ref_model
+      regrid_scheme:   linear
+      mask_fillvalues: False
+      mask_land:       False
+      mask_ocean:      False
+      mask_poro:       False
+      multimodel_mean: True
+      save_intermediary_cubes: False
+    Preprocess_ID1:
+      select_level:    None
+      regrid:          True
+      target_grid:     ref_model
 #     target_grid:     test_data/ta_Amon_MPI-ESM-LR_historical_r1i1p1_200001-200512.nc
       regrid_scheme:   linear
       mask_fillvalues: True
-      mask_landocean:  None
-      multimodel_mean: True
-    Preprocess_Type1:
+      mask_land:  True
+      mask_ocean:  False
+      mask_poro:  False
+      multimodel_mean: False
+      save_intermediary_cubes: True
+    Preprocess_ID2:
       select_level:    None
       regrid:          True
       target_grid:     ref_model
@@ -34,12 +49,13 @@
       id: MyDiagShit1
       description: tutorial diagnostic
       variables: 
-        - {name: ta, ref_model: ['ERA-Interim'], field: T3M, only: "None"}
+        - {name: ta, ref_model: ['ERA-Interim'], field: T3M, only: "None", preproc_id: ID1}
       preprocess:
         id: shitter1
-        select_level: 850
+        select_level: 200
       scripts:
-        - {script: perfmetrics_main.ncl,     cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_cycle_monthlyclim_850_glob.ncl}
+        - {script: perfmetrics_main.ncl,     cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_cycle_monthlyclim_200_glob.ncl}
+        - {script: perfmetrics_grading.ncl,     cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_grading_RMSD_200_glob.ncl}
       additional_models:
         - {name: GFDL-ESM2G, project: CMIP5_ETHZ,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2002,  path: /test_data/}
         - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 2000,  end: 2002,  path: ./test_data/OBS/Tier3/ERA-Interim}
@@ -49,7 +65,7 @@
       id: MyDiagShit2
       description: tutorial diagnostic
       variables:
-        - {name: pr,  ref_model: ['NCEP'],  field: T2Ms, only: "None"}
+        - {name: pr,  ref_model: ['NCEP'],  field: T2Ms, only: "None", preproc_id: ID2}
       preprocess:
         id: shitter2
         select_level: 850
