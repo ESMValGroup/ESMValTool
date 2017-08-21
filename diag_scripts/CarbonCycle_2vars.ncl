@@ -43,6 +43,7 @@ load "./diag_scripts/lib/ncl/latlon.ncl"
 load "./diag_scripts/lib/ncl/statistics.ncl"
 load "./diag_scripts/aux/SAMonsoon/SAMonsoon.ncl"
 load "./diag_scripts/lib/ncl/meta_data.ncl"
+load "./diag_scripts/lib/ncl/watermark.ncl"
 
 load "./plot_scripts/ncl/scatterplot.ncl"
 
@@ -85,6 +86,13 @@ begin
     if(ismissing(file_type)) then
         file_type = "ps"
     end if
+
+    ;; Check watermark
+    watermark = getenv("ESMValTool_watermark")
+    if(ismissing(watermark)) then
+        watermark = "False"
+    end if
+    print(watermark)
 
     ;; Check required diag_script_info attributes
     req_atts = (/"region"/)
@@ -261,6 +269,10 @@ begin
     contrib_authors = (/"A_anav_al", "A_wenz_sa", "A_righ_ma"/)
 
     ESMValMD(plot@outfile, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+    
+    if watermark.ne."False" then
+        make_watermark(plot@outfile, "same", watermark)
+    end if
 
     delete([/alltags, caption, id, climofiles/])
 
