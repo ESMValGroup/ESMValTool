@@ -6,10 +6,10 @@ class Fix(object):
     Base class for fixes
     """
     def fix_metadata(self, cube):
-        pass
+        return cube
 
     def fix_data(self, cube):
-        pass
+        return cube
 
     @staticmethod
     def get_fix(project, model, variable):

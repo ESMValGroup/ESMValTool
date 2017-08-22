@@ -33,12 +33,9 @@ class CMIP6Info(object):
 
         self._load_coordinates()
         for json_file in glob.glob(os.path.join(self._cmor_folder, '*.json')):
-            try:
-                if 'CV_test' in json_file or 'grids' in json_file:
-                    continue
-                self._load_table(json_file)
-            except Exception as x:
-                pass
+            if 'CV_test' in json_file or 'grids' in json_file:
+                continue
+            self._load_table(json_file)
 
     @staticmethod
     def _get_cmor_path(cmor_tables_path):
@@ -64,7 +61,7 @@ class CMIP6Info(object):
 
             for var_name, var_data in raw_data['variable_entry'].items():
                 var = VariableInfo(var_name)
-                if frequency in var_data:
+                if 'frequency' in var_data:
                     var.frequency = var_data['frequency']
                 else:
                     var.frequency = frequency
