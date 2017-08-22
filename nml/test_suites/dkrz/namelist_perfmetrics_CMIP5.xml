@@ -37,7 +37,7 @@ This namelist is part of the ESMValTool
     <max_data_blocksize type="integer">        500         </max_data_blocksize>
     <verbosity  type="integer">                  1         </verbosity>
     <exit_on_warning  type="boolean">        False         </exit_on_warning>
-    <output_file_type>                          ps         </output_file_type>
+    <output_file_type>                         png         </output_file_type>
     <force_calc type="boolean">              False         </force_calc>
     <force_gradecalc type="boolean">         False         </force_gradecalc>
     <force_taylorcalc type="boolean">        False         </force_taylorcalc>
@@ -194,6 +194,6 @@ This namelist is part of the ESMValTool
 
 </DIAGNOSTICS>
 <ESGF>                                                             
-    <config_file> ./nml/to_be_checked/esgf_config.xml </config_file> 
+    <config_file> ./esgf_config.xml </config_file> 
 </ESGF>                                                            
 </namelist>

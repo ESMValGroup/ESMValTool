@@ -988,35 +988,30 @@ begin
             var_all@res_tiMainString = var_all@res_tiMainString + \
                 location + altitude
             plot = cycle_plot(wks, var_all, var0)
-            plot@outfile = outfile + file_type
+            plot@outfile = outfile + "." + file_type
             draw(plot)
             frame(wks)
             info_output(" gv " + outfile + "." + file_type, verbosity, 1)
 
             ;; tagging
-            ST_tag = (/"ST_mean", "ST_avg"/) 
+            ST_tag = (/"ST_mean"/) 
             if (isatt(var_all, "metric")) then
                 if (var_all@metric .eq. "RMSD") then
                     ST_tag := (/"ST_mean", "ST_rmsd"/)
                 end if
             end if 
-            plot_fname = wks@fullname
-            alltags = array_append_record(tags,\
-                (/region@DM_tag/), 0)
-            alltags := array_append_record(alltags,\
-                (/"PT_geo"/), 0)
-            alltags := array_append_record(alltags,\
-                (/ST_tag/), 0)                      
-            caption = "Cycle plot. Models: " + models@name + \
-                      ", variable: " + variables(0) + \
-                      ", start year: " + start_year + \
-                      ", end year: " + end_year
+            alltags = array_append_record(tags, (/region@DM_tag/), 0)
+            alltags := array_append_record(alltags, (/"PT_seas"/), 0)
+            alltags := array_append_record(alltags, ST_tag, 0)                      
+            caption = "Cycle plot of variable: " + variables(0) 
             id = diag_script + "_example_id"   
+            climofiles=new(dimsizes(models@name), string)
             do imod = 0, dimsizes(models@name) -1
                 climofiles(imod) = interface_get_inpaths(imod) + "/" + \
                     interface_get_infile(variables(0), field_types(0), imod)
             end do
-            delete([/alltags, caption, id, climofiles/])
+            ESMValMD(outfile, alltags, caption, id, variables(0), models@name, climofiles)
+            delete([/alltags, caption, id, climofiles, ST_tag/])
          end if
 
         ;; Plot - Zonal mean case
@@ -1045,35 +1040,28 @@ begin
                     gsn_define_colormap(wks, "amwg_blueyellowred")
                 end if
                 plot = zonalmean_profile(wks, var, var0)
-                plot@outfile = outfile + file_type
+                plot@outfile = outfile + "." + file_type
                 draw(plot)
                 frame(wks)
                 info_output(" gv " + outfile + "." + file_type, \
                             verbosity, 1)
                             
                 ;; tagging
-                ST_tag = (/"ST_mean", "ST_avg"/)
+                ST_tag = (/"ST_mean"/)
                 if (isatt(var_all, "metric")) then 
                     if (var_all@metric .eq. "RMSD") then
                         ST_tag := (/"ST_mean", "ST_rmsd"/)
                     end if
                 end if                 
-                plot_fname = wks@fullname
-                alltags = array_append_record(tags,\
-                    (/region@DM_tag/), 0)
-                alltags = array_append_record(alltags,\
-                    (/"PT_zonal"/), 0)
-                alltags = array_append_record(alltags,\
-                    (/ST_tag/), 0)                
-                caption = "Cycle plot. Models: " + models@name + \
-                          ", variable: " + variables(0) + \
-                          ", start year: " + start_year + \
-                          ", end year: " + end_year
+                alltags = array_append_record(tags, (/region@DM_tag/), 0)
+                alltags := array_append_record(alltags, (/"PT_zonal"/), 0)
+                alltags := array_append_record(alltags, ST_tag, 0)                      
+                caption = "Zonal plot of variable: " + variables(0) 
                 id = diag_script + "_example_id"   
-                climofiles(imod) = interface_get_inpaths(imod) + "/" + \
+                climofiles = interface_get_inpaths(imod) + "/" + \
                         interface_get_infile(variables(0), field_types(0), imod)
-                ESMValMD(plot@outfile, alltags, caption, id, variables, modesl@name(imod), climofiles)
-                delete([/alltags, caption, id, climofiles/])                            
+                ESMValMD(outfile, alltags, caption, id, variables(0), models@name(imod), climofiles)
+                delete([/alltags, caption, id, climofiles, ST_tag/])                            
 
                 delete(var@res_cnLevels)
                 delete(wks)
@@ -1107,7 +1095,7 @@ begin
                             time_avg + "_" + level + region_name
                         gsn_merge_colormaps(wks, "temp_19lev", "gray70")
                         plot = zonalmean_profile(wks, var, var0)
-                        plot@outfile = outfile + file_type
+                        plot@outfile = outfile + "." + file_type
                 
                         ; add stippling for statistically significant grid cells
                         var = var_sig(imod, :, :)
@@ -1134,28 +1122,25 @@ begin
                         frame(wks)
                         
                         ;; tagging
-                        ST_tag = (/"ST_mean", "ST_avg", "ST_diff"/)
+                        ST_tag = (/"ST_mean", "ST_diff"/)
                         if (isatt(var_all, "metric")) then
                             if (var_all@metric .eq. "RMSD") then
-                                ST_tag := (/"ST_mean", "ST_diff", "ST_avg", "ST_rmsd"/)
+                                ST_tag := (/"ST_mean", "ST_diff", "ST_rmsd"/)
                             end if
                         end if 
-                        plot_fname = wks@fullname
-                        alltags = array_append_record(tags,\
-                            (/region@DM_tag/), 0)
-                        alltags := array_append_record(alltags,\
-                            (/"PT_zonal"/), 0)
-                        alltags := array_append_record(alltags,\
-                            (/ST_tag/), 0)                              
-                        caption = "Cycle plot. Models: " + models@name + \
-                              ", variable: " + variables(0) + \
-                              ", start year: " + start_year + \
-                              ", end year: " + end_year
+                        alltags = array_append_record(tags, (/region@DM_tag/), 0)
+                        alltags := array_append_record(alltags, (/"PT_zonal"/), 0)
+                        alltags := array_append_record(alltags, ST_tag, 0)                      
+                        caption = "Zonal plot of variable: " + variables(0) 
                         id = diag_script + "_example_id"   
-                        climofiles(imod) = interface_get_inpaths(imod) + "/" + \
+                        climofiles = new(2, string)
+                        climofiles(0) = interface_get_inpaths(imod) + "/" + \
                                interface_get_infile(variables(0), field_types(0), imod)
-                        ESMValMD(plot@outfile, alltags, caption, id, variables, modesl@name(imod), climofiles)
-                        delete([/alltags, caption, id, climofiles/])  
+                        climofiles(1) = interface_get_inpaths(ref_ind) + "/" + \
+                               interface_get_infile(variables(0), field_types(0), ref_ind)
+                        modelsname = (/models@name(imod), models@name(ref_ind)/)
+                        ESMValMD(outfile, alltags, caption, id, variables(0), modelsname, climofiles)
+                        delete([/alltags, caption, id, climofiles, ST_tag/])  
                         
                         info_output(" gv " + outfile + "." + file_type, \
                                     verbosity, 1)
@@ -1204,33 +1189,26 @@ begin
                     gsn_define_colormap(wks, "amwg_blueyellowred")
                 end if
                 plot = contour_map_ce(wks, var, var0)
-                plot@outfile = outfile + file_type
+                plot@outfile = outfile + "." + file_type
                 draw(plot)
                 frame(wks)
                         
                 ;; tagging
-                ST_tag = (/"ST_mean", "ST_avg"/)
+                ST_tag = (/"ST_mean"/)
                 if (isatt(var_all, "metric")) then
                     if (var_all@metric .eq. "RMSD") then
-                        ST_tag := (/"ST_mean", "ST_avg", "ST_rmsd"/)
+                        ST_tag := (/"ST_mean", "ST_rmsd"/)
                     end if
                 end if 
-                plot_fname = wks@fullname
-                alltags = array_append_record(tags,\
-                    (/region@DM_tag/), 0)
-                alltags := array_append_record(alltags,\
-                    (/"PT_geo"/), 0)
-                alltags := array_append_record(alltags,\
-                    (/ST_tag/), 0)                    
-                caption = "Cycle plot. Models: " + models@name + \
-                    ", variable: " + variables(0) + \
-                    ", start year: " + start_year + \
-                    ", end year: " + end_year
+                alltags = array_append_record(tags, (/region@DM_tag/), 0)
+                alltags := array_append_record(alltags, (/"PT_geo"/), 0)
+                alltags := array_append_record(alltags, ST_tag, 0)                      
+                caption = "Geographical distribution of variable: " + variables(0) 
                 id = diag_script + "_example_id"   
-                climofiles(imod) = interface_get_inpaths(imod) + "/" + \
+                climofiles = interface_get_inpaths(imod) + "/" + \
                      interface_get_infile(variables(0), field_types(0), imod)
-                ESMValMD(plot@outfile, alltags, caption, id, variables, modesl@name(imod), climofiles)
-                delete([/alltags, caption, id, climofiles/])  
+                ESMValMD(outfile, alltags, caption, id, variables(0), models@name(imod), climofiles)
+                delete([/alltags, caption, id, climofiles, ST_tag/])  
                 
                 info_output(" gv " + outfile + "." + file_type, \
                             verbosity, 1)                                           
@@ -1281,7 +1259,7 @@ begin
                             time_avg + "_" + level + region_name
                         gsn_merge_colormaps(wks, "temp_19lev", "gray70")
                         plot = contour_map_ce(wks, var, var0)
-                        plot@outfile = outfile + file_type
+                        plot@outfile = outfile + "." + file_type
                         
                         ; add stippling/masking of statistically significant/not-significant grid cells
 
@@ -1312,28 +1290,25 @@ begin
                         frame(wks)
                         
                         ;; tagging
-                        ST_tag = (/"ST_mean", "ST_avg", "ST_diff"/)
+                        ST_tag = (/"ST_mean", "ST_diff"/)
                         if (isatt(var_all, "metric")) then 
                             if (var_all@metric .eq. "RMSD") then
-                                ST_tag := (/"ST_mean", "ST_avg", "ST_diff", "ST_rmsd"/)
+                                ST_tag := (/"ST_mean", "ST_diff", "ST_rmsd"/)
                             end if
                         end if 
-                        plot_fname = wks@fullname
-                        alltags = array_append_record(tags,\
-                            (/region@DM_tag/), 0)
-                        alltags := array_append_record(alltags,\
-                            (/"PT_geo"/), 0)
-                        alltags := array_append_record(alltags,\
-                            (/ST_tag/), 0)
-                        caption = "Cycle plot. Models: " + models@name + \
-                              ", variable: " + variables(0) + \
-                              ", start year: " + start_year + \
-                              ", end year: " + end_year
+                        alltags = array_append_record(tags, (/region@DM_tag/), 0)
+                        alltags := array_append_record(alltags, (/"PT_geo"/), 0)
+                        alltags := array_append_record(alltags, ST_tag, 0)                      
+                        caption = "Difference in geographical distribution of variable: " + variables(0) 
                         id = diag_script + "_example_id"   
-                        climofiles(imod) = interface_get_inpaths(imod) + "/" + \
+                        climofiles = new(2, string)
+                        climofiles(0) = interface_get_inpaths(imod) + "/" + \
                                interface_get_infile(variables(0), field_types(0), imod)
-                        ESMValMD(plot@outfile, alltags, caption, id, variables, modesl@name(imod), climofiles)
-                        delete([/alltags, caption, id, climofiles/])  
+                        climofiles(1) = interface_get_inpaths(ref_ind) + "/" + \
+                               interface_get_infile(variables(0), field_types(0), ref_ind)
+                        modelsname = (/models@name(imod), models@name(ref_ind)/)
+                        ESMValMD(outfile, alltags, caption, id, variables(0), modelsname, climofiles)
+                        delete([/alltags, caption, id, climofiles, ST_tag/])  
                         
                         info_output(" gv " + outfile + "." + file_type, \
                                     verbosity, 1)

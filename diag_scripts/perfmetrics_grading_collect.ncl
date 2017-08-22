@@ -110,7 +110,6 @@ begin
         ;; Loop over files in the list, append data
         do ii = 0,  dimsizes(file_list) - 1
             data_temp = ncdf_read(file_list(ii), "grade")
-
             ;; Change to 3 dimensional
             if (dimsizes(dimsizes(data_temp)).eq.2) then
 
@@ -174,6 +173,11 @@ begin
                     end do
                 end if
             end if
+            do iclim = 0, data_temp@num_climofiles-1
+                num_climo = "climofile_"+iclim
+                data_all@$num_climo$ = data_temp@$num_climo$
+                data_all@num_climofiles = data_temp@num_climofiles
+            end do
             delete(data_temp)
         end do
 
@@ -194,9 +198,9 @@ begin
     delete(data_all@var)
     delete(data_all@title)
     delete(data_all@ncdf_dir)
-    if(isatt(data_all, "reference")) then
-        delete(data_all@reference)
-    end if
+    ;if(isatt(data_all, "reference")) then
+    ;    delete(data_all@reference)
+    ;end if
 
     ;; Sort models in alphabetical order (exclude MMM)
     if (isatt(diag_script_info, "sort")) then
@@ -256,19 +260,22 @@ begin
 
         ;; Call plotting function
         plot = portrait_plot(wks, data_all, "grade")
-        plot@outfile = outfile_plot + file_type
         
-        alltags = array_append_record(tags,\
-           (/"DM_glob", "PT_portrait", ST_tag/), 0)
-        caption = "Similar to Figure 3 od Gleckler et al. (2008). Model: " + models@name + \
-              ", variable: " + variables(0)
+        ;; Attach Metadata to plot
+        alltags = array_append_record(tags, (/"DM_glob", "PT_portrait"/), 0)
+        alltags := array_append_record(tags, ST_tag, 0)
+        caption = "Portrait diagramm. Similar to Figure 3 od Gleckler et al. (2008)."
         id = diag_script + "_example_id"
-        climofiles = new(/dimsizes(models@name)/)
-        do imod = 0, dimsizes(models@name) -1
-            climofiles(imod) = interface_get_inpaths(imod) + "/" + \
-                 interface_get_infile(variables(0), field_types(0), imod)
+        allmodelnames = data_all&models
+        allmodelnames := array_append_record(allmodelnames, data_all&reference, 0)
+        climofiles = new(data_all@num_climofiles, string)
+        do iclim = 0, data_all@num_climofiles-1
+            num_climo = "climofile_"+iclim
+            climofiles(iclim) = data_all@$num_climo$
         end do
-        ESMValMD(plot@outfile, alltags, caption, id, variables(0), models@name, climofiles)
+print(climofiles)
+
+        ESMValMD(outfile_plot, alltags, caption, id, variables(0), allmodelnames, climofiles)
 
         delete([/alltags, caption, id, climofiles/])
 
@@ -279,7 +286,7 @@ begin
     end if 
 
     ;; Remove temporary grading list
-    system("rm -f " + temp_dir)
+;    system("rm -f " + temp_dir)
 
     leave_msg(diag_script, "", 4)
 

@@ -102,6 +102,13 @@ begin
                 data_all = tmp
                 delete(tmp)
             end if
+
+            ; climofiles for tagging
+            do iclim = 0, data_temp@num_climofiles-1
+                num_climo = "climofile_"+iclim
+                data_all@$num_climo$ = data_temp@$num_climo$
+                data_all@num_climofiles = data_temp@num_climofiles
+            end do
             delete(data_temp)
 
         end do
@@ -144,28 +151,21 @@ begin
         
         ;; tagging
         ST_tag = (/"ST_mean", "ST_stddev", "ST_corr"/)
-        outfile_plot = outfile_plot + "_" + data_all@metric
-        if (data_all@metric .eq. "RMSD") then
-            ST_tag := array_append_record(ST_tag, (/"ST_rmsd"/),0)
-        else if (data_all@metric .eq. "BIAS") then
-            ST_tag := array_append_record(ST_tag, (/"ST_diff"/),0)
-        end if 
-        end if
-        
-        plot@outfile = outfile_plot + file_type
-        
-        alltags = array_append_record(tags,\
-           (/"DM_glob", "PT_taylor", ST_tag/), 0)
-        caption = "Similar to Figure 10 of Gleckler et al. (2008). Model: " + models@name + \
-              ", variable: " + variables(0)
+        alltags = array_append_record(tags, (/"DM_glob", "PT_taylor"/), 0)
+        alltags := array_append_record(tags, ST_tag, 0)
+        caption = "Taylor Plot of varialbe " + variables(0) \
+                  + ". Similar to Figure 10 of Gleckler et al. (2008)."
         id = diag_script + "_example_id"
-        climofiles = new(/dimsizes(models@name)/)
-        do imod = 0, dimsizes(models@name) -1
-            climofiles(imod) = interface_get_inpaths(imod) + "/" + \
-                 interface_get_infile(variables(0), field_types(0), imod)
+        allmodelnames = data_all&models
+        ;allmodelnames := array_append_record(allmodelnames, data_all&reference, 0)
+        climofiles = new(data_all@num_climofiles, string)
+        do iclim = 0, data_all@num_climofiles-1
+            num_climo = "climofile_"+iclim
+            climofiles(iclim) = data_all@$num_climo$
         end do
-        ESMValMD(plot@outfile, alltags, caption, id, variables(0), models@name, climofiles)
+        ESMValMD(outfile_plot, alltags, caption, id, variables(0), allmodelnames, climofiles)
         delete([/alltags, caption, id, climofiles/])
+
         info_output(" gv " + outfile_plot + "." + file_type, verbosity, 1)
     end if
 
