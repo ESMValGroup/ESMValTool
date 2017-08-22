@@ -123,12 +123,11 @@ class CMORCheck(object):
             raises as soon as an error if defected. If set to False, it perform
             all checks and the raises.
         """
-        self._check_data_range()
-
-        # Check units
         if self._cmor_var.units:
             if str(self._cube.units) != self._cmor_var.units:
                 self._cube.convert_units(self._cmor_var.units)
+
+        self._check_data_range()
 
         self.report_errors()
 
