@@ -19,6 +19,8 @@ from yaml_parser import Parser as Ps
 import preprocess as pp
 import copy
 import ConfigParser
+import namelistchecks as pchk
+import uuid
 
 # Define ESMValTool version
 version = "2.0.0"
@@ -150,14 +152,6 @@ class configFile:
         else:
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no force_processing in config "
             GLOB['force_processing'] = True
-        # preprocess_id can be moved in config.ini
-        # should we want to 
-        #if cp.has_option('GLOBAL','preprocess_id') :
-        #    preprocess_id = cp.get('GLOBAL','preprocess_id')
-        #    GLOB['preprocess_id'] = preprocess_id
-        #else:
-        #    print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no preprocess_id in config "
-        #    GLOB['preprocess_id'] = 'Default'
         if cp.has_option('GLOBAL','run_directory') :
             run_directory = cp.get('GLOBAL','run_directory')
             GLOB['run_directory'] = run_directory
@@ -236,20 +230,28 @@ project_info = {}
 project_info['GLOBAL'] = GLOBAL_DICT
 project_info['MODELS'] = project_info_0.MODELS
 project_info['DIAGNOSTICS'] = project_info_0.DIAGNOSTICS
+
+# perform options integrity checks
+info(' >>> main.py >>> Checking integrity of namelist', verbosity, required_verbosity=1)
+tchk1 = datetime.datetime.now()
+pchk.models_checks(project_info['MODELS'])
+pchk.diags_checks(project_info['DIAGNOSTICS'])
+pchk.preprocess_checks(project_info_0.PREPROCESS)
+tchk2 = datetime.datetime.now()
+dtchk = tchk2 - tchk1
+info(' >>> main.py >>> Namelist check successful! Time: ' + str(dtchk), verbosity, required_verbosity=1)
+
 # this will have to be purget at some point in the future
 project_info['CONFIG'] = project_info_0.CONFIG
 
 # if run_directory exists, don't overwrite it
 if os.path.isdir(project_info['GLOBAL']['run_directory']):
-    mvd = 'mv ' + project_info['GLOBAL']['run_directory'] + ' ' + project_info['GLOBAL']['run_directory'] + '_old'
+    suf = uuid.uuid4().hex
+    newdir = project_info['GLOBAL']['run_directory'] + '_' + suf
+    mvd = 'mv ' + project_info['GLOBAL']['run_directory'] + ' ' + newdir
     proc = subprocess.Popen(mvd, stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
-    info(' >>> main.py >>> Renamed existent run directory to ' + project_info['GLOBAL']['run_directory'] + '_old', verbosity, required_verbosity=1)
-
-# identify which Preprocess to perfom from config.ini (optional)
-#preprocess_id = 'Preprocess_' + GLOBAL_DICT['preprocess_id']
-#info('>>> main.py >>> Preprocess type: ' + preprocess_id, verbosity, required_verbosity=1)
-#project_info['PREPROCESS'] = project_info_0.PREPROCESS[preprocess_id]
+    info(' >>> main.py >>> Renamed existent run directory to ' + newdir, verbosity, required_verbosity=1)
 
 # Additional entries to 'project_info'. The 'project_info' construct
 # is one way by which Python passes on information to the NCL-routines.
@@ -318,6 +320,10 @@ for c in project_info['DIAGNOSTICS']:
 
         # start calling preprocess
         op = pp.Diag()
+
+        # old packaging of variable objects (legacy from intial version)
+        # this needs to be changed once we have the new variable definition
+        # codes in place
         variable_defs_base_vars = op.add_base_vars_fields(requested_vars, model, var_def_dir)
         # if not all variable_defs_base_vars are available, try to fetch
         # the target variable directly (relevant for derived variables)
@@ -343,12 +349,14 @@ for c in project_info['DIAGNOSTICS']:
             # PREPROCESS ID: extracted from variable dictionary
             if hasattr(base_var, 'preproc_id'):
                 try:
-                    preprocess_id = 'Preprocess_' + base_var.preproc_id
-                    info('>>> main.py >>> Preprocess type: ' + preprocess_id, verbosity, required_verbosity=1)
-                    project_info['PREPROCESS'] = project_info_0.PREPROCESS[preprocess_id]
+                    preprocess_id = base_var.preproc_id
+                    for preproc_dict in project_info_0.PREPROCESS:
+                        if preproc_dict['id'] == preprocess_id:
+                            info('>>> main.py >>> Preprocess id: ' + preprocess_id, verbosity, required_verbosity=1)
+                            project_info['PREPROCESS'] = preproc_dict
                 except AttributeError:
-                    info('>>> main.py >>> Preprocess type not specified in variable information. Using Default', verbosity, required_verbosity=1)
-                    project_info['PREPROCESS'] = 'Preprocess_Default'
+                    info('>>> main.py >>> preprocess_id is not an attribute of variable object. Exiting...', verbosity, required_verbosity=1)
+                    sys.exit(1)
             pp.preprocess(project_info, base_var, model, currDiag, cmor_reformat_type = 'py')
 
     vardicts = currDiag.variables
