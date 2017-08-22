@@ -1010,7 +1010,8 @@ begin
                 climofiles(imod) = interface_get_inpaths(imod) + "/" + \
                     interface_get_infile(variables(0), field_types(0), imod)
             end do
-            ESMValMD(outfile, alltags, caption, id, variables(0), models@name, climofiles)
+            contrib_authors = (/"A_righ_ma", "A_eyri_ve", "A_gott_kl", "A_fran_fr", "A_senf_da"/)
+            ESMValMD(outfile, alltags, caption, id, variables(0), models@name, climofiles, diag_script, contrib_authors)
             delete([/alltags, caption, id, climofiles, ST_tag/])
          end if
 
@@ -1060,7 +1061,8 @@ begin
                 id = diag_script + "_example_id"   
                 climofiles = interface_get_inpaths(imod) + "/" + \
                         interface_get_infile(variables(0), field_types(0), imod)
-                ESMValMD(outfile, alltags, caption, id, variables(0), models@name(imod), climofiles)
+                contrib_authors = (/"A_righ_ma", "A_eyri_ve", "A_gott_kl", "A_fran_fr", "A_senf_da"/)
+                ESMValMD(outfile, alltags, caption, id, variables(0), models@name(imod), climofiles, diag_script, contrib_authors)
                 delete([/alltags, caption, id, climofiles, ST_tag/])                            
 
                 delete(var@res_cnLevels)
@@ -1139,7 +1141,8 @@ begin
                         climofiles(1) = interface_get_inpaths(ref_ind) + "/" + \
                                interface_get_infile(variables(0), field_types(0), ref_ind)
                         modelsname = (/models@name(imod), models@name(ref_ind)/)
-                        ESMValMD(outfile, alltags, caption, id, variables(0), modelsname, climofiles)
+                        contrib_authors = (/"A_righ_ma", "A_eyri_ve", "A_gott_kl", "A_fran_fr", "A_senf_da"/)
+                        ESMValMD(outfile, alltags, caption, id, variables(0), modelsname, climofiles, diag_script, contrib_authors)
                         delete([/alltags, caption, id, climofiles, ST_tag/])  
                         
                         info_output(" gv " + outfile + "." + file_type, \
@@ -1207,7 +1210,8 @@ begin
                 id = diag_script + "_example_id"   
                 climofiles = interface_get_inpaths(imod) + "/" + \
                      interface_get_infile(variables(0), field_types(0), imod)
-                ESMValMD(outfile, alltags, caption, id, variables(0), models@name(imod), climofiles)
+                contrib_authors = (/"A_righ_ma", "A_eyri_ve", "A_gott_kl", "A_fran_fr", "A_senf_da"/)
+                ESMValMD(outfile, alltags, caption, id, variables(0), models@name(imod), climofiles, diag_script, contrib_authors)
                 delete([/alltags, caption, id, climofiles, ST_tag/])  
                 
                 info_output(" gv " + outfile + "." + file_type, \
@@ -1307,7 +1311,8 @@ begin
                         climofiles(1) = interface_get_inpaths(ref_ind) + "/" + \
                                interface_get_infile(variables(0), field_types(0), ref_ind)
                         modelsname = (/models@name(imod), models@name(ref_ind)/)
-                        ESMValMD(outfile, alltags, caption, id, variables(0), modelsname, climofiles)
+                        contrib_authors = (/"A_righ_ma", "A_eyri_ve", "A_gott_kl", "A_fran_fr", "A_senf_da"/)
+                        ESMValMD(outfile, alltags, caption, id, variables(0), modelsname, climofiles, diag_script, contrib_authors)
                         delete([/alltags, caption, id, climofiles, ST_tag/])  
                         
                         info_output(" gv " + outfile + "." + file_type, \

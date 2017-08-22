@@ -273,9 +273,9 @@ begin
             num_climo = "climofile_"+iclim
             climofiles(iclim) = data_all@$num_climo$
         end do
-print(climofiles)
+        contrib_authors = (/"A_righ_ma", "A_eyri_ve", "A_gott_kl", "A_fran_fr"/)
 
-        ESMValMD(outfile_plot, alltags, caption, id, variables(0), allmodelnames, climofiles)
+        ESMValMD(outfile_plot, alltags, caption, id, variables(0), allmodelnames, climofiles, diag_script, contrib_authors)
 
         delete([/alltags, caption, id, climofiles/])
 
@@ -286,7 +286,7 @@ print(climofiles)
     end if 
 
     ;; Remove temporary grading list
-;    system("rm -f " + temp_dir)
+    system("rm -f " + temp_dir)
 
     leave_msg(diag_script, "", 4)
 
