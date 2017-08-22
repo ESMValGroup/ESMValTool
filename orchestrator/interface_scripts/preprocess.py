@@ -582,10 +582,9 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
                 # force single cube; this function defaults a list of cubes
                 reft_cube_0 = iris.load(files, var_cons, callback=merge_callback)[0]
 
-            fix_class = Fix.get_fix(project_name, model_name, var_name)
-            if fix_class is not None:
-                fix = fix_class(reft_cube_0)
-                fix.fix_metadata()
+            fix = Fix.get_fix(project_name, model_name, var_name)
+            if fix is not None:
+                reft_cube_0 = fix.fix_metadata(reft_cube_0)
 
             # Check metadata before any preprocessing start
             var_info = variables_info.get_variable(table, var_name)
@@ -597,9 +596,9 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
             yr2 = int(model['end_year'])
             reft_cube = pt.time_slice(reft_cube_0, yr1,1,1, yr2,12,31)
 
-            if fix_class is not None:
-                fix = fix_class(reft_cube)
-                fix.fix_data()
+            if fix is not None:
+                reft_cube = fix.fix_data(reft_cube)
+
             # Check data after time (and maybe lat-lon slicing)
             checker = CC(reft_cube, var_info, automatic_fixes=True)
             checker.check_data()

@@ -5,13 +5,10 @@ class Fix(object):
     """
     Base class for fixes
     """
-    def __init__(self, cube):
-        self.cube = cube
-
-    def fix_metadata(self):
+    def fix_metadata(self, cube):
         pass
 
-    def fix_data(self):
+    def fix_data(self, cube):
         pass
 
     @staticmethod
@@ -21,7 +18,7 @@ class Fix(object):
         variable = variable.replace('-', '_')
         try:
             fix = importlib.import_module('orchestrator.interface_scripts.fixes.{0}.{1}'.format(project, model))
-            fix = getattr(fix, variable)
+            fix = getattr(fix, variable)()
         except (AttributeError, ImportError):
             fix = None
         return fix
