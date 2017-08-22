@@ -32,6 +32,7 @@
 ;; Caveats
 ;;
 ;; Modification history
+;;    20170822-A_bock_ls: added tags for reporting
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;;                        of the code
 ;;    20150702-A_eval_ma: written.
@@ -57,6 +58,8 @@ load "./diag_scripts/aux/SAMonsoon/descriptions.ncl"
 
 exact_panel_position_file = "./diag_scripts/aux/SAMonsoon/exact_panel_positions_propagation.ncl"
 load "./plot_scripts/ncl/monsoon_panels.ncl"
+
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 ;*********************************************************************
 
@@ -367,6 +370,35 @@ begin
     ;; Three panel plots (ref, model, diff), here for mean
     two_by_one(storage_vault, di, plot_settings, "rp-timelat", "rp-timelon", debuginfo, valid_statistics, res)
 
+    ;; Attach Metadata to plots
+    xml_name = getenv("ESMValTool_xml_name")
+    suffix = get_file_suffix(xml_name, 0)
+    base_name = str_sub_str(xml_name, suffix, "")
+
+    contrib_authors = (/"A_eval_ma", "A_levi_ri", "A_mart_gi"/)
+    diag_script_base = basename(diag_script)
+    output_dir = get_output_dir(plot_dir, diag_script_base)
+    caption = "Lagged correlation of precipitation anomalies with respect to " \
+              + "an area avearged region in the Indian Ocean"
+    alltags = array_append_record(tags, (/"DM_reg", "ST_corr", "PT_geo"/), 0)
+    id = diag_script + "_latlon_" + variables(0)
+    aux_filename_info = di@season + "-rp-timelat-rp-timelon"
+
+    do idx_mod = 0, dim_MOD - 1
+        climofiles = interface_get_inpaths(idx_mod) + "/" + \
+                 interface_get_infile(variables(0), field_types(0), idx_mod)
+        allmodelnames = models@name(idx_mod)
+        output_filename = interface_get_figure_filename(diag_script_base,\
+                                                    var0,\
+                                                    field_type0,\
+                                                    aux_filename_info, idx_mod)
+        output_file_path = output_dir + output_filename
+
+        ESMValMD(output_file_path, alltags, caption, id, variables, allmodelnames, climofiles, diag_script, contrib_authors)
+    end do
+    delete([/id, climofiles/])
+
+
     res = orig_res
 
     ;; Units label,
@@ -386,6 +418,24 @@ begin
     debuginfo@description = SAMonsoon_daily_precip_propagation_descr(di)
     multipanel(storage_vault, di, plot_settings, "rp-timelat", debuginfo, valid_statistics, res)
 
+    ;; Attach Metadata to plot
+    id = diag_script + "_lat_panel" + variables(0)
+
+    climofiles = new(dimsizes(models@name), string)
+    do imod = 0, dimsizes(models@name) - 1
+            climofiles(imod) = interface_get_inpaths(imod) + "/" + \
+                 interface_get_infile(variables(0), field_types(0), imod)
+    end do
+
+    aux_title_info = di@season + "-rp-timelat"
+    output_filename = interface_get_figure_filename(diag_script_base,\
+                                                    var0,\
+                                                    field_type0,\
+                                                    aux_title_info, -1)
+    output_file_path = output_dir + output_filename
+
+    ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+
     delete(valid_statistics)
     valid_statistics = (/"yrs"/)
     plot_settings@lb_units = lb_units + ", latitude extent: " + write_tuple_with_dash(di@prop_isv_latrange)
@@ -394,6 +444,18 @@ begin
     plot_settings@part_of_header = " lag-lon propagation of filtered daily Precip anom"
     debuginfo@description = SAMonsoon_daily_precip_propagation_descr(di)
     multipanel(storage_vault, di, plot_settings, "rp-timelon", debuginfo, valid_statistics, res)
+
+    ;; Attach Metadata to plot
+    id = diag_script + "_lon_panel" + variables(0)
+
+    aux_title_info = di@season + "-rp-timelon"
+    output_filename = interface_get_figure_filename(diag_script_base,\
+                                                    var0,\
+                                                    field_type0,\
+                                                    aux_title_info, -1)
+    output_file_path = output_dir + output_filename
+
+    ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
 
     info_output(">>>>>>>> Leaving " + diag_script, verbosity, 4)
 end
