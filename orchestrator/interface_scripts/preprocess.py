@@ -521,8 +521,7 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
         reformat_script = os.path.join("reformat_scripts",
                                        which_reformat,
                                        "reformat_" + which_reformat + "_main.ncl")
-        if ((not os.path.isfile(project_info['TEMPORARY']['outfile_fullpath']))
-                or project_info['GLOBAL']['force_processing']):
+        if not os.path.isfile(project_info['TEMPORARY']['outfile_fullpath']):
 
             info("  >>> preprocess.py >>>  Calling " + reformat_script + " to check/reformat model data",
                  verbosity,
