@@ -15,6 +15,7 @@ import auxiliary
 from auxiliary import info, error, print_header, ncl_version_check
 import exceptions
 import launchers
+from orchestrator.interface_scripts.fixes.fix import Fix
 from regrid import regrid as rg
 import iris
 import preprocessing_tools as pt
@@ -375,11 +376,11 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
                     project_info['TEMPORARY']['areafile_path'] = areafile_path
         if k == 'save_intermediary_cubes':
             save_intermediary_cubes = prp[k]
-         
+
         # land (keeps only land regions)
         if k == 'mask_land':
 
-            if prp[k] is not False: 
+            if prp[k] is not False:
                 mask_land = True
                 lmaskdir = os.path.join(model["path"],
                                        model["exp"],
@@ -581,7 +582,12 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
                 # force single cube; this function defaults a list of cubes
                 reft_cube_0 = iris.load(files, var_cons, callback=merge_callback)[0]
 
-            # Check metadata before any preprocessing starts
+            fix_class = Fix.get_fix(project_name, model_name, var_name)
+            if fix_class is not None:
+                fix = fix_class(reft_cube_0)
+                fix.fix_metadata()
+
+            # Check metadata before any preprocessing start
             var_info = variables_info.get_variable(table, var_name)
             checker = CC(reft_cube_0, var_info, automatic_fixes=True)
             checker.check_metadata()
@@ -591,6 +597,9 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
             yr2 = int(model['end_year'])
             reft_cube = pt.time_slice(reft_cube_0, yr1,1,1, yr2,12,31)
 
+            if fix_class is not None:
+                fix = fix_class(reft_cube)
+                fix.fix_data()
             # Check data after time (and maybe lat-lon slicing)
             checker = CC(reft_cube, var_info, automatic_fixes=True)
             checker.check_data()
@@ -634,7 +643,7 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
 
                 # save to default path (this file will change with
                 # every iteration of preprocess step)
-                iris.save(reft_cube, project_info['TEMPORARY']['outfile_fullpath'])            
+                iris.save(reft_cube, project_info['TEMPORARY']['outfile_fullpath'])
 
         else:
             info("  >>> preprocess.py >>>  Could not find LAND mask file  " + lmaskfile, verbosity, required_verbosity=1)
