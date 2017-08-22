@@ -341,7 +341,6 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
     #############################################################################
 
     # initialize variables
-    regrid = False
     save_intermediary_cubes = False
     mask_fillvalues = False
     multimodel_mean = False
@@ -352,34 +351,26 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
     # parse dictionary
     for k in prp.keys():
         if k == 'select_level':
-            if prp[k] is not 'None':
-                select_level = prp[k]
-        if k == 'regrid':
-            regrid = prp[k]
+            select_level = prp[k]
         if k == 'target_grid':
-            if prp[k] is not 'None':
-                target_grid = prp[k]
+            target_grid = prp[k]
         if k == 'regrid_scheme':
-            if prp[k] is not 'None':
-                regrid_scheme = prp[k]
+            regrid_scheme = prp[k]
         if k == 'mask_fillvalues':
-            if prp[k] is not False:
-                mask_fillvalues = True
+            mask_fillvalues = True
         if k == 'multimodel_mean':
-            if prp[k] is not False:
-                multimodel_mean = True
+            multimodel_mean = True
         if k == 'gridfile':
-            if prp[k] is not 'None':
-                areafile_path = prp[k]
-                if areafile_path is not None:
-                    project_info['TEMPORARY']['areafile_path'] = areafile_path
+            areafile_path = prp[k]
+            if areafile_path is not None:
+                project_info['TEMPORARY']['areafile_path'] = areafile_path
         if k == 'save_intermediary_cubes':
             save_intermediary_cubes = prp[k]
          
         # land (keeps only land regions)
-        if k == 'mask_land':
+        if k == 'mask_landocean':
 
-            if prp[k] is not False: 
+            if prp[k] == 'land': 
                 mask_land = True
                 lmaskdir = os.path.join(model["path"],
                                        model["exp"],
@@ -391,9 +382,8 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
                 lmaskfile_path = os.path.join(lmaskdir, lmaskfile)
 
         # ocean (keeps only ocean regions)
-        if k == 'mask_ocean':
 
-            if prp[k] is not False:
+            if prp[k] == 'ocean':
                 mask_ocean = True
                 if lmaskfile_path is not None:
                     project_info['TEMPORARY']['lmaskfile_path'] = lmaskfile_path
@@ -693,7 +683,7 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
     #################### 2. TIME/AREA OPS #################################################
 
     #################### FINAL. REGRID ####################################################
-    if regrid is True and target_grid is not None:
+    if target_grid != 'None':
 
         # we will regrid according to whatever regridding scheme and reference grids are needed
         # and create new regridded files from the original cmorized/masked ones
