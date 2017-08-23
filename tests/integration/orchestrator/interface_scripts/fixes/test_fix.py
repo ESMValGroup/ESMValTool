@@ -6,6 +6,10 @@ from iris.cube import Cube
 class TestFix(unittest.TestCase):
 
     def test_get_fix(self):
+        from orchestrator.interface_scripts.fixes.CMIP5.CanESM2 import fgco2
+        self.assertIsInstance(Fix.get_fix('CMIP5', 'CanESM2', 'fgco2'), fgco2)
+
+    def test_get_fix_with_replace(self):
         from orchestrator.interface_scripts.fixes.CMIP5.BNU_ESM import ch4
         self.assertIsInstance(Fix.get_fix('CMIP5', 'BNU-ESM', 'ch4'), ch4)
 
@@ -29,5 +33,10 @@ class TestFix(unittest.TestCase):
         reference = Cube([0])
 
         self.assertEqual(Fix().fix_data(cube), reference)
+
+    def test_fix_file(self):
+        filepath = 'sample_filepath'
+        self.assertEqual(Fix().fix_file(filepath), filepath)
+
 
 
