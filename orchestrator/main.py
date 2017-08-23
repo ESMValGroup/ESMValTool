@@ -146,12 +146,6 @@ class configFile:
         else:
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no max_data_filesize in config "
             GLOB['max_data_filesize'] = 100
-        if cp.has_option('GLOBAL','force_processing') :
-            fop = self.s2b(cp.get('GLOBAL','force_processing'))
-            GLOB['force_processing'] = fop
-        else:
-            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no force_processing in config "
-            GLOB['force_processing'] = True
         if cp.has_option('GLOBAL','run_directory') :
             run_directory = cp.get('GLOBAL','run_directory')
             GLOB['run_directory'] = run_directory
@@ -159,6 +153,13 @@ class configFile:
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no run_directory in config "
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> assuming .  "
             GLOB['run_directory'] = '.'
+        if cp.has_option('GLOBAL','save_intermediary_cubes') :
+            save_intermediary_cubes = self.s2b(cp.get('GLOBAL','save_intermediary_cubes'))
+            GLOB['save_intermediary_cubes'] = save_intermediary_cubes
+        else:
+            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no save_intermediary_cubes in config "
+            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> assuming False  "
+            GLOB['save_intermediary_cubes'] = False
         return GLOB
 
 # start parsing command line args
@@ -362,12 +363,22 @@ for c in project_info['DIAGNOSTICS']:
     vardicts = currDiag.variables
     variables = []
     field_types = []
+    # hack: needed by diags that
+    # perform regridding on ref_model
+    # and expect that to be a model attribute
+    ref_models = []
+    ###############
     for v in vardicts:
         variables.append(v['name'])
         field_types.append(v['field'])
+        ref_models.append(v['ref_model'][0])
 
     project_info['RUNTIME']['currDiag'] = currDiag
-    for derived_var, derived_field in zip(variables, field_types):
+    for derived_var, derived_field, refmodel in zip(variables, field_types, ref_models):
+
+        # needed by external diag to perform refridding
+        model['ref'] = refmodel
+        info(" >>> main.py >>> External diagnostic will use ref_model: " + model['ref'], verbosity, required_verbosity=1)
 
         project_info['RUNTIME']['derived_var'] = derived_var
         project_info['RUNTIME']['derived_field_type'] = derived_field

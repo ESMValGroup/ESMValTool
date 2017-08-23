@@ -7,7 +7,7 @@ import sys
 
 def models_checks(models_dict):
     """
-    checking for standard keys and values e.g.:
+    checking for standard keys and values e.g. for CMIP5*:
     {name: MPI-ESM-LR, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  
      start_year: 2000,  end_year: 2002,  path: ./test_data}
     Fastest check is try/except
@@ -30,8 +30,9 @@ def models_checks(models_dict):
         except KeyError as e:
             print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR ', e, 'is missing in model', m
             sys.exit(1)
-        ####### CMIP5 ####################################
-        if project == 'CMIP5':
+        ####### check specific project name cases ########################################
+        ####### CMIP5 and any other CMIP5 derivatives ####################################
+        if project.startswith('CMIP5') is True:
             try:
                 mip = m['mip']
                 if mip is None:
@@ -48,7 +49,37 @@ def models_checks(models_dict):
             except KeyError as e:
                 print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR ', e, 'is missing in model', m
                 sys.exit(1)
-        ##################################################
+        ######## EMAC and any other EMAC drivative ############################################
+        # same as default
+        ######## GFDL and any other GFDL derrivative ##########################################
+        if project.startswith('GFDL') is True:
+            try:
+                realm = m['realm']
+                if realm is None:
+                    print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR model realm is None', m
+                    sys.exit(1)
+            except KeyError as e:
+                print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR ', e, 'is missing in model', m
+                sys.exit(1)
+            try:
+                shifty = m['shift']
+                if shifty is None:
+                    print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR model shift is None', m
+                    sys.exit(1)
+            except KeyError as e:
+                print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR ', e, 'is missing in model', m
+                sys.exit(1)
+        ######### CCMVal and any CCMVal derrivative ###################################################
+        if project.startswith('CCMVal') is True:
+            try:
+                exp = m['exp']
+                if exp is None:
+                    print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR model exp is None', m
+                    sys.exit(1)
+            except KeyError as e:
+                print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR ', e, 'is missing in model', m
+                sys.exit(1)
+        ########## end specific project name cases ####################################################
         try:
             ensemble = m['ensemble']
             if ensemble is None:
@@ -116,11 +147,18 @@ def diags_checks(diags_dict):
                 except KeyError as e:
                     print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR ', e, 'is missing in variable', v, c
                     sys.exit(1)
-        except AttributeError as e:
-            print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR ', e, ' in diagnostic', c
-            sys.exit(1)
-        try:
-            preprocess = D.preprocess
+                try:
+                    vref = v['ref_model']
+                    if vref is None:
+                        print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR variable ref_model is None', v, c
+                        sys.exit(1)
+                    else:
+                        if isinstance(vref, list) is False:
+                            print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR variable ref_model needs to be a list', v, c
+                            sys.exit(1)
+                except KeyError as e:
+                    print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR ', e, 'is missing in variable', v, c
+                    sys.exit(1)
         except AttributeError as e:
             print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR ', e, ' in diagnostic', c
             sys.exit(1)
@@ -152,7 +190,7 @@ def preprocess_checks(preprocess):
     Takes each dictionary object from PREPROCESS
     and looks for standard keys eg
     {id: pp1, select_level: None, target_grid: ref_model, regrid_scheme: linear,
-     mask_fillvalues: True, mask_landocean: None, multimodel_mean: True, save_intermediary_cubes: True}
+     mask_fillvalues: True, mask_landocean: None, multimodel_mean: True}
     very similar to models_checks 
     """
     for m in preprocess:
@@ -177,6 +215,10 @@ def preprocess_checks(preprocess):
             if tg is None:
                 print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR preprocess target_grid is None', m
                 sys.exit(1)
+            else:
+                if isinstance(tg, basestring) is False:
+                    print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR preprocess target_grid needs to be a string: None, ref_model or XxY', m
+                    sys.exit(1)
         except KeyError as e:
             print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR ', e, 'is missing in preprocess', m
             sys.exit(1)
@@ -208,14 +250,6 @@ def preprocess_checks(preprocess):
             mmm = m['multimodel_mean']
             if mmm is None:
                 print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR preprocess multimodel_mean is None', m
-                sys.exit(1)
-        except KeyError as e:
-            print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR ', e, 'is missing in preprocess', m
-            sys.exit(1)
-        try:
-            sic = m['save_intermediary_cubes']
-            if sic is None:
-                print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR preprocess save_intermediary_cubes is None', m
                 sys.exit(1)
         except KeyError as e:
             print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR ', e, 'is missing in preprocess', m
