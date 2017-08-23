@@ -552,8 +552,8 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
     # New code: cmor_check.py (by Javier Vegas)
     if cmor_reformat_type == 'py':
         # needed imports
-        from cmor_check import CMORCheck as CC
-        from cmor_check import CMORCheckError as CCE
+        from orchestrator.interface_scripts.cmor_check import CMORCheck as CC
+        from orchestrator.interface_scripts.cmor_check import CMORCheckError as CCE
         import warnings
         from variable_info import CMIP5Info
 
@@ -565,10 +565,11 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
 
         try:
             # Load cubes for requested variable in given files
-            # remember naming conbentions
+            # remember naming conventions
             # IN: infiles
             # OUT: project_info['TEMPORARY']['outfile_fullpath']
-            files = infiles
+            fix = Fix.get_fix(project_name, model_name, var_name)
+            files = [fix.fix_file(filepath) for filepath in infiles]
             with warnings.catch_warnings():
                 warnings.filterwarnings('ignore',
                                         'Missing CF-netCDF measure variable',
@@ -582,7 +583,7 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
                 # force single cube; this function defaults a list of cubes
                 reft_cube_0 = iris.load(files, var_cons, callback=merge_callback)[0]
 
-            fix = Fix.get_fix(project_name, model_name, var_name)
+
             if fix is not None:
                 reft_cube_0 = fix.fix_metadata(reft_cube_0)
 

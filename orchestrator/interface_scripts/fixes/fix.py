@@ -5,6 +5,9 @@ class Fix(object):
     """
     Base class for fixes
     """
+    def fix_file(self, filepath):
+        return filepath
+
     def fix_metadata(self, cube):
         return cube
 
