@@ -13,6 +13,7 @@
 ;#    *                                                                       #
 ;# Caveats:                                                                   #
 ;# Modification history:                                                      #
+;#    * 20170823-A_bock_ls added tags for reporting                           #
 ;#    * 20151027-A_laue_ax moved call to 'write_references' to the beginning  #
 ;#                         of the code                                        #
 ;#    * 20150325-A_laue_ax modified reference tags used for acknowledgements  #
@@ -32,6 +33,8 @@ load "./diag_scripts/lib/ncl/latlon.ncl"
 load "./diag_scripts/lib/ncl/regridding.ncl"
 load "./diag_scripts/lib/ncl/style.ncl"
 load "./diag_scripts/lib/ncl/ensemble.ncl"
+
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 ;; fetch general parameters
 begin
@@ -298,6 +301,26 @@ begin
         ;; Plotting
         map = gsn_csm_lat_time(wks, A3(lat|:, time|:), res)
         print("gv " + output_file_path + "." + file_type)
+
+        ;; Attach Metadata to plot
+        xml_name = getenv("ESMValTool_xml_name")
+        suffix = get_file_suffix(xml_name, 0)
+        base_name = str_sub_str(xml_name, suffix, "")
+
+        alltags = array_append_record(tags, (/"DM_global", "ST_mean", "ST_clim", "PT_seas", "PT_zonal"/), 0)
+
+        caption = "Annual cycle of zonal mean of variable " + variables(0)
+
+        id = diag_script + "_" + base_name
+
+        climofiles = interface_get_inpaths(idx_mod) + "/" + \
+                 interface_get_infile(variables(0), field_types(0), idx_mod)
+
+        contrib_authors = "A_gott_kl"
+
+        ESMValMD(output_file_path, alltags, caption, id, variables(0), models@name(idx_mod), climofiles, diag_script, contrib_authors)
+
+        delete([/alltags, caption, id, climofiles/])
 
         ;; clean up
         delete([/wks, A2, A3, time_mean/])
