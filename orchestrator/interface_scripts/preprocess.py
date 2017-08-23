@@ -568,8 +568,15 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
             # remember naming conventions
             # IN: infiles
             # OUT: project_info['TEMPORARY']['outfile_fullpath']
-            fix = Fix.get_fix(project_name, model_name, var_name)
-            files = [fix.fix_file(filepath) for filepath in infiles]
+            fixes = Fix.get_fixes(project_name, model_name, var_name)
+
+            def apply_file_fixes(filepath):
+                for fix in fixes:
+                    filepath = fix.fix_file(filepath)
+                return  filepath
+
+            files = [ apply_file_fixes(filepath) for filepath in infiles]
+
             with warnings.catch_warnings():
                 warnings.filterwarnings('ignore',
                                         'Missing CF-netCDF measure variable',
@@ -584,7 +591,7 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
                 reft_cube_0 = iris.load(files, var_cons, callback=merge_callback)[0]
 
 
-            if fix is not None:
+            for fix in fixes:
                 reft_cube_0 = fix.fix_metadata(reft_cube_0)
 
             # Check metadata before any preprocessing start
@@ -597,7 +604,7 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
             yr2 = int(model['end_year'])
             reft_cube = pt.time_slice(reft_cube_0, yr1,1,1, yr2,12,31)
 
-            if fix is not None:
+            for fix in fixes:
                 reft_cube = fix.fix_data(reft_cube)
 
             # Check data after time (and maybe lat-lon slicing)

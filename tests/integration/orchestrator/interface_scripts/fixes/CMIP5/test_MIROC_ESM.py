@@ -1,7 +1,10 @@
 import unittest
 from iris.cube import Cube
+from iris.coords import DimCoord
 from cf_units import Unit
-from orchestrator.interface_scripts.fixes.CMIP5.MIROC_ESM import co2, tro3, gpp
+from iris.exceptions import CoordinateNotFoundError
+
+from orchestrator.interface_scripts.fixes.CMIP5.MIROC_ESM import co2, tro3, gpp, allvars
 
 
 class TestCo2(unittest.TestCase):
@@ -27,6 +30,7 @@ class TestTro3(unittest.TestCase):
         self.assertEqual(cube.data[0], 1000)
         self.assertEqual(cube.units, Unit('J'))
 
+
 class TestGpp(unittest.TestCase):
 
     def setUp(self):
@@ -37,6 +41,44 @@ class TestGpp(unittest.TestCase):
         cube = self.fix.fix_metadata(self.cube)
         self.assertEqual(cube.data[0], 1)
         self.assertEqual(cube.units, Unit('g m-2 day-1'))
+
+
+class TestAll(unittest.TestCase):
+    def setUp(self):
+        self.cube = Cube([[1, 2], [3, 4]], var_name='co2', units='J')
+        self.cube.add_dim_coord(DimCoord([0, 1], standard_name='time',
+                                         units=Unit('days since 0000-01-01 00:00:00', calendar='standard')),
+                                0)
+        self.cube.add_dim_coord(DimCoord([0, 1], long_name='AR5PL35'), 1)
+
+        self.fix = allvars()
+
+    def test_fix_metadata(self):
+        cube = self.fix.fix_metadata(self.cube)
+        time = cube.coord('time')
+        self.assertEqual(time.units.origin, 'days since 1849-01-01 00:00:00')
+        self.assertEqual(time.units.calendar, 'standard')
+
+    def test_fix_metadata_1_1(self):
+        time = self.cube.coord('time')
+        time.units = Unit("days since 1-1-1", time.units.calendar)
+        cube = self.fix.fix_metadata(self.cube)
+
+        time = cube.coord('time')
+        self.assertEqual(time.units.origin, 'days since 1850-01-01 00:00:00')
+        self.assertEqual(time.units.calendar, 'standard')
+
+    def test_fix_metadata_plev(self):
+        time = self.cube.coord('time')
+        time.units = Unit("days since 1-1-1", time.units.calendar)
+        cube = self.fix.fix_metadata(self.cube)
+        cube.coord('air_pressure')
+
+    def test_fix_metadata_no_plev(self):
+        self.cube.remove_coord('AR5PL35')
+        cube = self.fix.fix_metadata(self.cube)
+        with self.assertRaises(CoordinateNotFoundError):
+            cube.coord('air_pressure')
 
 
 # if (iscoord(var, "time")) then
