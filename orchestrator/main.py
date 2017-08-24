@@ -160,6 +160,13 @@ class configFile:
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no save_intermediary_cubes in config "
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> assuming False  "
             GLOB['save_intermediary_cubes'] = False
+        if cp.has_option('GLOBAL','data_dir_drs') :
+            ddd = cp.get('GLOBAL','data_dir_drs')
+            GLOB['data_dir_drs'] = ddd
+        else:
+            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no data_dir_drs in config "
+            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> assuming None  "
+            GLOB['data_dir_drs'] = 'None'
         return GLOB
 
 # start parsing command line args
