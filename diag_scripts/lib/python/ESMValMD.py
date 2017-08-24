@@ -11,6 +11,7 @@ import string
 import random
 import sys
 import os
+from watermark import make_watermark
 
 class ESMValMD(METAdata):
 
@@ -30,6 +31,10 @@ class ESMValMD(METAdata):
         self.set_type(dtype)
 
         self.set_file(modfile)
+
+        watermark = "default"
+        if (watermark!="None"):
+            make_watermark(modfile)
 
         if directwrite:
             self.write()
