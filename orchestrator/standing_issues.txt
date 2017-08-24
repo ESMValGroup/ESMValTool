@@ -34,3 +34,49 @@ MemoryError
              |   end if
              | Diagnostic is not working for < 3 models!!
 -------------------------------------------------------------------------------------
+23/08/2017   | regridding now works with an target_grid: MxN cell but NCL diagnostics
+             | spit fire with such a configuration:
+  PREPROCESS:
+    - {id: pp1, select_level: None, target_grid: 2x2, regrid_scheme: nearest,
+mask_fillvalues: True, mask_landocean: None, multimodel_mean: True}
+
+NCL ERROR MESSAGE: (0)  info:   ++++++++++++++++++++++++++++++++++++++++++
+NCL ERROR MESSAGE: (0)  info:   perfmetrics_main.ncl (var: ta)
+NCL ERROR MESSAGE: (0)  info:   ++++++++++++++++++++++++++++++++++++++++++
+NCL ERROR MESSAGE: (0)  info:   Reading in file = /group_workspaces/jasmin/ncas_cms/valeriu/ESMValTool/orchestrator/parser_yaml_V/test_output/preproc/CMIP5/CMIP5_MPI-ESM-LR_Amon_historical_r1i1p1_T3M_ta_2000-2002.nc
+NCL ERROR MESSAGE: (0)  info:   Reading in file = /group_workspaces/jasmin/ncas_cms/valeriu/ESMValTool/orchestrator/parser_yaml_V/test_output/preproc/CMIP5/CMIP5_MPI-ESM-MR_Amon_historical_r1i1p1_T3M_ta_2000-2002.nc
+NCL ERROR MESSAGE: (0)  info:   Reading in file = /group_workspaces/jasmin/ncas_cms/valeriu/ESMValTool/orchestrator/parser_yaml_V/test_output/preproc/CMIP5/CMIP5_bcc-csm1-1_Amon_historical_r1i1p1_T3M_ta_2000-2002.nc
+NCL ERROR MESSAGE: (0)  info:   fatal: in perfmetrics_main.ncl, models are on irregular grid, diag_script_info@grid = '1x1' must be used
+NCL ERROR MESSAGE:
+Traceback (most recent call last):
+  File "main.py", line 413, in <module>
+    launcher_arguments=None)
+  File "./interface_scripts/preprocess.py", line 66, in run_executable
+    exit_on_warning)
+  File "./interface_scripts/launchers.py", line 174, in execute
+    self.write_stdouterr(std_outerr, verbosity, exit_on_warning)
+  File "./interface_scripts/launchers.py", line 95, in write_stdouterr
+    raise nclExecuteError(self.lang + " ERROR (see full NCL output above)")
+auxiliary.nclExecuteError: 'NCL ERROR (see full NCL output above)'
+
+NCL ERROR MESSAGE: (0)  info:   ++++++++++++++++++++++++++++++++++++++++++
+NCL ERROR MESSAGE: (0)  info:   MyDiag_test_ta.ncl (var: ta)
+NCL ERROR MESSAGE: (0)  info:   ++++++++++++++++++++++++++++++++++++++++++
+NCL ERROR MESSAGE: (0)  info:   Reading in file = /group_workspaces/jasmin/ncas_cms/valeriu/ESMValTool/orchestrator/parser_yaml_V/test_output/preproc/CMIP5/CMIP5_MPI-ESM-LR_Amon_historical_r1i1p1_T3M_ta_2000-2002.nc
+NCL ERROR MESSAGE: (0)  info:   Reading in file = /group_workspaces/jasmin/ncas_cms/valeriu/ESMValTool/orchestrator/parser_yaml_V/test_output/preproc/CMIP5/CMIP5_bcc-csm1-1_Amon_historical_r1i1p1_T3M_ta_2000-2002.nc
+NCL ERROR MESSAGE: (0)  info:   fatal: in MyDiag_test_ta.ncl, no lat dimension
+NCL ERROR MESSAGE:
+Traceback (most recent call last):
+  File "main.py", line 413, in <module>
+    launcher_arguments=None)
+  File "./interface_scripts/preprocess.py", line 66, in run_executable
+    exit_on_warning)
+  File "./interface_scripts/launchers.py", line 174, in execute
+    self.write_stdouterr(std_outerr, verbosity, exit_on_warning)
+  File "./interface_scripts/launchers.py", line 95, in write_stdouterr
+    raise nclExecuteError(self.lang + " ERROR (see full NCL output above)")
+auxiliary.nclExecuteError: 'NCL ERROR (see full NCL output above)'
+
+              | I also noticed that when using such a cell configuration the resulting regridded cube
+              | contains a mask object suggestive of vertical interpolation (??)
+----------------------------------------------------------------------------------------------------

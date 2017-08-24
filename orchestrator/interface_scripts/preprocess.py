@@ -342,7 +342,6 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
     #############################################################################
 
     # initialize variables
-    regrid = False
     save_intermediary_cubes = False
     mask_fillvalues = False
     multimodel_mean = False
@@ -353,34 +352,26 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
     # parse dictionary
     for k in prp.keys():
         if k == 'select_level':
-            if prp[k] is not 'None':
-                select_level = prp[k]
-        if k == 'regrid':
-            regrid = prp[k]
+            select_level = prp[k]
         if k == 'target_grid':
-            if prp[k] is not 'None':
-                target_grid = prp[k]
+            target_grid = prp[k]
         if k == 'regrid_scheme':
-            if prp[k] is not 'None':
-                regrid_scheme = prp[k]
+            regrid_scheme = prp[k]
         if k == 'mask_fillvalues':
-            if prp[k] is not False:
-                mask_fillvalues = True
+            mask_fillvalues = True
         if k == 'multimodel_mean':
-            if prp[k] is not False:
-                multimodel_mean = True
+            multimodel_mean = True
         if k == 'gridfile':
-            if prp[k] is not 'None':
+
                 areafile_path = prp[k]
                 if areafile_path is not None:
                     project_info['TEMPORARY']['areafile_path'] = areafile_path
-        if k == 'save_intermediary_cubes':
-            save_intermediary_cubes = prp[k]
+
 
         # land (keeps only land regions)
-        if k == 'mask_land':
+        if k == 'mask_landocean':
 
-            if prp[k] is not False:
+            if prp[k] == 'land':
                 mask_land = True
                 lmaskdir = os.path.join(model["path"],
                                        model["exp"],
@@ -392,9 +383,8 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
                 lmaskfile_path = os.path.join(lmaskdir, lmaskfile)
 
         # ocean (keeps only ocean regions)
-        if k == 'mask_ocean':
 
-            if prp[k] is not False:
+            if prp[k] == 'ocean':
                 mask_ocean = True
                 if lmaskfile_path is not None:
                     project_info['TEMPORARY']['lmaskfile_path'] = lmaskfile_path
@@ -518,6 +508,9 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
 
     ################## START CHANGING STUFF ###########################################
 
+    # check if we want to save at each step
+    save_intermediary_cubes = project_info['GLOBAL']['save_intermediary_cubes']
+
     ################## 0. CMOR_REFORMAT (NCL version) ##############
     # Legacy code that will be purged in the future
     # Check if the current project has a specific reformat routine,
@@ -532,8 +525,7 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
         reformat_script = os.path.join("reformat_scripts",
                                        which_reformat,
                                        "reformat_" + which_reformat + "_main.ncl")
-        if ((not os.path.isfile(project_info['TEMPORARY']['outfile_fullpath']))
-                or project_info['GLOBAL']['force_processing']):
+        if not os.path.isfile(project_info['TEMPORARY']['outfile_fullpath']):
 
             info("  >>> preprocess.py >>>  Calling " + reformat_script + " to check/reformat model data",
                  verbosity,
@@ -630,6 +622,9 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
 
     #################### 1. LAND/OCEAN/PORO MASK VIA sftlf/sftof/mrsofc FILE ####################################################
 
+    # variable needed later for naming files
+    mask_type = False
+
     # Land Mask
     if mask_land is True:
         if os.path.isfile(lmaskfile_path):
@@ -644,6 +639,7 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
             if cmor_reformat_type == 'py':
                 reft_cube = pt.fx_mask(reft_cube, l_mask)
                 if save_intermediary_cubes is True:
+                    mask_type = 'land'
                     default_save = project_info['TEMPORARY']['outfile_fullpath']
                     cmor_mask_save = default_save.strip('.nc') + '_cmor_land-mask.nc'
                     iris.save(reft_cube, cmor_mask_save)
@@ -670,6 +666,7 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
             if cmor_reformat_type == 'py':
                 reft_cube = pt.fx_mask(reft_cube, o_mask)
                 if save_intermediary_cubes is True:
+                    mask_type = 'ocean'
                     default_save = project_info['TEMPORARY']['outfile_fullpath']
                     cmor_mask_save = default_save.strip('.nc') + '_cmor_ocean-mask.nc'
                     iris.save(reft_cube, cmor_mask_save)
@@ -695,6 +692,7 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
             if cmor_reformat_type == 'py':
                 reft_cube = pt.fx_mask(reft_cube, por_mask)
                 if save_intermediary_cubes is True:
+                    mask_type = 'poro'
                     default_save = project_info['TEMPORARY']['outfile_fullpath']
                     cmor_mask_save = default_save.strip('.nc') + '_cmor_poro-mask.nc'
                     iris.save(reft_cube, cmor_mask_save)
@@ -709,7 +707,7 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
     #################### 2. TIME/AREA OPS #################################################
 
     #################### FINAL. REGRID ####################################################
-    if regrid is True and target_grid is not None:
+    if target_grid != 'None':
 
         # we will regrid according to whatever regridding scheme and reference grids are needed
         # and create new regridded files from the original cmorized/masked ones
@@ -796,9 +794,47 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
                                     newlyRegriddedCube = iris.save(rgc, newlyRegriddedFilePath)
                                     info(' >>> preprocess.py >>> Running diagnostic on ' + newlyRegriddedFilePath, verbosity, required_verbosity=1)
 
+                                    # check cube
+                                    reft_cube = rgc
+                                    checker = CC(reft_cube, var_info, automatic_fixes=True)
+                                    checker.check_data()
+
                         # otherwise don't do anything
                         else:
                             info(' >>> preprocess.py >>> No regridding model specified in variables[ref_model]. Skipping regridding.', verbosity, required_verbosity=1)
+
+            else:
+                # assume and check it is of XxY form
+                if isinstance(target_grid.split('x')[0], basestring) and isinstance(target_grid.split('x')[1], basestring):
+                    info(' >>> preprocess.py >>> Target regrid is XxY: ' + target_grid, verbosity, required_verbosity=1)
+                    if regrid_scheme:
+                        rgc = rg(src_cube, target_grid, regrid_scheme)
+                    else:
+                        info(' >>> preprocess.py >>> No regrid scheme specified, assuming linear', verbosity, required_verbosity=1)
+                        rgc = rg(src_cube, target_grid, 'linear')
+
+                    info(' >>> preprocess.py >>> Regridded cube summary --->', verbosity, required_verbosity=1)
+                    print(rgc)
+
+                    # check cube
+                    reft_cube = rgc
+                    checker = CC(reft_cube, var_info, automatic_fixes=True)
+                    checker.check_data()
+
+                    # save-append to outfile fullpath list to be further processed
+                    iris.save(rgc, project_info['TEMPORARY']['outfile_fullpath'])
+
+                    if save_intermediary_cubes is True:
+                        default_save = project_info['TEMPORARY']['outfile_fullpath']
+                        if mask_type:
+                            cmor_mask_regrid_save = default_save.strip('.nc') + '_cmor_' \
+                                                    + mask_type + '-mask_regrid_' \
+                                                    + target_grid + '.nc'
+                            iris.save(reft_cube, cmor_mask_regrid_save)
+                        else:
+                            cmor_regrid_save = default_save.strip('.nc') + '_cmor_regrid_' \
+                                               + target_grid + '.nc'
+                            iris.save(reft_cube, cmor_regrid_save)
 
     ############ FINISH all PREPROCESSING and delete environment
     del(project_info['TEMPORARY'])

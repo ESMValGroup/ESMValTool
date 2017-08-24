@@ -27,16 +27,15 @@ class Namelist(yaml.YAMLObject):
 
 class Diagnostic(yaml.YAMLObject):
     yaml_tag = u'!Diagnostic'
-    def __init__(self, id, description, variables, preprocess, scripts, additional_models):
+    def __init__(self, id, description, variables, scripts, additional_models):
         self.id = id
         self.description = description
         self.variables = variables
-        self.preprocess = preprocess
         self.scripts = scripts
         self.additional_models = additional_models
     def __repr__(self):
-        return "%s(id=%r, description=%r, variables=%r, preprocess=%r, scripts=%r, additional_models=%r)" % (
-            self.__class__.__name__, self.id, self.description, self.variables, self.preprocess, self.scripts, self.additional_models)
+        return "%s(id=%r, description=%r, variables=%r, scripts=%r, additional_models=%r)" % (
+            self.__class__.__name__, self.id, self.description, self.variables, self.scripts, self.additional_models)
 
 ############################################################################################################################
 # this class is not currently used but is coded here
