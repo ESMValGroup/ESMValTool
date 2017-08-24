@@ -79,4 +79,11 @@ auxiliary.nclExecuteError: 'NCL ERROR (see full NCL output above)'
 
               | I also noticed that when using such a cell configuration the resulting regridded cube
               | contains a mask object suggestive of vertical interpolation (??)
+
+FIXED by VP: in interface_scripts/regrid.py: 
+l.119:
+    # VP: this is needed to have standard CF naming
+    # the diagnostics look for var_name in the netCDF files
+    cube.coords()[0].var_name = 'lat'
+    cube.coords()[1].var_name = 'lon'
 ----------------------------------------------------------------------------------------------------

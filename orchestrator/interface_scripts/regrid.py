@@ -116,6 +116,11 @@ def _stock_cube(spec):
     coords_spec = [(lats, 0), (lons, 1)]
     cube = iris.cube.Cube(dummy, dim_coords_and_dims=coords_spec)
 
+    # VP: this is needed to have standard CF naming
+    # the diagnostics look for var_name in the netCDF files
+    cube.coords()[0].var_name = 'lat'
+    cube.coords()[1].var_name = 'lon'
+
     return cube
 
 
