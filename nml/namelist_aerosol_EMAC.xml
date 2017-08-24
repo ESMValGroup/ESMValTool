@@ -167,15 +167,15 @@ This namelist is part of the ESMValTool
         <field_type>          T3I                                       </field_type>
         <diag_script_cfg_dir> ./nml/cfg_aerosol/EMAC/                   </diag_script_cfg_dir>
 
-        <diag_script cfg="cfg_aerosol_profiles_ACCESS.ncl">    aerosol_profiles.ncl  </diag_script>
-        <diag_script cfg="cfg_aerosol_profiles_CONCERT.ncl">   aerosol_profiles.ncl  </diag_script>
-        <diag_script cfg="cfg_aerosol_profiles_CR-AVE.ncl">    aerosol_profiles.ncl  </diag_script>
-        <diag_script cfg="cfg_aerosol_profiles_DC3.ncl">       aerosol_profiles.ncl  </diag_script>
-        <diag_script cfg="cfg_aerosol_profiles_HIPPO.ncl">     aerosol_profiles.ncl  </diag_script>
-        <diag_script cfg="cfg_aerosol_profiles_Oct-AVE.ncl">   aerosol_profiles.ncl  </diag_script>
-        <diag_script cfg="cfg_aerosol_profiles_SALTRACE1.ncl"> aerosol_profiles.ncl  </diag_script>
-        <diag_script cfg="cfg_aerosol_profiles_SALTRACE2.ncl"> aerosol_profiles.ncl  </diag_script>
-        <diag_script cfg="cfg_aerosol_profiles_TC4.ncl">       aerosol_profiles.ncl  </diag_script>
+        <diag_script cfg="cfg_aerosol_profiles_ACCESS.ncl">         aerosol_profiles.ncl  </diag_script>
+        <diag_script cfg="cfg_aerosol_profiles_CONCERT.ncl">        aerosol_profiles.ncl  </diag_script>
+        <diag_script cfg="cfg_aerosol_profiles_CR-AVE.ncl">         aerosol_profiles.ncl  </diag_script>
+        <diag_script cfg="cfg_aerosol_profiles_DC3.ncl">            aerosol_profiles.ncl  </diag_script>
+        <diag_script cfg="cfg_aerosol_profiles_HIPPO.ncl">          aerosol_profiles.ncl  </diag_script>
+        <diag_script cfg="cfg_aerosol_profiles_Oct-AVE.ncl">        aerosol_profiles.ncl  </diag_script>
+        <diag_script cfg="cfg_aerosol_profiles_SALTRACE-SP2-1.ncl"> aerosol_profiles.ncl  </diag_script>
+        <diag_script cfg="cfg_aerosol_profiles_SALTRACE-SP2-2.ncl"> aerosol_profiles.ncl  </diag_script>
+        <diag_script cfg="cfg_aerosol_profiles_TC4.ncl">            aerosol_profiles.ncl  </diag_script>
 
     </diag>
 
