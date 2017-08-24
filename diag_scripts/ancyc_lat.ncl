@@ -318,7 +318,7 @@ begin
 
         contrib_authors = "A_gott_kl"
 
-        ESMValMD(output_file_path, alltags, caption, id, variables(0), models@name(idx_mod), climofiles, diag_script, contrib_authors)
+        ESMValMD(output_file_path+"."+file_type, alltags, caption, id, variables(0), models@name(idx_mod), climofiles, diag_script, contrib_authors)
 
         delete([/alltags, caption, id, climofiles/])
 

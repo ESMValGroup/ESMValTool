@@ -426,7 +426,7 @@ begin
     end do
     contrib_authors = (/"A_anav_al", "A_wenz_sa", "A_righ_ma"/)
 
-    ESMValMD(outfile, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+    ESMValMD(outfile+"."+file_type, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
 
     delete([/alltags, caption, id, climofiles/])    
     delete(data_arr)

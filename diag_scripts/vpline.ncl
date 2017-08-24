@@ -519,7 +519,7 @@ begin
 
    contrib_authors = "A_wenz_sa"
 
-   ESMValMD(output_dir+outfile, alltags, caption, id, variables(0), allmodelnames, climofiles, diag_script, contrib_authors)
+   ESMValMD(wks@fullname, alltags, caption, id, variables(0), allmodelnames, climofiles, diag_script, contrib_authors)
 ;**************************************************************
 
    info_output(" gv " + wks@fullname + " &", verbosity, 1)

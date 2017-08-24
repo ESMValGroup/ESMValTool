@@ -322,7 +322,7 @@ begin
                                                     var0,\
                                                     field_type0,\
                                                     aux_filename_info, -1)
-    output_file_path = output_dir + output_filename
+    output_file_path = output_dir + output_filename + ".png"
 
     ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
 
@@ -349,7 +349,7 @@ begin
                                                     var0,\
                                                     field_type0,\
                                                     aux_filename_info, -1)
-    output_file_path = output_dir + output_filename
+    output_file_path = output_dir + output_filename + ".png"
 
     ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
 
@@ -391,7 +391,7 @@ begin
                                                     var0,\
                                                     field_type0,\
                                                     aux_filename_info, -1)
-    output_file_path = output_dir + output_filename
+    output_file_path = output_dir + output_filename + ".png"
 
     ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
 
@@ -423,7 +423,7 @@ begin
                                                     var0,\
                                                     field_type0,\
                                                     aux_filename_info, -1)
-    output_file_path = output_dir + output_filename
+    output_file_path = output_dir + output_filename + ".png"
 
     ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
 

@@ -286,7 +286,7 @@ begin
         contrib_authors = (/"A_righ_ma", "A_kais_ch"/)
         modelsname = array_append_record(models@name, diag_script_info@network + "_" + data_arr@stname, 0)
         climofiles_mod = array_append_record(climofiles, stations_file(stID), 0)
-        ESMValMD(plot_file, alltags, caption, id, variables(0), \
+        ESMValMD(plot_file+"."+file_type, alltags, caption, id, variables(0), \
                  modelsname, climofiles_mod, diag_script, contrib_authors)
         delete([/alltags, modelsname, climofiles_mod/])
         ; -------------------------------------------------------------------------------
@@ -379,7 +379,7 @@ begin
                        diag_script_info@network + "_" + stname, 0)
         end do
         climofiles_mod := array_append_record(climofiles(mID), stations_file, 0)
-        ESMValMD(plot_file, alltags, caption, id, variables(0), \
+        ESMValMD(plot_file+"."+file_type, alltags, caption, id, variables(0), \
                  modelsname_mod, climofiles_mod, diag_script, contrib_authors)
         delete(alltags)
         ; -------------------------------------------------------------------------------
@@ -503,7 +503,7 @@ begin
                        diag_script_info@network + "_" + stname, 0)
         end do
         climofiles_mod := array_append_record(climofiles(mID), stations_file, 0)
-        ESMValMD(plot_file, alltags, caption, id, variables(0), \
+        ESMValMD(plot_file+"."+file_type, alltags, caption, id, variables(0), \
                  modelsname_mod, climofiles_mod, diag_script, contrib_authors)
         delete(alltags)
         ; -------------------------------------------------------------------------------

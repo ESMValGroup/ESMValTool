@@ -17,6 +17,7 @@
 ;;                     carbon_corr_2var.ncl
 ;;
 ;; Modification history
+;;    * 20170822-A_bock_ls: added tags for reporting
 ;;    * 20151027-A_laue_ax: added call to 'write_references'
 ;;    * 201509-A_Sabrina Wenzel: updated to new ESMValTool structure
 ;;    * 201303-A_Sabrina Wenzel: written 
@@ -36,6 +37,8 @@ load "./diag_scripts/uniform_coordinates.ncl"
 load "./plot_scripts/ncl/scatterplot.ncl"
 load "./plot_scripts/ncl/xy_line.ncl"
 load "./plot_scripts/ncl/legends.ncl"
+
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 begin
   diag_script = "carbon_constraint"
