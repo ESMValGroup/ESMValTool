@@ -160,13 +160,23 @@ class configFile:
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no save_intermediary_cubes in config "
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> assuming False  "
             GLOB['save_intermediary_cubes'] = False
-        if cp.has_option('GLOBAL','data_dir_drs') :
-            ddd = cp.get('GLOBAL','data_dir_drs')
-            GLOB['data_dir_drs'] = ddd
+        if cp.has_option('GLOBAL','data_dir_type') :
+            ddd = cp.get('GLOBAL','data_dir_type')
+            GLOB['data_dir_type'] = ddd
+            permitted_values = ['user_drs', 'user_file', 'user_unstructured', 'badc', 'dkrz']
+            # permitted values:
+            # user_drs: user's model['path'] has a DRS structure
+            # user_file: user's model['path'] points to a single file
+            # user_unstructured: user's model['path'] contains an unstructured collection of files
+            # badc: file search on BADC archive
+            # dkrz: file search on DKRZ archive
+            if ddd not in permitted_values:
+                print >> sys.stderr,"PY  ERROR:  >>> main.py >>> Unrecognized option for data_dir_type in config: ", ddd
+                sys.exit(1)
         else:
-            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no data_dir_drs in config "
-            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> assuming None  "
-            GLOB['data_dir_drs'] = 'None'
+            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no data_dir_type in config "
+            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> assuming None  (unstructured data directory)"
+            GLOB['data_dir_type'] = 'None'
         return GLOB
 
 # start parsing command line args

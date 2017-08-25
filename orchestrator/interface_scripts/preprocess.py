@@ -222,10 +222,22 @@ def get_cmip_cf_infile(project_info, currentDiag, model, currentVarName):
     """
     # assert verbosity level
     verbosity = project_info['GLOBAL']['verbosity']
-    # assert data_dir_drs value
 
     # look for files keyed by project name
     proj_name = model['project']
+
+    # specify path
+    rootdir = model['path']
+
+    # specify start_year and end_year
+    y1 = model['start_year']
+    y2 = model['end_year']
+
+    # set the file discovery variable
+    dir_type = project_info['GLOBAL']['data_dir_type']
+
+    # enumerate the structured directory cases
+    structured_cases = ['user_drs', 'badc', 'dkrz']
 
     # get variables; data files is a dictionary keyed on variable
     data_files = {}
@@ -233,103 +245,43 @@ def get_cmip_cf_infile(project_info, currentDiag, model, currentVarName):
 
     for var in variables:
 
-        # initialize empty list to conatin file names
-        infiles = []
+        # single file
+        if dir_type == 'user_file':
+            full_paths = gf.get_single_file(rootdir, y1, y2)
 
-        # specify path completely; taken from model path
-        # model path could be fully determined or NOT
-        rootdir = model['path']
-
-        ############ structured cases: either path is file or we have DRS structured path ############################
-        # check if rootdir is a full path to a file
-        if rootdir.endswith('.nc') is True:
-            info(" >>> preprocess.py >>> Specified path points to file " + rootdir, verbosity, required_verbosity=1)
-            # assert true file existence
-            srch = 'ls ' + rootdir
-
-        # check if we retrieve data straight from a remote server
-        # or check if rootdir has a standard DRS structure
-        elif project_info['GLOBAL']['data_dir_drs'] != 'None':
-
-            drs = project_info['GLOBAL']['data_dir_drs']
+        # user drs structured or dataserver
+        elif dir_type in structured_cases:
             if proj_name.startswith('CMIP5') is True:
-                full_path = gf.get_cmip5(drs, rootdir, var['name'], model)
+                full_paths = gf.get_cmip5(dir_type, rootdir, var['name'], model)
             elif proj_name.startswith('EMAC') is True:
-                full_path = gf.get_emac(drs, rootdir, var['name'], model)
+                full_paths = gf.get_emac(dir_type, rootdir, var['name'], model)
             elif proj_name.startswith('GFDL') is True:
-                full_path = gf.get_gfdl(drs, rootdir, var['name'], model)
+                full_paths = gf.get_gfdl(dir_type, rootdir, var['name'], model)
             elif proj_name.startswith('CCMVal') is True:
-                full_path = gf.get_ccmval(drs, rootdir, var['name'], model)
+                full_paths = gf.get_ccmval(dir_type, rootdir, var['name'], model)
 
-        ##############################################################################################################
+        # user dir with no structure in it
+        elif dir_type == 'user_unstructured':
+            full_paths = gf.get_from_unstructured_dir(rootdir, model, var)
 
-        ########### unstructured case: assume needed files all live in a common directory 'rootdir' ###########################
-        elif project_info['GLOBAL']['data_dir_drs'] == 'None':
-
-            # use standard convention for file naming according to project
-            # CMIP5 and any of its derrivatives
-            if proj_name.startswith('CMIP5') is True:
-                infile_id = '*' + '_'.join([var['name'], model['mip'],
-                                            model['name'],
-                                            model['exp'],
-                                            model['ensemble']]) + '_*.nc*'
-
-            # EMAC and any of its derrivatives (FIXME UNTESTED!!!)
-            elif proj_name.startswith('EMAC') is True:
-                infile_id = '*' + '_'.join([var['name'],
-                                            model['name'],
-                                            model['ensemble']]) + '_*.nc*'
-
-            # GFDL and any of its derrivatives (FIXME UNTESTED!!!)
-            elif proj_name.startswith('GFDL') is True:
-                infile_id = '*' + '_'.join([var['name'], 
-                                            model['name'], model['realm'],
-                                            model['ensemble']]) + '_*.nc*'
-
-            # CCMVal and any of its derrivatives (FIXME UNTESTED!!!)
-            elif proj_name.startswith('CCMVal') is True:
-                infile_id = '*' + '_'.join([var['name'], 
-                                            model['name'], model['exp'],
-                                            model['ensemble']]) + '_*.nc*'
-
-            # look for files: get paths
-            srch = 'ls ' + rootdir + '/' + infile_id
-
-        if rootdir.endswith('.nc') is True or project_info['GLOBAL']['data_dir_drs'] == 'None':
-            proc = subprocess.Popen(srch, stdout=subprocess.PIPE, shell=True)
-            (out, err) = proc.communicate()
-            fpaths = out.split('\n')
-        if project_info['GLOBAL']['data_dir_drs'] != 'None':
-            fpaths = full_path
-            fpaths.append('bogus_path')
-
-        # loop through filepaths and identify per variable name;
-        # last element of ls will always be an empty string
-        for fpath in fpaths[0:-1]:
-            if os.path.exists(fpath.strip()):
-                infiles.append(fpath.strip())
-                if currentVarName == var['name']:
-                    info(" >>> preprocess.py >>> Using file " + fpath.strip(), verbosity, required_verbosity=1)
-            else:
-                fi = rootdir + '/' + infile_id
-                info(" >>> preprocess.py >>> Could not find file type " + fi, verbosity, required_verbosity=1)
-        data_files[var['name']] = infiles
-
-        # checks on the nuber of files
-        # found for a specific project, model, ensemble...
+        # checks on the nuber of files for globbing in GLOB.nc
+        # found for a specific identified [project, model, ensemble...]
         # note the GLOB file can be created for ANY type of project
-        if len(infiles) == 0:
+        # and lives in rootdir
+        if len(full_paths) == 0:
             info(" >>> preprocess.py >>> Could not find any data files for " + model['name'], verbosity, required_verbosity=1)
-        if len(infiles) > 1:
+        if len(full_paths) == 1:
+            data_files[var['name']] = full_paths
+        if len(full_paths) > 1:
             # get pp.glob to glob the files into one single file
             info(" >>> preprocess.py >>> Found multiple netCDF files for current diagnostic, attempting to glob them; variable: " + var['name'],
                  verbosity, required_verbosity=1)
             standard_name = rootdir + '/' + '_'.join([var['name'], model['project'],
                                                      model['name'],
-                                                     model['ensemble']]) + '_GLOB.nc'
+                                                     model['ensemble'], str(y1), str(y2)]) + '_GLOB.nc'
             # glob only if the GLOB.nc file doesnt exist
             if os.path.exists(standard_name) is False:
-                globs = pt.glob(infiles, standard_name, verbosity)
+                globs = pt.glob(full_paths, standard_name, verbosity)
                 info(" >>> preprocess.py >>> Globbing files now...",
                      verbosity, required_verbosity=1)
             else:
@@ -339,10 +291,9 @@ def get_cmip_cf_infile(project_info, currentDiag, model, currentVarName):
             if globs == 1:
                 data_files[var['name']] = [standard_name]
             else:
-                data_files[var['name']] = infiles
+                data_files[var['name']] = full_paths
                 info(" >>> preprocess.py >>> Could not glob files, keeping a list of files", verbosity, required_verbosity=1)
  
-
     return data_files
 
 def get_obs_cf_infile(project_info, currentDiag, obs_model, currentVarName):

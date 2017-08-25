@@ -1,5 +1,7 @@
 """
 Tool to establish a structured DRS path to files
+Rtrieval of data files from either structured databases like BADC or DKRZ
+or from DRS-structured ROOTDIR specified by user.
 Author: Valeriu Predoi, University of Reading, valeriu.predoi@ncas.ac.uk
 First version: August 2017
 """
@@ -78,8 +80,26 @@ def date_handling(time1,time2):
             year2 = y2.year
     return year1,year2
 
-# ---- function that establishes the DRS path
-def get_drs(dir1, sdir, ic, model, var, latest_dir):
+# ---- function that does time checking on a file
+def time_check(fpath, yr1, yr2):
+    """
+    fpath: full path to file
+    yr1, yr2: model['start_year'], model['end_year']
+    """
+    ssp = fpath.split('/')
+    av = ssp[-1]
+    time_range = av.split('_')[-1].strip('.nc')
+    time1 = time_range.split('-')[0]
+    time2 = time_range.split('-')[1]
+    year1 = date_handling(time1,time2)[0]
+    year2 = date_handling(time1,time2)[1]
+    if time_handling(year1, yr1, year2, yr2) is True:
+        return True
+    else:
+        return False
+
+# ---- function that establishes the DRS path for CMIP5 files
+def get_cmip5_drs(dir1, sdir, ic, model, var, latest_dir):
     """
     Function that returns DRS.
     dir1: root directory
@@ -89,9 +109,14 @@ def get_drs(dir1, sdir, ic, model, var, latest_dir):
     latest_dir: on badc is /latest/ - this is known in advance
     and is dependant on where the code is run.
     """
-    mip = model['mip']
-    exp = model['exp']
-    ens = model['ensemble']
+    # these are mendatory to establish path
+    try:
+        mip = model['mip']
+        exp = model['exp']
+        ens = model['ensemble']
+    except KeyError as e:
+        print >> sys.stderr, 'PY  info:  >>> get_file_from_drs.py >>> ERROR ', e, 'is missing in model', model
+        sys.exit(1)
 
     if mip == '3h':
         gdrs = dir1 + sdir + '/' + ic + '/' + exp + '/3h/*/*/' + ens \
@@ -130,10 +155,10 @@ def get_drs(dir1, sdir, ic, model, var, latest_dir):
               + '/' + ic + '/' + exp + '/mon/aerosol/aero/' + ens \
               + latest_dir + var + '/'
     else:
-        print('Could not establish custom DRS...')
+        print('PY  info:  >>> get_file_from_drs.py >>> Could not establish custom DRS; trying a general path')
         gdrs = dir1 + sdir + '/' + ic + '/' + exp + '/' + mip + '/*/*/' + ens \
                + latest_dir + var + '/'
-        print('Using generalized path: %s' % gdrs)
+        print('PY  info:  >>> get_file_from_drs.py >>> Using generalized path: %s' % gdrs)
     return gdrs
 
 # ---- capture ls in the preferred directory
@@ -150,7 +175,7 @@ def lsladir(dirname):
     return res
 
 # ---- local file finder
-def find_local_files(model, out1, dirname1, latest_dir, var):
+def find_local_files(model, out1, dirname1, latest_dir, var, label):
     """
     Function that performs local search for files using `find'
     The depth is as high as possible so that find is fast.
@@ -169,7 +194,8 @@ def find_local_files(model, out1, dirname1, latest_dir, var):
             for st2 in out2.split('\n')[3:-1]:
                 findic = st2.split()[-1]
                 if findic == model['name']:
-                    drs = get_drs(dirname1, subdir, findic, model, var, latest_dir)
+                    if label == 'cmip5':
+                        drs = get_cmip5_drs(dirname1, subdir, findic, model, var, latest_dir)
 
                     # -follow option allows for finding symlinked files
                     strfindic = 'find ' + drs\
@@ -180,21 +206,25 @@ def find_local_files(model, out1, dirname1, latest_dir, var):
                         flist.append(t)
     return flist
 
-def find_file(model, ldir, rdir, ld, var):
+def find_file(model, ldir, rdir, ld, var, label):
     """
     Function that does direct parsing of available datasource files and establishes
     the paths to the needed files; makes use of find_local_files()
     File versioning is controlled by finding the ld = e.g. /latest/ dir 
     in the badc datasource, this may differ on other clusters and should be correctly
-    hardcoded in the code!
+    hardcoded in the code when calling the function. For case 'user', this is a
+    'jump' directory (it doesn't exist)
 
     ldir,rdir: args for find_local_files
     rdir: root data directory eg /badc/cmip5/data/cmip5/output1/
+          or rootdir in the 'user' case
     ldir: 'ls -la' output of rdir
+
+    label: type of file needed to establish the drs path
 
     """
 
-    arname = find_local_files(model, ldir, rdir, ld, var)
+    arname = find_local_files(model, ldir, rdir, ld, var, label)
     fs = []
 
     if len(arname) > 0:
@@ -203,6 +233,7 @@ def find_file(model, ldir, rdir, ld, var):
         for s in arname:
             ssp = s.split('/')
             av = ssp[-1]
+            # FIXME replace this with time_check()
             time_range = av.split('_')[-1].strip('.nc')
             time1 = time_range.split('-')[0]
             time2 = time_range.split('-')[1]
@@ -210,39 +241,153 @@ def find_file(model, ldir, rdir, ld, var):
             year2 = date_handling(time1,time2)[1]
             if time_handling(year1, yr1, year2, yr2) is True:
                 if os.path.exists(s):
-                    print("PY  info:  >>> get_file_from_drs.py >>> Found matching file: ", s)
                     fs.append(s)
 
     return fs
 
+def get_single_file(rootdir, yr1, yr2):
+    """
+    Retrieves a single file given that
+    rootdir = model['path'] is a pointer to a single file
+    Performs checks on file extension and needed time bracket
+    rootdir: model['path'' - an .nc file
+    yr1, yr2: model['start_year'], model['end_year']
+    """
+    # checks
+    if os.path.exists(rootdir):
+        if rootdir.endswith('.nc') is True:
+            print("PY  info:  >>> preprocess.py >>> data_dir_type set to user_file ")
+            print("PY  info:   >>> preprocess.py >>> Specified path points to file %s" % rootdir)
+        else:
+            print("PY  info:   >>> preprocess.py >>> data_dir_type set to user_file ")
+            print("PY  info:   >>> preprocess.py >>> Specified path DOES NOT point to netCDF file %s" % rootdir)
+            sys.exit(1)
+    else:
+        print("PY  info:   >>> preprocess.py >>> data_dir_type set to user_file ")
+        print("PY  info:   >>> preprocess.py >>> Specified path is non existent %s" % rootdir)
+        sys.exit(1)
+
+    # time checks
+    tc = time_check(rootdir, yr1, yr2)
+    if tc is True:
+        files = [rootdir]
+    else:
+        print("PY  info:   >>> preprocess.py >>> Specified file failed time checks: %s" % rootdir)
+
+    return files
+
+def get_from_unstructured_dir(rootdir, model, var):
+    """
+    Looks for matching files in a directory
+    containing a bunch of files, no structure given
+    """
+    files = []
+
+    proj_name = model['project']
+
+    # use standard convention for file naming according to project
+    # CMIP5 and any of its derrivatives
+    if proj_name.startswith('CMIP5') is True:
+        infile_id = '*' + '_'.join([var['name'], model['mip'],
+                                    model['name'],
+                                    model['exp'],
+                                    model['ensemble']]) + '_*.nc*'
+
+    # EMAC and any of its derrivatives (FIXME UNTESTED!!!)
+    elif proj_name.startswith('EMAC') is True:
+        infile_id = '*' + '_'.join([var['name'],
+                                    model['name'],
+                                    model['ensemble']]) + '_*.nc*'
+
+    # GFDL and any of its derrivatives (FIXME UNTESTED!!!)
+    elif proj_name.startswith('GFDL') is True:
+        infile_id = '*' + '_'.join([var['name'],
+                                    model['name'], model['realm'],
+                                    model['ensemble']]) + '_*.nc*'
+
+    # CCMVal and any of its derrivatives (FIXME UNTESTED!!!)
+    elif proj_name.startswith('CCMVal') is True:
+        infile_id = '*' + '_'.join([var['name'],
+                                    model['name'], model['exp'],
+                                    model['ensemble']]) + '_*.nc*'
+
+    # look for files: get paths
+    srch = 'ls ' + rootdir + '/' + infile_id
+    proc = subprocess.Popen(srch, stdout=subprocess.PIPE, shell=True)
+    (out, err) = proc.communicate()
+    fpaths = out.split('\n')
+    
+
+    # loop through filepaths and identify per variable name;
+    # last element of ls will always be an empty string
+    for fpath in fpaths[0:-1]:
+        filepath = fpath.strip()
+        if os.path.exists(filepath):
+            # time checks
+            tc = time_check(filepath, model['start_year'], model['end_year'])
+            if tc is True:
+                files.append(filepath)
+                print("PY  info:   >>> preprocess.py >>> Using file %s" % filepath)
+        else:
+            fi = rootdir + '/' + infile_id
+            print("PY  info:   >>> preprocess.py >>> Could not find file type %s" % fi)
+
+    return files
 
 def get_cmip5(drs, rootdir, var, model):
     """
-    drs: input from config
+    drs: input from config (badc, dkrz, user_drs)
     rootdir: input from roject_info[MODEL] via preprocess.py
     var and model: input from project_info
     """
 
     if drs == 'badc':
+        """
+        This case together with 'dkrz' allows for an automatic search on 
+        local databases at BADC and DKRZ. The search is performed using pre-built
+        DRS paths and uses the key directory name latestDir specific to each database
+        for file version control (hardcoded here).
+        """
         print("PY  info:  >>> get_file_from_drs.py >>> Looking for data on BADC ")
         host_root = '/badc/cmip5/data/cmip5/output1/' #rdir
         ls_host_root = lsladir(host_root) #ldir
 
-        # this is a standard for badc
+        # this is a standard for BADC
+        # hence the hardcoding
         latestDir = '/latest/'
 
-        files = find_file(model, ls_host_root, host_root, latestDir, var)
-        print("PY  info:  >>> get_file_from_drs.py >>> Found matching files on BADC: ", files)
+        files = find_file(model, ls_host_root, host_root, latestDir, var, label = 'cmip5')
+        print("PY  info:  >>> get_file_from_drs.py >>> Found matching files on BADC: ")
+        for fi in files:
+            print("PY  info:  >>>    file: %s" % fi)
 
     elif drs == 'dkrz':
-        print(" >>> get_file_from_drs.py >>> Looking for data on DKRZ ")
 
-    elif drs == 'user':
-        print(" >>> get_file_from_drs.py >>> User root directory path with DRS structure: %s" % rootdir)
+        # FIXME this bit needs correct paths
+        print("PY  info:  >>> get_file_from_drs.py >>> Looking for data on DKRZ ")
+        host_root = 'xxx/xxx' #rdir
+        ls_host_root = lsladir(host_root) #ldir
+
+        # this is a standard for DKRZ
+        # hence the hardcoding
+        latestDir = '/xxx/'
+
+        files = find_file(model, ls_host_root, host_root, latestDir, var, label = 'cmip5')
+        print("PY  info:  >>> get_file_from_drs.py >>> Found matching files on DKRZ: ")
+        for fi in files:
+            print("PY  info:  >>>    file: %s" % fi)
+
+    elif drs == 'user_drs':
+        """
+        This case assumes that the model['path'] = rootdir supplied in the namelist
+        has a DRS structure e.g. for CMIP5: rootdir/institution/proj_name/experiment/frequency/realm/mip/ensemble/variable_name/
+                                            ./test_data_drs/MPI-M/MPI-ESM-LR/historical/mon/atmos/Amon/r1i1p1/ta/
+        """
+        print("PY  info:  >>> get_file_from_drs.py >>> User root directory path with DRS structure: %s" % rootdir)
         ls_host_root = lsladir(rootdir) #ldir
 
-        # this is a standard for badc
-        latestDir = '/latest/'
+        # this is a dummy
+        latestDir = '/'
 
         # check path integrity
         if rootdir.endswith('/'):
@@ -250,17 +395,22 @@ def get_cmip5(drs, rootdir, var, model):
         else:
             host_root = rootdir + '/'
 
-        files = find_file(model, ls_host_root, host_root, latestDir, var)
-        print("PY  info:  >>> get_file_from_drs.py >>> Found matching files in user data root: ", files)
+        files = find_file(model, ls_host_root, host_root, latestDir, var, label = 'cmip5')
+        print("PY  info:  >>> get_file_from_drs.py >>> Found matching files in %s: " % rootdir)
+        for fi in files:
+            print("PY  info:  >>>    file: %s" % fi)
     else:
-        print(" >>> get_file_from_drs.py >>> Could not establish root directory path: ", drs)    
+        print(" >>> get_file_from_drs.py >>> Could not establish root directory type: ", drs)    
 
     return files
 
 
 def get_emac(drs, rootdir, var, model):
+    # FIXME needs implementation
     pass
 def get_gfdl(drs, rootdir, var, model):
+    # FIXME needs implementation
     pass
 def get_ccmval(drs, rootdir, var, model):
+    # FIXME needs implementation
     pass
