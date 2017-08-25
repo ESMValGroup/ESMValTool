@@ -1,7 +1,21 @@
 """
 Tool to establish a structured DRS path to files
-Rtrieval of data files from either structured databases like BADC or DKRZ
+Retrieval of data files from either structured databases like BADC or DKRZ
 or from DRS-structured ROOTDIR specified by user.
+
+The usage of this tool is goverened by data_dir_type option in config.ini with
+the following permitted values and their respective actions:
+
+            Option | For all options just model['path'] from namelist is needed
+            --------------------------------------------------------------------
+            O1: user_drs: assumes user's 'model['path']' path has a DRS structure of
+                          form is model['path']/institution/proj_name/experiment/frequency/realm/mip/ensemble/variable_name/FILE
+                          once model['path'] is passed, the code will retrieve the file from the DRS structure
+            O2: user_file: user's model['path'] points to a single file (good for small diagnostics)
+            O3: user_unstructured: user's model['path'] contains an unstructured collection of files (good for testing or for small diagnostics)
+            O4: badc: file search on BADC archive (automatic)
+            O5: dkrz: file search on DKRZ archive (automatic) - still to be correctly handled
+
 Author: Valeriu Predoi, University of Reading, valeriu.predoi@ncas.ac.uk
 First version: August 2017
 """
