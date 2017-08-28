@@ -104,14 +104,15 @@ def models_checks(models_dict):
         except KeyError as e:
             print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR ', e, 'is missing in model', m
             sys.exit(1)
-        try:
-            path = m['path']
-            if path is None:
-                print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR model path is None', m
-                sys.exit(1)
-        except KeyError as e:
-            print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR ', e, 'is missing in model', m
-            sys.exit(1)
+# FIX-ME not needed anymore, can be deleted
+#        try:
+#            path = m['path']
+#            if path is None:
+#                print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR model path is None', m
+#                sys.exit(1)
+#        except KeyError as e:
+#            print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR ', e, 'is missing in model', m
+#            sys.exit(1)
 
 def diags_checks(diags_dict):
     """

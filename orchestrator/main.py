@@ -155,6 +155,21 @@ class configFile:
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no save_intermediary_cubes in config "
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> assuming False  "
             GLOB['save_intermediary_cubes'] = False
+        if cp.has_option('GLOBAL','model_rootpath'): ## Use this for all classes except the ones for obs_rootpath
+            mp = cp.get('GLOBAL','model_rootpath')
+            GLOB['model_rootpath'] = mp
+        else:
+            print >> sys.stderr,"PY  ERROR:  >>> main.py >>> Model root path not defined"
+            sys.exit(1)
+        if cp.has_option('GLOBAL','obs_rootpath'): ## Use this for OBS, obs4mips, ana4mips classes
+            op = cp.get('GLOBAL','obs_rootpath')
+            GLOB['obs_rootpath'] = op
+        else:
+            print >> sys.stderr,"PY  ERROR:  >>> main.py >>> Observations root path not defined"
+            sys.exit(1)
+        if cp.has_option('GLOBAL','rawobs_rootpath'): ## For reformat_obs only, to be used later
+            rop = cp.get('GLOBAL','rawobs_rootpath')
+            GLOB['rawobs_rootpath'] = rop
         if cp.has_option('GLOBAL','data_dir_type') :
             ddd = cp.get('GLOBAL','data_dir_type')
             GLOB['data_dir_type'] = ddd
