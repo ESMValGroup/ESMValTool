@@ -97,13 +97,13 @@ class configFile:
             GLOB['write_plots'] = write_plots
         else:
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no write_plots in config "
-            GLOB['write_plots'] = False
+            GLOB['write_plots'] = True
         if cp.has_option('GLOBAL','write_netcdf') :
             write_netcdf = self.s2b(cp.get('GLOBAL','write_netcdf'))
             GLOB['write_netcdf'] = write_netcdf
         else:
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no write_netcdf in config "
-            GLOB['write_netcdf'] = False
+            GLOB['write_netcdf'] = True
         if cp.has_option('GLOBAL','verbosity') :
             verbosity = int(cp.get('GLOBAL','verbosity'))
             GLOB['verbosity'] = verbosity
