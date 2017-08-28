@@ -185,7 +185,7 @@ class ESMValProject(object):
         return lat_min, lat_max, lon_min, lon_max
 
     def get_clim_dir(self):
-        return self._get_path_with_sep(self.project_info['GLOBAL']['climo_dir'])
+        return self._get_path_with_sep(self.project_info['GLOBAL']['preproc_dir'])
 
     def get_clim_model_filenames(self, variable=None, monthly=True):
         """

@@ -112,13 +112,13 @@ def get_cf_outpath(project_info, model):
             @param model One of the <model>-tags in the XML namelist file
             @return A string (output path)
 
-            Standard path: dir_output/climo_dir/projectname/projectname_expname_ens_field_var_yrstart-yrend.nc
+            Standard path: dir_output/preproc_dir/projectname/projectname_expname_ens_field_var_yrstart-yrend.nc
     """
-    outdir1 = project_info['GLOBAL']['climo_dir']
+    outdir1 = project_info['GLOBAL']['preproc_dir']
     outdir2 = model['project']
     # let's check if directories exists, if not create them
     if not os.path.isdir(outdir1):
-        mkd = 'mkdir -p ' + project_info['GLOBAL']['climo_dir']
+        mkd = 'mkdir -p ' + project_info['GLOBAL']['preproc_dir']
         proc = subprocess.Popen(mkd, stdout=subprocess.PIPE, shell=True)
         (out, err) = proc.communicate()
     if not os.path.isdir(os.path.join(outdir1, outdir2)):
@@ -130,7 +130,7 @@ def get_cf_outpath(project_info, model):
 def get_cf_outfile(model, field, variable):
     """ @brief Returns the path and output file used in reformat
             @param variable Current variable
-            @param climo_dir Where processed (reformatted) input files reside
+            @param preproc_dir Where processed (reformatted) input files reside
             @param model One of the <model>-tags in the XML namelist file
             @param field The field (see tutorial.pdf for available fields)
             @param variable The variable (defaults to the variable in

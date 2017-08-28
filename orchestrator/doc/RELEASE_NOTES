@@ -37,7 +37,7 @@ MINOR CHANGES AND BUG FIXES
 Version 1.0.1 - June 2016
 ===============================================================================
 GENERAL
-- paths to workdir, climodir, plotdir, model and observational data can now be
+- paths to workdir, preprocdir, plotdir, model and observational data can now be
   set in a single configuration file (config_private.xml) and included in the
   main namelists using the @{} syntax (e.g., @{MODELPATH}/CMIP5/MPI-ESM-LR/...)
 - reformat scripts for the observations can now be defined in a main namelist

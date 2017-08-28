@@ -177,9 +177,9 @@ function extract_area(index[1]:integer,
 ;;    The field corresponding to the variable var.
 ;;
 ;; Description
-;;    Extracts additional data from the climo-file.
+;;    Extracts additional data from the preproc-file.
 ;;    The parameters for irregular grids (e.g. area,lat,lon) are written to
-;;    climo-files by the reformat routines.
+;;    preproc-files by the reformat routines.
 ;;    The functionality is similar to "extract_data", but reduced (e.g.
 ;;    fetching of var sub-sets is not implemented here).
 ;;    This new function was written to avoid modifying "extract_data", which is

@@ -122,12 +122,12 @@ class configFile:
         else:
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no output_file_type in config "
             GLOB['output_file_type'] = 'ps'
-        if cp.has_option('GLOBAL','climo_dir') :
-            climo_dir = cp.get('GLOBAL','climo_dir')
-            GLOB['climo_dir'] = climo_dir
+        if cp.has_option('GLOBAL','preproc_dir') :
+            preproc_dir = cp.get('GLOBAL','preproc_dir')
+            GLOB['preproc_dir'] = preproc_dir
         else:
-            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no climo_dir in config "
-            GLOB['climo_dir'] = '.'
+            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no preproc_dir in config "
+            GLOB['preproc_dir'] = '.'
         if cp.has_option('GLOBAL','wrk_dir') :
             work_dir = cp.get('GLOBAL','wrk_dir')
             GLOB['wrk_dir'] = work_dir
@@ -240,7 +240,7 @@ GLOBAL_DICT = confFileClass.GLOBAL(config_file)
 # Project_info is a dictionary with all info from the namelist.
 project_info_0 = Project.load_namelist(yml_path)
 verbosity = GLOBAL_DICT['verbosity']
-climo_dir = GLOBAL_DICT['climo_dir']
+preproc_dir = GLOBAL_DICT['preproc_dir']
 exit_on_warning = GLOBAL_DICT.get('exit_on_warning', False)
 
 # Project_info is a dictionary with all info from the namelist.
