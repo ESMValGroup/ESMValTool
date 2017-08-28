@@ -177,9 +177,9 @@ function extract_area(index[1]:integer,
 ;;    The field corresponding to the variable var.
 ;;
 ;; Description
-;;    Extracts additional data from the climo-file.
+;;    Extracts additional data from the preproc-file.
 ;;    The parameters for irregular grids (e.g. area,lat,lon) are written to
-;;    climo-files by the reformat routines.
+;;    preproc-files by the reformat routines.
 ;;    The functionality is similar to "extract_data", but reduced (e.g.
 ;;    fetching of var sub-sets is not implemented here).
 ;;    This new function was written to avoid modifying "extract_data", which is
@@ -831,11 +831,11 @@ local regfile_in_tmp, regfile_out_tmp, lat, lon, gAtt, field_out, quote
 begin
 
     ;; Necessary files
-    if (.not.isfilepresent(wrk_dir + "/CDO/")) then
-        system("mkdir -p " + wrk_dir + "/CDO/")
+    if (.not.isfilepresent(work_dir + "/CDO/")) then
+        system("mkdir -p " + work_dir + "/CDO/")
     end if
-    regfile_in_tmp  = wrk_dir + "/CDO/regrid_in.nc"   ; temporary -
-    regfile_out_tmp = wrk_dir + "/CDO/regrid_out.nc"  ; regrid-files
+    regfile_in_tmp  = work_dir + "/CDO/regrid_in.nc"   ; temporary -
+    regfile_out_tmp = work_dir + "/CDO/regrid_out.nc"  ; regrid-files
     if (isfilepresent(regfile_in_tmp)) then
         system("rm " + regfile_in_tmp)
     end if

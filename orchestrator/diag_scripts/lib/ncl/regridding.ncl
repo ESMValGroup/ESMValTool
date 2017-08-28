@@ -783,7 +783,7 @@ begin
     enter_msg(scriptname, funcname, 6)
 
     ;; Workdir
-    workpath = getenv("ESMValTool_wrk_dir")
+    workpath = getenv("ESMValTool_work_dir")
 
     ;; Define interpolation method
     INTERP_METHOD = (/"conserve"/)

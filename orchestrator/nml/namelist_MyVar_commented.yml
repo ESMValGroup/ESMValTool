@@ -11,7 +11,7 @@
     write_plots:       True
     write_netcdf:      True
     force_processing:  True # this is functional as before
-    wrk_dir:           ./test_output/work/
+    work_dir:           ./test_output/work/
     plot_dir:          ./test_output/plots/
     climo_dir:       ./test_output/preproc/
     verbosity:         1

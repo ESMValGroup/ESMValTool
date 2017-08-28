@@ -338,7 +338,7 @@ procedure write_filelist(script:string,
 ;;    filelist: list of filenames processed to produce the file to be written
 ;;    sourcefilelist: list of filenames processed to produce the input files
 ;;                    of the file to be written (e.g., input files used to
-;;                    produce climo files then used to process write a derived
+;;                    produce preproc files then used to process a derived
 ;;                    variable)
 ;;    fixfile: filename of a FIXFILE applied to process the data to be written
 ;;             (if applicable)
@@ -524,7 +524,7 @@ begin
 
 ; a_laue_ax+
 ;    ;; Namelist in use
-;    namelist = getenv("ESMValTool_xml_name")
+;    namelist = getenv("ESMValTool_yml_name")
 ; a_laue_ax-
 
     ;; Master refs file
