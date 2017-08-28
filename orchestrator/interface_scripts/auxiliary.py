@@ -79,7 +79,7 @@ def print_header(projdict):
     info("  Bjoern Broetz (DLR, Germany - bjoern.broetz@dlr.de)", vv, 1)
     info("  Nikolay Koldunov (AWI, Germany - nikolay.koldunov@awi.de)", vv, 1)
     info("  Axel Lauer (DLR, Germany - axel.lauer@dlr.de)", vv, 1)
-    info"   Benjamin Mueller (LMU, Germany - b.mueller@iggf.geo.uni-muenchen.de)", vv, 1)
+    info("  Benjamin Mueller (LMU, Germany - b.mueller@iggf.geo.uni-muenchen.de)", vv, 1)
     info("  Valeriu Predoi (University of Reading, UK - valeriu.predoi@ncas.ac.uk)", vv, 1)
     info("  Mattia Righi (DLR, Germany - mattia.righi@dlr.de)", vv, 1)
     info("  Javier Vegas-Regidor (BSC, Spain - javier.vegas@bsc.es)", vv, 1)
