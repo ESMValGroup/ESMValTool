@@ -2,24 +2,23 @@
 
 """
 Completely rewritten wrapper to be able to deal with
-the new yaml parser and simplified interface_scripts 
+the new yaml parser and simplified interface_scripts
 toolbox. Author: Valeriu Predoi, University of Reading,
 Initial version: August 2017
 contact: valeriu.predoi@ncas.ac.uk
 """
 import sys
-sys.path.append("./interface_scripts")
 import subprocess
 import getopt
-from auxiliary import info, error, print_header, ncl_version_check
+from interface_scripts.auxiliary import info, error, print_header, ncl_version_check
 import datetime
 import os
 import pdb
-from yaml_parser import Parser as Ps
-import preprocess as pp
+from interface_scripts.yaml_parser import Parser as Ps
+import interface_scripts.preprocess as pp
 import copy
 import ConfigParser
-import namelistchecks as pchk
+import interface_scripts.namelistchecks as pchk
 import uuid
 
 # Define ESMValTool version
@@ -369,7 +368,7 @@ for c in project_info['DIAGNOSTICS']:
                  verbosity, 2)
             # REFORMAT: for backwards compatibility we can revert to ncl reformatting
             # by changing cmor_reformat_type = 'ncl'
-            # for python cmor_check one, use cmor_reformat_type = 'py' 
+            # for python cmor_check one, use cmor_reformat_type = 'py'
             # PREPROCESS ID: extracted from variable dictionary
             if hasattr(base_var, 'preproc_id'):
                 try:
@@ -434,7 +433,7 @@ for c in project_info['DIAGNOSTICS']:
                               verbosity,
                               exit_on_warning,
                               launcher_arguments=None)
-            
+
 
 # delete environment variable
 del(os.environ['0_ESMValTool_version'])
