@@ -31,8 +31,8 @@ def models_checks(models_dict):
             print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR ', e, 'is missing in model', m
             sys.exit(1)
         ####### check specific project name cases ########################################
-        ####### CMIP5 and any other CMIP5 derivatives ####################################
-        if project.startswith('CMIP5') is True:
+        ####### CMIP5
+        if project == 'CMIP5':
             try:
                 mip = m['mip']
                 if mip is None:
@@ -49,10 +49,10 @@ def models_checks(models_dict):
             except KeyError as e:
                 print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR ', e, 'is missing in model', m
                 sys.exit(1)
-        ######## EMAC and any other EMAC drivative ############################################
+        ######## EMAC
         # same as default
-        ######## GFDL and any other GFDL derrivative ##########################################
-        if project.startswith('GFDL') is True:
+        ######## GFDL
+        if project == 'GFDL':
             try:
                 realm = m['realm']
                 if realm is None:
@@ -69,12 +69,38 @@ def models_checks(models_dict):
             except KeyError as e:
                 print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR ', e, 'is missing in model', m
                 sys.exit(1)
-        ######### CCMVal and any CCMVal derrivative ###################################################
-        if project.startswith('CCMVal') is True:
+        ######### CCMVal
+        if project == 'CCMVal1' or project == 'CCMVal2':
             try:
                 exp = m['exp']
                 if exp is None:
                     print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR model exp is None', m
+                    sys.exit(1)
+            except KeyError as e:
+                print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR ', e, 'is missing in model', m
+                sys.exit(1)
+        ######### OBS
+        if project == 'OBS':
+            try:
+                type = m['type']
+                if type is None:
+                    print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR model type is None', m
+                    sys.exit(1)
+            except KeyError as e:
+                print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR ', e, 'is missing in model', m
+                sys.exit(1)
+            try:
+                version = m['version']
+                if version is None:
+                    print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR model version is None', m
+                    sys.exit(1)
+            except KeyError as e:
+                print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR ', e, 'is missing in model', m
+                sys.exit(1)
+            try:
+                tier = m['tier']
+                if tier is None:
+                    print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR model tier is None', m
                     sys.exit(1)
             except KeyError as e:
                 print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR ', e, 'is missing in model', m

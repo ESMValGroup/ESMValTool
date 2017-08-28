@@ -211,7 +211,7 @@ def get_dict_key(model):
                          str(model['end_year'])])
     return dict_key
 
-def get_cmip_cf_infile(project_info, currentDiag, model, currentVarName):
+def get_cmip_cf_infile(project_info, currentDiag, model, currentVarName): ## FIX-ME: rename this to get_cf_infile
     """@brief Path to input netCDF files for models
        @param project_info all info dictionary
        @param currDiag(dict) current diagnostic
@@ -226,43 +226,42 @@ def get_cmip_cf_infile(project_info, currentDiag, model, currentVarName):
     # look for files keyed by project name
     proj_name = model['project']
 
-    # specify path
-    rootdir = model['path']
-
     # specify start_year and end_year
     y1 = model['start_year']
     y2 = model['end_year']
 
     # set the file discovery variable
-    dir_type = project_info['GLOBAL']['data_dir_type']
+    cmip5_dirtype = project_info['GLOBAL']['cmip5_dirtype']
 
-    # enumerate the structured directory cases
-    structured_cases = ['user_drs', 'badc', 'dkrz']
+    # set rootpaths
+    model_rootpath = project_info['GLOBAL']['model_rootpath']
+    obs_rootpath = project_info['GLOBAL']['obs_rootpath']
 
     # get variables; data files is a dictionary keyed on variable
     data_files = {}
     variables = currentDiag.variables
 
     for var in variables:
-
-        # single file
-        if dir_type == 'user_file':
-            full_paths = gf.get_single_file(rootdir, y1, y2)
-
-        # user drs structured or dataserver
-        elif dir_type in structured_cases:
-            if proj_name.startswith('CMIP5') is True:
-                full_paths = gf.get_cmip5(dir_type, rootdir, var['name'], model)
-            elif proj_name.startswith('EMAC') is True:
-                full_paths = gf.get_emac(dir_type, rootdir, var['name'], model)
-            elif proj_name.startswith('GFDL') is True:
-                full_paths = gf.get_gfdl(dir_type, rootdir, var['name'], model)
-            elif proj_name.startswith('CCMVal') is True:
-                full_paths = gf.get_ccmval(dir_type, rootdir, var['name'], model)
-
-        # user dir with no structure in it
-        elif dir_type == 'user_unstructured':
-            full_paths = gf.get_from_unstructured_dir(rootdir, model, var)
+        # Models' classes
+        if proj_name == 'CMIP5':
+            full_paths = gf.get_cmip5(cmip5_dirtype, model_rootpath, var['name'], model)
+        elif proj_name == 'EMAC':
+            full_paths = gf.get_emac(model_rootpath, var['name'], model)
+        elif proj_name == 'GFDL':
+            full_paths = gf.get_gfdl(model_rootpath, var['name'], model)
+        elif proj_name == 'CCMVal1' or proj_name == 'CCMVal2':
+            full_paths = gf.get_ccmval(model_rootpath, var['name'], model)
+        # Observations' classes
+        elif proj_name = 'OBS':
+            full_paths = gf.get_obs(obs_rootpath, var['name'], model)
+        elif proj_name = 'obs4mips':
+            full_paths = gf.get_obs4mips(obs_rootpath, var['name'], model)
+        elif proj_name = 'ana4mips':
+            full_paths = gf.get_ana4mips(obs_rootpath, var['name'], model)
+        # Unstructured user-defined directory
+        elif proj_name == 'NONE' 
+            full_paths = gf.get_from_unstructured_dir(model_rootpath, model, var)
+        # FIX-ME: to be added MiKlip, ECEARTH, GO, JSBACH
 
         # checks on the nuber of files for globbing in GLOB.nc
         # found for a specific identified [project, model, ensemble...]
@@ -296,7 +295,7 @@ def get_cmip_cf_infile(project_info, currentDiag, model, currentVarName):
  
     return data_files
 
-def get_obs_cf_infile(project_info, currentDiag, obs_model, currentVarName):
+def get_obs_cf_infile(project_info, currentDiag, obs_model, currentVarName): ## FIX-ME: merge this with get_cf_infile above
     """@brief Function that returns the observation file for regridding
        Returns a full path dictionary keyed on variable name
        namelist field type: {name: ERA-Interim,  project: OBS,  type: reanaly,
