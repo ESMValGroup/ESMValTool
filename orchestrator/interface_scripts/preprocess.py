@@ -572,7 +572,7 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
     info(' >>> preprocess.py >>> Reformatted target: ' + fullpath, verbosity, required_verbosity=1)
 
     # indir is hardcoded to keep things tight; could be an option to namelist
-    project_info['TEMPORARY']['indir_path'] = project_info['GLOBAL']['run_directory']
+    project_info['TEMPORARY']['indir_path'] = project_info['GLOBAL']['run_dir']
     project_info['TEMPORARY']['outfile_fullpath'] = fullpath
     project_info['TEMPORARY']['infile_path'] = infiles
     project_info['TEMPORARY']['start_year'] = model['start_year']

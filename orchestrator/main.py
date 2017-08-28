@@ -141,13 +141,13 @@ class configFile:
         else:
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no max_data_filesize in config, set to 100"
             GLOB['max_data_filesize'] = 100
-        if cp.has_option('GLOBAL','run_directory') :
-            run_directory = cp.get('GLOBAL','run_directory')
-            GLOB['run_directory'] = run_directory
+        if cp.has_option('GLOBAL','run_dir') :
+            run_dir = cp.get('GLOBAL','run_dir')
+            GLOB['run_dir'] = run_dir
         else:
-            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no run_directory in config "
+            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no run_dir in config "
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> assuming .  "
-            GLOB['run_directory'] = '.'
+            GLOB['run_dir'] = '.'
         if cp.has_option('GLOBAL','save_intermediary_cubes') :
             save_intermediary_cubes = self.s2b(cp.get('GLOBAL','save_intermediary_cubes'))
             GLOB['save_intermediary_cubes'] = save_intermediary_cubes
@@ -256,13 +256,13 @@ project_info['RUNTIME']['yml_name'] = os.path.basename(yml_path)
 # Set references/acknowledgement file
 refs_acknows_file = str.replace(project_info['RUNTIME']['yml_name'], "namelist_", "refs-acknows_")
 refs_acknows_file = refs_acknows_file.split(os.extsep)[0] + ".log"
-out_refs = os.path.join(project_info["GLOBAL"]['run_directory'], refs_acknows_file)
+out_refs = os.path.join(project_info["GLOBAL"]['run_dir'], refs_acknows_file)
 project_info['RUNTIME']['out_refs'] = out_refs
 
 # Print summary
 info("", verbosity, 1)
 info("NAMELIST   = " + project_info['RUNTIME']['yml_name'], verbosity, 1)
-info("RUNDIR     = " + project_info["GLOBAL"]['run_directory'], verbosity, 1)
+info("RUNDIR     = " + project_info["GLOBAL"]['run_dir'], verbosity, 1)
 info("WORKDIR    = " + project_info["GLOBAL"]["work_dir"], verbosity, 1)
 info("PREPROCDIR = " + project_info["GLOBAL"]["preproc_dir"], verbosity, 1)
 info("PLOTDIR    = " + project_info["GLOBAL"]["plot_dir"], verbosity, 1)
@@ -284,11 +284,11 @@ info('>>> main.py >>> Namelist check successful! Time: ' + str(dtchk), verbosity
 # this will have to be purget at some point in the future
 project_info['CONFIG'] = project_info_0.CONFIG
 
-# if run_directory exists, don't overwrite it
-if os.path.isdir(project_info['GLOBAL']['run_directory']):
+# if run_dir exists, don't overwrite it
+if os.path.isdir(project_info['GLOBAL']['run_dir']):
     suf = uuid.uuid4().hex
-    newdir = project_info['GLOBAL']['run_directory'] + '_' + suf
-    mvd = 'mv ' + project_info['GLOBAL']['run_directory'] + ' ' + newdir
+    newdir = project_info['GLOBAL']['run_dir'] + '_' + suf
+    mvd = 'mv ' + project_info['GLOBAL']['run_dir'] + ' ' + newdir
     proc = subprocess.Popen(mvd, stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
     info('>>> main.py >>> Renamed existent run directory to ' + newdir, verbosity, 1)
@@ -301,11 +301,11 @@ in_refs = os.path.join(os.getcwd(), 'doc/MASTER_authors-refs-acknow.txt')
 project_info['RUNTIME']['in_refs'] = in_refs
 
 # Open refs-acknows file in run_dir (delete if existing)
-if not os.path.isdir(project_info['GLOBAL']['run_directory']):
-    mkd = 'mkdir -p ' + project_info['GLOBAL']['run_directory']
+if not os.path.isdir(project_info['GLOBAL']['run_dir']):
+    mkd = 'mkdir -p ' + project_info['GLOBAL']['run_dir']
     proc = subprocess.Popen(mkd, stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
-    info('>>> main.py >>> Created run directory ' + project_info['GLOBAL']['run_directory'], verbosity, 1)
+    info('>>> main.py >>> Created run directory ' + project_info['GLOBAL']['run_dir'], verbosity, 1)
 
 if (os.path.isfile(out_refs)):
     os.remove(out_refs)
