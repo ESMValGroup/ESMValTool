@@ -86,7 +86,7 @@ def print_header(projdict):
     info(line2, vv, 1)
     info("", vv, 1)
     info("NAMELIST   = " + projdict['RUNTIME']['xml_name'], vv, 1)
-    info("WORKDIR    = " + projdict["GLOBAL"]["wrk_dir"], vv, 1)
+    info("WORKDIR    = " + projdict["GLOBAL"]["work_dir"], vv, 1)
     info("PREPROCDIR = " + projdict["GLOBAL"]["preproc_dir"], vv, 1)
     info("PLOTDIR    = " + projdict["GLOBAL"]["plot_dir"], vv, 1)
     info("LOGFILE    = " + projdict['RUNTIME']['out_refs'], vv, 1)

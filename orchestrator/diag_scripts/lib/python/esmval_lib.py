@@ -714,7 +714,7 @@ class ESMValProject(object):
 
     def get_work_dir(self):
         """ returns the work directory """
-        return self._get_path_with_sep(self.project_info['GLOBAL']['wrk_dir'])
+        return self._get_path_with_sep(self.project_info['GLOBAL']['work_dir'])
 
     def mask_unwanted_values(self, array, low=None, high=None):
         """ Returns the given array masked with values outside the limits.

@@ -831,11 +831,11 @@ local regfile_in_tmp, regfile_out_tmp, lat, lon, gAtt, field_out, quote
 begin
 
     ;; Necessary files
-    if (.not.isfilepresent(wrk_dir + "/CDO/")) then
-        system("mkdir -p " + wrk_dir + "/CDO/")
+    if (.not.isfilepresent(work_dir + "/CDO/")) then
+        system("mkdir -p " + work_dir + "/CDO/")
     end if
-    regfile_in_tmp  = wrk_dir + "/CDO/regrid_in.nc"   ; temporary -
-    regfile_out_tmp = wrk_dir + "/CDO/regrid_out.nc"  ; regrid-files
+    regfile_in_tmp  = work_dir + "/CDO/regrid_in.nc"   ; temporary -
+    regfile_out_tmp = work_dir + "/CDO/regrid_out.nc"  ; regrid-files
     if (isfilepresent(regfile_in_tmp)) then
         system("rm " + regfile_in_tmp)
     end if

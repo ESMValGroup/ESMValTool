@@ -326,7 +326,7 @@ function get_work_dir()
 ;;    A string with the full path of work_dir.
 ;;
 ;; Description
-;;    Fetches $ESMValTool_wrk_dir and checks that it ends with a slash.
+;;    Fetches $ESMValTool_work_dir and checks that it ends with a slash.
 ;;
 ;; Caveats
 ;;
@@ -344,7 +344,7 @@ begin
     verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
     enter_msg(scriptname, funcname, 10)
 
-    curr_work_dir = getenv("ESMValTool_wrk_dir")
+    curr_work_dir = getenv("ESMValTool_work_dir")
 
     ;; Make sure it ends with a slash
     if (str_get_cols(curr_work_dir, -1, -1).ne."/") then

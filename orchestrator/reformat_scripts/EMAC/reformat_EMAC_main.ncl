@@ -79,7 +79,7 @@ begin
 
     ;; Temporary file for storing variable-file associations and save time on
     ;; subsequent iterations of the time loop
-    VFATMP = getenv("ESMValTool_wrk_dir") + "/EMAC_reformat.tmp"
+    VFATMP = getenv("ESMValTool_work_dir") + "/EMAC_reformat.tmp"
 
     ;; Recipe file
     RECIPEFILE = "./reformat_scripts/EMAC/recipes/EMAC_recipe_" + VAR + ".ncl"

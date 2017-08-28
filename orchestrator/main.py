@@ -128,12 +128,12 @@ class configFile:
         else:
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no preproc_dir in config "
             GLOB['preproc_dir'] = '.'
-        if cp.has_option('GLOBAL','wrk_dir') :
-            work_dir = cp.get('GLOBAL','wrk_dir')
-            GLOB['wrk_dir'] = work_dir
+        if cp.has_option('GLOBAL','work_dir') :
+            work_dir = cp.get('GLOBAL','work_dir')
+            GLOB['work_dir'] = work_dir
         else:
-            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no wrk_dir in config "
-            GLOB['wrk_dir'] = '.'
+            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no work_dir in config "
+            GLOB['work_dir'] = '.'
         if cp.has_option('GLOBAL','plot_dir') :
             plot_dir = cp.get('GLOBAL','plot_dir')
             GLOB['plot_dir'] = plot_dir
@@ -288,18 +288,18 @@ in_refs = os.path.join(os.getcwd(), 'doc/MASTER_authors-refs-acknow.txt')
 project_info['RUNTIME']['in_refs'] = in_refs
 
 # Create refs-acknows file in workdir (delete if existing)
-wrk_dir = os.path.join(project_info['GLOBAL']['run_directory'], project_info['GLOBAL']['wrk_dir'])
-if not os.path.isdir(wrk_dir):
-    mkd = 'mkdir -p ' + wrk_dir
+work_dir = os.path.join(project_info['GLOBAL']['run_directory'], project_info['GLOBAL']['work_dir'])
+if not os.path.isdir(work_dir):
+    mkd = 'mkdir -p ' + work_dir
     proc = subprocess.Popen(mkd, stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
-    info(' >>> main.py >>> Created work directory ' + wrk_dir, verbosity, required_verbosity=1)
+    info(' >>> main.py >>> Created work directory ' + work_dir, verbosity, required_verbosity=1)
 
 # Prepare writing of references/acknowledgementes to file
 refs_acknows_file = str.replace(input_xml_file, "namelist_", "refs-acknows_")
 refs_acknows_file = refs_acknows_file.split(os.extsep)[0] + ".log"
 
-out_refs = os.path.join(wrk_dir, refs_acknows_file)
+out_refs = os.path.join(work_dir, refs_acknows_file)
 if (os.path.isfile(out_refs)):
     os.remove(out_refs)
 f = open(out_refs, "w")
