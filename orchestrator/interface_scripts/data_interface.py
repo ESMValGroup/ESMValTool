@@ -64,7 +64,7 @@ class Data_interface(object):
             @brief Base class for all the *_data_interface classes
             @param project_info Current namelist in dictionary format
 
-            The init routine repackages all configuration data from xml-
+            The init routine repackages all configuration data from yml-
             and variable_definition-files to simpler Python structures,
             typically arrays. These arrays are used by the child
             *_data_interface to rewrite the configuration information
@@ -102,7 +102,7 @@ class Data_interface(object):
             = self.get_interface_fileinfo(project_info)
 
         # Repackage model specific data, i.e. the <model>-tags from the
-        # xml-namelist files
+        # yml-namelist files
         model_specifiers, models, model_attr_id, model_attr_skip = self.get_modelinfo(project_info)
         for modelpart in model_specifiers:
             current_column = map(itemgetter(model_specifiers.index(modelpart)),
@@ -260,7 +260,7 @@ class Data_interface(object):
         return variable_info_true, variable_info
 
     def write_env_projinfo(self, project_info):
-        """ @brief Writes XML-file information to env. variables
+        """ @brief Writes YML-file information to env. variables
             @param project_info Current namelist in dictionary format
 
             Information between Python and NCL is (partially) exchanged
@@ -327,7 +327,7 @@ class Ncl_data_interface(Data_interface):
     def write_data_to_interface(self):
         """ @brief Write the configuration data to NCL format
 
-            This routine writes the configuration data from the xml-,
+            This routine writes the configuration data from the yml-,
             diagnostic_def/-files to NCL formatted files the
             interface_data/-folder. These files are then read by the
             NCL diag_scripts.

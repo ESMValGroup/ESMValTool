@@ -28,7 +28,7 @@ begin
 ;    enter_msg(scriptname, funcname, 4)
 
     ;; Namelist in use
-    namelist = getenv("ESMValTool_xml_name")
+    namelist = getenv("ESMValTool_yml_name")
 
     ;; ESMValTool version
     version = getenv("0_ESMValTool_version")

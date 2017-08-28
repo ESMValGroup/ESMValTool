@@ -1,3 +1,4 @@
+from auxiliary import info
 import yaml
 import os
 import sys
@@ -63,10 +64,8 @@ class Parser():
             sys.exit(1)
         s = file(param_file, 'r')
         n = yaml.load(s)
-        print('PY  info: >>> yaml_parser.py >>> We have loaded %s parameter file...' % param_file)
         # some conditioning, add more in the future?
         if not isinstance(n, Namelist): raise Exception( "Namelist malformed" )
         if not isinstance(n.MODELS, list): raise Exception( "MODELS is not a list" )
         if not isinstance(n.DIAGNOSTICS, dict): raise Exception( "DIAGNOSTICS is not a dictionary" )
-        print('PY  info: >>> yaml_parser.py >>> We have %i diagnostics to do! Starting the main code now...' % len(n.DIAGNOSTICS))
         return n

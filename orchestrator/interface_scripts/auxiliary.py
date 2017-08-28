@@ -12,7 +12,7 @@ class nclExecuteError(Exception):
         return repr(self.value)
 
 
-class xmlTagError(Exception):
+class ymlTagError(Exception):
     def __init__(self, value):
         self.value = value
 
@@ -53,14 +53,14 @@ def error(string):
     sys.stderr.write("error: " + string + '\n')
     sys.exit(1)
 
-def print_header(projdict):
+def print_header():
     """ @brief Print the ESMValTool header
         @param project_info dictionary with the necessary information
     """
     
     vv = 1
     line1 = 54 * "_"
-    line2 = 61 * "_"
+    line2 = 70 * "_"
 
     info("", vv, 1)
     info(line1, vv, 1)
@@ -80,18 +80,10 @@ def print_header(projdict):
     info("  Nikolay Koldunov (AWI, Germany - nikolay.koldunov@awi.de)", vv, 1)
     info("  Axel Lauer (DLR, Germany - axel.lauer@dlr.de)", vv, 1)
     info("  Benjamin Mueller (LMU, Germany - b.mueller@iggf.geo.uni-muenchen.de)", vv, 1)
-    info("  Valeriu Predoi (University of Reading, UK - valeriu.predoi@ncas.ac.uk)", vv, 1)
+    info("  Valeriu Predoi (URead, UK - valeriu.predoi@ncas.ac.uk)", vv, 1)
     info("  Mattia Righi (DLR, Germany - mattia.righi@dlr.de)", vv, 1)
     info("  Javier Vegas-Regidor (BSC, Spain - javier.vegas@bsc.es)", vv, 1)
     info(line2, vv, 1)
-    info("", vv, 1)
-    info("NAMELIST   = " + projdict['RUNTIME']['xml_name'], vv, 1)
-    info("WORKDIR    = " + projdict["GLOBAL"]["work_dir"], vv, 1)
-    info("PREPROCDIR = " + projdict["GLOBAL"]["preproc_dir"], vv, 1)
-    info("PLOTDIR    = " + projdict["GLOBAL"]["plot_dir"], vv, 1)
-    info("LOGFILE    = " + projdict['RUNTIME']['out_refs'], vv, 1)
-    info(line2, vv, 1)
-    info("REFORMATTING THE OBSERVATIONAL DATA...", vv, 1)
     info("", vv, 1)
 
 def ncl_version_check():

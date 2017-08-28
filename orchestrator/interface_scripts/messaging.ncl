@@ -524,7 +524,7 @@ begin
 
 ; a_laue_ax+
 ;    ;; Namelist in use
-;    namelist = getenv("ESMValTool_xml_name")
+;    namelist = getenv("ESMValTool_yml_name")
 ; a_laue_ax-
 
     ;; Master refs file
