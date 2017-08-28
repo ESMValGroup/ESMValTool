@@ -116,7 +116,7 @@ def get_cf_outpath(project_info, model):
     """
     outdir1 = project_info['GLOBAL']['preproc_dir']
     outdir2 = model['project']
-    # let's check if directories exists, if not create them
+    # let's check if directories exist, if not create them
     if not os.path.isdir(outdir1):
         mkd = 'mkdir -p ' + project_info['GLOBAL']['preproc_dir']
         proc = subprocess.Popen(mkd, stdout=subprocess.PIPE, shell=True)
@@ -143,7 +143,7 @@ def get_cf_outfile(model, field, variable):
     # look for files keyed by project name
     proj_name = model['project']
 
-    # CMIP5 and any of its derrivatives
+    # CMIP5 and any of its derivatives
     if proj_name.startswith('CMIP5') is True:
         outfile = '_'.join([proj_name,
                             model['name'],
@@ -154,7 +154,7 @@ def get_cf_outfile(model, field, variable):
                             variable,
                             str(model['start_year'])]) + '-' + str(model['end_year']) + '.nc'
 
-    # EMAC and any of its derrivatives
+    # EMAC and any of its derivatives
     elif proj_name.startswith('EMAC') is True:
         outfile = '_'.join([proj_name,
                             model['name'],
@@ -163,7 +163,7 @@ def get_cf_outfile(model, field, variable):
                             variable,
                             str(model['start_year'])]) + '-' + str(model['end_year']) + '.nc'
 
-    # GFDL and any of its derrivatives
+    # GFDL and any of its derivatives
     elif proj_name.startswith('GFDL') is True:
         outfile = '_'.join([proj_name,
                             model['name'],
@@ -173,7 +173,7 @@ def get_cf_outfile(model, field, variable):
                             variable,
                             str(model['start_year'])]) + '-' + str(model['end_year'], model['shift']) + '.nc'
 
-    # CCMVal and any of its derrivatives
+    # CCMVal and any of its derivatives
     elif proj_name.startswith('CCMVal') is True:
         outfile = '_'.join([proj_name,
                             model['name'],
@@ -556,6 +556,10 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
 
     # Build input and output file names
     infileslist = get_cmip_cf_infile(project_info, currentDiag, model, variable.name)[variable.name]
+
+    print infileslist
+    sys.exit(1)
+
     # VP-FIXME-question : the code can glob multiple files, but how to handle the case when globbing fails; currently
     # the diagnostic is run on only the first file
     if len(infileslist) == 1:
