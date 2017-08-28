@@ -25,6 +25,7 @@ class gpp(Fix):
         cube.units = cf_units.Unit('g m-2 day-1')
         return cube
 
+
 class allvars(Fix):
     def fix_metadata(self, cube):
         try:

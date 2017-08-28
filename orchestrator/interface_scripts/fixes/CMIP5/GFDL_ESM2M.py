@@ -1,6 +1,7 @@
 from orchestrator.interface_scripts.fixes.fix import Fix
 from cf_units import Unit
 
+
 class allvars(Fix):
     def fix_metadata(self, cube):
         time = cube.coord('time')
@@ -12,6 +13,7 @@ class sftof(Fix):
 
     def fix_data(self, cube):
         return cube * 100
+
 
 class co2(Fix):
 

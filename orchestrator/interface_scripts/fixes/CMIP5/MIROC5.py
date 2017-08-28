@@ -6,18 +6,16 @@ class sftof(Fix):
     def fix_data(self, cube):
         return cube * 100
 
+
 class snw(Fix):
 
     def fix_metadata(self, cube):
         return cube * 100
 
+
 class snc(snw):
     pass
 
-
-    # ret = 1
-    #
-    # ; calendar = "noleap"
     # dayspermonth = (/31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31/)
 
     # if ((name.eq."snc".or.name.eq."snw").and.FIELD.eq."T2Ds".and. \
