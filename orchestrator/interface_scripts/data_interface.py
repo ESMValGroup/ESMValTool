@@ -46,9 +46,9 @@ def get_diag_value(di, projinfomodels, projinfoconfig, v):
     elif v == 'field_types':
         currentry = [s['field'] for s in di.variables]
     elif v == 'var_attr_mip':
-        currentry = [s['mip'] for s in projinfomodels]
+        currentry = [s['mip'] for s in projinfomodels if 'mip' in s.keys()]
     elif v == 'var_attr_exp':
-        currentry = [s['exp'] for s in projinfomodels]
+        currentry = [s['exp'] for s in projinfomodels if 'exp' in s.keys()]
     elif v == 'var_attr_ref':
         currentry_list = [s['ref_model'] for s in di.variables]
         currentry = [item for sublist in currentry_list for item in sublist]
@@ -202,6 +202,8 @@ class Data_interface(object):
 
         model_ids = []
         for model in project_info['MODELS']:
+            print('All models:')
+            print(model)
             if "id" in model.keys():
                 model_ids.append(model['id'])
             if "ref" in model.keys():

@@ -340,6 +340,9 @@ for c in project_info['DIAGNOSTICS']:
     # Are the requested variables derived from other, more basic, variables?
     requested_vars = currDiag.variables
 
+    # get all models
+    project_info['MODELS'] = project_info['MODELS'] + currDiag.additional_models
+ 
     # Prepare/reformat model data for each model
     for model in project_info['MODELS']:
         #currProject = model['project']
@@ -408,8 +411,9 @@ for c in project_info['DIAGNOSTICS']:
     project_info['RUNTIME']['currDiag'] = currDiag
     for derived_var, derived_field, refmodel in zip(variables, field_types, ref_models):
 
-        # needed by external diag to perform refridding
-        model['ref'] = refmodel
+        # needed by external diag to perform regridding
+        for model in project_info['MODELS']:
+            model['ref'] = refmodel
         info(">>> main.py >>> External diagnostic will use ref_model: " + model['ref'], verbosity, required_verbosity=1)
 
         project_info['RUNTIME']['derived_var'] = derived_var
