@@ -1,5 +1,5 @@
 <namelist>
-<include href="./config_private.xml" />
+<include href="./config_private_DLR-DKRZ.xml"/>
 <namelist_summary>
 ###############################################################################
 namelist_MyDiag.xml
@@ -29,17 +29,18 @@ This namelist is part of the ESMValTool
     <write_plot_vars type="boolean">       True         </write_plot_vars>
     <max_data_filesize type="integer">      100         </max_data_filesize>
     <max_data_blocksize type="integer">     500         </max_data_blocksize>
-    <verbosity type="integer">               1         </verbosity>
-    <exit_on_warning type="boolean">      True         </exit_on_warning>
-    <output_file_type>                       ps         </output_file_type>
+    <verbosity  type="integer">             100         </verbosity>
+    <exit_on_warning  type="boolean">      True         </exit_on_warning>
+    <output_file_type>                      png         </output_file_type>
     <tags>                            P_embrace         </tags>
 </GLOBAL>
 
 <MODELS>
-    <model>ESGF_CMIP5 MPI-ESM-LR output1 MPI-M MPI-ESM-LR historical mon atmos Amon r1i1p1 latest 2000 2004 CMIP5_template</model>
+    <model>ESGF_CMIP5  MPI-ESM-LR   output1  MPI-M  MPI-ESM-LR   historical  mon  atmos  Amon  r1i1p1  latest  2000  2004  CMIP5_template </model>
 </MODELS>
 
-
+<!-- Please do not change anything below this line,
+     unless you want to modify the standard diagnostic settings. -->
 <DIAGNOSTICS>
     <diag>
         <description>         Tutorial diagnostic  </description>
@@ -53,4 +54,7 @@ This namelist is part of the ESMValTool
     </diag>
 </DIAGNOSTICS>
 
-<include href="./config_private_DLR-DKRZ.xml" /><ESGF><config_file>./esgf_config.xml</config_file></ESGF></namelist>
+<ESGF>
+    <config_file> ./esgf_config.xml </config_file>
+</ESGF>
+</namelist>
