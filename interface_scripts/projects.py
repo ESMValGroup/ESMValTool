@@ -3573,7 +3573,7 @@ class ESGF:
 
                         # Extract numeric digits from direct
                         # Shouldn't need 'try' block here
-                        version_num = int(filter(str.isdigit, candidate))
+                        version_num = int(filter(str.isdigit, str(candidate)))
 
                         # Compare datetime object to date
                         if version_num > highest_version:
