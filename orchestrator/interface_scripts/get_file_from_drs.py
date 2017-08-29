@@ -302,26 +302,27 @@ def get_from_unstructured_dir(rootdir, model, var):
     # use standard convention for file naming according to project
     # CMIP5 and any of its derrivatives
     if proj_name.startswith('CMIP5') is True:
-        infile_id = '*' + '_'.join([var['name'], model['mip'],
+
+        infile_id = '*' + '_'.join([var, model['mip'],
                                     model['name'],
                                     model['exp'],
                                     model['ensemble']]) + '_*.nc*'
 
     # EMAC and any of its derrivatives (FIXME UNTESTED!!!)
     elif proj_name.startswith('EMAC') is True:
-        infile_id = '*' + '_'.join([var['name'],
+        infile_id = '*' + '_'.join([var,
                                     model['name'],
                                     model['ensemble']]) + '_*.nc*'
 
     # GFDL and any of its derrivatives (FIXME UNTESTED!!!)
     elif proj_name.startswith('GFDL') is True:
-        infile_id = '*' + '_'.join([var['name'],
+        infile_id = '*' + '_'.join([var,
                                     model['name'], model['realm'],
                                     model['ensemble']]) + '_*.nc*'
 
     # CCMVal and any of its derrivatives (FIXME UNTESTED!!!)
     elif proj_name.startswith('CCMVal') is True:
-        infile_id = '*' + '_'.join([var['name'],
+        infile_id = '*' + '_'.join([var,
                                     model['name'], model['exp'],
                                     model['ensemble']]) + '_*.nc*'
 
@@ -413,6 +414,14 @@ def get_cmip5(drs, rootdir, var, model):
         print("PY  info:  >>> get_file_from_drs.py >>> Found matching files in %s: " % rootdir)
         for fi in files:
             print("PY  info:  >>>    file: %s" % fi)
+
+    elif drs == 'None':
+        """
+        This case assumes files live in a single directory
+        with no structure whatsoever (all jumbled in)
+        """
+        files = get_from_unstructured_dir(rootdir, model, var)
+
     else:
         print(" >>> get_file_from_drs.py >>> Could not establish root directory type: ", drs)    
 
