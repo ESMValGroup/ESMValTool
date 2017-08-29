@@ -270,10 +270,6 @@ begin
 
     ESMValMD(plot@outfile, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
     
-    if watermark.ne."False" then
-        make_watermark(plot@outfile, "same", watermark)
-    end if
-
     delete([/alltags, caption, id, climofiles/])
 
     

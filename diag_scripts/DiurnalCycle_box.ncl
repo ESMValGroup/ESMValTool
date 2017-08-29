@@ -526,7 +526,7 @@ begin
     end do
     contrib_authors = "A_rio_ca"
 
-    ESMValMD(plot_outfile, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+    ESMValMD(plot_outfile+".png", alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
 
     delete([/alltags, caption, id, climofiles/])
 

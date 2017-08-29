@@ -711,7 +711,9 @@ begin
 
         allmodels = array_append_record(models@name, diag_script_info@campaign, 0)
 
-        ESMValMD(plot_file + "." + file_type, alltags, caption, id, variables(0), allmodels, climofiles)
+        contrib_authors = (/"A_righ_ma", "A_kais_ch"/)
+
+        ESMValMD(plot_file + "." + file_type, alltags, caption, id, variables(0), allmodels, climofiles, diag_script, contrib_authors)
 
         delete(climofiles)
         delete(ttags)
@@ -802,7 +804,9 @@ begin
 
         allmodels = array_append_record(models@name, diag_script_info@campaign, 0)
 
-        ESMValMD(plot_file + "." + file_type, alltags, caption, id, variables(0), allmodels, climofiles)
+        contrib_authors = (/"A_righ_ma", "A_kais_ch"/)
+
+        ESMValMD(plot_file + "." + file_type, alltags, caption, id, variables(0), allmodels, climofiles, diag_script, contrib_authors)
 
         delete(climofiles)
         delete(ttags)

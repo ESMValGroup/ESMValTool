@@ -342,7 +342,7 @@ begin
     id = diag_script + "_" + variables(0)
     contrib_authors = "A_laue_ax"
 
-    ESMValMD(outfile, alltags, caption, id, variables(0), models@name, climofiles, diag_script, contrib_authors)
+    ESMValMD(outfile+"."+file_type, alltags, caption, id, variables(0), models@name, climofiles, diag_script, contrib_authors)
 
 end
 
