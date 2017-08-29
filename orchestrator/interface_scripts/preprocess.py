@@ -252,14 +252,14 @@ def get_cmip_cf_infile(project_info, currentDiag, model, currentVarName): ## FIX
         elif proj_name == 'CCMVal1' or proj_name == 'CCMVal2':
             full_paths = gf.get_ccmval(model_rootpath, var['name'], model)
         # Observations' classes
-        elif proj_name = 'OBS':
+        elif proj_name == 'OBS':
             full_paths = gf.get_obs(obs_rootpath, var['name'], model)
-        elif proj_name = 'obs4mips':
+        elif proj_name == 'obs4mips':
             full_paths = gf.get_obs4mips(obs_rootpath, var['name'], model)
-        elif proj_name = 'ana4mips':
+        elif proj_name == 'ana4mips':
             full_paths = gf.get_ana4mips(obs_rootpath, var['name'], model)
         # Unstructured user-defined directory
-        elif proj_name == 'NONE' 
+        elif proj_name == 'NONE' : 
             full_paths = gf.get_from_unstructured_dir(model_rootpath, model, var)
         # FIX-ME: to be added MiKlip, ECEARTH, GO, JSBACH
 
@@ -275,7 +275,7 @@ def get_cmip_cf_infile(project_info, currentDiag, model, currentVarName): ## FIX
             # get pp.glob to glob the files into one single file
             info(" >>> preprocess.py >>> Found multiple netCDF files for current diagnostic, attempting to glob them; variable: " + var['name'],
                  verbosity, required_verbosity=1)
-            standard_name = rootdir + '/' + '_'.join([var['name'], model['project'],
+            standard_name = model_rootpath + '/' + '_'.join([var['name'], model['project'],
                                                      model['name'],
                                                      model['ensemble'], str(y1), str(y2)]) + '_GLOB.nc'
             # glob only if the GLOB.nc file doesnt exist
@@ -555,9 +555,6 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
 
     # Build input and output file names
     infileslist = get_cmip_cf_infile(project_info, currentDiag, model, variable.name)[variable.name]
-
-    print infileslist
-    sys.exit(1)
 
     # VP-FIXME-question : the code can glob multiple files, but how to handle the case when globbing fails; currently
     # the diagnostic is run on only the first file
