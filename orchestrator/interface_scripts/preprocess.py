@@ -207,16 +207,23 @@ def get_dict_key(model):
             'cn' in 'interface_scripts/read_data.ncl'
     """
 
-    # mip, ensemble and exp are not specific to all models,
-    # removing them makes things common to ALL models
-    # and should NOT break the NCL interfacing
-    dict_key = "_".join([model['project'],
-                         model['name'],
-                         #model['mip'],
-                         #model['exp'],
-                         #model['ensemble'],
-                         str(model['start_year']),
-                         str(model['end_year'])])
+    # allow for different projects
+
+    # CMIP5
+    if model['project'] == 'CMIP5':
+        dict_key = "_".join([model['project'],
+                             model['name'],
+                             model['mip'],
+                             model['exp'],
+                             model['ensemble'],
+                             str(model['start_year']),
+                             str(model['end_year'])])
+    else:
+        dict_key = "_".join([model['project'],
+                             model['name'],
+                             str(model['start_year']),
+                             str(model['end_year'])])
+
     return dict_key
 
 def get_cf_infile(project_info, currentDiag, model, currentVarName):
@@ -626,6 +633,7 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
 
     else:
         reft_cube = iris.load_cube(infiles)
+        iris.save(reft_cube, project_info['TEMPORARY']['outfile_fullpath'])
 
     #################### 1. LAND/OCEAN/PORO MASK VIA sftlf/sftof/mrsofc FILE ####################################################
 

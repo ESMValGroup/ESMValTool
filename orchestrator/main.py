@@ -25,6 +25,8 @@ import uuid
 # Define ESMValTool version
 version = "2.0.0"
 os.environ['0_ESMValTool_version'] = version
+# we may need this
+# os.environ["ESMValTool_force_calc"] = "True"
 
 # Check NCL version
 ncl_version_check()
@@ -310,11 +312,11 @@ in_refs = os.path.join(os.getcwd(), 'doc/MASTER_authors-refs-acknow.txt')
 project_info['RUNTIME']['in_refs'] = in_refs
 
 # Open refs-acknows file in run_dir (delete if existing)
-if not os.path.isdir(project_info['GLOBAL']['run_dir']):
-    mkd = 'mkdir -p ' + project_info['GLOBAL']['run_dir']
+if not os.path.isdir(project_info['GLOBAL']['work_dir']):
+    mkd = 'mkdir -p ' + project_info['GLOBAL']['work_dir']
     proc = subprocess.Popen(mkd, stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
-    info('>>> main.py >>> Created run directory ' + project_info['GLOBAL']['run_dir'], verbosity, 1)
+    info('>>> main.py >>> Created work directory ' + project_info['GLOBAL']['work_dir'], verbosity, 1)
 
 if (os.path.isfile(out_refs)):
     os.remove(out_refs)

@@ -187,22 +187,41 @@ class Data_interface(object):
             easily.
         """
         # condition: keys for all models are the same !!!
-        model_specifiers = project_info['MODELS'][0].keys()
+        # this is, in fact, bullshit, because we should 
+        # allow for a variety of model specifiers. Hacking it
+        # here (VP)
+        #model_specifiers = project_info['MODELS'][0].keys()
+        
+        model_specifiers = ['project', 'start_year',\
+                            'name', 'exp', 'mip', 'end_year',\
+                            'ref', 'ensemble']
+
+        # OBS: {'project': 'OBS', 'start_year': 2000, 'version': 1, 
+        #  'name': 'ERA-Interim', 'ref': 'ERA-Interim', 'tier': 3, 'end_year': 2002, 'type': 'reanaly'}
+        # CMIP5 (default) : {'project': 'CMIP5', 'start_year': 2000, 'name': 'bcc-csm1-1', 
+        #  'exp': 'historical', 'mip': 'Amon', 'end_year': 2002, 'ref': 'ERA-Interim', 'ensemble': 'r1i1p1'} 
 
         # this is a bit hacky
         # but makes sure the key - val order stays fixed
         models = []
         for model in project_info['MODELS']:
-            mdls = []
-            a = model.keys()
-            for k in a:
-                b = model[k]
-                mdls.append(b)
+            # cmip5
+            if model['project'] == 'CMIP5':
+                mdls = [model['project'], model['start_year'],\
+                        model['name'], model['exp'], model['mip'], model['end_year'],\
+                        model['ref'], model['ensemble']]
+
+            # obs
+            if model['project'] == 'OBS':
+                mdls = [model['project'], model['start_year'],\
+                        model['name'], 'exp', 'mip', model['end_year'],\
+                        model['ref'], 'ensemble']
+
             models.append(mdls)
 
         model_ids = []
         for model in project_info['MODELS']:
-            print('All models:')
+            print('Model is:')
             print(model)
             if "id" in model.keys():
                 model_ids.append(model['id'])
@@ -362,7 +381,8 @@ class Ncl_data_interface(Data_interface):
                         place_holder = [str(ph) for ph in place_holder]
 
                     else:  # Assume string
-                        place_holder = ['"' + ph + '"' for ph in place_holder]
+                        # but force it to be a string (VP)
+                        place_holder = ['"' + str(ph) + '"' for ph in place_holder]
 
                     place_holder = [item1 + item2
                                     for item1, item2 in zip(lhs, place_holder)]
