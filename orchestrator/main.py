@@ -24,6 +24,8 @@ import uuid
 # Define ESMValTool version
 version = "2.0.0"
 os.environ['0_ESMValTool_version'] = version
+# we may need this
+# os.environ["ESMValTool_force_calc"] = "True"
 
 # Check NCL version
 ncl_version_check()
@@ -154,23 +156,32 @@ class configFile:
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no save_intermediary_cubes in config "
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> assuming False  "
             GLOB['save_intermediary_cubes'] = False
-        if cp.has_option('GLOBAL','data_dir_type') :
-            ddd = cp.get('GLOBAL','data_dir_type')
-            GLOB['data_dir_type'] = ddd
-            permitted_values = ['user_drs', 'user_file', 'user_unstructured', 'badc', 'dkrz']
-            # permitted values:
-            # user_drs: user's model['path'] has a DRS structure
-            # user_file: user's model['path'] points to a single file
-            # user_unstructured: user's model['path'] contains an unstructured collection of files
-            # badc: file search on BADC archive
-            # dkrz: file search on DKRZ archive
+        if cp.has_option('GLOBAL','model_rootpath'): ## Use this for all classes except the ones for obs_rootpath
+            mp = cp.get('GLOBAL','model_rootpath')
+            GLOB['model_rootpath'] = mp
+        else:
+            print >> sys.stderr,"PY  ERROR:  >>> main.py >>> Model root path not defined"
+            sys.exit(1)
+        if cp.has_option('GLOBAL','obs_rootpath'):  ## Use this for OBS, obs4mips, ana4mips classes
+            op = cp.get('GLOBAL','obs_rootpath')
+            GLOB['obs_rootpath'] = op
+        else:
+            print >> sys.stderr,"PY  ERROR:  >>> main.py >>> Observations root path not defined"
+            sys.exit(1)
+        if cp.has_option('GLOBAL','rawobs_rootpath'):  ## For reformat_obs only, to be used later
+            rop = cp.get('GLOBAL','rawobs_rootpath')
+            GLOB['rawobs_rootpath'] = rop
+        if cp.has_option('GLOBAL','cmip5_dirtype') :
+            ddd = cp.get('GLOBAL','cmip5_dirtype')
+            GLOB['cmip5_dirtype'] = ddd
+            permitted_values = ['default', 'badc', 'dkrz', 'ethz', 'smhi', 'None']
             if ddd not in permitted_values:
-                print >> sys.stderr,"PY  ERROR:  >>> main.py >>> Unrecognized option for data_dir_type in config: ", ddd
+                print >> sys.stderr,"PY  ERROR:  >>> main.py >>> Unrecognized option for cmip5_dirtype in config: ", ddd
                 sys.exit(1)
         else:
-            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no data_dir_type in config "
+            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no cmip5_dirtype in config "
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> assuming None  (unstructured data directory)"
-            GLOB['data_dir_type'] = 'None'
+            GLOB['cmip5_dirtype'] = 'None'
         return GLOB
 
 
@@ -299,18 +310,23 @@ project_info['RUNTIME']['regridtarget'] = []
 in_refs = os.path.join(os.getcwd(), 'doc/MASTER_authors-refs-acknow.txt')
 project_info['RUNTIME']['in_refs'] = in_refs
 
+# Create workdir
+if not os.path.isdir(project_info['GLOBAL']['work_dir']):
+    mkd = 'mkdir -p ' + project_info['GLOBAL']['work_dir']
+    proc = subprocess.Popen(mkd, stdout=subprocess.PIPE, shell=True)
+    (out, err) = proc.communicate()
+    info('>>> main.py >>> Created work directory ' + project_info['GLOBAL']['work_dir'], verbosity, 1)
+
 # Open refs-acknows file in run_dir (delete if existing)
 if not os.path.isdir(project_info['GLOBAL']['run_dir']):
     mkd = 'mkdir -p ' + project_info['GLOBAL']['run_dir']
     proc = subprocess.Popen(mkd, stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
     info('>>> main.py >>> Created run directory ' + project_info['GLOBAL']['run_dir'], verbosity, 1)
-
 if (os.path.isfile(out_refs)):
     os.remove(out_refs)
 f = open(out_refs, "w")
 f.close()
-
 
 # Current working directory
 project_info['RUNTIME']['cwd'] = os.getcwd()
@@ -330,8 +346,12 @@ for c in project_info['DIAGNOSTICS']:
     # Are the requested variables derived from other, more basic, variables?
     requested_vars = currDiag.variables
 
+    # get all models
+    project_info['ADDITIONAL_MODELS'] = currDiag.additional_models
+    project_info['ALLMODELS'] = project_info['MODELS'] + project_info['ADDITIONAL_MODELS']
+ 
     # Prepare/reformat model data for each model
-    for model in project_info['MODELS']:
+    for model in project_info['ALLMODELS']:
         #currProject = model['project']
         model_name = model['name']
         project_name = model['project']
@@ -398,8 +418,9 @@ for c in project_info['DIAGNOSTICS']:
     project_info['RUNTIME']['currDiag'] = currDiag
     for derived_var, derived_field, refmodel in zip(variables, field_types, ref_models):
 
-        # needed by external diag to perform refridding
-        model['ref'] = refmodel
+        # needed by external diag to perform regridding
+        for model in project_info['ALLMODELS']:
+            model['ref'] = refmodel
         info(">>> main.py >>> External diagnostic will use ref_model: " + model['ref'], verbosity, required_verbosity=1)
 
         project_info['RUNTIME']['derived_var'] = derived_var

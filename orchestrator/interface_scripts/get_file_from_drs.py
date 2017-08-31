@@ -302,26 +302,27 @@ def get_from_unstructured_dir(rootdir, model, var):
     # use standard convention for file naming according to project
     # CMIP5 and any of its derrivatives
     if proj_name.startswith('CMIP5') is True:
-        infile_id = '*' + '_'.join([var['name'], model['mip'],
+
+        infile_id = '*' + '_'.join([var, model['mip'],
                                     model['name'],
                                     model['exp'],
                                     model['ensemble']]) + '_*.nc*'
 
     # EMAC and any of its derrivatives (FIXME UNTESTED!!!)
     elif proj_name.startswith('EMAC') is True:
-        infile_id = '*' + '_'.join([var['name'],
+        infile_id = '*' + '_'.join([var,
                                     model['name'],
                                     model['ensemble']]) + '_*.nc*'
 
     # GFDL and any of its derrivatives (FIXME UNTESTED!!!)
     elif proj_name.startswith('GFDL') is True:
-        infile_id = '*' + '_'.join([var['name'],
+        infile_id = '*' + '_'.join([var,
                                     model['name'], model['realm'],
                                     model['ensemble']]) + '_*.nc*'
 
     # CCMVal and any of its derrivatives (FIXME UNTESTED!!!)
     elif proj_name.startswith('CCMVal') is True:
-        infile_id = '*' + '_'.join([var['name'],
+        infile_id = '*' + '_'.join([var,
                                     model['name'], model['exp'],
                                     model['ensemble']]) + '_*.nc*'
 
@@ -347,6 +348,49 @@ def get_from_unstructured_dir(rootdir, model, var):
             print("PY  info:   >>> preprocess.py >>> Could not find file type %s" % fi)
 
     return files
+
+def get_obs(rootdir, obs_var, obs_model):
+    """@brief Function that returns the observation file for regridding
+       Returns a files list
+       namelist field type: {name: ERA-Interim,  project: OBS,  type: reanaly,
+       version: 1,  start: 2000,  end: 2002,  path: /obspath/Tier3/ERA-Interim/}
+       path type needs to be: FULL e.g. data_dir/OBS/Tier3/ERA-Interim/ where files are
+    """
+
+    obsfiles = []
+
+    # check if rootdir is a full path to a file
+    if rootdir.endswith('.nc') is True:
+        print("PY  info:   >>> preprocess.py >>> preprocess.py >>> Specified path points to file " + rootdir)
+        # assert true file existence
+        srch = 'ls ' + rootdir
+
+    else:
+
+        # use standard convention for OBS file naming
+        # FIXME - there may be multiple OBS naming conventions? 
+        infile_id = '*' + '_'.join([obs_model['project'], obs_model['name'],
+                                    obs_model['type'], str(obs_model['version']),
+                                    obs_var['field'], obs_var['name']]) + '_*.nc*'
+
+        # look for files: get paths
+        srch = 'ls ' + rootdir + '/' + infile_id
+
+    proc = subprocess.Popen(srch, stdout=subprocess.PIPE, shell=True)
+    (out, err) = proc.communicate()
+    fpaths = out.split('\n')
+
+    # loop through filepaths
+    # last element of ls will always be an empty string
+    for fpath in fpaths[0:-1]:
+        if os.path.exists(fpath.strip()):
+            obsfiles.append(fpath.strip())
+            print("PY  info:   >>> preprocess.py >>> preprocess.py >>> Using OBS file for regridding " + fpath.strip())
+        else:
+            fi = rootdir + '/' + infile_id
+            print("PY  info:   >>> preprocess.py >>> preprocess.py >>> Could not find OBS file type " + fi)
+
+    return obsfiles
 
 def get_cmip5(drs, rootdir, var, model):
     """
@@ -391,8 +435,9 @@ def get_cmip5(drs, rootdir, var, model):
         for fi in files:
             print("PY  info:  >>>    file: %s" % fi)
 
-    elif drs == 'user_drs':
+    elif drs == 'default':
         """
+        Default structure: DRS enabled
         This case assumes that the model['path'] = rootdir supplied in the namelist
         has a DRS structure e.g. for CMIP5: rootdir/institution/proj_name/experiment/frequency/realm/mip/ensemble/variable_name/
                                             ./test_data_drs/MPI-M/MPI-ESM-LR/historical/mon/atmos/Amon/r1i1p1/ta/
@@ -410,9 +455,28 @@ def get_cmip5(drs, rootdir, var, model):
             host_root = rootdir + '/'
 
         files = find_file(model, ls_host_root, host_root, latestDir, var, label = 'cmip5')
-        print("PY  info:  >>> get_file_from_drs.py >>> Found matching files in %s: " % rootdir)
-        for fi in files:
-            print("PY  info:  >>>    file: %s" % fi)
+        if len(files) > 0:
+            print("PY  info:  >>> get_file_from_drs.py >>> Found matching files in %s: " % rootdir)
+            for fi in files:
+                print("PY  info:  >>>    file: %s" % fi)
+        else:
+            print("PY  info:  >>> get_file_from_drs.py >>> No matching files found in %s " % rootdir)
+            sys.exit(1)
+
+    elif drs == 'None':
+        """
+        This case assumes files live in a single directory
+        with no structure whatsoever (all jumbled in)
+        """
+        files = get_from_unstructured_dir(rootdir, model, var)
+        if len(files) > 0:
+            print("PY  info:  >>> get_file_from_drs.py >>> Found matching files in %s: " % rootdir)
+            for fi in files:
+                print("PY  info:  >>>    file: %s" % fi)
+        else:
+            print("PY  info:  >>> get_file_from_drs.py >>> No matching files found in %s " % rootdir)
+            sys.exit(1)
+
     else:
         print(" >>> get_file_from_drs.py >>> Could not establish root directory type: ", drs)    
 

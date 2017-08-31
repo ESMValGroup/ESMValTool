@@ -46,9 +46,9 @@ def get_diag_value(di, projinfomodels, projinfoconfig, v):
     elif v == 'field_types':
         currentry = [s['field'] for s in di.variables]
     elif v == 'var_attr_mip':
-        currentry = [s['mip'] for s in projinfomodels]
+        currentry = [s['mip'] for s in projinfomodels if 'mip' in s.keys()]
     elif v == 'var_attr_exp':
-        currentry = [s['exp'] for s in projinfomodels]
+        currentry = [s['exp'] for s in projinfomodels if 'exp' in s.keys()]
     elif v == 'var_attr_ref':
         currentry_list = [s['ref_model'] for s in di.variables]
         currentry = [item for sublist in currentry_list for item in sublist]
@@ -116,7 +116,7 @@ class Data_interface(object):
         for var in self.interface.repackage_these:
             if "currDiag" in project_info['RUNTIME']:
                 currDiag = project_info['RUNTIME']['currDiag']
-                curr_entry = get_diag_value(currDiag, project_info['MODELS'], project_info['CONFIG'], var)
+                curr_entry = get_diag_value(currDiag, project_info['ALLMODELS'], project_info['CONFIG'], var)
                 if isinstance(curr_entry, list):
                     vars(self.interface)[var] = curr_entry
                 else:
@@ -156,7 +156,7 @@ class Data_interface(object):
         infile_fullpaths = []
         figfiles_suffix = []
 
-        for model in project_info['MODELS']:
+        for model in project_info['ALLMODELS']:
             currProject = model
 
             figfiles_suffix.append(pp.get_figure_file_names(project_info, model))
@@ -187,21 +187,42 @@ class Data_interface(object):
             easily.
         """
         # condition: keys for all models are the same !!!
-        model_specifiers = project_info['MODELS'][0].keys()
+        # this is, in fact, bullshit, because we should 
+        # allow for a variety of model specifiers. Hacking it
+        # here (VP)
+        #model_specifiers = project_info['ALLMODELS'][0].keys()
+        
+        model_specifiers = ['project', 'start_year',\
+                            'name', 'exp', 'mip', 'end_year',\
+                            'ref', 'ensemble']
+
+        # OBS: {'project': 'OBS', 'start_year': 2000, 'version': 1, 
+        #  'name': 'ERA-Interim', 'ref': 'ERA-Interim', 'tier': 3, 'end_year': 2002, 'type': 'reanaly'}
+        # CMIP5 (default) : {'project': 'CMIP5', 'start_year': 2000, 'name': 'bcc-csm1-1', 
+        #  'exp': 'historical', 'mip': 'Amon', 'end_year': 2002, 'ref': 'ERA-Interim', 'ensemble': 'r1i1p1'} 
 
         # this is a bit hacky
         # but makes sure the key - val order stays fixed
         models = []
-        for model in project_info['MODELS']:
-            mdls = []
-            a = model.keys()
-            for k in a:
-                b = model[k]
-                mdls.append(b)
+        for model in project_info['ALLMODELS']:
+            # cmip5
+            if model['project'] == 'CMIP5':
+                mdls = [model['project'], model['start_year'],\
+                        model['name'], model['exp'], model['mip'], model['end_year'],\
+                        model['ref'], model['ensemble']]
+
+            # obs
+            if model['project'] == 'OBS':
+                mdls = [model['project'], model['start_year'],\
+                        model['name'], 'exp', 'mip', model['end_year'],\
+                        model['ref'], 'ensemble']
+
             models.append(mdls)
 
         model_ids = []
-        for model in project_info['MODELS']:
+        for model in project_info['ALLMODELS']:
+            print('Model is:')
+            print(model)
             if "id" in model.keys():
                 model_ids.append(model['id'])
             if "ref" in model.keys():
@@ -211,7 +232,7 @@ class Data_interface(object):
         
         model_skips = []
         # Collect instances when to skip derived variable calculations
-        for model in project_info['MODELS']:
+        for model in project_info['ALLMODELS']:
             if "skip_derive_var" in model.keys():
                 model_skips.append(model["skip_derive_var"])
             else:
@@ -313,7 +334,7 @@ class Ncl_data_interface(Data_interface):
         # of in the base class. The dict_keys are are used to keep track
         # of the current data sets
         self.interface.dict_keys = []
-        for model in project_info['MODELS']:
+        for model in project_info['ALLMODELS']:
             currProject = model
 
             self.interface.dict_keys.append(pp.get_dict_key(model))
@@ -360,7 +381,8 @@ class Ncl_data_interface(Data_interface):
                         place_holder = [str(ph) for ph in place_holder]
 
                     else:  # Assume string
-                        place_holder = ['"' + ph + '"' for ph in place_holder]
+                        # but force it to be a string (VP)
+                        place_holder = ['"' + str(ph) + '"' for ph in place_holder]
 
                     place_holder = [item1 + item2
                                     for item1, item2 in zip(lhs, place_holder)]

@@ -214,7 +214,7 @@ class ESMValProject(object):
             mip = currDiag.get_var_attr_mip()
             exp = currDiag.get_var_attr_exp()
             for idx in range(len(variables)):
-                for model in self.project_info['MODELS']:
+                for model in self.project_info['ALLMODELS']:
                     currProject = getattr(vars()['projects'], model.split_entries()[0])()
                     fullpath = currProject.get_cf_fullpath(self.project_info,
                                                            model,
@@ -465,7 +465,7 @@ class ESMValProject(object):
         """ Returns the id tag of the model if defined and empty string if not.
         The input is just the model name."""
         model_id = ''
-        models = self.project_info['MODELS']
+        models = self.project_info['ALLMODELS']
         for model in models:
             # loop over all entries and take the one we're after
             if (inmodel == model.split_entries()[1]):
@@ -584,7 +584,7 @@ class ESMValProject(object):
             It's slightly hazardous so use at your own risk i.e. you shouldn't
             use two instances of same model (i.e. two separate time periods -
             this loops over the models and takes the last one that hits) """
-            for key in self.project_info['MODELS']:
+            for key in self.project_info['ALLMODELS']:
                 if (key.split_entries()[1] == model):
                     project, name, MIP, scenario, ensemble, start, end = key.split_entries()[0:7]
             years = "-".join([start, end])
@@ -753,7 +753,7 @@ class ESMValProject(object):
             requested_vars = currDiag.get_variables_list()
 
             for idx in range(len(variables)):
-                for model in self.project_info['MODELS']:
+                for model in self.project_info['ALLMODELS']:
                         #~ print model.split_entries()[0] # gives 'JSBACH'
                         #~ print vars()
                         currProject = getattr(vars()['projects'], model.split_entries()[0])()
