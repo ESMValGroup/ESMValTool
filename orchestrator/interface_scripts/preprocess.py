@@ -192,7 +192,8 @@ def get_cf_outfile(model, field, variable):
                             model['name'],
                             model['type'],
                             str(model['version']),
-                            str(model['tier']),
+                            field,
+                            variable,
                             str(model['start_year'])]) + '-' + str(model['end_year']) + '.nc'
 
     return outfile
