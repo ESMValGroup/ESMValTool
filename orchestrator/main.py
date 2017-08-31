@@ -348,10 +348,11 @@ for c in project_info['DIAGNOSTICS']:
     requested_vars = currDiag.variables
 
     # get all models
-    project_info['MODELS'] = project_info['MODELS'] + currDiag.additional_models
+    project_info['ADDITIONAL_MODELS'] = currDiag.additional_models
+    project_info['ALLMODELS'] = project_info['MODELS'] + project_info['ADDITIONAL_MODELS']
  
     # Prepare/reformat model data for each model
-    for model in project_info['MODELS']:
+    for model in project_info['ALLMODELS']:
         #currProject = model['project']
         model_name = model['name']
         project_name = model['project']
@@ -419,7 +420,7 @@ for c in project_info['DIAGNOSTICS']:
     for derived_var, derived_field, refmodel in zip(variables, field_types, ref_models):
 
         # needed by external diag to perform regridding
-        for model in project_info['MODELS']:
+        for model in project_info['ALLMODELS']:
             model['ref'] = refmodel
         info(">>> main.py >>> External diagnostic will use ref_model: " + model['ref'], verbosity, required_verbosity=1)
 
