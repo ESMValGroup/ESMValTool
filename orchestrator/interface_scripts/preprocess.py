@@ -18,6 +18,7 @@ import launchers
 from orchestrator.interface_scripts.fixes.fix import Fix
 from regrid import regrid as rg
 import iris
+import iris.exceptions
 import preprocessing_tools as pt
 import get_file_from_drs as gf
 
@@ -594,12 +595,12 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
             # OUT: project_info['TEMPORARY']['outfile_fullpath']
             fixes = Fix.get_fixes(project_name, model_name, var_name)
 
-            def apply_file_fixes(filepath):
-                for fix in fixes:
-                    filepath = fix.fix_file(filepath)
-                return  filepath
+            def apply_file_fixes(file_to_fix):
+                for next_fix in fixes:
+                    file_to_fix = next_fix.fix_file(file_to_fix)
+                return file_to_fix
 
-            files = [ apply_file_fixes(filepath) for filepath in infiles]
+            files = [apply_file_fixes(filepath) for filepath in infiles]
 
             with warnings.catch_warnings():
                 warnings.filterwarnings('ignore',
@@ -613,7 +614,6 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
                 var_cons = iris.Constraint(cube_func=cube_var_name)
                 # force single cube; this function defaults a list of cubes
                 reft_cube_0 = iris.load(files, var_cons, callback=merge_callback)[0]
-
 
             for fix in fixes:
                 reft_cube_0 = fix.fix_metadata(reft_cube_0)
