@@ -215,8 +215,8 @@ class ESMValProject(object):
             exp = currDiag.get_var_attr_exp()
             for idx in range(len(variables)):
                 for model in self.project_info['ALLMODELS']:
-                    currProject = getattr(vars()['projects'], model.split_entries()[0])()
-                    fullpath = currProject.get_cf_fullpath(self.project_info,
+                    curr_project = getattr(vars()['projects'], model.split_entries()[0])()
+                    fullpath = curr_project.get_cf_fullpath(self.project_info,
                                                            model,
                                                            field_types[idx],
                                                            variables[idx],
@@ -225,7 +225,7 @@ class ESMValProject(object):
                     if variable == variables[idx] and os.path.isfile(fullpath):
                         if monthly:
                             if 'M' in field_types[idx]:
-                                name = currProject.get_model_name(model)
+                                name = curr_project.get_model_name(model)
                                 res.update({name: fullpath})
         return res
 
@@ -234,7 +234,6 @@ class ESMValProject(object):
         paths. Also checks existance. """
         if variable is None:
             raise ValueError('You need to specify a variable!')
-            sys.exit()
 
         obs = ''
         # The input variable is the actual variable but the obs id may differ
@@ -269,8 +268,8 @@ class ESMValProject(object):
 
     def get_configfile(self):
         """ returns the cfg file full location """
-        currDiag = self.project_info['RUNTIME']['currDiag']
-        cfg_file = currDiag.get_diag_script_cfg()
+        curr_diag = self.project_info['RUNTIME']['currDiag']
+        cfg_file = curr_diag.get_diag_script_cfg()
         return cfg_file
 
     def get_configfile_name(self):
@@ -281,20 +280,20 @@ class ESMValProject(object):
 
     def get_currVars(self):
         """ returns the diagnostic variables """
-        currDiag = self.project_info['RUNTIME']['currDiag']
-        currVars = currDiag.get_variables()
-        return currVars
+        curr_diag = self.project_info['RUNTIME']['currDiag']
+        curr_vars = curr_diag.get_variables()
+        return curr_vars
 
     def get_diag_script_name(self):
         """ returns the current diagnostic script name """
-        currDiag = self.project_info['RUNTIME']['currDiag']
-        diag_script_name = os.path.splitext(currDiag.diag_script)[0]
+        curr_diag = self.project_info['RUNTIME']['currDiag']
+        diag_script_name = os.path.splitext(curr_diag.diag_script)[0]
         return diag_script_name
 
     def get_field_type(self):
         """ returns the first (and often only) field type """
-        currDiag = self.project_info['RUNTIME']['currDiag']
-        field_type = currDiag.get_field_types()[0]
+        curr_diag = self.project_info['RUNTIME']['currDiag']
+        field_type = curr_diag.get_field_types()[0]
         return field_type
 
     def get_graphic_format(self):
@@ -756,16 +755,16 @@ class ESMValProject(object):
                 for model in self.project_info['ALLMODELS']:
                         #~ print model.split_entries()[0] # gives 'JSBACH'
                         #~ print vars()
-                        currProject = getattr(vars()['projects'], model.split_entries()[0])()
+                        curr_project = getattr(vars()['projects'], model.split_entries()[0])()
                         variable_defs_base_vars = currDiag.add_base_vars_fields(requested_vars, model)
 
                         base_vars = currDiag.select_base_vars(variable_defs_base_vars, model,
-                                      currProject, self.project_info)
-                        name = currProject.get_model_name(model)
+                                      curr_project, self.project_info)
+                        name = curr_project.get_model_name(model)
                         res.update({name: {}})
                         for base_var in base_vars:
 
-                            tmp_dir, tmp_files = currProject.get_cf_infile(self.project_info, model, base_var.fld, base_var.var, base_var.mip, base_var.exp)  # variable actually not used for e.g. JSBACH
+                            tmp_dir, tmp_files = curr_project.get_cf_infile(self.project_info, model, base_var.fld, base_var.var, base_var.mip, base_var.exp)  # variable actually not used for e.g. JSBACH
                             #currProject.get_cf_infile(self.project_info, model, base_var, variable, mip, exp)  # variable actually not used for e.g. JSBACH
 
                             # store results

@@ -27,6 +27,7 @@ import get_file_from_drs as gf
 ### more specialized modules for prerocessing purposes
 ########################################################
 
+
 def write_data_interface(executable, project_info):
     """ @brief Write Python data structures to target script format interface
         @param executable String pointing to the script/binary to execute
@@ -36,8 +37,9 @@ def write_data_interface(executable, project_info):
         a format appropriate for the target script/binary
     """
     suffix = os.path.splitext(executable)[1][1:]
-    currInterface = vars(dint)[suffix.title() + '_data_interface'](project_info)
-    currInterface.write_data_to_interface()
+    curr_interface = vars(dint)[suffix.title() + '_data_interface'](project_info)
+    curr_interface.write_data_to_interface()
+
 
 def run_executable(string_to_execute,
                    project_info,
@@ -59,10 +61,10 @@ def run_executable(string_to_execute,
         write_data_interface(string_to_execute, project_info)
 
     suffix = os.path.splitext(string_to_execute)[1][1:]
-    currLauncher = vars(launchers)[suffix + '_launcher']()
+    curr_launcher = vars(launchers)[suffix + '_launcher']()
     if launcher_arguments is not None:
-        currLauncher.arguments = launcher_arguments
-    currLauncher.execute(string_to_execute,
+        curr_launcher.arguments = launcher_arguments
+    curr_launcher.execute(string_to_execute,
                          project_info,
                          verbosity,
                          exit_on_warning)
@@ -228,7 +230,7 @@ def get_dict_key(model):
 
     return dict_key
 
-def get_cf_infile(project_info, currentDiag, model, currentVarName):
+def get_cf_infile(project_info, current_diag, model, current_var_name):
     """@brief Path to input netCDF files for models
        @param project_info all info dictionary
        @param currDiag(dict) current diagnostic
@@ -256,7 +258,7 @@ def get_cf_infile(project_info, currentDiag, model, currentVarName):
 
     # get variables; data files is a dictionary keyed on variable
     data_files = {}
-    variables = currentDiag.variables
+    variables = current_diag.variables
 
     for var in variables:
         # Models' classes
@@ -276,7 +278,7 @@ def get_cf_infile(project_info, currentDiag, model, currentVarName):
         elif proj_name == 'ana4mips':
             full_paths = gf.get_ana4mips(obs_rootpath, var['name'], model)
         # Unstructured user-defined directory
-        elif proj_name == 'NONE' : 
+        elif proj_name == 'NONE' :
             full_paths = gf.get_from_unstructured_dir(model_rootpath, model, var)
         # FIX-ME: to be added MiKlip, ECEARTH, GO, JSBACH
 
@@ -309,7 +311,7 @@ def get_cf_infile(project_info, currentDiag, model, currentVarName):
             else:
                 data_files[var['name']] = full_paths
                 info(" >>> preprocess.py >>> Could not glob files, keeping a list of files", verbosity, required_verbosity=1)
- 
+
     return data_files
 
 def get_cf_areafile(project_info, model):
@@ -350,7 +352,7 @@ def merge_callback(raw_cube, field, filename):
 
 ####################################################################################################################################
 
-def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
+def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
 
 ###############################################################################################################
 #################### The Big Mean PREPROCESS Machine ##########################################################
@@ -501,7 +503,7 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
     os.environ['__ESMValTool_base_var'] = variable.name
 
     # Build input and output file names
-    infileslist = get_cf_infile(project_info, currentDiag, model, variable.name)[variable.name]
+    infileslist = get_cf_infile(project_info, current_diag, model, variable.name)[variable.name]
 
     # VP-FIXME-question : the code can glob multiple files, but how to handle the case when globbing fails; currently
     # the diagnostic is run on only the first file
@@ -793,9 +795,9 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
             # ref_model regrid string descriptor
             project_info['RUNTIME']['regridtarget'] = []
             if target_grid == 'ref_model':
-                additional_models_dicts = currentDiag.additional_models
+                additional_models_dicts = current_diag.additional_models
                 # identify the current variable
-                for var in currentDiag.variables:
+                for var in current_diag.variables:
                     if var['name'] == variable.name:
                         ref_model_list = var['ref_model']
 
@@ -808,7 +810,7 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
                                     # add to environment variable
                                     project_info['RUNTIME']['regridtarget'].append(ref_model)
                                     info(" >>> preprocess.py >>> Regridding on ref_model " + ref_model, verbosity, required_verbosity=1)
-                                    tgt_nc_grid = get_cf_infile(project_info, currentDiag, obs_model, variable.name)[variable.name][0]
+                                    tgt_nc_grid = get_cf_infile(project_info, current_diag, obs_model, variable.name)[variable.name][0]
                                     tgt_grid_cube = iris.load_cube(tgt_nc_grid)
 
                                     info(" >>> preprocess.py >>> Target regrid cube summary --->", verbosity, required_verbosity=1)
@@ -823,10 +825,10 @@ def preprocess(project_info, variable, model, currentDiag, cmor_reformat_type):
                                     print(rgc)
 
                                     # save specifically named regridded file to be used by external diagnostic
-                                    newlyRegriddedCube = iris.save(rgc, get_regridded_cf_fullpath(project_info, model, variable.field, variable.name, ref_model))
-                                    newlyRegriddedFilePath = get_regridded_cf_fullpath(project_info, model, variable.field, variable.name, ref_model)
-                                    newlyRegriddedCube = iris.save(rgc, newlyRegriddedFilePath)
-                                    info(" >>> preprocess.py >>> Running diagnostic on " + newlyRegriddedFilePath, verbosity, required_verbosity=1)
+                                    newly_regridded_cube = iris.save(rgc, get_regridded_cf_fullpath(project_info, model, variable.field, variable.name, ref_model))
+                                    newly_regridded_file_path = get_regridded_cf_fullpath(project_info, model, variable.field, variable.name, ref_model)
+                                    newly_regridded_cube = iris.save(rgc, newly_regridded_file_path)
+                                    info(" >>> preprocess.py >>> Running diagnostic on " + newly_regridded_file_path, verbosity, required_verbosity=1)
 
                                     # check cube
                                     reft_cube = rgc
@@ -951,7 +953,7 @@ class Diag:
 
         return dep_vars
 
-    def select_base_vars(self, variables, model, currentDiag, project_info):
+    def select_base_vars(self, variables, model, current_diag, project_info):
 
         verbosity = project_info['GLOBAL']['verbosity']
 
@@ -963,7 +965,7 @@ class Diag:
 
             # first try: use base variables provided by variable_defs script
             os.environ['__ESMValTool_base_var'] = base_var.name
-            infiles = get_cf_infile(project_info, currentDiag, model, base_var.name)[base_var.name]
+            infiles = get_cf_infile(project_info, current_diag, model, base_var.name)[base_var.name]
 
             if len(infiles) == 0:
                 info(" >>> preprocess.py >>> No input files found for " + base_var.name +
@@ -973,7 +975,7 @@ class Diag:
                 base_var.fld = base_var.fld0
 
                 # try again with input variable = base variable (non derived)
-                infile = get_cf_infile(project_info, currentDiag, model, base_var.name)[base_var.name]
+                infile = get_cf_infile(project_info, current_diag, model, base_var.name)[base_var.name]
 
                 if len(infile) == 0:
                     raise exceptions.IOError(2, "No input files found in ",
