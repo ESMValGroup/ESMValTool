@@ -311,18 +311,23 @@ project_info['RUNTIME']['regridtarget'] = []
 in_refs = os.path.join(os.getcwd(), 'doc/MASTER_authors-refs-acknow.txt')
 project_info['RUNTIME']['in_refs'] = in_refs
 
-# Open refs-acknows file in run_dir (delete if existing)
+# Create workdir
 if not os.path.isdir(project_info['GLOBAL']['work_dir']):
     mkd = 'mkdir -p ' + project_info['GLOBAL']['work_dir']
     proc = subprocess.Popen(mkd, stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
     info('>>> main.py >>> Created work directory ' + project_info['GLOBAL']['work_dir'], verbosity, 1)
 
+# Open refs-acknows file in run_dir (delete if existing)
+if not os.path.isdir(project_info['GLOBAL']['run_dir']):
+    mkd = 'mkdir -p ' + project_info['GLOBAL']['run_dir']
+    proc = subprocess.Popen(mkd, stdout=subprocess.PIPE, shell=True)
+    (out, err) = proc.communicate()
+    info('>>> main.py >>> Created run directory ' + project_info['GLOBAL']['run_dir'], verbosity, 1)
 if (os.path.isfile(out_refs)):
     os.remove(out_refs)
 f = open(out_refs, "w")
 f.close()
-
 
 # Current working directory
 project_info['RUNTIME']['cwd'] = os.getcwd()
