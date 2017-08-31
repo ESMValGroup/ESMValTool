@@ -1,4 +1,5 @@
 test/testdata
-interface_data/*
+interface_data/*.tmp
+interface_data/ncl.interface
 test_data/
 test_output/
