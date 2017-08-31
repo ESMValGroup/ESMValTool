@@ -50,17 +50,23 @@ def time_handling(year1, year1_model, year2, year2_model):
     # left/right overlaps and complete misses
     elif year1 <= int(year1_model) and year2 <= int(year2_model):
         # data is entirely before model
-        if year2 <= int(year1_model):
+        if year2 < int(year1_model):
             return False
+        # edge on
+        elif year2 == int(year1_model):
+            return True
         # data overlaps to the left
-        elif year2 >= int(year1_model):
+        elif year2 > int(year1_model):
             return True
     elif year1 >= int(year1_model) and year2 >= int(year2_model):
         # data is entirely after model
         if year1 >= int(year2_model):
             return False
+        # edge on
+        elif year1 == int(year2_model):
+            return True
         # data overlaps to the right
-        elif year1 <= int(year2_model):
+        elif year1 < int(year2_model):
             return True
 
 # ---- function to handle various date formats
@@ -270,15 +276,15 @@ def get_single_file(rootdir, yr1, yr2):
     # checks
     if os.path.exists(rootdir):
         if rootdir.endswith('.nc') is True:
-            print("PY  info:  >>> preprocess.py >>> data_dir_type set to user_file ")
-            print("PY  info:   >>> preprocess.py >>> Specified path points to file %s" % rootdir)
+            print("PY  info:  >>> get_file_from_drs.py >>> data_dir_type set to user_file ")
+            print("PY  info:   >>> get_file_from_drs.py >>> Specified path points to file %s" % rootdir)
         else:
-            print("PY  info:   >>> preprocess.py >>> data_dir_type set to user_file ")
-            print("PY  info:   >>> preprocess.py >>> Specified path DOES NOT point to netCDF file %s" % rootdir)
+            print("PY  info:   >>> get_file_from_drs.py >>> data_dir_type set to user_file ")
+            print("PY  info:   >>> get_file_from_drs.py >>> Specified path DOES NOT point to netCDF file %s" % rootdir)
             sys.exit(1)
     else:
-        print("PY  info:   >>> preprocess.py >>> data_dir_type set to user_file ")
-        print("PY  info:   >>> preprocess.py >>> Specified path is non existent %s" % rootdir)
+        print("PY  info:   >>> get_file_from_drs.py >>> data_dir_type set to user_file ")
+        print("PY  info:   >>> get_file_from_drs.py >>> Specified path is non existent %s" % rootdir)
         sys.exit(1)
 
     # time checks
@@ -286,7 +292,7 @@ def get_single_file(rootdir, yr1, yr2):
     if tc is True:
         files = [rootdir]
     else:
-        print("PY  info:   >>> preprocess.py >>> Specified file failed time checks: %s" % rootdir)
+        print("PY  info:   >>> get_file_from_drs.py >>> Specified file failed time checks: %s" % rootdir)
 
     return files
 
@@ -342,10 +348,10 @@ def get_from_unstructured_dir(rootdir, model, var):
             tc = time_check(filepath, model['start_year'], model['end_year'])
             if tc is True:
                 files.append(filepath)
-                print("PY  info:   >>> preprocess.py >>> Using file %s" % filepath)
+                print("PY  info:   >>> get_file_from_drs.py >>> Using file %s" % filepath)
         else:
             fi = rootdir + '/' + infile_id
-            print("PY  info:   >>> preprocess.py >>> Could not find file type %s" % fi)
+            print("PY  info:   >>> get_file_from_drs.py >>> Could not find file type %s" % fi)
 
     return files
 
@@ -361,7 +367,7 @@ def get_obs(rootdir, obs_var, obs_model):
 
     # check if rootdir is a full path to a file
     if rootdir.endswith('.nc') is True:
-        print("PY  info:   >>> preprocess.py >>> preprocess.py >>> Specified path points to file " + rootdir)
+        print("PY  info:   >>> get_file_from_drs.py >>> get_file_from_drs.py >>> Specified path points to file " + rootdir)
         # assert true file existence
         srch = 'ls ' + rootdir
 
@@ -385,10 +391,10 @@ def get_obs(rootdir, obs_var, obs_model):
     for fpath in fpaths[0:-1]:
         if os.path.exists(fpath.strip()):
             obsfiles.append(fpath.strip())
-            print("PY  info:   >>> preprocess.py >>> preprocess.py >>> Using OBS file for regridding " + fpath.strip())
+            print("PY  info:   >>> get_file_from_drs.py >>> get_file_from_drs.py >>> Using OBS file for regridding " + fpath.strip())
         else:
             fi = rootdir + '/' + infile_id
-            print("PY  info:   >>> preprocess.py >>> preprocess.py >>> Could not find OBS file type " + fi)
+            print("PY  info:   >>> get_file_from_drs.py >>> get_file_from_drs.py >>> Could not find OBS file type " + fi)
 
     return obsfiles
 
