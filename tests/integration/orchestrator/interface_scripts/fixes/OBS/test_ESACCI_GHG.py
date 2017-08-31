@@ -18,6 +18,7 @@ class Testxco2Stderr(unittest.TestCase):
         cube = self.fix.fix_data(self.cube)
         self.assertEqual(cube.data[0], 1e6)
 
+
 class Testxco2Stddev(unittest.TestCase):
 
     def setUp(self):

@@ -15,7 +15,6 @@ class TestGpp(unittest.TestCase):
         self.assertEqual(cube.data[0], 100)
         self.assertEqual(cube.units, Unit('J'))
 
-
     # dayspermonth = (/31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31/)
     #
     # if ((name.eq."snc".or.name.eq."snw").and.FIELD.eq."T2Ds".and. \

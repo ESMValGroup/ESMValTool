@@ -20,6 +20,7 @@ class TestCo2(unittest.TestCase):
         self.assertEqual(cube.data[0], 29.0/44.0 * 1.e6)
         self.assertEqual(cube.units, Unit('J'))
 
+
 class Testfgco2(unittest.TestCase):
 
     def setUp(self):

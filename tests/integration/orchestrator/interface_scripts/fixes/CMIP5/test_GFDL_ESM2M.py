@@ -8,7 +8,7 @@ from orchestrator.interface_scripts.fixes.CMIP5.GFDL_ESM2M import allvars, sftof
 class TestAll(unittest.TestCase):
     def setUp(self):
         self.cube = Cube([1, 2], var_name='co2', units='J')
-        self.cube.add_dim_coord(DimCoord([0,1], standard_name='time',
+        self.cube.add_dim_coord(DimCoord([0, 1], standard_name='time',
                                          units=Unit('days since 0001-01-01 00:00:00', calendar='standard')),
                                 0)
         self.fix = allvars()
