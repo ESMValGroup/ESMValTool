@@ -4,3 +4,9 @@
 [submodule "backend/cmip5-cmor-tables"]
 	path = backend/cmip5-cmor-tables
 	url = https://github.com/PCMDI/cmip5-cmor-tables.git
+[submodule "orchestrator/interface_scripts/cmip5-cmor-tables"]
+	path = orchestrator/interface_scripts/cmip5-cmor-tables
+	url = https://github.com/PCMDI/cmip5-cmor-tables.git
+[submodule "orchestrator/interface_scripts/cmip6-cmor-tables"]
+	path = orchestrator/interface_scripts/cmip6-cmor-tables
+	url = https://github.com/PCMDI/cmip6-cmor-tables.git
