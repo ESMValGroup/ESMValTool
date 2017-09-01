@@ -577,8 +577,8 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
     # New code: cmor_check.py (by Javier Vegas)
     elif cmor_reformat_type == 'py' and project_name == 'CMIP5':
         # needed imports
-        from orchestrator.interface_scripts.cmor_check import CMORCheck as CC
-        from orchestrator.interface_scripts.cmor_check import CMORCheckError as CCE
+        from interface_scripts.cmor_check import CMORCheck as CC
+        from interface_scripts.cmor_check import CMORCheckError as CCE
         import warnings
         from variable_info import CMIP5Info
 
