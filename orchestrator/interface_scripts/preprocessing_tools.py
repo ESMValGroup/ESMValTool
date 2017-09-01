@@ -9,26 +9,52 @@ from auxiliary import info
 #########################################################################
 # FILE OPERATIONS
 #########################################################################
+# a couple functions needed by cmor reformatting (the new python one)
+def get_attr_from_field_coord(ncfield, coord_name, attr):
+    if coord_name is not None:
+        attrs = ncfield.cf_group[coord_name].cf_attrs()
+        attr_val = [value for (key, value) in attrs if key == attr]
+        if attr_val:
+            return attr_val[0]
+    return None
+
+# Use this callback to fix anything Iris tries to break!
+# noinspection PyUnusedLocal
+# function also used in preprocess.py
+def merge_callback(raw_cube, field, filename):
+    # Remove attributes that cause issues with merging and concatenation
+    for attr in ['creation_date', 'tracking_id', 'history']:
+        if attr in raw_cube.attributes:
+            del raw_cube.attributes[attr]
+    for coord in raw_cube.coords():
+        # Iris chooses to change longitude and latitude units to degrees
+        #  regardless of value in file, so reinstating file value
+        if coord.standard_name in ['longitude', 'latitude']:
+            units = get_attr_from_field_coord(field,
+                                              coord.var_name,
+                                              'units')
+            if units is not None:
+                coord.units = units
+
 # merge multiple files assigned to a same diagnostic and variable
-def glob(file_list, fname, verbosity):
+def glob(file_list, fname, varname, verbosity):
     """
     Function that takes a list of nc files and globs them into a single one
     """
     # there may be the case where the nc file contains multiple cubes
-    cl = []
-    for a in file_list:
-        m = iris.load(a)
-        if len(m) == 1:
-            cl.append(iris.load_cube(a))
-        elif len(iris.load(a)) > 1:
-            #FIXME: this is a very nasty case
-            # that has to be very carefully treated
-            # current implementation does not allow
-            # for a thorough check e.g. the resulting
-            # concatenated = c.concatenate()
-            # will have multiple elements if even one 
-            # bit of metadata differs across cubes
-            cl.append(m[-1])
+    # and/or the time calendars are crooked
+    # -> these exceptional cases are nicely solved by applying Javier's nice
+    # iris fixing (merge_callback and get_attr_from_field_coord are also
+    # in preprocess.py but keeping them here in case we will have to change things)
+
+    var_name = varname
+
+    def cube_var_name(raw_cube):
+        return raw_cube.var_name == var_name
+    var_cons = iris.Constraint(cube_func=cube_var_name)
+    # force single cube; this function defaults a list of cubes
+    cl = [iris.load(a, var_cons, callback=merge_callback)[0] for a in file_list]
+
     c = iris.cube.CubeList(cl)
 
     try:
