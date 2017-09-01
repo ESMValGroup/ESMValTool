@@ -41,7 +41,10 @@ class TestCMIP5Info(unittest.TestCase):
 
     def test_constructor_optional_parameter(self):
         cwd = os.path.dirname(os.path.realpath(__file__))
-        cmor_tables_path = os.path.join(cwd, '..', '..', 'cmip5-cmor-tables')
+        cmor_tables_path = os.path.join(cwd, '..', '..', '..', '..',
+                                        'orchestrator', 'interface_scripts', 'cmip5-cmor-tables')
+        cmor_tables_path = os.path.abspath(cmor_tables_path)
+        print(cmor_tables_path)
         CMIP5Info(cmor_tables_path)
 
     def test_get_variable_tas(self):

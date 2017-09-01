@@ -9,11 +9,10 @@ Tests are implemented using *assert* statements
 
 import sys
 import os
-import glob
 
 import unittest
 import tempfile
-from nose.tools import assert_raises
+
 
 class TestLauncher(unittest.TestCase):
 
@@ -26,11 +25,12 @@ class TestLauncher(unittest.TestCase):
 
         # temporary directory for output
         self.tmpdir = tempfile.mkdtemp() + os.sep
-        sys.path.append(os.path.join(esmval_path,"interface_scripts"))
+        sys.path.append(os.path.join(esmval_path, "interface_scripts"))
 
     def tearDown(self):
         # implement here everything you would like to see happen AFTER a test was executed
         pass
+
 
 class TestPythonLauncher(TestLauncher):
 
@@ -110,6 +110,7 @@ class TestPythonLauncher(TestLauncher):
         with self.assertRaises(ValueError):
             L.execute(script, project_info, 0, False)
 
+
 class TestCSHLauncher(TestLauncher):
 
         def setUp(self):
@@ -123,20 +124,21 @@ class TestCSHLauncher(TestLauncher):
         def test_csh_launcher_execute(self):
                 testscript = os.path.join(self.tmpdir, 'test.csh')
                 try:
-                        with open(testscript,'w') as f:
+                        with open(testscript, 'w') as f:
                                 f.write("#!/usr/bin/env csh")
                                 f.write("echo 'Inside test script' ")
                                 f.close()
                 except IOError:
                         raise die("IOError occured in test_csh_launcher_execute.")
 
-                self.L.execute(testscript,{},100, None)
+                self.L.execute(testscript, {}, 100, None)
                 os.remove(testscript)
 
         def test_csh_launcher_execute_no_file(self):
                 testscript = os.path.join(self.tmpdir, 'test.csh')
                 with self.assertRaises(IOError):
                         self.L.execute(testscript,{},100, None)
+
 
 class TestBASHLauncher(TestLauncher):
 
@@ -151,25 +153,26 @@ class TestBASHLauncher(TestLauncher):
         def test_bash_launcher_execute(self):
                 testscript = os.path.join(self.tmpdir, 'test.bash')
                 try:
-                        with open(testscript,'w') as f:
+                        with open(testscript, 'w') as f:
                                 f.write("#!/usr/bin/env bash")
                                 f.write("echo 'Inside test script' ")
                                 f.close()
                 except IOError:
                         raise die("IOError occured in test_bash_launcher_execute.")
 
-                self.L.execute(testscript,{},100, None)
+                self.L.execute(testscript, {}, 100, None)
                 os.remove(testscript)
 
         def test_bash_launcher_execute_no_file(self):
                 testscript = os.path.join(self.tmpdir, 'test.bash')
                 with self.assertRaises(IOError):
-                        self.L.execute(testscript,{},100, None)
+                        self.L.execute(testscript, {}, 100, None)
+
 
 class TestBadLauncher(TestLauncher):
 
         def test_bad_lancher(self):
-                # This test should be cleaned soon by using custom exceptions 
+                # This test should be cleaned soon by using custom exceptions
                 TestLauncher.setUp(self)
                 from interface_scripts.launchers import shell_launcher
                 try:
@@ -178,10 +181,6 @@ class TestBadLauncher(TestLauncher):
                 except:
                         badshell = False
                 self.assertEqual(badshell, False)
-
-
-
-
 
 if __name__ == "__main__":
     unittest.main()

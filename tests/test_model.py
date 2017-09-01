@@ -9,9 +9,9 @@ Tests are implemented using *assert* statements
 
 import sys
 import os
-import glob
 
 import unittest
+
 
 class Test(unittest.TestCase):
 

@@ -3,7 +3,6 @@ Test script for "Southern Hemisphere"
 """
 
 import os
-import pdb
 import unittest
 
 from esmvaltool_testlib import ESMValToolTest
