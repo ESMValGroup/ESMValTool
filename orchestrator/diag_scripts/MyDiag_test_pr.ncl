@@ -66,7 +66,7 @@ load "./plot_scripts/ncl/contour_maps.ncl"
 
 begin
     ;;###########################################################
-    ;;# Fetch general parameters, set in namelist_MyDiag.xml,   #
+    ;;# Fetch general parameters, set in namelist_MyDiag.yml,   #
     ;;# passed via environment variables by python code         #
     ;;###########################################################
     verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
