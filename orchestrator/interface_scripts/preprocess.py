@@ -600,7 +600,8 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
                     file_to_fix = next_fix.fix_file(file_to_fix)
                 return file_to_fix
 
-            files = [apply_file_fixes(filepath) for filepath in infiles]
+            # infiles is always a fullpath = single string
+            files = apply_file_fixes(infiles)
 
             with warnings.catch_warnings():
                 warnings.filterwarnings('ignore',
