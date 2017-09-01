@@ -2,24 +2,23 @@
 
 """
 Completely rewritten wrapper to be able to deal with
-the new yaml parser and simplified interface_scripts 
+the new yaml parser and simplified interface_scripts
 toolbox. Author: Valeriu Predoi, University of Reading,
 Initial version: August 2017
 contact: valeriu.predoi@ncas.ac.uk
 """
 import sys
-sys.path.append("./interface_scripts")
 import subprocess
 import getopt
-from auxiliary import info, error, print_header, ncl_version_check
+from interface_scripts.auxiliary import info, error, print_header, ncl_version_check
 import datetime
 import os
 import pdb
-from yaml_parser import Parser as Ps
-import preprocess as pp
+from interface_scripts.yaml_parser import Parser as Ps
+import interface_scripts.preprocess as pp
 import copy
 import ConfigParser
-import namelistchecks as pchk
+import interface_scripts.namelistchecks as pchk
 import uuid
 
 # Define ESMValTool version
@@ -85,96 +84,96 @@ class configFile:
         the GLOBAL attributes. Takes ConfigParser object cp
         """
         cp = self.get_par_file(params_file)
-        GLOB = {}
+        glob = {}
         if cp.has_option('GLOBAL','ini-version') :
             ini_version = int(cp.get('GLOBAL','ini-version'))
-            GLOB['ini-version'] = ini_version
+            glob['ini-version'] = ini_version
         if cp.has_option('GLOBAL','write_plots') :
             write_plots = self.s2b(cp.get('GLOBAL','write_plots'))
-            GLOB['write_plots'] = write_plots
+            glob['write_plots'] = write_plots
         else:
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no write_plots in config, set to True"
-            GLOB['write_plots'] = True
+            glob['write_plots'] = True
         if cp.has_option('GLOBAL','write_netcdf') :
             write_netcdf = self.s2b(cp.get('GLOBAL','write_netcdf'))
-            GLOB['write_netcdf'] = write_netcdf
+            glob['write_netcdf'] = write_netcdf
         else:
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no write_netcdf in config, set to True"
-            GLOB['write_netcdf'] = True
+            glob['write_netcdf'] = True
         if cp.has_option('GLOBAL','verbosity') :
             verbosity = int(cp.get('GLOBAL','verbosity'))
-            GLOB['verbosity'] = verbosity
+            glob['verbosity'] = verbosity
         else:
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no verbosity in config, set to 1"
-            GLOB['verbosity'] = 1
+            glob['verbosity'] = 1
         if cp.has_option('GLOBAL','exit_on_warning') :
             eow = self.s2b(cp.get('GLOBAL','exit_on_warning'))
-            GLOB['exit_on_warning'] = eow
+            glob['exit_on_warning'] = eow
         else:
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no exit_on_warning in config, set to True"
-            GLOB['exit_on_warning'] = False
+            glob['exit_on_warning'] = False
         if cp.has_option('GLOBAL','output_file_type') :
             output_type = cp.get('GLOBAL','output_file_type')
-            GLOB['output_file_type'] = output_type
+            glob['output_file_type'] = output_type
         else:
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no output_file_type in config, set to ps"
-            GLOB['output_file_type'] = 'ps'
+            glob['output_file_type'] = 'ps'
         if cp.has_option('GLOBAL','preproc_dir') :
             preproc_dir = cp.get('GLOBAL','preproc_dir')
-            GLOB['preproc_dir'] = preproc_dir
+            glob['preproc_dir'] = preproc_dir
         else:
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no preproc_dir in config, set to ./preproc/"
-            GLOB['preproc_dir'] = './preproc/'
+            glob['preproc_dir'] = './preproc/'
         if cp.has_option('GLOBAL','work_dir') :
             work_dir = cp.get('GLOBAL','work_dir')
-            GLOB['work_dir'] = work_dir
+            glob['work_dir'] = work_dir
         else:
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no work_dir in config, set to ./work/"
-            GLOB['work_dir'] = './work/'
+            glob['work_dir'] = './work/'
         if cp.has_option('GLOBAL','plot_dir') :
             plot_dir = cp.get('GLOBAL','plot_dir')
-            GLOB['plot_dir'] = plot_dir
+            glob['plot_dir'] = plot_dir
         else:
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no plot_dir in config, set to ./plots/"
-            GLOB['plot_dir'] = './plots/'
+            glob['plot_dir'] = './plots/'
         if cp.has_option('GLOBAL','max_data_filesize') :
             mdf = int(cp.get('GLOBAL','max_data_filesize'))
-            GLOB['max_data_filesize'] = mdf
+            glob['max_data_filesize'] = mdf
         else:
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no max_data_filesize in config, set to 100"
-            GLOB['max_data_filesize'] = 100
+            glob['max_data_filesize'] = 100
         if cp.has_option('GLOBAL','run_dir') :
             run_dir = cp.get('GLOBAL','run_dir')
-            GLOB['run_dir'] = run_dir
+            glob['run_dir'] = run_dir
         else:
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no run_dir in config "
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> assuming .  "
-            GLOB['run_dir'] = '.'
+            glob['run_dir'] = '.'
         if cp.has_option('GLOBAL','save_intermediary_cubes') :
             save_intermediary_cubes = self.s2b(cp.get('GLOBAL','save_intermediary_cubes'))
-            GLOB['save_intermediary_cubes'] = save_intermediary_cubes
+            glob['save_intermediary_cubes'] = save_intermediary_cubes
         else:
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no save_intermediary_cubes in config "
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> assuming False  "
-            GLOB['save_intermediary_cubes'] = False
+            glob['save_intermediary_cubes'] = False
         if cp.has_option('GLOBAL','model_rootpath'): ## Use this for all classes except the ones for obs_rootpath
             mp = cp.get('GLOBAL','model_rootpath')
-            GLOB['model_rootpath'] = mp
+            glob['model_rootpath'] = mp
         else:
             print >> sys.stderr,"PY  ERROR:  >>> main.py >>> Model root path not defined"
             sys.exit(1)
         if cp.has_option('GLOBAL','obs_rootpath'):  ## Use this for OBS, obs4mips, ana4mips classes
             op = cp.get('GLOBAL','obs_rootpath')
-            GLOB['obs_rootpath'] = op
+            glob['obs_rootpath'] = op
         else:
             print >> sys.stderr,"PY  ERROR:  >>> main.py >>> Observations root path not defined"
             sys.exit(1)
         if cp.has_option('GLOBAL','rawobs_rootpath'):  ## For reformat_obs only, to be used later
             rop = cp.get('GLOBAL','rawobs_rootpath')
-            GLOB['rawobs_rootpath'] = rop
+            glob['rawobs_rootpath'] = rop
         if cp.has_option('GLOBAL','cmip5_dirtype') :
             ddd = cp.get('GLOBAL','cmip5_dirtype')
-            GLOB['cmip5_dirtype'] = ddd
+            glob['cmip5_dirtype'] = ddd
             permitted_values = ['default', 'badc', 'dkrz', 'ethz', 'smhi', 'None']
             if ddd not in permitted_values:
                 print >> sys.stderr,"PY  ERROR:  >>> main.py >>> Unrecognized option for cmip5_dirtype in config: ", ddd
@@ -182,8 +181,8 @@ class configFile:
         else:
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no cmip5_dirtype in config "
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> assuming None  (unstructured data directory)"
-            GLOB['cmip5_dirtype'] = 'None'
-        return GLOB
+            glob['cmip5_dirtype'] = 'None'
+        return glob
 
 
 print_header()
@@ -350,7 +349,7 @@ for c in project_info['DIAGNOSTICS']:
     # get all models
     project_info['ADDITIONAL_MODELS'] = currDiag.additional_models
     project_info['ALLMODELS'] = project_info['MODELS'] + project_info['ADDITIONAL_MODELS']
- 
+
     # Prepare/reformat model data for each model
     for model in project_info['ALLMODELS']:
         #currProject = model['project']
@@ -389,7 +388,7 @@ for c in project_info['DIAGNOSTICS']:
                  verbosity, 2)
             # REFORMAT: for backwards compatibility we can revert to ncl reformatting
             # by changing cmor_reformat_type = 'ncl'
-            # for python cmor_check one, use cmor_reformat_type = 'py' 
+            # for python cmor_check one, use cmor_reformat_type = 'py'
             # PREPROCESS ID: extracted from variable dictionary
             if hasattr(base_var, 'preproc_id'):
                 try:
@@ -455,7 +454,7 @@ for c in project_info['DIAGNOSTICS']:
                               verbosity,
                               exit_on_warning,
                               launcher_arguments=None)
-            
+
 
 # delete environment variable
 del(os.environ['0_ESMValTool_version'])
