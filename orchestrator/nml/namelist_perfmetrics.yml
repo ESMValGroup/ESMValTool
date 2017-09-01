@@ -18,7 +18,7 @@
       # mask_fillvalues: TODO
       # mask_landocean: None,land,ocean,poro functional and tested
       # multimodel_mean: TODO
-    - {id: pp1, select_level: None, target_grid: None, regrid_scheme: linear, mask_fillvalues: True, mask_landocean: None, multimodel_mean: True}
+    - {id: pp1, select_level: None, target_grid: None, regrid_scheme: linear, mask_fillvalues: None, mask_landocean: None, multimodel_mean: None}
     - {id: pp2, select_level: 850, target_grid: ref_model, regrid_scheme: linear, mask_fillvalues: True, mask_landocean: None, multimodel_mean: True}
 
   CONFIG:
@@ -32,14 +32,17 @@
       id: MyDiagShit1
       description: tutorial diagnostic
       variables: 
-          # functional and tested
-        - {name: ta, ref_model: ['ERA-Interim','NCEP'], field: T3M, only: "None" , preproc_id: pp1}
+        - {name: ta, ref_model: ['ERA-Interim','NCEP'], field: T3M, only: None, preproc_id: pp1}
       scripts:
-          # functional and tested
-        - {script: perfmetrics_main.ncl,     cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_cycle_monthlyclim_200_glob.ncl}
+        # Annual cycle plot
+        - {script: perfmetrics_main.ncl,  cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_cycle_monthlyclim_200_glob.ncl}
+        # Zonal mean plot
+        - {script: perfmetrics_main.ncl,  cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_zonal_annualclim_all_glob.ncl}
+        # Taylor and grading precalculations
+        - {script: perfmetrics_main.ncl,     cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_grading_RMSD_200_glob.ncl}
         - {script: perfmetrics_grading.ncl,  cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_grading_RMSD_200_glob.ncl}
+        - {script: perfmetrics_taylor.ncl,   cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_grading_RMSD_200_glob.ncl}
       additional_models:
-          # functional and tested
 ##        - {name: GFDL-ESM2G, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
         - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 3}
         - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 2}
