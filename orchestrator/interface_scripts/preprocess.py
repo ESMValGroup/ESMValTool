@@ -15,7 +15,7 @@ import auxiliary
 from auxiliary import info, error, print_header, ncl_version_check
 import exceptions
 import launchers
-from orchestrator.interface_scripts.fixes.fix import Fix
+from interface_scripts.fixes.fix import Fix
 from regrid import regrid as rg
 import iris
 import iris.exceptions
