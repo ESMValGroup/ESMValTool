@@ -300,7 +300,7 @@ def get_cf_infile(project_info, current_diag, model, current_var_name):
                                                      model['ensemble'], str(y1), str(y2)]) + '_GLOB.nc'
             # glob only if the GLOB.nc file doesnt exist
             if os.path.exists(standard_name) is False:
-                globs = pt.glob(full_paths, standard_name, verbosity)
+                globs = pt.glob(full_paths, standard_name, var['name'], verbosity)
                 info(" >>> preprocess.py >>> Globbing files now...",
                      verbosity, required_verbosity=1)
             else:
