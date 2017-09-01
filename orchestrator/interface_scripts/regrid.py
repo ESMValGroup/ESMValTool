@@ -17,7 +17,15 @@ import iris
 from iris.analysis import AreaWeighted, Linear, Nearest, UnstructuredNearest
 from numpy import ma
 import numpy as np
+##################### begin FIXME Bill Little ###################################
 #import python-stratify as stratify
+###### the import does not work ############
+# _vinterp now lives in interface_scripts, but could add path to another one
+# that could be maintained externally
+# import sys
+# sys.path.append('/group_workspaces/jasmin/ncas_cms/valeriu/anaconda2/envs/CMOR/lib/python2.7/site-packages/stratify/')
+from ._vinterp import interpolate
+#################### end FIXME Bill Little #################################
 
 # Regular expression to parse a "MxN" cell-specification.
 _CELL_SPEC = re.compile(r'''\A
@@ -360,7 +368,7 @@ def vinterp(src_cube, levels, scheme):
                                                    broadcast_shape)
 
             # Now perform the actual vertical interpolation.
-            new_data = stratify.interpolate(levels,
+            new_data = interpolate(levels,
                                             src_levels_broadcast,
                                             src_cube.data,
                                             axis=z_axis,

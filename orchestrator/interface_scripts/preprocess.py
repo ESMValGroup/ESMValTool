@@ -17,6 +17,7 @@ import exceptions
 import launchers
 from interface_scripts.fixes.fix import Fix
 from regrid import regrid as rg
+from regrid import vinterp as vip
 import iris
 import iris.exceptions
 import preprocessing_tools as pt
@@ -572,6 +573,10 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
             if (not os.path.isfile(project_info['TEMPORARY']['outfile_fullpath'])):
                 raise exceptions.IOError(2, "Expected reformatted file isn't available: ",
                                          project_info['TEMPORARY']['outfile_fullpath'])
+                sys.exit(1)
+        
+        # load cube now, if available
+        reft_cube = iris.load_cube(project_info['TEMPORARY']['outfile_fullpath']) 
 
     ################## 0. CMOR_REFORMAT (PY version) ##############
     # New code: cmor_check.py (by Javier Vegas)
@@ -668,22 +673,16 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
             info(" >>> preprocess.py >>>  Using mask file  " + lmaskfile_path, verbosity, required_verbosity=1)
             l_mask = iris.load_cube(lmaskfile_path)
 
-            if cmor_reformat_type == 'ncl':
-                src_cube = iris.load_cube(project_info['TEMPORARY']['outfile_fullpath'])
-                src_cube = pt.fx_mask(src_cube, l_mask)
-                iris.save(src_cube, project_info['TEMPORARY']['outfile_fullpath'])
+            reft_cube = pt.fx_mask(reft_cube, l_mask)
+            if save_intermediary_cubes is True:
+                mask_type = 'land'
+                default_save = project_info['TEMPORARY']['outfile_fullpath']
+                cmor_mask_save = default_save.strip('.nc') + '_cmor_land-mask.nc'
+                iris.save(reft_cube, cmor_mask_save)
 
-            if cmor_reformat_type == 'py':
-                reft_cube = pt.fx_mask(reft_cube, l_mask)
-                if save_intermediary_cubes is True:
-                    mask_type = 'land'
-                    default_save = project_info['TEMPORARY']['outfile_fullpath']
-                    cmor_mask_save = default_save.strip('.nc') + '_cmor_land-mask.nc'
-                    iris.save(reft_cube, cmor_mask_save)
-
-                # save to default path (this file will change with
-                # every iteration of preprocess step)
-                iris.save(reft_cube, project_info['TEMPORARY']['outfile_fullpath'])
+            # save to default path (this file will change with
+            # every iteration of preprocess step)
+            iris.save(reft_cube, project_info['TEMPORARY']['outfile_fullpath'])
 
         else:
             info(" >>> preprocess.py >>>  Could not find LAND mask file  " + lmaskfile, verbosity, required_verbosity=1)
@@ -695,22 +694,16 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
             info(" >>> preprocess.py >>>  Using OCEAN mask file  " + omaskfile_path, verbosity, required_verbosity=1)
             o_mask = iris.load_cube(omaskfile_path)
 
-            if cmor_reformat_type == 'ncl':
-                src_cube = iris.load_cube(project_info['TEMPORARY']['outfile_fullpath'])
-                src_cube = pt.fx_mask(src_cube, o_mask)
-                iris.save(src_cube, project_info['TEMPORARY']['outfile_fullpath'])
+            reft_cube = pt.fx_mask(reft_cube, o_mask)
+            if save_intermediary_cubes is True:
+                mask_type = 'ocean'
+                default_save = project_info['TEMPORARY']['outfile_fullpath']
+                cmor_mask_save = default_save.strip('.nc') + '_cmor_ocean-mask.nc'
+                iris.save(reft_cube, cmor_mask_save)
 
-            if cmor_reformat_type == 'py':
-                reft_cube = pt.fx_mask(reft_cube, o_mask)
-                if save_intermediary_cubes is True:
-                    mask_type = 'ocean'
-                    default_save = project_info['TEMPORARY']['outfile_fullpath']
-                    cmor_mask_save = default_save.strip('.nc') + '_cmor_ocean-mask.nc'
-                    iris.save(reft_cube, cmor_mask_save)
-
-                # save to default path (this file will change with
-                # every iteration of preprocess step)
-                iris.save(reft_cube, project_info['TEMPORARY']['outfile_fullpath'])
+            # save to default path (this file will change with
+            # every iteration of preprocess step)
+            iris.save(reft_cube, project_info['TEMPORARY']['outfile_fullpath'])
 
         else:
             info(" >>> preprocess.py >>>  Could not find OCEAN mask file  " + omaskfile, verbosity, required_verbosity=1)
@@ -721,27 +714,93 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
             info(" >>> preprocess.py >>>  Using PORO mask file  " + pormaskfile_path, verbosity, required_verbosity=1)
             por_mask = iris.load_cube(pormaskfile_path)
 
-            if cmor_reformat_type == 'ncl':
-                src_cube = iris.load_cube(project_info['TEMPORARY']['outfile_fullpath'])
-                src_cube = pt.fx_mask(src_cube, por_mask)
-                iris.save(src_cube, project_info['TEMPORARY']['outfile_fullpath'])
+            reft_cube = pt.fx_mask(reft_cube, por_mask)
+            if save_intermediary_cubes is True:
+                mask_type = 'poro'
+                default_save = project_info['TEMPORARY']['outfile_fullpath']
+                cmor_mask_save = default_save.strip('.nc') + '_cmor_poro-mask.nc'
+                iris.save(reft_cube, cmor_mask_save)
 
-            if cmor_reformat_type == 'py':
-                reft_cube = pt.fx_mask(reft_cube, por_mask)
-                if save_intermediary_cubes is True:
-                    mask_type = 'poro'
-                    default_save = project_info['TEMPORARY']['outfile_fullpath']
-                    cmor_mask_save = default_save.strip('.nc') + '_cmor_poro-mask.nc'
-                    iris.save(reft_cube, cmor_mask_save)
-
-                # save to default path (this file will change with
-                # every iteration of preprocess step)
-                iris.save(reft_cube, project_info['TEMPORARY']['outfile_fullpath'])
+            # save to default path (this file will change with
+            # every iteration of preprocess step)
+            iris.save(reft_cube, project_info['TEMPORARY']['outfile_fullpath'])
 
         else:
             info(" >>> preprocess.py >>>  Could not find OCEAN mask file  " + omaskfile, verbosity, required_verbosity=1)
 
-    #################### 2. TIME/AREA OPS #################################################
+    #################### 2. LEVEL/TIME/AREA OPS #################################################
+
+    # SELECT LEVEL: PREPROCESS['select_level']
+    # so far, this implementation selects and saves
+    # a single level; it could be expanded for multiple levels
+    # -> select_level can be a list
+
+    sl = False
+
+    if select_level != 'None':
+
+        # a few basic checks on the select_level values
+        if isinstance(select_level, basestring):
+            try:
+                vlevels = select_level.split(',')
+                psl = 2
+            except (AttributeError, "'int' object has no attribute 'split'"):
+                info(" >>> preprocess.py >>>  Vertical levels must be either int, string or list " + select_level,
+                         verbosity,
+                         required_verbosity=1)
+                pass
+        elif isinstance(select_level, int):
+            vlevels = select_level
+            psl = 2
+        elif isinstance(select_level, list):
+            vlevels = select_level
+            psl = 2
+        else:
+            info(" >>> preprocess.py >>>  Vertical levels must be int, string or list " + select_level + " - no select level!",
+                     verbosity,
+                     required_verbosity=1)
+            psl = 0
+            
+
+        if psl > 0:
+
+            info(" >>> preprocess.py >>>  Calling regrid to select vertical level " + str(vlevels),
+                     verbosity,
+                     required_verbosity=1)
+
+            vscheme = 'linear' # optionality needed
+
+            reft_cube = vip(reft_cube, vlevels, vscheme)
+
+            # check cube
+            if project_name == 'CMIP5':
+                checker = CC(reft_cube, var_info, automatic_fixes=True)
+                checker.check_data()
+            # ATTENTION: this check throws an error for CMIP5_bcc-csm1-1_Amon_historical_r1i1p1_T3M_ta_2000-2002.nc
+            # The error rings up in all subsequent checker.check_data() calls (if this is commented out)
+            # File "/group_workspaces/jasmin/ncas_cms/valeriu/ESMValTool/orchestrator/parser_newbranch_31Aug17/interface_scripts/cmor_check.py", line 101, in report_errors
+            # raise CMORCheckError(msg)
+            # interface_scripts.cmor_check.CMORCheckError: There were errors in variable ta:
+            # ta: has values > valid_max = 336.3
+            # this is most probably due to interpolation errors
+            # FIXME: probably Bill should look into this!
+
+            # save intermediary
+            if save_intermediary_cubes is True:
+                sl = 'SL' + str(vlevels)
+                default_save = project_info['TEMPORARY']['outfile_fullpath']
+                if mask_type:
+                    sl_save = default_save.strip('.nc') + '_cmor_SL' + str(vlevels) \
+                                            + '_' + mask_type + '.nc'
+                    iris.save(reft_cube, sl_save)
+                else:
+                    sl_save = default_save.strip('.nc') + '_cmor_SL' + str(vlevels) \
+                                            + '.nc'
+                    iris.save(reft_cube, sl_save)
+
+            # save to default path (this file will change with
+            # every iteration of preprocess step)
+            iris.save(reft_cube, project_info['TEMPORARY']['outfile_fullpath'])
 
     #################### FINAL. REGRID ####################################################
     if target_grid != 'None':
@@ -753,20 +812,8 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
                  verbosity,
                  required_verbosity=1)
 
-        # let's first perform the backwards compatible check on the type
-        # of cmor_reformat
-        if cmor_reformat_type == 'ncl':
-            # first let's see if the regrid source is a simple netCDF file (cube)
-            if os.path.isfile(project_info['TEMPORARY']['outfile_fullpath']):
-                info(" >>> preprocess.py >>> Preparing to regrid " + project_info['TEMPORARY']['outfile_fullpath'], verbosity, required_verbosity=1)
-                src_cube = iris.load_cube(project_info['TEMPORARY']['outfile_fullpath'])
-            # no cmor_reformat was done so we just take the original files
-            else:
-                src_cube = iris.load_cube(infiles)
-
-        # get the floating cube from cmor_check.py above
-        elif cmor_reformat_type == 'py':
-            src_cube = reft_cube
+        # get the floating cube
+        src_cube = reft_cube
 
         info(" >>> preprocess.py >>> Source cube to be regridded --->", verbosity, required_verbosity=1)
         print(src_cube)
@@ -865,7 +912,12 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
 
                     if save_intermediary_cubes is True:
                         default_save = project_info['TEMPORARY']['outfile_fullpath']
-                        if mask_type:
+                        if mask_type and sl:
+                            cmor_mask_regrid_save = default_save.strip('.nc') + '_cmor_' \
+                                                    + '_' + sl + '_' + mask_type + '-mask_regrid_' \
+                                                    + target_grid + '.nc'
+                            iris.save(reft_cube, cmor_mask_regrid_save)
+                        elif mask_type and not sl:
                             cmor_mask_regrid_save = default_save.strip('.nc') + '_cmor_' \
                                                     + mask_type + '-mask_regrid_' \
                                                     + target_grid + '.nc'
