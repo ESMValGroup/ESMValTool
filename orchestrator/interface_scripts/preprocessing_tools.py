@@ -14,8 +14,23 @@ def glob(file_list, fname, verbosity):
     """
     Function that takes a list of nc files and globs them into a single one
     """
-    cl = [iris.load_cube(a) for a in file_list]
+    # there may be the case where the nc file contains multiple cubes
+    cl = []
+    for a in file_list:
+        m = iris.load(a)
+        if len(m) == 1:
+            cl.append(iris.load_cube(a))
+        elif len(iris.load(a)) > 1:
+            #FIXME: this is a very nasty case
+            # that has to be very carefully treated
+            # current implementation does not allow
+            # for a thorough check e.g. the resulting
+            # concatenated = c.concatenate()
+            # will have multiple elements if even one 
+            # bit of metadata differs across cubes
+            cl.append(m[-1])
     c = iris.cube.CubeList(cl)
+
     try:
         concatenated = c.concatenate()
         try:
