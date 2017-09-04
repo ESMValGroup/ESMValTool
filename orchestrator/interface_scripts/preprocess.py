@@ -22,6 +22,7 @@ import iris
 import iris.exceptions
 import preprocessing_tools as pt
 import get_file_from_drs as gf
+import numpy as np
 
 #######################################################
 ### This script contains basic functionalities
@@ -389,9 +390,9 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
         if k == 'regrid_scheme':
             regrid_scheme = prp[k]
         if k == 'mask_fillvalues':
-            mask_fillvalues = True
+            mask_fillvalues = prp[k]
         if k == 'multimodel_mean':
-            multimodel_mean = True
+            multimodel_mean = prp[k]
         if k == 'gridfile':
 
                 areafile_path = prp[k]
@@ -544,6 +545,8 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
 
     # check if we want to save at each step
     save_intermediary_cubes = project_info['GLOBAL']['save_intermediary_cubes']
+    # and initialize the latest_saver iterative variable
+    latest_saver = project_info['TEMPORARY']['outfile_fullpath']
 
     ################## 0. CMOR_REFORMAT (NCL version) ##############
     # Legacy code that will be purged in the future
@@ -645,9 +648,8 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
             # saving the cube allows for more steps to be performed
             # on the (un)regridded files
             if save_intermediary_cubes is True:
-                default_save = project_info['TEMPORARY']['outfile_fullpath']
-                cmor_save = default_save.strip('.nc') + '_cmor.nc'
-                iris.save(reft_cube, cmor_save)
+                latest_saver = latest_saver.strip('.nc') + '_cmor.nc'
+                iris.save(reft_cube, latest_saver)
 
             # save to default path (this file will change with
             # every iteration of preprocess step)
@@ -664,9 +666,6 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
 
     #################### 1. LAND/OCEAN/PORO MASK VIA sftlf/sftof/mrsofc FILE ####################################################
 
-    # variable needed later for naming files
-    mask_type = False
-
     # Land Mask
     if mask_land is True:
         if os.path.isfile(lmaskfile_path):
@@ -675,10 +674,8 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
 
             reft_cube = pt.fx_mask(reft_cube, l_mask)
             if save_intermediary_cubes is True:
-                mask_type = 'land'
-                default_save = project_info['TEMPORARY']['outfile_fullpath']
-                cmor_mask_save = default_save.strip('.nc') + '_cmor_land-mask.nc'
-                iris.save(reft_cube, cmor_mask_save)
+                latest_saver = latest_saver.strip('.nc') + '_land-mask.nc'
+                iris.save(reft_cube, latest_saver)
 
             # save to default path (this file will change with
             # every iteration of preprocess step)
@@ -696,10 +693,8 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
 
             reft_cube = pt.fx_mask(reft_cube, o_mask)
             if save_intermediary_cubes is True:
-                mask_type = 'ocean'
-                default_save = project_info['TEMPORARY']['outfile_fullpath']
-                cmor_mask_save = default_save.strip('.nc') + '_cmor_ocean-mask.nc'
-                iris.save(reft_cube, cmor_mask_save)
+                latest_saver = latest_saver.strip('.nc') + '_ocean-mask.nc'
+                iris.save(reft_cube, latest_saver)
 
             # save to default path (this file will change with
             # every iteration of preprocess step)
@@ -716,10 +711,8 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
 
             reft_cube = pt.fx_mask(reft_cube, por_mask)
             if save_intermediary_cubes is True:
-                mask_type = 'poro'
-                default_save = project_info['TEMPORARY']['outfile_fullpath']
-                cmor_mask_save = default_save.strip('.nc') + '_cmor_poro-mask.nc'
-                iris.save(reft_cube, cmor_mask_save)
+                latest_saver = latest_saver.strip('.nc') + '_poro-mask.nc'
+                iris.save(reft_cube, latest_saver)
 
             # save to default path (this file will change with
             # every iteration of preprocess step)
@@ -734,9 +727,6 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
     # so far, this implementation selects and saves
     # a single level; it could be expanded for multiple levels
     # -> select_level can be a list
-
-    sl = False
-
     if select_level != 'None':
 
         # a few basic checks on the select_level values
@@ -773,9 +763,10 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
             reft_cube = vip(reft_cube, vlevels, vscheme)
 
             # check cube
-            if project_name == 'CMIP5':
-                checker = CC(reft_cube, var_info, automatic_fixes=True)
-                checker.check_data()
+            #########################
+            #if project_name == 'CMIP5':
+            #    checker = CC(reft_cube, var_info, automatic_fixes=True)
+            #    checker.check_data()
             # ATTENTION: this check throws an error for CMIP5_bcc-csm1-1_Amon_historical_r1i1p1_T3M_ta_2000-2002.nc
             # The error rings up in all subsequent checker.check_data() calls (if this is commented out)
             # File "/group_workspaces/jasmin/ncas_cms/valeriu/ESMValTool/orchestrator/parser_newbranch_31Aug17/interface_scripts/cmor_check.py", line 101, in report_errors
@@ -784,25 +775,18 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
             # ta: has values > valid_max = 336.3
             # this is most probably due to interpolation errors
             # FIXME: probably Bill should look into this!
+            #############################
 
             # save intermediary
             if save_intermediary_cubes is True:
-                sl = 'SL' + str(vlevels)
-                default_save = project_info['TEMPORARY']['outfile_fullpath']
-                if mask_type:
-                    sl_save = default_save.strip('.nc') + '_cmor_SL' + str(vlevels) \
-                                            + '_' + mask_type + '.nc'
-                    iris.save(reft_cube, sl_save)
-                else:
-                    sl_save = default_save.strip('.nc') + '_cmor_SL' + str(vlevels) \
-                                            + '.nc'
-                    iris.save(reft_cube, sl_save)
+                latest_saver = latest_saver.strip('.nc') + '_SL' + str(vlevels) + '.nc'
+                iris.save(reft_cube, latest_saver)
 
             # save to default path (this file will change with
             # every iteration of preprocess step)
             iris.save(reft_cube, project_info['TEMPORARY']['outfile_fullpath'])
 
-    #################### FINAL. REGRID ####################################################
+    #################### 3. REGRID ####################################################
     if target_grid != 'None':
 
         # we will regrid according to whatever regridding scheme and reference grids are needed
@@ -832,10 +816,11 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
                 rgc = rg(src_cube, tgt_regrid_cube, 'linear')
 
             info(" >>> preprocess.py >>> Regridded cube summary --->", verbosity, required_verbosity=1)
-            print(rgc)
+            reft_cube = rgc
+            print(reft_cube)
 
             # save-append to outfile fullpath list to be further processed
-            iris.save(rgc, project_info['TEMPORARY']['outfile_fullpath'])
+            iris.save(reft_cube, project_info['TEMPORARY']['outfile_fullpath'])
         except (IOError, iris.exceptions.IrisError) as exc:
             info(" >>> preprocessing_tools.py >>> Target " + target_grid + " is not a netCDF file", "", verbosity)
             pass
@@ -879,10 +864,12 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
                                     info(" >>> preprocess.py >>> Running diagnostic on " + newly_regridded_file_path, verbosity, required_verbosity=1)
 
                                     # check cube
+                                    ###################
                                     reft_cube = rgc
-                                    if project_name == 'CMIP5':
-                                        checker = CC(reft_cube, var_info, automatic_fixes=True)
-                                        checker.check_data()
+                                    #if project_name == 'CMIP5':
+                                    #    checker = CC(reft_cube, var_info, automatic_fixes=True)
+                                    #    checker.check_data()
+                                    ################### to be turned back on soon
 
                         # otherwise don't do anything
                         else:
@@ -902,33 +889,68 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
                     print(rgc)
 
                     # check cube
+                    ######################
                     reft_cube = rgc
-                    if project_name == 'CMIP5':
-                        checker = CC(reft_cube, var_info, automatic_fixes=True)
-                        checker.check_data()
+                    #if project_name == 'CMIP5':
+                    #    checker = CC(reft_cube, var_info, automatic_fixes=True)
+                    #    checker.check_data()
+                    ###################### to be turned back on soon
 
                     # save-append to outfile fullpath list to be further processed
-                    iris.save(rgc, project_info['TEMPORARY']['outfile_fullpath'])
+                    iris.save(reft_cube, project_info['TEMPORARY']['outfile_fullpath'])
 
                     if save_intermediary_cubes is True:
-                        default_save = project_info['TEMPORARY']['outfile_fullpath']
-                        if mask_type and sl:
-                            cmor_mask_regrid_save = default_save.strip('.nc') + '_cmor_' \
-                                                    + '_' + sl + '_' + mask_type + '-mask_regrid_' \
-                                                    + target_grid + '.nc'
-                            iris.save(reft_cube, cmor_mask_regrid_save)
-                        elif mask_type and not sl:
-                            cmor_mask_regrid_save = default_save.strip('.nc') + '_cmor_' \
-                                                    + mask_type + '-mask_regrid_' \
-                                                    + target_grid + '.nc'
-                            iris.save(reft_cube, cmor_mask_regrid_save)
-                        else:
-                            cmor_regrid_save = default_save.strip('.nc') + '_cmor_regrid_' \
-                                               + target_grid + '.nc'
-                            iris.save(reft_cube, cmor_regrid_save)
+                        latest_saver = latest_saver.strip('.nc') + '_regrid_' + target_grid + '.nc'
+                        iris.save(reft_cube, latest_saver)
+
+
+    ############ 4. MASK FILL VALUES ##############################################
+    if mask_fillvalues is True:
+
+        # Brief explanation of functionality:
+        # Mask fill values
+        # -----------------
+        # Suppose now we want to apply a mask that discards all the grid
+        # points that have less than 20 data points in each 5 year block
+        # c = mask_cube_counts(mycube, val_thr=1.0, counts_thr=20, time_window=5)[2]
+        # Here: - mycube is the cube I am working on;
+        #       - val_thr is a value threshold
+        #       - counts_thr is a counts threshold for discarding
+        #       - time_window is the window we count and apply counts_thr
+
+        info(" >>> preprocess.py >>> Creating fillvalues mask...", verbosity, required_verbosity=1)
+        val_thr = 1.0 # dummy for now
+        count_thr = 10 # to be computed from all models
+        time_window = 5 # to be called by said diagnostic
+        reft_cube = pt.mask_cube_counts(reft_cube, val_thr, count_thr, time_window)[2]
+
+        if save_intermediary_cubes is True:
+            latest_saver = latest_saver.strip('.nc') + '_mfv.nc'
+            iris.save(reft_cube, latest_saver)
+
+        # save-append to outfile fullpath list to be further processed
+        iris.save(reft_cube, project_info['TEMPORARY']['outfile_fullpath'])
+
+    ############ 5. MULTIMODEL MEAN and anything else that needs ALL models #######
+    # These steps are done outside the main Preprocess loop since they need ALL the models
 
     ############ FINISH all PREPROCESSING and delete environment
     del(project_info['TEMPORARY'])
+
+    # return the latest cube, and latest path
+    return reft_cube, latest_saver
+
+# functions that perform collective models analysis
+# apply multimodel means and/or anything else needed
+# the order in which functions are called matters !!!
+def multimodel_mean(cube_collection, path_collection):
+    # time average
+    means_list = [mycube.collapsed('time', iris.analysis.MEAN) for mycube in cube_collection]
+    # global mean
+    means = [np.mean(m.data) for m in means_list]
+    print(" >>> preprocess.py >>> Multimodel mean: %s", str(means)) 
+
+
 
 ###################################################################################
 ### a few definititory functions needed

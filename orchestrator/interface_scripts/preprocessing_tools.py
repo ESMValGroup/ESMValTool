@@ -4,7 +4,8 @@
 import iris
 import numpy as np
 from auxiliary import info
-
+from iris.analysis import Aggregator
+from iris.util import rolling_window
 
 #########################################################################
 # FILE OPERATIONS
@@ -271,8 +272,6 @@ def window_counts(mycube, value_threshold, window_size, pctile):
     window_counts[2] = std(array)
     window_counts[3] = percentile(array, pctile)
     """
-    from iris.analysis import Aggregator
-    from iris.util import rolling_window
 
     # Make an aggregator from the user function.
     SPELL_COUNT = Aggregator('spell_count',
@@ -294,8 +293,6 @@ def window_counts(mycube, value_threshold, window_size, pctile):
 
 def mask_cube_counts(mycube, value_threshold, counts_threshold, window_size):
 
-    from iris.analysis import Aggregator
-    from iris.util import rolling_window
     # Make an aggregator from the user function.
     SPELL_COUNT = Aggregator('spell_count',
                              count_spells,

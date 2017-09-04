@@ -341,6 +341,8 @@ info(">>> main.py >>> Starting the Earth System Model Evaluation Tool v" + versi
 # Loop over all diagnostics defined in project_info and
 # create/prepare netCDF files for each variable
 for c in project_info['DIAGNOSTICS']:
+
+    # set current diagnostic
     currDiag = project_info['DIAGNOSTICS'][c]
 
     # Are the requested variables derived from other, more basic, variables?
@@ -349,6 +351,10 @@ for c in project_info['DIAGNOSTICS']:
     # get all models
     project_info['ADDITIONAL_MODELS'] = currDiag.additional_models
     project_info['ALLMODELS'] = project_info['MODELS'] + project_info['ADDITIONAL_MODELS']
+
+    # initialize empty lists to hold preprocess cubes and file paths for each model
+    models_cubes = []
+    models_fullpaths = []
 
     # Prepare/reformat model data for each model
     for model in project_info['ALLMODELS']:
@@ -400,7 +406,16 @@ for c in project_info['DIAGNOSTICS']:
                 except AttributeError:
                     info('>>> main.py >>> preprocess_id is not an attribute of variable object. Exiting...', verbosity, required_verbosity=1)
                     sys.exit(1)
-            pp.preprocess(project_info, base_var, model, currDiag, cmor_reformat_type = 'py')
+            prep = pp.preprocess(project_info, base_var, model, currDiag, cmor_reformat_type = 'py')
+
+            # add only if we need multimodel statistics
+            if project_info['PREPROCESS']['multimodel_mean'] is True:
+                models_cubes.append(prep[0])
+                models_fullpaths.append(prep[1])
+
+    # before we proceed more, we call multimodel operations
+    if project_info['PREPROCESS']['multimodel_mean'] is True:
+        pp.multimodel_mean(models_cubes, models_fullpaths)
 
     vardicts = currDiag.variables
     variables = []
