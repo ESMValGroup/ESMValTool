@@ -1,5 +1,5 @@
 <namelist>
-<include href="./config_private.xml" />
+<include href="./config_private_DLR-DKRZ.xml" />
 <namelist_summary>
 ###############################################################################
 namelist_lauer13jclim.xml
@@ -45,18 +45,18 @@ This namelist is part of the ESMValTool
     <model>ESGF_CMIP5 bcc-csm1-1-m output1 BCC bcc-csm1-1-m historical mon atmos Amon r1i1p1 latest 1986 2005 CMIP5_template</model>
     <model>ESGF_CMIP5 BNU-ESM output1 BNU BNU-ESM historical mon atmos Amon r1i1p1 latest 1986 2005 CMIP5_template</model>
     <model>ESGF_CMIP5 CanESM2 output1 CCCma CanESM2 historical mon atmos Amon r1i1p1 latest 1986 2005 CMIP5_template</model>
-    <model>ESGF_CMIP5 CCSM4 output1 NCAR CCSM4 historical mon atmos Amon r1i1p1 latest 1986 2005 CMIP5_template</model>
+    <model>ESGF_CMIP5 CCSM4 output1 NCAR CCSM4 historical mon atmos Amon r1i1p1 v20121031 1986 2005 CMIP5_template</model>
     <model>ESGF_CMIP5 CESM1-BGC output1 NSF-DOE-NCAR CESM1-BGC historical mon atmos Amon r1i1p1 latest 1986 2005 CMIP5_template</model>
 
     <model>ESGF_CMIP5 CESM1-CAM5 output1 NSF-DOE-NCAR CESM1-CAM5 historical mon atmos Amon r1i1p1 latest 1986 2005 CMIP5_template</model>
     <model>ESGF_CMIP5 CESM1-FASTCHEM output1 NSF-DOE-NCAR CESM1-FASTCHEM historical mon atmos Amon r1i1p1 latest 1986 2005 CMIP5_template</model>
     <model>ESGF_CMIP5 CESM1-WACCM output1 NSF-DOE-NCAR CESM1-WACCM historical mon atmos Amon r1i1p1 latest 1986 2005 CMIP5_template</model>
-    <model>ESGF_CMIP5 CMCC-CESM output1 CMCC CMCC-CESM historical mon atmos Amon r1i1p1 latest 1986 2005 CMIP5_template</model>
+    <model>ESGF_CMIP5 CMCC-CESM output1 CMCC CMCC-CESM historical mon atmos Amon r1i1p1 v20120907 1986 2005 CMIP5_template</model>
 
 
 
     <model>ESGF_CMIP5 CNRM-CM5 output1 CNRM-CERFACS CNRM-CM5 historical mon atmos Amon r1i1p1 latest 1986 2005 CMIP5_template</model>
-    <model>ESGF_CMIP5 CSIRO-Mk3-6-0 output1 CSIRO-QCCCE CSIRO-Mk3-6-0 historical mon atmos Amon r1i1p1 latest 1986 2005 CMIP5_template</model>
+    <model>ESGF_CMIP5 CSIRO-Mk3-6-0 output1 CSIRO-QCCCE CSIRO-Mk3-6-0 historical mon atmos Amon r1i1p1 v1 1986 2005 CMIP5_template</model>
 
     <model>ESGF_CMIP5 GFDL-CM3 output1 NOAA-GFDL GFDL-CM3 historical mon atmos Amon r1i1p1 latest 1986 2005 CMIP5_template</model>
     <model>ESGF_CMIP5 GFDL-ESM2G output1 NOAA-GFDL GFDL-ESM2G historical mon atmos Amon r1i1p1 latest 1986 2005 CMIP5_template</model>
@@ -71,7 +71,6 @@ This namelist is part of the ESMValTool
     <model>ESGF_CMIP5 IPSL-CM5A-LR output1 IPSL IPSL-CM5A-LR historical mon atmos Amon r1i1p1 latest 1986 2005 CMIP5_template</model>
     <model>ESGF_CMIP5 IPSL-CM5A-MR output1 IPSL IPSL-CM5A-MR historical mon atmos Amon r1i1p1 latest 1986 2005 CMIP5_template</model>
     <model>ESGF_CMIP5 IPSL-CM5B-LR output1 IPSL IPSL-CM5B-LR historical mon atmos Amon r1i1p1 latest 1986 2005 CMIP5_template</model>
-    <model>ESGF_CMIP5 MIROC4h output1 MIROC MIROC4h historical mon atmos Amon r1i1p1 latest 1986 2005 CMIP5_template</model>
     <model>ESGF_CMIP5 MIROC5 output1 MIROC MIROC5 historical mon atmos Amon r1i1p1 latest 1986 2005 CMIP5_template</model>
     <model>ESGF_CMIP5 MIROC-ESM output1 MIROC MIROC-ESM historical mon atmos Amon r1i1p1 latest 1986 2005 CMIP5_template</model>
     <model>ESGF_CMIP5 MIROC-ESM-CHEM output1 MIROC MIROC-ESM-CHEM historical mon atmos Amon r1i1p1 latest 1986 2005 CMIP5_template</model>
@@ -79,8 +78,6 @@ This namelist is part of the ESMValTool
     <model>ESGF_CMIP5 MPI-ESM-MR output1 MPI-M MPI-ESM-MR historical mon atmos Amon r1i1p1 latest 1986 2005 CMIP5_template</model>
     <model>ESGF_CMIP5 MPI-ESM-P output1 MPI-M MPI-ESM-P historical mon atmos Amon r1i1p1 latest 1986 2005 CMIP5_template</model>
     <model>ESGF_CMIP5 MRI-CGCM3 output1 MRI MRI-CGCM3 historical mon atmos Amon r1i1p1 latest 1986 2005 CMIP5_template</model>
-    <model>ESGF_CMIP5 NorESM1-M output1 NCC NorESM1-M historical mon atmos Amon r1i1p1 latest 1986 2005 CMIP5_template</model>
-    <model>ESGF_CMIP5 NorESM1-ME output1 NCC NorESM1-ME historical mon atmos Amon r1i1p1 latest 1986 2005 CMIP5_template</model>
 
  </MODELS>
 
@@ -281,4 +278,5 @@ This namelist is part of the ESMValTool
 
 </DIAGNOSTICS>
 
-<include href="./config_private_DLR-DKRZ.xml" /><ESGF><config_file>./esgf_config.xml</config_file></ESGF></namelist>
+<ESGF><config_file>./esgf_config.xml</config_file></ESGF>
+</namelist>
