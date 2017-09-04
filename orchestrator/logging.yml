@@ -1,0 +1,31 @@
+# Logger configuration
+version: 1
+disable_existing_loggers: False
+formatters:
+  console:
+    format: '%(asctime)s %(levelname)-7s %(name)s: %(message)s'
+  summary:
+    format: '%(levelname)-7s %(name)s: %(message)s'
+  developer:
+    format: '%(asctime)s [%(process)d] %(levelname)-7s %(filename)s:%(lineno)s %(message)s'
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: console
+    stream: ext://sys.stdout
+  summary_file:
+    class: logging.FileHandler
+    level: INFO
+    formatter: summary
+    filename: summary.log
+    mode: w
+  developer_file:
+    class: logging.FileHandler
+    level: DEBUG
+    formatter: developer
+    filename: developer.log
+    mode: w
+root:
+  level: DEBUG
+  handlers: [console, summary_file, developer_file]

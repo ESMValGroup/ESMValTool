@@ -10,7 +10,10 @@ contact: valeriu.predoi@ncas.ac.uk
 import sys
 import subprocess
 import getopt
-from interface_scripts.auxiliary import info, error, print_header, ncl_version_check
+from interface_scripts.auxiliary import print_header, ncl_version_check
+import logging
+import logging.config
+import yaml
 import datetime
 import os
 import pdb
@@ -20,6 +23,41 @@ import copy
 import ConfigParser
 import interface_scripts.namelistchecks as pchk
 import uuid
+
+def configure_logging(cfg_file=None, output=None, console_log_level=None):
+    """Set up logging"""
+    if cfg_file is None:
+        cfg_file = os.path.join(os.path.dirname(__file__), 'logging.yml')
+
+    if output is None:
+        output = os.getcwd()
+
+    cfg_file = os.path.abspath(cfg_file)
+    with open(cfg_file) as file:
+        cfg = yaml.safe_load(file)
+
+    for handler in cfg['handlers'].values():
+        if 'filename' in handler:
+            if not os.path.isabs(handler['filename']):
+                handler['filename'] = os.path.join(output, handler['filename'])
+        if console_log_level is not None and 'stream' in handler:
+            if handler['stream'] in ('ext://sys.stdout', 'ext://sys.stderr'):
+                handler['level'] = console_log_level
+
+    logging.config.dictConfig(cfg)
+
+# Configure logging
+#TODO: specify a good output directory for log files
+#TODO: (maybe) allow changing the console log level from the command line
+configure_logging()
+
+# Get a logger
+logger = logging.getLogger('ESMValTool')
+
+logger.debug("Example debug message")
+logger.info("Example info message")
+logger.warn("Example warning message")
+logger.error("Example error message")
 
 # Define ESMValTool version
 version = "2.0.0"
@@ -45,7 +83,7 @@ def usage():
               and references therein. Have fun!
 
     """
-    print >> sys.stderr, msg
+    print(msg)
 
 # class to hold information for configuration
 class configFile:
@@ -69,7 +107,7 @@ class configFile:
         """
         # ---- Check the params_file exists
         if not os.path.isfile(params_file):
-            error(">>> main.py >>> non existent configuration file " + params_file)
+            logger.error("non existent configuration file %s", params_file)
         cp = ConfigParser.ConfigParser()
         cp.read(params_file)
         return cp
@@ -92,81 +130,79 @@ class configFile:
             write_plots = self.s2b(cp.get('GLOBAL','write_plots'))
             glob['write_plots'] = write_plots
         else:
-            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no write_plots in config, set to True"
+            logger.warn("no write_plots in config, set to True")
             glob['write_plots'] = True
         if cp.has_option('GLOBAL','write_netcdf') :
             write_netcdf = self.s2b(cp.get('GLOBAL','write_netcdf'))
             glob['write_netcdf'] = write_netcdf
         else:
-            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no write_netcdf in config, set to True"
+            logger.warn("no write_netcdf in config, set to True")
             glob['write_netcdf'] = True
         if cp.has_option('GLOBAL','verbosity') :
             verbosity = int(cp.get('GLOBAL','verbosity'))
             glob['verbosity'] = verbosity
         else:
-            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no verbosity in config, set to 1"
+            logger.warn("no verbosity in config, set to 1")
             glob['verbosity'] = 1
         if cp.has_option('GLOBAL','exit_on_warning') :
             eow = self.s2b(cp.get('GLOBAL','exit_on_warning'))
             glob['exit_on_warning'] = eow
         else:
-            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no exit_on_warning in config, set to True"
+            logger.warn("no exit_on_warning in config, set to True")
             glob['exit_on_warning'] = False
         if cp.has_option('GLOBAL','output_file_type') :
             output_type = cp.get('GLOBAL','output_file_type')
             glob['output_file_type'] = output_type
         else:
-            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no output_file_type in config, set to ps"
+            logger.warn("no output_file_type in config, set to ps")
             glob['output_file_type'] = 'ps'
         if cp.has_option('GLOBAL','preproc_dir') :
             preproc_dir = cp.get('GLOBAL','preproc_dir')
             glob['preproc_dir'] = preproc_dir
         else:
-            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no preproc_dir in config, set to ./preproc/"
+            logger.warn("no preproc_dir in config, set to ./preproc/")
             glob['preproc_dir'] = './preproc/'
         if cp.has_option('GLOBAL','work_dir') :
             work_dir = cp.get('GLOBAL','work_dir')
             glob['work_dir'] = work_dir
         else:
-            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no work_dir in config, set to ./work/"
+            logger.warn("no work_dir in config, set to ./work/")
             glob['work_dir'] = './work/'
         if cp.has_option('GLOBAL','plot_dir') :
             plot_dir = cp.get('GLOBAL','plot_dir')
             glob['plot_dir'] = plot_dir
         else:
-            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no plot_dir in config, set to ./plots/"
+            logger.warn("no plot_dir in config, set to ./plots/")
             glob['plot_dir'] = './plots/'
         if cp.has_option('GLOBAL','max_data_filesize') :
             mdf = int(cp.get('GLOBAL','max_data_filesize'))
             glob['max_data_filesize'] = mdf
         else:
-            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no max_data_filesize in config, set to 100"
+            logger.warn("no max_data_filesize in config, set to 100")
             glob['max_data_filesize'] = 100
         if cp.has_option('GLOBAL','run_dir') :
             run_dir = cp.get('GLOBAL','run_dir')
             glob['run_dir'] = run_dir
         else:
-            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no run_dir in config "
-            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> assuming .  "
+            logger.warn("no run_dir in config, assuming .")
             glob['run_dir'] = '.'
         if cp.has_option('GLOBAL','save_intermediary_cubes') :
             save_intermediary_cubes = self.s2b(cp.get('GLOBAL','save_intermediary_cubes'))
             glob['save_intermediary_cubes'] = save_intermediary_cubes
         else:
-            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no save_intermediary_cubes in config "
-            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> assuming False  "
+            logger.warn("no save_intermediary_cubes in config, assuming False")
             glob['save_intermediary_cubes'] = False
         if cp.has_option('GLOBAL','model_rootpath'): ## Use this for all classes except the ones for obs_rootpath
             mp = cp.get('GLOBAL','model_rootpath')
             glob['model_rootpath'] = mp
         else:
-            print >> sys.stderr,"PY  ERROR:  >>> main.py >>> Model root path not defined"
+            logger.error("Model root path not defined")
             sys.exit(1)
         if cp.has_option('GLOBAL','obs_rootpath'):  ## Use this for OBS, obs4mips, ana4mips classes
             op = cp.get('GLOBAL','obs_rootpath')
             glob['obs_rootpath'] = op
         else:
-            print >> sys.stderr,"PY  ERROR:  >>> main.py >>> Observations root path not defined"
+            logger.error("Observations root path not defined")
             sys.exit(1)
         if cp.has_option('GLOBAL','rawobs_rootpath'):  ## For reformat_obs only, to be used later
             rop = cp.get('GLOBAL','rawobs_rootpath')
@@ -176,11 +212,11 @@ class configFile:
             glob['cmip5_dirtype'] = ddd
             permitted_values = ['default', 'badc', 'dkrz', 'ethz', 'smhi', 'None']
             if ddd not in permitted_values:
-                print >> sys.stderr,"PY  ERROR:  >>> main.py >>> Unrecognized option for cmip5_dirtype in config: ", ddd
+                logger.error("Unrecognized option for cmip5_dirtype in config: %s", ddd)
                 sys.exit(1)
         else:
-            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no cmip5_dirtype in config "
-            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> assuming None  (unstructured data directory)"
+            logger.warn("no cmip5_dirtype in config, "
+                        "assuming None (unstructured data directory)")
             glob['cmip5_dirtype'] = 'None'
         return glob
 
@@ -221,18 +257,18 @@ for o, a in opts:
         config_file = a
         command_string = command_string + ' -c ' + a
     else:
-        print >> sys.stderr, "Unknown option:", o
+        logger.error("Unknown option: %s", o)
         usage()
         sys.exit(1)
 
 # condition options
 if not namelist_file:
-    print >> sys.stderr, "PY  ERROR:  >>> main.py >>> No namelist file specified."
-    print >> sys.stderr, "PY  ERROR:  >>> main.py >>> Use --namelist-file to specify it."
+    logger.error("No namelist file specified.")
+    logger.error("Use --namelist-file to specify it.")
     sys.exit(1)
 if not config_file:
-    print >> sys.stderr, "PY  ERROR:  >>> main.py >>> No configuration file specified."
-    print >> sys.stderr, "PY  ERROR:  >>> main.py >>> Use --config-file to specify it."
+    logger.error("No configuration file specified.")
+    logger.error("Use --config-file to specify it.")
     sys.exit(1)
 
 # Get namelist file
@@ -270,26 +306,25 @@ out_refs = os.path.join(project_info["GLOBAL"]['run_dir'], refs_acknows_file)
 project_info['RUNTIME']['out_refs'] = out_refs
 
 # Print summary
-info("", verbosity, 1)
-info("NAMELIST   = " + project_info['RUNTIME']['yml_name'], verbosity, 1)
-info("RUNDIR     = " + project_info["GLOBAL"]['run_dir'], verbosity, 1)
-info("WORKDIR    = " + project_info["GLOBAL"]["work_dir"], verbosity, 1)
-info("PREPROCDIR = " + project_info["GLOBAL"]["preproc_dir"], verbosity, 1)
-info("PLOTDIR    = " + project_info["GLOBAL"]["plot_dir"], verbosity, 1)
-info("LOGFILE    = " + project_info['RUNTIME']['out_refs'], verbosity, 1)
-info(70 * "_", verbosity, 1)
-info("", verbosity, 1)
-#    info("REFORMATTING THE OBSERVATIONAL DATA...", vv, 1)
+logger.info("NAMELIST   = %s", project_info['RUNTIME']['yml_name'])
+logger.info("RUNDIR     = %s", project_info["GLOBAL"]['run_dir'])
+logger.info("WORKDIR    = %s", project_info["GLOBAL"]["work_dir"])
+logger.info("PREPROCDIR = %s", project_info["GLOBAL"]["preproc_dir"])
+logger.info("PLOTDIR    = %s", project_info["GLOBAL"]["plot_dir"])
+logger.info("LOGFILE    = %s", project_info['RUNTIME']['out_refs'])
+logger.info(70 * "_")
+
+#    logger.info("REFORMATTING THE OBSERVATIONAL DATA...", vv, 1)
 
 # perform options integrity checks
-info('>>> main.py >>> Checking integrity of namelist', verbosity, 1)
+logger.info('Checking integrity of namelist')
 tchk1 = datetime.datetime.now()
 pchk.models_checks(project_info['MODELS'])
 pchk.diags_checks(project_info['DIAGNOSTICS'])
 pchk.preprocess_checks(project_info_0.PREPROCESS)
 tchk2 = datetime.datetime.now()
 dtchk = tchk2 - tchk1
-info('>>> main.py >>> Namelist check successful! Time: ' + str(dtchk), verbosity, 1)
+logger.info('Namelist check successful! Time: %s', dtchk)
 
 # this will have to be purget at some point in the future
 project_info['CONFIG'] = project_info_0.CONFIG
@@ -301,7 +336,7 @@ if os.path.isdir(project_info['GLOBAL']['run_dir']):
     mvd = 'mv ' + project_info['GLOBAL']['run_dir'] + ' ' + newdir
     proc = subprocess.Popen(mvd, stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
-    info('>>> main.py >>> Renamed existent run directory to ' + newdir, verbosity, 1)
+    logger.info('Renamed existing run directory to %s', newdir)
 
 # tell the environment about regridding
 project_info['RUNTIME']['regridtarget'] = []
@@ -315,14 +350,16 @@ if not os.path.isdir(project_info['GLOBAL']['work_dir']):
     mkd = 'mkdir -p ' + project_info['GLOBAL']['work_dir']
     proc = subprocess.Popen(mkd, stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
-    info('>>> main.py >>> Created work directory ' + project_info['GLOBAL']['work_dir'], verbosity, 1)
+    logger.info('Created work directory %s', project_info['GLOBAL']['work_dir'])
 
-# Open refs-acknows file in run_dir (delete if existing)
+# Create rundir
 if not os.path.isdir(project_info['GLOBAL']['run_dir']):
     mkd = 'mkdir -p ' + project_info['GLOBAL']['run_dir']
     proc = subprocess.Popen(mkd, stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
-    info('>>> main.py >>> Created run directory ' + project_info['GLOBAL']['run_dir'], verbosity, 1)
+    logger.info('Created run directory %s', project_info['GLOBAL']['run_dir'])
+
+# Open refs-acknows file in run_dir (delete if existing)
 if (os.path.isfile(out_refs)):
     os.remove(out_refs)
 f = open(out_refs, "w")
@@ -335,8 +372,8 @@ project_info['RUNTIME']['cwd'] = os.getcwd()
 timestamp1 = datetime.datetime.now()
 timestamp_format = "%Y-%m-%d --  %H:%M:%S"
 
-info(">>> main.py >>> Starting the Earth System Model Evaluation Tool v" + version + " at time: "
-     + timestamp1.strftime(timestamp_format) + "...", verbosity, 1)
+logger.info("Starting the Earth System Model Evaluation Tool v%s at time: %s ...",
+            version, timestamp1.strftime(timestamp_format))
 
 # Loop over all diagnostics defined in project_info and
 # create/prepare netCDF files for each variable
@@ -355,8 +392,7 @@ for c in project_info['DIAGNOSTICS']:
         #currProject = model['project']
         model_name = model['name']
         project_name = model['project']
-        info(">>> main.py >>> ", verbosity, 1)
-        info(">>> main.py >>> MODEL = " + model_name + " (" + project_name + ")", verbosity, 1)
+        logger.info("MODEL = %s (%s)", model_name, project_name)
 
         # variables needed for target variable, according to variable_defs
         var_def_dir = project_info_0.CONFIG['var_def_scripts']
@@ -380,12 +416,10 @@ for c in project_info['DIAGNOSTICS']:
             if project_info_0.CONFIG['var_only_case'] > 0:
                 if op.id_is_explicitly_excluded(base_var, model):
                     continue
-            info(">>> main.py >>> VARIABLE = " + base_var.name + " (" + base_var.field + ")",
-                 verbosity, 1)
+            logger.info("VARIABLE = %s (%s)", base_var.name, base_var.field)
 
             # Rewrite netcdf to expected input format.
-            info(">>> main.py >>> Calling preprocessing to check/reformat model data, and apply preprocessing steps",
-                 verbosity, 2)
+            logger.info("Calling preprocessing to check/reformat model data, and apply preprocessing steps")
             # REFORMAT: for backwards compatibility we can revert to ncl reformatting
             # by changing cmor_reformat_type = 'ncl'
             # for python cmor_check one, use cmor_reformat_type = 'py'
@@ -395,10 +429,10 @@ for c in project_info['DIAGNOSTICS']:
                     preprocess_id = base_var.preproc_id
                     for preproc_dict in project_info_0.PREPROCESS:
                         if preproc_dict['id'] == preprocess_id:
-                            info('>>> main.py >>> Preprocess id: ' + preprocess_id, verbosity, required_verbosity=1)
+                            logger.info('Preprocess id: %s', preprocess_id)
                             project_info['PREPROCESS'] = preproc_dict
                 except AttributeError:
-                    info('>>> main.py >>> preprocess_id is not an attribute of variable object. Exiting...', verbosity, required_verbosity=1)
+                    logger.info('preprocess_id is not an attribute of variable object. Exiting...')
                     sys.exit(1)
             pp.preprocess(project_info, base_var, model, currDiag, cmor_reformat_type = 'py')
 
@@ -421,7 +455,7 @@ for c in project_info['DIAGNOSTICS']:
         # needed by external diag to perform regridding
         for model in project_info['ALLMODELS']:
             model['ref'] = refmodel
-        info(">>> main.py >>> External diagnostic will use ref_model: " + model['ref'], verbosity, required_verbosity=1)
+        logger.info("External diagnostic will use ref_model: %s", model['ref'])
 
         project_info['RUNTIME']['derived_var'] = derived_var
         project_info['RUNTIME']['derived_field_type'] = derived_field
@@ -436,19 +470,15 @@ for c in project_info['DIAGNOSTICS']:
 
             # this is hardcoded, maybe make it an option
             executable = "./interface_scripts/derive_var.ncl"
-            info(">>> main.py >>> ", verbosity, required_verbosity=1)
-            info(">>> main.py >>> Calling " + executable + " for '" + derived_var + "'",
-                 verbosity, required_verbosity=1)
+            logger.info("Calling %s for '%s'", executable, derived_var)
             pp.run_executable(executable, project_info, verbosity,
                               exit_on_warning)
 
             # run diagnostics
             executable = "./diag_scripts/" + scrpts[i]['script']
             configfile = scrpts[i]['cfg_file']
-            info(">>> main.py >>> ", verbosity, required_verbosity=1)
-            info(">>> main.py >>> Running diag_script: " + executable, verbosity, required_verbosity=1)
-            info(">>> main.py >>> with configuration file: " + configfile, verbosity,
-                 required_verbosity=1)
+            logger.info("Running diag_script: %s", executable)
+            logger.info("with configuration file: %s", configfile)
             pp.run_executable(executable,
                               project_info,
                               verbosity,
@@ -461,13 +491,10 @@ del(os.environ['0_ESMValTool_version'])
 
 #End time timing
 timestamp2 = datetime.datetime.now()
-info(">>> main.py >>> ", verbosity, 1)
-info(">>> main.py >>> Ending the Earth System Model Evaluation Tool v" + version + " at time: "
-     + timestamp2.strftime(timestamp_format), verbosity, 1)
-info(">>> main.py >>> Time for running namelist was: " + str(timestamp2 - timestamp1), verbosity, 1)
+logger.info("Ending the Earth System Model Evaluation Tool v%s at time: %s",
+            version, timestamp2.strftime(timestamp_format))
+logger.info("Time for running namelist was: %s", timestamp2 - timestamp1)
 
 # Remind the user about reference/acknowledgement file
-info(">>> main.py >>> ", verbosity, 1)
-info(">>> main.py >>> For the required references/acknowledgements of these diagnostics see: ",
-     verbosity, 1)
-info(">>> main.py >>> " + out_refs, verbosity, 1)
+logger.info("For the required references/acknowledgements of these diagnostics see: ")
+logger.info(out_refs)
