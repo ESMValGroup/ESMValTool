@@ -162,14 +162,10 @@ class Data_interface(object):
             figfiles_suffix.append(pp.get_figure_file_names(project_info, model))
 
             # Get reformatted infiles
-            if len(project_info['RUNTIME']['regridtarget']) == 0:
-                # no regridding
-                infile_fullpaths.append(pp.get_cf_fullpath(project_info, model, field="${FIELD}", variable="${VARIABLE}"))
-            else:
-                rgtargets = project_info['RUNTIME']['regridtarget']
-                for rgtarget in rgtargets:
-                    infile_fullpaths.append(pp.get_regridded_cf_fullpath(project_info, model, field="${FIELD}", variable="${VARIABLE}", regrid_target_name=rgtarget))
-            infiles.append(pp.get_cf_outfile(model, field="${FIELD}", variable="${VARIABLE}"))
+            # need the input dict because of old variable derivation
+            infile_fullpaths.append(pp.get_cf_fullpath(project_info, model, variable = {'name':"${VARIABLE}",'field':"${FIELD}"}))
+            singfile = pp.get_cf_fullpath(project_info, model, variable = {'name':"${VARIABLE}",'field':"${FIELD}"}).split('/')[-1]
+            infiles.append(singfile)
             infile_paths.append(pp.get_cf_outpath(project_info, model))
 
         return figfiles_suffix,\

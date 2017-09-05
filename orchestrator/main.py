@@ -156,32 +156,42 @@ class configFile:
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no save_intermediary_cubes in config "
             print >> sys.stderr,"PY  WARNING:  >>> main.py >>> assuming False  "
             glob['save_intermediary_cubes'] = False
-        if cp.has_option('GLOBAL','model_rootpath'): ## Use this for all classes except the ones for obs_rootpath
-            mp = cp.get('GLOBAL','model_rootpath')
-            glob['model_rootpath'] = mp
+        # change to data_finder.py
+        ###########################
+        #if cp.has_option('GLOBAL','model_rootpath'): ## Use this for all classes except the ones for obs_rootpath
+        #    mp = cp.get('GLOBAL','model_rootpath')
+        #    glob['model_rootpath'] = mp
+        #else:
+        #    print >> sys.stderr,"PY  ERROR:  >>> main.py >>> Model root path not defined"
+        #    sys.exit(1)
+        #if cp.has_option('GLOBAL','obs_rootpath'):  ## Use this for OBS, obs4mips, ana4mips classes
+        #    op = cp.get('GLOBAL','obs_rootpath')
+        #    glob['obs_rootpath'] = op
+        #else:
+        #    print >> sys.stderr,"PY  ERROR:  >>> main.py >>> Observations root path not defined"
+        #    sys.exit(1)
+        #if cp.has_option('GLOBAL','rawobs_rootpath'):  ## For reformat_obs only, to be used later
+        #    rop = cp.get('GLOBAL','rawobs_rootpath')
+        #    glob['rawobs_rootpath'] = rop
+        #if cp.has_option('GLOBAL','cmip5_dirtype') :
+        #    ddd = cp.get('GLOBAL','cmip5_dirtype')
+        #    glob['cmip5_dirtype'] = ddd
+        #    permitted_values = ['default', 'badc', 'dkrz', 'ethz', 'smhi', 'None']
+        #    if ddd not in permitted_values:
+        #        print >> sys.stderr,"PY  ERROR:  >>> main.py >>> Unrecognized option for cmip5_dirtype in config: ", ddd
+        #        sys.exit(1)
+        if cp.has_option('GLOBAL','rootpath_CMIP5'):
+            mp = cp.get('GLOBAL','rootpath_CMIP5')
+            glob['rootpath_CMIP5'] = mp
         else:
-            print >> sys.stderr,"PY  ERROR:  >>> main.py >>> Model root path not defined"
+            print >> sys.stderr,"PY  ERROR:  >>> main.py >>> Model root path forr CMIP5 not defined"
             sys.exit(1)
-        if cp.has_option('GLOBAL','obs_rootpath'):  ## Use this for OBS, obs4mips, ana4mips classes
-            op = cp.get('GLOBAL','obs_rootpath')
-            glob['obs_rootpath'] = op
+        if cp.has_option('GLOBAL','rootpath_OBS'):
+            op = cp.get('GLOBAL','rootpath_OBS')
+            glob['rootpath_OBS'] = op
         else:
-            print >> sys.stderr,"PY  ERROR:  >>> main.py >>> Observations root path not defined"
+            print >> sys.stderr,"PY  ERROR:  >>> main.py >>> Model root path forr CMIP5 not defined"
             sys.exit(1)
-        if cp.has_option('GLOBAL','rawobs_rootpath'):  ## For reformat_obs only, to be used later
-            rop = cp.get('GLOBAL','rawobs_rootpath')
-            glob['rawobs_rootpath'] = rop
-        if cp.has_option('GLOBAL','cmip5_dirtype') :
-            ddd = cp.get('GLOBAL','cmip5_dirtype')
-            glob['cmip5_dirtype'] = ddd
-            permitted_values = ['default', 'badc', 'dkrz', 'ethz', 'smhi', 'None']
-            if ddd not in permitted_values:
-                print >> sys.stderr,"PY  ERROR:  >>> main.py >>> Unrecognized option for cmip5_dirtype in config: ", ddd
-                sys.exit(1)
-        else:
-            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> no cmip5_dirtype in config "
-            print >> sys.stderr,"PY  WARNING:  >>> main.py >>> assuming None  (unstructured data directory)"
-            glob['cmip5_dirtype'] = 'None'
         return glob
 
 

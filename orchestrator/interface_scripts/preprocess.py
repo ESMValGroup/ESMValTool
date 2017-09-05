@@ -23,6 +23,7 @@ import iris.exceptions
 import preprocessing_tools as pt
 import get_file_from_drs as gf
 import numpy as np
+import data_finder as df
 
 #######################################################
 ### This script contains basic functionalities
@@ -81,7 +82,7 @@ def get_figure_file_names(project_info, model):
     #                 str(model['start_year'])]) + "-" + str(model['end_year'])
     return "_".join([model['project'], model['name'], str(model['start_year'])]) + "-" + str(model['end_year'])
 
-def get_cf_fullpath(project_info, model, field, variable):
+def get_cf_fullpath(project_info, model, variable):
     """ @brief Returns the path (only) to the output file used in reformat
             @param project_info Current namelist in dictionary format
             @param model One of the <model>-tags in the XML namelist file
@@ -91,27 +92,9 @@ def get_cf_fullpath(project_info, model, field, variable):
             This function specifies the full output path (directory + file) to
             the outupt file to use in the reformat routines and in climate.ncl
     """
-    outdir = get_cf_outpath(project_info, model)
-    outfile = get_cf_outfile(model, field, variable)
-    return os.path.join(outdir, outfile)
+    fullpath = df.get_output_file(project_info, model, variable)
+    return fullpath
 
-def get_regridded_cf_fullpath(project_info, model, field, variable, regrid_target_name):
-    """ @brief Returns the path (only) to the output file used in reformat AFTER regridding
-            @param project_info Current namelist in dictionary format
-            @param model One of the <model>-tags in the XML namelist file
-            @param field The field (see tutorial.pdf for available fields)
-            @param variable The variable (defaults to the variable in
-
-            This function specifies the full output path (directory + file) to
-            the outupt file to use in the reformat routines and in climate.ncl
-    """
-    outdir = get_cf_outpath(project_info, model) + '/REGRIDDED_ON_' + regrid_target_name
-    if not os.path.isdir(outdir):
-        mkd = 'mkdir -p ' + outdir
-        proc = subprocess.Popen(mkd, stdout=subprocess.PIPE, shell=True)
-        (out, err) = proc.communicate()
-    outfile = get_cf_outfile(model, field, variable)
-    return os.path.join(outdir, outfile)
 
 def get_cf_outpath(project_info, model):
     """ @brief Returns the path (only) to the output file used in reformat
@@ -133,76 +116,6 @@ def get_cf_outpath(project_info, model):
         proc = subprocess.Popen(mkd, stdout=subprocess.PIPE, shell=True)
         (out, err) = proc.communicate()
     return os.path.join(outdir1, outdir2)
-
-def get_cf_outfile(model, field, variable):
-    """ @brief Returns the path and output file used in reformat
-            @param variable Current variable
-            @param preproc_dir Where processed (reformatted) input files reside
-            @param model One of the <model>-tags in the XML namelist file
-            @param field The field (see tutorial.pdf for available fields)
-            @param variable The variable (defaults to the variable in
-                            project_info)
-            @return A string (output path)
-
-            Returns standard name for outfile after (at least) cmor_check
-            This file will be rewritten with any preprocess step iteration.
-    """
-    # look for files keyed by project name
-    proj_name = model['project']
-
-    # CMIP5 and any of its derivatives
-    if proj_name.startswith('CMIP5') is True:
-        outfile = '_'.join([proj_name,
-                            model['name'],
-                            model['mip'],
-                            model['exp'],
-                            model['ensemble'],
-                            field,
-                            variable,
-                            str(model['start_year'])]) + '-' + str(model['end_year']) + '.nc'
-
-    # EMAC and any of its derivatives
-    elif proj_name.startswith('EMAC') is True:
-        outfile = '_'.join([proj_name,
-                            model['name'],
-                            model['ensemble'],
-                            field,
-                            variable,
-                            str(model['start_year'])]) + '-' + str(model['end_year']) + '.nc'
-
-    # GFDL and any of its derivatives
-    elif proj_name.startswith('GFDL') is True:
-        outfile = '_'.join([proj_name,
-                            model['name'],
-                            model['realm'],
-                            model['ensemble'],
-                            field,
-                            variable,
-                            str(model['start_year'])]) + '-' + str(model['end_year'], model['shift']) + '.nc'
-
-    # CCMVal and any of its derivatives
-    elif proj_name.startswith('CCMVal') is True:
-        outfile = '_'.join([proj_name,
-                            model['name'],
-                            model['exp'],
-                            model['ensemble'],
-                            field,
-                            variable,
-                            str(model['start_year'])]) + '-' + str(model['end_year']) + '.nc'
-
-    else:
-        # obs
-        #print >> sys.stderr, " project name, not recognized as standard (CMIP5, EMAC, GFDL or CCMVal) exiting ", proj_name
-        #sys.exit(1)
-        outfile = '_'.join([proj_name,
-                            model['name'],
-                            model['type'],
-                            str(model['version']),
-                            field,
-                            variable,
-                            str(model['start_year'])]) + '-' + str(model['end_year']) + '.nc'
-
-    return outfile
 
 def get_dict_key(model):
     """ @brief Returns a unique key based on the model entries provided.
@@ -252,43 +165,15 @@ def get_cf_infile(project_info, current_diag, model, current_var_name):
     y1 = model['start_year']
     y2 = model['end_year']
 
-    # set the file discovery variable
-    cmip5_dirtype = project_info['GLOBAL']['cmip5_dirtype']
-
-    # set rootpaths
-    model_rootpath = project_info['GLOBAL']['model_rootpath']
-    obs_rootpath = project_info['GLOBAL']['obs_rootpath']
-
     # get variables; data files is a dictionary keyed on variable
     data_files = {}
     variables = current_diag.variables
 
     for var in variables:
-        # Models' classes
-        if proj_name == 'CMIP5':
-            full_paths = gf.get_cmip5(cmip5_dirtype, model_rootpath, var['name'], model)
-        elif proj_name == 'EMAC':
-            full_paths = gf.get_emac(model_rootpath, var['name'], model)
-        elif proj_name == 'GFDL':
-            full_paths = gf.get_gfdl(model_rootpath, var['name'], model)
-        elif proj_name == 'CCMVal1' or proj_name == 'CCMVal2':
-            full_paths = gf.get_ccmval(model_rootpath, var['name'], model)
-        # Observations' classes
-        elif proj_name == 'OBS':
-            full_paths = gf.get_obs(obs_rootpath, var, model)
-        elif proj_name == 'obs4mips':
-            full_paths = gf.get_obs4mips(obs_rootpath, var['name'], model)
-        elif proj_name == 'ana4mips':
-            full_paths = gf.get_ana4mips(obs_rootpath, var['name'], model)
-        # Unstructured user-defined directory
-        elif proj_name == 'NONE' :
-            full_paths = gf.get_from_unstructured_dir(model_rootpath, model, var)
-        # FIX-ME: to be added MiKlip, ECEARTH, GO, JSBACH
 
-        # checks on the nuber of files for globbing in GLOB.nc
-        # found for a specific identified [project, model, ensemble...]
-        # note the GLOB file can be created for ANY type of project
-        # and lives in rootdir
+        full_paths = df.get_input_filelist(project_info, model, var)
+        model_rootpath = get_cf_outpath(project_info, model)
+
         if len(full_paths) == 0:
             info(" >>> preprocess.py >>> Could not find any data files for " + model['name'], verbosity, required_verbosity=1)
         if len(full_paths) == 1:
@@ -517,10 +402,15 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
         info(" >>> preprocess.py >>> netCDF globbing has failed", verbosity, required_verbosity=1)
         info(" >>> preprocess.py >>> Running diagnostic ONLY on the first file", verbosity, required_verbosity=1)
         infiles = infileslist[0]
-    outfilename = get_cf_outfile(model, variable.field, variable.name)
+    # need this since we are still using the old variable derivation through Var() object
+    vari = {}
+    vari['name'] = variable.name
+    vari['field'] = variable.field
+    ##############################
+    outfilename = df.get_output_file(project_info, model, vari).split('/')[-1]
     info(" >>> preprocess.py >>> Reformatted file name: " + outfilename, verbosity, required_verbosity=1)
     # get full outpaths - original cmorized files that are preserved all through the process
-    fullpath = get_cf_fullpath(project_info, model, variable.field, variable.name)
+    fullpath = df.get_output_file(project_info, model, vari)
     info(" >>> preprocess.py >>> Reformatted target: " + fullpath, verbosity, required_verbosity=1)
 
     # indir is hardcoded to keep things tight; could be an option to namelist
@@ -826,7 +716,6 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
             pass
             # continue to see what regridding we need
             # ref_model regrid string descriptor
-            project_info['RUNTIME']['regridtarget'] = []
             if target_grid == 'ref_model':
                 additional_models_dicts = current_diag.additional_models
                 # identify the current variable
@@ -840,8 +729,7 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
                             ref_model = ref_model_list[0]
                             for obs_model in additional_models_dicts:
                                 if obs_model['name'] == ref_model:
-                                    # add to environment variable
-                                    project_info['RUNTIME']['regridtarget'].append(ref_model)
+
                                     info(" >>> preprocess.py >>> Regridding on ref_model " + ref_model, verbosity, required_verbosity=1)
                                     tgt_nc_grid = get_cf_infile(project_info, current_diag, obs_model, variable.name)[variable.name][0]
                                     tgt_grid_cube = iris.load_cube(tgt_nc_grid)
@@ -857,12 +745,6 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
                                     info(" >>> preprocess.py >>> Regridded cube summary --->", verbosity, required_verbosity=1)
                                     print(rgc)
 
-                                    # save specifically named regridded file to be used by external diagnostic
-                                    newly_regridded_cube = iris.save(rgc, get_regridded_cf_fullpath(project_info, model, variable.field, variable.name, ref_model))
-                                    newly_regridded_file_path = get_regridded_cf_fullpath(project_info, model, variable.field, variable.name, ref_model)
-                                    newly_regridded_cube = iris.save(rgc, newly_regridded_file_path)
-                                    info(" >>> preprocess.py >>> Running diagnostic on " + newly_regridded_file_path, verbosity, required_verbosity=1)
-
                                     # check cube
                                     ###################
                                     reft_cube = rgc
@@ -870,6 +752,14 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
                                     #    checker = CC(reft_cube, var_info, automatic_fixes=True)
                                     #    checker.check_data()
                                     ################### to be turned back on soon
+
+                                    # save-append to outfile fullpath list to be further processed
+                                    iris.save(reft_cube, project_info['TEMPORARY']['outfile_fullpath'])
+
+                                    if save_intermediary_cubes is True:
+                                        latest_saver = latest_saver.strip('.nc') + '_regridded_on_' + ref_model + '.nc'
+                                        iris.save(reft_cube, latest_saver)
+
 
                         # otherwise don't do anything
                         else:
