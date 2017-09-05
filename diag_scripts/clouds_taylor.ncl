@@ -1164,7 +1164,7 @@ begin
 
             contrib_authors = "A_laue_ax"
 
-            ESMValMD(wks@fullname, alltags, caption, id, variables(0), models@name, climofiles, diag_script, contrib_author)
+            ESMValMD(wks@fullname, alltags, caption, id, variables(0), models@name, climofiles, diag_script, contrib_authors)
 
             if (embracelegend.and.(is.eq.(numseas-1))) then
                 frame(legendwks)

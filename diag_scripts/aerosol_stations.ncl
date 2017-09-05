@@ -242,6 +242,9 @@ begin
         ;; Attach station info as attribute
         data_arr@stname = str_squeeze(str_get_field( \
             obser_model_pts&station(stID), 1, ";"))
+        data_arr@stname = str_sub_str(data_arr@stname, " ", "_")
+        data_arr@stname = str_sub_str(data_arr@stname, "(", "_")
+        data_arr@stname = str_sub_str(data_arr@stname, ")", "_")
         data_arr@stlat  = tofloat(str_get_field( \
             obser_model_pts&station(stID), 2, ";"))
         data_arr@stlon  = tofloat(str_get_field( \
@@ -277,6 +280,9 @@ begin
             create_legend_lines(annots, styles, lg_outfile, "lines")
         end if
 
+        draw(plot)
+        frame(wks)
+
         ; -------------------------------------------------------------------------------
         ; add meta data to plot (for reporting)
         caption = "Timeseries of " + variables(0) + " at " + diag_script_info@network \
@@ -292,8 +298,6 @@ begin
         ; -------------------------------------------------------------------------------
 
         delete(data_arr)
-        draw(plot)
-        frame(wks)
         delete(wks)
 
     end do
