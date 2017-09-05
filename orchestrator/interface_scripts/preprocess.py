@@ -10,9 +10,8 @@ import pdb
 import subprocess
 import re
 import sys
+import logging
 import data_interface as dint
-import auxiliary
-from auxiliary import info, error, ncl_version_check
 import exceptions
 import launchers
 from orchestrator.interface_scripts.fixes.fix import Fix
@@ -21,6 +20,8 @@ import iris
 import iris.exceptions
 import preprocessing_tools as pt
 import get_file_from_drs as gf
+
+logger = logging.getLogger(__name__)
 
 #######################################################
 ### This script contains basic functionalities
@@ -288,30 +289,27 @@ def get_cf_infile(project_info, current_diag, model, current_var_name):
         # note the GLOB file can be created for ANY type of project
         # and lives in rootdir
         if len(full_paths) == 0:
-            info(" >>> preprocess.py >>> Could not find any data files for " + model['name'], verbosity, required_verbosity=1)
+            logger.info("Could not find any data files for %s", model['name'])
         if len(full_paths) == 1:
             data_files[var['name']] = full_paths
         if len(full_paths) > 1:
             # get pp.glob to glob the files into one single file
-            info(" >>> preprocess.py >>> Found multiple netCDF files for current diagnostic, attempting to glob them; variable: " + var['name'],
-                 verbosity, required_verbosity=1)
+            logger.info("Found multiple netCDF files for current diagnostic, attempting to glob them; variable: %s", var['name'])
             standard_name = model_rootpath + '/' + '_'.join([var['name'], model['project'],
                                                      model['name'],
                                                      model['ensemble'], str(y1), str(y2)]) + '_GLOB.nc'
             # glob only if the GLOB.nc file doesnt exist
             if os.path.exists(standard_name) is False:
                 globs = pt.glob(full_paths, standard_name, verbosity)
-                info(" >>> preprocess.py >>> Globbing files now...",
-                     verbosity, required_verbosity=1)
+                logger.info("Globbing files now...")
             else:
-                info(" >>> preprocess.py >>> Found GLOB file: " + standard_name,
-                     verbosity, required_verbosity=1)
+                logger.info("Found GLOB file: %s", standard_name)
                 globs = 1
             if globs == 1:
                 data_files[var['name']] = [standard_name]
             else:
                 data_files[var['name']] = full_paths
-                info(" >>> preprocess.py >>> Could not glob files, keeping a list of files", verbosity, required_verbosity=1)
+                logger.info("Could not glob files, keeping a list of files")
 
     return data_files
 
@@ -361,7 +359,7 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
 
     # Starting to look at preprocessing needs
     verbosity = project_info["GLOBAL"]["verbosity"]
-    info(" >>> preprocess.py >>> Looking at (namelist) PREPROCESS section now", verbosity, required_verbosity=1)
+    logger.info("Looking at (namelist) PREPROCESS section now")
     # initialize the environment variables dictionary
     project_info['TEMPORARY'] = {}
     # key in the prperocess
@@ -511,15 +509,15 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
     if len(infileslist) == 1:
         infiles = infileslist[0]
     else:
-        info(" >>> preprocess.py >>> Found multiple netCDF files for current diagnostic", verbosity, required_verbosity=1)
-        info(" >>> preprocess.py >>> netCDF globbing has failed", verbosity, required_verbosity=1)
-        info(" >>> preprocess.py >>> Running diagnostic ONLY on the first file", verbosity, required_verbosity=1)
+        logger.info("Found multiple netCDF files for current diagnostic")
+        logger.info("netCDF globbing has failed")
+        logger.info("Running diagnostic ONLY on the first file")
         infiles = infileslist[0]
     outfilename = get_cf_outfile(model, variable.field, variable.name)
-    info(" >>> preprocess.py >>> Reformatted file name: " + outfilename, verbosity, required_verbosity=1)
+    logger.info("Reformatted file name: %s", outfilename)
     # get full outpaths - original cmorized files that are preserved all through the process
     fullpath = get_cf_fullpath(project_info, model, variable.field, variable.name)
-    info(" >>> preprocess.py >>> Reformatted target: " + fullpath, verbosity, required_verbosity=1)
+    logger.info("Reformatted target: %s", fullpath)
 
     # indir is hardcoded to keep things tight; could be an option to namelist
     project_info['TEMPORARY']['indir_path'] = project_info['GLOBAL']['run_dir']
@@ -531,13 +529,13 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
         project_info['TEMPORARY']['ensemble'] = model['ensemble']
     project_info['TEMPORARY']['variable'] = variable.name
     project_info['TEMPORARY']['field'] = variable.field
-    info(" >>> preprocess.py >>> Gathering runtime variables:", verbosity, required_verbosity=1)
-    info(" >>> preprocess.py >>> Project is " + model['project'], verbosity, required_verbosity=1)
-    info(" >>> preprocess.py >>> Model is " + model['name'], verbosity, required_verbosity=1)
+    logger.info("Gathering runtime variables:")
+    logger.info("Project is %s", model['project'])
+    logger.info("Model is %s", model['name'])
     if project_name == 'CMIP5':
-        info(" >>> preprocess.py >>> Ensemble is " + model['ensemble'], verbosity, required_verbosity=1)
-    info(" >>> preprocess.py >>> Full IN path is " + infiles, verbosity, required_verbosity=1)
-    info(" >>> preprocess.py >>> Full OUT path is " + fullpath, verbosity, required_verbosity=1)
+        logger.info("Ensemble is %s", model['ensemble'])
+    logger.info("Full IN path is %s", infiles)
+    logger.info("Full OUT path is %s", fullpath)
 
     ################## START CHANGING STUFF ###########################################
 
@@ -560,9 +558,7 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
                                        "reformat_" + which_reformat + "_main.ncl")
         if not os.path.isfile(project_info['TEMPORARY']['outfile_fullpath']):
 
-            info(" >>> preprocess.py >>>  Calling " + reformat_script + " to check/reformat model data",
-                 verbosity,
-                 required_verbosity=1)
+            logger.info(" Calling %s to check/reformat model data", reformat_script)
 
             run_executable(reformat_script, project_info, verbosity,
                            exit_on_warning)
@@ -650,7 +646,7 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
         except (iris.exceptions.ConstraintMismatchError,
                 iris.exceptions.ConcatenateError,
                 CCE) as ex:
-            print(ex)
+            logger.warning("%s", ex)
 
     else:
         reft_cube = iris.load_cube(infiles)
@@ -664,7 +660,7 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
     # Land Mask
     if mask_land is True:
         if os.path.isfile(lmaskfile_path):
-            info(" >>> preprocess.py >>>  Using mask file  " + lmaskfile_path, verbosity, required_verbosity=1)
+            logger.info(" Using mask file %s", lmaskfile_path)
             l_mask = iris.load_cube(lmaskfile_path)
 
             if cmor_reformat_type == 'ncl':
@@ -685,13 +681,13 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
                 iris.save(reft_cube, project_info['TEMPORARY']['outfile_fullpath'])
 
         else:
-            info(" >>> preprocess.py >>>  Could not find LAND mask file  " + lmaskfile, verbosity, required_verbosity=1)
+            logger.info("Could not find LAND mask file %s", lmaskfile)
 
 
     # Ocean Mask
     if mask_ocean is True:
         if os.path.isfile(omaskfile_path):
-            info(" >>> preprocess.py >>>  Using OCEAN mask file  " + omaskfile_path, verbosity, required_verbosity=1)
+            logger.info("Using OCEAN mask file %s", omaskfile_path)
             o_mask = iris.load_cube(omaskfile_path)
 
             if cmor_reformat_type == 'ncl':
@@ -712,12 +708,12 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
                 iris.save(reft_cube, project_info['TEMPORARY']['outfile_fullpath'])
 
         else:
-            info(" >>> preprocess.py >>>  Could not find OCEAN mask file  " + omaskfile, verbosity, required_verbosity=1)
+            logger.info("Could not find OCEAN mask file %s", omaskfile)
 
     # Poro Mask
     if mask_poro is True:
         if os.path.isfile(pormaskfile_path):
-            info(" >>> preprocess.py >>>  Using PORO mask file  " + pormaskfile_path, verbosity, required_verbosity=1)
+            logger.info(" Using PORO mask file %s", pormaskfile_path)
             por_mask = iris.load_cube(pormaskfile_path)
 
             if cmor_reformat_type == 'ncl':
@@ -738,7 +734,7 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
                 iris.save(reft_cube, project_info['TEMPORARY']['outfile_fullpath'])
 
         else:
-            info(" >>> preprocess.py >>>  Could not find OCEAN mask file  " + omaskfile, verbosity, required_verbosity=1)
+            logger.info("Could not find OCEAN mask file %s", omaskfile)
 
     #################### 2. TIME/AREA OPS #################################################
 
@@ -748,16 +744,14 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
         # we will regrid according to whatever regridding scheme and reference grids are needed
         # and create new regridded files from the original cmorized/masked ones
         # but preserving thos original files (optionally)
-        info(" >>> preprocess.py >>>  Calling regrid to regrid model data onto " + target_grid + " grid",
-                 verbosity,
-                 required_verbosity=1)
+        logger.info("Calling regrid to regrid model data onto %s grid", target_grid)
 
         # let's first perform the backwards compatible check on the type
         # of cmor_reformat
         if cmor_reformat_type == 'ncl':
             # first let's see if the regrid source is a simple netCDF file (cube)
             if os.path.isfile(project_info['TEMPORARY']['outfile_fullpath']):
-                info(" >>> preprocess.py >>> Preparing to regrid " + project_info['TEMPORARY']['outfile_fullpath'], verbosity, required_verbosity=1)
+                logger.info("Preparing to regrid %s", project_info['TEMPORARY']['outfile_fullpath'])
                 src_cube = iris.load_cube(project_info['TEMPORARY']['outfile_fullpath'])
             # no cmor_reformat was done so we just take the original files
             else:
@@ -767,29 +761,26 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
         elif cmor_reformat_type == 'py':
             src_cube = reft_cube
 
-        info(" >>> preprocess.py >>> Source cube to be regridded --->", verbosity, required_verbosity=1)
-        print(src_cube)
+        logger.info("Source cube to be regridded --->\n%s", src_cube)
 
         # try return a cube for regrid target
         # target_grid = could simply be a netCDF file or string model
         # descriptor eg 'ref_model'; currently netCDF and ref_model labels are implemented
         try:
             tgt_grid_cube = iris.load_cube(target_grid)
-            info(" >>> preprocess.py >>> Target regrid cube summary --->", verbosity, required_verbosity=1)
-            print(tgt_grid_cube)
+            logger.info("Target regrid cube summary --->\n%s", tgt_grid_cube)
             if regrid_scheme:
                 rgc = rg(src_cube, tgt_regrid_cube, regrid_scheme)
             else:
-                info(" >>> preprocess.py >>> No regrid scheme specified, assuming linear", verbosity, required_verbosity=1)
+                logger.info("No regrid scheme specified, assuming linear")
                 rgc = rg(src_cube, tgt_regrid_cube, 'linear')
 
-            info(" >>> preprocess.py >>> Regridded cube summary --->", verbosity, required_verbosity=1)
-            print(rgc)
+            logger.info("Regridded cube summary --->\n%s", rgc)
 
             # save-append to outfile fullpath list to be further processed
             iris.save(rgc, project_info['TEMPORARY']['outfile_fullpath'])
         except (IOError, iris.exceptions.IrisError) as exc:
-            info(" >>> preprocessing_tools.py >>> Target " + target_grid + " is not a netCDF file", "", verbosity)
+            logger.info("Target %s is not a netCDF file", target_grid)
             pass
             # continue to see what regridding we need
             # ref_model regrid string descriptor
@@ -809,26 +800,24 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
                                 if obs_model['name'] == ref_model:
                                     # add to environment variable
                                     project_info['RUNTIME']['regridtarget'].append(ref_model)
-                                    info(" >>> preprocess.py >>> Regridding on ref_model " + ref_model, verbosity, required_verbosity=1)
+                                    logger.info("Regridding on ref_model %s", ref_model)
                                     tgt_nc_grid = get_cf_infile(project_info, current_diag, obs_model, variable.name)[variable.name][0]
                                     tgt_grid_cube = iris.load_cube(tgt_nc_grid)
 
-                                    info(" >>> preprocess.py >>> Target regrid cube summary --->", verbosity, required_verbosity=1)
-                                    print(tgt_grid_cube)
+                                    logger.info("Target regrid cube summary --->\n%s", tgt_grid_cube)
 
                                     if regrid_scheme:
                                         rgc = rg(src_cube, tgt_grid_cube, regrid_scheme)
                                     else:
-                                        info(" >>> preprocess.py >>> No regrid scheme specified, assuming linear", verbosity, required_verbosity=1)
+                                        logger.info("No regrid scheme specified, assuming linear")
                                         rgc = rg(src_cube, tgt_grid_cube, 'linear')
-                                    info(" >>> preprocess.py >>> Regridded cube summary --->", verbosity, required_verbosity=1)
-                                    print(rgc)
+                                    logger.info("Regridded cube summary --->\n%s", rgc)
 
                                     # save specifically named regridded file to be used by external diagnostic
                                     newly_regridded_cube = iris.save(rgc, get_regridded_cf_fullpath(project_info, model, variable.field, variable.name, ref_model))
                                     newly_regridded_file_path = get_regridded_cf_fullpath(project_info, model, variable.field, variable.name, ref_model)
                                     newly_regridded_cube = iris.save(rgc, newly_regridded_file_path)
-                                    info(" >>> preprocess.py >>> Running diagnostic on " + newly_regridded_file_path, verbosity, required_verbosity=1)
+                                    logger.info("Running diagnostic on %s", newly_regridded_file_path)
 
                                     # check cube
                                     reft_cube = rgc
@@ -838,20 +827,19 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
 
                         # otherwise don't do anything
                         else:
-                            info(" >>> preprocess.py >>> No regridding model specified in variables[ref_model]. Skipping regridding.", verbosity, required_verbosity=1)
+                            logger.info("No regridding model specified in variables[ref_model]. Skipping regridding.")
 
             else:
                 # assume and check it is of XxY form
                 if isinstance(target_grid.split('x')[0], basestring) and isinstance(target_grid.split('x')[1], basestring):
-                    info(" >>> preprocess.py >>> Target regrid is XxY: " + target_grid, verbosity, required_verbosity=1)
+                    logger.info("Target regrid is XxY: %s", target_grid)
                     if regrid_scheme:
                         rgc = rg(src_cube, target_grid, regrid_scheme)
                     else:
-                        info(" >>> preprocess.py >>> No regrid scheme specified, assuming linear", verbosity, required_verbosity=1)
+                        logger.info("No regrid scheme specified, assuming linear")
                         rgc = rg(src_cube, target_grid, 'linear')
 
-                    info(" >>> preprocess.py >>> Regridded cube summary --->", verbosity, required_verbosity=1)
-                    print(rgc)
+                    logger.info("Regridded cube summary --->\n%s", rgc)
 
                     # check cube
                     reft_cube = rgc
@@ -955,8 +943,6 @@ class Diag:
 
     def select_base_vars(self, variables, model, current_diag, project_info):
 
-        verbosity = project_info['GLOBAL']['verbosity']
-
         for base_var in variables:
             # FIXME we should not need this anymore??
             # Check if this variable should be excluded for this model-id
@@ -968,8 +954,7 @@ class Diag:
             infiles = get_cf_infile(project_info, current_diag, model, base_var.name)[base_var.name]
 
             if len(infiles) == 0:
-                info(" >>> preprocess.py >>> No input files found for " + base_var.name +
-                     " (" + base_var.field + ")", verbosity, 1)
+                logger.info("No input files found for %s (%s)", base_var.name, base_var.field)
 
                 base_var.var = base_var.var0
                 base_var.fld = base_var.fld0
@@ -981,8 +966,7 @@ class Diag:
                     raise exceptions.IOError(2, "No input files found in ",
                                              infile)
                 else:
-                    info(" >>> preprocess.py >>> Using " + base_var.name + " (" + base_var.field +
-                         ")", verbosity, 1)
+                    logger.info("Using %s (%s)", base_var.name, base_var.field)
                     base_vars = [base_var]
                     break  # discard other base vars
 
