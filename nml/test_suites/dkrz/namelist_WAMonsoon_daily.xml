@@ -1,4 +1,5 @@
 <namelist>
+<include href="./config_private_DLR-DKRZ.xml" />
 <namelist_summary>
 ###############################################################################
 namelist_WAMonsoon_daily.xml
@@ -47,7 +48,7 @@ This namelist is part of the ESMValTool
 </MODELS>
 
 <DIAGNOSTICS>
-	
+
 <diag>
     <description> Intra-seasonal variability of precipitation                          </description>
     <variable_def_dir>                                 ./variable_defs/                </variable_def_dir>
@@ -56,7 +57,7 @@ This namelist is part of the ESMValTool
     <diag_script_cfg_dir>                              ./nml/cfg_WAMonsoon/            </diag_script_cfg_dir>
     <diag_script cfg="cfg_WAMonsoon_precip_hp90.ncl">  WAMonsoon_isv_filtered.ncl   </diag_script>
     <diag_script cfg="cfg_WAMonsoon_precip_bp3-10.ncl">  WAMonsoon_isv_filtered.ncl </diag_script>
-    <model id="gpcp"> CMIP5  GPCP-1DD-V12       day  observation   r1i1p1   2001  2002  /home/roehrig/script/EMBRACE/ESMValTool/data        </model>
+    <model id="gpcp"> obs4mips    GPCP-1DD L3 v1.2 2001 2002 @{OBSPATH}/Tier1/ </model>
     <tags> R_atmos, T_phys </tags>
 	</diag>
 
@@ -66,9 +67,9 @@ This namelist is part of the ESMValTool
     <variable ref_model="NOAA">                         rlut                           </variable>
     <field_type>                                        T2Ds                           </field_type>
     <diag_script_cfg_dir>                              ./nml/cfg_WAMonsoon/            </diag_script_cfg_dir>
-    <diag_script cfg="cfg_WAMonsoon_rlut_hp90.ncl">  WAMonsoon_isv_filtered.ncl       </diag_script>  
-    <diag_script cfg="cfg_WAMonsoon_rlut_bp3-10.ncl">  WAMonsoon_isv_filtered.ncl     </diag_script> 
-    <model id="NOAA"> CMIP5  NOAA       day  observation   r1i1p1   2001  2002  /home/roehrig/script/EMBRACE/ESMValTool/data        </model>
+    <diag_script cfg="cfg_WAMonsoon_rlut_hp90.ncl">  WAMonsoon_isv_filtered.ncl       </diag_script>
+    <diag_script cfg="cfg_WAMonsoon_rlut_bp3-10.ncl">  WAMonsoon_isv_filtered.ncl     </diag_script>
+    <model id="NOAA"> OBS NOAA-PSD-Interp ground 1 2001 2002 @{OBSPATH}/Tier2/NOAA-PSD-Interp/  </model>
     <tags> R_atmos, T_phys </tags>
 </diag>
 
@@ -78,10 +79,11 @@ This namelist is part of the ESMValTool
     <variable ref_model="gpcp">                         pr-mmday                               </variable>
     <field_type>                                        T2Ds                                   </field_type>
     <diag_script_cfg_dir>                              ./nml/cfg_WAMonsoon/                    </diag_script_cfg_dir>
-    <diag_script cfg="cfg_WAMonsoon_precip_autocorr_hp90.ncl">  WAMonsoon_autocorr.ncl  </diag_script> 
-    <model id="gpcp"> CMIP5  GPCP-1DD-V12       day  observation   r1i1p1   2001  2002  /home/roehrig/script/EMBRACE/ESMValTool/data        </model>
+    <diag_script cfg="cfg_WAMonsoon_precip_autocorr_hp90.ncl">  WAMonsoon_autocorr.ncl  </diag_script>
+    <model id="gpcp"> obs4mips    GPCP-1DD L3 v1.2 2001 2002 @{OBSPATH}/Tier1/ </model>
     <tags> R_atmos, T_phys, T_atmDyn </tags>
 </diag>
 
 </DIAGNOSTICS>
-<include href="./config_private_DLR-DKRZ.xml" /><ESGF><config_file>./esgf_config.xml</config_file></ESGF></namelist>
+<ESGF><config_file>./esgf_config.xml</config_file></ESGF>
+</namelist>

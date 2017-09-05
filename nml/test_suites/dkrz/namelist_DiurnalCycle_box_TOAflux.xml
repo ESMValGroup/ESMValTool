@@ -1,4 +1,5 @@
 <namelist>
+  <include href="./config_private_DLR-DKRZ.xml" />
 <namelist_summary>
 ###############################################################################
 namelist_DiurnalCycle_box_TOAflux.xml
@@ -27,17 +28,17 @@ This namelist is part of the ESMValTool
     <write_plot_vars type="boolean">                       True      </write_plot_vars>
     <max_data_filesize type="integer">                      100      </max_data_filesize>
     <max_data_blocksize type="integer">                     500      </max_data_blocksize>
-    <verbosity  type="integer">                              10      </verbosity>
-    <exit_on_warning  type="boolean">                     False      </exit_on_warning>
+    <verbosity type="integer">                              10      </verbosity>
+    <exit_on_warning type="boolean">                     False      </exit_on_warning>
     <read_from_vault type="boolean">                      False       </read_from_vault>
-    <output_file_type>                                       ps      </output_file_type>
+    <output_file_type>                                      png      </output_file_type>
     <tags>                                            P_embrace      </tags>
 </GLOBAL>
 
 
 <MODELS>
-    <model>  CMIP5     CNRM-AM-PRE6     3hr    amip   r1i1p1   2004 2004  /nobackup/rossby17/sm_maeva/Data/tmp </model>
-    <model>  CMIP5     MPIESM-1-1       3hr    amip   r1i1p1   2004 2004  /nobackup/rossby17/sm_maeva/Data/tmp </model>
+    <!--model>ESGF_CMIP5 CNRM-CM5 output1 CNRM-CERFACS CNRM-CM5 amip 3hr atmos 3hr r1i1p1 latest 2004 2004 CMIP5_template</model>
+    <model>ESGF_CMIP5 MPI-ESM-LR output1 MPI-M MPI-ESM-LR amip 3hr atmos 3hr r1i1p1 latest 2004 2004 CMIP5_template</model-->
 </MODELS>
 
 <DIAGNOSTICS>
@@ -84,7 +85,7 @@ This namelist is part of the ESMValTool
         <diag_script cfg="cfg_DiurnalCycle_EEP_SON.ncl">    DiurnalCycle_box.ncl   </diag_script>
         <diag_script cfg="cfg_DiurnalCycle_WEP_SON.ncl">    DiurnalCycle_box.ncl   </diag_script>
 
-        <model id="ceres">  CMIP5       CERES-SYN1deg      3hr     observation  r1i1p1  2004 2004  /data/crio/EMBRACE/ESMVAL/DATA/CMIP5 </model>
+        <model id="ceres">CMIP5 CERES-SYN1deg 3hr observation r1i1p1 2004 2004 @{OBSPATH}/Tier3/CERES-SYN1deg</model>
     </diag>
 
 
@@ -129,7 +130,7 @@ This namelist is part of the ESMValTool
         <diag_script cfg="cfg_DiurnalCycle_EEP_SON.ncl">    DiurnalCycle_box.ncl   </diag_script>
         <diag_script cfg="cfg_DiurnalCycle_WEP_SON.ncl">    DiurnalCycle_box.ncl   </diag_script>
 
-        <model id="ceres">  CMIP5       CERES-SYN1deg      3hr     observation  r1i1p1  2004 2004  /data/crio/EMBRACE/ESMVAL/DATA/CMIP5 </model>
+        <model id="ceres">CMIP5 CERES-SYN1deg 3hr observation r1i1p1 2004 2004 @{OBSPATH}/Tier3/CERES-SYN1deg</model>
     </diag>
 
  <diag>
@@ -139,7 +140,7 @@ This namelist is part of the ESMValTool
         <field_type>                                                        T2Is   </field_type>
         <diag_script_cfg_dir>                             ./nml/cfg_DiurnalCycle/  </diag_script_cfg_dir>
         <tags>                                                    R_atmos, T_phys  </tags>
-     
+
         <diag_script cfg="cfg_DiurnalCycle_Sahel_DJF.ncl">  DiurnalCycle_box.ncl   </diag_script>
         <diag_script cfg="cfg_DiurnalCycle_WestAf_DJF.ncl"> DiurnalCycle_box.ncl   </diag_script>
         <diag_script cfg="cfg_DiurnalCycle_GoG_DJF.ncl">    DiurnalCycle_box.ncl   </diag_script>
@@ -173,7 +174,7 @@ This namelist is part of the ESMValTool
         <diag_script cfg="cfg_DiurnalCycle_EEP_SON.ncl">    DiurnalCycle_box.ncl   </diag_script>
         <diag_script cfg="cfg_DiurnalCycle_WEP_SON.ncl">    DiurnalCycle_box.ncl   </diag_script>
 
-        <model id="ceres">  CMIP5       CERES-SYN1deg      3hr     observation  r1i1p1  2004 2004  /data/crio/EMBRACE/ESMVAL/DATA/CMIP5 </model>
+        <model id="ceres">CMIP5 CERES-SYN1deg 3hr observation r1i1p1 2004 2004 @{OBSPATH}/Tier3/CERES-SYN1deg</model>
     </diag>
 
  <diag>
@@ -183,7 +184,7 @@ This namelist is part of the ESMValTool
         <field_type>                                                        T2Is   </field_type>
         <diag_script_cfg_dir>                             ./nml/cfg_DiurnalCycle/  </diag_script_cfg_dir>
         <tags>                                                    R_atmos, T_phys  </tags>
-     
+
         <diag_script cfg="cfg_DiurnalCycle_Sahel_DJF.ncl">  DiurnalCycle_box.ncl   </diag_script>
         <diag_script cfg="cfg_DiurnalCycle_WestAf_DJF.ncl"> DiurnalCycle_box.ncl   </diag_script>
         <diag_script cfg="cfg_DiurnalCycle_GoG_DJF.ncl">    DiurnalCycle_box.ncl   </diag_script>
@@ -217,7 +218,8 @@ This namelist is part of the ESMValTool
         <diag_script cfg="cfg_DiurnalCycle_EEP_SON.ncl">    DiurnalCycle_box.ncl   </diag_script>
         <diag_script cfg="cfg_DiurnalCycle_WEP_SON.ncl">    DiurnalCycle_box.ncl   </diag_script>
 
-        <model id="ceres">  CMIP5       CERES-SYN1deg      3hr     observation  r1i1p1  2004 2004  /data/crio/EMBRACE/ESMVAL/DATA/CMIP5 </model>
+        <model id="ceres">CMIP5 CERES-SYN1deg 3hr observation r1i1p1 2004 2004 @{OBSPATH}/Tier3/CERES-SYN1deg</model>
 </diag>
 </DIAGNOSTICS>
+<ESGF><config_file>./esgf_config.xml</config_file></ESGF>
 </namelist>
