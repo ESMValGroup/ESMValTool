@@ -387,12 +387,12 @@ begin
                         interface_get_inpaths(imod) + "/" + \
                         interface_get_infile(variables(n_var), field_types(n_var), imod)
         end do
-    end do    
+    end do
 
     ;; aux_title_info original line 1505 monsoon_panels.ncl, assuming no pages etc
     aux_title_info = di@season + "-amplitude"
     plot_outfile = get_output_dir(plot_dir, diag_script_base) + \
-          interface_get_figure_filename(diag_script_base, var0, field_type0, \ 
+          interface_get_figure_filename(diag_script_base, var0, field_type0, \
           aux_title_info, -1)
     alltags = array_append_record(tags, "DM_reg", 0)
     alltags := array_append_record(alltags,\
@@ -401,7 +401,7 @@ begin
     id = diag_script + "_" + base_name + "-amplitude"
     contrib_authors = "A_rio_ca"
 
-    +".png"ESMValMD(plot_outfile+".png", alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+    ESMValMD(plot_outfile+".png", alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
 
     delete([/alltags, caption, id/])
 
@@ -414,7 +414,7 @@ begin
    ;; aux_title_info original line 1505 monsoon_panels.ncl, assuming no pages etc
     aux_title_info = di@season + "-phase"
     plot_outfile = get_output_dir(plot_dir, diag_script_base) + \
-          interface_get_figure_filename(diag_script_base, var0, field_type0, \ 
+          interface_get_figure_filename(diag_script_base, var0, field_type0, \
           aux_title_info, -1)
     alltags = array_append_record(tags, "DM_reg", 0)
     alltags := array_append_record(alltags,\
@@ -436,7 +436,7 @@ begin
    ;; aux_title_info original line 1505 monsoon_panels.ncl, assuming no pages etc
     aux_title_info = di@season + "-var"
     plot_outfile = get_output_dir(plot_dir, diag_script_base) + \
-          interface_get_figure_filename(diag_script_base, var0, field_type0, \ 
+          interface_get_figure_filename(diag_script_base, var0, field_type0, \
           aux_title_info, -1)
     alltags = array_append_record(tags, "DM_reg", 0)
     alltags := array_append_record(alltags,\
