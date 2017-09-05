@@ -268,8 +268,12 @@ begin
 
     alltags = array_append_record(tags, (/"DM_reg", "ST_clim", "PT_seas"/), 0)
 
-    caption = "Seasonal cycle of variable "  + variables(0) + \
-               " over given domain"
+    caption = "Seasonal cycle of variable "  + variables(0) \
+                + " averaged over the area,"\
+                + " lat: " + min_lat + "-" + max_lat\
+                + ", lon: " + min_lon + "-" + max_lon\
+                + ". The gray area indicates standard deviation from model mean to"\
+                + " indicate the spread between models (obs/reanalysis are excluded)."
 
     id = diag_script + "_seasonal-cycle_" + variables(0)
 
@@ -307,8 +311,12 @@ begin
     ;; Attach Metadata to plot
     alltags = array_append_record(tags, (/"DM_reg", "ST_anomaly", "PT_seas"/), 0)
 
-    caption = "Seasonal anomaly of variable "  + variables(0) + \
-               " over given domain"
+    caption = "Seasonal anomaly of variable "  + variables(0) \
+                + " averaged over the area,"\
+                + " lat: " + min_lat + "-" + max_lat\
+                + ", lon: " + min_lon + "-" + max_lon\
+                + ". The gray area indicates standard deviation from model mean to"\
+                + " indicate the spread between models (obs/reanalysis are excluded)."
 
     id = diag_script + "_seasonal-cycle-anom_" + variables(0)
 
