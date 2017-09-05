@@ -35,6 +35,7 @@
 ;; Caveats
 ;;
 ;; Modification history
+;;    20170905-A_bock_ls: added tags for reporting
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;;                        of the code
 ;;    20140515-A_roeh_ro: written
@@ -52,6 +53,9 @@ load "./diag_scripts/lib/ncl/set_operators.ncl"
 exact_panel_position_file = "./diag_scripts/aux/" + diag_script_info@my_region + "Monsoon/exact_panel_positions_" + variables(0) + ".ncl"
 
 load "./plot_scripts/ncl/monsoon_panels.ncl"
+
+load "./diag_scripts/lib/ncl/meta_data.ncl"
+
 ;*********************************************************************
 
 begin
@@ -266,6 +270,39 @@ begin
     plot_settings@aux_filename_info = di@season + "-IAV"
     plot_settings@left_plot_subheader = latlon_header_string + ", " + years_string
     ts_line_wrapper(storage_vault, di, plot_settings, "precip-iav", debuginfo)
+
+    ;; Attach Metadata to plot
+    alltags = array_append_record(tags, (/"DM_reg", "ST_anomaly", "ST_var", "PT_times"/), 0)
+
+    caption = "Standardized anomalies of Precipitation, normalized"\
+              + " with climatology across specified years and averaged over the"\
+              + " area, lat: " + min_lat + "-" + max_lat\
+              + ", lon: " + min_lon + "-" + max_lon\
+              + ". The gray area indicates standard deviation from model mean to"\
+              + "indicate the spread between models (obs/reanalysis are excluded)"\
+
+    id = diag_script + variables(0)
+
+    climofiles = new(dimsizes(models@name), string)
+    do imod = 0, dimsizes(models@name) - 1
+            climofiles(imod) = interface_get_inpaths(imod) + "/" + \
+                 interface_get_infile(variables(0), field_types(0), imod)
+    end do
+
+    contrib_authors = (/"A_roeh_ro"/)
+
+    diag_script_base = basename(diag_script)
+    output_dir = get_output_dir(plot_dir, diag_script_base)
+    aux_filename_info = plot_settings@aux_filename_info
+    output_filename = interface_get_figure_filename(diag_script_base,\
+                                                    var0,\
+                                                    field_type0,\
+                                                    aux_filename_info, -1)
+    output_file_path = output_dir + output_filename + "." + output_file_type
+
+    ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+
+    delete([/alltags, caption, id, climofiles/])
 
     info_output(">>>>>>>> Leaving " + diag_script, verbosity, 4)
 end
