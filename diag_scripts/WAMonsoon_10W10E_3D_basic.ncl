@@ -308,6 +308,7 @@ begin
     plot_settings@default_palette = "ncl_default"
 
     three_by_one_diff(storage_vault, di, plot_settings, "mean", debuginfo, valid_statistics, res)
+
     ;; Attach Metadata to plots
     xml_name = getenv("ESMValTool_xml_name")
     suffix = get_file_suffix(xml_name, 0)
