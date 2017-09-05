@@ -31,7 +31,7 @@ This namelist is part of the ESMValTool
     <verbosity type="integer">                    10      </verbosity>
     <exit_on_warning type="boolean">           False      </exit_on_warning>
     <read_from_vault type="boolean">        False         </read_from_vault>
-    <output_file_type>                            ps      </output_file_type>
+    <output_file_type>                           png      </output_file_type>
     <tags>                                 P_embrace      </tags>
 </GLOBAL>
 

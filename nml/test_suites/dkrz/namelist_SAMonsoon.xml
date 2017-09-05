@@ -70,7 +70,7 @@ This namelist is part of the ESMValTool
     <diag_script cfg="cfg_SAMonsoon_wind_basic_200mb.ncl">   SAMonsoon_wind_basic.ncl               </diag_script>
     <tags>  R_atmos, T_atmDyn </tags>
 
-    <model>CMIP5 ERA-Interim Amon reanalysis r1i1p1 1998 2004 @{OBSPATH}/Tier3/ERA-Interim</model>
+    <model> OBS         ERA-Interim            reanaly           1   1998 2004    @{OBSPATH}/Tier3/ERA-Interim     </model>
     <model> OBS      NCEP        reanaly     1           1998  2004  @{OBSPATH}/Tier2/NCEP        </model>
 </diag>
 
@@ -84,7 +84,7 @@ This namelist is part of the ESMValTool
     <diag_script cfg="cfg_SAMonsoon_wind_basic_850mb.ncl">   SAMonsoon_wind_basic.ncl               </diag_script>
     <tags>  R_atmos, T_atmDyn </tags>
 
-    <model>CMIP5 ERA-Interim Amon reanalysis r1i1p1 1980 2004 @{OBSPATH}/Tier3/ERA-Interim</model>
+    <model> OBS         ERA-Interim            reanaly           1   1998 2004    @{OBSPATH}/Tier3/ERA-Interim     </model>
     <model> OBS      NCEP        reanaly     1           1980  2004  @{OBSPATH}/Tier2/NCEP        </model>
 </diag>
 
@@ -98,7 +98,7 @@ This namelist is part of the ESMValTool
     <diag_script cfg="cfg_SAMonsoon_wind_seasonal.ncl">   SAMonsoon_wind_seasonal.ncl          </diag_script>
      <tags>  R_atmos, T_monsoon, T_atmDyn </tags>
 
-    <model>CMIP5 ERA-Interim Amon reanalysis r1i1p1 1980 2004 @{OBSPATH}/Tier3/ERA-Interim</model>
+    <model> OBS         ERA-Interim            reanaly           1   1998 2004    @{OBSPATH}/Tier3/ERA-Interim     </model>
     <model> OBS      NCEP        reanaly     1           1980  2004  @{OBSPATH}/Tier2/NCEP        </model>
 </diag>
 
@@ -117,7 +117,7 @@ This namelist is part of the ESMValTool
     <model>CMIP5 TRMM-3B42 Amon observation r1i1p1 1998 2010 @{OBSPATH}/Tier2/TRMM-3B42</model>
     <model>  obs4mips    GPCP-1DD L3 v1.2 1998 2010 @{OBSPATH}/Tier1/ </model>
     <model>CMIP5 CMAP Amon observation r1i1p1 1980 2004 @{OBSPATH}/Tier2/CMAP</model>
-    <model>CMIP5 ERA-Interim Amon reanalysis r1i1p1 1980 2004 @{OBSPATH}/Tier3/ERA-Interim</model>
+    <model> OBS         ERA-Interim            reanaly           1   1998 2004    @{OBSPATH}/Tier3/ERA-Interim     </model>
     <model>CMIP5 MERRA Amon reanalysis r1i1p1 1980 2004 @{OBSPATH}/Tier1/MERRA</model>
 </diag>
 
