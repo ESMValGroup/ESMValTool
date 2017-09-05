@@ -35,6 +35,7 @@
 ;; Caveats
 ;;
 ;; Modification history
+;;    20170904-A_bock_ls: added tags for reporting
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;;                        of the code
 ;;    20150515-A_roeh_ro: written
@@ -61,6 +62,8 @@ exact_panel_position_file = "./diag_scripts/aux/WAMonsoon/exact_panel_positions_
 load "./plot_scripts/ncl/monsoon_panels.ncl"
 load "./diag_scripts/aux/SAMonsoon/exact_panel_positions_generic.ncl"
 load "./diag_scripts/aux/SAMonsoon/SAMonsoon_panel_positions.ncl"
+
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 ;*********************************************************************
 
@@ -288,6 +291,31 @@ begin
                                  + ", " + di@lonrange(1) + "]"
     plot_settings@left_plot_subheader = years_string
     xy_line_overlap(storage_vault, di, plot_settings, "mean", debuginfo)
+
+    ;; Attach Metadata to plot
+    xml_name = getenv("ESMValTool_xml_name")
+    suffix = get_file_suffix(xml_name, 0)
+    base_name = str_sub_str(xml_name, suffix, "")
+    plot_outfile = get_output_dir(plot_dir, diag_script_base) + \
+          interface_get_figure_filename(diag_script_base, var0, field_type0, \
+          plot_settings@aux_filename_info, -1)
+
+    alltags = array_append_record(tags,\
+           (/"PT_diurn", "DM_reg", "ST_mean"/), 0)
+    caption = "Mean for variable " + variables(0)
+    id = diag_script + "_" + base_name
+    climofiles = new(dimsizes(models@name), string)
+    do imod = 0, dimsizes(models@name) - 1
+        climofiles(imod) = \
+            interface_get_inpaths(imod) + "/" + \
+            interface_get_infile(variables(0), field_types(0), imod)
+    end do
+    contrib_authors = "A_roeh_ro"
+
+    ESMValMD(plot_outfile+".png", alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+
+    delete([/alltags, caption, id, climofiles/])
+
 
     info_output(">>>>>>>> Leaving " + diag_script, verbosity, 4)
 end
