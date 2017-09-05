@@ -10,7 +10,7 @@ contact: valeriu.predoi@ncas.ac.uk
 import sys
 import subprocess
 import getopt
-from interface_scripts.auxiliary import print_header, ncl_version_check
+from interface_scripts.auxiliary import get_header, ncl_version_check
 import logging
 import logging.config
 import yaml
@@ -23,6 +23,37 @@ import copy
 import ConfigParser
 import interface_scripts.namelistchecks as pchk
 import uuid
+import re
+
+logger = logging.getLogger('ESMValTool')
+
+# Define ESMValTool version
+version = "2.0.0"
+os.environ['0_ESMValTool_version'] = version
+# we may need this
+# os.environ["ESMValTool_force_calc"] = "True"
+
+
+def usage():
+    """ Print usage."""
+    msg = get_header()
+    msg += """
+              Usage:
+    
+              python main.py [OPTIONS]
+              ESMValTool - Earth System Model Evaluation Tool.
+              You can run with these command-line options:
+
+              -h --help             [HELP]     Print help message and exit.
+              -n --namelist-file    [REQUIRED] Namelist file.
+              -c --config-file      [REQUIRED] Configuration file. 
+
+              For further help, check the doc/-folder for pdfs 
+              and references therein. Have fun!
+
+    """
+    print(msg)
+    
 
 def configure_logging(cfg_file=None, output=None, console_log_level=None):
     """Set up logging"""
@@ -42,50 +73,43 @@ def configure_logging(cfg_file=None, output=None, console_log_level=None):
                 handler['filename'] = os.path.join(output, handler['filename'])
         if console_log_level is not None and 'stream' in handler:
             if handler['stream'] in ('ext://sys.stdout', 'ext://sys.stderr'):
-                handler['level'] = console_log_level
+                handler['level'] = console_log_level.upper()
 
     logging.config.dictConfig(cfg)
 
-# Configure logging
-#TODO: specify a good output directory for log files
-#TODO: (maybe) allow changing the console log level from the command line
-configure_logging()
 
-# Get a logger
-logger = logging.getLogger('ESMValTool')
-
-logger.debug("Example debug message")
-logger.info("Example info message")
-logger.warn("Example warning message")
-logger.error("Example error message")
-
-# Define ESMValTool version
-version = "2.0.0"
-os.environ['0_ESMValTool_version'] = version
-# we may need this
-# os.environ["ESMValTool_force_calc"] = "True"
-
-# Check NCL version
-ncl_version_check()
-
-# print usage
-def usage():
-    msg = """ 
-              python main.py [OPTIONS]
-              ESMValTool - Earth System Model Evaluation Tool.
-              You can run with these command-line options:
-
-              -h --help             [HELP]     Print help message and exit.
-              -n --namelist-file    [REQUIRED] Namelist file.
-              -c --config-file      [REQUIRED] Configuration file. 
-
-              For further help, check the doc/-folder for pdfs 
-              and references therein. Have fun!
-
+def get_log_level_and_path(config_ini_file):
+    """ Get the log level and path from config.ini, as logging needs to be
+        configured as early as possible.
     """
-    print(msg)
+    
+    # set defaults
+    cfg = {
+        'log_level': 'INFO',
+        'log_path': os.getcwd(),
+    }
+    
+    # update defaults if possible
+    if isinstance(config_ini_file, str) and os.path.exists(config_ini_file):
 
-# class to hold information for configuration
+        with open(config_ini_file, 'r') as file:
+            cfg_file = file.read()
+        
+        options = {
+            'log_level': r'(?i)^\s*log_level\s*=\s*(debug|info|warning|error)\s*(?:#.*|)$',
+            'log_path': r'(?i)^\s*run_dir\s*=\s*(.*)\s*(?:#.*|)$',
+        }
+
+        for key, regex in options.items():
+            match = re.search(regex, cfg_file, re.MULTILINE)
+            if match:
+                cfg[key] = match.groups()[0]
+
+    cfg['log_path'] = os.path.abspath(cfg['log_path'])
+
+    return cfg['log_level'], cfg['log_path']
+
+
 class configFile:
     """
     Class to hold info from the configuration file (if present)
@@ -130,67 +154,74 @@ class configFile:
             write_plots = self.s2b(cp.get('GLOBAL','write_plots'))
             glob['write_plots'] = write_plots
         else:
-            logger.warn("no write_plots in config, set to True")
+            logger.warning("no write_plots in config, set to True")
             glob['write_plots'] = True
         if cp.has_option('GLOBAL','write_netcdf') :
             write_netcdf = self.s2b(cp.get('GLOBAL','write_netcdf'))
             glob['write_netcdf'] = write_netcdf
         else:
-            logger.warn("no write_netcdf in config, set to True")
+            logger.warning("no write_netcdf in config, set to True")
             glob['write_netcdf'] = True
+        if cp.has_option('GLOBAL','log_level') :
+            glob['log_level'] = cp.get('GLOBAL','log_level').upper()
+        else:
+            glob['log_level'] = 'INFO'
         if cp.has_option('GLOBAL','verbosity') :
+            #TODO: remove verbosity once it is no longer used
             verbosity = int(cp.get('GLOBAL','verbosity'))
             glob['verbosity'] = verbosity
+            logger.warning("Option verbosity in %s is deprecated and will be "
+                           "removed in the future, use log_level instead",
+                           params_file)
         else:
-            logger.warn("no verbosity in config, set to 1")
             glob['verbosity'] = 1
         if cp.has_option('GLOBAL','exit_on_warning') :
             eow = self.s2b(cp.get('GLOBAL','exit_on_warning'))
             glob['exit_on_warning'] = eow
         else:
-            logger.warn("no exit_on_warning in config, set to True")
+            logger.warning("no exit_on_warning in config, set to True")
             glob['exit_on_warning'] = False
         if cp.has_option('GLOBAL','output_file_type') :
             output_type = cp.get('GLOBAL','output_file_type')
             glob['output_file_type'] = output_type
         else:
-            logger.warn("no output_file_type in config, set to ps")
+            logger.warning("no output_file_type in config, set to ps")
             glob['output_file_type'] = 'ps'
         if cp.has_option('GLOBAL','preproc_dir') :
             preproc_dir = cp.get('GLOBAL','preproc_dir')
             glob['preproc_dir'] = preproc_dir
         else:
-            logger.warn("no preproc_dir in config, set to ./preproc/")
+            logger.warning("no preproc_dir in config, set to ./preproc/")
             glob['preproc_dir'] = './preproc/'
         if cp.has_option('GLOBAL','work_dir') :
             work_dir = cp.get('GLOBAL','work_dir')
             glob['work_dir'] = work_dir
         else:
-            logger.warn("no work_dir in config, set to ./work/")
+            logger.warning("no work_dir in config, set to ./work/")
             glob['work_dir'] = './work/'
         if cp.has_option('GLOBAL','plot_dir') :
             plot_dir = cp.get('GLOBAL','plot_dir')
             glob['plot_dir'] = plot_dir
         else:
-            logger.warn("no plot_dir in config, set to ./plots/")
+            logger.warning("no plot_dir in config, set to ./plots/")
             glob['plot_dir'] = './plots/'
         if cp.has_option('GLOBAL','max_data_filesize') :
             mdf = int(cp.get('GLOBAL','max_data_filesize'))
             glob['max_data_filesize'] = mdf
         else:
-            logger.warn("no max_data_filesize in config, set to 100")
+            logger.warning("no max_data_filesize in config, set to 100")
             glob['max_data_filesize'] = 100
         if cp.has_option('GLOBAL','run_dir') :
             run_dir = cp.get('GLOBAL','run_dir')
             glob['run_dir'] = run_dir
         else:
-            logger.warn("no run_dir in config, assuming .")
+            logger.warning("no run_dir in config, assuming .")
             glob['run_dir'] = '.'
         if cp.has_option('GLOBAL','save_intermediary_cubes') :
             save_intermediary_cubes = self.s2b(cp.get('GLOBAL','save_intermediary_cubes'))
             glob['save_intermediary_cubes'] = save_intermediary_cubes
         else:
-            logger.warn("no save_intermediary_cubes in config, assuming False")
+            logger.warning("no save_intermediary_cubes in config, assuming False")
             glob['save_intermediary_cubes'] = False
         if cp.has_option('GLOBAL','model_rootpath'): ## Use this for all classes except the ones for obs_rootpath
             mp = cp.get('GLOBAL','model_rootpath')
@@ -215,13 +246,11 @@ class configFile:
                 logger.error("Unrecognized option for cmip5_dirtype in config: %s", ddd)
                 sys.exit(1)
         else:
-            logger.warn("no cmip5_dirtype in config, "
+            logger.warning("no cmip5_dirtype in config, "
                         "assuming None (unstructured data directory)")
             glob['cmip5_dirtype'] = 'None'
         return glob
 
-
-print_header()
 
 # start parsing command line args
 # options initialize and descriptor
@@ -238,10 +267,10 @@ longop = [
 
 # get command line arguments
 try:
-  opts, args = getopt.getopt(sys.argv[1:], shortop, longop)
+    opts, args = getopt.getopt(sys.argv[1:], shortop, longop)
 except getopt.GetoptError:
-  usage()
-  sys.exit(1)
+    usage()
+    sys.exit(1)
 
 command_string = 'python main.py '
 
@@ -257,20 +286,50 @@ for o, a in opts:
         config_file = a
         command_string = command_string + ' -c ' + a
     else:
-        logger.error("Unknown option: %s", o)
+        print("ERROR: Unknown option: %s", o)
         usage()
         sys.exit(1)
 
 # condition options
 if not namelist_file:
-    logger.error("No namelist file specified.")
-    logger.error("Use --namelist-file to specify it.")
+    print(get_header())
+    print("ERROR: No namelist file specified.")
+    print("ERROR: Use --namelist-file to specify it.")
     sys.exit(1)
 if not config_file:
-    logger.error("No configuration file specified.")
-    logger.error("Use --config-file to specify it.")
+    print(get_header())
+    print("ERROR: No configuration file specified.")
+    print("ERROR: Use --config-file to specify it.")
     sys.exit(1)
 
+####################################################
+# Set up logging before anything else              #
+####################################################
+
+# get the required console log level and location to save the logs
+# from config file
+log_level, run_dir = get_log_level_and_path(config_file)
+
+# if run_dir exists, don't overwrite it
+previous_run_dir = None
+if os.path.isdir(run_dir):
+    previous_run_dir = run_dir + '_' + uuid.uuid4().hex
+    os.rename(run_dir, previous_run_dir)
+os.makedirs(run_dir)
+
+# configure logging
+configure_logging(output=run_dir, console_log_level=log_level)
+
+# Log header
+logger.info(get_header())
+
+if previous_run_dir:
+    logger.info('Renamed existing run directory %s to %s',
+                run_dir, previous_run_dir)
+
+# Check NCL version
+ncl_version_check()
+    
 # Get namelist file
 yml_path = namelist_file
 
@@ -328,15 +387,6 @@ logger.info('Namelist check successful! Time: %s', dtchk)
 
 # this will have to be purget at some point in the future
 project_info['CONFIG'] = project_info_0.CONFIG
-
-# if run_dir exists, don't overwrite it
-if os.path.isdir(project_info['GLOBAL']['run_dir']):
-    suf = uuid.uuid4().hex
-    newdir = project_info['GLOBAL']['run_dir'] + '_' + suf
-    mvd = 'mv ' + project_info['GLOBAL']['run_dir'] + ' ' + newdir
-    proc = subprocess.Popen(mvd, stdout=subprocess.PIPE, shell=True)
-    (out, err) = proc.communicate()
-    logger.info('Renamed existing run directory to %s', newdir)
 
 # tell the environment about regridding
 project_info['RUNTIME']['regridtarget'] = []
@@ -432,7 +482,7 @@ for c in project_info['DIAGNOSTICS']:
                             logger.info('Preprocess id: %s', preprocess_id)
                             project_info['PREPROCESS'] = preproc_dict
                 except AttributeError:
-                    logger.info('preprocess_id is not an attribute of variable object. Exiting...')
+                    logger.error('preprocess_id is not an attribute of variable object. Exiting...')
                     sys.exit(1)
             pp.preprocess(project_info, base_var, model, currDiag, cmor_reformat_type = 'py')
 
@@ -496,5 +546,6 @@ logger.info("Ending the Earth System Model Evaluation Tool v%s at time: %s",
 logger.info("Time for running namelist was: %s", timestamp2 - timestamp1)
 
 # Remind the user about reference/acknowledgement file
-logger.info("For the required references/acknowledgements of these diagnostics see: ")
-logger.info(out_refs)
+logger.info("For the required references/acknowledgements of these "
+            "diagnostics see: %s", out_refs)
+

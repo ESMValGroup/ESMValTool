@@ -4,28 +4,28 @@ disable_existing_loggers: False
 formatters:
   console:
     format: '%(asctime)s %(levelname)-7s %(name)s: %(message)s'
-  summary:
+  brief:
     format: '%(levelname)-7s %(name)s: %(message)s'
-  developer:
+  debug:
     format: '%(asctime)s [%(process)d] %(levelname)-7s %(filename)s:%(lineno)s %(message)s'
 handlers:
   console:
     class: logging.StreamHandler
-    level: DEBUG
+    level: INFO
     formatter: console
     stream: ext://sys.stdout
-  summary_file:
+  simple_log_file:
     class: logging.FileHandler
     level: INFO
-    formatter: summary
-    filename: summary.log
+    formatter: brief
+    filename: main_log.txt
     mode: w
-  developer_file:
+  debug_log_file:
     class: logging.FileHandler
     level: DEBUG
-    formatter: developer
-    filename: developer.log
+    formatter: debug
+    filename: main_log_debug.txt
     mode: w
 root:
   level: DEBUG
-  handlers: [console, summary_file, developer_file]
+  handlers: [console, simple_log_file, debug_log_file]

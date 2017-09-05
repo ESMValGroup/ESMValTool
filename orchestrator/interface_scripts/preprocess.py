@@ -12,7 +12,7 @@ import re
 import sys
 import data_interface as dint
 import auxiliary
-from auxiliary import info, error, print_header, ncl_version_check
+from auxiliary import info, error, ncl_version_check
 import exceptions
 import launchers
 from orchestrator.interface_scripts.fixes.fix import Fix
@@ -600,7 +600,7 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
                     file_to_fix = next_fix.fix_file(file_to_fix)
                 return file_to_fix
 
-            files = [apply_file_fixes(filepath) for filepath in infiles]
+            files = apply_file_fixes(infiles)
 
             with warnings.catch_warnings():
                 warnings.filterwarnings('ignore',

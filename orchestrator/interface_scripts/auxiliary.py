@@ -1,8 +1,8 @@
 import pdb
 import sys
 import commands
-import string
 import logging
+import warnings
 
 logger = logging.getLogger(__name__)
 
@@ -44,18 +44,24 @@ def info(string, verbosity, required_verbosity):
         @param verbosity the requested verbosity level
         @param required_verbosity level required to print something
     """
-    if verbosity >= required_verbosity:
-        print "PY  info: " + str(string)
+    warnings.warn("function info() is deprecated and will be removed "
+                  "in the future", DeprecationWarning)    
+    if verbosity <= 1:
+        logger.info("%s", string)
+    else:
+        logger.debug("%s", string)
 
 
 def error(string):
     """ @brief Print an info string to standard error and exit execution
         @param string the info message to print
     """
-    sys.stderr.write("error: " + string + '\n')
+    warnings.warn("function error() is deprecated and will be removed "
+                  "in the future", DeprecationWarning)    
+    logger.error("%s", string)
     sys.exit(1)
 
-def print_header():
+def get_header():
     """ @brief Print the ESMValTool header
         @param project_info dictionary with the necessary information
     """
@@ -89,7 +95,7 @@ def print_header():
         "",
     ]
 
-    logger.info("\n".join(header))
+    return "\n".join(header)
 
 
 def ncl_version_check():
