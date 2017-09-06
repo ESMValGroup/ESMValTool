@@ -53,17 +53,23 @@ def time_handling(year1, year1_model, year2, year2_model):
     # left/right overlaps and complete misses
     elif year1 <= int(year1_model) and year2 <= int(year2_model):
         # data is entirely before model
-        if year2 <= int(year1_model):
+        if year2 < int(year1_model):
             return False
+        # edge on
+        elif year2 == int(year1_model):
+            return True
         # data overlaps to the left
-        elif year2 >= int(year1_model):
+        elif year2 > int(year1_model):
             return True
     elif year1 >= int(year1_model) and year2 >= int(year2_model):
         # data is entirely after model
         if year1 >= int(year2_model):
             return False
+        # edge on
+        elif year1 == int(year2_model):
+            return True
         # data overlaps to the right
-        elif year1 <= int(year2_model):
+        elif year1 < int(year2_model):
             return True
 
 # ---- function to handle various date formats
@@ -365,6 +371,7 @@ def get_obs(rootdir, obs_var, obs_model):
     # check if rootdir is a full path to a file
     if rootdir.endswith('.nc') is True:
         logger.info("Specified path points to file %s", rootdir)
+
         # assert true file existence
         srch = 'ls ' + rootdir
 

@@ -223,32 +223,42 @@ class configFile:
         else:
             logger.warning("no save_intermediary_cubes in config, assuming False")
             glob['save_intermediary_cubes'] = False
-        if cp.has_option('GLOBAL','model_rootpath'): ## Use this for all classes except the ones for obs_rootpath
-            mp = cp.get('GLOBAL','model_rootpath')
-            glob['model_rootpath'] = mp
+        # change to data_finder.py
+        ###########################
+        #if cp.has_option('GLOBAL','model_rootpath'): ## Use this for all classes except the ones for obs_rootpath
+        #    mp = cp.get('GLOBAL','model_rootpath')
+        #    glob['model_rootpath'] = mp
+        #else:
+        #    print >> sys.stderr,"PY  ERROR:  >>> main.py >>> Model root path not defined"
+        #    sys.exit(1)
+        #if cp.has_option('GLOBAL','obs_rootpath'):  ## Use this for OBS, obs4mips, ana4mips classes
+        #    op = cp.get('GLOBAL','obs_rootpath')
+        #    glob['obs_rootpath'] = op
+        #else:
+        #    print >> sys.stderr,"PY  ERROR:  >>> main.py >>> Observations root path not defined"
+        #    sys.exit(1)
+        #if cp.has_option('GLOBAL','rawobs_rootpath'):  ## For reformat_obs only, to be used later
+        #    rop = cp.get('GLOBAL','rawobs_rootpath')
+        #    glob['rawobs_rootpath'] = rop
+        #if cp.has_option('GLOBAL','cmip5_dirtype') :
+        #    ddd = cp.get('GLOBAL','cmip5_dirtype')
+        #    glob['cmip5_dirtype'] = ddd
+        #    permitted_values = ['default', 'badc', 'dkrz', 'ethz', 'smhi', 'None']
+        #    if ddd not in permitted_values:
+        #        print >> sys.stderr,"PY  ERROR:  >>> main.py >>> Unrecognized option for cmip5_dirtype in config: ", ddd
+        #        sys.exit(1)
+        if cp.has_option('GLOBAL','rootpath_CMIP5'):
+            mp = cp.get('GLOBAL','rootpath_CMIP5')
+            glob['rootpath_CMIP5'] = mp
         else:
-            logger.error("Model root path not defined")
+            logger.error("Model root path for CMIP5 not defined")
             sys.exit(1)
-        if cp.has_option('GLOBAL','obs_rootpath'):  ## Use this for OBS, obs4mips, ana4mips classes
-            op = cp.get('GLOBAL','obs_rootpath')
-            glob['obs_rootpath'] = op
+        if cp.has_option('GLOBAL','rootpath_OBS'):
+            op = cp.get('GLOBAL','rootpath_OBS')
+            glob['rootpath_OBS'] = op
         else:
             logger.error("Observations root path not defined")
             sys.exit(1)
-        if cp.has_option('GLOBAL','rawobs_rootpath'):  ## For reformat_obs only, to be used later
-            rop = cp.get('GLOBAL','rawobs_rootpath')
-            glob['rawobs_rootpath'] = rop
-        if cp.has_option('GLOBAL','cmip5_dirtype') :
-            ddd = cp.get('GLOBAL','cmip5_dirtype')
-            glob['cmip5_dirtype'] = ddd
-            permitted_values = ['default', 'badc', 'dkrz', 'ethz', 'smhi', 'None']
-            if ddd not in permitted_values:
-                logger.error("Unrecognized option for cmip5_dirtype in config: %s", ddd)
-                sys.exit(1)
-        else:
-            logger.warning("no cmip5_dirtype in config, "
-                        "assuming None (unstructured data directory)")
-            glob['cmip5_dirtype'] = 'None'
         return glob
 
 
@@ -428,6 +438,8 @@ logger.info("Starting the Earth System Model Evaluation Tool v%s at time: %s ...
 # Loop over all diagnostics defined in project_info and
 # create/prepare netCDF files for each variable
 for c in project_info['DIAGNOSTICS']:
+
+    # set current diagnostic
     currDiag = project_info['DIAGNOSTICS'][c]
 
     # Are the requested variables derived from other, more basic, variables?
@@ -436,6 +448,10 @@ for c in project_info['DIAGNOSTICS']:
     # get all models
     project_info['ADDITIONAL_MODELS'] = currDiag.additional_models
     project_info['ALLMODELS'] = project_info['MODELS'] + project_info['ADDITIONAL_MODELS']
+
+    # initialize empty lists to hold preprocess cubes and file paths for each model
+    models_cubes = []
+    models_fullpaths = []
 
     # Prepare/reformat model data for each model
     for model in project_info['ALLMODELS']:
@@ -484,7 +500,16 @@ for c in project_info['DIAGNOSTICS']:
                 except AttributeError:
                     logger.error('preprocess_id is not an attribute of variable object. Exiting...')
                     sys.exit(1)
-            pp.preprocess(project_info, base_var, model, currDiag, cmor_reformat_type = 'py')
+            prep = pp.preprocess(project_info, base_var, model, currDiag, cmor_reformat_type = 'py')
+
+            # add only if we need multimodel statistics
+            if project_info['PREPROCESS']['multimodel_mean'] is True:
+                models_cubes.append(prep[0])
+                models_fullpaths.append(prep[1])
+
+    # before we proceed more, we call multimodel operations
+    if project_info['PREPROCESS']['multimodel_mean'] is True:
+        pp.multimodel_mean(models_cubes, models_fullpaths)
 
     vardicts = currDiag.variables
     variables = []
