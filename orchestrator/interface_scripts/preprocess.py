@@ -621,9 +621,7 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
                 vlevels = select_level.split(',')
                 psl = 2
             except (AttributeError, "'int' object has no attribute 'split'"):
-                info(" >>> preprocess.py >>>  Vertical levels must be either int, string or list " + select_level,
-                         verbosity,
-                         required_verbosity=1)
+                logger.warning("Vertical levels must be either int, string or list " + select_level)
                 pass
         elif isinstance(select_level, int):
             vlevels = select_level
@@ -632,17 +630,13 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
             vlevels = select_level
             psl = 2
         else:
-            info(" >>> preprocess.py >>>  Vertical levels must be int, string or list " + select_level + " - no select level!",
-                     verbosity,
-                     required_verbosity=1)
+            logger.warning("Vertical levels must be int, string or list " + select_level + " - no select level!")
             psl = 0
             
 
         if psl > 0:
 
-            info(" >>> preprocess.py >>>  Calling regrid to select vertical level " + str(vlevels),
-                     verbosity,
-                     required_verbosity=1)
+            logger.info(" >>> preprocess.py >>>  Calling regrid to select vertical level " + str(vlevels))
 
             vscheme = 'linear' # optionality needed
 
@@ -797,7 +791,7 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
         #       - counts_thr is a counts threshold for discarding
         #       - time_window is the window we count and apply counts_thr
 
-        info(" >>> preprocess.py >>> Creating fillvalues mask...", verbosity, required_verbosity=1)
+        logger.info(" >>> preprocess.py >>> Creating fillvalues mask...")
         val_thr = 1.0 # dummy for now
         count_thr = 10 # to be computed from all models
         time_window = 5 # to be called by said diagnostic
