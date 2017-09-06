@@ -24,6 +24,9 @@ First version: August 2017
 import sys, os
 import subprocess
 from datetime import datetime
+import logging
+
+logger = logging.getLogger(__name__)
 
 # ---- handling the years for files
 def time_handling(year1, year1_model, year2, year2_model):
@@ -135,7 +138,7 @@ def get_cmip5_drs(dir1, sdir, ic, model, var, latest_dir):
         exp = model['exp']
         ens = model['ensemble']
     except KeyError as e:
-        print >> sys.stderr, 'PY  info:  >>> get_file_from_drs.py >>> ERROR ', e, 'is missing in model', model
+        logger.error("%s is missing in model %s", e, model)
         sys.exit(1)
 
     if mip == '3h':
@@ -175,10 +178,10 @@ def get_cmip5_drs(dir1, sdir, ic, model, var, latest_dir):
               + '/' + ic + '/' + exp + '/mon/aerosol/aero/' + ens \
               + latest_dir + var + '/'
     else:
-        print('PY  info:  >>> get_file_from_drs.py >>> Could not establish custom DRS; trying a general path')
+        logger.info('Could not establish custom DRS; trying a general path')
         gdrs = dir1 + sdir + '/' + ic + '/' + exp + '/' + mip + '/*/*/' + ens \
                + latest_dir + var + '/'
-        print('PY  info:  >>> get_file_from_drs.py >>> Using generalized path: %s' % gdrs)
+        logger.info('Using generalized path: %s', gdrs)
     return gdrs
 
 # ---- capture ls in the preferred directory
@@ -276,15 +279,15 @@ def get_single_file(rootdir, yr1, yr2):
     # checks
     if os.path.exists(rootdir):
         if rootdir.endswith('.nc') is True:
-            print("PY  info:  >>> get_file_from_drs.py >>> data_dir_type set to user_file ")
-            print("PY  info:   >>> get_file_from_drs.py >>> Specified path points to file %s" % rootdir)
+            logger.info("data_dir_type set to user_file ")
+            logger.info("Specified path points to file %s", rootdir)
         else:
-            print("PY  info:   >>> get_file_from_drs.py >>> data_dir_type set to user_file ")
-            print("PY  info:   >>> get_file_from_drs.py >>> Specified path DOES NOT point to netCDF file %s" % rootdir)
+            logger.info("data_dir_type set to user_file ")
+            logger.info("Specified path DOES NOT point to netCDF file %s", rootdir)
             sys.exit(1)
     else:
-        print("PY  info:   >>> get_file_from_drs.py >>> data_dir_type set to user_file ")
-        print("PY  info:   >>> get_file_from_drs.py >>> Specified path is non existent %s" % rootdir)
+        logger.info("data_dir_type set to user_file ")
+        logger.info("Specified path is non existent %s", rootdir)
         sys.exit(1)
 
     # time checks
@@ -292,7 +295,7 @@ def get_single_file(rootdir, yr1, yr2):
     if tc is True:
         files = [rootdir]
     else:
-        print("PY  info:   >>> get_file_from_drs.py >>> Specified file failed time checks: %s" % rootdir)
+        logger.info("Specified file failed time checks: %s", rootdir)
 
     return files
 
@@ -348,10 +351,10 @@ def get_from_unstructured_dir(rootdir, model, var):
             tc = time_check(filepath, model['start_year'], model['end_year'])
             if tc is True:
                 files.append(filepath)
-                print("PY  info:   >>> get_file_from_drs.py >>> Using file %s" % filepath)
+                logger.info("Using file %s", filepath)
         else:
             fi = rootdir + '/' + infile_id
-            print("PY  info:   >>> get_file_from_drs.py >>> Could not find file type %s" % fi)
+            logger.info("Could not find file type %s", fi)
 
     return files
 
@@ -367,7 +370,8 @@ def get_obs(rootdir, obs_var, obs_model):
 
     # check if rootdir is a full path to a file
     if rootdir.endswith('.nc') is True:
-        print("PY  info:   >>> get_file_from_drs.py >>> get_file_from_drs.py >>> Specified path points to file " + rootdir)
+        logger.info("Specified path points to file %s", rootdir)
+
         # assert true file existence
         srch = 'ls ' + rootdir
 
@@ -391,10 +395,10 @@ def get_obs(rootdir, obs_var, obs_model):
     for fpath in fpaths[0:-1]:
         if os.path.exists(fpath.strip()):
             obsfiles.append(fpath.strip())
-            print("PY  info:   >>> get_file_from_drs.py >>> get_file_from_drs.py >>> Using OBS file for regridding " + fpath.strip())
+            logger.info("Using OBS file for regridding %s", fpath.strip())
         else:
             fi = rootdir + '/' + infile_id
-            print("PY  info:   >>> get_file_from_drs.py >>> get_file_from_drs.py >>> Could not find OBS file type " + fi)
+            logger.info("Could not find OBS file type %s", fi)
 
     return obsfiles
 
@@ -412,7 +416,7 @@ def get_cmip5(drs, rootdir, var, model):
         DRS paths and uses the key directory name latestDir specific to each database
         for file version control (hardcoded here).
         """
-        print("PY  info:  >>> get_file_from_drs.py >>> Looking for data on BADC ")
+        logger.info("Looking for data on BADC ")
         host_root = '/badc/cmip5/data/cmip5/output1/' #rdir
         ls_host_root = lsladir(host_root) #ldir
 
@@ -421,14 +425,14 @@ def get_cmip5(drs, rootdir, var, model):
         latestDir = '/latest/'
 
         files = find_file(model, ls_host_root, host_root, latestDir, var, label = 'cmip5')
-        print("PY  info:  >>> get_file_from_drs.py >>> Found matching files on BADC: ")
+        logger.info("Found matching files on BADC: ")
         for fi in files:
-            print("PY  info:  >>>    file: %s" % fi)
+            logger.info("file: %s", fi)
 
     elif drs == 'dkrz':
 
         # FIXME this bit needs correct paths
-        print("PY  info:  >>> get_file_from_drs.py >>> Looking for data on DKRZ ")
+        logger.info("Looking for data on DKRZ ")
         host_root = 'xxx/xxx' #rdir
         ls_host_root = lsladir(host_root) #ldir
 
@@ -437,9 +441,9 @@ def get_cmip5(drs, rootdir, var, model):
         latestDir = '/xxx/'
 
         files = find_file(model, ls_host_root, host_root, latestDir, var, label = 'cmip5')
-        print("PY  info:  >>> get_file_from_drs.py >>> Found matching files on DKRZ: ")
+        logger.info("Found matching files on DKRZ: ")
         for fi in files:
-            print("PY  info:  >>>    file: %s" % fi)
+            logger.info("file: %s", fi)
 
     elif drs == 'default':
         """
@@ -448,7 +452,7 @@ def get_cmip5(drs, rootdir, var, model):
         has a DRS structure e.g. for CMIP5: rootdir/institution/proj_name/experiment/frequency/realm/mip/ensemble/variable_name/
                                             ./test_data_drs/MPI-M/MPI-ESM-LR/historical/mon/atmos/Amon/r1i1p1/ta/
         """
-        print("PY  info:  >>> get_file_from_drs.py >>> User root directory path with DRS structure: %s" % rootdir)
+        logger.info("User root directory path with DRS structure: %s", rootdir)
         ls_host_root = lsladir(rootdir) #ldir
 
         # this is a dummy
@@ -462,11 +466,11 @@ def get_cmip5(drs, rootdir, var, model):
 
         files = find_file(model, ls_host_root, host_root, latestDir, var, label = 'cmip5')
         if len(files) > 0:
-            print("PY  info:  >>> get_file_from_drs.py >>> Found matching files in %s: " % rootdir)
+            logger.info("Found matching files in %s: ", rootdir)
             for fi in files:
-                print("PY  info:  >>>    file: %s" % fi)
+                logger.info("file: %s", fi)
         else:
-            print("PY  info:  >>> get_file_from_drs.py >>> No matching files found in %s " % rootdir)
+            logger.info("No matching files found in %s ", rootdir)
             sys.exit(1)
 
     elif drs == 'None':
@@ -476,15 +480,15 @@ def get_cmip5(drs, rootdir, var, model):
         """
         files = get_from_unstructured_dir(rootdir, model, var)
         if len(files) > 0:
-            print("PY  info:  >>> get_file_from_drs.py >>> Found matching files in %s: " % rootdir)
+            logger.info("Found matching files in %s: ", rootdir)
             for fi in files:
-                print("PY  info:  >>>    file: %s" % fi)
+                logger.info("file: %s", fi)
         else:
-            print("PY  info:  >>> get_file_from_drs.py >>> No matching files found in %s " % rootdir)
+            logger.info("No matching files found in %s ", rootdir)
             sys.exit(1)
 
     else:
-        print(" >>> get_file_from_drs.py >>> Could not establish root directory type: ", drs)    
+        logger.info("Could not establish root directory type: ", drs)    
 
     return files
 
