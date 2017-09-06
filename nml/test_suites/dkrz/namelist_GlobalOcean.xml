@@ -45,7 +45,7 @@ This namelist is part of the ESMValTool
   <max_data_blocksize type="integer">                2000      </max_data_blocksize>
   <verbosity  type="integer">                           1      </verbosity>    # >3 ... all output
   <exit_on_warning  type="boolean">                 False      </exit_on_warning>
-  <output_file_type>                                   ps      </output_file_type>
+  <output_file_type>                                  png      </output_file_type>
   <tags> D_bakker14essd, D_bianchi12gbc, D_jones15james, D_key04gbc, D_roedenbeck13os, D_takahashi14marchem, P_embrace </tags>
 </GLOBAL>
 

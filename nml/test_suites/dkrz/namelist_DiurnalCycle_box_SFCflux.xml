@@ -30,11 +30,11 @@ This namelist is part of the ESMValTool
     <verbosity type="integer">                               10      </verbosity>
     <exit_on_warning type="boolean">                      False      </exit_on_warning>
     <read_from_vault type="boolean">                       False      </read_from_vault>
-    <output_file_type>                                        ps      </output_file_type>
+    <output_file_type>                                        png    </output_file_type>
     <tags>                                             P_embrace      </tags>
 </GLOBAL>
 
-<MODELS>       
+<MODELS>
    <model>ESGF_CMIP5 CNRM-CM5 output1 CNRM-CERFACS CNRM-CM5 amip 3hr atmos 3hr r1i1p1 latest 2004 2004 CMIP5_template</model>
    <model>ESGF_CMIP5 HadGEM2-A output1 MOHC HadGEM2-A amip 3hr atmos 3hr r1i1p1 latest 2004 2004 CMIP5_template</model>
    <model>ESGF_CMIP5 IPSL-CM5A-LR output1 IPSL IPSL-CM5A-LR amip 3hr atmos 3hr r1i1p1 latest 2004 2004 CMIP5_template</model>
@@ -94,7 +94,7 @@ This namelist is part of the ESMValTool
     <field_type>                                                        T2Is  </field_type>
     <diag_script_cfg_dir>                             ./nml/cfg_DiurnalCycle/ </diag_script_cfg_dir>
     <tags>                                                    R_atmos, T_phys </tags>
-    
+
     <diag_script cfg="cfg_DiurnalCycle_Sahel_DJF.ncl">  DiurnalCycle_box.ncl  </diag_script>
     <diag_script cfg="cfg_DiurnalCycle_WestAf_DJF.ncl"> DiurnalCycle_box.ncl  </diag_script>
     <diag_script cfg="cfg_DiurnalCycle_GoG_DJF.ncl">    DiurnalCycle_box.ncl  </diag_script>
@@ -138,7 +138,7 @@ This namelist is part of the ESMValTool
     <field_type>                                                        T2Is  </field_type>
     <diag_script_cfg_dir>                             ./nml/cfg_DiurnalCycle/ </diag_script_cfg_dir>
     <tags>                                                    R_atmos, T_phys </tags>
-    
+
     <diag_script cfg="cfg_DiurnalCycle_Sahel_DJF.ncl">  DiurnalCycle_box.ncl  </diag_script>
     <diag_script cfg="cfg_DiurnalCycle_WestAf_DJF.ncl"> DiurnalCycle_box.ncl  </diag_script>
     <diag_script cfg="cfg_DiurnalCycle_GoG_DJF.ncl">    DiurnalCycle_box.ncl  </diag_script>
@@ -183,7 +183,7 @@ This namelist is part of the ESMValTool
     <field_type>                                                     T2Is     </field_type>
     <diag_script_cfg_dir>                            ./nml/cfg_DiurnalCycle/  </diag_script_cfg_dir>
     <tags>                                                    R_atmos, T_phys </tags>
-    
+
     <diag_script cfg="cfg_DiurnalCycle_Sahel_DJF.ncl">  DiurnalCycle_box.ncl  </diag_script>
     <diag_script cfg="cfg_DiurnalCycle_WestAf_DJF.ncl"> DiurnalCycle_box.ncl  </diag_script>
     <diag_script cfg="cfg_DiurnalCycle_GoG_DJF.ncl">    DiurnalCycle_box.ncl  </diag_script>
@@ -227,7 +227,7 @@ This namelist is part of the ESMValTool
      <field_type>                                                        T2Is  </field_type>
      <diag_script_cfg_dir>                             ./nml/cfg_DiurnalCycle/ </diag_script_cfg_dir>
      <tags>                                                    R_atmos, T_phys </tags>
-    
+
      <diag_script cfg="cfg_DiurnalCycle_Sahel_DJF.ncl">  DiurnalCycle_box.ncl  </diag_script>
      <diag_script cfg="cfg_DiurnalCycle_WestAf_DJF.ncl"> DiurnalCycle_box.ncl  </diag_script>
      <diag_script cfg="cfg_DiurnalCycle_GoG_DJF.ncl">    DiurnalCycle_box.ncl  </diag_script>
@@ -271,7 +271,7 @@ This namelist is part of the ESMValTool
     <field_type>                                                        T2Is  </field_type>
     <diag_script_cfg_dir>                             ./nml/cfg_DiurnalCycle/ </diag_script_cfg_dir>
     <tags>                                                    R_atmos, T_phys </tags>
-    
+
     <diag_script cfg="cfg_DiurnalCycle_Sahel_DJF.ncl">  DiurnalCycle_box.ncl  </diag_script>
     <diag_script cfg="cfg_DiurnalCycle_WestAf_DJF.ncl"> DiurnalCycle_box.ncl  </diag_script>
     <diag_script cfg="cfg_DiurnalCycle_GoG_DJF.ncl">    DiurnalCycle_box.ncl  </diag_script>
@@ -315,7 +315,7 @@ This namelist is part of the ESMValTool
     <field_type>                                                        T2Is  </field_type>
     <diag_script_cfg_dir>                             ./nml/cfg_DiurnalCycle/ </diag_script_cfg_dir>
     <tags>                                                    R_atmos, T_phys </tags>
-    
+
     <diag_script cfg="cfg_DiurnalCycle_Sahel_DJF.ncl">  DiurnalCycle_box.ncl  </diag_script>
     <diag_script cfg="cfg_DiurnalCycle_WestAf_DJF.ncl"> DiurnalCycle_box.ncl  </diag_script>
     <diag_script cfg="cfg_DiurnalCycle_GoG_DJF.ncl">    DiurnalCycle_box.ncl  </diag_script>

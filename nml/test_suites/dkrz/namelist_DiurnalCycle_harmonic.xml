@@ -31,7 +31,7 @@ This namelist is part of the ESMValTool
     <max_data_blocksize type="integer">                                 500   </max_data_blocksize>
     <verbosity type="integer">                                          10   </verbosity>
     <exit_on_warning type="boolean">                                 False   </exit_on_warning>
-    <output_file_type>                                                   ps   </output_file_type>
+    <output_file_type>                                                  png   </output_file_type>
     <show_debuginfo type="boolean">                                   False   </show_debuginfo>
     <read_from_vault type="boolean">                                  False   </read_from_vault>
     <force_processing type="boolean">                                 False   </force_processing>

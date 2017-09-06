@@ -32,7 +32,7 @@ This namelist is part of the ESMValTool
     <max_data_blocksize type="integer">     500         </max_data_blocksize>
     <verbosity type="integer">               1         </verbosity>
     <exit_on_warning type="boolean">     False         </exit_on_warning>
-    <output_file_type>                       ps         </output_file_type>
+    <output_file_type>                       png       </output_file_type>
     <tags>                     D_emmons00jgr, P_esmval  </tags>
 </GLOBAL>
 
