@@ -9,9 +9,9 @@ Tests are implemented using *assert* statements
 
 import sys
 import os
-import glob
 
 import unittest
+
 
 class Test(unittest.TestCase):
 
@@ -28,8 +28,6 @@ class Test(unittest.TestCase):
 
     def test_basic(self):
         assert True
-
-
 
 if __name__ == "__main__":
     unittest.main()

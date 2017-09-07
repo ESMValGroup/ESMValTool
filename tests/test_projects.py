@@ -9,9 +9,8 @@ Tests are implemented using *assert* statements
 
 import sys
 import os
-import glob
-
 import unittest
+
 
 class Test(unittest.TestCase):
 
@@ -29,12 +28,12 @@ class Test(unittest.TestCase):
     def test_project_init(self):
         from interface_scripts.projects import Project
         # most simple test of init
-        P = Project()
+        Project()
 
     def test_cmip5_init(self):
         from interface_scripts.projects import CMIP5
-        P = CMIP5()
-        self.assertEqual(P.basename, 'CMIP5')
+        p = CMIP5()
+        self.assertEqual(p.basename, 'CMIP5')
 
 
 if __name__ == "__main__":

@@ -1,0 +1,1206 @@
+###############################################################################
+# namelist_righi15gmd_ECVs.xml
+#
+# Description
+# This namelist produces figures 1 to 9, and S2 to S12 of Righi et al. (2015)
+#
+# Authors
+# Franziska Frank (DLR, Germany)
+# Mattia Righi (DLR, Germany)
+# Veronika Eyring (DLR, Germany)
+#
+# Project
+# DLR ESMVal
+#
+# References
+# Righi et al., Geosci. Model Dev., 8, 733-768 10.5194/gmd-8-733-2015 (2015)
+# Gleckler et al., J. Geophys. Res., 113, D06104, doi: 10.1029/2007JD008972
+# (2008)
+#
+# This namelist is part of the ESMValTool
+###############################################################################
+
+GLOBAL:
+  write_plots:       True
+  write_netcdf:      True
+  verbosity:         1
+  exit_on_warning:   False
+  output_file_type:  ps
+
+
+MODELS:
+  - {name: EVAL2,   project: EMAC,  ensemble: 1,  start: 1999,  end: 2009,  path: /modelpath/}
+  - {name: QCTM,    project: EMAC,  ensemble: 1,  start: 1999,  end: 2007,  path: /modelpath/}
+  - {name: TS2000,  project: EMAC,  ensemble: 1,  start: 2001,  end: 2010,  path: /modelpath/}
+  - {name: ACCMIP,  project: EMAC,  ensemble: 1,  start: 2001,  end: 2010,  path: /modelpath/}
+
+
+PREPROCESS:
+  select_level:    None
+  target_grid:     None
+  regrid_scheme:   None
+  mask_fillvalues: True
+  mask_landocean:  None
+  multimodel_mean: False
+
+
+DIAGNOSTICS:
+
+# ANNUAL CYCLE PLOTS (Figs. 1, 8, S4, S6, S8) ##########################################################################
+
+  DIAG_tacycle:
+    description: Temperature
+    variable: {name: ta, ref_model: [ERA-Interim,NCEP], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 200}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_glob.ncl}
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_trop.ncl}
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_NHExt.ncl}
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_SHExt.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+
+  DIAG_uacycle:
+    description: Eastward wind
+    variable: {name: ua, ref_model: [ERA-Interim,NCEP], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 200}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_glob.ncl}
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_trop.ncl}
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_NHExt.ncl}
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_SHExt.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+
+  DIAG_vacycle:
+    description: Northward wind
+    variable: {name: va, ref_model: [ERA-Interim,NCEP], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 200}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_glob.ncl}
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_trop.ncl}
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_NHExt.ncl}
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_SHExt.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+
+  DIAG_zgcycle:
+    description: Geopotential height
+    variable: {name: zg, ref_model: [ERA-Interim,NCEP], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 500}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_glob.ncl}
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_trop.ncl}
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_NHExt.ncl}
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_SHExt.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+
+  DIAG_huscycle:
+    description: Specific humidity
+    variable: {name: hus, ref_model: [AIRS,ERA-Interim], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 400}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_glob.ncl}
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_trop.ncl}
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_NHExt.ncl}
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_SHExt.ncl}
+    additional_models:
+      - {name: AIRS,  project: obs4mips,  level: L3,  version: RetStd-v5,  start: 2003,  end: 2010,  path: /obspath/}
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+
+# ADDITIONAL DIAGNOSTICS FOR TEMPERATURE AND STRATOSPHERIC WATER VAPOUR (Figs. 3, 4) ###################################
+
+  DIAG_ta100:
+    description: Temperature
+    variable: {name: ta, ref_model: ERA-Interim, field: T3M}
+    preprocess:
+      select_level: 100
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_trop.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+
+  DIAG_h2o:
+    description: Water vapour
+    variable: {name: vmrh2o, ref_model: HALOE, field: T3M}
+    preprocess:
+      - {select_level: 100}
+      - {select_level: 200}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_trop.ncl}
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_cycle_monthlyclim_SHExt.ncl}
+    additional_models:
+      - {name: HALOE,  project: OBS,  type: sat,  version: 1, start: 1991,  end: 2002,  path: /obspath/}
+
+
+# ZONAL MEAN PLOTS (Figs. 2, 9, S2, S3, S5, S7, S9) ####################################################################
+
+  DIAG_tazonal:
+    description: Temperature
+    variable: {name: ta, ref_model: [ERA-Interim,NCEP], field: T3M}
+    scripts:
+      - {script: perfmetrics_main,  cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_zonal_annualclim_all_glob.ncl}
+      - {script: perfmetrics_main,  cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_zonal_DJF_all_glob.ncl}
+      - {script: perfmetrics_main,  cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_zonal_MAM_all_glob.ncl}
+      - {script: perfmetrics_main,  cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_zonal_JJA_all_glob.ncl}
+      - {script: perfmetrics_main,  cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_zonal_SON_all_glob.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+                        
+  DIAG_uazonal:
+    description: Eastward wind
+    variable: {name: ua, ref_model: [ERA-Interim,NCEP], field: T3M}
+    scripts:
+      - {script: perfmetrics_main,  cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_zonal_DJF_all_glob.ncl}
+      - {script: perfmetrics_main,  cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_zonal_JJA_all_glob.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+                        
+  DIAG_vazonal:
+    description: Northward wind
+    variable: {name: va, ref_model: [ERA-Interim,NCEP], field: T3M}
+    scripts:
+      - {script: perfmetrics_main,  cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_zonal_annualclim_all_glob.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_zgzonal:
+    description: Geopotential height
+    variable: {name: zg, ref_model: [ERA-Interim,NCEP], field: T3M}
+    scripts:
+      - {script: perfmetrics_main,  cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_zonal_annualclim_all_glob.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_huszonal:
+    description: Specific humidity
+    variable: {name: hus, ref_model: [AIRS,ERA-Interim], field: T3M}
+    scripts:
+      - {script: perfmetrics_main,  cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_zonal_annualclim_all_glob.ncl}
+    additional_models:
+      - {name: AIRS,  project: obs4mips,  level: L3,  version: RetStd-v5,  start: 2003,  end: 2010,  path: /obspath/}
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+
+# LAT-LON PLOTS (Figs. S10, S11, S12) ##################################################################################
+
+  DIAG_rlutcslatlon:
+    description: Outgoing LW radiation (clearsky)
+    variable: {name: rlutcs, ref_model: [SRB,CERES-EBAF], field: T2Ms}
+    scripts:
+      - {script: perfmetrics_main, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_latlon_annualclim_all_glob.ncl}
+    additional_models:
+      - {name: SRB,  project: OBS,  type: sat,  version: 1,  start: 1995,  end: 2005,  path: /obspath/}
+      - {name: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start: 2001,  end: 2012, path: /obspath/}
+
+  DIAG_rlutlatlon:
+    description: Outgoing LW radiation (allsky)
+    variable: {name: rlut, ref_model: [SRB,CERES-EBAF], field: T2Ms}
+    scripts:
+      - {script: perfmetrics_main, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_latlon_annualclim_all_glob.ncl}
+    additional_models:
+      - {name: SRB,  project: OBS,  type: sat,  version: 1,  start: 1995,  end: 2005,  path: /obspath/}
+      - {name: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start: 2001,  end: 2012, path: /obspath/}
+
+  DIAG_rsutlatlon:
+    description: Reflected SW radiation (allsky)
+    variable: {name: rsut, ref_model: [SRB,CERES-EBAF], field: T2Ms}
+    scripts:
+      - {script: perfmetrics_main, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_latlon_annualclim_all_glob.ncl}
+    additional_models:
+      - {name: SRB,  project: OBS,  type: sat,  version: 1,  start: 1995,  end: 2005,  path: /obspath/}
+      - {name: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start: 2001,  end: 2012, path: /obspath/}
+
+  DIAG_coverlatlon:
+    description: Total cloud cover
+    variable: {name: clt, ref_model: MODIS, field: T2Ms}
+    scripts:
+      - {script: perfmetrics_main, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_latlon_annualclim_all_glob.ncl}
+    additional_models:
+      - {name: MODIS,  project: obs4mips,  level: L3,  version: C5,  start: 2001,  end: 2010, path: /modelpath/Tier1}
+
+
+# RMSD GRADING (GLOBAL) (Figs. 5a, 7a, 7e) #############################################################################
+
+  DIAG_tarmsdglob:
+    description: Temperature
+    variable: {name: ta, ref_model: [ERA-Interim,NCEP], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 200}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_glob.ncl}
+      - {script: perfmetrics_taylor.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_glob.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_tataylorglob:
+    description: Temperature
+    scripts:
+      - {script: perfmetrics_taylor_collect.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_taylor_collect.ncl}
+
+  DIAG_uarmsdglob:
+    description: Eastward wind
+    variable: {name: ua, ref_model: [ERA-Interim,NCEP], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 200}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_glob.ncl}
+      - {script: perfmetrics_taylor.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_glob.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_uataylorglob:
+    description: Eastward wind
+    scripts:
+      - {script: perfmetrics_taylor_collect.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_taylor_collect.ncl}
+
+  DIAG_varmsdglob:
+    description: Northward wind
+    variable: {name: va, ref_model: [ERA-Interim,NCEP], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 200}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_glob.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_zgrmsdglob:
+    description: Geopotential height
+    variable: {name: zg, ref_model: [ERA-Interim,NCEP], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 500}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_glob.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_husrmsdglob:
+    description: Specific humidity
+    variable: {name: hus, ref_model: [AIRS,ERA-Interim], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 400}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_glob.ncl}
+    additional_models:
+      - {name: AIRS,  project: obs4mips,  level: L3,  version: RetStd-v5,  start: 2003,  end: 2010,  path: /obspath/}
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_rlutcsrmsdglob:
+    description: Outgoing LW radiation (clearsky)
+    variable: {name: rlutcs, ref_model: [SRB,CERES-EBAF], field: T2Ms}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_glob.ncl}
+    additional_models:
+      - {name: SRB,  project: OBS,  type: sat,  version: 1,  start: 1995,  end: 2005,  path: /obspath/}
+      - {name: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start: 2001,  end: 2012, path: /obspath/}
+
+  DIAG_rlutrmsdglob:
+    description: Outgoing LW radiation (allsky)
+    variable: {name: rlut, ref_model: [SRB,CERES-EBAF], field: T2Ms}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_glob.ncl}
+    additional_models:
+      - {name: SRB,  project: OBS,  type: sat,  version: 1,  start: 1995,  end: 2005,  path: /obspath/}
+      - {name: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start: 2001,  end: 2012, path: /obspath/}
+
+  DIAG_rsutrmsdglob:
+    description: Reflected SW radiation (allsky)
+    variable: {name: rsut, ref_model: [SRB,CERES-EBAF], field: T2Ms}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_glob.ncl}
+    additional_models:
+      - {name: SRB,  project: OBS,  type: sat,  version: 1,  start: 1995,  end: 2005,  path: /obspath/}
+      - {name: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start: 2001,  end: 2012, path: /obspath/}
+
+  DIAG_rmsdglob:
+    description: Portrait diagram
+    scripts:
+      - {script: perfmetrics_grading_collect.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_glob.ncl}
+
+      
+# RMSD GRADING (TROPICS) (Figs. 5b, 7b, 7f) ############################################################################
+
+  DIAG_tarmsdtrop:
+    description: Temperature
+    variable: {name: ta, ref_model: [ERA-Interim,NCEP], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 200}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_trop.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_trop.ncl}
+      - {script: perfmetrics_taylor.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_trop.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_tataylortrop:
+    description: Temperature
+    scripts:
+      - {script: perfmetrics_taylor_collect.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_taylor_collect.ncl}
+
+  DIAG_uarmsdtrop:
+    description: Eastward wind
+    variable: {name: ua, ref_model: [ERA-Interim,NCEP], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 200}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_trop.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_trop.ncl}
+      - {script: perfmetrics_taylor.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_trop.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_uataylortrop:
+    description: Eastward wind
+    scripts:
+      - {script: perfmetrics_taylor_collect.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_taylor_collect.ncl}
+
+  DIAG_varmsdtrop:
+    description: Northward wind
+    variable: {name: va, ref_model: [ERA-Interim,NCEP], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 200}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_trop.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_trop.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_zgrmsdtrop:
+    description: Geopotential height
+    variable: {name: zg, ref_model: [ERA-Interim,NCEP], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 500}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_trop.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_trop.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_husrmsdtrop:
+    description: Specific humidity
+    variable: {name: hus, ref_model: [AIRS,ERA-Interim], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 400}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_trop.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_trop.ncl}
+    additional_models:
+      - {name: AIRS,  project: obs4mips,  level: L3,  version: RetStd-v5,  start: 2003,  end: 2010,  path: /obspath/}
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_rlutcsrmsdtrop:
+    description: Outgoing LW radiation (clearsky)
+    variable: {name: rlutcs, ref_model: [SRB,CERES-EBAF], field: T2Ms}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_trop.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_trop.ncl}
+    additional_models:
+      - {name: SRB,  project: OBS,  type: sat,  version: 1,  start: 1995,  end: 2005,  path: /obspath/}
+      - {name: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start: 2001,  end: 2012, path: /obspath/}
+
+  DIAG_rlutrmsdtrop:
+    description: Outgoing LW radiation (allsky)
+    variable: {name: rlut, ref_model: [SRB,CERES-EBAF], field: T2Ms}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_trop.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_trop.ncl}
+    additional_models:
+      - {name: SRB,  project: OBS,  type: sat,  version: 1,  start: 1995,  end: 2005,  path: /obspath/}
+      - {name: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start: 2001,  end: 2012, path: /obspath/}
+
+  DIAG_rsutrmsdtrop:
+    description: Reflected SW radiation (allsky)
+    variable: {name: rsut, ref_model: [SRB,CERES-EBAF], field: T2Ms}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_trop.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_trop.ncl}
+    additional_models:
+      - {name: SRB,  project: OBS,  type: sat,  version: 1,  start: 1995,  end: 2005,  path: /obspath/}
+      - {name: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start: 2001,  end: 2012, path: /obspath/}
+
+  DIAG_rmsdtrop:
+    description: Portrait diagram
+    scripts:
+      - {script: perfmetrics_grading_collect.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_trop.ncl}
+
+
+# RMSD GRADING (NH EXTRATROPICS) (Figs. 5c, 7c, 7g) ####################################################################
+
+  DIAG_tarmsdNHExt:
+    description: Temperature
+    variable: {name: ta, ref_model: [ERA-Interim,NCEP], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 200}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_NHExt.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_NHExt.ncl}
+      - {script: perfmetrics_taylor.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_NHExt.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_tataylorNHExt:
+    description: Temperature
+    scripts:
+      - {script: perfmetrics_taylor_collect.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_taylor_collect.ncl}
+
+  DIAG_uarmsdNHExt:
+    description: Eastward wind
+    variable: {name: ua, ref_model: [ERA-Interim,NCEP], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 200}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_NHExt.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_NHExt.ncl}
+      - {script: perfmetrics_taylor.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_NHExt.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_uataylorNHExt:
+    description: Eastward wind
+    scripts:
+      - {script: perfmetrics_taylor_collect.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_taylor_collect.ncl}
+
+  DIAG_varmsdNHExt:
+    description: Northward wind
+    variable: {name: va, ref_model: [ERA-Interim,NCEP], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 200}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_NHExt.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_NHExt.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_zgrmsdNHExt:
+    description: Geopotential height
+    variable: {name: zg, ref_model: [ERA-Interim,NCEP], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 500}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_NHExt.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_NHExt.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_husrmsdNHExt:
+    description: Specific humidity
+    variable: {name: hus, ref_model: [AIRS,ERA-Interim], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 400}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_NHExt.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_NHExt.ncl}
+    additional_models:
+      - {name: AIRS,  project: obs4mips,  level: L3,  version: RetStd-v5,  start: 2003,  end: 2010,  path: /obspath/}
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_rlutcsrmsdNHExt:
+    description: Outgoing LW radiation (clearsky)
+    variable: {name: rlutcs, ref_model: [SRB,CERES-EBAF], field: T2Ms}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_NHExt.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_NHExt.ncl}
+    additional_models:
+      - {name: SRB,  project: OBS,  type: sat,  version: 1,  start: 1995,  end: 2005,  path: /obspath/}
+      - {name: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start: 2001,  end: 2012, path: /obspath/}
+
+  DIAG_rlutrmsdNHExt:
+    description: Outgoing LW radiation (allsky)
+    variable: {name: rlut, ref_model: [SRB,CERES-EBAF], field: T2Ms}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_NHExt.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_NHExt.ncl}
+    additional_models:
+      - {name: SRB,  project: OBS,  type: sat,  version: 1,  start: 1995,  end: 2005,  path: /obspath/}
+      - {name: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start: 2001,  end: 2012, path: /obspath/}
+
+  DIAG_rsutrmsdNHExt:
+    description: Reflected SW radiation (allsky)
+    variable: {name: rsut, ref_model: [SRB,CERES-EBAF], field: T2Ms}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_NHExt.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_NHExt.ncl}
+    additional_models:
+      - {name: SRB,  project: OBS,  type: sat,  version: 1,  start: 1995,  end: 2005,  path: /obspath/}
+      - {name: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start: 2001,  end: 2012, path: /obspath/}
+
+  DIAG_rmsdNHExt:
+    description: Portrait diagram
+    scripts:
+      - {script: perfmetrics_grading_collect.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_NHExt.ncl}
+
+
+# RMSD GRADING (SH EXTRATROPICS) (Figs. 5d, 7d, 7h) ####################################################################
+
+  DIAG_tarmsdSHExt:
+    description: Temperature
+    variable: {name: ta, ref_model: [ERA-Interim,NCEP], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 200}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_SHExt.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_SHExt.ncl}
+      - {script: perfmetrics_taylor.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_SHExt.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_tataylorSHExt:
+    description: Temperature
+    scripts:
+      - {script: perfmetrics_taylor_collect.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_taylor_collect.ncl}
+
+  DIAG_uarmsdSHExt:
+    description: Eastward wind
+    variable: {name: ua, ref_model: [ERA-Interim,NCEP], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 200}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_SHExt.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_SHExt.ncl}
+      - {script: perfmetrics_taylor.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_SHExt.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_uataylorSHExt:
+    description: Eastward wind
+    scripts:
+      - {script: perfmetrics_taylor_collect.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_taylor_collect.ncl}
+
+  DIAG_varmsdSHExt:
+    description: Northward wind
+    variable: {name: va, ref_model: [ERA-Interim,NCEP], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 200}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_SHExt.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_SHExt.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_zgrmsdSHExt:
+    description: Geopotential height
+    variable: {name: zg, ref_model: [ERA-Interim,NCEP], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 500}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_SHExt.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_SHExt.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_husrmsdSHExt:
+    description: Specific humidity
+    variable: {name: hus, ref_model: [AIRS,ERA-Interim], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 400}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_SHExt.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_SHExt.ncl}
+    additional_models:
+      - {name: AIRS,  project: obs4mips,  level: L3,  version: RetStd-v5,  start: 2003,  end: 2010,  path: /obspath/}
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_rlutcsrmsdSHExt:
+    description: Outgoing LW radiation (clearsky)
+    variable: {name: rlutcs, ref_model: [SRB,CERES-EBAF], field: T2Ms}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_SHExt.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_SHExt.ncl}
+    additional_models:
+      - {name: SRB,  project: OBS,  type: sat,  version: 1,  start: 1995,  end: 2005,  path: /obspath/}
+      - {name: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start: 2001,  end: 2012, path: /obspath/}
+
+  DIAG_rlutrmsdSHExt:
+    description: Outgoing LW radiation (allsky)
+    variable: {name: rlut, ref_model: [SRB,CERES-EBAF], field: T2Ms}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_SHExt.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_SHExt.ncl}
+    additional_models:
+      - {name: SRB,  project: OBS,  type: sat,  version: 1,  start: 1995,  end: 2005,  path: /obspath/}
+      - {name: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start: 2001,  end: 2012, path: /obspath/}
+
+  DIAG_rsutrmsdSHExt:
+    description: Reflected SW radiation (allsky)
+    variable: {name: rsut, ref_model: [SRB,CERES-EBAF], field: T2Ms}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_SHExt.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_SHExt.ncl}
+    additional_models:
+      - {name: SRB,  project: OBS,  type: sat,  version: 1,  start: 1995,  end: 2005,  path: /obspath/}
+      - {name: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start: 2001,  end: 2012, path: /obspath/}
+
+  DIAG_rmsdSHExt:
+    description: Portrait diagram
+    scripts:
+      - {script: perfmetrics_grading_collect.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_RMSD_SHExt.ncl}
+
+
+# BIAS GRADING (GLOBAL) (Fig. 6a) ######################################################################################
+
+  DIAG_tabiasglob:
+    description: Temperature
+    variable: {name: ta, ref_model: [ERA-Interim,NCEP], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 200}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_uabiasglob:
+    description: Eastward wind
+    variable: {name: ua, ref_model: [ERA-Interim,NCEP], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 200}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_vabiasglob:
+    description: Northward wind
+    variable: {name: va, ref_model: [ERA-Interim,NCEP], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 200}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_zgbiasglob:
+    description: Geopotential height
+    variable: {name: zg, ref_model: [ERA-Interim,NCEP], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 500}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_husbiasglob:
+    description: Specific humidity
+    variable: {name: hus, ref_model: [AIRS,ERA-Interim], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 400}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+    additional_models:
+      - {name: AIRS,  project: obs4mips,  level: L3,  version: RetStd-v5,  start: 2003,  end: 2010,  path: /obspath/}
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_rlutcsbiasglob:
+    description: Outgoing LW radiation (clearsky)
+    variable: {name: rlutcs, ref_model: [SRB,CERES-EBAF], field: T2Ms}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+    additional_models:
+      - {name: SRB,  project: OBS,  type: sat,  version: 1,  start: 1995,  end: 2005,  path: /obspath/}
+      - {name: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start: 2001,  end: 2012, path: /obspath/}
+
+  DIAG_rlutbiasglob:
+    description: Outgoing LW radiation (allsky)
+    variable: {name: rlut, ref_model: [SRB,CERES-EBAF], field: T2Ms}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+    additional_models:
+      - {name: SRB,  project: OBS,  type: sat,  version: 1,  start: 1995,  end: 2005,  path: /obspath/}
+      - {name: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start: 2001,  end: 2012, path: /obspath/}
+
+  DIAG_rsutbiasglob:
+    description: Reflected SW radiation (allsky)
+    variable: {name: rsut, ref_model: [SRB,CERES-EBAF], field: T2Ms}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+    additional_models:
+      - {name: SRB,  project: OBS,  type: sat,  version: 1,  start: 1995,  end: 2005,  path: /obspath/}
+      - {name: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start: 2001,  end: 2012, path: /obspath/}
+
+  DIAG_biasglob:
+    description: Portrait diagram
+    scripts:
+      - {script: perfmetrics_grading_collect.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+
+
+# BIAS GRADING (TROPICS) (Fig. 6b) #####################################################################################
+
+  DIAG_tabiastrop:
+    description: Temperature
+    variable: {name: ta, ref_model: [ERA-Interim,NCEP], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 200}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_uabiastrop:
+    description: Eastward wind
+    variable: {name: ua, ref_model: [ERA-Interim,NCEP], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 200}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_vabiastrop:
+    description: Northward wind
+    variable: {name: va, ref_model: [ERA-Interim,NCEP], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 200}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_zgbiastrop:
+    description: Geopotential height
+    variable: {name: zg, ref_model: [ERA-Interim,NCEP], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 500}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_husbiastrop:
+    description: Specific humidity
+    variable: {name: hus, ref_model: [AIRS,ERA-Interim], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 400}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+    additional_models:
+      - {name: AIRS,  project: obs4mips,  level: L3,  version: RetStd-v5,  start: 2003,  end: 2010,  path: /obspath/}
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_rlutcsbiastrop:
+    description: Outgoing LW radiation (clearsky)
+    variable: {name: rlutcs, ref_model: [SRB,CERES-EBAF], field: T2Ms}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+    additional_models:
+      - {name: SRB,  project: OBS,  type: sat,  version: 1,  start: 1995,  end: 2005,  path: /obspath/}
+      - {name: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start: 2001,  end: 2012, path: /obspath/}
+
+  DIAG_rlutbiastrop:
+    description: Outgoing LW radiation (allsky)
+    variable: {name: rlut, ref_model: [SRB,CERES-EBAF], field: T2Ms}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+    additional_models:
+      - {name: SRB,  project: OBS,  type: sat,  version: 1,  start: 1995,  end: 2005,  path: /obspath/}
+      - {name: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start: 2001,  end: 2012, path: /obspath/}
+
+  DIAG_rsutbiastrop:
+    description: Reflected SW radiation (allsky)
+    variable: {name: rsut, ref_model: [SRB,CERES-EBAF], field: T2Ms}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+    additional_models:
+      - {name: SRB,  project: OBS,  type: sat,  version: 1,  start: 1995,  end: 2005,  path: /obspath/}
+      - {name: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start: 2001,  end: 2012, path: /obspath/}
+
+  DIAG_biastrop:
+    description: Portrait diagram
+    scripts:
+      - {script: perfmetrics_grading_collect.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+
+# BIAS GRADING (NH EXTRATROPICS) (Fig. 6c) #############################################################################
+
+  DIAG_tabiasNHExt:
+    description: Temperature
+    variable: {name: ta, ref_model: [ERA-Interim,NCEP], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 200}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_uabiasNHExt:
+    description: Eastward wind
+    variable: {name: ua, ref_model: [ERA-Interim,NCEP], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 200}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_vabiasNHExt:
+    description: Northward wind
+    variable: {name: va, ref_model: [ERA-Interim,NCEP], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 200}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_zgbiasNHExt:
+    description: Geopotential height
+    variable: {name: zg, ref_model: [ERA-Interim,NCEP], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 500}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_husbiasNHExt:
+    description: Specific humidity
+    variable: {name: hus, ref_model: [AIRS,ERA-Interim], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 400}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+    additional_models:
+      - {name: AIRS,  project: obs4mips,  level: L3,  version: RetStd-v5,  start: 2003,  end: 2010,  path: /obspath/}
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_rlutcsbiasNHExt:
+    description: Outgoing LW radiation (clearsky)
+    variable: {name: rlutcs, ref_model: [SRB,CERES-EBAF], field: T2Ms}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+    additional_models:
+      - {name: SRB,  project: OBS,  type: sat,  version: 1,  start: 1995,  end: 2005,  path: /obspath/}
+      - {name: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start: 2001,  end: 2012, path: /obspath/}
+
+  DIAG_rlutbiasNHExt:
+    description: Outgoing LW radiation (allsky)
+    variable: {name: rlut, ref_model: [SRB,CERES-EBAF], field: T2Ms}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+    additional_models:
+      - {name: SRB,  project: OBS,  type: sat,  version: 1,  start: 1995,  end: 2005,  path: /obspath/}
+      - {name: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start: 2001,  end: 2012, path: /obspath/}
+
+  DIAG_rsutbiasNHExt:
+    description: Reflected SW radiation (allsky)
+    variable: {name: rsut, ref_model: [SRB,CERES-EBAF], field: T2Ms}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+    additional_models:
+      - {name: SRB,  project: OBS,  type: sat,  version: 1,  start: 1995,  end: 2005,  path: /obspath/}
+      - {name: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start: 2001,  end: 2012, path: /obspath/}
+
+  DIAG_biasNHExt:
+    description: Portrait diagram
+    scripts:
+      - {script: perfmetrics_grading_collect.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+
+
+# BIAS GRADING (SH EXTRATROPICS) (Fig. 6d) #############################################################################
+
+  DIAG_tabiasSHExt:
+    description: Temperature
+    variable: {name: ta, ref_model: [ERA-Interim,NCEP], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 200}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_uabiasSHExt:
+    description: Eastward wind
+    variable: {name: ua, ref_model: [ERA-Interim,NCEP], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 200}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_vabiasSHExt:
+    description: Northward wind
+    variable: {name: va, ref_model: [ERA-Interim,NCEP], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 200}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_zgbiasSHExt:
+    description: Geopotential height
+    variable: {name: zg, ref_model: [ERA-Interim,NCEP], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 500}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+    additional_models:
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+      - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_husbiasSHExt:
+    description: Specific humidity
+    variable: {name: hus, ref_model: [AIRS,ERA-Interim], field: T3M}
+    preprocess:
+      - {select_level: 850}
+      - {select_level: 400}
+      - {select_level: 30}
+      - {select_level: 5}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+    additional_models:
+      - {name: AIRS,  project: obs4mips,  level: L3,  version: RetStd-v5,  start: 2003,  end: 2010,  path: /obspath/}
+      - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 1996,  end: 2005,  path: /obspath/}
+
+  DIAG_rlutcsbiasSHExt:
+    description: Outgoing LW radiation (clearsky)
+    variable: {name: rlutcs, ref_model: [SRB,CERES-EBAF], field: T2Ms}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+    additional_models:
+      - {name: SRB,  project: OBS,  type: sat,  version: 1,  start: 1995,  end: 2005,  path: /obspath/}
+      - {name: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start: 2001,  end: 2012, path: /obspath/}
+
+  DIAG_rlutbiasSHExt:
+    description: Outgoing LW radiation (allsky)
+    variable: {name: rlut, ref_model: [SRB,CERES-EBAF], field: T2Ms}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+    additional_models:
+      - {name: SRB,  project: OBS,  type: sat,  version: 1,  start: 1995,  end: 2005,  path: /obspath/}
+      - {name: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start: 2001,  end: 2012, path: /obspath/}
+
+  DIAG_rsutbiasSHExt:
+    description: Reflected SW radiation (allsky)
+    variable: {name: rsut, ref_model: [SRB,CERES-EBAF], field: T2Ms}
+    scripts:
+      - {script: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+      - {script: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}
+    additional_models:
+      - {name: SRB,  project: OBS,  type: sat,  version: 1,  start: 1995,  end: 2005,  path: /obspath/}
+      - {name: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start: 2001,  end: 2012, path: /obspath/}
+
+  DIAG_biasSHExt:
+    description: Portrait diagram
+    scripts:
+      - {script: perfmetrics_grading_collect.ncl, cfg_file: ./nml/cfg_righi15gmd/ECVs/cfg_perfmetrics_grading_BIAS_glob.ncl}

@@ -1,0 +1,99 @@
+# Example YAML namelist with full functionality in current version
+##################################################################
+# Inline comments explain the current functionality
+
+# Master name of namelist
+!Namelist
+
+#############################################################################################
+# GLOBAL section
+  GLOBAL:
+    write_plots:       True
+    write_netcdf:      True
+    force_processing:  True # this is functional as before
+    work_dir:           ./test_output/work/
+    plot_dir:          ./test_output/plots/
+    climo_dir:       ./test_output/preproc/
+    verbosity:         1
+    exit_on_warning:   False
+    output_file_type:  pdf
+    max_data_filesize:   100 # not used
+#    max_data_blocksize:  500 # not used 
+#    force_calc:        False # not used
+#    force_gradecalc:   False # not used
+#    force_taylorcalc:  False # not used
+################### This whole section has moved in config.ini ###############################
+
+  # code loops through each of the models (of course :P)
+  # if regridding needs to be done by external diagnostic, 'ref: model_name_to_regrid_on' can be added as dictionary key
+  MODELS:
+    - {name: MPI-ESM-LR, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002,  path: ./test_data, gridfile: "None"}
+    - {name: bcc-csm1-1, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002,  path: ./test_data, gridfile: "None"}
+
+  # PREPROCESS can now be sectioned in different instances
+  # identified in main.py and adjacent modules by their tag names:
+  # here Preprocess_Default and Preprocess_Type1
+  # these names are initiated from config.ini
+  PREPROCESS:
+    Preprocess_Default:
+      select_level:    None
+      regrid:          True
+      target_grid:     ref_model
+#     target_grid:     test_data/ta_Amon_MPI-ESM-LR_historical_r1i1p1_200001-200512.nc
+      regrid_scheme:   linear
+      mask_fillvalues: True
+      mask_landocean:  None
+      multimodel_mean: True
+    Preprocess_Type1:
+      select_level:    None
+      regrid:          False
+      target_grid:     ref_model
+#     target_grid:     test_data/ta_Amon_MPI-ESM-LR_historical_r1i1p1_200001-200512.nc
+      regrid_scheme:   linear
+      mask_fillvalues: True
+      mask_landocean:  None
+      multimodel_mean: True
+
+  CONFIG:
+    var_def_scripts: ./variable_defs
+    var_only_case: 0
+  
+  DIAGNOSTICS:
+    DIAG_shit_1:
+      # diagnostic object 1: given a namelist one can specify as many diagnostics objects as one wants
+      !Diagnostic
+      id: MyDiagShit1
+      description: tutorial diagnostic
+      variables: 
+        # for external diagnostics (eg NCL) it is reccomended to use a single ref_model
+        # explanation: say you want regridding on two or more ref models, those regridded files will be added to the path
+        # but NCL will only look for a number of files = the number of models (hardcoded in data_handling.ncl) so it will
+        # skip everything after N_model files
+        # also here: multiple variables are supported, but it's cleaner if we do a single variable per diagnostic
+        - {name: ta, ref_model: ['ERA-Interim'], field: T3M, only: "None"}
+      preprocess:
+        id: shitter1
+        select_level: 850
+      scripts:
+        # can specify as many dignostic scripts as one wants
+        - {script: MyDiag_test_ta.ncl,     cfg_file: ./nml/cfg_MyDiag/cfg_MyDiag.ncl}
+        - {script: MyDiag_test_ta_no2.ncl,     cfg_file: ./nml/cfg_MyDiag/cfg_MyDiag.ncl}
+      additional_models:
+        - {name: GFDL-ESM2G, project: CMIP5_ETHZ,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2002,  path: /test_data/}
+        - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 2000,  end: 2002,  path: ./test_data/OBS/Tier3/ERA-Interim}
+        - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 2000,  end: 2002,  path: ./test_data/OBS/Tier2/NCEP}
+    DIAG_shit_2:
+      !Diagnostic
+      id: MyDiagShit2
+      description: tutorial diagnostic
+      variables:
+        - {name: pr,  ref_model: ['ERA-Interim'],  field: T2Ms, only: "None"}
+      preprocess:
+        id: shitter2
+        select_level: 850
+      scripts:
+        - {script: MyDiag_test_pr.ncl,     cfg_file: ./nml/cfg_MyDiag/cfg_MyDiag.ncl}
+      additional_models:
+        - {name: GFDL-ESM2G, project: CMIP5_ETHZ,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2002,  path: /test_data/}
+        - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 2000,  end: 2002,  path: ./test_data/OBS/Tier3/ERA-Interim}
+        - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 2000,  end: 2002,  path: /obspath/Tier2/NCEP/}

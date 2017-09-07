@@ -5,6 +5,7 @@ performance metrics testing
 
 import os
 from xml.dom import minidom
+import shutil
 
 from easytest import EasyTest
 

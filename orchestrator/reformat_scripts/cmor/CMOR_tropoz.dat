@@ -1,0 +1,23 @@
+SOURCE: CCMI1
+!============
+variable_entry:    tropoz 
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     equivalent_thickness_at_stp_of_troposphere_ozone_content
+units:             DU
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         Tropospheric Ozone Column
+comment:           
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+type:              real
+valid_min:         0.0
+valid_max:         500.0
+!----------------------------------
+!

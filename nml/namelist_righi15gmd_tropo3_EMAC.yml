@@ -1,0 +1,557 @@
+###############################################################################
+# namelist_righi15gmd_tropo3.xml
+# 
+# Description
+# This namelist produces figures 9, 11-15, 18 of Righi et al. (2015)
+# 
+# Author
+# Klaus-Dirk Gottschaldt (DLR, Germany)
+# 
+# Contributors
+# Franziska Frank (DLR, Germany)
+# Mattia Righi (DLR, Germany)
+# Veronika Eyring (DLR, Germany)
+# 
+# Project
+# DLR ESMVal
+# 
+# References
+# Righi et al., Geosci. Model Dev., 8, 733-768 10.5194/gmd-8-733-2015 (2015)
+# 
+# This namelist is part of the ESMValTool
+###############################################################################
+
+GLOBAL:
+  write_plots:       True
+  write_netcdf:      True
+  verbosity:         1
+  exit_on_warning:   False
+  output_file_type:  ps
+
+  
+MODELS:
+  - {name: EVAL2,      project: EMAC,  ensemble: 1,  start: 1999,  end: 2009,  path: /modelpath/}
+  - {name: QCTM,       project: EMAC,  ensemble: 1,  start: 1999,  end: 2007,  path: /modelpath/}
+  - {name: TS2000,     project: EMAC,  ensemble: 1,  start: 2001,  end: 2010,  path: /modelpath/}
+  - {name: ACCMIP,     project: EMAC,  ensemble: 1,  start: 2001,  end: 2010,  path: /modelpath/}
+  - {name: ACCMIP-S1,  project: EMAC,  ensemble: 1,  start: 2001,  end: 2010,  path: /modelpath/}
+  - {name: ACCMIP-S2,  project: EMAC,  ensemble: 1,  start: 2001,  end: 2010,  path: /modelpath/}
+
+
+PREPROCESS:
+  select_level:    None
+  target_grid:     None
+  regrid_scheme:   None
+  mask_fillvalues: True
+  mask_landocean:  None
+  multimodel_mean: False
+
+
+DIAGNOSTICS:
+
+# Fig. 10, 13, 14 ######################################################################################################
+
+  DIAG_tropozmap:
+    description: Fig 13 and 14: tropospheric column ozone plots
+    variables:
+      - {name: tropoz, ref_model: AURA-MLS-OMI, field: T2Ms}
+    scripts:
+      - {name: ancyc_lat.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_righi15gmd_fig14.ncl}
+      - {name: lat_lon.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_righi15gmd_fig13.ncl}
+    additional_models:
+      - {name: AURA-MLS-OMI,  project: OBS,  type: sat,  version: 1,  start: 2005,  end: 2012,  path: /obspath/Tier2/AURA-MLS-OMI/}
+
+      
+  DIAG_tozmap:
+    description: Fig 9: total column ozone plot
+    variables:
+      - {name: toz, field: T2Ms}
+    scripts:
+      - {name: ancyc_lat, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_righi15gmd_fig10.ncl}
+    additional_models:
+      - {name: NIWA,     project: OBS,  type: reanaly,  version: 1,  start: 1998,  end: 2010,  path: /obspath/Tier3/NIWA/}
+      - {name: GTO-ECV,  project: OBS,  type: sat,      version: 1,  start: 1998,  end: 2010,  path: /obspath/Tier3/GTO-ECV/}
+
+      
+# Fig. 11 (top-left) and Fig 12 (top- and bottom-left) #################################################################
+
+  DIAG_tropozrmsd:
+    description: RMSD grading for portrait plot and Taylor plot for tropoz
+    variables:
+      - {name: tropoz, ref_model: AURA-MLS-OMI, field: T2Ms}
+    scripts:
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_SH_Midlat.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_SH_Midlat.ncl}
+      - {name: perfmetrics_taylor.ncl,  cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_SH_Midlat.ncl}
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_NH_Midlat.ncl
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_NH_Midlat.ncl
+      - {name: perfmetrics_taylor.ncl,  cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_NH_Midlat.ncl
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_trop.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_trop.ncl}
+      - {name: perfmetrics_taylor.ncl,  cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_trop.ncl}
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_glob.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_glob.ncl}
+      - {name: perfmetrics_taylor.ncl,  cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_glob.ncl}
+    additional_models:
+      - {name: AURA-MLS-OMI,  project: OBS,  type: sat,  ensemble: 1,  start: 2005,  end: 2012,  obs: /obspath/Tier2/AURA-MLS-OMI/}
+
+      
+  DIAG_tropoztalorcollect:
+    description: Taylor plot collect
+    scripts:
+      - {name: perfmetrics_taylor_collect.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_taylor_collect.ncl}
+
+      
+  DIAG_tozrmsd:
+    description: RMSD grading for portrait plot and Taylor plot for toz
+    variables:
+      - {name: toz, ref_model: [NIWA,GTO-ECV],  field: T2Ms}
+    scripts:
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_SH_Polar.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_SH_Polar.ncl}
+      - {name: perfmetrics_taylor.ncl,  cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_SH_Polar.ncl}
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_NH_Polar.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_NH_Polar.ncl}
+      - {name: perfmetrics_taylor.ncl,  cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_NH_Polar.ncl}
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_SH_Midlat.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_SH_Midlat.ncl}
+      - {name: perfmetrics_taylor.ncl,  cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_SH_Midlat.ncl}
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_NH_Midlat.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_NH_Midlat.ncl}
+      - {name: perfmetrics_taylor.ncl,  cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_NH_Midlat.ncl}
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_trop.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_trop.ncl}
+      - {name: perfmetrics_taylor.ncl,  cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_trop.ncl}
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_glob.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_glob.ncl}
+      - {name: perfmetrics_taylor.ncl,  cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_all_glob.ncl}
+    additional_models:
+      - {name: NIWA,     project: OBS,  type: reanaly,  version: 1,  start: 1998,  end: 2010,  path: /obspath/Tier3/NIWA}
+      - {name: GWO-ECV,  project: OBS,  type: sat,      version: 1,  start: 1998,  end: 2010,  path: /obspath/Tier3/GTO-ECV}
+
+      
+  DIAG_tozrmsdcollect:
+    description: RMSD grading and Taylor plot collect
+    scripts:
+      - {name: perfmetrics_grading_collect.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_collect_O3.ncl}
+      - {name: perfmetrics_taylor_collect.ncl,  cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_taylor_collect.ncl}
+
+
+# Fig. 11 (bottom left) ################################################################################################
+
+  DIAG_tropozmap:
+    description: Fig 13 and 14: tropospheric column ozone plots
+    variables:
+      - {name: tropoz, ref_model: AURA-MLS-OMI, field: T2Ms}
+    scripts:
+      - {name: ancyc_lat.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_righi15gmd_fig14.ncl}
+      - {name: lat_lon.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_righi15gmd_fig13.ncl}
+    additional_models:
+      - {name: AURA-MLS-OMI,  project: OBS,  type: sat,  version: 1,  start: 2005,  end: 2012,  path: /obspath/Tier2/AURA-MLS-OMI/}
+
+      
+  DIAG_tozmap:
+    description: fig 9: total column ozone plot
+    variables:
+      - {name: toz, field: T2Ms}
+    scripts:
+      - {name: ancyc_lat, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_righi15gmd_fig10.ncl}
+    additional_models:
+      - {name: NIWA,     project: OBS,  type: reanaly,  version: 1,  start: 1998,  end: 2010,  path: /obspath/Tier3/NIWA/}
+      - {name: GTO-ECV,  project: OBS,  type: sat,      version: 1,  start: 1998,  end: 2010,  path: /obspath/Tier3/GTO-ECV/}
+
+      
+# Fig. 11 (top-left) and Fig 12 (top- and bottom-left) #################################################################
+
+  DIAG_tropozbias:
+    description: BIAS grading for portrait plot for tropoz
+    variables:
+      - {name: tropoz, ref_model: AURA-MLS-OMI, field: T2Ms}
+    scripts:
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_SH_Midlat.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_SH_Midlat.ncl}
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_NH_Midlat.ncl
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_NH_Midlat.ncl
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_trop.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_trop.ncl}
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_glob.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_glob.ncl}
+    additional_models:
+      - {name: AURA-MLS-OMI,  project: OBS,  type: sat,  ensemble: 1,  start: 2005,  end: 2012,  obs: /obspath/Tier2/AURA-MLS-OMI/}
+
+      
+  DIAG_tozbias:
+    description: BIAS grading for portrait plot and Taylor plot for toz
+    variables:
+      - {name: toz, ref_model: [NIWA,GTO-ECV],  field: T2Ms}
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_SH_Polar.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_SH_Polar.ncl}
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_NH_Polar.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_NH_Polar.ncl}
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_SH_Midlat.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_SH_Midlat.ncl}
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_NH_Midlat.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_NH_Midlat.ncl}
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_trop.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_trop.ncl}
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_glob.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_all_glob.ncl}
+    additional_models:
+      - {name: NIWA,     project: OBS,  type: reanaly,  version: 1,  start: 1998,  end: 2010,  path: /obspath/Tier3/NIWA}
+      - {name: GWO-ECV,  project: OBS,  type: sat,      version: 1,  start: 1998,  end: 2010,  path: /obspath/Tier3/GTO-ECV}
+
+      
+  DIAG_biascollect:
+    description: BIAS grading plot collect
+    scripts:
+      - {name: perfmetrics_grading_collect.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_collect_O3.ncl}
+      
+# Fig. 11 (top-right), Fig. 12 (top- and bottom-right), and Fig. 18 ####################################################
+
+  DIAG_cormsdazr:
+    description: CO RMSD grading and Taylor plot: azr (NHmidlat)
+    variables:
+      - {name: vmrco_azr, ref_model: GLOBALVIEW,  field: T0Ms}
+    scripts:
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_azr_RMSD.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_azr_RMSD.ncl}
+      - {name: perfmetrics_taylor.ncl,  cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_azr_RMSD.ncl}
+    additional_models:
+      - {name: GLOBALVIEW,  project: OBS,  type: ground,  version: azr-01D0,  start: 1999,  end: 2008,  path: /obspath/Tier2/GLOBALVIEW/}
+
+
+  DIAG_cormsdhpb:
+    description: CO RMSD grading and Taylor plot: hpb (NHmidlat)
+    variables:
+      - {name: vmrco_hpb, ref_model: GLOBALVIEW,  field: T0Ms}
+    scripts:
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_hpb_RMSD.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_hpb_RMSD.ncl}
+      - {name: perfmetrics_taylor.ncl,  cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_hpb_RMSD.ncl}
+    additional_models:
+      - {name: GLOBALVIEW,  project: OBS,  type: ground,  version: hpb-01D0,  start: 1999,  end: 2008,  path: /obspath/Tier2/GLOBALVIEW/}
+
+      
+  DIAG_cormsdlef:
+    description: CO RMSD grading and Taylor plot: lef (NHmidlat)
+    variables:
+      - {name: vmrco_lef, ref_model: GLOBALVIEW,  field: T0Ms}
+    scripts:
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_lef_RMSD.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_lef_RMSD.ncl}
+      - {name: perfmetrics_taylor.ncl,  cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_lef_RMSD.ncl}
+    additional_models:
+      - {name: GLOBALVIEW,  project: OBS,  type: ground,  version: lef-01D0,  start: 1999,  end: 2008,  path: /obspath/Tier2/GLOBALVIEW/}
+
+
+  DIAG_cormsdnwr:
+    description: CO RMSD grading and Taylor plot: nwr (NHmidlat)
+    variables:
+      - {name: vmrco_nwr, ref_model: GLOBALVIEW,  field: T0Ms}
+    scripts:
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_nwr_RMSD.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_nwr_RMSD.ncl}
+      - {name: perfmetrics_taylor.ncl,  cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_nwr_RMSD.ncl}
+    additional_models:
+      - {name: GLOBALVIEW,  project: OBS,  type: ground,  version: nwr-01D0,  start: 1999,  end: 2008,  path: /obspath/Tier2/GLOBALVIEW/}      
+
+
+  DIAG_cormsdeic:
+    description: CO RMSD grading and Taylor plot: eic (SHmidlat)
+    variables:
+      - {name: vmrco_eic, ref_model: GLOBALVIEW,  field: T0Ms}
+    scripts:
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_eic_RMSD.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_eic_RMSD.ncl}
+      - {name: perfmetrics_taylor.ncl,  cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_eic_RMSD.ncl}
+    additional_models:
+      - {name: GLOBALVIEW,  project: OBS,  type: ground,  version: eic-01D0,  start: 1999,  end: 2008,  path: /obspath/Tier2/GLOBALVIEW/}      
+
+      
+  DIAG_cotaylorcollect:
+    dscription: Taylor plot collect
+    scripts:
+      - {name: perfmetrics_taylor_collect.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_taylor_collect.ncl}
+      
+  DIAG_cormsdalt:
+    description: CO RMSD grading and Taylor plot: alt (NHpolar)
+    variables:
+      - {name: vmrco_alt, ref_model: GLOBALVIEW,  field: T0Ms}
+    scripts:
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_alt_RMSD.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_alt_RMSD.ncl}
+      - {name: perfmetrics_taylor.ncl,  cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_alt_RMSD.ncl}
+    additional_models:
+      - {name: GLOBALVIEW,  project: OBS,  type: ground,  version: alt-01D0,  start: 1999,  end: 2008,  path: /obspath/Tier2/GLOBALVIEW/}      
+
+
+  DIAG_cormsdchr:
+    description: CO RMSD grading and Taylor plot: chr (Trop)
+    variables:
+      - {name: vmrco_chr, ref_model: GLOBALVIEW,  field: T0Ms}
+    scripts:
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_chr_RMSD.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_chr_RMSD.ncl}
+      - {name: perfmetrics_taylor.ncl,  cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_chr_RMSD.ncl}
+    additional_models:
+      - {name: GLOBALVIEW,  project: OBS,  type: ground,  version: chr-01D0,  start: 1999,  end: 2008,  path: /obspath/Tier2/GLOBALVIEW/}      
+
+
+  DIAG_cormsdgmi:
+    description: CO RMSD grading and Taylor plot: gmi (Trop)
+    variables:
+      - {name: vmrco_gmi, ref_model: GLOBALVIEW,  field: T0Ms}
+    scripts:
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_gmi_RMSD.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_gmi_RMSD.ncl}
+      - {name: perfmetrics_taylor.ncl,  cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_gmi_RMSD.ncl}
+    additional_models:
+      - {name: GLOBALVIEW,  project: OBS,  type: ground,  version: gmi-01D0,  start: 1999,  end: 2008,  path: /obspath/Tier2/GLOBALVIEW/}      
+
+
+  DIAG_cormsdmlo:
+    description: CO RMSD grading and Taylor plot: mlo (Trop)
+    variables:
+      - {name: vmrco_mlo, ref_model: GLOBALVIEW,  field: T0Ms}
+    scripts:
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_mlo_RMSD.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_mlo_RMSD.ncl}
+      - {name: perfmetrics_taylor.ncl,  cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_mlo_RMSD.ncl}
+    additional_models:
+      - {name: GLOBALVIEW,  project: OBS,  type: ground,  version: mlo-01D0,  start: 1999,  end: 2008,  path: /obspath/Tier2/GLOBALVIEW/}      
+
+
+  DIAG_cormsdcollect:
+    description: RMSD grading and Taylor plot collect
+    scripts:
+      - {name: perfmetrics_grading_collect.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_collect_CO.ncl}
+      - {name: perfmetrics_taylor_collect.ncl,  cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_taylor_collect.ncl}
+
+
+# Fig 11 (bottom-right) ################################################################################################
+
+  DIAG_cobiasazr:
+    description: CO BIAS grading plot: azr (NHmidlat)
+    variables:
+      - {name: vmrco_azr, ref_model: GLOBALVIEW,  field: T0Ms}
+    scripts:
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_azr_BIAS.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_azr_BIAS.ncl}
+    additional_models:
+      - {name: GLOBALVIEW,  project: OBS,  type: ground,  version: azr-01D0,  start: 1999,  end: 2008,  path: /obspath/Tier2/GLOBALVIEW/}
+
+
+  DIAG_cobiashpb:
+    description: CO BIAS grading plot: hpb (NHmidlat)
+    variables:
+      - {name: vmrco_hpb, ref_model: GLOBALVIEW,  field: T0Ms}
+    scripts:
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_hpb_BIAS.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_hpb_BIAS.ncl}
+    additional_models:
+      - {name: GLOBALVIEW,  project: OBS,  type: ground,  version: hpb-01D0,  start: 1999,  end: 2008,  path: /obspath/Tier2/GLOBALVIEW/}
+
+      
+  DIAG_cobiaslef:
+    description: CO BIAS grading plot: lef (NHmidlat)
+    variables:
+      - {name: vmrco_lef, ref_model: GLOBALVIEW,  field: T0Ms}
+    scripts:
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_lef_BIAS.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_lef_BIAS.ncl}
+    additional_models:
+      - {name: GLOBALVIEW,  project: OBS,  type: ground,  version: lef-01D0,  start: 1999,  end: 2008,  path: /obspath/Tier2/GLOBALVIEW/}
+
+
+  DIAG_cobiasnwr:
+    description: CO BIAS grading plot: nwr (NHmidlat)
+    variables:
+      - {name: vmrco_nwr, ref_model: GLOBALVIEW,  field: T0Ms}
+    scripts:
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_nwr_BIAS.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_nwr_BIAS.ncl}
+    additional_models:
+      - {name: GLOBALVIEW,  project: OBS,  type: ground,  version: nwr-01D0,  start: 1999,  end: 2008,  path: /obspath/Tier2/GLOBALVIEW/}      
+
+
+  DIAG_cobiaseic:
+    description: CO BIAS grading plot: eic (SHmidlat)
+    variables:
+      - {name: vmrco_eic, ref_model: GLOBALVIEW,  field: T0Ms}
+    scripts:
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_eic_BIAS.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_eic_BIAS.ncl}
+    additional_models:
+      - {name: GLOBALVIEW,  project: OBS,  type: ground,  version: eic-01D0,  start: 1999,  end: 2008,  path: /obspath/Tier2/GLOBALVIEW/}      
+
+
+  DIAG_cobiasalt:
+    description: CO BIAS grading plot: alt (NHpolar)
+    variables:
+      - {name: vmrco_alt, ref_model: GLOBALVIEW,  field: T0Ms}
+    scripts:
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_alt_BIAS.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_alt_BIAS.ncl}
+    additional_models:
+      - {name: GLOBALVIEW,  project: OBS,  type: ground,  version: alt-01D0,  start: 1999,  end: 2008,  path: /obspath/Tier2/GLOBALVIEW/}      
+
+
+  DIAG_cobiaschr:
+    description: CO BIAS grading plot: chr (Trop)
+    variables:
+      - {name: vmrco_chr, ref_model: GLOBALVIEW,  field: T0Ms}
+    scripts:
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_chr_BIAS.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_chr_BIAS.ncl}
+    additional_models:
+      - {name: GLOBALVIEW,  project: OBS,  type: ground,  version: chr-01D0,  start: 1999,  end: 2008,  path: /obspath/Tier2/GLOBALVIEW/}      
+
+
+  DIAG_cobiasgmi:
+    description: CO BIAS grading plot: gmi (Trop)
+    variables:
+      - {name: vmrco_gmi, ref_model: GLOBALVIEW,  field: T0Ms}
+    scripts:
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_gmi_BIAS.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_gmi_BIAS.ncl}
+    additional_models:
+      - {name: GLOBALVIEW,  project: OBS,  type: ground,  version: gmi-01D0,  start: 1999,  end: 2008,  path: /obspath/Tier2/GLOBALVIEW/}      
+
+
+  DIAG_cobiasmlo:
+    description: CO BIAS grading plot: mlo (Trop)
+    variables:
+      - {name: vmrco_mlo, ref_model: GLOBALVIEW,  field: T0Ms}
+    scripts:
+      - {name: perfmetrics_main.ncl,    cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_mlo_BIAS.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T0Ms_mlo_BIAS.ncl}
+    additional_models:
+      - {name: GLOBALVIEW,  project: OBS,  type: ground,  version: mlo-01D0,  start: 1999,  end: 2008,  path: /obspath/Tier2/GLOBALVIEW/}      
+
+
+  DIAG_cobiascollect:
+    description: BIAS grading plot collect
+    scripts:
+      - {name: perfmetrics_grading_collect.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_collect_CO.ncl}
+
+
+# Fig. 11 (top-middle), Fig. 12 (top- and bottom-middle) and Fig. 15 ###################################################
+
+  DIAG_tro3rmsdNHext:
+    description: RMSD grading and Taylor plot for Tilmes ozonesonde data: NHext region
+    variables:
+      - {name: tro3_NHext, ref_model: Tilmes, field: T1M}
+    scripts:
+      - {name: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_250_NHext_RMSD.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_250_NHext_RMSD.ncl}
+      - {name: perfmetrics_taylor.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_250_NHext_RMSD.ncl}
+      - {name: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_500_NHext_RMSD.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_500_NHext_RMSD.ncl}
+      - {name: perfmetrics_taylor.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_500_NHext_RMSD.ncl}
+      - {name: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_700_NHext_RMSD.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_700_NHext_RMSD.ncl}
+      - {name: perfmetrics_taylor.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_700_NHext_RMSD.ncl}
+    additional_models:
+      - {name: Tilmes,  project: OBS,  type: insitu,  version: NHext,  start: 2000,  end: 2000,  path: /obspath/Tier2/Tilmes/}
+
+      
+  DIAG_tro3rmsdSHext:
+    description: RMSD grading and Taylor plot for Tilmes ozonesonde data: SHext region
+    variables:
+      - {name: tro3_SHext, ref_model: Tilmes, field: T1M}
+    scripts:
+      - {name: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_250_SHext_RMSD.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_250_SHext_RMSD.ncl}
+      - {name: perfmetrics_taylor.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_250_SHext_RMSD.ncl}
+      - {name: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_500_SHext_RMSD.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_500_SHext_RMSD.ncl}
+      - {name: perfmetrics_taylor.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_500_SHext_RMSD.ncl}
+      - {name: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_700_SHext_RMSD.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_700_SHext_RMSD.ncl}
+      - {name: perfmetrics_taylor.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_700_SHext_RMSD.ncl}
+    additional_models:
+      - {name: Tilmes,  project: OBS,  type: insitu,  version: SHext,  start: 2000,  end: 2000,  path: /obspath/Tier2/Tilmes/}
+      
+  DIAG_tro3taylorcollect:
+    description: Taylor plot collect
+    scripts:
+      - {name: perfmetrics_taylor_collect.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_taylor_collect.ncl}
+
+
+  DIAG_tro3rmsdTrop:
+    description: RMSD grading and Taylor plot for Tilmes ozonesonde data: Trop region
+    variables:
+      - {name: tro3_Trop, ref_model: Tilmes, field: T1M}
+    scripts:
+      - {name: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_250_Trop_RMSD.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_250_Trop_RMSD.ncl}
+      - {name: perfmetrics_taylor.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_250_Trop_RMSD.ncl}
+      - {name: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_500_Trop_RMSD.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_500_Trop_RMSD.ncl}
+      - {name: perfmetrics_taylor.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_500_Trop_RMSD.ncl}
+      - {name: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_700_Trop_RMSD.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_700_Trop_RMSD.ncl}
+      - {name: perfmetrics_taylor.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_700_Trop_RMSD.ncl}
+    additional_models:
+      - {name: Tilmes,  project: OBS,  type: insitu,  version: Trop,  start: 2000,  end: 2000,  path: /obspath/Tier2/Tilmes/}
+
+
+  DIAG_tro3rmsdcollect:
+    description: Grading and Taylor plot collect
+    scripts:
+      - {name: perfmetrics_grading_collect.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_RMSD_collect_Tilmes.ncl}
+      - {name: perfmetrics_taylor_collect.ncl,  cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_taylor_collect.ncl}
+
+
+# Fig. 11 (bottom-middle) ##############################################################################################
+
+  DIAG_tro3biasNHext:
+    description: BIAS grading plot for Tilmes ozonesonde data: NHext region
+    variables:
+      - {name: tro3_NHext, ref_model: Tilmes, field: T1M}
+    scripts:
+      - {name: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_250_NHext_BIAS.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_250_NHext_BIAS.ncl}
+      - {name: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_500_NHext_BIAS.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_500_NHext_BIAS.ncl}
+      - {name: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_700_NHext_BIAS.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_700_NHext_BIAS.ncl}
+    additional_models:
+      - {name: Tilmes,  project: OBS,  type: insitu,  version: NHext,  start: 2000,  end: 2000,  path: /obspath/Tier2/Tilmes/}
+
+      
+  DIAG_tro3biasSHext:
+    description: BIAS grading plot for Tilmes ozonesonde data: SHext region
+    variables:
+      - {name: tro3_SHext, ref_model: Tilmes, field: T1M}
+    scripts:
+      - {name: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_250_SHext_BIAS.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_250_SHext_BIAS.ncl}
+      - {name: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_500_SHext_BIAS.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_500_SHext_BIAS.ncl}
+      - {name: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_700_SHext_BIAS.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_700_SHext_BIAS.ncl}
+    additional_models:
+      - {name: Tilmes,  project: OBS,  type: insitu,  version: SHext,  start: 2000,  end: 2000,  path: /obspath/Tier2/Tilmes/}
+      
+
+  DIAG_tro3biasTrop:
+    description: BIAS grading plot for Tilmes ozonesonde data: Trop region
+    variables:
+      - {name: tro3_Trop, ref_model: Tilmes, field: T1M}
+    scripts:
+      - {name: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_250_Trop_BIAS.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_250_Trop_BIAS.ncl}
+      - {name: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_500_Trop_BIAS.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_500_Trop_BIAS.ncl}
+      - {name: perfmetrics_main.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_700_Trop_BIAS.ncl}
+      - {name: perfmetrics_grading.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_cycle_monthlyclim_T1M_700_Trop_BIAS.ncl}
+    additional_models:
+      - {name: Tilmes,  project: OBS,  type: insitu,  version: Trop,  start: 2000,  end: 2000,  path: /obspath/Tier2/Tilmes/}
+
+
+  DIAG_tro3biascollect:
+    description: BIAS grading plot collect
+    scripts:
+      - {name: perfmetrics_grading_collect.ncl, cfg_file: ./nml/cfg_righi15gmd/tropo3/cfg_perfmetrics_grading_BIAS_collect_Tilmes.ncl}
+
