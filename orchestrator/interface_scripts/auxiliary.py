@@ -61,42 +61,6 @@ def error(string):
     logger.error("%s", string)
     sys.exit(1)
 
-def get_header():
-    """ @brief Print the ESMValTool header
-        @param project_info dictionary with the necessary information
-    """
-
-    line1 = 54 * "_"
-    line2 = 70 * "_"
-
-    header = [
-        "",
-        line1,
-        r"  _____ ____  __  ____     __    _ _____           _  ",
-        r" | ____/ ___||  \/  \ \   / /_ _| |_   _|__   ___ | | ",
-        r" |  _| \___ \| |\/| |\ \ / / _` | | | |/ _ \ / _ \| | ",
-        r" | |___ ___) | |  | | \ V / (_| | | | | (_) | (_) | | ",
-        r" |_____|____/|_|  |_|  \_/ \__,_|_| |_|\___/ \___/|_| ",
-        line1,
-        "",
-        " http://www.esmvaltool.org/",
-        line2,
-        "",
-        "CORE DEVELOPMENT TEAM AND CONTACTS:",
-        "  Veronika Eyring (PI; DLR, Germany - veronika.eyring@dlr.de)",
-        "  Bjoern Broetz (DLR, Germany - bjoern.broetz@dlr.de)",
-        "  Nikolay Koldunov (AWI, Germany - nikolay.koldunov@awi.de)",
-        "  Axel Lauer (DLR, Germany - axel.lauer@dlr.de)",
-        "  Benjamin Mueller (LMU, Germany - b.mueller@iggf.geo.uni-muenchen.de)",
-        "  Valeriu Predoi (URead, UK - valeriu.predoi@ncas.ac.uk)",
-        "  Mattia Righi (DLR, Germany - mattia.righi@dlr.de)",
-        "  Javier Vegas-Regidor (BSC, Spain - javier.vegas@bsc.es)",
-        line2,
-        "",
-    ]
-
-    return "\n".join(header)
-
 
 def ncl_version_check():
     """ @brief Check the NCL version
