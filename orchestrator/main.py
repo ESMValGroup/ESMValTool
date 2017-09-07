@@ -54,6 +54,7 @@ from interface_scripts.auxiliary import ncl_version_check
 from interface_scripts.yaml_parser import Parser as Ps
 
 logger = logging.getLogger('ESMValTool')
+logger.addHandler(logging.NullHandler())
 
 # Define ESMValTool version
 __version__ = "2.0.0"
