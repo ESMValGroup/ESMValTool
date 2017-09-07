@@ -613,9 +613,8 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
     #################### 2. LEVEL/TIME/AREA OPS #################################################
 
     # SELECT LEVEL: PREPROCESS['select_level']
-    # so far, this implementation selects and saves
-    # a single level; it could be expanded for multiple levels
-    # -> select_level can be a list
+    # SELECT_LEVEL could be a single element or a [list]
+    # with multiple values 
     if select_level != 'None':
 
         # a few basic checks on the select_level values
@@ -626,14 +625,14 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
             except (AttributeError, "'int' object has no attribute 'split'"):
                 logger.warning("Vertical levels must be either int, string or list " + select_level)
                 pass
-        elif isinstance(select_level, int):
-            vlevels = select_level
+        elif isinstance(select_level, int) or isinstance(select_level, float):
+            vlevels = [select_level]
             psl = 2
         elif isinstance(select_level, list):
             vlevels = select_level
             psl = 2
         else:
-            logger.warning("Vertical levels must be int, string or list " + select_level + " - no select level!")
+            logger.warning("Vertical levels must be int, float, string or list " + select_level + " - no select level!")
             psl = 0
             
 
@@ -641,33 +640,40 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
 
             logger.info(" >>> preprocess.py >>>  Calling regrid to select vertical level " + str(vlevels))
 
-            vscheme = 'linear' # optionality needed
+            # check cube has 'air_pressure' coordinate
+            ap = reft_cube.coord('air_pressure')
+            if ap is None:
+                logger.warning(" >>> preprocess.py >>>  Trying to select level but cube has no air_pressure coordinate ")
+            else:
+                ap_vals = ap.points
+                logger.info(" >>> preprocess.py >>> Cube air pressure values " + str(ap_vals))
 
-            reft_cube = vip(reft_cube, vlevels, vscheme)
 
-            # check cube
-            #########################
-            #if project_name == 'CMIP5':
-            #    checker = CC(reft_cube, var_info, automatic_fixes=True)
-            #    checker.check_data()
-            # ATTENTION: this check throws an error for CMIP5_bcc-csm1-1_Amon_historical_r1i1p1_T3M_ta_2000-2002.nc
-            # The error rings up in all subsequent checker.check_data() calls (if this is commented out)
-            # File "/group_workspaces/jasmin/ncas_cms/valeriu/ESMValTool/orchestrator/parser_newbranch_31Aug17/interface_scripts/cmor_check.py", line 101, in report_errors
-            # raise CMORCheckError(msg)
-            # interface_scripts.cmor_check.CMORCheckError: There were errors in variable ta:
-            # ta: has values > valid_max = 336.3
-            # this is most probably due to interpolation errors
-            # FIXME: probably Bill should look into this!
-            #############################
+                # warn if selected levels are outside data bounds
+                if min(vlevels) < min(ap_vals):
+                    logger.warning(" >>> preprocess.py >>>  Selected pressure level below lowest data point, expect large extrapolation errors! ")
+                if max(vlevels) > max(ap_vals):
+                    logger.warning(" >>> preprocess.py >>>  Selected pressure level above highest data point, expect large extrapolation errors! ")
 
-            # save intermediary
-            if save_intermediary_cubes is True:
-                latest_saver = latest_saver.strip('.nc') + '_SL' + str(vlevels) + '.nc'
-                iris.save(reft_cube, latest_saver)
+                vscheme = 'linear' # optionality needed
 
-            # save to default path (this file will change with
-            # every iteration of preprocess step)
-            iris.save(reft_cube, project_info['TEMPORARY']['outfile_fullpath'])
+                reft_cube = vip(reft_cube, vlevels, vscheme)
+
+                # check cube
+                #########################
+                #if project_name == 'CMIP5':
+                #    checker = CC(reft_cube, var_info, automatic_fixes=True)
+                #    checker.check_data()
+
+                # save intermediary
+                if save_intermediary_cubes is True:
+                    vnames = '_'.join(['SL' + str(v) for v in vlevels])
+                    latest_saver = latest_saver.strip('.nc') + '_' + vnames + '.nc'
+                    iris.save(reft_cube, latest_saver)
+
+                # save to default path (this file will change with
+                # every iteration of preprocess step)
+                iris.save(reft_cube, project_info['TEMPORARY']['outfile_fullpath'])
 
     #################### 3. REGRID ####################################################
     if target_grid != 'None':
