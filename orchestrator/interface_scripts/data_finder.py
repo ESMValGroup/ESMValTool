@@ -8,6 +8,10 @@ Authors: Valeriu Predoi, University of Reading, valeriu.predoi@ncas.ac.uk
 import sys, os
 import subprocess
 from datetime import datetime
+import logging
+
+# start the logging procedure
+logger = logging.getLogger('ESMValTool')
 
 def cmip5_model2inst(model): ## CHECK-ME: A dictionary is preferred to avoid using find, which causes some issues on some machines in the past (too slow)
     """
@@ -79,6 +83,8 @@ def cmip5_model2inst(model): ## CHECK-ME: A dictionary is preferred to avoid usi
     instdict['MRI-ESM1'] = 'MRI'
     instdict['MRI-AGCM3-2S'] = 'MRI'
 
+    return instdict[model]
+
 
 def cmip5_mip2realm_freq(mip): ## CHECK-ME: Same as above
     """
@@ -101,7 +107,7 @@ def cmip5_mip2realm_freq(mip): ## CHECK-ME: Same as above
     if mip in mipdict.keys():
         return mipdict[mip]
     else:
-        print "ERROR"
+        logger.error("ERROR - CMIP5: can not map mip to realm. Exiting")
     
 
 def get_input_filelist(project_info, model, var): ## FIX-ME
@@ -109,18 +115,9 @@ def get_input_filelist(project_info, model, var): ## FIX-ME
 
     # project_info is supposed to contain all the information from the config file
     # Here in particular rootpath and drs are needed (also as dictionaries)
-
-    ## The rootpath is defined in config but now is project-dependent!
-    ## Define as dictionary (is this possible in config.ini? Otherwise switch to yaml...)
-    precise_rootpaths = ['rootpath_CMIP5', 'rootpath_OBS', 'rootpath_obs4mips']
-    string = 'rootpath_' + model['project']
-    if string in precise_rootpaths:
-        root = project_info['GLOBAL'][string]
-    else:
-        if 'rootpath_default' in project_info['GLOBAL'].keys():
-            root = project_info['GLOBAL']['rootpath_default']
-        else:
-            print "ERROR: rootpath for project " + model['project'] + " not defined in config"
+    # Order of setting variables:
+    # - first get the drs, so we condition on it if at all
+    # - second, set the root depending on drs
 
     ## Directory structure is defined in config and also project-depentend (at present only used for CMIP5)
     key_drs = 'drs_' + model['project']
@@ -128,6 +125,28 @@ def get_input_filelist(project_info, model, var): ## FIX-ME
         drs = project_info['GLOBAL'][key_drs]
     else:
         drs = None
+
+    ## The rootpath is defined in config but now is project-dependent!
+    ## Define as dictionary (is this possible in config.ini? Otherwise switch to yaml...)
+    # no dictionary at the moment, just individual subscripts
+
+    # if drs at all
+    if drs == 'BADC' or drs == 'DKRZ':
+        root = project_info['GLOBAL']['host_root']
+        logger.info("Root path set to: %s" % root)
+    # FIXME check cases ETHZ, SMHI...
+    else:    
+        precise_rootpaths = ['rootpath_CMIP5', 'rootpath_OBS', 'rootpath_obs4mips']
+        string = 'rootpath_' + model['project']
+        if string in precise_rootpaths:
+            root = project_info['GLOBAL'][string]
+            logger.info("Root path set to: %s" % root)
+        else:
+            if 'rootpath_default' in project_info['GLOBAL'].keys():
+                root = project_info['GLOBAL']['rootpath_default']
+                logger.info("Root path set to: %s" % root)
+            else:
+                logger.error("ERROR: rootpath for project %s not defined in config" % model['project'])
 
     ## Trying to implement the variable-dependent model keys (see section 4.1 yaml document)
     ## Basic idea: same model used by different variable with different mip/ensemble/exp. In
@@ -139,7 +158,7 @@ def get_input_filelist(project_info, model, var): ## FIX-ME
         model['ensemble'] = var['ensemble']
     if 'exp' in var.keys():
         model['exp'] = var['exp']
-    
+
     module = globals()[model['project']]()
     files = module.infile_path(root, model, var, drs)
 
@@ -217,7 +236,7 @@ class CMIP5(DataFinder):
 
         if (drs == 'BADC'):
 
-            ## host_root = '/badc/cmip5/data/cmip5/output1/' ## must be given in config, not here
+            logger.info('Getting CMIP5 data from BADC')
 
             # Latest version is always called 'latest' at BADC
             latest = 'latest'
@@ -226,14 +245,16 @@ class CMIP5(DataFinder):
                                 cmip5_model2inst(model['name']),
                                 model['name'],
                                 model['exp'],
-                                cmip5_mip2realm_freq(model['mip'])[0],
                                 cmip5_mip2realm_freq(model['mip'])[1],
+                                cmip5_mip2realm_freq(model['mip'])[0],
                                 model['mip'],
                                 model['ensemble'],
                                 latest,
                                 var['name']])
 
         elif (drs == 'DKRZ'):
+
+            logger.info('Getting CMIP5 data from DKRZ')
 
             ## host_root = '/mnt/lustre01/work/kd0956/CMIP5/data/cmip5/output1/'  ## must be given in config, not here
 
@@ -263,6 +284,9 @@ class CMIP5(DataFinder):
                                 var['name']])
 
         elif (drs == 'ETHZ'):
+
+            logger.info('Getting CMIP5 data with ETHZ root format')
+
             dirname = '/'.join([rootpath, 
                                 model['exp'], 
                                 model['mip'], 
@@ -277,13 +301,16 @@ class CMIP5(DataFinder):
                                 cmip5_mip2realm_freq(model['mip'])[1]])
 
         elif drs is None:
+
+            logger.info('No DRS rootpath specified')
+
             dirname = rootpath
             if (not dirname.endswith('/')):
                 dirname = dirname + '/'
 
         else:
-            print "ERROR"
-            ## FIX-ME: error message as appropriate
+
+            logger.error("ERROR: can not establsh path to CMIP5 files")
 
         # The CMIP5 filename is always the same, only the drs changes
         filename = '_'.join([var['name'],

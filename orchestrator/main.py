@@ -223,30 +223,6 @@ class configFile:
         else:
             logger.warning("no save_intermediary_cubes in config, assuming False")
             glob['save_intermediary_cubes'] = False
-        # change to data_finder.py
-        ###########################
-        #if cp.has_option('GLOBAL','model_rootpath'): ## Use this for all classes except the ones for obs_rootpath
-        #    mp = cp.get('GLOBAL','model_rootpath')
-        #    glob['model_rootpath'] = mp
-        #else:
-        #    print >> sys.stderr,"PY  ERROR:  >>> main.py >>> Model root path not defined"
-        #    sys.exit(1)
-        #if cp.has_option('GLOBAL','obs_rootpath'):  ## Use this for OBS, obs4mips, ana4mips classes
-        #    op = cp.get('GLOBAL','obs_rootpath')
-        #    glob['obs_rootpath'] = op
-        #else:
-        #    print >> sys.stderr,"PY  ERROR:  >>> main.py >>> Observations root path not defined"
-        #    sys.exit(1)
-        #if cp.has_option('GLOBAL','rawobs_rootpath'):  ## For reformat_obs only, to be used later
-        #    rop = cp.get('GLOBAL','rawobs_rootpath')
-        #    glob['rawobs_rootpath'] = rop
-        #if cp.has_option('GLOBAL','cmip5_dirtype') :
-        #    ddd = cp.get('GLOBAL','cmip5_dirtype')
-        #    glob['cmip5_dirtype'] = ddd
-        #    permitted_values = ['default', 'badc', 'dkrz', 'ethz', 'smhi', 'None']
-        #    if ddd not in permitted_values:
-        #        print >> sys.stderr,"PY  ERROR:  >>> main.py >>> Unrecognized option for cmip5_dirtype in config: ", ddd
-        #        sys.exit(1)
         if cp.has_option('GLOBAL','rootpath_CMIP5'):
             mp = cp.get('GLOBAL','rootpath_CMIP5')
             glob['rootpath_CMIP5'] = mp
@@ -259,6 +235,25 @@ class configFile:
         else:
             logger.error("Observations root path not defined")
             sys.exit(1)
+        if cp.has_option('GLOBAL','drs_CMIP5'):
+            drs = cp.get('GLOBAL','drs_CMIP5')
+            glob['drs_CMIP5'] = drs
+            # check if drs_CMIP5 has host_root fro BADC and DKRZ
+            if drs == 'BADC' or drs == 'DKRZ':
+                if cp.has_option('GLOBAL','host_root'):
+                    hroot = cp.get('GLOBAL','host_root')
+                    glob['host_root'] = hroot
+                else:
+                    logger.error("Using database DRS for CMIP5: database root path not defined")
+                    sys.exit(1)
+        else:
+            logger.warning("No DRS specifier, assuming None and continuing")
+        if cp.has_option('GLOBAL','run_diagnostic') :
+            run_diagnostic = self.s2b(cp.get('GLOBAL','run_diagnostic'))
+            glob['run_diagnostic'] = run_diagnostic
+        else:
+            logger.warning("no run_diagnostic in config, assuming True")
+            glob['run_diagnostic'] = True
         return glob
 
 
@@ -549,16 +544,18 @@ for c in project_info['DIAGNOSTICS']:
             pp.run_executable(executable, project_info, verbosity,
                               exit_on_warning)
 
-            # run diagnostics
-            executable = "./diag_scripts/" + scrpts[i]['script']
-            configfile = scrpts[i]['cfg_file']
-            logger.info("Running diag_script: %s", executable)
-            logger.info("with configuration file: %s", configfile)
-            pp.run_executable(executable,
-                              project_info,
-                              verbosity,
-                              exit_on_warning,
-                              launcher_arguments=None)
+            # run diagnostics...
+            # ...unless run_diagnostic is specifically set to False
+            if project_info['GLOBAL']['run_diagnostic'] is True:
+                executable = "./diag_scripts/" + scrpts[i]['script']
+                configfile = scrpts[i]['cfg_file']
+                logger.info("Running diag_script: %s", executable)
+                logger.info("with configuration file: %s", configfile)
+                pp.run_executable(executable,
+                                  project_info,
+                                  verbosity,
+                                  exit_on_warning,
+                                  launcher_arguments=None)
 
 
 # delete environment variable

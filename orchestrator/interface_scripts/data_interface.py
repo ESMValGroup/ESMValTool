@@ -217,8 +217,8 @@ class Data_interface(object):
 
         model_ids = []
         for model in project_info['ALLMODELS']:
-            print('Model is:')
-            print(model)
+            # print('Model is:')
+            # print(model)
             if "id" in model.keys():
                 model_ids.append(model['id'])
             if "ref" in model.keys():

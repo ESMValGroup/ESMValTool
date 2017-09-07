@@ -147,7 +147,7 @@ def get_dict_key(model):
 
     return dict_key
 
-def get_cf_infile(project_info, current_diag, model, current_var_name):
+def get_cf_infile(project_info, current_diag, model, current_var_dict):
     """@brief Path to input netCDF files for models
        @param project_info all info dictionary
        @param currDiag(dict) current diagnostic
@@ -388,8 +388,15 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
     # Variable put in environment
     os.environ['__ESMValTool_base_var'] = variable.name
 
+    #############################'
+    # need this since we are still using the old variable derivation through Var() object
+    vari = {}
+    vari['name'] = variable.name
+    vari['field'] = variable.field
+    ##############################
+
     # Build input and output file names
-    infileslist = get_cf_infile(project_info, current_diag, model, variable.name)[variable.name]
+    infileslist = get_cf_infile(project_info, current_diag, model, vari)[variable.name]
 
     # VP-FIXME-question : the code can glob multiple files, but how to handle the case when globbing fails; currently
     # the diagnostic is run on only the first file
@@ -400,11 +407,7 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
         logger.info("netCDF globbing has failed")
         logger.info("Running diagnostic ONLY on the first file")
         infiles = infileslist[0]
-    # need this since we are still using the old variable derivation through Var() object
-    vari = {}
-    vari['name'] = variable.name
-    vari['field'] = variable.field
-    ##############################
+
     outfilename = df.get_output_file(project_info, model, vari).split('/')[-1]
     logger.info("Reformatted file name: %s", outfilename)
     # get full outpaths - original cmorized files that are preserved all through the process
@@ -717,7 +720,7 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
                                 if obs_model['name'] == ref_model:
 
                                     logger.info("Regridding on ref_model %s", ref_model)
-                                    tgt_nc_grid = get_cf_infile(project_info, current_diag, obs_model, variable.name)[variable.name][0]
+                                    tgt_nc_grid = get_cf_infile(project_info, current_diag, obs_model, vari)[variable.name][0]
                                     tgt_grid_cube = iris.load_cube(tgt_nc_grid)
 
                                     logger.info("Target regrid cube summary --->\n%s", tgt_grid_cube)
@@ -911,7 +914,14 @@ class Diag:
 
             # first try: use base variables provided by variable_defs script
             os.environ['__ESMValTool_base_var'] = base_var.name
-            infiles = get_cf_infile(project_info, current_diag, model, base_var.name)[base_var.name]
+
+            # need this since we are still using the old variable derivation through Var() object
+            vari = {}
+            vari['name'] = base_var.name
+            vari['field'] = base_var.field
+            ##############################
+
+            infiles = get_cf_infile(project_info, current_diag, model, vari)[base_var.name]
 
             if len(infiles) == 0:
                 logger.info("No input files found for %s (%s)", base_var.name, base_var.field)
@@ -920,7 +930,7 @@ class Diag:
                 base_var.fld = base_var.fld0
 
                 # try again with input variable = base variable (non derived)
-                infile = get_cf_infile(project_info, current_diag, model, base_var.name)[base_var.name]
+                infile = get_cf_infile(project_info, current_diag, model, vari)[base_var.name]
 
                 if len(infile) == 0:
                     raise exceptions.IOError(2, "No input files found in ",
