@@ -566,7 +566,8 @@ if __name__ == '__main__':
     try:
         main()
     except:
-        logger.error("Program terminated abnormally, see stack trace below for more information")
-        raise
+        logger.exception("Program terminated abnormally, see stack trace "
+                         "below for more information", exc_info=True)
+        sys.exit(1)
     else:
         logger.info("Run was succesful")
