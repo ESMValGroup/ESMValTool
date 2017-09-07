@@ -242,9 +242,9 @@ begin
         ;; Attach station info as attribute
         data_arr@stname = str_squeeze(str_get_field( \
             obser_model_pts&station(stID), 1, ";"))
-        data_arr@stname = str_sub_str(data_arr@stname, " ", "_")
-        data_arr@stname = str_sub_str(data_arr@stname, "(", "_")
-        data_arr@stname = str_sub_str(data_arr@stname, ")", "_")
+        ;data_arr@stname = str_sub_str(data_arr@stname, " ", "_")
+        ;data_arr@stname = str_sub_str(data_arr@stname, "(", "_")
+        ;data_arr@stname = str_sub_str(data_arr@stname, ")", "_")
         data_arr@stlat  = tofloat(str_get_field( \
             obser_model_pts&station(stID), 2, ";"))
         data_arr@stlon  = tofloat(str_get_field( \
@@ -257,7 +257,9 @@ begin
         data_arr@res_xyLineThicknesses   = thicks
         data_arr@res_xyDashPatterns      = dashes
 
-        plot_file = diag_script_info@network + "_" + data_arr@stname \
+        ;plot_file = diag_script_info@network + "_" + data_arr@stname \
+        plot_file = diag_script_info@network + "_" + data_arr@stlat \
+            + "_" + data_arr@stlon \
             + "_timeseries_" + \
             diag_script_info@time_avg + "_" + min(years) + "-" + max(years) + \
             "_" + var0

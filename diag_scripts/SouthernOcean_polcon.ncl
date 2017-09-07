@@ -349,7 +349,7 @@ begin
     num_pages = ceil( dimsizes(plots) / (tofloat(nvert*nhori)) ) ; = # of files
     if (num_pages.eq.1) then  ; only 1 file: no sequence number added
         plot_fname = wks@fullname
-        id = "#idSeaIcePolcon"
+        id = diag_script + "_" + variables(0)
         climofiles = interface_get_inpaths(0) + "/" + \
                      interface_get_infile(var0, field_type0, 0)
         if (dimsizes(models@name).gt.1) then
@@ -375,7 +375,7 @@ begin
             seq_num = sprinti("%0.6i", ipage)
             plot_fname = plotname + seq_num + "." + \
                          plotname_split(dimsizes(plotname_split)-1)
-            id = "#idSeaIcePolcon" + seq_num
+            id = diag_script + "_" + variables(0) + "_" + seq_num
             if (ipage.ne.num_pages) then
                 ind_models_shown = ispan( (ipage-1)*nvert*nhori, \
                                           ipage*nvert*nhori-1, 1 )
