@@ -5,9 +5,13 @@ Authors: Valeriu Predoi, University of Reading, valeriu.predoi@ncas.ac.uk
 """
 
 # ---- Import standard modules to the python path.
+import logging
 import sys, os
 import subprocess
 from datetime import datetime
+
+logger = logging.getLogger(__name__)
+
 
 def cmip5_model2inst(model): ## CHECK-ME: A dictionary is preferred to avoid using find, which causes some issues on some machines in the past (too slow)
     """
@@ -101,7 +105,7 @@ def cmip5_mip2realm_freq(mip): ## CHECK-ME: Same as above
     if mip in mipdict.keys():
         return mipdict[mip]
     else:
-        print "ERROR"
+        logger.warning("mip %s not found in CMIP5", mip)
     
 
 def get_input_filelist(project_info, model, var): ## FIX-ME
@@ -120,7 +124,7 @@ def get_input_filelist(project_info, model, var): ## FIX-ME
         if 'rootpath_default' in project_info['GLOBAL'].keys():
             root = project_info['GLOBAL']['rootpath_default']
         else:
-            print "ERROR: rootpath for project " + model['project'] + " not defined in config"
+            logger.warning("rootpath for project %s not defined in config", model['project'])
 
     ## Directory structure is defined in config and also project-depentend (at present only used for CMIP5)
     key_drs = 'drs_' + model['project']
@@ -282,7 +286,7 @@ class CMIP5(DataFinder):
                 dirname = dirname + '/'
 
         else:
-            print "ERROR"
+            logger.warning("Something wrong .. TODO: implement error message")
             ## FIX-ME: error message as appropriate
 
         # The CMIP5 filename is always the same, only the drs changes
