@@ -16,22 +16,19 @@ class Test(unittest.TestCase):
 
     def setUp(self):
         # implement here everything you would like to see happen BEFORE a test is executed
-
-        # to allow that test find the ESMValTool modules, we add here pathes to the system path
-        esmval_path = os.path.dirname(os.path.realpath(__file__)) + os.sep + '..' + os.sep
-        sys.path.append(esmval_path)
+        pass
 
     def tearDown(self):
         # implement here everything you would like to see happen AFTER a test was executed
         pass
 
     def test_project_init(self):
-        from interface_scripts.projects import Project
+        from esmvaltool.interface_scripts.projects import Project
         # most simple test of init
         Project()
 
     def test_cmip5_init(self):
-        from interface_scripts.projects import CMIP5
+        from esmvaltool.interface_scripts.projects import CMIP5
         p = CMIP5()
         self.assertEqual(p.basename, 'CMIP5')
 
