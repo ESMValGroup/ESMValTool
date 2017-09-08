@@ -472,26 +472,26 @@ begin
             data1@res_tmXMajorGridThicknessF = 1.0  ; thickness of major
             map = contourplot(wks, data1, "dummy_for_var")
 
-    ; add meta data to plot (for reporting)
+            ; add meta data to plot (for reporting)
 
-    climofiles = new(2, string)
-    climofiles(0) = interface_get_inpaths(imod) + "/" + \
-        interface_get_infile(variables(0), field_types(0), imod)
-    climofiles(1) = interface_get_inpaths(idx_ref) + "/" + \
-        interface_get_infile(variables(0), field_types(0), idx_ref)
+            climofiles = new(2, string)
+            climofiles(0) = interface_get_inpaths(imod) + "/" + \
+                interface_get_infile(variables(0), field_types(0), imod)
+            climofiles(1) = interface_get_inpaths(idx_ref) + "/" + \
+                interface_get_infile(variables(0), field_types(0), idx_ref)
 
-    alltags = array_append_record(tags, (/"PT_time", "ST_diff", "DM_reg"/), 0)
+            alltags = array_append_record(tags, (/"PT_time", "ST_diff", "DM_reg"/), 0)
 
-    modelsname = (/models@name(imod), models@name(idx_ref)/)
+            modelsname = (/models@name(imod), models@name(idx_ref)/)
 
-    caption = "Difference in mean " + variables(0) + " for defined domain: (" \
-              + latmin + "-" + latmax + " N, " + lonmin + "-" + lonmax + " W)."
+            caption = "Difference in mean " + variables(0) + " for defined domain: (" \
+                      + latmin + "-" + latmax + " N, " + lonmin + "-" + lonmax + " W)."
 
-    id = diag_script + "_" + variables(0)
+            id = diag_script + "_" + variables(0)
 
-    contrib_authors = (/"A_vanu_be"/)
+            contrib_authors = (/"A_vanu_be"/)
 
-    ESMValMD(wks@fullname, alltags, caption, id, variables(0), modelsname, climofiles, diag_script, contrib_authors)
+            ESMValMD(wks@fullname, alltags, caption, id, variables(0), modelsname, climofiles, diag_script, contrib_authors)
 
 
             delete(data1)
