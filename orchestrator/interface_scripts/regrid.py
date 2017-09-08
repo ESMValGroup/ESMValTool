@@ -285,6 +285,14 @@ def _create_cube(src_cube, data, levels):
 
     return result
 
+def vinterp_schemes():
+    """
+    Simple functional to list what available
+    vinterp schemes
+    CHANGE this everytime you change vinterp()
+    """
+    vs = ['linear', 'nearest']
+    return vs
 
 def vinterp(src_cube, levels, scheme):
     """
