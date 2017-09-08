@@ -28,6 +28,7 @@
 ;;    days, hours, minutes, seconds are not checked
 ;;
 ;; Modification history
+;;    20170908-A_bock_ls: Added reporting
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;;                        of the code
 ;;    20140416-A_vanu_be: written.
@@ -53,6 +54,8 @@ load "./interface_scripts/messaging.ncl"
 
 load "./plot_scripts/ncl/contourplot.ncl"
 load "./plot_scripts/ncl/contour_maps.ncl"
+
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 ;;#############################################################################
 ;; Collect information
@@ -468,6 +471,29 @@ begin
             data1@res_tmXMajorGrid   = True         ; show major grid lines
             data1@res_tmXMajorGridThicknessF = 1.0  ; thickness of major
             map = contourplot(wks, data1, "dummy_for_var")
+
+    ; add meta data to plot (for reporting)
+
+    climofiles = new(2, string)
+    climofiles(0) = interface_get_inpaths(imod) + "/" + \
+        interface_get_infile(variables(0), field_types(0), imod)
+    climofiles(1) = interface_get_inpaths(idx_ref) + "/" + \
+        interface_get_infile(variables(0), field_types(0), idx_ref)
+
+    alltags = array_append_record(tags, (/"PT_time", "ST_diff", "DM_reg"/), 0)
+
+    modelsname = (/models@name(imod), models@name(idx_ref)/)
+
+    caption = "Difference in mean " + variables(0) + " for defined domain: (" \
+              + latmin + "-" + latmax + " N, " + lonmin + "-" + lonmax + " W)."
+
+    id = diag_script + "_" + variables(0)
+
+    contrib_authors = (/"A_vanu_be"/)
+
+    ESMValMD(wks@fullname, alltags, caption, id, variables(0), modelsname, climofiles, diag_script, contrib_authors)
+
+
             delete(data1)
             delete([/var_prof_vint, var_prof_diff/])
             delete([/utime_var, yy_var, mm_var/])
