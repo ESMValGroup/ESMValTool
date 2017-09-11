@@ -431,7 +431,7 @@ def time_handling(year1, year1_model, year2, year2_model):
             return True
     elif year1 >= int(year1_model) and year2 >= int(year2_model):
         # data is entirely after model
-        if year1 >= int(year2_model):
+        if year1 > int(year2_model):
             return False
         # edge on
         elif year1 == int(year2_model):
