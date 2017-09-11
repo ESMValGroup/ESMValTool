@@ -308,44 +308,44 @@ begin
         delete(pan)
         delete(n_p)
 
-    ; add meta data to plot (for reporting)
+        ; add meta data to plot (for reporting)
 
-    climofiles = new(dim_MOD, string)
+        climofiles = new(dim_MOD, string)
 
-    do ii = 0, dim_MOD - 1
-        climofiles(ii) = \
-            interface_get_inpaths(ii) + "/" \
-            + interface_get_infile(variables(0), field_types(0), ii)
-    end do
+        do ii = 0, dim_MOD - 1
+            climofiles(ii) = \
+                interface_get_inpaths(ii) + "/" \
+                + interface_get_infile(variables(0), field_types(0), ii)
+        end do
 
-    domain = "DM_reg"
+        domain = "DM_reg"
 
-    if ((field_type0.eq."T3M").or.(field_type0.eq."T2Ms")) then
-        if ((diag_script_info@latrange_basic(0).eq.-90.).and. \
-            (diag_script_info@latrange_basic(1).eq.90.).and.  \
-            (diag_script_info@lonrange_basic(0).eq.0.).and. \
-            (diag_script_info@lonrange_basic(1).eq.360.)) then
-            domain = "DM_glob"
+        if ((field_type0.eq."T3M").or.(field_type0.eq."T2Ms")) then
+            if ((diag_script_info@latrange_basic(0).eq.-90.).and. \
+                (diag_script_info@latrange_basic(1).eq.90.).and.  \
+                (diag_script_info@lonrange_basic(0).eq.0.).and. \
+                (diag_script_info@lonrange_basic(1).eq.360.)) then
+                domain = "DM_glob"
+            end if
+        else
+            if ((diag_script_info@latrange_basic(0).eq.-90.).and. \
+                (diag_script_info@latrange_basic(1).eq.90.)) then
+                domain = "DM_glob"
+            end if
         end if
-    else
-        if ((diag_script_info@latrange_basic(0).eq.-90.).and. \
-            (diag_script_info@latrange_basic(1).eq.90.)) then
-            domain = "DM_glob"
-        end if
-    end if
 
-    alltags = array_append_record(tags, (/"PT_geo", "ST_mean", domain/), 0)
+        alltags = array_append_record(tags, (/"PT_geo", "ST_mean", domain/), 0)
 
-    caption = "Global distribution of variable " + var0 + " and " + var1 \
-              + " for given domain and season."
+        caption = "Global distribution of variable " + var0 + " and " + var1 \
+                  + " for given domain and season."
 
-    id = diag_script + "_" + variables(0)
+        id = diag_script + "_" + variables(0)
 
-    contrib_authors = (/"A_wang_sh"/)
+        contrib_authors = (/"A_wang_sh"/)
 
-    outfile = output_dir + output_filename + "." + output_file_type
+        outfile = output_dir + output_filename + "." + output_file_type
 
-    ESMValMD(outfile, alltags, caption, id, (/var0, var1/), models@name, climofiles, diag_script, contrib_authors)
+        ESMValMD(outfile, alltags, caption, id, (/var0, var1/), models@name, climofiles, diag_script, contrib_authors)
 
 
     end do  ; end seasons
