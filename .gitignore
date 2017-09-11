@@ -13,6 +13,7 @@ htmlcov/
 # Temporary files in interface
 interface_data/curr_trace_indent.txt
 interface_data/*.tmp
+interface_data/ncl.interface
 
 # Created by PyCharm
 .idea/
