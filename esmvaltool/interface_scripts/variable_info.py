@@ -6,6 +6,10 @@ import os
 import json
 import glob
 import sys
+import errno
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class CMIP6Info(object):
@@ -297,9 +301,7 @@ class CMIP5Info(object):
 
         self._cmor_folder = os.path.join(cmor_tables_path, 'Tables')
         if not os.path.isdir(self._cmor_folder):
-            print >> sys.stderr, "PY  ERROR:  >>> variable_info.py >>> Looking for CMOR tables in: ", self._cmor_folder
-            print >> sys.stderr, "PY  ERROR:  >>> variable_info.py >>> No CMOR tables in path...exiting"
-            sys.exit(1)
+            raise OSError(errno.ENOTDIR, "CMOR tables path is not a directory", self._cmor_folder)
 
         self.tables = {}
 
