@@ -1,68 +1,91 @@
 #!/usr/bin/env python
 """ESMValTool installation script"""
+# This script installs dependencies available on PyPI
+#
+# Dependencies that need to be installed some other way (e.g. conda):
+# - ncl
+# - iris
+# - basemap
 
 import sys
 import unittest
 
-import coverage
 from setuptools import Command, setup
 
-import esmvaltool
+PACKAGES = [
+    'esmvaltool',
+]
 
 
 class RunTests(Command):
-    """Run tests and generate a coverage report htmlcov/index.html"""
+    """Class to run tests and generate a coverage report htmlcov/index.html"""
+    user_options = []
 
-    cov = coverage.Coverage(source=['esmvaltool'])
-    cov.set_option("run:branch", True)
-    cov.set_option("html:title", 'Coverage report for ESMValTool')
-    cov.start()
+    def initialize_options(self):
+        """Do nothing"""
 
-    loader = unittest.TestLoader()
-    tests = loader.discover('tests', pattern='test_*.py', top_level_dir='.')
-    runner = unittest.TextTestRunner(verbosity=2)
-    results = runner.run(tests)
+    def finalize_options(self):
+        """Do nothing"""
 
-    cov.stop()
-    cov.save()
-    cov.report()
-    cov.html_report()
+    def run(self):
+        """Run tests and generate a coverage report."""
+        import coverage
+        
+        cov = coverage.Coverage(source=PACKAGES)
+        cov.set_option("run:branch", True)
+        cov.set_option("html:title", 'Coverage report for ESMValTool')
+        cov.start()
 
-    sys.exit(0 if results.wasSuccessful() else 1)
+        loader = unittest.TestLoader()
+        tests = loader.discover(
+            'tests', pattern='test_*.py', top_level_dir='.')
+        runner = unittest.TextTestRunner(verbosity=2)
+        results = runner.run(tests)
+
+        cov.stop()
+        cov.save()
+        cov.report()
+        cov.html_report()
+
+        sys.exit(0 if results.wasSuccessful() else 1)
 
 
 with open('README.md') as readme:
     setup(
         name='ESMValTool',
-        version=esmvaltool.__version__,
+        version="2.0.0",
         description=readme.read(),
-        packages=[
-            'esmvaltool',
-        ],
+        packages=PACKAGES,
         # Include all version controlled files
         include_package_data=True,
         use_scm_version=True,
-        setup_requires=['setuptools_scm'],
+        setup_requires=[
+            'setuptools_scm',
+        ],
         install_requires=[
+            'cdo',
+            'cf_units',
+            'coverage',
+            'cython',
+            'esgf-pyclient',
             'numpy',
             'netCDF4',
-            'matplotlib'
-            'basemap',
-            'iris',
-            'esgf-pyclient',
-            'scientificpython',
+            'matplotlib',
+            'pyyaml',
+            'shapely',
         ],
-        tests_requires=[
-            'nose',
+        tests_require=[
+            'coverage',
             'easytest',
             'mock',
+            'nose',
             'pytest',
-            'coverage',
         ],
         entry_points={
-            'console_scripts': ['esmvaltool = esmvaltool.main:main'],
+            'console_scripts': [
+                'esmvaltool = esmvaltool.main:run',
+            ],
         },
         cmdclass={
             'test': RunTests,
-        },
-    )
+        }, )

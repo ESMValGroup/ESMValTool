@@ -313,6 +313,8 @@ def main():
         logger.info('Renamed existing run directory %s to %s',
                     run_dir, previous_run_dir)
 
+    logger.info("Using config file %s", config_file)
+
     # Check NCL version
     ncl_version_check()
 
@@ -327,6 +329,8 @@ def process_namelist(namelist_file, config_file):
 
     if not os.path.isfile(config_file):
         raise OSError(errno.ENOENT, "Specified config file does not exist", config_file)
+
+    logger.info("Processing namelist %s", namelist_file)
 
     os.environ['0_ESMValTool_version'] = __version__
     # we may need this
@@ -532,14 +536,17 @@ def process_namelist(namelist_file, config_file):
                 project_info['RUNTIME']['currDiag'].scripts = [scrpts[i]]
 
                 # this is hardcoded, maybe make it an option
-                executable = "./interface_scripts/derive_var.ncl"
+                script_root = os.path.dirname(__file__)
+                executable = os.path.join(script_root, "interface_scripts",
+                                          "derive_var.ncl")
                 logger.info("Calling %s for '%s'", executable, derived_var)
                 pp.run_executable(executable, project_info, verbosity,
                                   exit_on_warning)
 
                 # run diagnostics
-                executable = "./diag_scripts/" + scrpts[i]['script']
-                configfile = scrpts[i]['cfg_file']
+                executable = os.path.join(script_root, "diag_scripts",
+                                          scrpts[i]['script'])
+                configfile = os.path.join(script_root, scrpts[i]['cfg_file'])
                 logger.info("Running diag_script: %s", executable)
                 logger.info("with configuration file: %s", configfile)
                 pp.run_executable(executable,
@@ -562,8 +569,8 @@ def process_namelist(namelist_file, config_file):
                 "diagnostics see: %s", out_refs)
 
 
-if __name__ == '__main__':
-
+def run():
+    """ Run main, logging any exceptions."""
     try:
         main()
     except:
@@ -572,3 +579,7 @@ if __name__ == '__main__':
         sys.exit(1)
     else:
         logger.info("Run was succesful")
+
+
+if __name__ == '__main__':
+    run()

@@ -157,7 +157,7 @@ class ncl_launcher(launchers):
         """
         # Reset NCL trace back indent (available with verbosity=2)
         #print(self.filename)
-	f_ncl_indent = open('interface_data/curr_trace_indent.txt', "w")
+        f_ncl_indent = open('interface_data/curr_trace_indent.txt', "w")
         f_ncl_indent.write("0")
         f_ncl_indent.close()
 
@@ -166,9 +166,11 @@ class ncl_launcher(launchers):
                                             + ncl_executable
                                             + "\", is missing)")
 
+        script_root = os.path.dirname(os.path.dirname(__file__))
         run_application = subprocess.Popen("ncl " + ncl_executable, shell=True,
                                            stdin=open(os.devnull),
-                                           stdout=subprocess.PIPE)
+                                           stdout=subprocess.PIPE,
+                                           cwd=script_root)
         #run_application.wait()
         std_outerr = run_application.communicate()[0].split('\n')
         self.write_stdouterr(std_outerr, verbosity, exit_on_warning)
