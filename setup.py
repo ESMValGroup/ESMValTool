@@ -6,6 +6,8 @@
 # - ncl
 # - iris
 # - basemap
+# - cmip5-cmor-tables
+# - cmip6-cmor-tables
 
 import sys
 import unittest
