@@ -1,5 +1,5 @@
 """
-Integration tests for the :func:`esmvaltool.backend.regrid.vinterp` function.
+Integration tests for the :func:`esmvaltool.interface_scripts.regrid.vinterp` function.
 
 """
 
@@ -12,7 +12,7 @@ import numpy as np
 
 import tests
 from esmvaltool.interface_scripts.regrid import _MDI, vinterp
-from tests.unit.regrid import _make_cube, _make_vcoord
+from tests.unit.interface_scripts.regrid import _make_cube, _make_vcoord
 
 
 class Test(tests.Test):

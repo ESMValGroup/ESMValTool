@@ -1,5 +1,5 @@
 """
-Unit tests for the :func:`esmvaltool.backend.regrid.regrid` function.
+Unit tests for the :func:`esmvaltool.interface_scripts.regrid.regrid` function.
 
 """
 
@@ -58,7 +58,7 @@ class Test(tests.Test):
                                   coord=self.tgt_grid_coord)
         self.regrid_schemes = ['linear', 'nearest', 'area_weighted',
                                'unstructured_nearest']
-        self.mock_stock = self.patch('backend.regrid._stock_cube',
+        self.mock_stock = self.patch('esmvaltool.interface_scripts.regrid._stock_cube',
                                      side_effect=lambda arg: self.tgt_grid)
         self.mocks = [self.coord_system, self.coords, self.regrid,
                       self.src_cube, self.tgt_grid_coord, self.tgt_grid,

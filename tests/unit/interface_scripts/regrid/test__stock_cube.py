@@ -1,5 +1,5 @@
 """
-Unit tests for the :func:`esmvaltool.backend.regrid._stock_cube` function.
+Unit tests for the :func:`esmvaltool.interface_scripts.regrid._stock_cube` function.
 
 """
 
