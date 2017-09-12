@@ -12,9 +12,9 @@ from numpy import ma
 import numpy as np
 import unittest
 
-import backend.tests as tests
-from backend.tests.unit.regrid import _make_cube
-from backend.regrid import regrid
+import tests
+from tests.unit.regrid import _make_cube
+from esmvaltool.interface_scripts.regrid import regrid
 
 
 class Test(tests.Test):

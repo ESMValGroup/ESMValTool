@@ -11,9 +11,9 @@ import iris
 import numpy as np
 import unittest
 
-import backend.tests as tests
-from backend.tests.unit.regrid import _make_vcoord, _make_cube
-from backend.regrid import _MDI, vinterp
+import tests
+from tests.unit.regrid import _make_vcoord, _make_cube
+from esmvaltool.interface_scripts.regrid import _MDI, vinterp
 
 
 class Test(tests.Test):

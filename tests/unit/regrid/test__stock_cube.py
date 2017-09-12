@@ -12,10 +12,10 @@ import mock
 import numpy as np
 import unittest
 
-import backend.tests as tests
-from backend.regrid import (_LAT_MIN, _LAT_MAX, _LAT_RANGE,
+import tests
+from esmvaltool.interface_scripts.regrid import (_LAT_MIN, _LAT_MAX, _LAT_RANGE,
                             _LON_MIN, _LON_MAX, _LON_RANGE)
-from backend.regrid import _stock_cube as stock_cube
+from esmvaltool.interface_scripts.regrid import _stock_cube as stock_cube
 
 
 class Test(tests.Test):

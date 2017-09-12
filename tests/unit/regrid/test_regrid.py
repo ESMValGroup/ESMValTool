@@ -11,8 +11,8 @@ import iris
 import mock
 import unittest
 
-import backend.tests as tests
-from backend.regrid import _cache, horizontal_schemes, regrid
+import tests
+from esmvaltool.interface_scripts.regrid import _cache, horizontal_schemes, regrid
 
 
 class Test(tests.Test):

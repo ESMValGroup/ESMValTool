@@ -10,9 +10,9 @@ import six  # noqa
 import numpy as np
 import unittest
 
-import backend.tests as tests
-from backend.tests.unit.regrid import _make_vcoord, _make_cube
-from backend.regrid import _create_cube as create_cube
+import tests
+from tests.unit.regrid import _make_vcoord, _make_cube
+from esmvaltool.interface_scripts.regrid import _create_cube as create_cube
 
 
 class Test(tests.Test):
