@@ -536,7 +536,7 @@ def process_namelist(namelist_file, config_file):
                 project_info['RUNTIME']['currDiag'].scripts = [scrpts[i]]
 
                 # this is hardcoded, maybe make it an option
-                script_root = os.path.dirname(__file__)
+                script_root = os.path.abspath(os.path.dirname(__file__))
                 executable = os.path.join(script_root, "interface_scripts",
                                           "derive_var.ncl")
                 logger.info("Calling %s for '%s'", executable, derived_var)
