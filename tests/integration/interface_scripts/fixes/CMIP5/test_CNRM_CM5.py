@@ -1,7 +1,10 @@
 import unittest
-from iris.cube import Cube
+
 from cf_units import Unit
-from esmvaltool.interface_scripts.fixes.CMIP5.CNRM_CM5 import msftmyz, msftmyzba
+from iris.cube import Cube
+
+from esmvaltool.interface_scripts.fixes.CMIP5.CNRM_CM5 import (msftmyz,
+                                                               msftmyzba)
 
 
 class TestMsftmyz(unittest.TestCase):

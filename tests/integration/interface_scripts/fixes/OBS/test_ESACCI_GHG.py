@@ -1,6 +1,11 @@
 import unittest
+
 from iris.cube import Cube
-from esmvaltool.interface_scripts.fixes.OBS.ESACCI_GHG import xco2Stderr, xco2Stddev, xch4Stderr, xch4Stddev
+
+from esmvaltool.interface_scripts.fixes.OBS.ESACCI_GHG import (xch4Stddev,
+                                                               xch4Stderr,
+                                                               xco2Stddev,
+                                                               xco2Stderr)
 
 
 class Testxco2Stderr(unittest.TestCase):
@@ -65,4 +70,3 @@ class Testxch4Stderr(unittest.TestCase):
     def test_fix_data(self):
         cube = self.fix.fix_data(self.cube)
         self.assertEqual(cube.data[0], 1e9)
-

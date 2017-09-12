@@ -1,6 +1,8 @@
 import unittest
-from iris.cube import Cube
+
 from iris.coords import DimCoord
+from iris.cube import Cube
+
 from esmvaltool.interface_scripts.fixes.OBS.ESACCI_OZONE import tro3prof
 
 

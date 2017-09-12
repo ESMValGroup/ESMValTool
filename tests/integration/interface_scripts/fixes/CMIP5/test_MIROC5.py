@@ -1,6 +1,8 @@
 import unittest
-from iris.cube import Cube
+
 from cf_units import Unit
+from iris.cube import Cube
+
 from esmvaltool.interface_scripts.fixes.CMIP5.MIROC5 import sftof
 
 

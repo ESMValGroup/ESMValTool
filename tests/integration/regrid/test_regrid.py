@@ -3,18 +3,17 @@ Integration tests for the :func:`esmvaltool.backend.regrid.regrid` function.
 
 """
 
-from __future__ import (absolute_import, division, print_function)
-from six.moves import (filter, input, map, range, zip)  # noqa
-import six  # noqa
+from __future__ import absolute_import, division, print_function
 
-import iris
-from numpy import ma
-import numpy as np
 import unittest
 
+import iris
+import numpy as np
+from numpy import ma
+
 import tests
-from tests.unit.regrid import _make_cube
 from esmvaltool.interface_scripts.regrid import regrid
+from tests.unit.regrid import _make_cube
 
 
 class Test(tests.Test):

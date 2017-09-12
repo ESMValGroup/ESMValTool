@@ -1,11 +1,14 @@
-import unittest
-from iris.cube import Cube
-from iris.coords import DimCoord
-from cf_units import Unit
-from esmvaltool.interface_scripts.fixes.CMIP5.CESM1_BGC import co2, nbp, allvars
-import tempfile
-import netCDF4
 import os
+import tempfile
+import unittest
+
+import netCDF4
+from cf_units import Unit
+from iris.coords import DimCoord
+from iris.cube import Cube
+
+from esmvaltool.interface_scripts.fixes.CMIP5.CESM1_BGC import (allvars, co2,
+                                                                nbp)
 
 
 class TestAll(unittest.TestCase):

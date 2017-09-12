@@ -4,10 +4,10 @@ Unit tests for the variable_info module.
 
 """
 
-import unittest
 import os
+import unittest
 
-from esmvaltool.interface_scripts.variable_info import CMIP6Info, CMIP5Info
+from esmvaltool.interface_scripts.variable_info import CMIP5Info, CMIP6Info
 
 
 class TestCMIP6Info(unittest.TestCase):

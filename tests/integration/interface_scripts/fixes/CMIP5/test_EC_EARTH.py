@@ -1,7 +1,9 @@
 import unittest
-from iris.cube import Cube
+
 from cf_units import Unit
-from esmvaltool.interface_scripts.fixes.CMIP5.EC_EARTH import sic, sftlf
+from iris.cube import Cube
+
+from esmvaltool.interface_scripts.fixes.CMIP5.EC_EARTH import sftlf, sic
 
 
 class TestSic(unittest.TestCase):

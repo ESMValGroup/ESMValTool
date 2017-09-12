@@ -1,6 +1,8 @@
 import unittest
-from iris.cube import Cube
+
 from cf_units import Unit
+from iris.cube import Cube
+
 from esmvaltool.interface_scripts.fixes.CMIP5.inmcm4 import gpp, lai
 
 
@@ -25,5 +27,3 @@ class TestLai(unittest.TestCase):
         cube = self.fix.fix_data(self.cube)
         self.assertEqual(cube.data[0], 1.0 / 100.0)
         self.assertEqual(cube.units, Unit('J'))
-
-

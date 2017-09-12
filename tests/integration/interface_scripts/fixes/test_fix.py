@@ -1,6 +1,8 @@
 import unittest
-from esmvaltool.interface_scripts.fixes.fix import Fix
+
 from iris.cube import Cube
+
+from esmvaltool.interface_scripts.fixes.fix import Fix
 
 
 class TestFix(unittest.TestCase):
@@ -41,6 +43,3 @@ class TestFix(unittest.TestCase):
     def test_fix_file(self):
         filepath = 'sample_filepath'
         self.assertEqual(Fix().fix_file(filepath), filepath)
-
-
-

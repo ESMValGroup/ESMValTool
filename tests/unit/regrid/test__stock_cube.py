@@ -3,19 +3,19 @@ Unit tests for the :func:`esmvaltool.backend.regrid._stock_cube` function.
 
 """
 
-from __future__ import (absolute_import, division, print_function)
-from six.moves import (filter, input, map, range, zip)  # noqa
-import six  # noqa
+from __future__ import absolute_import, division, print_function
+
+import unittest
 
 import iris
 import mock
 import numpy as np
-import unittest
 
 import tests
-from esmvaltool.interface_scripts.regrid import (_LAT_MIN, _LAT_MAX, _LAT_RANGE,
-                            _LON_MIN, _LON_MAX, _LON_RANGE)
 from esmvaltool.interface_scripts.regrid import _stock_cube as stock_cube
+from esmvaltool.interface_scripts.regrid import (_LAT_MAX, _LAT_MIN,
+                                                 _LAT_RANGE, _LON_MAX,
+                                                 _LON_MIN, _LON_RANGE)
 
 
 class Test(tests.Test):

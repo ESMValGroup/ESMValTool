@@ -3,17 +3,16 @@ Integration tests for the :func:`esmvaltool.backend.regrid.vinterp` function.
 
 """
 
-from __future__ import (absolute_import, division, print_function)
-from six.moves import (filter, input, map, range, zip)  # noqa
-import six  # noqa
+from __future__ import absolute_import, division, print_function
+
+import unittest
 
 import iris
 import numpy as np
-import unittest
 
 import tests
-from tests.unit.regrid import _make_vcoord, _make_cube
 from esmvaltool.interface_scripts.regrid import _MDI, vinterp
+from tests.unit.regrid import _make_cube, _make_vcoord
 
 
 class Test(tests.Test):

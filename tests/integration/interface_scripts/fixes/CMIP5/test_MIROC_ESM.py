@@ -1,10 +1,12 @@
 import unittest
-from iris.cube import Cube
-from iris.coords import DimCoord
+
 from cf_units import Unit
+from iris.coords import DimCoord
+from iris.cube import Cube
 from iris.exceptions import CoordinateNotFoundError
 
-from esmvaltool.interface_scripts.fixes.CMIP5.MIROC_ESM import co2, tro3, gpp, allvars
+from esmvaltool.interface_scripts.fixes.CMIP5.MIROC_ESM import (allvars, co2,
+                                                                gpp, tro3)
 
 
 class TestCo2(unittest.TestCase):

@@ -1,7 +1,10 @@
 import unittest
-from iris.cube import Cube
+
 from cf_units import Unit
-from esmvaltool.interface_scripts.fixes.CMIP5.BNU_ESM import ch4, co2, fgco2, spco2
+from iris.cube import Cube
+
+from esmvaltool.interface_scripts.fixes.CMIP5.BNU_ESM import (ch4, co2, fgco2,
+                                                              spco2)
 
 
 class TestCo2(unittest.TestCase):

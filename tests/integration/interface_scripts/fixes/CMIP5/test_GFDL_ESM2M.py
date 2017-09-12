@@ -1,8 +1,11 @@
 import unittest
-from iris.cube import Cube
-from iris.coords import DimCoord
+
 from cf_units import Unit
-from esmvaltool.interface_scripts.fixes.CMIP5.GFDL_ESM2M import allvars, sftof, co2
+from iris.coords import DimCoord
+from iris.cube import Cube
+
+from esmvaltool.interface_scripts.fixes.CMIP5.GFDL_ESM2M import (allvars, co2,
+                                                                 sftof)
 
 
 class TestAll(unittest.TestCase):

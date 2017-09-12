@@ -7,11 +7,10 @@
 Tests are implemented using *assert* statements
 """
 
-import sys
 import os
-
-import unittest
+import sys
 import tempfile
+import unittest
 
 
 class TestLauncher(unittest.TestCase):
@@ -179,5 +178,3 @@ class TestBadLauncher(TestLauncher):
 
 if __name__ == "__main__":
     unittest.main()
-
-

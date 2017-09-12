@@ -4,18 +4,18 @@ Unit tests for the CMORCheck class.
 
 """
 
+import sys
 # Standard library imports
 import unittest
-import sys
-
 # Third-party imports
 from StringIO import StringIO
 
-import numpy
 import iris
-import iris.coords
 import iris.coord_categorisation
+import iris.coords
+import numpy
 from cf_units import Unit
+
 from esmvaltool.interface_scripts.cmor_check import CMORCheck, CMORCheckError
 
 

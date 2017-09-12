@@ -6,7 +6,8 @@ Unit tests for the variable_info module.
 
 import unittest
 
-from esmvaltool.interface_scripts.variable_info import VariableInfo, CoordinateInfo
+from esmvaltool.interface_scripts.variable_info import (CoordinateInfo,
+                                                        VariableInfo)
 
 
 class TestVariableInfo(unittest.TestCase):
