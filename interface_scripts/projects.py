@@ -615,6 +615,7 @@ class ana4mips(Project):
             This function looks for the input file to use in the
             reformat routines
         """
+
         # msd = model_section_dictionary
         msd = self.get_model_sections(model)
         msd = self.rewrite_mip_exp(msd, mip, exp)
@@ -3251,6 +3252,33 @@ class ESGF:
                   "hold ESGF coupling report, does not exist"
             raise RuntimeError(msg)
 
+    def _resolve_variable_definitions_(self,d):
+        decode = {}
+        decode['Amon'] = {'time_freq':'mon', 'realm':'atmos'}
+        decode['Lmon'] = {'time_freq':'mon', 'realm':'land'}
+        decode['Omon'] = {'time_freq':'mon', 'realm':'ocean'}
+
+        if 'mip' in d.keys():
+            if d['mip'] == 'MIP_VAR_DEF':
+                if isinstance(self.variable,dict):
+                    if 'mip' in self.variable.keys():
+                        k = self.variable['mip']
+                        d['mip'] = k
+                        if k in decode.keys():
+                            d['time_freq'] = decode[k]['time_freq']
+                            d['realm'] = decode[k]['realm']
+                        else:
+                            msg = "Unkown mip :" + str(k)
+                            raise RuntimeError(msg)
+
+        if 'experiment' in d.keys():
+            if d['experiment'] == 'EXP_VAR_DEF':
+                if isinstance(self.variable,dict):
+                    if 'exp' in self.variable.keys():
+                        d['experiment'] = self.variable['exp']
+
+        return d
+
     def get_cf_indir(self,
                      project_info,
                      model,
@@ -3299,6 +3327,9 @@ class ESGF:
 
         # Add variable to msd
         msd['variable'] = variable
+
+        # Resolve "???_VAR_DEF" entries with variable attributes
+        msd = self._resolve_variable_definitions_(msd)
 
         # Explainer: all model entries contain a section called 'project'
         #            which identifies the project class required. This
@@ -3623,6 +3654,7 @@ class ESGF_CMIP5(ESGF, CMIP5):
                                  'mip',
                                  'ensemble']
 
+        self.variable = None
         # Define the 'basename'-variable explicitly
         # All project classes do this, but not sure if really necessary
         self.basename = self.__class__.__name__
@@ -3640,10 +3672,12 @@ class ESGF_CMIP5(ESGF, CMIP5):
         :param model: One of the <model>-tags in the XML namelist file
         :param field: Not used but included for calling compatibility
         :param variable: The variable
-        :param mip: Not used but included for calling compatibility
-        :param exp: Not used but included for calling compatibility
+        :param mip: mip variable attribute
+        :param exp: exp variable attribute
         :returns: Two strings (input directory and input file)
         """
+
+        self.variable = {'name': variable, 'mip': mip, 'exp': exp}
 
         # Call to get_project_variable_name() in 'Project' class
         # via ESGF baseclass (could equally go via CMIP5 baseclass)
@@ -3661,6 +3695,7 @@ class ESGF_CMIP5(ESGF, CMIP5):
 
         # Get model sections, as python dictionary
         msd = self.get_model_sections(model)
+        msd = self.rewrite_mip_exp(msd, mip, exp)
 
         infile = '_'.join([variable,
                            msd['mip'],
