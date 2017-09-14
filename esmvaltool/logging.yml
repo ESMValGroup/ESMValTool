@@ -11,8 +11,8 @@ formatters:
 handlers:
   console:
     class: logging.StreamHandler
-    level: DEBUG
-    formatter: debug
+    level: INFO
+    formatter: console
     stream: ext://sys.stdout
   simple_log_file:
     class: logging.FileHandler
