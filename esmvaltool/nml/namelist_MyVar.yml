@@ -43,15 +43,15 @@
         - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  tier: 3, start_year: 2000,  end_year: 2002}
         - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  tier: 2, start_year: 2000,  end_year: 2002}
         
-#     DIAG_shit_2:
-#       !Diagnostic
-#       id: MyDiagShit2
-#       description: tutorial diagnostic
-#       variables:
-#         - {name: pr,  ref_model: ['ERA-Interim'],  field: T2Ms, only: "None", preproc_id: pp2}
-#       scripts:
-#         - {script: MyDiag_test_pr.ncl,  cfg_file: ./nml/cfg_MyDiag/cfg_MyDiag.ncl}
-#       additional_models:
-#         - {name: GFDL-ESM2G, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002,  path: /test_data/}
-#         - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  tier: 3, start_year: 2000,  end_year: 2002}
+    DIAG_shit_2:
+      !Diagnostic
+      id: MyDiagShit2
+      description: tutorial diagnostic
+      variables:
+        - {name: pr,  ref_model: ['ERA-Interim'],  field: T2Ms, only: "None", preproc_id: pp2}
+      scripts:
+        - {script: MyDiag_test_pr.ncl,  cfg_file: ./nml/cfg_MyDiag/cfg_MyDiag.ncl}
+      additional_models:
+        - {name: GFDL-ESM2G, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002,  path: /test_data/}
+        - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  tier: 3, start_year: 2000,  end_year: 2002}
 ##        - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  path: /obspath/Tier2/NCEP/}
