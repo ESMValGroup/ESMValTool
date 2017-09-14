@@ -63,22 +63,18 @@ More on the <GLOBAL>-tag
 
 :numref:`tab_glob_tags` summarizes the tags defined in the <GLOBAL> section of the namelist. Some of these tags (e.g., regridding_dir) are specific to some diagnostics and not generally defined in all namelists.
 
-
-
 :numref:`tab_glob_tags` Tags of the <GLOBAL> section of the namelist. Note that not all tags might be used by a diagnostic.
-
 
 .. _tab_glob_tags:
 
-
 +----------------------+----------+------------------------------------------------------------------------------------------------+
-| Name	               | Type	  | Description                                                                                    |
+| Name                 | Type     | Description                                                                                    |
 +======================+==========+================================================================================================+
-| climo_dir	       | string	  | Path for intermediate files (netCDF)                                                           |
+| climo_dir            | string   | Path for intermediate files (netCDF)                                                           |
 +----------------------+----------+------------------------------------------------------------------------------------------------+
 | exit_on_warning      | boolean  | Stop on warnings                                                                               |
 +----------------------+----------+------------------------------------------------------------------------------------------------+
-| force_calc	       | boolean  | Force diagnostic specific files to be recreated                                                |
+| force_calc           | boolean  | Force diagnostic specific files to be recreated                                                |
 +----------------------+----------+------------------------------------------------------------------------------------------------+
 | force_gradecalc      | boolean  | Force recalculation of model grading (perfmetrics)                                             |
 +----------------------+----------+------------------------------------------------------------------------------------------------+
@@ -90,25 +86,25 @@ More on the <GLOBAL>-tag
 +----------------------+----------+------------------------------------------------------------------------------------------------+
 | max_data_filesize    | integer  | Limits internal memory handling in some core NCL scripts                                       |
 +----------------------+----------+------------------------------------------------------------------------------------------------+
-| output_file_type     | string	  | File format of plots (ps, pdf, eps, png); not all formats supported by all diagnostic scripts  |
+| output_file_type     | string   | File format of plots (ps, pdf, eps, png); not all formats supported by all diagnostic scripts  |
 +----------------------+----------+------------------------------------------------------------------------------------------------+
-| plot_dir             | string	  | Output path for plots                                                                          |
+| plot_dir             | string   | Output path for plots                                                                          |
 +----------------------+----------+------------------------------------------------------------------------------------------------+
 | read_from_vault      | boolean  | Retrieve computed diagnostic fields from netCDF                                                |
 +----------------------+----------+------------------------------------------------------------------------------------------------+
-| regridding_dir       | string	  | Path for intermediate files used by NCL regridding routines                                    |
+| regridding_dir       | string   | Path for intermediate files used by NCL regridding routines                                    |
 +----------------------+----------+------------------------------------------------------------------------------------------------+
-| show_debuginfo       | string	  | Generate a second version of each figure with explanatory text overlayed                       |
+| show_debuginfo       | string   | Generate a second version of each figure with explanatory text overlayed                       |
 +----------------------+----------+------------------------------------------------------------------------------------------------+
-| verbosity	       | integer  | Verbosity level (0 = minimum output, 4=maximum output)                                         |
+| verbosity            | integer  | Verbosity level (0 = minimum output, 4=maximum output)                                         |
 +----------------------+----------+------------------------------------------------------------------------------------------------+
-| write_netcdf	       | boolean  | Write results to netCDF file                                                                   |
+| write_netcdf         | boolean  | Write results to netCDF file                                                                   |
 +----------------------+----------+------------------------------------------------------------------------------------------------+
 | write_plot_vars      | boolean  | Currenntly not used                                                                            |
 +----------------------+----------+------------------------------------------------------------------------------------------------+
-| write_plots	       | boolean  | Produce plots                                                                                  |
+| write_plots          | boolean  | Produce plots                                                                                  |
 +----------------------+----------+------------------------------------------------------------------------------------------------+
-| wrk_dir              | string	  | Output path for data (netCDF, acknowledgements)                                                |
+| wrk_dir              | string   | Output path for data (netCDF, acknowledgements)                                                |
 +----------------------+----------+------------------------------------------------------------------------------------------------+
 
 .. _mod_tag:
@@ -143,33 +139,36 @@ Here, the leading asterisk is a placeholder for the variable, which is defined i
 The <model>-tag may also take the optional attribute "*id*":
 
 Example:
+
    *<model* **id** *="ERAINT"> OBS ERA-Interim reanaly 1 2003 2004 @{OBSPATH}/Tier3/ERA-Interim </model>*
 
 The attribute *id* specifies a string that can be used to refer to the model in other places of the namelist. :numref:`tab_mod_tags` gives a summary of valid attributes in <model>-tags.
 
-
-
 :numref:`tab_proj_spec` Project specifiers and corresponding arguments.
+
+.. raw:: latex
+
+    \newline
 
 .. _tab_proj_spec:
 
 +-------------------+------------+---------------+------------+------------+------------+------------+------------+------------+
 | project specifier | argument 1 | argument 2    | argument 3 | argument 4 | argument 5 | argument 6 | argument 7 | argument 8 |
 +===================+============+===============+============+============+============+============+============+============+
-| ana4mips	    | Name	 | table         | experiment | ensemble   | realm      | start year | end year   | path       |
+| ana4mips          | Name       | table         | experiment | ensemble   | realm      | start year | end year   | path       |
 +-------------------+------------+---------------+------------+------------+------------+------------+------------+------------+
-| CCMVal            | name       | case-name     | ensemble   | start year | end year   |  path      |            |            |
-| CCMVal1           | name       | case-name     | ensemble   | start year | end year   |  path      |            |            |
-| CCMVal2	    | name       | case-name     | ensemble   | start year | end year   |  path      |            |            |
+| CCMVal            | name       | case-name     | ensemble   | start year | end year   | path       |            |            |
+| CCMVal1           | name       | case-name     | ensemble   | start year | end year   | path       |            |            |
+| CCMVal2           | name       | case-name     | ensemble   | start year | end year   | path       |            |            |
 +-------------------+------------+---------------+------------+------------+------------+------------+------------+------------+
 | CMIP5             | name       | mip           | experiment | ensemble   | start year |  end year  | Path       |            |
 | CMIP5_ETHZ        | name       | mip           | experiment | ensemble   | start year |  end year  | path       |            |
 | CMIP5_gridfile    | name       | mip           | experiment | ensemble   | start year |  end year  | path       | gridfile   |
 | CMIP5_SMHI        | name       | mip           | experiment | ensemble   | start year |  end year  | frequency  | path       |
 +-------------------+------------+---------------+------------+------------+------------+------------+------------+------------+
-| ECEARTH	    | Name	 | experiment    | ensemble   | start year | end year   | path       |            |            |
+| ECEARTH           | Name       | experiment    | ensemble   | start year | end year   | path       |            |            |
 +-------------------+------------+---------------+------------+------------+------------+------------+------------+------------+
-| EMAC              | name	 | ensemble      | start year | end year   | path       |            |            |            |
+| EMAC              | name       | ensemble      | start year | end year   | path       |            |            |            |
 +-------------------+------------+---------------+------------+------------+------------+------------+------------+------------+
 | GO                | name       | table         | experiment | ensemble   | start year | end year   | path       |            |
 | GO_gridfile       | name       | table         | experiment | ensemble   | start year | end year   | path       |            |
@@ -178,44 +177,54 @@ The attribute *id* specifies a string that can be used to refer to the model in 
 | MiKlip_baseline0  | name       | table         | experiment | ensemble   | realm      | start yea  | end year   | path       |
 +-------------------+------------+---------------+------------+------------+------------+------------+------------+------------+
 | OBS               | name       | case-name     | ensemble   | start year | end year   | Path       |            |            |
-| OBS_gridfile	    | name       | case-name     | ensemble   | start year | end year   | path       | gridfile   |            |
+| OBS_gridfile      | name       | case-name     | ensemble   | start year | end year   | path       | gridfile   |            |
 |                   |            | (insitu,      |            |            |            |            |            |            |
 |                   |            | sat, ground   |            |            |            |            |            |            |
 |                   |            | reanaly)      |            |            |            |            |            |            |
 +-------------------+------------+---------------+------------+------------+------------+------------+------------+------------+
-| obs4mips	    | Name	 | process level | ensemble   | start year | end year   | path	     |            |            |
+| obs4mips          | Name       | process level | ensemble   | start year | end year   | path	     |            |            |
 +-------------------+------------+---------------+------------+------------+------------+------------+------------+------------+
-
 
 
 :numref:`tab_mod_tags` Optional attributes of the <model> tag.
 
+.. raw:: latex
+
+    \newline
+
 .. _tab_mod_tags:
 
 +-------+---------+------------------------------------------------------------------------------+
-| Name	| Type    | Description                                                                  |
+| Name  | Type    | Description                                                                  |
 +=======+=========+==============================================================================+
-| id	| String  | Define a name used to refer to the model data in other parts of the namelist |
+| id    | String  | Define a name used to refer to the model data in other parts of the namelist |
 +-------+---------+------------------------------------------------------------------------------+
 
 
 
 :numref:`tab_opt_att` Optional attributes of the <variable> tag.
 
+.. raw:: latex
+
+    \newline
+
+.. tabularcolumns:: |l|l|p{12.75cm}|
+
 .. _tab_opt_att:
 
-+-----------+----------+----------------------------------------------------------------------------------------------------------+
-| Name      | Type     | Description                                                                                              |
-+===========+==========+==========================================================================================================+
-| exclude   | String   | Model (id) to exclude from processing                                                                    |
-+-----------+----------+----------------------------------------------------------------------------------------------------------+
-| EXP	    | String   | Define a name used to the CMIP5 experiment, e.g.,                                                        |
-+-----------+----------+----------------------------------------------------------------------------------------------------------+
-| MIP	    | String   | Define a name used to refer to the CMIP5 data stream, e.g., "Amon", "Omon", "day", "fx"; to be used in   |
-|           |          | combination with "MIP_VAR_DEF" replacing the CMIP5 stream in the definition of a <model> tag.            |
-+-----------+----------+----------------------------------------------------------------------------------------------------------+
-| ref_model | String   | Define a reference model (model id)                                                                      |
-+-----------+----------+----------------------------------------------------------------------------------------------------------+
++-----------+----------+---------------------------------------------------------------------------------------------+
+| Name      | Type     | Description                                                                                 |
++===========+==========+=============================================================================================+
+| exclude   | String   | Model (id) to exclude from processing                                                       |
++-----------+----------+---------------------------------------------------------------------------------------------+
+| EXP       | String   | Define a name used to the CMIP5 experiment, e.g., historical                                |
++-----------+----------+---------------------------------------------------------------------------------------------+
+| MIP       | String   | Define a name used to refer to the CMIP5 data stream, e.g., "Amon", "Omon", "day", "fx";    |
+|           |          | to be used in combination with "MIP_VAR_DEF" replacing the CMIP5 stream in the definition   |
+|           |          | of a <model> tag.                                                                           |
++-----------+----------+---------------------------------------------------------------------------------------------+
+| ref_model | String   | Define a reference model (model id)                                                         |
++-----------+----------+---------------------------------------------------------------------------------------------+
 
 
 .. _diag_tag:
@@ -225,12 +234,15 @@ More on the <DIAGNOSTICS>-tag
 
 Each <diag> entry refers to one or several scripts in the folder *diag_scripts/* complemented by a variable name (see :numref:`tab_var_def` for a list of variables) and the corresponding (input) field type (see :numref:`tab_fld_typ`). Optionally the <diag>-tag may contain additional <model>-tags; these data sets will be processed only by the diagnostic(s) listed in the current <diag> entry. In this way it is possible to define a set of models to be analyzed by all diagnostics in the namelist (in the <MODELS> section) and a set of models to be analyzed only by specific diagnostics (in the <diag> section). Available <diag>-tags are listed in :numref:`tab_diag_tags`, their optional attributes in :numref:`tab_diag_att`.
 
-
 :numref:`tab_diag_tags` Tags of the <diag> section within the <DIAGNOSTICS> section of the namelist. There are no default values.
 
+.. raw:: latex
+
+    \newline
+
+.. tabularcolumns:: |l|l|p{11.5cm}|
 
 .. _tab_diag_tags:
-
 
 +----------------------+----------+-----------------------------------------------------------------------------------------------------------------+
 | Name                 | Type     | Description                                                                                                     |
@@ -261,9 +273,13 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 +----------------------+----------+-----------------------------------------------------------------------------------------------------------------+
 
 
-
-
 :numref:`tab_diag_att` Optional attributes of selected tags in the <diag> section. 
+
+.. raw:: latex
+
+    \newline
+
+.. tabularcolumns:: |l|l|l|p{10cm}|
 
 .. _tab_diag_att:
 
@@ -285,10 +301,11 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 | cfg        | string   | <diag_script> | Configuration file for the diagnostic script                                                     |
 +------------+----------+---------------+--------------------------------------------------------------------------------------------------+
 
-
-
-
 :numref:`tab_fld_typ` Field types.
+
+.. raw:: latex
+
+    \newline
 
 .. _tab_fld_typ:
 
@@ -333,9 +350,11 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 
 :numref:`tab_var_def` Variable definition scripts.
 
+.. raw:: latex
+
+    \newline
 
 .. _tab_var_def:
-
 
 +--------------------------+-----------------------------------------------------------------------------------+
 | Script name              | Description                                                                       |
@@ -418,7 +437,7 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 +--------------------------+-----------------------------------------------------------------------------------+
 | ita.ncl                  | Depth weighted temperature (ocean, 730 m)                                         |
 +--------------------------+-----------------------------------------------------------------------------------+
-| iwpStderr.ncl	           | Ice water path standard error (observations)                                      |
+| iwpStderr.ncl            | Ice water path standard error (observations)                                      |
 +--------------------------+-----------------------------------------------------------------------------------+
 | lai.ncl                  | Leaf area index                                                                   |
 +--------------------------+-----------------------------------------------------------------------------------+
@@ -528,7 +547,7 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 +--------------------------+-----------------------------------------------------------------------------------+
 | sic.ncl                  | Sea ice area fraction                                                             |
 +--------------------------+-----------------------------------------------------------------------------------+
-| sicStderr.ncl	           | Sea ice area fraction standard error (observations)                               |
+| sicStderr.ncl            | Sea ice area fraction standard error (observations)                               |
 +--------------------------+-----------------------------------------------------------------------------------+
 | sit.ncl                  | Sea ice thickness                                                                 |
 +--------------------------+-----------------------------------------------------------------------------------+
