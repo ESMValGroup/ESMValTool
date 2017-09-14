@@ -227,30 +227,6 @@ class configFile:
         else:
             logger.warning("no save_intermediary_cubes in config, assuming False")
             glob['save_intermediary_cubes'] = False
-        # change to data_finder.py
-        ###########################
-        #if cp.has_option('GLOBAL','model_rootpath'): ## Use this for all classes except the ones for obs_rootpath
-        #    mp = cp.get('GLOBAL','model_rootpath')
-        #    glob['model_rootpath'] = mp
-        #else:
-        #    print >> sys.stderr,"PY  ERROR:  >>> main.py >>> Model root path not defined"
-        #    sys.exit(1)
-        #if cp.has_option('GLOBAL','obs_rootpath'):  ## Use this for OBS, obs4mips, ana4mips classes
-        #    op = cp.get('GLOBAL','obs_rootpath')
-        #    glob['obs_rootpath'] = op
-        #else:
-        #    print >> sys.stderr,"PY  ERROR:  >>> main.py >>> Observations root path not defined"
-        #    sys.exit(1)
-        #if cp.has_option('GLOBAL','rawobs_rootpath'):  ## For reformat_obs only, to be used later
-        #    rop = cp.get('GLOBAL','rawobs_rootpath')
-        #    glob['rawobs_rootpath'] = rop
-        #if cp.has_option('GLOBAL','cmip5_dirtype') :
-        #    ddd = cp.get('GLOBAL','cmip5_dirtype')
-        #    glob['cmip5_dirtype'] = ddd
-        #    permitted_values = ['default', 'badc', 'dkrz', 'ethz', 'smhi', 'None']
-        #    if ddd not in permitted_values:
-        #        print >> sys.stderr,"PY  ERROR:  >>> main.py >>> Unrecognized option for cmip5_dirtype in config: ", ddd
-        #        sys.exit(1)
         if cp.has_option('GLOBAL','rootpath_CMIP5'):
             mp = cp.get('GLOBAL','rootpath_CMIP5')
             glob['rootpath_CMIP5'] = mp
@@ -263,6 +239,25 @@ class configFile:
         else:
             logger.error("Observations root path not defined")
             sys.exit(1)
+        if cp.has_option('GLOBAL','drs_CMIP5'):
+            drs = cp.get('GLOBAL','drs_CMIP5')
+            glob['drs_CMIP5'] = drs
+            # check if drs_CMIP5 has host_root fro BADC and DKRZ
+            if drs == 'BADC' or drs == 'DKRZ':
+                if cp.has_option('GLOBAL','host_root'):
+                    hroot = cp.get('GLOBAL','host_root')
+                    glob['host_root'] = hroot
+                else:
+                    logger.error("Using database DRS for CMIP5: database root path not defined")
+                    sys.exit(1)
+        else:
+            logger.warning("No DRS specifier, assuming None and continuing")
+        if cp.has_option('GLOBAL','run_diagnostic') :
+            run_diagnostic = self.s2b(cp.get('GLOBAL','run_diagnostic'))
+            glob['run_diagnostic'] = run_diagnostic
+        else:
+            logger.warning("no run_diagnostic in config, assuming True")
+            glob['run_diagnostic'] = True
         return glob
 
 
@@ -339,35 +334,35 @@ def process_namelist(namelist_file, config_file):
 
     # Parse input namelist into project_info-dictionary.
     Project = Ps()
-
+    
     # Parse config file into GLOBAL_DICT info_dictionary
     confFileClass = configFile()
     GLOBAL_DICT = confFileClass.GLOBAL(config_file)
-
+    
     # Project_info is a dictionary with all info from the namelist.
     project_info_0 = Project.load_namelist(yml_path)
     verbosity = GLOBAL_DICT['verbosity']
     preproc_dir = GLOBAL_DICT['preproc_dir']
     exit_on_warning = GLOBAL_DICT.get('exit_on_warning', False)
-
+    
     # Project_info is a dictionary with all info from the namelist.
     project_info = {}
     project_info['GLOBAL'] = GLOBAL_DICT
     project_info['MODELS'] = project_info_0.MODELS
     project_info['DIAGNOSTICS'] = project_info_0.DIAGNOSTICS
-
+    
     # Additional entries to 'project_info'. The 'project_info' construct
     # is one way by which Python passes on information to the NCL-routines.
     project_info['RUNTIME'] = {}
     project_info['RUNTIME']['yml'] = yml_path
     project_info['RUNTIME']['yml_name'] = os.path.basename(yml_path)
-
+    
     # Set references/acknowledgement file
     refs_acknows_file = str.replace(project_info['RUNTIME']['yml_name'], "namelist_", "refs-acknows_")
     refs_acknows_file = refs_acknows_file.split(os.extsep)[0] + ".log"
     out_refs = os.path.join(project_info["GLOBAL"]['run_dir'], refs_acknows_file)
     project_info['RUNTIME']['out_refs'] = out_refs
-
+    
     # Print summary
     logger.info("NAMELIST   = %s", project_info['RUNTIME']['yml_name'])
     logger.info("RUNDIR     = %s", project_info["GLOBAL"]['run_dir'])
@@ -376,9 +371,9 @@ def process_namelist(namelist_file, config_file):
     logger.info("PLOTDIR    = %s", project_info["GLOBAL"]["plot_dir"])
     logger.info("LOGFILE    = %s", project_info['RUNTIME']['out_refs'])
     logger.info(70 * "_")
-
+    
     #    logger.info("REFORMATTING THE OBSERVATIONAL DATA...", vv, 1)
-
+    
     # perform options integrity checks
     logger.info('Checking integrity of namelist')
     tchk1 = datetime.datetime.now()
@@ -388,17 +383,17 @@ def process_namelist(namelist_file, config_file):
     tchk2 = datetime.datetime.now()
     dtchk = tchk2 - tchk1
     logger.info('Namelist check successful! Time: %s', dtchk)
-
+    
     # this will have to be purget at some point in the future
     project_info['CONFIG'] = project_info_0.CONFIG
-
+    
     # tell the environment about regridding
     project_info['RUNTIME']['regridtarget'] = []
-
+    
     # Master references-acknowledgements file (hard coded)
     in_refs = os.path.join(os.getcwd(), 'doc/MASTER_authors-refs-acknow.txt')
     project_info['RUNTIME']['in_refs'] = in_refs
-
+    
     # Create workdir
     if not os.path.isdir(project_info['GLOBAL']['work_dir']):
         logger.info('Creating work_dir %s', project_info['GLOBAL']['work_dir'])
@@ -415,45 +410,45 @@ def process_namelist(namelist_file, config_file):
 
     # Current working directory
     project_info['RUNTIME']['cwd'] = os.getcwd()
-
+    
     # Summary to std-out before starting the loop
     timestamp1 = datetime.datetime.now()
     timestamp_format = "%Y-%m-%d --  %H:%M:%S"
-
+    
     logger.info("Starting the Earth System Model Evaluation Tool v%s at time: %s ...",
                 __version__, timestamp1.strftime(timestamp_format))
-
+    
     # Loop over all diagnostics defined in project_info and
     # create/prepare netCDF files for each variable
     for c in project_info['DIAGNOSTICS']:
-
+    
         # set current diagnostic
         currDiag = project_info['DIAGNOSTICS'][c]
-
+    
         # Are the requested variables derived from other, more basic, variables?
         requested_vars = currDiag.variables
-
+    
         # get all models
         project_info['ADDITIONAL_MODELS'] = currDiag.additional_models
         project_info['ALLMODELS'] = project_info['MODELS'] + project_info['ADDITIONAL_MODELS']
-
+    
         # initialize empty lists to hold preprocess cubes and file paths for each model
         models_cubes = []
         models_fullpaths = []
-
+    
         # Prepare/reformat model data for each model
         for model in project_info['ALLMODELS']:
             #currProject = model['project']
             model_name = model['name']
             project_name = model['project']
             logger.info("MODEL = %s (%s)", model_name, project_name)
-
+    
             # variables needed for target variable, according to variable_defs
             var_def_dir = project_info_0.CONFIG['var_def_scripts']
-
+    
             # start calling preprocess
             op = pp.Diag()
-
+    
             # old packaging of variable objects (legacy from intial version)
             # this needs to be changed once we have the new variable definition
             # codes in place
@@ -461,17 +456,17 @@ def process_namelist(namelist_file, config_file):
             # if not all variable_defs_base_vars are available, try to fetch
             # the target variable directly (relevant for derived variables)
             base_vars = op.select_base_vars(variable_defs_base_vars,
-                                            model,
-                                            currDiag,
-                                            project_info)
-
+                                                  model,
+                                                  currDiag,
+                                                  project_info)
+    
             # process base variables
             for base_var in base_vars:
                 if project_info_0.CONFIG['var_only_case'] > 0:
                     if op.id_is_explicitly_excluded(base_var, model):
                         continue
                 logger.info("VARIABLE = %s (%s)", base_var.name, base_var.field)
-
+    
                 # Rewrite netcdf to expected input format.
                 logger.info("Calling preprocessing to check/reformat model data, and apply preprocessing steps")
                 # REFORMAT: for backwards compatibility we can revert to ncl reformatting
@@ -489,16 +484,16 @@ def process_namelist(namelist_file, config_file):
                         logger.error('preprocess_id is not an attribute of variable object. Exiting...')
                         sys.exit(1)
                 prep = pp.preprocess(project_info, base_var, model, currDiag, cmor_reformat_type = 'py')
-
+    
                 # add only if we need multimodel statistics
                 if project_info['PREPROCESS']['multimodel_mean'] is True:
                     models_cubes.append(prep[0])
                     models_fullpaths.append(prep[1])
-
+    
         # before we proceed more, we call multimodel operations
         if project_info['PREPROCESS']['multimodel_mean'] is True:
             pp.multimodel_mean(models_cubes, models_fullpaths)
-
+    
         vardicts = currDiag.variables
         variables = []
         field_types = []
@@ -511,52 +506,54 @@ def process_namelist(namelist_file, config_file):
             variables.append(v['name'])
             field_types.append(v['field'])
             ref_models.append(v['ref_model'][0])
-
+    
         project_info['RUNTIME']['currDiag'] = currDiag
         for derived_var, derived_field, refmodel in zip(variables, field_types, ref_models):
-
+    
             # needed by external diag to perform regridding
             for model in project_info['ALLMODELS']:
                 model['ref'] = refmodel
             logger.info("External diagnostic will use ref_model: %s", model['ref'])
-
+    
             project_info['RUNTIME']['derived_var'] = derived_var
             project_info['RUNTIME']['derived_field_type'] = derived_field
-
+    
             # iteration over diagnostics for each variable
             scrpts = copy.deepcopy(currDiag.scripts)
             for i in range(len(currDiag.scripts)):
-
+    
                 # because the NCL environment is dumb, it is important to
                 # tell the environment which diagnostic script to use
                 project_info['RUNTIME']['currDiag'].scripts = [scrpts[i]]
-
+    
                 # this is hardcoded, maybe make it an option
                 executable = "./interface_scripts/derive_var.ncl"
                 logger.info("Calling %s for '%s'", executable, derived_var)
                 pp.run_executable(executable, project_info, verbosity,
                                   exit_on_warning)
-
-                # run diagnostics
-                executable = "./diag_scripts/" + scrpts[i]['script']
-                configfile = scrpts[i]['cfg_file']
-                logger.info("Running diag_script: %s", executable)
-                logger.info("with configuration file: %s", configfile)
-                pp.run_executable(executable,
-                                  project_info,
-                                  verbosity,
-                                  exit_on_warning,
-                                  launcher_arguments=None)
-
+    
+                # run diagnostics...
+                # ...unless run_diagnostic is specifically set to False
+                if project_info['GLOBAL']['run_diagnostic'] is True:
+                    executable = "./diag_scripts/" + scrpts[i]['script']
+                    configfile = scrpts[i]['cfg_file']
+                    logger.info("Running diag_script: %s", executable)
+                    logger.info("with configuration file: %s", configfile)
+                    pp.run_executable(executable,
+                                      project_info,
+                                      verbosity,
+                                      exit_on_warning,
+                                      launcher_arguments=None)
+    
     # delete environment variable
     del os.environ['0_ESMValTool_version']
-
+    
     #End time timing
     timestamp2 = datetime.datetime.now()
     logger.info("Ending the Earth System Model Evaluation Tool v%s at time: %s",
                 __version__, timestamp2.strftime(timestamp_format))
     logger.info("Time for running namelist was: %s", timestamp2 - timestamp1)
-
+    
     # Remind the user about reference/acknowledgement file
     logger.info("For the required references/acknowledgements of these "
                 "diagnostics see: %s", out_refs)

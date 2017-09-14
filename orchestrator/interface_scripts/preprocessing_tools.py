@@ -425,7 +425,9 @@ def seasonal_mean(mycube):
     annual_seasonal_mean = mycube.aggregated_by(['clim_season', 'season_year'], iris.analysis.MEAN)
     spans_three_months = lambda time: (time.bound[1] - time.bound[0]) == 2160
     three_months_bound = iris.Constraint(time=spans_three_months)
-    return annual_seasonal_mean.extract(three_months_bound)
+    resc = annual_seasonal_mean.extract(three_months_bound)
+    print(resc)
+    return resc
 
 # operate along a trajectory line
 def trajectory_cube(mycube, long1, long2, lat1, lat2, plong1, plong2, plat1, plat2,samplecounts):
