@@ -5,13 +5,13 @@ Authors: Valeriu Predoi, University of Reading, valeriu.predoi@ncas.ac.uk
 """
 
 # ---- Import standard modules to the python path.
-import sys, os
+import logging
+import os
 import subprocess
 from datetime import datetime
-import logging
 
 # start the logging procedure
-logger = logging.getLogger('ESMValTool')
+logger = logging.getLogger(__name__)
 
 def cmip5_model2inst(model): ## CHECK-ME: A dictionary is preferred to avoid using find, which causes some issues on some machines in the past (too slow)
     """
@@ -488,4 +488,3 @@ def time_check(fpath, yr1, yr2):
         return True
     else:
         return False
-
