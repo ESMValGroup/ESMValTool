@@ -29,7 +29,7 @@
 
 
 
-load "./interface_data/ncl.interface"
+load "$ESMValTool_interface_data/ncl.interface"
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/data_handling.ncl"
 load "./interface_scripts/messaging.ncl"

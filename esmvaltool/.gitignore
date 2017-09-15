@@ -1,6 +1,3 @@
 test/testdata
-interface_data/*.tmp
-interface_data/*.txt
-interface_data/ncl.interface
 test_data/
 test_output/

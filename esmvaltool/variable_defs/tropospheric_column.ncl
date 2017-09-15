@@ -1,4 +1,4 @@
-load "./interface_data/ncl.interface"
+load "$ESMValTool_interface_data/ncl.interface"
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/data_handling.ncl"
 load "./interface_scripts/messagging.ncl"
@@ -37,7 +37,7 @@ begin
 end
 
 begin
-    vardeffile = "interface_data/" + "ps_info.tmp"
+    vardeffile = "$ESMValTool_interface_data/" + "ps_info.tmp"
     
     loadscript(vardeffile)
 end

@@ -550,12 +550,12 @@ begin
         file_handles = new(2, "file")
         file_handles(0) = keep_fin
         file_handles(1) = fout
-        asciiwrite("./interface_data/lat_name.txt", lat_name)
-        asciiwrite("./interface_data/lon_name.txt", lon_name)
+        asciiwrite("$ESMValTool_interface_data/lat_name.txt", lat_name)
+        asciiwrite("$ESMValTool_interface_data/lon_name.txt", lon_name)
         if ( rankN .eq. 4 ) then 
-          asciiwrite("./interface_data/depth_name.txt", lev_name)
+          asciiwrite("$ESMValTool_interface_data/depth_name.txt", lev_name)
         end if
-        asciiwrite("./interface_data/fn_out.txt", fn_out)
+        asciiwrite("$ESMValTool_interface_data/fn_out.txt", fn_out)
         temp = fix_data(file_handles, "ocean-latlon" )
         delete(temp)
     end if
@@ -569,12 +569,12 @@ begin
         file_handles = new(2, "file")
         file_handles(0) = keep_fin
         file_handles(1) = fout
-        asciiwrite("./interface_data/lat_name.txt", lat_name)
-        asciiwrite("./interface_data/lon_name.txt", lon_name)
+        asciiwrite("$ESMValTool_interface_data/lat_name.txt", lat_name)
+        asciiwrite("$ESMValTool_interface_data/lon_name.txt", lon_name)
         if ( rankN .eq. 4 ) then 
-          asciiwrite("./interface_data/depth_name.txt", lev_name)
+          asciiwrite("$ESMValTool_interface_data/depth_name.txt", lev_name)
         end if
-        asciiwrite("./interface_data/fn_out.txt", fn_out)
+        asciiwrite("$ESMValTool_interface_data/fn_out.txt", fn_out)
         temp = fix_default(file_handles, "ocean-latlon")
         delete(temp)
       end if

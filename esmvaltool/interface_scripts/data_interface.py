@@ -77,13 +77,6 @@ class Data_interface(object):
         self.mip = '${MIP}'
         self.exp = '${EXP}'
 
-        self.do_not_remove_these =\
-            [item for item in os.listdir('./interface_data/')
-             if re.search('.*_interface_templates', item) is not None]
-
-        self.do_not_remove_these.insert(0, "README")
-        self.do_not_remove_these.insert(0, ".svn")
-
         indata_root = self.get_data_root()
         if 'AUXILIARIES' in project_info:
             # 'CMIP5_fx' is hardcoded as it is (so far) the only class supporting
@@ -285,7 +278,6 @@ class Data_interface(object):
             project_info-dictionary content to environment variables
             prefixed with "ESMValTool_".
         """
-        verbosity = project_info['GLOBAL']['verbosity']
 
         for section_key in ['GLOBAL', 'RUNTIME', 'TEMPORARY']:
             if section_key in project_info.keys():
@@ -297,21 +289,6 @@ class Data_interface(object):
                                                  + "' already defined")
                     os.environ["ESMValTool_" + key] = \
                         str(project_info[section_key][key])
-
-    def clean_up_interface_folder(self, exceptions):
-        """ @brief Remove files from the interface_data/-folder
-            @param exceptions Do not remove these entries
-        """
-        # Clean up interface-folder
-        listdir = os.listdir("./interface_data/")
-
-        # Remove exceptions from listdir
-        for listitem in exceptions:
-            if listitem in listdir:
-                listdir.remove(listitem)
-
-        for direntry in listdir:
-            os.remove(os.path.join("./interface_data", direntry))
 
 
 class Ncl_data_interface(Data_interface):
@@ -349,10 +326,16 @@ class Ncl_data_interface(Data_interface):
             interface_data/-folder. These files are then read by the
             NCL diag_scripts.
         """
-        self.clean_up_interface_folder(self.do_not_remove_these)
 
-        fsource = open("interface_data/ncl_interface_templates/ncl.tmpl", "r")
-        ftarget = open("interface_data/ncl.interface", "w")
+        template = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)),
+            "interface_data",
+            "ncl_interface_templates",
+            "ncl.tmpl",
+        )
+        interface_data = self.project_info['RUNTIME']['interface_data']
+        fsource = open(template, "r")
+        ftarget = open(os.path.join(interface_data, "ncl.interface"), "w")
 
         # Replace template file placeholders, <<[A-Z_]+>>, with
         # configuration data
@@ -402,9 +385,8 @@ class Ncl_data_interface(Data_interface):
                     = self.reparse_variable_info(curr_var, variable_def_dir)
 
                 # Write parsed content to temp-file in interface_data
-                variable_info_file = "interface_data/"\
-                                     + curr_var\
-                                     + "_info.tmp"
+                variable_info_file = os.path.join(interface_data,
+                                                  curr_var + "_info.tmp")
                 fvarinfo = open(variable_info_file, "w")
 
                 if variable_info_true:
@@ -444,10 +426,15 @@ class R_data_interface(Data_interface):
     def write_data_to_interface(self):
         """ @brief Write the configuration data to Matlab format
         """
-        self.clean_up_interface_folder(self.do_not_remove_these)
-
-        fsource = open("interface_data/r_interface_templates/r.tmpl", "r")
-        ftarget = open("interface_data/r.interface", "w")
+        template = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)),
+            "interface_data",
+            "r_interface_templates",
+            "r.tmpl",
+        )
+        interface_data = self.project_info['RUNTIME']['interface_data']
+        fsource = open(template, "r")
+        ftarget = open(os.path.join(interface_data, "r.interface"), "w")
         line_cont = ', \n'
 
         # Replace template file placeholders, <<[A-Z_]+>>, with
@@ -491,9 +478,8 @@ class R_data_interface(Data_interface):
                     = self.reparse_variable_info(curr_var, variable_def_dir)
 
                 # Write parsed content to temp-file in data_interface
-                variable_info_file = "interface_data/"\
-                                     + curr_var\
-                                     + "_info.tmp"
+                variable_info_file = os.path.join(interface_data,
+                                                  curr_var + "_info.tmp")
                 fvarinfo = open(variable_info_file, "w")
 
                 if variable_info_true:
@@ -521,4 +507,3 @@ class Py_data_interface(Data_interface):
     def write_data_to_interface(self):
         """ @brief Write the configuration data to Matlab format
         """
-        self.clean_up_interface_folder(self.do_not_remove_these)

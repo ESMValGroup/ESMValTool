@@ -2,7 +2,7 @@ info_output <- function(output_string,
                         verbosity,
                         required_verbosity) {
 
-    main_wd = Sys.getenv(c("ESMValTool_cwd"))
+    main_wd = Sys.getenv(c("ESMValTool_interface_data"))
     if (nchar(main_wd) == 0) {
         print(paste("info: ", output_string, sep = ""))
     }
@@ -17,7 +17,7 @@ info_output <- function(output_string,
 
         if (verbosity >= required_verbosity) {
             entering_routine <- regexpr("<<<<<<<< Entering", output_string, fixed = T)[1]
-            indent_file <- file.path(main_wd, "interface_data/curr_trace_indent.txt")
+            indent_file <- file.path(main_wd, "curr_trace_indent.txt")
             if (entering_routine != -1) {
                 indent <- read_integer(indent_file)
                 indent = indent + indent_step

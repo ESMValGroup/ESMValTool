@@ -8,7 +8,7 @@
 
 ;; definition of functions write_header and write_diag_header
 load "./interface_scripts/write_header.ncl"
-load "./interface_data/ncl.interface"
+load "$ESMValTool_interface_data/ncl.interface"
 
 begin
 
@@ -23,7 +23,7 @@ begin
 
     ;; Master refs file "master_refs" and output refs file "output_refs" as
     ;; well as "auth", "contr", "diag", "obs", "proj" are defined in
-    ;; "./interface_data/ncl.ref.info"
+    ;; "$ESMValTool_interface_data/ncl.ref.info"
 
     s_open  = "echo " + str_get_dq
     s_close = str_get_dq + " >> " + out_refs

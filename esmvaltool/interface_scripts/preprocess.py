@@ -23,6 +23,7 @@ import preprocessing_tools as pt
 import get_file_from_drs as gf
 import numpy as np
 import data_finder as df
+import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -61,18 +62,19 @@ def run_executable(string_to_execute,
         Check the type of script/binary from the executable string suffix and
         execute the script/binary properly.
     """
-
+    
     if write_di:
         write_data_interface(string_to_execute, project_info)
 
     suffix = os.path.splitext(string_to_execute)[1][1:]
-    curr_launcher = vars(launchers)[suffix + '_launcher']()
+    interface_data = project_info['RUNTIME']['interface_data']
+    curr_launcher = vars(launchers)[suffix + '_launcher'](interface_data=interface_data)
     if launcher_arguments is not None:
         curr_launcher.arguments = launcher_arguments
     curr_launcher.execute(string_to_execute,
-                         project_info,
-                         verbosity,
-                         exit_on_warning)
+                          project_info,
+                          verbosity,
+                          exit_on_warning)
 
 def get_figure_file_names(project_info, model):
     """ @brief Returns names for plots

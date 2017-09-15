@@ -54,11 +54,11 @@ begin
 
 
             if ( dimsizes(dimsizes(var)) .eq. 4 ) then
-              depth_name = asciiread("./interface_data/depth_name.txt", 1, "string")
+              depth_name = asciiread("$ESMValTool_interface_data/depth_name.txt", 1, "string")
             end if
-            fn_out = asciiread("./interface_data/fn_out.txt", 1, "string")
-            lat_name = asciiread("./interface_data/lat_name.txt", 1, "string")
-            lon_name = asciiread("./interface_data/lon_name.txt", 1, "string")        
+            fn_out = asciiread("$ESMValTool_interface_data/fn_out.txt", 1, "string")
+            lat_name = asciiread("$ESMValTool_interface_data/lat_name.txt", 1, "string")
+            lon_name = asciiread("$ESMValTool_interface_data/lon_name.txt", 1, "string")        
             if (isfilevar(fin,lat_name)) then  ;get original coordinates (not always in file!)
                info_output("lat_name from file " + lat_name, verbosity, 3)
               i = fin->$lon_name$  
