@@ -154,9 +154,7 @@ begin
     end if
 
     ;; Average over time (function in ./diag_scripts/lib/ncl/statistics.ncl)
-    data10 = time_operations(A0, -1, -1, "average", "annualclim", True)
-    ;; Make data 2D
-    data1 = data10(plev|0, lat|:, lon|:)
+    data1 = time_operations(A0, -1, -1, "average", "annualclim", True)
     info_output(" ++++++++++++++ Variable summary of time averaged data " + \
                 "(data1): ", verbosity, 5)
     if (verbosity .ge. 0) then

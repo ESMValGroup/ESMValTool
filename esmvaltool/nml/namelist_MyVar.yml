@@ -17,8 +17,8 @@
       # mask_fillvalues: TODO
       # mask_landocean: None,land,ocean,poro - all functional and tested
       # multimodel_mean: TODO
-    - {id: pp1, select_level: None, target_grid: None, regrid_scheme: linear, mask_fillvalues: True, mask_landocean: None, multimodel_mean: True}
-    - {id: pp2, select_level: 850, target_grid: ref_model, regrid_scheme: linear, mask_fillvalues: True, mask_landocean: None, multimodel_mean: True}
+    - {id: pp1, select_level: {levels: 85000, scheme: nearest}, target_grid: None, regrid_scheme: linear, mask_fillvalues: True, mask_landocean: None, multimodel_mean: True}
+    - {id: pp2, select_level: None, target_grid: ref_model, regrid_scheme: linear, mask_fillvalues: True, mask_landocean: None, multimodel_mean: True}
 
   CONFIG:
     var_def_scripts: ./variable_defs
