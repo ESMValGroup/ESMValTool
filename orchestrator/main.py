@@ -1,59 +1,64 @@
 #! /usr/bin/env python
+r"""
+______________________________________________________
+  _____ ____  __  ____     __    _ _____           _
+ | ____/ ___||  \/  \ \   / /_ _| |_   _|__   ___ | |
+ |  _| \___ \| |\/| |\ \ / / _` | | | |/ _ \ / _ \| |
+ | |___ ___) | |  | | \ V / (_| | | | | (_) | (_) | |
+ |_____|____/|_|  |_|  \_/ \__,_|_| |_|\___/ \___/|_|
+______________________________________________________
 
+ http://www.esmvaltool.org/
+______________________________________________________________________
+
+CORE DEVELOPMENT TEAM AND CONTACTS:
+  Veronika Eyring (PI; DLR, Germany - veronika.eyring@dlr.de)
+  Bjoern Broetz (DLR, Germany - bjoern.broetz@dlr.de)
+  Nikolay Koldunov (AWI, Germany - nikolay.koldunov@awi.de)
+  Axel Lauer (DLR, Germany - axel.lauer@dlr.de)
+  Benjamin Mueller (LMU, Germany - b.mueller@iggf.geo.uni-muenchen.de)
+  Valeriu Predoi (URead, UK - valeriu.predoi@ncas.ac.uk)
+  Mattia Righi (DLR, Germany - mattia.righi@dlr.de)
+  Javier Vegas-Regidor (BSC, Spain - javier.vegas@bsc.es)
+______________________________________________________________________
+
+ESMValTool - Earth System Model Evaluation Tool
+
+For further help, check the doc/-folder for pdfs
+and references therein. Have fun!
 """
-Completely rewritten wrapper to be able to deal with
-the new yaml parser and simplified interface_scripts
-toolbox. Author: Valeriu Predoi, University of Reading,
-Initial version: August 2017
-contact: valeriu.predoi@ncas.ac.uk
-"""
-import sys
-import subprocess
-import getopt
-from interface_scripts.auxiliary import get_header, ncl_version_check
+
+# Completely rewritten wrapper to be able to deal with
+# the new yaml parser and simplified interface_scripts
+# toolbox. Author: Valeriu Predoi, University of Reading,
+# Initial version: August 2017
+# contact: valeriu.predoi@ncas.ac.uk
+
+import argparse
+import ConfigParser
+import copy
+import datetime
+import errno
 import logging
 import logging.config
-import yaml
-import datetime
 import os
-import pdb
-from interface_scripts.yaml_parser import Parser as Ps
-import interface_scripts.preprocess as pp
-import copy
-import ConfigParser
-import interface_scripts.namelistchecks as pchk
-import uuid
 import re
+import sys
+import uuid
+
+import yaml
+
+import interface_scripts.namelistchecks as pchk
+import interface_scripts.preprocess as pp
+from interface_scripts.auxiliary import ncl_version_check
+from interface_scripts.yaml_parser import Parser as Ps
 
 logger = logging.getLogger('ESMValTool')
+logger.addHandler(logging.NullHandler())
 
 # Define ESMValTool version
-version = "2.0.0"
-os.environ['0_ESMValTool_version'] = version
-# we may need this
-# os.environ["ESMValTool_force_calc"] = "True"
+__version__ = "2.0.0"
 
-
-def usage():
-    """ Print usage."""
-    msg = get_header()
-    msg += """
-              Usage:
-    
-              python main.py [OPTIONS]
-              ESMValTool - Earth System Model Evaluation Tool.
-              You can run with these command-line options:
-
-              -h --help             [HELP]     Print help message and exit.
-              -n --namelist-file    [REQUIRED] Namelist file.
-              -c --config-file      [REQUIRED] Configuration file. 
-
-              For further help, check the doc/-folder for pdfs 
-              and references therein. Have fun!
-
-    """
-    print(msg)
-    
 
 def configure_logging(cfg_file=None, output=None, console_log_level=None):
     """Set up logging"""
@@ -78,34 +83,32 @@ def configure_logging(cfg_file=None, output=None, console_log_level=None):
     logging.config.dictConfig(cfg)
 
 
-def get_log_level_and_path(config_ini_file):
-    """ Get the log level and path from config.ini, as logging needs to be
-        configured as early as possible.
+def get_log_level_and_path(config_file):
+    """ Get the log level and path from config.ini or config.yml,
+        as logging needs to be configured as early as possible.
     """
-    
+
     # set defaults
     cfg = {
         'log_level': 'INFO',
-        'log_path': os.getcwd(),
+        'log_path': None,
     }
-    
-    # update defaults if possible
-    if isinstance(config_ini_file, str) and os.path.exists(config_ini_file):
 
-        with open(config_ini_file, 'r') as file:
+    # update defaults if possible
+    if isinstance(config_file, str) and os.path.exists(config_file):
+
+        with open(config_file, 'r') as file:
             cfg_file = file.read()
-        
+
         options = {
-            'log_level': r'(?i)^\s*log_level\s*=\s*(debug|info|warning|error)\s*(?:#.*|)$',
-            'log_path': r'(?i)^\s*run_dir\s*=\s*(.*)\s*(?:#.*|)$',
+            'log_level': r'(?i)^\s*log_level\s*(?:=|:)\s*(debug|info|warning|error)\s*(?:#.*|)$',
+            'log_path': r'(?i)^\s*run_dir\s*(?:=|:)\s*(.*)\s*(?:#.*|)$',
         }
 
         for key, regex in options.items():
             match = re.search(regex, cfg_file, re.MULTILINE)
             if match:
                 cfg[key] = match.groups()[0]
-
-    cfg['log_path'] = os.path.abspath(cfg['log_path'])
 
     return cfg['log_level'], cfg['log_path']
 
@@ -114,6 +117,7 @@ class configFile:
     """
     Class to hold info from the configuration file (if present)
     """
+    
     def s2b(self, s):
         """
         convert a string to boolean arg
@@ -257,317 +261,311 @@ class configFile:
         return glob
 
 
-# start parsing command line args
-# options initialize and descriptor
-namelist_file    = None
-config_file      = None
-preprocess_id    = None
+def main():
+    """ Run the program"""
 
-shortop = "hp:n:c:"
-# ---- Long form.
-longop = [
-   "help",
-   "namelist-file=",
-   "config-file="]
+    # parse command line args
+    parser = argparse.ArgumentParser(description=__doc__,
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument('-n', '--namelist-file',
+                        help='Namelist file')
+    parser.add_argument('-c', '--config-file',
+                        default=os.path.join(os.path.dirname(__file__), 'config.ini'),
+                        help='Config file')
+    args = parser.parse_args()
 
-# get command line arguments
-try:
-    opts, args = getopt.getopt(sys.argv[1:], shortop, longop)
-except getopt.GetoptError:
-    usage()
-    sys.exit(1)
+    namelist_file = os.path.abspath(args.namelist_file)
+    config_file = os.path.abspath(args.config_file)
 
-command_string = 'python main.py '
+    ####################################################
+    # Set up logging before anything else              #
+    ####################################################
 
-# parse options
-for o, a in opts:
-    if o in ("-h", "--help"):
-        usage()
-        sys.exit(0)
-    elif o in ("-n", "--namelist-file"):
-        namelist_file = a
-        command_string = command_string + ' -n ' + a
-    elif o in ("-c", "--config-file"):
-        config_file = a
-        command_string = command_string + ' -c ' + a
-    else:
-        print("ERROR: Unknown option: %s", o)
-        usage()
-        sys.exit(1)
+    # get the required console log level and location to save the logs
+    # from config file
 
-# condition options
-if not namelist_file:
-    print(get_header())
-    print("ERROR: No namelist file specified.")
-    print("ERROR: Use --namelist-file to specify it.")
-    sys.exit(1)
-if not config_file:
-    print(get_header())
-    print("ERROR: No configuration file specified.")
-    print("ERROR: Use --config-file to specify it.")
-    sys.exit(1)
+    log_level, run_dir = get_log_level_and_path(config_file)
 
-####################################################
-# Set up logging before anything else              #
-####################################################
+    # if run_dir exists, don't overwrite it
+    previous_run_dir = None
+    if not run_dir is None:
+        run_dir = os.path.abspath(run_dir)
+        if os.path.isdir(run_dir):
+            previous_run_dir = run_dir + '_' + uuid.uuid4().hex
+            os.rename(run_dir, previous_run_dir)
+        os.makedirs(run_dir)
 
-# get the required console log level and location to save the logs
-# from config file
-log_level, run_dir = get_log_level_and_path(config_file)
+    # configure logging
+    configure_logging(output=run_dir, console_log_level=log_level)
 
-# if run_dir exists, don't overwrite it
-previous_run_dir = None
-if os.path.isdir(run_dir):
-    previous_run_dir = run_dir + '_' + uuid.uuid4().hex
-    os.rename(run_dir, previous_run_dir)
-os.makedirs(run_dir)
+    # Log header
+    logger.info(__doc__)
 
-# configure logging
-configure_logging(output=run_dir, console_log_level=log_level)
+    if run_dir is None:
+        logger.warning("Failed to retrieve run_dir from config file")
 
-# Log header
-logger.info(get_header())
+    if previous_run_dir:
+        logger.info('Renamed existing run directory %s to %s',
+                    run_dir, previous_run_dir)
 
-if previous_run_dir:
-    logger.info('Renamed existing run directory %s to %s',
-                run_dir, previous_run_dir)
+    # Check NCL version
+    ncl_version_check()
 
-# Check NCL version
-ncl_version_check()
+    process_namelist(namelist_file=namelist_file, config_file=config_file)
+
+
+def process_namelist(namelist_file, config_file):
+    """Process namelist"""
+
+    if not os.path.isfile(namelist_file):
+        raise OSError(errno.ENOENT, "Specified namelist file does not exist", namelist_file)
+
+    if not os.path.isfile(config_file):
+        raise OSError(errno.ENOENT, "Specified config file does not exist", config_file)
+
+    os.environ['0_ESMValTool_version'] = __version__
+    # we may need this
+    # os.environ["ESMValTool_force_calc"] = "True"
+
+    preprocess_id = None
+
+    # Get namelist file
+    yml_path = namelist_file
+
+    # Parse input namelist into project_info-dictionary.
+    Project = Ps()
     
-# Get namelist file
-yml_path = namelist_file
+    # Parse config file into GLOBAL_DICT info_dictionary
+    confFileClass = configFile()
+    GLOBAL_DICT = confFileClass.GLOBAL(config_file)
+    
+    # Project_info is a dictionary with all info from the namelist.
+    project_info_0 = Project.load_namelist(yml_path)
+    verbosity = GLOBAL_DICT['verbosity']
+    preproc_dir = GLOBAL_DICT['preproc_dir']
+    exit_on_warning = GLOBAL_DICT.get('exit_on_warning', False)
+    
+    # Project_info is a dictionary with all info from the namelist.
+    project_info = {}
+    project_info['GLOBAL'] = GLOBAL_DICT
+    project_info['MODELS'] = project_info_0.MODELS
+    project_info['DIAGNOSTICS'] = project_info_0.DIAGNOSTICS
+    
+    # Additional entries to 'project_info'. The 'project_info' construct
+    # is one way by which Python passes on information to the NCL-routines.
+    project_info['RUNTIME'] = {}
+    project_info['RUNTIME']['yml'] = yml_path
+    project_info['RUNTIME']['yml_name'] = os.path.basename(yml_path)
+    
+    # Set references/acknowledgement file
+    refs_acknows_file = str.replace(project_info['RUNTIME']['yml_name'], "namelist_", "refs-acknows_")
+    refs_acknows_file = refs_acknows_file.split(os.extsep)[0] + ".log"
+    out_refs = os.path.join(project_info["GLOBAL"]['run_dir'], refs_acknows_file)
+    project_info['RUNTIME']['out_refs'] = out_refs
+    
+    # Print summary
+    logger.info("NAMELIST   = %s", project_info['RUNTIME']['yml_name'])
+    logger.info("RUNDIR     = %s", project_info["GLOBAL"]['run_dir'])
+    logger.info("WORKDIR    = %s", project_info["GLOBAL"]["work_dir"])
+    logger.info("PREPROCDIR = %s", project_info["GLOBAL"]["preproc_dir"])
+    logger.info("PLOTDIR    = %s", project_info["GLOBAL"]["plot_dir"])
+    logger.info("LOGFILE    = %s", project_info['RUNTIME']['out_refs'])
+    logger.info(70 * "_")
+    
+    #    logger.info("REFORMATTING THE OBSERVATIONAL DATA...", vv, 1)
+    
+    # perform options integrity checks
+    logger.info('Checking integrity of namelist')
+    tchk1 = datetime.datetime.now()
+    pchk.models_checks(project_info['MODELS'])
+    pchk.diags_checks(project_info['DIAGNOSTICS'])
+    pchk.preprocess_checks(project_info_0.PREPROCESS)
+    tchk2 = datetime.datetime.now()
+    dtchk = tchk2 - tchk1
+    logger.info('Namelist check successful! Time: %s', dtchk)
+    
+    # this will have to be purget at some point in the future
+    project_info['CONFIG'] = project_info_0.CONFIG
+    
+    # tell the environment about regridding
+    project_info['RUNTIME']['regridtarget'] = []
+    
+    # Master references-acknowledgements file (hard coded)
+    in_refs = os.path.join(os.getcwd(), 'doc/MASTER_authors-refs-acknow.txt')
+    project_info['RUNTIME']['in_refs'] = in_refs
+    
+    # Create workdir
+    if not os.path.isdir(project_info['GLOBAL']['work_dir']):
+        logger.info('Creating work_dir %s', project_info['GLOBAL']['work_dir'])
+        os.makedirs(project_info['GLOBAL']['work_dir'])
 
-# Parse input namelist into project_info-dictionary.
-Project = Ps()
+    # Create rundir
+    if not os.path.isdir(project_info['GLOBAL']['run_dir']):
+        logger.info('Creating run_dir %s', project_info['GLOBAL']['run_dir'])
+        os.makedirs(project_info['GLOBAL']['run_dir'])
 
-# Parse config file into GLOBAL_DICT info_dictionary
-confFileClass = configFile()
-GLOBAL_DICT = confFileClass.GLOBAL(config_file)
+    # Create refs-acknows file in run_dir (empty if existing)
+    with open(out_refs, "w"):
+        pass
 
-# Project_info is a dictionary with all info from the namelist.
-project_info_0 = Project.load_namelist(yml_path)
-verbosity = GLOBAL_DICT['verbosity']
-preproc_dir = GLOBAL_DICT['preproc_dir']
-exit_on_warning = GLOBAL_DICT.get('exit_on_warning', False)
-
-# Project_info is a dictionary with all info from the namelist.
-project_info = {}
-project_info['GLOBAL'] = GLOBAL_DICT
-project_info['MODELS'] = project_info_0.MODELS
-project_info['DIAGNOSTICS'] = project_info_0.DIAGNOSTICS
-
-# Additional entries to 'project_info'. The 'project_info' construct
-# is one way by which Python passes on information to the NCL-routines.
-project_info['RUNTIME'] = {}
-project_info['RUNTIME']['yml'] = yml_path
-project_info['RUNTIME']['yml_name'] = os.path.basename(yml_path)
-
-# Set references/acknowledgement file
-refs_acknows_file = str.replace(project_info['RUNTIME']['yml_name'], "namelist_", "refs-acknows_")
-refs_acknows_file = refs_acknows_file.split(os.extsep)[0] + ".log"
-out_refs = os.path.join(project_info["GLOBAL"]['run_dir'], refs_acknows_file)
-project_info['RUNTIME']['out_refs'] = out_refs
-
-# Print summary
-logger.info("NAMELIST   = %s", project_info['RUNTIME']['yml_name'])
-logger.info("RUNDIR     = %s", project_info["GLOBAL"]['run_dir'])
-logger.info("WORKDIR    = %s", project_info["GLOBAL"]["work_dir"])
-logger.info("PREPROCDIR = %s", project_info["GLOBAL"]["preproc_dir"])
-logger.info("PLOTDIR    = %s", project_info["GLOBAL"]["plot_dir"])
-logger.info("LOGFILE    = %s", project_info['RUNTIME']['out_refs'])
-logger.info(70 * "_")
-
-#    logger.info("REFORMATTING THE OBSERVATIONAL DATA...", vv, 1)
-
-# perform options integrity checks
-logger.info('Checking integrity of namelist')
-tchk1 = datetime.datetime.now()
-pchk.models_checks(project_info['MODELS'])
-pchk.diags_checks(project_info['DIAGNOSTICS'])
-pchk.preprocess_checks(project_info_0.PREPROCESS)
-tchk2 = datetime.datetime.now()
-dtchk = tchk2 - tchk1
-logger.info('Namelist check successful! Time: %s', dtchk)
-
-# this will have to be purget at some point in the future
-project_info['CONFIG'] = project_info_0.CONFIG
-
-# tell the environment about regridding
-project_info['RUNTIME']['regridtarget'] = []
-
-# Master references-acknowledgements file (hard coded)
-in_refs = os.path.join(os.getcwd(), 'doc/MASTER_authors-refs-acknow.txt')
-project_info['RUNTIME']['in_refs'] = in_refs
-
-# Create workdir
-if not os.path.isdir(project_info['GLOBAL']['work_dir']):
-    mkd = 'mkdir -p ' + project_info['GLOBAL']['work_dir']
-    proc = subprocess.Popen(mkd, stdout=subprocess.PIPE, shell=True)
-    (out, err) = proc.communicate()
-    logger.info('Created work directory %s', project_info['GLOBAL']['work_dir'])
-
-# Create rundir
-if not os.path.isdir(project_info['GLOBAL']['run_dir']):
-    mkd = 'mkdir -p ' + project_info['GLOBAL']['run_dir']
-    proc = subprocess.Popen(mkd, stdout=subprocess.PIPE, shell=True)
-    (out, err) = proc.communicate()
-    logger.info('Created run directory %s', project_info['GLOBAL']['run_dir'])
-
-# Open refs-acknows file in run_dir (delete if existing)
-if (os.path.isfile(out_refs)):
-    os.remove(out_refs)
-f = open(out_refs, "w")
-f.close()
-
-# Current working directory
-project_info['RUNTIME']['cwd'] = os.getcwd()
-
-# Summary to std-out before starting the loop
-timestamp1 = datetime.datetime.now()
-timestamp_format = "%Y-%m-%d --  %H:%M:%S"
-
-logger.info("Starting the Earth System Model Evaluation Tool v%s at time: %s ...",
-            version, timestamp1.strftime(timestamp_format))
-
-# Loop over all diagnostics defined in project_info and
-# create/prepare netCDF files for each variable
-for c in project_info['DIAGNOSTICS']:
-
-    # set current diagnostic
-    currDiag = project_info['DIAGNOSTICS'][c]
-
-    # Are the requested variables derived from other, more basic, variables?
-    requested_vars = currDiag.variables
-
-    # get all models
-    project_info['ADDITIONAL_MODELS'] = currDiag.additional_models
-    project_info['ALLMODELS'] = project_info['MODELS'] + project_info['ADDITIONAL_MODELS']
-
-    # initialize empty lists to hold preprocess cubes and file paths for each model
-    models_cubes = []
-    models_fullpaths = []
-
-    # Prepare/reformat model data for each model
-    for model in project_info['ALLMODELS']:
-        #currProject = model['project']
-        model_name = model['name']
-        project_name = model['project']
-        logger.info("MODEL = %s (%s)", model_name, project_name)
-
-        # variables needed for target variable, according to variable_defs
-        var_def_dir = project_info_0.CONFIG['var_def_scripts']
-
-        # start calling preprocess
-        op = pp.Diag()
-
-        # old packaging of variable objects (legacy from intial version)
-        # this needs to be changed once we have the new variable definition
-        # codes in place
-        variable_defs_base_vars = op.add_base_vars_fields(requested_vars, model, var_def_dir)
-        # if not all variable_defs_base_vars are available, try to fetch
-        # the target variable directly (relevant for derived variables)
-        base_vars = op.select_base_vars(variable_defs_base_vars,
-                                              model,
-                                              currDiag,
-                                              project_info)
-
-        # process base variables
-        for base_var in base_vars:
-            if project_info_0.CONFIG['var_only_case'] > 0:
-                if op.id_is_explicitly_excluded(base_var, model):
-                    continue
-            logger.info("VARIABLE = %s (%s)", base_var.name, base_var.field)
-
-            # Rewrite netcdf to expected input format.
-            logger.info("Calling preprocessing to check/reformat model data, and apply preprocessing steps")
-            # REFORMAT: for backwards compatibility we can revert to ncl reformatting
-            # by changing cmor_reformat_type = 'ncl'
-            # for python cmor_check one, use cmor_reformat_type = 'py'
-            # PREPROCESS ID: extracted from variable dictionary
-            if hasattr(base_var, 'preproc_id'):
-                try:
-                    preprocess_id = base_var.preproc_id
-                    for preproc_dict in project_info_0.PREPROCESS:
-                        if preproc_dict['id'] == preprocess_id:
-                            logger.info('Preprocess id: %s', preprocess_id)
-                            project_info['PREPROCESS'] = preproc_dict
-                except AttributeError:
-                    logger.error('preprocess_id is not an attribute of variable object. Exiting...')
-                    sys.exit(1)
-            prep = pp.preprocess(project_info, base_var, model, currDiag, cmor_reformat_type = 'py')
-
-            # add only if we need multimodel statistics
-            if project_info['PREPROCESS']['multimodel_mean'] is True:
-                models_cubes.append(prep[0])
-                models_fullpaths.append(prep[1])
-
-    # before we proceed more, we call multimodel operations
-    if project_info['PREPROCESS']['multimodel_mean'] is True:
-        pp.multimodel_mean(models_cubes, models_fullpaths)
-
-    vardicts = currDiag.variables
-    variables = []
-    field_types = []
-    # hack: needed by diags that
-    # perform regridding on ref_model
-    # and expect that to be a model attribute
-    ref_models = []
-    ###############
-    for v in vardicts:
-        variables.append(v['name'])
-        field_types.append(v['field'])
-        ref_models.append(v['ref_model'][0])
-
-    project_info['RUNTIME']['currDiag'] = currDiag
-    for derived_var, derived_field, refmodel in zip(variables, field_types, ref_models):
-
-        # needed by external diag to perform regridding
+    # Current working directory
+    project_info['RUNTIME']['cwd'] = os.getcwd()
+    
+    # Summary to std-out before starting the loop
+    timestamp1 = datetime.datetime.now()
+    timestamp_format = "%Y-%m-%d --  %H:%M:%S"
+    
+    logger.info("Starting the Earth System Model Evaluation Tool v%s at time: %s ...",
+                __version__, timestamp1.strftime(timestamp_format))
+    
+    # Loop over all diagnostics defined in project_info and
+    # create/prepare netCDF files for each variable
+    for c in project_info['DIAGNOSTICS']:
+    
+        # set current diagnostic
+        currDiag = project_info['DIAGNOSTICS'][c]
+    
+        # Are the requested variables derived from other, more basic, variables?
+        requested_vars = currDiag.variables
+    
+        # get all models
+        project_info['ADDITIONAL_MODELS'] = currDiag.additional_models
+        project_info['ALLMODELS'] = project_info['MODELS'] + project_info['ADDITIONAL_MODELS']
+    
+        # initialize empty lists to hold preprocess cubes and file paths for each model
+        models_cubes = []
+        models_fullpaths = []
+    
+        # Prepare/reformat model data for each model
         for model in project_info['ALLMODELS']:
-            model['ref'] = refmodel
-        logger.info("External diagnostic will use ref_model: %s", model['ref'])
+            #currProject = model['project']
+            model_name = model['name']
+            project_name = model['project']
+            logger.info("MODEL = %s (%s)", model_name, project_name)
+    
+            # variables needed for target variable, according to variable_defs
+            var_def_dir = project_info_0.CONFIG['var_def_scripts']
+    
+            # start calling preprocess
+            op = pp.Diag()
+    
+            # old packaging of variable objects (legacy from intial version)
+            # this needs to be changed once we have the new variable definition
+            # codes in place
+            variable_defs_base_vars = op.add_base_vars_fields(requested_vars, model, var_def_dir)
+            # if not all variable_defs_base_vars are available, try to fetch
+            # the target variable directly (relevant for derived variables)
+            base_vars = op.select_base_vars(variable_defs_base_vars,
+                                                  model,
+                                                  currDiag,
+                                                  project_info)
+    
+            # process base variables
+            for base_var in base_vars:
+                if project_info_0.CONFIG['var_only_case'] > 0:
+                    if op.id_is_explicitly_excluded(base_var, model):
+                        continue
+                logger.info("VARIABLE = %s (%s)", base_var.name, base_var.field)
+    
+                # Rewrite netcdf to expected input format.
+                logger.info("Calling preprocessing to check/reformat model data, and apply preprocessing steps")
+                # REFORMAT: for backwards compatibility we can revert to ncl reformatting
+                # by changing cmor_reformat_type = 'ncl'
+                # for python cmor_check one, use cmor_reformat_type = 'py'
+                # PREPROCESS ID: extracted from variable dictionary
+                if hasattr(base_var, 'preproc_id'):
+                    try:
+                        preprocess_id = base_var.preproc_id
+                        for preproc_dict in project_info_0.PREPROCESS:
+                            if preproc_dict['id'] == preprocess_id:
+                                logger.info('Preprocess id: %s', preprocess_id)
+                                project_info['PREPROCESS'] = preproc_dict
+                    except AttributeError:
+                        logger.error('preprocess_id is not an attribute of variable object. Exiting...')
+                        sys.exit(1)
+                prep = pp.preprocess(project_info, base_var, model, currDiag, cmor_reformat_type = 'py')
+    
+                # add only if we need multimodel statistics
+                if project_info['PREPROCESS']['multimodel_mean'] is True:
+                    models_cubes.append(prep[0])
+                    models_fullpaths.append(prep[1])
+    
+        # before we proceed more, we call multimodel operations
+        if project_info['PREPROCESS']['multimodel_mean'] is True:
+            pp.multimodel_mean(models_cubes, models_fullpaths)
+    
+        vardicts = currDiag.variables
+        variables = []
+        field_types = []
+        # hack: needed by diags that
+        # perform regridding on ref_model
+        # and expect that to be a model attribute
+        ref_models = []
+        ###############
+        for v in vardicts:
+            variables.append(v['name'])
+            field_types.append(v['field'])
+            ref_models.append(v['ref_model'][0])
+    
+        project_info['RUNTIME']['currDiag'] = currDiag
+        for derived_var, derived_field, refmodel in zip(variables, field_types, ref_models):
+    
+            # needed by external diag to perform regridding
+            for model in project_info['ALLMODELS']:
+                model['ref'] = refmodel
+            logger.info("External diagnostic will use ref_model: %s", model['ref'])
+    
+            project_info['RUNTIME']['derived_var'] = derived_var
+            project_info['RUNTIME']['derived_field_type'] = derived_field
+    
+            # iteration over diagnostics for each variable
+            scrpts = copy.deepcopy(currDiag.scripts)
+            for i in range(len(currDiag.scripts)):
+    
+                # because the NCL environment is dumb, it is important to
+                # tell the environment which diagnostic script to use
+                project_info['RUNTIME']['currDiag'].scripts = [scrpts[i]]
+    
+                # this is hardcoded, maybe make it an option
+                executable = "./interface_scripts/derive_var.ncl"
+                logger.info("Calling %s for '%s'", executable, derived_var)
+                pp.run_executable(executable, project_info, verbosity,
+                                  exit_on_warning)
+    
+                # run diagnostics...
+                # ...unless run_diagnostic is specifically set to False
+                if project_info['GLOBAL']['run_diagnostic'] is True:
+                    executable = "./diag_scripts/" + scrpts[i]['script']
+                    configfile = scrpts[i]['cfg_file']
+                    logger.info("Running diag_script: %s", executable)
+                    logger.info("with configuration file: %s", configfile)
+                    pp.run_executable(executable,
+                                      project_info,
+                                      verbosity,
+                                      exit_on_warning,
+                                      launcher_arguments=None)
+    
+    # delete environment variable
+    del os.environ['0_ESMValTool_version']
+    
+    #End time timing
+    timestamp2 = datetime.datetime.now()
+    logger.info("Ending the Earth System Model Evaluation Tool v%s at time: %s",
+                __version__, timestamp2.strftime(timestamp_format))
+    logger.info("Time for running namelist was: %s", timestamp2 - timestamp1)
+    
+    # Remind the user about reference/acknowledgement file
+    logger.info("For the required references/acknowledgements of these "
+                "diagnostics see: %s", out_refs)
 
-        project_info['RUNTIME']['derived_var'] = derived_var
-        project_info['RUNTIME']['derived_field_type'] = derived_field
 
-        # iteration over diagnostics for each variable
-        scrpts = copy.deepcopy(currDiag.scripts)
-        for i in range(len(currDiag.scripts)):
+if __name__ == '__main__':
 
-            # because the NCL environment is dumb, it is important to
-            # tell the environment which diagnostic script to use
-            project_info['RUNTIME']['currDiag'].scripts = [scrpts[i]]
-
-            # this is hardcoded, maybe make it an option
-            executable = "./interface_scripts/derive_var.ncl"
-            logger.info("Calling %s for '%s'", executable, derived_var)
-            pp.run_executable(executable, project_info, verbosity,
-                              exit_on_warning)
-
-            # run diagnostics...
-            # ...unless run_diagnostic is specifically set to False
-            if project_info['GLOBAL']['run_diagnostic'] is True:
-                executable = "./diag_scripts/" + scrpts[i]['script']
-                configfile = scrpts[i]['cfg_file']
-                logger.info("Running diag_script: %s", executable)
-                logger.info("with configuration file: %s", configfile)
-                pp.run_executable(executable,
-                                  project_info,
-                                  verbosity,
-                                  exit_on_warning,
-                                  launcher_arguments=None)
-
-
-# delete environment variable
-del(os.environ['0_ESMValTool_version'])
-
-#End time timing
-timestamp2 = datetime.datetime.now()
-logger.info("Ending the Earth System Model Evaluation Tool v%s at time: %s",
-            version, timestamp2.strftime(timestamp_format))
-logger.info("Time for running namelist was: %s", timestamp2 - timestamp1)
-
-# Remind the user about reference/acknowledgement file
-logger.info("For the required references/acknowledgements of these "
-            "diagnostics see: %s", out_refs)
-
+    try:
+        main()
+    except:
+        logger.exception("Program terminated abnormally, see stack trace "
+                         "below for more information", exc_info=True)
+        sys.exit(1)
+    else:
+        logger.info("Run was succesful")
