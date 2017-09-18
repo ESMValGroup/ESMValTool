@@ -258,7 +258,8 @@ begin
         delete(n_p)
 
         ; add meta data to plot (for reporting)
-        caption = "EOF analysis " + name_eof(s) + " of variable " + var0 
+        caption = "Madden Julian Oscillation Climate Variability: " + \
+                  "EOF analysis " + name_eof(s) + " of variable " + var0 
 
         id = diag_script + "_" + variables(0) + "_" + name_eof(s)
 
