@@ -127,11 +127,9 @@ namelist (see below).
 
 All observations are tiered as follows:
 
-    • Tier 1: data sets from the obs4MIPs and ana4MIPs archives
-
-    • Tier 2: other freely available data sets
-
-    • Tier 3: restricted data sets (e.g., license agreement required)
+    * Tier 1: data sets from the obs4MIPs and ana4MIPs archives
+    * Tier 2: other freely available data sets
+    * Tier 3: restricted data sets (e.g., license agreement required)
 
 Observational data sets not available in the obs4MIPs/ana4MIPs archives need
 to be reformatted according to the CF/CMOR standard before they can be used
@@ -182,15 +180,15 @@ without the need for reformatting. Examples of such data sets include:
 	* AIRS
 	* CERES-EBAF
 	* CFSR
-	• CloudSat-L3
-	• GPCP-1DD, GPCP-SG
-	• IFS-Cy31r2
-	• ISCCP
-	• MERRA
-	• MISR
-	• MODIS
-	• TES
-	• TRMM, TRMM-L3
+	* CloudSat-L3
+	* GPCP-1DD, GPCP-SG
+	* IFS-Cy31r2
+	* ISCCP
+	* MERRA
+	* MISR
+	* MODIS
+	* TES
+	* TRMM, TRMM-L3
 
 **For the required file naming conventions and the expected directory structure see :numref:`obs_data`**
 
@@ -587,4 +585,4 @@ An example excerpt of an acknowledgements log file is provided below.
       	Fixes applied to original source file(s):
     	./reformat_scripts/fixes/CMIP5_MPI-ESM-LR_fix.ncl
 
-   […]
+   [...]

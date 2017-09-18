@@ -17,23 +17,15 @@ mailing list by sending an email to Listserv@dlr.de with the following text:
 Core development team
 =====================
 
-* **Veronika Eyring (DLR, Germany)**, veronika.eyring at dlr.de
+* Deutsches Zentrum für Luft- und Raumfahrt (DLR), Institut für Physik der Atmosphäre, Germany (PI)
 
   ESMValTool Core PI and Developer: contact for requests to use the ESMValTool and for collaboration with the
   development team, access to the PRIVATE GitHub repository (see :numref:`annex_b`)
 
-* **Axel Lauer (DLR, Germany)**, axel.lauer at dlr.de
-
-  ESMValTool Core Developer: contact for technical and scientific questions, access to the PRIVATE GitHub
-  repository (see :numref:`annex_b`)
-
-* **Mattia Righi (DLR, Germany)**, mattia.righi at dlr.de
-
-  ESMValTool Core Developer: contact for technical and scientific questions
-
-* **Björn Brötz (DLR, Germany)**, bjoern.broetz at dlr.de
-
-  ESMValTool Core Developer: contact for technical questions
+* Alfred-Wegener-Institute Bremerhaven (AWI), Germany (overseeing EU Horizon 2020 APPLICATE and TRR181 ESMValTool work)
+* Barcelona Computing Center (BSC), Spain (overseeing EU Horizon 2020 PRIMAVERA ESMValTool work)
+* Ludwig Maximilian University of Munich, Germany (overseeing EU Horizon 2020 CRESCENDO ESMValTool work)
+* University of Reading, United Kingdom
 
 Contacts for specific diagnostic sets are the respective authors, as listed in the corresponding diagnostic
 documentation (including the ESMValTool development team wiki) and in the source code.
@@ -43,7 +35,7 @@ Pull requests
 
 This section describes the general workflow of how new diagnostics are integrated into the ESMValTool and the
 responsibilities of the developer contribution to the ESMValTool. *For technical details on how to work with the
-version controlled repository for the ESMValTool source code see :numref:`annex_b`.*
+version controlled repository for the ESMValTool source code see* :numref:`annex_b`.
 
 Workflow core development team
 ------------------------------

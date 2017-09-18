@@ -30,7 +30,7 @@ When implementing a new diagnostic script or metrics set, it should be documente
 |                           |                                                                          |
 |                           | XyZ=SurnameYearJournalabbreviation                                       |
 |                           |                                                                          |
-|                           | (e.g., stocker12jgr,stocker12sci1,stocker12sci2).                        |
+|                           | (e.g., stocker12jgr, stocker12sci1, stocker12sci2).                      |
 |                           |                                                                          |
 |                           | For copies of reports that are not publicly available:                   |
 |                           |                                                                          |
@@ -62,22 +62,22 @@ When implementing a new diagnostic script or metrics set, it should be documente
 | **(feature branch)**      |                                                                          |
 +---------------------------+--------------------------------------------------------------------------+
 | ``1.`` Overview                                                                                      |
-| . . . Insert text here                                                                               |
+| ... Insert text here                                                                                 |
 | ``2.`` Available Diagnostics                                                                         |
-| . . . Insert text here                                                                               |
+| ... Insert text here                                                                                 |
 | ``3.`` Specific Routines                                                                             |
-| . . . Contains a description of specific routines being developed for the given diagnostic that helps|
-| . . . to identify common code (which should then go in the ``lib/``)                                 |
+| ... Contains a description of specific routines being developed for the given diagnostic that helps  |
+| ... to identify common code (which should then go in the ``lib/``)                                   |
 | ``4.`` Observations and Scripts (also see Model and observational data below)                        |
-| . . . Insert text here                                                                               |
+| ... Insert text here                                                                                 |
 | ``5.`` Test Cases (see also Automated testing, section :numref:`auto_test`)                          |
-| . . . Insert text here                                                                               |
+| ... Insert text here                                                                                 |
 | ``6.`` References                                                                                    |
-| . . . REF1                                                                                           |
-| . . . REF2                                                                                           |
-| . . . etc.                                                                                           |
+| ... REF1                                                                                             |
+| ... REF2                                                                                             |
+| ... etc.                                                                                             |
 | ``7.`` Sample Plots                                                                                  |
-| . . . Please insert sample plots for all plot types produced by the namelist                         |
+| ... Please insert sample plots for all plot types produced by the namelist                           |
 +---------------------------+--------------------------------------------------------------------------+
 
 
@@ -105,6 +105,7 @@ In this case a reference to the official URL is provided such that a user can ge
 The reformatting routines must be documented with a standard header providing all information required to retrieve and process the data, as well as their availability (Tier 1, Tier 2, or Tier 3).
 
 All observations are tiered as follows:
+
     * Tier 1: data sets from the obs4MIPs and ana4MIPs archives
     * Tier 2: other freely available data sets
     * Tier 3: restricted data sets (e.g., license agreement required)

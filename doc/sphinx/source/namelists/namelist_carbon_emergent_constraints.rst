@@ -76,8 +76,11 @@ Observations and reformat scripts
 **Note:** (1) obs4mips data can be used directly without any preprocessing; (2) see headers of reformat scripts for non-obs4mips data for download instructions.
 
 * GCP - Global Carbon Budget including land (nbp) and ocean (fgco2) carbon fluxes
+
 Reformat script: reformat_scripts/obs/reformat_obs_GCP.ncl
+
 * NCEP - National Centers for Environmental Prediction reanalysis data for near surface temperature
+
 Reformat script: reformat_scripts/obs/reformat_obs_NCEP.ncl
 
 References

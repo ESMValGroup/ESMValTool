@@ -1,54 +1,60 @@
-Annex A – More tables
-*********************
+Annex A -- More tables
+**********************
+
+:numref:`tab_direc_struc` Directory structure of the ESMValTool sorted by file type.
+
+.. tabularcolumns:: |p{5.2cm}|p{10.3cm}|
 
 .. _tab_direc_struc:
 
-.. table:: S10
-
-   Table S10 Directory structure of the ESMValTool sorted by file type.
-
++-------------------------------------------------------------------------------+
+| *Namelists*                                                                   |
 +-------------------------------+-----------------------------------------------+
-| Namelists                     |                                               |
-+===============================+===============================================+
 | nml/namelist_XyZ.xml          | Namelists for specifying general parameters,  |
 |                               | input data and diagnostics to run.            |
 +-------------------------------+-----------------------------------------------+
-| Configuration files           |                                               |
+
+.. tabularcolumns:: |p{5.2cm}|p{10.3cm}|
+
++-------------------------------------------------------------------------------+
+| *Configuration files*                                                         |
 +-------------------------------+-----------------------------------------------+
 | nml/cfg_XyZ/cfg_XyZ_*.typ     | Configuration files for diagnostic scripts.   |
-|                               | The suffix “.typ” specifies the language the  |
+|                               | The suffix ".typ" specifies the language the  |
 |                               | routine is written in. Note: there is usually |
 |                               | than one configuration script per diagnostic  |
 |                               | set.                                          |
 +-------------------------------+-----------------------------------------------+
-|                               |                                               |
-| Scripts                       |                                               |
+
+.. tabularcolumns:: |p{5.2cm}|p{10.3cm}|
+
++-------------------------------------------------------------------------------+
+| *Scripts*                                                                     |
 +-------------------------------+-----------------------------------------------+
 | main.py                       | Driver script controlling the overall program |
 |                               | flow                                          |
 +-------------------------------+-----------------------------------------------+
-| diag_scripts/                 |                                               |
-|                               | Directory containing all diagnostics called   |
-| - MyDiag.ncl                  | by the namelists. Supporting routines are     |
-| - SeaIce_polcon.ncl           | placed in “diag_scripts/lib” under the        |
-| - SAMonsoon.ncl               | subdirectory corresponding to the programming |
-| - etc.                        | language used (NCL, Python, R).               |
+| diag_scripts/                 | Directory containing all diagnostics called   |
+|                               | by the namelists. Supporting routines are     |
+| - MyDiag.ncl                  | placed in "diag_scripts/lib" under the        |
+| - SeaIce_polcon.ncl           | subdirectory corresponding to the programming |
+| - SAMonsoon.ncl               | language used (NCL, Python, R).               |
+| - etc.                        |                                               |
 +-------------------------------+-----------------------------------------------+
-| aux/                          |                                               |
-|                               | Functions and procedures specific to          |
-| - <diagnostic>/               | a given diagnostic are stored in the          |
-|                               | subdirectory                                  |
+| aux/                          | Functions and procedures specific to          |
+|                               | a given diagnostic are stored in the          |
+| - <diagnostic>/               | subdirectory                                  |
 |                               | diag_scripts/aux/<diagnostic>.                |
 +-------------------------------+-----------------------------------------------+
-| lib/                          |                                               |
-|                               |                                               |
-| - ncl/                        | Functions that are called by the              |
+| lib/                          | Functions that are called by the              |
 |                               | diag_scripts, for example statistics.typ      |
-|   - ensemble.ncl              | collects all statistical functions in a       |
-|   - regrid.ncl                | single file. When adding a new function,      |
-|   - statistics.ncl            | it must be added to list in the header.       |
+| - ncl/                        | collects all statistical functions in a       |
+|                               | single file. When adding a new function,      |
+|   - ensemble.ncl              | it must be added to list in the header.       |
+|   - regrid.ncl                |                                               |
+|   - statistics.ncl            |                                               |
 |   - style.ncl                 |                                               |
-|   - …                         |                                               |
+|   - ...                       |                                               |
 |                               |                                               |
 | - python/                     |                                               |
 |                               |                                               |
@@ -56,24 +62,30 @@ Annex A – More tables
 |   - regrid.py                 |                                               |
 |   - statistics.py             |                                               |
 |   - style.py                  |                                               |
-|   - …                         |                                               |
+|   - ...                       |                                               |
 |                               |                                               |
-| - … for other languages       |                                               |
+| - ... for other languages     |                                               |
 | (e.g., R)                     |                                               |
 +-------------------------------+-----------------------------------------------+
-| plot_scripts/                 |                                               |
-|                               | Plotting routines; files should have an       |
-| - ncl/                        | intuitive name for their purpose. Data to be  |
-| - plotting1.ncl               | plotted may be passed to them directly or via |
-| - plotting2.ncl               | netCDF files.                                 |
-| - ...                         |                                               |
+
+.. tabularcolumns:: |p{5.2cm}|p{10.3cm}|
+
++-------------------------------+-----------------------------------------------+
+| plot_scripts/                 | Plotting routines; files should have an       |
+|                               | intuitive name for their purpose. Data to be  |
+| - ncl/                        | plotted may be passed to them directly or via |
+|                               | netCDF files.                                 |
+|   - plotting1.ncl             |                                               |
+|   - plotting2.ncl             |                                               |
+|   - ...                       |                                               |
 |                               |                                               |
-| python/                       |                                               |
+| - python/                     |                                               |
 |                               |                                               |
-| - plotting1.ncl               |                                               |
-| - plotting2.ncl               |                                               |
+|   - plotting1.py              |                                               |
+|   - plotting2.py              |                                               |
 |                               |                                               |
-| for other languages (e.g.R)   |                                               |
+| - ... for other languages     |                                               |
+| (e.g., R)                     |                                               |
 +-------------------------------+-----------------------------------------------+
 | interface_data/               | Inter-process communication, e.g., between    |
 |                               | Python and NCL/R, is done by sourcing NCL/R   |
@@ -82,18 +94,21 @@ Annex A – More tables
 |                               | templates files for different languages.      |
 +-------------------------------+-----------------------------------------------+
 | interface_scripts/            | Routines called from the workflow manager     |
-|                               | script “main.py”, mainly used to handle the   |
+|                               | script "main.py", mainly used to handle the   |
 |                               | control flow of the tool, e.g., parsing       |
 |                               | namelists, updating temporary files in the    |
 |                               | folder interface_data/, etc).                 |
 +-------------------------------+-----------------------------------------------+
+
+.. tabularcolumns:: |p{5.2cm}|p{10.3cm}|
+
++-------------------------------+-----------------------------------------------+
 | reformat_scripts/             | Routines for checking or reformatting raw     |
 |                               | input data.                                   |
 +-------------------------------+-----------------------------------------------+
-| reformat_scripts/cmor/        |                                               |
-|                               | Contains the CMOR tables, defined as          |
-| - CMOR_<var>.dat              | plain-text files CMOR_<var>.dat, where <var>  |
-|                               | is the variable’s standard name. Additional   |
+| reformat_scripts/cmor/        | Contains the CMOR tables, defined as          |
+|                               | plain-text files CMOR_<var>.dat, where <var>  |
+| - CMOR_<var>.dat              | is the variable's standard name. Additional   |
 |                               | tables can be added by the users, e.g.,       |
 |                               | from http://www2-pcmdi.llnl.gov/cmor/tables/. |
 +-------------------------------+-----------------------------------------------+
@@ -115,15 +130,14 @@ Annex A – More tables
 | - reformat_EMAC_func.ncl      |                                               |
 | - names_EMAC.dat              |                                               |
 +-------------------------------+-----------------------------------------------+
-| reformat_scripts/fixes/       |                                               |
-|                               | Contains the user-defined, project- and       |
-| - <project>_<model>_fixes.ncl | model-specific fixes, defined as NCL          |
-|                               | scripts <project>_<model>_fixes.ncl.          |
+| reformat_scripts/fixes/       | Contains the user-defined, project- and       |
+|                               | model-specific fixes, defined as NCL          |
+| - <project>_<model>_fixes.ncl | scripts <project>_<model>_fixes.ncl.          |
 |                               | A template is also provided for the user      |
 |                               | to add more fixes.                            |
 +-------------------------------+-----------------------------------------------+
 | reformat_scripts/obs/         | Contains specific reformat routines for       |
-|                               | “cmorizing” observational data.               |
+|                               | "cmorizing" observational data.               |
 +-------------------------------+-----------------------------------------------+
 | reformat_scripts/constants.ncl| Contains general-purpose functions and        |
 |                               | procedure, called by the default, the         |
@@ -142,7 +156,11 @@ Annex A – More tables
 | defs/                         | attributes and calculation of derived         |
 |                               | variables                                     |
 +-------------------------------+-----------------------------------------------+
-| Data folders                  |                                               |
+
+.. tabularcolumns:: |p{5.2cm}|p{10.3cm}|
+
++-------------------------------------------------------------------------------+
+| *Data folders*                                                                |
 +-------------------------------+-----------------------------------------------+
 |                               | The data folders are specified in             |
 |                               | nml/namelist_*, and thus may be different     |

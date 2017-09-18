@@ -16,9 +16,9 @@ In order the address these challenging objectives the ESMValTool is conceived as
 Architecture
 ============
 
-:numref:`fig_1` shows a schematic of the ESMValTool architecture: the workflow manager (controlled by the Python script "main.py") runs a set of diagnostics on data provided by, for instance, a data archive. The configuration and the settings of each diagnostic are specified in namelists read and passed to the diagnostics by the workflow manager. The results which typically comprise of netCDF files and/or plots are stored in output folders along with log-files summarizing the data used, references, and technical details to ensure traceability and reproducibility of the results.
+:numref:`fig_schematic` shows a schematic of the ESMValTool architecture: the workflow manager (controlled by the Python script "main.py") runs a set of diagnostics on data provided by, for instance, a data archive. The configuration and the settings of each diagnostic are specified in namelists read and passed to the diagnostics by the workflow manager. The results which typically comprise of netCDF files and/or plots are stored in output folders along with log-files summarizing the data used, references, and technical details to ensure traceability and reproducibility of the results.
 
-.. _fig_1:
+.. _fig_schematic:
 .. figure::  ../../source/figures/schematic.png
    :align:   center
 
