@@ -41,7 +41,7 @@ This namelist is part of the ESMValTool
 </GLOBAL>
 
 <MODELS>
-    <model>ESGF_CMIP5 EC-EARTH output1 ICHEC EC-EARTH amip mon atmos Amon r2i1p1 latest 1901 2004 CMIP5_template</model>
+    <model>ESGF_CMIP5 EC-EARTH output1 ICHEC EC-EARTH amip mon atmos Amon r1i1p1 latest 1980 2004 CMIP5_template</model>
     <!--
     <model> CMIP5  GPCC6-2deg   Amon   historical  r1i1p1  1901 2004   /nobackup/rossby16/sm_grini/Data/GPCC/GPCC6/GLB-2/mon </model>
     <model> CMIP5  CRU-TS31     Amon   historical  r1i1p1  1901 2004   /nobackup/rossby15/sm_grini/Data/CRU/CRU-TS31/GLOBAL  </model>

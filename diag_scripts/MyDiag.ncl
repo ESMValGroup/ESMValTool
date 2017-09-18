@@ -134,7 +134,7 @@ begin
                               + models@ensemble(imod), verbosity, 5)
 
     ;; See ./interface_scripts/data_handling.ncl
-    A0 = extract_data(imod, data, -1, 0, 0)
+    A0 = extract_data_extended(imod,var0, data, -1, 0, 0)
     info_output(" ++++++++++++++ Variable summary of original data (A0): ", \
                 verbosity, 5)
     if (verbosity .ge. 4) then
