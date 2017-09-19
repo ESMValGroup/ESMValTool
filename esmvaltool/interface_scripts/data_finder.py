@@ -10,8 +10,8 @@ import os
 import subprocess
 from datetime import datetime
 
-# start the logging procedure
 logger = logging.getLogger(__name__)
+
 
 def cmip5_model2inst(model): ## CHECK-ME: A dictionary is preferred to avoid using find, which causes some issues on some machines in the past (too slow)
     """
@@ -104,10 +104,10 @@ def cmip5_mip2realm_freq(mip): ## CHECK-ME: Same as above
     mipdict['day'] = ['atmos', 'day'] 
     mipdict['fx'] = ['*', 'fx']
 
-    if mip in mipdict.keys():
+    if mip in mipdict:
         return mipdict[mip]
-    else:
-        logger.error("ERROR - CMIP5: can not map mip to realm. Exiting")
+
+    raise KeyError("CMIP5: cannot map mip {} to realm".format(mip))
     
 
 def get_input_filelist(project_info, model, var): ## FIX-ME
@@ -121,10 +121,7 @@ def get_input_filelist(project_info, model, var): ## FIX-ME
 
     ## Directory structure is defined in config and also project-depentend (at present only used for CMIP5)
     key_drs = 'drs_' + model['project']
-    if key_drs in project_info['GLOBAL'].keys():
-        drs = project_info['GLOBAL'][key_drs]
-    else:
-        drs = None
+    drs = project_info['GLOBAL'].get(key_drs)
 
     ## The rootpath is defined in config but now is project-dependent!
     ## Define as dictionary (is this possible in config.ini? Otherwise switch to yaml...)
@@ -133,30 +130,28 @@ def get_input_filelist(project_info, model, var): ## FIX-ME
     # if drs at all
     if drs == 'BADC' or drs == 'DKRZ':
         root = project_info['GLOBAL']['host_root']
-        logger.info("Root path set to: %s" % root)
     # FIXME check cases ETHZ, SMHI...
-    else:    
+    else:
         precise_rootpaths = ['rootpath_CMIP5', 'rootpath_OBS', 'rootpath_obs4mips']
         string = 'rootpath_' + model['project']
         if string in precise_rootpaths:
             root = project_info['GLOBAL'][string]
-            logger.info("Root path set to: %s" % root)
+        elif 'rootpath_default' in project_info['GLOBAL']:
+            root = project_info['GLOBAL']['rootpath_default']
         else:
-            if 'rootpath_default' in project_info['GLOBAL'].keys():
-                root = project_info['GLOBAL']['rootpath_default']
-                logger.info("Root path set to: %s" % root)
-            else:
-                logger.error("ERROR: rootpath for project %s not defined in config" % model['project'])
+            raise ValueError("rootpath for project {} not defined in config".format(model['project']))
+    
+    logger.info("Root path set to: %s", root)
 
     ## Trying to implement the variable-dependent model keys (see section 4.1 yaml document)
     ## Basic idea: same model used by different variable with different mip/ensemble/exp. In
     ##             this case the mip/exp/ensemble is defined in the variable dictionary, while
     ##             the model dictionary contains a wildcard (mip: *)
-    if 'mip' in var.keys():
+    if 'mip' in var:
         model['mip'] = var['mip']
-    if 'ensemble' in var.keys():
+    if 'ensemble' in var:
         model['ensemble'] = var['ensemble']
-    if 'exp' in var.keys():
+    if 'exp' in var:
         model['exp'] = var['exp']
 
     module = globals()[model['project']]()
@@ -205,7 +200,9 @@ def find_files(dirname, filename):
     # work only with existing dirs or allowed permission dirs
     strfindic = 'find ' + dirname +' -follow -type f -iname ' + '*' + filename + '*'
     proc = subprocess.Popen(strfindic, stdout=subprocess.PIPE, shell=True)
-    (out, err) = proc.communicate()
+    out, err = proc.communicate()
+    if err:
+        logger.warning("'%s' says:\n%s", strfindic, err)
     for t in out.split('\n')[0:-1]:
         flist.append(t)
     return flist
@@ -272,14 +269,7 @@ class CMIP5(DataFinder):
             list_versions.sort()
             latest = os.path.basename(list_versions[-1])
 
-            dirname = '/'.join([rootpath,
-                                cmip5_model2inst(model['name']),
-                                model['name'],
-                                model['exp'],
-                                cmip5_mip2realm_freq(model['mip'])[0],
-                                cmip5_mip2realm_freq(model['mip'])[1],
-                                model['mip'],
-                                model['ensemble'],
+            dirname = '/'.join([dirname,
                                 latest,
                                 var['name']])
 
@@ -310,7 +300,8 @@ class CMIP5(DataFinder):
 
         else:
 
-            logger.error("ERROR: can not establsh path to CMIP5 files")
+            raise ValueError("Cannot establish path to CMIP5 files")
+
 
         # The CMIP5 filename is always the same, only the drs changes
         filename = '_'.join([var['name'],
@@ -318,7 +309,6 @@ class CMIP5(DataFinder):
                              model['name'],
                              model['exp'],
                              model['ensemble']]) + '*.nc'
-        path = dirname + filename
         
         # use find here
         in_files_list = veto_files(model, dirname, filename)
@@ -365,7 +355,7 @@ class OBS(DataFinder):
                          str(model['version']),
                          var['field'],
                          var['name']]) + '*.nc'
-        path = dirname + filename
+
         # use find here
         in_files_list = veto_files(model, dirname, filename)
 
