@@ -7,9 +7,8 @@
 Tests are implemented using *assert* statements
 """
 
-import sys
 import os
-
+import sys
 import unittest
 
 
@@ -17,10 +16,7 @@ class Test(unittest.TestCase):
 
     def setUp(self):
         # implement here everything you would like to see happen BEFORE a test is executed
-
-        # to allow that test find the ESMValTool modules, we add here pathes to the system path
-        esmval_path = os.path.dirname(os.path.realpath(__file__)) + os.sep + '..' + os.sep
-        sys.path.append(esmval_path)
+        pass
 
     def tearDown(self):
         # implement here everything you would like to see happen AFTER a test was executed
@@ -31,5 +27,3 @@ class Test(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
-
