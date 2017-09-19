@@ -7,11 +7,10 @@
 Tests are implemented using *assert* statements
 """
 
-import sys
 import os
-
-import unittest
+import sys
 import tempfile
+import unittest
 
 
 class TestLauncher(unittest.TestCase):
@@ -19,13 +18,8 @@ class TestLauncher(unittest.TestCase):
     def setUp(self):
         # implement here everything you would like to see happen BEFORE a test is executed
 
-        # to allow that test find the ESMValTool modules, we add here pathes to the system path
-        esmval_path = os.path.dirname(os.path.realpath(__file__)) + os.sep + '..' + os.sep
-        sys.path.append(esmval_path)
-
         # temporary directory for output
         self.tmpdir = tempfile.mkdtemp() + os.sep
-        sys.path.append(os.path.join(esmval_path, "interface_scripts"))
 
     def tearDown(self):
         # implement here everything you would like to see happen AFTER a test was executed
@@ -35,14 +29,14 @@ class TestLauncher(unittest.TestCase):
 class TestPythonLauncher(TestLauncher):
 
     def test_python_launcher_init(self):
-        from interface_scripts.launchers import py_launcher
+        from esmvaltool.interface_scripts.launchers import py_launcher
         L = py_launcher()
         self.assertFalse(L.execute_as_shell)
         self.assertEqual(L.lang, 'PY ')
 
     def test_python_launcher_exectue_shell(self):
         # execute launcher in SHELL and check if output files existing
-        from interface_scripts.launchers import py_launcher
+        from esmvaltool.interface_scripts.launchers import py_launcher
 
         # generate some dummy python script that should be executed
         # this script will just save some file
@@ -62,7 +56,7 @@ class TestPythonLauncher(TestLauncher):
 
     def test_python_launcher_execute_script(self):
         # execute launcher in SCRIPT and check if output files existing
-        from interface_scripts.launchers import py_launcher
+        from esmvaltool.interface_scripts.launchers import py_launcher
         sys.path.append(self.tmpdir)
 
         # generate some dummy python script that should be executed
@@ -84,7 +78,7 @@ class TestPythonLauncher(TestLauncher):
 
     def test_python_launcher_missing_script(self):
         # test here that error handling works: script NOT available!
-        from interface_scripts.launchers import py_launcher
+        from esmvaltool.interface_scripts.launchers import py_launcher
         L = py_launcher(execute_as_shell=False)
         project_info = {}
         with self.assertRaises(ValueError):
@@ -92,7 +86,7 @@ class TestPythonLauncher(TestLauncher):
 
     def test_python_launcher_execute_script_with_errors(self):
         # execute launcher in SCRIPT and check if output files existing
-        from interface_scripts.launchers import py_launcher
+        from esmvaltool.interface_scripts.launchers import py_launcher
         sys.path.append(self.tmpdir)
 
         # generate some dummy python script that should be executed
@@ -115,7 +109,7 @@ class TestCSHLauncher(TestLauncher):
 
         def setUp(self):
                 TestLauncher.setUp(self)
-                from interface_scripts.launchers import csh_launcher
+                from esmvaltool.interface_scripts.launchers import csh_launcher
                 self.L = csh_launcher()
 
         def test_csh_launcher_init(self):
@@ -144,7 +138,7 @@ class TestBASHLauncher(TestLauncher):
 
         def setUp(self):
                 TestLauncher.setUp(self)
-                from interface_scripts.launchers import bash_launcher
+                from esmvaltool.interface_scripts.launchers import bash_launcher
                 self.L = bash_launcher()
 
         def test_bash_launcher_init(self):
@@ -174,7 +168,7 @@ class TestBadLauncher(TestLauncher):
         def test_bad_lancher(self):
                 # This test should be cleaned soon by using custom exceptions
                 TestLauncher.setUp(self)
-                from interface_scripts.launchers import shell_launcher
+                from esmvaltool.interface_scripts.launchers import shell_launcher
                 try:
                         self.L = shell_launcher('badshell')
                         badshell = True
@@ -184,5 +178,3 @@ class TestBadLauncher(TestLauncher):
 
 if __name__ == "__main__":
     unittest.main()
-
-

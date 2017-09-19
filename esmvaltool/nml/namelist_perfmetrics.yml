@@ -1,0 +1,50 @@
+!Namelist
+
+  MODELS:
+    - {name: MPI-ESM-LR, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+    - {name: MPI-ESM-MR, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+    - {name: bcc-csm1-1, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+
+  PREPROCESS:
+      # note: all functional; for instructions see namelist_helper.txt
+    - {id: pp1, select_level: {levels: [2000, 7000], scheme: nearest}, target_grid: ref_model, regrid_scheme: linear, mask_fillvalues: {min_value: 1.0, threshold_percent: 0.9, time_window: 3}, mask_landocean: None, multimodel_mean: True}
+    - {id: pp2, select_level: {levels: 2000, scheme: linear}, target_grid: 1x1, regrid_scheme: linear, mask_fillvalues: None, mask_landocean: None, multimodel_mean: True}
+
+  CONFIG:
+    var_def_scripts: ./variable_defs
+    var_only_case: 0
+  
+  DIAGNOSTICS:
+
+    DIAG_shit_1:
+      !Diagnostic
+      id: MyDiagShit1
+      description: tutorial diagnostic
+      variables: 
+        - {name: ta, ref_model: ['ERA-Interim','NCEP'], field: T3M, only: None, preproc_id: pp1}
+      scripts:
+        # Annual cycle plot
+        - {script: perfmetrics_main.ncl,  cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_cycle_monthlyclim_200_glob.ncl}
+        # Zonal mean plot
+        - {script: perfmetrics_main.ncl,  cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_zonal_annualclim_all_glob.ncl}
+        # Taylor and grading precalculations
+        - {script: perfmetrics_main.ncl,     cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_grading_RMSD_200_glob.ncl}
+        - {script: perfmetrics_grading.ncl,  cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_grading_RMSD_200_glob.ncl}
+        - {script: perfmetrics_taylor.ncl,   cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_grading_RMSD_200_glob.ncl}
+      additional_models:
+##        - {name: GFDL-ESM2G, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+        - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 3}
+        - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 2}
+
+#     DIAG_shit_2:
+#       !Diagnostic
+#       id: MyDiagShit2
+#       description: tutorial diagnostic
+#       variables:
+#         - {name: pr,  ref_model: ['NCEP'],  field: T2Ms, only: "None", preproc_id: pp2}
+#       scripts:
+#         - {script: MyDiag_test_pr.ncl,     cfg_file: ./nml/cfg_MyDiag/cfg_MyDiag.ncl}
+#       additional_models:
+#         - {name: GFDL-ESM2G, project: CMIP5_ETHZ,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start: 2000,  end: 2002,  path: /test_data/}
+#         - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start: 2000,  end: 2002,  tier: 3}
+#         - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start: 2000,  end: 2002,  tier: 2}
