@@ -26,10 +26,10 @@ implemented. These include: univariate empirical orthogonal function (EOF)
 analysis for 20-100 day bandpass filtered daily anomalies of precipitation,
 OLR, u850 and u200. To illustrate the northward and eastward propagation of
 the MJO, lag-longitude and lag-latitude diagrams show either the equatorially
-(latitude) averaged (10°S-10ºN) or zonally (longitude) averaged (80ºE-100ºE)
+(latitude) averaged (10°S-10ºN) or zonally (longitude) averaged (80°E-100°E)
 intraseasonal precipitation anomalies and u850 anomalies correlated against
-intraseasonal precipitation at an Indian Ocean reference point (75ºE-100ºE,
-10ºS-5ºN). Similar figures can also be produced for other key variables and
+intraseasonal precipitation at an Indian Ocean reference point (75°E-100°E,
+10°S-5°N). Similar figures can also be produced for other key variables and
 regions following the definitions of Waliser et al. (2009). To further
 explore the MJO intraseasonal variability, the wavenumber-frequency spectra
 for each season is calculated for individual variables. In addition, we also
@@ -118,17 +118,14 @@ Example plots
 -------------
 
 .. figure:: ../../source/namelists/figures/MJO/fig_mjo_1.png
-   :scale: 50 %
-   :alt: xxxx
+   :width: 60 %
 
 .. figure:: ../../source/namelists/figures/MJO/fig_mjo_2.png
-   :scale: 50 %
-   :alt: xxxx
+   :width: 80 %
 
 .. figure:: ../../source/namelists/figures/MJO/fig_mjo_3.png
-   :scale: 50 %
-   :alt: xxxx
+   :width: 80 %
 
 .. figure:: ../../source/namelists/figures/MJO/fig_mjo_4.png
-   :scale: 50 %
-   :alt: xxxx
+   :width: 80 %
+

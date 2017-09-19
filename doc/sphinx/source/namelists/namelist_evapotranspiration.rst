@@ -73,6 +73,7 @@ References
 * Mueller, B., and S. I. Seneviratne (2014), Systematic land climate and
   evapotranspiration biases in CMIP5 simulations, Geophys. Res. Lett.,
   41, 128-134, doi: 10.1002/2013GL058055.
+
 * Mueller, B., Hirschi, M., Jimenez, C., Ciais, P., Dirmeyer, P. A., Dolman,
   A. J., Fisher, J. B., Jung, M., Ludwig, F., Maignan, F., Miralles, D. G.,
   McCabe, M. F., Reichstein, M., Sheffield, J., Wang, K., Wood, E. F., Zhang,
@@ -95,18 +96,4 @@ Example plots
 .. figure::  ../../source/namelists/figures/evapotranspiration/fig_evapo_3.png
    :align:   center
    :width:   50%
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

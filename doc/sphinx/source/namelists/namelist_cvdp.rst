@@ -47,15 +47,15 @@ User settings
 
 User setting files (cfg files) are stored in nml/cfg_CVDP/
 
-     #.	cvdp_obs.ncl
+#. cvdp_obs.ncl
 
-         *Required diag_script_info attributes*
+   *Required diag_script_info attributes*
 
-	     * obs_ref: list of reference data sets (observations) (array)
+   * obs_ref: list of reference data sets (observations) (array)
 
-     #.	cvdp_driver.ncl (called by cvdp_atmos.ncl)
+#. cvdp_driver.ncl (called by cvdp_atmos.ncl)
 
-         *The wrapper script cvdp_driver.ncl sets the user options for the CVDP.*
+   *The wrapper script cvdp_driver.ncl sets the user options for the CVDP.*
 
 
 
@@ -125,6 +125,7 @@ Example plots
 .. fig_cvdp_1:
 .. figure:: ../../source/namelists/figures/cvdp/figure_namelists_cvdp_EOF-SST-NorthPacific.png
    :align:  center
+   :width:  90%
 
    The leading empirical orthogonal function (EOF) of monthly sea surface temperature (SST) anomalies over the North Pacific (after removing the global mean SST anomaly) based on the HadISST observational data set (top left) during 1900-2005, and (remaining panels) several model simulations of the Coupled Model Intercomparison Project Phase 5 (CMIP5), for the models MIROC4h and CanCM4 during 1960-2005.
 
@@ -132,6 +133,7 @@ Example plots
 .. fig_cvdp_2:
 .. figure:: ../../source/namelists/figures/cvdp/figure_namelists_cvdp_Nino34-Index.png
    :align:  center
+   :width:  100%
 
    The weighted area average of monthly SST anomalies in the region 5°S-5°N, 190°-240°E also known as the "Niño-3.4 Index" (Trenberth et al., 2002) based on the HadISST observational data set (top left) for the period 1900-2005, and (remaining panels) several model simulations of the Coupled Model Intercomparison Project Phase 5 (CMIP5), for the models MIROC4h and CanCM4 during 1960-2005. The red/blue shading on the Niño3.4 time series denotes positive/negative deviations from the best-fit linear trend line.
 
@@ -139,7 +141,7 @@ Example plots
 .. fig_cvdp_3:
 .. figure:: ../../source/namelists/figures/cvdp/figure_namelists_cvdp_LaNina-Composite.png
    :align:  center
-   :width:  12cm
+   :width:  80%
 
    Longitude-latitude sections of composite SST anomalies along the equator (3°N-3°S) for La Niña based on the HadISST oberservational data set (top left) for the period 1900-2005, and (remaining panels) several model simulations of the Coupled Model Intercomparison Project Phase 5 (CMIP5), for the models MIROC4h and CanCM4 during 1960-2005. The number at the top right of each panel indicates the number of events used for the composite.
 
@@ -147,6 +149,7 @@ Example plots
 .. fig_cvdp_4:
 .. figure:: ../../source/namelists/figures/cvdp/figure_namelists_cvdp_AMO-Monthly.png
    :align:  center
-   :width:  12cm
+   :width:  80%
 
    The power spectrum as a function of frequency in cycle per month of the Niño-3.4 SST index for the HadISST observational data set (top left) for the period 1900-2005, and (remaining panels) several model simulations of the Coupled Model Intercomparison Project Phase 5 (CMIP5), for the models MIROC4h and CanCM4 during 1960-2005. The black line denotes the spectrum. The red line indicates the best-fit first-order Markov red noise spectrum, the blue line its 95% and the green line its 99% confidence bounds. The observational spectrum is overlaid in gray on each model spectrum if available.
+

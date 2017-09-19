@@ -10,9 +10,9 @@ The plots will be done based on a collection of individual namelists. The follow
 
 * Figure 9.2 a,b: Annual-mean surface air temperature for the period 1980-2005. The left panel shows the multi-model mean and the right panel the bias as the difference between the CMIP5 multi-model mean and the climatology from ERA-Interim (Dee et al., 2011).
 
-* Figure 9.4 a,b: Annual-mean precipitation rate (mm day-1) for the period 1980-2005. The left panel shows the multi-model mean and the right panel the bias as the difference between the CMIP5 multi-model mean and the climatology from the Global Precipitation Climatology Project (Adler et al., 2003).
+* Figure 9.4 a,b: Annual-mean precipitation rate (mm day\ :sup:`-1`) for the period 1980-2005. The left panel shows the multi-model mean and the right panel the bias as the difference between the CMIP5 multi-model mean and the climatology from the Global Precipitation Climatology Project (Adler et al., 2003).
 
-* Figure 9.5: Climatological (1985-2005) annual-mean cloud radiative effects in Wm-2 for the CMIP5 models against CERES EBAF (2001-2011) in Wm-2. Top row shows the shortwave effect; middle row the longwave effect, and bottom row the net effect. Multi-model-mean biases against CERES EBAF 2.6 are shown on the left, whereas the right panels show zonal averages from CERES EBAF 2.6 (black), the individual CMIP5 models (thin gray lines), and the multi-model mean (thick red line).
+* Figure 9.5: Climatological (1985-2005) annual-mean cloud radiative effects in Wm\ :sup:`-2` for the CMIP5 models against CERES EBAF (2001-2011) in Wm\ :sup:`-2`. Top row shows the shortwave effect; middle row the longwave effect, and bottom row the net effect. Multi-model-mean biases against CERES EBAF 2.6 are shown on the left, whereas the right panels show zonal averages from CERES EBAF 2.6 (black), the individual CMIP5 models (thin gray lines), and the multi-model mean (thick red line).
 
 * Figure 9.7: Relative space-time root-mean square error (RMSE) calculated from the 1980-2005 climatological seasonal cycle of the CMIP5 historical simulations. A relative performance is displayed, with blue shading indicating performance being better and red shading worse, than the median of all model results. A diagonal split of a grid square shows the relative error with respect to the reference data set (lower right triangle) and the alternate data set (upper left triangle). White boxes are used when data is not available for the given model and variable or no alternate data set has been used. The figure shows that performance varies across CMIP5 models and variables, with some models comparing better with observations for one variable and another model performing better for a different variable.
 
@@ -79,17 +79,11 @@ User settings
 See individual diagnostics (Annex C):
 
 * Aerosol
-
 * Clouds
-
 * Emergent constraints on carbon cycle feedbacks
-
 * Ozone and associated climate impacts
-
 * Performance metrics for essential climate parameters
-
 * Sea ice
-
 * South Asian Summer Monsoon diagnostics
 
 
@@ -98,35 +92,20 @@ Variables
 ---------
 
 * co2 (atmos, monthly mean, longitude, latitude, plev, time)
-
 * fgco2 (ocean, monthly mean, longitude, latitude, time)
-
 * hus (atmos, monthly mean, longitude, latitude, level, time)
-
 * nbp (land, monthly mean, longitude, latitude, time)
-
 * od550aer (aero, monthly mean, longitude, latitude, time)
-
 * pr (atmos, 3-hr/monthly mean, longitude, latitude, time)
-
 * rlut, rlutcs (atmos, monthly mean, longitude, latitude, time)
-
 * rsut, rsutcs (atmos, monthly mean, longitude, latitude, time)
-
 * sic (ocean, monthly mean, longitude, latitude, time)
-
 * ta (atmos, monthly mean, longitude, latitude, level, time)
-
 * tas (atmos, monthly mean, longitude, latitude, time)
-
 * toz (atmos, monthly mean, longitude, latitude, time)
-
 * tro3 (atmos, monthly mean, longitude, latitude, level, time)
-
 * ua (atmos, monthly mean, longitude, latitude, level, time)
-
 * va (atmos, monthly mean, longitude, latitude, level, time)
-
 * zg (atmos, monthly mean, longitude, latitude, level, time)
 
 
@@ -136,34 +115,20 @@ Observations and reformat scripts
 
 *Note:* (1) obs4mips data can be used directly without any preprocessing; (2) see headers of reformat scripts for non-obs4mips data for download instructions.
 
-* AIRS L3 (hus  obs4mips)
-
-* CERES-EBAF (rlut, rlutcs, rsut, rsutcs  obs4mips)
-
-* CMAP (pr  reformat_scripts/obs/reformat_obs_CMAP.ncl)
-
-* ERA-Interim (tas, ta, ua, va, zg, hus  reformat_scripts/obs/reformat_obs_ERA-Interim.ncl)
-
-* ESACCI-AEROSOL (od550aer  reformat_scripts/obs/reformat_obs_ESACCI-AEROSOL.ncl)
-
-* GCP - Global carbon budget including land (nbp) and ocean (fgco2) carbon fluxes (reformat_scripts/obs/reformat_obs_GCP.ncl)
-
-* GPCP-SG (pr  obs4mips)
-
-* HadISST (sic  reformat_scripts/obs/reformat_obs_HadISST.ncl)
-
-* MERRA (pr  obs4mips)
-
-* MODIS-L3 (od550aer  obs4mips)
-
-* NCEP (tas, ta, ua, va, zg  reformat_scripts/obs/reformat_obs_NCEP.ncl)
-
-* NIWA (toz  reformat_scripts/obs/reformat_obs_NIWA.ncl)
-
-* NSIDC-NT (sic  reformat_scripts/obs/reformat_obs_NSIDC.ncl)
-
-* TRMM-3B42 (pr  reformat_scripts/obs/reformat_obs_TRMM-3B42-3hourly.ncl)
-
+* AIRS L3 (hus -- obs4mips)
+* CERES-EBAF (rlut, rlutcs, rsut, rsutcs -- obs4mips)
+* CMAP (pr -- reformat_scripts/obs/reformat_obs_CMAP.ncl)
+* ERA-Interim (tas, ta, ua, va, zg, hus -- reformat_scripts/obs/reformat_obs_ERA-Interim.ncl)
+* ESACCI-AEROSOL (od550aer -- reformat_scripts/obs/reformat_obs_ESACCI-AEROSOL.ncl)
+* GCP -- Global carbon budget including land (nbp) and ocean (fgco2) carbon fluxes (reformat_scripts/obs/reformat_obs_GCP.ncl)
+* GPCP-SG (pr -- obs4mips)
+* HadISST (sic -- reformat_scripts/obs/reformat_obs_HadISST.ncl)
+* MERRA (pr -- obs4mips)
+* MODIS-L3 (od550aer -- obs4mips)
+* NCEP (tas, ta, ua, va, zg -- reformat_scripts/obs/reformat_obs_NCEP.ncl)
+* NIWA (toz -- reformat_scripts/obs/reformat_obs_NIWA.ncl)
+* NSIDC-NT (sic -- reformat_scripts/obs/reformat_obs_NSIDC.ncl)
+* TRMM-3B42 (pr -- reformat_scripts/obs/reformat_obs_TRMM-3B42-3hourly.ncl)
 
 
 
@@ -185,73 +150,57 @@ Example plots
 
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig1_ipccar5_ch9.png
-   :scale: 60 %
-   :alt: xxxx
+   :width: 80%
    
    Resembling Flato et al. (2013), Fig. 9.2a,b (Eyring et al., 2016: Fig. 4).
 
-
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig2_ipccar5_ch9.png
-   :scale: 60 %
-   :alt: xxxx
+   :width: 80%
    
    Resembling Flato et al. (2013), Fig. 9.4a,b (Eyring et al., 2016: Fig. 4).
 
-
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig3_ipccar5_ch9.png
-   :scale: 60 %
-   :alt: xxxx
+   :width: 60%
    
    Resembling Flato et al. (2013), Fig. 9.5 (Eyring et al., 2016: Fig. 12).
 
-
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig4_ipccar5_ch9.png
-   :scale: 60 %
-   :alt: xxxx
+   :width: 80%
    
-   Resembling Flato et al. (2013), Fig. 9.7 (Eyring et al., 2016: Fig. 2).E
-
+   Resembling Flato et al. (2013), Fig. 9.7 (Eyring et al., 2016: Fig. 2).
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig5_ipccar5_ch9.png
-   :scale: 60 %
-   :alt: xxxx
+   :width: 60%
    
    Resembling Flato et al. (2013), Fig. 9.10 (Eyring et al., 2016: Fig. 25).
 
-
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig6_ipccar5_ch9.png
-   :scale: 60 %
-   :alt: xxxx
+   :width: 80%
    
    Resembling Flato et al. (2013), Fig. 9.24 (Eyring et al., 2016: Fig. 17).
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig7_ipccar5_ch9.png
-   :scale: 80 %
-   :alt: xxxx
+   :width: 80%
    
    Similar to Flato et al. (2013), Fig. 9.28.
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig8_ipccar5_ch9.png
-   :scale: 60 %
-   :alt: xxxx
+   :width: 60%
    
    Resembling Flato et al. (2013), Fig. 9.29 (Eyring et al., 2016: Fig. 23).
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig9_ipccar5_ch9.png
-   :scale: 80 %
-   :alt: xxxx
+   :width: 80%
    
-   Similar to Flat et al. (2013), Fig. 9.30.
+   Similar to Flato et al. (2013), Fig. 9.30.
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig10_ipccar5_ch9.png
-   :scale: 60 %
-   :alt: xxxx
+   :width: 60%
    
    Resembling Flato et al. (2013), Fig. 9.32 (Eyring et al., 2016: Fig. 5).
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig11_ipccar5_ch9.png
-   :scale: 80 %
-   :alt: xxxx
-   
+   :width: 80%
+
    Resembling Flato et al. (2013), Fig. 9.45 (Eyring et al., 2016: Fig. 26).
 

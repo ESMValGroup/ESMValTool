@@ -4,9 +4,7 @@ Precipitation dependence on soil moisture
 Overview
 --------
 
-The "precipitacion dependance on soil moisture diagnostic" is used for the analysis of the coupling between soil moisture and precipitation in Taylor
-et al. 2012. The script sm_pr_diag_nml.py provides the diagnostic on a regular 5°x5° grid for the land surface between 60°S and 60°N. In the output
-plots (see example :numref:`fig_precip_sm`) shading blue (red) indicates convective precipitation more likely over wetter (drier) soils.
+The "precipitacion dependance on soil moisture diagnostic" is used for the analysis of the coupling between soil moisture and precipitation in Taylor et al. 2012. The script sm_pr_diag_nml.py provides the diagnostic on a regular 5°x5° grid for the land surface between 60°S and 60°N. In the output plots (see example :numref:`fig_precip_sm`) shading blue (red) indicates convective precipitation more likely over wetter (drier) soils.
 
 Available namelists and diagnostics
 -----------------------------------
@@ -53,8 +51,8 @@ User setting files (cfg files) are stored in nml/ cfg_sm_pr/
 Variables
 ---------
 
-* pr - precipitation (atmos, 3hr, time latitude longtitude)
-* mrsos - moisture in upper portion of soil column (land, 3hr, time latitude longtitude)
+* pr -- precipitation (atmos, 3hr, time latitude longtitude)
+* mrsos -- moisture in upper portion of soil column (land, 3hr, time latitude longtitude)
 
 Observations and reformat scripts
 ---------------------------------
@@ -64,27 +62,14 @@ None.
 References
 ----------
 
-Taylor, C. M., R. A. M. de Jeu, F. Guichard, P. P. Harris, and W. A. Dorigo (2012), Afternoon rain more likely over drier soils, Nature, 489(7416), 423-426, doi: 10.1038/nature11377.
+* Taylor, C. M., R. A. M. de Jeu, F. Guichard, P. P. Harris, and W. A. Dorigo (2012), Afternoon rain more likely over drier soils, Nature, 489(7416), 423-426, doi: 10.1038/nature11377.
 
 Example plots
 -------------
 
 .. _fig_precip_sm:
 .. figure:: ../../source/namelists/figures/precip_sm/precip_sm_fig1.png
-   :width: 12cm
-   
+   :width: 60%
+
    CNRM-CM5_sm_pr_diag_plot (CNRM-CM5, 3hr, amip, r1i1p1, 1999-2008).
-
-
-
-
-
-
-
-
-
-
-
-
-
 

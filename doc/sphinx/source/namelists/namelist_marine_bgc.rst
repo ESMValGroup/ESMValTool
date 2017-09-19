@@ -21,6 +21,7 @@ Namelists are stored in nml/
 Diagnostics are stored in diag_scripts/
 
 * GO_comp_map.ncl: this diagnostic takes input from up to four models, one of which is defined as the reference, to produce contour maps of the time-mean (climatology) and standard deviation (inter-annual or inter-seasonal [e.g., JJAS] variability) together with the difference between the reference and each model. GO_comp_map.ncl is based on SAM_monsoon/SAMonsoon_wind_basic.ncl and uses many SAMonsoon underlying functions. Extensions to these routines include support for the pre-processing and interpolation of curvilinear ocean grids (e.g., ORCA2, NEMO) along with the option to use 3-D (TO3M; depth-resolving) input model data (ocean) and select a single depth level on which to produce comp_maps.
+
 * GO_tsline.ncl: this diagnostic (developed from SeaIce_tsline.ncl) produces annual and seasonal time series plots from monthly ocean data, and includes reformatting options to convert input irregularly gridded data into a version that NCL can interpret by introducing intermediate referencing co-ordinates in dimensioning the variable, and writing gridcell areas to the same file. Plots can be produced either globally or from a selected latitude-longitude range, with optional extensions including the ability to mask model fields with observational coverage, plot anomaly fields, or overlay derived fields such as linear trend lines, running means or multi-model means. Support for irregular grids (e.g., ORCA2, ORCA1) is provided to, for instance, apply a weighting based on gridcell areas before calculating averages (see reformat_scripts/GO/).
 
 User settings
@@ -76,8 +77,9 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-.. note:: (1) obs4mips data can be used directly without any preprocessing;
-          (2) see headers of reformat scripts for non-obs4mips data for download instructions.
+*Note:* (1) obs4mips data can be used directly without any preprocessing;
+(2) see headers of reformat scripts for non-obs4mips data for download
+instructions.
 
 * spco2: Surface Ocean CO2 Atlas (SOCAT version 2; Bakker et al., 2014)
 
@@ -121,36 +123,20 @@ References
 Example plots
 -------------
 
-|
-
 .. figure:: ../../source/namelists/figures/marine_bgc/marine_bgc_fig_1.png
-   :width: 16cm
+   :width: 80%
 
-|
-|
-         
-+-----------------------------------------------------------------------------+----------------------------------------------------------------------------+
-| .. image :: ../../source/namelists/figures/marine_bgc/marine_bgc_fig_2a.png | .. image:: ../../source/namelists/figures/marine_bgc/marine_bgc_fig_2b.png |
-+-----------------------------------------------------------------------------+----------------------------------------------------------------------------+
+.. centered:: |pic_marinebgc_1| |pic_marinebgc_2|
+
+.. |pic_marinebgc_1| image:: ../../source/namelists/figures/marine_bgc/marine_bgc_fig_2a.png
+   :width: 45%
+
+.. |pic_marinebgc_2| image:: ../../source/namelists/figures/marine_bgc/marine_bgc_fig_2b.png
+   :width: 45%
 
 .. figure:: ../../source/namelists/figures/marine_bgc/marine_bgc_fig_3.png
-   :width: 10cm
+   :width: 50%
 
 .. figure:: ../../source/namelists/figures/marine_bgc/marine_bgc_fig_4.png
-   :width: 14cm
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+   :width: 90%
 

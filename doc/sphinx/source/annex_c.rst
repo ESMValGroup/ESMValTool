@@ -124,14 +124,6 @@ v1.1 are described in
     \newpage 
     \pagebreak
 
-.. include:: namelists/namelist_seaice.rst
-
-.. raw:: latex
-
-    \clearpage
-    \newpage 
-    \pagebreak
-
 .. include:: namelists/namelist_ozone_climate.rst
 
 .. raw:: latex
@@ -148,7 +140,7 @@ v1.1 are described in
     \newpage 
     \pagebreak
 
-.. include:: namelists/namelist_precip_sm.rst
+.. include:: namelists/namelist_perfmetrics.rst
 
 .. raw:: latex
 
@@ -156,7 +148,7 @@ v1.1 are described in
     \newpage 
     \pagebreak
 
-.. include:: namelists/namelist_perfmetrics.rst
+.. include:: namelists/namelist_precip_sm.rst
 
 .. raw:: latex
 
@@ -166,7 +158,7 @@ v1.1 are described in
 
 .. include:: namelists/namelist_seaice.rst
 
-.. raw:: latex
+.. .. raw:: latex
 
     \clearpage
     \newpage 
@@ -213,3 +205,4 @@ v1.1 are described in
     \pagebreak
 
 .. include:: namelists/namelist_wam.rst
+

@@ -153,9 +153,10 @@ References
 Example plots
 -------------
 
-.. fig_seaice_1:
+.. _fig_seaice1:
 .. figure:: ../../source/namelists/figures/seaice/figure_namelist_seaice_polcon-Arctic.png
-   :width: 12cm
+   :width: 80%
+   :align: center
 
    Polar-stereographic contour maps (Arctic) of sea ice concentration averaged
    over the period 1979-2005 from HadISST and NSIDC observations, as well as
@@ -163,9 +164,10 @@ Example plots
    line indicates the sea ice extent (i.e., sea ice concentration of 15%).
 
 
-.. fig_seaice_2:
+.. _fig_seaice2:
 .. figure:: ../../source/namelists/figures/seaice/figure_namelist_seaice_polcon-diff-Antarctic.png
-   :width: 12cm
+   :width: 80%
+   :align: center
 
    Polar-stereogrpahic projections (Antarctic) of the difference in sea ice
    concentration between historical CMIP5 simulations from different Earth
@@ -174,10 +176,10 @@ Example plots
    observations.
 
 
-.. fig_seaice_3:
+.. _fig_seaice3:
 .. figure:: ../../source/namelists/figures/seaice/figure_namelist_seaice_tsline-Arctic.png
-   :name:  fig_seaice_tsline-Arctic
-   :width: 14cm
+   :width: 60%
+   :align: center
 
    Timeseries (1960-2005) of September Arctic sea ice extent from different
    historical CMIP5 Earth system model simulations, and HadISST (black,
@@ -186,9 +188,10 @@ Example plots
    grid cells with a sea ice concentration of at least 15%.
 
 
-.. fig_seaice_4:
+.. _fig_seaice4:
 .. figure:: ../../source/namelists/figures/seaice/figure_namelist_seaice_anncyc-Antarctic.png
-   :width: 14cm
+   :width: 60%
+   :align: center
 
-   Same as :numref:`fig_seaice_tsline-Arctic`, but for the annual cycle of Antarctic sea ice extent.
+   Same as :numref:`fig_seaice3`, but for the annual cycle of Antarctic sea ice extent.
 

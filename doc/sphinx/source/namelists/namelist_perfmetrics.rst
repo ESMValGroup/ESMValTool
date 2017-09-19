@@ -6,11 +6,7 @@ Performance metrics for essential climate parameters
 Overview
 --------
 
-The goal is to create a standard namelist for the calculation of performance metrics to quantify the ability of the models to reproduce the
-climatological mean annual cycle for selected "Essential Climate Variables" (ECVs) plus some additional corresponding diagnostics and plots to better
-understand and interpret the results. The namelist can be used to calculate performance metrics at different vertical levels (e.g., 5, 30, 200, 850
-hPa as in Gleckler et al., 2008) and in four regions (global, tropics 20°N-20°S, northern extratropics 20°-90°N, southern extratropics 20°-90°S). As
-an additional reference, we consider the Righi et al. (2015) paper.
+The goal is to create a standard namelist for the calculation of performance metrics to quantify the ability of the models to reproduce the climatological mean annual cycle for selected "Essential Climate Variables" (ECVs) plus some additional corresponding diagnostics and plots to better understand and interpret the results. The namelist can be used to calculate performance metrics at different vertical levels (e.g., 5, 30, 200, 850 hPa as in Gleckler et al., 2008) and in four regions (global, tropics 20°N-20°S, northern extratropics 20°-90°N, southern extratropics 20°-90°S). As an additional reference, we consider the Righi et al. (2015) paper.
 
 Available namelists and diagnostics
 -----------------------------------
@@ -32,61 +28,61 @@ User settings
 
 User setting files (cfg files) are stored in nml/cfg_perfmetrics/CMIP5/
 
-   1. perfmetrics_grading.ncl
+#. perfmetrics_grading.ncl
 
-      *diag_script_info attributes*
+   *diag_script_info attributes*
 
-      * MultiModelMean: calculate multi-model mean (True, False)
-      * MultiModelMedian: calculate multi-model median (True, False)
-      * metric: applied metric ("RMSD" = root-mean square difference, "BIAS" = mean bias, "stddev_ratio" = ratio of standard deviations of var and ref (for Taylor diagrams only), "correlation" = pattern correlation of var and ref (for Taylor diagrams only)).
-      * normalization: applied normalization ("mean" = normalization with mean, "median" = normalization with media, "centered_median" = substracting and dividing by the median, "stddev_mean" = normalization with substracting the mean and dividing by the standard deviation)
+   * MultiModelMean: calculate multi-model mean (True, False)
+   * MultiModelMedian: calculate multi-model median (True, False)
+   * metric: applied metric ("RMSD" = root-mean square difference, "BIAS" = mean bias, "stddev_ratio" = ratio of standard deviations of var and ref (for Taylor diagrams only), "correlation" = pattern correlation of var and ref (for Taylor diagrams only)).
+   * normalization: applied normalization ("mean" = normalization with mean, "median" = normalization with media, "centered_median" = substracting and dividing by the median, "stddev_mean" = normalization with substracting the mean and dividing by the standard deviation)
 
-   2. perfmetrics_grading_collect.ncl
+#. perfmetrics_grading_collect.ncl
 
-      *Required diag_script_info attributes*
+   *Required diag_script_info attributes*
 
-      * label_bounds: min and max of the labelbar
-      * label_scale: bin width of the labelbar
-      * disp_values: switch on/off the grading values on the plot
+   * label_bounds: min and max of the labelbar
+   * label_scale: bin width of the labelbar
+   * disp_values: switch on/off the grading values on the plot
 
-      *Optional diag_script_info attributes*
+   *Optional diag_script_info attributes*
 
-      * sort: sort models in alphabetic order (excluding multi-model mean)
-      * title: plot title
-      * scale_font: scaling factor applied to the default font size
+   * sort: sort models in alphabetic order (excluding multi-model mean)
+   * title: plot title
+   * scale_font: scaling factor applied to the default font size
 
-   3. perfmetrics_main.ncl
+#. perfmetrics_main.ncl
 
-      *diag_script_info attributes*
+   *diag_script_info attributes*
 
-      * plot_type: plot type ("cycle" (time), "zonal" (plev, lat), "latlon" (lat, lon), "cycle_latlon" (time, lat, lon))
-      * time_avg: time averaging ("monthlyclim", "seasonalclim")
-      * valid_fraction: required fraction of valid values
-      * level: vertical level (hPa, "all" for no selection; set to "all" for zonal mean plots)
-      * region: averaging region ("Global", "Tropics", "NH extratropics", "SH extratropics")
-      * grid: regridding option ("finest", "coarsest", "ref")
-      * draw_plots: create plots (True, False)
-      * plot_diff: create difference plots (only for zonal and lat-lon plots) (True, False)
-      * plot_stddev: plot standard deviation ("all", "none", "ref_model" or given model name)
-      * legend_outside: plot legend in a separate file (only for cycle plots) (True, False)
-      * styleset: plot style (only for cycle plots) ("CMIP5", "DEFAULT", "EMAC")
-      * t_test: calculate t-test for difference plots (only for zonal and lat-lon plots) (True, False)
-      * conf_level: confidence level for the t-test (only for zonal and lat-lon plots)
+   * plot_type: plot type ("cycle" (time), "zonal" (plev, lat), "latlon" (lat, lon), "cycle_latlon" (time, lat, lon))
+   * time_avg: time averaging ("monthlyclim", "seasonalclim")
+   * valid_fraction: required fraction of valid values
+   * level: vertical level (hPa, "all" for no selection; set to "all" for zonal mean plots)
+   * region: averaging region ("Global", "Tropics", "NH extratropics", "SH extratropics")
+   * grid: regridding option ("finest", "coarsest", "ref")
+   * draw_plots: create plots (True, False)
+   * plot_diff: create difference plots (only for zonal and lat-lon plots) (True, False)
+   * plot_stddev: plot standard deviation ("all", "none", "ref_model" or given model name)
+   * legend_outside: plot legend in a separate file (only for cycle plots) (True, False)
+   * styleset: plot style (only for cycle plots) ("CMIP5", "DEFAULT", "EMAC")
+   * t_test: calculate t-test for difference plots (only for zonal and lat-lon plots) (True, False)
+   * conf_level: confidence level for the t-test (only for zonal and lat-lon plots)
 
-   4. perfmetrics_taylor.ncl
+#. perfmetrics_taylor.ncl
 
-      *Required diag_script_info attributes*
+   *Required diag_script_info attributes*
 
-      * region: averaging region ("Global", "Tropics", "NH extratropics", "SH extratropics")
-      * time_avg: time averaging ("monthlyclim", "seasonalclim")
-      * metric: selected metric (required but ignored by permetrics_taylor.ncl)
-      * normalization: type of metric normalization (required but ignored by permetrics_taylor.ncl)
+   * region: averaging region ("Global", "Tropics", "NH extratropics", "SH extratropics")
+   * time_avg: time averaging ("monthlyclim", "seasonalclim")
+   * metric: selected metric (required but ignored by permetrics_taylor.ncl)
+   * normalization: type of metric normalization (required but ignored by permetrics_taylor.ncl)
 
-   5. perfmetrics_taylor_collect.ncl
+#. perfmetrics_taylor_collect.ncl
 
-      *diag_script_info attributes*
+   *diag_script_info attributes*
 
-      None.
+   * None.
 
 Variables
 ---------
@@ -104,8 +100,7 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-.. note:: (1) obs4mips data can be used directly without any preprocessing;
-          (2) see headers of reformat scripts for non-obs4mips data for download instructions.
+*Note: (1) obs4mips data can be used directly without any preprocessing; (2) see headers of reformat scripts for non-obs4mips data for download instructions.*
 
 * AIRS L3 (hus – obs4mips)
 * CERES-EBAF (rlut, rlutcs, rsut, rsutcs – obs4mips)
@@ -125,27 +120,23 @@ References
 Example plots
 -------------
 
-+------------------------------------------------------------------------------+------------------------------------------------------------------------------+
-| .. image :: ../../source/namelists/figures/perfmetrics/perfmetrics_fig_1.png | .. image :: ../../source/namelists/figures/perfmetrics/perfmetrics_fig_2.png |
-+------------------------------------------------------------------------------+------------------------------------------------------------------------------+
+.. centered:: |pic_permetrics1| |pic_permetrics2|
 
-+------------------------------------------------------------------------------+------------------------------------------------------------------------------+ 
-| .. image :: ../../source/namelists/figures/perfmetrics/perfmetrics_fig_3.png | .. image :: ../../source/namelists/figures/perfmetrics/perfmetrics_fig_4.png |  
-+------------------------------------------------------------------------------+------------------------------------------------------------------------------+
+.. |pic_permetrics1| image:: ../../source/namelists/figures/perfmetrics/perfmetrics_fig_1.png
+   :width: 50%
+
+.. |pic_permetrics2| image:: ../../source/namelists/figures/perfmetrics/perfmetrics_fig_2.png
+   :width: 30%
+
+.. centered:: |pic_permetrics3| |pic_permetrics4|
+
+.. |pic_permetrics3| image:: ../../source/namelists/figures/perfmetrics/perfmetrics_fig_3.png
+   :width: 30%
+
+.. |pic_permetrics4| image:: ../../source/namelists/figures/perfmetrics/perfmetrics_fig_4.png
+   :width: 52%
 
 .. figure:: ../../source/namelists/figures/perfmetrics/perfmetrics_fig_5.png
-   :width: 12cm
-
-
-
-
-
-
-
-
-
-
-
-
-
+   :width: 75%
+   :align: center
 

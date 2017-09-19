@@ -27,86 +27,86 @@ User setting files (cfg files) are stored in nml/cfg_SouthernHemisphere/
 
 #. SouthernHemisphere.py and SouthernHemisphere_scatter.py
 
-*Diag_script_info attributes*
+   *Diag_script_info attributes*
 
-General options for all diagnostics
+   General options for all diagnostics
 
-* plot_clouds: True, False
-* plot_fluxes: True, False
-* plot_radiation: True, False
-* plot_scatter: True, False
-* plot_background_grid: True, False
-* plot_total_cover: True, False
-* plot_liquid_path: True, False
-* plot_ice_path: True, False
-* plot_optical_depth: True, False
-* plot_flux_maps: True, False
-* plot_radiation_maps: True, False
+   * plot_clouds: True, False
+   * plot_fluxes: True, False
+   * plot_radiation: True, False
+   * plot_scatter: True, False
+   * plot_background_grid: True, False
+   * plot_total_cover: True, False
+   * plot_liquid_path: True, False
+   * plot_ice_path: True, False
+   * plot_optical_depth: True, False
+   * plot_flux_maps: True, False
+   * plot_radiation_maps: True, False
 
-Common sub keys for all diagnostics (plot\_): X_maps, X_averages, sub_areas
+   Common sub keys for all diagnostics (plot\_): X_maps, X_averages, sub_areas
 
-* plot_lat_averages: True, False
-* plot_lon_averages: True, False
-* plot_monthly_averages: True, False
-* plot_sub_areas: True, False
-* mask_unwanted_values: mask values (e.g., missing values) exceeding "mask_limit_low" and "mask_limit_high" (True, False)
-* mask_limit_low: lower threshold used for creating a mask (if "mask_unwanted_values" = True)
-* mask_limit_high: upper threshold used for creating a mask (if "mask_unwanted_values" = True)
+   * plot_lat_averages: True, False
+   * plot_lon_averages: True, False
+   * plot_monthly_averages: True, False
+   * plot_sub_areas: True, False
+   * mask_unwanted_values: mask values (e.g., missing values) exceeding "mask_limit_low" and "mask_limit_high" (True, False)
+   * mask_limit_low: lower threshold used for creating a mask (if "mask_unwanted_values" = True)
+   * mask_limit_high: upper threshold used for creating a mask (if "mask_unwanted_values" = True)
 
-Configuration for Southern Hemisphere maps and plots. All plots will be generated for all areas but only monthly averages for sub_areas. 
+   Configuration for Southern Hemisphere maps and plots. All plots will be generated for all areas but only monthly averages for sub_areas. 
 
-* areas: name of area(s), defined separately for each area (see below), e.g., default
-* sub_areas: name of sub-area(s), defined separately for each sub-area (see below), e.g., northern southern
-* scatter_areas: cloud vs radiation scatter plot areas; areas must be defined separately (see below), e.g., default
-* seasons: which months to plot for each contour and lat/lon mean plots (e.g., DJF MAM JJA SON); each season has to be defined separately (see below)
+   * areas: name of area(s), defined separately for each area (see below), e.g., default
+   * sub_areas: name of sub-area(s), defined separately for each sub-area (see below), e.g., northern southern
+   * scatter_areas: cloud vs radiation scatter plot areas; areas must be defined separately (see below), e.g., default
+   * seasons: which months to plot for each contour and lat/lon mean plots (e.g., DJF MAM JJA SON); each season has to be defined separately (see below)
 
-Definition of each area, e.g., [SouthernHemisphere_default]
+   Definition of each area, e.g., [SouthernHemisphere_default]
 
-* lat_min: min. latitude
-* lat_max: max. latitude
-* lon_min: min. longitude
-* lon_max: max. longitude
-* stride: color difference interval (how many units per color/shade); if set to 0, the stride is calculated automatically using "maxshades" (max. number of colors/shades)
-* maxshades: max. number of colors/shades
+   * lat_min: min. latitude
+   * lat_max: max. latitude
+   * lon_min: min. longitude
+   * lon_max: max. longitude
+   * stride: color difference interval (how many units per color/shade); if set to 0, the stride is calculated automatically using "maxshades" (max. number of colors/shades)
+   * maxshades: max. number of colors/shades
 
-The contour_limits_* are contour map limits and are given by 3 or 5 integers (min, max, diff, [dev_min, dev_max]). The min and max values define the limits for model maps (and the clear sky (cs) variant). The diff value gives a range [-diff, diff] for difference maps of model - obs (and cs). The last range [dev_min, dev_max] is the range for model/obs - model/obs (cs).
+   The contour_limits_* are contour map limits and are given by 3 or 5 integers (min, max, diff, [dev_min, dev_max]). The min and max values define the limits for model maps (and the clear sky (cs) variant). The diff value gives a range [-diff, diff] for difference maps of model - obs (and cs). The last range [dev_min, dev_max] is the range for model/obs - model/obs (cs).
 
-* hfls, hfss (latent, sensible heat); rlut, rsut (long, shortwave radiation).
-* contour_limits_clt: contour limits for total cloud cover
-* contour_limits_clivi: contour limits for ice water path
-* contour_limits_clwvi: contour limits for total condensed water path
-* contour_limits_hfls: contour limits for latent heat
-* contour_limits_hfss: contour limits for sensible heat
-* contour_limits_rlut: contour limits for longwave radiation
-* contour_limits_rsut: contour limits for shortwave radiation
-* contour_limits_rlds: contour limits for surface downwelling longwave radiation
-* contour_limits_rsds: contour limits for surface downwelling shortwave radiation
+   * hfls, hfss (latent, sensible heat); rlut, rsut (long, shortwave radiation).
+   * contour_limits_clt: contour limits for total cloud cover
+   * contour_limits_clivi: contour limits for ice water path
+   * contour_limits_clwvi: contour limits for total condensed water path
+   * contour_limits_hfls: contour limits for latent heat
+   * contour_limits_hfss: contour limits for sensible heat
+   * contour_limits_rlut: contour limits for longwave radiation
+   * contour_limits_rsut: contour limits for shortwave radiation
+   * contour_limits_rlds: contour limits for surface downwelling longwave radiation
+   * contour_limits_rsds: contour limits for surface downwelling shortwave radiation
 
-Color maps for map plots. You may change the maps as you will, just google "python matplotlib colormaps" for examples. Color maps can be inverted by adding '_r' at the end.
+   Color maps for map plots. You may change the maps as you will, just google "python matplotlib colormaps" for examples. Color maps can be inverted by adding '_r' at the end.
 
-* colourmap_clouds: e.g., Blues
-* colourmap_model: e.g., RdYlGn_r
-* colourmap_diff: e.g., jet
-* colourmap_dev: e.g., cool hot_r
+   * colourmap_clouds: e.g., Blues
+   * colourmap_model: e.g., RdYlGn_r
+   * colourmap_diff: e.g., jet
+   * colourmap_dev: e.g., cool hot_r
 
-Definition of sub areas, e.g., [SouthernHemisphere_northern]
+   Definition of sub areas, e.g., [SouthernHemisphere_northern]
 
-* lat_min: min. latitude
-* lat_max: max. latitude
-* lon_min: min. longitude
-* lon_max: max. longitude
+   * lat_min: min. latitude
+   * lat_max: max. latitude
+   * lon_min: min. longitude
+   * lon_max: max. longitude
 
-Definition of months covered by each season – 1 is January and so forth, e.g., [SouthernHemisphere_season_DJF]
+   Definition of months covered by each season -- 1 is January and so forth, e.g., [SouthernHemisphere_season_DJF]
 
-* season_months: e.g., 12 1 2
+   * season_months: e.g., 12 1 2
 
-Configuration for cloud vs radiation scatter plots
+   Configuration for cloud vs radiation scatter plots
 
-* lat_min: min. latitude
-* lat_max: max. latitude
-* lon_min: min. longitude
-* lon_max: max. longitude
-* points: number of bins
+   * lat_min: min. latitude
+   * lat_max: max. latitude
+   * lon_min: min. longitude
+   * lon_max: max. longitude
+   * points: number of bins
 
 
 Variables
@@ -130,10 +130,15 @@ Note: (1) obs4mips data can be used directly without any preprocessing; (2) see 
 
 * CERES-EBAF (obs4mips)
 * WHOI-OAFlux
+
   *Reformat script:* reformat_scripts/obs/reformat_obs_WHOI-OAFlux.ncl
+
 * CloudSat-L3
+
   *Reformat script:* reformat_scripts/obs/reformat_obs_cloudsat.bash
+
 * MODIS-L3-C6
+
   *Reformat script:* reformat_scripts/obs/reformat_obs_MODIS-L3-C6.ncl
 
 References
@@ -146,30 +151,22 @@ Example plots
 -------------
 
 .. figure:: ../../source/namelists/figures/southern_hemisphere/fig1.png
-   :width: 12 cm
-   :alt: xxxx
+   :width: 90%
+   :align: center
    
 .. figure:: ../../source/namelists/figures/southern_hemisphere/fig2.png
-   :scale: 50 %
-   :alt: xxxx
+   :width: 70%
+   :align: center
 
-.. figure:: ../../source/namelists/figures/southern_hemisphere/fig3.png
-   :width: 10 cm
-   :alt: xxxx
+.. centered:: |pic_sh_1| |pic_sh_2|
 
-.. figure:: ../../source/namelists/figures/southern_hemisphere/fig4.png
-   :width: 10 cm
-   :alt: xxxx
+.. |pic_sh_1| image:: ../../source/namelists/figures/southern_hemisphere/fig3.png
+   :width: 45%
+
+.. |pic_sh_2| image:: ../../source/namelists/figures/southern_hemisphere/fig4.png
+   :width: 45%
 
 .. figure:: ../../source/namelists/figures/southern_hemisphere/fig5.png
-   :width: 10 cm
-   :alt: xxxx
-
-
-
-
-
-
-
-
+   :width: 45%
+   :align: center
 

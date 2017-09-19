@@ -43,42 +43,42 @@ User settings
 
 User setting files (cfg files) are stored in nml/cfg_anav13jclim/
 
-* CarbonCycle_MVI.ncl
+1. CarbonCycle_MVI.ncl
 
-  *Diag_script_info attributes*
+   *Diag_script_info attributes*
 
-  * grid: target grid for regridding ("0.5deg", "1deg", "2deg")
-  * region: region for spatial average ("Global", "Northern Hemisphere",
-    "Southern Hemisphere", "Tropics")
-  * ref_model : reference model, e.g. "CRU"
+   * grid: target grid for regridding ("0.5deg", "1deg", "2deg")
+   * region: region for spatial average ("Global", "Northern Hemisphere",
+     "Southern Hemisphere", "Tropics")
+   * ref_model : reference model, e.g. "CRU"
 
-* CarbonCycle_main.ncl
+2. CarbonCycle_main.ncl
 
-  *Diag_script_info attributes*
+   *Diag_script_info attributes*
 
-  * region: region for spatial average ("Global", "Northern Hemisphere",
-    "Southern Hemisphere", "Tropics")
-  * legend_outside: plot legend in a separate file (True, False)
-  * styleset: plot style set ("CMIP5", "EMAC", "DEFAULT")
-  * sort: sort models alphabetically (True, False)
-  * seasonal_cycle_plot: create seasonal cycle plot (True, False)
-  * errorbar_plot: create error bar plot (True, False)
-  * mean_IAV_plot: create mean (x-axsis), IAV (y-axsis) plot (True, False)
+   * region: region for spatial average ("Global", "Northern Hemisphere",
+     "Southern Hemisphere", "Tropics")
+   * legend_outside: plot legend in a separate file (True, False)
+   * styleset: plot style set ("CMIP5", "EMAC", "DEFAULT")
+   * sort: sort models alphabetically (True, False)
+   * seasonal_cycle_plot: create seasonal cycle plot (True, False)
+   * errorbar_plot: create error bar plot (True, False)
+   * mean_IAV_plot: create mean (x-axsis), IAV (y-axsis) plot (True, False)
 
-* CarbonCycle_2vars.ncl
+3. CarbonCycle_2vars.ncl
 
-  *Diag_script_info attributes*
+   *Diag_script_info attributes*
 
-  * region: region for spatial average ("Global", "Northern Hemisphere",
-    "Southern Hemisphere", "Tropics")
-  * legend_outside: plot legend in a separate file (True, False)
-  * styleset: plot style set ("CMIP5", "EMAC", "DEFAULT")
+   * region: region for spatial average ("Global", "Northern Hemisphere",
+     "Southern Hemisphere", "Tropics")
+   * legend_outside: plot legend in a separate file (True, False)
+   * styleset: plot style set ("CMIP5", "EMAC", "DEFAULT")
 
-* perfmetrics_main.ncl, perfmetric_grading.ncl
+4. perfmetrics_main.ncl, perfmetric_grading.ncl
 
-  *Diag_script_info attributes*
+   *Diag_script_info attributes*
 
-  * see section :numref:`nml_perfmetrics`
+   * see section :numref:`nml_perfmetrics`
 
 
 Variables
@@ -128,12 +128,23 @@ References
 Example plots
 -------------
 
-+--------------------------------------------------------------------------------+--------------------------------------------------------------------------------+
-| .. image:: ../../source/namelists/figures/carbon_cycle/fig_carbon_cycle_1.png  | .. image:: ../../source/namelists/figures/carbon_cycle/fig_carbon_cycle_2.png  |
-+--------------------------------------------------------------------------------+--------------------------------------------------------------------------------+
-| .. image:: ../../source/namelists/figures/carbon_cycle/fig_carbon_cycle_3.png  | .. image:: ../../source/namelists/figures/carbon_cycle/fig_carbon_cycle_4.png  |
-+--------------------------------------------------------------------------------+--------------------------------------------------------------------------------+
-| .. image:: ../../source/namelists/figures/carbon_cycle/fig_carbon_cycle_5.png                                                                                   |
-|    :width: 50%                                                                                                                                                  |
-|    :align: center                                                                                                                                               |
-+--------------------------------------------------------------------------------+--------------------------------------------------------------------------------+  
+.. centered:: |pic_carbcyc_1| |pic_carbcyc_2|
+
+.. |pic_carbcyc_1| image:: ../../source/namelists/figures/carbon_cycle/fig_carbon_cycle_1.png
+   :width: 45%
+
+.. |pic_carbcyc_2| image:: ../../source/namelists/figures/carbon_cycle/fig_carbon_cycle_2.png
+   :width: 45%
+
+.. centered:: |pic_carbcyc_3| |pic_carbcyc_4|
+
+.. |pic_carbcyc_3| image:: ../../source/namelists/figures/carbon_cycle/fig_carbon_cycle_3.png
+   :width: 45%
+
+.. |pic_carbcyc_4| image:: ../../source/namelists/figures/carbon_cycle/fig_carbon_cycle_4.png
+   :width: 45%
+
+.. figure:: ../../source/namelists/figures/carbon_cycle/fig_carbon_cycle_5.png
+   :width: 50%
+   :align: center
+
