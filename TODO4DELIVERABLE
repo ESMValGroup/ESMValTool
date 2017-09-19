@@ -1,0 +1,24 @@
+TODO for deliverables
+---------------------
+
+
+* document reporting (Ben)
+* integrate code for reporting
+
+
+
+
+ACTUAL DOCUMENT COMPILATION
+* integrate easytest and dummydata documentation simply as an Annex to the main deliverable! --> separate PDF documents!
+
+
+
+* generate for all packages a final and tagged version for the deliverable
+also upload this final version on pip and conda-forge
+ * easytest
+  * dummydata
+  * CRESCENDO D73 branch
+store also github HASHKEY  
+  
+
+

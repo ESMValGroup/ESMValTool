@@ -28,19 +28,19 @@
 # 2015-06-30  a_laue_ax: added ESMValTool version
 
 import sys
-sys.path.append("./interface_scripts")
+import os
+sys.path.append(os.path.abspath("./interface_scripts"))
 
-# path to ESMVal python toolbox library
-sys.path.append("./diag_scripts/lib/python")
-sys.path.append("./diag_scripts")
+# path to ESMVal python toolbox library (ensure absolute path as otherwise modules might not found properly)
+sys.path.append(os.path.abspath("./diag_scripts/lib/python"))
+sys.path.append(os.path.abspath("./diag_scripts"))
 
 from auxiliary import info, error, print_header, ncl_version_check
 ## from climate import climate
 from optparse import OptionParser
 import datetime
 import projects
-import os
-import pdb
+#import pdb
 import reformat
 import xml.sax
 import xml_parsers
@@ -78,21 +78,28 @@ parser.parse(input_xml_full_path)
 # Project_info is a dictionary with all info from the namelist.
 project_info = Project.project_info
 
+#bn_muel++
+#add namelist to tags
+if 'GLOBAL' not in project_info.keys():
+    assert False, "This is a reporting namelist!"
+
+if "tags" in project_info.get('GLOBAL').keys():
+    project_info.get('GLOBAL')['tags'].append(input_xml_full_path.split('/')[-1])
+else:
+    project_info.get('GLOBAL')['tags']=[input_xml_full_path.split('/')[-1]]
+#bn_muel++
+
 if options.reformat:
-	if 'REFORMAT' not in project_info.keys():
-		error('No REFORMAT tag specified in {0}'.format(input_xml_full_path))
-	if len(project_info['REFORMAT']) == 0:
-		info('No reformat script specified',1,1)
+    if 'REFORMAT' not in project_info.keys():
+        error('No REFORMAT tag specified in {0}'.format(input_xml_full_path))
+    if len(project_info['REFORMAT']) == 0:
+        info('No reformat script specified',1,1)
         print_header({}, options.reformat)
-	for k,v in project_info['REFORMAT'].iteritems():
-		if not os.path.exists(v):
-			error('Path {0} does not exist'.format(v))
-		projects.run_executable(v,
-	                                project_info,
-	                                1,
-	                                False,
-	                                write_di=False)
-	sys.exit(0)
+    for k,v in project_info['REFORMAT'].iteritems():
+        if not os.path.exists(v):
+            error('Path {0} does not exist'.format(v))
+        projects.run_executable(v, project_info, 1, False, write_di=False)
+        sys.exit(0)
 
 verbosity = project_info['GLOBAL']['verbosity']
 climo_dir = project_info['GLOBAL']['climo_dir']
@@ -135,6 +142,7 @@ timestamp1 = datetime.datetime.now()
 timestamp_format = "%Y-%m-%d --  %H:%M:%S"
 
 print_header(project_info, options.reformat)
+
 info("Starting the Earth System Model Evaluation Tool v" + version + " at time: "
      + timestamp1.strftime(timestamp_format) + "...", verbosity, 1)
 
@@ -179,7 +187,20 @@ if 'ESGF' in project_info and 'config_file' in project_info['ESGF']:
 
 # Loop over all diagnostics defined in project_info and
 # create/prepare netCDF files for each variable
+DiagCounter=1
+
 for currDiag in project_info['DIAGNOSTICS']:
+    
+    #bn_muel++
+    if "tags" in currDiag.__dict__.keys():
+        GlobalTags=list(project_info.get('GLOBAL')['tags'])
+        if len(currDiag.__dict__['tags'])>0:
+            more_tags=currDiag.__dict__['tags'][0].split(",") + ["Auto_Diag_"+str(DiagCounter).zfill(3)]
+        else:
+            more_tags=["Auto_Diag_"+str(DiagCounter).zfill(3)]
+        project_info.get('GLOBAL')['tags'].extend(more_tags)
+        DiagCounter+=1
+    #bn_muel++
 
     # Are the requested variables derived from other, more basic, variables?
     requested_vars = currDiag.get_variables_list()
@@ -247,6 +268,11 @@ for currDiag in project_info['DIAGNOSTICS']:
                             verbosity,
                             exit_on_warning,
                             launcher_arguments=currDiag.get_launcher_arguments())
+    
+    #bn_muel++
+    if "tags" in currDiag.__dict__.keys():
+        project_info.get('GLOBAL')['tags'] = list(GlobalTags)
+    #bn_muel++
 
 # delete environment variable
 del(os.environ['0_ESMValTool_version'])
