@@ -40,6 +40,8 @@ import sys   # debug
 import os
 
 import ConfigParser
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.ndimage.interpolation import map_coordinates as interp2d
