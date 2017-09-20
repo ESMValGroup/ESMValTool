@@ -299,6 +299,12 @@ Example plots
    
    Produced with "eyring13jgr_fig04.ncl".
 
+.. _fig_ozone06:
+.. figure:: ../../source/namelists/figures/ozone_climate/eyring13jgr_fig06.png
+   :width: 60%
+   
+   Produced with "eyring13jgr_fig06.ncl".
+
 .. _fig_ozone07:
 .. figure:: ../../source/namelists/figures/ozone_climate/fig_ozone_climate_4.png
    :width: 60%
