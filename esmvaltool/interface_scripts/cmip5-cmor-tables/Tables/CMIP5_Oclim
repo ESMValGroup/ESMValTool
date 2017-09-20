@@ -1,0 +1,1250 @@
+table_id: Table Oclim
+modeling_realm: ocean
+
+frequency: monClim
+
+cmor_version: 2.6 ! minimum version of CMOR that can read this table
+cf_version:   1.4         ! version of CF that output conforms to
+project_id:   CMIP5  ! project id
+table_date:   17 July 2013 ! date this table was constructed
+
+missing_value: 1.e20      ! value used to indicate a missing value
+                          !   in arrays output by netCDF as 32-bit IEEE 
+                          !   floating-point numbers (float or real)
+
+baseURL: http://cmip-pcmdi.llnl.gov/CMIP5/dataLocation 
+product: output
+
+required_global_attributes: creation_date tracking_id forcing model_id parent_experiment_id parent_experiment_rip branch_time contact institute_id ! space separated required global attribute 
+
+forcings:   N/A Nat Ant GHG SD SI SA TO SO Oz LU Sl Vl SS Ds BC MD OC AA
+
+expt_id_ok: '10- or 30-year run initialized in year XXXX' 'decadalXXXX'
+expt_id_ok: 'volcano-free hindcast initialized in year XXXX' 'noVolcXXXX'
+expt_id_ok: 'prediction with 2010 volcano' 'volcIn2010'
+expt_id_ok: 'pre-industrial control' 'piControl'
+expt_id_ok: 'historical' 'historical'
+expt_id_ok: 'historical extension' 'historicalExt'
+expt_id_ok: 'other historical forcing' 'historicalMisc'
+expt_id_ok: 'mid-Holocene' 'midHolocene'
+expt_id_ok: 'last glacial maximum' 'lgm'
+expt_id_ok: 'last millennium' 'past1000'
+expt_id_ok: 'RCP4.5' 'rcp45'
+expt_id_ok: 'RCP8.5' 'rcp85'
+expt_id_ok: 'RCP2.6' 'rcp26'
+expt_id_ok: 'RCP6' 'rcp60'
+expt_id_ok: 'ESM pre-industrial control' 'esmControl'
+expt_id_ok: 'ESM historical' 'esmHistorical'
+expt_id_ok: 'ESM RCP8.5' 'esmrcp85'
+expt_id_ok: 'ESM fixed climate 1' 'esmFixClim1'
+expt_id_ok: 'ESM fixed climate 2' 'esmFixClim2'
+expt_id_ok: 'ESM feedback 1' 'esmFdbk1'
+expt_id_ok: 'ESM feedback 2' 'esmFdbk2'
+expt_id_ok: '1 percent per year CO2' '1pctCO2'
+expt_id_ok: 'abrupt 4XCO2' 'abrupt4xCO2'
+expt_id_ok: 'natural-only' 'historicalNat'
+expt_id_ok: 'GHG-only' 'historicalGHG'
+expt_id_ok: 'AMIP' 'amip'
+expt_id_ok: '2030 time-slice' 'sst2030'
+expt_id_ok: 'control SST climatology' 'sstClim'
+expt_id_ok: 'CO2 forcing' 'sstClim4xCO2'
+expt_id_ok: 'all aerosol forcing' 'sstClimAerosol'
+expt_id_ok: 'sulfate aerosol forcing' 'sstClimSulfate'
+expt_id_ok: '4xCO2 AMIP' 'amip4xCO2'
+expt_id_ok: 'AMIP plus patterned anomaly' 'amipFuture'
+expt_id_ok: 'aqua planet control' 'aquaControl'
+expt_id_ok: '4xCO2 aqua planet' 'aqua4xCO2'
+expt_id_ok: 'aqua planet plus 4K anomaly' 'aqua4K'
+expt_id_ok: 'AMIP plus 4K anomaly' 'amip4K'
+
+
+approx_interval:  30.000000     ! approximate spacing between successive time
+                          !   samples (in units of the output time 
+                          !   coordinate.
+
+generic_levels:   olevel
+
+!============
+axis_entry: longitude
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    longitude
+units:            degrees_east
+axis:             X             ! X, Y, Z, T (default: undeclared)
+long_name:        longitude
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         lon
+valid_min:        0.0         
+valid_max:        360.0 
+stored_direction: increasing
+type:             double
+must_have_bounds: yes
+!----------------------------------
+!
+
+
+!============
+axis_entry: latitude
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    latitude
+units:            degrees_north
+axis:             Y             ! X, Y, Z, T (default: undeclared)
+long_name:        latitude
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         lat
+valid_min:        -90.0         
+valid_max:        90.0 
+stored_direction: increasing
+type:             double
+must_have_bounds: yes
+!----------------------------------
+!
+
+
+!============
+axis_entry: time2
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    time
+units:            days since ?
+axis:             T             ! X, Y, Z, T (default: undeclared)
+long_name:        time
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         time
+stored_direction: increasing
+type:             double
+must_have_bounds: yes
+climatology:      yes
+!----------------------------------
+!
+
+!============
+axis_entry: depth_coord
+!============
+!
+!  This vertical coordinate is used in z-coordinate models 
+!   The units are meters (m), and it has a value of 0. at the surface
+!   and becomes more and more positive with depth.
+!
+!------------
+!
+! Axis attributes:
+!----------------------------------	
+standard_name:    depth
+units:            m
+axis:             Z
+positive:	  down 
+long_name:        ocean depth coordinate
+!----------------------------------	
+!
+! Additional axis information:
+!----------------------------------	
+out_name:         lev
+must_have_bounds: yes
+stored_direction: increasing
+valid_min:        0.
+valid_max:        12000.
+!----------------------------------	
+!
+!============
+axis_entry: olev
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+axis:             Z             ! X, Y, Z, T (default: undeclared)
+positive:         down         ! up or down (default: undeclared)
+long_name:        generic ocean level
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         lev
+stored_direction: increasing
+type:             double
+must_have_bounds: no
+!----------------------------------
+!
+!============
+axis_entry: ocean_double_sigma
+!============
+!
+!------------
+!
+! Axis attributes:
+!----------------------------------	
+standard_name:    ocean_double_sigma
+axis:             Z
+positive:	  up
+long_name:        ocean double sigma coordinate
+!----------------------------------	
+!
+! Additional axis information:
+!----------------------------------	
+out_name:         lev
+must_have_bounds: yes
+formula:          for k <= k_c:\n z= sigma*f \n for k > k_c:\n z= f + (sigma-1)*(depth-f) \n f= 0.5*(z1+ z2) + 0.5*(z1-z2)* tanh(2*a/(z1-z2)*(depth-href))
+z_factors:        sigma: sigma depth: depth z1: z1 z2: z2 a: a_coeff href: href k_c: k_c
+z_bounds_factors: sigma: sigma_bnds depth: depth z1: z1 z2: z2 a: a href: href k_c: k_c
+!----------------------------------	
+!
+!============
+axis_entry: ocean_sigma_z
+!============
+!
+!------------
+!
+! Axis attributes:
+!----------------------------------	
+standard_name:    ocean_sigma_z
+axis:             Z
+long_name:        ocean sigma over z coordinate
+!----------------------------------	
+!
+! Additional axis information:
+!----------------------------------	
+out_name:         lev
+must_have_bounds: yes
+formula:          for k <= nsigma: z = eta + sigma*(min(depth_c,depth)+eta) ; for k > nsigma: z = zlev
+z_factors:        sigma: sigma eta: eta depth: depth depth_c: depth_c nsigma: nsigma zlev: zlev
+z_bounds_factors: sigma: sigma_bnds eta: eta depth: depth depth_c: depth_c nsigma: nsigma zlev: zlev_bnds
+!----------------------------------	
+!
+!============
+axis_entry: ocean_s
+!============
+!
+!  This coordinate is dimensionless and varies from 0 at the surface to -1. at the ocean floor.
+!  The values of s, which appears in the formula below, should be stored as ocean_s.  
+!  Note that in the netCDF file the variable will be named "lev", not ocean_s.
+!
+!------------
+!
+! Axis attributes:
+!----------------------------------	
+standard_name:    ocean_s_coordinate
+axis:             Z
+positive:	  up
+long_name:        ocean s-coordinate
+!----------------------------------	
+!
+! Additional axis information:
+!----------------------------------	
+out_name:         lev
+must_have_bounds: yes
+stored_direction: decreasing
+valid_min:        -1.
+valid_max:        0.
+formula:          z = eta*(1+s) + depth_c*s + (depth-depth_c)*C \n where \n C=(1-b)*sinh(a*s)/sinh(a) +\n           b*(tanh(a*(s+0.5))/(2*tanh(0.5*a)) - 0.5)
+z_factors:        s: lev eta: eta depth: depth a: a_coeff b: b_coeff depth_c: depth_c
+z_bounds_factors: s: lev_bnds eta: eta depth: depth a: a b: b depth_c: depth_c
+!----------------------------------	
+!
+!============
+axis_entry: ocean_sigma
+!============
+!
+!  This coordinate is dimensionless and varies from 0 at the surface to -1. at the ocean floor.
+!  The values of sigma, which appears in the formula below, should be stored as ocean_sigma.  
+!  Note that in the netCDF file the variable will be named "lev", not ocean_sigma.
+!
+!------------
+!
+! Axis attributes:
+!----------------------------------	
+standard_name:    ocean_sigma_coordinate
+axis:             Z
+positive:	  up
+long_name:        ocean sigma coordinate
+!----------------------------------	
+!
+! Additional axis information:
+!----------------------------------	
+out_name:         lev
+must_have_bounds: yes
+stored_direction: decreasing
+valid_min:        -1.
+valid_max:        0.
+formula:          z = eta + sigma*(depth+eta)
+z_factors:        sigma: lev eta: eta depth: depth
+z_bounds_factors: sigma: lev_bnds eta: eta depth: depth
+!----------------------------------	
+!
+!
+! ***************************************************************
+!
+! Vertical coordinate formula_terms:
+!
+! ***************************************************************
+!
+!============
+variable_entry: eta
+!============
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+units:            m
+cell_methods:     time: mean
+long_name:        Sea Surface Height
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:      longitude latitude time2
+type:      real
+!----------------------------------
+!
+!
+!============
+variable_entry: depth
+!============
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+units:        m
+long_name:    Sea Floor Depth
+comment:      Ocean bathymetry.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:      longitude latitude
+out_name:        depth
+type:            real
+valid_min:        0.
+valid_max:        12000.
+ok_min_mean_abs:  2000.
+ok_max_mean_abs:  5000.
+!----------------------------------
+!
+!
+!============
+variable_entry: sigma
+!============
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   vertical coordinate formula term: sigma(k)
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         olevel
+type:               double
+!----------------------------------	
+!
+!
+!============
+variable_entry: sigma_bnds
+!============
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   vertical coordinate formula term: sigma(k+1/2)
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         olevel
+type:               double
+!----------------------------------	
+!
+!
+!============
+variable_entry: zlev
+!============
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   vertical coordinate formula term: zlev(k)
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         olevel
+type:               double
+!----------------------------------	
+!
+!
+!============
+variable_entry: zlev_bnds
+!============
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   vertical coordinate formula term: zlev(k+1/2)
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+dimensions:         olevel
+type:               double
+!----------------------------------	
+!
+!
+!
+!============
+variable_entry: depth_c
+!============
+!
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   vertical coordinate formula term: depth_c
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+type:               double
+!----------------------------------
+!
+!
+!============
+variable_entry: a
+!============
+!
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   vertical coordinate formula term: coefficient a
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+type:               double
+!----------------------------------
+!
+!
+!============
+variable_entry: b
+!============
+!
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   vertical coordinate formula term: coefficient b
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+type:               double
+!----------------------------------
+!
+!
+!============
+variable_entry: nsigma
+!============
+!
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   vertical coordinate formula term: nsigma
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+type:               integer
+!----------------------------------
+!
+!
+!============
+variable_entry: z1
+!============
+!
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   vertical coordinate formula term: z1
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+type:               double
+!----------------------------------
+!
+!
+!============
+variable_entry: z2
+!============
+!
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   vertical coordinate formula term: z2
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+type:               double
+!----------------------------------
+!
+!
+!============
+variable_entry: href
+!============
+!
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   vertical coordinate formula term: href
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+type:               double
+!----------------------------------
+!
+!
+!============
+variable_entry: k_c
+!============
+!
+!------------
+!
+! Variable attributes:
+!----------------------------------	
+long_name:   vertical coordinate formula term: k_c
+!----------------------------------	
+!
+! Additional variable information:
+!----------------------------------	
+type:               integer
+!----------------------------------
+!
+!
+
+!============
+variable_entry:    difvho
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_vertical_heat_diffusivity
+units:             m2 s-1
+cell_methods:      time: mean within years time: mean over years
+cell_measures:     area: areacello volume: volcello
+long_name:         Ocean Vertical Heat Diffusivity
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time2
+out_name:          difvho
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    difvso
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_vertical_salt_diffusivity
+units:             m2 s-1
+cell_methods:      time: mean within years time: mean over years
+cell_measures:     area: areacello volume: volcello
+long_name:         Ocean Vertical Salt Diffusivity 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time2
+out_name:          difvso
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    difvtrbo
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_vertical_tracer_diffusivity_due_to_background
+units:             m2 s-1
+cell_methods:      time: mean within years time: mean over years
+cell_measures:     area: areacello volume: volcello
+long_name:         Ocean Vertical Tracer Diffusivity due to Background 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time2
+out_name:          difvtrbo
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    difvtrto
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_vertical_tracer_diffusivity_due_to_tides
+units:             m2 s-1
+cell_methods:      time: mean within years time: mean over years
+cell_measures:     area: areacello volume: volcello
+long_name:         Ocean Vertical Tracer Diffusivity due to Tides 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time2
+out_name:          difvtrto
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    tnpeo
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     tendency_of_ocean_potential_energy_content
+units:             W m-2
+cell_methods:      time: mean within years time: mean over years
+cell_measures:     area: areacello volume: volcello
+long_name:         Tendency of Ocean Potential Energy Content 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time2
+out_name:          tnpeo
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    tnpeot
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     tendency_of_ocean_potential_energy_content_due_to_tides
+units:             W m-2
+cell_methods:      time: mean within years time: mean over years
+cell_measures:     area: areacello volume: volcello
+long_name:         Tendency of Ocean Potential Energy Content due to Tides 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time2
+out_name:          tnpeot
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    tnpeotb
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     tendency_of_ocean_potential_energy_content_due_to_background
+units:             W m-2
+cell_methods:      time: mean within years time: mean over years
+cell_measures:     area: areacello volume: volcello
+long_name:         Tendency of Ocean Potential Energy Content due to Background
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time2
+out_name:          tnpeotb
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    difvmo
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_vertical_momentum_diffusivity
+units:             m2 s-1
+cell_methods:      time: mean within years time: mean over years
+cell_measures:     area: areacello volume: volcello
+long_name:         Ocean Vertical Momentum Diffusivity
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time2
+out_name:          difvmo
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    difvmbo
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_vertical_momentum_diffusivity_due_to_background
+units:             m2 s-1
+cell_methods:      time: mean within years time: mean over years
+cell_measures:     area: areacello volume: volcello
+long_name:         Ocean Vertical Momentum Diffusivity due to Background
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time2
+out_name:          difvmbo
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    difvmto
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_vertical_momentum_diffusivity_due_to_tides
+units:             m2 s-1
+cell_methods:      time: mean within years time: mean over years
+cell_measures:     area: areacello volume: volcello
+long_name:         Ocean Vertical Momentum Diffusivity due to Tides
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time2
+out_name:          difvmto
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    difvmfdo
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_vertical_momentum_diffusivity_due_to_form_drag
+units:             m2 s-1
+cell_methods:      time: mean within years time: mean over years
+cell_measures:     area: areacello volume: volcello
+long_name:         Ocean Vertical Momentum Diffusivity due to Form Drag
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time2
+out_name:          difvmfdo
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    dispkevfo
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_kinetic_energy_dissipation_per_unit_area_due_to_vertical_friction
+units:             W m-2
+cell_methods:      time: mean within years time: mean over years
+cell_measures:     area: areacello volume: volcello
+long_name:         Ocean Kinetic Energy Dissipation Per Unit Area due to Vertical Friction
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time2
+out_name:          dispkevfo
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    diftrblo
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_tracer_bolus_laplacian_diffusivity
+units:             m2 s-1
+cell_methods:      time: mean within years time: mean over years
+cell_measures:     area: areacello volume: volcello
+long_name:         Ocean Tracer Bolus Laplacian Diffusivity 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time2
+out_name:          diftrblo
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    diftrbbo
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_tracer_bolus_biharmonic_diffusivity
+units:             m4 s-1
+cell_methods:      time: mean within years time: mean over years
+cell_measures:     area: areacello volume: volcello
+long_name:         Ocean Tracer Bolus Biharmonic Diffusivity 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time2
+out_name:          diftrbbo
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    diftrelo
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_tracer_epineutral_laplacian_diffusivity
+units:             m2 s-1
+cell_methods:      time: mean within years time: mean over years
+cell_measures:     area: areacello volume: volcello
+long_name:         Ocean Tracer Epineutral Laplacian Diffusivity 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time2
+out_name:          diftrelo
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    diftrebo
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_tracer_epineutral_biharmonic_diffusivity
+units:             m4 s-1
+cell_methods:      time: mean within years time: mean over years
+cell_measures:     area: areacello volume: volcello
+long_name:         Ocean Tracer Epineutral Biharmonic Diffusivity 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time2
+out_name:          diftrebo
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    diftrxylo
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_tracer_xy_laplacian_diffusivity
+units:             m2 s-1
+cell_methods:      time: mean within years time: mean over years
+cell_measures:     area: areacello volume: volcello
+long_name:         Ocean Tracer XY Laplacian Diffusivity 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time2
+out_name:          diftrxylo
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    diftrxybo
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_tracer_xy_biharmonic_diffusivity
+units:             m4 s-1
+cell_methods:      time: mean within years time: mean over years
+cell_measures:     area: areacello volume: volcello
+long_name:         Ocean Tracer XY Biharmonic Diffusivity 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time2
+out_name:          diftrxybo
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    tnkebto
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     tendency_of_ocean_eddy_kinetic_energy_content_due_to_bolus_transport
+units:             W m-2
+cell_methods:      time: mean within years time: mean over years
+cell_measures:     area: areacello volume: volcello
+long_name:         Tendency of Ocean Eddy Kinetic Energy Content due to Bolus Transport 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time2
+out_name:          tnkebto
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    difmxylo
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_momentum_xy_laplacian_diffusivity
+units:             m2 s-1
+cell_methods:      time: mean within years time: mean over years
+cell_measures:     area: areacello volume: volcello
+long_name:         Ocean Momentum XY Laplacian Diffusivity
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time2
+out_name:          difmxylo
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    difmxybo
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_momentum_xy_biharmonic_diffusivity
+units:             m4 s-1
+cell_methods:      time: mean within years time: mean over years
+cell_measures:     area: areacello volume: volcello
+long_name:         Ocean Momentum XY Biharmonic Diffusivity
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time2
+out_name:          difmxybo
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    dispkexyfo
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_kinetic_energy_dissipation_per_unit_area_due_to_xy_friction
+units:             W m-2
+cell_methods:      time: mean within years time: mean over years
+cell_measures:     area: areacello volume: volcello
+long_name:         Ocean Kinetic Energy Dissipation Per Unit Area due to XY Friction
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time2
+out_name:          dispkexyfo
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    diftrblo2d
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_tracer_bolus_laplacian_diffusivity
+units:             m2 s-1
+cell_methods:      time: mean within years time: mean over years
+cell_measures:     area: areacello 
+long_name:         Ocean Tracer Bolus Laplacian Diffusivity 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time2
+out_name:          diftrblo
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    diftrbbo2d
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_tracer_bolus_biharmonic_diffusivity
+units:             m4 s-1
+cell_methods:      time: mean within years time: mean over years
+cell_measures:     area: areacello 
+long_name:         Ocean Tracer Bolus Biharmonic Diffusivity 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time2
+out_name:          diftrbbo
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    diftrelo2d
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_tracer_epineutral_laplacian_diffusivity
+units:             m2 s-1
+cell_methods:      time: mean within years time: mean over years
+cell_measures:     area: areacello 
+long_name:         Ocean Tracer Epineutral Laplacian Diffusivity 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time2
+out_name:          diftrelo
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    diftrebo2d
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_tracer_epineutral_biharmonic_diffusivity
+units:             m4 s-1
+cell_methods:      time: mean within years time: mean over years
+cell_measures:     area: areacello 
+long_name:         Ocean Tracer Epineutral Biharmonic Diffusivity 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time2
+out_name:          diftrebo
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    diftrxylo2d
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_tracer_xy_laplacian_diffusivity
+units:             m2 s-1
+cell_methods:      time: mean within years time: mean over years
+cell_measures:     area: areacello 
+long_name:         Ocean Tracer XY Laplacian Diffusivity 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time2
+out_name:          diftrxylo
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    diftrxybo2d
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_tracer_xy_biharmonic_diffusivity
+units:             m4 s-1
+cell_methods:      time: mean within years time: mean over years
+cell_measures:     area: areacello 
+long_name:         Ocean Tracer XY Biharmonic Diffusivity 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time2
+out_name:          diftrxybo
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    tnkebto2d
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     tendency_of_ocean_eddy_kinetic_energy_content_due_to_bolus_transport
+units:             W m-2
+cell_methods:      time: mean within years time: mean over years
+cell_measures:     area: areacello 
+long_name:         Tendency of Ocean Eddy Kinetic Energy Content due to Bolus Transport 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time2
+out_name:          tnkebto
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    difmxylo2d
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_momentum_xy_laplacian_diffusivity
+units:             m2 s-1
+cell_methods:      time: mean within years time: mean over years
+cell_measures:     area: areacello 
+long_name:         Ocean Momentum XY Laplacian Diffusivity
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time2
+out_name:          difmxylo
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    difmxybo2d
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_momentum_xy_biharmonic_diffusivity
+units:             m4 s-1
+cell_methods:      time: mean within years time: mean over years
+cell_measures:     area: areacello 
+long_name:         Ocean Momentum XY Biharmonic Diffusivity
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time2
+out_name:          difmxybo
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    dispkexyfo2d
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     ocean_kinetic_energy_dissipation_per_unit_area_due_to_xy_friction
+units:             W m-2
+cell_methods:      time: mean within years time: mean over years
+cell_measures:     area: areacello 
+long_name:         Ocean Kinetic Energy Dissipation Per Unit Area due to XY Friction
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time2
+out_name:          dispkexyfo
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    zfull
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     depth_below_geoid
+units:             m
+cell_methods:      time: mean within years time: mean over years
+cell_measures:     area: areacello 
+long_name:         Depth Below Geoid of Ocean Layer
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time2
+out_name:          zfull
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    zhalf
+!============
+modeling_realm:    ocean
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     depth_below_geoid
+units:             m
+cell_methods:      time: mean within years time: mean over years
+cell_measures:     area: areacello 
+long_name:         Depth Below Geoid of Interfaces Between Ocean Layers
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude olevel time2
+out_name:          zhalf
+type:              real
+!----------------------------------
+!
+
