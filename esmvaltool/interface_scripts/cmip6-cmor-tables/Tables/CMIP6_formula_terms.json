@@ -1,0 +1,142 @@
+{
+    "variable_entry": {
+        "a": {
+            "long_name": "vertical coordinate formula term: a(k)", 
+            "units": "", 
+            "dimensions": "alevel", 
+            "type": "double"
+        }, 
+        "ps": {
+            "long_name": "Surface Air Pressure", 
+            "units": "Pa", 
+            "dimensions": "longitude latitude time", 
+            "type": "real"
+        }, 
+        "p0": {
+            "long_name": "vertical coordinate formula term: reference pressure", 
+            "units": "Pa", 
+            "dimensions": "", 
+            "type": ""
+        }, 
+        "b": {
+            "long_name": "vertical coordinate formula term: b(k)", 
+            "units": "", 
+            "dimensions": "alevel", 
+            "type": "double"
+        }, 
+        "b_bnds": {
+            "long_name": "vertical coordinate formula term: b(k+1/2)", 
+            "units": "", 
+            "dimensions": "alevel", 
+            "type": "double"
+        }, 
+        "ap_bnds": {
+            "long_name": "vertical coordinate formula term: ap(k+1/2)", 
+            "units": "Pa", 
+            "dimensions": "alevel", 
+            "type": "double"
+        }, 
+        "ap": {
+            "long_name": "vertical coordinate formula term: ap(k)", 
+            "units": "Pa", 
+            "dimensions": "alevel", 
+            "type": "double"
+        }, 
+        "orog": {
+            "long_name": "Surface Altitude", 
+            "units": "m", 
+            "dimensions": "longitude latitude", 
+            "type": "real"
+        }, 
+        "ztop": {
+            "long_name": "height of top of model", 
+            "units": "m", 
+            "dimensions": "", 
+            "type": ""
+        }, 
+        "ptop": {
+            "long_name": "pressure at top of model", 
+            "units": "Pa", 
+            "dimensions": "", 
+            "type": ""
+        }, 
+        "a_bnds": {
+            "long_name": "vertical coordinate formula term: a(k+1/2)", 
+            "units": "", 
+            "dimensions": "alevel", 
+            "type": "double"
+        }, 
+        "depth_c": {
+            "long_name": "vertical coordinate formula term: depth_c", 
+            "units": "", 
+            "dimensions": "", 
+            "type": "double"
+        }, 
+        "nsigma": {
+            "long_name": "vertical coordinate formula term: nsigma", 
+            "units": "", 
+            "dimensions": "", 
+            "type": "integer"
+        }, 
+        "href": {
+            "long_name": "vertical coordinate formula term: href", 
+            "units": "", 
+            "dimensions": "", 
+            "type": "double"
+        }, 
+        "zlev": {
+            "long_name": "vertical coordinate formula term: zlev(k)", 
+            "units": "", 
+            "dimensions": "olevel", 
+            "type": "double"
+        }, 
+        "zlev_bnds": {
+            "long_name": "vertical coordinate formula term: zlev(k+1/2)", 
+            "units": "", 
+            "dimensions": "olevel", 
+            "type": "double"
+        }, 
+        "z1": {
+            "long_name": "vertical coordinate formula term: z1", 
+            "units": "", 
+            "dimensions": "", 
+            "type": "double"
+        }, 
+        "z2": {
+            "long_name": "vertical coordinate formula term: z2", 
+            "units": "", 
+            "dimensions": "", 
+            "type": "double"
+        }, 
+        "sigma_bnds": {
+            "long_name": "vertical coordinate formula term: sigma(k+1/2)", 
+            "units": "", 
+            "dimensions": "olevel", 
+            "type": "double"
+        }, 
+        "depth": {
+            "long_name": "Sea Floor Depth: formula term: thetao", 
+            "units": "m", 
+            "dimensions": "longitude latitude", 
+            "type": "real"
+        }, 
+        "eta": {
+            "long_name": "Sea Surface Height formula term: thetao", 
+            "units": "m", 
+            "dimensions": "longitude latitude time", 
+            "type": "real"
+        }, 
+        "k_c": {
+            "long_name": "vertical coordinate formula term: k_c", 
+            "units": "", 
+            "dimensions": "", 
+            "type": "integer"
+        }, 
+        "sigma": {
+            "long_name": "vertical coordinate formula term: sigma(k)", 
+            "units": "", 
+            "dimensions": "olevel", 
+            "type": "double"
+        }
+    }
+}
