@@ -62,7 +62,7 @@ __version__ = "2.0.0"
 def configure_logging(cfg_file=None, output=None, console_log_level=None):
     """Set up logging"""
     if cfg_file is None:
-        cfg_file = os.path.join(os.path.dirname(__file__), 'logging.yml')
+        cfg_file = os.path.join(os.path.dirname(__file__), 'config-logging.yml')
 
     if output is None:
         output = os.getcwd()
