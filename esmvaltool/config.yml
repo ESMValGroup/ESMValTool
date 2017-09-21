@@ -1,0 +1,33 @@
+###############################################################################
+# User's configuration file for the ESMValTool
+###############################################################################
+
+# Diagnostics create plots? [True]/False
+write_plots: True
+# Diagnositcs write NetCDF files? [True]/False
+write_netcdf: True
+# Set the console log level debug, [info], warning, error
+log_level: info
+# verbosity is deprecated and will be removed in the future
+#verbosity: 1
+# Exit on warning? True/[False]
+exit_on_warning: False
+# Plot file format? [ps]/pdf/png/eps/epsi
+output_file_type: pdf
+# Destination directories
+run_dir :  /home/bandela/test_output
+preproc_dir: /home/bandela/test_output/preproc
+work_dir: /home/bandela/test_output/work
+plot_dir: /home/bandela/test_output/plots
+# Save intermediary cubes in the preprocessor True/[False]
+save_intermediary_cubes: True
+
+# Rootpath to CMIP5 data
+rootpath_CMIP5: ./testdata/
+# Rootpath to OBS data
+rootpath_OBS: ./testdata/
+# Rootpath to raw observational data
+rawobs_rootpath: ./testdata/
+
+# Directory structure for CMIP5 data: [None]/BADC/DKRZ/ETHZ
+cmip5_dirtype: None

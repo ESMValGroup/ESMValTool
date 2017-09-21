@@ -28,14 +28,14 @@ For further help, check the doc/-folder for pdfs
 and references therein. Have fun!
 """
 
-# Completely rewritten wrapper to be able to deal with
-# the new yaml parser and simplified interface_scripts
-# toolbox. Author: Valeriu Predoi, University of Reading,
-# Initial version: August 2017
-# contact: valeriu.predoi@ncas.ac.uk
+# ESMValTool main script
+#
+# Authors:
+# Bouwe Andela (NLESC, Netherlands - b.andela@esciencecenter.nl)
+# Valeriu Predoi (URead, UK - valeriu.predoi@ncas.ac.uk)
+# Mattia Righi (DLR, Germany - mattia.righi@dlr.de)
 
 import argparse
-import ConfigParser
 import copy
 import datetime
 import errno
@@ -45,7 +45,6 @@ import os
 import re
 import sys
 import uuid
-
 import yaml
 
 import interface_scripts.namelistchecks as pchk
@@ -113,152 +112,35 @@ def get_log_level_and_path(config_file):
     return cfg['log_level'], cfg['log_path']
 
 
-class configFile:
+def read_config_file(config_file):
+    """ Read config file and store settings in a dictionary
+        
     """
-    Class to hold info from the configuration file (if present)
-    """
-    
-    def s2b(self, s):
-        """
-        convert a string to boolean arg
-        """
-        if s == 'True':
-            return True
-        elif s == 'False':
-            return False
-        else:
-            raise ValueError
+    glob = {}
+    glob = yaml.load(file(config_file, 'r'))
 
-    def get_par_file(self, params_file):
-        """
-        Gets the params file
-        """
-        # ---- Check the params_file exists
-        if not os.path.isfile(params_file):
-            logger.error("non existent configuration file %s", params_file)
-        cp = ConfigParser.ConfigParser()
-        cp.read(params_file)
-        return cp
+    # set defaults
+    defaults = {
+        'write_plots': True,
+        'write_netcdf': True,
+        'exit_on_warning': False,
+        'max_data_filesize': 100,
+        'output_file_type': 'ps',
+        'run_dir': './',
+        'preproc_dir': './preproc/',
+        'work_dir': './work/',
+        'plot_dir': './plots/',
+        'save_intermediary_cubes': False,
+        'cmip5_dirtype': None,
+        'run_diagnostic': True
+    }
 
-    # parse GLOBAL section
-    # the beauty of ConfigParser is that
-    # one can add sections, so here is
-    # where you define them
-    def GLOBAL(self, params_file):
-        """
-        Function to build dictionary containing
-        the GLOBAL attributes. Takes ConfigParser object cp
-        """
-        cp = self.get_par_file(params_file)
-        glob = {}
-        if cp.has_option('GLOBAL','ini-version') :
-            ini_version = int(cp.get('GLOBAL','ini-version'))
-            glob['ini-version'] = ini_version
-        if cp.has_option('GLOBAL','write_plots') :
-            write_plots = self.s2b(cp.get('GLOBAL','write_plots'))
-            glob['write_plots'] = write_plots
-        else:
-            logger.warning("no write_plots in config, set to True")
-            glob['write_plots'] = True
-        if cp.has_option('GLOBAL','write_netcdf') :
-            write_netcdf = self.s2b(cp.get('GLOBAL','write_netcdf'))
-            glob['write_netcdf'] = write_netcdf
-        else:
-            logger.warning("no write_netcdf in config, set to True")
-            glob['write_netcdf'] = True
-        if cp.has_option('GLOBAL','log_level') :
-            glob['log_level'] = cp.get('GLOBAL','log_level').upper()
-        else:
-            glob['log_level'] = 'INFO'
-        if cp.has_option('GLOBAL','verbosity') :
-            #TODO: remove verbosity once it is no longer used
-            verbosity = int(cp.get('GLOBAL','verbosity'))
-            glob['verbosity'] = verbosity
-            logger.warning("Option verbosity in %s is deprecated and will be "
-                           "removed in the future, use log_level instead",
-                           params_file)
-        else:
-            glob['verbosity'] = 10 if glob['log_level'] == 'DEBUG' else 1
-        if cp.has_option('GLOBAL','exit_on_warning') :
-            eow = self.s2b(cp.get('GLOBAL','exit_on_warning'))
-            glob['exit_on_warning'] = eow
-        else:
-            logger.warning("no exit_on_warning in config, set to True")
-            glob['exit_on_warning'] = False
-        if cp.has_option('GLOBAL','output_file_type') :
-            output_type = cp.get('GLOBAL','output_file_type')
-            glob['output_file_type'] = output_type
-        else:
-            logger.warning("no output_file_type in config, set to ps")
-            glob['output_file_type'] = 'ps'
-        if cp.has_option('GLOBAL','preproc_dir') :
-            preproc_dir = cp.get('GLOBAL','preproc_dir')
-            glob['preproc_dir'] = preproc_dir
-        else:
-            logger.warning("no preproc_dir in config, set to ./preproc/")
-            glob['preproc_dir'] = './preproc/'
-        if cp.has_option('GLOBAL','work_dir') :
-            work_dir = cp.get('GLOBAL','work_dir')
-            glob['work_dir'] = work_dir
-        else:
-            logger.warning("no work_dir in config, set to ./work/")
-            glob['work_dir'] = './work/'
-        if cp.has_option('GLOBAL','plot_dir') :
-            plot_dir = cp.get('GLOBAL','plot_dir')
-            glob['plot_dir'] = plot_dir
-        else:
-            logger.warning("no plot_dir in config, set to ./plots/")
-            glob['plot_dir'] = './plots/'
-        if cp.has_option('GLOBAL','max_data_filesize') :
-            mdf = int(cp.get('GLOBAL','max_data_filesize'))
-            glob['max_data_filesize'] = mdf
-        else:
-            logger.warning("no max_data_filesize in config, set to 100")
-            glob['max_data_filesize'] = 100
-        if cp.has_option('GLOBAL','run_dir') :
-            run_dir = cp.get('GLOBAL','run_dir')
-            glob['run_dir'] = run_dir
-        else:
-            logger.warning("no run_dir in config, assuming .")
-            glob['run_dir'] = '.'
-        if cp.has_option('GLOBAL','save_intermediary_cubes') :
-            save_intermediary_cubes = self.s2b(cp.get('GLOBAL','save_intermediary_cubes'))
-            glob['save_intermediary_cubes'] = save_intermediary_cubes
-        else:
-            logger.warning("no save_intermediary_cubes in config, assuming False")
-            glob['save_intermediary_cubes'] = False
-        if cp.has_option('GLOBAL','rootpath_CMIP5'):
-            mp = cp.get('GLOBAL','rootpath_CMIP5')
-            glob['rootpath_CMIP5'] = mp
-        else:
-            logger.error("Model root path for CMIP5 not defined")
-            sys.exit(1)
-        if cp.has_option('GLOBAL','rootpath_OBS'):
-            op = cp.get('GLOBAL','rootpath_OBS')
-            glob['rootpath_OBS'] = op
-        else:
-            logger.error("Observations root path not defined")
-            sys.exit(1)
-        if cp.has_option('GLOBAL','drs_CMIP5'):
-            drs = cp.get('GLOBAL','drs_CMIP5')
-            glob['drs_CMIP5'] = drs
-            # check if drs_CMIP5 has host_root fro BADC and DKRZ
-            if drs == 'BADC' or drs == 'DKRZ':
-                if cp.has_option('GLOBAL','host_root'):
-                    hroot = cp.get('GLOBAL','host_root')
-                    glob['host_root'] = hroot
-                else:
-                    logger.error("Using database DRS for CMIP5: database root path not defined")
-                    sys.exit(1)
-        else:
-            logger.warning("No DRS specifier, assuming None and continuing")
-        if cp.has_option('GLOBAL','run_diagnostic') :
-            run_diagnostic = self.s2b(cp.get('GLOBAL','run_diagnostic'))
-            glob['run_diagnostic'] = run_diagnostic
-        else:
-            logger.warning("no run_diagnostic in config, assuming True")
-            glob['run_diagnostic'] = True
-        return glob
+    for key in defaults:
+        if not key in glob:
+            logger.warning("No %s specification in config file, defaulting to %s" % (key, defaults[key]))
+            glob[key] = defaults[key]
+
+    return(glob)
 
 
 def create_interface_data_dir(project_info, executable):
@@ -313,7 +195,7 @@ def main():
     # configure logging
     configure_logging(output=run_dir, console_log_level=log_level)
 
-    # Log header
+    # log header
     logger.info(__doc__)
 
     if run_dir is None:
@@ -325,7 +207,7 @@ def main():
 
     logger.info("Using config file %s", config_file)
 
-    # Check NCL version
+    # check NCL version
     ncl_version_check()
 
     process_namelist(namelist_file=namelist_file, config_file=config_file)
@@ -343,56 +225,52 @@ def process_namelist(namelist_file, config_file):
     logger.info("Processing namelist %s", namelist_file)
 
     os.environ['0_ESMValTool_version'] = __version__
-    # we may need this
-    # os.environ["ESMValTool_force_calc"] = "True"
 
     preprocess_id = None
     script_root = os.path.abspath(os.path.dirname(__file__))
 
-    # Get namelist file
+    # get namelist file
     yml_path = namelist_file
 
-    # Parse input namelist into project_info-dictionary.
+    # parse input namelist into project_info-dictionary.
     Project = Ps()
 
-    # Parse config file into GLOBAL_DICT info_dictionary
-    confFileClass = configFile()
-    GLOBAL_DICT = confFileClass.GLOBAL(config_file)
+    # parse config file into GLOBAL_DICT info_dictionary
+    GLOBAL_DICT = read_config_file(config_file)
 
-    # Project_info is a dictionary with all info from the namelist.
+    # project_info is a dictionary with all info from the namelist.
     project_info_0 = Project.load_namelist(yml_path)
-    verbosity = GLOBAL_DICT['verbosity']
-    preproc_dir = GLOBAL_DICT['preproc_dir']
-    exit_on_warning = GLOBAL_DICT.get('exit_on_warning', False)
 
-    # Project_info is a dictionary with all info from the namelist.
+    # project_info is a dictionary with all info from the namelist.
     project_info = {}
     project_info['GLOBAL'] = GLOBAL_DICT
     project_info['MODELS'] = project_info_0.MODELS
     project_info['DIAGNOSTICS'] = project_info_0.DIAGNOSTICS
 
-    # Additional entries to 'project_info'. The 'project_info' construct
-    # is one way by which Python passes on information to the NCL-routines.
+    # FIX-ME: outdated, keep until standard logging is fully implemented
+    project_info['GLOBAL']['verbosity'] = 1
+    verbosity = 1 
+
+    # additional entries to 'project_info'
     project_info['RUNTIME'] = {}
     project_info['RUNTIME']['yml'] = yml_path
     project_info['RUNTIME']['yml_name'] = os.path.basename(yml_path)
 
-    # Set references/acknowledgement file
+    # set references/acknowledgement file
     refs_acknows_file = str.replace(project_info['RUNTIME']['yml_name'], "namelist_", "refs-acknows_")
     refs_acknows_file = refs_acknows_file.split(os.extsep)[0] + ".log"
     out_refs = os.path.join(project_info["GLOBAL"]['run_dir'], refs_acknows_file)
     project_info['RUNTIME']['out_refs'] = out_refs
 
-    # Print summary
+    # print summary
+    logger.info(70 * "-")
     logger.info("NAMELIST   = %s", project_info['RUNTIME']['yml_name'])
     logger.info("RUNDIR     = %s", project_info["GLOBAL"]['run_dir'])
     logger.info("WORKDIR    = %s", project_info["GLOBAL"]["work_dir"])
     logger.info("PREPROCDIR = %s", project_info["GLOBAL"]["preproc_dir"])
     logger.info("PLOTDIR    = %s", project_info["GLOBAL"]["plot_dir"])
     logger.info("LOGFILE    = %s", project_info['RUNTIME']['out_refs'])
-    logger.info(70 * "_")
-
-    #    logger.info("REFORMATTING THE OBSERVATIONAL DATA...", vv, 1)
+    logger.info(70 * "-")
 
     # perform options integrity checks
     logger.info('Checking integrity of namelist')
@@ -410,28 +288,28 @@ def process_namelist(namelist_file, config_file):
     # tell the environment about regridding
     project_info['RUNTIME']['regridtarget'] = []
 
-    # Master references-acknowledgements file (hard coded)
+    # master references-acknowledgements file (hard coded)
     in_refs = os.path.join(script_root, 'doc', 'MASTER_authors-refs-acknow.txt')
     project_info['RUNTIME']['in_refs'] = in_refs
 
-    # Create workdir
+    # create workdir
     if not os.path.isdir(project_info['GLOBAL']['work_dir']):
         logger.info('Creating work_dir %s', project_info['GLOBAL']['work_dir'])
         os.makedirs(project_info['GLOBAL']['work_dir'])
 
-    # Create rundir
+    # create rundir
     if not os.path.isdir(project_info['GLOBAL']['run_dir']):
         logger.info('Creating run_dir %s', project_info['GLOBAL']['run_dir'])
         os.makedirs(project_info['GLOBAL']['run_dir'])
 
-    # Create refs-acknows file in run_dir (empty if existing)
+    # create refs-acknows file in run_dir (empty if existing)
     with open(out_refs, "w"):
         pass
 
-    # Current working directory
+    # current working directory
     project_info['RUNTIME']['cwd'] = os.getcwd()
 
-    # Summary to std-out before starting the loop
+    # summary to std-out before starting the loop
     timestamp1 = datetime.datetime.utcnow()
     timestamp_format = "%Y-%m-%d --  %H:%M:%S"
 
@@ -443,8 +321,8 @@ def process_namelist(namelist_file, config_file):
         project_info['CONFIG']['var_def_scripts'] = \
             os.path.join(script_root, project_info['CONFIG']['var_def_scripts'])
 
-    # Loop over all diagnostics defined in project_info and
-    # create/prepare netCDF files for each variable
+    # loop over all diagnostics defined in project_info and create/prepare
+    # netCDF files for each variable
     for c in project_info['DIAGNOSTICS']:
 
         # set current diagnostic
@@ -461,9 +339,8 @@ def process_namelist(namelist_file, config_file):
         models_cubes = []
         models_fullpaths = []
 
-        # Prepare/reformat model data for each model
+        # prepare/reformat model data for each model
         for model in project_info['ALLMODELS']:
-            #currProject = model['project']
             model_name = model['name']
             project_name = model['project']
             logger.info("MODEL = %s (%s)", model_name, project_name)
@@ -471,12 +348,13 @@ def process_namelist(namelist_file, config_file):
             # start calling preprocess
             op = pp.Diag()
 
-            # old packaging of variable objects (legacy from intial version)
-            # this needs to be changed once we have the new variable definition
-            # codes in place
+            # FIX-ME old packaging of variable objects (legacy from initial 
+            # version), this needs to be changed once we have the new variable
+            # definition codes in place
             variable_defs_base_vars = op.add_base_vars_fields(
                 requested_vars, model,
                 project_info['CONFIG']['var_def_scripts'])
+
             # if not all variable_defs_base_vars are available, try to fetch
             # the target variable directly (relevant for derived variables)
             base_vars = op.select_base_vars(variable_defs_base_vars, model,
@@ -489,8 +367,8 @@ def process_namelist(namelist_file, config_file):
                         continue
                 logger.info("VARIABLE = %s (%s)", base_var.name, base_var.field)
 
-                # Rewrite netcdf to expected input format.
-                logger.info("Calling preprocessing to check/reformat model data, and apply preprocessing steps")
+                # rewrite netcdf to expected input format.
+                logger.info("Calling preprocessor")
                 # REFORMAT: for backwards compatibility we can revert to ncl reformatting
                 # by changing cmor_reformat_type = 'ncl'
                 # for python cmor_check one, use cmor_reformat_type = 'py'
@@ -530,6 +408,7 @@ def process_namelist(namelist_file, config_file):
             ref_models.append(v['ref_model'][0])
 
         project_info['RUNTIME']['currDiag'] = currDiag
+
         for derived_var, derived_field, refmodel in zip(variables, field_types, ref_models):
 
             # needed by external diag to perform regridding
@@ -555,7 +434,7 @@ def process_namelist(namelist_file, config_file):
                 interface_data = create_interface_data_dir(project_info, executable)
                 project_info['RUNTIME']['interface_data'] = interface_data
                 pp.run_executable(executable, project_info, verbosity,
-                                  exit_on_warning)
+                                  project_info['GLOBAL']['exit_on_warning'])
 
                 # run diagnostics...
                 # ...unless run_diagnostic is specifically set to False
@@ -570,7 +449,7 @@ def process_namelist(namelist_file, config_file):
                     pp.run_executable(executable,
                                       project_info,
                                       verbosity,
-                                      exit_on_warning,
+                                      project_info['GLOBAL']['exit_on_warning'],
                                       launcher_arguments=None)
 
     # delete environment variable
