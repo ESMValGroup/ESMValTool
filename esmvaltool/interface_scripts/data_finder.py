@@ -13,96 +13,101 @@ from datetime import datetime
 logger = logging.getLogger(__name__)
 
 
-def cmip5_model2inst(model): ## CHECK-ME: A dictionary is preferred to avoid using find, which causes some issues on some machines in the past (too slow)
+def cmip5_model2inst(model):
     """
     Return the institute given the model name in CMIP5
     """
 
-    instdict = {}
-    instdict['HadGEM2-CC'] = 'MOHC'
-    instdict['HadGEM2-A'] = 'MOHC'
-    instdict['HadCM3'] = 'MOHC'
-    instdict['HadGEM2-ES'] = 'MOHC'
-    instdict['FIO-ESM'] = 'FIO'
-    instdict['fio-esm'] = 'FIO'
-    instdict['CCSM4'] = 'NCAR'
-    instdict['GEOS-5'] = 'NASA-GMAO'
-    instdict['inmcm4'] = 'INM'
-    instdict['CanESM2'] = 'CCCma'
-    instdict['CanCM4'] = 'CCCma'
-    instdict['CanAM4'] = 'CCCma'
-    instdict['GISS-E2-R'] = 'NASA-GISS'
-    instdict['GISS-E2-R-CC'] = 'NASA-GISS'
-    instdict['GISS-E2-H-CC'] = 'NASA-GISS'
-    instdict['GISS-E2-H'] = ' NASA-GISS'
-    instdict['CNRM-CM5'] = 'CNRM-CERFACS'
-    instdict['CNRM-CM5-2'] = 'CNRM-CERFACS'
-    instdict['NICAM-09'] = 'NICAM'
-    instdict['IPSL-CM5A-LR'] = 'IPSL'
-    instdict['IPSL-CM5A-MR'] = 'IPSL'
-    instdict['IPSL-CM5B-LR'] = 'IPSL'
-    instdict['CSIRO-Mk3-6-0'] = 'CSIRO-QCCCE'
-    instdict['CESM1-CAM5'] = 'NSF-DOE-NCAR'
-    instdict['CESM1-CAM5-1-FV2'] = 'NSF-DOE-NCAR'
-    instdict['CESM1-BGC'] = 'NSF-DOE-NCAR'
-    instdict['CESM1-WACCM'] = 'NSF-DOE-NCAR'
-    instdict['CESM1-FASTCHEM'] = 'NSF-DOE-NCAR'
-    instdict['NorESM1-M'] = 'NCC'
-    instdict['NorESM1-ME'] = 'NCC'
-    instdict['CFSv2-2011'] = 'NOAA-NCEP'
-    instdict['ACCESS1-3'] = 'CSIRO-BOM'
-    instdict['ACCESS1-0'] = 'CSIRO-BOM'
-    instdict['CMCC-CM'] = 'CMCC'
-    instdict['CMCC-CESM'] = 'CMCC'
-    instdict['CMCC-CMS'] = 'CMCC'
-    instdict['FGOALS-g2'] = 'LASG-CESS'
-    instdict['FGOALS-s2'] = 'LASG-IAP'
-    instdict['FGOALS-gl'] = 'LASG-IAP'
-    instdict['GFDL-HIRAM-C180'] = 'NOAA-GFDL'
-    instdict['GFDL-ESM2G'] = 'NOAA-GFDL'
-    instdict['GFDL-CM2p1'] = 'NOAA-GFDL'
-    instdict['GFDL-CM3'] = 'NOAA-GFDL'
-    instdict['GFDL-ESM2M'] = 'NOAA-GFDL'
-    instdict['GFDL-HIRAM-C360'] = 'NOAA-GFDL'
-    instdict['EC-EARTH'] = 'ICHEC'
-    instdict['BNU-ESM'] = 'BNU'
-    instdict['CFSv2-2011'] = 'COLA-CFS'
-    instdict['HadGEM2-AO'] = 'NIMR-KMA'
-    instdict['MIROC4h'] = 'MIROC'
-    instdict['MIROC5'] = 'MIROC'
-    instdict['MIROC-ESM'] = 'MIROC'
-    instdict['MIROC-ESM-CHEM'] = 'MIROC'
-    instdict['bcc-csm1-1'] = 'BCC'
-    instdict['bcc-csm1-1-m'] = 'BCC'
-    instdict['HadGEM2-ES'] = 'INPE'
-    instdict['MPI-ESM-LR'] = 'MPI-M'
-    instdict['MPI-ESM-MR'] = 'MPI-M'
-    instdict['MPI-ESM-P'] = 'MPI-M'
-    instdict['MRI-AGCM3-2H'] = 'MRI'
-    instdict['MRI-CGCM3'] = 'MRI'
-    instdict['MRI-ESM1'] = 'MRI'
-    instdict['MRI-AGCM3-2S'] = 'MRI'
+    instdict = {
+        'HadGEM2-CC': 'MOHC',
+        'HadGEM2-A': 'MOHC',
+        'HadCM3': 'MOHC',
+        'HadGEM2-ES': 'MOHC',
+        'FIO-ESM': 'FIO',
+        'fio-esm': 'FIO',
+        'CCSM4': 'NCAR',
+        'GEOS-5': 'NASA-GMAO',
+        'inmcm4': 'INM',
+        'CanESM2': 'CCCma',
+        'CanCM4': 'CCCma',
+        'CanAM4': 'CCCma',
+        'GISS-E2-R': 'NASA-GISS',
+        'GISS-E2-R-CC': 'NASA-GISS',
+        'GISS-E2-H-CC': 'NASA-GISS',
+        'GISS-E2-H': ' NASA-GISS',
+        'CNRM-CM5': 'CNRM-CERFACS',
+        'CNRM-CM5-2': 'CNRM-CERFACS',
+        'NICAM-09': 'NICAM',
+        'IPSL-CM5A-LR': 'IPSL',
+        'IPSL-CM5A-MR': 'IPSL',
+        'IPSL-CM5B-LR': 'IPSL',
+        'CSIRO-Mk3-6-0': 'CSIRO-QCCCE',
+        'CESM1-CAM5': 'NSF-DOE-NCAR',
+        'CESM1-CAM5-1-FV2': 'NSF-DOE-NCAR',
+        'CESM1-BGC': 'NSF-DOE-NCAR',
+        'CESM1-WACCM': 'NSF-DOE-NCAR',
+        'CESM1-FASTCHEM': 'NSF-DOE-NCAR',
+        'NorESM1-M': 'NCC',
+        'NorESM1-ME': 'NCC',
+        'CFSv2-2011': 'NOAA-NCEP',
+        'ACCESS1-3': 'CSIRO-BOM',
+        'ACCESS1-0': 'CSIRO-BOM',
+        'CMCC-CM': 'CMCC',
+        'CMCC-CESM': 'CMCC',
+        'CMCC-CMS': 'CMCC',
+        'FGOALS-g2': 'LASG-CESS',
+        'FGOALS-s2': 'LASG-IAP',
+        'FGOALS-gl': 'LASG-IAP',
+        'GFDL-HIRAM-C180': 'NOAA-GFDL',
+        'GFDL-ESM2G': 'NOAA-GFDL',
+        'GFDL-CM2p1': 'NOAA-GFDL',
+        'GFDL-CM3': 'NOAA-GFDL',
+        'GFDL-ESM2M': 'NOAA-GFDL',
+        'GFDL-HIRAM-C360': 'NOAA-GFDL',
+        'EC-EARTH': 'ICHEC',
+        'BNU-ESM': 'BNU',
+        'CFSv2-2011': 'COLA-CFS',
+        'HadGEM2-AO': 'NIMR-KMA',
+        'MIROC4h': 'MIROC',
+        'MIROC5': 'MIROC',
+        'MIROC-ESM': 'MIROC',
+        'MIROC-ESM-CHEM': 'MIROC',
+        'bcc-csm1-1': 'BCC',
+        'bcc-csm1-1-m': 'BCC',
+        'HadGEM2-ES': 'INPE',
+        'MPI-ESM-LR': 'MPI-M',
+        'MPI-ESM-MR': 'MPI-M',
+        'MPI-ESM-P': 'MPI-M',
+        'MRI-AGCM3-2H': 'MRI',
+        'MRI-CGCM3': 'MRI',
+        'MRI-ESM1': 'MRI',
+        'MRI-AGCM3-2S': 'MRI',
+    }
 
-    return instdict[model]
+    if model in instdict:
+        return instdict[model]
+
+    raise KeyError("CMIP5: cannot map model {} to institute".format(model))
 
 
-def cmip5_mip2realm_freq(mip): ## CHECK-ME: Same as above
+def cmip5_mip2realm_freq(mip):
     """
     Returns realm and frequency given the mip in CMIP5
     """
 
-    mipdict = {} ## CHECK-ME: I wrote this based on the DKRZ data, some entries might be missing
-    mipdict['Amon'] = ['atmos', 'mon']
-    mipdict['Omon'] = ['ocean', 'mon']
-    mipdict['Lmon'] = ['land', 'mon']
-    mipdict['LImon'] = ['landIce', 'mon']
-    mipdict['OImon'] = ['seaIce', 'mon']
-    mipdict['aero'] = ['aerosol', 'mon']
-#    mipdict['3hr'] = ???
-    mipdict['cfDay'] = ['atmos', 'day'] 
-    mipdict['cfMon'] = ['atmos', 'mon'] 
-    mipdict['day'] = ['atmos', 'day'] 
-    mipdict['fx'] = ['*', 'fx']
+    mipdict: {
+        'Amon': ['atmos', 'mon'],
+        'Omon': ['ocean', 'mon'],
+        'Lmon': ['land', 'mon'],
+        'LImon': ['landIce', 'mon'],
+        'OImon': ['seaIce', 'mon'],
+        'aero': ['aerosol', 'mon'],
+        #'3hr': ???
+        'cfDay': ['atmos', 'day'],
+        'cfMon': ['atmos', 'mon'], 
+        'day': ['atmos', 'day'],
+        'fx': ['*', 'fx']
+    }
 
     if mip in mipdict:
         return mipdict[mip]
