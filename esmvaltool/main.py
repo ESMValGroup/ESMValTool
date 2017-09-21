@@ -28,11 +28,12 @@ For further help, check the doc/-folder for pdfs
 and references therein. Have fun!
 """
 
-# Completely rewritten wrapper to be able to deal with
-# the new yaml parser and simplified interface_scripts
-# toolbox. Author: Valeriu Predoi, University of Reading,
-# Initial version: August 2017
-# contact: valeriu.predoi@ncas.ac.uk
+# ESMValTool main script
+#
+# Authors:
+# Bouwe Andela (NLESC, Netherlands - b.andela@esciencecenter.nl)
+# Valeriu Predoi (URead, UK - valeriu.predoi@ncas.ac.uk)
+# Mattia Righi (DLR, Germany - mattia.righi@dlr.de)
 
 import argparse
 import copy
@@ -194,7 +195,7 @@ def main():
     # configure logging
     configure_logging(output=run_dir, console_log_level=log_level)
 
-    # Log header
+    # log header
     logger.info(__doc__)
 
     if run_dir is None:
@@ -206,7 +207,7 @@ def main():
 
     logger.info("Using config file %s", config_file)
 
-    # Check NCL version
+    # check NCL version
     ncl_version_check()
 
     process_namelist(namelist_file=namelist_file, config_file=config_file)
@@ -228,19 +229,19 @@ def process_namelist(namelist_file, config_file):
     preprocess_id = None
     script_root = os.path.abspath(os.path.dirname(__file__))
 
-    # Get namelist file
+    # get namelist file
     yml_path = namelist_file
 
-    # Parse input namelist into project_info-dictionary.
+    # parse input namelist into project_info-dictionary.
     Project = Ps()
 
-    # Parse config file into GLOBAL_DICT info_dictionary
+    # parse config file into GLOBAL_DICT info_dictionary
     GLOBAL_DICT = read_config_file(config_file)
 
-    # Project_info is a dictionary with all info from the namelist.
+    # project_info is a dictionary with all info from the namelist.
     project_info_0 = Project.load_namelist(yml_path)
 
-    # Project_info is a dictionary with all info from the namelist.
+    # project_info is a dictionary with all info from the namelist.
     project_info = {}
     project_info['GLOBAL'] = GLOBAL_DICT
     project_info['MODELS'] = project_info_0.MODELS
@@ -250,28 +251,26 @@ def process_namelist(namelist_file, config_file):
     project_info['GLOBAL']['verbosity'] = 1
     verbosity = 1 
 
-    # Additional entries to 'project_info'. The 'project_info' construct
-    # is one way by which Python passes on information to the NCL-routines.
+    # additional entries to 'project_info'
     project_info['RUNTIME'] = {}
     project_info['RUNTIME']['yml'] = yml_path
     project_info['RUNTIME']['yml_name'] = os.path.basename(yml_path)
 
-    # Set references/acknowledgement file
+    # set references/acknowledgement file
     refs_acknows_file = str.replace(project_info['RUNTIME']['yml_name'], "namelist_", "refs-acknows_")
     refs_acknows_file = refs_acknows_file.split(os.extsep)[0] + ".log"
     out_refs = os.path.join(project_info["GLOBAL"]['run_dir'], refs_acknows_file)
     project_info['RUNTIME']['out_refs'] = out_refs
 
-    # Print summary
+    # print summary
+    logger.info(70 * "-")
     logger.info("NAMELIST   = %s", project_info['RUNTIME']['yml_name'])
     logger.info("RUNDIR     = %s", project_info["GLOBAL"]['run_dir'])
     logger.info("WORKDIR    = %s", project_info["GLOBAL"]["work_dir"])
     logger.info("PREPROCDIR = %s", project_info["GLOBAL"]["preproc_dir"])
     logger.info("PLOTDIR    = %s", project_info["GLOBAL"]["plot_dir"])
     logger.info("LOGFILE    = %s", project_info['RUNTIME']['out_refs'])
-    logger.info(70 * "_")
-
-    #    logger.info("REFORMATTING THE OBSERVATIONAL DATA...", vv, 1)
+    logger.info(70 * "-")
 
     # perform options integrity checks
     logger.info('Checking integrity of namelist')
@@ -289,28 +288,28 @@ def process_namelist(namelist_file, config_file):
     # tell the environment about regridding
     project_info['RUNTIME']['regridtarget'] = []
 
-    # Master references-acknowledgements file (hard coded)
+    # master references-acknowledgements file (hard coded)
     in_refs = os.path.join(script_root, 'doc', 'MASTER_authors-refs-acknow.txt')
     project_info['RUNTIME']['in_refs'] = in_refs
 
-    # Create workdir
+    # create workdir
     if not os.path.isdir(project_info['GLOBAL']['work_dir']):
         logger.info('Creating work_dir %s', project_info['GLOBAL']['work_dir'])
         os.makedirs(project_info['GLOBAL']['work_dir'])
 
-    # Create rundir
+    # create rundir
     if not os.path.isdir(project_info['GLOBAL']['run_dir']):
         logger.info('Creating run_dir %s', project_info['GLOBAL']['run_dir'])
         os.makedirs(project_info['GLOBAL']['run_dir'])
 
-    # Create refs-acknows file in run_dir (empty if existing)
+    # create refs-acknows file in run_dir (empty if existing)
     with open(out_refs, "w"):
         pass
 
-    # Current working directory
+    # current working directory
     project_info['RUNTIME']['cwd'] = os.getcwd()
 
-    # Summary to std-out before starting the loop
+    # summary to std-out before starting the loop
     timestamp1 = datetime.datetime.utcnow()
     timestamp_format = "%Y-%m-%d --  %H:%M:%S"
 
@@ -322,8 +321,8 @@ def process_namelist(namelist_file, config_file):
         project_info['CONFIG']['var_def_scripts'] = \
             os.path.join(script_root, project_info['CONFIG']['var_def_scripts'])
 
-    # Loop over all diagnostics defined in project_info and
-    # create/prepare netCDF files for each variable
+    # loop over all diagnostics defined in project_info and create/prepare
+    # netCDF files for each variable
     for c in project_info['DIAGNOSTICS']:
 
         # set current diagnostic
@@ -340,9 +339,8 @@ def process_namelist(namelist_file, config_file):
         models_cubes = []
         models_fullpaths = []
 
-        # Prepare/reformat model data for each model
+        # prepare/reformat model data for each model
         for model in project_info['ALLMODELS']:
-            #currProject = model['project']
             model_name = model['name']
             project_name = model['project']
             logger.info("MODEL = %s (%s)", model_name, project_name)
@@ -350,12 +348,13 @@ def process_namelist(namelist_file, config_file):
             # start calling preprocess
             op = pp.Diag()
 
-            # old packaging of variable objects (legacy from intial version)
-            # this needs to be changed once we have the new variable definition
-            # codes in place
+            # FIX-ME old packaging of variable objects (legacy from initial 
+            # version), this needs to be changed once we have the new variable
+            # definition codes in place
             variable_defs_base_vars = op.add_base_vars_fields(
                 requested_vars, model,
                 project_info['CONFIG']['var_def_scripts'])
+
             # if not all variable_defs_base_vars are available, try to fetch
             # the target variable directly (relevant for derived variables)
             base_vars = op.select_base_vars(variable_defs_base_vars, model,
@@ -368,8 +367,8 @@ def process_namelist(namelist_file, config_file):
                         continue
                 logger.info("VARIABLE = %s (%s)", base_var.name, base_var.field)
 
-                # Rewrite netcdf to expected input format.
-                logger.info("Calling preprocessing to check/reformat model data, and apply preprocessing steps")
+                # rewrite netcdf to expected input format.
+                logger.info("Calling preprocessor")
                 # REFORMAT: for backwards compatibility we can revert to ncl reformatting
                 # by changing cmor_reformat_type = 'ncl'
                 # for python cmor_check one, use cmor_reformat_type = 'py'
@@ -409,6 +408,7 @@ def process_namelist(namelist_file, config_file):
             ref_models.append(v['ref_model'][0])
 
         project_info['RUNTIME']['currDiag'] = currDiag
+
         for derived_var, derived_field, refmodel in zip(variables, field_types, ref_models):
 
             # needed by external diag to perform regridding
