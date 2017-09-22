@@ -45,6 +45,7 @@ import os
 import re
 import sys
 import uuid
+
 import yaml
 
 import interface_scripts.namelistchecks as pchk
@@ -114,10 +115,8 @@ def get_log_level_and_path(config_file):
 
 def read_config_file(config_file):
     """ Read config file and store settings in a dictionary
-        
     """
-    glob = {}
-    glob = yaml.load(file(config_file, 'r'))
+    cfg = yaml.load(file(config_file, 'r'))
 
     # set defaults
     defaults = {
@@ -136,11 +135,17 @@ def read_config_file(config_file):
     }
 
     for key in defaults:
-        if not key in glob:
-            logger.warning("No %s specification in config file, defaulting to %s" % (key, defaults[key]))
-            glob[key] = defaults[key]
+        if not key in cfg:
+            logger.warning("No %s specification in config file, "
+                           "defaulting to %s", key, defaults[key])
+            cfg[key] = defaults[key]
 
-    return(glob)
+    # expand ~ to /home/username in directory names
+    for key in cfg:
+        if key.endswith('_dir'):
+            cfg[key] = os.path.expanduser(cfg[key])
+
+    return cfg
 
 
 def create_interface_data_dir(project_info, executable):
@@ -167,7 +172,7 @@ def main():
     parser.add_argument('-n', '--namelist-file',
                         help='Namelist file')
     parser.add_argument('-c', '--config-file',
-                        default=os.path.join(os.path.dirname(__file__), 'config.ini'),
+                        default=os.path.join(os.path.dirname(__file__), 'config.yml'),
                         help='Config file')
     args = parser.parse_args()
 
@@ -249,7 +254,7 @@ def process_namelist(namelist_file, config_file):
 
     # FIX-ME: outdated, keep until standard logging is fully implemented
     project_info['GLOBAL']['verbosity'] = 1
-    verbosity = 1 
+    verbosity = 1
 
     # additional entries to 'project_info'
     project_info['RUNTIME'] = {}
@@ -323,10 +328,7 @@ def process_namelist(namelist_file, config_file):
 
     # loop over all diagnostics defined in project_info and create/prepare
     # netCDF files for each variable
-    for c in project_info['DIAGNOSTICS']:
-
-        # set current diagnostic
-        currDiag = project_info['DIAGNOSTICS'][c]
+    for currDiag in project_info['DIAGNOSTICS'].values():
 
         # Are the requested variables derived from other, more basic, variables?
         requested_vars = currDiag.variables
@@ -348,7 +350,7 @@ def process_namelist(namelist_file, config_file):
             # start calling preprocess
             op = pp.Diag()
 
-            # FIX-ME old packaging of variable objects (legacy from initial 
+            # FIX-ME old packaging of variable objects (legacy from initial
             # version), this needs to be changed once we have the new variable
             # definition codes in place
             variable_defs_base_vars = op.add_base_vars_fields(
@@ -373,25 +375,22 @@ def process_namelist(namelist_file, config_file):
                 # by changing cmor_reformat_type = 'ncl'
                 # for python cmor_check one, use cmor_reformat_type = 'py'
                 # PREPROCESS ID: extracted from variable dictionary
-                if hasattr(base_var, 'preproc_id'):
-                    try:
-                        preprocess_id = base_var.preproc_id
-                        for preproc_dict in project_info_0.PREPROCESS:
-                            if preproc_dict['id'] == preprocess_id:
-                                logger.info('Preprocess id: %s', preprocess_id)
-                                project_info['PREPROCESS'] = preproc_dict
-                    except AttributeError:
-                        logger.error('preprocess_id is not an attribute of variable object. Exiting...')
-                        sys.exit(1)
-                prep = pp.preprocess(project_info, base_var, model, currDiag, cmor_reformat_type = 'py')
+
+                preprocess_id = base_var.preproc_id
+                for preproc_dict in project_info_0.PREPROCESS:
+                    if preproc_dict['id'] == preprocess_id:
+                        logger.info('Preprocess id: %s', preprocess_id)
+                        project_info['PREPROCESS'] = preproc_dict
+
+                prep = pp.preprocess(project_info, base_var, model, currDiag, cmor_reformat_type='py')
 
                 # add only if we need multimodel statistics
-                if project_info['PREPROCESS']['multimodel_mean'] is True:
+                if project_info['PREPROCESS']['multimodel_mean']:
                     models_cubes.append(prep[0])
                     models_fullpaths.append(prep[1])
 
         # before we proceed more, we call multimodel operations
-        if project_info['PREPROCESS']['multimodel_mean'] is True:
+        if project_info['PREPROCESS']['multimodel_mean']:
             pp.multimodel_mean(models_cubes, models_fullpaths)
 
         vardicts = currDiag.variables
@@ -438,14 +437,14 @@ def process_namelist(namelist_file, config_file):
 
                 # run diagnostics...
                 # ...unless run_diagnostic is specifically set to False
-                if project_info['GLOBAL']['run_diagnostic'] is True:
+                if project_info['GLOBAL']['run_diagnostic']:
                     executable = os.path.join(script_root, "diag_scripts",
                                               scrpts[i]['script'])
                     configfile = os.path.join(script_root, scrpts[i]['cfg_file'])
                     logger.info("Running diag_script: %s", executable)
                     logger.info("with configuration file: %s", configfile)
                     interface_data = create_interface_data_dir(project_info, executable)
-                    project_info['RUNTIME']['interface_data'] = interface_data                    
+                    project_info['RUNTIME']['interface_data'] = interface_data
                     pp.run_executable(executable,
                                       project_info,
                                       verbosity,
