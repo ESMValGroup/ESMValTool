@@ -142,7 +142,7 @@ def read_config_file(config_file):
 
     # expand ~ to /home/username in directory names
     for key in cfg:
-        if key.endswith('_dir'):
+        if key.endswith('_dir') or 'rootpath' in key:
             cfg[key] = os.path.expanduser(cfg[key])
 
     return cfg
@@ -191,7 +191,7 @@ def main():
     # if run_dir exists, don't overwrite it
     previous_run_dir = None
     if not run_dir is None:
-        run_dir = os.path.abspath(run_dir)
+        run_dir = os.path.abspath(os.path.expanduser(run_dir))
         if os.path.isdir(run_dir):
             previous_run_dir = run_dir + '_' + uuid.uuid4().hex
             os.rename(run_dir, previous_run_dir)
