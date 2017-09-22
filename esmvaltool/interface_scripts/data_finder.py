@@ -120,19 +120,35 @@ def get_input_filelist(project_info, model, var): ## FIX-ME
     # - second, set the root depending on drs
 
     ## Directory structure is defined in config and also project-depentend (at present only used for CMIP5)
-    key_drs = 'drs_' + model['project']
+    key_drs = 'cmip5_dirtype'
     drs = project_info['GLOBAL'].get(key_drs)
+    # correct for 'None' as string from yaml
+    if drs == 'None':
+        drs = None
 
     ## The rootpath is defined in config but now is project-dependent!
     ## Define as dictionary (is this possible in config.ini? Otherwise switch to yaml...)
     # no dictionary at the moment, just individual subscripts
 
-    # if drs at all
-    if drs == 'BADC' or drs == 'DKRZ':
-        root = project_info['GLOBAL']['host_root']
+    # if drs at all ONLY for CMIP5
+    if model['project'] == 'CMIP5':
+        if drs == 'BADC' or drs == 'DKRZ':
+            try:
+                root = project_info['GLOBAL']['host_root']
+            except:
+                raise ValueError("Running with cmip5_dirtype; host_root: for database {} not defined in config".format(drs))
+
+        else:
+            if 'rootpath_CMIP5' in project_info['GLOBAL']:
+                root = project_info['GLOBAL']['rootpath_CMIP5']
+            elif 'rootpath_default' in project_info['GLOBAL']:
+                root = project_info['GLOBAL']['rootpath_default']
+            else:
+                raise ValueError("rootpath for project {} not defined in config".format(model['project']))
+
     # FIXME check cases ETHZ, SMHI...
     else:
-        precise_rootpaths = ['rootpath_CMIP5', 'rootpath_OBS', 'rootpath_obs4mips']
+        precise_rootpaths = ['rootpath_OBS', 'rootpath_obs4mips']
         string = 'rootpath_' + model['project']
         if string in precise_rootpaths:
             root = project_info['GLOBAL'][string]
