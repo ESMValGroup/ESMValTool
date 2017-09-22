@@ -54,6 +54,12 @@ from auxiliary import info
 from ESMValMD import ESMValMD
 
 def main(project_info):
+    """
+    Parameters
+    ----------
+    project_info : dict
+        Dictionary with project information
+    """
 
     # print(">>>>>>>> entering ww09_ESMValTool.py <<<<<<<<<<<<")
 
@@ -191,6 +197,14 @@ def main(project_info):
 
 
 def get_climo_filenames(E, variable):
+    """
+    Parameters
+    ----------
+    E : ESMValProject
+        ESMValProject instance
+    variable : str
+        variable to be processed
+    """
 
     import projects
     import os
@@ -221,10 +235,24 @@ def get_climo_filenames(E, variable):
 
 
 def regrid(aIn, xIn, yIn, xOut, yOut, fixmdis=True, xCyclic=0.0):
-
     """
     Function for regridding onto 2.5 degree lat-long grid as the ISCCP
     obs data used for comparison was stored on.
+
+    aIn : xx
+        xxx
+    xIn : xxx
+        xxx
+    yIn : xxx
+        xxx
+    xOut : xxx
+        xxx
+    yOut : xxx
+        xxx
+    fixmdis : Bool
+        xxx
+    xCyclic : float
+        xxxxx
     """
     # first represent missing data as np.NAN
     # - this replicates the default "hard MDI" behaviour of IDL regrid
@@ -290,9 +318,19 @@ def regrid(aIn, xIn, yIn, xOut, yOut, fixmdis=True, xCyclic=0.0):
 
 
 def read_and_regrid(sSrcFilename, sVarname, lons2, lats2):
-
     """
     Function for reading and regridding cmor compliant input data.
+
+    Parameters
+    ----------
+    sSrcFilename : str
+        filename
+    sVarname : str
+        xxxxx
+    lons2 : xxxx
+        xxxxx
+    lats2 : xxxxx
+        xxxxxx
     """
 
     npts = len(lons2)
@@ -331,25 +369,16 @@ def read_and_regrid(sSrcFilename, sVarname, lons2, lats2):
 #    return data_rg
     return(np.ma.filled(rgmasked))
 
-
 def crem_calc(E, pointers):
-
     """
     Main program for calculating Cloud Regime Error Metric following equation
     4 in Williams and Webb (2009) (WW09) from CMOR-compliant netCDF data.
 
-    Inputs:
-    pointers - Dictionary of paths to the required netCDF files with
-               the following keys:
-               albisccp_nc
-               pctisccp_nc
-               cltisccp_nc
-               rsut_nc
-               rsutcs_nc
-               rlut_nc
-               rlutcs_nc
-               snc_nc
-               sic_nc
+    Parameters
+    ----------
+    pointers : dict
+        Keys in dictionary are: albisccp_nc, pctisccp_nc, cltisccp_nc,
+        rsut_nc, rsutcs_nc, rlut_nc, rlutcs_nc, snc_nc, sic_nc
 
     For CMIP5, snc is in the CMIP5 table 'day'. All other variables
     are in the CMIP5 table 'cfday'. A minimum of 2 years, and ideally 5
@@ -359,9 +388,12 @@ def crem_calc(E, pointers):
     If snc is not available then snw can be used instead. In this case
     pointers[snc_nc] should be set to None and snw_nc set.
 
-    Outputs:
-    CREMpd is the present-day cloud regime error metric of WW09.
-    rCREMpd is the component from each regime.
+    Returns
+    -------
+    CREMpd : xxxx
+        present-day cloud regime error metric of WW09.
+    rCREMpd : xxxx
+        component from each regime.
     """
 
     # Lookup arrays

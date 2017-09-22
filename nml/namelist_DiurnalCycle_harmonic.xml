@@ -7,11 +7,17 @@ Description
 Computes mean diurnal cycle of precipitation over specific boxes
 and seasons.
 
-Authors
+Author(s)
 Catherine Rio (LMD, France - catherine.rio@lmd.jussieu.fr)
+
+Contributor(s)
+n/a
 
 Project
 EMBRACE
+
+Reference(s)
+n/a
 
 This namelist is part of the ESMValTool
 ###############################################################################

@@ -64,4 +64,16 @@ coverage.xml
 /tests/data/**
 /test_bash.sh
 /python_test_out.txt
+
+# Editor Backup
+*~
+
+# Temporary folders
+work/*
+interface_data/*
+
+# Build folder
+doc/sphinx/source/diag_scripts/**
+doc/sphinx/source/plot_scripts/**
 doc/sphinx/build
+

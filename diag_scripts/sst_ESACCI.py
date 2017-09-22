@@ -43,6 +43,12 @@ from sst_diagnostic import SeaSurfaceTemperatureDiagnostic
 
 
 def main(project_info):
+    """
+    Parameters
+    ----------
+    project_info : dict
+        Dictionary with project details
+    """
     import projects
     print(">>>>>>>> sst_ESACCI.py is running! <<<<<<<<<<<<")
 

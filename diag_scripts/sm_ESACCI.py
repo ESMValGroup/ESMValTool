@@ -43,6 +43,10 @@ from sm_diagnostic import SoilMoistureDiagnostic
 
 
 def main(project_info):
+    """
+    project_info : dict
+        dictionary with project info
+    """
     print(">>>>>>>> sm_ESACCI.py is running! <<<<<<<<<<<<")
 
 # A_laue_ax+

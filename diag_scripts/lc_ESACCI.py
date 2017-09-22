@@ -43,6 +43,12 @@ from lc_diagnostic import LandCoverDiagnostic
 
 
 def main(project_info):
+    """
+    Parameters
+    ----------
+    project_info : dict
+        Project information
+    """
     print('>>>>>>>> lc_ESACCI.py is running! <<<<<<<<<<<<')
 
 # A_laue_ax+

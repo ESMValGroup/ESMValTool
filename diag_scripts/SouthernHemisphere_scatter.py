@@ -1,121 +1,113 @@
 """
-;;#############################################################################
-;; SouthernHemisphere.py
-;; Author: Jarmo Makela (FMI, Finland)
-;; EMBRACE project
-;;#############################################################################
-;; Description
-;;    This script is the diagnostics and plotting script for
-;;    Southern Hemisphere radiation and fluxes maps and graphs
-;;
-;; Required diag_script_info attributes (diagnostics specific)
-;;
-;; [general]
-;; plot_clouds:           Switch to plot cloud diags
-;; plot_fluxes:           Switch to plot fluxes diags
-;; plot_radiation:        Switch to plot radiation diags
-;; plot_scatter:          Switch to plot scatter diags
-;; plot_background_grid:  Switch to plot background grid
-;;
-;; plot_total_cover:     Sub map switch for plotting
-;; plot_liquid_path:     Sub map switch for plotting
-;; plot_ice_path:        Sub map switch for plotting
-;; plot_optical_depth:   Sub map switch for plotting
-;; plot_flux_maps:       Sub map switch for plotting
-;; plot_radiation_maps:  Sub map switch for plotting
-;;
-;; plot_lat_averages:        General switch valid for all plots
-;; plot_lon_averages:        General switch valid for all plots
-;; plot_monthly_averages:    General switch valid for all plots
-;; plot_sub_areas:           General switch valid for all plots
-;;
-;; mask_unwanted_values: Switch for masking values
-;; mask_limit_low:       Mask values below this value
-;; mask_limit_high:      Mask values above this value
-;;
-;; [SouthernHemisphere]
-;; areas:           Control what plots (regions/seasons) are generated
-;; sub_areas:       Control what plots (regions/seasons) are generated
-;; scatter_areas:   Control what plots (regions/seasons) are generated
-;; seasons:         Control what plots (regions/seasons) are generated
-;;
-;; [SouthernHemisphere_default]
-;; lat_min: Default area
-;; lat_max: Default area
-;; lon_min: Default area
-;; lon_max: Default area
-;;
-;; stride:      Color difference interval
-;; maxshades:   Color difference interval
-;;
-;; contour_limits_clt:   (min, max, diff, [dev_min, dev_max]
-;; contour_limits_clivi: (min, max, diff, [dev_min, dev_max]
-;; contour_limits_clwvi: (min, max, diff, [dev_min, dev_max]
-;; contour_limits_hfls:  (min, max, diff, [dev_min, dev_max]
-;; contour_limits_hfss:  (min, max, diff, [dev_min, dev_max]
-;; contour_limits_rlut:  (min, max, diff, [dev_min, dev_max]
-;; contour_limits_rsut:  (min, max, diff, [dev_min, dev_max]
-;; contour_limits_rlds:  (min, max, diff, [dev_min, dev_max]
-;; contour_limits_rsds:  (min, max, diff, [dev_min, dev_max]
-;;
-;; colourmap_clouds: Python matplotlib colormaps, suffix '_r' = reversed cmap
-;; colourmap_model:  Python matplotlib colormaps, suffix '_r' = reversed cmap
-;; colourmap_diff:   Python matplotlib colormaps, suffix '_r' = reversed cmap
-;; colourmap_dev:    Python matplotlib colormaps, suffix '_r' = reversed cmap
-;;
-;;
-;; # Define area specifications for sub_areas
-;; [SouthernHemisphere_northern]
-;; lat_min: Define areas for northern parts
-;; lat_max: Define areas for northern parts
-;; lon_min: Define areas for northern parts
-;; lon_max: Define areas for northern parts
-;;
-;; [SouthernHemisphere_southern]
-;; lat_min: Define areas for southern parts
-;; lat_max: Define areas for southern parts
-;; lon_min: Define areas for southern parts
-;; lon_max: Define areas for southern parts
-;;
-;; # Months to use for each season - 1 is January and so forth.
-;; [SouthernHemisphere_season_DJF]
-;; season_months: Months to use, 1 i January and so forth
-;;
-;; [SouthernHemisphere_season_MAM]
-;; season_months: Months to use, 1 i January and so forth
-;;
-;; [SouthernHemisphere_season_JJA]
-;; season_months: Months to use, 1 i January and so forth
-;;
-;; [SouthernHemisphere_season_SON]
-;; season_months: Months to use, 1 i January and so forth
-;;
-;; # Define configuration for cloud vs radiation scatter plots
-;; [SouthernHemisphere_scatter_default]
-;; lat_min: Configuration for cloud vs radiation scatter plots
-;; lat_max: Configuration for cloud vs radiation scatter plots
-;; lon_min: Configuration for cloud vs radiation scatter plots
-;; lon_max: Configuration for cloud vs radiation scatter plots
-;; points:  Configuration for cloud vs radiation scatter plots
-;;
-;; Optional diag_script_info attributes (diagnostic specific)
-;;
-;; Required variable_info attributes (variable specific)
-;;    long_name: Name displayed in plot
-;;    units:     Units
-;;
-;; Optional variable_info attributes (variable specific)
-;;
-;; Caveats
-;;    See TODO in 'esmval_lib' about hardcoded CMIP5 project class
-;;    assumptions.
-;;
-;; Modification history
-;;    20151029-A_laue_ax: added output of acknowledgements + processed files
-;;                        to log-file
-;;    20150415-A_maek_ja: written
-;;
-;; #############################################################################
+This script is the diagnostics and plotting script for
+Southern Hemisphere radiation and fluxes maps and graphs
+
+Author: Jarmo Makela (FMI, Finland)
+EMBRACE project
+
+
+
+Required diag_script_info attributes (diagnostics specific)
+
+[general]
+plot_clouds:           Switch to plot cloud diags
+plot_fluxes:           Switch to plot fluxes diags
+plot_radiation:        Switch to plot radiation diags
+plot_scatter:          Switch to plot scatter diags
+plot_background_grid:  Switch to plot background grid
+
+plot_total_cover:     Sub map switch for plotting
+plot_liquid_path:     Sub map switch for plotting
+plot_ice_path:        Sub map switch for plotting
+plot_optical_depth:   Sub map switch for plotting
+plot_flux_maps:       Sub map switch for plotting
+plot_radiation_maps:  Sub map switch for plotting
+
+plot_lat_averages:        General switch valid for all plots
+plot_lon_averages:        General switch valid for all plots
+plot_monthly_averages:    General switch valid for all plots
+plot_sub_areas:           General switch valid for all plots
+
+mask_unwanted_values: Switch for masking values
+mask_limit_low:       Mask values below this value
+mask_limit_high:      Mask values above this value
+
+[SouthernHemisphere]
+areas:           Control what plots (regions/seasons) are generated
+sub_areas:       Control what plots (regions/seasons) are generated
+scatter_areas:   Control what plots (regions/seasons) are generated
+seasons:         Control what plots (regions/seasons) are generated
+
+[SouthernHemisphere_default]
+lat_min: Default area
+lat_max: Default area
+lon_min: Default area
+lon_max: Default area
+
+stride:      Color difference interval
+maxshades:   Color difference interval
+
+contour_limits_clt:   (min, max, diff, [dev_min, dev_max]
+contour_limits_clivi: (min, max, diff, [dev_min, dev_max]
+contour_limits_clwvi: (min, max, diff, [dev_min, dev_max]
+contour_limits_hfls:  (min, max, diff, [dev_min, dev_max]
+contour_limits_hfss:  (min, max, diff, [dev_min, dev_max]
+contour_limits_rlut:  (min, max, diff, [dev_min, dev_max]
+contour_limits_rsut:  (min, max, diff, [dev_min, dev_max]
+contour_limits_rlds:  (min, max, diff, [dev_min, dev_max]
+contour_limits_rsds:  (min, max, diff, [dev_min, dev_max]
+
+colourmap_clouds: Python matplotlib colormaps, suffix '_r' = reversed cmap
+colourmap_model:  Python matplotlib colormaps, suffix '_r' = reversed cmap
+colourmap_diff:   Python matplotlib colormaps, suffix '_r' = reversed cmap
+colourmap_dev:    Python matplotlib colormaps, suffix '_r' = reversed cmap
+
+
+# Define area specifications for sub_areas
+[SouthernHemisphere_northern]
+lat_min: Define areas for northern parts
+lat_max: Define areas for northern parts
+lon_min: Define areas for northern parts
+lon_max: Define areas for northern parts
+
+[SouthernHemisphere_southern]
+lat_min: Define areas for southern parts
+lat_max: Define areas for southern parts
+lon_min: Define areas for southern parts
+lon_max: Define areas for southern parts
+
+# Months to use for each season - 1 is January and so forth.
+[SouthernHemisphere_season_DJF]
+season_months: Months to use, 1 i January and so forth
+
+[SouthernHemisphere_season_MAM]
+season_months: Months to use, 1 i January and so forth
+
+[SouthernHemisphere_season_JJA]
+season_months: Months to use, 1 i January and so forth
+
+[SouthernHemisphere_season_SON]
+season_months: Months to use, 1 i January and so forth
+
+# Define configuration for cloud vs radiation scatter plots
+[SouthernHemisphere_scatter_default]
+lat_min: Configuration for cloud vs radiation scatter plots
+lat_max: Configuration for cloud vs radiation scatter plots
+lon_min: Configuration for cloud vs radiation scatter plots
+lon_max: Configuration for cloud vs radiation scatter plots
+points:  Configuration for cloud vs radiation scatter plots
+
+Optional diag_script_info attributes (diagnostic specific)
+
+Required variable_info attributes (variable specific)
+   long_name: Name displayed in plot
+   units:     Units
+
+Optional variable_info attributes (variable specific)
+
+Caveats
+   See TODO in 'esmval_lib' about hardcoded CMIP5 project class
+   assumptions.
 """
 # Basic Python packages
 import ConfigParser
@@ -142,7 +134,14 @@ from mpl_toolkits.basemap import Basemap
 import netCDF4 as nc
 
 def main(project_info):
-    """Diagnostics and plotting script for Southern Hemisphere radiation."""
+    """
+    Diagnostics and plotting script for Southern Hemisphere radiation.
+
+    Parameters
+    ----------
+    project_info : dict
+        project information
+    """
 
     # ESMValProject provides some easy methods to access information in
     # project_info but you can also access it directly (as in main.py)
@@ -186,7 +185,24 @@ def calculate_scatterplot_values(modelconfig,
                                  cloud,
                                  radiation,
                                  bins=''):
-    """Calculate cloud vs radiation scatterplot values from input."""
+    """
+    Calculate cloud vs radiation scatterplot values from input.
+    
+    Parameters
+    ----------
+    modelconfig : xxxx
+        xxxx
+    area : xxxx
+        xxxx
+    cl_key : xxxxx
+        xxx
+    cloud : xxxx
+        xxx
+    radiation : xxx
+        xxxx
+    bins : str
+        xxxx
+    """
     # Check if limits are already defined
     if (len(bins) > 0):
         nbins = len(bins) - 1
@@ -226,7 +242,22 @@ def calculate_scatterplot_values(modelconfig,
 
 
 def interpolate_3d(data, lats, lons, target_lats, target_lons):
-    """Interpolate time/lat/lon grid to specific lat/lon coordinates."""
+    """
+    Interpolate time/lat/lon grid to specific lat/lon coordinates.
+    
+    Parameters
+    ----------
+    data : xxxx
+        xxx
+    lats : xxx
+        xxxxx
+    lons : xxxx
+        xxxx
+    target_lats : xxxx
+        xxx
+    target_lons : xxx
+        xxxx
+    """
     new_data = np.zeros((data.shape[0], len(target_lats), len(target_lons)))
     for time in xrange(data.shape[0]):
         new_data[time] = interpolate_data_grid(data[time, :, :],
@@ -238,8 +269,23 @@ def interpolate_3d(data, lats, lons, target_lats, target_lons):
 
 
 def interpolate_data_grid(data, lats, lons, target_lats, target_lons):
-    """Interpolates the data values to a specific lat/lon grid.
-    This function should only be used for 2D arrays (no time indeces etc.)"""
+    """
+    Interpolates the data values to a specific lat/lon grid.
+    This function should only be used for 2D arrays (no time indeces etc.)
+    
+    Parameters
+    ----------
+    data : xxxx
+        xxxx
+    lats : xxxx
+        xxx
+    lons : xxxx
+        xxx
+    target_lats : xxxx
+        xxx
+    target_lons : xxxx
+        xxx
+    """
 
     # First check if the coordinates are the same, otherwise interpolate
     if (np.array_equal(lats, target_lats)
@@ -277,6 +323,13 @@ def interpolate_data_grid(data, lats, lons, target_lats, target_lons):
 def process_scatter(E, modelconfig):
     """
     Main script for gathering cloud vs radiation values and plotting them.
+
+    Parameters
+    ----------
+    E : xxxx
+        xxx
+    modelconfig : xxxx
+        xxxx
     """
     config_file = E.get_configfile()
     experiment = 'SouthernHemisphere'
