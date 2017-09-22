@@ -72,7 +72,7 @@ def main(project_info):
     res = E.write_references(diag_script,              # diag script name
                              ["A_will_ke"],            # authors
                              [""],                     # contributors
-                             ["D_Williams09climdyn"],  # diag_references
+                             ["D_williams09climdyn"],  # diag_references
                              ["E_isccp_d1"],           # obs_references
                              ["P_cmug"],               # proj_references
                              project_info,

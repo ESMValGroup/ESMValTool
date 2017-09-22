@@ -1,5 +1,5 @@
 ;;#############################################################################
-;; REFORMAT SCRIPT FOR SALTRACE OBSERVATIONAL DATA
+;; REFORMAT SCRIPT FOR SALTRACE-SP2 OBSERVATIONAL DATA
 ;;#############################################################################
 ;;
 ;; Tier
@@ -31,13 +31,14 @@ begin
 
     ;; Source name
     OBSNAME = "SALTRACE"
+    SUBNAME = "SP2"
 
     ;; Tier
     TIER = 3
 
     ;; Input dir (raw data)
     INDIR = getenv("ESMValTool_RAWOBSPATH") + "/Tier" + \
-        TIER + "/" + OBSNAME + "/"
+        TIER + "/" + OBSNAME + "/" + SUBNAME + "/"
 
     ;; Output dir (CMOR-ized data)
     OUTDIR = getenv("ESMValTool_OBSPATH") + "/Tier" + \
@@ -59,7 +60,7 @@ load "./diag_scripts/lib/ncl/statistics.ncl"
 begin
 
     verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
-    diag_script = "reformat_obs_SALTRACE.ncl"
+    diag_script = "reformat_obs_SALTRACE-SP2.ncl"
     enter_msg(diag_script, "", 1)
 
     ;; Create output dir
@@ -247,7 +248,7 @@ begin
         gAtt@tier        = TIER
         gAtt@source      = "Data provided by Bernadett Weinzierl (DLR)"
         gAtt@reference   = "Not available"
-        gAtt@title       = OBSNAME + \
+        gAtt@title       = OBSNAME + "-" + SUBNAME + \
             " vertical profiles reformatted for the ESMValTool"
         gAtt@conventions = "CF/CMOR"
 
@@ -256,7 +257,7 @@ begin
             str_get_field(str_get_field(PERIOD, 1, "-"), 2, "/")
         d2 = str_get_field(str_get_field(PERIOD, 2, "-"), 1, "/") + \
             str_get_field(str_get_field(PERIOD, 2, "-"), 2, "/")
-        fout = OUTDIR + "OBS_" + OBSNAME + "_campaign_" + \
+        fout = OUTDIR + "OBS_" + OBSNAME + "-" + SUBNAME + "_campaign_" + \
             CAMPAIGN + "_" + FIELD + "_" + NAME + "_" + d1 + "-" + d2 + ".nc"
 
         ;; Write variable

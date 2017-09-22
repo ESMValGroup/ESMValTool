@@ -75,7 +75,9 @@ This namelist is part of the ESMValTool
 <!--   <reformat_script id="NSIDC">                   ./reformat_scripts/obs/reformat_obs_NSIDC.ncl                   </reformat_script> -->
 <!--   <reformat_script id="Oct-AVE">                 ./reformat_scripts/obs/reformat_obs_Oct-AVE.ncl                 </reformat_script> -->
 <!--   <reformat_script id="Putaud">                  ./reformat_scripts/obs/reformat_obs_Putaud.ncl                  </reformat_script> -->
-<!--   <reformat_script id="SALTRACE">                ./reformat_scripts/obs/reformat_obs_SALTRACE.ncl                </reformat_script> -->
+<!--   <reformat_script id="SALTRACE-CPC">            ./reformat_scripts/obs/reformat_obs_SALTRACE-CPC.ncl            </reformat_script> -->
+<!--   <reformat_script id="SALTRACE-LIDAR">          ./reformat_scripts/obs/reformat_obs_SALTRACE-LIDAR.ncl          </reformat_script> -->
+<!--   <reformat_script id="SALTRACE-SP2">            ./reformat_scripts/obs/reformat_obs_SALTRACE-SP2.ncl            </reformat_script> -->
 <!--   <reformat_script id="SeaWIFS">                 ./reformat_scripts/obs/reformat_obs_SeaWIFS.csh                 </reformat_script> -->
 <!--   <reformat_script id="SOCAT">                   ./reformat_scripts/obs/reformat_obs_SOCAT.csh                   </reformat_script> -->
 <!--   <reformat_script id="SRB">                     ./reformat_scripts/obs/reformat_obs_SRB.ncl                     </reformat_script> -->
