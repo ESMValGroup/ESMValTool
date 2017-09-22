@@ -163,10 +163,6 @@ def get_cf_infile(project_info, current_diag, model, current_var_dict):
     # look for files keyed by project name
     proj_name = model['project']
 
-    # specify start_year and end_year
-    y1 = model['start_year']
-    y2 = model['end_year']
-
     # get variables; data files is a dictionary keyed on variable
     data_files = {}
     variables = current_diag.variables
@@ -174,18 +170,20 @@ def get_cf_infile(project_info, current_diag, model, current_var_dict):
     for var in variables:
 
         full_paths = get_input_filelist(project_info, model, var)
-        model_rootpath = get_cf_outpath(project_info, model)
+        standard_name = get_cf_fullpath(project_info, model, var)
+        standard_name = standard_name.replace('.nc', '_GLOB.nc')
 
         if len(full_paths) == 0:
             logger.info("Could not find any data files for %s", model['name'])
+
         if len(full_paths) == 1:
             data_files[var['name']] = full_paths
+
         if len(full_paths) > 1:
+
             # get pp.glob to glob the files into one single file
             logger.info("Found multiple netCDF files for current diagnostic, attempting to glob them; variable: %s", var['name'])
-            standard_name = model_rootpath + '/' + '_'.join([var['name'], model['project'],
-                                                     model['name'],
-                                                     model['ensemble'], str(y1), str(y2)]) + '_GLOB.nc'
+
             # glob only if the GLOB.nc file doesnt exist
             if os.path.exists(standard_name) is False:
                 globs = pt.glob(full_paths, standard_name, var['name'], verbosity)
