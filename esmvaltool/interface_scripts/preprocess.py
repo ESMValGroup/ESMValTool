@@ -170,6 +170,7 @@ def get_cf_infile(project_info, current_diag, model, current_var_dict):
     for var in variables:
 
         full_paths = get_input_filelist(project_info, model, var)
+        standard_path = get_cf_outpath(project_info, model) # Need this call to create subdir in preproc (FIX-ME: get_cf_outpath and get_cf_fullpath shall be merged in a single function get_cf_outfile)
         standard_name = get_cf_fullpath(project_info, model, var)
         standard_name = standard_name.replace('.nc', '_GLOB.nc')
 
