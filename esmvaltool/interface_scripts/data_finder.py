@@ -1,22 +1,20 @@
-"""
-TO BE WRITTEN...
-Authors: Valeriu Predoi, University of Reading, valeriu.predoi@ncas.ac.uk
-         Mattia Righi, DLR, mattia.righi@dlr.de
-"""
+# Data finder module for the ESMValTool
+# Authors:
+# Valeriu Predoi (URead, UK - valeriu.predoi@ncas.ac.uk)
+# Mattia Righi (DLR, Germany - mattia.righi@dlr.de)
 
-# ---- Import standard modules to the python path.
 import logging
 import os
 import subprocess
+import yaml
+import re
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
 
 def cmip5_model2inst(model):
-    """
-    Return the institute given the model name in CMIP5
-    """
+    """ Return the institute given the model name in CMIP5 """
 
     instdict = {
         'HadGEM2-CC': 'MOHC',
@@ -91,11 +89,9 @@ def cmip5_model2inst(model):
 
 
 def cmip5_mip2realm_freq(mip):
-    """
-    Returns realm and frequency given the mip in CMIP5
-    """
+    """ Returns realm and frequency given the mip in CMIP5 """
 
-    mipdict: {
+    mipdict = {
         'Amon': ['atmos', 'mon'],
         'Omon': ['ocean', 'mon'],
         'Lmon': ['land', 'mon'],
@@ -113,45 +109,75 @@ def cmip5_mip2realm_freq(mip):
         return mipdict[mip]
 
     raise KeyError("CMIP5: cannot map mip {} to realm".format(mip))
-    
-
-def get_input_filelist(project_info, model, var): ## FIX-ME
 
 
-    # project_info is supposed to contain all the information from the config file
-    # Here in particular rootpath and drs are needed (also as dictionaries)
-    # Order of setting variables:
-    # - first get the drs, so we condition on it if at all
-    # - second, set the root depending on drs
+def replace_tags(path, model, var):
+    """ Replaces tags in the config-developer's file with actual values """
 
-    ## Directory structure is defined in config and also project-depentend (at present only used for CMIP5)
-    key_drs = 'drs_' + model['project']
-    drs = project_info['GLOBAL'].get(key_drs)
+    tags = {
+        'model':       [model, 'name'],
+        'exp':         [model, 'exp'],
+        'mip':         [model, 'mip'],
+        'ensemble':    [model, 'ensemble'],
+        'var':         [var,   'name'],
+        'field':       [var,   'field'],
+        'level':       [model, 'level'],
+        'type':        [model, 'type'],
+        'tier':        [model, 'tier'],
+        'version':     [model, 'version'],
+        'project':     [model, 'project'],
+        'start-year':  [model, 'start_year'],
+        'end-year':    [model, 'end_year'],
+        'latestversion': 'latestversion'  # will be replaced later
+    }
 
-    ## The rootpath is defined in config but now is project-dependent!
-    ## Define as dictionary (is this possible in config.ini? Otherwise switch to yaml...)
-    # no dictionary at the moment, just individual subscripts
+    # These are specific to CMIP5
+    if model['project'] == 'CMIP5':
+        tags['institute'] = cmip5_model2inst(model['name']),
+        tags['freq'] = cmip5_mip2realm_freq(model['mip'])[1],
+        tags['realm'] = cmip5_mip2realm_freq(model['mip'])[0],
+   
+    path = path.strip('/')
 
-    # if drs at all
-    if drs == 'BADC' or drs == 'DKRZ':
-        root = project_info['GLOBAL']['host_root']
-    # FIXME check cases ETHZ, SMHI...
-    else:
-        precise_rootpaths = ['rootpath_CMIP5', 'rootpath_OBS', 'rootpath_obs4mips']
-        string = 'rootpath_' + model['project']
-        if string in precise_rootpaths:
-            root = project_info['GLOBAL'][string]
-        elif 'rootpath_default' in project_info['GLOBAL']:
-            root = project_info['GLOBAL']['rootpath_default']
+    tlist = re.findall(r'\[([^]]*)\]', path)
+
+    for tag in tlist:
+        if type(tags[tag]) is list:
+            replacewith = str(tags[tag][0][tags[tag][1]])
+            if tag == 'tier':
+                replacewith = ''.join(('Tier', replacewith))
         else:
-            raise ValueError("rootpath for project {} not defined in config".format(model['project']))
-    
-    logger.info("Root path set to: %s", root)
+            replacewith = str(tags[tag])
+        path = path.replace('[' + tag + ']', replacewith)
+       
+    return path
 
-    ## Trying to implement the variable-dependent model keys (see section 4.1 yaml document)
-    ## Basic idea: same model used by different variable with different mip/ensemble/exp. In
-    ##             this case the mip/exp/ensemble is defined in the variable dictionary, while
-    ##             the model dictionary contains a wildcard (mip: *)
+
+def read_config_file(project, cfg_file=None):
+    """ Parses the developer's configuration file and returns the dictionary
+        for the given project
+    """
+
+    dict = {}
+    if (cfg_file is None):
+        cfg_file = os.path.join(os.path.dirname(__file__), '../config-developer.yml')
+        dict = yaml.load(file(cfg_file, 'r'))
+
+    if project in dict:
+        return dict[project]
+
+    raise KeyError('Specifications for {} not found in config-developer file'.format(project))
+
+
+def get_input_filelist(project_info, model, var):
+    """ Returns the full path to input files
+    """
+
+    project = model['project'] 
+    
+    dict = read_config_file(project)
+
+    # Apply variable-dependent model keys
     if 'mip' in var:
         model['mip'] = var['mip']
     if 'ensemble' in var:
@@ -159,41 +185,64 @@ def get_input_filelist(project_info, model, var): ## FIX-ME
     if 'exp' in var:
         model['exp'] = var['exp']
 
-    module = globals()[model['project']]()
-    files = module.infile_path(root, model, var, drs)
+    # Set the rootpath
+    if project in project_info['GLOBAL']['rootpath']:
+        dir1 = project_info['GLOBAL']['rootpath'][project]
+    elif 'default' in project_info['GLOBAL']['rootpath']:
+        dir1 = project_info['GLOBAL']['rootpath']['default']
+    else:
+        raise KeyError('default rootpath must be specified in config-user file')
+
+    if not os.path.isdir(dir1):
+        raise OSError('directory not found', dir1)
+
+    # Set the drs
+    if project in project_info['GLOBAL']['drs']:
+        drs = project_info['GLOBAL']['drs'][project]
+    else:
+        drs = 'default'
+
+    if drs in dict['input_dir']:
+        dir2 = replace_tags(dict['input_dir'][drs], model, var)
+    else:
+        raise KeyError('drs %s for %s project not specified in config-developer file' % (drs, project))
+
+    dirname = os.path.join(dir1, dir2)
+
+    # Find latest version if required
+    if '[latestversion]' in dirname:
+        part1 = dirname.split('[latestversion]')[0]
+        part2 = dirname.split('[latestversion]')[1]
+        list_versions = os.listdir(part1)
+        list_versions.sort()
+        latest = os.path.basename(list_versions[-1])
+        dirname = os.path.join(part1, latest, part2)
+
+    if not os.path.isdir(dirname):
+        raise OSError('directory not found', dirname)
+
+    # Set the filename
+    filename = replace_tags(dict['input_file'], model, var)
+
+    # Full path to files
+    files = veto_files(model, dirname, filename)
 
     return files
 
 
 def get_output_file(project_info, model, var):
+    """ Returns the full path to the output (preprocessed) file
+    """
+
+    dict = read_config_file(model['project'])
     
-    module = globals()[model['project']]()
-    files = module.outfile_path(project_info['GLOBAL']['preproc_dir'], model, var)
+    outfile = os.path.join(project_info['GLOBAL']['preproc_dir'], 
+                           model['project'], 
+                           replace_tags(dict['output_file'], model, var))
+    outfile = ''.join((outfile, '.nc'))
 
-    return files
+    return outfile
 
-class DataFinder:
-    """
-    Class for input and output file name based on the project class
-    rootpath is the machine-dependent root path specified in config.ini
-    model is the model dictionary in main namelist
-    var is the variable dictionary in the main namelist
-    drs is a flag in config.ini (only used in for CMIP5)
-    """
-
-    # The input filename is constructed as
-    # rootpath (project dependent, explicitly defined in config) /
-    # drs (project dependent, machine dependent, set with label in config) /
-    # file name (project dependent, fully determined by the model and variable dicts)
-    def infile_path(self, rootpath, model, var, drs):
-        return None
-
-    # The output filename is constructed as
-    # rootpath (preproc_dir, defined in config) /
-    # project name /
-    # file name (project dependent, fully determined by the model and variable dicts)
-    def outfile_path(self, rootpath, model, var):  # this shall replace get_cf_outfile in preprocess.py
-        return None
 
 def find_files(dirname, filename):
     """
@@ -211,6 +260,7 @@ def find_files(dirname, filename):
     for t in out.split('\n')[0:-1]:
         flist.append(t)
     return flist
+
 
 def veto_files(model, dirname, filename):
     """
@@ -232,166 +282,7 @@ def veto_files(model, dirname, filename):
 
     return fs
 
-class CMIP5(DataFinder):
 
-    def infile_path(self, rootpath, model, var, drs):
-
-        if (drs == 'BADC'):
-
-            logger.info('Getting CMIP5 data from BADC')
-
-            # Latest version is always called 'latest' at BADC
-            latest = 'latest'
-
-            dirname = '/'.join([rootpath,              # CHECK-ME
-                                cmip5_model2inst(model['name']),
-                                model['name'],
-                                model['exp'],
-                                cmip5_mip2realm_freq(model['mip'])[1],
-                                cmip5_mip2realm_freq(model['mip'])[0],
-                                model['mip'],
-                                model['ensemble'],
-                                latest,
-                                var['name']])
-
-        elif (drs == 'DKRZ'):
-
-            logger.info('Getting CMIP5 data from DKRZ')
-
-            ## host_root = '/mnt/lustre01/work/kd0956/CMIP5/data/cmip5/output1/'  ## must be given in config, not here
-
-            # Automatically find the latest version by sorting
-            dirname = '/'.join([rootpath,
-                                cmip5_model2inst(model['name']),
-                                model['name'],
-                                model['exp'],
-                                cmip5_mip2realm_freq(model['mip'])[0],
-                                cmip5_mip2realm_freq(model['mip'])[1],
-                                model['mip'],
-                                model['ensemble']])
-
-            list_versions = os.listdir(dirname)
-            list_versions.sort()
-            latest = os.path.basename(list_versions[-1])
-
-            dirname = '/'.join([dirname,
-                                latest,
-                                var['name']])
-
-        elif (drs == 'ETHZ'):
-
-            logger.info('Getting CMIP5 data with ETHZ root format')
-
-            dirname = '/'.join([rootpath, 
-                                model['exp'], 
-                                model['mip'], 
-                                var, model['name'], 
-                                model['ensemble']]) + '/'
-
-        elif (drs == 'SMHI'):
-            dirname = '/'.join([rootpath,
-                                model["name"],
-                                model["ensemble"],
-                                model["exp"],
-                                cmip5_mip2realm_freq(model['mip'])[1]])
-
-        elif drs is None:
-
-            logger.info('No DRS rootpath specified')
-
-            dirname = rootpath
-            if (not dirname.endswith('/')):
-                dirname = dirname + '/'
-
-        else:
-
-            raise ValueError("Cannot establish path to CMIP5 files")
-
-
-        # The CMIP5 filename is always the same, only the drs changes
-        filename = '_'.join([var['name'],
-                             model['mip'],
-                             model['name'],
-                             model['exp'],
-                             model['ensemble']]) + '*.nc'
-        
-        # use find here
-        in_files_list = veto_files(model, dirname, filename)
-
-        return in_files_list
-
-    def outfile_path(self, rootpath, model, var):
-        out_files_path =  rootpath + '/' + model['project'] + '/' + '_'.join([model['project'],
-                                     model['name'],
-                                     model['mip'],
-                                     model['exp'],
-                                     model['ensemble'],
-                                     var['field'],
-                                     var['name'],
-                                     str(model['start_year']) + '-' + str(model['end_year'])]) + '.nc'
-
-        return out_files_path
-
-class EMAC(DataFinder):
-
-    def infile_path(self, rootpath, model, var, drs):
-        path = '/'.join(rootpath, model['name'])
-        return path
-
-    def outfile_path(self, rootpath, model, var):
-        path = rootpath + '/' + model['project'] + '/' + '_'.join([model['project'],
-                                    model['name'],
-                                    model['ensemble'],
-                                    var['field'],
-                                    var['name'],
-                                    str(model['start_year']) + '-' + str(model['end_year'])]) + '.nc'
-        return path
-
-
-class OBS(DataFinder):
-
-    def infile_path(self, rootpath, model, var, drs):
-        dirname = '/'.join([rootpath, 
-                            'Tier' + str(model['tier']),
-                            model['name']])
-        filename = '_'.join([model['project'], 
-                         model['name'],
-                         str(model['type']), 
-                         str(model['version']),
-                         var['field'],
-                         var['name']]) + '*.nc'
-
-        # use find here
-        in_files_list = veto_files(model, dirname, filename)
-
-        return in_files_list
-
-    def outfile_path(self, rootpath, model, var):
-        out_files_path = rootpath + '/' + model['project'] + '/' + '_'.join([model['project'],
-                                     model['name'],
-                                     str(model['type']),
-                                     str(model['version']),
-                                     var['field'],
-                                     var['name'],
-                                     str(model['start_year']) + '-' + str(model['end_year'])]) + '.nc'
-        return out_files_path
-
-
-## TO BE ADDED ##############
-# class obs4mips(DataFinder):
-# class ana4mips(DataFinder):
-# class MiKlip(DataFinder):
-# class CCMval1(DataFinder):
-# class CCMval2(DataFinder):
-# class ECEARTH(DataFinder):
-# class GFDL(DataFinder):
-#############################
-
-### FIX-ME: below is the original code, I didn't change anything there.
-   
-
-
-# ---- handling the years for files
 def time_handling(year1, year1_model, year2, year2_model):
     """
     This function is responsible for finding the correct 

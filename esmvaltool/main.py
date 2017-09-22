@@ -131,7 +131,6 @@ def read_config_file(config_file):
         'work_dir': './work/',
         'plot_dir': './plots/',
         'save_intermediary_cubes': False,
-        'cmip5_dirtype': None,
         'run_diagnostic': True
     }
 
@@ -139,6 +138,7 @@ def read_config_file(config_file):
         if not key in glob:
             logger.warning("No %s specification in config file, defaulting to %s" % (key, defaults[key]))
             glob[key] = defaults[key]
+
 
     return(glob)
 

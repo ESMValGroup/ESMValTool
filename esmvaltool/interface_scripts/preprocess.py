@@ -20,9 +20,8 @@ from regrid import vinterp as vip
 import iris
 import iris.exceptions
 import preprocessing_tools as pt
-import get_file_from_drs as gf
 import numpy as np
-import data_finder as df
+from data_finder import get_input_filelist, get_output_file
 import datetime
 
 logger = logging.getLogger(__name__)
@@ -95,7 +94,7 @@ def get_cf_fullpath(project_info, model, variable):
             This function specifies the full output path (directory + file) to
             the outupt file to use in the reformat routines and in climate.ncl
     """
-    fullpath = df.get_output_file(project_info, model, variable)
+    fullpath = get_output_file(project_info, model, variable)
     return fullpath
 
 
@@ -174,7 +173,7 @@ def get_cf_infile(project_info, current_diag, model, current_var_dict):
 
     for var in variables:
 
-        full_paths = df.get_input_filelist(project_info, model, var)
+        full_paths = get_input_filelist(project_info, model, var)
         model_rootpath = get_cf_outpath(project_info, model)
 
         if len(full_paths) == 0:
@@ -410,10 +409,10 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
         logger.info("Running diagnostic ONLY on the first file")
         infiles = infileslist[0]
 
-    outfilename = df.get_output_file(project_info, model, vari).split('/')[-1]
+    outfilename = get_output_file(project_info, model, vari).split('/')[-1]
     logger.info("Reformatted file name: %s", outfilename)
     # get full outpaths - original cmorized files that are preserved all through the process
-    fullpath = df.get_output_file(project_info, model, vari)
+    fullpath = get_output_file(project_info, model, vari)
     logger.info("Reformatted target: %s", fullpath)
 
     # indir is hardcoded to keep things tight; could be an option to namelist
