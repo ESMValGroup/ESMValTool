@@ -114,40 +114,34 @@ def cmip5_mip2realm_freq(mip):
 def replace_tags(path, model, var):
     """ Replaces tags in the config-developer's file with actual values """
 
-    tags = {
-        'model':       [model, 'name'],
-        'exp':         [model, 'exp'],
-        'mip':         [model, 'mip'],
-        'ensemble':    [model, 'ensemble'],
-        'var':         [var,   'name'],
-        'field':       [var,   'field'],
-        'level':       [model, 'level'],
-        'type':        [model, 'type'],
-        'tier':        [model, 'tier'],
-        'version':     [model, 'version'],
-        'project':     [model, 'project'],
-        'start-year':  [model, 'start_year'],
-        'end-year':    [model, 'end_year'],
-        'latestversion': 'latestversion'  # will be replaced later
-    }
-
-    # These are specific to CMIP5
-    if model['project'] == 'CMIP5':
-        tags['institute'] = cmip5_model2inst(model['name']),
-        tags['freq'] = cmip5_mip2realm_freq(model['mip'])[1],
-        tags['realm'] = cmip5_mip2realm_freq(model['mip'])[0],
-   
     path = path.strip('/')
 
     tlist = re.findall(r'\[([^]]*)\]', path)
 
     for tag in tlist:
-        if type(tags[tag]) is list:
-            replacewith = str(tags[tag][0][tags[tag][1]])
-            if tag == 'tier':
-                replacewith = ''.join(('Tier', replacewith))
-        else:
-            replacewith = str(tags[tag])
+
+        if tag == 'var':
+            replacewith = var['name']
+        elif tag == 'field':
+            replacewith = var['field']
+        elif tag == 'institute':
+            replacewith = cmip5_model2inst(model['name'])
+        elif tag == 'freq':
+            replacewith = cmip5_mip2realm_freq(model['mip'])[1]
+        elif tag == 'realm':
+            replacewith = cmip5_mip2realm_freq(model['mip'])[0]
+        elif tag == 'latestversion':  # handled separately later
+            pass
+        elif tag == 'tier':
+            replacewith = ''.join(('Tier', str(model['tier'])))
+        elif tag == 'model':
+            replacewith = model['name']
+        else:  # all other cases use the corrsponding model dictionary key
+            if tag in model:
+                replacewith = str(model[tag])
+            else:
+                raise KeyError('Model key %s must be specified for project %s, check your namelist entry' % (tag, model['project']))
+
         path = path.replace('[' + tag + ']', replacewith)
        
     return path
