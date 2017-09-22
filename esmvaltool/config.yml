@@ -31,3 +31,4 @@ rawobs_rootpath: ./testdata/
 
 # Directory structure for CMIP5 data: [None]/BADC/DKRZ/ETHZ
 cmip5_dirtype: None
+#host_root: '/badc/cmip5/data/cmip5/output1/'
