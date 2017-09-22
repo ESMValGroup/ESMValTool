@@ -2,14 +2,14 @@
 diag_script_info = True
 
 ; Selected campaign
-diag_script_info@campaign = "SALTRACE"
+diag_script_info@campaign = "SALTRACE-SP2"
 
 ; Style
 diag_script_info@styleset = "DEFAULT"
 
 ; Path to campaign data
 diag_script_info@datapath = getenv("ESMValTool_OBSPATH") + "/Tier3/"+\
-                            diag_script_info@campaign
+                            "SALTRACE/"
 
 ; Cloud cover threshold (%)
 diag_script_info@cc_threshold = 100.

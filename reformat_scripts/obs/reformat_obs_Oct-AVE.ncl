@@ -1,5 +1,5 @@
 ;;#############################################################################
-;; REFORMAT SCRIPT FOR Texas OBSERVATIONAL DATA
+;; REFORMAT SCRIPT FOR Oct-AVE OBSERVATIONAL DATA
 ;;#############################################################################
 ;;
 ;; Tier
@@ -25,7 +25,7 @@
 begin
 
     ;; Source name
-    OBSNAME = "Texas"
+    OBSNAME = "Oct-AVE"
 
     ;; Tier
     TIER = 3
@@ -60,7 +60,7 @@ load "./reformat_scripts/obs/reformat_obs_func.ncl"
 begin
 
     verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
-    diag_script = "reformat_obs_Texas.ncl"
+    diag_script = "reformat_obs_Oct-AVE.ncl"
     enter_msg(diag_script, "", 1)
 
     ;; Create output dir
