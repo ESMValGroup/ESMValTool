@@ -63,6 +63,7 @@ load "./diag_scripts/lib/ncl/style.ncl"
 load "./diag_scripts/lib/ncl/statistics.ncl"
 load "./plot_scripts/ncl/contour_maps.ncl"
 
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 begin
     ;;###########################################################
@@ -118,8 +119,9 @@ begin
         MyParam = variable_info@MyDiag_title
         info_output(" MyParam = " + MyParam, verbosity, 5)
     else
-        error_msg("f", diag_script, "", "missing variable attribute " + \
-                  "'MyDiag_title'")
+;        error_msg("f", diag_script, "", "missing variable attribute " + \
+;                  "'MyDiag_title'")
+        MyParam = ""
     end if
 
     ;;###########################################
@@ -132,7 +134,7 @@ begin
                               + models@ensemble(imod), verbosity, 5)
 
     ;; See ./interface_scripts/data_handling.ncl
-    A0 = extract_data(imod, data, -1, 0, 0)
+    A0 = extract_data_extended(imod,var0, data, -1, 0, 0)
     info_output(" ++++++++++++++ Variable summary of original data (A0): ", \
                 verbosity, 5)
     if (verbosity .ge. 4) then
@@ -194,8 +196,10 @@ begin
     ;; Annotation
     data1@res_tiMainString      = MyParam  ; Main title
     data1@res_gsnLeftString     = annots(imod)
-    data1@res_gsnRightString    = variable_info@long_name + " in " \
-                                                          + variable_info@units
+    data1@res_gsnRightString    = variable_info@long_name
+    if (isatt(variable_info, "units")) then
+        data1@res_gsnRightString = data1@res_gsnRightString + " in " + variable_info@units
+    end if
     ;; Specified in ./nml/cfg_MyDiag/cfg_MyDiag.ncl
     data1@res_mpProjection      = diag_script_info@projection
     ;; Set explicit contour levels
@@ -222,6 +226,8 @@ begin
     end if
     if(isatt(variable_info, "units")) then
         data1@var_units     = variable_info@units
+    else
+        data1@var_units     = ""
     end if
 
     ;;###########################################
@@ -253,6 +259,19 @@ begin
     ;; Option 2: pass data via netCDF file
     ;;-> useful for non-NCL routines & metrics
 ;    map = contour_map("dummy_for_wks", ncdf_outfile,"default")
+
+    alltags = array_append_record(tags,\
+           (/"DM_glob", "PT_geo", "ST_mean"/), 0)
+    caption = "This is an example caption. Model: " + models@name(0) + \
+              ", variable: " + variables(0)
+    id = diag_script + "_example_id"
+    climofiles = interface_get_inpaths(imod) + "/" + \
+                 interface_get_infile(variables(0), field_types(0), imod)
+    contrib_authors = (/"A_gott_kl", "A_eval_ma"/)
+
+    ESMValMD(map@outfile, alltags, caption, id, variables(0), models@name(0), climofiles, diag_script, contrib_authors)
+
+    delete([/alltags, caption, id, climofiles/])
 
     ;;######################################################
     ;;# Separate output to a graphics file, Panelling      #

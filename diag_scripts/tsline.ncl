@@ -33,6 +33,7 @@
 ;;    Multi-model mean to be implemented.
 ;;
 ;; Modification history
+;;    20170810-A_bock_ls: added tags for reporting
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;;                        of the code
 ;;    20150622-A_wenz_sa: added optional anomaly calculation, choice of 
@@ -55,6 +56,8 @@ load "./diag_scripts/lib/ncl/latlon.ncl"
 load "./diag_scripts/lib/ncl/style.ncl"
 
 load "./plot_scripts/ncl/xy_line.ncl"
+
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 begin
 
@@ -271,6 +274,7 @@ begin
             end if
             procmod = dim_avg_Wrap(tmp(:, {maxlev:minlev}))
             delete(tmp)
+                                          
         end if
 
         ;; time, lat, lon
@@ -280,23 +284,27 @@ begin
                                       diag_script_info@ts_minlon, \
                                       diag_script_info@ts_maxlon, area_opper, \
                                       True)
+                                      
         end if
 
         ;; time, lev, lat
         if (field_type0.eq."T2Mz") then
             error_msg("f", diag_script, "", \
                       "field type T2Mz not yet implemented")
+                      
         end if
 
         ;; time, lat
         if (field_type0.eq."T1Ms") then
             error_msg("f", diag_script, "", \
                       "field type T1Ms not yet implemented")
+                      
         end if
 
         ;; time
         if (field_type0.eq."T0M") then
             procmod = A0_timavg
+            
         end if
 
         if (.not.isdefined("procmod")) then
@@ -312,6 +320,7 @@ begin
             delete(procmod)
             procmod = tmp
             delete(tmp)
+            
         else
             detr = "nodetr"
         end if
@@ -339,9 +348,10 @@ begin
         end if
         delete(procmod)
         delete(date)
-
+        
     end do
-
+    delete(imod)
+    
     ;; Convert time coordinate to years (required by the plot routine)
     if (time_avg.eq."monthly") then
         year = model_arr&time / 100
@@ -366,7 +376,7 @@ begin
 
     ;; Convert units if appropriate
     if (isatt(variable_info, "plot_units")) then
-        model_arr = convert_units(model_arr, variable_info@plot_units)
+        model_arr = convert_units(model_arr, variable_info@_units)
     end if
 
     ;; Multimodel mean
@@ -384,6 +394,7 @@ begin
             model_arr = tmp_mmm
             models@name = tmpm
             delete([/tmp_mmm,tmpm/])
+            
         end if
     end if
 
@@ -450,8 +461,60 @@ begin
 
     xy_line(wks, model_arr, model_arr&time, 0, res, False)
       
-
     info_output(" gv " + wks@fullname + " &", verbosity, 1)
+
+    ;; Attach Metadata to plot
+    xml_name = getenv("ESMValTool_xml_name")
+    suffix = get_file_suffix(xml_name, 0)
+    base_name = str_sub_str(xml_name, suffix, "")
+    
+    if (diag_script_info@multi_model_mean.eq."y") then
+        allmodelnames = array_append_record(models@name, (/"multi-model-mean"/), 0)
+    else
+        allmodelnames = models@name
+    end if 
+
+        domain = "DM_reg"
+
+    if ((field_type0.eq."T3M").or.(field_type0.eq."T2Ms")) then
+        if ((diag_script_info@ts_minlat.eq.-90.).and. \
+            (diag_script_info@ts_maxlat.eq.90.).and.  \
+            (diag_script_info@ts_minlon.eq.0.).and. \
+            (diag_script_info@ts_maxlon.eq.360.)) then
+            domain = "DM_glob"
+        end if
+    else
+        if ((diag_script_info@ts_minlat.eq.-90.).and. \
+            (diag_script_info@ts_maxlat.eq.90.)) then
+            domain = "DM_glob"
+        end if
+    end if
+
+    if (anom .eq. "anom") then
+        stat = "ST_anomaly"
+        captionadd = "anomalies"
+    else
+        stat = "ST_mean"
+        captionadd = "means"
+    end if
+
+    ;alltags = array_append_record(tags, DM_tag, 0)
+    alltags = array_append_record(tags, (/domain, stat, "PT_times"/), 0)
+
+    caption = "Time series of the " + captionadd + " for variable " + variables(0) \
+                + " over the period " + start_year + "-" + end_year
+
+    id = diag_script + "_" + variables(0)
+    
+    climofiles = new(dim_MOD, string)
+    do ii = 0, dim_MOD-1
+            climofiles(ii) = interface_get_inpaths(ii) + "/" + \
+                 interface_get_infile(variables(0), field_types(0), ii)
+    end do
+
+    contrib_authors = (/"A_cion_ir", "A_righ_ma","A_wenz_sa"/)
+
+    ESMValMD(wks@fullname, alltags, caption, id, variables(0), allmodelnames, climofiles, diag_script, contrib_authors)
 
 ;    ;; References
 ;    write_references(diag_script, "A_cion_ir", (/"A_righ_ma","A_wenz_sa"/), "D_0001", \

@@ -315,6 +315,14 @@ begin
         val@long_name = "Taylor diagram"
         val@diag_script = (/diag_script/)
         val@var = "var"
+        ;add climofiles for tagging
+        val@num_climofiles = dimsizes(models@name)
+        do imod = 0, dimsizes(models@name) -1
+            num_climo = "climofile_"+imod
+            climofile = interface_get_inpaths(imod) + "/" + \
+                 interface_get_infile(variables(0), field_types(0), imod)
+            val@$num_climo$ = climofile
+        end do
 
         ;; Write NetCDF output
         ncdf_outfile = ncdf_write(val, val@ncdf_dir)

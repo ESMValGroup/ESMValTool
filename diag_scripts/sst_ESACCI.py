@@ -93,7 +93,6 @@ def main(project_info):
 
                     # copy old data to provide data that is needed again
                     D_old = copy(Diag)
-
                     # initialize diagnostic
                     Diag = SeaSurfaceTemperatureDiagnostic()
                     # provide project_info to diagnostic

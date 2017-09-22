@@ -28,7 +28,7 @@ This namelist is part of the Reporting suite for the ESMValTool
 </TAGS>
 
 <FOLDERS>
-    <place> @{PLOTPATH}/TEST/sst_ESACCI </place>
+    <place> @{PLOTPATH}/tests/ </place>
     <!-- <place> @{PLOTPATH} </place> -->
 </FOLDERS>
 

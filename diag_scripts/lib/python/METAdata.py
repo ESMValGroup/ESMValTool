@@ -6,6 +6,8 @@ Created on Fri Dec 16 15:43:30 2016
 """
 import xml.etree.ElementTree as XMLT
 import xml.dom.minidom as XMLPP
+import netCDF4 as nc
+import os
 
 
 class METAdata(object):
@@ -27,6 +29,7 @@ class METAdata(object):
         self.__modfile__ = modfile
 
         self.tags = None
+        self.DataIDs = None
 
     def set_type(self, dtype):
         """
@@ -43,7 +46,7 @@ class METAdata(object):
                 ", ".join(self.avail) + "]!"
         # check if exif is available
         try:
-            from gi.repository import GExiv2 as EXIV
+            from PIL import Image, PngImagePlugin
         except:
             self.__dtype__ = 'xml'
 
@@ -64,6 +67,9 @@ class METAdata(object):
             self.__data_dict__ = dictionary
         else:
             assert False, "Input is not a dictionary!"
+
+        if "DataIDs" in self.__data_dict__['ESMValTool'].keys():
+            self.__get_DataIDs__()
 
     def set_file(self, modfile):
         if isinstance(modfile, (unicode, str)):
@@ -87,7 +93,7 @@ class METAdata(object):
 
     def __write_meta__(self):
 
-        from gi.repository import GExiv2 as EXIV
+        from PIL import Image, PngImagePlugin
 
         if not self.__modfile__.split(".")[-1] in self.__meta_formats__:
             print("Warning! This is not an acceptable " +
@@ -99,14 +105,16 @@ class METAdata(object):
 
         if len(self.__data_dict__.keys()) == 1:
 
-            metadata = EXIV.Metadata(self.__modfile__)
+            meta = PngImagePlugin.PngInfo()
+
+            image = Image.open(self.__modfile__)
 
             tags = self.__build_pretty_xml__(pretty=False)
             self.tags = self.__build_pretty_xml__(pretty=True)
 
-            metadata.set_tag_string(self.__exif_maintag__, tags)
+            meta.add_itxt(self.__exif_maintag__, tags, zip=True)
 
-            metadata.save_file()
+            image.save(self.__modfile__, "png", pnginfo=meta)
 
         elif len(self.__data_dict__.keys()) == 0:
             print("No meta data to be written!")
@@ -237,17 +245,22 @@ class METAdata(object):
 
     def __read_meta__(self):
 
-        from gi.repository import GExiv2 as EXIV
+        from PIL import Image, PngImagePlugin
+        from PIL.ExifTags import TAGS
 
-        metadata = EXIV.Metadata(self.__modfile__)
-        root = XMLT.fromstring(metadata.get(self.__exif_maintag__))
-        if len(root.getchildren()) == 0:
-            assert False, "Object " + root.tag + " is misformed!"
-        val = {}
-        [val.update(self.__xml_to_dict__(branch))
-         for branch in root.getchildren()]
-        self.__data_dict__ = {root.tag: val}
-        return self.__data_dict__
+        image = Image.open(self.__modfile__)
+        info = image.info
+        if self.__exif_maintag__ in info.keys():
+            root = XMLT.fromstring(info[self.__exif_maintag__])
+            if len(root.getchildren()) == 0:
+                assert False, "Object " + root.tag + " is misformed!"
+            val = {}
+            [val.update(self.__xml_to_dict__(branch))
+             for branch in root.getchildren()]
+            self.__data_dict__ = {root.tag: val}
+            return self.__data_dict__
+        else:
+            return None
 
     def __xml_to_dict__(self, branch):
 
@@ -259,6 +272,41 @@ class METAdata(object):
              for subbranch in branch.getchildren()]
 
         return {branch.tag: val}
+
+    def __get_DataIDs__(self):
+
+        def __ID_hunter__(file_list):
+
+            new_list = []
+            for f in file_list:
+                if os.path.isfile(f):
+                    try:
+                        DataInfo = nc.Dataset(f)
+                        ti = "tracking_id"
+                        if ti in DataInfo.__dict__.keys():
+                            new_list.append(getattr(DataInfo, ti))
+
+                        elif "infile_0000" in DataInfo.__dict__.keys():
+                            infiles = [t for t in DataInfo.__dict__.keys() if
+                                       t.split("_")[0] == "infile"]
+                            infiles = [getattr(DataInfo, i_f) for
+                                       i_f in infiles]
+                            new_list.extend(__ID_hunter__(infiles))
+
+                        else:
+                            assert False, \
+                                "There is header information missing!" + \
+                                "Either tracking_id or infile_**** needed."
+                    except:
+                        new_list.append("NO ID found in file " + f + "!")
+                else:
+                    new_list.append(f)
+
+            return new_list
+
+        self.__data_dict__['ESMValTool']['DataIDs'] = \
+            __ID_hunter__(
+                    self.__data_dict__['ESMValTool']['DataIDs'].split(","))
 
 # USAGE
 

@@ -33,10 +33,11 @@ This namelist is part of the ESMValTool
   <write_plot_vars type="boolean">    True                      </write_plot_vars>
   <max_data_filesize type="integer">  100                       </max_data_filesize>
   <max_data_blocksize type="integer"> 500                       </max_data_blocksize>
-  <output_file_type>                  png                        </output_file_type>
+  <output_file_type>                  png                       </output_file_type>
   <verbosity  type="integer">         4                         </verbosity>
   <debuginfo type="boolean">          False                     </debuginfo>
-  <exit_on_warning  type="boolean">   False                      </exit_on_warning>
+  <exit_on_warning  type="boolean">   False                     </exit_on_warning>
+  <tags>                              P_embrace, D_taylor12     </tags>
 </GLOBAL>
 
 
@@ -64,7 +65,9 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir>                          ./nml/cfg_sm_pr                </diag_script_cfg_dir>
         <diag_script cfg="cfg_sm_pr.conf">              sm_pr_diag_nml.py             </diag_script>
         <launcher_arguments>    [('execute_as_shell', False)]                         </launcher_arguments>
-    </diag>
+    
+        <tags> R_land, R_atmos, T_chem </tags>
+  </diag>
 </DIAGNOSTICS>
 
 </namelist>

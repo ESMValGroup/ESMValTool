@@ -22,10 +22,12 @@ sys.path.append(main_ESMValTool+"/diag_scripts")
 
 # path to ESMVal REPORT python toolbox library
 sys.path.append("./lib")
+sys.path.append("./utils")
 
 import xml_parsers
 import projects
 from html_writer import HTML_writer
+from report_cleanup import cleanup_report
 
 # additional info
 version = "0.1"
@@ -49,7 +51,19 @@ input_xml_full_path = args[0]
 Project = xml_parsers.namelistHandler()
 parser = xml.sax.make_parser()
 parser.setContentHandler(Project)
+
+# Current working directory adjustments depending on namelist
+CWD = os.getcwd()
+os.chdir(main_ESMValTool)
+if input_xml_full_path.split(os.sep)[0] == \
+    (main_ESMValTool[:-1] if main_ESMValTool[-1] == os.sep
+     else main_ESMValTool):
+    input_xml_full_path = input_xml_full_path[1:]
+else:
+    input_xml_full_path = CWD + input_xml_full_path[2:]
+
 parser.parse(input_xml_full_path)
+os.chdir(CWD)
 
 # Project_info is a dictionary with all info from the namelist.
 project_info = Project.project_info
@@ -68,7 +82,13 @@ in_refs = os.path.join(os.getcwd(), 'doc/MASTER_authors-refs-acknow.txt')
 project_info['RUNTIME']['in_refs'] = in_refs
 
 # Current working directory
-project_info['RUNTIME']['cwd'] = os.getcwd()
+project_info['RUNTIME']['cwd'] = CWD
+
+# cleanup directories
+do_print = False
+template_dir = './templates/'
+image_dir = './static/images/'
+cleanup_report(template_dir, image_dir, do_print)
 
 # try to process the data
 try:
@@ -77,6 +97,7 @@ try:
                                              " && python " + "main.py " +
                                              project_info['RUNTIME']['xml'],
                                              shell=True)
+
     case = "pre"
 except Exception, TOOL_error:
     ESMValTool_log = str(TOOL_error.output)
@@ -84,8 +105,7 @@ except Exception, TOOL_error:
 
 # run server
 app = Flask(__name__)
-# host_add = "0.0.0.0"
-host_add = "141.84.50.139"
+host_add = "127.0.0.1"
 host_port = 5000
 full_host = host_add + ":" + str(host_port)
 
@@ -134,14 +154,15 @@ if case == "pre":
                 diag_script_cfg.split(".")[1:]
                 )
 
-        with open(thisfile) as f:
-            cfg = f.readlines()
+#        with open(thisfile) as f:
+#            cfg = f.readlines()
+
+        cfg = thisfile
 
         Key = str(k0).zfill(3)
         k0 += 1
 
         DKEY = "Auto_Diag_"+Key
-
         # Diagnostic
         D.diag_html(DKEY, project_info['GLOBAL']['plot_dir'], cfg, [DKEY],
                     full_host,
@@ -207,5 +228,5 @@ def diagnostic(tagname):
     return render_template(tagname+'.html')
 
 if __name__ == '__main__':
-    app.debug = True
+    app.debug = False
     app.run(host=host_add, port=host_port)

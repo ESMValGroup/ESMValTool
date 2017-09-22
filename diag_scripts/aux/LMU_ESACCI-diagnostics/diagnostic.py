@@ -4,16 +4,18 @@ Basic implementation for diagnostics into ESMValTool
 # used modules
 import numpy as np
 import os
+import pdb
 # import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
-import matplotlib.dates as mdates
+#import matplotlib.dates as mdates
 # from netCDF4 import Dataset
 
 # global installation
 from geoval.core.data import GeoData
 from geoval.core.mapping import SingleMap
 import extended_data
+from easyhov import easyhov_diff
 from esmval_lib import ESMValProject
 from ESMValMD import ESMValMD
 # from GeoData_mapping import *
@@ -73,6 +75,7 @@ class Diagnostic(object):
         self._changed = False
 
         self._basetags = []
+        self._infiles = []
 
     def _get_output_rootname(self):
         """
@@ -82,7 +85,7 @@ class Diagnostic(object):
 
         name_parts = self._mod_file.split("/")[-1].split(".")[0].split("_")
         self.modname = "_".join(name_parts[i] for i in [0, 3, 2, 4])
-        self.refname = "ESACCI"  # self._ref_type
+        self.refname = self._ref_type
 
         return self._plot_dir + os.sep + self._vartype.replace(" ", "_") + \
             '_' + self.refname + '_' + self.modname
@@ -114,6 +117,7 @@ class Diagnostic(object):
         self._plot_dir = plot_dir
         self.E = E
 # A_laue_ax-
+
         self._work_dir = project_info.get('GLOBAL')['wrk_dir']
         self._climo_dir = project_info.get('GLOBAL')['climo_dir']
         self._mod_line = model.split_entries()
@@ -245,6 +249,13 @@ class Diagnostic(object):
 #            if self.cfg.write_preprocessed_data:
 #                self._save_p_data()
 
+        # make sure that only used netcdf files set an attribute
+        # ending on "_file"
+        self._infiles = [getattr(self, s) for s in self.__dict__.keys()
+                         if ("_mod_file" in s or "_ref_file" in s)]
+        self._allfiles = [getattr(self, s) for s in self.__dict__.keys()
+                          if ("_file" in s)]
+
     def _load_regionalization_shape(self):
         """
         loading model data
@@ -292,6 +303,7 @@ class BasicDiagnostics(Diagnostic):
         super(BasicDiagnostics, self).__init__(**kwargs)
         self._plot_parameters()
 
+        # TODO This should be set in cfg?, as well as the interpolation style?
         self.reso = {"lat": 96, "lon": 192}
         # self.reso = {"lat": 6, "lon": 12} #default for testing
         self.resoLUT = {"128-256": "T85",
@@ -776,7 +788,7 @@ class BasicDiagnostics(Diagnostic):
                    vmin=0, vmax=1, ax=ax2, cmap='summer')
             f.suptitle(self.modname + " - " + self.refname +
                        " global mean difference and p-value " +
-                       "from Student's t-test (for differeing averages)" +
+                       "from Student's t-test (for differeing averages) " +
                        monthtit)
 
             oname = self._get_output_rootname() + monthstr + \
@@ -825,11 +837,13 @@ class BasicDiagnostics(Diagnostic):
 
         ESMValMD("both",
                  f_name,
-                 self._basetags + ['gmd', 'basic', self.modname],
-                 str('Global mean difference ' +
-                     'of the time series between ' + self.modname +
+                 self._basetags + ['DM_global', 'ST_diff', 'ST_mean', 'PT_geo',
+                                   self.modname, self.refname],
+                 str('Global mean difference' + monthtit +
+                     ' of the time series between ' + self.modname +
                      ' and ' + self.refname + ' ' + self._vartype + '.'),
-                 '#ID' + 'gmd' + self.var)
+                 '#ID' + 'gmd' + self.var,
+                 ",".join(self._infiles))
 
         # and
 
@@ -966,13 +980,16 @@ class BasicDiagnostics(Diagnostic):
 
             ESMValMD("both",
                      oname,
-                     self._basetags + ['4plot', 'basic', self.modname],
-                     str('Global mean time series for ' + self.modname +
-                         ' and ' + self.refname + ' ' + self._vartype +
-                         ' (upper row). Additionally, differences are shown ' +
-                         'in the lower row, both in absolute values and ' +
-                         'relative to the ' + self.refname + ' data set.'),
-                     '#ID' + '4plot' + self.var)
+                     self._basetags + ['DM_global', 'ST_diff', 'ST_mean',
+                                       'PT_geo', self.modname, self.refname],
+                     str('Global mean time series' + monthtit + ' for ' +
+                         self.modname + ' and ' + self.refname + ' ' +
+                         self._vartype + ' (upper row). Additionally, ' +
+                         'differences are shown in the lower row, both in ' +
+                         'absolute values (left) and relative to the ' +
+                         self.refname + ' data set (right).'),
+                     '#ID' + '4plot' + self.var,
+                     ",".join(self._infiles))
 
     def _p_stat(self, D, ts):
         """ produce table """
@@ -1053,11 +1070,14 @@ class BasicDiagnostics(Diagnostic):
 
         ESMValMD("xml",
                  oname,
-                 self._basetags + ['TimeS', 'stattab', 'basic', name],
+                 self._basetags + ['DM_global', 'ST_mean', 'ST_stddev',
+                                   'ST_range', name],
                  str('Statistics for ' + name + " " + self._vartype +
-                     '. All statistics are based on the time dependent ' +
+                     '. All statistics are based on time dependent ' +
                      'counts and not normalized.'),
-                 '#ID' + 'stattab' + self.var)
+                 '#ID' + 'stattab' + self.var,
+                 (self._mod_file if name in self._mod_file else self._ref_file)
+                 )
 
     def _write_climatologies_statistic(self, name):
         """ writing portrait statistic as csv """
@@ -1075,6 +1095,17 @@ class BasicDiagnostics(Diagnostic):
         finally:
             f.close()
 
+        ESMValMD("xml",
+                 oname,
+                 self._basetags + ['DM_global', 'ST_mean', 'ST_stddev',
+                                   'ST_range', name],
+                 str('Statistics for climatology of ' + name + " " +
+                     self._vartype + '. All statistics are based on ' +
+                     'time dependent counts and not normalized.'),
+                 '#ID' + 'climstattab' + self.var,
+                 (self._mod_file if name in self._mod_file else self._ref_file)
+                 )
+
     def _plot_climatologies(self, month):
         """ plotting 4plots for climatologies/months """
 
@@ -1087,6 +1118,9 @@ class BasicDiagnostics(Diagnostic):
         ts_save = False
         stat_m_save = False
         stat_r_save = False
+
+        standard_basetags = list(self._basetags)
+        self._basetags = self._basetags + ["ST_clim"]
 
         if '_gmt_r_data' in self.__dict__.keys():
             gmt_r_save = True
@@ -1197,6 +1231,8 @@ class BasicDiagnostics(Diagnostic):
         else:
             del self._stat_r_data
 
+        self._basetags = standard_basetags
+
     def _plot_portrait_comparison(self, refname, modname, clim=False):
         """ plotting portrait comparison """
         # plot spatially aggregated ts
@@ -1238,10 +1274,14 @@ class BasicDiagnostics(Diagnostic):
 
         ESMValMD("both",
                  f_name,
-                 self._basetags + ['TimeS', 'basic', self.modname],
-                 str('Time series of spatial mean for ' + self.modname +
+                 self._basetags + ['DM_global', 'PT_times', 'ST_mean',
+                                   self.refname, self.modname],
+                 str('Time series of spatial mean ' +
+                     ('climatology ' if 'ST_clim' in self._basetags else '') +
+                     'for ' + self.modname +
                      ' and ' + self.refname + ' ' + self._vartype + '.'),
-                 '#ID' + 'TimeS' + self.var)
+                 '#ID' + 'TimeS' + self.var,
+                 ",".join(self._infiles))
 
         if self.cfg.regionalization:
             unit2 = math.ceil(np.sqrt(len(self._regions)))  # 2
@@ -1361,11 +1401,15 @@ class BasicDiagnostics(Diagnostic):
 
             ESMValMD("both",
                      f_name,
-                     self._basetags + ['TimeS', 'reg', 'basic', self.modname],
-                     str('Regionalized time series of spatial mean for ' +
+                     self._basetags + ['DM_reg', 'PT_times', 'ST_mean',
+                                       self.refname, self.modname],
+                     str('Regionalized ' + ('climatology ' if 'ST_clim'
+                                            in self._basetags else '') +
+                         'time series of spatial mean for ' +
                          self.modname + ' and ' + self.refname + ' ' +
                          self._vartype + '.'),
-                     '#ID' + 'TimeSreg' + self.var)
+                     '#ID' + 'TimeSreg' + self.var,
+                     ",".join(self._infiles))
 
     def _global_mean_timeseries(self, name):
         """ calculating mean of TS """
@@ -1428,132 +1472,75 @@ class BasicDiagnostics(Diagnostic):
 
         ESMValMD("both",
                  f_name,
-                 self._basetags + ['gmt', 'basic', name],
+                 self._basetags + ['DM_global', 'ST_mean', name],
                  str('Temporal mean of the ' + name + ' ' +
                      self._vartype + ' data set.'),
-                 '#ID' + 'gmt' + self.var)
+                 '#ID' + 'gmt' + self.var,
+                 (self._mod_file if name in self._mod_file else self._ref_file)
+                 )
 
     def _plot_hovmoeller_like(self):
         """
         plot hovmoeller-like images for identification of model differences
         """
-        self._hov_lat_mod_data = \
-            self._clim_m_data.get_zonal_mean(return_object=False, lat=True)
+        CliDiff = easyhov_diff()
 
-        self._hov_lon_mod_data = \
-            self._clim_m_data.get_zonal_mean(return_object=False, lat=False)
+        l_type = "lat"
+        CliDiff.settype(l_type)
+        CliDiff.setdata([self._mod_data, self._ref_data])
+        HOV = CliDiff.plot(minhov=min(self.cfg.mima_hov),
+                           maxhov=max(self.cfg.mima_hov),
+                           mindiff=min(self.cfg.mima_hovdiff),
+                           maxdiff=max(self.cfg.mima_hovdiff),
+                           cmap=self.cfg.cmap_globmeants,
+                           cmapdiff='RdBu',
+                           titles=[self.modname,
+                                   "difference",
+                                   self.refname],
+                           unit="[" + self._mod_data.unit + "]")
+        HOV.set_size_inches(20, 5)
 
-        self._hov_lat_ref_data = \
-            self._clim_r_data.get_zonal_mean(return_object=False, lat=True)
+        f_name = self._get_output_rootname() + \
+            '_' + l_type + '_hov.' + self.output_type
+        HOV.savefig(f_name, dpi=self.plot_dpi)
 
-        self._hov_lon_ref_data = \
-            self._clim_r_data.get_zonal_mean(return_object=False, lat=False)
+        ESMValMD("both",
+                 f_name,
+                 self._basetags + ['DM_global', 'ST_mean', 'ST_diff',
+                                   'PT_zonal', self.modname, self.refname],
+                 str('Climatological/latitudinal Hovmoeller plots and ' +
+                     'difference of the ' + self.modname + ' and ' +
+                     self.refname + ' ' + self._vartype + ' data sets.'),
+                 '#ID' + 'hov' + self.var,
+                 ",".join(self._infiles))
 
-        # calculate lat dependent mod
-#        self._hov_lat_mod_data = self._clim_m_data.data.mean(axis=2)
-        # calculate lon dependent mod
-#        self._hov_lon_mod_data = self._clim_m_data.data.mean(axis=1)
-        d = self._hov_lon_mod_data.data.copy()
-        d = np.hstack((d[:, np.arange(0, d.shape[1]/2)+d.shape[1]/2-1],
-                       d[:, np.arange(0, d.shape[1]/2)]))
-        m = self._hov_lon_mod_data.mask.copy()
-        m = np.hstack((m[:, np.arange(0, m.shape[1]/2)+m.shape[1]/2-1],
-                       m[:, np.arange(0, m.shape[1]/2)]))
-        self._hov_lon_mod_data = np.ma.array(d, mask=m)
-        # calculate lat dependent ref
-#        self._hov_lat_ref_data = self._clim_r_data.data.mean(axis=2)
-        # calculate lon dependent ref
-#        self._hov_lon_ref_data = self._clim_r_data.data.mean(axis=1)
-        d = self._hov_lon_ref_data.data.copy()
-        d = np.hstack((d[:, np.arange(0, d.shape[1]/2)+d.shape[1]/2-1],
-                       d[:, np.arange(0, d.shape[1]/2)]))
-        m = self._hov_lon_ref_data.mask.copy()
-        m = np.hstack((m[:, np.arange(0, m.shape[1]/2)+m.shape[1]/2-1],
-                       m[:, np.arange(0, m.shape[1]/2)]))
-        self._hov_lon_ref_data = np.ma.array(d, mask=m)
+        l_type = "lon"
+        CliDiff.settype(l_type)
+        HOV = CliDiff.plot(minhov=min(self.cfg.mima_hov),
+                           maxhov=max(self.cfg.mima_hov),
+                           mindiff=min(self.cfg.mima_hovdiff),
+                           maxdiff=max(self.cfg.mima_hovdiff),
+                           cmap=self.cfg.cmap_globmeants,
+                           cmapdiff='RdBu',
+                           titles=[self.modname,
+                                   "difference",
+                                   self.refname],
+                           unit="[" + self._mod_data.unit + "]")
+        HOV.set_size_inches(20, 5)
 
-        # calculate lat dependent diff
-        self._hov_lat_diff_data = self._hov_lat_mod_data -\
-            self._hov_lat_ref_data
-        # calculate lon dependent diff
-        self._hov_lon_diff_data = self._hov_lon_mod_data -\
-            self._hov_lon_ref_data
+        f_name = self._get_output_rootname() + \
+            '_' + l_type + '_hov.' + self.output_type
+        HOV.savefig(f_name, dpi=self.plot_dpi)
 
-        fig = plt.figure(figsize=(20, 5))
-
-        ashape = self._hov_lon_ref_data.shape
-
-        a = fig.add_subplot(1, 3, 1)
-        imgplot = plt.imshow(self._hov_lon_mod_data,
-                             cmap=cm.get_cmap(self.cfg.cmap_globmeants, 10))
-        plt.ylabel('climatology [months]')
-        plt.yticks(range(0, 12), range(1, 13))
-        plt.xticks([-0.5, ashape[1]/4, ashape[1]/2,
-                    3*ashape[1]/4, ashape[1]-0.5],
-                   ["180 W", "90 W", "0", "90 E", "180 E"])
-        plt.axis('tight')
-        plt.colorbar(ticks=np.linspace(min(self.cfg.mima_hov),
-                                       max(self.cfg.mima_hov),
-                                       num=11))
-        imgplot.set_clim((min(self.cfg.mima_hov),
-                          max(self.cfg.mima_hov)))
-        ax = plt.gca()
-        ax.set_yticks(np.arange(-.5, 12, 1), minor=True)
-        ax.grid(which='minor', color='black', linestyle='-', linewidth=1)
-        a.set_title('MOD')
-
-        b = fig.add_subplot(1, 3, 3)
-        imgplot = plt.imshow(self._hov_lon_ref_data,
-                             cmap=cm.get_cmap(self.cfg.cmap_globmeants, 10))
-        plt.yticks(range(0, 12), range(1, 13))
-        plt.xticks([-0.5, ashape[1]/4, ashape[1]/2,
-                    3*ashape[1]/4, ashape[1]-0.5],
-                   ["180 W", "90 W", "0", "90 E", "180 E"])
-        plt.axis('tight')
-        plt.colorbar(ticks=np.linspace(min(self.cfg.mima_hov),
-                                       max(self.cfg.mima_hov),
-                                       num=11))
-        imgplot.set_clim((min(self.cfg.mima_hov),
-                          max(self.cfg.mima_hov)))
-        ax = plt.gca()
-        ax.set_yticks(np.arange(-.5, 12, 1), minor=True)
-        ax.grid(which='minor', color='black', linestyle='-', linewidth=1)
-        b.set_title('REF')
-
-        c = fig.add_subplot(1, 3, 2)
-        imgplot = plt.imshow(self._hov_lon_diff_data,
-                             cmap=cm.get_cmap('RdBu', 10))
-        plt.yticks(range(0, 12), range(1, 13))
-        plt.xticks([-0.5, ashape[1]/4, ashape[1]/2,
-                    3*ashape[1]/4, ashape[1]-0.5],
-                   ["180 W", "90 W", "0", "90 E", "180 E"])
-        plt.axis('tight')
-        plt.colorbar(ticks=np.linspace(min(self.cfg.mima_hovdiff),
-                                       max(self.cfg.mima_hovdiff),
-                                       num=11))
-        imgplot.set_clim((min(self.cfg.mima_hovdiff),
-                          max(self.cfg.mima_hovdiff)))
-        ax = plt.gca()
-        ax.set_yticks(np.arange(-.5, 12, 1), minor=True)
-        ax.grid(which='minor', color='black', linestyle='-', linewidth=1)
-        c.set_title('DIFF')
-        plt.xlabel('longitude [deg]')
-
-        f_name = self._plot_dir + os.sep + self._vartype.replace(" ", "_") + \
-            '_' + '_hov.' + self.output_type
-        imgplot.figure.savefig(f_name, dpi=self.plot_dpi)
-
-#        f_name = self._plot_dir + os.sep + self._vartype.replace(" ", "_") + \
-#            '_' + name + '_hov.' + self.output_type
-#
-#        plt.close()
-#
-#        ESMValMD("both",
-#                 f_name,
-#                 self._basetags + ['gmt', 'basic', name],
-#                 str('Temporal mean of the ' + name + ' ' +
-#                     self._vartype + ' data set.'),
-#                 '#ID' + 'gmt' + self.var)
+        ESMValMD("both",
+                 f_name,
+                 self._basetags + ['DM_global', 'ST_mean', 'ST_diff',
+                                   'PT_zonal', self.modname, self.refname],
+                 str('Climatological/longitudinal Hovmoeller plots and ' +
+                     'difference of the ' + self.modname + ' and ' +
+                     self.refname + ' ' + self._vartype + ' data sets.'),
+                 '#ID' + 'hov' + self.var,
+                 ",".join(self._infiles))
 
     def _calc_spatial_correlation(self, X, Y):
         """
@@ -1719,12 +1706,17 @@ class BasicDiagnostics(Diagnostic):
 
         ESMValMD("both",
                  oname,
-                 self._basetags + ['TCorr', 'basic', self.modname],
+                 self._basetags + ['DM_global', 'PT_geo', 'ST_corr',
+                                   self.refname, self.modname],
                  str('Pixelwise correlation of temporal trend between ' +
                      self.modname + ' and ' + self.refname + ' ' +
-                     self._vartype + ' (left). The right panel describes ' +
+                     self._vartype + (' anomalies' if 'anomalytrend' in
+                                      self.cfg.__dict__.keys() and
+                                      self.cfg.anomalytrend else '') +
+                     ' (left). The right panel describes ' +
                      'the pattern of corresponding p-values.'),
-                 '#ID' + 'Tcorr' + self.var)
+                 '#ID' + 'Tcorr' + self.var,
+                 ",".join(self._infiles))
 
     def _plot_trend_maps(self, S, P, name):
         """
@@ -1812,14 +1804,17 @@ class BasicDiagnostics(Diagnostic):
 
             ESMValMD("both",
                      oname,
-                     self._basetags + ['trend', 'basic', name],
+                     self._basetags + ['DM_global', 'PT_geo', 'ST_trend',
+                                       name],
                      str("Spatially distributed temporal trend of " + name +
                          " and the p-values of these trends (right panel) " +
                          "for the years " + str(self._start_time.year) +
                          " to " + str(self._stop_time.year) +
                          ". The p-values higher than 1.0 are not shown " +
-                         "seperately."),
-                     '#ID' + 'trend' + self.var)
+                         "separately."),
+                     '#ID' + 'trend' + self.var,
+                     (self._mod_file if name in self._mod_file
+                      else self._ref_file))
 
         else:
             f = plt.figure(figsize=(10, 6))
@@ -1903,18 +1898,22 @@ class BasicDiagnostics(Diagnostic):
 
             ESMValMD("both",
                      oname,
-                     self._basetags + ['trend', 'basic', name],
+                     self._basetags + ['DM_global', 'PT_geo', 'ST_trend',
+                                       name],
                      str("Spatially distributed temporal trend of " + name +
                          " for the years " + str(self._start_time.year) +
                          " to " + str(self._stop_time.year) +
                          ". Values are only shown for trends with a p-value " +
                          "smaller than 0.05."),
-                     '#ID' + 'trend' + self.var)
+                     '#ID' + 'trend' + self.var,
+                     (self._mod_file if name in self._mod_file
+                      else self._ref_file))
 
     def _write_shape_statistics(self, data, diag, name):
         """
         write regionalized statistics
         """
+        print(diag)
         oname = self._plot_dir + os.sep + self._vartype.replace(" ", "_") + \
             '_' + 'regionalized_' + self.cfg.shape + '_' + name + '_' + \
             diag + '_stat.csv'
@@ -1929,6 +1928,18 @@ class BasicDiagnostics(Diagnostic):
                 writer.writerow(stat)
         finally:
             f.close()
+
+        ESMValMD("xml",
+                 oname,
+                 self._basetags + ['DM_reg', 'ST_mean', 'ST_stddev',
+                                   'ST_range', name],
+                 str('Regional statistics for ' + name + ' ' + self._vartype +
+                     ' (' + diag.replace('_', ' ') + ')' +
+                     '. All statistics are based on time dependent ' +
+                     'counts and not normalized.'),
+                 '#ID' + 'stattabreg' + self.var,
+                 (self._mod_file if name in self._mod_file else self._ref_file)
+                 )
 
     def _get_files_in_directory(self, directory, pattern, asstring=True):
         """ returns list and number of files with pattern in directory """
@@ -1946,8 +1957,12 @@ class BasicDiagnostics(Diagnostic):
     def _aggregate_resolution(self, infile, resolution, remove=True):
         """ currenty only T63, T85 and custom"""
         cdo = Cdo()
-        oname = self._work_dir + os.sep + "temp" + os.sep + \
-            tempfile.NamedTemporaryFile().name.split('/')[-1]
+
+        odir = self._work_dir + os.sep + "temp" + os.sep
+        if not os.path.exists(odir):
+            os.makedirs(odir)
+        oname = odir + tempfile.NamedTemporaryFile().name.split('/')[-1]
+
         if resolution == "T21":
             gridtype = "t21grid"
         elif resolution == "T63":
@@ -1961,7 +1976,10 @@ class BasicDiagnostics(Diagnostic):
         else:
             assert False, "This resolution cannot be handled yet."
 
-        cdo.remapcon(gridtype, input=infile, output=oname,
+        # TODO decide on best interpolation scheme....
+        # con produces least errors if resolution fits,
+        # bil produces the least irritating patterns if resolution doesn't fit
+        cdo.remapbil(gridtype, input=infile, output=oname,
                      options='-f nc4 -b F32')
 
         if remove:
@@ -1984,6 +2002,8 @@ class BasicDiagnostics(Diagnostic):
 
             if '_stat_m_data' in self.__dict__.keys() and \
                     '_stat_r_data' in self.__dict__.keys():
+                    # and \
+                    # self.cfg.regionalization:
 
                 rootname = self._plot_dir + os.sep + \
                     self._vartype.replace(" ", "_") + '_' + \
@@ -2009,7 +2029,6 @@ class BasicDiagnostics(Diagnostic):
                 def _file_to_arrays(csvfile):
                     a = {}
                     with open(csvfile) as csvfile:
-                        # csvfile=csv.reader(csvfile)
                         for row in csvfile:
                             rowL = row.strip().split(',')
                             if rowL[-1] in a.keys():
@@ -2068,7 +2087,7 @@ class BasicDiagnostics(Diagnostic):
                             ax.plot(self._ts,
                                     M_list[li][0][R_order[im]][::, 0],
                                     linestyle='-', color=colors[li],
-                                    label=M_list_d[li].split("_")[-2],
+                                    label=M_list_d[li].split("_")[-4],
                                     linewidth=2.0)
                         ax.plot(self._ts,
                                 R_list[0][R_order[im]], linestyle='-',
@@ -2096,6 +2115,14 @@ class BasicDiagnostics(Diagnostic):
                         ax.grid()
                         handles, labels = ax.get_legend_handles_labels()
 
+                        files = [MFN[1] for MFN
+                                 in self.E.get_clim_model_filenames(self.var).
+                                 items()]
+                        infiles = [any([(xs in ys) for xs in labels])
+                                   for ys in files]
+                        infiles = [files[i] for i in range(len(infiles))
+                                   if infiles[i]]
+
                     f_name = rootname + '_regionalized_smean_ts.' + \
                         self.output_type
                     f.savefig(f_name)
@@ -2103,13 +2130,14 @@ class BasicDiagnostics(Diagnostic):
 
                     ESMValMD("both",
                              f_name,
-                             self._basetags + ['TimeS', 'MultiMod',
-                                               'reg', 'basic'] +
+                             self._basetags + ['DM_reg', 'PT_times',
+                                               'ST_mean'] +
                              labels,
                              str('Time series of spatial mean for different ' +
                                  'regions. The multiple models are: ' +
                                  ", ".join(labels) + '.'),
-                             '#ID' + 'regov' + self.var)
+                             '#ID' + 'regov' + self.var,
+                             ",".join(infiles))
 
     def _month_i2str(self, number):
         m = [

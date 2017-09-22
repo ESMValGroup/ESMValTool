@@ -44,6 +44,7 @@ This namelist is part of the ESMValTool
     <force_calc type="boolean">              False         </force_calc>
     <force_gradecalc type="boolean">         False         </force_gradecalc>
     <force_taylorcalc type="boolean">        False         </force_taylorcalc>
+    <tags>                     D_quin13cam, P_cmug         </tags>
 </GLOBAL>
 
 <MODELS>
@@ -64,6 +65,7 @@ This namelist is part of the ESMValTool
         <variable>            sconcbc                           </variable>
         <field_type>          T2Ms                              </field_type>
         <diag_script_cfg_dir> ./nml/cfg_aerosol/CMIP5/          </diag_script_cfg_dir>
+	<tags>                R_aerosol, T_aerosol              </tags>
 
         <model>  CMIP5_ETHZ  ACCESS1-0           aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
         <model>  CMIP5_ETHZ  ACCESS1-3           aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
@@ -96,6 +98,7 @@ This namelist is part of the ESMValTool
         <variable>            sconcoa                            </variable>
         <field_type>          T2Ms                               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_aerosol/CMIP5/           </diag_script_cfg_dir>
+	<tags>                R_aerosol, T_aerosol               </tags>
 
 <!--         <model>  CMIP5_ETHZ  ACCESS1-0           aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model> -->
 <!--         <model>  CMIP5_ETHZ  ACCESS1-3           aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model> -->
@@ -128,6 +131,7 @@ This namelist is part of the ESMValTool
         <variable>            sconcso4                           </variable>
         <field_type>          T2Ms                               </field_type>
         <diag_script_cfg_dir> ./nml/cfg_aerosol/CMIP5/           </diag_script_cfg_dir>
+	<tags>                R_aerosol, T_aerosol               </tags>
 
         <model>  CMIP5_ETHZ  ACCESS1-0           aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
         <model>  CMIP5_ETHZ  ACCESS1-3           aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
@@ -163,6 +167,7 @@ This namelist is part of the ESMValTool
         <variable>            od550aer                        </variable>
         <field_type>          T2Ms                            </field_type>
         <diag_script_cfg_dir> ./nml/cfg_aerosol/CMIP5/        </diag_script_cfg_dir>
+	<tags>                R_aerosol, T_aerosol            </tags>
 
         <model>  CMIP5_ETHZ  ACCESS1-0           aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
         <model>  CMIP5_ETHZ  ACCESS1-3           aero  historical   r1i1p1  1980 2015  @{MODELPATH}/ETHZ_CMIP5/ </model>
@@ -197,6 +202,7 @@ This namelist is part of the ESMValTool
 	<variable>            od550aer                        </variable>
 	<field_type>          T2Ms                            </field_type>
 	<diag_script_cfg_dir> ./nml/cfg_aerosol/CMIP5/        </diag_script_cfg_dir>
+	<tags>                R_aerosol, T_aerosol            </tags>
 
         <model> CMIP5_ETHZ CSIRO-Mk3-6-0  aero historical r1i1p1 1850 2015 @{MODELPATH}/ETHZ_CMIP5/ </model>
         <model> CMIP5_ETHZ GFDL-ESM2G     aero historical r1i1p1 1861 2015 @{MODELPATH}/ETHZ_CMIP5/ </model>
@@ -234,6 +240,7 @@ This namelist is part of the ESMValTool
 	<variable>            od550aer                        </variable>
 	<field_type>          T2Ms                            </field_type>
 	<diag_script_cfg_dir> ./nml/cfg_aerosol/CMIP5/        </diag_script_cfg_dir>
+	<tags>                R_aerosol, T_aerosol            </tags>
 
         <model>  CMIP5_ETHZ  ACCESS1-0           aero  historical   r1i1p1  2003 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
         <model>  CMIP5_ETHZ  ACCESS1-3           aero  historical   r1i1p1  2003 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>

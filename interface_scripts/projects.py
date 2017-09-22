@@ -615,6 +615,7 @@ class ana4mips(Project):
             This function looks for the input file to use in the
             reformat routines
         """
+
         # msd = model_section_dictionary
         msd = self.get_model_sections(model)
         msd = self.rewrite_mip_exp(msd, mip, exp)
@@ -3251,6 +3252,33 @@ class ESGF:
                   "hold ESGF coupling report, does not exist"
             raise RuntimeError(msg)
 
+    def _resolve_variable_definitions_(self,d):
+        decode = {}
+        decode['Amon'] = {'time_freq':'mon', 'realm':'atmos'}
+        decode['Lmon'] = {'time_freq':'mon', 'realm':'land'}
+        decode['Omon'] = {'time_freq':'mon', 'realm':'ocean'}
+
+        if 'mip' in d.keys():
+            if d['mip'] == 'MIP_VAR_DEF':
+                if isinstance(self.variable,dict):
+                    if 'mip' in self.variable.keys():
+                        k = self.variable['mip']
+                        d['mip'] = k
+                        if k in decode.keys():
+                            d['time_freq'] = decode[k]['time_freq']
+                            d['realm'] = decode[k]['realm']
+                        else:
+                            msg = "Unkown mip :" + str(k)
+                            raise RuntimeError(msg)
+
+        if 'experiment' in d.keys():
+            if d['experiment'] == 'EXP_VAR_DEF':
+                if isinstance(self.variable,dict):
+                    if 'exp' in self.variable.keys():
+                        d['experiment'] = self.variable['exp']
+
+        return d
+
     def get_cf_indir(self,
                      project_info,
                      model,
@@ -3299,6 +3327,9 @@ class ESGF:
 
         # Add variable to msd
         msd['variable'] = variable
+
+        # Resolve "???_VAR_DEF" entries with variable attributes
+        msd = self._resolve_variable_definitions_(msd)
 
         # Explainer: all model entries contain a section called 'project'
         #            which identifies the project class required. This
@@ -3573,7 +3604,7 @@ class ESGF:
 
                         # Extract numeric digits from direct
                         # Shouldn't need 'try' block here
-                        version_num = int(filter(str.isdigit, candidate))
+                        version_num = int(filter(str.isdigit, str(candidate)))
 
                         # Compare datetime object to date
                         if version_num > highest_version:
@@ -3623,6 +3654,7 @@ class ESGF_CMIP5(ESGF, CMIP5):
                                  'mip',
                                  'ensemble']
 
+        self.variable = None
         # Define the 'basename'-variable explicitly
         # All project classes do this, but not sure if really necessary
         self.basename = self.__class__.__name__
@@ -3640,10 +3672,12 @@ class ESGF_CMIP5(ESGF, CMIP5):
         :param model: One of the <model>-tags in the XML namelist file
         :param field: Not used but included for calling compatibility
         :param variable: The variable
-        :param mip: Not used but included for calling compatibility
-        :param exp: Not used but included for calling compatibility
+        :param mip: mip variable attribute
+        :param exp: exp variable attribute
         :returns: Two strings (input directory and input file)
         """
+
+        self.variable = {'name': variable, 'mip': mip, 'exp': exp}
 
         # Call to get_project_variable_name() in 'Project' class
         # via ESGF baseclass (could equally go via CMIP5 baseclass)
@@ -3661,6 +3695,7 @@ class ESGF_CMIP5(ESGF, CMIP5):
 
         # Get model sections, as python dictionary
         msd = self.get_model_sections(model)
+        msd = self.rewrite_mip_exp(msd, mip, exp)
 
         infile = '_'.join([variable,
                            msd['mip'],
@@ -3679,13 +3714,43 @@ class ESGF_CMIP5(ESGF, CMIP5):
 
     def get_cf_areafile(self, project_info, model):
         """
-        Override of version in CMIP5 parent class, not yet implemented
-        :param project_info: the 'project_info' dictionary
-        :param model: One of the <model>-tags in the XML namelist file
-        :returns: Dummy string 'cf_areafile_not_yet_implemented'
         """
-        return 'cf_areafile_not_yet_implemented'
+        import copy
+        variable = 'areacello'
+        fxmodel = copy.deepcopy(model)
+        mml = fxmodel.split_entries()
+        mml[6] = 'fx'
+        mml[7] = 'ocean'
+        mml[8] = 'fx'
+        mml[9] = 'r0i0p0'
+        fxmodel.__init__(' '.join(mml),fxmodel.attributes,fxmodel.diag_specific)
+        try:
+            indir = ESGF.get_cf_indir(self,
+                                      project_info,
+                                      fxmodel,
+                                      variable,
+                                      self.ESGF_facet_names,
+                                      ESGF_project = 'CMIP5')
 
+            # Get model sections, as python dictionary
+            msd = self.get_model_sections(fxmodel)
+
+            infile = '_'.join([variable,
+                               msd['mip'],
+                               msd['model'], # in CMIP5 class this was 'name'
+                               msd['experiment'],
+                               msd['ensemble']]) + '.nc'
+
+            if (not os.path.isfile(os.path.join(indir, infile))):
+                infile = '_'.join([variable,
+                                   msd['mip'],
+                                   msd['model'], # in CMIP5 class this was 'name'
+                                   msd['experiment'],
+                                   msd['ensemble']]) + '*.nc'
+
+            return os.path.join(indir, infile)
+        except:
+            return 'cf_areafile_not_available'
 
 class ESGF_CMIP5_fx(ESGF_CMIP5):
     """
@@ -3781,7 +3846,6 @@ def write_data_interface(executable, project_info):
     suffix = os.path.splitext(executable)[1][1:]
     currInterface = vars(data_interface)[suffix.title() + '_data_interface'](project_info)
     currInterface.write_data_to_interface()
-
 
 def run_executable(string_to_execute,
                    project_info,

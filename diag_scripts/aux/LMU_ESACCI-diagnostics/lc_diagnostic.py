@@ -1,5 +1,5 @@
 import os
-import subprocess
+import shutil
 import numpy as np
 import matplotlib.pyplot as plt
 from netCDF4 import Dataset
@@ -196,9 +196,19 @@ class LandCoverDiagnostic(BasicDiagnostics):
 
         ESMValMD("both",
                  oname,
-                 self._basetags,
-                 'TODO',  # TODO give caption
-                 '#ID' + 'TODO' + self.var)
+                 self._basetags + ['DM_global', 'PT_geo', self.refname,
+                                   self.modname, 'ST_mean', 'ST_stddev',
+                                   'ST_diff'],
+                 'Difference of ' + self._vartype + ' between ' +
+                 self.refname + ' and ' + self.modname +
+                 ' data for the year ' + year + '. ' +
+                 'Additionally, a per pixel temporal standard deviation with' +
+                 ' the factor of ' + str(self.cfg.std_factor) + ' is ' +
+                 'added/substracted to the model data (' + self.modname +
+                 ') for clarification of regional difference severity.',
+                 '#ID' + 'diff' + year + "/" + str(self.cfg.std_factor) +
+                 "std" + self.var,
+                 ','.join(self._infiles))
 
     def _load_model_data(self):
         """ load model data """
@@ -227,8 +237,9 @@ class LandCoverDiagnostic(BasicDiagnostics):
             if not os.path.exists(newfile):
                 tempfile = self._aggregate_resolution(
                     self._mod_file, grid, remove=False)
-                subprocess.call(["mkdir", newdir])
-                subprocess.call(['cp', tempfile, newfile])
+                if not os.path.exists(newdir):
+                    os.makedirs(newdir)
+                shutil.copy2(tempfile, newfile)
                 os.remove(tempfile)
 
             self._mod_file = newfile
@@ -266,8 +277,9 @@ class LandCoverDiagnostic(BasicDiagnostics):
             if not os.path.exists(newfile):
                 tempfile = self._aggregate_resolution(
                     self._ref_file, grid, remove=False)
-                subprocess.call(["mkdir", newdir])
-                subprocess.call(['cp', tempfile, newfile])
+                if not os.path.exists(newdir):
+                    os.makedirs(newdir)
+                shutil.copy2(tempfile, newfile)
                 os.remove(tempfile)
 
             self._ref_file = newfile

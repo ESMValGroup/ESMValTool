@@ -25,6 +25,7 @@
 ;;            http://ncl.ucar.edu/Applications/mjoclivar.shtml
 ;;
 ;; Modification history
+;;    20170918-A_bock_ls: added tags for reporting
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;;                        of the code
 ;;    20150828-A_wang_sh: written
@@ -52,6 +53,7 @@ load "./plot_scripts/ncl/mjo_level1.ncl"
 load "./plot_scripts/ncl/mjo_level2.ncl"
 load "./diag_scripts/aux/mjo/mjo.ncl"
 
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 ;*********************************************************************
 
@@ -170,6 +172,20 @@ begin
     optPlot@gsnRightString = "U (lines)"
     ;; Local spatial smoothing
     optPlot@smth9 = 0.25
+
+    ;-----------------------------------------------------------------------------
+    ; for meta data
+        climofiles = new(dim_MOD, string)
+        do ii = 0, dim_MOD - 1
+            climofiles(ii) = \
+                interface_get_inpaths(ii) + "/" \
+                + interface_get_infile(variables(0), field_types(0), ii)
+        end do
+        domain = "DM_reg"
+        alltags = array_append_record(tags, (/"PT_other", "ST_spectrum", domain/), 0)
+        contrib_authors = (/"A_wang_sh"/)
+    ;-----------------------------------------------------------------------------
+
 
    ;; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    ;; loop through seasons
@@ -315,11 +331,34 @@ begin
         end if
         gsn_panel(wks, plot, (/n_p, 2/), pan)    ; panel plot
 
+        ; add meta data to plot (for reporting)
+        caption = "Madden Julian Oscillation Climate Variability: " + \
+                  "latitude lag correlation diagram of season " + seasons(s) + \
+                  " of variable " + var0 + " and " + var1
+
+        id = diag_script + "_lat_" + variables(0) + "_" + seasons(s)
+
+        outfile = output_dir + output_filename + "." + output_file_type
+
+        ESMValMD(outfile, alltags, caption, id, (/var0, var1/), models@name, climofiles, diag_script, contrib_authors)
+
+
         pan@txString = "        Corr. between IO Precip & 10S-10N Precip/"\
                      + var1\
                      + " ~C~ ~Z70~                                       "\
                      + "                  IO:75-100E, 10S-5N"
         gsn_panel(wks2, plot2, (/n_p, 2/), pan)    ; panel plot
+
+        ; add meta data to plot (for reporting)
+        caption = "Madden Julian Oscillation Climate Variability: " + \
+                  "longitude lag correlation diagram of season " + seasons(s) + \
+                  " of variable " + var0 + " and " + var1
+
+        id = diag_script + "_lon_" + variables(0) + "_" + seasons(s)
+
+        outfile = output_dir + output_filename2 + "." + output_file_type
+
+        ESMValMD(outfile, alltags, caption, id, (/var0, var1/), models@name, climofiles, diag_script, contrib_authors)
 
         delete(plot)
         delete(pan)

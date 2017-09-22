@@ -19,6 +19,7 @@
 ;; Caveats
 ;;
 ;; Modification history
+;;    20170511-A_gier_be: added metadata to files
 ;;    20151130-A_laue_ax: corrected passing of file type from namelist to
 ;;                        plotting functions; moved call to write_references
 ;;                        to beginning of code
@@ -41,6 +42,8 @@ load "./diag_scripts/lib/ncl/style.ncl"
 load "./diag_scripts/lib/ncl/latlon.ncl"
 load "./diag_scripts/lib/ncl/statistics.ncl"
 load "./diag_scripts/aux/SAMonsoon/SAMonsoon.ncl"
+load "./diag_scripts/lib/ncl/meta_data.ncl"
+load "./diag_scripts/lib/ncl/watermark.ncl"
 
 load "./plot_scripts/ncl/scatterplot.ncl"
 
@@ -83,6 +86,13 @@ begin
     if(ismissing(file_type)) then
         file_type = "ps"
     end if
+
+    ;; Check watermark
+    watermark = getenv("ESMValTool_watermark")
+    if(ismissing(watermark)) then
+        watermark = "False"
+    end if
+    print(watermark)
 
     ;; Check required diag_script_info attributes
     req_atts = (/"region"/)
@@ -232,8 +242,37 @@ begin
     data_arr@res_tiMainString = var0 + "-" + var1 + " - " + \
         diag_script_info@region
     plot = scatterplot_markers(wks, data_arr, var0)
+    plot@outfile = outfile + "." + file_type
     draw(plot)
     frame(wks)
+    
+    ;; Attach Metadata to plot
+    xml_name = getenv("ESMValTool_xml_name")
+    suffix = get_file_suffix(xml_name, 0)
+    base_name = str_sub_str(xml_name, suffix, "")
+    
+    alltags = array_append_record(tags, region@DM_tag, 0)
+    alltags := array_append_record(alltags,\
+           (/"PT_scatter", "ST_mean"/), 0)
+    caption = "Scatterplot for " + variables(0) + " and " + \
+              variables(1) + " over the period " + start_year + \
+              "-" + end_year
+    id = diag_script + "_" + base_name
+    climofiles = new(dimsizes(models@name) * dimsizes(variables), string)
+    do n_var = 0, dimsizes(variables) - 1
+        do imod = 0, dimsizes(models@name) - 1
+            climofiles(n_var * dimsizes(models@name) + imod) = \
+                        interface_get_inpaths(imod) + "/" + \
+                        interface_get_infile(variables(n_var), field_types(n_var), imod)
+        end do
+    end do
+    contrib_authors = (/"A_anav_al", "A_wenz_sa", "A_righ_ma"/)
+
+    ESMValMD(plot@outfile, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+    
+    delete([/alltags, caption, id, climofiles/])
+
+    
 
     leave_msg(diag_script, "", 4)
 

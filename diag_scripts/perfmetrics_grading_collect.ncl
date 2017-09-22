@@ -31,6 +31,7 @@
 ;; Caveats
 ;;
 ;; Modification history
+;;    20170512-A_rett_ri: tagging
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;;                        of the code
 ;;    20150325-A_laue_ax: modified reference tags used for acknowledgements
@@ -51,6 +52,7 @@ load "./interface_scripts/messaging.ncl"
 load "./diag_scripts/lib/ncl/style.ncl"
 
 load "./plot_scripts/ncl/portrait_plot.ncl"
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 begin
 
@@ -108,7 +110,6 @@ begin
         ;; Loop over files in the list, append data
         do ii = 0,  dimsizes(file_list) - 1
             data_temp = ncdf_read(file_list(ii), "grade")
-
             ;; Change to 3 dimensional
             if (dimsizes(dimsizes(data_temp)).eq.2) then
 
@@ -118,7 +119,6 @@ begin
                 delete(data_temp)
                 data_temp = temp
                 delete(temp)
-
             end if
 
             if (.not.isdefined("data_all")) then
@@ -173,6 +173,11 @@ begin
                     end do
                 end if
             end if
+            do iclim = 0, data_temp@num_climofiles-1
+                num_climo = "climofile_"+iclim
+                data_all@$num_climo$ = data_temp@$num_climo$
+                data_all@num_climofiles = data_temp@num_climofiles
+            end do
             delete(data_temp)
         end do
 
@@ -193,9 +198,9 @@ begin
     delete(data_all@var)
     delete(data_all@title)
     delete(data_all@ncdf_dir)
-    if(isatt(data_all, "reference")) then
-        delete(data_all@reference)
-    end if
+    ;if(isatt(data_all, "reference")) then
+    ;    delete(data_all@reference)
+    ;end if
 
     ;; Sort models in alphabetical order (exclude MMM)
     if (isatt(diag_script_info, "sort")) then
@@ -241,20 +246,44 @@ begin
 
         ;; Define outfile name
         outfile_plot = output_dir + name + "_" + diags
+        ST_tag = (/"ST_mean", "ST_diff"/)
         if (isatt(data_all, "metric")) then
             outfile_plot = outfile_plot + "_" + data_all@metric
+            if (data_all@metric .eq. "RMSD") then
+                ST_tag := (/"ST_mean", "ST_rmsd"/)
+            end if 
         end if
-        outfile_plot = outfile_plot + "_grading"
+        outfile_plot = outfile_plot + "_grading"    
 
         ;; Create workspace
         wks = gsn_open_wks(file_type, outfile_plot)
 
         ;; Call plotting function
         plot = portrait_plot(wks, data_all, "grade")
+        
+        ;; Attach Metadata to plot
+        alltags = array_append_record(tags, (/"DM_glob", "PT_portrait"/), 0)
+        alltags := array_append_record(tags, ST_tag, 0)
+        caption = "Portrait diagramm. Similar to Figure 3 od Gleckler et al. (2008)."
+        id = diag_script + "_example_id"
+        allmodelnames = data_all&models
+        allmodelnames := array_append_record(allmodelnames, data_all&reference, 0)
+        climofiles = new(data_all@num_climofiles, string)
+        do iclim = 0, data_all@num_climofiles-1
+            num_climo = "climofile_"+iclim
+            climofiles(iclim) = data_all@$num_climo$
+        end do
+        contrib_authors = (/"A_righ_ma", "A_eyri_ve", "A_gott_kl", "A_fran_fr"/)
+
+        ESMValMD(outfile_plot+"."+file_type, alltags, caption, id, variables(0), allmodelnames, climofiles, diag_script, contrib_authors)
+
+        delete([/alltags, caption, id, climofiles/])
+
+        
 
         info_output(" gv " + outfile_plot + "." + file_type, verbosity, 1)
 
-    end if
+    end if 
 
     ;; Remove temporary grading list
     system("rm -f " + temp_dir)

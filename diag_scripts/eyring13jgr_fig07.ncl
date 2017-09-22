@@ -37,6 +37,7 @@
 ;# Caveats:                                                                   #
 ;#                                                                            #
 ;# Modification history:                                                      #
+;#    * 20170811-A_bock_ls: added tags for reporting                          #   
 ;#    * 20151208-A-laue_ax: code clean-up, added call to write_references     #
 ;#    * 201510??-A-cion_ir: written                                           #
 ;#                                                                            #
@@ -59,6 +60,8 @@ load "./diag_scripts/lib/ncl/style.ncl"
 load "./diag_scripts/lib/ncl/ensemble.ncl"
 load "./diag_scripts/lib/ncl/misc_function.ncl"
 
+load "./diag_scripts/lib/ncl/meta_data.ncl"
+
 ;************************************************
 
 begin
@@ -70,7 +73,7 @@ begin
     dim_MOD = dimsizes(models@name)
     var0 = variables(0)
     field_type0 = field_types(0)
-    print(diag_script_info)
+    ;print(diag_script_info)
     colors=project_style(diag_script_info,"colors")
     dashes=project_style(diag_script_info, "dashes")
     thicks=tofloat(project_style(diag_script_info, "thicks"))
@@ -154,7 +157,7 @@ begin
         attrib_chem = " "
     end if
 
-    print(list_chem_mod)
+    ;print(list_chem_mod)
 
     if ((isatt(diag_script_info, "list_nochem_mod"))) then
         list_nochem_mod = diag_script_info@list_nochem_mod
@@ -242,6 +245,9 @@ begin
     in = 0
     let = (/"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", \
             "n", "o", "p", "q", "o", "s", "t", "u", "v", "w", "x", "y", "z"/)
+
+    ;; tagging 
+    DM_tag = new(dimsizes(season) , string)     
 
     do ipan = 0, dimsizes(season) - 1  ; panel loop
         month = (/"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", \
@@ -462,7 +468,7 @@ begin
 
         ;***********period average****************************
 
-        print(period1)
+        ;print(period1)
         period1_chem_t = dim_avg_n_Wrap(chem_t(istart:, :, \
             {period1(0):period1(1)}, :), 2)
         period1_nochem_t = dim_avg_n_Wrap(nochem_t(istart:, :, \
@@ -472,7 +478,7 @@ begin
         period2_nochem_t = dim_avg_n_Wrap(nochem_t(istart:, :, \
             {period2(0):period2(1)}, :), 2)
         diff_chem = period2_chem_t - period1_chem_t
-        printVarSummary(diff_chem) 
+        ;printVarSummary(diff_chem) 
         diff_nochem = period2_nochem_t - period1_nochem_t
         diff_chem = (/diff_chem * (conform(diff_chem, lev, 2) / 10)/)
         diff_nochem = (/diff_nochem * (conform(diff_nochem, lev, 2) / 10)/)
@@ -493,6 +499,35 @@ begin
             latstring2 = latrange(ipan,1) + "N"
         else 
             latstring2 = -latrange(ipan, 1) + "S"
+        end if
+
+        ;; tagging
+        DM_tag(ipan) = "DM_reg"
+        if (latrange(ipan, 1).eq.90) then
+            if(latrange(ipan, 0).eq.-90) then
+                DM_tag(ipan) = "DM_global"
+            else if (latrange(ipan, 0).eq.60) then
+                DM_tag(ipan) = "DM_polar"
+            else if (latrange(ipan, 0).eq.0) then
+                DM_tag(ipan) = "DM_nh"
+            end if
+            end if
+            end if
+        else if (latrange(ipan, 1).eq.30) then
+            if (latrange(ipan, 0).eq.30.) then
+                DM_tag(ipan) = "DM_trop"
+            end if
+        else if (latrange(ipan, 1).eq.0) then
+            if (latrange(ipan, 0).eq.-90) then
+                DM_tag(ipan) = "DM_sh"
+            end if
+        else if (latrange(ipan, 1).eq.-60) then
+            if (latrange(ipan, 0).eq.-90.) then
+                DM_tag(ipan) = "DM_polar"
+            end if
+        end if
+        end if
+        end if
         end if
 
         res                   = True  ; plot mods desired
@@ -668,4 +703,34 @@ begin
     end if
 
     frame(wks)
+
+    ;; Attach Metadata to plot
+    xml_name = getenv("ESMValTool_xml_name")
+    suffix = get_file_suffix(xml_name, 0)
+    base_name = str_sub_str(xml_name, suffix, "")
+
+    alltags = array_append_record(tags, DM_tag, 0)
+    alltags := array_append_record(alltags, (/"ST_diff", "PT_vert"/), 0)
+
+    caption = "Differences in vertically resolved " + variables(0) \
+               + " between the " + period1(0) + "s and " + period2(0) + \
+               "s for the RCP simulations " + 
+               "over given domains and seasons" + \
+               ", similar to Eyring et al., JGR, 2013, fig. 7."
+
+    id = diag_script + "_" + variables(0)
+
+    climofiles = new(dim_MOD, string)
+    do imod = 0, dimsizes(models@name) - 1
+            climofiles(imod) = interface_get_inpaths(imod) + "/" + \
+                 interface_get_infile(variables(0), field_types(0), imod)
+    end do
+
+    contrib_authors = "A_cion_ir" 
+
+    ESMValMD(output_file_path+"."+file_type, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+
+    delete([/alltags, caption, id, climofiles, DM_tag, imod/])
+
+    
 end

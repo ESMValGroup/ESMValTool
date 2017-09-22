@@ -29,8 +29,9 @@ This namelist is part of the ESMValTool
     <max_data_blocksize type="integer">          500      </max_data_blocksize>
     <verbosity  type="integer">                    10      </verbosity>
     <exit_on_warning  type="boolean">           False      </exit_on_warning>
-    <read_from_vault type="boolean">        False        </read_from_vault>
+    <read_from_vault type="boolean">        False         </read_from_vault>
     <output_file_type>                            ps      </output_file_type>
+    <tags>                                 P_embrace      </tags>
 </GLOBAL>
 
 
@@ -51,6 +52,8 @@ This namelist is part of the ESMValTool
         <variable ref_model="trmm">        pr-mmh            </variable>
         <field_type>                        T2Is              </field_type>
         <diag_script_cfg_dir>            ./nml/cfg_DiurnalCycle/  </diag_script_cfg_dir>
+        <tags>                            R_atmos, T_phys    </tags>
+     
         <diag_script cfg="cfg_DiurnalCycle_Sahel_DJF.ncl">  DiurnalCycle_box.ncl </diag_script>
         <diag_script cfg="cfg_DiurnalCycle_WestAf_DJF.ncl">  DiurnalCycle_box.ncl </diag_script>
         <diag_script cfg="cfg_DiurnalCycle_GoG_DJF.ncl">  DiurnalCycle_box.ncl </diag_script>

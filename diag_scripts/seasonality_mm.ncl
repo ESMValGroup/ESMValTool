@@ -30,6 +30,7 @@
 ;;    none
 ;;
 ;; Modification history
+;;    20170622-A_laue_ax: added tags for reporting
 ;;    20170320-A_laue_ax: written.
 ;;
 ;;#############################################################################
@@ -43,6 +44,8 @@ load "./diag_scripts/lib/ncl/style.ncl"
 load "./diag_scripts/aux/perfmetrics/aux_perfmetrics.ncl"
 
 load "./plot_scripts/ncl/contour_maps.ncl"
+
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 begin
 
@@ -70,6 +73,17 @@ begin
 
     season = (/"DJF", "JJA"/)
     numseas = 2
+
+    climofiles = new(dim_MOD, string)
+
+    do ii = 0, dim_MOD - 1
+        climofiles(ii) = \
+            interface_get_inpaths(ii) + "/" \
+            + interface_get_infile(variables(0), field_types(0), ii)
+    end do
+
+    alltags = array_append_record(tags, (/"PT_geo", "ST_clim", "ST_mean", "ST_diff", "DM_glob"/), 0)
+    allmodelnames = array_append_record(models@name, (/"multi-model-mean"/), 0)
 end
 
 begin
@@ -501,6 +515,19 @@ begin
         plots(3) = contour_map(wks, bias_abs_seas, var0)
 
         gsn_panel(wks, plots, (/2, 2/), pres)
+
+        ; add meta data to plot (for reporting)
+
+        caption = "Multi model values for variable " + variables(0) \
+                  + ", from top left to bottom right: mean, mean of absolute seasonality, " \
+                  + "mean bias in seasonality, mean bias in absolute seasonality. Reference dataset: " \
+                  + models@name(ref_ind) + ". Similar to IPCC AR5, fig. 9.3."
+
+        id = diag_script + "_" + variables(0)
+
+        contrib_authors = "A_laue_ax"
+
+        ESMValMD(wks@fullname, alltags, caption, id, variables(0), allmodelnames, climofiles, diag_script, contrib_authors)
 
         info_output(" Wrote " + wks@fullname, verbosity, 1)
     end if

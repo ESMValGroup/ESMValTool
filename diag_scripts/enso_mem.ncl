@@ -22,6 +22,7 @@
 ;;    none
 ;;
 ;; Modification history
+;;    20170622-A_laue_ax: added tags for reporting
 ;;    20170315-A_laue_ax: written.
 ;;
 ;;#############################################################################
@@ -44,6 +45,8 @@ load "./diag_scripts/aux/perfmetrics/aux_perfmetrics.ncl"
 
 load "./diag_scripts/aux/enso_mem/evlmem.ncl"
 load "./diag_scripts/aux/enso_mem/memcof.ncl"
+
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 begin
     ; ###########################################################
@@ -85,6 +88,16 @@ begin
     do imod = 0, dim_MOD - 1
         data = read_data(imod, var0, field_type0)
     end do
+
+    climofiles = new(dim_MOD, string)
+
+    do ii = 0, dim_MOD - 1
+        climofiles(ii) = \
+            interface_get_inpaths(ii) + "/" \
+            + interface_get_infile(variables(0), field_types(0), ii)
+    end do
+
+    alltags = array_append_record(tags, (/"PT_pro", "ST_spectrum", "DM_reg"/), 0)
 end
 
 begin
@@ -321,6 +334,15 @@ begin
 
     delete(mem_power)
     delete(mem_period)
+
+    ; add meta data to plot (for reporting)
+
+    caption = "Maximum entropy power spectra of variable " + variables(0) + " averaged over the NINO3 region" \
+              + " (5N to 5S, 150W to 90W), similar to IPCC AR5, fig. 9.35."
+    id = diag_script + "_" + variables(0)
+    contrib_authors = "A_laue_ax"
+
+    ESMValMD(outfile+"."+file_type, alltags, caption, id, variables(0), models@name, climofiles, diag_script, contrib_authors)
 
 end
 

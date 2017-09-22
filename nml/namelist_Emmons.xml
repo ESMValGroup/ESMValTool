@@ -33,6 +33,7 @@ This namelist is part of the ESMValTool
     <verbosity  type="integer">               1         </verbosity>
     <exit_on_warning  type="boolean">     False         </exit_on_warning>
     <output_file_type>                       ps         </output_file_type>
+    <tags>                     D_emmons00jgr, P_esmval  </tags>
 </GLOBAL>
 
 <MODELS>
@@ -46,6 +47,7 @@ This namelist is part of the ESMValTool
         <variable>            tro3                            </variable>
         <field_type>          T3M                             </field_type>
         <diag_script_cfg_dir> ./nml/cfg_Emmons/               </diag_script_cfg_dir>
+        <tags>                R_atmosChem, T_ghg              </tags>
 
         <diag_script cfg="cfg_Emmons.ncl"> Emmons.ncl  </diag_script>
     </diag>

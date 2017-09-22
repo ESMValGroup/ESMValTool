@@ -15,6 +15,7 @@
 ;; Caveats
 ;;
 ;; Modification history
+;;    20170821-A_bock_ls: added tags for reporting
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;;                        of the code
 ;;    20150702-A_eval_ma: written.
@@ -34,6 +35,9 @@ load "./diag_scripts/lib/ncl/set_operators.ncl"
 exact_panel_position_file = "./diag_scripts/aux/SAMonsoon/exact_panel_positions_wind.ncl"
 
 load "./plot_scripts/ncl/monsoon_panels.ncl"
+
+load "./diag_scripts/lib/ncl/meta_data.ncl"
+
 ;*********************************************************************
 
 begin
@@ -409,6 +413,42 @@ begin
                                 + "~C~~F22~Diag ref:~F21~ DOI: 10.1002/qj.49712555412"
     xy_plot_wrapper(storage_vault, di, plot_settings, "goswami", debuginfo)
 
+    ;; Attach Metadata to plot
+    xml_name = getenv("ESMValTool_xml_name")
+    suffix = get_file_suffix(xml_name, 0)
+    base_name = str_sub_str(xml_name, suffix, "")
+
+    alltags = array_append_record(tags, (/"DM_reg", "ST_clim", "PT_seas"/), 0)
+
+    caption = "Monthly climatology for the Goswami Monsoon Index (GMI)"\
+              + " across specified years. GMI is the vertical northward wind shear for"\
+              + " the area, lat: " + gos_minlat + "-" + gos_maxlat\
+              + ", lon: " + gos_minlon + "-" + gos_maxlon\
+              + ". The gray area indicates standard deviation from model mean to"\
+              + " indicate the spread between models (obs/reanalysis are excluded)."
+
+    id = diag_script + "_goswami_" + variables(0)
+
+    climofiles = new(dimsizes(models@name), string)
+    do imod = 0, dimsizes(models@name) - 1
+            climofiles(imod) = interface_get_inpaths(imod) + "/" + \
+                 interface_get_infile(variables(0), field_types(0), imod)
+    end do
+
+    contrib_authors = (/"A_eval_ma", "A_levi_ri", "A_mart_gi"/)
+
+    diag_script_base = basename(diag_script)
+    output_dir = get_output_dir(plot_dir, diag_script_base)
+    aux_filename_info = plot_settings@aux_filename_info
+    output_filename = interface_get_figure_filename(diag_script_base,\
+                                                    var0 + var1,\
+                                                    field_type0 + field_type1,\
+                                                    aux_filename_info, -1)
+    output_file_path = output_dir + output_filename + "." + output_file_type
+
+    ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+
+
 ; --------------------------
 
     plot_settings@title_string = "Goswami Monsoon Wind at v200"
@@ -421,12 +461,41 @@ begin
                                 + "~C~~F22~GMI ref:~F21~ DOI: 10.1002/qj.49712555412"
     xy_plot_wrapper(storage_vault, di, plot_settings, "goswami-200", debuginfo)
 
+    ;; Attach Metadata to plot
+    caption = "Monthly climatology for the northward wind speed. This"\
+              + " is one of the components of the Goswami Monsoon Index (GMI)."\
+              + " The gray area indicates standard deviation from model mean to"\
+              + " indicate the spread between models (obs/reanalysis are excluded)"
+
+    id = diag_script + "_goswami-200_" + variables(0)
+
+    aux_filename_info = plot_settings@aux_filename_info
+    output_filename = interface_get_figure_filename(diag_script_base,\
+                                                    var0 + var1,\
+                                                    field_type0 + field_type1,\
+                                                    aux_filename_info, -1)
+    output_file_path = output_dir + output_filename + "." + output_file_type
+
+    ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+
 ; --------------------------
 
     plot_settings@title_string = "Goswami Monsoon Wind at v850"
     plot_settings@aux_filename_info = "goswami-seasonal-cycle-v850"
     plot_settings@yaxis_string = "v850"
     xy_plot_wrapper(storage_vault, di, plot_settings, "goswami-850", debuginfo)
+
+    ;; Attach Metadata to plot
+    id = diag_script + "_goswami-850_" + variables(0)
+
+    aux_filename_info = plot_settings@aux_filename_info
+    output_filename = interface_get_figure_filename(diag_script_base,\
+                                                    var0 + var1,\
+                                                    field_type0 + field_type1,\
+                                                    aux_filename_info, -1)
+    output_file_path = output_dir + output_filename + "." + output_file_type
+
+    ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
 
 ; --------------------------
 
@@ -443,6 +512,25 @@ begin
                                 + "~C~~F22~Diag ref:~F21~ DOI: 10.1002/qj.49711850705"
     xy_plot_wrapper(storage_vault, di, plot_settings, "webster-yang", debuginfo)
 
+    ;; Attach Metadata to plot
+    caption = "Monthly climatology for the Webster Yang Monsoon Index"\
+              + " (WYI) across specified years. WYI is the eastward vertical wind"\
+              + " shear average for the area, lat: " + wy_minlat + "-" + wy_maxlat\
+              + ", lon: " + wy_minlon + "-" + wy_maxlon\
+              + ". The gray area indicates standard deviation from model mean to"\
+              + " indicate the spread between models (obs/reanalysis are excluded)."
+
+    id = diag_script + "_webster-yang_" + variables(0)
+
+    aux_filename_info = plot_settings@aux_filename_info
+    output_filename = interface_get_figure_filename(diag_script_base,\
+                                                    var0 + var1,\
+                                                    field_type0 + field_type1,\
+                                                    aux_filename_info, -1)
+    output_file_path = output_dir + output_filename + "." + output_file_type
+
+    ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+
 ; --------------------------
 
     plot_settings@title_string = "Webster Yang Monsoon Wind at u200"
@@ -456,12 +544,42 @@ begin
                                 + "~C~~F22~WYI ref:~F21~ DOI: 10.1002/qj.49711850705"
     xy_plot_wrapper(storage_vault, di, plot_settings, "webster-yang-200", debuginfo)
 
+    ;; Attach Metadata to plot
+    caption = "Monthly climatology for the eastward wind speed"\
+              + " average. This is one of the components of the Webster Yang "\
+              + " Monsoon Index (WYI)."\
+              + " The gray area indicates standard deviation from model mean to"\
+              + " indicate the spread between models (obs/reanalysis are excluded)."
+
+    id = diag_script + "_webster-yang-200_" + variables(0)
+
+    aux_filename_info = plot_settings@aux_filename_info
+    output_filename = interface_get_figure_filename(diag_script_base,\
+                                                    var0 + var1,\
+                                                    field_type0 + field_type1,\
+                                                    aux_filename_info, -1)
+    output_file_path = output_dir + output_filename + "." + output_file_type
+
+    ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+
 ; --------------------------
 
     plot_settings@title_string = "Webster Yang Monsoon Wind at u850"
     plot_settings@aux_filename_info = "webster-yang-seasonal-cycle-u850"
     plot_settings@yaxis_string = "u850"
     xy_plot_wrapper(storage_vault, di, plot_settings, "webster-yang-850", debuginfo)
+
+    ;; Attach Metadata to plot
+    id = diag_script + "_webster-yang-850_" + variables(0)
+
+    aux_filename_info = plot_settings@aux_filename_info
+    output_filename = interface_get_figure_filename(diag_script_base,\
+                                                    var0 + var1,\
+                                                    field_type0 + field_type1,\
+                                                    aux_filename_info, -1)
+    output_file_path = output_dir + output_filename + "." + output_file_type
+
+    ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
 
 ; --------------------------
 
@@ -479,6 +597,27 @@ begin
                                 + "~C~~F22~Diag ref:~F21~ DOI: 10.1175/1520-0477(1999)080<0629:COSASM>2.0.CO;2"
     xy_plot_wrapper(storage_vault, di, plot_settings, "wang-fan", debuginfo)
 
+    ;; Attach Metadata to plot
+    caption = "Monthly climatology for the Wang Fan Monsoon Index (WFI)."\
+              + " WYI is the eastward wind speed difference between the areas,"\
+              + " lat: " + wf1_minlat + "-" + wf1_maxlat\
+              + ", lon: " + wf1_minlon + "-" + wf1_maxlon + " and"\
+              + " lat: " + wf2_minlat + "-" + wf2_maxlat\
+              + ", lon: " + wf2_minlon + "-" + wf2_maxlon\
+              + ". The gray area indicates standard deviation from model mean to"\
+              + " indicate the spread between models (obs/reanalysis are excluded)."
+
+    id = diag_script + "_wang_fan_" + variables(0)
+
+    aux_filename_info = plot_settings@aux_filename_info
+    output_filename = interface_get_figure_filename(diag_script_base,\
+                                                    var0 + var1,\
+                                                    field_type0 + field_type1,\
+                                                    aux_filename_info, -1)
+    output_file_path = output_dir + output_filename + "." + output_file_type
+
+    ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+
 ; --------------------------
 
     plot_settings@title_string = "Wang Fan Monsoon Wind at Area 1"
@@ -491,12 +630,43 @@ begin
                                 + "~C~~F22~WFI ref:~F21~ DOI: 10.1175/1520-0477(1999)080<0629:COSASM>2.0.CO;2"
     xy_plot_wrapper(storage_vault, di, plot_settings, "wang-fan-850-1", debuginfo)
 
+    ;; Attach Metadata to plot
+    caption = "Monthly climatology for the eastward wind speed average."\
+              + " This is one of the components of the Wang Fan Monsoon Index (WFI)."\
+              + " The gray area indicates standard deviation from model mean to"\
+              + " indicate the spread between models (obs/reanalysis are excluded)."
+
+    id = diag_script + "_wang-fan-850-1_" + variables(0)
+
+    aux_filename_info = plot_settings@aux_filename_info
+    output_filename = interface_get_figure_filename(diag_script_base,\
+                                                    var0 + var1,\
+                                                    field_type0 + field_type1,\
+                                                    aux_filename_info, -1)
+    output_file_path = output_dir + output_filename + "." + output_file_type
+
+    ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+
 ; --------------------------
 
     plot_settings@title_string = "Wang Fan Monsoon Wind at Area 2"
     plot_settings@aux_filename_info = "wang-fan-seasonal-cycle-area2"
     plot_settings@yaxis_string = "u850~B~area_2~E~"
     xy_plot_wrapper(storage_vault, di, plot_settings, "wang-fan-850-2", debuginfo)
+
+    ;; Attach Metadata to plot
+    id = diag_script + "_wang-fan-850-2_" + variables(0)
+
+    aux_filename_info = plot_settings@aux_filename_info
+    output_filename = interface_get_figure_filename(diag_script_base,\
+                                                    var0 + var1,\
+                                                    field_type0 + field_type1,\
+                                                    aux_filename_info, -1)
+    output_file_path = output_dir + output_filename + "." + output_file_type
+
+    ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+
+    delete([/alltags, caption, id/])
 
     info_output(">>>>>>>> Leaving " + diag_script, verbosity, 4)
 end

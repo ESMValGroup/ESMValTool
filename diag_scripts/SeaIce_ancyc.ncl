@@ -50,6 +50,8 @@ load "./diag_scripts/lib/ncl/set_operators.ncl"
 load "./plot_scripts/ncl/aux_plotting.ncl"
 load "./plot_scripts/ncl/xy_line.ncl"
 
+load "./diag_scripts/lib/ncl/meta_data.ncl"
+
 begin
     verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
     info_output("<<<<<<<< Entering " + diag_script, verbosity, 4)
@@ -85,7 +87,7 @@ begin
     ;; Get environment variables
     file_type = getenv("ESMValTool_output_file_type")
     if(ismissing(file_type)) then
-        file_type = "PS"
+        file_type = "PNG"
     end if
 
     ;; Check field type
@@ -402,6 +404,32 @@ begin
             debuginfo)
     xy_line(wks_area, val_area, val_area&month, val_area_stddev, res_area, \
             debuginfo)
+            
+    ;; Reporting
+    climofiles = interface_get_inpaths(0) + "/" + \
+                     interface_get_infile(var0, field_type0, 0)
+    if (dimsizes(models@name).gt.1) then
+        do imod=1, dimsizes(models@name)-1
+;;TODO: Problem with OBS* classes: for OBS* classes, interface_get_infile 
+;;      already returns path + file! Reason yet unknown.
+            climofiles := array_append_record( climofiles, \
+                    interface_get_inpaths(imod) + "/" + \
+                    interface_get_infile(var0, field_type0, imod), 0 )
+        end do
+    end if
+    plot_fname = wks_ext@fullname
+    alltags = array_append_record(tags, (/"DM_polar", "PT_seas", "ST_mean", "ST_stddev"/), 0)
+    caption = "Annual cycle of sea ice extent. TODO: Problem with OBS* classes: for OBS* classes, interface_get_infile already returns path + file! Reason yet unknown."
+    id = "#idSeaIceAncycExtent"
+    contrib_authors = (/"A_gott_kl", "A_hueb_mi", "A_eval_ma", "A_brae_me", "A_senf_da"/)
+    ESMValMD(plot_fname, alltags, caption, id, var0, models@name, climofiles, diag_script, contrib_authors)
+    delete([/plot_fname, alltags, caption, id/])
+    plot_fname = wks_area@fullname
+    alltags = array_append_record(tags, (/"DM_polar", "PT_seas", "ST_mean", "ST_stddev"/), 0)
+    caption = "Annual cycle of sea ice area. TODO: Problem with OBS* classes: for OBS* classes, interface_get_infile already returns path + file! Reason yet unknown."
+    id = "#idSeaIceAncycArea"
+    ESMValMD(plot_fname, alltags, caption, id, var0, models@name, climofiles, diag_script, contrib_authors)
+    delete([/plot_fname, alltags, caption, id/])
 
     info_output(" gv " + wks_ext@fullname + " &", verbosity, 1)
     info_output(" gv " + wks_area@fullname + " &", verbosity, 1)

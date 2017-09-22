@@ -29,7 +29,7 @@ begin
     dimension = 1  ; Level
 
     ; See ./interface_scripts/data_handling.ncl
-    dum = extract_data(index, tmp, dimension, 20000., 20000.)
+    dum = extract_data_extended(index,"ta", tmp, dimension, 20000., 20000.)
     dum@long_name = variable_info@long_name
 
     data_new = True
