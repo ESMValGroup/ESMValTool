@@ -62,7 +62,7 @@ __version__ = "2.0.0"
 def configure_logging(cfg_file=None, output=None, console_log_level=None):
     """Set up logging"""
     if cfg_file is None:
-        cfg_file = os.path.join(os.path.dirname(__file__), 'logging.yml')
+        cfg_file = os.path.join(os.path.dirname(__file__), 'config-logging.yml')
 
     if output is None:
         output = os.getcwd()
@@ -131,7 +131,6 @@ def read_config_file(config_file):
         'work_dir': './work/',
         'plot_dir': './plots/',
         'save_intermediary_cubes': False,
-        'cmip5_dirtype': None,
         'run_diagnostic': True
     }
 
@@ -139,6 +138,7 @@ def read_config_file(config_file):
         if not key in glob:
             logger.warning("No %s specification in config file, defaulting to %s" % (key, defaults[key]))
             glob[key] = defaults[key]
+
 
     return(glob)
 
