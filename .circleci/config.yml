@@ -1,0 +1,11 @@
+version: 2
+jobs:
+  build:
+    working_directory: /esmvaltool
+    docker:
+      - image: nielsdrost/esmvaltool-deps:20170520
+    steps:
+      - checkout
+      - run: ./run-tests
+      - store_test_results:
+          path: test-reports/

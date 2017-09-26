@@ -21,8 +21,8 @@ class Test(unittest.TestCase):
         pass
 
     def test_model_get_line(self):
-        from esmvaltool.interface_scripts.model import Model
-        M = Model('modelname', 'diagname')
+        from interface_scripts.model import Model
+        M = Model('modelname', 'diagname', False)
         self.assertEqual(M.get_model_line(), 'modelname')
 
 if __name__ == "__main__":
