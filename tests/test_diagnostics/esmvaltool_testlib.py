@@ -3,11 +3,53 @@ This modules provides generic functions needed for ESMValTool
 performance metrics testing
 """
 
+import glob
 import os
 import shutil
-from xml.dom import minidom
 
+import yaml
 from easytest import EasyTest
+
+import esmvaltool
+
+
+def _load_config(filename=None):
+    """ Load test configuration
+    """
+    if filename is None:
+        config_file = 'config-test.yml'
+        if os.path.isfile(config_file):
+            filename = config_file
+        else:
+            filename = os.path.join(os.path.dirname(__file__), config_file)
+
+    with open(filename, 'r') as file:
+        cfg = yaml.safe_load(file)
+
+    return cfg
+
+
+_CFG = _load_config()
+
+
+def _create_config_user_file(output_directory):
+    """ Write a config-user.yml file for running ESMValTool
+        such that it writes all output to `output_directory`.
+    """
+
+    cfg = _CFG['user']
+
+    # update/insert output directory definitions
+    cfg['run_dir'] = output_directory
+    for task in ('preproc', 'work', 'plot'):
+        cfg[task + '_dir'] = os.path.join(output_directory, task)
+
+    # write to file
+    filename = os.path.join(output_directory, 'config-user.yml')
+    with open(filename, 'w') as file:
+        yaml.safe_dump(cfg, file)
+
+    return filename
 
 
 class ESMValToolTest(EasyTest):
@@ -15,46 +57,47 @@ class ESMValToolTest(EasyTest):
     main class for all ESMValTool tests
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, namelist, output_directory, **kwargs):
         """
+        namelist: str
+            The filename of the namelist that should be tested.
         output_directory : str
-            a default output directory is set as ESMVALROOT/work/plots
-            but user can specify custom output directory
+            The name of a temporary directory where results can be stored.
         """
-        self.nml = kwargs.pop('nml', None)
-        assert self.nml is not None, 'Namelist needs to be provided!'
+        script_root = esmvaltool.get_script_root()
 
-        exe = 'python main.py'  # the command to call ESMValTool
-        assert exe is not None, 'Executable needs to be given!'
+        # the command to call ESMValTool
+        exe = os.path.join(script_root, 'main.py')
 
-        self.esmval_dir = kwargs.pop('esmval_dir', None)
-        assert self.esmval_dir is not None, 'esmval_dir directory needs to be given'
+        # required ESMValTool configuration files
+        config = _create_config_user_file(output_directory)
+        if not os.path.isfile(namelist):
+            namelist = os.path.join(script_root, 'nml', namelist)
 
-        xmldoc = minidom.parse(os.path.join(self.esmval_dir, self.nml))
-        nml_plot_dir = xmldoc.getElementsByTagName('plot_dir')[0].childNodes[0].nodeValue.strip()
+        # the location of the reference output
+        namelist_base = os.path.splitext(os.path.basename(namelist))[0]
+        refs = glob.glob(
+            os.path.join(_CFG['reference_output'], '*' + namelist_base + '*'))
+        refdirectory = None if not refs else refs[0]
+        if len(refs) > 1:
+            print("Warning: found multiple possible reference datasets:\n{}"
+                  "for namelist {}\n"
+                  "Using only {}".format("\n".join(refs), namelist,
+                                         refdirectory))
 
-        # output directory as defined in nml
-        default_output_dir = os.path.join(self.esmval_dir, nml_plot_dir)
-        output_directory = kwargs.pop('output_directory', default_output_dir)
-        self.refdir_root = self.esmval_dir + 'testdata' + os.sep
-        super(ESMValToolTest, self).__init__(exe,
-                                             args=[self.nml],
-                                             output_directory=output_directory,
-                                             checksum_exclude=['ps', 'epsi', 'eps'],
-                                             **kwargs)
+        super(ESMValToolTest, self).__init__(
+            exe=exe,
+            args=['-n', namelist, '-c', config],
+            output_directory=output_directory,
+            refdirectory=refdirectory,
+            checksum_exclude=['ps', 'epsi', 'eps'],
+            **kwargs)
 
     def generate_reference_data(self):
         """
         generate reference data by executing the namelist once and then copy
         results to the output directory
         """
-        self._execute(wdir=self.esmval_dir)
         if not os.path.exists(self.refdirectory):
-            self._copy_output()
-
-    def run_nml(self):
-        self._execute(wdir=self.esmval_dir)
-
-    def _copy_output(self):
-        """ copy entire result output to reference data directory """
-        shutil.copytree(self.output_directory, self.refdirectory)
+            self._execute()
+            shutil.copytree(self.output_directory, self.refdirectory)

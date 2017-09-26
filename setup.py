@@ -6,8 +6,6 @@
 # - ncl
 # - iris
 # - basemap
-# - cmip5-cmor-tables
-# - cmip6-cmor-tables
 
 import sys
 import unittest
@@ -32,7 +30,7 @@ class RunTests(Command):
     def run(self):
         """Run tests and generate a coverage report."""
         import coverage
-        
+
         cov = coverage.Coverage(source=PACKAGES)
         cov.set_option("run:branch", True)
         cov.set_option("html:title", 'Coverage report for ESMValTool')
@@ -48,6 +46,7 @@ class RunTests(Command):
         cov.save()
         cov.report()
         cov.html_report()
+        cov.xml_report()
 
         sys.exit(0 if results.wasSuccessful() else 1)
 

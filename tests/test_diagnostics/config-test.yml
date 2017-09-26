@@ -1,0 +1,23 @@
+###############################################################################
+# Diagnostic test configuration file for the ESMValTool
+###############################################################################
+
+# Directory containing reference output
+reference_output: ~/esmvaltool_reference_output
+
+# Template for the user configuration file
+user:
+  write_plots: True
+  write_netcdf: True
+  log_level: warning
+  exit_on_warning: False
+  output_file_type: pdf
+  save_intermediary_cubes: True
+    
+  rootpath:
+    CMIP5: ~/esmvaltool_input
+    OBS: ~/esmvaltool_input
+    default: ~/esmvaltool_input
+
+  drs:
+    CMIP5: default
