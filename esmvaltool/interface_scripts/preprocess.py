@@ -20,9 +20,8 @@ from regrid import vinterp as vip
 import iris
 import iris.exceptions
 import preprocessing_tools as pt
-import get_file_from_drs as gf
 import numpy as np
-import data_finder as df
+from data_finder import get_input_filelist, get_output_file
 import datetime
 
 logger = logging.getLogger(__name__)
@@ -95,7 +94,7 @@ def get_cf_fullpath(project_info, model, variable):
             This function specifies the full output path (directory + file) to
             the outupt file to use in the reformat routines and in climate.ncl
     """
-    fullpath = df.get_output_file(project_info, model, variable)
+    fullpath = get_output_file(project_info, model, variable)
     return fullpath
 
 
@@ -164,29 +163,28 @@ def get_cf_infile(project_info, current_diag, model, current_var_dict):
     # look for files keyed by project name
     proj_name = model['project']
 
-    # specify start_year and end_year
-    y1 = model['start_year']
-    y2 = model['end_year']
-
     # get variables; data files is a dictionary keyed on variable
     data_files = {}
     variables = current_diag.variables
 
     for var in variables:
 
-        full_paths = df.get_input_filelist(project_info, model, var)
-        model_rootpath = get_cf_outpath(project_info, model)
+        full_paths = get_input_filelist(project_info, model, var)
+        standard_path = get_cf_outpath(project_info, model) # Need this call to create subdir in preproc (FIX-ME: get_cf_outpath and get_cf_fullpath shall be merged in a single function get_cf_outfile)
+        standard_name = get_cf_fullpath(project_info, model, var)
+        standard_name = standard_name.replace('.nc', '_GLOB.nc')
 
         if len(full_paths) == 0:
             logger.info("Could not find any data files for %s", model['name'])
+
         if len(full_paths) == 1:
             data_files[var['name']] = full_paths
+
         if len(full_paths) > 1:
+
             # get pp.glob to glob the files into one single file
             logger.info("Found multiple netCDF files for current diagnostic, attempting to glob them; variable: %s", var['name'])
-            standard_name = model_rootpath + '/' + '_'.join([var['name'], model['project'],
-                                                     model['name'],
-                                                     model['ensemble'], str(y1), str(y2)]) + '_GLOB.nc'
+
             # glob only if the GLOB.nc file doesnt exist
             if os.path.exists(standard_name) is False:
                 globs = pt.glob(full_paths, standard_name, var['name'], verbosity)
@@ -410,10 +408,10 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
         logger.info("Running diagnostic ONLY on the first file")
         infiles = infileslist[0]
 
-    outfilename = df.get_output_file(project_info, model, vari).split('/')[-1]
+    outfilename = get_output_file(project_info, model, vari).split('/')[-1]
     logger.info("Reformatted file name: %s", outfilename)
     # get full outpaths - original cmorized files that are preserved all through the process
-    fullpath = df.get_output_file(project_info, model, vari)
+    fullpath = get_output_file(project_info, model, vari)
     logger.info("Reformatted target: %s", fullpath)
 
     # indir is hardcoded to keep things tight; could be an option to namelist

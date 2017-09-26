@@ -34,14 +34,14 @@ class PreprocessItem(yaml.YAMLObject):
             self.__class__.__name__, self.select_level, self.regrid, self.target_grid, self.regrid_scheme, self.mask_fillvalues, self.mask_landocean, self.multimodel_mean)
 ##############################################################################################################################
 
-class Parser():
-    def load_namelist(self, param_file):
 
-        with open(param_file, 'r') as file:
-            n = yaml.load(file)
+def load_namelist(namelist_file):
 
-        # some conditioning, add more in the future?
-        if not isinstance(n, Namelist): raise Exception( "Namelist malformed" )
-        if not isinstance(n.MODELS, list): raise Exception( "MODELS is not a list" )
-        if not isinstance(n.DIAGNOSTICS, dict): raise Exception( "DIAGNOSTICS is not a dictionary" )
-        return n
+    with open(namelist_file, 'r') as file:
+        namelist = yaml.load(file)
+
+    # some conditioning, add more in the future?
+    if not isinstance(namelist, Namelist): raise Exception("Namelist malformed")
+    if not isinstance(namelist.MODELS, list): raise Exception("MODELS is not a list")
+    if not isinstance(namelist.DIAGNOSTICS, dict): raise Exception("DIAGNOSTICS is not a dictionary")
+    return namelist

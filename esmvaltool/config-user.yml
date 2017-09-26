@@ -22,12 +22,15 @@ plot_dir: ~/esmvaltool_output/plots
 # Save intermediary cubes in the preprocessor True/[False]
 save_intermediary_cubes: True
 
-# Rootpath to CMIP5 data
-rootpath_CMIP5: ~/esmvaltool_input
-# Rootpath to OBS data
-rootpath_OBS: ~/esmvaltool_input
-# Rootpath to raw observational data
-rawobs_rootpath: ~/esmvaltool_input
-
-# Directory structure for CMIP5 data: [None]/BADC/DKRZ/ETHZ
-cmip5_dirtype: None
+rootpath:
+  # Rootpath to CMIP5 data
+  CMIP5: ~/esmvaltool_input
+  # Rootpath to OBS data
+  OBS: ~/esmvaltool_input
+  # Default
+  default: ~/esmvaltool_input
+  
+# Directory structure for input data: [default]/BADC/DKRZ/ETHZ/etc
+# See config-developer.yml for definitions.
+drs:
+  CMIP5: default
