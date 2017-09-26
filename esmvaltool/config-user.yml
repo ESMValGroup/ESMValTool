@@ -22,12 +22,15 @@ plot_dir: /home/bandela/test_output/plots
 # Save intermediary cubes in the preprocessor True/[False]
 save_intermediary_cubes: True
 
-# Rootpath to CMIP5 data
-rootpath_CMIP5: ./testdata/
-# Rootpath to OBS data
-rootpath_OBS: ./testdata/
-# Rootpath to raw observational data
-rawobs_rootpath: ./testdata/
-
+rootpath:
+  # Rootpath to CMIP5 data
+  CMIP5: ./testdata/
+  # Rootpath to OBS data
+  OBS: ./testdata/
+  # Default
+  default: ./testdata/
+  
 # Directory structure for CMIP5 data: [None]/BADC/DKRZ/ETHZ
-cmip5_dirtype: None
+drs:
+  CMIP5: None
+
