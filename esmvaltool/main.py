@@ -44,8 +44,8 @@ import logging.config
 import os
 import re
 import sys
-import uuid
 import yaml
+import uuid
 
 import interface_scripts.namelistchecks as pchk
 import interface_scripts.preprocess as pp
@@ -58,6 +58,8 @@ logger.addHandler(logging.NullHandler())
 # Define ESMValTool version
 __version__ = "2.0.0"
 
+# fix the hex label to avoid confusion
+FixedTimeLabel = uuid.uuid4().hex
 
 def configure_logging(cfg_file=None, output=None, console_log_level=None):
     """Set up logging"""
@@ -112,9 +114,10 @@ def get_log_level_and_path(config_file):
     return cfg['log_level'], cfg['log_path']
 
 
-def read_config_file(config_file):
+def read_config_file(config_file, namelistName, timeLabel=FixedTimeLabel):
     """ Read config file and store settings in a dictionary
-        
+        Complexity added so it can handle subdirectory retagging
+        and handling of relative paths. 
     """
     glob = {}
     glob = yaml.load(file(config_file, 'r'))
@@ -131,14 +134,24 @@ def read_config_file(config_file):
         'work_dir': './work/',
         'plot_dir': './plots/',
         'save_intermediary_cubes': False,
-        'run_diagnostic': True
+        'run_diagnostic': True,
+        'user_tag': 'ESMValTool'
     }
+
+    subdirs = ['run_dir', 'preproc_dir', 'work_dir', 'plot_dir']
 
     for key in defaults:
         if not key in glob:
             logger.warning("No %s specification in config file, defaulting to %s" % (key, defaults[key]))
             glob[key] = defaults[key]
 
+    for key in defaults:
+        # retag subdirectory names and absolutize paths
+        if key in subdirs:
+            subDirName = os.path.basename(glob[key])
+            fullpath = os.path.abspath(os.path.dirname(glob[key]))
+            new_subdir = retag_output_subdirs(subDirName, namelistName, glob['user_tag'], timeLabel)
+            glob[key] = os.path.join(fullpath, new_subdir)
 
     return(glob)
 
@@ -156,6 +169,13 @@ def create_interface_data_dir(project_info, executable):
     )
     os.makedirs(interface_data)
     return interface_data
+
+def retag_output_subdirs(subDirName, nmlName, userTag, timeLabel=FixedTimeLabel):
+    """ Always name the dirs with _NAMELIST_TAG_TIME
+        so we dont overwrite and keep good bookkeeping
+    """
+    subDir = "_".join([subDirName, nmlName, userTag, timeLabel])
+    return subDir
 
 
 def main():
@@ -181,16 +201,15 @@ def main():
     # get the required console log level and location to save the logs
     # from config file
 
-    log_level, run_dir = get_log_level_and_path(config_file)
+    log_level = get_log_level_and_path(config_file)[0]
+    namelist_name = os.path.splitext(os.path.basename(namelist_file))[0]
+    config_dict = read_config_file(config_file, namelist_name, timeLabel=FixedTimeLabel)
+    run_dir = config_dict['run_dir']
 
-    # if run_dir exists, don't overwrite it
-    previous_run_dir = None
-    if not run_dir is None:
-        run_dir = os.path.abspath(run_dir)
-        if os.path.isdir(run_dir):
-            previous_run_dir = run_dir + '_' + uuid.uuid4().hex
-            os.rename(run_dir, previous_run_dir)
+    # create run_dir
+    if run_dir is not None:
         os.makedirs(run_dir)
+        logger.info("We just created run dir: %s", run_dir)
 
     # configure logging
     configure_logging(output=run_dir, console_log_level=log_level)
@@ -200,10 +219,6 @@ def main():
 
     if run_dir is None:
         logger.warning("Failed to retrieve run_dir from config file")
-
-    if previous_run_dir:
-        logger.info('Renamed existing run directory %s to %s',
-                    run_dir, previous_run_dir)
 
     logger.info("Using config file %s", config_file)
 
@@ -229,14 +244,15 @@ def process_namelist(namelist_file, config_file):
     preprocess_id = None
     script_root = os.path.abspath(os.path.dirname(__file__))
 
-    # get namelist file
+    # get namelist file and its name
     yml_path = namelist_file
+    namelist_name = os.path.splitext(os.path.basename(namelist_file))[0]
 
     # parse input namelist into project_info-dictionary.
     Project = Ps()
 
     # parse config file into GLOBAL_DICT info_dictionary
-    GLOBAL_DICT = read_config_file(config_file)
+    GLOBAL_DICT = read_config_file(config_file, namelist_name, timeLabel=FixedTimeLabel)
 
     # project_info is a dictionary with all info from the namelist.
     project_info_0 = Project.load_namelist(yml_path)
