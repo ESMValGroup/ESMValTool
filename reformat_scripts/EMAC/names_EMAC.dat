@@ -23,6 +23,7 @@ cly            | #RECIP         | T3?,T2?z      |       | CCMI                |
 conccnmode     | #RECIP         | T3?,T2?s      | S     | --                  |
 conccnd5       | #RECIP         | T3?           |       | --                  |
 conccnd10      | #RECIP         | T3?           |       | --                  |
+conccnd14      | #RECIP         | T3?           |       | --                  |
 conccnSTPd3    | #RECIP         | T3?           |       | --                  |
 conccnSTPd5    | #RECIP         | T3?           |       | --                  |
 conccnSTPd120  | #RECIP         | T3?           |       | --                  |

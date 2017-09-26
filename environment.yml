@@ -1,6 +1,5 @@
 name: root
 channels:
-- khallock
 - conda-forge
 - defaults
 - Clyde_Fare
@@ -13,6 +12,9 @@ dependencies:
 - esgf-pyclient
 - scientificpython
 - ncl
+- numba
+- python-stratify
+- pyyaml
 # iris
 - matplotlib=1.5.*
 - cartopy=0.15.*
@@ -27,3 +29,10 @@ dependencies:
 - xorg-libxext
 - pip:
   - geoval
+
+# testing
+- nose
+- pytest
+- easytest
+- mock
+- coverage
