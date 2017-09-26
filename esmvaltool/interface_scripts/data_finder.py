@@ -168,7 +168,7 @@ def get_input_filelist(project_info, model, var):
     """
 
     project = model['project'] 
-    
+   
     dict = read_config_file(project)
 
     # Apply variable-dependent model keys
