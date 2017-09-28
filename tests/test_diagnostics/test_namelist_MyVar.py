@@ -6,10 +6,12 @@ import shutil
 import tempfile
 import unittest
 
-from .esmvaltool_testlib import ESMValToolTest
+from esmvaltool_testlib import ESMValToolTest
 
 
-class TestDiagnostic(unittest.TestCase):
+class TestNamelistMyVar(unittest.TestCase):
+    """ Test the example namelist_MyVar """
+
     def setUp(self):
         """ Run before the test"""
         self.output_directory = tempfile.mkdtemp()
@@ -41,12 +43,20 @@ class TestDiagnostic(unittest.TestCase):
             None : do nothing
             [list] : list with existing filename to be checked
         """
-        T = ESMValToolTest(
+        test = ESMValToolTest(
             namelist='namelist_MyVar.yml',
-            output_directory=self.output_directory)
-        T.run_tests(
-            execute=True, graphics=None, checksum_files='all', files='all')
-        self.assertTrue(T.sucess)
+            output_directory=self.output_directory,
+            ignore=['work/interface_data/*/*/*', '*log*.txt', '*.log'],
+            checksum_exclude=['pdf', 'ps', 'png', 'eps', 'epsi', 'nc'])
+
+        test.run(
+            graphics=None,
+            files='all',
+            check_size_gt_zero=True,
+            checksum_files='all',
+            check_file_content=['nc'])
+
+        self.assertTrue(test.sucess)
 
 
 if __name__ == "__main__":
