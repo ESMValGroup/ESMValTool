@@ -630,7 +630,7 @@ begin
 
             ;; Adding campaign and location for model list of tags
             if isvar("camp_loc") then
-                camp_loc := array_append_index(camp_loc, campaign + "_" + location, 0)
+                camp_loc := array_append_record(camp_loc, campaign + "_" + location, 0)
             else
                 camp_loc = campaign + "_" + location
             end if
