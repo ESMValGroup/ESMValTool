@@ -50,24 +50,12 @@ ESMValMD <- function(filename,
     scriptname <- "diag_scripts/lib/R/meta_data.r"
     info_output(paste0("<<<<<<<< Entering ", funcname, " (", scriptname, ")"), verbosity, 6)
 
-info_output(paste0("----------------filename: ", filename), verbosity, 6)
-info_output(paste0("--------------------tags: ", tags), verbosity, 6)
-info_output(paste0("-----------------caption: ", caption), verbosity, 6)
-info_output(paste0("----------------------id: ", id), verbosity, 6)
-info_output(paste0("----------------varnames: ", varnames), verbosity, 6)
-info_output(paste0("--------------modelnames: ", modelnames), verbosity, 6)
-info_output(paste0("-----------------infiles: ", infiles), verbosity, 6)
-info_output(paste0("---------------diag_name: ", diag_name), verbosity, 6)
-info_output(paste0("---------contrib_authors: ", contrib_authors), verbosity, 6)
-
     m_tags = paste("M", modelnames, sep="_")
     v_tags = paste("V", varnames, sep="_")
     tags_plus = union(tags, m_tags)
     tags_plus = union(tags_plus, v_tags)
     rm(m_tags)
     rm(v_tags)
-
-info_output(paste0("--------------------tags: ", tags), verbosity, 6)
 
     n = length(tags_plus)
     str = ""
@@ -95,7 +83,7 @@ info_output(paste0("--------------------tags: ", tags), verbosity, 6)
     str[8] = contrib_authors[1]
     if (n > 1) {
         for (i in 2:n) {
-            str[8] = paste(str[8], contrib_authors[i], sep(","))
+            str[8] = paste(str[8], contrib_authors[i], sep=",")
         }
     }
 
@@ -103,7 +91,7 @@ info_output(paste0("--------------------tags: ", tags), verbosity, 6)
     write(str, ascii_file, sep=("\n"))
     rm(str)
 
-    system(paste("python diag_scripts/lib/python/running_MD_for_ncl_with_file.py '",ascii_file, "'"))
+    system(paste("python diag_scripts/lib/python/running_MD_for_ncl_with_file.py '",ascii_file, "'", sep=""))
 #    system("rm '" + ascii_file + "'")
 
     info_output(paste0(">>>>>>>> Leaving ", funcname, " (", scriptname, ")"), verbosity, 6)

@@ -168,18 +168,13 @@ for (model_idx in c(1:length(models_name))) {
     
     invisible(dev.off())
 
-    filename = figure_filename
-    tags <- c("tag1", "tag2")
-    caption <- "caption"
-    id <- "id"
-    varnames <- "varnames"
+    tags = union(tags,c("PT_geo", "ST_other", "DM_global"))
+    caption <- "Standard Precipitation Index (SPI) trend plots"
+    id = paste("id", diag_script, var0, sep="_")
     modelnames <- c("MPI", "EMAC")
-info_output(paste0("-------fullpath_filename: ", fullpath_filename), verbosity, 6) 
-info_output(paste0("----------------filename: ", filename), verbosity, 6) 
-    infiles <- "infiles"
-    diag_name <- "diag_name"
-    contrib_authors <- "contrib_authors"
-    ESMValMD(filename, tags, caption, id, varnames, modelnames, infiles, diag_name, contrib_authors)
+    infiles <- fullpath_filename
+    contrib_authors <- c("A_orlo_bo", "A_eval_ma")
+    ESMValMD(figure_filename, tags, caption, id, var0, modelnames, infiles, diag_script, contrib_authors)
 
 }
 info_output(paste0(">>>>>>>> Leaving ", diag_script), verbosity, 4)

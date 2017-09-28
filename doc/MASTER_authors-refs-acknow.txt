@@ -306,4 +306,5 @@ ST_clim = climatology
 ST_perc = percentiles
 ST_median = median
 ST_detrend = detrend
+ST_other = other statistics
 
