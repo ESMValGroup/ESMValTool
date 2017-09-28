@@ -176,12 +176,12 @@ begin
                 (diag_script_info@latrange_eof(1).eq.90.).and.  \
                 (diag_script_info@lonrange_eof(0).eq.0.).and. \
                 (diag_script_info@lonrange_eof(1).eq.360.)) then
-                domain = "DM_glob"
+                domain = "DM_global"
             end if
         else
             if ((diag_script_info@latrange_eof(0).eq.-90.).and. \
                 (diag_script_info@latrange_eof(1).eq.90.)) then
-                domain = "DM_glob"
+                domain = "DM_global"
             end if
         end if
         alltags = array_append_record(tags, (/"PT_geo", "ST_eof", domain/), 0)

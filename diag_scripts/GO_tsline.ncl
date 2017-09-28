@@ -773,12 +773,12 @@ begin
             (diag_script_info@ts_latrange(1).eq.90.).and.  \
             (diag_script_info@ts_lonrange(0).eq.0.).and. \
             (diag_script_info@ts_lonrange(1).eq.360.)) then
-            domain = "DM_glob"
+            domain = "DM_global"
         end if
     else
         if ((diag_script_info@ts_latrange(0).eq.-90.).and. \
             (diag_script_info@ts_latrange(1).eq.90.)) then
-            domain = "DM_glob"
+            domain = "DM_global"
         end if
     end if
 

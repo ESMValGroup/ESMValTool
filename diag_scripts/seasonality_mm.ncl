@@ -82,7 +82,7 @@ begin
             + interface_get_infile(variables(0), field_types(0), ii)
     end do
 
-    alltags = array_append_record(tags, (/"PT_geo", "ST_clim", "ST_mean", "ST_diff", "DM_glob"/), 0)
+    alltags = array_append_record(tags, (/"PT_geo", "ST_clim", "ST_mean", "ST_diff", "DM_global"/), 0)
     allmodelnames = array_append_record(models@name, (/"multi-model-mean"/), 0)
 end
 

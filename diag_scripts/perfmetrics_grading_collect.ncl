@@ -262,7 +262,7 @@ begin
         plot = portrait_plot(wks, data_all, "grade")
         
         ;; Attach Metadata to plot
-        alltags = array_append_record(tags, (/"DM_glob", "PT_portrait"/), 0)
+        alltags = array_append_record(tags, (/"DM_global", "PT_portrait"/), 0)
         alltags := array_append_record(tags, ST_tag, 0)
         caption = "Portrait diagramm. Similar to Figure 3 od Gleckler et al. (2008)."
         id = diag_script + "_example_id"

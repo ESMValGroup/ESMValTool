@@ -481,12 +481,12 @@ begin
             (diag_script_info@ts_maxlat.eq.90.).and.  \
             (diag_script_info@ts_minlon.eq.0.).and. \
             (diag_script_info@ts_maxlon.eq.360.)) then
-            domain = "DM_glob"
+            domain = "DM_global"
         end if
     else
         if ((diag_script_info@ts_minlat.eq.-90.).and. \
             (diag_script_info@ts_maxlat.eq.90.)) then
-            domain = "DM_glob"
+            domain = "DM_global"
         end if
     end if
 

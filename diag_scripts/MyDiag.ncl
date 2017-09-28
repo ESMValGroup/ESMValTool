@@ -261,7 +261,7 @@ begin
 ;    map = contour_map("dummy_for_wks", ncdf_outfile,"default")
 
     alltags = array_append_record(tags,\
-           (/"DM_glob", "PT_geo", "ST_mean"/), 0)
+           (/"DM_global", "PT_geo", "ST_mean"/), 0)
     caption = "This is an example caption. Model: " + models@name(0) + \
               ", variable: " + variables(0)
     id = diag_script + "_example_id"
