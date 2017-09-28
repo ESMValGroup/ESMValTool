@@ -714,7 +714,7 @@ begin
 
     caption = "Differences in vertically resolved " + variables(0) \
                + " between the " + period1(0) + "s and " + period2(0) + \
-               "s for the RCP simulations " + 
+               "s for the RCP simulations " + \
                "over given domains and seasons" + \
                ", similar to Eyring et al., JGR, 2013, fig. 7."
 
