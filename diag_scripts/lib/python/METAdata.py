@@ -197,6 +197,8 @@ class METAdata(object):
                 elif isinstance(act_dict[branch], list):
                     XMLT.SubElement(curr_root, branch).text = "|".join(
                         act_dict[branch])
+                elif act_dict[branch] is None:
+                    XMLT.SubElement(curr_root, branch).text = ""
                 else:
                     print(act_dict[branch])
                     assert False, "This data type is not implemented yet: " + \
