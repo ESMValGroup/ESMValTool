@@ -34,6 +34,7 @@ class RunTests(Command):
         errno = pytest.main([
             'tests',
             '--cov=esmvaltool',
+            '--cov-report=html:{}/coverage_html'.format(report_dir),
             '--cov-report=xml:{}/coverage.xml'.format(report_dir),
             '--junit-xml={}/report.xml'.format(report_dir),
         ])
