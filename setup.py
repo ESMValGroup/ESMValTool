@@ -17,7 +17,7 @@ PACKAGES = [
 
 
 class RunTests(Command):
-    """Class to run tests and generate a coverage report htmlcov/index.html"""
+    """Class to run tests and generate reports"""
     user_options = []
 
     def initialize_options(self):
