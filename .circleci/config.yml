@@ -15,15 +15,15 @@ jobs:
       - run:
           # Create Conda Environment (result is cached, only run again if environment.yml was changed)
           command : |
-            conda env create --file environment.yml --name esmvaltool
+            conda env create --quiet --file environment.yml --name esmvaltool
       - save_cache:
-          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
+          key: deps1-{{ .Branch }}-{{ checksum "environment.yml" }}
           paths:
             - "/opt/conda/envs/esmvaltool"
       - run:
           # Update Conda Environment
           command : |
-            conda env update --file environment.yml --name esmvaltool
+            conda env update --quiet --file environment.yml --name esmvaltool
       - run:
           # Activate Conda environment and run tests
           command : |
