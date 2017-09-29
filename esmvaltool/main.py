@@ -43,9 +43,8 @@ import logging
 import logging.config
 import os
 import re
+import shutil
 import sys
-import uuid
-
 import yaml
 
 if __name__ == '__main__':
@@ -92,37 +91,7 @@ def configure_logging(cfg_file=None, output=None, console_log_level=None):
     logging.config.dictConfig(cfg)
 
 
-def get_log_level_and_path(config_file):
-    """ Get the log level and path from config.ini or config.yml,
-        as logging needs to be configured as early as possible.
-    """
-
-    # set defaults
-    cfg = {
-        'log_level': 'INFO',
-        'log_path': None,
-    }
-
-    # update defaults if possible
-    if isinstance(config_file, str) and os.path.exists(config_file):
-
-        with open(config_file, 'r') as file:
-            cfg_file = file.read()
-
-        options = {
-            'log_level': r'(?i)^\s*log_level\s*(?:=|:)\s*(debug|info|warning|error)\s*(?:#.*|)$',
-            'log_path': r'(?i)^\s*run_dir\s*(?:=|:)\s*(.*)\s*(?:#.*|)$',
-        }
-
-        for key, regex in options.items():
-            match = re.search(regex, cfg_file, re.MULTILINE)
-            if match:
-                cfg[key] = match.groups()[0]
-
-    return cfg['log_level'], cfg['log_path']
-
-
-def read_config_file(config_file):
+def read_config_file(config_file, namelist_name):
     """ Read config file and store settings in a dictionary
     """
     cfg = yaml.safe_load(file(config_file, 'r'))
@@ -139,7 +108,8 @@ def read_config_file(config_file):
         'work_dir': './work/',
         'plot_dir': './plots/',
         'save_intermediary_cubes': False,
-        'run_diagnostic': True
+        'run_diagnostic': True,
+        'user_tag': '',
     }
 
     for key in defaults:
@@ -148,13 +118,32 @@ def read_config_file(config_file):
                            "defaulting to %s", key, defaults[key])
             cfg[key] = defaults[key]
 
-    # expand ~ to /home/username in directory names
+    # expand ~ to /home/username in directory names and normalize paths
     for key in cfg:
         if key.endswith('_dir'):
-            cfg[key] = os.path.expanduser(cfg[key])
+            cfg[key] = os.path.abspath(os.path.expanduser(cfg[key]))
 
     for key in cfg['rootpath']:
-        cfg['rootpath'][key] = os.path.expanduser(cfg['rootpath'][key])
+        cfg['rootpath'][key] = os.path.abspath(
+            os.path.expanduser(cfg['rootpath'][key]))
+
+    # insert a directory date_time_namelist_usertag in the output paths
+    now = datetime.datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+    new_subdir = '_'.join((now, namelist_name))
+    if cfg['user_tag']:
+        new_subdir += '_' + cfg['user_tag']
+
+    for key in 'preproc_dir', 'work_dir', 'plot_dir':
+        path = cfg[key]
+        if path.startswith(cfg['run_dir']):
+            cfg[key] = os.path.join(
+                os.path.dirname(path),
+                new_subdir,
+                os.path.basename(path))
+        else:
+            cfg[key] = os.path.join(path, new_subdir)
+
+    cfg['run_dir'] = os.path.join(cfg['run_dir'], new_subdir)
 
     return cfg
 
@@ -194,51 +183,42 @@ def main():
     # Set up logging before anything else              #
     ####################################################
 
-    # get the required console log level and location to save the logs
-    # from config file
-
-    log_level, run_dir = get_log_level_and_path(config_file)
-
-    # if run_dir exists, don't overwrite it
-    previous_run_dir = None
-    if not run_dir is None:
-        run_dir = os.path.abspath(os.path.expanduser(run_dir))
-        if os.path.isdir(run_dir):
-            previous_run_dir = run_dir + '_' + uuid.uuid4().hex
-            os.rename(run_dir, previous_run_dir)
-        os.makedirs(run_dir)
-
     # configure logging
-    configure_logging(output=run_dir, console_log_level=log_level)
+
+    if not os.path.exists(config_file):
+        print("ERROR: config file {} does not exist".format(config_file))
+
+    namelist_name = os.path.splitext(os.path.basename(namelist_file))[0]
+    cfg = read_config_file(config_file, namelist_name)
+
+    if os.path.exists(cfg['run_dir']):
+        print("ERROR: run_dir {} already exists, aborting to prevent data loss"
+              .format(cfg['run_dir']))
+    os.makedirs(cfg['run_dir'])
+
+    configure_logging(output=cfg['run_dir'], console_log_level=cfg['log_level'])
 
     # log header
     logger.info(__doc__)
-
-    if run_dir is None:
-        logger.warning("Failed to retrieve run_dir from config file")
-
-    if previous_run_dir:
-        logger.info('Renamed existing run directory %s to %s',
-                    run_dir, previous_run_dir)
 
     logger.info("Using config file %s", config_file)
 
     # check NCL version
     ncl_version_check()
 
-    process_namelist(namelist_file=namelist_file, config_file=config_file)
+    process_namelist(namelist_file=namelist_file, global_config=cfg)
 
 
-def process_namelist(namelist_file, config_file):
+def process_namelist(namelist_file, global_config):
     """Process namelist"""
 
     if not os.path.isfile(namelist_file):
         raise OSError(errno.ENOENT, "Specified namelist file does not exist", namelist_file)
 
-    if not os.path.isfile(config_file):
-        raise OSError(errno.ENOENT, "Specified config file does not exist", config_file)
-
     logger.info("Processing namelist %s", namelist_file)
+
+    # copy namelist to run_dir for future reference
+    shutil.copy2(namelist_file, global_config['run_dir'])
 
     os.environ['0_ESMValTool_version'] = __version__
 
@@ -250,7 +230,7 @@ def process_namelist(namelist_file, config_file):
 
     # project_info is a dictionary with all info from the namelist.
     project_info = {}
-    project_info['GLOBAL'] = read_config_file(config_file)
+    project_info['GLOBAL'] = global_config
     project_info['MODELS'] = namelist.MODELS
     project_info['DIAGNOSTICS'] = namelist.DIAGNOSTICS
 
