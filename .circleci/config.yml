@@ -5,6 +5,7 @@ jobs:
     docker:
       - image: continuumio/miniconda
     steps:
+      - checkout
       - run:
           name: Add some system packages (mostly since geoval needs them)
           command : |
