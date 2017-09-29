@@ -3,9 +3,30 @@ jobs:
   build:
     working_directory: /esmvaltool
     docker:
-      - image: nielsdrost/esmvaltool-deps:20170520
+      - image: continuumio/miniconda
     steps:
-      - checkout
-      - run: ./run-tests
+      - run:
+          name: Add some system packages (mostly since geoval needs them)
+          command : |
+            apt-get update -y && apt-get install -y build-essential
+      - restore_cache:
+          key: deps1-{{ .Branch }}-{{ checksum "environment.yml" }}
+      - run:
+          name: Create Conda Environment (result is cached, only run again if environment.yml was changed)
+          command : |
+            conda env create --file environment.yml --name esmvaltool
+      - save_cache:
+          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
+          paths:
+            - "/opt/conda/envs/esmvaltool"
+      - run:
+          name: Update Conda Environment (for any updates since environment.yml was changed, not cached)
+          command : |conda
+            conda env update --file environment.yml --name esmvaltool
+      - run:
+          name: Activate conda environment and run tests
+          command : |
+            source activate esmvaltool
+            ./setup.py test
       - store_test_results:
           path: test-reports/
