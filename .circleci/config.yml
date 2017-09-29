@@ -13,7 +13,7 @@ jobs:
       - run:
           # Create Conda Environment
           command : |
-            conda create -n esmvaltool --offline --no-deps --no-update-dependencies
+            conda create -n esmvaltool -y
       - restore_cache:
           key: deps2-{{ .Branch }}-{{ checksum "environment.yml" }}
       - run:
