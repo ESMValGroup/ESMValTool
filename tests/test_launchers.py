@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
 # This file is part of ESMValTool
-
-
 """
 Tests are implemented using *assert* statements
 """
@@ -14,7 +12,6 @@ import unittest
 
 
 class TestLauncher(unittest.TestCase):
-
     def setUp(self):
         # implement here everything you would like to see happen BEFORE a test is executed
 
@@ -27,7 +24,6 @@ class TestLauncher(unittest.TestCase):
 
 
 class TestPythonLauncher(TestLauncher):
-
     def test_python_launcher_init(self):
         from esmvaltool.interface_scripts.launchers import py_launcher
         L = py_launcher()
@@ -93,11 +89,11 @@ class TestPythonLauncher(TestLauncher):
         # this script will just save some file
 
         script = self.tmpdir + 'testscript_script_fail.py'
-        o = open(script, 'w')
-        o.write('import json\n')
-        o.write('def main(project_info):\n')
-        o.write("  here we introduce some syntax error this script should then fail")
-        o.close()
+        with open(script, 'w') as o:
+            o.write('import json\n')
+            o.write('def main(project_info):\n')
+            o.write("  here we introduce some syntax error, "
+                    "this script should then fail")
 
         L = py_launcher(execute_as_shell=False)
         project_info = {}
@@ -106,75 +102,67 @@ class TestPythonLauncher(TestLauncher):
 
 
 class TestCSHLauncher(TestLauncher):
+    def setUp(self):
+        TestLauncher.setUp(self)
+        from esmvaltool.interface_scripts.launchers import csh_launcher
+        self.L = csh_launcher()
 
-        def setUp(self):
-                TestLauncher.setUp(self)
-                from esmvaltool.interface_scripts.launchers import csh_launcher
-                self.L = csh_launcher()
+    def test_csh_launcher_init(self):
+        self.assertEqual(self.L.lang, 'csh')
 
-        def test_csh_launcher_init(self):
-                self.assertEqual(self.L.lang, 'csh')
+    def test_csh_launcher_execute(self):
+        testscript = os.path.join(self.tmpdir, 'test.csh')
 
-        def test_csh_launcher_execute(self):
-                testscript = os.path.join(self.tmpdir, 'test.csh')
-                try:
-                        with open(testscript, 'w') as f:
-                                f.write("#!/usr/bin/env csh")
-                                f.write("echo 'Inside test script' ")
-                                f.close()
-                except IOError:
-                        raise die("IOError occured in test_csh_launcher_execute.")
+        with open(testscript, 'w') as f:
+            f.write("#!/usr/bin/env csh")
+            f.write("echo 'Inside test script' ")
 
-                self.L.execute(testscript, {}, 100, None)
-                os.remove(testscript)
+        self.L.execute(testscript, {}, 100, None)
+        os.remove(testscript)
 
-        def test_csh_launcher_execute_no_file(self):
-                testscript = os.path.join(self.tmpdir, 'test.csh')
-                with self.assertRaises(IOError):
-                        self.L.execute(testscript,{},100, None)
+    def test_csh_launcher_execute_no_file(self):
+        testscript = os.path.join(self.tmpdir, 'test.csh')
+        with self.assertRaises(IOError):
+            self.L.execute(testscript, {}, 100, None)
 
 
 class TestBASHLauncher(TestLauncher):
+    def setUp(self):
+        TestLauncher.setUp(self)
+        from esmvaltool.interface_scripts.launchers import bash_launcher
+        self.L = bash_launcher()
 
-        def setUp(self):
-                TestLauncher.setUp(self)
-                from esmvaltool.interface_scripts.launchers import bash_launcher
-                self.L = bash_launcher()
+    def test_bash_launcher_init(self):
+        self.assertEqual(self.L.lang, 'bash')
 
-        def test_bash_launcher_init(self):
-                self.assertEqual(self.L.lang, 'bash')
+    def test_bash_launcher_execute(self):
+        testscript = os.path.join(self.tmpdir, 'test.bash')
 
-        def test_bash_launcher_execute(self):
-                testscript = os.path.join(self.tmpdir, 'test.bash')
-                try:
-                        with open(testscript, 'w') as f:
-                                f.write("#!/usr/bin/env bash")
-                                f.write("echo 'Inside test script' ")
-                                f.close()
-                except IOError:
-                        raise die("IOError occured in test_bash_launcher_execute.")
+        with open(testscript, 'w') as f:
+            f.write("#!/usr/bin/env bash")
+            f.write("echo 'Inside test script' ")
 
-                self.L.execute(testscript, {}, 100, None)
-                os.remove(testscript)
+        self.L.execute(testscript, {}, 100, None)
+        os.remove(testscript)
 
-        def test_bash_launcher_execute_no_file(self):
-                testscript = os.path.join(self.tmpdir, 'test.bash')
-                with self.assertRaises(IOError):
-                        self.L.execute(testscript, {}, 100, None)
+    def test_bash_launcher_execute_no_file(self):
+        testscript = os.path.join(self.tmpdir, 'test.bash')
+        with self.assertRaises(IOError):
+            self.L.execute(testscript, {}, 100, None)
 
 
 class TestBadLauncher(TestLauncher):
+    def test_bad_lancher(self):
+        # This test should be cleaned soon by using custom exceptions
+        TestLauncher.setUp(self)
+        from esmvaltool.interface_scripts.launchers import shell_launcher
+        try:
+            self.L = shell_launcher('badshell')
+            badshell = True
+        except:
+            badshell = False
+        self.assertEqual(badshell, False)
 
-        def test_bad_lancher(self):
-                # This test should be cleaned soon by using custom exceptions
-                TestLauncher.setUp(self)
-                from esmvaltool.interface_scripts.launchers import shell_launcher
-                try:
-                        self.L = shell_launcher('badshell')
-                        badshell = True
-                except:
-                        badshell = False
-                self.assertEqual(badshell, False)
 
 if __name__ == "__main__":
     unittest.main()

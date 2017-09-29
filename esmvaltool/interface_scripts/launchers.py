@@ -1,13 +1,14 @@
-from auxiliary import nclExecuteError, nclExecuteWarning, error, info
+import contextlib
 import os
-import pdb
 import re
+import StringIO
 import subprocess
 import sys
-import string
-import StringIO
-import contextlib
+import tempfile
 import traceback
+
+from auxiliary import nclExecuteError, nclExecuteWarning
+
 
 @contextlib.contextmanager
 def stdoutIO(std_outerr=None):
@@ -27,11 +28,11 @@ def stdoutIO(std_outerr=None):
 class launchers(object):
     def __init__(self, interface_data=None):
         self.persistent_env_variables = ['ESMValTool_data_root']
-        self.interface_data = interface_data
         if interface_data is None:
-            self.filename = None
+            self.interface_data = tempfile.mkdtemp()
         else:
-            self.filename = os.path.join(interface_data, 'curr_trace_indent.txt')
+            self.interface_data = interface_data
+        self.filename = os.path.join(self.interface_data, 'curr_trace_indent.txt')
  
     def convert_arguments(self):
         """
@@ -352,15 +353,13 @@ class shell_launcher(launchers):
         if shell in ['csh','bash']:
             self.lang = shell
         else:
-            raise error('Unknown shell: {0}'.format(shell))
+            raise ValueError('Unknown shell: {0}'.format(shell))
         super(shell_launcher, self).__init__(**kwargs)
 
     def execute(self, executable, project_info, verbosity, exit_on_warning):
-        try:
-            with open(self.filename, "w") as f:
-                f.write("0")
-        except IOError:
-            raise error("IOError while open/write: '{0}'".format(self.filename))
+
+        with open(self.filename, "w") as f:
+            f.write("0")
 
         if not os.path.exists(executable):
             raise IOError("file to execute is missing: {0}".format(executable))  
@@ -382,11 +381,13 @@ class shell_launcher(launchers):
         for key in [env for env in os.environ if re.search('^ESMValTool_*', env)]:
             del(os.environ[key])
 
+
 class csh_launcher(shell_launcher):
     """ @brief csh-shell script launcher
     """
     def __init__(self, **kwargs):
         super(csh_launcher, self).__init__('csh', **kwargs)
+
 
 class bash_launcher(shell_launcher):
     """ @brief bash-shell script launcher

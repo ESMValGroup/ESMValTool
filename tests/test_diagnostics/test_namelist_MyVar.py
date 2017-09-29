@@ -1,45 +1,24 @@
 """
-Test script for "Sea ice"
+Test script for "MyVar"
 """
 
-import os
+import shutil
+import tempfile
 import unittest
 
 from esmvaltool_testlib import ESMValToolTest
 
-# set ESMValTool root directory
-esmval_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..')
 
-
-class MyDiagnosticTest(ESMValToolTest):
-    """
-    Define class for Test metric here
-    """
-    def __init__(self):
-
-        # 1) specify here the full path of the namelist to be tested
-        #    (relative to ESMValTool root)
-        xmlfile = "namelist_SeaIce.xml"
-        nml = os.path.join(os.environ["ESMValTool_easytest_nmldirs"], xmlfile)
-        # <<<<<<<<<
-
-        # 2) define here the location of the reference directory
-        #    note that it is expeced that the directory has the same name
-        #    as the namelist
-        refdir = os.path.join(os.environ["ESMValTool_easytest_refdirs"], xmlfile[:-4], "plots")
-        # <<<<<<<<<<<<<<<
-        super(MyDiagnosticTest, self).__init__(nml=nml,
-                                               refdirectory=refdir,
-                                               esmval_dir=esmval_dir)
-
-
-class TestDiagnostic(unittest.TestCase):
+class TestNamelistMyVar(unittest.TestCase):
+    """ Test the example namelist_MyVar """
 
     def setUp(self):
-        pass
+        """ Run before the test"""
+        self.output_directory = tempfile.mkdtemp()
 
     def tearDown(self):
-        pass
+        """ Clean up after the test"""
+        shutil.rmtree(self.output_directory)
 
     def test_diagnostic(self):
         """
@@ -64,10 +43,21 @@ class TestDiagnostic(unittest.TestCase):
             None : do nothing
             [list] : list with existing filename to be checked
         """
-        T = MyDiagnosticTest()
-        T.run_nml()
-        T.run_tests(execute=False, graphics=None, checksum_files='all', files='all')
-        self.assertTrue(T.sucess)
+        test = ESMValToolTest(
+            namelist='namelist_MyVar.yml',
+            output_directory=self.output_directory,
+            ignore=['work/interface_data/*/*/*', '*log*.txt', '*.log'],
+            checksum_exclude=['pdf', 'ps', 'png', 'eps', 'epsi', 'nc'])
+
+        test.run(
+            graphics=None,
+            files='all',
+            check_size_gt_zero=True,
+            checksum_files='all',
+            check_file_content=['nc'])
+
+        self.assertTrue(test.sucess)
+
 
 if __name__ == "__main__":
     unittest.main()
