@@ -10,18 +10,22 @@ jobs:
           # Add some system packages (mostly since geoval needs them)
           command : |
             apt-get update -y && apt-get install -y build-essential
-      - restore_cache:
-          key: deps1-{{ .Branch }}-{{ checksum "environment.yml" }}
       - run:
-          # Create Conda Environment (result is cached, only run again if environment.yml was changed)
+          # Create Conda Environment
           command : |
-            conda env create --quiet --file environment.yml --name esmvaltool
+            conda  -n esmvaltool --offline -y --no-deps
+      - restore_cache:
+          key: deps2-{{ .Branch }}-{{ checksum "environment.yml" }}
+      - run:
+          # Update Conda Environment (result is cached, only run again if environment.yml was changed)
+          command : |
+            conda env update --quiet --file environment.yml --name esmvaltool
       - save_cache:
-          key: deps1-{{ .Branch }}-{{ checksum "environment.yml" }}
+          key: deps2-{{ .Branch }}-{{ checksum "environment.yml" }}
           paths:
             - "/opt/conda/envs/esmvaltool"
       - run:
-          # Update Conda Environment
+          # Update Conda Environment (for any changes since cache was created)
           command : |
             conda env update --quiet --file environment.yml --name esmvaltool
       - run:
