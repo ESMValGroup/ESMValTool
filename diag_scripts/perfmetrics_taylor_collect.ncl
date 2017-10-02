@@ -152,7 +152,7 @@ begin
         ;; tagging
         ST_tag = (/"ST_mean", "ST_stddev", "ST_corr"/)
         alltags = array_append_record(tags, (/"DM_global", "PT_taylor"/), 0)
-        alltags := array_append_record(tags, ST_tag, 0)
+        alltags := array_append_record(alltags, ST_tag, 0)
         caption = "Taylor Plot of varialbe " + variables(0) \
                   + ". Similar to Figure 10 of Gleckler et al. (2008)."
         id = diag_script + "_example_id"

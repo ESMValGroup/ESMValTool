@@ -301,7 +301,7 @@ begin
           plot_settings@aux_filename_info, -1)
 
     alltags = array_append_record(tags,\
-           (/"PT_diurn", "DM_reg", "ST_mean"/), 0)
+           (/"PT_zonal", "DM_reg", "ST_mean"/), 0)
     caption = "Mean for variable " + variables(0)
     id = diag_script + "_" + base_name
     climofiles = new(dimsizes(models@name), string)

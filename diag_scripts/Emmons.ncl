@@ -43,6 +43,7 @@
 ;#    * performance metrics not implemented yet                               #
 ;#                                                                            #
 ;# Modification history:                                                      #
+;#    * 20170830-A_bock_ls: added tags                                        #
 ;#    * 20151027-A_laue_ax: moved call to 'write_references' to the beginning #
 ;#                        of the code                                         #
 ;#    * 20150325-A_laue_ax: modified reference tags used for acknowledgements #

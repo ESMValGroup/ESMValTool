@@ -290,7 +290,7 @@ begin
         caption = "Timeseries of " + variables(0) + " at " + diag_script_info@network \
                    + " station " + data_arr@stname + "."
         id = diag_script + "_" + variables(0)
-        alltags = (/"ST_clim", "PT_times", "DM_reg"/)
+        alltags = array_append_record(tags,(/"ST_clim", "PT_times", "DM_reg"/),0)
         contrib_authors = (/"A_righ_ma", "A_kais_ch"/)
         modelsname = array_append_record(models@name, diag_script_info@network + "_" + data_arr@stname, 0)
         climofiles_mod = array_append_record(climofiles, stations_file(stID), 0)

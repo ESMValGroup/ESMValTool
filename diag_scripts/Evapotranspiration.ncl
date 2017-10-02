@@ -336,8 +336,7 @@ begin
 
         ;; Atach metadata to plots
         alltags = array_append_record(tags,\
-           (/"DM_global", "PT_geo", "ST_mean", "ST_rmsd", "ST_diff", \
-             "ST_corr", "ST_clim"/), 0)
+           (/"DM_global", "PT_geo", "ST_mean", "ST_diff", "ST_clim"/), 0)
         do imod = 0, dim_MOD - 1
             if (any(imod .eq. idx_ref)) then
                 continue
@@ -391,8 +390,7 @@ begin
 
         ;; Attach metadata to plots
         alltags = array_append_record(tags,\
-           (/"DM_global", "PT_geo", "ST_mean", \
-             "ST_clim", "ST_corr"/), 0)
+           (/"DM_global", "PT_geo", "ST_mean", "ST_clim"/), 0)
         figures_per_page = get_figures_per_page(dim_MOD,\
                                             max_figures_pp,\
                                             min_figures_pp)
@@ -449,8 +447,7 @@ begin
 
         ;; Attach metadata to plots
         alltags = array_append_record(tags,\
-           (/"DM_global", "PT_geo", "ST_mean", "ST_rmsd", "ST_diff", \
-             "ST_clim"/), 0)
+           (/"DM_global", "PT_geo", "ST_mean", "ST_diff", "ST_clim"/), 0)
         figures_per_page = get_figures_per_page(dim_MOD,\
                                             max_figures_pp,\
                                             min_figures_pp)
