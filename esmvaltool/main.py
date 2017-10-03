@@ -43,23 +43,30 @@ import logging
 import logging.config
 import os
 import re
+import shutil
 import sys
 import yaml
-import uuid
 
-import interface_scripts.namelistchecks as pchk
-import interface_scripts.preprocess as pp
-from interface_scripts.auxiliary import ncl_version_check
-from interface_scripts.yaml_parser import Parser as Ps
+if __name__ == '__main__':
+    # Hack to make this file executable
+    sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-logger = logging.getLogger('ESMValTool')
-logger.addHandler(logging.NullHandler())
+from esmvaltool.interface_scripts import namelistchecks
+from esmvaltool.interface_scripts.preprocess import (
+    preprocess, multimodel_mean, run_executable, Diag)
+from esmvaltool.interface_scripts.auxiliary import ncl_version_check
+from esmvaltool.interface_scripts.yaml_parser import load_namelist
 
 # Define ESMValTool version
 __version__ = "2.0.0"
 
-# fix the hex label to avoid confusion
-FixedTimeLabel = uuid.uuid4().hex
+# set up logging
+if __name__ == '__main__':
+    logger = logging.getLogger('ESMValTool')
+    logger.addHandler(logging.NullHandler())
+else:
+    logger = logging.getLogger(__name__)
+
 
 def configure_logging(cfg_file=None, output=None, console_log_level=None):
     """Set up logging"""
@@ -84,43 +91,10 @@ def configure_logging(cfg_file=None, output=None, console_log_level=None):
     logging.config.dictConfig(cfg)
 
 
-def get_log_level_and_path(config_file):
-    """ Get the log level and path from config.ini or config.yml,
-        as logging needs to be configured as early as possible.
-    """
-
-    # set defaults
-    cfg = {
-        'log_level': 'INFO',
-        'log_path': None,
-    }
-
-    # update defaults if possible
-    if isinstance(config_file, str) and os.path.exists(config_file):
-
-        with open(config_file, 'r') as file:
-            cfg_file = file.read()
-
-        options = {
-            'log_level': r'(?i)^\s*log_level\s*(?:=|:)\s*(debug|info|warning|error)\s*(?:#.*|)$',
-            'log_path': r'(?i)^\s*run_dir\s*(?:=|:)\s*(.*)\s*(?:#.*|)$',
-        }
-
-        for key, regex in options.items():
-            match = re.search(regex, cfg_file, re.MULTILINE)
-            if match:
-                cfg[key] = match.groups()[0]
-
-    return cfg['log_level'], cfg['log_path']
-
-
-def read_config_file(config_file, namelistName, timeLabel=FixedTimeLabel):
+def read_config_file(config_file, namelist_name):
     """ Read config file and store settings in a dictionary
-        Complexity added so it can handle subdirectory retagging
-        and handling of relative paths. 
     """
-    glob = {}
-    glob = yaml.load(file(config_file, 'r'))
+    cfg = yaml.safe_load(file(config_file, 'r'))
 
     # set defaults
     defaults = {
@@ -135,25 +109,43 @@ def read_config_file(config_file, namelistName, timeLabel=FixedTimeLabel):
         'plot_dir': './plots/',
         'save_intermediary_cubes': False,
         'run_diagnostic': True,
-        'user_tag': 'ESMValTool'
+        'user_tag': '',
     }
 
-    subdirs = ['run_dir', 'preproc_dir', 'work_dir', 'plot_dir']
-
     for key in defaults:
-        if not key in glob:
-            logger.warning("No %s specification in config file, defaulting to %s" % (key, defaults[key]))
-            glob[key] = defaults[key]
+        if not key in cfg:
+            logger.warning("No %s specification in config file, "
+                           "defaulting to %s", key, defaults[key])
+            cfg[key] = defaults[key]
 
-    for key in defaults:
-        # retag subdirectory names and absolutize paths
-        if key in subdirs:
-            subDirName = os.path.basename(glob[key])
-            fullpath = os.path.abspath(os.path.dirname(glob[key]))
-            new_subdir = retag_output_subdirs(subDirName, namelistName, glob['user_tag'], timeLabel)
-            glob[key] = os.path.join(fullpath, new_subdir)
+    # expand ~ to /home/username in directory names and normalize paths
+    for key in cfg:
+        if key.endswith('_dir'):
+            cfg[key] = os.path.abspath(os.path.expanduser(cfg[key]))
 
-    return(glob)
+    for key in cfg['rootpath']:
+        cfg['rootpath'][key] = os.path.abspath(
+            os.path.expanduser(cfg['rootpath'][key]))
+
+    # insert a directory date_time_namelist_usertag in the output paths
+    now = datetime.datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+    new_subdir = '_'.join((now, namelist_name))
+    if cfg['user_tag']:
+        new_subdir += '_' + cfg['user_tag']
+
+    for key in 'preproc_dir', 'work_dir', 'plot_dir':
+        path = cfg[key]
+        if path.startswith(cfg['run_dir']):
+            cfg[key] = os.path.join(
+                os.path.dirname(path),
+                new_subdir,
+                os.path.basename(path))
+        else:
+            cfg[key] = os.path.join(path, new_subdir)
+
+    cfg['run_dir'] = os.path.join(cfg['run_dir'], new_subdir)
+
+    return cfg
 
 
 def create_interface_data_dir(project_info, executable):
@@ -170,13 +162,6 @@ def create_interface_data_dir(project_info, executable):
     os.makedirs(interface_data)
     return interface_data
 
-def retag_output_subdirs(subDirName, nmlName, userTag, timeLabel=FixedTimeLabel):
-    """ Always name the dirs with _NAMELIST_TAG_TIME
-        so we dont overwrite and keep good bookkeeping
-    """
-    subDir = "_".join([subDirName, nmlName, userTag, timeLabel])
-    return subDir
-
 
 def main():
     """ Run the program"""
@@ -187,7 +172,7 @@ def main():
     parser.add_argument('-n', '--namelist-file',
                         help='Namelist file')
     parser.add_argument('-c', '--config-file',
-                        default=os.path.join(os.path.dirname(__file__), 'config.ini'),
+                        default=os.path.join(os.path.dirname(__file__), 'config-user.yml'),
                         help='Config file')
     args = parser.parse_args()
 
@@ -198,79 +183,65 @@ def main():
     # Set up logging before anything else              #
     ####################################################
 
-    # get the required console log level and location to save the logs
-    # from config file
-
-    log_level = get_log_level_and_path(config_file)[0]
-    namelist_name = os.path.splitext(os.path.basename(namelist_file))[0]
-    config_dict = read_config_file(config_file, namelist_name, timeLabel=FixedTimeLabel)
-    run_dir = config_dict['run_dir']
-
-    # create run_dir
-    if run_dir is not None:
-        os.makedirs(run_dir)
-        logger.info("We just created run dir: %s", run_dir)
-
     # configure logging
-    configure_logging(output=run_dir, console_log_level=log_level)
+
+    if not os.path.exists(config_file):
+        print("ERROR: config file {} does not exist".format(config_file))
+
+    namelist_name = os.path.splitext(os.path.basename(namelist_file))[0]
+    cfg = read_config_file(config_file, namelist_name)
+
+    if os.path.exists(cfg['run_dir']):
+        print("ERROR: run_dir {} already exists, aborting to prevent data loss"
+              .format(cfg['run_dir']))
+    os.makedirs(cfg['run_dir'])
+
+    configure_logging(output=cfg['run_dir'], console_log_level=cfg['log_level'])
 
     # log header
     logger.info(__doc__)
-
-    if run_dir is None:
-        logger.warning("Failed to retrieve run_dir from config file")
 
     logger.info("Using config file %s", config_file)
 
     # check NCL version
     ncl_version_check()
 
-    process_namelist(namelist_file=namelist_file, config_file=config_file)
+    process_namelist(namelist_file=namelist_file, global_config=cfg)
 
 
-def process_namelist(namelist_file, config_file):
+def process_namelist(namelist_file, global_config):
     """Process namelist"""
 
     if not os.path.isfile(namelist_file):
         raise OSError(errno.ENOENT, "Specified namelist file does not exist", namelist_file)
 
-    if not os.path.isfile(config_file):
-        raise OSError(errno.ENOENT, "Specified config file does not exist", config_file)
-
     logger.info("Processing namelist %s", namelist_file)
+
+    # copy namelist to run_dir for future reference
+    shutil.copy2(namelist_file, global_config['run_dir'])
 
     os.environ['0_ESMValTool_version'] = __version__
 
     preprocess_id = None
     script_root = os.path.abspath(os.path.dirname(__file__))
 
-    # get namelist file and its name
-    yml_path = namelist_file
-    namelist_name = os.path.splitext(os.path.basename(namelist_file))[0]
-
-    # parse input namelist into project_info-dictionary.
-    Project = Ps()
-
-    # parse config file into GLOBAL_DICT info_dictionary
-    GLOBAL_DICT = read_config_file(config_file, namelist_name, timeLabel=FixedTimeLabel)
-
     # project_info is a dictionary with all info from the namelist.
-    project_info_0 = Project.load_namelist(yml_path)
+    namelist = load_namelist(namelist_file)
 
     # project_info is a dictionary with all info from the namelist.
     project_info = {}
-    project_info['GLOBAL'] = GLOBAL_DICT
-    project_info['MODELS'] = project_info_0.MODELS
-    project_info['DIAGNOSTICS'] = project_info_0.DIAGNOSTICS
+    project_info['GLOBAL'] = global_config
+    project_info['MODELS'] = namelist.MODELS
+    project_info['DIAGNOSTICS'] = namelist.DIAGNOSTICS
 
     # FIX-ME: outdated, keep until standard logging is fully implemented
     project_info['GLOBAL']['verbosity'] = 1
-    verbosity = 1 
+    verbosity = 1
 
     # additional entries to 'project_info'
     project_info['RUNTIME'] = {}
-    project_info['RUNTIME']['yml'] = yml_path
-    project_info['RUNTIME']['yml_name'] = os.path.basename(yml_path)
+    project_info['RUNTIME']['yml'] = namelist_file
+    project_info['RUNTIME']['yml_name'] = os.path.basename(namelist_file)
 
     # set references/acknowledgement file
     refs_acknows_file = str.replace(project_info['RUNTIME']['yml_name'], "namelist_", "refs-acknows_")
@@ -291,15 +262,15 @@ def process_namelist(namelist_file, config_file):
     # perform options integrity checks
     logger.info('Checking integrity of namelist')
     tchk1 = datetime.datetime.utcnow()
-    pchk.models_checks(project_info['MODELS'])
-    pchk.diags_checks(project_info['DIAGNOSTICS'])
-    pchk.preprocess_checks(project_info_0.PREPROCESS)
+    namelistchecks.models_checks(project_info['MODELS'])
+    namelistchecks.diags_checks(project_info['DIAGNOSTICS'])
+    namelistchecks.preprocess_checks(namelist.PREPROCESS)
     tchk2 = datetime.datetime.utcnow()
     dtchk = tchk2 - tchk1
     logger.info('Namelist check successful! Time: %s', dtchk)
 
     # this will have to be purget at some point in the future
-    project_info['CONFIG'] = project_info_0.CONFIG
+    project_info['CONFIG'] = namelist.CONFIG
 
     # tell the environment about regridding
     project_info['RUNTIME']['regridtarget'] = []
@@ -339,10 +310,7 @@ def process_namelist(namelist_file, config_file):
 
     # loop over all diagnostics defined in project_info and create/prepare
     # netCDF files for each variable
-    for c in project_info['DIAGNOSTICS']:
-
-        # set current diagnostic
-        currDiag = project_info['DIAGNOSTICS'][c]
+    for currDiag in project_info['DIAGNOSTICS'].values():
 
         # Are the requested variables derived from other, more basic, variables?
         requested_vars = currDiag.variables
@@ -362,9 +330,9 @@ def process_namelist(namelist_file, config_file):
             logger.info("MODEL = %s (%s)", model_name, project_name)
 
             # start calling preprocess
-            op = pp.Diag()
+            op = Diag()
 
-            # FIX-ME old packaging of variable objects (legacy from initial 
+            # FIX-ME old packaging of variable objects (legacy from initial
             # version), this needs to be changed once we have the new variable
             # definition codes in place
             variable_defs_base_vars = op.add_base_vars_fields(
@@ -378,7 +346,7 @@ def process_namelist(namelist_file, config_file):
 
             # process base variables
             for base_var in base_vars:
-                if project_info_0.CONFIG['var_only_case'] > 0:
+                if namelist.CONFIG['var_only_case'] > 0:
                     if op.id_is_explicitly_excluded(base_var, model):
                         continue
                 logger.info("VARIABLE = %s (%s)", base_var.name, base_var.field)
@@ -389,26 +357,23 @@ def process_namelist(namelist_file, config_file):
                 # by changing cmor_reformat_type = 'ncl'
                 # for python cmor_check one, use cmor_reformat_type = 'py'
                 # PREPROCESS ID: extracted from variable dictionary
-                if hasattr(base_var, 'preproc_id'):
-                    try:
-                        preprocess_id = base_var.preproc_id
-                        for preproc_dict in project_info_0.PREPROCESS:
-                            if preproc_dict['id'] == preprocess_id:
-                                logger.info('Preprocess id: %s', preprocess_id)
-                                project_info['PREPROCESS'] = preproc_dict
-                    except AttributeError:
-                        logger.error('preprocess_id is not an attribute of variable object. Exiting...')
-                        sys.exit(1)
-                prep = pp.preprocess(project_info, base_var, model, currDiag, cmor_reformat_type = 'py')
+
+                preprocess_id = base_var.preproc_id
+                for preproc_dict in namelist.PREPROCESS:
+                    if preproc_dict['id'] == preprocess_id:
+                        logger.info('Preprocess id: %s', preprocess_id)
+                        project_info['PREPROCESS'] = preproc_dict
+
+                cube, path = preprocess(project_info, base_var, model, currDiag, cmor_reformat_type='py')
 
                 # add only if we need multimodel statistics
-                if project_info['PREPROCESS']['multimodel_mean'] is True:
-                    models_cubes.append(prep[0])
-                    models_fullpaths.append(prep[1])
+                if project_info['PREPROCESS']['multimodel_mean']:
+                    models_cubes.append(cube)
+                    models_fullpaths.append(path)
 
         # before we proceed more, we call multimodel operations
-        if project_info['PREPROCESS']['multimodel_mean'] is True:
-            pp.multimodel_mean(models_cubes, models_fullpaths)
+        if project_info['PREPROCESS']['multimodel_mean']:
+            multimodel_mean(models_cubes, models_fullpaths)
 
         vardicts = currDiag.variables
         variables = []
@@ -418,10 +383,10 @@ def process_namelist(namelist_file, config_file):
         # and expect that to be a model attribute
         ref_models = []
         ###############
-        for v in vardicts:
-            variables.append(v['name'])
-            field_types.append(v['field'])
-            ref_models.append(v['ref_model'][0])
+        for var in vardicts:
+            variables.append(var['name'])
+            field_types.append(var['field'])
+            ref_models.append(var['ref_model'][0])
 
         project_info['RUNTIME']['currDiag'] = currDiag
 
@@ -449,24 +414,29 @@ def process_namelist(namelist_file, config_file):
                 logger.info("Calling %s for '%s'", executable, derived_var)
                 interface_data = create_interface_data_dir(project_info, executable)
                 project_info['RUNTIME']['interface_data'] = interface_data
-                pp.run_executable(executable, project_info, verbosity,
-                                  project_info['GLOBAL']['exit_on_warning'])
+                run_executable(
+                    executable,
+                    project_info,
+                    verbosity,
+                    project_info['GLOBAL']['exit_on_warning'],
+                )
 
                 # run diagnostics...
                 # ...unless run_diagnostic is specifically set to False
-                if project_info['GLOBAL']['run_diagnostic'] is True:
+                if project_info['GLOBAL']['run_diagnostic']:
                     executable = os.path.join(script_root, "diag_scripts",
                                               scrpts[i]['script'])
                     configfile = os.path.join(script_root, scrpts[i]['cfg_file'])
                     logger.info("Running diag_script: %s", executable)
                     logger.info("with configuration file: %s", configfile)
                     interface_data = create_interface_data_dir(project_info, executable)
-                    project_info['RUNTIME']['interface_data'] = interface_data                    
-                    pp.run_executable(executable,
-                                      project_info,
-                                      verbosity,
-                                      project_info['GLOBAL']['exit_on_warning'],
-                                      launcher_arguments=None)
+                    project_info['RUNTIME']['interface_data'] = interface_data
+                    run_executable(
+                        executable,
+                        project_info,
+                        verbosity,
+                        project_info['GLOBAL']['exit_on_warning'],
+                    )
 
     # delete environment variable
     del os.environ['0_ESMValTool_version']

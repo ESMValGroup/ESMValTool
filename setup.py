@@ -6,11 +6,8 @@
 # - ncl
 # - iris
 # - basemap
-# - cmip5-cmor-tables
-# - cmip6-cmor-tables
 
 import sys
-import unittest
 
 from setuptools import Command, setup
 
@@ -20,7 +17,7 @@ PACKAGES = [
 
 
 class RunTests(Command):
-    """Class to run tests and generate a coverage report htmlcov/index.html"""
+    """Class to run tests and generate reports"""
     user_options = []
 
     def initialize_options(self):
@@ -31,25 +28,18 @@ class RunTests(Command):
 
     def run(self):
         """Run tests and generate a coverage report."""
-        import coverage
-        
-        cov = coverage.Coverage(source=PACKAGES)
-        cov.set_option("run:branch", True)
-        cov.set_option("html:title", 'Coverage report for ESMValTool')
-        cov.start()
+        import pytest
 
-        loader = unittest.TestLoader()
-        tests = loader.discover(
-            'tests', pattern='test_*.py', top_level_dir='.')
-        runner = unittest.TextTestRunner(verbosity=2)
-        results = runner.run(tests)
+        report_dir = 'test-reports'
+        errno = pytest.main([
+            'tests',
+            '--cov=esmvaltool',
+            '--cov-report=html:{}/coverage_html'.format(report_dir),
+            '--cov-report=xml:{}/coverage.xml'.format(report_dir),
+            '--junit-xml={}/report.xml'.format(report_dir),
+        ])
 
-        cov.stop()
-        cov.save()
-        cov.report()
-        cov.html_report()
-
-        sys.exit(0 if results.wasSuccessful() else 1)
+        sys.exit(errno)
 
 
 with open('README.md') as readme:
@@ -74,14 +64,16 @@ with open('README.md') as readme:
             'netCDF4',
             'matplotlib',
             'pyyaml',
+            'pytest',
+            'pytest-cov',
             'shapely',
         ],
         tests_require=[
-            'coverage',
             'easytest',
             'mock',
             'nose',
             'pytest',
+            'pytest-cov',
         ],
         entry_points={
             'console_scripts': [

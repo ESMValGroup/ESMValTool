@@ -15,22 +15,22 @@ exit_on_warning: False
 # Plot file format? [ps]/pdf/png/eps/epsi
 output_file_type: pdf
 # Destination directories
-run_dir :  /home/bandela/test_output
-preproc_dir: /home/bandela/test_output/preproc
-work_dir: /home/bandela/test_output/work
-plot_dir: /home/bandela/test_output/plots
+run_dir: ~/esmvaltool_output
+preproc_dir: ~/esmvaltool_output/preproc
+work_dir: ~/esmvaltool_output/work
+plot_dir: ~/esmvaltool_output/plots
 # Save intermediary cubes in the preprocessor True/[False]
 save_intermediary_cubes: True
 
 rootpath:
   # Rootpath to CMIP5 data
-  CMIP5: ./testdata/
+  CMIP5: ~/esmvaltool_input
   # Rootpath to OBS data
-  OBS: ./testdata/
+  OBS: ~/esmvaltool_input
   # Default
-  default: ./testdata/
+  default: ~/esmvaltool_input
   
-# Directory structure for CMIP5 data: [None]/BADC/DKRZ/ETHZ
+# Directory structure for input data: [default]/BADC/DKRZ/ETHZ/etc
+# See config-developer.yml for definitions.
 drs:
-  CMIP5: None
-
+  CMIP5: default

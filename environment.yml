@@ -35,4 +35,4 @@ dependencies:
 - pytest
 - easytest
 - mock
-- coverage
+- pytest-cov
