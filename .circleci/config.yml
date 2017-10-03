@@ -37,3 +37,8 @@ jobs:
           path: test-reports/
       - store_artifacts:
           path: test-reports/
+      - run:
+          # Upload test results to codacy
+          command : |
+            pip install codacy-coverage
+            python-codacy-coverage -r test-reports/coverage.xml
