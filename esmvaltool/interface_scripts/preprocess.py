@@ -5,24 +5,22 @@ toolbox. Author: Valeriu Predoi, University of Reading,
 Initial version: August 2017
 contact: valeriu.predoi@ncas.ac.uk
 """
-import os
-import pdb
-import subprocess
-import re
-import sys
-import logging
-import data_interface as dint
+import copy
 import exceptions
-import launchers
-from fixes.fix import Fix
-from regrid import regrid as rg
-from regrid import vinterp as vip
+import logging
+import os
+import subprocess
+
 import iris
 import iris.exceptions
-import preprocessing_tools as pt
 import numpy as np
+
+import data_interface as dint
+import launchers
+import preprocessing_tools as pt
 from data_finder import get_input_filelist, get_output_file
-import datetime
+from fixes.fix import Fix
+from regrid import regrid, vertical_schemes, vinterp
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +48,7 @@ def run_executable(string_to_execute,
                    project_info,
                    verbosity,
                    exit_on_warning,
-                   launcher_arguments=None,write_di=True):
+                   launcher_arguments=None, write_di=True):
     """ @brief Executes script/binary
         @param executable String pointing to the script/binary to execute
         @param project_info Current namelist in dictionary format
@@ -61,7 +59,7 @@ def run_executable(string_to_execute,
         Check the type of script/binary from the executable string suffix and
         execute the script/binary properly.
     """
-    
+
     if write_di:
         write_data_interface(string_to_execute, project_info)
 
@@ -465,10 +463,9 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
             if (not os.path.isfile(project_info['TEMPORARY']['outfile_fullpath'])):
                 raise exceptions.IOError(2, "Expected reformatted file isn't available: ",
                                          project_info['TEMPORARY']['outfile_fullpath'])
-                sys.exit(1)
-        
+
         # load cube now, if available
-        reft_cube = iris.load_cube(project_info['TEMPORARY']['outfile_fullpath']) 
+        reft_cube = iris.load_cube(project_info['TEMPORARY']['outfile_fullpath'])
 
     ################## 0. CMOR_REFORMAT (PY version) ##############
     # New code: cmor_check.py (by Javier Vegas)
@@ -661,9 +658,8 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
             nsl = 0
 
         # check scheme value
-        from regrid import vinterp_schemes as visc
-        if scheme not in visc():
-            logger.warning("Select level scheme should be one of the allowed ones %s - no select level! " % str(possible_schemes))
+        if scheme not in vertical_schemes:
+            logger.warning("Select level scheme should be one of the allowed ones %s - no select level! ", vertical_schemes)
             nsl = 0
 
         # check levels value
@@ -672,8 +668,7 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
                 vlevels = levels.split(',')
                 psl = 2
             except (AttributeError, "'int' object has no attribute 'split'"):
-                logger.warning("Vertical levels must be either int, string or list " + levels)
-                pass
+                logger.warning("Vertical levels must be either int, string or list %r", levels)
         elif isinstance(levels, int) or isinstance(levels, float):
             vlevels = [levels]
             psl = 2
@@ -681,32 +676,31 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
             vlevels = levels
             psl = 2
         else:
-            logger.warning("Vertical levels must be int, float, string or list (of ints or floats) " + levels + " - no select level!")
+            logger.warning("Vertical levels must be int, float, string or list (of ints or floats) %s - no select level!", levels)
             psl = 0
-            
 
         if psl > 0 and nsl > 0:
 
-            logger.info(" >>> preprocess.py >>>  Calling regrid to select vertical level %s Pa with scheme %s" % (str(vlevels), scheme))
+            logger.info("Calling regrid to select vertical level %s Pa with scheme %s", vlevels, scheme)
 
             # check cube has 'air_pressure' coordinate
             ap = reft_cube.coord('air_pressure')
             if ap is None:
-                logger.warning(" >>> preprocess.py >>>  Trying to select level but cube has no air_pressure coordinate ")
+                logger.warning("Trying to select level but cube has no air_pressure coordinate ")
             else:
                 ap_vals = ap.points
-                logger.info(" >>> preprocess.py >>> Cube air pressure values " + str(ap_vals))
+                logger.info("Cube air pressure values " + str(ap_vals))
 
 
                 # warn if selected levels are outside data bounds
                 # these cases will automatically make cmor.check() crash anyway
                 if min(vlevels) < min(ap_vals):
-                    logger.warning(" >>> preprocess.py >>>  Selected pressure level below lowest data point, expect large extrapolation errors! ")
+                    logger.warning("Selected pressure level below lowest data point, expect large extrapolation errors! ")
                 if max(vlevels) > max(ap_vals):
-                    logger.warning(" >>> preprocess.py >>>  Selected pressure level above highest data point, expect large extrapolation errors! ")
+                    logger.warning("Selected pressure level above highest data point, expect large extrapolation errors! ")
 
                 # call vinterp(interpolate)
-                reft_cube = vip(reft_cube, vlevels, scheme)
+                reft_cube = vinterp(reft_cube, vlevels, scheme)
 
                 # check cube
                 #########################
@@ -746,10 +740,10 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
             tgt_grid_cube = iris.load_cube(target_grid)
             logger.info("Target regrid cube summary --->\n%s", tgt_grid_cube)
             if regrid_scheme:
-                rgc = rg(src_cube, tgt_regrid_cube, regrid_scheme)
+                rgc = regrid(src_cube, tgt_regrid_cube, regrid_scheme)
             else:
                 logger.info("No regrid scheme specified, assuming linear")
-                rgc = rg(src_cube, tgt_regrid_cube, 'linear')
+                rgc = regrid(src_cube, tgt_regrid_cube, 'linear')
 
             logger.info("Regridded cube summary --->\n%s", rgc)
             reft_cube = rgc
@@ -791,10 +785,10 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
                                     logger.info("Target regrid cube summary --->\n%s", tgt_grid_cube)
 
                                     if regrid_scheme:
-                                        rgc = rg(src_cube, tgt_grid_cube, regrid_scheme)
+                                        rgc = regrid(src_cube, tgt_grid_cube, regrid_scheme)
                                     else:
                                         logger.info("No regrid scheme specified, assuming linear")
-                                        rgc = rg(src_cube, tgt_grid_cube, 'linear')
+                                        rgc = regrid(src_cube, tgt_grid_cube, 'linear')
                                     logger.info("Regridded cube summary --->\n%s", rgc)
 
                                     # check cube
@@ -823,10 +817,10 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
                 if isinstance(target_grid.split('x')[0], basestring) and isinstance(target_grid.split('x')[1], basestring):
                     logger.info("Target regrid is XxY: %s", target_grid)
                     if regrid_scheme:
-                        rgc = rg(src_cube, target_grid, regrid_scheme)
+                        rgc = regrid(src_cube, target_grid, regrid_scheme)
                     else:
                         logger.info("No regrid scheme specified, assuming linear")
-                        rgc = rg(src_cube, target_grid, 'linear')
+                        rgc = regrid(src_cube, target_grid, 'linear')
 
                     logger.info("Regridded cube summary --->\n%s", rgc)
 
@@ -917,7 +911,7 @@ def multimodel_mean(cube_collection, path_collection):
 
     # global mean
     means = [np.mean(m.data) for m in means_list]
-    logger.info(" >>> preprocess.py >>> Multimodel global means: %s" % str(means))
+    logger.info("Multimodel global means: %s", means)
 
     # seasonal mean
     # need to fix this !
@@ -925,8 +919,6 @@ def multimodel_mean(cube_collection, path_collection):
     #print(smeans_cubes)
     #smeans = [np.mean(c.data) for c in smeans_cubes]
     #logger.info(" >>> preprocess.py >>> Multimodel seasonal global means: %s" % str(smeans))
-    
-
 
 
 ###################################################################################
