@@ -61,7 +61,7 @@ def run_executable(string_to_execute,
         Check the type of script/binary from the executable string suffix and
         execute the script/binary properly.
     """
-    
+
     if write_di:
         write_data_interface(string_to_execute, project_info)
 
@@ -466,9 +466,9 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
                 raise exceptions.IOError(2, "Expected reformatted file isn't available: ",
                                          project_info['TEMPORARY']['outfile_fullpath'])
                 sys.exit(1)
-        
+
         # load cube now, if available
-        reft_cube = iris.load_cube(project_info['TEMPORARY']['outfile_fullpath']) 
+        reft_cube = iris.load_cube(project_info['TEMPORARY']['outfile_fullpath'])
 
     ################## 0. CMOR_REFORMAT (PY version) ##############
     # New code: cmor_check.py (by Javier Vegas)
@@ -483,7 +483,6 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
 
         var_name = variable.name
         table = model['mip']
-
 
         try:
             # Load cubes for requested variable in given files
@@ -683,7 +682,7 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
         else:
             logger.warning("Vertical levels must be int, float, string or list (of ints or floats) " + levels + " - no select level!")
             psl = 0
-            
+
 
         if psl > 0 and nsl > 0:
 
@@ -925,7 +924,7 @@ def multimodel_mean(cube_collection, path_collection):
     #print(smeans_cubes)
     #smeans = [np.mean(c.data) for c in smeans_cubes]
     #logger.info(" >>> preprocess.py >>> Multimodel seasonal global means: %s" % str(smeans))
-    
+
 
 
 
