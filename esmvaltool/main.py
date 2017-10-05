@@ -170,14 +170,14 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('-n', '--namelist-file',
-                        help='Namelist file')
+                        help='Path to the namelist file', required=True)
     parser.add_argument('-c', '--config-file',
                         default=os.path.join(os.path.dirname(__file__), 'config-user.yml'),
                         help='Config file')
     args = parser.parse_args()
 
-    namelist_file = os.path.abspath(args.namelist_file)
-    config_file = os.path.abspath(args.config_file)
+    namelist_file = os.path.abspath(os.path.expandvars(os.path.expanduser(args.namelist_file)))
+    config_file = os.path.abspath(os.path.expandvars(os.path.expanduser(args.config_file)))
 
     ####################################################
     # Set up logging before anything else              #

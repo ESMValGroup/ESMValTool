@@ -481,7 +481,6 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
         var_name = variable.name
         table = model['mip']
 
-
         try:
             # Load cubes for requested variable in given files
             # remember naming conventions
