@@ -6,7 +6,6 @@ performance metrics testing
 import glob
 import os
 import shutil
-import tempfile
 from unittest import SkipTest
 
 import numpy as np
@@ -36,13 +35,21 @@ def _load_config(filename=None):
     with open(filename, 'r') as file:
         cfg = yaml.safe_load(file)
 
+    cfg['configfile'] = filename
     cfg['reference']['output'] = os.path.abspath(
         os.path.expanduser(cfg['reference']['output']))
+
+    if cfg['test'].get('namelists', []) == []:
+        script_root = esmvaltool.get_script_root()
+        namelist_glob = os.path.join(script_root, 'nml', 'namelist_*.yml')
+        cfg['test']['namelists'] = glob.glob(namelist_glob)
 
     return cfg
 
 
 _CFG = _load_config()
+
+NAMELISTS = _CFG['test']['namelists']
 
 
 def _create_config_user_file(output_directory):
@@ -52,38 +59,12 @@ def _create_config_user_file(output_directory):
 
     cfg = _CFG['user']
 
-    # update/insert output directory definitions
-    cfg['run_dir'] = output_directory
-    for task in ('preproc', 'work', 'plot'):
-        cfg[task + '_dir'] = os.path.join(output_directory, task)
-
     # write to file
-    fd, filename = tempfile.mkstemp(text=True)
-    with os.fdopen(fd, 'w') as file:
+    filename = os.path.join(output_directory, 'config-user.yml')
+    with open(filename, 'w') as file:
         yaml.safe_dump(cfg, file)
-    # use code below once moving run_dir is fixed
-    #     filename = os.path.join(output_directory, 'config-user.yml')
-    #     with open(filename, 'w') as file:
-    #         yaml.safe_dump(cfg, file)
 
     return filename
-
-
-def _get_ref_directory(namelist):
-    """ Get the name of the directory containing the reference data"""
-
-    namelist_base = os.path.splitext(os.path.basename(namelist))[0]
-    namelist_glob = os.path.join(_CFG['reference']['output'],
-                                 '*' + namelist_base + '*')
-    refs = glob.glob(namelist_glob)
-    refdirectory = refs[0] if refs else None
-
-    if len(refs) > 1:
-        print("Warning: found multiple possible reference datasets:\n{}\n"
-              "for namelist {}\n"
-              "Using only the first one, {}".format("\n".join(refs), namelist,
-                                                    refdirectory))
-    return refdirectory
 
 
 class ESMValToolTest(EasyTest):
@@ -96,58 +77,50 @@ class ESMValToolTest(EasyTest):
         namelist: str
             The filename of the namelist that should be tested.
         output_directory : str
-            The name of a temporary directory where results can be stored.
+            The name of a directory where results can be stored.
         ignore: str or iterable of str
             Glob patterns of files to be ignored when testing.
         """
         if not _CFG['test']['run']:
-            raise SkipTest("System tests disabled")
+            raise SkipTest("System tests disabled in {}"
+                           .format(_CFG['configfile']))
 
         self.ignore = (ignore, ) if isinstance(ignore, str) else ignore
 
         script_root = esmvaltool.get_script_root()
 
-        # Normalize input paths
+        # Normalize namelist path
         if not os.path.exists(namelist):
             namelist = os.path.join(script_root, 'nml', namelist)
         namelist = os.path.abspath(namelist)
-        output_directory = os.path.abspath(output_directory)
+
+        # Define output and reference data paths
+        namelist_name = os.path.splitext(os.path.basename(namelist))[0]
+        namelist_dir = os.path.join(output_directory, namelist_name)
+        reference_dir = os.path.join(_CFG['reference']['output'],
+                                     namelist_name)
 
         # Are we asked to generate reference data?
         self.generate_ref = _CFG['reference'].get('generate', False)
 
-        # Find the location of the reference data
-        refdirectory = _get_ref_directory(namelist)
-
-        # If no reference data is available
-        if refdirectory is None:
-
-            # Should reference data be generated?
-            if not self.generate_ref:
-                raise SkipTest("No reference data available")
-
-            # Should it be generated for this namelist?
-            generate_nml = _CFG['reference'].get('generate_namelists', [])
-            namelist_base = os.path.basename(namelist)
-            if not (generate_nml == [] or namelist_base in generate_nml):
-                raise SkipTest("No reference data available")
-
-            # Define a new reference data directory
-            refdirectory = os.path.join(_CFG['reference']['output'],
-                                        os.path.splitext(namelist_base)[0])
-
-        # the command to call ESMValTool
-        exe = os.path.join(script_root, 'main.py')
+        # If reference data is neither available nor should be generated, skip
+        if not os.path.exists(reference_dir) and not self.generate_ref:
+            raise SkipTest("No reference data available for namelist {} in {}"
+                           .format(namelist, _CFG['reference']['output']))
 
         # required ESMValTool configuration file
         config = _create_config_user_file(output_directory)
 
         super(ESMValToolTest, self).__init__(
-            exe=exe,
-            args=['-n', namelist, '-c', config],
-            output_directory=output_directory,
-            refdirectory=refdirectory,
+            exe=os.path.join(script_root, 'main.py'),
+            args=['-n', namelist, '-c', config, '-o', namelist_dir],
+            output_directory=namelist_dir,
+            refdirectory=reference_dir,
             **kwargs)
+        # Workaround: namelist_dir is created by the call to the
+        # EasyTest constructor, but ESMValTool stops if the output
+        # directory already exists, so delete it before running ESMValTool.
+        os.rmdir(namelist_dir)
 
     def run(self, **kwargs):
         """ Run tests, unless we are asked to generate the reference data instead.
@@ -164,7 +137,8 @@ class ESMValToolTest(EasyTest):
         """
         if not os.path.exists(self.refdirectory):
             self._execute()
-            shutil.copytree(self.output_directory, self.refdirectory)
+            shutil.move(self.output_directory,
+                        os.path.dirname(self.refdirectory))
         else:
             print("Warning: not generating reference data, reference "
                   "directory {} already exists.".format(self.refdirectory))
