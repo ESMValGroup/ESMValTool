@@ -100,7 +100,7 @@ def cmip5_mip2realm_freq(mip):
         'aero': ['aerosol', 'mon'],
         #'3hr': ???
         'cfDay': ['atmos', 'day'],
-        'cfMon': ['atmos', 'mon'], 
+        'cfMon': ['atmos', 'mon'],
         'day': ['atmos', 'day'],
         'fx': ['*', 'fx']
     }
@@ -124,12 +124,16 @@ def replace_tags(path, model, var):
             replacewith = var['name']
         elif tag == 'field':
             replacewith = var['field']
-        elif tag == 'institute':
-            replacewith = cmip5_model2inst(model['name'])
-        elif tag == 'freq':
-            replacewith = cmip5_mip2realm_freq(model['mip'])[1]
-        elif tag == 'realm':
-            replacewith = cmip5_mip2realm_freq(model['mip'])[0]
+        elif tag in ('institute', 'freq', 'realm'):
+            if tag in model:
+                replacewith = str(model[tag])
+            else:
+                if tag == 'institute':
+                    replacewith = cmip5_model2inst(model['name'])
+                elif tag == 'freq':
+                    replacewith = cmip5_mip2realm_freq(model['mip'])[1]
+                elif tag == 'realm':
+                    replacewith = cmip5_mip2realm_freq(model['mip'])[0]
         elif tag == 'latestversion':  # handled separately later
             pass
         elif tag == 'tier':
@@ -143,7 +147,7 @@ def replace_tags(path, model, var):
                 raise KeyError('Model key %s must be specified for project %s, check your namelist entry' % (tag, model['project']))
 
         path = path.replace('[' + tag + ']', replacewith)
-       
+
     return path
 
 
@@ -167,8 +171,8 @@ def get_input_filelist(project_info, model, var):
     """ Returns the full path to input files
     """
 
-    project = model['project'] 
-   
+    project = model['project']
+
     dict = read_config_file(project)
 
     # Apply variable-dependent model keys
@@ -229,9 +233,9 @@ def get_output_file(project_info, model, var):
     """
 
     dict = read_config_file(model['project'])
-    
-    outfile = os.path.join(project_info['GLOBAL']['preproc_dir'], 
-                           model['project'], 
+
+    outfile = os.path.join(project_info['GLOBAL']['preproc_dir'],
+                           model['project'],
                            replace_tags(dict['output_file'], model, var))
     outfile = ''.join((outfile, '.nc'))
 
@@ -279,7 +283,7 @@ def veto_files(model, dirname, filename):
 
 def time_handling(year1, year1_model, year2, year2_model):
     """
-    This function is responsible for finding the correct 
+    This function is responsible for finding the correct
     files for the needed timespan:
 
     year1 - the start year in files
