@@ -82,10 +82,8 @@ class Test(tests.Test):
             emsg = 'Failed to extract levels'
             with self.assertRaisesRegexp(ValueError, emsg):
                 vinterp(self.cube, levels, 'linear')
-    
-    @unittest.expectedFailure
+
     def test_interpolation(self):
-        #TODO: fix code so this test works
         new_data = np.array(True)
         levels = np.array([0.5, 1.5])
         scheme = 'linear'
@@ -115,9 +113,7 @@ class Test(tests.Test):
         # Check the _create_cube kwargs ...
         self.assertEqual(kwargs, dict())
 
-    @unittest.expectedFailure
     def test_interpolation__extrapolated_NaN_filling(self):
-        #TODO: fix code so this test works
         new_data = np.array([0, np.nan])
         levels = [0.5, 1.5]
         scheme = 'nearest'
@@ -148,9 +144,7 @@ class Test(tests.Test):
         # Check the _create_cube kwargs ...
         self.assertEqual(kwargs, dict())
 
-    @unittest.expectedFailure
     def test_interpolation__masked(self):
-        #TODO: fix code so this test works
         new_data = np.empty(self.shape)
         levels = np.array([0.5, 1.5])
         scheme = 'linear'
