@@ -13,6 +13,7 @@ engines:
         python_version: 3
 
 exclude_paths: [
+    'doc/**',
     # cmor tables
     'esmvaltool/interface_scripts/cmip*-cmor-tables/**',
     # old stuff

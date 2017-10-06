@@ -8,8 +8,9 @@ linters:
     yamllint:
     shellcheck:
 files:
-    # ignore old stuff, recent versions are in 'esmvaltool' dir
     ignore: [
+        'doc',
+        # ignore old stuff, recent versions are in 'esmvaltool' dir
         'backend',
         'diag_scripts',
         'interface_data',
