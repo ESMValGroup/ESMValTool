@@ -20,12 +20,12 @@ import numpy as np
 import stratify
 import stratify._vinterp as vinterp
 
-#class DirectionExtrapolator(vinterp.PyFuncExtrapolator):
-#    def extrap_kernel(self, direction, z_src, fz_src,
-#                      level, output_array):
-#        output_array[:] = np.inf if direction > 0 else -np.inf
+# class DirectionExtrapolator(vinterp.PyFuncExtrapolator):
+#     def extrap_kernel(self, direction, z_src, fz_src,
+#                       level, output_array):
+#         output_array[:] = np.inf if direction > 0 else -np.inf
 #
-#extrapolator = DirectionExtrapolator()
+# extrapolator = DirectionExtrapolator()
 
 # Regular expression to parse a "MxN" cell-specification.
 _CELL_SPEC = re.compile(r'''\A

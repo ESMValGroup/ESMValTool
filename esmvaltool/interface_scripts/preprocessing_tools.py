@@ -50,7 +50,8 @@ def glob(file_list, varname):
     # and/or the time calendars are crooked
     # -> these exceptional cases are nicely solved by applying Javier's nice
     # iris fixing (merge_callback and get_attr_from_field_coord are also
-    # in preprocess.py but keeping them here in case we will have to change things)
+    # in preprocess.py but keeping them here in case we will have to
+    # change things)
 
     var_name = varname
 
@@ -68,23 +69,18 @@ def glob(file_list, varname):
     try:
         concatenated = c.concatenate()
         try:
-            logger.info(
-                " >>> preprocessing_tools.py >>> Successfully concatenated cubes"
-            )
+            logger.info("Successfully concatenated cubes")
             return concatenated[0]
         except (OSError, iris.exceptions.IrisError) as exc:
-            logger.warning(
-                " >>> preprocessing_tools.py >>> Could not save concatenated cube, keeping a list of files - %s ",
-                str(exc))
-            pass
+            logger.warning("Could not save concatenated cube, keeping a "
+                           "list of files - %s ", exc)
             return 0
     except iris.exceptions.ConcatenateError as exc:
         error_message = "Problem trying to concatenate the following cubes:\n"
         for cube in cl:
             error_message += cube.summary(shorten=True) + '\n'
-        pass
         logger.warning(
-            " >>> preprocessing_tools.py >>> Could not concatenate cubes, keeping a list of files - %s",
+            "Could not concatenate cubes, keeping a list of files - %s",
             error_message)
         return 0
 
@@ -238,9 +234,10 @@ use with cube aggregation functions such as :meth:`~iris.cube.Cube.collapsed`,
 :meth:`~iris.cube.Cube.aggregated_by` or
 :meth:`~iris.cube.Cube.rolling_window`.
 
-In this case, we have a time sequence of measurements (time unit dt), and we want to calculate how many times N
-the measurements exceed a certain threshold R over a sliding window dT (multiple of dt). The threshold could be 0
-for any unwanted value for instance.
+In this case, we have a time sequence of measurements (time unit dt), and we
+want to calculate how many times N the measurements exceed a certain threshold
+R over a sliding window dT (multiple of dt). The threshold could be 0 for any
+unwanted value for instance.
 
 """
 
@@ -316,8 +313,8 @@ def window_counts(mycube, value_threshold, window_size, pctile):
         threshold=value_threshold,
         spell_length=window_size)
 
-    #if one wants to print the whole array
-    #np.set_printoptions(threshold=np.nan)
+    # if one wants to print the whole array
+    # np.set_printoptions(threshold=np.nan)
     r = counts_windowed_cube.data.flatten()
     meanr = np.mean(r)
     stdr = np.std(r)
@@ -369,7 +366,9 @@ def time_slice(mycube, yr1, mo1, d1, yr2, mo2, d2):
     Function that returns a subset of the original cube (slice)
     given two dates of interest date1 and date2
     date1 and date2 should be given in a yr,mo,d (int)format e.g.
-    time_slice(cube,2006,2,2,2010,1,1) or time_slice(cube,'2006','2','2','2010','1','1');
+    time_slice(cube,2006,2,2,2010,1,1) or
+    time_slice(cube,'2006','2','2','2010','1','1');
+
     Returns a cube
     """
     import datetime
@@ -378,7 +377,9 @@ def time_slice(mycube, yr1, mo1, d1, yr2, mo2, d2):
     myDate2 = datetime.datetime(int(yr2), int(mo2), int(d2))
     t1 = mycube.coord('time').units.date2num(myDate1)
     t2 = mycube.coord('time').units.date2num(myDate2)
-    myConstraint = iris.Constraint(time=lambda t: t1 < mycube.coord('time').units.date2num(t.point) and t2 > mycube.coord('time').units.date2num(t.point))
+    myConstraint = iris.Constraint(time=lambda t: (
+        t1 < mycube.coord('time').units.date2num(t.point) and
+        t2 > mycube.coord('time').units.date2num(t.point)))
     cubeslice = mycube.extract(myConstraint)
     return cubeslice
 
@@ -472,7 +473,10 @@ def seasonal_mean(mycube):
         mycube, 'time', name='season_year')
     annual_seasonal_mean = mycube.aggregated_by(['clim_season', 'season_year'],
                                                 iris.analysis.MEAN)
-    spans_three_months = lambda time: (time.bound[1] - time.bound[0]) == 2160
+
+    def spans_three_months(time):
+        return (time.bound[1] - time.bound[0]) == 2160
+
     three_months_bound = iris.Constraint(time=spans_three_months)
     resc = annual_seasonal_mean.extract(three_months_bound)
     print(resc)
