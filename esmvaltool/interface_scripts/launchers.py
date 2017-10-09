@@ -32,8 +32,9 @@ class launchers(object):
             self.interface_data = tempfile.mkdtemp()
         else:
             self.interface_data = interface_data
-        self.filename = os.path.join(self.interface_data, 'curr_trace_indent.txt')
- 
+        self.filename = os.path.join(self.interface_data,
+                                     'curr_trace_indent.txt')
+
     def convert_arguments(self):
         """
         convert launcher arguments to a dictionary
@@ -69,19 +70,28 @@ class launchers(object):
                                                 "warnings_to_ignore.txt")
             if os.path.isfile(warnings_ignore_file):
                 with open(warnings_ignore_file) as fin:
-                    diag_specific_warnings_to_ignore = fin.readlines()           
+                    diag_specific_warnings_to_ignore = fin.readlines()
 
         # Suppress version info output and empty lines
-        info = [line for line in range(len(std_outerr)) if ((line > self.filter_max_line) and len(std_outerr[line]) > 0)]
+        info = [
+            line for line in range(len(std_outerr))
+            if ((line > self.filter_max_line) and len(std_outerr[line]) > 0)
+        ]
 
-        fatal = [line for line in range(len(std_outerr))
-                 if re.search(self.fatal_string, std_outerr[line], re.IGNORECASE)]
+        fatal = [
+            line for line in range(len(std_outerr))
+            if re.search(self.fatal_string, std_outerr[line], re.IGNORECASE)
+        ]
 
-        error = [line for line in range(len(std_outerr))
-                 if re.search(self.error_string, std_outerr[line], re.IGNORECASE)]
+        error = [
+            line for line in range(len(std_outerr))
+            if re.search(self.error_string, std_outerr[line], re.IGNORECASE)
+        ]
 
-        warning = [line for line in range(len(std_outerr))
-                   if re.search(self.warning_string, std_outerr[line], re.IGNORECASE)]
+        warning = [
+            line for line in range(len(std_outerr))
+            if re.search(self.warning_string, std_outerr[line], re.IGNORECASE)
+        ]
 
         # Remove warnings to be skipped
         warnings_to_skip = []
@@ -90,7 +100,9 @@ class launchers(object):
         else:
             warnings_to_keep = []
             for line in warning:
-                if std_outerr[line].strip() in [w.strip() for w in diag_specific_warnings_to_ignore]:
+                if std_outerr[line].strip() in [
+                        w.strip() for w in diag_specific_warnings_to_ignore
+                ]:
                     warnings_to_skip.append(line)
                 else:
                     warnings_to_keep.append(line)
@@ -98,33 +110,42 @@ class launchers(object):
         if len(fatal) > 0:
             for line in [currLine for currLine in std_outerr]:
                 sys.stderr.write(self.lang + " ERROR MESSAGE: " + line + '\n')
-            raise nclExecuteError(self.lang + " ERROR (see full NCL output above)")
+            raise nclExecuteError(self.lang +
+                                  " ERROR (see full NCL output above)")
 
         if len(error) > 0:
             for line in [currLine for currLine in std_outerr]:
                 sys.stderr.write(self.lang + " ERROR MESSAGE: " + line + '\n')
+
+
 # A-laue_ax+
-            # In contrast to "fatal" errors, we treat "normal" errors as warnings
-            # and do not abort (except if "exit_on_warning" in the namelist is set
-            # to "True".)
+# In contrast to "fatal" errors, we treat "normal" errors as warnings
+# and do not abort (except if "exit_on_warning" in the namelist is set
+# to "True".)
             if exit_on_warning:
-# A-laue_ax-
-                raise nclExecuteError(self.lang + " ERROR (see full NCL output above)")
+                # A-laue_ax-
+                raise nclExecuteError(self.lang +
+                                      " ERROR (see full NCL output above)")
 
         all_output_as_warning = False
         if len(warnings_to_keep) > 0:
             all_output_as_warning = True
             for line in [currLine for currLine in std_outerr]:
-                sys.stderr.write(self.lang + " WARNING MESSAGE: " + line + '\n')
+                sys.stderr.write(self.lang + " WARNING MESSAGE: " + line +
+                                 '\n')
             if exit_on_warning:
-                raise nclExecuteWarning(self.lang + " WARNING (see full NCL output above)")
+                raise nclExecuteWarning(self.lang +
+                                        " WARNING (see full NCL output above)")
 
         if len(info) > 0 and verbosity <= 10 and not all_output_as_warning:
             for line_no in info:
                 remove_quotation_marks = re.sub('"', '', std_outerr[line_no])
-                if re.search('.*info: (.*)', remove_quotation_marks) is not None:
-                    output_string = re.search(".*info: (.*)", remove_quotation_marks).group(1)
-                    sys.stdout.write(self.lang + " info: " + output_string + '\n')
+                if re.search('.*info: (.*)',
+                             remove_quotation_marks) is not None:
+                    output_string = re.search(".*info: (.*)",
+                                              remove_quotation_marks).group(1)
+                    sys.stdout.write(self.lang + " info: " + output_string +
+                                     '\n')
                 else:
                     sys.stdout.write(std_outerr[line_no] + '\n')
 
@@ -133,10 +154,16 @@ class launchers(object):
                 sys.stdout.write(line + '\n')
 
         if len(warnings_to_skip) > 0:
-            sys.stdout.write(self.lang + " info: The following warnings were ignored (specified to" + '\n')
-            sys.stdout.write(self.lang + " info: be ignored in the diagnostic script)" + '\n')
+            sys.stdout.write(
+                self.lang +
+                " info: The following warnings were ignored (specified to" +
+                '\n')
+            sys.stdout.write(self.lang +
+                             " info: be ignored in the diagnostic script)" +
+                             '\n')
             for line in warnings_to_skip:
-                sys.stdout.write(self.lang + " info: " + std_outerr[line] + '\n')
+                sys.stdout.write(self.lang + " info: " + std_outerr[line] +
+                                 '\n')
 
 
 class ncl_launcher(launchers):
@@ -148,7 +175,8 @@ class ncl_launcher(launchers):
         self.fatal_string = 'fatal:'
         self.warning_string = 'warning:'
 
-    def execute(self, ncl_executable, project_info, verbosity, exit_on_warning):
+    def execute(self, ncl_executable, project_info, verbosity,
+                exit_on_warning):
         """ @brief Wrapper to execute NCL scripts
             @param ncl_command Full path to the NCL script to execute
             @param project_info Current namelist in dictionary format
@@ -166,22 +194,25 @@ class ncl_launcher(launchers):
             f_ncl_indent.write("0")
 
         if not os.path.exists(ncl_executable):
-            raise nclExecuteError(self.lang + " ERROR (file to execute, \""
-                                            + ncl_executable
-                                            + "\", is missing)")
+            raise nclExecuteError(self.lang + " ERROR (file to execute, \"" +
+                                  ncl_executable + "\", is missing)")
 
         script_root = os.path.dirname(os.path.dirname(__file__))
-        run_application = subprocess.Popen("ncl " + ncl_executable, shell=True,
-                                           stdin=open(os.devnull),
-                                           stdout=subprocess.PIPE,
-                                           cwd=script_root)
+        run_application = subprocess.Popen(
+            "ncl " + ncl_executable,
+            shell=True,
+            stdin=open(os.devnull),
+            stdout=subprocess.PIPE,
+            cwd=script_root)
         #run_application.wait()
         std_outerr = run_application.communicate()[0].split('\n')
         self.write_stdouterr(std_outerr, verbosity, exit_on_warning)
 
-        for key in [env for env in os.environ if re.search('^ESMValTool_*', env)]:
+        for key in [
+                env for env in os.environ if re.search('^ESMValTool_*', env)
+        ]:
             if key not in self.persistent_env_variables:
-                del(os.environ[key])
+                del (os.environ[key])
 
 
 class r_launcher(launchers):
@@ -215,9 +246,8 @@ class r_launcher(launchers):
             r_pre_launch = ""
 
         if not os.path.exists(r_script):
-            raise nclExecuteError(self.lang + " ERROR (file to execute, \""
-                                            + r_script
-                                            + "\", is missing)")
+            raise nclExecuteError(self.lang + " ERROR (file to execute, \"" +
+                                  r_script + "\", is missing)")
 
         # Default launch command for R scripts
         r_launch = ' Rscript --slave --quiet '
@@ -230,22 +260,27 @@ class r_launcher(launchers):
 
         r_run = r_pre_launch + r_launch + r_script
 
-        run_application = subprocess.Popen(r_run, shell=True,
-                                           stdin=open(os.devnull),
-                                           stdout=subprocess.PIPE,
-                                           stderr=subprocess.STDOUT)
+        run_application = subprocess.Popen(
+            r_run,
+            shell=True,
+            stdin=open(os.devnull),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT)
         run_application.wait()
         std_outerr = run_application.communicate()[0].split('\n')
         self.write_stdouterr(std_outerr, verbosity, exit_on_warning)
 
-        for key in [env for env in os.environ if re.search('^ESMValTool_*', env)]:
-            del(os.environ[key])
+        for key in [
+                env for env in os.environ if re.search('^ESMValTool_*', env)
+        ]:
+            del (os.environ[key])
 
 
 class py_launcher(launchers):
     """
     general python launcher
     """
+
     def __init__(self, execute_as_shell=False, **kwargs):
         """
         Parameters
@@ -262,7 +297,8 @@ class py_launcher(launchers):
         self.warning_string = 'warning:'
         self.execute_as_shell = execute_as_shell
 
-    def execute(self, python_executable, project_info, verbosity, exit_on_warning):
+    def execute(self, python_executable, project_info, verbosity,
+                exit_on_warning):
         """ @brief Wrapper to execute PYTHON scripts
             @param python_executable: Full path to the python script to execute
             @param project_info Current namelist in dictionary format
@@ -291,11 +327,14 @@ class py_launcher(launchers):
                 self.execute_as_shell = self.launch_args['execute_as_shell']
 
         if self.execute_as_shell:
-            self._execute_shell(python_executable, project_info, verbosity, exit_on_warning)
+            self._execute_shell(python_executable, project_info, verbosity,
+                                exit_on_warning)
         else:  # Default option
-            self._execute_script(python_executable, project_info, verbosity, exit_on_warning)
+            self._execute_script(python_executable, project_info, verbosity,
+                                 exit_on_warning)
 
-    def _execute_script(self, python_executable, project_info, verbosity, exit_on_warning):
+    def _execute_script(self, python_executable, project_info, verbosity,
+                        exit_on_warning):
         """
         excute python script directly
 
@@ -307,50 +346,62 @@ class py_launcher(launchers):
             dictionary with relevant project info from namelist
         """
         if not os.path.exists(python_executable):
-            raise ValueError('Python executable not existing: %s' % python_executable)
+            raise ValueError(
+                'Python executable not existing: %s' % python_executable)
 
         # try to import the script. Note the script needs to be in
         # the pythonpath. This is normally ensured already due to
         # the sys.path.append statements in main.py
-        cmd = 'import ' + os.path.splitext(os.path.basename(python_executable))[0] + ' as usr_script'
+        cmd = 'import ' + os.path.splitext(
+            os.path.basename(python_executable))[0] + ' as usr_script'
 
         try:
             exec cmd
         except:
             print(cmd)
             print(traceback.format_exc())
-            raise ValueError('The script %s can not be imported!' % python_executable)
+            raise ValueError(
+                'The script %s can not be imported!' % python_executable)
 
         # import was successfull. Now call the script with project_info
         # as argument
         # Capturing stdout/err for warnings, however, this currently doesn't capture Tracebacks..
+
+
 #        with stdoutIO() as s:
 #            usr_script.main(project_info)
 #        self.write_stdouterr(string.split(s.getvalue(), '\n'), verbosity, exit_on_warning)
 
-        # This catpures Traceback but won't let us analyse the stdout/err for text warnings
+# This catpures Traceback but won't let us analyse the stdout/err for text warnings
         usr_script.main(project_info)
 
-    def _execute_shell(self, python_executable, project_info, verbosity, exit_on_warning):
+    def _execute_shell(self, python_executable, project_info, verbosity,
+                       exit_on_warning):
         """
         execute python script in shell as subprocess
         """
-        run_application = subprocess.Popen("python " + python_executable, shell=True,
-                                           stdin=open(os.devnull),
-                                           stdout=subprocess.PIPE)
+        run_application = subprocess.Popen(
+            "python " + python_executable,
+            shell=True,
+            stdin=open(os.devnull),
+            stdout=subprocess.PIPE)
         run_application.wait()
         std_outerr = run_application.communicate()[0].split('\n')
         self.write_stdouterr(std_outerr, verbosity, exit_on_warning)
 
-        for key in [env for env in os.environ if re.search('^ESMValTool_*', env)]:
-            del(os.environ[key])
+        for key in [
+                env for env in os.environ if re.search('^ESMValTool_*', env)
+        ]:
+            del (os.environ[key])
+
 
 class shell_launcher(launchers):
     """ @brief general unix shell launcher
         @param shell: name of shell (bash or csh)
     """
+
     def __init__(self, shell, **kwargs):
-        if shell in ['csh','bash']:
+        if shell in ['csh', 'bash']:
             self.lang = shell
         else:
             raise ValueError('Unknown shell: {0}'.format(shell))
@@ -362,29 +413,34 @@ class shell_launcher(launchers):
             f.write("0")
 
         if not os.path.exists(executable):
-            raise IOError("file to execute is missing: {0}".format(executable))  
+            raise IOError("file to execute is missing: {0}".format(executable))
 
         cmd = self.lang + " {0}".format(executable)
-        run_application = subprocess.Popen(cmd, shell=True,
-                                           stdin=open(os.devnull),
-                                           stdout=subprocess.PIPE,
-                                           stderr=subprocess.PIPE)
+        run_application = subprocess.Popen(
+            cmd,
+            shell=True,
+            stdin=open(os.devnull),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE)
         run_application.wait()
         output = run_application.communicate()
-        std_out = filter(None,output[0].split('\n'))
-        std_err = filter(None,output[1].split('\n'))
+        std_out = filter(None, output[0].split('\n'))
+        std_err = filter(None, output[1].split('\n'))
         for i in [self.lang.upper() + ' INFO : ' + item for item in std_out]:
             print i
         for i in [self.lang.upper() + ' ERROR: ' + item for item in std_err]:
             print i
 
-        for key in [env for env in os.environ if re.search('^ESMValTool_*', env)]:
-            del(os.environ[key])
+        for key in [
+                env for env in os.environ if re.search('^ESMValTool_*', env)
+        ]:
+            del (os.environ[key])
 
 
 class csh_launcher(shell_launcher):
     """ @brief csh-shell script launcher
     """
+
     def __init__(self, **kwargs):
         super(csh_launcher, self).__init__('csh', **kwargs)
 
@@ -392,5 +448,6 @@ class csh_launcher(shell_launcher):
 class bash_launcher(shell_launcher):
     """ @brief bash-shell script launcher
     """
+
     def __init__(self, **kwargs):
         super(bash_launcher, self).__init__('bash', **kwargs)

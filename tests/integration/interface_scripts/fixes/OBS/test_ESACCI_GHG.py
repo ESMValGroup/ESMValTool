@@ -2,14 +2,11 @@ import unittest
 
 from iris.cube import Cube
 
-from esmvaltool.interface_scripts.fixes.OBS.ESACCI_GHG import (xch4Stddev,
-                                                               xch4Stderr,
-                                                               xco2Stddev,
-                                                               xco2Stderr)
+from esmvaltool.interface_scripts.fixes.OBS.ESACCI_GHG import (
+    xch4Stddev, xch4Stderr, xco2Stddev, xco2Stderr)
 
 
 class Testxco2Stderr(unittest.TestCase):
-
     def setUp(self):
         self.cube = Cube([1], var_name='xco2Stderr', units='1')
         self.fix = xco2Stderr()
@@ -25,7 +22,6 @@ class Testxco2Stderr(unittest.TestCase):
 
 
 class Testxco2Stddev(unittest.TestCase):
-
     def setUp(self):
         self.cube = Cube([1], var_name='xco2Stddev', units='1')
         self.fix = xco2Stddev()
@@ -41,7 +37,6 @@ class Testxco2Stddev(unittest.TestCase):
 
 
 class Testxch4Stddev(unittest.TestCase):
-
     def setUp(self):
         self.cube = Cube([1], var_name='xch4Stddev', units='1')
         self.fix = xch4Stddev()
@@ -57,7 +52,6 @@ class Testxch4Stddev(unittest.TestCase):
 
 
 class Testxch4Stderr(unittest.TestCase):
-
     def setUp(self):
         self.cube = Cube([1], var_name='xch4Stderr', units='1')
         self.fix = xch4Stderr()

@@ -1,5 +1,4 @@
-#!/usr/bin/env python 
-
+#!/usr/bin/env python
 """
 ###############################################################################
 ## REFORMAT SCRIPT FOR THE ESACCI-LANDCOVER SATELLITE DATA
@@ -37,86 +36,97 @@
 ###############################################################################
 """
 
-inpath="/Work/Reference/OBS_ESACCI_LC/"
-outpath="/Work/Reference/OBS_ESACCI_LC/output/"
-path2lctool="./lib/lc-user-tools-3.10/"
+inpath = "/Work/Reference/OBS_ESACCI_LC/"
+outpath = "/Work/Reference/OBS_ESACCI_LC/output/"
+path2lctool = "./lib/lc-user-tools-3.10/"
 
 #these LC-classes will be processed
-var=["baresoilFrac","grassNcropFrac","shrubNtreeFrac"]
+var = ["baresoilFrac", "grassNcropFrac", "shrubNtreeFrac"]
 
 #this is how the LC-classes will be aggregated from LC-User-Tool output
-translatorlist={ 'baresoilFrac' : ['Bare_Soil'],
-                 'grassNcropFrac' : ['Managed_Grass','Natural_Grass'],
-                 'shrubNtreeFrac' : ['Tree_Broadleaf_Evergreen',
-                                     'Tree_Needleleaf_Evergreen',
-                                     'Tree_Broadleaf_Deciduous',
-                                     'Tree_Needleleaf_Deciduous',
-                                     'Shrub_Broadleaf_Evergreen',
-                                     'Shrub_Needleleaf_Evergreen',
-                                     'Shrub_Broadleaf_Deciduous',
-                                     'Shrub_Needleleaf_Deciduous']
+translatorlist = {
+    'baresoilFrac': ['Bare_Soil'],
+    'grassNcropFrac': ['Managed_Grass', 'Natural_Grass'],
+    'shrubNtreeFrac': [
+        'Tree_Broadleaf_Evergreen', 'Tree_Needleleaf_Evergreen',
+        'Tree_Broadleaf_Deciduous', 'Tree_Needleleaf_Deciduous',
+        'Shrub_Broadleaf_Evergreen', 'Shrub_Needleleaf_Evergreen',
+        'Shrub_Broadleaf_Deciduous', 'Shrub_Needleleaf_Deciduous'
+    ]
 }
 
-
-
 #the available years. You mayextend this list for further data!
-year=[2000,2005,2010]
+year = [2000, 2005, 2010]
 
 field = "T2Ms"
 
-timestep="monthly"
+timestep = "monthly"
 
-basicpath="./lib/python/"
+basicpath = "./lib/python/"
 
-import sys,os,subprocess,tempfile,datetime
+import sys, os, subprocess, tempfile, datetime
 from cdo import Cdo
 import numpy as np
-            
-pathname = os.path.dirname(sys.argv[0])        
+
+pathname = os.path.dirname(sys.argv[0])
 os.chdir(os.path.abspath(pathname))
 sys.path.append(basicpath)
 
 from preprocessing_basics import _get_files_in_directory
 
 
-
-
 def main():
 
     timestamp = datetime.datetime.now()
-    
-    file_list, list_length = _get_files_in_directory(inpath,'*P5Y-*-' + str(year) + '*.nc',False)
-        
-    if list_length == 0:    
-        file_list, list_length = _get_files_in_directory(inpath,'*P5Y-' + str(year) + '*.nc',False)
-        for locfile in file_list:    
-            lctool_Command= "bash " + path2lctool + os.sep + "bin" + os.sep + "aggregate-map.sh -PgridName=GEOGRAPHIC_LAT_LON -PnumMajorityClasses=1 -PoutputAccuracy=false -PoutputPFTClasses=true -PoutputLCCSClasses=false " + locfile
-            process = subprocess.Popen(lctool_Command.split(), stdout=subprocess.PIPE)
+
+    file_list, list_length = _get_files_in_directory(
+        inpath, '*P5Y-*-' + str(year) + '*.nc', False)
+
+    if list_length == 0:
+        file_list, list_length = _get_files_in_directory(
+            inpath, '*P5Y-' + str(year) + '*.nc', False)
+        for locfile in file_list:
+            lctool_Command = "bash " + path2lctool + os.sep + "bin" + os.sep + "aggregate-map.sh -PgridName=GEOGRAPHIC_LAT_LON -PnumMajorityClasses=1 -PoutputAccuracy=false -PoutputPFTClasses=true -PoutputLCCSClasses=false " + locfile
+            process = subprocess.Popen(
+                lctool_Command.split(), stdout=subprocess.PIPE)
             for line in iter(process.stdout.readline, b''):
                 print line,
                 process.stdout.close()
-            process.wait()  
-    
-    for y in year:
-        
-        outfilename=dict([(v,"OBS_" + "ESACCI-LANDCOVER_" + "sat_L4-LCCS-Map-300m-P5Y-aggregated-0.083333Deg_" + field + "_" + v) for v in var])
-        
-#        subprocess.call(["mkdir",outpath + "temp/"])
-        
-        fullfilenames=dict((de,outpath+outfilename[de]) for de in outfilename.keys())
-        
-        for ffn in fullfilenames:
-        
-            _preprocess_observations(fullfilenames[ffn],outpath,translatorlist,timestep,ffn,y,inpath,False)
-        #subprocess.call(["rm -rf",outpath + "temp"])
-    
-    print("Time for running preprocessing was: "+ str(datetime.datetime.now()-timestamp))
+            process.wait()
 
+    for y in year:
+
+        outfilename = dict([(v, "OBS_" + "ESACCI-LANDCOVER_" +
+                             "sat_L4-LCCS-Map-300m-P5Y-aggregated-0.083333Deg_"
+                             + field + "_" + v) for v in var])
+
+        #        subprocess.call(["mkdir",outpath + "temp/"])
+
+        fullfilenames = dict((de, outpath + outfilename[de])
+                             for de in outfilename.keys())
+
+        for ffn in fullfilenames:
+
+            _preprocess_observations(fullfilenames[ffn], outpath,
+                                     translatorlist, timestep, ffn, y, inpath,
+                                     False)
+        #subprocess.call(["rm -rf",outpath + "temp"])
+
+    print("Time for running preprocessing was: " +
+          str(datetime.datetime.now() - timestamp))
 
 
 ###############################################################################
 
-def _preprocess_observations(mainfile,outpath,translist,timestep,var,year,check_folder = None,force=False):
+
+def _preprocess_observations(mainfile,
+                             outpath,
+                             translist,
+                             timestep,
+                             var,
+                             year,
+                             check_folder=None,
+                             force=False):
     """
     preprocess observations to adapt to temporal and spatial resolution needed
     Parameters:
@@ -131,75 +141,94 @@ def _preprocess_observations(mainfile,outpath,translist,timestep,var,year,check_
     check_folder : alternativeley check this folder and write mainfile.built.nc
     force : if preprocessing should be forced when data already available
     """
-    
-    start_year=year-2
-    stop_year=year+2
-    
+
+    start_year = year - 2
+    stop_year = year + 2
+
     if not check_folder is None:
-    
-        file_list, list_length = _get_files_in_directory(check_folder,'*P5Y-*-' + str(year) + '*.nc',False)
+
+        file_list, list_length = _get_files_in_directory(
+            check_folder, '*P5Y-*-' + str(year) + '*.nc', False)
 
         if not list_length == 1:
             assert False, "There is less or more than one file! This should not happen!"
-    
-    ofile=mainfile+"_"+str(start_year)+"01"+"-"+str(stop_year)+"12"+'.nc'
-    
-    mf_bool=os.path.isfile(mainfile)
-    of_bool=os.path.isfile(ofile)
-    
+
+    ofile = mainfile + "_" + str(start_year) + "01" + "-" + str(
+        stop_year) + "12" + '.nc'
+
+    mf_bool = os.path.isfile(mainfile)
+    of_bool = os.path.isfile(ofile)
+
     if (mf_bool or of_bool) and not force:
         print("files already exist!")
         return
-        
+
     elif ((mf_bool or of_bool) and force) or not check_folder is None:
 
-        tmpfile1=outpath + os.sep + "temp" + os.sep + tempfile.NamedTemporaryFile().name.split('/')[-1]
-        tmpfile2=outpath + os.sep + "temp" + os.sep + tempfile.NamedTemporaryFile().name.split('/')[-1]
+        tmpfile1 = outpath + os.sep + "temp" + os.sep + tempfile.NamedTemporaryFile(
+        ).name.split('/')[-1]
+        tmpfile2 = outpath + os.sep + "temp" + os.sep + tempfile.NamedTemporaryFile(
+        ).name.split('/')[-1]
 
-
-        cdo=Cdo() 
+        cdo = Cdo()
 
         #select data depending on translatorlist
-        files=_select_given_names(outpath,file_list[0],translist[var],remove=False)
+        files = _select_given_names(
+            outpath, file_list[0], translist[var], remove=False)
 
         #sum data
-        cdo.enssum(input=files,output=tmpfile1,options='-f nc4 -b F32')
+        cdo.enssum(input=files, output=tmpfile1, options='-f nc4 -b F32')
         [os.remove(f) for f in files]
 
-        #chain: change name, multiply by 100 for "%", setunit to "%", duplicate for length of time range, set time axis, set day to 15, set reference time, calender and time units 
-        
-        cdo.settunits("seconds",input="-setcalendar,standard -setreftime,1970-01-01,00:00:00 -settaxis," + str(start_year) + "-01-15,12:00:00,1month -duplicate," + str((stop_year-start_year+1)*12) + " -mulc,100 -setunit,% -setmissval,1e20 -setctomiss,0 -setname," + var + " " + tmpfile1,output=tmpfile2,options='-f nc4 -b F32')
+        #chain: change name, multiply by 100 for "%", setunit to "%", duplicate for length of time range, set time axis, set day to 15, set reference time, calender and time units
 
-        subprocess.call(['cp',tmpfile2,ofile])
-        
-        os.remove(tmpfile1)        
+        cdo.settunits(
+            "seconds",
+            input=
+            "-setcalendar,standard -setreftime,1970-01-01,00:00:00 -settaxis,"
+            + str(start_year) + "-01-15,12:00:00,1month -duplicate," + str(
+                (stop_year - start_year + 1) * 12) +
+            " -mulc,100 -setunit,% -setmissval,1e20 -setctomiss,0 -setname," +
+            var + " " + tmpfile1,
+            output=tmpfile2,
+            options='-f nc4 -b F32')
+
+        subprocess.call(['cp', tmpfile2, ofile])
+
+        os.remove(tmpfile1)
         os.remove(tmpfile2)
-        
+
     else:
         print mainfile
-        assert False, "cannot find any files!" 
-        
-def _select_given_names(work_dir,infile,translist,remove=True):
+        assert False, "cannot find any files!"
+
+
+def _select_given_names(work_dir, infile, translist, remove=True):
     """ select names by list """
-    cdo=Cdo()
-    
-    tmplist=[]
+    cdo = Cdo()
+
+    tmplist = []
 
     if not (os.path.exists(work_dir + os.sep + "temp")):
         os.makedirs(work_dir + os.sep + "temp")
 
     for element in translist:
-        tmpfile=work_dir + os.sep + "temp" + os.sep + tempfile.NamedTemporaryFile().name.split('/')[-1]
-#        cdo.selname(element,input=infile,output=tmpfile,options='-f nc4 -b F32')
-        cdo.setmisstoc(0,input = "-selvar," + element + " " + infile, output = tmpfile, options = '-f nc4 -b F32')
-        
+        tmpfile = work_dir + os.sep + "temp" + os.sep + tempfile.NamedTemporaryFile(
+        ).name.split('/')[-1]
+        #        cdo.selname(element,input=infile,output=tmpfile,options='-f nc4 -b F32')
+        cdo.setmisstoc(
+            0,
+            input="-selvar," + element + " " + infile,
+            output=tmpfile,
+            options='-f nc4 -b F32')
+
         tmplist.append(tmpfile)
-    
+
     if remove:
         os.remove(infile)
-            
-        
+
     return tmplist
-    
+
+
 if __name__ == "__main__":
     main()

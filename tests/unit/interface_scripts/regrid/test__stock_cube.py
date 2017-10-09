@@ -13,9 +13,8 @@ import numpy as np
 
 import tests
 from esmvaltool.interface_scripts.regrid import _stock_cube as stock_cube
-from esmvaltool.interface_scripts.regrid import (_LAT_MAX, _LAT_MIN,
-                                                 _LAT_RANGE, _LON_MAX,
-                                                 _LON_MIN, _LON_RANGE)
+from esmvaltool.interface_scripts.regrid import (
+    _LAT_MAX, _LAT_MIN, _LAT_RANGE, _LON_MAX, _LON_MIN, _LON_RANGE)
 
 
 class Test(tests.Test):
@@ -23,11 +22,9 @@ class Test(tests.Test):
         # Generate the expected stock cube coordinate points.
         dx, dy = float(dx), float(dy)
         mid_dx, mid_dy = dx / 2, dy / 2
-        expected_lat_points = np.linspace(_LAT_MIN + mid_dy,
-                                          _LAT_MAX - mid_dy,
+        expected_lat_points = np.linspace(_LAT_MIN + mid_dy, _LAT_MAX - mid_dy,
                                           _LAT_RANGE / dy)
-        expected_lon_points = np.linspace(_LON_MIN + mid_dx,
-                                          _LON_MAX - mid_dx,
+        expected_lon_points = np.linspace(_LON_MIN + mid_dx, _LON_MAX - mid_dx,
                                           _LON_RANGE / dx)
 
         # Check the stock cube coordinates.
@@ -37,15 +34,15 @@ class Test(tests.Test):
         # Check the latitude coordinate creation.
         [args], kwargs = call_lats
         self.assertArrayEqual(args, expected_lat_points)
-        expected_lat_kwargs = dict(standard_name='latitude',
-                                   units='degrees_north')
+        expected_lat_kwargs = dict(
+            standard_name='latitude', units='degrees_north')
         self.assertEqual(kwargs, expected_lat_kwargs)
 
         # Check the longitude coordinate creation.
         [args], kwargs = call_lons
         self.assertArrayEqual(args, expected_lon_points)
-        expected_lon_kwargs = dict(standard_name='longitude',
-                                   units='degrees_east')
+        expected_lon_kwargs = dict(
+            standard_name='longitude', units='degrees_east')
         self.assertEqual(kwargs, expected_lon_kwargs)
 
         # Check that the coordinate guess_bounds method has been called.
@@ -65,11 +62,10 @@ class Test(tests.Test):
 
     def setUp(self):
         self.Cube = mock.sentinel.Cube
-        self.mock_Cube = self.patch('iris.cube.Cube',
-                                    return_value=self.Cube)
+        self.mock_Cube = self.patch('iris.cube.Cube', return_value=self.Cube)
         self.mock_coord = mock.Mock(spec=iris.coords.DimCoord)
-        self.mock_DimCoord = self.patch('iris.coords.DimCoord',
-                                        return_value=self.mock_coord)
+        self.mock_DimCoord = self.patch(
+            'iris.coords.DimCoord', return_value=self.mock_coord)
         self.mocks = [self.mock_Cube, self.mock_coord, self.mock_DimCoord]
 
     def test_invalid_cell_spec__alpha(self):
@@ -91,7 +87,7 @@ class Test(tests.Test):
         emsg = 'Invalid latitude delta in MxN cell specification'
         with self.assertRaisesRegexp(ValueError, emsg):
             stock_cube('1x2.3')
-    
+
     def test_specs(self):
         specs = ['0.5x0.5', '1x1', '2.5x2.5', '5x5', '10x10']
         for spec in specs:

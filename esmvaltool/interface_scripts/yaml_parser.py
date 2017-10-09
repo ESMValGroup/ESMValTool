@@ -1,5 +1,6 @@
 import yaml
 
+
 class Namelist(yaml.YAMLObject):
     """
     Class to hold the information from the namelist
@@ -9,19 +10,19 @@ class Namelist(yaml.YAMLObject):
     def __repr__(self):
         return '{0}(settings={1}, preprocess={2}, \
                models={3}, diagnostics={4})'.format(
-            self.__class__.__name__,
-            self.PREPROCESS,
-            self.MODELS,
-            self.DIAGNOSTICS,
-            self.CONFIG)
+            self.__class__.__name__, self.PREPROCESS, self.MODELS,
+            self.DIAGNOSTICS, self.CONFIG)
+
 
 class Diagnostic(yaml.YAMLObject):
-    
+
     yaml_tag = u'!Diagnostic'
 
     def __repr__(self):
         return "%s(id=%r, description=%r, variables=%r, scripts=%r, additional_models=%r)" % (
-            self.__class__.__name__, self.id, self.description, self.variables, self.scripts, self.additional_models)
+            self.__class__.__name__, self.id, self.description, self.variables,
+            self.scripts, self.additional_models)
+
 
 ############################################################################################################################
 # this class is not currently used but is coded here
@@ -31,7 +32,11 @@ class PreprocessItem(yaml.YAMLObject):
 
     def __repr__(self):
         return "%s(select_level=%r, regrid=%r, target_grid=%r, regrid_scheme=%r, mask_fillvalues=%r, mask_landocean=%r, multimodel_mean=%r)" % (
-            self.__class__.__name__, self.select_level, self.regrid, self.target_grid, self.regrid_scheme, self.mask_fillvalues, self.mask_landocean, self.multimodel_mean)
+            self.__class__.__name__, self.select_level, self.regrid,
+            self.target_grid, self.regrid_scheme, self.mask_fillvalues,
+            self.mask_landocean, self.multimodel_mean)
+
+
 ##############################################################################################################################
 
 
@@ -41,7 +46,10 @@ def load_namelist(namelist_file):
         namelist = yaml.load(file)
 
     # some conditioning, add more in the future?
-    if not isinstance(namelist, Namelist): raise Exception("Namelist malformed")
-    if not isinstance(namelist.MODELS, list): raise Exception("MODELS is not a list")
-    if not isinstance(namelist.DIAGNOSTICS, dict): raise Exception("DIAGNOSTICS is not a dictionary")
+    if not isinstance(namelist, Namelist):
+        raise Exception("Namelist malformed")
+    if not isinstance(namelist.MODELS, list):
+        raise Exception("MODELS is not a list")
+    if not isinstance(namelist.DIAGNOSTICS, dict):
+        raise Exception("DIAGNOSTICS is not a dictionary")
     return namelist

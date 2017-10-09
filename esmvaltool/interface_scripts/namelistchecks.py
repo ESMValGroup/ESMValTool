@@ -5,6 +5,7 @@ First version: August 2017
 """
 import sys
 
+
 def models_checks(models_dict):
     """
     checking for standard keys and values e.g. for CMIP5*:
@@ -130,6 +131,8 @@ def models_checks(models_dict):
         except KeyError as e:
             print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR ', e, 'is missing in model', m
             sys.exit(1)
+
+
 # FIX-ME not needed anymore, can be deleted
 #        try:
 #            path = m['path']
@@ -139,6 +142,7 @@ def models_checks(models_dict):
 #        except KeyError as e:
 #            print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR ', e, 'is missing in model', m
 #            sys.exit(1)
+
 
 def diags_checks(diags_dict):
     """
@@ -211,6 +215,7 @@ def diags_checks(diags_dict):
         except AttributeError as e:
             print >> sys.stderr, 'PY  info:  >>> namelistchecks.py >>> ERROR ', e, ' in diagnostic', c
             sys.exit(1)
+
 
 def preprocess_checks(preprocess):
     """

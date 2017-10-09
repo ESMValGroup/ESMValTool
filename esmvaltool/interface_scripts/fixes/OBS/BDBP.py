@@ -3,7 +3,6 @@ import cf_units
 
 
 class tro3prof(Fix):
-
     def fix_metadata(self, cube):
         old = cube.coord('air_pressure')
         dims = cube.coord_dims(old)

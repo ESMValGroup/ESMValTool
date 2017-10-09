@@ -5,6 +5,7 @@ class Fix(object):
     """
     Base class for model fixes.
     """
+
     def fix_file(self, filepath):
         """
         Apply fixes to the files prior to creating the cube. Should be use only to fix errors that prevent loading or
@@ -96,8 +97,9 @@ class Fix(object):
 
         fixes = []
         try:
-            fixes_module = importlib.import_module('esmvaltool.interface_scripts.fixes.{0}.{1}'.format(project,
-                                                                                                         model))
+            fixes_module = importlib.import_module(
+                'esmvaltool.interface_scripts.fixes.{0}.{1}'.format(
+                    project, model))
             for fix_name in ('allvars', variable):
                 try:
                     fixes.append(getattr(fixes_module, fix_name)())

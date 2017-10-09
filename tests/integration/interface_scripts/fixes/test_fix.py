@@ -6,10 +6,10 @@ from esmvaltool.interface_scripts.fixes.fix import Fix
 
 
 class TestFix(unittest.TestCase):
-
     def test_get_fix(self):
         from esmvaltool.interface_scripts.fixes.CMIP5.CanESM2 import fgco2
-        self.assertListEqual(Fix.get_fixes('CMIP5', 'CanESM2', 'fgco2'), [fgco2()])
+        self.assertListEqual(
+            Fix.get_fixes('CMIP5', 'CanESM2', 'fgco2'), [fgco2()])
 
     def test_get_fixes_with_replace(self):
         from esmvaltool.interface_scripts.fixes.CMIP5.BNU_ESM import ch4
@@ -17,10 +17,13 @@ class TestFix(unittest.TestCase):
 
     def test_get_fixes_with_generic(self):
         from esmvaltool.interface_scripts.fixes.CMIP5.CESM1_BGC import allvars, co2
-        self.assertListEqual(Fix.get_fixes('CMIP5', 'CESM1-BGC', 'co2'), [allvars(), co2()])
+        self.assertListEqual(
+            Fix.get_fixes('CMIP5', 'CESM1-BGC', 'co2'), [allvars(),
+                                                         co2()])
 
     def test_get_fix_no_project(self):
-        self.assertListEqual(Fix.get_fixes('BAD_PROJECT', 'BNU-ESM', 'ch4'), [])
+        self.assertListEqual(
+            Fix.get_fixes('BAD_PROJECT', 'BNU-ESM', 'ch4'), [])
 
     def test_get_fix_no_model(self):
         self.assertListEqual(Fix.get_fixes('CMIP5', 'BAD_MODEL', 'ch4'), [])

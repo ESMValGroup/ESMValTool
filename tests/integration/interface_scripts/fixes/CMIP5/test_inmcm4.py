@@ -7,7 +7,6 @@ from esmvaltool.interface_scripts.fixes.CMIP5.inmcm4 import gpp, lai
 
 
 class TestGpp(unittest.TestCase):
-
     def setUp(self):
         self.cube = Cube([1], var_name='gpp', units='J')
         self.fix = gpp()

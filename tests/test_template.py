@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
 # This file is part of ESMValTool
-
-
 """
 Tests are implemented using *assert* statements
 """
@@ -13,7 +11,6 @@ import unittest
 
 
 class Test(unittest.TestCase):
-
     def setUp(self):
         # implement here everything you would like to see happen BEFORE a test is executed
         pass
@@ -24,6 +21,7 @@ class Test(unittest.TestCase):
 
     def test_basic(self):
         assert True
+
 
 if __name__ == "__main__":
     unittest.main()

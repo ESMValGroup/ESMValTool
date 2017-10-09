@@ -9,7 +9,6 @@ import iris.exceptions
 import iris.coord_categorisation
 import cf_units
 
-
 iris.FUTURE.cell_datetime_objects = True
 iris.FUTURE.netcdf_promote = True
 
@@ -22,8 +21,12 @@ class CMORCheck(object):
     _vals_msg = '{}: has values {} {}'
     _contain_msg = '{}: does not contain {} {}'
 
-    def __init__(self, cube, var_info, frequency=None,
-                 fail_on_error=False, automatic_fixes=False):
+    def __init__(self,
+                 cube,
+                 var_info,
+                 frequency=None,
+                 fail_on_error=False,
+                 automatic_fixes=False):
         """
         Class used to check the CMOR-compliance of the data.
         It can also fix some minor errors and does some minor data
@@ -144,21 +147,19 @@ class CMORCheck(object):
         # Check standard_name
         if self._cmor_var.standard_name:
             if self._cube.standard_name != self._cmor_var.standard_name:
-                self.report_error(self._attr_msg, self._cube.var_name,
-                                  'standard_name',
-                                  self._cmor_var.standard_name,
-                                  self._cube.standard_name)
+                self.report_error(
+                    self._attr_msg, self._cube.var_name, 'standard_name',
+                    self._cmor_var.standard_name, self._cube.standard_name)
 
         # Check units
         if self._cmor_var.units:
             if not self._cube.units.is_convertible(self._cmor_var.units):
                 self.report_error('Variable {0} units () can not be '
-                                  'converted to {2}',
-                                  self._cube.var_name, self._cmor_var.units,
-                                  self._cube.units)
+                                  'converted to {2}', self._cube.var_name,
+                                  self._cmor_var.units, self._cube.units)
 
         # Check other variable attributes that match entries in cube.attributes
-        attrs = ('positive',)
+        attrs = ('positive', )
         for attr in attrs:
             attr_value = getattr(self._cmor_var, attr)
             if attr_value:
@@ -225,8 +226,8 @@ class CMORCheck(object):
 
             # Get coordinate var_name as it exists!
             try:
-                coord = self._cube.coord(var_name=var_name,
-                                         dim_coords=True)  # ,
+                coord = self._cube.coord(
+                    var_name=var_name, dim_coords=True)  # ,
                 #                        axis=axis)
             except iris.exceptions.CoordinateNotFoundError:
                 continue
@@ -315,17 +316,20 @@ class CMORCheck(object):
             self.report_error(self._does_msg, var_name,
                               'have time reference units')
         else:
-            coord.convert_units(cf_units.Unit('days since 1950-01-01 00:00:00',
-                                              calendar=coord.units.calendar))
+            coord.convert_units(
+                cf_units.Unit(
+                    'days since 1950-01-01 00:00:00',
+                    calendar=coord.units.calendar))
             simplified_cal = self._simplify_calendars(coord.units.calendar)
-            coord.units = cf_units.Unit(coord.units.name,
-                                        simplified_cal)
+            coord.units = cf_units.Unit(coord.units.name, simplified_cal)
 
         tol = 0.001
-        intervals = {'dec': (3600, 3660),
-                     'yr': (360, 366),
-                     'mon': (28, 31),
-                     'day': (1, 1)}
+        intervals = {
+            'dec': (3600, 3660),
+            'yr': (360, 366),
+            'mon': (28, 31),
+            'day': (1, 1)
+        }
         if self.frequency in intervals:
             interval = intervals[self.frequency]
             target_interval = (interval[0] - tol, interval[1] + tol)
@@ -342,21 +346,17 @@ class CMORCheck(object):
             msg = '{}: Frequency {} not supported by checker'
             self.report_error(msg, var_name, self.frequency)
             return
-        for i in range(len(coord.points)-1):
+        for i in range(len(coord.points) - 1):
             interval = coord.points[i + 1] - coord.points[i]
-            if (interval < target_interval[0] or
-               interval > target_interval[1]):
+            if (interval < target_interval[0]
+                    or interval > target_interval[1]):
                 msg = '{}: Frequency {} does not match input data'
                 self.report_error(msg, var_name, self.frequency)
                 break
 
-    CALENDARS = [['standard', 'gregorian'],
-                 ['proleptic_gregorian'],
-                 ['noleap', '365_day'],
-                 ['all_leap', '366_day'],
-                 ['360_day'],
-                 ['julian'],
-                 ['none']]
+    CALENDARS = [['standard',
+                  'gregorian'], ['proleptic_gregorian'], ['noleap', '365_day'],
+                 ['all_leap', '366_day'], ['360_day'], ['julian'], ['none']]
 
     @staticmethod
     def _simplify_calendars(calendar):

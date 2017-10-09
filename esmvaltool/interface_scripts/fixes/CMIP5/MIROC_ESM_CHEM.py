@@ -2,9 +2,9 @@ from esmvaltool.interface_scripts.fixes.fix import Fix
 
 
 class tro3(Fix):
-
     def fix_data(self, cube):
         return cube * 1000
+
 
 # if (name .eq. "tro3") then
 #     if (iscoord(var, "time")) then
