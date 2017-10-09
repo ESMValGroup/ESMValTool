@@ -47,9 +47,9 @@ import shutil
 import sys
 import yaml
 
-if __name__ == '__main__':
-    # Hack to make this file executable
-    sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+# Hack to make this file executable
+if __name__ == '__main__':  # noqa
+    sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))  # noqa
 
 from esmvaltool.interface_scripts import namelistchecks
 from esmvaltool.interface_scripts.preprocess import (
@@ -114,7 +114,7 @@ def read_config_file(config_file, namelist_name):
     }
 
     for key in defaults:
-        if not key in cfg:
+        if key not in cfg:
             logger.warning("No %s specification in config file, "
                            "defaulting to %s", key, defaults[key])
             cfg[key] = defaults[key]
@@ -317,22 +317,24 @@ def process_namelist(namelist_file, global_config):
 
     # variables needed for target variable, according to variable_defs
     if not os.path.isabs(project_info['CONFIG']['var_def_scripts']):
-        project_info['CONFIG']['var_def_scripts'] = \
-            os.path.join(script_root, project_info['CONFIG']['var_def_scripts'])
+        project_info['CONFIG']['var_def_scripts'] = os.path.join(
+            script_root, project_info['CONFIG']['var_def_scripts'])
 
     # loop over all diagnostics defined in project_info and create/prepare
     # netCDF files for each variable
     for currDiag in project_info['DIAGNOSTICS'].values():
 
-        # Are the requested variables derived from other, more basic, variables?
+        # Are the requested variables derived from other,
+        # more basic, variables?
         requested_vars = currDiag.variables
 
         # get all models
         project_info['ADDITIONAL_MODELS'] = currDiag.additional_models
-        project_info[
-            'ALLMODELS'] = project_info['MODELS'] + project_info['ADDITIONAL_MODELS']
+        project_info['ALLMODELS'] = \
+            project_info['MODELS'] + project_info['ADDITIONAL_MODELS']
 
-        # initialize empty lists to hold preprocess cubes and file paths for each model
+        # initialize empty lists to hold preprocess cubes and file paths
+        # for each model
         models_cubes = []
         models_fullpaths = []
 
@@ -367,8 +369,8 @@ def process_namelist(namelist_file, global_config):
 
                 # rewrite netcdf to expected input format.
                 logger.info("Calling preprocessor")
-                # REFORMAT: for backwards compatibility we can revert to ncl reformatting
-                # by changing cmor_reformat_type = 'ncl'
+                # REFORMAT: for backwards compatibility we can revert to ncl
+                # reformatting by changing cmor_reformat_type = 'ncl'
                 # for python cmor_check one, use cmor_reformat_type = 'py'
                 # PREPROCESS ID: extracted from variable dictionary
 
@@ -463,7 +465,7 @@ def process_namelist(namelist_file, global_config):
     # delete environment variable
     del os.environ['0_ESMValTool_version']
 
-    #End time timing
+    # End time timing
     timestamp2 = datetime.datetime.utcnow()
     logger.info(
         "Ending the Earth System Model Evaluation Tool v%s at time: %s",

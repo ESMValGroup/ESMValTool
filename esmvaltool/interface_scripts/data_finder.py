@@ -98,7 +98,7 @@ def cmip5_mip2realm_freq(mip):
         'LImon': ['landIce', 'mon'],
         'OImon': ['seaIce', 'mon'],
         'aero': ['aerosol', 'mon'],
-        #'3hr': ???
+        # '3hr': ???
         'cfDay': ['atmos', 'day'],
         'cfMon': ['atmos', 'mon'],
         'day': ['atmos', 'day'],
@@ -145,8 +145,8 @@ def replace_tags(path, model, var):
                 replacewith = str(model[tag])
             else:
                 raise KeyError(
-                    'Model key %s must be specified for project %s, check your namelist entry'
-                    % (tag, model['project']))
+                    "Model key %s must be specified for project %s, check "
+                    "your namelist entry".format(tag, model['project']))
 
         path = path.replace('[' + tag + ']', replacewith)
 
@@ -257,7 +257,8 @@ def find_files(dirname, filename):
     flist = []
 
     # work only with existing dirs or allowed permission dirs
-    strfindic = 'find ' + dirname + ' -follow -type f -iname ' + '*' + filename + '*'
+    strfindic = 'find {dirname} -follow -type f -iname *{filename}*'.format(
+        dirname=dirname, filename=filename)
     proc = subprocess.Popen(strfindic, stdout=subprocess.PIPE, shell=True)
     out, err = proc.communicate()
     if err:
@@ -269,9 +270,8 @@ def find_files(dirname, filename):
 
 def veto_files(model, dirname, filename):
     """
-    Function that does direct parsing of available datasource files and establishes
-    if files are the needed ones or not
-
+    Function that does direct parsing of available datasource files
+    and establishes if files are the needed ones or not
     """
 
     arname = find_files(dirname, filename)

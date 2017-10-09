@@ -204,7 +204,7 @@ class ncl_launcher(launchers):
             stdin=open(os.devnull),
             stdout=subprocess.PIPE,
             cwd=script_root)
-        #run_application.wait()
+        # run_application.wait()
         std_outerr = run_application.communicate()[0].split('\n')
         self.write_stdouterr(std_outerr, verbosity, exit_on_warning)
 
@@ -316,7 +316,8 @@ class py_launcher(launchers):
             python script at this point here. To be more flexible, an execution
             via the command line is preferred. See here for details:
 
-            * http://stackoverflow.com/questions/4230725/how-to-execute-a-python-script-file-with-an-argument-from-inside-another-python
+            * http://stackoverflow.com/questions/4230725/how-to-execute-
+              a-python-script-file-with-an-argument-from-inside-another-python
             * http://docs.python.org/2/tutorial/modules.html
         """
 
@@ -365,14 +366,16 @@ class py_launcher(launchers):
 
         # import was successfull. Now call the script with project_info
         # as argument
-        # Capturing stdout/err for warnings, however, this currently doesn't capture Tracebacks..
-
+        # Capturing stdout/err for warnings, however, this currently
+        # doesn't capture Tracebacks..
 
 #        with stdoutIO() as s:
 #            usr_script.main(project_info)
-#        self.write_stdouterr(string.split(s.getvalue(), '\n'), verbosity, exit_on_warning)
+#         self.write_stdouterr(
+#             string.split(s.getvalue(), '\n'), verbosity, exit_on_warning)
 
-# This catpures Traceback but won't let us analyse the stdout/err for text warnings
+        # This captures Traceback but won't let us analyse the stdout/err
+        # for text warnings
         usr_script.main(project_info)
 
     def _execute_shell(self, python_executable, project_info, verbosity,

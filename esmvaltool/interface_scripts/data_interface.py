@@ -1,6 +1,6 @@
 """
 Completely rewritten tool to be able to deal with
-the new yaml parser and simplified interface_scripts 
+the new yaml parser and simplified interface_scripts
 toolbox. Author: Valeriu Predoi, University of Reading,
 Initial version: August 2017
 contact: valeriu.predoi@ncas.ac.uk
@@ -82,8 +82,8 @@ class Data_interface(object):
 
         indata_root = self.get_data_root()
         if 'AUXILIARIES' in project_info:
-            # 'CMIP5_fx' is hardcoded as it is (so far) the only class supporting
-            # the 'AUXILIARIES'-tag
+            # 'CMIP5_fx' is hardcoded as it is (so far) the only class
+            # supporting the 'AUXILIARIES'-tag
             fx_project = getattr(globals()['projects'], 'CMIP5_fx')()
             fx_files = fx_project.get_fx_files(project_info)
             self.interface.fx_keys = project_info['AUXILIARIES'][
@@ -104,8 +104,8 @@ class Data_interface(object):
 
         # Repackage model specific data, i.e. the <model>-tags from the
         # yml-namelist files
-        model_specifiers, models, model_attr_id, model_attr_skip = self.get_modelinfo(
-            project_info)
+        model_specifiers, models, model_attr_id, model_attr_skip = \
+            self.get_modelinfo(project_info)
         for modelpart in model_specifiers:
             current_column = map(
                 itemgetter(model_specifiers.index(modelpart)), models)
@@ -200,16 +200,25 @@ class Data_interface(object):
         # this is, in fact, bullshit, because we should
         # allow for a variety of model specifiers. Hacking it
         # here (VP)
-        #model_specifiers = project_info['ALLMODELS'][0].keys()
+        # model_specifiers = project_info['ALLMODELS'][0].keys()
 
-        model_specifiers = ['project', 'start_year',\
-                            'name', 'exp', 'mip', 'end_year',\
-                            'ref', 'ensemble']
+        model_specifiers = [
+            'project',
+            'start_year',
+            'name',
+            'exp',
+            'mip',
+            'end_year',
+            'ref',
+            'ensemble',
+        ]
 
         # OBS: {'project': 'OBS', 'start_year': 2000, 'version': 1,
-        #  'name': 'ERA-Interim', 'ref': 'ERA-Interim', 'tier': 3, 'end_year': 2002, 'type': 'reanaly'}
-        # CMIP5 (default) : {'project': 'CMIP5', 'start_year': 2000, 'name': 'bcc-csm1-1',
-        #  'exp': 'historical', 'mip': 'Amon', 'end_year': 2002, 'ref': 'ERA-Interim', 'ensemble': 'r1i1p1'}
+        #  'name': 'ERA-Interim', 'ref': 'ERA-Interim', 'tier': 3,
+        #  'end_year': 2002, 'type': 'reanaly'}
+        # CMIP5 (default) : {'project': 'CMIP5', 'start_year': 2000,
+        #  'name': 'bcc-csm1-1', 'exp': 'historical', 'mip': 'Amon',
+        #  'end_year': 2002, 'ref': 'ERA-Interim', 'ensemble': 'r1i1p1'}
 
         # this is a bit hacky
         # but makes sure the key - val order stays fixed
@@ -217,15 +226,29 @@ class Data_interface(object):
         for model in project_info['ALLMODELS']:
             # cmip5
             if model['project'] == 'CMIP5':
-                mdls = [model['project'], model['start_year'],\
-                        model['name'], model['exp'], model['mip'], model['end_year'],\
-                        model['ref'], model['ensemble']]
+                mdls = [
+                    model['project'],
+                    model['start_year'],
+                    model['name'],
+                    model['exp'],
+                    model['mip'],
+                    model['end_year'],
+                    model['ref'],
+                    model['ensemble'],
+                ]
 
             # obs
             if model['project'] == 'OBS':
-                mdls = [model['project'], model['start_year'],\
-                        model['name'], 'exp', 'mip', model['end_year'],\
-                        model['ref'], 'ensemble']
+                mdls = [
+                    model['project'],
+                    model['start_year'],
+                    model['name'],
+                    'exp',
+                    'mip',
+                    model['end_year'],
+                    model['ref'],
+                    'ensemble',
+                ]
 
             models.append(mdls)
 
@@ -338,7 +361,8 @@ class Ncl_data_interface(Data_interface):
             currProject = model
 
             self.interface.dict_keys.append(pp.get_dict_key(model))
-        # Remove the diag_script_cfg entry if it is not NCL code (e.g., R, python, etc..)
+        # Remove the diag_script_cfg entry if it is not NCL code
+        # (e.g., R, python, etc..)
         class_prefix = re.search("([a-zA-Z]*)_.*",
                                  self.__class__.__name__).group(1).lower()
         class_regex = re.compile(class_prefix + '$')
@@ -422,12 +446,13 @@ class Ncl_data_interface(Data_interface):
 
                 if variable_info_true:
                     # A-laue_ax+
-                    # Attributes of "variable_info" that are arrays might cause
-                    # problems if more than one variable is used by a diagnostic
-                    # script as this effectively leads to a redefinition of the
-                    # already defined variable attributes. The redefinition will
-                    # fail if the number of array elements does not match the
-                    # "new" number of array elements.
+                    # Attributes of "variable_info" that are arrays might
+                    # cause problems if more than one variable is used by
+                    # a diagnostic script as this effectively leads to a
+                    # redefinition of the already defined variable attributes.
+                    # The redefinition will fail if the number of array
+                    # elements does not match the "new" number of array
+                    # elements.
                     # Work-around: delete "variable_info" if already defined.
                     fvarinfo.write('if (isvar("variable_info")) then\n')
                     fvarinfo.write('    delete(variable_info)\n')
