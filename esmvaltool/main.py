@@ -316,6 +316,8 @@ def process_namelist(namelist_file, global_config):
         requested_vars = currDiag.variables
 
         # get all models
+        if currDiag.additional_models is None:
+            currDiag.additional_models = []
         project_info['ADDITIONAL_MODELS'] = currDiag.additional_models
         project_info['ALLMODELS'] = project_info['MODELS'] + project_info['ADDITIONAL_MODELS']
 
