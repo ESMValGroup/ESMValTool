@@ -18,6 +18,13 @@ diag_script_info@minmax = (/-50.0, 50.0/)
 
 diag_script_info@show_anomalies = True
 
+diag_script_info@curve_interpolation = True  ; False = no interpolation of the calculated
+                                             ;         diurnal cycle
+                                             ; True  = interpolation of the calculated
+                                             ;         diurnal cycle (for input data with
+                                             ;         a coarse temporal resolution such as
+                                             ;         e.g. 3-hourly values)
+
 diag_script_info@multi_model_mean = "y"
 diag_script_info@supporting_gridlines = "y"
 diag_script_info@x_gridlines = "n"

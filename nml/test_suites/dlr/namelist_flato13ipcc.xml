@@ -382,10 +382,10 @@ This namelist is part of the ESMValTool
         <model> CMIP5_ETHZ CNRM-CM5     3hr amip r1i1p1 2004 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
         <model> CMIP5_ETHZ HadGEM2-A    3hr amip r1i1p1 2004 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
         <model> CMIP5_ETHZ IPSL-CM5A-LR 3hr amip r1i1p1 2004 2004 @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <diag_script cfg="cfg_DiurnalCycle_25N-70N_land_JJA.ncl">      DiurnalCycle_box.ncl </diag_script>
-        <diag_script cfg="cfg_DiurnalCycle_25N-70N_ocean_JJA.ncl">     DiurnalCycle_box.ncl </diag_script>
-        <diag_script cfg="cfg_DiurnalCycle_25S-25N_land_JJA+DJF.ncl">  DiurnalCycle_box.ncl </diag_script>
-        <diag_script cfg="cfg_DiurnalCycle_25S-25N_ocean_JJA+DJF.ncl"> DiurnalCycle_box.ncl </diag_script>
+        <diag_script cfg="cfg_ipcc-fig-9-30_25N-70N_land_JJA.ncl">      ipcc-fig-9-30.ncl </diag_script>
+        <diag_script cfg="cfg_ipcc-fig-9-30_25N-70N_ocean_JJA.ncl">     ipcc-fig-9-30.ncl </diag_script>
+        <diag_script cfg="cfg_ipcc-fig-9-30_25S-25N_land_JJA+DJF.ncl">  ipcc-fig-9-30.ncl </diag_script>
+        <diag_script cfg="cfg_ipcc-fig-9-30_25S-25N_ocean_JJA+DJF.ncl"> ipcc-fig-9-30.ncl </diag_script>
     </diag>
 
 <!-- *********************************************************************** -->
