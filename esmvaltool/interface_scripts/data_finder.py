@@ -9,6 +9,8 @@ import subprocess
 import yaml
 import re
 from datetime import datetime
+import iris
+import iris.coord_categorisation
 
 logger = logging.getLogger(__name__)
 
@@ -220,7 +222,7 @@ def get_input_filelist(project_info, model, var):
         raise OSError('directory not found', dirname)
 
     # Set the filename
-    filename = replace_tags(dict['input_file'], model, var)
+    filename = replace_tags(dict['input_file'][drs], model, var)
 
     # Full path to files
     files = veto_files(model, dirname, filename)
@@ -361,14 +363,27 @@ def time_check(fpath, yr1, yr2):
     fpath: full path to file
     yr1, yr2: model['start_year'], model['end_year']
     """
-    ssp = fpath.split('/')
-    av = ssp[-1]
-    time_range = av.split('_')[-1].strip('.nc')
-    time1 = time_range.split('-')[0]
-    time2 = time_range.split('-')[1]
-    year1 = date_handling(time1,time2)[0]
-    year2 = date_handling(time1,time2)[1]
-    if time_handling(year1, yr1, year2, yr2) is True:
-        return True
-    else:
+    try:
+        ssp = fpath.split('/')
+        av = ssp[-1]
+        time_range = av.split('_')[-1].strip('.nc')
+        time1 = time_range.split('-')[0]
+        time2 = time_range.split('-')[1]
+        year1 = date_handling(time1,time2)[0]
+        year2 = date_handling(time1,time2)[1]
+        if time_handling(year1, yr1, year2, yr2) is True:
+            return True
+        else:
+            return False
+    except Exception:
+        cubes = iris.load(fpath)
+        for cube in cubes:
+            if cube.coords('time'):
+                iris.coord_categorisation.add_year(cube, 'time')
+                extracted = cube.extract(iris.Constraint(year=lambda year: yr1 <= year <= yr2))
+                if extracted is None:
+                    return False
+                else:
+                    return True
         return False
+
