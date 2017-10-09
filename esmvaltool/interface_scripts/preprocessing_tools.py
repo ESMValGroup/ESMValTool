@@ -24,7 +24,7 @@ def get_attr_from_field_coord(ncfield, coord_name, attr):
 # function also used in preprocess.py
 def merge_callback(raw_cube, field, filename):
     # Remove attributes that cause issues with merging and concatenation
-    for attr in ['creation_date', 'tracking_id', 'history']:
+    for attr in ['creation_date', 'tracking_id', 'history', 'batch']:
         if attr in raw_cube.attributes:
             del raw_cube.attributes[attr]
     for coord in raw_cube.coords():
@@ -59,7 +59,7 @@ def glob(file_list, fname, varname, verbosity):
     c = iris.cube.CubeList(cl)
 
     try:
-        concatenated = c.concatenate()
+        concatenated = c.concatenate_cube()
         try:
             iris.save(concatenated, fname)
             info(" >>> preprocessing_tools.py >>> Successfully concatenated cubes", "", verbosity)
@@ -73,7 +73,7 @@ def glob(file_list, fname, varname, verbosity):
         for cube in cl:
             error_message += cube.summary(shorten=True) + '\n'
         pass
-        info(" >>> preprocessing_tools.py >>> Could not concatenate cubes, keeping a list of files ", error_message, verbosity)
+        info(" >>> preprocessing_tools.py >>> Could not concatenate cubes, keeping a list of files", error_message, verbosity)
         return 0
 
 ############################################################################
