@@ -6,6 +6,9 @@ import numpy as np
 from auxiliary import info
 from iris.analysis import Aggregator
 from iris.util import rolling_window
+import logging
+
+logger = logging.getLogger(__name__)
 
 #########################################################################
 # FILE OPERATIONS
@@ -38,7 +41,7 @@ def merge_callback(raw_cube, field, filename):
                 coord.units = units
 
 # merge multiple files assigned to a same diagnostic and variable
-def glob(file_list, fname, varname, verbosity):
+def glob(file_list, varname):
     """
     Function that takes a list of nc files and globs them into a single one
     """
@@ -61,19 +64,17 @@ def glob(file_list, fname, varname, verbosity):
     try:
         concatenated = c.concatenate_cube()
         try:
-            iris.save(concatenated, fname)
-            info(" >>> preprocessing_tools.py >>> Successfully concatenated cubes", "", verbosity)
-            return 1
+            logger.info(" >>> preprocessing_tools.py >>> Successfully concatenated cubes")
+            return concatenated
         except (OSError, iris.exceptions.IrisError) as exc:
-            info(" >>> preprocessing_tools.py >>> Could not save concatenated cube, keeping a list of files ", exc, verbosity)
-            pass
-            return 0
+            logger.warning(" >>> preprocessing_tools.py >>> Could not save concatenated cube, keeping a list of files - %s ", str(exc))
+            return None
     except iris.exceptions.ConcatenateError as exc:
         error_message = "Problem trying to concatenate the following cubes:\n"
         for cube in cl:
             error_message += cube.summary(shorten=True) + '\n'
         pass
-        info(" >>> preprocessing_tools.py >>> Could not concatenate cubes, keeping a list of files", error_message, verbosity)
+        logger.warning(" >>> preprocessing_tools.py >>> Could not concatenate cubes, keeping a list of files - %s", error_message)
         return 0
 
 ############################################################################

@@ -31,8 +31,9 @@ dependencies:
   - geoval
 
 # testing
-- nose
-- pytest
 - easytest
 - mock
+- nose
+- pytest
 - pytest-cov
+- pytest-html

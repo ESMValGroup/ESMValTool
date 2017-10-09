@@ -18,6 +18,14 @@ from iris.analysis import AreaWeighted, Linear, Nearest, UnstructuredNearest
 from numpy import ma
 import numpy as np
 import stratify
+import stratify._vinterp as vinterp
+
+#class DirectionExtrapolator(vinterp.PyFuncExtrapolator):
+#    def extrap_kernel(self, direction, z_src, fz_src,
+#                      level, output_array):
+#        output_array[:] = np.inf if direction > 0 else -np.inf
+#
+#extrapolator = DirectionExtrapolator()
 
 # Regular expression to parse a "MxN" cell-specification.
 _CELL_SPEC = re.compile(r'''\A
@@ -115,6 +123,11 @@ def _stock_cube(spec):
     dummy = np.empty(shape, dtype=np.dtype('int8'))
     coords_spec = [(lats, 0), (lons, 1)]
     cube = iris.cube.Cube(dummy, dim_coords_and_dims=coords_spec)
+
+    # VP: this is needed to have standard CF naming
+    # the diagnostics look for var_name in the netCDF files
+    cube.coords()[0].var_name = 'lat'
+    cube.coords()[1].var_name = 'lon'
 
     return cube
 
@@ -272,6 +285,14 @@ def _create_cube(src_cube, data, levels):
 
     return result
 
+def vinterp_schemes():
+    """
+    Simple functional to list what available
+    vinterp schemes
+    CHANGE this everytime you change vinterp()
+    """
+    vs = ['linear', 'nearest']
+    return vs
 
 def vinterp(src_cube, levels, scheme):
     """
@@ -332,6 +353,7 @@ def vinterp(src_cube, levels, scheme):
         # if they *all* exist in the source cube, otherwise
         # perform vertical interpolation.
         if set(levels).issubset(set(src_levels.points)):
+            print('--- select levels --- NOT performing vertical Interpolation')
             name = src_levels.name()
             coord_values = {name: lambda cell: cell.point in set(levels)}
             constraint = iris.Constraint(coord_values=coord_values)
@@ -342,6 +364,7 @@ def vinterp(src_cube, levels, scheme):
                 emsg = 'Failed to extract levels {!r} from cube {!r}.'
                 raise ValueError(emsg.format(list(levels), name))
         else:
+            print('--- select levels --- Performing vertical Interpolation')
             # Determine the source axis for vertical interpolation.
             z_axis, = src_cube.coord_dims(src_levels)
 
@@ -360,7 +383,7 @@ def vinterp(src_cube, levels, scheme):
                                             src_cube.data,
                                             axis=z_axis,
                                             interpolation=scheme,
-                                            extrapolation='nan')
+                                            extrapolation=stratify.EXTRAPOLATE_NEAREST)
 
             # Determine if we need to fill any extrapolated NaN values.
             mask = np.isnan(new_data)
