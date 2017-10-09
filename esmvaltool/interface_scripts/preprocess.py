@@ -175,26 +175,8 @@ def get_cf_infile(project_info, current_diag, model, current_var_dict):
         if len(full_paths) == 0:
             logger.info("Could not find any data files for %s", model['name'])
 
-        if len(full_paths) == 1:
+        else:
             data_files[var['name']] = full_paths
-
-        if len(full_paths) > 1:
-
-            # get pp.glob to glob the files into one single file
-            logger.info("Found multiple netCDF files for current diagnostic, attempting to glob them; variable: %s", var['name'])
-
-            # glob only if the GLOB.nc file doesnt exist
-            if os.path.exists(standard_name) is False:
-                globs = pt.glob(full_paths, standard_name, var['name'], verbosity)
-                logger.info("Globbing files now...")
-            else:
-                logger.info("Found GLOB file: %s", standard_name)
-                globs = 1
-            if globs == 1:
-                data_files[var['name']] = [standard_name]
-            else:
-                data_files[var['name']] = full_paths
-                logger.info("Could not glob files, keeping a list of files")
 
     return data_files
 
@@ -394,17 +376,7 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
     ##############################
 
     # Build input and output file names
-    infileslist = get_cf_infile(project_info, current_diag, model, vari)[variable.name]
-
-    # VP-FIXME-question : the code can glob multiple files, but how to handle the case when globbing fails; currently
-    # the diagnostic is run on only the first file
-    if len(infileslist) == 1:
-        infiles = infileslist[0]
-    else:
-        logger.info("Found multiple netCDF files for current diagnostic")
-        logger.info("netCDF globbing has failed")
-        logger.info("Running diagnostic ONLY on the first file")
-        infiles = infileslist[0]
+    infiles = get_cf_infile(project_info, current_diag, model, vari)[variable.name]
 
     outfilename = get_output_file(project_info, model, vari).split('/')[-1]
     logger.info("Reformatted file name: %s", outfilename)
@@ -427,7 +399,7 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
     logger.info("Model is %s", model['name'])
     if project_name == 'CMIP5':
         logger.info("Ensemble is %s", model['ensemble'])
-    logger.info("Full IN path is %s", infiles)
+    logger.info("Full IN path is %s", str(infiles))
     logger.info("Full OUT path is %s", fullpath)
 
     ################## START CHANGING STUFF ###########################################
@@ -493,8 +465,9 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
                     file_to_fix = next_fix.fix_file(file_to_fix)
                 return file_to_fix
 
-            # infiles is always a fullpath = single string
-            files = apply_file_fixes(infiles)
+            # infiles are fullpaths
+            files = [apply_file_fixes(infile) for infile in infiles]
+            cfilelist = []
 
             with warnings.catch_warnings():
                 warnings.filterwarnings('ignore',
@@ -507,8 +480,22 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
                     return raw_cube.var_name == var_name
                 var_cons = iris.Constraint(cube_func=cube_var_name)
                 # force single cube; this function defaults a list of cubes
-                reft_cube_0 = iris.load(files, var_cons, callback=merge_callback)[0]
+                for cfile in files:
+                    reft_cube_i = iris.load(cfile, var_cons, callback=merge_callback)[0]
+                    cfilelist.append(reft_cube_i)
 
+            # concatenate if needed
+            if len(cfilelist) > 1:
+                c = iris.cube.CubeList(cfilelist)
+                try:
+                    reft_cube_0 = c.concatenate()[0]
+                except iris.exceptions.ConcatenateError as exc:
+                    error_message = "Problem trying to concatenate cubes"
+                    logger.warning(error_message)
+            else:
+                reft_cube_0 = cfilelist[0]
+
+            # fix again
             for fix in fixes:
                 reft_cube_0 = fix.fix_metadata(reft_cube_0)
 
@@ -546,7 +533,11 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
             logger.warning("%s", ex)
 
     else:
-        reft_cube = iris.load_cube(infiles)
+        # check if we need to concatenate
+        if len(infiles) > 1:
+            reft_cube = pt.glob(infiles, variable.name)
+        else:
+            reft_cube = iris.load_cube(infiles)
         iris.save(reft_cube, project_info['TEMPORARY']['outfile_fullpath'])
 
     #################### 1. LAND/OCEAN/PORO MASK VIA sftlf/sftof/mrsofc FILE ####################################################
@@ -779,7 +770,12 @@ def preprocess(project_info, variable, model, current_diag, cmor_reformat_type):
 
                                     logger.info("Regridding on ref_model %s", ref_model)
                                     tgt_nc_grid = get_cf_infile(project_info, current_diag, obs_model, vari)[variable.name][0]
-                                    tgt_grid_cube = iris.load_cube(tgt_nc_grid)
+
+                                    # check if we need to concatenate
+                                    if len([tgt_nc_grid]) > 1:
+                                        tgt_grid_cube = pt.glob(tgt_nc_grid, variable.name)
+                                    else:
+                                        tgt_grid_cube = iris.load_cube(tgt_nc_grid)
 
                                     logger.info("Target regrid cube summary --->\n%s", tgt_grid_cube)
 
