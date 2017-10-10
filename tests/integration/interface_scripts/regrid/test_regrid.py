@@ -1,5 +1,6 @@
 """
-Integration tests for the :func:`esmvaltool.interface_scripts.regrid.regrid` function.
+Integration tests for the :func:`esmvaltool.interface_scripts.regrid.regrid`
+function.
 
 """
 

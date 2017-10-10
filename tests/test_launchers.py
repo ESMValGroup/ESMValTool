@@ -13,13 +13,15 @@ import unittest
 
 class TestLauncher(unittest.TestCase):
     def setUp(self):
-        # implement here everything you would like to see happen BEFORE a test is executed
+        # implement here everything you would like to see happen
+        # BEFORE a test is executed
 
         # temporary directory for output
         self.tmpdir = tempfile.mkdtemp() + os.sep
 
     def tearDown(self):
-        # implement here everything you would like to see happen AFTER a test was executed
+        # implement here everything you would like to see happen
+        # AFTER a test was executed
         pass
 
 

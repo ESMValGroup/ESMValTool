@@ -1,5 +1,6 @@
 """
-Integration tests for the :func:`esmvaltool.interface_scripts.regrid.vinterp` function.
+Integration tests for the :func:`esmvaltool.interface_scripts.regrid.vinterp`
+function.
 
 """
 

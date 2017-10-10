@@ -16,7 +16,8 @@ class TestFix(unittest.TestCase):
         self.assertListEqual(Fix.get_fixes('CMIP5', 'BNU-ESM', 'ch4'), [ch4()])
 
     def test_get_fixes_with_generic(self):
-        from esmvaltool.interface_scripts.fixes.CMIP5.CESM1_BGC import allvars, co2
+        from esmvaltool.interface_scripts.fixes.CMIP5.CESM1_BGC import (
+            allvars, co2)
         self.assertListEqual(
             Fix.get_fixes('CMIP5', 'CESM1-BGC', 'co2'), [allvars(),
                                                          co2()])
