@@ -49,6 +49,9 @@ import xml_parsers
 version = "1.1.0"
 os.environ['0_ESMValTool_version'] = version
 
+# watermarks (None, default)
+os.environ['0_ESMValTool_watermark'] = "None"
+
 # Check NCL version
 ncl_version_check()
 

@@ -20,8 +20,9 @@ class METAdata(object):
         self.__avail__ = ["xml", "meta", "both"]
         # http://www.sno.phy.queensu.ca/~phil/exiftool/exiftool_pod.html;
         # relevant r/w formats
-        self.__meta_formats__ = ["jpg", "jpeg", "png", "eps", "mp4",
-                                 "tiff", "pdf", "ps"]
+        #self.__meta_formats__ = ["jpg", "jpeg", "png", "eps", "mp4",
+        #                         "tiff", "pdf", "ps"]
+        self.__meta_formats__ = ["png"]
         self.__exif_maintag__ = "Exif.Image.ImageDescription"
         # self.__dtype__=dtype
         self.set_type(dtype)
@@ -96,7 +97,8 @@ class METAdata(object):
         from PIL import Image, PngImagePlugin
 
         if not self.__modfile__.split(".")[-1] in self.__meta_formats__:
-            print("Warning! This is not an acceptable " +
+            print("Warning! ." + self.__modfile__.split(".")[-1] +
+                  " is not an acceptable " +
                   "meta data file format! Instead, XML-file for meta data " +
                   "will be produced!")
             self.__dtype__ = "xml"

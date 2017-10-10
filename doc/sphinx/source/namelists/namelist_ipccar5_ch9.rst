@@ -8,13 +8,15 @@ The goal of this effort is to code up routines to reproduce Chapter 9 of AR5, so
 
 The plots will be done based on a collection of individual namelists. The following figures from Flato et al. (2013) can currently be reproduced:
 
-* Figure 9.2 a,b: Annual-mean surface air temperature for the period 1980-2005. The left panel shows the multi-model mean and the right panel the bias as the difference between the CMIP5 multi-model mean and the climatology from ERA-Interim (Dee et al., 2011).
+* Figure 9.2 a,b,c: Annual-mean surface air temperature for the period 1980-2005. a) multi-model mean, b) bias as the difference between the CMIP5 multi-model mean and the climatology from ERA-Interim (Dee et al., 2011), c) mean absolute model error with respect to the climatology from ERA-Interim.
 
-* Figure 9.4 a,b: Annual-mean precipitation rate (mm day\ :sup:`-1`) for the period 1980-2005. The left panel shows the multi-model mean and the right panel the bias as the difference between the CMIP5 multi-model mean and the climatology from the Global Precipitation Climatology Project (Adler et al., 2003).
+* Figure 9.4: Annual-mean precipitation rate (mm day\ :sup:`-1`) for the period 1980-2005. a) multi-model mean, b) bias as the difference between the CMIP5 multi-model mean and the climatology from the Global Precipitation Climatology Project (Adler et al., 2003), c) difference between the multi-model mean and the ECMWF reanalysis of the seasonality, and d) difference between the multi-model mean and the ERA-Interim absolute seasonality.
 
 * Figure 9.5: Climatological (1985-2005) annual-mean cloud radiative effects in Wm\ :sup:`-2` for the CMIP5 models against CERES EBAF (2001-2011) in Wm\ :sup:`-2`. Top row shows the shortwave effect; middle row the longwave effect, and bottom row the net effect. Multi-model-mean biases against CERES EBAF 2.6 are shown on the left, whereas the right panels show zonal averages from CERES EBAF 2.6 (black), the individual CMIP5 models (thin gray lines), and the multi-model mean (thick red line).
 
 * Figure 9.7: Relative space-time root-mean square error (RMSE) calculated from the 1980-2005 climatological seasonal cycle of the CMIP5 historical simulations. A relative performance is displayed, with blue shading indicating performance being better and red shading worse, than the median of all model results. A diagonal split of a grid square shows the relative error with respect to the reference data set (lower right triangle) and the alternate data set (upper left triangle). White boxes are used when data is not available for the given model and variable or no alternate data set has been used. The figure shows that performance varies across CMIP5 models and variables, with some models comparing better with observations for one variable and another model performing better for a different variable.
+
+* Figure 9.8: Observed and simulated time series of the anomalies in annual and global mean surface temperature. All anomalies are differences from the 1961-1990 time-mean of each individual time series. The reference period 1961-1990 is indicated by yellow shading; vertical dashed grey lines represent times of major volcanic eruptions. Single simulations for CMIP5 models (thin lines); multi-model mean (thick red line); different observations (thick black lines).
 
 * Figure 9.10: Total column ozone time series for (a) annual global and (b) Antarctic October mean. CMIP5 models are shown in colored lines and the multi-model mean in thick black, their standard deviation as gray shaded area, and observations (NIWA) (black symbols).
 
@@ -24,9 +26,15 @@ The plots will be done based on a collection of individual namelists. The follow
 
 * Figure 9.29: Time series of global oceanic mean aerosol optical depth (AOD) from individual CMIP5 models historical (1850-2005) and RCP 4.5 (2006-2010) simulations compared with MODIS and ESACCI-AEROSOL satellite data.
 
-* Figure 9.30: Composite diurnal cycle of precipitation averaged over land / ocean for different latitude bands / seasons (JuneJulyAugust (JJA), DecemberJanuaryFebruary (DJF), or their sum) at local time.
+* Figure 9.30: Composite diurnal cycle of precipitation averaged over land / ocean for different latitude bands / seasons (June-July-August (JJA), December-January-February (DJF), or their sum) at local time.
+
+* Figure 9.31: (a, b) The two leading Empirical Orthogonal Functions (EOFs) of outgoing longwave radiation (OLR). The 20- to 100-day filtered OLR from observations and each of the CMIP5 historical simulations is projected on these two leading EOFs to obtain MJO Principal Component time series. The scatterplot (c) shows the maximum positive correlation between the resulting MJO Principal Components and the time lag at which it occurred for all winters (November to March). The maximum positive correlation is an indication of the coherence with which the MJO convection propagates from the Indian Ocean to the Maritime Continent/western Pacific, and the time lag is approximately one fourth of the period of the MJO.
 
 * Figure 9.32: Monsoon precipitation intensity (upper panels) and monsoon precipitation domain (lower panels) for TRMM and an example of deviations from observations from three CMIP5 models (EC-Earth, HadGEM2-ES, and GFDL-ESM2M).
+
+* Figure 9.35: Maximum entropy power spectra of surface air temperature averaged over the NINO3 region for the CMIP5 models and. The vertical lines correspond to periods of two and seven years.
+
+* Figure 9.36: ENSO metrics for pre-industrial control simulations in CMIP3 and CMIP5. (a) and (b): SST anomaly standard deviation (deg C) in Nino 3 and Nino 4, respectively, (c) precipitation response (standard deviation, mm/day) in Nino4. 
 
 * Figure 9.45: The carbon cycle-climate feedback (gamma\ :sub:`LT`\) versus the short-term sensitivity of atmospheric CO\ :sub:`2`\  to interannual temperature variability (gamma\ :sub:`IAV`\) in the tropics for CMIP5 models. The red line shows the best fit line across the CMIP5 simulations and the vertical dashed lines show the observed range of gamma\ :sub:`IAV`\. (b) Probability distribution function (PDF) for gamma\ :sub:`LT`\. The solid line is derived after applying the interannual variability (IAV) constraint to the models while the dashed line is the prior PDF derived purely from the models before applying the IAV constraint.
 
@@ -43,21 +51,27 @@ Diagnostics are stored in diag_scripts/
 
 * aerosol_satellite.ncl (Fig. 9.28: Multi-year average AOD in comparison with satellite data)
 
-* carbon_constraint.ncl (fig. 9.45: Emergent constraints on carbon cycle feedbacks)
+* carbon_constraint.ncl (fig. 9.45b: Emergent constraints on carbon cycle feedbacks)
 
-* carbon_corr_2var.ncl (fig. 9.45: Emergent constraints on carbon cycle feedbacks)
+* carbon_corr_2var.ncl (fig. 9.45b: Emergent constraints on carbon cycle feedbacks)
 
-* carbon_dummy.ncl (fig. 9.45: Emergent constraints on carbon cycle feedbacks)
+* carbon_dummy.ncl (fig. 9.45b: Emergent constraints on carbon cycle feedbacks)
 
-* clouds_bias.ncl (figs. 9.2 a,b + 9.4 a,b: Clouds)
+* clouds_bias.ncl (figs. 9.2 a,b,c + 9.4 a,b: Clouds)
 
-* clouds_ipcc.ncl (fig. 9.4: Clouds)
+* clouds_ipcc.ncl (fig. 9.5: Clouds)
 
-* create_co2flux.ncl (fig. 9.45: Emergent constraints on carbon cycle feedbacks)
+* create_co2flux.ncl (fig. 9.45b: Emergent constraints on carbon cycle feedbacks)
 
-* DiurnalCycle_box.ncl (fig. 9.30: Composite diurnal cycle of precipitation)
+* enso_mem.ncl (fig. 9.35: Maximum entropy power spectra of surface air temperature averaged over the NINO3 region)
 
 * eyring13jgr_fig02.ncl (fig. 9.10: Ozone and associated climate impacts)
+
+* ipcc-fig-9-30.ncl (fig. 9.30: Composite diurnal cycle of precipitation)
+
+* ipcc-fig-9-31.ncl (fig. 9.31: Two leading Empirical Orthogonal Functions (EOFs) of the observed outgoing longwave radiation (OLR).)
+
+* ipcc-fig-9-36.ncl (fig. 9.36: (Anomaly) standard deviation averaged over Nino 3 and Nino 4 regions.)
 
 * perfmetrics_grading.ncl (fig. 9.7: Performance metrics for essential climate parameters)
 
@@ -69,9 +83,11 @@ Diagnostics are stored in diag_scripts/
 
 * SeaIce_tsline.ncl (fig. 9.24 a,b: Sea ice)
 
+* seasonality_mm.ncl (fig. 9.30: Seasonality)
+
 * tsline.ncl (fig. 9.29: Aerosol; fig. 9.45: Emergent constraints on carbon cycle feedbacks)
 
-
+* tsline_IPCC_Fig_9_8.ncl (fig. 9.8: Time series of anomalies of annual and global surface temperature)
 
 User settings
 -------------
@@ -149,58 +165,83 @@ Example plots
 -------------
 
 
-.. figure:: ../../source/namelists/figures/ipccar5_ch9/fig1_ipccar5_ch9.png
+.. figure:: ../../source/namelists/figures/ipccar5_ch9/fig-9-2.png
    :width: 80%
-   
-   Resembling Flato et al. (2013), Fig. 9.2a,b (Eyring et al., 2016: Fig. 4).
 
-.. figure:: ../../source/namelists/figures/ipccar5_ch9/fig2_ipccar5_ch9.png
+   Resembling Flato et al. (2013), Fig. 9.2a,b,c.
+
+.. figure:: ../../source/namelists/figures/ipccar5_ch9/fig-9-3.png
    :width: 80%
-   
-   Resembling Flato et al. (2013), Fig. 9.4a,b (Eyring et al., 2016: Fig. 4).
+
+   Resembling Flato et al. (2013), Fig. 9.3.
+
+.. figure:: ../../source/namelists/figures/ipccar5_ch9/fig-9-4.png
+   :width: 80%
+
+   Resembling Flato et al. (2013), Fig. 9.4.
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig3_ipccar5_ch9.png
    :width: 60%
-   
+
    Resembling Flato et al. (2013), Fig. 9.5 (Eyring et al., 2016: Fig. 12).
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig4_ipccar5_ch9.png
    :width: 80%
-   
+
    Resembling Flato et al. (2013), Fig. 9.7 (Eyring et al., 2016: Fig. 2).
+
+.. figure:: ../../source/namelists/figures/ipccar5_ch9/fig-9-8.png
+   :width: 80%
+
+   Resembling Flato et al. (2013), Fig. 9.8.
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig5_ipccar5_ch9.png
    :width: 60%
-   
+
    Resembling Flato et al. (2013), Fig. 9.10 (Eyring et al., 2016: Fig. 25).
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig6_ipccar5_ch9.png
    :width: 80%
-   
+
    Resembling Flato et al. (2013), Fig. 9.24 (Eyring et al., 2016: Fig. 17).
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig7_ipccar5_ch9.png
    :width: 80%
-   
+
    Similar to Flato et al. (2013), Fig. 9.28.
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig8_ipccar5_ch9.png
    :width: 60%
-   
+
    Resembling Flato et al. (2013), Fig. 9.29 (Eyring et al., 2016: Fig. 23).
 
-.. figure:: ../../source/namelists/figures/ipccar5_ch9/fig9_ipccar5_ch9.png
+.. figure:: ../../source/namelists/figures/ipccar5_ch9/fig-9-30.png
    :width: 80%
-   
+
    Similar to Flato et al. (2013), Fig. 9.30.
+
+.. figure:: ../../source/namelists/figures/ipccar5_ch9/fig-9-31.png
+   :width: 60%
+
+   Similar to Flato et al. (2013), Fig. 9.31.
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig10_ipccar5_ch9.png
    :width: 60%
-   
+
    Resembling Flato et al. (2013), Fig. 9.32 (Eyring et al., 2016: Fig. 5).
+
+.. figure:: ../../source/namelists/figures/ipccar5_ch9/fig-9-35.png
+   :width: 60%
+
+   Resembling Flato et al. (2013), Fig. 9.35.
+
+.. figure:: ../../source/namelists/figures/ipccar5_ch9/fig-9-36.png
+   :width: 80%
+
+   Resembling Flato et al. (2013), Fig. 9.36.
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig11_ipccar5_ch9.png
    :width: 80%
 
-   Resembling Flato et al. (2013), Fig. 9.45 (Eyring et al., 2016: Fig. 26).
+   Resembling Flato et al. (2013), Fig. 9.45b (Eyring et al., 2016: Fig. 26).
 
