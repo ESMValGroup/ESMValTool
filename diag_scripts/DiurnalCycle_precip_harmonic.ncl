@@ -20,7 +20,7 @@
 ;; Optional diag_script_info attributes (diagnostics specific)
 ;;
 ;; Caveats
-;;   The settings for GridType and Regional are set expli.citly in this script
+;;   The settings for GridType and Regional are set explicitly in this script
 ;;
 ;; Modification history
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
