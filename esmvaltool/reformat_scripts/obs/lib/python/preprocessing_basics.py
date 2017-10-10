@@ -1,14 +1,25 @@
 # -*- coding: utf-8 -*-
 """
-These are (cdo) wrapper functions that can be used by the obs reformatting 
+These are (cdo) wrapper functions that can be used by the obs reformatting
 scripts in python.
 
-Most functions will write temporary files in a subdirectory "temp" that has to 
-be written beforehand and deleted afterwards 
+Most functions will write temporary files in a subdirectory "temp" that has to
+be written beforehand and deleted afterwards.
 """
 
-import os, glob, tempfile, math, subprocess
+import glob
+import math
+import os
+import subprocess
+import tempfile
+
 from cdo import Cdo
+
+
+def _get_temp_file_path(work_dir):
+    """ return the path of a temporary file work_dir/temp/filename """
+    filename = os.path.basename(tempfile.NamedTemporaryFile().name)
+    return os.path.join(work_dir, "temp", filename)
 
 
 def _get_files_in_directory(directory, pattern, asstring=True):
@@ -40,8 +51,7 @@ def _get_subdirectories_in_directory(directory, asstring=True):
 def _aggregate_obs_from_files(work_dir, file_list):
     """ reads different obs files into one file """
     cdo = Cdo()
-    oname = work_dir + os.sep + "temp" + os.sep + tempfile.NamedTemporaryFile(
-    ).name.split('/')[-1]
+    oname = _get_temp_file_path(work_dir)
     try:
         cdo.cat(input=file_list, output=oname, options='-f nc4')
         return oname
@@ -64,8 +74,7 @@ def _aggregate_timestep(work_dir, infile, timestep, remove=True):
     """ aggregate infile to timestep """
     """ currenty only monthly """
     cdo = Cdo()
-    oname = work_dir + os.sep + "temp" + os.sep + tempfile.NamedTemporaryFile(
-    ).name.split('/')[-1]
+    oname = _get_temp_file_path(work_dir)
     if timestep == "monthly":
         cdo.monmean(input=infile, output=oname, options='-f nc4 -b F32')
         if remove:
@@ -80,21 +89,17 @@ def _aggregate_specific_years(work_dir, infile, times, remove=True):
     """ aggregate infile to times with mean and sd"""
 
     cdo = Cdo()
-    onameM = work_dir + os.sep + "temp" + os.sep + tempfile.NamedTemporaryFile(
-    ).name.split('/')[-1]
-    onameS = work_dir + os.sep + "temp" + os.sep + tempfile.NamedTemporaryFile(
-    ).name.split('/')[-1]
-    oname = work_dir + os.sep + "temp" + os.sep + tempfile.NamedTemporaryFile(
-    ).name.split('/')[-1]
-    tmpname = work_dir + os.sep + "temp" + os.sep + tempfile.NamedTemporaryFile(
-    ).name.split('/')[-1]
+    onameM = _get_temp_file_path(work_dir)
+    onameS = _get_temp_file_path(work_dir)
+    oname = _get_temp_file_path(work_dir)
+    tmpname = _get_temp_file_path(work_dir)
     cdo.selyear(
         ",".join([str(t) for t in times]),
         input=infile,
         output=tmpname,
         options='-f nc4 -b F32')
     cdo.timselmean(12, input=tmpname, output=onameM, options='-f nc4 -b F32')
-    #cdo.timselstd(12,input=tmpname,output=onameS,options='-f nc4 -b F32')
+    # cdo.timselstd(12,input=tmpname,output=onameS,options='-f nc4 -b F32')
     name = cdo.showname(input=onameM)
     cdo.setname(
         name[0] + "_std -timselstd,12",
@@ -115,8 +120,7 @@ def _aggregate_resolution(work_dir, infile, resolution, remove=True):
     """ aggregate infile to resolution """
     """ currenty only T63, T85 """
     cdo = Cdo()
-    oname = work_dir + os.sep + "temp" + os.sep + tempfile.NamedTemporaryFile(
-    ).name.split('/')[-1]
+    oname = _get_temp_file_path(work_dir)
     if resolution == "T63":
         cdo.remapcon(
             't63grid', input=infile, output=oname, options='-f nc4 -b F32')
@@ -135,8 +139,7 @@ def _aggregate_resolution(work_dir, infile, resolution, remove=True):
 def _select_variable(work_dir, infile, variablename, remove=False):
     """ select variables from infile """
     cdo = Cdo()
-    oname = work_dir + os.sep + "temp" + os.sep + tempfile.NamedTemporaryFile(
-    ).name.split('/')[-1]
+    oname = _get_temp_file_path(work_dir)
     cdo.selname(
         variablename, input=infile, output=oname, options='-f nc4 -b F32')
     if remove:
@@ -147,8 +150,7 @@ def _select_variable(work_dir, infile, variablename, remove=False):
 def _sum_files(work_dir, infiles, remove=True):
     """ sum up all infiles """
     cdo = Cdo()
-    oname = work_dir + os.sep + "temp" + os.sep + tempfile.NamedTemporaryFile(
-    ).name.split('/')[-1]
+    oname = _get_temp_file_path(work_dir)
     cdo.enssum(input=" ".join(infiles), output=oname, options='-f nc4 -b F32')
     if remove:
         for ifi in infiles:
@@ -163,10 +165,8 @@ def _extract_variables(work_dir,
                        remove=True):
     """ select, sum up and rename variable(s) from infile """
 
-    tmpname = work_dir + os.sep + "temp" + os.sep + tempfile.NamedTemporaryFile(
-    ).name.split('/')[-1]
-    oname = work_dir + os.sep + "temp" + os.sep + tempfile.NamedTemporaryFile(
-    ).name.split('/')[-1]
+    tmpname = _get_temp_file_path(work_dir)
+    oname = _get_temp_file_path(work_dir)
     selfilenames = []
 
     stop = 0

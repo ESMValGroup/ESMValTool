@@ -12,23 +12,29 @@
 ##    http://maps.elie.ucl.ac.be/CCI/viewer/download.php
 ##
 ## Download and processing instructions
-##    1) Goto http://maps.elie.ucl.ac.be/CCI/viewer/index.php and click on "Download data".
+##    1) Goto http://maps.elie.ucl.ac.be/CCI/viewer/index.php and click on
+##       "Download data".
 ##    2) Select "Climate Research Data Package (CRDP)".
 ##    3) Register with your name and email.
 ##    4) Seach for "Land Cover Maps - v1.6.1" and download netCDF:
 ##        a) 2008-2012 epoch - v1.6.1 (netcdf) - 2.8Go
 ##        b) 2003-2007 epoch - v1.6.1 (netcdf) - 2.8Go
 ##        c) 1998-2002 epoch - v1.6.1 (netcdf) - 1.1Go
-##    5) The CCI-LC User Tools are available on the same page, search for "User tool".
-##    6) Unpack the CCI-LC Tools into the directory specified below (variable path2lctool).
-##    7) Please adjust in- and out-path below! Then run: python reformat_obs_ESACCI-LANDCOVER.py
+##    5) The CCI-LC User Tools are available on the same page, search for
+##       "User tool".
+##    6) Unpack the CCI-LC Tools into the directory specified below
+##       (variable path2lctool).
+##    7) Please adjust in- and out-path below!
+##       Then run: python reformat_obs_ESACCI-LANDCOVER.py
 ##
 ## Caveats
 ##    Requires the CCI-LC User Tools
 ##    Path to folder must be set in variable path2lctool.
-##    The CCI-LC User Tools require an installed Java SE 64Bit JRE version 7 or higher.
-##    The CCI-LC User Tools are available at: http://maps.elie.ucl.ac.be/CCI/viewer/download.php
-##    Produces only single year data expanded to their time range of validity!   
+##    The CCI-LC User Tools require an installed Java SE 64Bit JRE version 7
+##    or higher.
+##    The CCI-LC User Tools are available at:
+##    http://maps.elie.ucl.ac.be/CCI/viewer/download.php
+##    Produces only single year data expanded to their time range of validity!
 ##
 ## Modification history
 ##    20160714-A_muel_bn: written.
@@ -36,14 +42,25 @@
 ###############################################################################
 """
 
+import datetime
+import os
+import subprocess
+import sys
+import tempfile
+
+import numpy as np
+
+from cdo import Cdo
+from preprocessing_basics import _get_files_in_directory
+
 inpath = "/Work/Reference/OBS_ESACCI_LC/"
 outpath = "/Work/Reference/OBS_ESACCI_LC/output/"
 path2lctool = "./lib/lc-user-tools-3.10/"
 
-#these LC-classes will be processed
+# these LC-classes will be processed
 var = ["baresoilFrac", "grassNcropFrac", "shrubNtreeFrac"]
 
-#this is how the LC-classes will be aggregated from LC-User-Tool output
+# this is how the LC-classes will be aggregated from LC-User-Tool output
 translatorlist = {
     'baresoilFrac': ['Bare_Soil'],
     'grassNcropFrac': ['Managed_Grass', 'Natural_Grass'],
@@ -55,7 +72,7 @@ translatorlist = {
     ]
 }
 
-#the available years. You mayextend this list for further data!
+# the available years. You mayextend this list for further data!
 year = [2000, 2005, 2010]
 
 field = "T2Ms"
@@ -64,15 +81,9 @@ timestep = "monthly"
 
 basicpath = "./lib/python/"
 
-import sys, os, subprocess, tempfile, datetime
-from cdo import Cdo
-import numpy as np
-
 pathname = os.path.dirname(sys.argv[0])
 os.chdir(os.path.abspath(pathname))
 sys.path.append(basicpath)
-
-from preprocessing_basics import _get_files_in_directory
 
 
 def main():
@@ -86,9 +97,17 @@ def main():
         file_list, list_length = _get_files_in_directory(
             inpath, '*P5Y-' + str(year) + '*.nc', False)
         for locfile in file_list:
-            lctool_Command = "bash " + path2lctool + os.sep + "bin" + os.sep + "aggregate-map.sh -PgridName=GEOGRAPHIC_LAT_LON -PnumMajorityClasses=1 -PoutputAccuracy=false -PoutputPFTClasses=true -PoutputLCCSClasses=false " + locfile
-            process = subprocess.Popen(
-                lctool_Command.split(), stdout=subprocess.PIPE)
+            lctool_Command = [
+                "bash",
+                os.path.join(path2lctool, "bin", "aggregate-map.sh"),
+                "-PgridName=GEOGRAPHIC_LAT_LON",
+                "-PnumMajorityClasses=1",
+                "-PoutputAccuracy=false",
+                "-PoutputPFTClasses=true",
+                "-PoutputLCCSClasses=false",
+                locfile,
+            ]
+            process = subprocess.Popen(lctool_Command, stdout=subprocess.PIPE)
             for line in iter(process.stdout.readline, b''):
                 print line,
                 process.stdout.close()
@@ -110,7 +129,7 @@ def main():
             _preprocess_observations(fullfilenames[ffn], outpath,
                                      translatorlist, timestep, ffn, y, inpath,
                                      False)
-        #subprocess.call(["rm -rf",outpath + "temp"])
+        # subprocess.call(["rm -rf",outpath + "temp"])
 
     print("Time for running preprocessing was: " +
           str(datetime.datetime.now() - timestamp))
@@ -128,10 +147,10 @@ def _preprocess_observations(mainfile,
                              check_folder=None,
                              force=False):
     """
-    preprocess observations to adapt to temporal and spatial resolution needed
+    Preprocess observations to adapt to temporal and spatial resolution needed.
+
     Parameters:
     -----------
-    
     mainfile : string with path to file
     outpath : string with path to outpath
     translist : translatorlist from land cover classes to new class
@@ -145,13 +164,13 @@ def _preprocess_observations(mainfile,
     start_year = year - 2
     stop_year = year + 2
 
-    if not check_folder is None:
+    if check_folder is not None:
 
         file_list, list_length = _get_files_in_directory(
             check_folder, '*P5Y-*-' + str(year) + '*.nc', False)
 
-        if not list_length == 1:
-            assert False, "There is less or more than one file! This should not happen!"
+        assert list_length == 1, ("There is less or more than one file! "
+                                  "This should not happen!")
 
     ofile = mainfile + "_" + str(start_year) + "01" + "-" + str(
         stop_year) + "12" + '.nc'
@@ -163,33 +182,45 @@ def _preprocess_observations(mainfile,
         print("files already exist!")
         return
 
-    elif ((mf_bool or of_bool) and force) or not check_folder is None:
+    elif ((mf_bool or of_bool) and force) or check_folder is not None:
 
-        tmpfile1 = outpath + os.sep + "temp" + os.sep + tempfile.NamedTemporaryFile(
-        ).name.split('/')[-1]
-        tmpfile2 = outpath + os.sep + "temp" + os.sep + tempfile.NamedTemporaryFile(
-        ).name.split('/')[-1]
+        tmpfile1 = os.path.join(
+            outpath,
+            "temp",
+            os.path.basename(tempfile.NamedTemporaryFile().name), )
+        tmpfile2 = os.path.join(
+            outpath,
+            "temp",
+            os.path.basename(tempfile.NamedTemporaryFile().name), )
 
         cdo = Cdo()
 
-        #select data depending on translatorlist
+        # select data depending on translatorlist
         files = _select_given_names(
             outpath, file_list[0], translist[var], remove=False)
 
-        #sum data
+        # sum data
         cdo.enssum(input=files, output=tmpfile1, options='-f nc4 -b F32')
         [os.remove(f) for f in files]
 
-        #chain: change name, multiply by 100 for "%", setunit to "%", duplicate for length of time range, set time axis, set day to 15, set reference time, calender and time units
+        # chain: change name, multiply by 100 for "%", setunit to "%",
+        # duplicate for length of time range, set time axis, set day
+        # to 15, set reference time, calender and time units
 
         cdo.settunits(
             "seconds",
-            input=
-            "-setcalendar,standard -setreftime,1970-01-01,00:00:00 -settaxis,"
-            + str(start_year) + "-01-15,12:00:00,1month -duplicate," + str(
-                (stop_year - start_year + 1) * 12) +
-            " -mulc,100 -setunit,% -setmissval,1e20 -setctomiss,0 -setname," +
-            var + " " + tmpfile1,
+            input=' '.join([
+                '-setcalendar,standard',
+                '-setreftime,1970-01-01,00:00:00',
+                '-settaxis,{!s}-01-15,12:00:00,1month'.format(start_year),
+                '-duplicate,{!s}'.format((stop_year - start_year + 1) * 12),
+                '-mulc,100',
+                '-setunit,%',
+                '-setmissval,1e20',
+                '-setctomiss,0',
+                '-setname,{!s}'.format(var),
+                tmpfile1,
+            ]),
             output=tmpfile2,
             options='-f nc4 -b F32')
 
@@ -213,9 +244,12 @@ def _select_given_names(work_dir, infile, translist, remove=True):
         os.makedirs(work_dir + os.sep + "temp")
 
     for element in translist:
-        tmpfile = work_dir + os.sep + "temp" + os.sep + tempfile.NamedTemporaryFile(
-        ).name.split('/')[-1]
-        #        cdo.selname(element,input=infile,output=tmpfile,options='-f nc4 -b F32')
+        tmpfile = os.path.join(
+            work_dir,
+            "temp",
+            os.path.basename(tempfile.NamedTemporaryFile().name), )
+        # cdo.selname(
+        #     element, input=infile, output=tmpfile, options='-f nc4 -b F32')
         cdo.setmisstoc(
             0,
             input="-selvar," + element + " " + infile,
