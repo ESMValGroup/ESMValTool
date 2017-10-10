@@ -32,8 +32,11 @@ class ESMValMD(METAdata):
 
         self.set_file(modfile)
 
-        watermark = "default"
-        if (watermark!="None"):
+        self.watermark = "None"  # default
+        if '0_ESMValTool_watermark' in os.environ.keys():
+            self.watermark = os.environ['0_ESMValTool_watermark']
+
+        if (self.watermark!="None"):
             make_watermark(modfile)
 
         if directwrite:

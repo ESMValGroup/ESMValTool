@@ -8,7 +8,7 @@
 ;; This script computes and outputs the mean diurnal cycle of precipitation
 ;; averaged over a given region and season(s).
 ;; The diagnostic is based on DiurnalCycle_box.ncl but in contrast to
-;; DiurnalCycle_box.ncl, the results calculated by this diagnostic aare averaged
+;; DiurnalCycle_box.ncl, the results calculated by this diagnostic are averaged
 ;; over all grid cells with the same local time.
 ;;
 ;; Required diag_script_info attributes (diagnostics specific)
@@ -76,9 +76,9 @@ begin
     var0 = variables(0)
     field_type0 = field_types(0)
 
-    file_type = getenv("ESMValTool_output_file_type")
-    if (ismissing(file_type)) then
-        file_type = "ps"
+    output_file_type = getenv("ESMValTool_output_file_type")
+    if (ismissing(output_file_type)) then
+        output_file_type = "ps"  ; default
     end if
 
     diag_script_base = basename(diag_script)
@@ -553,7 +553,7 @@ begin
             interface_get_inpaths(imod) + "/" + \
             interface_get_infile(variables(0), field_types(0), imod)
     end do
-    ESMValMD(plot_outfile+"."+file_type, alltags, caption, id, variables, \
+    ESMValMD(plot_outfile + "." + output_file_type, alltags, caption, id, variables, \
              models@name, climofiles, diag_script, authors)
     delete([/alltags, caption, id, climofiles/])
     ; -------------------------------------------------------------------------
