@@ -11,6 +11,7 @@ import re
 from datetime import datetime
 import iris
 import iris.coord_categorisation
+import six
 
 logger = logging.getLogger(__name__)
 
@@ -175,7 +176,7 @@ def get_input_filelist(project_info, model, var):
 
     project = model['project']
 
-    dict = read_config_file(project)
+    project_config = read_config_file(project)
 
     # Apply variable-dependent model keys
     if 'mip' in var:
@@ -186,13 +187,7 @@ def get_input_filelist(project_info, model, var):
         model['exp'] = var['exp']
 
     # Set the rootpath
-    if project in project_info['GLOBAL']['rootpath']:
-        dir1 = project_info['GLOBAL']['rootpath'][project]
-    elif 'default' in project_info['GLOBAL']['rootpath']:
-        dir1 = project_info['GLOBAL']['rootpath']['default']
-    else:
-        raise KeyError('default rootpath must be specified in config-user file')
-
+    dir1 = _get_option_with_default(project_info['GLOBAL'], 'rootpath', project, 'user config')
     if not os.path.isdir(dir1):
         raise OSError('directory not found', dir1)
 
@@ -202,11 +197,8 @@ def get_input_filelist(project_info, model, var):
     else:
         drs = 'default'
 
-    if drs in dict['input_dir']:
-        dir2 = replace_tags(dict['input_dir'][drs], model, var)
-    else:
-        raise KeyError('drs %s for %s project not specified in config-developer file' % (drs, project))
-
+    input_folder = _get_option_with_default(project_config, 'input_dir', drs, 'developer config for %s' % project)
+    dir2 = replace_tags(input_folder, model, var)
     dirname = os.path.join(dir1, dir2)
 
     # Find latest version if required
@@ -222,13 +214,26 @@ def get_input_filelist(project_info, model, var):
         raise OSError('directory not found', dirname)
 
     # Set the filename
-    filename = replace_tags(dict['input_file'][drs], model, var)
+    input_file = _get_option_with_default(project_config, 'input_file', drs, 'developer config for %s' % project)
+    filename = replace_tags(input_file, model, var)
 
     # Full path to files
     files = veto_files(model, dirname, filename)
 
     return files
 
+def _get_option_with_default(config, key, option, config_name):
+    config_value = config[key]
+
+    if isinstance(config_value, six.string_types):
+        value = config_value
+    elif option in config_value:
+        value = config_value[option]
+    elif 'default' in config_value:
+        value = config_value['default']
+    else:
+        raise KeyError('Option %s not specified and no default provided for %s in %s' % (option, key, config_name))
+    return value
 
 def get_output_file(project_info, model, var):
     """ Returns the full path to the output (preprocessed) file

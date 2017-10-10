@@ -29,8 +29,8 @@ rootpath:
   OBS: ~/esmvaltool_input
   # Default
   default: ~/esmvaltool_input
-  
+
 # Directory structure for input data: [default]/BADC/DKRZ/ETHZ/etc
 # See config-developer.yml for definitions.
 drs:
-  CMIP5: default
+  CMIP5: BSC

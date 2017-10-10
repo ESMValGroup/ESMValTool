@@ -20,11 +20,18 @@
 CMIP5:
   input_dir:
     default: '/'
+    BSC: '[institute]/[model]/[exp]/S[startdate]/[freq]/[realm]/[var]/[ensemble]'
     BADC: '[institute]/[model]/[exp]/[freq]/[realm]/[mip]/[ensemble]/latest/[var]'
     DKRZ: '[institute]/[model]/[exp]/[realm]/[freq]/[mip]/[ensemble]/[latestversion]/[var]'
     ETHZ: '[exp]/[mip]/[var]/[model]/[ensemble]/'
     SMHI: '[model]/[ensemble]/[exp]/[freq]'
-  input_file: '[var]_[mip]_[model]_[exp]_[ensemble]_*'
+  input_file: '[var]_[mip]_[model]_[exp]_*[ensemble]_*'
+  output_file: '[model]_[mip]_[exp]_[ensemble]_[field]_[var]_[start_year]-[end_year]'
+
+SPECS:
+  input_dir: '[institute]/[model]/[exp]/S[startdate]/[freq]/[realm]/[var]/[ensemble]'
+  input_file:
+    default: '[var]_[mip]_[model]_[exp]_S[startdate]_[ensemble]_*'
   output_file: '[model]_[mip]_[exp]_[ensemble]_[field]_[var]_[start_year]-[end_year]'
 
 OBS:
@@ -55,8 +62,8 @@ CCMVal2:
   input_dir:
     default: '[exp]/[model]'
   input_file: '[project]_[exp]_[name]_[ensemble]_[field]_[var]'
-  output_file: '[project]_[exp]_[name]_[ensemble]_[field]_[var]_[start_year]-[end_year]'    
-  
+  output_file: '[project]_[exp]_[name]_[ensemble]_[field]_[var]_[start_year]-[end_year]'
+
 EMAC:
   input_dir:
     default: '[model]'
