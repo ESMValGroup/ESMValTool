@@ -81,6 +81,7 @@ with open('README.md') as readme:
             'easytest',
             'mock',
             'nose',
+            'pycodestyle',
             'pytest',
             'pytest-cov',
             'pytest-html',
