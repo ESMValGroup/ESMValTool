@@ -291,8 +291,13 @@ def preprocess(project_info, variable, model, current_diag,
 
             if prp[k] == 'land':
                 mask_land = True
-                lmaskdir = os.path.join(model["path"], model["exp"], 'fx',
-                                        'sftlf', model["name"], 'r0i0p0')
+                lmaskdir = os.path.join(
+                    model["path"],
+                    model["exp"],
+                    'fx',
+                    'sftlf',
+                    model["name"],
+                    'r0i0p0', )
                 lmaskfile = 'sftlf_fx_{}_{}_r0i0p0.nc'.format(
                     model["name"], model["exp"])
                 lmaskfile_path = os.path.join(lmaskdir, lmaskfile)
@@ -317,8 +322,13 @@ def preprocess(project_info, variable, model, current_diag,
 
             if prp[k] is not False:
                 mask_poro = True
-                pormaskdir = os.path.join(model["path"], model["exp"], 'fx',
-                                          'mrsofc', model["name"], 'r0i0p0')
+                pormaskdir = os.path.join(
+                    model["path"],
+                    model["exp"],
+                    'fx',
+                    'mrsofc',
+                    model["name"],
+                    'r0i0p0', )
                 pormaskfile = 'mrsofc_fx_{}_{}_r0i0p0.nc'.format(
                     model["name"], model["exp"])
                 porofile_path = os.path.join(pormaskdir, pormaskfile)
