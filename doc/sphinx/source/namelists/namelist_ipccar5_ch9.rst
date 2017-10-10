@@ -236,7 +236,7 @@ Example plots
    Resembling Flato et al. (2013), Fig. 9.35.
 
 .. figure:: ../../source/namelists/figures/ipccar5_ch9/fig-9-36.png
-   :width: 80%
+   :width: 60%
 
    Resembling Flato et al. (2013), Fig. 9.36.
 

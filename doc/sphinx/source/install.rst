@@ -32,9 +32,7 @@ The ESMValTool has the following software requirements (note that specific diagn
   .. attention:: It is strongly recommended to use the Python distribution Anaconda (https://www.continuum.io/), as it allows the user to install additional Python libraries and extensions in a simple way and without modifying the installed Python distribution (i.e., without root permissions). The installation instructions for the additional Python packages listed above are given for Anaconda.
 
 * NCAR Command Language (NCL 2014) version 6.2 or higher (note: NCL version 6.3 is not supported, see known issues) to run the quality check and reformat routines processing all input files. See the control flow description on reformat_default in :numref:`workflow_reformat` for details.
-* The statistical computing software R to run diagnostics written in R. A working installation of R and the executable Rscript in the
-* default search path are required. In addition, the netCDF for R libraries (ncdf / ncdf4) are needed. Currently, only the diagnostic
-* "Standardized Precipitation index (SPI)" (see :numref:`annex_c`) requires R. More diagnostics written in R might be added in the future.
+* The statistical computing software R to run diagnostics written in R. A working installation of R and the executable Rscript in the default search path are required. In addition, the netCDF for R libraries (ncdf / ncdf4) are needed. Currently, only the diagnostics "Standardized Precipitation index (SPI)" and "Ozone and associated climate impacts (Eyring13, fig. 6)" (see :numref:`annex_c`) require R. More diagnostics written in R might be added in the future.
 * The sea ice diagnostics (and derived diagnostics such as, for instance, the ESA CCI namelist) require the Climate Data Operators (CDO): https://code.zmaw.de/projects/cdo. The CDO executable has to be in the default search path (callable via the command "cdo").
 * Input files in netCDF with required attributes and dimension names. Valid input files are:
 
