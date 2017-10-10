@@ -202,9 +202,9 @@ class ESMValProject(object):
         """
         get names of models
 
-        # TODO this is currently hardcoded for CMIP5 and should be more flexible
-        perhaps one can even replace this code totally with code in the
-        interface dir
+        # TODO this is currently hardcoded for CMIP5 and should be more
+        flexible perhaps one can even replace this code totally with code
+        in the interface dir
 
         Parameters
         ----------
@@ -340,7 +340,8 @@ class ESMValProject(object):
             ilist[1] += 1
             indices = tuple(ilist)
         if (extend == 'lons' or extend == 'both'):
-            # If we have global longtitude values then assign ghost layers later
+            # If we have global longtitude values then assign ghost
+            # layers later
             if (indices[3] - indices[2] + 1 == len(lons)):
                 lon_global = True
             else:
@@ -389,45 +390,36 @@ class ESMValProject(object):
         # Read in the required data for a specific model.
         # We have to define some special cases when there's looping over
         # latitudes or longtitudes.
-        data = np.zeros((datafile.variables[datakey].shape[0],
-                         lats_req.shape[0], lons_req.shape[0]))
+        var = datafile.variables[datakey]
+        data = np.zeros((var.shape[0], lats_req.shape[0], lons_req.shape[0]))
 
         if (indices[0] > indices[1] and indices[2] > indices[3]):
             # Extract the four corners from the nc file
             data[:, :lat_break, :lon_break] = \
-                datafile.variables[datakey][:, indices[0]:, indices[2]:]
-
+                var[:, indices[0]:, indices[2]:]
             data[:, :lat_break, lon_break:] = \
-                datafile.variables[datakey][:, indices[0]:, :indices[3] + 1]
-
+                var[:, indices[0]:, :indices[3] + 1]
             data[:, lat_break:, :lon_break] = \
-                datafile.variables[datakey][:, :indices[1] + 1, indices[2]:]
-
+                var[:, :indices[1] + 1, indices[2]:]
             data[:, lat_break:, lon_break:] = \
-                datafile.variables[datakey][:, :indices[1] + 1, :indices[3] + 1]
+                var[:, :indices[1] + 1, :indices[3] + 1]
 
         elif (indices[0] > indices[1] and indices[2] <= indices[3]):
             # Looping only over lats
             data[:, :lat_break, :] = \
-                datafile.variables[datakey][:, indices[0]:,
-                                            indices[2]:indices[3] + 1]
-
+                var[:, indices[0]:, indices[2]:indices[3] + 1]
             data[:, lat_break:, :] = \
-                datafile.variables[datakey][:, :indices[1] + 1,
-                                            indices[2]:indices[3] + 1]
+                var[:, :indices[1] + 1, indices[2]:indices[3] + 1]
 
         elif (indices[0] <= indices[1] and indices[2] > indices[3]):
             # Looping only over lons
             data[:, :, :lon_break] = \
-                datafile.variables[datakey][:, indices[0]:indices[1] + 1,
-                                            indices[2]:]
-
+                var[:, indices[0]:indices[1] + 1, indices[2]:]
             data[:, :, lon_break:] = \
-                datafile.variables[datakey][:, indices[0]:indices[1] + 1,
-                                            :indices[3] + 1]
+                var[:, indices[0]:indices[1] + 1, :indices[3] + 1]
         else:
-            data = datafile.variables[datakey][:, indices[0]:indices[1] + 1,
-                                               indices[2]:indices[3] + 1]
+            data = \
+                var[:, indices[0]:indices[1] + 1, indices[2]:indices[3] + 1]
 
         # Now we mask unwanted values if specified
         mask = modelconfig.getboolean('general', 'mask_unwanted_values')
@@ -594,12 +586,20 @@ class ESMValProject(object):
             use two instances of same model (i.e. two separate time periods -
             this loops over the models and takes the last one that hits) """
             for key in self.project_info['ALLMODELS']:
-                if (key.split_entries()[1] == model):
-                    project, name, MIP, scenario, ensemble, start, end = key.split_entries(
-                    )[0:7]
+                entries = key.split_entries()
+                if (entries[1] == model):
+                    (project, _, MIP, scenario, ensemble, start,
+                     end) = entries[0:7]
             years = "-".join([start, end])
-            base = separator.join(
-                [base, project, model, MIP, scenario, ensemble, years])
+            base = separator.join([
+                base,
+                project,
+                model,
+                MIP,
+                scenario,
+                ensemble,
+                years,
+            ])
 
         base = ".".join([base, self.get_graphic_format()])
         return base
@@ -759,8 +759,8 @@ class ESMValProject(object):
 
             for idx in range(len(variables)):
                 for model in self.project_info['ALLMODELS']:
-                    #~ print model.split_entries()[0] # gives 'JSBACH'
-                    #~ print vars()
+                    # print model.split_entries()[0] # gives 'JSBACH'
+                    # print vars()
                     curr_project = getattr(vars()['projects'],
                                            model.split_entries()[0])()
                     variable_defs_base_vars = currDiag.add_base_vars_fields(
@@ -777,10 +777,18 @@ class ESMValProject(object):
                             self.project_info, model, base_var.fld,
                             base_var.var, base_var.mip, base_var.exp
                         )  # variable actually not used for e.g. JSBACH
-                        #currProject.get_cf_infile(self.project_info, model, base_var, variable, mip, exp)  # variable actually not used for e.g. JSBACH
+
+                        # variable actually not used for e.g. JSBACH
+                        # currProject.get_cf_infile(
+                        #     self.project_info,
+                        #     model,
+                        #     base_var,
+                        #     variable,
+                        #     mip,
+                        #     exp, )
 
                         # store results
-                        #return a dictionary by model and variable
+                        # return a dictionary by model and variable
                         res[name][base_var.var] = {
                             'directory': tmp_dir,
                             'files': tmp_files
@@ -896,7 +904,6 @@ class ESMValProject(object):
                     tid = ""
                     print("***** info: could not open original source file: " +
                           sfile + " *****")
-                    #pass
 
                 if i is 0:
                     log.write(
