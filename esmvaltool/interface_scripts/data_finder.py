@@ -145,7 +145,7 @@ def replace_tags(path, model, var):
                 replacewith = str(model[tag])
             else:
                 raise KeyError(
-                    "Model key %s must be specified for project %s, check "
+                    "Model key {} must be specified for project {}, check "
                     "your namelist entry".format(tag, model['project']))
 
         path = path.replace('[' + tag + ']', replacewith)
