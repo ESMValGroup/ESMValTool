@@ -358,7 +358,7 @@ class py_launcher(launchers):
 
         try:
             exec cmd
-        except:
+        except ImportError:
             print(cmd)
             print(traceback.format_exc())
             raise ValueError(

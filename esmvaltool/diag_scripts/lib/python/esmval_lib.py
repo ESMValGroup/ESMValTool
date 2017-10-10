@@ -835,22 +835,22 @@ class ESMValProject(object):
 
         try:
             var = f.variable
-        except:
+        except AttributeError:
             var = ""
 
         try:
             mod = f.model
-        except:
+        except AttributeError:
             mod = ""
 
         try:
             ver = f.version
-        except:
+        except AttributeError:
             ver = "unknown"
 
         try:
             fix = f.fixfile
-        except:
+        except AttributeError:
             fix = ""
 
         ref = []
@@ -859,7 +859,7 @@ class ESMValProject(object):
             reftmp = f.reference
             for r in reftmp.split("\n"):
                 ref.append(r)
-        except:
+        except AttributeError:
             pass
 
         if (self.firstime is True):
@@ -884,7 +884,7 @@ class ESMValProject(object):
             strg = "infile_" + str(i).zfill(4)
             try:
                 sfile = getattr(f, strg)
-            except:
+            except AttributeError:
                 sfile = ""
                 break
 
@@ -893,14 +893,14 @@ class ESMValProject(object):
                     fs = Dataset(sfile, 'r')
                     try:
                         tid = fs.tracking_id
-                    except:
+                    except AttributeError:
                         tid = ""
                     try:
                         ref.append(fs.reference)
-                    except:
+                    except AttributeError:
                         pass
                     fs.close()
-                except:
+                except IOError:
                     tid = ""
                     print("***** info: could not open original source file: " +
                           sfile + " *****")

@@ -99,7 +99,7 @@ class TestPythonLauncher(TestLauncher):
 
         L = py_launcher(execute_as_shell=False)
         project_info = {}
-        with self.assertRaises(ValueError):
+        with self.assertRaises(SyntaxError):
             L.execute(script, project_info, 0, False)
 
 
@@ -161,7 +161,7 @@ class TestBadLauncher(TestLauncher):
         try:
             self.L = shell_launcher('badshell')
             badshell = True
-        except:
+        except ValueError:
             badshell = False
         self.assertEqual(badshell, False)
 

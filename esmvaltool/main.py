@@ -481,7 +481,7 @@ def run():
     """ Run main, logging any exceptions."""
     try:
         main()
-    except:
+    except:  # noqa
         logger.exception(
             "Program terminated abnormally, see stack trace "
             "below for more information",
