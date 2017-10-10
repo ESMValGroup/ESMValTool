@@ -20,7 +20,7 @@
 ;; Optional diag_script_info attributes (diagnostics specific)
 ;;
 ;; Caveats
-;;   The settings for GridType and Regional are set explicitly in this script
+;;   The settings for GridType and Regional are set expli.citly in this script
 ;;
 ;; Modification history
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
@@ -67,8 +67,11 @@ begin
     ;; ||          REFERENCES INFO               ||
     ;; ||                                        ||
     ;; ============================================
+
+    contrib_authors = "A_rio_ca"
+
     write_references(diag_script,            \  ; script name
-                     "A_rio_ca",             \  ; authors
+                     contrib_authors,        \  ; authors
                      "",                     \  ; contributors
                      "",                     \  ; diag_references
                      "",                     \  ; obs_references
@@ -111,6 +114,11 @@ begin
                             "cn_levels_phase_basic",\
                             "cn_levels_var_basic" /)
     exit_if_missing_atts(diag_script_info, required_attributes)
+
+    ;; 'output_file_type' if fetched from ncl.interface
+    if (.not. isdefined("output_file_type")) then
+        output_file_type = "PS"
+    end if
 
     ;; Abbreviate a little...
     di = diag_script_info
@@ -399,9 +407,8 @@ begin
            (/"PT_diurn", "PT_geo", "ST_mean", "ST_corr"/), 0)
     caption = di@season + " - amplitude" + plot_settings@part_of_header
     id = diag_script + "_" + base_name + "-amplitude"
-    contrib_authors = "A_rio_ca"
 
-    ESMValMD(plot_outfile+".png", alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+    ESMValMD(plot_outfile + "." + output_file_type, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
 
     delete([/alltags, caption, id/])
 
@@ -421,9 +428,8 @@ begin
            (/"PT_diurn", "PT_geo", "ST_mean", "ST_corr"/), 0)
     caption = di@season + " - phase" + plot_settings@part_of_header
     id = diag_script + "_" + base_name + "-phase"
-    contrib_authors = "A_rio_ca"
 
-    ESMValMD(plot_outfile+".png", alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+    ESMValMD(plot_outfile + "." + output_file_type, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
 
     delete([/alltags, caption, id/])
 
@@ -443,9 +449,8 @@ begin
            (/"PT_diurn", "PT_geo", "ST_mean", "ST_corr"/), 0)
     caption = di@season + " - var" + plot_settings@part_of_header
     id = diag_script + "_" + base_name + "-var"
-    contrib_authors = "A_rio_ca"
 
-    ESMValMD(plot_outfile+".png", alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+    ESMValMD(plot_outfile + "." + output_file_type, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
 
     delete([/alltags, caption, id, climofiles/])
 

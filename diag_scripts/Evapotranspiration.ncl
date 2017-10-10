@@ -98,6 +98,9 @@ begin
     ;; ||          REFERENCES INFO               ||
     ;; ||                                        ||
     ;; ============================================
+
+    contrib_authors = (/"A_eval_ma", "A_davi_ed", "A_orlo_bo"/)
+
     write_references(diag_script,                  \  ; script name
                      (/"A_eval_ma"/),              \  ; authors
                      (/"A_davi_ed", "A_orlo_bo"/), \  ; contributors
@@ -143,6 +146,11 @@ begin
     required_attributes = (/"cn_levels_mean_basic",\
                             "cn_levels_mean_diff_basic"/)
     exit_if_missing_atts(diag_script_info, required_attributes)
+
+    ;; 'output_file_type' if fetched from ncl.interface
+    if (.not. isdefined("output_file_type")) then
+        output_file_type = "PS"
+    end if
 
     ;; Abbreviate a little...
     di = diag_script_info
@@ -359,9 +367,8 @@ begin
                         interface_get_infile(variables(0), field_types(0), imod) 
             climofiles(1) = interface_get_inpaths(idx_ref) + "/" + \
                         interface_get_infile(variables(0), field_types(0), idx_ref)
-            contrib_authors = (/"A_eval_ma", "A_davi_ed", "A_orlo_bo"/)
 
-            ESMValMD(outfile+".png", alltags, caption, id, variables, models_tag, climofiles, diag_script, contrib_authors)
+            ESMValMD(outfile + "." + output_file_type, alltags, caption, id, variables, models_tag, climofiles, diag_script, contrib_authors)
             delete([/caption, id, climofiles, outfile/])
         end do
         delete(alltags)
@@ -427,9 +434,8 @@ begin
                         interface_get_inpaths(imod) + "/" + \
                         interface_get_infile(variables(0), field_types(0), imod)
             end do
-            contrib_authors = (/"A_eval_ma", "A_davi_ed", "A_orlo_bo"/)
 
-            ESMValMD(outfile+".png", alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+            ESMValMD(outfile + "." + output_file_type, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
             delete([/caption, id, climofiles, outfile/])
         end do
         delete(alltags)
@@ -485,9 +491,8 @@ begin
                         interface_get_inpaths(imod) + "/" + \
                         interface_get_infile(variables(0), field_types(0), imod)
             end do
-            contrib_authors = (/"A_eval_ma", "A_davi_ed", "A_orlo_bo"/)
 
-            ESMValMD(outfile+".png", alltags, caption, id, variables, mod_tags, climofiles, diag_script, contrib_authors)
+            ESMValMD(outfile + "." + output_file_type, alltags, caption, id, variables, mod_tags, climofiles, diag_script, contrib_authors)
             delete([/caption, id, climofiles, outfile, mod_inds, mod_tags/])
         end do
         delete(alltags)

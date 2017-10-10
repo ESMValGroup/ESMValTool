@@ -86,8 +86,11 @@ begin
     ;;-----------------------
     ;; References Information
     ;;-----------------------
+
+    contrib_authors = "A_roeh_ro"
+
     write_references(diag_script,            \  ; script name
-                     "A_roeh_ro",            \  ; authors
+                     contrib_authors,        \  ; authors
                      "",                     \  ; contributors
                      "",                     \  ; diag_references
                      "",                     \  ; obs_references
@@ -101,6 +104,10 @@ begin
 end
 
 begin
+    ;; 'output_file_type' if fetched from ncl.interface
+    if (.not. isdefined("output_file_type")) then
+        output_file_type = "ps"
+    end if
 
     data = True
     do idx_mod = 0, dim_MOD - 1
@@ -310,9 +317,8 @@ begin
             interface_get_inpaths(imod) + "/" + \
             interface_get_infile(variables(0), field_types(0), imod)
     end do
-    contrib_authors = "A_roeh_ro"
 
-    ESMValMD(plot_outfile+".png", alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+    ESMValMD(plot_outfile + "." + output_file_type, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
 
     delete([/alltags, caption, id, climofiles/])
 

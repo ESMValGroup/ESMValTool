@@ -65,6 +65,9 @@ begin
     field_type0 = field_types(0)
 
     ;; References Information
+
+    contrib_authors = (/"A_gott_kl", "A_hueb_mi", "A_eval_ma", "A_brae_me", "A_senf_da"/)
+
     write_references(diag_script, \
                      "A_gott_kl", \
                      (/"A_hueb_mi", "A_eval_ma", "A_brae_me", "A_senf_da"/), \
@@ -421,7 +424,6 @@ begin
     alltags = array_append_record(tags, (/"DM_polar", "PT_seas", "ST_mean", "ST_stddev"/), 0)
     caption = "Annual cycle of sea ice extent. TODO: Problem with OBS* classes: for OBS* classes, interface_get_infile already returns path + file! Reason yet unknown."
     id = "#idSeaIceAncycExtent"
-    contrib_authors = (/"A_gott_kl", "A_hueb_mi", "A_eval_ma", "A_brae_me", "A_senf_da"/)
     ESMValMD(plot_fname, alltags, caption, id, var0, models@name, climofiles, diag_script, contrib_authors)
     delete([/plot_fname, alltags, caption, id/])
     plot_fname = wks_area@fullname

@@ -82,6 +82,9 @@ begin
     ;; ||          REFERENCES INFO               ||
     ;; ||                                        ||
     ;; ============================================
+
+    contrib_authors = (/"A_eval_ma", "A_levi_ri", "A_mart_gi"/)
+
     write_references(diag_script,            \  ; script name
                      "A_eval_ma",               \  ; authors
                      (/"A_levi_ri", "A_mart_gi"/), \  ; contributors
@@ -121,6 +124,11 @@ begin
                             "abs_cmap",\
                             "diff_cmap"/)
     exit_if_missing_atts(diag_script_info, required_attributes)
+
+    ;; 'output_file_type' if fetched from ncl.interface
+    if (.not. isdefined("output_file_type")) then
+        output_file_type = "ps"
+    end if
 
     ;; Abbreviate a little...
     di = diag_script_info
@@ -312,8 +320,6 @@ begin
                  interface_get_infile(variables(0), field_types(0), imod)
     end do
 
-    contrib_authors = (/"A_eval_ma", "A_levi_ri", "A_mart_gi"/)
-
     diag_script_base = basename(diag_script)
     output_dir = get_output_dir(plot_dir, diag_script_base)
     aux_filename_info = di@summer_season + "-"\
@@ -322,7 +328,7 @@ begin
                                                     var0,\
                                                     field_type0,\
                                                     aux_filename_info, -1)
-    output_file_path = output_dir + output_filename + ".png"
+    output_file_path = output_dir + output_filename + "." + output_file_type
 
     ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
 
@@ -349,7 +355,7 @@ begin
                                                     var0,\
                                                     field_type0,\
                                                     aux_filename_info, -1)
-    output_file_path = output_dir + output_filename + ".png"
+    output_file_path = output_dir + output_filename + "." + output_file_type
 
     ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
 
@@ -391,7 +397,7 @@ begin
                                                     var0,\
                                                     field_type0,\
                                                     aux_filename_info, -1)
-    output_file_path = output_dir + output_filename + ".png"
+    output_file_path = output_dir + output_filename + "." + output_file_type
 
     ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
 
@@ -423,7 +429,7 @@ begin
                                                     var0,\
                                                     field_type0,\
                                                     aux_filename_info, -1)
-    output_file_path = output_dir + output_filename + ".png"
+    output_file_path = output_dir + output_filename + "." + output_file_type
 
     ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
 
