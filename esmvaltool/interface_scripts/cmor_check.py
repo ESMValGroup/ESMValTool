@@ -354,9 +354,15 @@ class CMORCheck(object):
                 self.report_error(msg, var_name, self.frequency)
                 break
 
-    CALENDARS = [['standard',
-                  'gregorian'], ['proleptic_gregorian'], ['noleap', '365_day'],
-                 ['all_leap', '366_day'], ['360_day'], ['julian'], ['none']]
+    CALENDARS = [
+        ['standard', 'gregorian'],
+        ['proleptic_gregorian'],
+        ['noleap', '365_day'],
+        ['all_leap', '366_day'],
+        ['360_day'],
+        ['julian'],
+        ['none'],
+    ]
 
     @staticmethod
     def _simplify_calendars(calendar):
