@@ -26,4 +26,3 @@ class xch4Stderr(Fix):
 
 class xch4Stddev(xch4Stderr):
     pass
-

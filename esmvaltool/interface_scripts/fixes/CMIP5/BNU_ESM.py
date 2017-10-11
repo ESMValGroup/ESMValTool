@@ -3,7 +3,6 @@ from cf_units import Unit
 
 
 class fgco2(Fix):
-
     def fix_metadata(self, cube):
         cube.units = Unit('kg m-2 s-1')
         return cube
@@ -13,29 +12,27 @@ class fgco2(Fix):
 
 
 class ch4(Fix):
-
     def fix_metadata(self, cube):
         cube.units = Unit('1e-9')
         return cube
 
     def fix_data(self, cube):
-        return cube * 29.0/16.0 * 1.e9
+        return cube * 29.0 / 16.0 * 1.e9
 
 
 class co2(Fix):
-
     def fix_metadata(self, cube):
         cube.units = Unit('1e-6')
         return cube
 
     def fix_data(self, cube):
-        return cube * 29.0/44.0 * 1.e6
+        return cube * 29.0 / 44.0 * 1.e6
 
 
 class spco2(Fix):
-
     def fix_data(self, cube):
         return cube * 1.e6
+
 
 # No clear way to apply this fix now that we are working with cubes, not files
 
@@ -54,4 +51,3 @@ class spco2(Fix):
 #       ret = 0
 #   end if
 #
-

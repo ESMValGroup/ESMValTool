@@ -1,5 +1,6 @@
 """
-Unit tests for the :func:`esmvaltool.interface_scripts.regrid._create_cube` function.
+Unit tests for the :func:`esmvaltool.interface_scripts.regrid._create_cube`
+function.
 
 """
 

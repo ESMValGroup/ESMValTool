@@ -24,11 +24,13 @@ def _make_vcoord(data, dtype=None):
         data = np.asarray(data, dtype=dtype)
 
     # Create a pressure vertical coordinate.
-    kwargs = dict(standard_name='air_pressure',
-                  long_name='Pressure',
-                  var_name='plev', units='hPa',
-                  attributes=dict(positive='down'),
-                  coord_system=None)
+    kwargs = dict(
+        standard_name='air_pressure',
+        long_name='Pressure',
+        var_name='plev',
+        units='hPa',
+        attributes=dict(positive='down'),
+        coord_system=None)
 
     try:
         zcoord = DimCoord(data, **kwargs)
@@ -52,13 +54,15 @@ def _make_cube(data, aux_coord=True, dim_coord=True, dtype=None):
     z, y, x = data.shape
 
     # Create the cube.
-    cm = CellMethod(method='mean', coords='time', intervals='20 minutes',
-                    comments=None)
-    kwargs = dict(standard_name='air_temperature',
-                  long_name='Air Temperature',
-                  var_name='ta', units='K',
-                  attributes=dict(cube='attribute'),
-                  cell_methods=(cm,))
+    cm = CellMethod(
+        method='mean', coords='time', intervals='20 minutes', comments=None)
+    kwargs = dict(
+        standard_name='air_temperature',
+        long_name='Air Temperature',
+        var_name='ta',
+        units='K',
+        attributes=dict(cube='attribute'),
+        cell_methods=(cm, ))
     cube = iris.cube.Cube(data, **kwargs)
 
     # Create a synthetic test vertical coordinate.
@@ -68,11 +72,13 @@ def _make_cube(data, aux_coord=True, dim_coord=True, dtype=None):
     # Create a synthetic test latitude coordinate.
     data = np.arange(y, dtype=dtype) + 1
     cs = iris.coord_systems.GeogCS(iris.fileformats.pp.EARTH_RADIUS)
-    kwargs = dict(standard_name='latitude',
-                  long_name='Latitude',
-                  var_name='lat', units='degrees_north',
-                  attributes=dict(latitude='attribute'),
-                  coord_system=cs)
+    kwargs = dict(
+        standard_name='latitude',
+        long_name='Latitude',
+        var_name='lat',
+        units='degrees_north',
+        attributes=dict(latitude='attribute'),
+        coord_system=cs)
     ycoord = DimCoord(data, **kwargs)
     if data.size > 1:
         ycoord.guess_bounds()
@@ -80,11 +86,13 @@ def _make_cube(data, aux_coord=True, dim_coord=True, dtype=None):
 
     # Create a synthetic test longitude coordinate.
     data = np.arange(x, dtype=dtype) + 1
-    kwargs = dict(standard_name='longitude',
-                  long_name='Longitude',
-                  var_name='lon', units='degrees_east',
-                  attributes=dict(longitude='attribute'),
-                  coord_system=cs)
+    kwargs = dict(
+        standard_name='longitude',
+        long_name='Longitude',
+        var_name='lon',
+        units='degrees_east',
+        attributes=dict(longitude='attribute'),
+        coord_system=cs)
     xcoord = DimCoord(data, **kwargs)
     if data.size > 1:
         xcoord.guess_bounds()
@@ -94,11 +102,13 @@ def _make_cube(data, aux_coord=True, dim_coord=True, dtype=None):
     # that spans the vertical dimension.
     if aux_coord:
         data = np.arange(np.prod((z, y)), dtype=dtype).reshape(z, y)
-        kwargs = dict(standard_name=None,
-                      long_name='Pressure Slice',
-                      var_name='aplev', units='hPa',
-                      attributes=dict(positive='down'),
-                      coord_system=None)
+        kwargs = dict(
+            standard_name=None,
+            long_name='Pressure Slice',
+            var_name='aplev',
+            units='hPa',
+            attributes=dict(positive='down'),
+            coord_system=None)
         zycoord = AuxCoord(data, **kwargs)
         cube.add_aux_coord(zycoord, (0, 1))
 

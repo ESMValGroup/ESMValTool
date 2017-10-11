@@ -10,7 +10,6 @@ from esmvaltool.interface_scripts.fixes.CMIP5.MIROC_ESM import (allvars, co2,
 
 
 class TestCo2(unittest.TestCase):
-
     def setUp(self):
         self.cube = Cube([1], var_name='co2', units='J')
         self.fix = co2()
@@ -22,7 +21,6 @@ class TestCo2(unittest.TestCase):
 
 
 class TestTro3(unittest.TestCase):
-
     def setUp(self):
         self.cube = Cube([1], var_name='tro3', units='J')
         self.fix = tro3()
@@ -34,7 +32,6 @@ class TestTro3(unittest.TestCase):
 
 
 class TestGpp(unittest.TestCase):
-
     def setUp(self):
         self.cube = Cube([1], var_name='gpp', units='J')
         self.fix = gpp()
@@ -48,9 +45,12 @@ class TestGpp(unittest.TestCase):
 class TestAll(unittest.TestCase):
     def setUp(self):
         self.cube = Cube([[1, 2], [3, 4]], var_name='co2', units='J')
-        self.cube.add_dim_coord(DimCoord([0, 1], standard_name='time',
-                                         units=Unit('days since 0000-01-01 00:00:00', calendar='standard')),
-                                0)
+        self.cube.add_dim_coord(
+            DimCoord(
+                [0, 1],
+                standard_name='time',
+                units=Unit(
+                    'days since 0000-01-01 00:00:00', calendar='standard')), 0)
         self.cube.add_dim_coord(DimCoord([0, 1], long_name='AR5PL35'), 1)
 
         self.fix = allvars()

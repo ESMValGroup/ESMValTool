@@ -16,6 +16,7 @@ class TestTro3(unittest.TestCase):
         self.assertEqual(cube.data[0], 1000)
         self.assertEqual(cube.units, Unit('J'))
 
+
 # if (name .eq. "tro3") then
 #     ; files say unit of ozone is "1e-9" ut unit is actually "1e-6"
 #     var = var * 1.0e3
@@ -28,8 +29,9 @@ class TestTro3(unittest.TestCase):
 #                     tt(0, 1) = 1
 #                     tt(0, 0) = tt(0, 0) + 1  ; year
 #                 end if
-#                 var&time(it) = cd_inv_calendar(tt(0, 0), tt(0, 1), tt(0, 2), tt(0, 3), \
-#                                                tt(0, 4), tt(0, 5), var&time@units, 0)
+#                 var&time(it) = cd_inv_calendar(\
+#                     tt(0, 0), tt(0, 1), tt(0, 2), tt(0, 3), \
+#                     tt(0, 4), tt(0, 5), var&time@units, 0)
 #             end if
 #         end do
 #     ret = 0

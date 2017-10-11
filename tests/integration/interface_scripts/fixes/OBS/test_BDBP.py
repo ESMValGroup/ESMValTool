@@ -7,10 +7,10 @@ from esmvaltool.interface_scripts.fixes.OBS.BDBP import tro3prof
 
 
 class TestTro3prof(unittest.TestCase):
-
     def setUp(self):
         self.cube = Cube([1, 2], var_name='tro3prof', units='J')
-        self.cube.add_dim_coord(DimCoord([1, 2], standard_name='air_pressure',  units='hPa'), 0)
+        self.cube.add_dim_coord(
+            DimCoord([1, 2], standard_name='air_pressure', units='hPa'), 0)
         self.fix = tro3prof()
 
     def test_fix_metadata(self):
@@ -22,8 +22,12 @@ class TestTro3prof(unittest.TestCase):
 
     def test_fix_metadata_with_bounds(self):
         self.cube = Cube([1, 2], var_name='tro3prof', units='J')
-        self.cube.add_dim_coord(DimCoord([1, 2], standard_name='air_pressure', units='hPa',
-                                         bounds=[[0.5, 1.5], [1.5, 2.5]]), 0)
+        self.cube.add_dim_coord(
+            DimCoord(
+                [1, 2],
+                standard_name='air_pressure',
+                units='hPa',
+                bounds=[[0.5, 1.5], [1.5, 2.5]]), 0)
         cube = self.fix.fix_metadata(self.cube)
 
         plev = cube.coord('air_pressure')

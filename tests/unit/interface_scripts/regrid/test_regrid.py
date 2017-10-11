@@ -24,14 +24,18 @@ class Test(tests.Test):
             self.assertIn(spec, _cache)
             self.assertEqual(_cache[spec], self.tgt_grid)
             self.coord_system.asset_called_once()
-            expected_calls = [mock.call(axis='x', dim_coords=True),
-                              mock.call(axis='y', dim_coords=True)]
+            expected_calls = [
+                mock.call(axis='x', dim_coords=True),
+                mock.call(axis='y', dim_coords=True)
+            ]
             self.assertEqual(self.tgt_grid_coord.mock_calls, expected_calls)
             self.regrid.assert_called_once_with(self.tgt_grid, expected_scheme)
         else:
             if scheme == 'unstructured_nearest':
-                expected_calls = [mock.call(axis='x', dim_coords=True),
-                                  mock.call(axis='y', dim_coords=True)]
+                expected_calls = [
+                    mock.call(axis='x', dim_coords=True),
+                    mock.call(axis='y', dim_coords=True)
+                ]
                 self.assertEqual(self.coords.mock_calls, expected_calls)
                 expected_calls = [mock.call(self.coord), mock.call(self.coord)]
                 self.assertEqual(self.remove_coord.mock_calls, expected_calls)
@@ -48,21 +52,25 @@ class Test(tests.Test):
         self.remove_coord = mock.Mock()
         self.regridded_cube = mock.sentinel.regridded_cube
         self.regrid = mock.Mock(return_value=self.regridded_cube)
-        self.src_cube = mock.Mock(spec=iris.cube.Cube,
-                                  coord_system=self.coord_system,
-                                  coords=self.coords,
-                                  remove_coord=self.remove_coord,
-                                  regrid=self.regrid)
+        self.src_cube = mock.Mock(
+            spec=iris.cube.Cube,
+            coord_system=self.coord_system,
+            coords=self.coords,
+            remove_coord=self.remove_coord,
+            regrid=self.regrid)
         self.tgt_grid_coord = mock.Mock()
-        self.tgt_grid = mock.Mock(spec=iris.cube.Cube,
-                                  coord=self.tgt_grid_coord)
-        self.regrid_schemes = ['linear', 'nearest', 'area_weighted',
-                               'unstructured_nearest']
-        self.mock_stock = self.patch('esmvaltool.interface_scripts.regrid._stock_cube',
-                                     side_effect=lambda arg: self.tgt_grid)
-        self.mocks = [self.coord_system, self.coords, self.regrid,
-                      self.src_cube, self.tgt_grid_coord, self.tgt_grid,
-                      self.mock_stock]
+        self.tgt_grid = mock.Mock(
+            spec=iris.cube.Cube, coord=self.tgt_grid_coord)
+        self.regrid_schemes = [
+            'linear', 'nearest', 'area_weighted', 'unstructured_nearest'
+        ]
+        self.mock_stock = self.patch(
+            'esmvaltool.interface_scripts.regrid._stock_cube',
+            side_effect=lambda arg: self.tgt_grid)
+        self.mocks = [
+            self.coord_system, self.coords, self.regrid, self.src_cube,
+            self.tgt_grid_coord, self.tgt_grid, self.mock_stock
+        ]
 
     def test_nop(self):
         cube = mock.sentinel.cube

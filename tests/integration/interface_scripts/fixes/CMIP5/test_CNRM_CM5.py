@@ -8,7 +8,6 @@ from esmvaltool.interface_scripts.fixes.CMIP5.CNRM_CM5 import (msftmyz,
 
 
 class TestMsftmyz(unittest.TestCase):
-
     def setUp(self):
         self.cube = Cube([1], var_name='msftmyz', units='J')
         self.fix = msftmyz()
@@ -20,7 +19,6 @@ class TestMsftmyz(unittest.TestCase):
 
 
 class TestMsftmyzba(unittest.TestCase):
-
     def setUp(self):
         self.cube = Cube([1], var_name='msftmyzba', units='J')
         self.fix = msftmyzba()
