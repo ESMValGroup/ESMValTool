@@ -74,7 +74,7 @@ This namelist is part of the ESMValTool
     <model>  CMIP5_ETHZ  CESM1-BGC           Amon  historical   r1i1p1  1980 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
     <model>  CMIP5_ETHZ  CESM1-CAM5          Amon  historical   r1i1p1  1980 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
     <model>  CMIP5_ETHZ  CESM1-CAM5-1-FV2    Amon  historical   r1i1p1  1980 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
-    <model>  CMIP5_ETHZ  CESM1-FAST          Amon  historical   r1i1p1  1980 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
+    <model>  CMIP5_ETHZ  CESM1-FASTCHEM      Amon  historical   r1i1p1  1980 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
     <model>  CMIP5_ETHZ  CESM1-WACCM         Amon  historical   r1i1p1  1980 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
     <model>  CMIP5_ETHZ  CMCC-CESM           Amon  historical   r1i1p1  1980 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
     <model>  CMIP5_ETHZ  CMCC-CM             Amon  historical   r1i1p1  1980 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
