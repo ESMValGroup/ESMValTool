@@ -6,20 +6,17 @@ from iris.exceptions import CoordinateNotFoundError
 
 
 class tro3(Fix):
-
     def fix_data(self, cube):
         return cube * 1000
 
 
 class co2(Fix):
-
     def fix_metadata(self, cube):
         cube.units = cf_units.Unit('1.0e-6')
         return cube
 
 
 class gpp(Fix):
-
     def fix_metadata(self, cube):
         # Fixing the metadata, automatic unit conversion should do the trick
         cube.units = cf_units.Unit('g m-2 day-1')
@@ -36,9 +33,11 @@ class allvars(Fix):
                 calendar = 'standard'
 
             if time.units.origin == 'days since 0000-01-01 00:00:00':
-                time.units = cf_units.Unit('days since 1849-01-01 00:00:00', calendar=calendar)
+                time.units = cf_units.Unit(
+                    'days since 1849-01-01 00:00:00', calendar=calendar)
             elif time.units.origin == 'days since 1-1-1':
-                time.units = cf_units.Unit('days since 1850-01-01 00:00:00', calendar=calendar)
+                time.units = cf_units.Unit(
+                    'days since 1850-01-01 00:00:00', calendar=calendar)
         except CoordinateNotFoundError:
             pass
 
@@ -57,5 +56,3 @@ class allvars(Fix):
             pass
 
         return cube
-
-

@@ -11,7 +11,6 @@ from esmvaltool.interface_scripts.variable_info import (CoordinateInfo,
 
 
 class TestVariableInfo(unittest.TestCase):
-
     def setUp(self):
         self.value = 'value'
 
@@ -56,7 +55,6 @@ class TestVariableInfo(unittest.TestCase):
 
 
 class TestCoordinateInfo(unittest.TestCase):
-
     def setUp(self):
         self.value = 'value'
 

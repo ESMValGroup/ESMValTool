@@ -19,4 +19,3 @@ class tro3prof(Fix):
         plev.units = cf_units.Unit('Pa')
         cube.add_dim_coord(plev, dims)
         return cube
-

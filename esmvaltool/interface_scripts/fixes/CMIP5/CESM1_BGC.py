@@ -23,5 +23,6 @@ class co2(Fix):
 class allvars(Fix):
     def fix_metadata(self, cube):
         time = cube.coord('time')
-        time.units = Unit('days since 1850-01-01 00:00:00', time.units.calendar)
+        time.units = Unit('days since 1850-01-01 00:00:00',
+                          time.units.calendar)
         return cube

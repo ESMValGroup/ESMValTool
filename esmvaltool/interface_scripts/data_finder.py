@@ -101,7 +101,7 @@ def cmip5_mip2realm_freq(mip):
         'LImon': ['landIce', 'mon'],
         'OImon': ['seaIce', 'mon'],
         'aero': ['aerosol', 'mon'],
-        #'3hr': ???
+        # '3hr': ???
         'cfDay': ['atmos', 'day'],
         'cfMon': ['atmos', 'mon'],
         'day': ['atmos', 'day'],
@@ -147,7 +147,9 @@ def replace_tags(path, model, var):
             if tag in model:
                 replacewith = str(model[tag])
             else:
-                raise KeyError('Model key %s must be specified for project %s, check your namelist entry' % (tag, model['project']))
+                raise KeyError(
+                    "Model key {} must be specified for project {}, check "
+                    "your namelist entry".format(tag, model['project']))
 
         path = path.replace('[' + tag + ']', replacewith)
 
@@ -161,13 +163,15 @@ def read_config_file(project, cfg_file=None):
 
     dict = {}
     if (cfg_file is None):
-        cfg_file = os.path.join(os.path.dirname(__file__), '../config-developer.yml')
+        cfg_file = os.path.join(
+            os.path.dirname(__file__), '../config-developer.yml')
         dict = yaml.load(file(cfg_file, 'r'))
 
     if project in dict:
         return dict[project]
 
-    raise KeyError('Specifications for {} not found in config-developer file'.format(project))
+    raise KeyError('Specifications for {} not found in config-developer file'.
+                   format(project))
 
 
 def get_input_filelist(project_info, model, var):
@@ -187,7 +191,8 @@ def get_input_filelist(project_info, model, var):
         model['exp'] = var['exp']
 
     # Set the rootpath
-    dir1 = _get_option_with_default(project_info['GLOBAL'], 'rootpath', project, 'user config')
+
+        dir1 = _get_option_with_default(project_info['GLOBAL'],'rootpath',project, 'user config')
     if not os.path.isdir(dir1):
         raise OSError('directory not found', dir1)
 
@@ -197,8 +202,8 @@ def get_input_filelist(project_info, model, var):
     else:
         drs = 'default'
 
-    input_folder = _get_option_with_default(project_config, 'input_dir', drs, 'developer config for %s' % project)
-    dir2 = replace_tags(input_folder, model, var)
+    input_folder = _get_option_with_default(project_config,'input_dir',drs, 'developer config for %s' % project )
+dir2 = replace_tags(input_folder, model, var)
     dirname = os.path.join(dir1, dir2)
 
     # Find latest version if required
@@ -257,7 +262,8 @@ def find_files(dirname, filename):
     flist = []
 
     # work only with existing dirs or allowed permission dirs
-    strfindic = 'find ' + dirname +' -follow -type f -iname ' + '*' + filename + '*'
+    strfindic = 'find {dirname} -follow -type f -iname *{filename}*'.format(
+        dirname=dirname, filename=filename)
     proc = subprocess.Popen(strfindic, stdout=subprocess.PIPE, shell=True)
     out, err = proc.communicate()
     if err:
@@ -269,9 +275,8 @@ def find_files(dirname, filename):
 
 def veto_files(model, dirname, filename):
     """
-    Function that does direct parsing of available datasource files and establishes
-    if files are the needed ones or not
-
+    Function that does direct parsing of available datasource files
+    and establishes if files are the needed ones or not
     """
 
     arname = find_files(dirname, filename)
@@ -331,8 +336,9 @@ def time_handling(year1, year1_model, year2, year2_model):
         elif year1 < int(year2_model):
             return True
 
+
 # ---- function to handle various date formats
-def date_handling(time1,time2):
+def date_handling(time1, time2):
     """
     This function deals with different input date formats e.g.
     time1 = 198204 or
@@ -360,7 +366,8 @@ def date_handling(time1,time2):
             year1 = y1.year
             y2 = datetime.strptime(time2, '%Y%m%d%H%M')
             year2 = y2.year
-    return year1,year2
+    return year1, year2
+
 
 # ---- function that does time checking on a file
 def time_check(fpath, yr1, yr2):
@@ -374,8 +381,8 @@ def time_check(fpath, yr1, yr2):
         time_range = av.split('_')[-1].strip('.nc')
         time1 = time_range.split('-')[0]
         time2 = time_range.split('-')[1]
-        year1 = date_handling(time1,time2)[0]
-        year2 = date_handling(time1,time2)[1]
+        year1 = date_handling(time1, time2)[0]
+        year2 = date_handling(time1, time2)[1]
         if time_handling(year1, yr1, year2, yr2) is True:
             return True
         else:

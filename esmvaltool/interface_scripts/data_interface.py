@@ -1,6 +1,6 @@
 """
 Completely rewritten tool to be able to deal with
-the new yaml parser and simplified interface_scripts 
+the new yaml parser and simplified interface_scripts
 toolbox. Author: Valeriu Predoi, University of Reading,
 Initial version: August 2017
 contact: valeriu.predoi@ncas.ac.uk
@@ -13,6 +13,7 @@ import re
 from auxiliary import info
 import preprocess as pp
 
+
 class ESMValTool_interface(object):
     def __init__(self):
         # Array that for standardizing part of figure file name
@@ -24,17 +25,18 @@ class ESMValTool_interface(object):
         self.infiles_prefix = []
         self.infiles_suffix = []
 
-        self.repackage_these = ["diag_script", "diag_script_cfg",
-                                "variables", "field_types",
-                                "var_attr_mip", "var_attr_exp",
-                                "var_attr_ref", "var_attr_exclude",
-                                "variable_def_dir"]
+        self.repackage_these = [
+            "diag_script", "diag_script_cfg", "variables", "field_types",
+            "var_attr_mip", "var_attr_exp", "var_attr_ref", "var_attr_exclude",
+            "variable_def_dir"
+        ]
 
         self.from_proj_info = ["output_file_type"]
 
     def __iter__(self):
         for interface_object in vars(self).keys():
             yield interface_object
+
 
 def get_diag_value(di, projinfomodels, projinfoconfig, v):
     if v == 'diag_script':
@@ -58,6 +60,7 @@ def get_diag_value(di, projinfomodels, projinfoconfig, v):
         currentry = projinfoconfig['var_def_scripts']
     return currentry
 
+
 class Data_interface(object):
     def __init__(self, project_info):
         """
@@ -79,12 +82,17 @@ class Data_interface(object):
 
         indata_root = self.get_data_root()
         if 'AUXILIARIES' in project_info:
-            # 'CMIP5_fx' is hardcoded as it is (so far) the only class supporting
-            # the 'AUXILIARIES'-tag
+            # 'CMIP5_fx' is hardcoded as it is (so far) the only class
+            # supporting the 'AUXILIARIES'-tag
             fx_project = getattr(globals()['projects'], 'CMIP5_fx')()
             fx_files = fx_project.get_fx_files(project_info)
-            self.interface.fx_keys = project_info['AUXILIARIES']['FX_files'].fx_files.keys()
-            self.interface.fx_values = [os.path.join(indata_root, item.get_fullpath()) for item in project_info['AUXILIARIES']['FX_files'].fx_files.values()]
+            self.interface.fx_keys = project_info['AUXILIARIES'][
+                'FX_files'].fx_files.keys()
+            self.interface.fx_values = [
+                os.path.join(indata_root, item.get_fullpath())
+                for item in project_info['AUXILIARIES']['FX_files']
+                .fx_files.values()
+            ]
 
         # Repackage the above arrays, i.e., input file names and output figure
         # names (the latter one is optional to use in the diag_script).
@@ -96,10 +104,11 @@ class Data_interface(object):
 
         # Repackage model specific data, i.e. the <model>-tags from the
         # yml-namelist files
-        model_specifiers, models, model_attr_id, model_attr_skip = self.get_modelinfo(project_info)
+        model_specifiers, models, model_attr_id, model_attr_skip = \
+            self.get_modelinfo(project_info)
         for modelpart in model_specifiers:
-            current_column = map(itemgetter(model_specifiers.index(modelpart)),
-                                 models)
+            current_column = map(
+                itemgetter(model_specifiers.index(modelpart)), models)
             vars(self.interface)["models_" + modelpart] = current_column
 
         vars(self.interface)["model_attr_id"] = model_attr_id
@@ -109,7 +118,9 @@ class Data_interface(object):
         for var in self.interface.repackage_these:
             if "currDiag" in project_info['RUNTIME']:
                 currDiag = project_info['RUNTIME']['currDiag']
-                curr_entry = get_diag_value(currDiag, project_info['ALLMODELS'], project_info['CONFIG'], var)
+                curr_entry = get_diag_value(currDiag,
+                                            project_info['ALLMODELS'],
+                                            project_info['CONFIG'], var)
                 if isinstance(curr_entry, list):
                     vars(self.interface)[var] = curr_entry
                 else:
@@ -152,12 +163,22 @@ class Data_interface(object):
         for model in project_info['ALLMODELS']:
             currProject = model
 
-            figfiles_suffix.append(pp.get_figure_file_names(project_info, model))
+            figfiles_suffix.append(
+                pp.get_figure_file_names(project_info, model))
 
             # Get reformatted infiles
             # need the input dict because of old variable derivation
-            infile_fullpaths.append(pp.get_cf_fullpath(project_info, model, variable = {'name':"${VARIABLE}",'field':"${FIELD}"}))
-            singfile = pp.get_cf_fullpath(project_info, model, variable = {'name':"${VARIABLE}",'field':"${FIELD}"}).split('/')[-1]
+            infile_fullpaths.append(
+                pp.get_cf_fullpath(
+                    project_info,
+                    model,
+                    variable={'name': "${VARIABLE}",
+                              'field': "${FIELD}"}))
+            singfile = pp.get_cf_fullpath(
+                project_info,
+                model,
+                variable={'name': "${VARIABLE}",
+                          'field': "${FIELD}"}).split('/')[-1]
             infiles.append(singfile)
             infile_paths.append(pp.get_cf_outpath(project_info, model))
 
@@ -176,19 +197,28 @@ class Data_interface(object):
             easily.
         """
         # condition: keys for all models are the same !!!
-        # this is, in fact, bullshit, because we should 
+        # this is, in fact, bullshit, because we should
         # allow for a variety of model specifiers. Hacking it
         # here (VP)
-        #model_specifiers = project_info['ALLMODELS'][0].keys()
-        
-        model_specifiers = ['project', 'start_year',\
-                            'name', 'exp', 'mip', 'end_year',\
-                            'ref', 'ensemble']
+        # model_specifiers = project_info['ALLMODELS'][0].keys()
 
-        # OBS: {'project': 'OBS', 'start_year': 2000, 'version': 1, 
-        #  'name': 'ERA-Interim', 'ref': 'ERA-Interim', 'tier': 3, 'end_year': 2002, 'type': 'reanaly'}
-        # CMIP5 (default) : {'project': 'CMIP5', 'start_year': 2000, 'name': 'bcc-csm1-1', 
-        #  'exp': 'historical', 'mip': 'Amon', 'end_year': 2002, 'ref': 'ERA-Interim', 'ensemble': 'r1i1p1'} 
+        model_specifiers = [
+            'project',
+            'start_year',
+            'name',
+            'exp',
+            'mip',
+            'end_year',
+            'ref',
+            'ensemble',
+        ]
+
+        # OBS: {'project': 'OBS', 'start_year': 2000, 'version': 1,
+        #  'name': 'ERA-Interim', 'ref': 'ERA-Interim', 'tier': 3,
+        #  'end_year': 2002, 'type': 'reanaly'}
+        # CMIP5 (default) : {'project': 'CMIP5', 'start_year': 2000,
+        #  'name': 'bcc-csm1-1', 'exp': 'historical', 'mip': 'Amon',
+        #  'end_year': 2002, 'ref': 'ERA-Interim', 'ensemble': 'r1i1p1'}
 
         # this is a bit hacky
         # but makes sure the key - val order stays fixed
@@ -196,15 +226,29 @@ class Data_interface(object):
         for model in project_info['ALLMODELS']:
             # cmip5
             if model['project'] == 'CMIP5':
-                mdls = [model['project'], model['start_year'],\
-                        model['name'], model['exp'], model['mip'], model['end_year'],\
-                        model['ref'], model['ensemble']]
+                mdls = [
+                    model['project'],
+                    model['start_year'],
+                    model['name'],
+                    model['exp'],
+                    model['mip'],
+                    model['end_year'],
+                    model['ref'],
+                    model['ensemble'],
+                ]
 
             # obs
             if model['project'] == 'OBS':
-                mdls = [model['project'], model['start_year'],\
-                        model['name'], 'exp', 'mip', model['end_year'],\
-                        model['ref'], 'ensemble']
+                mdls = [
+                    model['project'],
+                    model['start_year'],
+                    model['name'],
+                    'exp',
+                    'mip',
+                    model['end_year'],
+                    model['ref'],
+                    'ensemble',
+                ]
 
             models.append(mdls)
 
@@ -218,7 +262,7 @@ class Data_interface(object):
                 model_ids.append(model['ref'])
             else:
                 model_ids.append("None")
-        
+
         model_skips = []
         # Collect instances when to skip derived variable calculations
         for model in project_info['ALLMODELS']:
@@ -252,16 +296,21 @@ class Data_interface(object):
 
         # Remove comments
         remove_comments = re.compile('(.*?);.*')
-        variable_info = [remove_comments.sub(r'\1', entry) for entry in var_def]
+        variable_info = [
+            remove_comments.sub(r'\1', entry) for entry in var_def
+        ]
 
         # Remove lines in the "variable_def"-file missing the
         # "variable_info"-attribute
         variable_info_entry_regex = re.compile("variable_info@.*=.*")
-        variable_info = [entry for entry in variable_info
-                         if variable_info_entry_regex.search(entry) is not None]
+        variable_info = [
+            entry for entry in variable_info
+            if variable_info_entry_regex.search(entry) is not None
+        ]
 
-        variable_info = [re.sub("variable_info@", "", entry)
-                         for entry in variable_info]
+        variable_info = [
+            re.sub("variable_info@", "", entry) for entry in variable_info
+        ]
 
         # Split variable_info attribute strings to a [key, value]-list
         regexp_equal = re.compile("\s*=\s*")
@@ -284,9 +333,9 @@ class Data_interface(object):
                 for key in project_info[section_key]:
                     # Check and fail on duplicate entries
                     if "ESMValTool_" + key in os.environ:
-                        raise writeProjinfoError("Environment variable "
-                                                 + "'ESMValTool_" + key
-                                                 + "' already defined")
+                        raise writeProjinfoError("Environment variable " +
+                                                 "'ESMValTool_" + key +
+                                                 "' already defined")
                     os.environ["ESMValTool_" + key] = \
                         str(project_info[section_key][key])
 
@@ -297,6 +346,7 @@ class Ncl_data_interface(Data_interface):
     the arrays initialized by the Data_interface base class to files
     that can be loaded into NCL-scripts
     """
+
     def __init__(self, project_info):
         """ @brief Initiates the NCL data interface class
             @param project_info Current namelist in dictionary format
@@ -311,12 +361,14 @@ class Ncl_data_interface(Data_interface):
             currProject = model
 
             self.interface.dict_keys.append(pp.get_dict_key(model))
-        # Remove the diag_script_cfg entry if it is not NCL code (e.g., R, python, etc..)
-        class_prefix = re.search("([a-zA-Z]*)_.*", self.__class__.__name__).group(1).lower()
+        # Remove the diag_script_cfg entry if it is not NCL code
+        # (e.g., R, python, etc..)
+        class_prefix = re.search("([a-zA-Z]*)_.*",
+                                 self.__class__.__name__).group(1).lower()
         class_regex = re.compile(class_prefix + '$')
         if 'diag_script_cfg' in vars(self.interface).keys():
             if class_regex.search(self.interface.diag_script_cfg[0]) is None:
-                del(self.interface.diag_script_cfg)
+                del (self.interface.diag_script_cfg)
 
     def write_data_to_interface(self):
         """ @brief Write the configuration data to NCL format
@@ -331,8 +383,7 @@ class Ncl_data_interface(Data_interface):
             os.path.dirname(os.path.dirname(__file__)),
             "interface_data",
             "ncl_interface_templates",
-            "ncl.tmpl",
-        )
+            "ncl.tmpl", )
         interface_data = self.project_info['RUNTIME']['interface_data']
         fsource = open(template, "r")
         ftarget = open(os.path.join(interface_data, "ncl.interface"), "w")
@@ -361,10 +412,14 @@ class Ncl_data_interface(Data_interface):
 
                     else:  # Assume string
                         # but force it to be a string (VP)
-                        place_holder = ['"' + str(ph) + '"' for ph in place_holder]
+                        place_holder = [
+                            '"' + str(ph) + '"' for ph in place_holder
+                        ]
 
-                    place_holder = [item1 + item2
-                                    for item1, item2 in zip(lhs, place_holder)]
+                    place_holder = [
+                        item1 + item2
+                        for item1, item2 in zip(lhs, place_holder)
+                    ]
                     ftarget.write(', \\\n'.join(place_holder) + rhs + '\n')
                 else:
                     pass
@@ -391,21 +446,25 @@ class Ncl_data_interface(Data_interface):
 
                 if variable_info_true:
                     # A-laue_ax+
-                    # Attributes of "variable_info" that are arrays might cause
-                    # problems if more than one variable is used by a diagnostic
-                    # script as this effectively leads to a redefinition of the
-                    # already defined variable attributes. The redefinition will
-                    # fail if the number of array elements does not match the
-                    # "new" number of array elements.
+                    # Attributes of "variable_info" that are arrays might
+                    # cause problems if more than one variable is used by
+                    # a diagnostic script as this effectively leads to a
+                    # redefinition of the already defined variable attributes.
+                    # The redefinition will fail if the number of array
+                    # elements does not match the "new" number of array
+                    # elements.
                     # Work-around: delete "variable_info" if already defined.
                     fvarinfo.write('if (isvar("variable_info")) then\n')
                     fvarinfo.write('    delete(variable_info)\n')
                     fvarinfo.write('end if\n')
                     # A-laue_ax-
-                    variable_info = ["variable_info@" + key + "=" + value
-                                     for key, value in variable_info]
+                    variable_info = [
+                        "variable_info@" + key + "=" + value
+                        for key, value in variable_info
+                    ]
 
-                    fvarinfo.write('variable_info = True\n' + '\n'.join(variable_info))
+                    fvarinfo.write('variable_info = True\n' +
+                                   '\n'.join(variable_info))
                 else:
                     fvarinfo.write('variable_info = False')
                 fvarinfo.close()
@@ -417,6 +476,7 @@ class R_data_interface(Data_interface):
     the arrays initialized by the Data_interface base class to files
     that can be loaded into R-scripts
     """
+
     def __init__(self, project_info):
         """ @brief Initiates the R data interface class
             @param project_info Current namelist in dictionary format
@@ -430,8 +490,7 @@ class R_data_interface(Data_interface):
             os.path.dirname(os.path.dirname(__file__)),
             "interface_data",
             "r_interface_templates",
-            "r.tmpl",
-        )
+            "r.tmpl", )
         interface_data = self.project_info['RUNTIME']['interface_data']
         fsource = open(template, "r")
         ftarget = open(os.path.join(interface_data, "r.interface"), "w")
@@ -457,8 +516,10 @@ class R_data_interface(Data_interface):
                     # whitespace entries in lhs-array provides alignment
                     # if/when data is written to file
                     place_holder = ['"' + str(ph) + '"' for ph in place_holder]
-                    place_holder = [item1 + item2
-                                    for item1, item2 in zip(lhs, place_holder)]
+                    place_holder = [
+                        item1 + item2
+                        for item1, item2 in zip(lhs, place_holder)
+                    ]
                     ftarget.write(line_cont.join(place_holder) + rhs + '\n')
                 else:
                     pass
@@ -483,10 +544,13 @@ class R_data_interface(Data_interface):
                 fvarinfo = open(variable_info_file, "w")
 
                 if variable_info_true:
-                    variable_info = ["variable_info@" + key + " <- " + value
-                                     for key, value in variable_info]
+                    variable_info = [
+                        "variable_info@" + key + " <- " + value
+                        for key, value in variable_info
+                    ]
 
-                    fvarinfo.write('variable_info <- True\n' + '\n'.join(variable_info))
+                    fvarinfo.write('variable_info <- True\n' +
+                                   '\n'.join(variable_info))
                 else:
                     fvarinfo.write('variable_info <- False')
                 fvarinfo.close()
@@ -498,6 +562,7 @@ class Py_data_interface(Data_interface):
     the arrays initialized by the Data_interface base class to files
     that can be loaded into Python-scripts
     """
+
     def __init__(self, project_info):
         """ @brief Initiates the Python data interface class
             @param project_info Current namelist in dictionary format

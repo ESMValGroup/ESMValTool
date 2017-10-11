@@ -20,12 +20,12 @@ import numpy as np
 import stratify
 import stratify._vinterp as vinterp
 
-#class DirectionExtrapolator(vinterp.PyFuncExtrapolator):
-#    def extrap_kernel(self, direction, z_src, fz_src,
-#                      level, output_array):
-#        output_array[:] = np.inf if direction > 0 else -np.inf
+# class DirectionExtrapolator(vinterp.PyFuncExtrapolator):
+#     def extrap_kernel(self, direction, z_src, fz_src,
+#                       level, output_array):
+#         output_array[:] = np.inf if direction > 0 else -np.inf
 #
-#extrapolator = DirectionExtrapolator()
+# extrapolator = DirectionExtrapolator()
 
 # Regular expression to parse a "MxN" cell-specification.
 _CELL_SPEC = re.compile(r'''\A
@@ -50,10 +50,11 @@ _LON_RANGE = _LON_MAX - _LON_MIN
 _cache = dict()
 
 # Supported horizontal regridding schemes.
-horizontal_schemes = dict(linear=Linear(extrapolation_mode='mask'),
-                          nearest=Nearest(extrapolation_mode='mask'),
-                          area_weighted=AreaWeighted(),
-                          unstructured_nearest=UnstructuredNearest())
+horizontal_schemes = dict(
+    linear=Linear(extrapolation_mode='mask'),
+    nearest=Nearest(extrapolation_mode='mask'),
+    area_weighted=AreaWeighted(),
+    unstructured_nearest=UnstructuredNearest())
 
 # Supported vertical interpolation schemes.
 vertical_schemes = ['linear', 'nearest']
@@ -101,21 +102,15 @@ def _stock_cube(spec):
     mid_dx, mid_dy = dx / 2, dy / 2
 
     # Construct the latitude coordinate, with bounds.
-    ydata = np.linspace(_LAT_MIN + mid_dy,
-                        _LAT_MAX - mid_dy,
-                        _LAT_RANGE / dy)
-    lats = iris.coords.DimCoord(ydata,
-                                standard_name='latitude',
-                                units='degrees_north')
+    ydata = np.linspace(_LAT_MIN + mid_dy, _LAT_MAX - mid_dy, _LAT_RANGE / dy)
+    lats = iris.coords.DimCoord(
+        ydata, standard_name='latitude', units='degrees_north')
     lats.guess_bounds()
 
     # Construct the longitude coordinate, with bounds.
-    xdata = np.linspace(_LON_MIN + mid_dx,
-                        _LON_MAX - mid_dx,
-                        _LON_RANGE / dx)
-    lons = iris.coords.DimCoord(xdata,
-                                standard_name='longitude',
-                                units='degrees_east')
+    xdata = np.linspace(_LON_MIN + mid_dx, _LON_MAX - mid_dx, _LON_RANGE / dx)
+    lons = iris.coords.DimCoord(
+        xdata, standard_name='longitude', units='degrees_east')
     lons.guess_bounds()
 
     # Construct the resultant stock cube, with dummy data.
@@ -285,6 +280,7 @@ def _create_cube(src_cube, data, levels):
 
     return result
 
+
 def vinterp_schemes():
     """
     Simple functional to list what available
@@ -293,6 +289,7 @@ def vinterp_schemes():
     """
     vs = ['linear', 'nearest']
     return vs
+
 
 def vinterp(src_cube, levels, scheme):
     """
@@ -353,7 +350,8 @@ def vinterp(src_cube, levels, scheme):
         # if they *all* exist in the source cube, otherwise
         # perform vertical interpolation.
         if set(levels).issubset(set(src_levels.points)):
-            print('--- select levels --- NOT performing vertical Interpolation')
+            print(
+                '--- select levels --- NOT performing vertical Interpolation')
             name = src_levels.name()
             coord_values = {name: lambda cell: cell.point in set(levels)}
             constraint = iris.Constraint(coord_values=coord_values)
@@ -378,12 +376,13 @@ def vinterp(src_cube, levels, scheme):
                                                    broadcast_shape)
 
             # Now perform the actual vertical interpolation.
-            new_data = stratify.interpolate(levels,
-                                            src_levels_broadcast,
-                                            src_cube.data,
-                                            axis=z_axis,
-                                            interpolation=scheme,
-                                            extrapolation=stratify.EXTRAPOLATE_NEAREST)
+            new_data = stratify.interpolate(
+                levels,
+                src_levels_broadcast,
+                src_cube.data,
+                axis=z_axis,
+                interpolation=scheme,
+                extrapolation=stratify.EXTRAPOLATE_NEAREST)
 
             # Determine if we need to fill any extrapolated NaN values.
             mask = np.isnan(new_data)
