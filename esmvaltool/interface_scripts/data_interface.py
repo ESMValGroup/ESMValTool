@@ -225,7 +225,7 @@ class Data_interface(object):
         models = []
         for model in project_info['ALLMODELS']:
             # cmip5
-            if model['project'] == 'CMIP5':
+            if model['project'] in ('CMIP5', 'SPECS'):
                 mdls = [
                     model['project'],
                     model['start_year'],

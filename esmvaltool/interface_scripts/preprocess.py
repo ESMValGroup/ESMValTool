@@ -486,7 +486,7 @@ def preprocess(project_info, variable, model, current_diag,
     # 0. CMOR_REFORMAT (PY version)
 
     # New code: cmor_check.py (by Javier Vegas)
-    elif cmor_reformat_type == 'py' and project_name == 'CMIP5':
+    elif cmor_reformat_type == 'py' and project_name in ('CMIP5', 'SPECS'):
         # needed imports
         from cmor_check import CMORCheck as CC
         from cmor_check import CMORCheckError as CCE
