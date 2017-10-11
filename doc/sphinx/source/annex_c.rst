@@ -28,6 +28,14 @@ v1.1 are described in
     \newpage 
     \pagebreak 
 
+.. include:: namelists/namelist_autoassess_rad.rst
+
+.. raw:: latex
+
+    \clearpage
+    \newpage 
+    \pagebreak 
+
 .. include:: namelists/namelist_catchment.rst
 
 .. raw:: latex
