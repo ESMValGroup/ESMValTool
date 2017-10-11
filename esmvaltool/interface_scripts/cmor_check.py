@@ -188,10 +188,7 @@ class CMORCheck(object):
         for coordinate in self._cmor_var.coordinates.values():
             if coordinate.generic_level or not coordinate.value:
                 rank += 1
-        # Extract dimension coordinates from cube
-        dim_coords = self._cube.coords(dim_coords=True)
-        # Check number of dimension coords matches rank
-        if len(dim_coords) != rank:
+        if len(self._cube.shape) != rank:
             self.report_error(self._does_msg, self._cube.var_name,
                               'match coordinate rank')
 
