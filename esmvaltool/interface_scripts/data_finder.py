@@ -202,8 +202,8 @@ def get_input_filelist(project_info, model, var):
     else:
         drs = 'default'
 
-    input_folder = _get_option_with_default(project_config,'input_dir',drs, 'developer config for %s' % project )
-dir2 = replace_tags(input_folder, model, var)
+    input_folder = _get_option_with_default(project_config, 'input_dir', drs, 'developer config for %s' % project )
+    dir2 = replace_tags(input_folder, model, var)
     dirname = os.path.join(dir1, dir2)
 
     # Find latest version if required
