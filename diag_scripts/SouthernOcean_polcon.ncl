@@ -33,6 +33,7 @@
 ;;    http://www.ncl.ucar.edu/Applications/Scripts/ice_4.ncl).
 ;;
 ;; Modification history
+;;    20171011-A_laue_ax: Bugfixes reporting
 ;;    20170907-A_bock_ls: Added reporting
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;;                        of the code
@@ -385,8 +386,13 @@ begin
             end if
             climofiles = interface_get_inpaths(ind_models_shown(0)) + "/" + \
                 interface_get_infile(var0, field_type0, ind_models_shown(0))
+            imax = 0
             if (dimsizes(ind_models_shown).gt.1) then
                 do imod=1, dimsizes(ind_models_shown)-1
+                    if (ind_models_shown(imod).ge.dim_MOD) then
+                        break
+                    end if
+                    imax = imod
 ;;TODO: Problem with OBS* classes: for OBS* classes, interface_get_infile
 ;;      already returns path + file! Reason yet unknown.
                     climofiles := array_append_record( climofiles, \
@@ -395,8 +401,9 @@ begin
                                              ind_models_shown(imod)), 0 )
                 end do
             end if
+
             ESMValMD(plot_fname, alltags, caption, id, var0, \
-                     models@name(ind_models_shown), climofiles, diag_script, contrib_authors)
+                     models@name(ind_models_shown(0:imax)), climofiles, diag_script, contrib_authors)
             delete([/seq_num, plot_fname, id, ind_models_shown, climofiles/])
         end do
     end if

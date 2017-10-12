@@ -398,15 +398,19 @@ begin
     output_dir = get_output_dir(plot_dir, diag_script_base)
 
     do idx_mod = 0, dim_MOD - 1
+        if (any(idx_mod .eq. plot_settings@idx_ref)) then
+            continue
+        end if
+
         caption = "Intensity of variable "  + variables(0) + \
                " over given seasons (" + di@season + ")"
         alltags = array_append_record(tags, (/"DM_global", "ST_clim", "PT_geo"/), 0)
         climofiles = new(2, string)
         climofiles(0) = interface_get_inpaths(idx_mod) + "/" + \
                  interface_get_infile(variables(0), field_types(0), idx_mod)
-        climofiles(1) = interface_get_inpaths(idx_ref) + "/" + \
-                 interface_get_infile(variables(0), field_types(0), idx_ref)
-        allmodelnames = (/models@name(idx_mod), models@name(idx_ref)/)
+        climofiles(1) = interface_get_inpaths(idx_ref(0)) + "/" + \
+                 interface_get_infile(variables(0), field_types(0), idx_ref(0))
+        allmodelnames = (/models@name(idx_mod), models@name(idx_ref(0))/)
         id = diag_script + "_mean_" + variables(0)
         aux_filename_info = di@season + "-mean"
         output_filename = interface_get_figure_filename(diag_script_base,\
@@ -430,8 +434,8 @@ begin
 
         ESMValMD(output_file_path, alltags, caption, id, variables, allmodelnames, climofiles, diag_script, contrib_authors)
 
+        delete([/alltags, caption, id, climofiles/])
     end do
-    delete([/alltags, caption, id, climofiles/])
 
     res = orig_res
     plot_settings@skip_long_name_in_plots = True

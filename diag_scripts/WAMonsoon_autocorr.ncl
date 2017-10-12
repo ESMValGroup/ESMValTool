@@ -516,14 +516,17 @@ begin
     output_dir = get_output_dir(plot_dir, diag_script_base)
 
     do idx_mod = 0, dim_MOD - 1
+        if (any(idx_mod .eq. plot_settings@idx_ref)) then
+            continue
+        end if
         caption = " 1-day autocorrelation of intraseasonal anomalies."
         alltags = array_append_record(tags, (/"DM_reg", "ST_corr", "PT_geo"/), 0)
         climofiles = new(2, string)
         climofiles(0) = interface_get_inpaths(idx_mod) + "/" + \
                  interface_get_infile(variables(0), field_types(0), idx_mod)
-        climofiles(1) = interface_get_inpaths(idx_ref) + "/" + \
-                 interface_get_infile(variables(0), field_types(0), idx_ref)
-        allmodelnames = (/models@name(idx_mod), models@name(idx_ref)/)
+        climofiles(1) = interface_get_inpaths(idx_ref(0)) + "/" + \
+                 interface_get_infile(variables(0), field_types(0), idx_ref(0))
+        allmodelnames = (/models@name(idx_mod), models@name(idx_ref(0))/)
         id = diag_script + "_corr_" + variables(0)
         aux_filename_info = di@season + "-corr"
         output_filename = interface_get_figure_filename(diag_script_base,\
@@ -534,9 +537,9 @@ begin
 
         ESMValMD(output_file_path, alltags, caption, id, variables, allmodelnames, climofiles, diag_script, contrib_authors)
 
-    end do
+        delete([/alltags, caption, id, climofiles/])
 
-    delete([/alltags, caption, id, climofiles/])
+    end do
 
     res = orig_res
     plot_settings@gsn_right_string = False

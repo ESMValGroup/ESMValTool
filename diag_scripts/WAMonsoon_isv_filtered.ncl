@@ -497,6 +497,9 @@ begin
     output_dir = get_output_dir(plot_dir, diag_script_base)
 
     do idx_mod = 0, dim_MOD - 1
+        if (idx_mod .eq. plot_settings@idx_ref) then
+            continue
+        end if
         caption = "Standard deviation of the filtered field over the " + di@season + " season."
         alltags = array_append_record(tags, (/"DM_reg", "ST_stddev", "PT_geo"/), 0)
         climofiles = new(2, string)
@@ -528,6 +531,9 @@ begin
 
         ;; Attach Metadata to plots
         do idx_mod = 0, dim_MOD - 1
+            if (any(idx_mod .eq. plot_settings@idx_ref)) then
+                continue
+            end if
             caption = "Normalized standard deviation of the filtered field over the " \
                        + di@season + " season."
             alltags = array_append_record(tags, (/"DM_trop", "ST_stddev", "PT_geo"/), 0)
@@ -544,8 +550,18 @@ begin
 
     end if
 
-    delete([/alltags, caption, id, climofiles/])
-
+    if (isvar("alltags")) then
+        delete(alltags)
+    end if
+    if (isvar("caption")) then
+        delete(caption)
+    end if
+    if (isvar("id")) then
+        delete(id)
+    end if
+    if (isvar("climofiles")) then
+        delete(climofiles)
+    end if
 
     res = orig_res
     plot_settings@gsn_right_string = False

@@ -351,6 +351,9 @@ begin
     output_dir = get_output_dir(plot_dir, diag_script_base)
 
     do idx_mod = 0, dim_MOD - 1
+        if (any(idx_mod .eq. plot_settings@idx_ref)) then
+            continue
+        end if
         caption = "Average of zonal and meridional wind component over the " + \
                di@season + " season." + \
                " Zonal wind is in shading and total wind is in vector."
@@ -358,15 +361,16 @@ begin
         climofiles = new(2, string)
         climofiles(0) = interface_get_inpaths(idx_mod) + "/" + \
                  interface_get_infile(variables(0), field_types(0), idx_mod)
-        climofiles(1) = interface_get_inpaths(idx_ref) + "/" + \
-                 interface_get_infile(variables(0), field_types(0), idx_ref)
-        allmodelnames = (/models@name(idx_mod), models@name(idx_ref)/)
+        climofiles(1) = interface_get_inpaths(idx_ref(0)) + "/" + \
+                 interface_get_infile(variables(0), field_types(0), idx_ref(0))
+        allmodelnames = (/models@name(idx_mod), models@name(idx_ref(0))/)
         id = diag_script + "_mean_" + variables(0)
         aux_filename_info = di@season + "-mean"
         output_filename = interface_get_figure_filename(diag_script_base,\
                                                     var0 + var1,\
                                                     field_type0 + field_type1,\
                                                     aux_filename_info, idx_mod)
+
         output_file_path = output_dir + output_filename + "." + output_file_type
 
         ESMValMD(output_file_path, alltags, caption, id, variables, allmodelnames, climofiles, diag_script, contrib_authors)
@@ -378,7 +382,10 @@ begin
 
         ;; Attach Metadata to plots
         do idx_mod = 0, dim_MOD - 1
-        caption = "Standard deviation of zonal and meridional wind component over the " + \
+            if (any(idx_mod .eq. plot_settings@idx_ref)) then
+                continue
+            end if
+            caption = "Standard deviation of zonal and meridional wind component over the " + \
                di@season + " season." + \
                " Zonal wind is in shading and total wind is in vector."
             alltags = array_append_record(tags, (/"DM_trop", "ST_stddev", "PT_geo"/), 0)
@@ -395,7 +402,18 @@ begin
 
     end if
 
-    delete([/alltags, caption, id, climofiles/])
+    if (isvar("alltags")) then
+        delete(alltags)
+    end if
+    if (isvar("caption")) then
+        delete(caption)
+    end if
+    if (isvar("id")) then
+        delete(id)
+    end if
+    if (isvar("climofiles")) then
+        delete(climofiles)
+    end if
 
     res = orig_res
     plot_settings@skip_long_name_in_plots = False
@@ -423,7 +441,9 @@ begin
 
     diag_script_base = basename(diag_script)
     output_dir = get_output_dir(plot_dir, diag_script_base)
+
     aux_title_info = di@season + "-mean"
+
     output_filename = interface_get_figure_filename(diag_script_base,\
                                                     var0 + var1,\
                                                     field_type0 + field_type1,\
@@ -451,6 +471,7 @@ begin
     diag_script_base = basename(diag_script)
     output_dir = get_output_dir(plot_dir, diag_script_base)
     aux_title_info = di@season + "-mean-diff"
+
     output_filename = interface_get_figure_filename(diag_script_base,\
                                                     var0 + var1,\
                                                     field_type0 + field_type1,\

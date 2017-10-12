@@ -376,7 +376,7 @@ begin
 
     ;; Convert units if appropriate
     if (isatt(variable_info, "plot_units")) then
-        model_arr = convert_units(model_arr, variable_info@_units)
+        model_arr = convert_units(model_arr, variable_info@plot_units)
     end if
 
     ;; Multimodel mean

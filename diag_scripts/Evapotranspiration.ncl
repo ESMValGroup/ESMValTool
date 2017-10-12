@@ -361,12 +361,12 @@ begin
                       " and " + models@name(imod)
 
             id = diag_script + "_" + base_name + "_" + di@season + models@name(imod)
-            models_tag = (/models@name(imod), models@name(idx_ref)/)
+            models_tag = (/models@name(imod), models@name(idx_ref(0))/)
             climofiles = new(2, "string")
             climofiles(0) = interface_get_inpaths(imod) + "/" + \
                         interface_get_infile(variables(0), field_types(0), imod) 
-            climofiles(1) = interface_get_inpaths(idx_ref) + "/" + \
-                        interface_get_infile(variables(0), field_types(0), idx_ref)
+            climofiles(1) = interface_get_inpaths(idx_ref(0)) + "/" + \
+                        interface_get_infile(variables(0), field_types(0), idx_ref(0))
 
             ESMValMD(outfile + "." + output_file_type, alltags, caption, id, variables, models_tag, climofiles, diag_script, contrib_authors)
             delete([/caption, id, climofiles, outfile/])

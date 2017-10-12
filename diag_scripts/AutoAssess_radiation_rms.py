@@ -124,8 +124,8 @@ import pdb
 import sys
 import numpy as np
 import iris
-import iris.quickplot as qplt
-import matplotlib.pyplot as plt
+##import iris.quickplot as qplt
+##import matplotlib.pyplot as plt
 from netCDF4 import Dataset
 
 # ESMValTool defined Python packages

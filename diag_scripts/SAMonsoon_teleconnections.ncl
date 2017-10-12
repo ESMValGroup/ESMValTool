@@ -445,6 +445,9 @@ begin
     output_dir = get_output_dir(plot_dir, diag_script_base)
 
     do idx_mod = 0, dim_MOD - 1
+        if (any(idx_mod .eq. plot_settings@idx_ref)) then
+            continue
+        end if
         caption = "Contour plot with the correlation between precipitaion over "\
                   + "India and SST in the Nino 3.4 area"
         alltags = array_append_record(tags, (/"DM_reg", "ST_corr", "ST_diff", "PT_geo"/), 0)
@@ -465,8 +468,8 @@ begin
         output_file_path = output_dir + output_filename + "." + output_file_type
 
         ESMValMD(output_file_path, alltags, caption, id, variables, allmodelnames, climofiles, diag_script, contrib_authors)
+        delete([/alltags, caption, id, climofiles/])
     end do
-    delete([/alltags, caption, id, climofiles/])
 
     res = orig_res
     plot_settings@gsn_right_string = False
