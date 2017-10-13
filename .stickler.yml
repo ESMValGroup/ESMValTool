@@ -9,7 +9,8 @@ linters:
     shellcheck:
 files:
     ignore: [
-        'doc',
+        'doc/sphinx',
+        'esmvaltool/doc/sphinx',
         # ignore old stuff, recent versions are in 'esmvaltool' dir
         'backend',
         'diag_scripts',
