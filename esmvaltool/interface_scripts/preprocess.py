@@ -40,8 +40,7 @@ def write_data_interface(executable, project_info):
         a format appropriate for the target script/binary
     """
     suffix = os.path.splitext(executable)[1][1:]
-    curr_interface = vars(dint)[suffix.title()
-                                + '_data_interface'](project_info)
+    curr_interface = vars(dint)['{0}_data_interface'.format(suffix.title())](project_info)
     curr_interface.write_data_to_interface()
 
 

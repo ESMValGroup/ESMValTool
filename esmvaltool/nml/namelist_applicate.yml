@@ -4,7 +4,7 @@
       # models functional and tested for CMIP5 only
       # checks functional and tested in interface_scripts/namelistchecks.py for ALL model types
       # TODO: EMAC, GFDL, CCMVal
-    - {name: EC-EARTH, project: SPECS, institute: BSC, mip: OImon,  exp: decadal, startdate: 19811101,  ensemble: r1i1p1,  start_year: 1981,  end_year: 1985}
+    - {name: EC-EARTH, project: SPECS, institute: BSC, mip: OImon,  exp: decadal, startdate: 20011101,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2005}
 
   PREPROCESS:
       # status of options:
@@ -25,32 +25,11 @@
 
   DIAGNOSTICS:
 
-    DIAG_shit_1:
+    NegativeSeaIceFeedback:
       !Diagnostic
-      id: MyDiagShit1
-      description: tutorial diagnostic
+      id: negative_seaice_feedback
+      description: Computes the negative seaice feedback
       variables:
-          # functional and tested
-        - {name: sic, ref_model: ['ERA-Interim','NCEP'], field: T3M, only: "None" , preproc_id: pp1}
+        - {name: sit, ref_model: ['ERA-Interim','NCEP'], field: T2M, only: "None" , preproc_id: pp1}
       scripts:
-          # functional and tested
-        - {script: MyDiag_test_ta.ncl,      cfg_file: ./nml/cfg_MyDiag/cfg_MyDiag.ncl}
-#        - {script: MyDiag_test_ta_no2.ncl,  cfg_file: ./nml/cfg_MyDiag/cfg_MyDiag.ncl}
-#      additional_models:
-#          # functional and tested
-#        - {name: GFDL-ESM2G, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-#        - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  tier: 3, start_year: 2000,  end_year: 2002}
-#        - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  tier: 2, start_year: 2000,  end_year: 2002}
-#
-#    DIAG_shit_2:
-#      !Diagnostic
-#      id: MyDiagShit2
-#      description: tutorial diagnostic
-#      variables:
-#        - {name: pr,  ref_model: ['ERA-Interim'],  field: T2Ms, only: "None", preproc_id: pp2}
-#      scripts:
-#        - {script: MyDiag_test_pr.ncl,  cfg_file: ./nml/cfg_MyDiag/cfg_MyDiag.ncl}
-#      additional_models:
-#        - {name: GFDL-ESM2G, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002,  path: /test_data/}
-#        - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  tier: 3, start_year: 2000,  end_year: 2002}
-###        - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  path: /obspath/Tier2/NCEP/}
+        - {script: negative_seaice_feedback.py, cfg_file: ./nml/cfg_NegativeSeaIceFeedback/cfg_negative_seaice_feedback.ncl}

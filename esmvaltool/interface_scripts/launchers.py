@@ -1,4 +1,5 @@
 import contextlib
+import importlib
 import os
 import re
 import StringIO
@@ -346,23 +347,12 @@ class py_launcher(launchers):
         project_info : dict
             dictionary with relevant project info from namelist
         """
-        if not os.path.exists(python_executable):
-            raise ValueError(
-                'Python executable not existing: %s' % python_executable)
-
-        # try to import the script. Note the script needs to be in
-        # the pythonpath. This is normally ensured already due to
-        # the sys.path.append statements in main.py
-        cmd = 'import ' + os.path.splitext(
-            os.path.basename(python_executable))[0] + ' as usr_script'
 
         try:
-            exec cmd
-        except ImportError:
-            print(cmd)
-            print(traceback.format_exc())
+            usr_script = importlib.import_module('esmvaltool.diag_scripts.{0}'.format(os.path.basename(python_executable)[:-3]))
+        except ImportError as ex:
             raise ValueError(
-                'The script %s can not be imported!' % python_executable)
+                'The script %s can not be imported from esmvaltool.diag_scripts: %s' % (python_executable, ex))
 
         # import was successfull. Now call the script with project_info
         # as argument

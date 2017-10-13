@@ -4,9 +4,7 @@
 
 import ConfigParser
 import os
-import pdb
 import sys
-import projects
 import numpy as np
 
 from netCDF4 import Dataset
@@ -214,14 +212,13 @@ class ESMValProject(object):
             returned values are monthly (e.g. monthly=True)
             returns 12 fields of data
         """
-        import projects
         if variable is None:
             raise ValueError('You need to specify a variable!')
 
         res = {}
         for currDiag in self.project_info['DIAGNOSTICS']:
-            variables = currDiag.get_variables()
-            field_types = currDiag.get_field_types()
+            variables = self.get_variables(currDiag)
+            field_types = self.get_field_types(currDiag)
             mip = currDiag.get_var_attr_mip()
             exp = currDiag.get_var_attr_exp()
             for idx in range(len(variables)):
@@ -237,6 +234,15 @@ class ESMValProject(object):
                                 name = curr_project.get_model_name(model)
                                 res.update({name: fullpath})
         return res
+
+    def get_variables(self, diagnostic):
+        return [variable['name'] for variable in self._get_diagnostic_dictionary(diagnostic)]
+
+    def get_variables(self, diagnostic):
+        return [variable['field'] for variable in self._get_diagnostic_dictionary(diagnostic)]
+
+    def _get_diagnostic_dictionary(self, diagnostic):
+        return self.project_info['DIAGNOSTICS'][diagnostic]
 
     def get_clim_model_and_obs_filenames(self, variable=None):
         """Returns variable specific model and observation filenames with full

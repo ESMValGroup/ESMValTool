@@ -27,3 +27,13 @@ class sic(Fix):
         print(cube)
         return cube
 
+
+class sit(Fix):
+
+    def fix_file(self, filepath):
+        handler = Dataset(filepath, 'a')
+        handler.contact = 'Pierre-Antoine Bretonniere, pierre-antoine.bretonniere@bsc.es, ' \
+                          'Javier Vegas Regidor, javier.vegas@bsc.es'
+        handler.variables['sit'].coordinates = 'lat lon'
+        handler.close()
+        return filepath

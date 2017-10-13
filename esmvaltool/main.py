@@ -466,7 +466,7 @@ def process_namelist(namelist_file, global_config):
                         executable,
                         project_info,
                         verbosity,
-                        project_info['GLOBAL']['exit_on_warning'], )
+                        project_info['GLOBAL']['exit_on_warning'])
 
     # delete environment variable
     del os.environ['0_ESMValTool_version']
@@ -487,7 +487,7 @@ def run():
     """ Run main, logging any exceptions."""
     try:
         main()
-    except:  # noqa
+    except Exception:  # noqa
         logger.exception(
             "Program terminated abnormally, see stack trace "
             "below for more information",
