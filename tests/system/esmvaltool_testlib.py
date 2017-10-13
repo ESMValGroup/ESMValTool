@@ -6,6 +6,7 @@ performance metrics testing
 import glob
 import os
 import shutil
+import sys
 from unittest import SkipTest
 
 import numpy as np
@@ -59,6 +60,10 @@ def _create_config_user_file(output_directory):
 
     cfg = _CFG['user']
 
+    cfg['run_dir'] = output_directory
+    for task in ('preproc', 'work', 'plot'):
+        cfg[task + '_dir'] = os.path.join(output_directory, task)
+
     # write to file
     filename = os.path.join(output_directory, 'config-user.yml')
     with open(filename, 'w') as file:
@@ -96,7 +101,6 @@ class ESMValToolTest(EasyTest):
 
         # Define output and reference data paths
         namelist_name = os.path.splitext(os.path.basename(namelist))[0]
-        namelist_dir = os.path.join(output_directory, namelist_name)
         reference_dir = os.path.join(_CFG['reference']['output'],
                                      namelist_name)
 
@@ -112,15 +116,11 @@ class ESMValToolTest(EasyTest):
         config = _create_config_user_file(output_directory)
 
         super(ESMValToolTest, self).__init__(
-            exe=os.path.join(script_root, 'main.py'),
-            args=['-n', namelist, '-c', config, '-o', namelist_dir],
-            output_directory=namelist_dir,
+            exe='esmvaltool',
+            args=['-n', namelist, '-c', config],
+            output_directory=output_directory,
             refdirectory=reference_dir,
             **kwargs)
-        # Workaround: namelist_dir is created by the call to the
-        # EasyTest constructor, but ESMValTool stops if the output
-        # directory already exists, so delete it before running ESMValTool.
-        os.rmdir(namelist_dir)
 
     def run(self, **kwargs):
         """ Run tests, unless we are asked to generate the reference data instead.
@@ -142,6 +142,32 @@ class ESMValToolTest(EasyTest):
         else:
             print("Warning: not generating reference data, reference "
                   "directory {} already exists.".format(self.refdirectory))
+
+    def _execute(self):
+        """ Execute ESMValTool """
+        # run ESMValTool
+        sys.argv[1:] = self.args
+        esmvaltool.main.run()
+
+        # Update the output directory to point to the output of the run
+        output = []
+        for path in os.listdir(self.output_directory):
+            path = os.path.join(self.output_directory, path)
+            if os.path.isdir(path):
+                output.append(path)
+
+        if not output:
+            raise OSError(
+                "Output directory not found in location {}. "
+                "Probably ESMValTool failed to create any output."
+                .format(self.output_directory))
+
+        if len(output) > 1:
+            print("Warning: found multiple output directories:\n{}\nin output "
+                  "location {}\nusing the first one.".format(
+                      output, self.output_directory))
+
+        self.output_directory = output[0] + os.sep
 
     # Overwrite this method of easytest.EasyTest to be able to
     # ignore certain files

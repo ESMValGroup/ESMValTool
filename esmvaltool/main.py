@@ -177,11 +177,6 @@ def main():
         '--config-file',
         default=os.path.join(os.path.dirname(__file__), 'config-user.yml'),
         help='Config file')
-    parser.add_argument(
-        '-o',
-        '--output-directory',
-        help='Directory in which output should be written, '
-             'takes precedence over paths defined in config-user.yml')
     args = parser.parse_args()
 
     namelist_file = os.path.abspath(
@@ -200,13 +195,6 @@ def main():
 
     namelist_name = os.path.splitext(os.path.basename(namelist_file))[0]
     cfg = read_config_file(config_file, namelist_name)
-
-    # Overwrite output directory if specified on command line
-    if args.output_directory:
-        output_directory = os.path.abspath(args.output_directory)
-        cfg['run_dir'] = output_directory
-        for subdir in 'preproc', 'work', 'plot':
-            cfg[subdir + '_dir'] = os.path.join(output_directory, subdir)
 
     # Create run dir
     if os.path.exists(cfg['run_dir']):
