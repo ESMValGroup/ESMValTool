@@ -8,6 +8,8 @@
 # - python-stratify
 # - basemap
 
+import os
+import re
 import sys
 
 from setuptools import Command, setup
@@ -17,8 +19,21 @@ PACKAGES = [
 ]
 
 
-class RunTests(Command):
+class CustomCommand(Command):
+    """ Custom Command class """
+
+    def install_deps_temp(self):
+        """ Try to temporarily install packages needed to run the command."""
+        if self.distribution.install_requires:
+            self.distribution.fetch_build_eggs(
+                self.distribution.install_requires)
+        if self.distribution.tests_require:
+            self.distribution.fetch_build_eggs(self.distribution.tests_require)
+
+
+class RunTests(CustomCommand):
     """Class to run tests and generate reports"""
+
     user_options = []
 
     def initialize_options(self):
@@ -30,12 +45,7 @@ class RunTests(Command):
     def run(self):
         """Run tests and generate a coverage report."""
 
-        # Install packages needed to run the tests
-        if self.distribution.install_requires:
-            self.distribution.fetch_build_eggs(
-                self.distribution.install_requires)
-        if self.distribution.tests_require:
-            self.distribution.fetch_build_eggs(self.distribution.tests_require)
+        self.install_deps_temp()
 
         import pytest
 
@@ -49,6 +59,72 @@ class RunTests(Command):
             '--junit-xml={}/report.xml'.format(report_dir),
             '--html={}/report.html'.format(report_dir),
         ])
+
+        sys.exit(errno)
+
+
+class RunLinter(CustomCommand):
+    """Class to run a linter and generate reports"""
+
+    user_options = []
+
+    def initialize_options(self):
+        """Do nothing"""
+
+    def finalize_options(self):
+        """Do nothing"""
+
+    def _discover_python_files(self, paths, ignore):
+        """Discover Python files"""
+
+        def _ignore(path):
+            """ True if `path` should be ignored, False otherwise."""
+            return any(re.match(pattern, path) for pattern in ignore)
+
+        for path in sorted(set(paths)):
+            for root, _, files in os.walk(path):
+                if _ignore(path):
+                    continue
+                for filename in files:
+                    filename = os.path.join(root, filename)
+                    if (filename.lower().endswith('.py')
+                            and not _ignore(filename)):
+                        yield filename
+
+    def run(self):
+        """Run prospector and generate a report."""
+        check_paths = PACKAGES + [
+            'setup.py',
+            'tests',
+            'util',
+        ]
+        ignore = [
+            'esmvaltool/doc/sphinx',
+        ]
+
+        # try to install missing dependencies and import prospector
+        try:
+            from prospector.run import main
+        except ImportError:
+            # try to install and then import
+            self.distribution.fetch_build_eggs(['prospector[with_pyroma]'])
+            from prospector.run import main
+
+        self.install_deps_temp()
+
+        # run linter
+
+        # change working directory to package root
+        package_root = os.path.abspath(os.path.dirname(__file__))
+        os.chdir(package_root)
+
+        # write command line
+        files = self._discover_python_files(check_paths, ignore)
+        sys.argv = ['prospector']
+        sys.argv.extend(files)
+
+        # run prospector
+        errno = main()
 
         sys.exit(errno)
 
@@ -93,4 +169,5 @@ with open('README.md') as readme:
         },
         cmdclass={
             'test': RunTests,
+            'lint': RunLinter,
         }, )

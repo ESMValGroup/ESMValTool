@@ -36,9 +36,7 @@ Current issues related to code quality (both setup and code style issues)
 - upper/lower case named files: https://github.com/ESMValGroup/ESMValTool/issues/12
 - old-style python imports used https://github.com/ESMValGroup/ESMValTool/issues/18
 - docstring format used: https://github.com/ESMValGroup/ESMValTool/issues/50
-- Stickler-CI to verbose https://github.com/ESMValGroup/ESMValTool/issues/75
-- setup.py lint does not work yet: https://github.com/ESMValGroup/ESMValTool/issues/81
-- Auto-fix style issues: https://github.com/ESMValGroup/ESMValTool/issues/82
+- Stickler-CI too verbose https://github.com/ESMValGroup/ESMValTool/issues/75
 
 # Packaging ESMValTool: Conda and Docker
 
