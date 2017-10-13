@@ -7,7 +7,6 @@ from esmvaltool.interface_scripts.fixes.CMIP5.CanESM2 import fgco2
 
 
 class TestCanESM2Fgco2(unittest.TestCase):
-
     def setUp(self):
         self.cube = Cube([1], var_name='fgco2', units='J')
         self.fix = fgco2()

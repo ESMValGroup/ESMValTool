@@ -17,6 +17,7 @@ class Test(unittest.TestCase):
     Provides esmvaltool specific testing functionality.
 
     """
+
     def _remove_testcase_patches(self):
         """
         Helper method to remove per-testcase patches installed by
@@ -75,5 +76,5 @@ class Test(unittest.TestCase):
     @wraps(np.testing.assert_array_almost_equal)
     def assertArrayAlmostEqual(self, a, b, decimal=6, err_msg='',
                                verbose=True):
-        np.testing.assert_array_almost_equal(a, b, decimal=decimal,
-                                             err_msg=err_msg, verbose=verbose)
+        np.testing.assert_array_almost_equal(
+            a, b, decimal=decimal, err_msg=err_msg, verbose=verbose)

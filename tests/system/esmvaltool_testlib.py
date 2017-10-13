@@ -143,7 +143,8 @@ class ESMValToolTest(EasyTest):
             print("Warning: not generating reference data, reference "
                   "directory {} already exists.".format(self.refdirectory))
 
-    # Overwrite this method of easytest.EasyTest to be able to ignore certain files
+    # Overwrite this method of easytest.EasyTest to be able to
+    # ignore certain files
     def _get_files_from_refdir(self):
         """ Get a list of files from reference directory, while ignoring files
             that match patterns in self.ignore.

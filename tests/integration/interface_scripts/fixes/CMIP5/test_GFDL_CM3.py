@@ -7,7 +7,6 @@ from esmvaltool.interface_scripts.fixes.CMIP5.GFDL_CM3 import sftof
 
 
 class TestSftof(unittest.TestCase):
-
     def setUp(self):
         self.cube = Cube([1], var_name='sftof', units='J')
         self.fix = sftof()

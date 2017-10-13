@@ -6,6 +6,7 @@ import warnings
 
 logger = logging.getLogger(__name__)
 
+
 class nclExecuteError(Exception):
     def __init__(self, value):
         self.value = value
@@ -45,7 +46,7 @@ def info(string, verbosity, required_verbosity):
         @param required_verbosity level required to print something
     """
     warnings.warn("function info() is deprecated and will be removed "
-                  "in the future", DeprecationWarning)    
+                  "in the future", DeprecationWarning)
     if verbosity <= 1:
         logger.info("%s", string)
     else:
@@ -57,7 +58,7 @@ def error(string):
         @param string the info message to print
     """
     warnings.warn("function error() is deprecated and will be removed "
-                  "in the future", DeprecationWarning)    
+                  "in the future", DeprecationWarning)
     logger.error("%s", string)
     sys.exit(1)
 
@@ -71,12 +72,13 @@ def ncl_version_check():
         logger.error("NCL not found")
 
     if out[1] == "6.3.0":
-        logger.error("NCL version " + out[1] +
-              " not supported due to a bug " +
-              "(see Known Issues in the ESMValTool user guide)")
+        logger.error("NCL version " + out[1] + " not supported due to a bug " +
+                     "(see Known Issues in the ESMValTool user guide)")
 
     if int(out[1].split(".")[0]) < 6:
-        logger.error("NCL version " + out[1] + " not supported, need version 6.2.0 or higher")
+        logger.error("NCL version " + out[1] +
+                     " not supported, need version 6.2.0 or higher")
 
     if int(out[1].split(".")[0]) == 6 and int(out[1].split(".")[1]) < 2:
-        logger.error("NCL version " + out[1] + " not supported, need version 6.2.0 or higher")
+        logger.error("NCL version " + out[1] +
+                     " not supported, need version 6.2.0 or higher")

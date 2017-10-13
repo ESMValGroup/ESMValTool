@@ -90,8 +90,8 @@ class CMIP6Info(object):
 
     def _load_coordinates(self):
         self.coords = {}
-        for json_file in glob.glob(os.path.join(self._cmor_folder,
-                                                '*coordinate*.json')):
+        for json_file in glob.glob(
+                os.path.join(self._cmor_folder, '*coordinate*.json')):
             with open(json_file) as inf:
                 table_data = json.loads(inf.read())
                 for coord_name in table_data['axis_entry'].keys():
@@ -179,7 +179,6 @@ class JsonInfo(object):
 
 
 class VariableInfo(JsonInfo):
-
     def __init__(self, short_name):
         """
         Class to read and store variable information
@@ -232,7 +231,6 @@ class VariableInfo(JsonInfo):
 
 
 class CoordinateInfo(JsonInfo):
-
     def __init__(self, name):
         """
         Class to read and store coordinate information
@@ -286,7 +284,6 @@ class CoordinateInfo(JsonInfo):
 
 
 class CMIP5Info(object):
-
     def __init__(self, cmor_tables_path=None):
         """
         Class to read CMIP5-like data request
@@ -301,7 +298,8 @@ class CMIP5Info(object):
 
         self._cmor_folder = os.path.join(cmor_tables_path, 'Tables')
         if not os.path.isdir(self._cmor_folder):
-            raise OSError(errno.ENOTDIR, "CMOR tables path is not a directory", self._cmor_folder)
+            raise OSError(errno.ENOTDIR, "CMOR tables path is not a directory",
+                          self._cmor_folder)
 
         self.tables = {}
 
@@ -365,7 +363,7 @@ class CMIP5Info(object):
         else:
             index = line.index(':')
             self._last_line_read = (line[:index].strip(),
-                                    line[index+1:].strip())
+                                    line[index + 1:].strip())
         return True
 
     def _read_coordinate(self, value):

@@ -20,7 +20,6 @@ from esmvaltool.interface_scripts.cmor_check import CMORCheck, CMORCheckError
 
 
 class VariableInfoMock:
-
     def __init__(self):
         self.short_name = 'short_name'
         self.standard_name = 'age_of_sea_ice'  # Iris don't accept fakes ...
@@ -38,23 +37,23 @@ class VariableInfoMock:
         requested = CoordinateInfoMock('air_pressure')
         requested.requested = [str(number) for number in range(20)]
 
-        self.coordinates = {'time': CoordinateInfoMock('time'),
-                            'lat': CoordinateInfoMock('lat'),
-                            'lon': CoordinateInfoMock('lon'),
-                            'air_pressure': requested,
-                            'depth': generic_level}
+        self.coordinates = {
+            'time': CoordinateInfoMock('time'),
+            'lat': CoordinateInfoMock('lat'),
+            'lon': CoordinateInfoMock('lon'),
+            'air_pressure': requested,
+            'depth': generic_level
+        }
 
 
 class CoordinateInfoMock:
-
     def __init__(self, name):
         self.name = name
         self.generic_level = False
 
         self.axis = ""
         self.value = ""
-        standard_names = {'lat': 'latitude',
-                          'lon': 'longitude'}
+        standard_names = {'lat': 'latitude', 'lon': 'longitude'}
         if name in standard_names:
             self.standard_name = standard_names[name]
         else:
@@ -63,9 +62,11 @@ class CoordinateInfoMock:
         self.out_name = self.name
         self.var_name = self.name
 
-        units = {'lat': 'degrees_north',
-                 'lon': 'degrees_east',
-                 'time': 'days since 1950-01-01 00:00:00'}
+        units = {
+            'lat': 'degrees_north',
+            'lon': 'degrees_east',
+            'time': 'days since 1950-01-01 00:00:00'
+        }
         if name in units:
             self.units = units[name]
         else:
@@ -74,8 +75,7 @@ class CoordinateInfoMock:
         self.stored_direction = "increasing"
         self.requested = []
 
-        valid_limits = {'lat': ('-90', '90'),
-                        'lon': ('0', '360')}
+        valid_limits = {'lat': ('-90', '90'), 'lon': ('0', '360')}
         if name in valid_limits:
             self.valid_min = valid_limits[name][0]
             self.valid_max = valid_limits[name][1]
@@ -85,7 +85,6 @@ class CoordinateInfoMock:
 
 
 class TestCMORCheck(unittest.TestCase):
-
     def setUp(self):
         self.var_info = VariableInfoMock()
         self.cube = self.get_cube(self.var_info)
@@ -97,8 +96,7 @@ class TestCMORCheck(unittest.TestCase):
         self.assertTrue(checker.has_errors())
 
     def test_fail_on_error(self):
-        checker = CMORCheck(self.cube, self.var_info,
-                            fail_on_error=True)
+        checker = CMORCheck(self.cube, self.var_info, fail_on_error=True)
         with self.assertRaises(CMORCheckError):
             checker.report_error('New error: {}', 'something failed')
 
@@ -109,8 +107,7 @@ class TestCMORCheck(unittest.TestCase):
         self.assertTrue(checker.has_warnings())
 
     def test_report_warning_with_fail_error(self):
-        checker = CMORCheck(self.cube, self.var_info,
-                            fail_on_error=True)
+        checker = CMORCheck(self.cube, self.var_info, fail_on_error=True)
         stdout = sys.stdout
         sys.stdout = StringIO()
         checker.report_warning('New error: {}', 'something failed')
@@ -122,8 +119,8 @@ class TestCMORCheck(unittest.TestCase):
         self._check_cube()
 
     def _check_cube(self, automatic_fixes=False):
-        checker = CMORCheck(self.cube, self.var_info,
-                            automatic_fixes=automatic_fixes)
+        checker = CMORCheck(
+            self.cube, self.var_info, automatic_fixes=automatic_fixes)
         checker.check_metadata()
         checker.check_data()
 
@@ -157,9 +154,11 @@ class TestCMORCheck(unittest.TestCase):
         self._check_fails_in_metadata()
 
     def _check_fails_in_metadata(self, automatic_fixes=False, frequency=None):
-        checker = CMORCheck(self.cube, self.var_info,
-                            automatic_fixes=automatic_fixes,
-                            frequency=frequency)
+        checker = CMORCheck(
+            self.cube,
+            self.var_info,
+            automatic_fixes=automatic_fixes,
+            frequency=frequency)
         with self.assertRaises(CMORCheckError):
             checker.check_metadata()
 
@@ -196,14 +195,14 @@ class TestCMORCheck(unittest.TestCase):
 
     def test_not_valid_min(self):
         coord = self.cube.coord('latitude')
-        values = numpy.linspace(coord.points[0]-1, coord.points[-1],
+        values = numpy.linspace(coord.points[0] - 1, coord.points[-1],
                                 len(coord.points))
         self._update_coordinate_values(self.cube, coord, values)
         self._check_fails_in_metadata()
 
     def test_not_valid_max(self):
         coord = self.cube.coord('latitude')
-        values = numpy.linspace(coord.points[0], coord.points[-1]+1,
+        values = numpy.linspace(coord.points[0], coord.points[-1] + 1,
                                 len(coord.points))
         self._update_coordinate_values(self.cube, coord, values)
         self._check_fails_in_metadata()
@@ -212,11 +211,12 @@ class TestCMORCheck(unittest.TestCase):
     def _update_coordinate_values(cube, coord, values):
         [dimension] = cube.coord_dims(coord)
         cube.remove_coord(coord)
-        new_coord = iris.coords.DimCoord(values,
-                                         standard_name=coord.standard_name,
-                                         long_name=coord.long_name,
-                                         var_name=coord.var_name,
-                                         units=coord.units)
+        new_coord = iris.coords.DimCoord(
+            values,
+            standard_name=coord.standard_name,
+            long_name=coord.long_name,
+            var_name=coord.var_name,
+            units=coord.units)
         cube.add_dim_coord(new_coord, dimension)
 
     def test_bad_units(self):
@@ -305,7 +305,8 @@ class TestCMORCheck(unittest.TestCase):
         with self.assertRaises(CMORCheckError):
             checker.check_data()
 
-    def get_cube(self, var_info,
+    def get_cube(self,
+                 var_info,
                  set_time_units="days since 1850-1-1 00:00:00",
                  frequency=None):
         """
@@ -344,13 +345,13 @@ class TestCMORCheck(unittest.TestCase):
 
         var_data = (numpy.ones(len(coords) * [20], 'f') *
                     (valid_min + (valid_max - valid_min) / 2))
-        cube = iris.cube.Cube(var_data,
-                              standard_name=var_info.standard_name,
-                              long_name=var_info.long_name,
-                              var_name=var_info.short_name,
-                              units=var_info.units,
-                              attributes=None,
-                              )
+        cube = iris.cube.Cube(
+            var_data,
+            standard_name=var_info.standard_name,
+            long_name=var_info.long_name,
+            var_name=var_info.short_name,
+            units=var_info.units,
+            attributes=None, )
         if var_info.positive:
             cube.attributes['positive'] = var_info.positive
 
@@ -364,12 +365,13 @@ class TestCMORCheck(unittest.TestCase):
 
     @staticmethod
     def _construct_scalar_coord(coord_spec):
-        return iris.coords.AuxCoord(coord_spec.value,
-                                    standard_name=coord_spec.standard_name,
-                                    long_name=coord_spec.long_name,
-                                    var_name=coord_spec.out_name,
-                                    units=coord_spec.units,
-                                    attributes=None)
+        return iris.coords.AuxCoord(
+            coord_spec.value,
+            standard_name=coord_spec.standard_name,
+            long_name=coord_spec.long_name,
+            var_name=coord_spec.out_name,
+            units=coord_spec.units,
+            attributes=None)
 
     def _create_coord_from_spec(self, coord_spec, set_time_units, frequency):
         if coord_spec.units.startswith("days since "):
@@ -390,13 +392,13 @@ class TestCMORCheck(unittest.TestCase):
             unit = Unit(dim_spec.units)
         # Set up attributes dictionary
         coord_atts = {'stored_direction': dim_spec.stored_direction}
-        coord = iris.coords.DimCoord(values,
-                                     standard_name=dim_spec.standard_name,
-                                     long_name=dim_spec.long_name,
-                                     var_name=dim_spec.out_name,
-                                     attributes=coord_atts,
-                                     units=unit,
-                                     )
+        coord = iris.coords.DimCoord(
+            values,
+            standard_name=dim_spec.standard_name,
+            long_name=dim_spec.long_name,
+            var_name=dim_spec.out_name,
+            attributes=coord_atts,
+            units=unit, )
         return coord
 
     @staticmethod
@@ -414,11 +416,11 @@ class TestCMORCheck(unittest.TestCase):
         decreasing = dim_spec.stored_direction == 'decreasing'
         endpoint = not dim_spec.standard_name == 'longitude'
         if decreasing:
-            values = numpy.linspace(valid_max, valid_min, 20,
-                                    endpoint=endpoint)
+            values = numpy.linspace(
+                valid_max, valid_min, 20, endpoint=endpoint)
         else:
-            values = numpy.linspace(valid_min, valid_max, 20,
-                                    endpoint=endpoint)
+            values = numpy.linspace(
+                valid_min, valid_max, 20, endpoint=endpoint)
         values = numpy.array(values)
         if dim_spec.requested:
             requested = [float(val) for val in dim_spec.requested]
@@ -426,11 +428,11 @@ class TestCMORCheck(unittest.TestCase):
             for j, request in enumerate(requested):
                 values[j] = request
             if decreasing:
-                extra_values = numpy.linspace(len(requested), valid_min,
-                                              20 - len(requested))
+                extra_values = numpy.linspace(
+                    len(requested), valid_min, 20 - len(requested))
             else:
-                extra_values = numpy.linspace(len(requested), valid_max,
-                                              20 - len(requested))
+                extra_values = numpy.linspace(
+                    len(requested), valid_max, 20 - len(requested))
 
             for j in range(len(requested), 20):
                 values[j] = extra_values[j - len(requested)]
@@ -445,7 +447,7 @@ class TestCMORCheck(unittest.TestCase):
         elif frequency == 'day':
             delta = 1
         elif frequency.ends_with('hr'):
-            delta = float(frequency[:-2])/24
+            delta = float(frequency[:-2]) / 24
         else:
             raise Exception('Frequency {} not supported'.format(frequency))
         start = 0

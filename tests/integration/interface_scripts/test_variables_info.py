@@ -11,15 +11,15 @@ from esmvaltool.interface_scripts.variable_info import CMIP5Info, CMIP6Info
 
 
 class TestCMIP6Info(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         cls.variables_info = CMIP6Info()
 
     def test_constructor_optional_parameter(self):
         cwd = os.path.dirname(os.path.realpath(__file__))
-        cmor_tables_path = os.path.join(cwd, '..', '..', '..',
-                                        'esmvaltool', 'interface_scripts', 'cmip6-cmor-tables')
+        cmor_tables_path = os.path.join(cwd, '..', '..', '..', 'esmvaltool',
+                                        'interface_scripts',
+                                        'cmip6-cmor-tables')
         cmor_tables_path = os.path.abspath(cmor_tables_path)
         CMIP6Info(cmor_tables_path)
 
@@ -36,15 +36,15 @@ class TestCMIP6Info(unittest.TestCase):
 
 
 class TestCMIP5Info(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         cls.variables_info = CMIP5Info()
 
     def test_constructor_optional_parameter(self):
         cwd = os.path.dirname(os.path.realpath(__file__))
-        cmor_tables_path = os.path.join(cwd, '..', '..', '..',
-                                        'esmvaltool', 'interface_scripts', 'cmip5-cmor-tables')
+        cmor_tables_path = os.path.join(cwd, '..', '..', '..', 'esmvaltool',
+                                        'interface_scripts',
+                                        'cmip5-cmor-tables')
         cmor_tables_path = os.path.abspath(cmor_tables_path)
         CMIP5Info(cmor_tables_path)
 

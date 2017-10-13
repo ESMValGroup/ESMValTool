@@ -11,9 +11,12 @@ from esmvaltool.interface_scripts.fixes.CMIP5.GFDL_ESM2M import (allvars, co2,
 class TestAll(unittest.TestCase):
     def setUp(self):
         self.cube = Cube([1, 2], var_name='co2', units='J')
-        self.cube.add_dim_coord(DimCoord([0, 1], standard_name='time',
-                                         units=Unit('days since 0001-01-01 00:00:00', calendar='standard')),
-                                0)
+        self.cube.add_dim_coord(
+            DimCoord(
+                [0, 1],
+                standard_name='time',
+                units=Unit(
+                    'days since 0001-01-01 00:00:00', calendar='standard')), 0)
         self.fix = allvars()
 
     def test_fix_data(self):
@@ -25,7 +28,6 @@ class TestAll(unittest.TestCase):
 
 
 class TestSftof(unittest.TestCase):
-
     def setUp(self):
         self.cube = Cube([1], var_name='sftof', units='J')
         self.fix = sftof()
@@ -37,7 +39,6 @@ class TestSftof(unittest.TestCase):
 
 
 class TestCo2(unittest.TestCase):
-
     def setUp(self):
         self.cube = Cube([1], var_name='co2', units='J')
         self.fix = co2()
