@@ -5,7 +5,8 @@ Basic implementation for diagnostics into ESMValTool
 import numpy as np
 import os
 import pdb
-# import matplotlib
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 #import matplotlib.dates as mdates
@@ -2001,9 +2002,9 @@ class BasicDiagnostics(Diagnostic):
         if self.overview:
 
             if '_stat_m_data' in self.__dict__.keys() and \
-                    '_stat_r_data' in self.__dict__.keys():
-                    # and \
-                    # self.cfg.regionalization:
+                    '_stat_r_data' in self.__dict__.keys() \
+                     and \
+                     self.cfg.regionalization:
 
                 rootname = self._plot_dir + os.sep + \
                     self._vartype.replace(" ", "_") + '_' + \

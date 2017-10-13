@@ -2,6 +2,8 @@ import os
 import shutil
 import csv
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from geoval.core.mapping import SingleMap
 from netCDF4 import Dataset

@@ -2,6 +2,8 @@ import os
 import csv
 import shutil
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from netCDF4 import Dataset
 from geoval.core.mapping import SingleMap
@@ -426,7 +428,8 @@ class SoilMoistureDiagnostic(BasicDiagnostics):
                 self._mod_file, self._project_info['RUNTIME']['currDiag'].
                 get_variables()[0])
 
-        if self.cfg.anomaly:
+        if "anomaly" in self.cfg.__dict__.keys() and self.cfg.anomaly:
+        # A_laue_ax   if self.cfg.anomaly:
 
             self._mod_pr_file = orig_mod_file
             self._mod_pr_file = self._mod_pr_file.split("/")

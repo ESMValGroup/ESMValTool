@@ -25,7 +25,6 @@ diag_script_info@draw_plots = True
 
 ;; Draw difference plots
 diag_script_info@plot_diff = True 
-diag_script_info@_diff = True 
 
 ;; Plot standard deviation ("all", "none", "ref_model" or given model name)
 diag_script_info@plot_stddev = "none"

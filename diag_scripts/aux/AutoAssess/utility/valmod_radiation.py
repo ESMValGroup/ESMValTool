@@ -9,6 +9,7 @@
 import string, pdb, csv, iris, numpy, sys, os
 import matplotlib.ticker
 import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import pickle
 import globalvar

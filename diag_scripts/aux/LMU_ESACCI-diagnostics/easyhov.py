@@ -10,6 +10,8 @@ Will be included in next geoval version
 """
 
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from geoval.core.data import GeoData

@@ -7,6 +7,8 @@ import netCDF4
 from geoval.core.netcdf import NetCDFHandler
 
 from geoval.core.data import GeoData
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import collections
 

@@ -1,6 +1,8 @@
 import os
 import shutil
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from netCDF4 import Dataset
 from geoval.core.mapping import SingleMap
@@ -40,7 +42,9 @@ class LandCoverDiagnostic(BasicDiagnostics):
 
         super(LandCoverDiagnostic, self).run_diagnostic()
 
-        self._specific_diag(single_years=self.cfg.single_years)
+        # A_laue_ax: added check for single_years in self.cfg
+        if "single_years" in self.cfg.__dict__.keys():
+            self._specific_diag(single_years=self.cfg.single_years)
 
     def _specific_diag(self, single_years=True):
         """

@@ -276,7 +276,7 @@ def get_monthly_input(project_info, mn, time, lon, lat,
         number of days per year 
     """
 
-    #import projects
+    import projects
     E = ESMValProject(project_info)
     verbosity = E.get_verbosity()
 
@@ -789,7 +789,7 @@ def get_topo(project_info, longi, lati, model):
     topo: array [lat, lon]
         topography ranges in model grid
     """
-    #import projects
+    import projects
     E = ESMValProject(project_info)
     verbosity = E.get_verbosity()
 

@@ -1223,7 +1223,7 @@ begin
 
                 ;; Difference plot to the reference
                 if (imod.ne.ref_ind) then
-                    if (diag_script_info@_diff) then
+                    if (diag_script_info@plot_diff) then
                         var = var_diff(imod, :, :)
                         outfile = output_dir + diag_script_base + "_" + \
                             modelnames(imod) + "-" + modelnames(ref_ind) + \

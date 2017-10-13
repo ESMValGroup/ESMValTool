@@ -379,7 +379,9 @@ begin
         model_arr = convert_units(model_arr, variable_info@plot_units)
     end if
 
+    
     ;; Multimodel mean
+    mmm_ind = -1
     if (any(diag_script_info@multi_model_mean.eq.(/"y","True"/))) then
         if (dim_MOD .gt. 1) then
             mmm = dim_avg_n_Wrap(model_arr,0)
@@ -387,7 +389,7 @@ begin
             tmp_mmm = new((/dim_MOD,dimsizes(model_arr&time)/),typeof(model_arr));array_append_record(model_arr, mmm, 0)
             tmp_mmm(:dim_MOD-2,:) = model_arr
             tmp_mmm(dim_MOD-1,:) = mmm
-            
+            mmm_ind = dim_MOD - 1
             tmpm = array_append_record(models@name, "Multimodel mean", 0)
             
             delete([/model_arr,models@name/])
@@ -508,6 +510,9 @@ begin
     
     climofiles = new(dim_MOD, string)
     do ii = 0, dim_MOD-1
+        if (ii.eq.mmm_ind) then
+            continue
+        end if
             climofiles(ii) = interface_get_inpaths(ii) + "/" + \
                  interface_get_infile(variables(0), field_types(0), ii)
     end do
