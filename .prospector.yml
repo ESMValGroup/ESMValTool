@@ -7,6 +7,7 @@ output-format: grouped
 strictness: veryhigh
 doc-warnings: true
 test-warnings: true
+member-warnings: false
 
 pyroma:
     run: true
@@ -17,11 +18,6 @@ pep8:
 pep257:
     # see http://pep257.readthedocs.io/en/latest/error_codes.html
     disable: [
-        # Does not seem to be detected correctly if summary on two lines:
-        D205, # 1 blank line required between summary line and description
-        # Whitespace is removed by docstring parser, see https://www.python.org/dev/peps/pep-0257/ 
-        # so it does not hurt and can be used for nice lay-out:
-        D210, # No whitespaces allowed surrounding docstring text
         # For short descriptions it makes sense not to end with a period:
         D400, # First line should end with a period
         # Disable because not part of PEP257 official convention:
