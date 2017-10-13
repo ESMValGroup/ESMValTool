@@ -1,6 +1,4 @@
-"""
-Test script to compare the output of ESMValTool against previous runs.
-"""
+"""Test script to compare the output of ESMValTool against previous runs."""
 
 import shutil
 import tempfile
@@ -12,7 +10,7 @@ from .esmvaltool_testlib import NAMELISTS, ESMValToolTest
 
 @pytest.fixture
 def output_directory():
-    """ Create a directory for storing ESMValTool output."""
+    """Create a directory for storing ESMValTool output."""
     tmp = tempfile.mkdtemp()
     yield tmp
     shutil.rmtree(tmp, ignore_errors=True)
@@ -20,8 +18,7 @@ def output_directory():
 
 @pytest.mark.parametrize("namelist", NAMELISTS)
 def test_namelist(output_directory, namelist):
-    """ Create a test for each namelist in NAMELISTS and run those."""
-
+    """Create a test for each namelist in NAMELISTS and run those."""
     test = ESMValToolTest(
         namelist=namelist,
         output_directory=output_directory,

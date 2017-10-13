@@ -1,7 +1,6 @@
-"""
-This modules provides generic functions needed for ESMValTool
-performance metrics testing
-"""
+"""Provide a class for testing esmvaltool."""
+
+from __future__ import print_function
 
 import glob
 import os
@@ -17,8 +16,7 @@ import esmvaltool
 
 
 def _load_config(filename=None):
-    """ Load test configuration
-    """
+    """Load test configuration"""
     if filename is None:
         # look in default locations for config-test.yml
         config_file = 'config-test.yml'
@@ -54,10 +52,11 @@ NAMELISTS = _CFG['test']['namelists']
 
 
 def _create_config_user_file(output_directory):
-    """ Write a config-user.yml file for running ESMValTool
-        such that it writes all output to `output_directory`.
-    """
+    """Write a config-user.yml file.
 
+    Write a configuration file for running ESMValTool
+    such that it writes all output to `output_directory`.
+    """
     cfg = _CFG['user']
 
     cfg['run_dir'] = output_directory
@@ -73,12 +72,12 @@ def _create_config_user_file(output_directory):
 
 
 class ESMValToolTest(EasyTest):
-    """
-    main class for all ESMValTool tests
-    """
+    """Main class for ESMValTool test runs."""
 
     def __init__(self, namelist, output_directory, ignore='', **kwargs):
         """
+        Create ESMValToolTest instance
+
         namelist: str
             The filename of the namelist that should be tested.
         output_directory : str
@@ -123,8 +122,7 @@ class ESMValToolTest(EasyTest):
             **kwargs)
 
     def run(self, **kwargs):
-        """ Run tests, unless we are asked to generate the reference data instead.
-        """
+        """Run tests or generate reference data."""
         if self.generate_ref:
             self.generate_reference_data()
             raise SkipTest("Generated reference data instead of running test")
@@ -132,8 +130,10 @@ class ESMValToolTest(EasyTest):
             super(ESMValToolTest, self).run_tests(**kwargs)
 
     def generate_reference_data(self):
-        """ Generate reference data by executing the namelist and then copying
-            results to the output directory.
+        """Generate reference data.
+
+        Generate reference data by executing the namelist and then moving
+        results to the output directory.
         """
         if not os.path.exists(self.refdirectory):
             self._execute()
@@ -144,7 +144,7 @@ class ESMValToolTest(EasyTest):
                   "directory {} already exists.".format(self.refdirectory))
 
     def _execute(self):
-        """ Execute ESMValTool """
+        """Execute ESMValTool"""
         # run ESMValTool
         sys.argv[1:] = self.args
         esmvaltool.main.run()
@@ -157,10 +157,9 @@ class ESMValToolTest(EasyTest):
                 output.append(path)
 
         if not output:
-            raise OSError(
-                "Output directory not found in location {}. "
-                "Probably ESMValTool failed to create any output."
-                .format(self.output_directory))
+            raise OSError("Output directory not found in location {}. "
+                          "Probably ESMValTool failed to create any output."
+                          .format(self.output_directory))
 
         if len(output) > 1:
             print("Warning: found multiple output directories:\n{}\nin output "
@@ -172,10 +171,10 @@ class ESMValToolTest(EasyTest):
     # Overwrite this method of easytest.EasyTest to be able to
     # ignore certain files
     def _get_files_from_refdir(self):
-        """ Get a list of files from reference directory, while ignoring files
-            that match patterns in self.ignore.
-        """
+        """Get a list of files from reference directory.
 
+        Inores files that match patterns in self.ignore.
+        """
         from fnmatch import fnmatchcase
 
         matches = []
@@ -194,9 +193,7 @@ class ESMValToolTest(EasyTest):
     # Overwrite this method of easytest.EasyTest because it is broken
     # for the case where x1 and x2 have no length
     def _compare_netcdf_values(self, F1, F2, allow_subset=False):
-        """
-        compare if two netCDF files have the same values
-        """
+        """Check if two netCDF files have the same values."""
         for k in F1.variables.keys():
             #             print('Comparing variable', k)
             x1 = F1.variables[k][:]
