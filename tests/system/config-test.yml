@@ -12,7 +12,7 @@
 
 test:
   # Execute system/diagnostic tests [false]/true
-  run: true
+  run: false
   # Limit testing/generating reference data to the following namelists
   # An empty list means any namelist in esmvaltool/nml
   namelists: [
