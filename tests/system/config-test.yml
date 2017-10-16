@@ -8,32 +8,33 @@
 #   - ESMValTool/tests/test_diagnostics/
 #
 ###############################################################################
- 
+---
+
 test:
-  # Execute system/diagnostic tests [False]/True
-  run: True
+  # Execute system/diagnostic tests [false]/true
+  run: false
+  # Limit testing/generating reference data to the following namelists
+  # An empty list means any namelist in esmvaltool/nml
+  namelists: [
+    namelist_MyVar.yml,
+  ]
 
 # Reference data configuration
 reference:
   # Directory containing reference output
   output: ~/esmvaltool_reference_output
-  # Generate reference data instead of checking [False]/True
-  generate: False
-  # Limit generating reference data to the following namelists
-  # An empty list means any namelist for which a test is defined
-  generate_namelists: [
-    namelist_MyVar.yml,
-  ]
+  # Generate reference data instead of checking [false]/true
+  generate: false
 
 # Template for the user configuration file
 user:
-  write_plots: True
-  write_netcdf: True
+  write_plots: true
+  write_netcdf: true
   log_level: warning
-  exit_on_warning: False
+  exit_on_warning: false
   output_file_type: pdf
-  save_intermediary_cubes: True
-    
+  save_intermediary_cubes: true
+
   rootpath:
     CMIP5: ~/esmvaltool_input
     OBS: ~/esmvaltool_input

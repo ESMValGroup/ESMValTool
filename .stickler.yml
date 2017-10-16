@@ -8,8 +8,10 @@ linters:
     yamllint:
     shellcheck:
 files:
-    # ignore old stuff, recent versions are in 'esmvaltool' dir
     ignore: [
+        'doc/sphinx',
+        'esmvaltool/doc/sphinx',
+        # ignore old stuff, recent versions are in 'esmvaltool' dir
         'backend',
         'diag_scripts',
         'interface_data',

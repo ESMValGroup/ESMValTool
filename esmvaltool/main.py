@@ -1,5 +1,6 @@
 #! /usr/bin/env python
-r"""
+r"""ESMValTool - Earth System Model Evaluation Tool
+
 ______________________________________________________
   _____ ____  __  ____     __    _ _____           _
  | ____/ ___||  \/  \ \   / /_ _| |_   _|__   ___ | |
@@ -22,7 +23,6 @@ CORE DEVELOPMENT TEAM AND CONTACTS:
   Javier Vegas-Regidor (BSC, Spain - javier.vegas@bsc.es)
 ______________________________________________________________________
 
-ESMValTool - Earth System Model Evaluation Tool
 
 For further help, check the doc/-folder for pdfs
 and references therein. Have fun!
@@ -35,6 +35,8 @@ and references therein. Have fun!
 # Valeriu Predoi (URead, UK - valeriu.predoi@ncas.ac.uk)
 # Mattia Righi (DLR, Germany - mattia.righi@dlr.de)
 
+from __future__ import print_function
+
 import argparse
 import copy
 import datetime
@@ -42,9 +44,9 @@ import errno
 import logging
 import logging.config
 import os
-import re
 import shutil
 import sys
+
 import yaml
 
 # Hack to make this file executable
@@ -52,9 +54,9 @@ if __name__ == '__main__':  # noqa
     sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))  # noqa
 
 from esmvaltool.interface_scripts import namelistchecks
-from esmvaltool.interface_scripts.preprocess import (
-    preprocess, multimodel_mean, run_executable, Diag)
 from esmvaltool.interface_scripts.auxiliary import ncl_version_check
+from esmvaltool.interface_scripts.preprocess import (
+    Diag, multimodel_mean, preprocess, run_executable)
 from esmvaltool.interface_scripts.yaml_parser import load_namelist
 
 # Define ESMValTool version
@@ -93,8 +95,7 @@ def configure_logging(cfg_file=None, output=None, console_log_level=None):
 
 
 def read_config_file(config_file, namelist_name):
-    """ Read config file and store settings in a dictionary
-    """
+    """Read config file and store settings in a dictionary."""
     cfg = yaml.safe_load(file(config_file, 'r'))
 
     # set defaults
@@ -148,8 +149,17 @@ def read_config_file(config_file, namelist_name):
 
 
 def create_interface_data_dir(project_info, executable):
-    """ Create a temporary directory for storing files needed to run
-        executable, returns the name of the created directory.
+    """Create a directory for storing temporary files needed by esmvaltool.
+
+    ESMValTool transfers information from the `esmvaltool` program to the
+    diagnostic programs that it runs by storing that information in files,
+    this function creates a directory to store those files.
+
+    Returns
+    -------
+    str
+        The name of the created directory.
+
     """
     now = datetime.datetime.utcnow().strftime("%Y%m%d_%H%M%S")
     interface_data = os.path.join(
@@ -162,8 +172,7 @@ def create_interface_data_dir(project_info, executable):
 
 
 def main():
-    """ Run the program"""
-
+    """Define the `esmvaltool` program"""
     # parse command line args
     parser = argparse.ArgumentParser(
         description=__doc__,
@@ -197,6 +206,7 @@ def main():
     namelist_name = os.path.splitext(os.path.basename(namelist_file))[0]
     cfg = read_config_file(config_file, namelist_name)
 
+    # Create run dir
     if os.path.exists(cfg['run_dir']):
         print("ERROR: run_dir {} already exists, aborting to prevent data loss"
               .format(cfg['run_dir']))
@@ -218,7 +228,6 @@ def main():
 
 def process_namelist(namelist_file, global_config):
     """Process namelist"""
-
     if not os.path.isfile(namelist_file):
         raise OSError(errno.ENOENT, "Specified namelist file does not exist",
                       namelist_file)
@@ -322,14 +331,14 @@ def process_namelist(namelist_file, global_config):
 
     # loop over all diagnostics defined in project_info and create/prepare
     # netCDF files for each variable
-    for currDiag in project_info['DIAGNOSTICS'].values():
+    for curr_diag in project_info['DIAGNOSTICS'].values():
 
         # Are the requested variables derived from other,
         # more basic, variables?
-        requested_vars = currDiag.variables
+        requested_vars = curr_diag.variables
 
         # get all models
-        project_info['ADDITIONAL_MODELS'] = currDiag.additional_models
+        project_info['ADDITIONAL_MODELS'] = curr_diag.additional_models
         project_info['ALLMODELS'] = \
             project_info['MODELS'] + project_info['ADDITIONAL_MODELS']
 
@@ -345,24 +354,24 @@ def process_namelist(namelist_file, global_config):
             logger.info("MODEL = %s (%s)", model_name, project_name)
 
             # start calling preprocess
-            op = Diag()
+            diagnostic = Diag()
 
             # FIX-ME old packaging of variable objects (legacy from initial
             # version), this needs to be changed once we have the new variable
             # definition codes in place
-            variable_defs_base_vars = op.add_base_vars_fields(
+            variable_defs_base_vars = diagnostic.add_base_vars_fields(
                 requested_vars, model,
                 project_info['CONFIG']['var_def_scripts'])
 
             # if not all variable_defs_base_vars are available, try to fetch
             # the target variable directly (relevant for derived variables)
-            base_vars = op.select_base_vars(variable_defs_base_vars, model,
-                                            currDiag, project_info)
+            base_vars = diagnostic.select_base_vars(
+                variable_defs_base_vars, model, curr_diag, project_info)
 
             # process base variables
             for base_var in base_vars:
                 if namelist.CONFIG['var_only_case'] > 0:
-                    if op.id_is_explicitly_excluded(base_var, model):
+                    if diagnostic.id_is_explicitly_excluded(base_var, model):
                         continue
                 logger.info("VARIABLE = %s (%s)", base_var.name,
                             base_var.field)
@@ -384,7 +393,7 @@ def process_namelist(namelist_file, global_config):
                     project_info,
                     base_var,
                     model,
-                    currDiag,
+                    curr_diag,
                     cmor_reformat_type='py')
 
                 # add only if we need multimodel statistics
@@ -396,7 +405,7 @@ def process_namelist(namelist_file, global_config):
         if project_info['PREPROCESS']['multimodel_mean']:
             multimodel_mean(models_cubes, models_fullpaths)
 
-        vardicts = currDiag.variables
+        vardicts = curr_diag.variables
         variables = []
         field_types = []
         # hack: needed by diags that
@@ -409,7 +418,7 @@ def process_namelist(namelist_file, global_config):
             field_types.append(var['field'])
             ref_models.append(var['ref_model'][0])
 
-        project_info['RUNTIME']['currDiag'] = currDiag
+        project_info['RUNTIME']['currDiag'] = curr_diag
 
         for derived_var, derived_field, refmodel in zip(
                 variables, field_types, ref_models):
@@ -424,8 +433,8 @@ def process_namelist(namelist_file, global_config):
             project_info['RUNTIME']['derived_field_type'] = derived_field
 
             # iteration over diagnostics for each variable
-            scrpts = copy.deepcopy(currDiag.scripts)
-            for i in range(len(currDiag.scripts)):
+            scrpts = copy.deepcopy(curr_diag.scripts)
+            for i in range(len(curr_diag.scripts)):
 
                 # because the NCL environment is dumb, it is important to
                 # tell the environment which diagnostic script to use
@@ -478,7 +487,7 @@ def process_namelist(namelist_file, global_config):
 
 
 def run():
-    """ Run main, logging any exceptions."""
+    """Run the `esmvaltool` program, logging any exceptions."""
     try:
         main()
     except:  # noqa
