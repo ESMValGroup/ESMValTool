@@ -17,7 +17,7 @@ def output_directory():
 
 
 @pytest.mark.parametrize("namelist", NAMELISTS)
-def test_namelist(output_directory, namelist):
+def test_namelist(output_directory, namelist):  # noqa
     """Create a test for each namelist in NAMELISTS and run those."""
     test = ESMValToolTest(
         namelist=namelist,

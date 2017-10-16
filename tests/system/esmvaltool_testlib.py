@@ -155,23 +155,25 @@ class ESMValToolTest(EasyTest):
         esmvaltool.main.run()
 
         # Update the output directory to point to the output of the run
+        output_directory = self.output_directory  # noqa
+
         output = []
-        for path in os.listdir(self.output_directory):
-            path = os.path.join(self.output_directory, path)
+        for path in os.listdir(output_directory):
+            path = os.path.join(output_directory, path)
             if os.path.isdir(path):
                 output.append(path)
 
         if not output:
             raise OSError("Output directory not found in location {}. "
                           "Probably ESMValTool failed to create any output."
-                          .format(self.output_directory))
+                          .format(output_directory))
 
         if len(output) > 1:
             print("Warning: found multiple output directories:\n{}\nin output "
                   "location {}\nusing the first one.".format(
-                      output, self.output_directory))
+                      output, output_directory))
 
-        self.output_directory = output[0] + os.sep
+        self.output_directory = output[0] + os.sep  # noqa
 
     def _get_files_from_refdir(self):
         """Get a list of files from reference directory.
