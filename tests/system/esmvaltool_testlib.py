@@ -144,7 +144,12 @@ class ESMValToolTest(EasyTest):
                   "directory {} already exists.".format(self.refdirectory))
 
     def _execute(self):
-        """Execute ESMValTool"""
+        """Execute ESMValTool
+
+        Override the _execute method because we want to run in our own
+        Python instance to get coverage reporting and we want to update
+        the location of `self.output_directory` afterwards.
+        """
         # run ESMValTool
         sys.argv[1:] = self.args
         esmvaltool.main.run()
@@ -168,12 +173,13 @@ class ESMValToolTest(EasyTest):
 
         self.output_directory = output[0] + os.sep
 
-    # Overwrite this method of easytest.EasyTest to be able to
-    # ignore certain files
     def _get_files_from_refdir(self):
         """Get a list of files from reference directory.
 
-        Inores files that match patterns in self.ignore.
+        Ignore files that match patterns in self.ignore.
+
+        Override this method of easytest.EasyTest to be able to ignore certain
+        files.
         """
         from fnmatch import fnmatchcase
 
@@ -190,19 +196,22 @@ class ESMValToolTest(EasyTest):
 
         return matches
 
-    # Overwrite this method of easytest.EasyTest because it is broken
-    # for the case where x1 and x2 have no length
     def _compare_netcdf_values(self, F1, F2, allow_subset=False):
-        """Check if two netCDF files have the same values."""
-        for k in F1.variables.keys():
-            #             print('Comparing variable', k)
-            x1 = F1.variables[k][:]
-            x2 = F2.variables[k][:]
+        """Compare two netCDF4 Dataset instances.
 
-            if allow_subset:  # allow that only a subset of data is compared
-                raise NotImplementedError
-            else:
-                if not np.array_equal(x1, x2):
-                    return False
+        Check if dataset2 contains the same variable values as dataset1.
+
+        Override this method of easytest.EasyTest because it is broken
+        for the case where value1 and value2 have no length.
+        """
+        if allow_subset:  # allow that only a subset of data is compared
+            raise NotImplementedError
+
+        for key in F1.variables:
+            values1 = F1.variables[key][:]
+            values2 = F2.variables[key][:]
+
+            if not np.array_equal(values1, values2):
+                return False
 
         return True
