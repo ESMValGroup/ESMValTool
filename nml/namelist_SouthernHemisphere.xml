@@ -19,6 +19,7 @@ Project
 EMBRACE
 
 Reference
+n/a
 
 This namelist is part of the ESMVal tool
 ###############################################################################
@@ -36,12 +37,13 @@ This namelist is part of the ESMVal tool
   <max_data_blocksize type="integer"> 500                       </max_data_blocksize>
   <output_file_type>                  png                        </output_file_type>
   <verbosity  type="integer">         1                         </verbosity>
+  <tags>                             P_emrace                  </tags>
 </GLOBAL>
 
 
 <MODELS>
-  <!-- Put here all the models you want to analyze but only those models
-  used my the entire Southern Hemisphere diagnostics. You'll have to add
+  <!-- Put here all the models you want to analyze, but only those models
+  used by the entire Southern Hemisphere diagnostics. You'll have to add
   the rest of the models to diagnostic specific sections below. -->
 </MODELS>
 
@@ -60,7 +62,8 @@ This namelist is part of the ESMVal tool
     <variable>             rsds                                   </variable>
     <variable>             rsdscs                                 </variable>
     <field_type>           T2Ms                                   </field_type>
-
+    <tags>                 R_atmos, T_phys                        </tags>
+	    
     <diag_script_cfg_dir>  ./nml/cfg_SouthernHemisphere                 </diag_script_cfg_dir>
     <diag_script cfg="SouthernHemisphere.conf">   SouthernHemisphere.py </diag_script>
     <launcher_arguments>    [('execute_as_shell', False)]               </launcher_arguments>
@@ -86,7 +89,8 @@ This namelist is part of the ESMVal tool
     <variable>             hfls                                </variable>
     <variable>             hfss                                </variable>
     <field_type>           T2Ms                                </field_type>
-
+    <tags>                 R_atmos, T_phys                     </tags>
+	  
     <diag_script_cfg_dir>  ./nml/cfg_SouthernHemisphere                 </diag_script_cfg_dir>
     <diag_script cfg="SouthernHemisphere.conf">   SouthernHemisphere.py </diag_script>
     <launcher_arguments>    [('execute_as_shell', False)]               </launcher_arguments>
@@ -108,7 +112,8 @@ This namelist is part of the ESMVal tool
     <variable_def_dir>     ./variable_defs/                         </variable_def_dir>
     <variable>             clt                                      </variable>
     <field_type>           T2Ms                                     </field_type>
-
+    <tags>                 R_atmos, T_clouds                        </tags>
+	  
     <diag_script_cfg_dir>  ./nml/cfg_SouthernHemisphere                 </diag_script_cfg_dir>
     <diag_script cfg="SouthernHemisphere.conf">   SouthernHemisphere.py </diag_script>
     <launcher_arguments>    [('execute_as_shell', False)]               </launcher_arguments>
@@ -129,7 +134,8 @@ This namelist is part of the ESMVal tool
     <variable_def_dir>     ./variable_defs/                  </variable_def_dir>
     <variable>             clivi                             </variable>
     <field_type>           T2Ms                              </field_type>
-
+    <tags>                 R_atmos, T_clouds                 </tags>
+	  
     <diag_script_cfg_dir>  ./nml/cfg_SouthernHemisphere                 </diag_script_cfg_dir>
     <diag_script cfg="SouthernHemisphere.conf">   SouthernHemisphere.py </diag_script>
     <launcher_arguments>    [('execute_as_shell', False)]               </launcher_arguments>
@@ -150,7 +156,8 @@ This namelist is part of the ESMVal tool
     <variable_def_dir>     ./variable_defs/                 </variable_def_dir>
     <variable>             clwvi                            </variable>
     <field_type>           T2Ms                             </field_type>
-
+    <tags>                 R_atmos, T_clouds                </tags>
+	  
     <diag_script_cfg_dir>  ./nml/cfg_SouthernHemisphere                 </diag_script_cfg_dir>
     <diag_script cfg="SouthernHemisphere.conf">   SouthernHemisphere.py </diag_script>
     <launcher_arguments>    [('execute_as_shell', False)]               </launcher_arguments>
@@ -175,7 +182,8 @@ This namelist is part of the ESMVal tool
     <variable ref="obs" exclude="clt_obs">  rlds              </variable>
     <variable ref="obs" exclude="clt_obs">  rsds              </variable>
     <field_type>                            T2Ms              </field_type>
-
+    <tags>                 R_atmos, T_phys                    </tags>
+	  
     <diag_script_cfg_dir>  ./nml/cfg_SouthernHemisphere                 </diag_script_cfg_dir>
     <diag_script cfg="SouthernHemisphere.conf">   SouthernHemisphere_scatter.py </diag_script>
     <launcher_arguments>    [('execute_as_shell', False)]               </launcher_arguments>

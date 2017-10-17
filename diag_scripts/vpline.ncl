@@ -22,6 +22,7 @@
 ;# Caveats:      
 ;#                                                              
 ;# Modification history:                                                      
+;#    * 20170824-A_bock_ls added tags for reporting
 ;#    * 20160926-A_laue_ax: 1) removed erroneous, hard-wired "fixing" of vertical
 ;#                          coordinate (plev) and introduced fix-files
 ;#                          (in reformat_scripts/fixes) for BDBP and ESACCI-OZONE
@@ -51,6 +52,8 @@ load "./diag_scripts/lib/ncl/misc_function.ncl"
 load "./diag_scripts/calc_seasonal.ncl"
 load "./diag_scripts/uniform_coordinates.ncl"
 load "./plot_scripts/ncl/aux_plotting.ncl"
+
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 begin
     verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
@@ -472,14 +475,14 @@ begin
            delete([/tmp,tmp_st/]) 
        end do
        
-       draw(plot_d(ipanel))
-       frame(wks)
+       ;draw(plot_d(ipanel))
+       ;frame(wks)
    end do
-   delete(res)
+;   delete(res)
 
    ;; Call legend-plotting routine
    Pres = True
-   Pres@gsnFrame       = False
+;   Pres@gsnFrame       = False
    Pres@gsnPanelBottom = 0.2
    Pres@gsnPanelFigureStrings=plot_num(0:dimsizes(latsel)-1) 
    Pres@gsnPanelFigureStringsFontHeightF = 0.02
@@ -492,7 +495,33 @@ begin
    ;; Call panel routine
    add_legenda(wks,plotMod,plotColor,tofloat(plotDash),LineScatters, LineTick,"0.4")
    gsn_panel(wks,plot_d,dimsizes(latsel),Pres)      
- 
+
+;**************************************************************
+   ; add meta data to plot (for reporting)
+
+   climofiles = new(dim_MOD, string)
+   do ii = 0, dim_MOD - 1
+       climofiles(ii) = \
+           interface_get_inpaths(ii) + "/" \
+           + interface_get_infile(variables(0), field_types(0), ii)
+   end do
+
+   alltags = array_append_record(tags, (/"DM_reg", "ST_clim", "PT_clim"/), 0)
+
+   if (multimean) then
+       allmodelnames = array_append_record(models@name, (/"multi-model-mean"/), 0)
+   end if
+
+   caption = "Vertical profiles of variable " + variables(0) \
+         + " with given latitude and month."
+
+   id = diag_script + "_" + variables(0)
+
+   contrib_authors = "A_wenz_sa"
+
+   ESMValMD(wks@fullname, alltags, caption, id, variables(0), allmodelnames, climofiles, diag_script, contrib_authors)
+;**************************************************************
+
    info_output(" gv " + wks@fullname + " &", verbosity, 1)
 
  end

@@ -57,6 +57,7 @@ load "./diag_scripts/lib/ncl/latlon.ncl"
 load "./diag_scripts/lib/ncl/regridding.ncl"
 load "./diag_scripts/lib/ncl/statistics.ncl"
 load "./diag_scripts/lib/ncl/scaling.ncl"
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 load "./plot_scripts/ncl/xy_line.ncl"
 load "./plot_scripts/ncl/scatterplot.ncl"
@@ -97,6 +98,11 @@ begin
 
     ;; Basename of diag_script
     diag_script_base = basename(diag_script)
+    
+    ;; Basename of nml
+    xml_name = getenv("ESMValTool_xml_name")
+    suffix = get_file_suffix(xml_name, 0)
+    base_name = str_sub_str(xml_name, suffix, "")
 
     ;; Define file type
     file_type = getenv("ESMValTool_output_file_type")
@@ -283,6 +289,29 @@ begin
         plot = cycle_plot(wks, data_arr, var0)
         draw(plot)
         frame(wks)
+        
+        ;; Attach Metadata to plot
+        
+        alltags = array_append_record(tags, region@DM_tag, 0)
+        alltags := array_append_record(alltags,\
+               (/"PT_seas", "ST_mean"/), 0)
+        caption = "Seasonal Cycle plot for " + variables(0) + \
+                  " over the period " + start_year + \
+                  "-" + end_year
+        id = diag_script + "_" + base_name
+        climofiles = new(dimsizes(models@name) * dimsizes(variables), string)
+        do n_var = 0, dimsizes(variables) - 1
+            do imod = 0, dimsizes(models@name) - 1
+                climofiles(n_var * dimsizes(models@name) + imod) = \
+                            interface_get_inpaths(imod) + "/" + \
+                            interface_get_infile(variables(n_var), field_types(n_var), imod)
+            end do
+        end do
+        contrib_authors = (/"A_anav_al", "A_wenz_sa", "A_righ_ma"/) 
+
+        ESMValMD(outfile+"."+file_type, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+
+        delete([/alltags, caption, id, climofiles/])
         delete(plot)
         delete(wks)
         delete(data_arr)
@@ -331,6 +360,30 @@ begin
         plot = errorbar_plot(wks, data_arr, var0)
         draw(plot)
         frame(wks)
+        
+        ;; Attach Metadata to plot
+        
+        alltags = array_append_record(tags, region@DM_tag, 0)
+        alltags := array_append_record(alltags,\
+               (/"PT_errorbar", "ST_stddev", "ST_mean"/), 0)
+        caption = "Errorbar plot for " + variables(0) + \
+                  " over the period " + start_year + \
+                  "-" + end_year + ". Similar to Anav 2013 fig 6."
+        id = diag_script + "_" + base_name
+        climofiles = new(dimsizes(models@name) * dimsizes(variables), string)
+        do n_var = 0, dimsizes(variables) - 1
+            do imod = 0, dimsizes(models@name) - 1
+                climofiles(n_var * dimsizes(models@name) + imod) = \
+                            interface_get_inpaths(imod) + "/" + \
+                            interface_get_infile(variables(n_var), field_types(n_var), imod)
+            end do
+        end do
+        contrib_authors = (/"A_anav_al", "A_wenz_sa", "A_righ_ma"/)
+
+        ESMValMD(outfile+"."+file_type, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+
+        delete([/alltags, caption, id, climofiles/])
+        
         delete(plot)
         delete(wks)
         delete(data_arr)
@@ -378,6 +431,29 @@ begin
         plot = scatterplot_markers(wks, data_arr, var0)
         draw(plot)
         frame(wks)
+        
+                ;; Attach Metadata to plot
+        
+        alltags = array_append_record(tags, region@DM_tag, 0)
+        alltags := array_append_record(alltags,\
+               (/"PT_scatter", "ST_mean"/), 0)
+        caption = "Scatterplot for " + variables(0) + \
+                  " over the period " + start_year + \
+                  "-" + end_year + ". Like Anav 2013 Fig 17."
+        id = diag_script + "_" + base_name
+        climofiles = new(dimsizes(models@name) * dimsizes(variables), string)
+        do n_var = 0, dimsizes(variables) - 1
+            do imod = 0, dimsizes(models@name) - 1
+                climofiles(n_var * dimsizes(models@name) + imod) = \
+                            interface_get_inpaths(imod) + "/" + \
+                            interface_get_infile(variables(n_var), field_types(n_var), imod)
+            end do
+        end do
+        contrib_authors = (/"A_anav_al", "A_wenz_sa", "A_righ_ma"/)
+
+        ESMValMD(outfile+"."+file_type, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+
+        delete([/alltags, caption, id, climofiles/])
 
     end if
 

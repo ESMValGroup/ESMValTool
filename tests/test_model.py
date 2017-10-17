@@ -5,6 +5,9 @@
 Tests are implemented using *assert* statements
 """
 
+
+import sys
+import os
 import unittest
 
 

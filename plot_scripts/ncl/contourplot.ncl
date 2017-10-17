@@ -31,8 +31,8 @@ function contourplot(wks_in[1],
 ;;    A graphic variable.
 ;;
 ;; Description
-;;    Wrapper for gsn_csm_contour (http://www.ncl.ucar.edu/Document/Graphics/
-;;    Interfaces/gsn_csm_contour.shtml)
+;;    Wrapper for gsn_csm_contour 
+;;    (http://www.ncl.ucar.edu/Document/Graphics/Interfaces/gsn_csm_contour.shtml)
 ;;    Opens default wks, if not provided as argument of type "graphic".
 ;;    Defines default resources, which are overridden by argument res.
 ;;    Creates plot, according to wks & res.

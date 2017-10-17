@@ -17,6 +17,7 @@
 ;http://ncl.ucar.edu/Applications/mjoclivar.shtml
 ;
 ;; Modification history
+;;    20170918-A_bock_ls: added tags for reporting
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;;                        of the code
 ;*********************************************************************
@@ -42,6 +43,7 @@ load "./plot_scripts/ncl/mjo_level1.ncl"
 load "./plot_scripts/ncl/mjo_level2.ncl"
 load "./diag_scripts/aux/mjo/mjo.ncl"
 
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 ;*********************************************************************
 
@@ -161,6 +163,20 @@ begin
 
     optPlot = True
 
+    ;-----------------------------------------------------------------------------
+    ; for meta data
+        climofiles = new(dim_MOD, string)
+        do ii = 0, dim_MOD - 1
+            climofiles(ii) = \
+                interface_get_inpaths(ii) + "/" \
+                + interface_get_infile(variables(0), field_types(0), ii)
+        end do
+        domain = "DM_reg"
+        alltags = array_append_record(tags, (/"PT_other", "ST_spectrum", domain/), 0)
+        contrib_authors = (/"A_wang_sh"/)
+    ;-----------------------------------------------------------------------------
+
+
     ;; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ;; loop through seasons
     do s = 0, dimsizes(SpecType) - 1
@@ -275,6 +291,19 @@ begin
         delete(plot)
         delete(pan)
         delete(n_p)
+
+        ; add meta data to plot (for reporting)
+        caption = "Madden Julian Oscillation Climate Variability: " + \
+                  SpecType(s) + "cross-spectra: coherence-squared and " + \
+                  "phase relationships in wavenumber-frequency space " + \
+                  " of variable " + var0 + " and " + var1
+
+        id = diag_script + "_" + variables(0) + "_" + SpecType(s)
+
+        outfile = output_dir + output_filename + "." + output_file_type
+
+        ESMValMD(outfile, alltags, caption, id, (/var0, var1/), models@name, climofiles, diag_script, contrib_authors)
+
 
     end do  ; End seasons
 

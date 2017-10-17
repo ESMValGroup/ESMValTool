@@ -9,6 +9,9 @@ Evaluates West African monsoon for daily data sets
 Author
 Romain Roehrig (Meteo France, France - romain.roehrig@meteo.fr)
 
+Contributor(s)
+n/a
+
 Project
 EMBRACE
 
@@ -35,6 +38,7 @@ This namelist is part of the ESMValTool
   <write_netcdf type="boolean">           True                            </write_netcdf>
   <read_from_vault type="boolean">        False                           </read_from_vault>
   <force_processing type="boolean">       False                           </force_processing>
+  <tags> D_kerry06jclim, D_roehrig13jclim, P_embrace </tags>
 </GLOBAL>
 
 <MODELS>
@@ -56,7 +60,8 @@ This namelist is part of the ESMValTool
     <diag_script cfg="cfg_WAMonsoon_precip_hp90.ncl">  WAMonsoon_isv_filtered.ncl   </diag_script>
     <diag_script cfg="cfg_WAMonsoon_precip_bp3-10.ncl">  WAMonsoon_isv_filtered.ncl </diag_script>
     <model id="gpcp"> CMIP5  GPCP-1DD-V12       day  observation   r1i1p1   2001  2002  /home/roehrig/script/EMBRACE/ESMValTool/data        </model>
-</diag>
+    <tags> R_atmos, T_phys </tags>
+	</diag>
 
 <diag>
     <description> Intra-seasonal variability of OLR                                    </description>
@@ -67,6 +72,7 @@ This namelist is part of the ESMValTool
     <diag_script cfg="cfg_WAMonsoon_rlut_hp90.ncl">  WAMonsoon_isv_filtered.ncl       </diag_script>  
     <diag_script cfg="cfg_WAMonsoon_rlut_bp3-10.ncl">  WAMonsoon_isv_filtered.ncl     </diag_script> 
     <model id="NOAA"> CMIP5  NOAA       day  observation   r1i1p1   2001  2002  /home/roehrig/script/EMBRACE/ESMValTool/data        </model>
+    <tags> R_atmos, T_phys </tags>
 </diag>
 
 <diag>
@@ -77,6 +83,7 @@ This namelist is part of the ESMValTool
     <diag_script_cfg_dir>                              ./nml/cfg_WAMonsoon/                    </diag_script_cfg_dir>
     <diag_script cfg="cfg_WAMonsoon_precip_autocorr_hp90.ncl">  WAMonsoon_autocorr.ncl  </diag_script> 
     <model id="gpcp"> CMIP5  GPCP-1DD-V12       day  observation   r1i1p1   2001  2002  /home/roehrig/script/EMBRACE/ESMValTool/data        </model>
+    <tags> R_atmos, T_phys, T_atmDyn </tags>
 </diag>
 
 </DIAGNOSTICS>

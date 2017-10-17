@@ -17,6 +17,7 @@
 ;http://ncl.ucar.edu/Applications/mjoclivar.shtml
 ;
 ;; Modification history
+;;    20170918-A_bock_ls: added tags for reporting
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;;                        of the code
 ;*********************************************************************
@@ -41,6 +42,7 @@ load "./diag_scripts/aux/mjo/mjo.ncl"
 load "./plot_scripts/ncl/mjo_level1.ncl"
 load "./plot_scripts/ncl/mjo_level2.ncl"
 
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 ;*********************************************************************
 
@@ -163,6 +165,31 @@ begin
 
     optPlot = True
 
+    ;-----------------------------------------------------------------------------
+    ; for meta data
+        modelsname = new(2, string)
+        modelsname(0) = models@name(idx_ref_pr)
+        modelsname(1) = models@name(idx_ref_ua)
+        climofiles = new(3, string)
+        climofiles(0) = \
+            interface_get_inpaths(idx_ref_pr) + "/" \
+            + interface_get_infile(variables(0), field_types(0), idx_ref_pr)
+        climofiles(1) = \
+            interface_get_inpaths(idx_ref_ua) + "/" \
+            + interface_get_infile(variables(1), field_types(0), idx_ref_ua)
+        climofiles(2) = \
+            interface_get_inpaths(idx_ref_ua) + "/" \
+            + interface_get_infile(variables(2), field_types(0), idx_ref_ua)
+        domain = "DM_reg"
+        alltags = array_append_record(tags, (/"PT_other", "ST_spectrum", domain/), 0)
+        caption = "Madden Julian Oscillation Climate Variability: " + \
+                  "life cycle composites based upon daily phase space" + \
+                  " of variable " + var0 + ", " + var1 + " and " + var2
+        contrib_authors = (/"A_wang_sh"/)
+        output_dir = get_output_dir(plot_dir, diag_script_base)
+    ;-----------------------------------------------------------------------------
+
+
     ;; ***************************************************************
     ;; ------------------ Open files for plots -----------------------
 
@@ -209,6 +236,26 @@ begin
                         idx_mod_pr,\
                         di)
 
+    ; add meta data to plot (for reporting)
+
+    do nSeason = 1, 2
+
+        id = diag_script + "_" + variables(0) + "_" + idx_mod_pr
+
+        aux_title_info = models@name(idx_mod_pr) + "_"\
+                     + di@season_life_cycle(nSeason - 1)
+        output_filename = interface_get_figure_filename(diag_script_base,\
+                                                    var0,\
+                                                    field_type0,\
+                                                    aux_title_info,\
+                                                    -1)
+
+        outfile = output_dir + output_filename + "." + output_file_type
+
+        ESMValMD(outfile, alltags, caption, id, (/var0, var1, var2/), modelsname, climofiles, diag_script, contrib_authors)
+
+    end do
+
     delete(xuv_all)
     delete(olr)
     delete(u850)
@@ -248,6 +295,41 @@ begin
             delete(v850)
             delete(idx_mod_pr)
             delete(idx_mod_ua)
+
+            ; add meta data to plot (for reporting)
+
+            modelsname := array_append_record(modelsname, models@name(idx_mod), 0)
+            climo_mod = new(3, string)
+            climo_mod(0) = \
+                interface_get_inpaths(idx_mod) + "/" \
+                + interface_get_infile(variables(0), field_types(0), idx_mod)
+            climo_mod(1) = \
+                interface_get_inpaths(idx_mod) + "/" \
+                + interface_get_infile(variables(1), field_types(0), idx_mod)
+            climo_mod(2) = \
+                interface_get_inpaths(idx_mod) + "/" \
+                + interface_get_infile(variables(2), field_types(0), idx_mod)
+            climofiles := array_append_record(climofiles, climo_mod, 0)
+    
+            do nSeason = 1, 2
+
+                id = diag_script + "_" + variables(0) + "_" + idx_mod
+
+                aux_title_info = models@name(idx_mod) + "_"\
+                             + di@season_life_cycle(nSeason - 1)
+                output_filename = interface_get_figure_filename(diag_script_base,\
+                                                            var0,\
+                                                            field_type0,\
+                                                            aux_title_info,\
+                                                            -1)
+
+                outfile = output_dir + output_filename + "." + output_file_type
+
+                ESMValMD(outfile, alltags, caption, id, (/var0, var1, var2/), modelsname, climofiles, diag_script, contrib_authors)
+
+            end do
+
+
         end if
     end do
 

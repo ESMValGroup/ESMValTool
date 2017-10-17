@@ -75,6 +75,7 @@
 ;;      variable has been calculated from) the *second* (third, ...)
 ;;
 ;; Modification history
+;;    20170620-A_laue_ax: added tags for reporting
 ;;    20161104-A_laue_ax: changed calculation of correlation and standard deviation
 ;;                        ratio from unweighted to grid area weighted
 ;;    20160901-A_laue_ax: added regridding option 1 deg x 1 deg
@@ -98,6 +99,8 @@ load "./diag_scripts/aux/perfmetrics/aux_perfmetrics.ncl"
 
 load "./plot_scripts/ncl/taylor_diagram_less_hardcoded.ncl"
 load "./plot_scripts/ncl/aux_plotting.ncl"
+
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 begin
 
@@ -307,8 +310,13 @@ begin
                                      imod, diag_script, opt)
 
             ;; Do not process data if already processed
-            if (isfilepresent(regr_path) .and. \
-                getenv("ESMValTool_force_calc").eq."False") then
+
+            force = getenv("ESMValTool_force_calc")
+            if (ismissing(force)) then
+                force = "False"
+            end if
+
+            if (isfilepresent(regr_path) .and. force.eq."False") then
                 pre_var = ncdf_read(regr_path, variables(ivar))
                 dnames = getVarDimNames(pre_var)
             else
@@ -509,7 +517,7 @@ begin
             dim_MOD = dim_MOD + 1
             mm_ind = 0
 
-            modelsatname = array_append_record((/"multi-model mean"/), \
+            modelsatname = array_append_record((/"multi-model-mean"/), \
                                                models@name, 0)
             delete(models@name)
             models@name = modelsatname
@@ -937,13 +945,38 @@ begin
     ; ========================================================================
 
     if (getenv("ESMValTool_write_plots").eq.True) then
+
+        if (flag_mean) then
+            nm = dim_MOD - 1
+        else
+            nm = dim_MOD
+        end if
+
+        climofiles = new(nm, string)
+
+        do ii = 0, nm - 1
+            climofiles(ii) = \
+                interface_get_inpaths(ii) + "/" \
+                + interface_get_infile(variables(0), field_types(0), ii)
+        end do
+
+        if (numvars.gt.1) then
+            climofilesx = array_append_record(climofiles, \
+                interface_get_inpaths(0) + "/" + \
+                interface_get_infile(variables(1), field_types(1), 0), 0)
+            delete(climofiles)
+            climofiles = climofilesx
+            delete(climofilesx)
+        end if
+
+        alltags = array_append_record(tags, (/"PT_taylor", "DM_global", "ST_clim"/), 0)
+
         ; create outfile directory
         plot_dir = getenv("ESMValTool_plot_dir")
         output_dir = get_output_dir(plot_dir, "clouds_taylor")
 
-        ;; create workspace
-
-        wks = get_wks("dummy_for_wks", diag_script, var0 + filename_add)
+        colors  = new(mod_i, string)
+        markers = new(mod_i, integer)
 
         ratio = new((/mod_i, 1, numseas/), float)  ; standard deviation ratios
         ratio = val(:, 0, :)
@@ -956,7 +989,7 @@ begin
         else
             colortab = (/"(/0.00, 0.00, 0.59/)", "(/0.00, 0.39, 1.00/)", \
                          "(/0.20, 1.00, 1.00/)", "(/0.20, 0.88, 0.00/)", \
-                         "(/1.00, 0.88, 0.00/)", "(/1.00, 0.59, 0.00/)", \
+                        "(/1.00, 0.88, 0.00/)", "(/1.00, 0.59, 0.00/)", \
                          "(/1.00, 0.20, 0.00/)", "(/0.59, 0.00, 0.00/)", \
                          "(/0.78, 0.00, 0.78/)", "(/0.59, 0.00, 0.59/)", \
                          "(/0.90, 0.90, 0.90/)", "(/0.70, 0.70, 0.70/)", \
@@ -964,70 +997,55 @@ begin
             markertab = (/16, 4, 5, 0/)
         end if
 
-        colors  = new(mod_i, string)
-        markers = new(mod_i, integer)
+        do is = 0, numseas - 1
+            if (isvar("wks")) then
+                delete(wks)
+            end if
 
-        i = 0
-        idx = 0
+            if (isvar("legendwks")) then
+                delete(legendwks)
+            end if
 
-        ; create new marker: filled star
+            if (isvar("plot")) then
+                delete(plot)
+            end if
 
-        mstring = "z"
-        fontnum = 35
-        size    = 1.5
-        angle   = 0.0
+            wks = get_wks("dummy_for_wks", diag_script, var0 + "_" + season(is) + filename_add)
 
-        new_index = NhlNewMarker(wks, mstring, fontnum, 0.0, 0.0, \
-                                 1.0, size, angle)
+            ; create new marker: filled star
 
-        if (embracelegend) then
-             legendwks = get_wks("legend_wks", diag_script, "legend" + filename_add)
-            new_index = NhlNewMarker(legendwks, mstring, fontnum, 0.0, 0.0, \
+            mstring = "z"
+            fontnum = 35
+            size    = 1.5
+            angle   = 0.0
+
+            new_index = NhlNewMarker(wks, mstring, fontnum, 0.0, 0.0, \
                                      1.0, size, angle)
-        else
-            legendwks = wks
-        end if
 
-        if (isatt(diag_script_info, "styleset")) then
-            do while (i.lt.mod_i)
+            if (embracelegend) then
+                legendwks = get_wks("legend_wks", diag_script, "legend" + filename_add)
+                new_index = NhlNewMarker(legendwks, mstring, fontnum, 0.0, 0.0, \
+                            1.0, size, angle)
+            else
+                legendwks = wks
+            end if
 
-                print(models@project(i) + " - " + models@name(i))
+            i = 0
+            idx = 0
 
-                colors(i)  = colortab(i)
-                markers(i) = markertab(i)
+            if (isatt(diag_script_info, "styleset")) then
+                do while (i.lt.mod_i)
 
-                ; override multi-model mean
-                if ((flag_mean).and.(i.eq.0)) then
-                    colors(i)  = "(/0.00, 0.00, 0.00/)"  ; black
-                    markers(i) = new_index
-                end if
-                ; override alternative obs (if "EMBRACE" legend)
-                if (embracelegend) then
-                    if ((isStrSubset(str_lower(models@project(i)), "obs"))) then
-                        if (flag_mean) then
-                            colors(i)  = "(/1.00, 0.00, 0.00/)"  ; red
-                        else
-                            colors(i)  = "(/0.00, 0.00, 0.00/)"  ; black
-                        end if
+                    colors(i)  = colortab(i)
+                    markers(i) = markertab(i)
+
+                    ; override multi-model mean
+                    if ((flag_mean).and.(i.eq.0)) then
+                        colors(i)  = "(/0.00, 0.00, 0.00/)"  ; black
                         markers(i) = new_index
-                        models@name(i) = "altern. ref. dataset"
-                        val&models(i) = models@name(i)
                     end if
-                end if
-                i = i + 1
-            end do
-
-        else
-
-            do while (i.lt.mod_i)
-                if ((flag_mean).and.(i.eq.0)) then
-                    colors(i)  = "(/0.00, 0.00, 0.00/)"  ; black
-                    markers(i) = new_index
-                    i = i + 1
-                else
+                    ; override alternative obs (if "EMBRACE" legend)
                     if (embracelegend) then
-                        colors(i)  = colortab(idx)
-                        print(models@project(i) + " - " + models@name(i))
                         if ((isStrSubset(str_lower(models@project(i)), "obs"))) then
                             if (flag_mean) then
                                 colors(i)  = "(/1.00, 0.00, 0.00/)"  ; red
@@ -1037,100 +1055,121 @@ begin
                             markers(i) = new_index
                             models@name(i) = "altern. ref. dataset"
                             val&models(i) = models@name(i)
-                        else
-                            markers(i) = markertab(mod(i,2))
                         end if
+                    end if
+                    i = i + 1
+                end do
+            else
+                do while (i.lt.mod_i)
+                    if ((flag_mean).and.(i.eq.0)) then
+                        colors(i)  = "(/0.00, 0.00, 0.00/)"  ; black
+                        markers(i) = new_index
                         i = i + 1
-                        if (i.ge.mod_i) then
-                            break
-                        end if
-                        idx = idx + 1
-                        if (idx.ge.dimsizes(colortab)) then
-                            idx = dimsizes(colortab) - 1
-                        end if
                     else
-                        do n = 0, mod_i / dimsizes(colortab)
+                        if (embracelegend) then
                             colors(i)  = colortab(idx)
-                            markers(i) = markertab(n)
+                            if ((isStrSubset(str_lower(models@project(i)), "obs"))) then
+                                if (flag_mean) then
+                                    colors(i)  = "(/1.00, 0.00, 0.00/)"  ; red
+                                else
+                                    colors(i)  = "(/0.00, 0.00, 0.00/)"  ; black
+                                end if
+                                markers(i) = new_index
+                                models@name(i) = "altern. ref. dataset"
+                                val&models(i) = models@name(i)
+                            else
+                                markers(i) = markertab(mod(i,2))
+                            end if
                             i = i + 1
                             if (i.ge.mod_i) then
                                 break
                             end if
-                        end do
-                        idx = idx + 1
-                        if (idx.ge.dimsizes(colortab)) then
-                            idx = dimsizes(colortab) - 1
+                            idx = idx + 1
+                            if (idx.ge.dimsizes(colortab)) then
+                                idx = dimsizes(colortab) - 1
+                            end if
+                        else
+                            do n = 0, mod_i / dimsizes(colortab)
+                                colors(i)  = colortab(idx)
+                                markers(i) = markertab(n)
+                                i = i + 1
+                                if (i.ge.mod_i) then
+                                    break
+                                end if
+                            end do
+                            idx = idx + 1
+                            if (idx.ge.dimsizes(colortab)) then
+                                idx = dimsizes(colortab) - 1
+                            end if
                         end if
                     end if
-                end if
-            end do
-
-        end if
-
-        ropts = True
-        ropts@gsnDraw         = False
-        ropts@gsnFrame        = False
-        ropts@Colors          = colors
-        ropts@Markers         = markers  ; marker styles
-        ropts@gsMarkerSizeF   = 0.0125
-
-        modelnames            = val&models
-        ropts@caseLabels      = modelnames
-
-;        ropts@stnRad          = (/ 0.5, 1.5 /)
-        ropts@stnRad          = (/ 0.5, 1.5, 2.0, 2.5 /)
-        ropts@OneX            = "1.00"
-;        ropts@ccRays          = (/ 0.6, 0.9 /)
-        ropts@ccRays          = (/ 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, \
-                                   0.9, 0.95, 0.99 /)
-;        ropts@ccRays_color    = "LightGray"
-;        ropts@ccRays_color    = "PaleGreen1"
-        ropts@ccRays_color    = "Black"
-        ropts@centerDiffRMS   = True
-        ropts@centerDiffRMS_color = "LightGray"  ; "PaleGreen1"
-
-        ropts@printDataLabels = False  ; print numeric label for each data pt.
-        ropts@reverseOrder    = True  ; reverse order of items in legend
-        ropts@legendBox       = True  ; draw box around legend
-
-        ; legend parameters
-
-        ropts@legendXpos            = 0.575
-        ropts@legendYpos            = -0.5
-        ropts@legendWidth           = 0.2
-
-        ropts@caseLabelsFontHeightF = 0.1
-        ropts@plotSize              = 0.6
-
-        if (embracelegend) then
-            ropts@legendExtraFile = True  ; save legend to extra file
-            ropts@modelsperrow = 7  ; 7 models per column in the legend
-        else
-            ropts@legendExtraFile = False
-            if (dim_MOD.ge.20) then
-                ropts@caseLabelsFontHeightF = 0.06
-                ropts@plotSize              = 0.45
+                end do
             end if
-        end if
 
-        ; plot
+            ropts = True
+            ropts@Colors          = colors
+            ropts@Markers         = markers  ; marker styles
+            ropts@gsMarkerSizeF   = 0.0125
 
-        plots = new(numseas, graphic)  ; collect individual maps in a graphic array
+            modelnames            = val&models
+            ropts@caseLabels      = modelnames
 
-        do is = 0, numseas - 1
+            ropts@stnRad          = (/ 0.5, 1.5, 2.0, 2.5 /)
+            ropts@OneX            = "1.00"
+            ropts@ccRays          = (/ 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, \
+                                       0.9, 0.95, 0.99 /)
+            ropts@ccRays_color    = "Black"
+            ropts@centerDiffRMS   = True
+            ropts@centerDiffRMS_color = "LightGray"  ; "PaleGreen1"
+
+            ropts@printDataLabels = False  ; print numeric label for each data pt.
+            ropts@reverseOrder    = True  ; reverse order of items in legend
+            ropts@legendBox       = True  ; draw box around legend
+
+            ; legend parameters
+
+            ropts@legendXpos            = 0.575
+            ropts@legendYpos            = -0.5
+            ropts@legendWidth           = 0.2
+
+            ropts@caseLabelsFontHeightF = 0.1
+            ropts@plotSize              = 0.6
+
+            if (embracelegend) then
+                ropts@legendExtraFile = True  ; save legend to extra file
+                ropts@modelsperrow = 7  ; 7 models per column in the legend
+            else
+                ropts@legendExtraFile = False
+                if (dim_MOD.ge.20) then
+                    ropts@caseLabelsFontHeightF = 0.06
+                    ropts@plotSize              = 0.45
+                end if
+            end if
+
+            ; plot
+
             ropts@tiMainString    = var0 + " (" + season(is) + ")"  ; title
             ; observational uncertainties as normalized RMS error
             ropts@rmsobs = rmsobs(is)
 
-            plots(is) = taylor_diagram(wks, legendwks, ratio(:, :, is), cc(:, :, is), ropts)
+            plot = taylor_diagram(wks, legendwks, ratio(:, :, is), cc(:, :, is), ropts)
 
-            pres = True      ; needed to override panelling defaults
-            pres@gsnPanelLabelBar = False  ; no general label bar desired here
-        end do
+            info_output(" Wrote " + wks@fullname, verbosity, 1)
 
-;;        outfile = panelling(wks, plots, 2, 2, pres)
+            ; add meta data to plot (for reporting)
 
-        info_output(" Wrote " + wks@fullname, verbosity, 1)
+            caption = "Taylor diagram for variable " + variables(0) + " (" + season(is) \
+                      + "), reference = " + models@name(ref_ind) + "."
+            id = diag_script + "_" + variables(0) + "_" + season(is)
+
+            contrib_authors = "A_laue_ax"
+
+            ESMValMD(wks@fullname, alltags, caption, id, variables(0), models@name, climofiles, diag_script, contrib_authors)
+
+            if (embracelegend.and.(is.eq.(numseas-1))) then
+                frame(legendwks)
+            end if
+        end do  ; is-loop (seasons)
     end if
 
     info_output(">>>>>>>> Leaving " + diag_script, verbosity, 4)

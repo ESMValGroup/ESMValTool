@@ -7,7 +7,7 @@ Description
 South Asian Monsoon diagnostics implemented from the UKMET Monsoon suite
 
 Authors
-Ricard Levine (UKMET, Great Britain - Richard.Levine@metoffice.gov.uk)
+Richard Levine (UKMET, Great Britain - Richard.Levine@metoffice.gov.uk)
 Martin Evaldsson (SMHI, Sweden - Martin.Evaldsson@smhi.se)
 
 Contributor
@@ -45,7 +45,8 @@ This namelist is part of the ESMValTool
   <write_netcdf type="boolean">           True         </write_netcdf>
   <read_from_vault type="boolean">        False        </read_from_vault>
   <force_processing type="boolean">       False        </force_processing>
-</GLOBAL>
+  <tags> D_phillips14eos, D_lin08jclim, D_webster92qjrms, D_goswami99qjrms, D_wang99bams, D_wang11climdyn, P_embrace  </tags>
+  </GLOBAL>
 
 <MODELS>
     <model> CMIP5  CNRM-CM5      Amon  historical  r1i1p1   1980  2004  /nobackup/rossby15/sm_grini/Data/CMIP5/CNRM-CM5/r1i1p1/historical/mon      </model>
@@ -66,7 +67,8 @@ This namelist is part of the ESMValTool
     <field_type>                           T2Ms                 </field_type>
     <diag_script_cfg_dir>                 ./nml/cfg_SAMonsoon/   </diag_script_cfg_dir>
     <diag_script cfg="cfg_SAMonsoon_wind_basic_200mb.ncl">   SAMonsoon_wind_basic.ncl               </diag_script>
-
+    <tags>  R_atmos, T_atmDyn </tags>
+  
     <model>  CMIP5       ERAINT        Amon     reanalysis   r1i1p1   1998 2004     /nobackup/rossby15/sm_grini/Data/ERAINT/GLOBAL/MM       </model>
     <model>  OBS         NCEP                   reanaly           1   1998 2004     /nobackup/rossby17/sm_maeva/Data/dlr_reanalys_data_raw  </model>
 </diag>
@@ -79,7 +81,8 @@ This namelist is part of the ESMValTool
     <field_type>                           T2Ms                </field_type>
     <diag_script_cfg_dir>                 ./nml/cfg_SAMonsoon/  </diag_script_cfg_dir>
     <diag_script cfg="cfg_SAMonsoon_wind_basic_850mb.ncl">   SAMonsoon_wind_basic.ncl               </diag_script>
-
+    <tags>  R_atmos, T_atmDyn </tags>
+    
     <model>  CMIP5       ERAINT        Amon     reanalysis   r1i1p1   1980 2004     /nobackup/rossby15/sm_grini/Data/ERAINT/GLOBAL/MM       </model>
     <model>  OBS         NCEP                   reanaly           1   1980 2004     /nobackup/rossby17/sm_maeva/Data/dlr_reanalys_data_raw  </model>
 </diag>
@@ -92,7 +95,8 @@ This namelist is part of the ESMValTool
     <field_type>                            T2Ms                 </field_type>
     <diag_script_cfg_dir>                  ./nml/cfg_SAMonsoon/   </diag_script_cfg_dir>
     <diag_script cfg="cfg_SAMonsoon_wind_seasonal.ncl">   SAMonsoon_wind_seasonal.ncl          </diag_script>
-
+     <tags>  R_atmos, T_monsoon, T_atmDyn </tags>
+  
     <model>  CMIP5       ERAINT        Amon     reanalysis   r1i1p1   1980 2004     /nobackup/rossby15/sm_grini/Data/ERAINT/GLOBAL/MM       </model>
     <model>  OBS         NCEP                   reanaly           1   1980 2004     /nobackup/rossby17/sm_maeva/Data/dlr_reanalys_data_raw  </model>
 </diag>
@@ -107,7 +111,8 @@ This namelist is part of the ESMValTool
     <diag_script cfg="cfg_SAMonsoon_precip.ncl">    SAMonsoon_precip_basic.ncl    </diag_script>
     <diag_script cfg="cfg_SAMonsoon_precip.ncl">    SAMonsoon_precip_seasonal.ncl </diag_script>
     <diag_script cfg="cfg_SAMonsoon_precip.ncl">    SAMonsoon_precip_domain.ncl   </diag_script>
-
+    <tags>  R_atmos, T_phys, T_monsoon, T_atmDyn </tags>
+  
     <model>  CMIP5       TRMM-3B43-v7-0.25deg    Amon     observation   r1i1p1   1998 2010  /nobackup/rossby15/sm_grini/Data/TRMM/TRMM3B43-V7/GLOBAL/mon </model>
     <model>  CMIP5       GPCP-1DD-V12            Amon     obs           r1i1p1   1998 2010  /nobackup/rossby18/sm_grini/Data/rossby14/Data/GPCP/GPCP-1DD-V12/GLOBAL/mon</model>
     <model>  CMIP5       CMAP                    Amon     observation   r1i1p1   1980 2004  /nobackup/rossby17/sm_maeva/Data/CMAP                        </model>
@@ -123,7 +128,8 @@ This namelist is part of the ESMValTool
     <field_type>                                T2Ms                           </field_type>
     <diag_script_cfg_dir>                      ./nml/cfg_SAMonsoon/            </diag_script_cfg_dir>
     <diag_script cfg="cfg_SAMonsoon_tele.ncl">  SAMonsoon_teleconnections.ncl  </diag_script>
-
+    <tags>  R_atmos, T_phys, T_monsoon, T_atmDyn </tags>
+  
     <model id="trmm">       CMIP5       TRMM-3B43-v7-0.25deg      Amon     observation  r1i1p1  1998 2010  /nobackup/rossby15/sm_grini/Data/TRMM/TRMM3B43-V7/GLOBAL/mon </model>
     <model id="hadisst">    CMIP5               MOHC-HadISST      Omon             obs  r1i1p1  1998 2010  /nobackup/rossby17/sm_maeva/Data/HadISST/GLOBAL/mon          </model>
 </diag>

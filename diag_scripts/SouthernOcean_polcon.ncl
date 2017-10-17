@@ -33,6 +33,8 @@
 ;;    http://www.ncl.ucar.edu/Applications/Scripts/ice_4.ncl).
 ;;
 ;; Modification history
+;;    20171011-A_laue_ax: Bugfixes reporting
+;;    20170907-A_bock_ls: Added reporting
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;;                        of the code
 ;;    20150605-A_vanu_be: additional attributes for more formatting control
@@ -65,6 +67,8 @@ load "./diag_scripts/lib/ncl/style.ncl"
 
 load "./plot_scripts/ncl/aux_plotting.ncl"
 load "./plot_scripts/ncl/contour_maps.ncl"
+
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 
 begin
@@ -337,6 +341,73 @@ begin
     pres = True
     pres@gsnPanelLabelBar = PanelLabelBar  ; 1 bar per panel?
     outfile = panelling(wks, plots, nvert, nhori, pres)
+
+    ;; Reporting
+    alltags = array_append_record(tags, (/"DM_polar", "PT_polar", \
+                                          "ST_mean"/), 0)
+    caption = "Polar-stereographic contour map of variable " + variables(0)
+    contrib_authors = (/"A_gott_kl", "A_senf_da"/)
+    num_pages = ceil( dimsizes(plots) / (tofloat(nvert*nhori)) ) ; = # of files
+    if (num_pages.eq.1) then  ; only 1 file: no sequence number added
+        plot_fname = wks@fullname
+        id = diag_script + "_" + variables(0)
+        climofiles = interface_get_inpaths(0) + "/" + \
+                     interface_get_infile(var0, field_type0, 0)
+        if (dimsizes(models@name).gt.1) then
+            do imod=1, dimsizes(models@name)-1
+;;TODO: Problem with OBS* classes: for OBS* classes, interface_get_infile
+;;      already returns path + file! Reason yet unknown.
+                climofiles := array_append_record( climofiles, \
+                    interface_get_inpaths(imod) + "/" + \
+                    interface_get_infile(var0, field_type0, imod), 0 )
+            end do
+        end if
+        ESMValMD(plot_fname, alltags, caption, id, var0, \
+                 models@name, climofiles, diag_script, contrib_authors)
+    else  ; Multiple files, each with its own sequence number
+        ; Split wks@fullname to later add number sequence before '.png'
+        plotname_split = str_split(wks@fullname, ".")
+        plotname = ""
+        do isplit=0, dimsizes(plotname_split)-2  ; reassemble except '.png'
+            plotname = plotname + plotname_split(isplit) + "."
+        end do
+        ; Add number sequence before '.png' and call reporting procedure
+        do ipage=1, num_pages
+            seq_num = sprinti("%0.6i", ipage)
+            plot_fname = plotname + seq_num + "." + \
+                         plotname_split(dimsizes(plotname_split)-1)
+            id = diag_script + "_" + variables(0) + "_" + seq_num
+            if (ipage.ne.num_pages) then
+                ind_models_shown = ispan( (ipage-1)*nvert*nhori, \
+                                          ipage*nvert*nhori-1, 1 )
+            else
+                ind_models_shown = ispan( (ipage-1)*nvert*nhori, \
+                                          dimsizes(plots)-1, 1 )
+            end if
+            climofiles = interface_get_inpaths(ind_models_shown(0)) + "/" + \
+                interface_get_infile(var0, field_type0, ind_models_shown(0))
+            imax = 0
+            if (dimsizes(ind_models_shown).gt.1) then
+                do imod=1, dimsizes(ind_models_shown)-1
+                    if (ind_models_shown(imod).ge.dim_MOD) then
+                        break
+                    end if
+                    imax = imod
+;;TODO: Problem with OBS* classes: for OBS* classes, interface_get_infile
+;;      already returns path + file! Reason yet unknown.
+                    climofiles := array_append_record( climofiles, \
+                        interface_get_inpaths(ind_models_shown(imod)) + "/" + \
+                        interface_get_infile(var0, field_type0, \
+                                             ind_models_shown(imod)), 0 )
+                end do
+            end if
+
+            ESMValMD(plot_fname, alltags, caption, id, var0, \
+                     models@name(ind_models_shown(0:imax)), climofiles, diag_script, contrib_authors)
+            delete([/seq_num, plot_fname, id, ind_models_shown, climofiles/])
+        end do
+    end if
+
 
     info_output(" gv " + outfile + " &", verbosity, 1)
 

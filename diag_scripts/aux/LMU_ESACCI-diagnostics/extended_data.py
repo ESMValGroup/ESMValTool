@@ -7,6 +7,8 @@ import netCDF4
 from geoval.core.netcdf import NetCDFHandler
 
 from geoval.core.data import GeoData
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import collections
 
@@ -145,7 +147,7 @@ class GeoData(GeoData):
                 print 'actual geometry:  ', self.data.ndim, self.data.shape
                 raise ValueError('Invalid geometry!')
 
-                                            
+
     def get_shape_statistics(self,regions): #written before geoval was implemented
         """
         get statistical information for different polygons in shapefile
@@ -153,14 +155,14 @@ class GeoData(GeoData):
         ----------
         regions : masks for masked array
         """
-        
+
         self.regionalized=dict()
         regname=regions.keys()
-        
+
 #        for s in np.arange(len(regions)):
 #            loc_content=self.data.copy()
 #            loc_content.mask=regions[regname[s]]
-#            
+#
 #            try:
 #                a=np.nanmin(loc_content)
 #            except:
@@ -170,7 +172,7 @@ class GeoData(GeoData):
 #            except:
 #                b=np.nan
 #            try:
-#                c=np.nanmax(loc_content) 
+#                c=np.nanmax(loc_content)
 #            except:
 #                c=np.nan
 #            try:
@@ -181,7 +183,7 @@ class GeoData(GeoData):
 #                e=loc_content.count()
 #            except:
 #                e=np.nan
-                
+
         for s in np.arange(len(regions)):
             loc_content=self.copy()
             #loc_content.data.mask=regions[regname[s]]
@@ -206,32 +208,32 @@ class GeoData(GeoData):
             #if (s == 1):
             #    exit()
 # A_laue_ax-
-            
+
             try:
                 a=np.nanmin(loc_content.data)
             except:
                 a=np.nan
             try:
-                b=loc_content.fldmean()
+                b=loc_content.fldmean(return_data=False)[0]
             except:
                 b=np.nan
             try:
-                c=np.nanmax(loc_content.data) 
+                c=np.nanmax(loc_content.data)
             except:
                 c=np.nan
             try:
                 lc2=loc_content.copy()
                 lc2.data=lc2.data**2
-                d=np.sqrt((lc2.fldmean()-b**2))
+                d=np.sqrt((lc2.fldmean(return_data=False)[0]-b**2))
             except:
                 d=np.nan
             try:
                 e=loc_content.data.count()
             except:
                 e=np.nan
-            
+
             self.regionalized[regname[s]]=[a,b,c,d,e]
-                                            
+
     def get_regions(self,shape,column=0): #written before geoval was implemented
         """
         get setup for statistical information for different polygons in shapefile
@@ -241,41 +243,41 @@ class GeoData(GeoData):
             information on areas from a classic ESRI shapefile
         """
         assert isinstance(shape,shp.Reader)
-        
-    
-            
+
+
+
         def point_in_poly(point,poly):
 
             testy=point[1]
             testx=point[0] if point[0]<180 else point[0]-360
-            
+
             vertx=[item[0] for item in poly]
             verty=[item[1] for item in poly]
-            
+
             nvert=len(poly)
             c=False
-          
+
             j=nvert-1
             for i in range(0, nvert):
                 if ( not((verty[i]>testy) == (verty[j]>testy)) and (testx < (vertx[j]-vertx[i]) * (testy-verty[i]) / (verty[j]-verty[i]) + vertx[i]) ):
                     c = not c
                 j=i
-          
+
             return c
-            
-                    
+
+
         regions=dict()
-        regname=np.array(shape.records())[:,column] 
-        
+        regname=np.array(shape.records())[:,column]
+
         for s in range(len(shape.shapes())):
             breaks=shape.shapes()[s].parts
             breaks.append(0)
             loc_polys=[]
             loc_masks=[]
             for e in range(len(breaks)-1):
-                
+
                 loc_polys.append(shape.shapes()[s].points[breaks[e]:(breaks[e+1]-1)])
-            
+
                 if len(self.shape) == 3:
                     loc_mask=np.any(self.data,axis=0).mask.copy()
                 elif len(self.shape) == 2:
@@ -285,25 +287,25 @@ class GeoData(GeoData):
                 for i in np.arange(self.shape[0] if len(self.shape) == 2 else self.shape[1]):
                     for j in np.arange(self.shape[1] if len(self.shape) == 2 else self.shape[2]):
                         ll=[(self.lon[i,j]),self.lat[i,j]]
-    
+
                         loc_mask[i,j]=point_in_poly(ll,loc_polys[-1])
-                        
-                loc_masks.append(loc_mask)     
-            
+
+                loc_masks.append(loc_mask)
+
 #            if len(self.shape) == 3:
 #                loc_mask=self.data.mask.copy()
 #            elif len(self.shape) == 2:
 #                loc_mask=self.data.mask.copy()
 #            else :
 #                assert False, "wrong data dimensions"
-                
+
 #            regions[regname[s]]=np.logical_or(loc_mask,np.logical_not(sum(loc_masks) % 2))
             regions[regname[s]]=np.logical_not(sum(loc_masks) % 2)
-            
+
         return collections.OrderedDict(sorted(regions.items()))
-        
-    
-        
+
+
+
 #    def _save_netcdf(self, filename, varname=None, delete=False, compress=True, format='NETCDF4'):
 #        """
 #        saves the data object to a netCDF file
@@ -379,7 +381,7 @@ class GeoData(GeoData):
 #            File.create_variable('ny', 'd', ('ny',))
 #            File.F.variables['ny'].units = 'degrees_north'
 #            File.F.variables['ny'].long_name = "y-coordinate"
-#            
+#
 #        if self.nx is not None:
 #            File.create_variable('nx', 'd', ('nx',))
 #            File.F.variables['nx'].units = 'degrees_east'
@@ -438,7 +440,7 @@ class GeoData(GeoData):
 #            File.F.variables[varname].coordinates = "longitude latitude"
 #
 #        File.close()
-        
+
     def _save_netcdf(self, filename, varname=None, delete=False, compress=True, format='NETCDF4'):
         """
         saves the data object to a netCDF file
@@ -514,7 +516,7 @@ class GeoData(GeoData):
             File.create_variable('lat', 'd', ('lat',))
             File.F.variables['lat'].units = 'degrees_north'
             File.F.variables['lat'].long_name = "y-coordinate"
-            
+
         if self.lon is not None:
             File.create_variable('lon', 'd', ('lon',))
             File.F.variables['lon'].units = 'degrees_east'
@@ -573,14 +575,14 @@ class GeoData(GeoData):
             File.F.variables[varname].coordinates = "longitude latitude"
 
         File.close()
-    
+
     GeoData._set_cell_area=C_set_cell_area
     GeoData.get_regions=get_regions
     GeoData.get_shape_statistics=get_shape_statistics
     GeoData._save_netcdf=_save_netcdf
-        
 
-        
-        
-        
-        
+
+
+
+
+

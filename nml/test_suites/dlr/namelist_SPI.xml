@@ -32,9 +32,11 @@ This namelist is part of the ESMValTool
     <write_plot_vars type="boolean">              True      </write_plot_vars>
     <max_data_filesize type="integer">             100      </max_data_filesize>
     <max_data_blocksize type="integer">            500      </max_data_blocksize>
-    <verbosity  type="integer">                      1      </verbosity>
+    <verbosity  type="integer">                    100      </verbosity>
     <exit_on_warning  type="boolean">             True      </exit_on_warning>
     <output_file_type>                             png      </output_file_type>
+    <tags>             D_lloyd-hughes02jclim,P_embrace      </tags>
+
 
 <!--    <r_pre_launch>      eval $(/usr/libexec/cmod sh add R/2.15.3-i1214);   </r_pre_launch> -->
 </GLOBAL>
@@ -51,6 +53,7 @@ This namelist is part of the ESMValTool
     <field_type>                                               T2Ms    </field_type>
     <diag_script_cfg_dir>  ./nml/cfg_SPI                               </diag_script_cfg_dir>
     <diag_script cfg="cfg_SPI.r">                             SPI.r    </diag_script>
+    <tags>                                           R_atmos,T_phys    </tags>
 
     <launcher_arguments>[('r_launch', ' Rscript --slave --quiet ')]</launcher_arguments>
 </diag>
