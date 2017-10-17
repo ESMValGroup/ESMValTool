@@ -14,7 +14,7 @@ engines:
 
 exclude_paths: [
     'doc/sphinx/**',
-    'esmvaltool/doc/sphinx/**'
+    'esmvaltool/doc/sphinx/**',
     # cmor tables
     'esmvaltool/interface_scripts/cmip*-cmor-tables/**',
     # old stuff
