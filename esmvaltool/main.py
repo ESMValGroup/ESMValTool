@@ -51,7 +51,8 @@ import yaml
 
 # Hack to make this file executable
 if __name__ == '__main__':  # noqa
-    sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))  # noqa
+    sys.path.insert(
+        0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # noqa
 
 from esmvaltool.interface_scripts import namelistchecks
 from esmvaltool.interface_scripts.auxiliary import ncl_version_check
