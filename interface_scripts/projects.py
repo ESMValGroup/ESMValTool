@@ -3492,7 +3492,7 @@ class ESGF:
 
             # Try to ascertain most up to date version directory
             # (will be None if no suitable version directory found)
-            version_dir = ESGF._get_latest_version_dir(version_path)
+            version_dir = ESGF._get_latest_version_dir(version_path, msd)
 
             # Check if this failed (i.e. version_dir==None)
             if not version_dir:
@@ -3537,7 +3537,7 @@ class ESGF:
         return dataset_path, activity
 
     @staticmethod
-    def _get_latest_version_dir(version_path):
+    def _get_latest_version_dir(version_path, msd):
         """
         If version given in model line as 'lastest', try and find
         most up to date version directory on the disk
@@ -3564,56 +3564,70 @@ class ESGF:
                 # Select any candidates for a version directory
                 # i.e. anything that is a directory and contains 'v'
                 # followed by a digit in its name
-                version_dirs = []
-                for candidate in dir_contents:
-                    if os.path.isdir(os.path.join(version_path, candidate)) and \
-                                    re.findall(r'^v[0-9]', candidate) is not []:
-                        version_dirs.append(candidate)
+                stillsearching = True
+                while stillsearching:
+                    version_dirs = []
+                    for candidate in dir_contents:
+                        if os.path.isdir(os.path.join(version_path, candidate)) and \
+                                        re.findall(r'^v[0-9]', candidate) is not []:
+                            version_dirs.append(candidate)
 
-                # Try to interpret version number as a date
-                # for each candidate.
-                # If no matches, or interpretation fails,
-                # do nothing and leave version string as it is.
-                latest_date = datetime.date(1900, 1, 1)
-                best_candidate = None
-                for candidate in version_dirs:
-                    try:
-                        # Convert the 8 digits to datetime object,
-                        # and also convert from datetime to date
-                        version_date = datetime.datetime \
-                            .strptime(candidate[1:9], '%Y%m%d').date()
-
-                        # Compare datetime object to date
-                        if version_date > latest_date:
-                            latest_date = version_date
-                            best_candidate = candidate
-                    except:
-                        pass
-                # If one or more candidates found matching this
-                # date format, use one represent most recent date
-                if best_candidate:
-                    version = best_candidate
-
-                # Otherwise, consider the candidate(s) as a 'v'
-                # followed by a version number, and choose the highest
-                # version number
-                else:
-                    highest_version = 0
+                    # Try to interpret version number as a date
+                    # for each candidate.
+                    # If no matches, or interpretation fails,
+                    # do nothing and leave version string as it is.
+                    latest_date = datetime.date(1900, 1, 1)
                     best_candidate = None
                     for candidate in version_dirs:
+                        try:
+                            # Convert the 8 digits to datetime object,
+                            # and also convert from datetime to date
+                            version_date = datetime.datetime \
+                                .strptime(candidate[1:9], '%Y%m%d').date()
 
-                        # Extract numeric digits from direct
-                        # Shouldn't need 'try' block here
-                        version_num = int(filter(str.isdigit, str(candidate)))
-
-                        # Compare datetime object to date
-                        if version_num > highest_version:
-                            highest_version = version_num
-                            best_candidate = candidate
-
+                            # Compare datetime object to date
+                            if version_date > latest_date:
+                                latest_date = version_date
+                                best_candidate = candidate
+                        except:
+                            pass
+                    # If one or more candidates found matching this
+                    # date format, use one represent most recent date
                     if best_candidate:
                         version = best_candidate
+                        directory = "{0}/{1}/{2}".format(version_path, version, msd['variable'])
+                        import glob
+                        #check if variable dir exists and if there are nc-files inside
+                        if os.path.isdir(directory):
+                            if len(glob.glob("{0}/*.nc".format(directory))) != 0:
+                                stillsearching = False
+                            else:
+                                dir_contents.remove(version)
+                        else:
+                            dir_contents.remove(version)
+                    # Otherwise, consider the candidate(s) as a 'v'
+                    # followed by a version number, and choose the highest
+                    # version number
+                    else:
+                        highest_version = 0
+                        best_candidate = None
+                        for candidate in version_dirs:
 
+                            # Extract numeric digits from direct
+                            # Shouldn't need 'try' block here
+                            version_num = int(filter(str.isdigit, str(candidate)))
+
+                            # Compare datetime object to date
+                            if version_num > highest_version:
+                                highest_version = version_num
+                                best_candidate = candidate
+
+                        if best_candidate:
+                            version = best_candidate
+                        stillsearching = False
+
+                    if len(version_dirs) == 0:
+                        stillsearching = False
         return version
 
 
