@@ -25,10 +25,13 @@ sys.path.insert(0, os.path.abspath('../../../diag_scripts/aux/LMU_ESACCI-diagnos
 sys.path.insert(0, os.path.abspath('../../../diag_scripts/aux/catchment_analysis'))
 sys.path.insert(0, os.path.abspath('../../../interface_scripts'))
 
-
+#add process_nl_docs in sphinx documentation source folder
+sys.path.insert(0, os.path.abspath('.'))
+import process_ncl_docs
 
 
 # not the best way to set the pathes, but working for autodoc ...
+
 
 
 # add custom extensions directory to python path
