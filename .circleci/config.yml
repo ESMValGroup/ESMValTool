@@ -39,6 +39,7 @@ jobs:
           path: test-reports/
       - run:
           # Upload test results to codacy
+          # Even when the actual running of the tests fails
           when: always
           command : |
             pip install codacy-coverage
