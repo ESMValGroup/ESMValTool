@@ -3542,7 +3542,6 @@ class ESGF:
         If version given in model line as 'lastest', try and find
         most up to date version directory on the disk
         """
-        import glob
         # Start with default value
         version = None
 
