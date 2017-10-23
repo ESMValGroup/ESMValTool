@@ -14,8 +14,6 @@ from easytest import EasyTest
 
 import esmvaltool
 
-from .data_simulator import simulate_input_data
-
 
 def _load_config(filename=None):
     """Load test configuration"""
@@ -129,6 +127,7 @@ class ESMValToolTest(EasyTest):
     def run(self, **kwargs):
         """Run tests or generate reference data."""
         if self.simulate_input:
+            from .data_simulator import simulate_input_data
             simulate_input_data(
                 namelist_file=self.namelist_file,
                 config_user_file=self.config_user_file)
