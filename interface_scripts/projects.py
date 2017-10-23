@@ -3542,6 +3542,7 @@ class ESGF:
         If version given in model line as 'lastest', try and find
         most up to date version directory on the disk
         """
+        import glob
         # Start with default value
         version = None
 
@@ -3596,7 +3597,6 @@ class ESGF:
                     if best_candidate:
                         version = best_candidate
                         directory = "{0}/{1}/{2}".format(version_path, version, msd['variable'])
-                        import glob
                         #check if variable dir exists and if there are nc-files inside
                         if os.path.isdir(directory):
                             if len(glob.glob("{0}/*.nc".format(directory))) != 0:
@@ -3624,7 +3624,15 @@ class ESGF:
 
                         if best_candidate:
                             version = best_candidate
-                        stillsearching = False
+                            directory = "{0}/{1}/{2}".format(version_path, version, msd['variable'])
+                            #check if variable dir exists and if there are nc-files inside
+                            if os.path.isdir(directory):
+                                if len(glob.glob("{0}/*.nc".format(directory))) != 0:
+                                    stillsearching = False
+                                else:
+                                    dir_contents.remove(version)
+                            else:
+                                dir_contents.remove(version)
 
                     if len(version_dirs) == 0:
                         stillsearching = False
