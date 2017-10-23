@@ -14,6 +14,8 @@ from easytest import EasyTest
 
 import esmvaltool
 
+from .data_simulator import simulate_input_data
+
 
 def _load_config(filename=None):
     """Load test configuration"""
@@ -93,44 +95,52 @@ class ESMValToolTest(EasyTest):
 
         script_root = esmvaltool.get_script_root()
 
-        # Normalize namelist path
+        # Set namelist path
         if not os.path.exists(namelist):
             namelist = os.path.join(script_root, 'nml', namelist)
-        namelist = os.path.abspath(namelist)
+        self.namelist_file = os.path.abspath(namelist)
 
-        # Define output and reference data paths
-        namelist_name = os.path.splitext(os.path.basename(namelist))[0]
-        reference_dir = os.path.join(_CFG['reference']['output'],
-                                     namelist_name)
+        # Simulate input data?
+        self.simulate_input = _CFG['test']['simulate_input']
 
-        # Are we asked to generate reference data?
-        self.generate_ref = _CFG['reference'].get('generate', False)
+        # Create reference output?
+        self.create_reference_output = _CFG['reference']['generate']
+
+        # Define reference output path
+        reference_dir = os.path.join(
+            _CFG['reference']['output'],
+            os.path.splitext(os.path.basename(self.namelist_file))[0])
 
         # If reference data is neither available nor should be generated, skip
-        if not os.path.exists(reference_dir) and not self.generate_ref:
+        if not (os.path.exists(reference_dir) or self.create_reference_output):
             raise SkipTest("No reference data available for namelist {} in {}"
                            .format(namelist, _CFG['reference']['output']))
 
-        # required ESMValTool configuration file
-        config = _create_config_user_file(output_directory)
+        # Write ESMValTool configuration file
+        self.config_user_file = _create_config_user_file(output_directory)
 
         super(ESMValToolTest, self).__init__(
             exe='esmvaltool',
-            args=['-n', namelist, '-c', config],
+            args=['-n', self.namelist_file, '-c', self.config_user_file],
             output_directory=output_directory,
             refdirectory=reference_dir,
             **kwargs)
 
     def run(self, **kwargs):
         """Run tests or generate reference data."""
-        if self.generate_ref:
-            self.generate_reference_data()
+        if self.simulate_input:
+            simulate_input_data(
+                namelist_file=self.namelist_file,
+                config_user_file=self.config_user_file)
+
+        if self.create_reference_output:
+            self.generate_reference_output()
             raise SkipTest("Generated reference data instead of running test")
         else:
             super(ESMValToolTest, self).run_tests(**kwargs)
 
-    def generate_reference_data(self):
-        """Generate reference data.
+    def generate_reference_output(self):
+        """Generate reference output.
 
         Generate reference data by executing the namelist and then moving
         results to the output directory.
