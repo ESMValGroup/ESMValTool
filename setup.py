@@ -163,6 +163,7 @@ with open('README.md') as readme:
             'shapely',
         ],
         tests_require=[
+            # TODO: add dummydata package once up to date PyPI version
             'easytest',
             'mock',
             'nose',

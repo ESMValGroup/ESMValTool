@@ -1,40 +1,60 @@
+---
+
 name: root
 channels:
 - conda-forge
 - defaults
 - Clyde_Fare
 
+# ESMVALTOOL DEPENDENCIES
+
 dependencies:
-# esmvaltool
-- cython
 - basemap
-- iris
+- cython
 - esgf-pyclient
-- scientificpython
-- ncl
 - numba
+- python-cdo
 - python-stratify
 - pyyaml
+- scientificpython
 # iris
-- matplotlib=1.5.*
+- iris
 - cartopy=0.15.*
-
+- matplotlib=1.5.*
 # ncl
-- libnetcdf=4.4.1.1
-- hdf5=1.8.17
+- ncl
 - hdf4=4.2.12
-- xorg-libsm=1.2.2
+- hdf5=1.8.17
 - icu=58.1
-- xorg-libxrender
+- libnetcdf=4.4.1.1
+- xorg-libsm=1.2.2
 - xorg-libxext
-- pip:
-  - geoval
+- xorg-libxrender
+
+# DEVELOPMENT DEPENDENCIES
+#
+# Dependencies below that are required by 'setup.py test' and 'setup.py lint'
+# should also be automatically be installed by setup.py in a temporary
+# location when required to run the command.
 
 # testing
 - easytest
 - mock
 - nose
-- pycodestyle
 - pytest
 - pytest-cov
 - pytest-html
+
+# Note that there can be only one pip section
+- pip:
+  # TODO: replace geoval by conda package and move to ESMVALTOOL DEPENDENCIES
+  - geoval
+  # TODO: replace dummydata by conda/PyPI package and move to testing
+  - "--editable=git+https://github.com/esmvalgroup/dummydata.git#egg=dummydata-dev"
+  # code style (pip versions are more up to date)
+  - isort
+  - prospector[with_pyroma]
+  - pycodestyle  # also used for testing
+  - pydocstyle
+  - pylint
+  - yapf
