@@ -13,6 +13,7 @@
 ;#    *                                                                       #
 ;# Caveats:                                                                   #
 ;# Modification history:                                                      #
+;#    * 20170808-A_bock_ls added tags for reporting
 ;#    * 20151203-A_laue_ax added option to calculate/plot multi-model-mean    #
 ;#                         (diag_script_info@calcmm) and differences to       #
 ;#                         reference data set (diag_script_info@calcdiff)     #
@@ -35,6 +36,8 @@ load "./diag_scripts/lib/ncl/latlon.ncl"
 load "./diag_scripts/lib/ncl/regridding.ncl"
 load "./diag_scripts/lib/ncl/style.ncl"
 load "./diag_scripts/lib/ncl/ensemble.ncl"
+
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 ;; fetch general parameters
 begin
@@ -323,6 +326,73 @@ begin
         ;; Plotting
         map = gsn_csm_contour_map(wks, A3, res)
         print("gv " + output_file_path + "." + file_type)
+
+        ;; Attach Metadata to plot
+        xml_name = getenv("ESMValTool_xml_name")
+        suffix = get_file_suffix(xml_name, 0)
+        base_name = str_sub_str(xml_name, suffix, "")
+
+        alltags = array_append_record(tags, (/"DM_global", "ST_mean", "ST_clim", "PT_geo"/), 0)
+        if (itype.eq.2) then  ; difference plots
+            alltags := array_append_record(alltags, (/"ST_diff"/), 0)
+        end if
+
+        id = diag_script + "_" + base_name
+
+        if((flag_mean).and.(imod.eq.-1)) then
+            if (itype.eq.2) then  ; difference plots 
+                modelnames = models@name            
+                climofiles = new(dim_MOD-1, string)
+                do ii = 0, dim_MOD-2
+                    climofiles(ii) = interface_get_inpaths(ii) + "/" + \
+                        interface_get_infile(variables(0), field_types(0), ii)
+                end do 
+                caption = "Difference of multi model mean values for variable " + \
+                  variables(0) + " to the reference = " + models@name(idx_ref)  + \
+                  " averaged over the period " + y1(0) + "-" + y2(0) + \
+                  ". The values on top of each panel show the global (area-weighted) average."
+            else
+                modelnames = models@name(ind(ispan(0, dim_MOD-2, 1).ne.idx_ref))
+                climofiles = new(dim_MOD-2, string)
+                do ii = 0, dim_MOD-2
+                    if(ii.ne.idx_ref) then
+                        climofiles(ii) = interface_get_inpaths(ii) + "/" + \
+                            interface_get_infile(variables(0), field_types(0), ii)
+                    end if
+                end do 
+                caption = "Multi model mean values for variable " + variables(0) + \
+                  " averaged over the period " + y1(0) + "-" + y2(0) + \
+                  ". The values on top of each panel show the global (area-weighted) average."
+            end if
+        else
+            if (itype.eq.2) then  ; difference plots 
+                modelnames = (/models@name(idx_mod),models@name(idx_ref)/)
+                climofiles = new(2, string) 
+                climofiles(0) = interface_get_inpaths(imod) + "/" + \
+                    interface_get_infile(variables(0), field_types(0), imod)
+                climofiles(1) = interface_get_inpaths(idx_ref) + "/" + \
+                    interface_get_infile(variables(0), field_types(0), idx_ref)
+                caption = "Difference of mean values for variable " + variables(0) + \
+                      " to the reference = " + models@name(idx_ref)  +\
+                      " averaged over the period " + y1(idx_mod) + \
+                      "-" + y2(idx_mod)+ " for " + models@name(imod) + \
+                      ". The values on top of each panel show the global (area-weighted) average."
+            else
+                modelnames = (/models@name(idx_mod)/)
+                climofiles = interface_get_inpaths(imod) + "/" + \
+                    interface_get_infile(variables(0), field_types(0), imod)
+                caption = "Mean values for variable " + variables(0) + \
+                      " averaged over the period " + y1(idx_mod) + \
+                      "-" + y2(idx_mod)+ " for " + models@name(imod) + \
+                      ". The values on top of each panel show the global (area-weighted) average."
+            end if
+        end if
+
+        contrib_authors = "A_gott_kl"
+
+        ESMValMD(output_file_path+"."+file_type, alltags, caption, id, variables(0), modelnames, climofiles, diag_script, contrib_authors)
+
+        delete([/alltags, caption, id, modelnames, climofiles/])
 
         ;; clean up
         delete([/wks, A2, A3, time_mean/])

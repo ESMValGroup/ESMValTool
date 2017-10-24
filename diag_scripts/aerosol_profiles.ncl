@@ -42,6 +42,7 @@
 ;; Caveats
 ;;
 ;; Modification history
+;;    20170705-A_laue_ax: added tags for reporting
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;;                        of the code
 ;;    20150325-A_laue_ax: modified reference tags used for acknowledgements
@@ -60,6 +61,8 @@ load "./diag_scripts/lib/ncl/scaling.ncl"
 load "./reformat_scripts/constants.ncl"
 
 load "./plot_scripts/ncl/xy_line.ncl"
+
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 begin
 
@@ -681,7 +684,44 @@ begin
         delete(model_arr)
         delete(obser_arr)
 
-        info_output("gv " + plot_file + "." + file_type + " &", verbosity, 1)
+        ; -------------------------------------------------------------------------------
+        ; add meta data to plot (for reporting)
+
+        climofiles = new(dim_MOD + 1, string)
+        do ii = 0, dim_MOD - 1
+            climofiles(ii) = \
+                interface_get_inpaths(ii) + "/" \
+                + interface_get_infile(variables(0), field_types(0), ii)
+        end do
+        climofiles(dim_MOD) = obsfiles(cpID)
+        
+        ttags = array_append_record(tags, (/"ST_clim", "DM_reg"/), 0)
+
+        if (l_sizedist) then
+            alltags = array_append_record(ttags, (/"PT_size"/), 0)
+            stype = "aerosol size-distribution"
+        else
+            alltags = array_append_record(ttags, (/"PT_vert"/), 0)
+            stype = "aerosol concentration"
+        end if
+
+        caption = "Mean (long dashed) and standard deviation (sort-dashed) " \
+                  + stype + " (campaign: " + diag_script_info@campaign + ", " + cname + ")"
+        id = diag_script + "_" + variables(0) + "_" + diag_script_info@campaign + "_" + cname
+
+        allmodels = array_append_record(models@name, diag_script_info@campaign, 0)
+
+        contrib_authors = (/"A_righ_ma", "A_kais_ch"/)
+
+        ESMValMD(plot_file + "." + file_type, alltags, caption, id, variables(0), allmodels, climofiles, diag_script, contrib_authors)
+
+        delete(climofiles)
+        delete(ttags)
+        delete(alltags)
+        delete(allmodels)
+        ; -------------------------------------------------------------------------------
+
+        info_output("wrote " + plot_file + "." + file_type + " &", verbosity, 1)
 
     end do  ; observations loop
 
@@ -734,6 +774,46 @@ begin
         plot = aerosol_profile(wks, model_all, obser_all, varobs)
         delete(model_all)
         delete(obser_all)
+
+        ; -------------------------------------------------------------------------------
+        ; add meta data to plot (for reporting)
+
+        modelfiles = new(dim_MOD, string)
+        do ii = 0, dim_MOD - 1
+            modelfiles(ii) = \
+                interface_get_inpaths(ii) + "/" \
+                + interface_get_infile(variables(0), field_types(0), ii)
+        end do
+
+        climofiles = array_append_record(modelfiles, obsfiles, 0)
+        delete(modelfiles)
+        
+        ttags = array_append_record(tags, (/"ST_clim", "DM_reg"/), 0)
+
+        if (l_sizedist) then
+            alltags = array_append_record(ttags, (/"PT_size"/), 0)
+            stype = "aerosol size-distribution"
+        else
+            alltags = array_append_record(ttags, (/"PT_vert"/), 0)
+            stype = "aerosol concentration"
+        end if
+
+        caption = "Summary plot: " \
+                  + stype + " (campaign: " + diag_script_info@campaign + ")"
+        id = diag_script + "_" + variables(0) + "_" + diag_script_info@campaign + "_" + cname
+
+        allmodels = array_append_record(models@name, diag_script_info@campaign, 0)
+
+        contrib_authors = (/"A_righ_ma", "A_kais_ch"/)
+
+        ESMValMD(plot_file + "." + file_type, alltags, caption, id, variables(0), allmodels, climofiles, diag_script, contrib_authors)
+
+        delete(climofiles)
+        delete(ttags)
+        delete(alltags)
+        delete(allmodels)
+        ; -------------------------------------------------------------------------------
+
 
     end if
 

@@ -36,6 +36,7 @@ This namelist is part of the ESMValTool
   <max_data_blocksize type="integer"> 500                       </max_data_blocksize>
   <output_file_type>                  png                        </output_file_type>
   <verbosity  type="integer">         1                         </verbosity>
+  <tags>                              D_gen14jclim, P_embrace   </tags>
 </GLOBAL>
 
 
@@ -61,7 +62,8 @@ This namelist is part of the ESMValTool
         <variable ref="ts_obs" exclude="pr_obs">       ts                             </variable>
         <variable ref="pr_obs" exclude="ts_obs">       pr-mmday                       </variable>
         <field_type>                                   T2Ms                           </field_type>
-
+	<tags>                                         R_ocean, R_atmos, T_phys       </tags>
+	    
 	<diag_script_cfg_dir>                          ./nml/cfg_TropicalVariability  </diag_script_cfg_dir>
         <diag_script cfg="TropicalVariability.conf">   TropicalVariability.py         </diag_script>
         <launcher_arguments>    [('execute_as_shell', False)]                         </launcher_arguments>
@@ -84,7 +86,8 @@ This namelist is part of the ESMValTool
         <variable ref="obs">                           ua-925                         </variable>
         <variable ref="obs">                           va-925                         </variable>
         <field_type>                                   T2Ms                           </field_type>
-
+	<tags>                                         R_atmos, T_atmDyn              </tags>
+	    
 	<diag_script_cfg_dir>                          ./nml/cfg_TropicalVariability  </diag_script_cfg_dir>
         <diag_script cfg="TropicalVariability.conf">   TropicalVariability_wind.py    </diag_script>
         <launcher_arguments>    [('execute_as_shell', False)]                         </launcher_arguments>
@@ -102,6 +105,7 @@ This namelist is part of the ESMValTool
         <variable_def_dir>                             ./variable_defs/               </variable_def_dir>
         <variable ref="ua_obs">                        ua-1000                        </variable>
         <field_type>                                   T2Ms                           </field_type>
+	<tags>                                         R_atmos, T_atmDyn              </tags>
 
 	<diag_script_cfg_dir>                          ./nml/cfg_TropicalVariability  </diag_script_cfg_dir>
         <diag_script cfg="TropicalVariability.conf">   TropicalVariability_EQ.py      </diag_script>

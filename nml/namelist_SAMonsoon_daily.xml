@@ -46,6 +46,8 @@ This namelist is part of the ESMValTool
   <write_netcdf type="boolean">           True         </write_netcdf>
   <read_from_vault type="boolean">        False         </read_from_vault>
   <force_processing type="boolean">       False        </force_processing>
+  <tags> D_phillips14eos, D_lin08jclim, D_webster92qjrms, D_goswami99qjrms, D_wang99bams, D_wang11climdyn, P_embrace  </tags>
+
 </GLOBAL>
 
 <MODELS>
@@ -69,6 +71,7 @@ This namelist is part of the ESMValTool
     <diag_script cfg="cfg_SAMonsoon_precip_daily.ncl">  SAMonsoon_precip_daily.ncl  </diag_script>
     <model id="gpcp"> CMIP5  GPCP-1DD-V12       day  obs   r1i1p1   1998  2009  /nobackup/rossby18/sm_grini/Data/rossby14/Data/GPCP/GPCP-1DD-V12/GLOBAL/day        </model>
     <model id="trmm"> CMIP5  TRMM-3B42-v7-0.25  day  obs   r1i1p1   1998  2009  /nobackup/rossby15/sm_grini/Data/TRMM/TRMM3B42-V7/GLOBAL_CMIP5/day/  </model>
+    <tags> R_atmos, T_atmDyn, T_phys </tags>
 </diag>
 
 <diag>
@@ -80,6 +83,7 @@ This namelist is part of the ESMValTool
     <diag_script cfg="cfg_SAMonsoon_precip_daily.ncl">   SAMonsoon_precip_propagation.ncl   </diag_script>
     <model id="gpcp"> CMIP5  GPCP-1DD-V12       day  obs   r1i1p1   1998  2009  /nobackup/rossby18/sm_grini/Data/rossby14/Data/GPCP/GPCP-1DD-V12/GLOBAL/day        </model>
     <model id="trmm"> CMIP5  TRMM-3B42-v7-0.25  day  obs   r1i1p1   1998  2009  /nobackup/rossby15/sm_grini/Data/TRMM/TRMM3B42-V7/GLOBAL_CMIP5/day/  </model>
+    <tags> R_atmos, T_atmDyn, T_phys </tags>
 </diag>
 
 </DIAGNOSTICS>

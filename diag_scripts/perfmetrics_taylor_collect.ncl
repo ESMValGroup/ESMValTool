@@ -18,6 +18,7 @@
 ;; Caveats
 ;;
 ;; Modification history
+;;    20170512-A_rett_ri: tagging
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;;                        of the code
 ;;    20150325-A_laue_ax: modified reference tags used for acknowledgements
@@ -35,6 +36,7 @@ load "./interface_scripts/data_handling.ncl"
 load "./interface_scripts/messaging.ncl"
 
 load "./plot_scripts/ncl/taylor_plot.ncl"
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 begin
 
@@ -100,6 +102,13 @@ begin
                 data_all = tmp
                 delete(tmp)
             end if
+
+            ; climofiles for tagging
+            do iclim = 0, data_temp@num_climofiles-1
+                num_climo = "climofile_"+iclim
+                data_all@$num_climo$ = data_temp@$num_climo$
+                data_all@num_climofiles = data_temp@num_climofiles
+            end do
             delete(data_temp)
 
         end do
@@ -139,6 +148,24 @@ begin
 
         ;; Plot
         plot  = taylor_plot(wks, data_all, "var")
+        
+        ;; tagging
+        ST_tag = (/"ST_mean", "ST_stddev", "ST_corr"/)
+        alltags = array_append_record(tags, (/"DM_global", "PT_taylor"/), 0)
+        alltags := array_append_record(alltags, ST_tag, 0)
+        caption = "Taylor Plot of varialbe " + variables(0) \
+                  + ". Similar to Figure 10 of Gleckler et al. (2008)."
+        id = diag_script + "_example_id"
+        allmodelnames = data_all&models
+        ;allmodelnames := array_append_record(allmodelnames, data_all&reference, 0)
+        climofiles = new(data_all@num_climofiles, string)
+        do iclim = 0, data_all@num_climofiles-1
+            num_climo = "climofile_"+iclim
+            climofiles(iclim) = data_all@$num_climo$
+        end do
+        contrib_authors = (/"A_righ_ma", "A_eyri_ve", "A_gott_kl", "A_fran_fr"/)
+        ESMValMD(outfile_plot+"."+file_type, alltags, caption, id, variables(0), allmodelnames, climofiles, diag_script, contrib_authors)
+        delete([/alltags, caption, id, climofiles/])
 
         info_output(" gv " + outfile_plot + "." + file_type, verbosity, 1)
     end if

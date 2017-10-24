@@ -24,6 +24,7 @@
 ;; Caveats
 ;;
 ;; Modification history
+;;    20170512-A_gier_be: Added tags for picture metadata
 ;;    20161109-A_laue_ax: - added option to mask land/ocean points
 ;;                        - added option to plot anomalies
 ;;                        - generalized calculation of diurnal cycle removing
@@ -44,6 +45,7 @@ load "./interface_scripts/data_handling.ncl"
 load "./interface_scripts/messaging.ncl"
 
 load "./diag_scripts/lib/ncl/set_operators.ncl"
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 ; A_laue_ax+
 load "./diag_scripts/lib/ncl/latlon.ncl"
@@ -77,8 +79,11 @@ begin
     ;;-----------------------
     ; References Information
     ;;-----------------------
+
+    contrib_authors = "A_rio_ca"
+
     write_references(diag_script,            \  ; script name
-                     "A_rio_ca",             \  ; authors
+                     contrib_authors,        \  ; authors
                      "",                     \  ; contributors
                      "",                     \  ; diag_references
                      "",                     \  ; obs_references
@@ -503,6 +508,30 @@ begin
 ; A_laue_ax-
 
     xy_line_overlap(storage_vault, di, plot_settings, "diurnalcycle", debuginfo)
+
+    ;; Attach Metadata to plot
+    xml_name = getenv("ESMValTool_xml_name")
+    suffix = get_file_suffix(xml_name, 0)
+    base_name = str_sub_str(xml_name, suffix, "")
+    plot_outfile = get_output_dir(plot_dir, diag_script_base) + \
+          interface_get_figure_filename(diag_script_base, var0, field_type0, \ 
+          plot_settings@aux_filename_info, -1)
+    
+    alltags = array_append_record(tags,\
+           (/"PT_diurn", "DM_reg"/), 0)
+    caption = "Mean Diurnal Cycle for " + variables(0) 
+    id = diag_script + "_" + base_name
+    climofiles = new(dimsizes(models@name) * dimsizes(variables), string)
+    do imod = 0, dimsizes(models@name) - 1
+        climofiles(imod) = \
+            interface_get_inpaths(imod) + "/" + \
+            interface_get_infile(variables(0), field_types(0), imod)
+    end do
+
+    ESMValMD(plot_outfile + "." + output_file_type, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+
+    delete([/alltags, caption, id, climofiles/])
+
 
     info_output(">>>>>>>> Leaving " + diag_script, verbosity, 4)
 end

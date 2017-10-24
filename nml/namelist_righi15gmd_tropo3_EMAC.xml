@@ -26,22 +26,23 @@ This namelist is part of the ESMValTool
 </namelist_summary>
 
 <GLOBAL>
-    <write_plots type="boolean">         True         </write_plots>
-    <write_netcdf type="boolean">        True         </write_netcdf>
-    <force_processing type="boolean">    False        </force_processing>
-    <wrk_dir type="path">                @{WORKPATH}  </wrk_dir>
-    <plot_dir type="path">               @{PLOTPATH}  </plot_dir>
-    <climo_dir type="path">              @{CLIMOPATH} </climo_dir>
-    <write_plot_vars type="boolean">     True         </write_plot_vars>
-    <max_data_filesize type="integer">   100          </max_data_filesize>
-    <max_data_blocksize type="integer">  500          </max_data_blocksize>
-    <verbosity  type="integer">          1            </verbosity>
-    <exit_on_warning  type="boolean">    False        </exit_on_warning>
+    <write_plots type="boolean">         True                    </write_plots>
+    <write_netcdf type="boolean">        True                    </write_netcdf>
+    <force_processing type="boolean">    False                   </force_processing>
+    <wrk_dir type="path">                @{WORKPATH}             </wrk_dir>
+    <plot_dir type="path">               @{PLOTPATH}             </plot_dir>
+    <climo_dir type="path">              @{CLIMOPATH}            </climo_dir>
+    <write_plot_vars type="boolean">     True                    </write_plot_vars>
+    <max_data_filesize type="integer">   100                     </max_data_filesize>
+    <max_data_blocksize type="integer">  500                     </max_data_blocksize>
+    <verbosity  type="integer">          1                       </verbosity>
+    <exit_on_warning  type="boolean">    False                   </exit_on_warning>
     <!-- Use epsi for correct bounding boxes, ps for transparent shadings -->
-    <output_file_type>                    ps          </output_file_type>
-    <force_calc type="boolean">          False        </force_calc>
-    <force_gradecalc type="boolean">     False        </force_gradecalc>
-    <force_taylorcalc type="boolean">    False        </force_taylorcalc>
+    <output_file_type>                    ps                     </output_file_type>
+    <force_calc type="boolean">          False                   </force_calc>
+    <force_gradecalc type="boolean">     False                   </force_gradecalc>
+    <force_taylorcalc type="boolean">    False                   </force_taylorcalc>
+    <tags>                               P_esmval, D_righi15gmd  </tags>
 </GLOBAL>
 
 <MODELS>
@@ -73,6 +74,8 @@ This namelist is part of the ESMValTool
 
         <diag_script cfg="cfg_righi15gmd_fig14.ncl">      ancyc_lat.ncl      </diag_script>
         <diag_script cfg="cfg_righi15gmd_fig13.ncl">      lat_lon.ncl      </diag_script>
+        
+        <tags> R_atmosChem, T_ghg, T_chem </tags>
     </diag>
     <diag>
         <description> fig 9: total column ozone plot </description>
@@ -85,6 +88,8 @@ This namelist is part of the ESMValTool
         <model> OBS  GTO-ECV sat  1 1998 2010  @{OBSPATH}/Tier3/GTO-ECV/ </model>
 
         <diag_script cfg="cfg_righi15gmd_fig10.ncl">      ancyc_lat.ncl      </diag_script>
+        
+        <tags> R_atmosChem, T_ghg, T_chem </tags>
     </diag>
 
 <!--################################################################################################################# -->
@@ -131,6 +136,8 @@ This namelist is part of the ESMValTool
         <field_type>          T2Ms                          </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
         <diag_script cfg="cfg_perfmetrics_taylor_collect.ncl">  perfmetrics_taylor_collect.ncl </diag_script>
+        
+        <tags> R_atmosChem, T_ghg, T_chem </tags>
     </diag>
 
     <diag>
@@ -181,6 +188,8 @@ This namelist is part of the ESMValTool
 
         <diag_script cfg="cfg_perfmetrics_grading_RMSD_collect_O3.ncl">  perfmetrics_grading_collect.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_taylor_collect.ncl">  perfmetrics_taylor_collect.ncl </diag_script>
+        
+        <tags> R_atmosChem, T_ghg, T_chem </tags>
     </diag>
 
 <!--################################################################################################################# -->
@@ -250,6 +259,8 @@ This namelist is part of the ESMValTool
         <field_type>          T2Ms                          </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
         <diag_script cfg="cfg_perfmetrics_grading_BIAS_collect_O3.ncl">  perfmetrics_grading_collect.ncl </diag_script>
+        
+        <tags> R_atmosChem, T_ghg, T_chem </tags>
     </diag>
 
 <!--################################################################################################################# -->
@@ -341,6 +352,8 @@ This namelist is part of the ESMValTool
 
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
         <diag_script cfg="cfg_perfmetrics_taylor_collect.ncl">  perfmetrics_taylor_collect.ncl </diag_script>
+        
+        <tags> R_atmosChem, T_ghg, T_chem, T_carbon </tags>
     </diag>
 
     <diag>
@@ -410,6 +423,8 @@ This namelist is part of the ESMValTool
 
         <diag_script cfg="cfg_perfmetrics_grading_RMSD_collect_CO.ncl">  perfmetrics_grading_collect.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_taylor_collect.ncl">  perfmetrics_taylor_collect.ncl </diag_script>
+        
+        <tags> R_atmosChem, T_ghg, T_chem, T_carbon </tags>
     </diag>
 
 <!--################################################################################################################# -->
@@ -549,6 +564,8 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
 
         <diag_script cfg="cfg_perfmetrics_grading_BIAS_collect_CO.ncl">  perfmetrics_grading_collect.ncl </diag_script>
+        
+        <tags> R_atmosChem, T_ghg, T_chem, T_carbon </tags>
     </diag>
 
 <!--################################################################################################################# -->
@@ -635,6 +652,8 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
         <diag_script cfg="cfg_perfmetrics_grading_RMSD_collect_Tilmes.ncl">  perfmetrics_grading_collect.ncl </diag_script>
         <diag_script cfg="cfg_perfmetrics_taylor_collect.ncl">  perfmetrics_taylor_collect.ncl </diag_script>
+        
+        <tags> R_atmosChem, T_ghg, T_chem </tags>
     </diag>
 
 <!--################################################################################################################# -->
@@ -701,6 +720,8 @@ This namelist is part of the ESMValTool
         <field_type>          T1M                           </field_type>
         <diag_script_cfg_dir> ./nml/cfg_righi15gmd/tropo3/  </diag_script_cfg_dir>
         <diag_script cfg="cfg_perfmetrics_grading_BIAS_collect_Tilmes.ncl">  perfmetrics_grading_collect.ncl </diag_script>
+        
+        <tags> R_atmosChem, T_ghg, T_chem </tags>
     </diag>
 
 </DIAGNOSTICS>

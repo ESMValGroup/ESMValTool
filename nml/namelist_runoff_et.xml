@@ -12,6 +12,9 @@ Authors
 Stefan Hagemann (MPI, Germany - stefan.hagemann@mpimet.mpg.de)
 Alexander Loew (LMU, Germany - alexander.loew@lmu.de)
 
+Contributor(s)
+n/a
+
 Project
 EMBRACE
 
@@ -40,6 +43,7 @@ This namelist is part of the ESMValTool
   <verbosity  type="integer">         2                         </verbosity>
   <debuginfo type="boolean">          False                     </debuginfo>
   <exit_on_warning  type="boolean">   True                      </exit_on_warning>
+  <tags>                              P_embrace, D_hagemann13jadvmodelearthsyst, D_weedon14wrr,  D_duemnill00mpimr </tags>
 </GLOBAL>
 
 
@@ -72,6 +76,8 @@ This namelist is part of the ESMValTool
         <diag_script cfg="none_yet.py">   catchment_analysis_val.py      </diag_script>
 
         <launcher_arguments>    [('execute_as_shell', False)]  </launcher_arguments>
+      
+      <tags> R_atmos, R_land, T_phys, T_chem </tags>
     </diag>
 
 </DIAGNOSTICS>

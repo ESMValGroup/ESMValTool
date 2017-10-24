@@ -39,6 +39,7 @@
 ;; Caveats
 ;;
 ;; Modification history
+;;    20170905-A_bock_ls: added tags for reporting
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;;                        of the code
 ;;    20150515-A_roeh_ro: written
@@ -65,6 +66,9 @@ load "./diag_scripts/aux/SAMonsoon/SAMonsoon.ncl"
 exact_panel_position_file = "./diag_scripts/aux/" + diag_script_info@my_region + "Monsoon/exact_panel_positions_pr-mmday.ncl"
 
 load "./plot_scripts/ncl/monsoon_panels.ncl"
+
+load "./diag_scripts/lib/ncl/meta_data.ncl"
+
 ;*********************************************************************
 undef("high_pass_latlon_time")
 function high_pass_latlon_time(x[*][*][*]:numeric,
@@ -483,6 +487,40 @@ begin
     ;; Three panel plots (ref, model, diff), here for stddev
     three_by_one_diff(storage_vault, di, plot_settings, "stddev", debuginfo, valid_statistics, res)
 
+    ;; Attach Metadata to plots
+    xml_name = getenv("ESMValTool_xml_name")
+    suffix = get_file_suffix(xml_name, 0)
+    base_name = str_sub_str(xml_name, suffix, "")
+
+    contrib_authors = (/"A_roeh_ro"/)
+    diag_script_base = basename(diag_script)
+    output_dir = get_output_dir(plot_dir, diag_script_base)
+
+    do idx_mod = 0, dim_MOD - 1
+        if (idx_mod .eq. plot_settings@idx_ref) then
+            continue
+        end if
+        caption = "Standard deviation of the filtered field over the " + di@season + " season."
+        alltags = array_append_record(tags, (/"DM_reg", "ST_stddev", "PT_geo"/), 0)
+        climofiles = new(2, string)
+        climofiles(0) = interface_get_inpaths(idx_mod) + "/" + \
+                 interface_get_infile(variables(0), field_types(0), idx_mod)
+        climofiles(1) = interface_get_inpaths(idx_ref) + "/" + \
+                 interface_get_infile(variables(0), field_types(0), idx_ref)
+        allmodelnames = (/models@name(idx_mod), models@name(idx_ref)/)
+        id = diag_script + "_stddev_" + variables(0)
+        aux_filename_info = di@season + "-stddev"
+        output_filename = interface_get_figure_filename(diag_script_base,\
+                                                    var0,\
+                                                    field_type0,\
+                                                    aux_filename_info, idx_mod)
+        output_file_path = output_dir + output_filename + "." + output_file_type
+
+        ESMValMD(output_file_path, alltags, caption, id, variables, allmodelnames, climofiles, diag_script, contrib_authors)
+
+    end do
+
+
     if (di@plot_norm) then
         ;; Three panel plots (ref, model, diff), here for normalized and masked stddev
         plot_settings@main_title_suffix = " (" + filter + " " + variable_info@long_name + " normalized)"
@@ -490,6 +528,39 @@ begin
         plot_settings@lb_units = "unitless"
         ;debuginfo@description = WAMonsoon_daily_precip_filter_norm_descr(di)
         three_by_one_diff(storage_vault, di, plot_settings, "stddev_norm", debuginfo, valid_statistics, res)
+
+        ;; Attach Metadata to plots
+        do idx_mod = 0, dim_MOD - 1
+            if (any(idx_mod .eq. plot_settings@idx_ref)) then
+                continue
+            end if
+            caption = "Normalized standard deviation of the filtered field over the " \
+                       + di@season + " season."
+            alltags = array_append_record(tags, (/"DM_trop", "ST_stddev", "PT_geo"/), 0)
+            id = diag_script + "_stddev_norm_" + variables(0)
+            aux_filename_info = di@season + "-stddev_norm"
+            output_filename = interface_get_figure_filename(diag_script_base,\
+                                                        var0,\
+                                                        field_type0,\
+                                                        aux_filename_info, idx_mod)
+            output_file_path = output_dir + output_filename + "." + output_file_type
+
+            ESMValMD(output_file_path, alltags, caption, id, variables, allmodelnames, climofiles, diag_script, contrib_authors)
+        end do
+
+    end if
+
+    if (isvar("alltags")) then
+        delete(alltags)
+    end if
+    if (isvar("caption")) then
+        delete(caption)
+    end if
+    if (isvar("id")) then
+        delete(id)
+    end if
+    if (isvar("climofiles")) then
+        delete(climofiles)
     end if
 
     res = orig_res
@@ -503,11 +574,59 @@ begin
     ;debuginfo@description = WAMonsoon_daily_precip_filter_descr(di)
     multipanel(storage_vault, di, plot_settings, "stddev", debuginfo, valid_statistics, res)
 
+    ;; Attach Metadata to plot
+    alltags = array_append_record(tags, (/"DM_reg", "ST_stddev", "PT_geo"/), 0)
+
+    caption = "Standard deviation of the filtered field over the " + di@season + " season."
+
+    id = diag_script + "_stddev_" + variables(0)
+
+    climofiles = new(dimsizes(models@name), string)
+    do imod = 0, dimsizes(models@name) - 1
+            climofiles(imod) = interface_get_inpaths(imod) + "/" + \
+                 interface_get_infile(variables(0), field_types(0), imod)
+    end do
+
+    diag_script_base = basename(diag_script)
+    output_dir = get_output_dir(plot_dir, diag_script_base)
+    aux_title_info = di@season + "-" + di@filter_name + "-stddev"
+    output_filename = interface_get_figure_filename(diag_script_base,\
+                                                    var0,\
+                                                    field_type0,\
+                                                    aux_title_info, -1)
+    output_file_path = output_dir + output_filename + "." + output_file_type
+
+    ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+
+    delete([/alltags, caption, id, imod/])
+
     if (di@plot_norm) then
         plot_settings@lb_units = "unitless (normalized with climatology)"
         plot_settings@part_of_header = " stddev of " + filter + " " + variable_info@long_name + " (climatology mask+norm)"
         ;debuginfo@description = WAMonsoon_daily_precip_filter_norm_descr(di)
         multipanel(storage_vault, di, plot_settings, "stddev_norm", debuginfo, valid_statistics, res)
+
+        ;; Attach Metadata to plot
+        alltags = array_append_record(tags, (/"DM_reg", "ST_stddev", "PT_geo"/), 0)
+
+        caption = "Normalized standard deviation of the filtered field over the " \
+                       + di@season + " season."
+
+        id = diag_script + "_stddev_norm" + variables(0)
+
+        diag_script_base = basename(diag_script)
+        output_dir = get_output_dir(plot_dir, diag_script_base)
+        aux_title_info = di@season + "-" + di@filter_name + "-stddev_norm"
+        output_filename = interface_get_figure_filename(diag_script_base,\
+                                                        var0,\
+                                                        field_type0,\
+                                                        aux_title_info, -1)
+        output_file_path = output_dir + output_filename + "." + output_file_type
+
+        ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+
+        delete([/alltags, caption, id/])
+
     end if
 
     info_output(">>>>>>>> Leaving " + diag_script, verbosity, 4)

@@ -3,7 +3,7 @@ import data_interface
 import exceptions
 import os
 import launchers
-import pdb
+#import pdb
 import re
 import glob
 import datetime
@@ -615,6 +615,7 @@ class ana4mips(Project):
             This function looks for the input file to use in the
             reformat routines
         """
+
         # msd = model_section_dictionary
         msd = self.get_model_sections(model)
         msd = self.rewrite_mip_exp(msd, mip, exp)
@@ -2290,6 +2291,199 @@ class GFDL(Project):
         return os.path.join(outdir, outfile)
 
 
+class GFDL_UDA(Project):
+    """ @brief Class defining the specific characteristics of the CMIP5 project
+    and the data available in the GFDL Unified Data Archive. """
+    def __init__(self):
+        Project.__init__(self)
+
+        ## The names of the space separated entries in the XML-file <model> tag
+        ## lines
+        self.model_specifiers = ["project", "name", "mip", "experiment",
+                                 "ensemble", "start_year", "end_year", "dir"]
+
+        self.add_specifier['case_name'] = 'experiment'
+
+        """ Define the 'basename'-variable explicitly
+        """
+        self.basename = "GFDL_UDA"
+
+    def get_dict_key(self, model, mip, exp):
+        """ @brief Returns a unique key based on the model entries provided.
+            @param model One of the <model>-tags in the XML namelist file
+            @return A string
+
+            This function creates and returns a key used in a number of NCL
+            scripts to refer to a specific dataset, see e.g., the variable
+            'cn' in 'interface_scripts/read_data.ncl'
+        """
+        # msd = model_section_dictionary
+        msd = self.get_model_sections(model)
+        msd = self.rewrite_mip_exp(msd, mip, exp)
+
+        dict_key = "_".join([msd['project'],
+                             msd['name'],
+                             msd['mip'],
+                             msd['experiment'],
+                             msd['ensemble'],
+                             msd['start_year'],
+                             msd['end_year']])
+        return dict_key
+
+    def get_figure_file_names(self, project_info, model, mip, exp):
+        """ @brief Returns the full path used for intermediate data storage
+            @param project_info Current namelist in dictionary format
+            @param model One of the <model>-tags in the XML namelist file
+            @param variable_attributes The variable attributes
+            @return A string
+
+            This function creates and returns the full path used in a number
+            of NCL scripts to write intermediate data sets.
+        """
+        # msd = model_section_dictionary
+        msd = self.get_model_sections(model)
+        msd = self.rewrite_mip_exp(msd, mip, exp)
+
+        return "_".join([msd['project'],
+                         msd['name'],
+                         msd['mip'],
+                         msd['experiment'],
+                         msd['ensemble'],
+                         msd['start_year']]) + "-" + msd['end_year']
+
+    def get_cf_infile(self, project_info, model, field, variable, mip, exp):
+        """ @brief Returns the path to the input file used in reformat
+            @param variable Current variable
+            @param climo_dir Where processed (reformatted) input files reside
+            @param model One of the <model>-tags in the XML namelist file
+            @param field The field (see tutorial.pdf for available fields)
+            @param variable The variable
+                            (defaults to the variable in project_info)
+            @param variable_attributes The variable attributes
+            @return Two strings (input directory and input file)
+
+            This function looks for the input file to use in the
+            reformat routines
+        """
+        indata_root = self.get_data_root()
+
+        msd = self.get_model_sections(model)
+        msd = self.rewrite_mip_exp(msd, mip, exp)
+
+        variable = self.get_project_variable_name(model, variable)
+
+        indir = self.get_uda_dir(msd['dir'], msd['name'], msd['experiment'],
+                                 variable, msd['mip'], msd['ensemble'])
+
+        infile = '_'.join([variable,
+                           self.table,
+                           msd['name'],
+                           msd['experiment'],
+                           msd['ensemble']]) + '.nc'
+
+        if (not os.path.isfile(os.path.join(indir, infile))):
+            infile = '_'.join([variable,
+                               self.table,
+                               msd['name'],
+                               msd['experiment'],
+                               msd['ensemble']]) + '*.nc'
+
+        self.dmget_gfdl_files(indir, infile)
+
+        return indir, infile
+
+    def dmget_gfdl_files(self, indir, infile):
+        """ The seems to be the need to make sure that the files
+        are available on disk in archive despite using the /work repo
+        """
+        full_path = os.path.join(indir, infile)
+        full_path = re.sub("^/work2", "/archive/pcmdi", full_path)
+
+        os.system("dmget %s" % full_path)
+        return
+
+    def get_uda_dir(self, basedir, model_name, experiment,
+                    variable, mip, ensemble):
+        """ @brief Returns the GFDL UDA directory for the
+        collection of CMIP5 Data housed at GFDL in standard
+        DRS Syntax. """
+
+        ModelCenters = os.walk(basedir).next()[1]
+        modelCenter = ""
+        finalPath = ""
+        freq = "mon"
+        realm = mip
+        if re.match("aero", realm):
+            realm = "aerosol"
+        while not modelCenter:
+            for center in ModelCenters:
+                models = os.walk(os.path.join(basedir, center)).next()[1]
+                if model_name in models:
+                    modelCenter = center
+        expandedPath = os.path.join(basedir, modelCenter,
+                                    model_name, experiment, freq, realm, )
+        if not os.path.isdir(expandedPath):
+            error_msg = "ERROR: Unable to determine Modeling center for "
+            error_msg += "%s, check model name" % model_name
+            return error_msg
+        self.table = os.walk(expandedPath).next()[1][0]
+        expandedPath = os.path.join(expandedPath, str(self.table), ensemble)
+        versions = os.walk(expandedPath).next()[1]
+        versions.sort(reverse=True)
+        var_version = versions[0]
+        expandedPath = os.path.join(expandedPath, var_version, variable)
+
+        return expandedPath
+
+    def get_cf_areafile(self, project_info, model):
+        """ @brief Returns the path to the areacello file
+                   used for ocean variables
+            @param project_info Current namelist in dictionary format
+            @param model One of the <model>-tags in the XML namelist file
+            @return A string (areafile path)
+
+            This function looks for the areafile of the ocean grid
+        """
+        msd = self.get_model_sections(model)
+
+        areadir = msd["dir"]
+
+        areafile = 'areacello_fx_' + msd["name"] + "_" + msd["experiment"] + \
+                   "_r0i0p0.nc"
+
+        return os.path.join(areadir, areafile)
+
+    def get_cf_outfile(self, project_info, model, field, variable, mip, exp):
+        """ @brief Returns the output file used in the reformat routines
+            @param variable Current variable
+            @param climo_dir Where processed (reformatted) input files reside
+            @param model One of the <model>-tags in the XML namelist file
+            @param field The field (see tutorial.pdf for available fields)
+            @param variable The variable
+                            (defaults to the variable in project_info)
+            @return A string (output path)
+
+            This function specifies the output file to use in the reformat
+            routines and in climate.ncl
+        """
+
+        msd = self.get_model_sections(model)
+
+        # Overide some model lines with settings from the variable attributes
+        msd = self.rewrite_mip_exp(msd, mip, exp)
+
+        outfile = '_'.join([msd['project'],
+                            msd['mip'],
+                            msd['experiment'],
+                            msd['name'],
+                            msd['ensemble'],
+                            field,
+                            variable,
+                            msd['start_year']]) + '-' + msd['end_year'] + '.nc'
+
+        return outfile
+
+
 class GO(CCMVal):
     """ @brief Class defining the specific characteristics of the GO project
     """
@@ -3058,6 +3252,33 @@ class ESGF:
                   "hold ESGF coupling report, does not exist"
             raise RuntimeError(msg)
 
+    def _resolve_variable_definitions_(self,d):
+        decode = {}
+        decode['Amon'] = {'time_freq':'mon', 'realm':'atmos'}
+        decode['Lmon'] = {'time_freq':'mon', 'realm':'land'}
+        decode['Omon'] = {'time_freq':'mon', 'realm':'ocean'}
+
+        if 'mip' in d.keys():
+            if d['mip'] == 'MIP_VAR_DEF':
+                if isinstance(self.variable,dict):
+                    if 'mip' in self.variable.keys():
+                        k = self.variable['mip']
+                        d['mip'] = k
+                        if k in decode.keys():
+                            d['time_freq'] = decode[k]['time_freq']
+                            d['realm'] = decode[k]['realm']
+                        else:
+                            msg = "Unkown mip :" + str(k)
+                            raise RuntimeError(msg)
+
+        if 'experiment' in d.keys():
+            if d['experiment'] == 'EXP_VAR_DEF':
+                if isinstance(self.variable,dict):
+                    if 'exp' in self.variable.keys():
+                        d['experiment'] = self.variable['exp']
+
+        return d
+
     def get_cf_indir(self,
                      project_info,
                      model,
@@ -3106,6 +3327,9 @@ class ESGF:
 
         # Add variable to msd
         msd['variable'] = variable
+
+        # Resolve "???_VAR_DEF" entries with variable attributes
+        msd = self._resolve_variable_definitions_(msd)
 
         # Explainer: all model entries contain a section called 'project'
         #            which identifies the project class required. This
@@ -3380,7 +3604,7 @@ class ESGF:
 
                         # Extract numeric digits from direct
                         # Shouldn't need 'try' block here
-                        version_num = int(filter(str.isdigit, candidate))
+                        version_num = int(filter(str.isdigit, str(candidate)))
 
                         # Compare datetime object to date
                         if version_num > highest_version:
@@ -3430,6 +3654,7 @@ class ESGF_CMIP5(ESGF, CMIP5):
                                  'mip',
                                  'ensemble']
 
+        self.variable = None
         # Define the 'basename'-variable explicitly
         # All project classes do this, but not sure if really necessary
         self.basename = self.__class__.__name__
@@ -3447,10 +3672,12 @@ class ESGF_CMIP5(ESGF, CMIP5):
         :param model: One of the <model>-tags in the XML namelist file
         :param field: Not used but included for calling compatibility
         :param variable: The variable
-        :param mip: Not used but included for calling compatibility
-        :param exp: Not used but included for calling compatibility
+        :param mip: mip variable attribute
+        :param exp: exp variable attribute
         :returns: Two strings (input directory and input file)
         """
+
+        self.variable = {'name': variable, 'mip': mip, 'exp': exp}
 
         # Call to get_project_variable_name() in 'Project' class
         # via ESGF baseclass (could equally go via CMIP5 baseclass)
@@ -3468,6 +3695,7 @@ class ESGF_CMIP5(ESGF, CMIP5):
 
         # Get model sections, as python dictionary
         msd = self.get_model_sections(model)
+        msd = self.rewrite_mip_exp(msd, mip, exp)
 
         infile = '_'.join([variable,
                            msd['mip'],
@@ -3486,13 +3714,43 @@ class ESGF_CMIP5(ESGF, CMIP5):
 
     def get_cf_areafile(self, project_info, model):
         """
-        Override of version in CMIP5 parent class, not yet implemented
-        :param project_info: the 'project_info' dictionary
-        :param model: One of the <model>-tags in the XML namelist file
-        :returns: Dummy string 'cf_areafile_not_yet_implemented'
         """
-        return 'cf_areafile_not_yet_implemented'
+        import copy
+        variable = 'areacello'
+        fxmodel = copy.deepcopy(model)
+        mml = fxmodel.split_entries()
+        mml[6] = 'fx'
+        mml[7] = 'ocean'
+        mml[8] = 'fx'
+        mml[9] = 'r0i0p0'
+        fxmodel.__init__(' '.join(mml),fxmodel.attributes,fxmodel.diag_specific)
+        try:
+            indir = ESGF.get_cf_indir(self,
+                                      project_info,
+                                      fxmodel,
+                                      variable,
+                                      self.ESGF_facet_names,
+                                      ESGF_project = 'CMIP5')
 
+            # Get model sections, as python dictionary
+            msd = self.get_model_sections(fxmodel)
+
+            infile = '_'.join([variable,
+                               msd['mip'],
+                               msd['model'], # in CMIP5 class this was 'name'
+                               msd['experiment'],
+                               msd['ensemble']]) + '.nc'
+
+            if (not os.path.isfile(os.path.join(indir, infile))):
+                infile = '_'.join([variable,
+                                   msd['mip'],
+                                   msd['model'], # in CMIP5 class this was 'name'
+                                   msd['experiment'],
+                                   msd['ensemble']]) + '*.nc'
+
+            return os.path.join(indir, infile)
+        except:
+            return 'cf_areafile_not_available'
 
 class ESGF_CMIP5_fx(ESGF_CMIP5):
     """
@@ -3588,7 +3846,6 @@ def write_data_interface(executable, project_info):
     suffix = os.path.splitext(executable)[1][1:]
     currInterface = vars(data_interface)[suffix.title() + '_data_interface'](project_info)
     currInterface.write_data_to_interface()
-
 
 def run_executable(string_to_execute,
                    project_info,

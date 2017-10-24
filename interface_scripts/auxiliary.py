@@ -1,7 +1,6 @@
 import sys
 import subprocess
 
-
 class nclExecuteError(Exception):
     def __init__(self, value):
         self.value = value
@@ -41,7 +40,7 @@ def info(string, verbosity, required_verbosity):
         @param required_verbosity level required to print something
     """
     if verbosity >= required_verbosity:
-        print "PY  info: " + str(string)
+        print("PY  info: " + str(string))
 
 
 def error(string):
@@ -56,7 +55,7 @@ def print_header(projdict, opt):
         @param project_info dictionary with the necessary information
         @param opt logical for shorter header for the reformat case
     """
-    
+
     vv = 1
     line1 = 54 * "_"
     line2 = 61 * "_"
@@ -99,10 +98,12 @@ def ncl_version_check():
     if out[0] != 0:
         error("NCL not found")
 
-    if out[1] == "6.3.0":
-        error("NCL version " + out[1] + 
-              " not supported due to a bug " + 
-              "(see Known Issues in the ESMValTool user guide)")
+    # AL deactivated for testing only; needs to be activated again
+    # disadvantage: NCL 6.3.0 is the current standard!
+    # if out[1] == "6.3.0":
+    #    error("NCL version " + out[1] +
+    #          " not supported due to a bug " +
+    #          "(see Known Issues in the ESMValTool user guide)")
 
     if int(out[1].split(".")[0]) < 6:
         error("NCL version " + out[1] + " not supported, need version 6.2.0 or higher")

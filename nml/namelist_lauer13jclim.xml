@@ -11,6 +11,9 @@ Lauer and Hamilton (2013)
 Author
 Axel Lauer (DLR, Germany - axel.lauer@dlr.de)
 
+Contributor(s)
+n/a
+
 Project
 DLR ESMVal
 
@@ -35,7 +38,8 @@ This namelist is part of the ESMValTool
     <exit_on_warning  type="boolean">     False      </exit_on_warning>
     <output_file_type>                       ps      </output_file_type>
     <force_calc type="boolean">           False      </force_calc>
-</GLOBAL>
+    <tags> D_lauer13jclim, P_esmval                  </tags>
+ </GLOBAL>
 
 <MODELS>
     <model>  CMIP5_ETHZ ACCESS1-0        Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
@@ -82,7 +86,7 @@ This namelist is part of the ESMValTool
     <model>  CMIP5_ETHZ NorESM1-ME       Amon historical r1i1p1  1986 2005 @{MODELPATH}/ETHZ_CMIP5/ </model>
 <!--    <model> EMAC RC1-base-07   1 1986 2005 /gpfs01/home/laue_ax/emac/RC1-base-07/   </model>
     <model> EMAC RC1SD-base-07   1 1986 2005 /gpfs01/home/laue_ax/emac/RC1SD-base-07/   </model> -->
-</MODELS>
+ </MODELS>
 
 <DIAGNOSTICS>
 
@@ -100,6 +104,7 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
         <model> OBS UWisc sat v2 1988 2007 @{OBSPATH}/Tier3/UWisc </model>
         <diag_script cfg="cfg_clouds.ncl"> clouds.ncl </diag_script>
+        <tags> R_atmos, T_clouds </tags>
     </diag>
 
     <diag>
@@ -110,6 +115,7 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
         <model> obs4mips MODIS L3 C5 2001 2010 @{OBSPATH}/Tier1/ </model>
         <diag_script cfg="cfg_clouds.ncl"> clouds.ncl </diag_script>
+        <tags> R_atmos, T_clouds </tags>
     </diag>
 
     <diag>
@@ -120,6 +126,7 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
         <model> obs4mips GPCP-SG L3 v2.2 1986 2005 @{OBSPATH}/Tier1/ </model>
         <diag_script cfg="cfg_clouds.ncl"> clouds.ncl </diag_script>
+        <tags> R_atmos, T_clouds, T_phys </tags>
     </diag>
 <!--
     <diag>
@@ -130,6 +137,7 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
         <model> OBS MODIS-CFMIP sat v2 2003 2014 @{OBSPATH}/Tier2/MODIS-CFMIP </model>
         <diag_script cfg="cfg_clouds.ncl"> clouds.ncl </diag_script>
+        <tags> R_atmos, T_clouds </tags>
     </diag>
 -->
     <diag>
@@ -140,6 +148,7 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
         <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2012 @{OBSPATH}/Tier1/ </model>
         <diag_script cfg="cfg_clouds.ncl"> clouds.ncl </diag_script>
+        <tags> R_atmos, T_clouds, T_phys </tags>
     </diag>
 
     <diag>
@@ -150,6 +159,7 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
         <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2012 @{OBSPATH}/Tier1/ </model>
         <diag_script cfg="cfg_clouds.ncl"> clouds.ncl </diag_script>
+        <tags> R_atmos, T_clouds, T_phys </tags>
     </diag>
 
     <diag>
@@ -160,6 +170,7 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
         <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2012 @{OBSPATH}/Tier1/ </model>
         <diag_script cfg="cfg_clouds.ncl"> clouds.ncl </diag_script>
+        <tags> R_atmos, T_clouds, T_phys </tags>
     </diag>
 
 <!-- *******************************************************************************
@@ -176,6 +187,7 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
         <model> obs4mips MODIS L3 C5 2001 2010 @{OBSPATH}/Tier1/ </model>
         <diag_script cfg="cfg_clouds_taylor.ncl"> clouds_taylor.ncl </diag_script>
+        <tags> R_atmos, T_clouds </tags>
     </diag>
 
     <diag>
@@ -186,6 +198,7 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
         <model> OBS UWisc sat v2 1988 2007 @{OBSPATH}/Tier3/UWisc </model>
         <diag_script cfg="cfg_clouds_taylor.ncl"> clouds_taylor.ncl </diag_script>
+        <tags> R_atmos, T_clouds </tags>
     </diag>
 
     <diag>
@@ -196,6 +209,7 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
         <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2012 @{OBSPATH}/Tier1/ </model>
         <diag_script cfg="cfg_clouds_taylor.ncl"> clouds_taylor.ncl </diag_script>
+        <tags> R_atmos, T_clouds, T_phys </tags>
     </diag>
 
     <diag>
@@ -206,6 +220,7 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
         <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2012 @{OBSPATH}/Tier1/ </model>
         <diag_script cfg="cfg_clouds_taylor.ncl"> clouds_taylor.ncl </diag_script>
+        <tags> R_atmos, T_clouds, T_phys </tags>
     </diag>
 <!--
     <diag>
@@ -216,6 +231,7 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
         <model> OBS MODIS-CFMIP sat v2 2003 2014 @{OBSPATH}/Tier2/MODIS-CFMIP </model>
         <diag_script cfg="cfg_clouds_taylor.ncl"> clouds_taylor.ncl </diag_script>
+        <tags> R_atmos, T_clouds </tags>
     </diag>
 -->
     <diag>
@@ -226,6 +242,7 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
         <model> obs4mips GPCP-SG L3 v2.2 1986 2005 @{OBSPATH}/Tier1/ </model>
         <diag_script cfg="cfg_clouds_taylor.ncl"> clouds_taylor.ncl </diag_script>
+        <tags> R_atmos, T_clouds, T_phys </tags>
     </diag>
 
 <!-- *******************************************************************************
@@ -244,6 +261,7 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
         <model> OBS UWisc sat v2 1988 2007 @{OBSPATH}/Tier3/UWisc </model>
         <diag_script cfg="cfg_clouds_interannual.ncl"> clouds_interannual.ncl </diag_script>
+        <tags> R_atmos, T_clouds </tags>
     </diag>
 
     <diag>
@@ -254,6 +272,7 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
         <model> obs4mips MODIS L3 C5 2001 2010 @{OBSPATH}/Tier1/ </model>
         <diag_script cfg="cfg_clouds_interannual.ncl"> clouds_interannual.ncl </diag_script>
+        <tags> R_atmos, T_clouds </tags>
     </diag>
 
     <diag>
@@ -264,6 +283,7 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
         <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2012 @{OBSPATH}/Tier1/ </model>
         <diag_script cfg="cfg_clouds_interannual.ncl"> clouds_interannual.ncl </diag_script>
+        <tags> R_atmos, T_clouds, T_phys </tags>
     </diag>
 
     <diag>
@@ -274,6 +294,7 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
         <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2012 @{OBSPATH}/Tier1/ </model>
         <diag_script cfg="cfg_clouds_interannual.ncl"> clouds_interannual.ncl </diag_script>
+        <tags> R_atmos, T_clouds, T_phys </tags>
     </diag>
 
     <diag>
@@ -284,6 +305,7 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
         <model> obs4mips CERES-EBAF L3B Ed2-7 2001 2012 @{OBSPATH}/Tier1/ </model>
         <diag_script cfg="cfg_clouds_interannual.ncl"> clouds_interannual.ncl </diag_script>
+        <tags> R_atmos, T_clouds, T_phys </tags>
     </diag>
 <!--
     <diag>
@@ -294,6 +316,7 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
         <model> OBS MODIS-CFMIP sat v2 2003 2014 @{OBSPATH}/Tier2/MODIS-CFMIP </model>
         <diag_script cfg="cfg_clouds_interannual.ncl"> clouds_interannual.ncl </diag_script>
+        <tags> R_atmos, T_clouds </tags>
     </diag>
 -->
     <diag>
@@ -304,9 +327,9 @@ This namelist is part of the ESMValTool
         <diag_script_cfg_dir> ./nml/cfg_clouds/  </diag_script_cfg_dir>
         <model> obs4mips GPCP-SG L3 v2.2 1986 2005 @{OBSPATH}/Tier1/ </model>
         <diag_script cfg="cfg_clouds_interannual.ncl"> clouds_interannual.ncl </diag_script>
+        <tags> R_atmos, T_clouds, T_phys </tags>
     </diag>
 
 </DIAGNOSTICS>
 
 </namelist>
-

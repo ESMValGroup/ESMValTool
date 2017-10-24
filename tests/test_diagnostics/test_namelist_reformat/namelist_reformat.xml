@@ -1,0 +1,89 @@
+<namelist>
+<!--
+<include href="./config_private.xml"/>
+-->
+<namelist_summary>
+###############################################################################
+namelist_reformat.xml
+
+Description
+Test namelist for the reformat routines
+
+Author
+Mattia Righi (DLR, Germany - mattia.righi@dlr.de)
+
+Project
+DLR ESMVal
+
+Reference
+
+This namelist is part of the ESMValTool
+###############################################################################
+</namelist_summary>
+
+<GLOBAL>
+  <write_plots type="boolean">            True          </write_plots>
+  <write_netcdf type="boolean">           True          </write_netcdf>
+  <force_processing type="boolean">       True          </force_processing>
+  <wrk_dir type="path">                   @{WORKPATH}   </wrk_dir>
+  <plot_dir type="path">                  @{PLOTPATH}   </plot_dir>
+  <climo_dir type="path">                 @{CLIMOPATH}  </climo_dir>
+  <write_plot_vars type="boolean">        True          </write_plot_vars>
+  <max_data_filesize type="integer">      100           </max_data_filesize>
+  <max_data_blocksize type="integer">     500           </max_data_blocksize>
+  <verbosity  type="integer">              1            </verbosity>
+  <exit_on_warning  type="boolean">       False         </exit_on_warning>
+</GLOBAL>
+
+<MODELS>
+<!-- Each block below is used for testing the project classes in projects.py -->
+
+<!--   ### OBSERVATIONS ######################################################################################################## -->
+   <model>  OBS         NCEP               reanaly   1    1980 2000      @{MODELPATH} </model>
+
+<!--   ### obs4mips ############################################################################################################ -->
+   <model>  obs4mips    AIRS           L3    RetStd-v5    2003 2010   @{MODELPATH} </model>
+   <model>  ana4mips    CFSR          Amon   reanalysis   2010 2013   @{MODELPATH} </model>
+   <model>  OBS         SRB            sat   1            1995 2005   @{MODELPATH} </model>
+
+<!--   ### EMAC ################################################################################################################ -->
+<!--
+   <model> EMAC    EVAL2   1  1999 2008  @{MODELPATH}/EMAC/EVAL2/   </model>
+-->
+
+<!--
+     <model> GFDL   CM4i_c96L48_am4a1r1_2000climo  atmos  1  1980  1983  1979  @{MODELPATH}  </model>
+-->
+
+<!--
+   <model> CCMVal1  AMTRAC        REF-1   1  1960 2004  @{MODELPATH}        </model>
+-->
+
+
+
+<!--
+   <model> CCMVal2  AMTRAC3       REF-B1  1  1951 2007  @{MODELPATH}      </model>
+-->
+
+  <model>  CMIP5_ETHZ  ACCESS1-0          Amon   historical   r1i1p1  1998 2004  @{MODELPATH} </model>
+  <model>  CMIP5_ETHZ  ACCESS1-3          Amon   historical   r1i1p1  1998 2004  @{MODELPATH} </model>
+
+   <model> CMIP5_ETHZ  FIO-ESM           OImon   historical   r1i1p1  1999 2004  @{MODELPATH} </model>
+
+
+<!--   ################################################################################################################################### -->
+</MODELS>
+
+<DIAGNOSTICS>
+    <diag>
+        <description> Time series plot                        </description>
+        <variable_def_dir>                ./variable_defs/    </variable_def_dir>
+        <variable>                          tas               </variable>
+        <field_type>                        T2Ms              </field_type>
+        <diag_script_cfg_dir>             ./nml/cfg_generic/  </diag_script_cfg_dir>
+
+        <diag_script cfg="cfg_generic_tsline.ncl">      tsline.ncl       </diag_script>
+    </diag>
+</DIAGNOSTICS>
+
+</namelist>

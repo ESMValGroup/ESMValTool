@@ -11,6 +11,9 @@ Martin Evaldsson (SMHI, Sweden - Martin.Evaldsson@smhi.se)
 Edouard Davin (ETHZ, Switzerland - Edouard.Davin@env.ethz.ch
 Boris Orlowski (ETHZ, Switzerland - [not longer at eth]
 
+Contributor(s)
+n/a
+
 Project
 EMBRACE
 
@@ -37,6 +40,7 @@ This namelist is part of the ESMValTool
     <write_netcdf type="boolean">                  True     </write_netcdf>
     <read_from_vault type="boolean">               False    </read_from_vault>
     <force_processing type="boolean">              False    </force_processing>
+    <tags>    D_mueller14grl, D_mueller13hess, P_embrace    </tags>
 
 </GLOBAL>
 
@@ -73,6 +77,7 @@ This namelist is part of the ESMValTool
     <variable_def_dir>                              ./variable_defs/   </variable_def_dir>
     <variable ref_model="LandFlux-EVAL">                         et    </variable>
     <field_type>                                               T2Ms    </field_type>
+    <tags>                                             R_land, T_phys  </tags>
 
     <diag_script_cfg_dir>                             ./nml/cfg_et    </diag_script_cfg_dir>
     <diag_script cfg="cfg_Evapotranspiration.ncl">   Evapotranspiration.ncl    </diag_script>
