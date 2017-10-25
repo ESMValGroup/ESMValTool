@@ -35,6 +35,8 @@
 ;;    standard). Conversion to microg/m3 is performed within the script.
 ;;
 ;; Modification history
+;;    20170823-A_bock_ls: code changes for reporting: all plots are written to
+;;                        individual files (no multi-page files), tags are added
 ;;    20161220_A_laue_ax: added option to set map projection
 ;;                        (diag_script_info@projection)
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
@@ -62,6 +64,8 @@ load "./diag_scripts/aux/aerosol/aux_aerosol.ncl"
 load "./plot_scripts/ncl/xy_line.ncl"
 load "./plot_scripts/ncl/scatterplot.ncl"
 load "./plot_scripts/ncl/contour_maps.ncl"
+
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 
 begin
 
@@ -123,16 +127,31 @@ begin
     end if
 
     ;; File type
-    valid_types = (/"PS", "ps", "PDF", "pdf"/)  ; Support for multiple pages
+;    valid_types = (/"PS", "ps", "PDF", "pdf"/)  ; Support for multiple pages
     file_type = getenv("ESMValTool_output_file_type")
     if (ismissing(file_type)) then
         file_type = "PS"
     end if
-    if (dimsizes(models@name) .gt. 1 .and. all(file_type .ne. valid_types)) then
-        info_output(file_type + " format does not support multiple pages, " \
-                    + "switching to ps", verbosity, 1)
-        file_type = "PS"
-    end if
+;    if (dimsizes(models@name) .gt. 1 .and. all(file_type .ne. valid_types)) then
+;        info_output(file_type + " format does not support multiple pages, " \
+;                    + "switching to ps", verbosity, 1)
+;        file_type = "PS"
+;    end if
+
+    ; -------------------------------------------------------------------------------
+    ; collect information for adding meta data to plots (for reporting)
+
+    climofiles = new(dim_MOD, string)
+    do ii = 0, dim_MOD - 1
+        climofiles(ii) = interface_get_inpaths(ii) + "/" \
+            + interface_get_infile(variables(0), field_types(0), ii)
+    end do
+
+    stations_file = systemfunc("ls " + diag_script_info@datapath + \
+                      "/OBS_" + diag_script_info@network + \
+                      "_ground_*_T0M_" + variables(0) + "_*.nc")
+    ; -------------------------------------------------------------------------------
+
 
     ;; Print summary info
     info_output("Network: " + diag_script_info@network, verbosity, 2)
@@ -187,16 +206,16 @@ begin
 
     ;; Define path and names of plot files
     plot_dir = getenv("ESMValTool_plot_dir")
-    diag_script_base = basename(diag_script)
+    diag_script_base = basename(diag_script) + "/aerosol_timeseries"
     output_dir = get_output_dir(plot_dir, diag_script_base)
 
     ;; Time-series plot ######################################################
     info_output("Time-series plot range: " + min(years) + "-" + max(years), \
                 verbosity, 2)
-    plot_file = diag_script_info@network + "_timeseries_" + \
-        diag_script_info@time_avg + "_" + min(years) + "-" + max(years) + \
-        "_" + var0
-    plot_file = output_dir + plot_file
+    ;plot_file = diag_script_info@network + "_timeseries_" + \
+    ;    diag_script_info@time_avg + "_" + min(years) + "-" + max(years) + \
+    ;    "_" + var0
+    ;plot_file = output_dir + plot_file
 
     ;; Define line properties (first element is used for observations)
     annots = array_append_record(diag_script_info@network, \
@@ -207,9 +226,6 @@ begin
                                  project_style(diag_script_info, "thicks"), 0)
     dashes = array_append_record(0, \
                                  project_style(diag_script_info, "dashes"), 0)
-    wks = gsn_open_wks(file_type, plot_file)
-    gsn_define_colormap(wks, array_append_record((/"white", "black"/), \
-                        colors, 0))
 
     ;; Loop over stations
     do stID = 0, dimsizes(obser_model_pts&station) - 1
@@ -226,6 +242,9 @@ begin
         ;; Attach station info as attribute
         data_arr@stname = str_squeeze(str_get_field( \
             obser_model_pts&station(stID), 1, ";"))
+        ;data_arr@stname = str_sub_str(data_arr@stname, " ", "_")
+        ;data_arr@stname = str_sub_str(data_arr@stname, "(", "_")
+        ;data_arr@stname = str_sub_str(data_arr@stname, ")", "_")
         data_arr@stlat  = tofloat(str_get_field( \
             obser_model_pts&station(stID), 2, ";"))
         data_arr@stlon  = tofloat(str_get_field( \
@@ -238,48 +257,73 @@ begin
         data_arr@res_xyLineThicknesses   = thicks
         data_arr@res_xyDashPatterns      = dashes
 
+        ;plot_file = diag_script_info@network + "_" + data_arr@stname \
+        plot_file = diag_script_info@network + "_" + data_arr@stlat \
+            + "_" + data_arr@stlon \
+            + "_timeseries_" + \
+            diag_script_info@time_avg + "_" + min(years) + "-" + max(years) + \
+            "_" + var0
+        plot_file = output_dir + plot_file
+        wks = gsn_open_wks(file_type, plot_file)
+        gsn_define_colormap(wks, array_append_record((/"white", "black"/), \
+                            colors, 0))
+
+
         ;; Call plot funciton
         plot = timeseries_station(wks, data_arr, var0)
 
-        delete(data_arr)
+        ;; Create legend file
+        if (diag_script_info@legend_outside) then
+            lg_outfile = plot_file + "_legend"
+            styles = True
+            styles@colors = colors
+            styles@dashes = dashes
+            styles@thicks = thicks
+            create_legend_lines(annots, styles, lg_outfile, "lines")
+        end if
+
         draw(plot)
         frame(wks)
 
-    end do
+        ; -------------------------------------------------------------------------------
+        ; add meta data to plot (for reporting)
+        caption = "Timeseries of " + variables(0) + " at " + diag_script_info@network \
+                   + " station " + data_arr@stname + "."
+        id = diag_script + "_" + variables(0)
+        alltags = array_append_record(tags,(/"ST_clim", "PT_times", "DM_reg"/),0)
+        contrib_authors = (/"A_righ_ma", "A_kais_ch"/)
+        modelsname = array_append_record(models@name, diag_script_info@network + "_" + data_arr@stname, 0)
+        climofiles_mod = array_append_record(climofiles, stations_file(stID), 0)
+        ESMValMD(plot_file+"."+file_type, alltags, caption, id, variables(0), \
+                 modelsname, climofiles_mod, diag_script, contrib_authors)
+        delete([/alltags, modelsname, climofiles_mod/])
+        ; -------------------------------------------------------------------------------
 
-    ;; Create legend file
-    if (diag_script_info@legend_outside) then
-        lg_outfile = plot_file + "_legend"
-        styles = True
-        styles@colors = colors
-        styles@dashes = dashes
-        styles@thicks = thicks
-        create_legend_lines(annots, styles, lg_outfile, "lines")
-    end if
+        delete(data_arr)
+        delete(wks)
+
+    end do
 
     delete(annots)
     delete(colors)
     delete(dashes)
     delete(thicks)
-    delete(wks)
 
-    info_output(" gv " + plot_file + "." + file_type, verbosity, 1)
+    ;info_output(" gv " + plot_file + "." + file_type, verbosity, 1)
 
     ;; Scatter plot ##########################################################
     info_output("Scatter-plot range: " + min(years) + "-" + max(years), \
                 verbosity, 2)
-    plot_file = diag_script_info@network + "_scatter_" + \
-        diag_script_info@time_avg + "_" + min(years) + "-" + max(years) + \
-        "_" + var0
-    plot_file = output_dir + plot_file
+    ;plot_file = diag_script_info@network + "_scatter_" + \
+    ;    diag_script_info@time_avg + "_" + min(years) + "-" + max(years) + \
+    ;    "_" + var0
+    ;plot_file = output_dir + plot_file
+    diag_script_base = basename(diag_script)
+    output_dir = get_output_dir(plot_dir, diag_script_base)
 
     ;; Style options
     colors = project_style(diag_script_info, "colors")
     annots = project_style(diag_script_info, "annots")
-
-    wks = gsn_open_wks(file_type, plot_file)
-    gsn_define_colormap(wks, array_append_record((/"white", "black"/), \
-                        colors, 0))
 
     ;; Define arrays
     obser = ndtooned(obser_model_pts(0, :, :))
@@ -291,6 +335,16 @@ begin
 
     ;; Loop over models
     do mID = 0, dimsizes(models@name) - 1
+
+        plot_file = diag_script_info@network + "_" + models@name(mID) \
+            + "_scatter_" + \
+            diag_script_info@time_avg + "_" + min(years) + "-" + max(years) + \
+            "_" + var0
+        plot_file = output_dir + plot_file
+
+        wks = gsn_open_wks(file_type, plot_file)
+        gsn_define_colormap(wks, array_append_record((/"white", "black"/), \
+                            colors, 0))
 
         data_arr&models = (/diag_script_info@network, annots(mID)/)
 
@@ -317,29 +371,54 @@ begin
         frame(wks)
         delete(model)
 
+        ; -------------------------------------------------------------------------------
+        ; add meta data to plot (for reporting)
+        caption = "Scatter plot of " + variables(0) + ", model: " + models@name(mID) \
+                   + " compared with " + diag_script_info@network + " stations."
+        id = diag_script + "_scatter_" + variables(0) 
+        alltags = (/"ST_clim", "PT_scatter", "DM_reg"/)
+        contrib_authors = (/"A_righ_ma", "A_kais_ch"/)
+        do stID = 0, dimsizes(obser_model_pts&station) - 1
+            stname = str_squeeze(str_get_field( \
+                obser_model_pts&station(stID), 1, ";"))
+            modelsname_mod := array_append_record(models@name(mID), \
+                       diag_script_info@network + "_" + stname, 0)
+        end do
+        climofiles_mod := array_append_record(climofiles(mID), stations_file, 0)
+        ESMValMD(plot_file+"."+file_type, alltags, caption, id, variables(0), \
+                 modelsname_mod, climofiles_mod, diag_script, contrib_authors)
+        delete(alltags)
+        ; -------------------------------------------------------------------------------
+
+        delete(wks)
+
     end do
     delete(data_arr)
-    delete(wks)
     if (isdefined("plot")) then
         delete(plot)
     end if
     delete(obser)
     delete(colors)
 
-    info_output(" gv " + plot_file + "." + file_type, verbosity, 1)
 
     ;; Map plot ###############################################################
-    plot_file = diag_script_info@network + "_map_annualclim_" \
-        + min(years) + "-" + max(years) + "_" + var0
-    plot_file = output_dir + plot_file
-    wks = gsn_open_wks(file_type, plot_file)
-    if (isatt(variable_info, "colortable_abs")) then
-        gsn_define_colormap(wks, variable_info@colortable_abs)
-    else
-        gsn_define_colormap(wks, "WhiteBlueGreenYellowRed")
-    end if
+;    plot_file = diag_script_info@network + "_map_annualclim_" \
+;        + min(years) + "-" + max(years) + "_" + var0
+;    plot_file = output_dir + plot_file
 
     do mID = 0, dimsizes(models@name) - 1
+
+        plot_file = diag_script_info@network + "_" + models@name(mID) \
+            + "__map_annualclim__" \
+            + min(years) + "-" + max(years) + "_" + var0
+        plot_file = output_dir + plot_file
+
+        wks = gsn_open_wks(file_type, plot_file)
+        if (isatt(variable_info, "colortable_abs")) then
+            gsn_define_colormap(wks, variable_info@colortable_abs)
+        else
+            gsn_define_colormap(wks, "WhiteBlueGreenYellowRed")
+        end if
 
         ;; Calculate time average over consistent time ranges
         tmp = extract_data(mID, data, -1, 0, 0)
@@ -416,9 +495,30 @@ begin
         delete(model)
         delete(obser)
 
+        ; -------------------------------------------------------------------------------
+        ; add meta data to plot (for reporting)
+        caption = "Geographical distribution of " + variables(0) + ", model: " + models@name(mID) \
+                   + " compared with " + diag_script_info@network + " stations."
+        id = diag_script + "_map_" + variables(0) 
+        alltags = (/"ST_clim", "PT_geo", "DM_global"/)
+        contrib_authors = (/"A_righ_ma", "A_kais_ch"/)
+        do stID = 0, dimsizes(obser_model_pts&station) - 1
+            stname = str_squeeze(str_get_field( \
+                obser_model_pts&station(stID), 1, ";"))
+            modelsname_mod := array_append_record(models@name(mID), \
+                       diag_script_info@network + "_" + stname, 0)
+        end do
+        climofiles_mod := array_append_record(climofiles(mID), stations_file, 0)
+        ESMValMD(plot_file+"."+file_type, alltags, caption, id, variables(0), \
+                 modelsname_mod, climofiles_mod, diag_script, contrib_authors)
+        delete(alltags)
+        ; -------------------------------------------------------------------------------
+
+        delete(wks)
+
     end do
 
-    info_output(" gv " + plot_file + "." + file_type, verbosity, 1)
+;    info_output(" gv " + plot_file + "." + file_type, verbosity, 1)
 
     info_output(">>>>>>>> Leaving " + diag_script, verbosity, 2)
 

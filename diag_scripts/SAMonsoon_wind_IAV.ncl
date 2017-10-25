@@ -18,6 +18,7 @@
 ;;   Only valid for prescribed SST experiments (AMIP)
 ;;
 ;; Modification history
+;;    20170821-A_bock_ls: added tags for reporting
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;;                        of the code
 ;;    20150702-A_eval_ma: written.
@@ -37,6 +38,9 @@ load "./diag_scripts/lib/ncl/set_operators.ncl"
 exact_panel_position_file = "./diag_scripts/aux/SAMonsoon/exact_panel_positions_wind.ncl"
 
 load "./plot_scripts/ncl/monsoon_panels.ncl"
+
+load "./diag_scripts/lib/ncl/meta_data.ncl"
+
 ;*********************************************************************
 
 begin
@@ -387,6 +391,39 @@ begin
                                 + "~C~   the same prescribed SST"
     ts_line_wrapper(storage_vault, di, plot_settings, "goswami-iav", debuginfo)
 
+    ;; Attach Metadata to plot
+    alltags = array_append_record(tags, (/"DM_reg", "ST_anomaly", "ST_var", "PT_times"/), 0)
+
+    caption = "Interannual variability of standardized anomalies"\
+              + " (normalized with climatology) for the Goswami Monsoon Index"\
+              + " (GMI). GMI is the vertical northward wind shear for the area,"\
+              + " lat: " + gos_minlat + "-" + gos_maxlat\
+              + ", lon: " + gos_minlon + "-" + gos_maxlon\
+              + ". The gray area indicates standard deviation from model mean to"\
+              + " indicate the spread between models (obs/reanalysis are excluded)."\
+
+    id = diag_script + "_goswami-iav_" + variables(0)
+
+    climofiles = new(dimsizes(models@name), string)
+    do imod = 0, dimsizes(models@name) - 1
+            climofiles(imod) = interface_get_inpaths(imod) + "/" + \
+                 interface_get_infile(variables(0), field_types(0), imod)
+    end do
+
+    contrib_authors = (/"A_eval_ma", "A_levi_ri", "A_mart_gi"/)
+
+    diag_script_base = basename(diag_script)
+    output_dir = get_output_dir(plot_dir, diag_script_base)
+    aux_filename_info = plot_settings@aux_filename_info
+    output_filename = interface_get_figure_filename(diag_script_base,\
+                                                    var0 + var1,\
+                                                    field_type0 + field_type1,\
+                                                    aux_filename_info, -1)
+    output_file_path = output_dir + output_filename + "." + output_file_type
+
+    ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+
+
 ; --------------------------
 
     plot_settings@title_string = "Webster Yang IAV (" + di@season + ")"
@@ -402,6 +439,26 @@ begin
                                 + "~C~~F22~Caveat:~F21~ Should only be used for comparing AMIP runs with"\
                                 + "~C~   the same prescribed SST"
     ts_line_wrapper(storage_vault, di, plot_settings, "webster-yang-iav", debuginfo)
+
+    ;; Attach Metadata to plot
+    caption = "Interannual variability of standardized anomalies"\
+              + " (normalized with climatology) for the Webster Yang Monsoon Index"\
+              + " (WYI). WYI is the vertical northward wind shear for the area,"\
+              + " lat: " + wy_minlat + "-" + wy_maxlat\
+              + ", lon: " + wy_minlon + "-" + wy_maxlon\
+              + ". The gray area indicates standard deviation from model mean to"\
+              + " indicate the spread between models (obs/reanalysis are excluded)."\
+
+    id = diag_script + "_webster-yang-iav_" + variables(0)
+
+    aux_filename_info = plot_settings@aux_filename_info
+    output_filename = interface_get_figure_filename(diag_script_base,\
+                                                    var0 + var1,\
+                                                    field_type0 + field_type1,\
+                                                    aux_filename_info, -1)
+    output_file_path = output_dir + output_filename + "." + output_file_type
+
+    ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
 
 ; --------------------------
 
@@ -421,6 +478,28 @@ begin
                                 + "~C~~F22~Caveat:~F21~ Should only be used for comparing AMIP runs with"\
                                 + "~C~   the same prescribed SST"
     ts_line_wrapper(storage_vault, di, plot_settings, "wang-fan-iav", debuginfo)
+
+    ;; Attach Metadata to plot
+    caption = "Interannual variability of standardized anomalies"\
+              + " (normalized with climatology) for the Wang Fan Monsoon Index"\
+              + " (WFI). WFI is the vertical northward wind shear for the area,"\
+              + " lat: " + wf1_minlat + "-" + wf1_maxlat\
+              + ", lon: " + wf1_minlon + "-" + wf1_maxlon + " and"\
+              + " lat: " + wf2_minlat + "-" + wf2_maxlat\
+              + ", lon: " + wf2_minlon + "-" + wf2_maxlon\
+              + ". The gray area indicates standard deviation from model mean to"\
+              + " indicate the spread between models (obs/reanalysis are excluded)."\
+                                
+    id = diag_script + "_wang-fan-iav_" + variables(0)
+                                
+    aux_filename_info = plot_settings@aux_filename_info
+    output_filename = interface_get_figure_filename(diag_script_base,\
+                                                    var0 + var1,\
+                                                    field_type0 + field_type1,\
+                                                    aux_filename_info, -1)
+    output_file_path = output_dir + output_filename + "." + output_file_type
+
+    ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
 
     info_output(">>>>>>>> Leaving " + diag_script, verbosity, 4)
 end

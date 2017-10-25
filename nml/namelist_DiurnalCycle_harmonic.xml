@@ -7,11 +7,17 @@ Description
 Computes mean diurnal cycle of precipitation over specific boxes
 and seasons.
 
-Authors
+Author(s)
 Catherine Rio (LMD, France - catherine.rio@lmd.jussieu.fr)
+
+Contributor(s)
+n/a
 
 Project
 EMBRACE
+
+Reference(s)
+n/a
 
 This namelist is part of the ESMValTool
 ###############################################################################
@@ -34,6 +40,7 @@ This namelist is part of the ESMValTool
     <show_debuginfo type="boolean">                                   False   </show_debuginfo>
     <read_from_vault type="boolean">                                  False   </read_from_vault>
     <force_processing type="boolean">                                 False   </force_processing>
+    <tags>                                                        P_embrace   </tags>
 </GLOBAL>
 
 <MODELS>
@@ -50,6 +57,7 @@ This namelist is part of the ESMValTool
     <variable ref_model="trmm">                      pr-mmh   </variable>
     <field_type>                                       T2Is   </field_type>
     <diag_script_cfg_dir>            ./nml/cfg_DiurnalCycle/  </diag_script_cfg_dir>
+    <tags>                                  R_atmos, T_phys   </tags>
 
     <diag_script cfg="cfg_DiurnalCycle_harmonic_DJF.ncl">  DiurnalCycle_precip_harmonic.ncl </diag_script>
     <diag_script cfg="cfg_DiurnalCycle_harmonic_MAM.ncl">  DiurnalCycle_precip_harmonic.ncl </diag_script>

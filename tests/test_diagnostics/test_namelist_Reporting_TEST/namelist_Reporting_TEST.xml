@@ -1,0 +1,81 @@
+<namelist>
+<namelist_summary>
+###############################################################################
+namelist_sst_TEST.xml
+
+Description
+
+Author
+Alexander Loew (LMU, Germany - alexander.loew@lmu.de)
+
+Project
+ESA CCI CMUG
+
+References
+
+This namelist is part of the ESMValTool
+###############################################################################
+</namelist_summary>
+
+<GLOBAL>
+  <write_plots type="boolean">        True                      </write_plots>
+  <write_netcdf type="boolean">       True                      </write_netcdf>
+  <force_processing type="boolean">   False                     </force_processing>
+  <wrk_dir type="path">               @{WORKPATH}               </wrk_dir>
+  <plot_dir type="path">              @{PLOTPATH}/TEST/     	 </plot_dir>
+  <climo_dir type="path">             @{CLIMOPATH}       		 </climo_dir>
+  <write_plot_vars type="boolean">    True                      </write_plot_vars>
+  <max_data_filesize type="integer">  100                       </max_data_filesize>
+  <max_data_blocksize type="integer"> 500                       </max_data_blocksize>
+  <output_file_type>                  png                      </output_file_type>
+  <verbosity  type="integer">         1                         </verbosity>
+  <debuginfo type="boolean">          False                     </debuginfo>
+  <exit_on_warning  type="boolean">   True                      </exit_on_warning>
+  
+  <tags> Example, monthly, ESACCI </tags>
+  
+</GLOBAL>
+
+
+<MODELS>
+
+  <model> CMIP5 		12x6 				MIP_VAR_DEF 	  historical 			r1i1p1 1991 2005  @{MODELPATH} </model>
+  <model> CMIP5		12x6II			MIP_VAR_DEF	  	  historical			r1i1p1 1991 2005  @{MODELPATH} </model>
+	
+</MODELS>
+
+
+<DIAGNOSTICS>
+
+
+    <diag>
+        <description>  															Doing ESACCI sea surface temperature analysis. 		</description>
+        <variable_def_dir>                								./variable_defs/      										</variable_def_dir>
+        <variable ref_model="ESACCI-SST" MIP="Amon">     			ts                                        			</variable>
+        <field_type>                      								T2Ms                                      			</field_type>
+        <diag_script cfg="./nml/cfg_ESACCI/cfg_sst_ESACCI.py">   	sst_ESACCI.py                    						</diag_script>
+        <launcher_arguments>               								[('execute_as_shell', False)]             			</launcher_arguments>
+        
+        <tags> sst, Ocean </tags>
+        
+        <model> OBS        ESACCI-SST 	sat     	 		  12x6  		 1992 2005  @{OBSPATH}  </model>
+    </diag>
+
+
+   <!--<diag>
+        <description>  															Doing ESACCI albedo analysis. 		</description>
+        <variable_def_dir>                								./variable_defs/      										</variable_def_dir>
+        <variable ref_model="ESACCI-SM" MIP="Lmon">     		   	sm                                        			</variable>
+        <variable exclude="ESACCI-SM" MIP="Amon">    					pr                                        </variable>
+        <field_type>                      								T2Ms                                      			</field_type>
+        <diag_script cfg="./nml/cfg_/cfg_sm_ESACCI.py">   			sm_ESACCI.py                    						</diag_script>
+        <launcher_arguments>               								[('execute_as_shell', False)]             			</launcher_arguments>
+        
+        <tags> sm, Land </tags>
+        
+        <model> OBS        ESACCI-SM 	sat     	 		  12x6  		 1992 2005  @{OBSPATH}  </model>
+    </diag>-->
+
+</DIAGNOSTICS>
+
+</namelist>

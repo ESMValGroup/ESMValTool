@@ -13,6 +13,11 @@ engines:
         python_version: 3
 
 exclude_paths: [
+    'doc/sphinx/**',
+    'esmvaltool/doc/sphinx/**'
+    # cmor tables
+    'esmvaltool/interface_scripts/cmip*-cmor-tables/**',
+    # old stuff
     'backend/**',
     'diag_scripts/**',
     'interface_data/**',

@@ -14,9 +14,14 @@ Authors
 Bjoern Broetz (DLR, Germany - bjoern.broetz@dlr.de)
 Mattia Righi (DLR, Germany - mattia.righi@dlr.de)
 
+Contributor(s)
+n/a
+
 Project
+n/a
 
 Reference
+n/a
 
 This namelist is part of the ESMValTool
 ###############################################################################
@@ -32,6 +37,7 @@ This namelist is part of the ESMValTool
 <!--   <reformat_script id="CARSNET">                 ./reformat_scripts/obs/reformat_obs_CARSNET.ncl                 </reformat_script> -->
 <!--   <reformat_script id="CASTNET">                 ./reformat_scripts/obs/reformat_obs_CASTNET.ncl                 </reformat_script> -->
 <!--   <reformat_script id="CERES-SYN1deg-SFC">       ./reformat_scripts/obs/reformat_obs_CERES-SYN1deg-SFC.bash      </reformat_script> -->
+<!--   <reformat_script id="CERES-SYN1deg-mon">       ./reformat_scripts/obs/reformat_obs_CERES-SYN1deg-mon.bash      </reformat_script> -->
 <!--   <reformat_script id="CERES-SYN1deg-TOA">       ./reformat_scripts/obs/reformat_obs_CERES-SYN1deg-TOA.bash      </reformat_script> -->
 <!--   <reformat_script id="CIRRUS">                  ./reformat_scripts/obs/reformat_obs_CIRRUS.ncl                  </reformat_script> -->
 <!--   <reformat_script id="cloudsat">                ./reformat_scripts/obs/reformat_obs_cloudsat.bash               </reformat_script> -->

@@ -1,0 +1,219 @@
+"""Provide a class for testing esmvaltool."""
+
+from __future__ import print_function
+
+import glob
+import os
+import shutil
+import sys
+from unittest import SkipTest
+
+import numpy as np
+import yaml
+from easytest import EasyTest
+
+import esmvaltool
+
+
+def _load_config(filename=None):
+    """Load test configuration"""
+    if filename is None:
+        # look in default locations for config-test.yml
+        config_file = 'config-test.yml'
+        default_locations = [
+            '.',
+            '~/.esmvaltool',
+            os.path.dirname(__file__),
+        ]
+        for path in default_locations:
+            filepath = os.path.join(os.path.expanduser(path), config_file)
+            if os.path.exists(filepath):
+                filename = os.path.abspath(filepath)
+                break
+
+    with open(filename, 'r') as file:
+        cfg = yaml.safe_load(file)
+
+    cfg['configfile'] = filename
+    cfg['reference']['output'] = os.path.abspath(
+        os.path.expanduser(cfg['reference']['output']))
+
+    if cfg['test'].get('namelists', []) == []:
+        script_root = esmvaltool.get_script_root()
+        namelist_glob = os.path.join(script_root, 'nml', 'namelist_*.yml')
+        cfg['test']['namelists'] = glob.glob(namelist_glob)
+
+    return cfg
+
+
+_CFG = _load_config()
+
+NAMELISTS = _CFG['test']['namelists']
+
+
+def _create_config_user_file(output_directory):
+    """Write a config-user.yml file.
+
+    Write a configuration file for running ESMValTool
+    such that it writes all output to `output_directory`.
+    """
+    cfg = _CFG['user']
+
+    cfg['run_dir'] = output_directory
+    for task in ('preproc', 'work', 'plot'):
+        cfg[task + '_dir'] = os.path.join(output_directory, task)
+
+    # write to file
+    filename = os.path.join(output_directory, 'config-user.yml')
+    with open(filename, 'w') as file:
+        yaml.safe_dump(cfg, file)
+
+    return filename
+
+
+class ESMValToolTest(EasyTest):
+    """Main class for ESMValTool test runs."""
+
+    def __init__(self, namelist, output_directory, ignore='', **kwargs):
+        """
+        Create ESMValToolTest instance
+
+        namelist: str
+            The filename of the namelist that should be tested.
+        output_directory : str
+            The name of a directory where results can be stored.
+        ignore: str or iterable of str
+            Glob patterns of files to be ignored when testing.
+        """
+        if not _CFG['test']['run']:
+            raise SkipTest("System tests disabled in {}"
+                           .format(_CFG['configfile']))
+
+        self.ignore = (ignore, ) if isinstance(ignore, str) else ignore
+
+        script_root = esmvaltool.get_script_root()
+
+        # Normalize namelist path
+        if not os.path.exists(namelist):
+            namelist = os.path.join(script_root, 'nml', namelist)
+        namelist = os.path.abspath(namelist)
+
+        # Define output and reference data paths
+        namelist_name = os.path.splitext(os.path.basename(namelist))[0]
+        reference_dir = os.path.join(_CFG['reference']['output'],
+                                     namelist_name)
+
+        # Are we asked to generate reference data?
+        self.generate_ref = _CFG['reference'].get('generate', False)
+
+        # If reference data is neither available nor should be generated, skip
+        if not os.path.exists(reference_dir) and not self.generate_ref:
+            raise SkipTest("No reference data available for namelist {} in {}"
+                           .format(namelist, _CFG['reference']['output']))
+
+        # required ESMValTool configuration file
+        config = _create_config_user_file(output_directory)
+
+        super(ESMValToolTest, self).__init__(
+            exe='esmvaltool',
+            args=['-n', namelist, '-c', config],
+            output_directory=output_directory,
+            refdirectory=reference_dir,
+            **kwargs)
+
+    def run(self, **kwargs):
+        """Run tests or generate reference data."""
+        if self.generate_ref:
+            self.generate_reference_data()
+            raise SkipTest("Generated reference data instead of running test")
+        else:
+            super(ESMValToolTest, self).run_tests(**kwargs)
+
+    def generate_reference_data(self):
+        """Generate reference data.
+
+        Generate reference data by executing the namelist and then moving
+        results to the output directory.
+        """
+        if not os.path.exists(self.refdirectory):
+            self._execute()
+            shutil.move(self.output_directory,
+                        os.path.dirname(self.refdirectory))
+        else:
+            print("Warning: not generating reference data, reference "
+                  "directory {} already exists.".format(self.refdirectory))
+
+    def _execute(self):
+        """Execute ESMValTool
+
+        Override the _execute method because we want to run in our own
+        Python instance to get coverage reporting and we want to update
+        the location of `self.output_directory` afterwards.
+        """
+        # run ESMValTool
+        sys.argv[1:] = self.args
+        esmvaltool.main.run()
+
+        # Update the output directory to point to the output of the run
+        output_directory = self.output_directory  # noqa
+
+        output = []
+        for path in os.listdir(output_directory):
+            path = os.path.join(output_directory, path)
+            if os.path.isdir(path):
+                output.append(path)
+
+        if not output:
+            raise OSError("Output directory not found in location {}. "
+                          "Probably ESMValTool failed to create any output."
+                          .format(output_directory))
+
+        if len(output) > 1:
+            print("Warning: found multiple output directories:\n{}\nin output "
+                  "location {}\nusing the first one.".format(
+                      output, output_directory))
+
+        self.output_directory = output[0] + os.sep  # noqa
+
+    def _get_files_from_refdir(self):
+        """Get a list of files from reference directory.
+
+        Ignore files that match patterns in self.ignore.
+
+        Override this method of easytest.EasyTest to be able to ignore certain
+        files.
+        """
+        from fnmatch import fnmatchcase
+
+        matches = []
+        for root, _, filenames in os.walk(self.refdirectory):
+            for filename in filenames:
+                path = os.path.join(root, filename)
+                relpath = os.path.relpath(path, start=self.refdirectory)
+                for pattern in self.ignore:
+                    if fnmatchcase(relpath, pattern):
+                        break
+                else:
+                    matches.append(path)
+
+        return matches
+
+    def _compare_netcdf_values(self, F1, F2, allow_subset=False):
+        """Compare two netCDF4 Dataset instances.
+
+        Check if dataset2 contains the same variable values as dataset1.
+
+        Override this method of easytest.EasyTest because it is broken
+        for the case where value1 and value2 have no length.
+        """
+        if allow_subset:  # allow that only a subset of data is compared
+            raise NotImplementedError
+
+        for key in F1.variables:
+            values1 = F1.variables[key][:]
+            values2 = F2.variables[key][:]
+
+            if not np.array_equal(values1, values2):
+                return False
+
+        return True

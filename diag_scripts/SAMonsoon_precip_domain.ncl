@@ -30,6 +30,7 @@
 ;;   The settings for GridType and Regional are set explicitly in this script
 ;;
 ;; Modification history
+;;    20170808-A_bock_ls: added tags for reporting
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;;                        of the code
 ;;    20150702-A_eval_ma: written.
@@ -51,6 +52,9 @@ load "./diag_scripts/aux/SAMonsoon/exact_panel_positions_generic.ncl"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
 
 load "./plot_scripts/ncl/monsoon_domain_panels.ncl"
+
+load "./diag_scripts/lib/ncl/meta_data.ncl"
+
 ;*********************************************************************
 
 begin
@@ -78,6 +82,9 @@ begin
     ;; ||          REFERENCES INFO               ||
     ;; ||                                        ||
     ;; ============================================
+
+    contrib_authors = (/"A_eval_ma", "A_levi_ri", "A_mart_gi"/)
+
     write_references(diag_script,            \  ; script name
                      "A_eval_ma",               \  ; authors
                      (/"A_levi_ri", "A_mart_gi"/), \  ; contributors
@@ -117,6 +124,11 @@ begin
                             "abs_cmap",\
                             "diff_cmap"/)
     exit_if_missing_atts(diag_script_info, required_attributes)
+
+    ;; 'output_file_type' if fetched from ncl.interface
+    if (.not. isdefined("output_file_type")) then
+        output_file_type = "ps"
+    end if
 
     ;; Abbreviate a little...
     di = diag_script_info
@@ -289,10 +301,65 @@ begin
     plot_settings@type = "mean"
     precip_domain(storage_vault, di, plot_settings, "intensity", debuginfo, valid_statistics, res)
 
+    ;; Attach Metadata to plot
+    xml_name = getenv("ESMValTool_xml_name")
+    suffix = get_file_suffix(xml_name, 0)
+    base_name = str_sub_str(xml_name, suffix, "")
+
+    alltags = array_append_record(tags, (/"DM_trop", "ST_clim", "PT_geo"/), 0)
+
+    caption = "Global intensity of variable "  + variables(0) + \
+               " over given seasons (summer=" \
+               + di@summer_season + " and winter=" + di@winter_season + ")" 
+
+    id = diag_script + "_intensity_" + variables(0)
+
+    climofiles = new(dimsizes(models@name), string)
+    do imod = 0, dimsizes(models@name) - 1
+            climofiles(imod) = interface_get_inpaths(imod) + "/" + \
+                 interface_get_infile(variables(0), field_types(0), imod)
+    end do
+
+    diag_script_base = basename(diag_script)
+    output_dir = get_output_dir(plot_dir, diag_script_base)
+    aux_filename_info = di@summer_season + "-"\
+                      + "intensity" + "_" + plot_settings@type
+    output_filename = interface_get_figure_filename(diag_script_base,\
+                                                    var0,\
+                                                    field_type0,\
+                                                    aux_filename_info, -1)
+    output_file_path = output_dir + output_filename + "." + output_file_type
+
+    ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+
+    delete([/alltags, caption, id, imod/])
+
+
     ;; Diff intensity plot
     plot_settings@type = "diff"
     plot_settings@part_of_header = "Precipitation Intensity: Model minus Reference"
     precip_domain(storage_vault, di, plot_settings, "intensity", debuginfo, valid_statistics, res)
+
+    ;; Attach Metadata to plot
+    alltags = array_append_record(tags, (/"DM_trop", "ST_diff", "PT_geo"/), 0)
+
+    caption = "Difference in global intensity of variable "  + variables(0) + \
+               " over given seasons (summer=" \
+               + di@summer_season + " and winter=" + di@winter_season + ")" 
+
+    id = diag_script + "_intensity_diff_" + variables(0)
+
+    aux_filename_info = di@summer_season + "-"\
+                      + "intensity" + "_" + plot_settings@type
+    output_filename = interface_get_figure_filename(diag_script_base,\
+                                                    var0,\
+                                                    field_type0,\
+                                                    aux_filename_info, -1)
+    output_file_path = output_dir + output_filename + "." + output_file_type
+
+    ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+
+    delete([/alltags, caption, id/])
 
     ;; Monsoon domain plot
     BlueWhite_domain = read_colormap_file(di@abs_cmap)
@@ -315,6 +382,27 @@ begin
     plot_settings@skip_statistics_in_plots = True
     precip_domain(storage_vault, di, plot_settings, "global-domain", debuginfo, valid_statistics, res)
 
+    ;; Attach Metadata to plot
+    alltags = array_append_record(tags, (/"DM_trop", "ST_clim", "PT_geo"/), 0)
+
+    caption = "Global domain of variable "  + variables(0) + \
+               " over given seasons (summer=" \
+               + di@summer_season + " and winter=" + di@winter_season + ")" 
+
+    id = diag_script + "_domain_" + variables(0)
+
+    aux_filename_info = di@summer_season + "-"\
+                      + "global-domain" + "_" + plot_settings@type
+    output_filename = interface_get_figure_filename(diag_script_base,\
+                                                    var0,\
+                                                    field_type0,\
+                                                    aux_filename_info, -1)
+    output_file_path = output_dir + output_filename + "." + output_file_type
+
+    ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+
+    delete([/alltags, caption, id/])
+
     ;; Diff domain plot
     plot_settings@type = "diff"
     plot_settings@part_of_header = "Global Domain: Model minus Reference"
@@ -325,6 +413,27 @@ begin
     delete(plot_settings@lbres_lblabels)
     plot_settings@lbres_lblabels = (/"only pr~B~REF_domain~N~", "no net value", "only pr~B~model_domain~N~"/)
     precip_domain(storage_vault, di, plot_settings, "global-domain", debuginfo, valid_statistics, res)
+
+    ;; Attach Metadata to plot
+    alltags = array_append_record(tags, (/"DM_trop", "ST_diff", "PT_geo"/), 0)
+
+    caption = "Difference in global domain of variable "  + variables(0) + \
+               " over given seasons (summer=" \
+               + di@summer_season + " and winter=" + di@winter_season + ")" 
+
+    id = diag_script + "_domain_diff_" + variables(0)
+
+    aux_filename_info = di@summer_season + "-"\
+                      + "global-domain" + "_" + plot_settings@type
+    output_filename = interface_get_figure_filename(diag_script_base,\
+                                                    var0,\
+                                                    field_type0,\
+                                                    aux_filename_info, -1)
+    output_file_path = output_dir + output_filename + "." + output_file_type
+
+    ESMValMD(output_file_path, alltags, caption, id, variables, models@name, climofiles, diag_script, contrib_authors)
+
+    delete([/alltags, caption, id, climofiles/])
 
     info_output(">>>>>>>> Leaving " + diag_script, verbosity, 4)
 end

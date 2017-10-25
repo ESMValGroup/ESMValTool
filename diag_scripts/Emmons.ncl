@@ -43,6 +43,7 @@
 ;#    * performance metrics not implemented yet                               #
 ;#                                                                            #
 ;# Modification history:                                                      #
+;#    * 20170830-A_bock_ls: added tags                                        #
 ;#    * 20151027-A_laue_ax: moved call to 'write_references' to the beginning #
 ;#                        of the code                                         #
 ;#    * 20150325-A_laue_ax: modified reference tags used for acknowledgements #
@@ -68,6 +69,7 @@ load "./diag_scripts/lib/ncl/style.ncl"
 load "./diag_scripts/lib/ncl/set_operators.ncl"
 load "./diag_scripts/lib/ncl/statistics.ncl"
 load "./diag_scripts/lib/ncl/latlon.ncl"
+load "./diag_scripts/lib/ncl/meta_data.ncl"
 load "./plot_scripts/ncl/xy_line.ncl"
 ;load "./plot_scripts/ncl/legends.ncl"
 load "./diag_scripts/aux/Emmons/aux_Emmons.ncl"
@@ -627,8 +629,15 @@ begin
             ;; clean up
             delete([/f, plev, var/])
 
+            ;; Adding campaign and location for model list of tags
+            if isvar("camp_loc") then
+                camp_loc := array_append_record(camp_loc, campaign + "_" + location, 0)
+            else
+                camp_loc = campaign + "_" + location
+            end if
+
         end do  ; ifile (files2use)
-        delete([/files2use/])
+        ;delete([/files2use/])
 
         ;;#####################################################################
         ;;# Draw the panel(s)                                                 #
@@ -636,6 +645,35 @@ begin
         pres = True
         outfile = panelling(wks, plots, nvert, nhori, pres)
         info_output(" Wrote " + outfile, verbosity, 1)
+
+
+        ;; Attach Metadata to plot
+        xml_name = getenv("ESMValTool_xml_name")
+        suffix = get_file_suffix(xml_name, 0)
+        base_name = str_sub_str(xml_name, suffix, "")
+    
+        alltags = array_append_record(tags, "DM_reg", 0)
+        alltags := array_append_record(alltags,\
+                   (/"PT_pro", "ST_mean"/), 0)
+        caption = "Vertical profiles of observations and model results for " + \
+                  var0 + " at " + location + ". Like Emmons 2000 fig 2."
+        id = diag_script + "_" + base_name
+        climofiles = new(dimsizes(models@name) * dimsizes(variables), string)
+        do n_var = 0, dimsizes(variables) - 1
+            do imod = 0, dimsizes(models@name) - 1
+                climofiles(n_var * dimsizes(models@name) + imod) = \
+                interface_get_inpaths(imod) + "/" + \
+                interface_get_infile(variables(n_var), field_types(n_var), imod)
+            end do
+        end do
+        climofiles := array_append_record(climofiles, files2use, 0)
+        modnames = array_append_record(models@name, camp_loc, 0)
+        contrib_authors = "A_gott_kl"
+
+        ESMValMD(outfile, alltags, caption, id, variables, modnames, climofiles, diag_script, contrib_authors)
+
+        delete([/alltags, caption, id, climofiles/])
+        delete(files2use)
 
         create_legend_lines(leg@annots, leg, name_string_leg, "lines")
 
