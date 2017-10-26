@@ -25,6 +25,8 @@ import sys
 import scipy.stats
 import esmvaltool.interface_scripts.preprocess
 import iris
+import logging
+logger = logging.getLogger(__name__)
 
 
 # 1. Function to evaluate sea-ice volume
@@ -44,8 +46,8 @@ def compute_volume(avgthickness, cellarea, mask=1):
         sys.exit("(compute_volume): mask not between 0 and 1")
 
     if np.max(avgthickness) > 20.0:
-        print("(compute_volume): W A R N I N G: large sea ice thickness")
-        print("(compute_volume): np.max(avgthickness) = " + str(np.max(avgthickness)))
+        logger.warning("(compute_volume): large sea ice thickness")
+        logger.warning("(compute_volume): np.max(avgthickness) = " + str(np.max(avgthickness)))
 
     if len(avgthickness.shape) == 3:
         nt, ny, nx = avgthickness.shape
@@ -195,26 +197,17 @@ def negative_seaice_feedback(volume, period, order=1):
         pval = 1.0 - scipy.stats.t.cdf(np.abs(tstat), N - 2)
 
         if pval > 0.05:
-            print("(negative_seaice_feedback) W A R N I N G")
-            print("                           Check the scatterplot of dV \
-                                        versus V_min, it is most")
-            print("                           likely suspicious, and the feedback \
-                                        factor likely meaningless")
-            print("p-value: " + str(pval))
+            logger.warning("(negative_seaice_feedback) Check the scatterplot of dV versus V_min, it is most likely "
+                           "suspicious, and the feedback  factor likely meaningless: p-value: " + str(pval))
 
         try:
             fit, cov = np.polyfit(Vmin, dV, 1, cov=True)
             nf = fit[0]  # Fit parameter
             sd = np.sqrt(cov[0, 0])  # Standard deviation on it
         except ValueError:
-            print("(negative_seaice_feedback) PROBLEM, series badly conditioned")
-            print("Input volume: ")
-            print(volume)
-            print("Vmin: ")
-            print(Vmin)
-            print("dV: ")
-            print(dV)
-            sys.exit()
+            logger.error("(negative_seaice_feedback) PROBLEM, series badly conditioned: "
+                         "Input volume: {0} Vmin: {1} dv: {2}".format(volume, Vmin, dV))
+            raise
     # 5. Return
     return [nf, [r, pval, sd], [Vmin, dV]]
 
@@ -237,12 +230,10 @@ def main(project_info):
         f.close()
 
         sit = iris.load_cube(sit_path)
-        print(sit)
-        print(sit.coord('time'))
         # Compute integrated volume over domain and append to existing time series
         volume = compute_volume(sit.data, cellarea, mask=1.0 * (sit.coord('latitude').points > 80.0))
 
         nf, stats, _ = negative_seaice_feedback(volume, period=12, order=2)
 
-        print("Negative feedback: ".ljust(20) + str(nf))
-        print("P-Value: ".ljust(20) + str(stats[1]))
+        logger.info("Negative feedback: ".ljust(20) + str(nf))
+        logger.info("P-Value: ".ljust(20) + str(stats[1]))

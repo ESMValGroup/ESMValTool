@@ -4,7 +4,7 @@
       # models functional and tested for CMIP5 only
       # checks functional and tested in interface_scripts/namelistchecks.py for ALL model types
       # TODO: EMAC, GFDL, CCMVal
-    - {name: EC-EARTH, project: SPECS, institute: BSC, mip: OImon,  exp: decadal, startdate: 20011101,  ensemble: r1i1p1,  start_year: 2002,  end_year: 2005}
+    - {name: EC-EARTH, project: SPECS, institute: BSC, mip: OImon,  exp: decadal, startdate: 20011101,  ensemble: r1i1p1,  start_year: 2002,  end_year: 2010}
 
   PREPROCESS:
       # status of options:
@@ -16,7 +16,7 @@
       # mask_fillvalues: TODO
       # mask_landocean: None,land,ocean,poro - all functional and tested
       # multimodel_mean: TODO
-    - {id: pp1, select_level: None, target_grid: None, regrid_scheme: linear, mask_fillvalues: True, mask_landocean: None, multimodel_mean: True}
+    - {id: pp1, select_level: None, target_grid: None, regrid_scheme: linear, mask_fillvalues: False, mask_landocean: None, multimodel_mean: False}
 #    - {id: pp2, select_level: None, target_grid: ref_model, regrid_scheme: linear, mask_fillvalues: True, mask_landocean: None, multimodel_mean: True}
 
   CONFIG:
