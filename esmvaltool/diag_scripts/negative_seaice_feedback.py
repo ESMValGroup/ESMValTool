@@ -90,32 +90,30 @@ def detrend(data, order=1, period=None):
 
     data_nonan = data[~np.isnan(data)]
 
-    N = len(data)
-    N_nonan = len(data_nonan)
+    n = len(data)
+    n_nonan = len(data_nonan)
 
     # If the signal has no periodicity, we just make a linear regression
     if period is None:
-        time_nonan = np.arange(N_nonan)
-        time = np.arange(N)
+        time_nonan = np.arange(n_nonan)
+        time = np.arange(n)
         p = np.polyfit(time_nonan, data_nonan, order)
-        residuals = data - np.sum([p[i] * time ** (order - i) \
-                                   for i in range(order + 1)], axis=0)
+        residuals = data - np.sum([p[i] * time ** (order - i) for i in range(order + 1)], axis=0)
 
     # If the signal contains a periodical component, we do the regression
     # time step per time step
     else:
-        residuals = np.empty([N])
+        residuals = np.empty([n])
 
         # For each time step of the period, detrend
         for jP in np.arange(period):
-            raw = data[np.arange(jP, N, period)]
+            raw = data[np.arange(jP, n, period)]
             raw_nonan = raw[~np.isnan(raw)]
             time = np.arange(len(raw))
             time_nonan = np.arange(len(raw_nonan))
             p = np.polyfit(time_nonan, raw_nonan, order)
-            residuals[np.arange(jP, N, period)] = \
-                raw - np.sum([p[i] * time ** (order - i) \
-                              for i in range(order + 1)], axis=0)
+            residuals[np.arange(jP, n, period)] = \
+                raw - np.sum([p[i] * time ** (order - i) for i in range(order + 1)], axis=0)
 
             # Note that another common option is to first remove a seasonal cycle
             # and then detrend the anomalies. However this assumes that a cycle can
@@ -165,40 +163,40 @@ def negative_seaice_feedback(volume, period, order=1):
 
     # 3. Detrend series. A one-year shift is introduced to make sure we
     #    compute volume production *after* the summer minimum
-    Vmin = detrend(volume[imin[:-1]], order=order)
-    dV = detrend(volume[imax[1:]] - volume[imin[:-1]], order=order)
+    v_min = detrend(volume[imin[:-1]], order=order)
+    dv = detrend(volume[imax[1:]] - volume[imin[:-1]], order=order)
 
     # 4. Compute diagnostics
     # If all Vmins are zero or all dVs are zero, return Nan (pathological case)
-    if np.max(Vmin) == 0.0 or np.max(dV == 0.0):
+    if np.max(v_min) == 0.0 or np.max(dv == 0.0):
         nf = np.nan
         r = np.nan
         pval = np.nan
         sd = np.nan
     else:
-        r = np.corrcoef(Vmin, dV)[0, 1]
-        N = len(Vmin)
-        tstat = r / np.sqrt((1 - r ** 2) / (N - 2))  # The t-statistic.
+        r = np.corrcoef(v_min, dv)[0, 1]
+        n = len(v_min)
+        tstat = r / np.sqrt((1 - r ** 2) / (n - 2))  # The t-statistic.
         # Under the null hypothesis
         # of no correlation,
         # tstat follows a student's
         # law with  N - 2 dof.
-        pval = 1.0 - scipy.stats.t.cdf(np.abs(tstat), N - 2)
+        pval = 1.0 - scipy.stats.t.cdf(np.abs(tstat), n - 2)
 
         if pval > 0.05:
             logger.warning("Check the scatterplot of dV versus V_min, it is most likely "
                            "suspicious, and the feedback  factor likely meaningless: p-value: " + str(pval))
 
         try:
-            fit, cov = np.polyfit(Vmin, dV, 1, cov=True)
+            fit, cov = np.polyfit(v_min, dv, 1, cov=True)
             nf = fit[0]  # Fit parameter
             sd = np.sqrt(cov[0, 0])  # Standard deviation on it
         except ValueError:
             logger.error("(negative_seaice_feedback) PROBLEM, series badly conditioned: "
-                         "Input volume: {0} Vmin: {1} dv: {2}".format(volume, Vmin, dV))
+                         "Input volume: {0} Vmin: {1} dv: {2}".format(volume, v_min, dv))
             raise
-    # 5. Return
-    return [nf, [r, pval, sd], [Vmin, dV]]
+
+    return [nf, [r, pval, sd], [v_min, dv]]
 
 
 def main(project_info):
