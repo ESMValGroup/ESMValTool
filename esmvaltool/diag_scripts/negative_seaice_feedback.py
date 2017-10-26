@@ -21,11 +21,11 @@
 # Module imports
 from netCDF4 import Dataset
 import numpy as np
-import sys
 import scipy.stats
 import esmvaltool.interface_scripts.preprocess
 import iris
 import logging
+
 logger = logging.getLogger(__name__)
 
 
@@ -38,12 +38,8 @@ def compute_volume(avgthickness, cellarea, mask=1):
 
         Output: Sea ice or snow volume in the region defined by the mask
     """
-
-    import sys
-    import numpy as np
-
     if np.max(mask) != 1.0 or np.min(mask) < 0.0:
-        sys.exit("(compute_volume): mask not between 0 and 1")
+        raise ValueError("Mask not between 0 and 1")
 
     if np.max(avgthickness) > 20.0:
         logger.warning("(compute_volume): large sea ice thickness")
@@ -55,41 +51,37 @@ def compute_volume(avgthickness, cellarea, mask=1):
     elif len(avgthickness.shape) == 2:
         vol = np.sum(avgthickness * cellarea * mask) / 1e12
     else:
-        sys.exit("(compute_volume): avgthickness has not 2 nor 3 dimensions")
-
+        raise ValueError("(compute_volume): avgthickness has not 2 nor 3 dimensions")
     return vol
 
 
 # 2. Function to detrend time series
 def detrend(data, order=1, period=None):
-    import numpy as np
-    import sys
-
     """ Input: data: 1-D numpy array of size N, assumed to be sampled at
                      evenly spaced times
                order: order of the polynomial for detrending
                period: possible existing periodicity of the signal, coming e.g.
-                       from external forcing,  expressed in units time steps. 
+                       from external forcing,  expressed in units time steps.
                        That is, data[i] and data[i + period] correspond
                        to two realizations of the process at times where the
                        forcing might be similar. Common examples include
                        the seasonal cycle forcing, or the diurnal forcing.
-   
+
                        If "period" is not None, the detrending is performed
                        separately for each time step (e.g., all 1st of January,
                        all 2nd of January, ..., all 31st of December in case
                        of annual cycle.
-  
+
                        If "period" is None, the detrending is performed on
                        the given time series
-                                            
+
         Output: the signal detrended using a least-square polynomial
                 regression of order "order"
-  
+
     """
 
     if len(data.shape) != 1:
-        sys.exit("(detrend): non-conform input data")
+        raise ValueError("Non-conform input data")
 
     # Remove possible nans from the data. All the regression (ie polyfit)
     # parameters will be estimated based on the no-nan data but the
@@ -159,20 +151,17 @@ def negative_seaice_feedback(volume, period, order=1):
     """
 
     if len(volume.shape) != 1:
-        sys.exit("(negative_seaice_feedback) volume is not 1-D")
+        raise ValueError("Volume is not 1-D")
 
     nt = len(volume)
     if nt // period != 1.0 * nt / period:
-        sys.exit("(negative_seaice_feedback) length of volume series is \
-              not multiple of period")
+        raise ValueError("Length of volume series is not multiple of period")
 
     # 1. Locate the minima for each year
-    imin = [t + np.nanargmin(volume[t:t + period]) \
-            for t in np.arange(0, nt, period)]
+    imin = [t + np.nanargmin(volume[t:t + period]) for t in np.arange(0, nt, period)]
 
     # 2. Locate the maxima for each year
-    imax = [t + np.nanargmax(volume[t:t + period]) \
-            for t in np.arange(0, nt, period)]
+    imax = [t + np.nanargmax(volume[t:t + period]) for t in np.arange(0, nt, period)]
 
     # 3. Detrend series. A one-year shift is introduced to make sure we
     #    compute volume production *after* the summer minimum
@@ -197,7 +186,7 @@ def negative_seaice_feedback(volume, period, order=1):
         pval = 1.0 - scipy.stats.t.cdf(np.abs(tstat), N - 2)
 
         if pval > 0.05:
-            logger.warning("(negative_seaice_feedback) Check the scatterplot of dV versus V_min, it is most likely "
+            logger.warning("Check the scatterplot of dV versus V_min, it is most likely "
                            "suspicious, and the feedback  factor likely meaningless: p-value: " + str(pval))
 
         try:
@@ -228,12 +217,14 @@ def main(project_info):
         e2t = f.variables["e2t"][:]
         cellarea = e1t[0, :, :] * e2t[0, :, :]
         f.close()
+        del e1t, e2t
 
         sit = iris.load_cube(sit_path)
-        # Compute integrated volume over domain and append to existing time series
         volume = compute_volume(sit.data, cellarea, mask=1.0 * (sit.coord('latitude').points > 80.0))
+        del cellarea
 
         nf, stats, _ = negative_seaice_feedback(volume, period=12, order=2)
+        del volume
 
         logger.info("Negative feedback: ".ljust(20) + str(nf))
         logger.info("P-Value: ".ljust(20) + str(stats[1]))
