@@ -23,7 +23,8 @@ from netCDF4 import Dataset
 import numpy as np
 import sys
 import scipy.stats
-from esmvaltool.diag_scripts.lib.python.esmval_lib import ESMValProject
+import esmvaltool.interface_scripts.preprocess
+import iris
 
 
 # 1. Function to evaluate sea-ice volume
@@ -219,52 +220,29 @@ def negative_seaice_feedback(volume, period, order=1):
 
 
 def main(project_info):
-
-    esmval_project = ESMValProject(project_info)
+    var = project_info['RUNTIME']['currDiag'].variables[0]
 
     # Open data
     # Root directory to the data
-    filenames = esmval_project.get_clim_model_filenames(variable='sit', monthly=True)
-    print filenames
-    return
-    base = "/group_workspaces/jasmin2/primavera1/WP2/CPL/METOFFICE/" + \
-           "HadGEM3-GC2/N96O025/present_day/mon/seaice/sit/anqjm/"
 
+    for model_info in project_info['ALLMODELS']:
+        sit_path = esmvaltool.interface_scripts.preprocess.get_cf_fullpath(project_info, model_info, var)
 
-    # Will contain time series of volume
-    volume = np.empty((yeare - yearb + 1) * 12)
-
-    # Load cell area
-    filearea = "/home/users/fmasson/mesh_mask_ORCA025L75.nc"
-    f = Dataset(filearea, mode="r")
-    e1t = f.variables["e1t"][:]
-    e2t = f.variables["e2t"][:]
-    cellarea = e1t[0, :, :] * e2t[0, :, :]
-    f.close()
-
-    cellarea = cellarea[29:-1, 1:-1]  # Grids were different
-
-    for year in np.arange(yearb, yeare + 1):
-        print(year)
-        file = base + \
-               "sit_OImon_HadGEM3-GC2_N96O025_present_day_anqjm_" + \
-               str(year) + "01" + "-" + str(year) + "12.nc"
-        f = Dataset(file, mode="r")
-        # If first year load latitude, longitude and mask
-        if year == yearb:
-            lat = f.variables["TLAT"][:]
-            lon = f.variables["TLON"][:]
-            mask = f.variables["tmask"][:]
-
-        # Load field of sea ice volume
-        siv_tmp = f.variables["sit"][:]
-        # Compute integrated volume over domain and append to existing time series
-        volume[(year - yearb) * 12: (year - yearb) * 12 + 12] = \
-            compute_volume(siv_tmp, cellarea, mask=1.0 * (lat > 80.0))
+        # Load cell area
+        filearea = "/esnas/autosubmit/con_files/mesh_mask_nemo.Ec2.3_O1L42.nc"
+        f = Dataset(filearea, mode="r")
+        e1t = f.variables["e1t"][:]
+        e2t = f.variables["e2t"][:]
+        cellarea = e1t[0, :, :] * e2t[0, :, :]
         f.close()
-        del siv_tmp
 
-    nf, stats, _ = negative_seaice_feedback(volume, period=12, order=2)
+        sit = iris.load_cube(sit_path)
+        print(sit)
+        print(sit.coord('time'))
+        # Compute integrated volume over domain and append to existing time series
+        volume = compute_volume(sit.data, cellarea, mask=1.0 * (sit.coord('latitude').points > 80.0))
 
-    print("Negative feedback: ".ljust(20) + str(nf))
-    print("P-Value: ".ljust(20) + str(stats[1]))
+        nf, stats, _ = negative_seaice_feedback(volume, period=12, order=2)
+
+        print("Negative feedback: ".ljust(20) + str(nf))
+        print("P-Value: ".ljust(20) + str(stats[1]))

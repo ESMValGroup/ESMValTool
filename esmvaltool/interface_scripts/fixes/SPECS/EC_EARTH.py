@@ -27,13 +27,17 @@ class sic(Fix):
         print(cube)
         return cube
 
-
 class sit(Fix):
 
     def fix_file(self, filepath):
         handler = Dataset(filepath, 'a')
         handler.contact = 'Pierre-Antoine Bretonniere, pierre-antoine.bretonniere@bsc.es, ' \
                           'Javier Vegas Regidor, javier.vegas@bsc.es'
-        handler.variables['sit'].coordinates = 'lat lon'
+        sit_var = handler.variables['sit']
+        sit_var.coordinates = 'lat lon'
+        if hasattr(sit_var, 'valid_max'):
+            del sit_var.valid_max
+        if hasattr(sit_var, 'valid_min'):
+            del sit_var.valid_min
         handler.close()
         return filepath

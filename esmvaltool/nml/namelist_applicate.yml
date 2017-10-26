@@ -4,7 +4,7 @@
       # models functional and tested for CMIP5 only
       # checks functional and tested in interface_scripts/namelistchecks.py for ALL model types
       # TODO: EMAC, GFDL, CCMVal
-    - {name: EC-EARTH, project: SPECS, institute: BSC, mip: OImon,  exp: decadal, startdate: 20011101,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2005}
+    - {name: EC-EARTH, project: SPECS, institute: BSC, mip: OImon,  exp: decadal, startdate: 20011101,  ensemble: r1i1p1,  start_year: 2002,  end_year: 2005}
 
   PREPROCESS:
       # status of options:

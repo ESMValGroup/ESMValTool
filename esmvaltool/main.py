@@ -340,10 +340,10 @@ def process_namelist(namelist_file, global_config):
 
         # get all models
         try:
-            if currDiag.additional_models is None:
-                currDiag.additional_models = []
+            if curr_diag.additional_models is None:
+                curr_diag.additional_models = []
         except AttributeError:
-            currDiag.additional_models = []
+            curr_diag.additional_models = []
 
         project_info['ADDITIONAL_MODELS'] = curr_diag.additional_models
         project_info['ALLMODELS'] = \

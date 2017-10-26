@@ -12,6 +12,7 @@ import os
 import subprocess
 
 import iris
+import iris.util
 import iris.exceptions
 import numpy as np
 
@@ -228,7 +229,7 @@ def get_attr_from_field_coord(ncfield, coord_name, attr):
 # noinspection PyUnusedLocal
 def merge_callback(raw_cube, field, filename):
     # Remove attributes that cause issues with merging and concatenation
-    for attr in ['creation_date', 'tracking_id', 'history']:
+    for attr in ['creation_date', 'tracking_id', 'history', 'batch', 'file_name', 'associate_file', 'TimeStamp']:
         if attr in raw_cube.attributes:
             del raw_cube.attributes[attr]
     for coord in raw_cube.coords():
@@ -511,7 +512,7 @@ def preprocess(project_info, variable, model, current_diag,
 
             # infiles are fullpaths
             files = [apply_file_fixes(infile) for infile in infiles]
-            cfilelist = []
+            cfilelist = iris.cube.CubeList()
 
             with warnings.catch_warnings():
                 warnings.filterwarnings('ignore',
@@ -527,18 +528,21 @@ def preprocess(project_info, variable, model, current_diag,
                 var_cons = iris.Constraint(cube_func=cube_var_name)
                 # force single cube; this function defaults a list of cubes
                 for cfile in files:
-                    reft_cube_i = iris.load(
-                        cfile, var_cons, callback=merge_callback)[0]
+                    reft_cube_i = iris.load_cube(cfile, var_cons, callback=merge_callback)
                     cfilelist.append(reft_cube_i)
 
             # concatenate if needed
             if len(cfilelist) > 1:
-                c = iris.cube.CubeList(cfilelist)
                 try:
-                    reft_cube_0 = c.concatenate()[0]
+                    iris.util.unify_time_units(cfilelist)
+                    reft_cube_0 = cfilelist.concatenate_cube()
                 except iris.exceptions.ConcatenateError as exc:
-                    error_message = "Problem trying to concatenate cubes"
-                    logger.warning(error_message)
+                    error_message = "Problem trying to concatenate cubes: {0}".format(exc)
+                    logger.error(error_message)
+                    logger.debug('List of cubes:')
+                    for cube in cfilelist:
+                        logger.debug(cube)
+                    raise
             else:
                 reft_cube_0 = cfilelist[0]
 
