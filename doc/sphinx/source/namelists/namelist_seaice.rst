@@ -154,7 +154,7 @@ Example plots
 -------------
 
 .. _fig_seaice1:
-.. figure:: ../../source/namelists/figures/seaice/figure_namelist_seaice_polcon-Arctic.png
+.. figure:: /namelists/figures/seaice/figure_namelist_seaice_polcon-Arctic.png
    :width: 80%
    :align: center
 
@@ -165,7 +165,7 @@ Example plots
 
 
 .. _fig_seaice2:
-.. figure:: ../../source/namelists/figures/seaice/figure_namelist_seaice_polcon-diff-Antarctic.png
+.. figure:: /namelists/figures/seaice/figure_namelist_seaice_polcon-diff-Antarctic.png
    :width: 80%
    :align: center
 
@@ -177,7 +177,7 @@ Example plots
 
 
 .. _fig_seaice3:
-.. figure:: ../../source/namelists/figures/seaice/figure_namelist_seaice_tsline-Arctic.png
+.. figure:: /namelists/figures/seaice/figure_namelist_seaice_tsline-Arctic.png
    :width: 60%
    :align: center
 
@@ -189,7 +189,7 @@ Example plots
 
 
 .. _fig_seaice4:
-.. figure:: ../../source/namelists/figures/seaice/figure_namelist_seaice_anncyc-Antarctic.png
+.. figure:: /namelists/figures/seaice/figure_namelist_seaice_anncyc-Antarctic.png
    :width: 60%
    :align: center
 

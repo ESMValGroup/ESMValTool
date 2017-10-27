@@ -128,13 +128,13 @@ Example plots
 
 .. centered:: |pic_tropvar_1| |pic_tropvar_2|
 
-.. |pic_tropvar_1| image:: ../../source/namelists/figures/tropical_variability/fig1.png
+.. |pic_tropvar_1| image:: /namelists/figures/tropical_variability/fig1.png
    :width: 45%
 
-.. |pic_tropvar_2| image:: ../../source/namelists/figures/tropical_variability/fig2.png
+.. |pic_tropvar_2| image:: /namelists/figures/tropical_variability/fig2.png
    :width: 45%
 
-.. figure:: ../../source/namelists/figures/tropical_variability/fig3.png
+.. figure:: /namelists/figures/tropical_variability/fig3.png
    :width: 60%
    :align: center
 
