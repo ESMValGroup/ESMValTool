@@ -15,6 +15,9 @@ Welcome to ESMValTool's documentation!
    developer_guide
 
    codedoc/main
+   autodoc/modules
+
+   esmvaltool_next/index
 
    diag_scripts/index
    plot_scripts/index
