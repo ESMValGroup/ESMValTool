@@ -33,3 +33,12 @@
         - {name: sit, ref_model: ['ERA-Interim','NCEP'], field: T2M, only: "None" , preproc_id: pp1}
       scripts:
         - {script: negative_seaice_feedback.py, cfg_file: ./nml/cfg_NegativeSeaIceFeedback/cfg_negative_seaice_feedback.ncl}
+
+    SeaIceEdge:
+      !Diagnostic
+      id: sea_ice_edge
+      description: Plots the sea-ice edge
+      variables:
+        - {name: sic, ref_model: None, field: T2M, only: "None" , preproc_id: pp1}
+      scripts:
+        - {script: seaice_edge.R, cfg_file: ./nml/cfg_NegativeSeaIceFeedback/cfg_negative_seaice_feedback.ncl}

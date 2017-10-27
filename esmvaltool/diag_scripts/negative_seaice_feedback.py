@@ -177,10 +177,8 @@ def negative_seaice_feedback(volume, period, order=1):
         r = np.corrcoef(v_min, dv)[0, 1]
         n = len(v_min)
         tstat = r / np.sqrt((1 - r ** 2) / (n - 2))  # The t-statistic.
-        # Under the null hypothesis
-        # of no correlation,
-        # tstat follows a student's
-        # law with  N - 2 dof.
+        # Under the null hypothesis of no correlation,
+        # tstat follows a student's law with  N - 2 dof.
         pval = 1.0 - scipy.stats.t.cdf(np.abs(tstat), n - 2)
 
         if pval > 0.05:
@@ -201,9 +199,6 @@ def negative_seaice_feedback(volume, period, order=1):
 
 def main(project_info):
     var = project_info['RUNTIME']['currDiag'].variables[0]
-
-    # Open data
-    # Root directory to the data
 
     for model_info in project_info['ALLMODELS']:
         sit_path = esmvaltool.interface_scripts.preprocess.get_cf_fullpath(project_info, model_info, var)
