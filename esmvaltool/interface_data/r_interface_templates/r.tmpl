@@ -35,7 +35,7 @@ models <- "True"
 models_project    <- c(<<MODELS_PROJECT>>)
 models_name       <- c(<<MODELS_NAME>>)
 models_MIP        <- c(<<MODELS_MIP>>)
-models_experiment <- c(<<MODELS_EXPERIMENT>>)
+models_experiment <- c(<<MODELS_EXP>>)
 models_ensemble   <- c(<<MODELS_ENSEMBLE>>)
 models_start_year <- c(<<MODELS_START_YEAR>>)
 models_end_year   <- c(<<MODELS_END_YEAR>>)
@@ -44,11 +44,11 @@ models_dir        <- c(<<MODELS_DIR>>)
 models_case_name  <- c(<<MODELS_CASE_NAME>>)
 
 
-interface_get_figure_filename <- function(diag_script_base, 
-                                                  variable, 
-                                                field_type, 
-                                                  aux_info, 
-                                                   idx_mod) { 
+interface_get_figure_filename <- function(diag_script_base,
+                                                  variable,
+                                                field_type,
+                                                  aux_info,
+                                                   idx_mod) {
 #   Arguments:
 #         @brief Construct a figure output file name
 #         @param diag_script_base  -  The diagnostic script running (withouth its suffix)
@@ -81,7 +81,7 @@ interface_get_figure_filename <- function(diag_script_base,
 #
 #
 interface_replace_place_holders <- function(variable,
-                                               field, 
+                                               field,
                                                  idx,
                             array_with_place_holders) {
 # Arguments:
@@ -95,14 +95,14 @@ interface_replace_place_holders <- function(variable,
     array_local_copy <- gsub("\\$\\{FIELD\\}", field, array_local_copy)
     array_local_copy <- gsub("\\$\\{MIP\\}", models_MIP[idx], array_local_copy)
     array_local_copy <- gsub("\\$\\{EXP\\}", models_experiment[idx], array_local_copy)
-    return_value <- array_local_copy 
+    return_value <- array_local_copy
 }
 
 
 #
 #
 interface_get_fullpath <- function (variable,
-                                    field, 
+                                    field,
                                     idx) {
 # Arguments:
 #         @brief Reconstructs the currend (idx) input filename
@@ -113,7 +113,7 @@ interface_get_fullpath <- function (variable,
 }
 
 interface_get_infile <- function (variable,
-                                  field, 
+                                  field,
                                   idx) {
 # Arguments:
 #         @brief Reconstructs the currend (idx) input filename

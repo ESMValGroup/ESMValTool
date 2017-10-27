@@ -1,5 +1,4 @@
-name: root
-channels:
+qchannels:
 - conda-forge
 - defaults
 - Clyde_Fare

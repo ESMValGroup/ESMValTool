@@ -259,11 +259,11 @@ class CMORCheck(object):
         if cmor.stored_direction:
             if cmor.stored_direction == 'increasing':
                 if coord.points[0] > coord.points[1]:
-                    self.report_error(self._is_msg, var_name, 'increasing')
+                    self.report_warning(self._is_msg, var_name, 'increasing')
 
             elif cmor.stored_direction == 'decreasing':
                 if coord.points[0] < coord.points[1]:
-                    self.report_error(self._is_msg, var_name, 'decreasing')
+                    self.report_warning(self._is_msg, var_name, 'decreasing')
 
     def _check_coord_values(self, coord_info, coord, var_name):
         # Check requested coordinate values exist in coord.points

@@ -162,6 +162,15 @@ class TestCMORCheck(unittest.TestCase):
         with self.assertRaises(CMORCheckError):
             checker.check_metadata()
 
+    def _check_warnings_in_metadata(self, automatic_fixes=False, frequency=None):
+        checker = CMORCheck(
+            self.cube,
+            self.var_info,
+            automatic_fixes=automatic_fixes,
+            frequency=frequency)
+        checker.check_metadata()
+        self.assertTrue(checker.has_warnings())
+
     def test_non_requested(self):
         coord = self.cube.coord('air_pressure')
         values = numpy.linspace(0, 40, len(coord.points))
@@ -175,11 +184,11 @@ class TestCMORCheck(unittest.TestCase):
         values = numpy.linspace(coord.points[-1], coord.points[0],
                                 len(coord.points))
         self._update_coordinate_values(self.cube, coord, values)
-        self._check_fails_in_metadata()
+        self._check_warnings_in_metadata()
 
     def test_non_decreasing(self):
         self.var_info.coordinates['lat'].stored_direction = 'decreasing'
-        self._check_fails_in_metadata()
+        self._check_warnings_in_metadata()
 
     def test_not_correct_lons(self):
         self.cube = self.cube.intersection(longitude=(-180., 180.))

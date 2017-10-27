@@ -67,7 +67,7 @@ def run_executable(string_to_execute,
 
     suffix = os.path.splitext(string_to_execute)[1][1:]
     interface_data = project_info['RUNTIME']['interface_data']
-    curr_launcher = vars(launchers)[suffix + '_launcher'](
+    curr_launcher = vars(launchers)[suffix.lower() + '_launcher'](
         interface_data=interface_data)
     if launcher_arguments is not None:
         curr_launcher.arguments = launcher_arguments
@@ -229,7 +229,8 @@ def get_attr_from_field_coord(ncfield, coord_name, attr):
 # noinspection PyUnusedLocal
 def merge_callback(raw_cube, field, filename):
     # Remove attributes that cause issues with merging and concatenation
-    for attr in ['creation_date', 'tracking_id', 'history', 'batch', 'file_name', 'associate_file', 'TimeStamp']:
+    for attr in ['creation_date', 'tracking_id', 'history', 'batch', 'file_name', 'associate_file', 'TimeStamp',
+                 'history_of_appended_files']:
         if attr in raw_cube.attributes:
             del raw_cube.attributes[attr]
     for coord in raw_cube.coords():
@@ -580,7 +581,7 @@ def preprocess(project_info, variable, model, current_diag,
 
         except (iris.exceptions.ConstraintMismatchError,
                 iris.exceptions.ConcatenateError, CCE) as ex:
-            logger.warning("%s", ex)
+            logger.error("%s", ex)
 
     else:
         # check if we need to concatenate

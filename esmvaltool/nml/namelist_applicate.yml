@@ -16,7 +16,7 @@
       # mask_fillvalues: TODO
       # mask_landocean: None,land,ocean,poro - all functional and tested
       # multimodel_mean: TODO
-    - {id: pp1, select_level: None, target_grid: None, regrid_scheme: linear, mask_fillvalues: False, mask_landocean: None, multimodel_mean: False}
+    - {id: pp1, select_level: None, target_grid: None, regrid_scheme: linear, mask_fillvalues: None, mask_landocean: None, multimodel_mean: False}
 #    - {id: pp2, select_level: None, target_grid: ref_model, regrid_scheme: linear, mask_fillvalues: True, mask_landocean: None, multimodel_mean: True}
 
   CONFIG:
@@ -25,20 +25,20 @@
 
   DIAGNOSTICS:
 
-    NegativeSeaIceFeedback:
-      !Diagnostic
-      id: negative_seaice_feedback
-      description: Computes the negative seaice feedback
-      variables:
-        - {name: sit, ref_model: ['ERA-Interim','NCEP'], field: T2M, only: "None" , preproc_id: pp1}
-      scripts:
-        - {script: negative_seaice_feedback.py, cfg_file: ./nml/cfg_NegativeSeaIceFeedback/cfg_negative_seaice_feedback.ncl}
+#    NegativeSeaIceFeedback:
+#      !Diagnostic
+#      id: negative_seaice_feedback
+#      description: Computes the negative seaice feedback
+#      variables:
+#        - {name: sit, ref_model: ['ERA-Interim','NCEP'], field: T2M, only: "None" , preproc_id: pp1}
+#      scripts:
+#        - {script: negative_seaice_feedback.py, cfg_file: ./nml/cfg_NegativeSeaIceFeedback/cfg_negative_seaice_feedback.ncl}
 
     SeaIceEdge:
       !Diagnostic
       id: sea_ice_edge
       description: Plots the sea-ice edge
       variables:
-        - {name: sic, ref_model: None, field: T2M, only: "None" , preproc_id: pp1}
+        - {name: sic, ref_model: ['ERA-Interim'], field: T2M, only: "None" , preproc_id: pp1}
       scripts:
-        - {script: seaice_edge.R, cfg_file: ./nml/cfg_NegativeSeaIceFeedback/cfg_negative_seaice_feedback.ncl}
+        - {script: sea_ice_edge.r, cfg_file: ./nml/cfg_NegativeSeaIceFeedback/cfg_negative_seaice_feedback.ncl}
