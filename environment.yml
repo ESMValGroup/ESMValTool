@@ -37,6 +37,9 @@ dependencies:
 # should also be automatically be installed by setup.py in a temporary
 # location when required to run the command.
 
+# documentation
+- sphinx
+
 # testing
 - easytest
 - mock
