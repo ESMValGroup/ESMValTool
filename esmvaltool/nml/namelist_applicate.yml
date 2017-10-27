@@ -4,7 +4,7 @@
       # models functional and tested for CMIP5 only
       # checks functional and tested in interface_scripts/namelistchecks.py for ALL model types
       # TODO: EMAC, GFDL, CCMVal
-    - {name: EC-EARTH, project: SPECS, institute: BSC, mip: OImon,  exp: decadal, startdate: 20011101,  ensemble: r1i1p1,  start_year: 2002,  end_year: 2010}
+    - {name: EC-EARTH, project: SPECS, institute: BSC, mip: OImon,  exp: decadal, startdate: 20011101,  ensemble: r1i1p1,  start_year: 2002,  end_year: 2011}
 
   PREPROCESS:
       # status of options:
@@ -41,4 +41,4 @@
       variables:
         - {name: sic, ref_model: ['ERA-Interim'], field: T2M, only: "None" , preproc_id: pp1}
       scripts:
-        - {script: sea_ice_edge.r, cfg_file: ./nml/cfg_NegativeSeaIceFeedback/cfg_negative_seaice_feedback.ncl}
+        - {script: sea_ice_edge.r, cfg_file: ./nml/cfg_SeaIceEdge/cfg_sea_ice_edge.r}
