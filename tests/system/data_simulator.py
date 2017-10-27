@@ -15,28 +15,11 @@ from esmvaltool.interface_scripts.yaml_parser import load_namelist
 from esmvaltool.main import read_config_file
 
 
-def generate_random_smooth(shape, low, high):
-    """Generate smoothly varying random data."""
-    # Generate random data
-    data = np.random.uniform(size=shape)
-
-    # Smooth by convolving with a Gaussian
-    gaussian_filter(data, sigma=2, output=data)
-
-    # Scale to physical numbers
-    dmin, dmax = data.min(), data.max()
-    scale = (high - low) / (dmax - dmin)
-    offset = low - dmin * scale
-    data = data * scale + offset
-
-    return data
-
-
 def write_data_file(var_name, filename, field, start_year, end_year):
     """Write a file containing simulated data."""
-    if '2' in field:
+    if 'T2M' in field:
         writer = Model2
-    elif '3' in field:
+    elif 'T3M' in field:
         writer = Model3
     else:
         raise NotImplementedError("Cannot create a model from field {}"
@@ -45,29 +28,18 @@ def write_data_file(var_name, filename, field, start_year, end_year):
     # TODO: Maybe this should be made configurable per diagnostic or model
     cfg = {
         'ta': {
-            'method': 'smooth',
+            'method': 'gaussian_blobs',
             'low': 223,
             'high': 303,
         },
         'pr': {
-            'method': 'smooth',
+            'method': 'gaussian_blobs',
             'low': 1e-7,
             'high': 2e-4,
         }
     }
 
     kwargs = cfg[var_name] if var_name in cfg else {'method': 'uniform'}
-
-    if var_name in cfg and cfg[var_name]['method'] == 'smooth':
-
-        def _get_variable_data(self):
-            """Override class method to use `generate_random_smooth`."""
-            return generate_random_smooth(
-                shape=(self.month, ) + self.variables[self.var].shape[1:],
-                low=cfg[var_name]['low'],
-                high=cfg[var_name]['high'], )
-
-        writer._get_variable_data = _get_variable_data
 
     writer(
         var=var_name,
