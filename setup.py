@@ -68,6 +68,7 @@ class RunTests(CustomCommand):
         report_dir = 'test-reports'
         errno = pytest.main([
             'tests',
+            '--ignore=tests/test_diagnostics',
             '--cov=esmvaltool',
             '--cov-report=term',
             '--cov-report=html:{}/coverage_html'.format(report_dir),
