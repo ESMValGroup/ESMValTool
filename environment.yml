@@ -29,6 +29,7 @@ dependencies:
 - xorg-libxext
 - pip:
   - geoval
+  - "--editable=git+https://github.com/esmvalgroup/dummydata.git#egg=dummydata-dev"
 
 # testing
 - easytest

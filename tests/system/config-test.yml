@@ -13,6 +13,8 @@
 test:
   # Execute system/diagnostic tests [false]/true
   run: false
+  # Simulate input data using the dummydata module [true]/false
+  simulate_input: true
   # Limit testing/generating reference data to the following namelists
   # An empty list means any namelist in esmvaltool/nml
   namelists: [
@@ -36,9 +38,9 @@ user:
   save_intermediary_cubes: true
 
   rootpath:
-    CMIP5: ~/esmvaltool_input
-    OBS: ~/esmvaltool_input
-    default: ~/esmvaltool_input
+    CMIP5: ~/esmvaltool_simulated_input
+    OBS: ~/esmvaltool_simulated_input
+    default: ~/esmvaltool_simulated_input
 
   drs:
     CMIP5: default
