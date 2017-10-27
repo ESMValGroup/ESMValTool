@@ -11,7 +11,14 @@ def test_pep8_conformance():
         'esmvaltool',
         'tests',
     ]
-    exclude_paths = ['esmvaltool/doc']
+    exclude_paths = [
+        'esmvaltool/doc',
+        'tests/test_diagnostics',
+        'tests/esmvaltool_testlib.py',
+        'tests/run_tests.py',
+        'tests/test_esmval_testlib.py',
+        'tests/wrappers.py',
+    ]
 
     print("PEP8 check of directories: {}\n".format(', '.join(check_paths)))
 
