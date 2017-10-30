@@ -6,7 +6,6 @@ import sys
 import time
 
 import numpy as np
-from scipy.ndimage.filters import gaussian_filter
 
 from dummydata.model2 import Model2
 from dummydata.model3 import Model3
@@ -147,5 +146,5 @@ def simulate_input_data(namelist_file, config_user_file=None):
 
 
 if __name__ == '__main__':
-    for namelist_file in sys.argv[1:]:
-        simulate_input_data(namelist_file=namelist_file, config_user_file=None)
+    for path in sys.argv[1:]:
+        simulate_input_data(namelist_file=path, config_user_file=None)
