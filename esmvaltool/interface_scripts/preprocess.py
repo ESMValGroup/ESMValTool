@@ -19,8 +19,10 @@ import data_interface as dint
 import launchers
 import preprocessing_tools as pt
 from data_finder import get_input_filelist, get_output_file
-from fixes.fix import Fix
+from esmvaltool.preprocessor.mask import fx_mask, mask_cube_counts
 from esmvaltool.preprocessor.regrid import regrid, vertical_schemes, vinterp
+from esmvaltool.preprocessor.time_area import time_slice
+from fixes.fix import Fix
 
 logger = logging.getLogger(__name__)
 
@@ -297,7 +299,8 @@ def preprocess(project_info, variable, model, current_diag,
                     'fx',
                     'sftlf',
                     model["name"],
-                    'r0i0p0', )
+                    'r0i0p0',
+                )
                 lmaskfile = 'sftlf_fx_{}_{}_r0i0p0.nc'.format(
                     model["name"], model["exp"])
                 lmaskfile_path = os.path.join(lmaskdir, lmaskfile)
@@ -328,7 +331,8 @@ def preprocess(project_info, variable, model, current_diag,
                     'fx',
                     'mrsofc',
                     model["name"],
-                    'r0i0p0', )
+                    'r0i0p0',
+                )
                 pormaskfile = 'mrsofc_fx_{}_{}_r0i0p0.nc'.format(
                     model["name"], model["exp"])
                 porofile_path = os.path.join(pormaskdir, pormaskfile)
@@ -555,7 +559,7 @@ def preprocess(project_info, variable, model, current_diag,
             # apply time gating so we minimize cube size
             yr1 = int(model['start_year'])
             yr2 = int(model['end_year'])
-            reft_cube = pt.time_slice(reft_cube_0, yr1, 1, 1, yr2, 12, 31)
+            reft_cube = time_slice(reft_cube_0, yr1, 1, 1, yr2, 12, 31)
 
             for fix in fixes:
                 reft_cube = fix.fix_data(reft_cube)
@@ -596,7 +600,7 @@ def preprocess(project_info, variable, model, current_diag,
             logger.info(" Using mask file %s", lmaskfile_path)
             l_mask = iris.load_cube(lmaskfile_path)
 
-            reft_cube = pt.fx_mask(reft_cube, l_mask)
+            reft_cube = fx_mask(reft_cube, l_mask)
 
             # check cube
             ######################
@@ -624,7 +628,7 @@ def preprocess(project_info, variable, model, current_diag,
             logger.info("Using OCEAN mask file %s", omaskfile_path)
             o_mask = iris.load_cube(omaskfile_path)
 
-            reft_cube = pt.fx_mask(reft_cube, o_mask)
+            reft_cube = fx_mask(reft_cube, o_mask)
 
             # check cube
             ######################
@@ -652,7 +656,7 @@ def preprocess(project_info, variable, model, current_diag,
             logger.info(" Using PORO mask file %s", pormaskfile_path)
             por_mask = iris.load_cube(pormaskfile_path)
 
-            reft_cube = pt.fx_mask(reft_cube, por_mask)
+            reft_cube = fx_mask(reft_cube, por_mask)
 
             # check cube
             ######################
@@ -985,8 +989,8 @@ def preprocess(project_info, variable, model, current_diag,
                 count_thr = int(max_counts_per_time_window * percentage)
 
                 # apply the mask
-                reft_cube = pt.mask_cube_counts(reft_cube, val_thr, count_thr,
-                                                time_window)[2]
+                reft_cube = mask_cube_counts(reft_cube, val_thr, count_thr,
+                                             time_window)[2]
 
                 # save if needed
                 if save_intermediary_cubes is True:
@@ -1032,7 +1036,7 @@ def multimodel_mean(cube_collection, path_collection):
 
     # seasonal mean
     # need to fix this !
-    # smeans_cubes = [pt.seasonal_mean(mycube) for mycube in cube_collection]
+    # smeans_cubes = [seasonal_mean(mycube) for mycube in cube_collection]
     # print(smeans_cubes)
     # smeans = [np.mean(c.data) for c in smeans_cubes]
     # logger.info("Multimodel seasonal global means: %s", smeans)
