@@ -11,9 +11,6 @@ diag_script_info@time_avg = "monthlyclim"
 ;; Required fraction of valid values
 diag_script_info@valid_fraction = 0.95
 
-;; Selected level (hPA, "all" for no selection)
-diag_script_info@level = 5.
-
 ;; Selected region ("Global", "Tropics", "NH extratropics", "SH extratropics")
 diag_script_info@region = "Global"
 
