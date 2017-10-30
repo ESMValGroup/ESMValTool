@@ -1,5 +1,5 @@
 """
-Unit tests for the :func:`esmvaltool.interface_scripts.regrid._stock_cube`
+Unit tests for the :func:`esmvaltool.preprocessor.regrid._stock_cube`
 function.
 
 """
@@ -13,8 +13,8 @@ import mock
 import numpy as np
 
 import tests
-from esmvaltool.interface_scripts.regrid import _stock_cube as stock_cube
-from esmvaltool.interface_scripts.regrid import (
+from esmvaltool.preprocessor.regrid import _stock_cube as stock_cube
+from esmvaltool.preprocessor.regrid import (
     _LAT_MAX, _LAT_MIN, _LAT_RANGE, _LON_MAX, _LON_MIN, _LON_RANGE)
 
 

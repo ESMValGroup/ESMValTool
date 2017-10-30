@@ -20,7 +20,7 @@ import launchers
 import preprocessing_tools as pt
 from data_finder import get_input_filelist, get_output_file
 from fixes.fix import Fix
-from regrid import regrid, vertical_schemes, vinterp
+from esmvaltool.preprocessor.regrid import regrid, vertical_schemes, vinterp
 
 logger = logging.getLogger(__name__)
 

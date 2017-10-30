@@ -1,5 +1,5 @@
 """
-Unit tests for the :func:`esmvaltool.interface_scripts.regrid.regrid` function.
+Unit tests for the :func:`esmvaltool.preprocessor.regrid.regrid` function.
 
 """
 
@@ -11,8 +11,7 @@ import iris
 import mock
 
 import tests
-from esmvaltool.interface_scripts.regrid import (_cache, horizontal_schemes,
-                                                 regrid)
+from esmvaltool.preprocessor.regrid import _cache, horizontal_schemes, regrid
 
 
 class Test(tests.Test):
@@ -65,7 +64,7 @@ class Test(tests.Test):
             'linear', 'nearest', 'area_weighted', 'unstructured_nearest'
         ]
         self.mock_stock = self.patch(
-            'esmvaltool.interface_scripts.regrid._stock_cube',
+            'esmvaltool.preprocessor.regrid._stock_cube',
             side_effect=lambda arg: self.tgt_grid)
         self.mocks = [
             self.coord_system, self.coords, self.regrid, self.src_cube,
