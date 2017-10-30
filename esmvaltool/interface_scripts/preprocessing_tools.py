@@ -1,15 +1,13 @@
-########################################################################
-# PREPROCESSING TOOLS
-########################################################################
-import iris
+#########################################################################
+# FILE OPERATIONS
+#########################################################################
 import logging
+
+import iris
 
 logger = logging.getLogger(__name__)
 
 
-#########################################################################
-# FILE OPERATIONS
-#########################################################################
 # a couple functions needed by cmor reformatting (the new python one)
 def get_attr_from_field_coord(ncfield, coord_name, attr):
     if coord_name is not None:
@@ -20,10 +18,8 @@ def get_attr_from_field_coord(ncfield, coord_name, attr):
     return None
 
 
-# Use this callback to fix anything Iris tries to break!
-# noinspection PyUnusedLocal
-# function also used in preprocess.py
 def merge_callback(raw_cube, field, filename):
+    """Use this callback to fix anything Iris tries to break."""
     # Remove attributes that cause issues with merging and concatenation
     for attr in ['creation_date', 'tracking_id', 'history']:
         if attr in raw_cube.attributes:
