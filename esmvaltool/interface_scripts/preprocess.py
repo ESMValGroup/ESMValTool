@@ -827,7 +827,13 @@ def preprocess(project_info, variable, model, current_diag,
             # continue to see what regridding we need
             # ref_model regrid string descriptor
             if target_grid == 'ref_model':
-                additional_models_dicts = current_diag.additional_models
+                try:
+                    additional_models_dicts = current_diag.additional_models
+                    if additional_models_dicts is None:
+                        additional_models_dicts = project_info['ALLMODELS']
+                except (AttributeError, "'Diagnostic' object has no attribute 'additional_models'"):
+                    logger.info("Regridding on one of the MODELS, no ADDITIONAL MODELS specified")
+                    additional_models_dicts = project_info['ALLMODELS']
                 # identify the current variable
                 for var in current_diag.variables:
                     if var['name'] == variable.name:
