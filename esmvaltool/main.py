@@ -341,9 +341,13 @@ def process_namelist(namelist_file, global_config):
         requested_vars = curr_diag.variables
 
         # get all models
-        project_info['ADDITIONAL_MODELS'] = curr_diag.additional_models
-        project_info['ALLMODELS'] = \
-            project_info['MODELS'] + project_info['ADDITIONAL_MODELS']
+        try:
+            project_info['ADDITIONAL_MODELS'] = curr_diag.additional_models
+            project_info['ALLMODELS'] = \
+                project_info['MODELS'] + project_info['ADDITIONAL_MODELS']
+        except (AttributeError, "'Diagnostic' object has no attribute 'additional_models'"):
+            logger.warning("Current diagnostic has no Additional Models field; setting ALLMODELS to MODELS")
+            project_info['ALLMODELS'] = project_info['MODELS']
 
         # initialize empty lists to hold preprocess cubes and file paths
         # for each model
