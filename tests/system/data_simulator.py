@@ -38,7 +38,7 @@ def write_data_file(var_name, filename, field, start_year, end_year):
         }
     }
 
-    kwargs = cfg[var_name] if var_name in cfg else {'method': 'uniform'}
+    kwargs = cfg[var_name] if var_name in cfg else {}
 
     writer(
         var=var_name,
