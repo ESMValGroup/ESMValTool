@@ -31,4 +31,6 @@ dependencies:
 # testing
 - nose
 - pytest
+- pytest-cov
+- pytest-html
 - easytest
