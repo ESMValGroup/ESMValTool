@@ -13,6 +13,7 @@ dependencies:
 - basemap
 - cartopy
 - cf_units
+- cython
 - esgf-pyclient
 - flask
 - iris
@@ -27,7 +28,6 @@ dependencies:
 - scipy
 - shapely
 - six
-#- cython
 #- scientificpython
 
 # Old Iris and ncl dependency block. Simply using the top level packages should be enough now.
