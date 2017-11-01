@@ -1,35 +1,49 @@
 ---
 
-name: root
+name: esmvaltool
 channels:
 - conda-forge
-- defaults
-- Clyde_Fare
+#- defaults # in case of missing packages
+#- Clyde_Fare #for scientific python
 
 # ESMVALTOOL DEPENDENCIES
 
 dependencies:
+# Needed by main, preprocessor, workflow, one or more diagnostics, shared diagnostic code.
 - basemap
-- cython
+- cartopy
+- cf_units
 - esgf-pyclient
+- flask
+- iris
+- ncl
+- netcdf4
 - numba
+- numpy
+- pillow # providing PIL package
 - python-cdo
 - python-stratify
 - pyyaml
-- scientificpython
+- scipy
+- shapely
+- six
+#- cython
+#- scientificpython
+
+# Old Iris and ncl dependency block. Simply using the top level packages should be enough now.
 # iris
-- iris
-- cartopy=0.15.*
-- matplotlib=1.5.*
-# ncl
-- ncl
-- hdf4=4.2.12
-- hdf5=1.8.17
-- icu=58.1
-- libnetcdf=4.4.1.1
-- xorg-libsm=1.2.2
-- xorg-libxext
-- xorg-libxrender
+#- iris
+#- cartopy=0.15.*
+#- matplotlib=1.5.*
+#
+#- ncl
+#- hdf4=4.2.12
+#- hdf5=1.8.17
+#- icu=58.1
+#- libnetcdf=4.4.1.1
+#- xorg-libsm=1.2.2
+#- xorg-libxext
+#- xorg-libxrender
 
 # DEVELOPMENT DEPENDENCIES
 #
