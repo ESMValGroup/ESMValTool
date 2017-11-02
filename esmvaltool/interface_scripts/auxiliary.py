@@ -1,7 +1,6 @@
-import pdb
-import sys
-import commands
 import logging
+import subprocess
+import sys
 import warnings
 
 logger = logging.getLogger(__name__)
@@ -66,19 +65,22 @@ def error(string):
 def ncl_version_check():
     """ @brief Check the NCL version
     """
-    out = commands.getstatusoutput("ncl -V")
 
-    if out[0] != 0:
+    try:
+        version = subprocess.check_output(['ncl', '-V'])
+    except subprocess.CalledProcessError:
         logger.error("NCL not found")
 
-    if out[1] == "6.3.0":
-        logger.error("NCL version " + out[1] + " not supported due to a bug " +
-                     "(see Known Issues in the ESMValTool user guide)")
+    version = version.decode(sys.stdout.encoding)
 
-    if int(out[1].split(".")[0]) < 6:
-        logger.error("NCL version " + out[1] +
+    if version == "6.3.0":
+        logger.error("NCL version " + version + " not supported due to a bug "
+                     + "(see Known Issues in the ESMValTool user guide)")
+
+    if int(version.split(".")[0]) < 6:
+        logger.error("NCL version " + version +
                      " not supported, need version 6.2.0 or higher")
 
-    if int(out[1].split(".")[0]) == 6 and int(out[1].split(".")[1]) < 2:
-        logger.error("NCL version " + out[1] +
+    if int(version.split(".")[0]) == 6 and int(version.split(".")[1]) < 2:
+        logger.error("NCL version " + version +
                      " not supported, need version 6.2.0 or higher")

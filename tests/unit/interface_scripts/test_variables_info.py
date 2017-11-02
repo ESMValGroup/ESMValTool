@@ -21,7 +21,7 @@ class TestVariableInfo(unittest.TestCase):
     def test_read_empty_dictionary(self):
         info = VariableInfo('var')
         info.read_json({})
-        self.assertEquals('', info.standard_name)
+        self.assertEqual('', info.standard_name)
 
     def test_read_standard_name(self):
         info = VariableInfo('var')
@@ -65,7 +65,7 @@ class TestCoordinateInfo(unittest.TestCase):
     def test_read_empty_dictionary(self):
         info = CoordinateInfo('var')
         info.read_json({})
-        self.assertEquals('', info.standard_name)
+        self.assertEqual('', info.standard_name)
 
     def test_read_standard_name(self):
         info = CoordinateInfo('var')

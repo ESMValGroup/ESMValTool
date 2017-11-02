@@ -14,7 +14,6 @@ dependencies:
 - cartopy
 - cf_units
 - cython
-- esgf-pyclient
 - flask
 - iris
 - ncl
@@ -55,7 +54,6 @@ dependencies:
 - sphinx
 
 # testing
-- easytest
 - mock
 - nose
 - pytest
@@ -64,7 +62,10 @@ dependencies:
 
 # Note that there can be only one pip section
 - pip:
-  # TODO: replace geoval by conda package and move to ESMVALTOOL DEPENDENCIES
+  # TODO: replace esgf-pyclient and geoval by conda packages
+  # TODO: move esgf-pyclient and geoval to ESMVALTOOL DEPENDENCIES
+  - easytest
+  - esgf-pyclient
   - geoval
   # TODO: replace dummydata by conda/PyPI package and move to testing
   - "--editable=git+https://github.com/esmvalgroup/dummydata.git#egg=dummydata-dev"

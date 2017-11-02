@@ -1,13 +1,15 @@
 import contextlib
+import importlib
+import io
 import os
 import re
-import StringIO
 import subprocess
 import sys
 import tempfile
 import traceback
 
-from auxiliary import nclExecuteError, nclExecuteWarning
+from .auxiliary import nclExecuteError, nclExecuteWarning
+from .data_interface import write_data_interface
 
 
 @contextlib.contextmanager
@@ -18,7 +20,11 @@ def stdoutIO(std_outerr=None):
     old = sys.stdout
     old_err = sys.stderr
     if std_outerr is None:
-        std_outerr = StringIO.StringIO()
+        if sys.version_info[0] == 2:
+            import StringIO
+            std_outerr = StringIO.StringIO()
+        else:
+            std_outerr = io.StringIO()
     sys.stdout = sys.stderr = std_outerr
     yield std_outerr
     sys.stdout = old
@@ -53,7 +59,7 @@ class launchers(object):
         if hasattr(self, 'arguments'):
             # the launcher arguments are a string which is interpreted as the
             # input to the dict() command. As a result one obtains a dictionary
-            exec 'self.launch_args = dict(' + self.arguments + ')'
+            exec('self.launch_args = dict(' + self.arguments + ')')
 
     def write_stdouterr(self, std_outerr, verbosity, exit_on_warning):
         """ @brief Filder and write subprocess output to screen
@@ -203,7 +209,9 @@ class ncl_launcher(launchers):
             shell=True,
             stdin=open(os.devnull),
             stdout=subprocess.PIPE,
-            cwd=script_root)
+            cwd=script_root,
+            universal_newlines=True,
+        )
         # run_application.wait()
         std_outerr = run_application.communicate()[0].split('\n')
         self.write_stdouterr(std_outerr, verbosity, exit_on_warning)
@@ -265,7 +273,9 @@ class r_launcher(launchers):
             shell=True,
             stdin=open(os.devnull),
             stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT)
+            stderr=subprocess.STDOUT,
+            universal_newlines=True,
+        )
         run_application.wait()
         std_outerr = run_application.communicate()[0].split('\n')
         self.write_stdouterr(std_outerr, verbosity, exit_on_warning)
@@ -353,29 +363,29 @@ class py_launcher(launchers):
         # try to import the script. Note the script needs to be in
         # the pythonpath. This is normally ensured already due to
         # the sys.path.append statements in main.py
-        cmd = 'import ' + os.path.splitext(
-            os.path.basename(python_executable))[0] + ' as usr_script'
+        module = os.path.splitext(os.path.basename(python_executable))[0]
 
         try:
-            exec cmd
+            usr_script = importlib.import_module(module)
         except ImportError:
-            print(cmd)
+            print('Failed to import {}'.format(module))
             print(traceback.format_exc())
-            raise ValueError(
-                'The script %s can not be imported!' % python_executable)
+            raise ValueError('The script {} can not be imported!'
+                             .format(python_executable))
 
         # import was successfull. Now call the script with project_info
         # as argument
         # Capturing stdout/err for warnings, however, this currently
         # doesn't capture Tracebacks..
 
+
 #        with stdoutIO() as s:
 #            usr_script.main(project_info)
 #         self.write_stdouterr(
 #             string.split(s.getvalue(), '\n'), verbosity, exit_on_warning)
 
-        # This captures Traceback but won't let us analyse the stdout/err
-        # for text warnings
+# This captures Traceback but won't let us analyse the stdout/err
+# for text warnings
         usr_script.main(project_info)
 
     def _execute_shell(self, python_executable, project_info, verbosity,
@@ -387,7 +397,8 @@ class py_launcher(launchers):
             "python " + python_executable,
             shell=True,
             stdin=open(os.devnull),
-            stdout=subprocess.PIPE)
+            stdout=subprocess.PIPE,
+            universal_newlines=True)
         run_application.wait()
         std_outerr = run_application.communicate()[0].split('\n')
         self.write_stdouterr(std_outerr, verbosity, exit_on_warning)
@@ -424,15 +435,16 @@ class shell_launcher(launchers):
             shell=True,
             stdin=open(os.devnull),
             stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE)
+            stderr=subprocess.PIPE,
+            universal_newlines=True)
         run_application.wait()
         output = run_application.communicate()
         std_out = filter(None, output[0].split('\n'))
         std_err = filter(None, output[1].split('\n'))
         for i in [self.lang.upper() + ' INFO : ' + item for item in std_out]:
-            print i
+            print(i)
         for i in [self.lang.upper() + ' ERROR: ' + item for item in std_err]:
-            print i
+            print(i)
 
         for key in [
                 env for env in os.environ if re.search('^ESMValTool_*', env)
@@ -454,3 +466,33 @@ class bash_launcher(shell_launcher):
 
     def __init__(self, **kwargs):
         super(bash_launcher, self).__init__('bash', **kwargs)
+
+
+def run_executable(string_to_execute,
+                   project_info,
+                   verbosity,
+                   exit_on_warning,
+                   launcher_arguments=None,
+                   write_di=True):
+    """ @brief Executes script/binary
+        @param executable String pointing to the script/binary to execute
+        @param project_info Current namelist in dictionary format
+        @param verbosity The requested verbosity level
+        @param exit_on_warning Boolean defining whether the wrapper should
+                               crash on warnings
+
+        Check the type of script/binary from the executable string suffix and
+        execute the script/binary properly.
+    """
+
+    if write_di:
+        write_data_interface(string_to_execute, project_info)
+
+    suffix = os.path.splitext(string_to_execute)[1][1:]
+    interface_data = project_info['RUNTIME']['interface_data']
+    curr_launcher = globals()[suffix
+                              + '_launcher'](interface_data=interface_data)
+    if launcher_arguments is not None:
+        curr_launcher.arguments = launcher_arguments
+    curr_launcher.execute(string_to_execute, project_info, verbosity,
+                          exit_on_warning)
