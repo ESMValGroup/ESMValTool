@@ -150,23 +150,23 @@ None.
 Example plots
 -------------
 
-.. figure:: ../../source/namelists/figures/southern_hemisphere/fig1.png
+.. figure:: /namelists/figures/southern_hemisphere/fig1.png
    :width: 90%
    :align: center
    
-.. figure:: ../../source/namelists/figures/southern_hemisphere/fig2.png
+.. figure:: /namelists/figures/southern_hemisphere/fig2.png
    :width: 70%
    :align: center
 
 .. centered:: |pic_sh_1| |pic_sh_2|
 
-.. |pic_sh_1| image:: ../../source/namelists/figures/southern_hemisphere/fig3.png
+.. |pic_sh_1| image:: /namelists/figures/southern_hemisphere/fig3.png
    :width: 45%
 
-.. |pic_sh_2| image:: ../../source/namelists/figures/southern_hemisphere/fig4.png
+.. |pic_sh_2| image:: /namelists/figures/southern_hemisphere/fig4.png
    :width: 45%
 
-.. figure:: ../../source/namelists/figures/southern_hemisphere/fig5.png
+.. figure:: /namelists/figures/southern_hemisphere/fig5.png
    :width: 45%
    :align: center
 
