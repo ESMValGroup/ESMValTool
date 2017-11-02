@@ -1,11 +1,9 @@
-from __future__ import print_function
-from __future__ import division
+from __future__ import division, print_function
+
 import numpy as np
 import pytest
 
-from conf_imports import backend
-
-from backend.derived_variables.calculate_variables import _p_level_widths
+from esmvaltool.preprocessor.derive import _p_level_widths
 
 
 def test_col_is_not_monotonic():
@@ -69,7 +67,7 @@ def test_highest_level_is_top_limit():
     col = np.array([1000, 900, 5])
     col = np.insert(col, 0, sp)
     col = np.append(col, top_limit)
-    result = np.array([70, 50 + 895/2, 895/2])
+    result = np.array([70, 50 + 895 / 2, 895 / 2])
     assert all(_p_level_widths(col) == result)
 
 

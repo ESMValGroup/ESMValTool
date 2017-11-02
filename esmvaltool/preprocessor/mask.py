@@ -3,6 +3,16 @@
 # V.Predoi, University of Reading, May 2017
 ########################################################################
 import iris
+import numpy as np
+from iris.analysis import Aggregator
+from iris.util import rolling_window
+
+
+def fx_mask(mycube, fx):
+    masked_cube = mycube.copy()
+    masked_cube.data = mycube.data * fx.data / 100.
+    return masked_cube
+
 
 def masked_cube_simple(mycube, slicevar, v1, v2, threshold):
     """
@@ -16,19 +26,26 @@ def masked_cube_simple(mycube, slicevar, v1, v2, threshold):
     coord_names = [coord.name() for coord in mycube.coords()]
     if slicevar in coord_names:
         coord = mycube.coord(slicevar)
-    	print('Masking on variable: %s' % coord.standard_name)
-    	cubeslice = mycube.extract(iris.Constraint(coord_values = {coord.standard_name:lambda cell: v1 <= cell.point <= v2}))
-    	if cubeslice is not None:
-        	masked_cubeslice = cubeslice.copy()
-        	masked_cubeslice.data = ma.masked_greater(cubeslice.data, threshold)
-        	print('Masking cube keeping only what is in between %f and %f'% (v1, v2))
-        	return masked_cubeslice
-    	else:
-        	print('NOT masking the cube')
-        	return mycube
+        print('Masking on variable: %s' % coord.standard_name)
+        cubeslice = mycube.extract(
+            iris.Constraint(
+                coord_values={
+                    coord.standard_name: lambda cell: v1 <= cell.point <= v2
+                }))
+        if cubeslice is not None:
+            masked_cubeslice = cubeslice.copy()
+            masked_cubeslice.data = ma.masked_greater(cubeslice.data,
+                                                      threshold)
+            print('Masking cube keeping only what is in between %f and %f' %
+                  (v1, v2))
+            return masked_cubeslice
+        else:
+            print('NOT masking the cube')
+            return mycube
     else:
         print('Variable is not a cube dimension, leaving cube untouched')
         return mycube
+
 
 def masked_cube_lonlat(mycube, lon1, lon2, lat1, lat2, threshold):
     """
@@ -39,7 +56,10 @@ def masked_cube_lonlat(mycube, lon1, lon2, lat1, lat2, threshold):
 
     """
     import numpy.ma as ma
-    cubeslice = mycube.extract(iris.Constraint(longitude = lambda v: lon1 <= v.point <= lon2, latitude = lambda v: lat1 <= v.point <= lat2))
+    cubeslice = mycube.extract(
+        iris.Constraint(
+            longitude=lambda v: lon1 <= v.point <= lon2,
+            latitude=lambda v: lat1 <= v.point <= lat2))
     if cubeslice is not None:
         masked_cubeslice = cubeslice.copy()
         masked_cubeslice.data = ma.masked_greater(cubeslice.data, threshold)
@@ -48,6 +68,7 @@ def masked_cube_lonlat(mycube, lon1, lon2, lat1, lat2, threshold):
     else:
         print('NOT masking the cube')
         return mycube
+
 
 def cube_shape(mycube):
     """
@@ -61,8 +82,8 @@ def cube_shape(mycube):
     region = sg.MultiPoint(zip(lon.points.flat, lat.points.flat))
     return region
 
-def maskgeometry(shapefilename, att, argv):
 
+def maskgeometry(shapefilename, att, argv):
     """
     This function takes in a shapefile shapefilename
     and creates a specific geometry based on a set of conditions
@@ -74,10 +95,13 @@ def maskgeometry(shapefilename, att, argv):
     import cartopy.io.shapereader as shpreader
     reader = shpreader.Reader(shapefilename)
     contours = reader.records()
-    contour_polygons, = [contour.geometry for contour in contours if
-                         contour.attributes[att] == argv]
+    contour_polygons, = [
+        contour.geometry for contour in contours
+        if contour.attributes[att] == argv
+    ]
     main_geom = sorted(contour_polygons.geoms, key=lambda geom: geom.area)[-1]
     return main_geom
+
 
 def mask_2d(mycube, geom):
     """
@@ -103,8 +127,9 @@ def mask_2d(mycube, geom):
         this_point = Point(this_lon, this_lat)
         mask[i] = this_point.within(geom)
 
-    mycube.data = mycube.data*mask
+    mycube.data = mycube.data * mask
     return mycube
+
 
 def polygon_shape(xlist, ylist):
     """
@@ -129,14 +154,12 @@ use with cube aggregation functions such as :meth:`~iris.cube.Cube.collapsed`,
 :meth:`~iris.cube.Cube.aggregated_by` or
 :meth:`~iris.cube.Cube.rolling_window`.
 
-In this case, we have a time sequence of measurements (time unit dt), and we want to calculate how many times N
-the measurements exceed a certain threshold R over a sliding window dT (multiple of dt). The threshold could be 0
-for any unwanted value for instance.
+In this case, we have a time sequence of measurements (time unit dt), and we
+want to calculate how many times N the measurements exceed a certain threshold
+R over a sliding window dT (multiple of dt). The threshold could be 0 for any
+unwanted value for instance.
 
 """
-import numpy as np
-from iris.analysis import Aggregator
-from iris.util import rolling_window
 
 
 # Define a function to perform the custom statistical operation.
@@ -170,19 +193,21 @@ def count_spells(data, threshold, axis, spell_length):
         # just cope with negative axis numbers
         axis += data.ndim
     # Threshold the data to find the 'significant' points.
-    data_hits = data>threshold
+    data_hits = data > threshold
     # Make an array with data values "windowed" along the time axis.
     ###############################################################
     # WARNING: default step is = window size i.e. no overlapping
     # if you want overlapping windows set the step to be m*spell_length
     # where m is a float
     ###############################################################
-    hit_windows = rolling_window(data_hits, window=spell_length, step=spell_length, axis=axis)
+    hit_windows = rolling_window(
+        data_hits, window=spell_length, step=spell_length, axis=axis)
     # Find the windows "full of True-s" (along the added 'window axis').
-    full_windows = np.all(hit_windows, axis=axis+1)
+    full_windows = np.all(hit_windows, axis=axis + 1)
     # Count points fulfilling the condition (along the time axis).
     spell_point_counts = np.sum(full_windows, axis=axis, dtype=int)
     return spell_point_counts
+
 
 def window_counts(mycube, value_threshold, window_size, pctile):
     """
@@ -198,40 +223,45 @@ def window_counts(mycube, value_threshold, window_size, pctile):
     """
 
     # Make an aggregator from the user function.
-    SPELL_COUNT = Aggregator('spell_count',
-                             count_spells,
-                             units_func=lambda units: 1)
+    SPELL_COUNT = Aggregator(
+        'spell_count', count_spells, units_func=lambda units: 1)
 
     # Calculate the statistic.
-    counts_windowed_cube = mycube.collapsed('time', SPELL_COUNT,
-                                          threshold=value_threshold,
-                                          spell_length=window_size)
+    counts_windowed_cube = mycube.collapsed(
+        'time',
+        SPELL_COUNT,
+        threshold=value_threshold,
+        spell_length=window_size)
 
-    #if one wants to print the whole array
-    #np.set_printoptions(threshold=np.nan)
+    # if one wants to print the whole array
+    # np.set_printoptions(threshold=np.nan)
     r = counts_windowed_cube.data.flatten()
     meanr = np.mean(r)
     stdr = np.std(r)
     prcr = np.percentile(r, pctile)
-    return r,meanr,stdr,prcr
+    return r, meanr, stdr, prcr
+
 
 def mask_cube_counts(mycube, value_threshold, counts_threshold, window_size):
+
     # Make an aggregator from the user function.
-    SPELL_COUNT = Aggregator('spell_count',
-                             count_spells,
-                             units_func=lambda units: 1)
+    SPELL_COUNT = Aggregator(
+        'spell_count', count_spells, units_func=lambda units: 1)
 
     # Calculate the statistic.
-    counts_windowed_cube = mycube.collapsed('time', SPELL_COUNT,
-                                          threshold=value_threshold,
-                                          spell_length=window_size)
+    counts_windowed_cube = mycube.collapsed(
+        'time',
+        SPELL_COUNT,
+        threshold=value_threshold,
+        spell_length=window_size)
 
     mask = counts_windowed_cube.data > counts_threshold
     mask.astype(np.int)
     # preserving the original cube metadata
     masked_cube = mycube.copy()
-    masked_cube.data = mycube.data*mask
+    masked_cube.data = mycube.data * mask
     return counts_windowed_cube, mask, masked_cube
+
 
 def mask_threshold(mycube, threshold):
     """
