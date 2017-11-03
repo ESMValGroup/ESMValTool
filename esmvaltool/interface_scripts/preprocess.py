@@ -577,7 +577,8 @@ def preprocess(project_info, variable, model, current_diag,
 
         except (iris.exceptions.ConstraintMismatchError,
                 iris.exceptions.ConcatenateError, CCE) as ex:
-            logger.warning("%s", ex)
+            logger.error("%s", ex)
+            return
 
     else:
         # check if we need to concatenate
