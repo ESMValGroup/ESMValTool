@@ -9,7 +9,7 @@ from xml.etree import ElementTree
 
 from easytest import EasyTest
 from dummydata import Model3, Model2
-from wrappers import CMIP5, CMIP5fx_w, CMIP5_ETHZ, OBS, OBS_gridfile, OBS4MIPS, ANA4MIPS
+from .wrappers import CMIP5, CMIP5fx_w, CMIP5_ETHZ, OBS, OBS_gridfile, OBS4MIPS, ANA4MIPS
 import glob
 
 

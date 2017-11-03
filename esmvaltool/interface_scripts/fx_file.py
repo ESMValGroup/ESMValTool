@@ -7,8 +7,6 @@
 # and the full path of the file (including name and extension)
 #
 
-import pdb
-
 
 class FX_file_exception(Exception):
     pass
@@ -52,7 +50,7 @@ class AllFXfiles:
             Note: run this as .__str__(), not from within a print statement
         """
         for Id in self.fx_files:
-            print str(self.fx_files[Id])
+            print(str(self.fx_files[Id]))
 
     def __iter__(self):
         for Id in self.fx_files:

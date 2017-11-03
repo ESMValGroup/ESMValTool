@@ -5,16 +5,17 @@
 
 import logging
 import os
-import subprocess
-import yaml
 import re
+import subprocess
 from datetime import datetime
+
+import yaml
 
 logger = logging.getLogger(__name__)
 
 
 def cmip5_model2inst(model):
-    """ Return the institute given the model name in CMIP5 """
+    """Return the institute given the model name in CMIP5."""
 
     instdict = {
         'HadGEM2-CC': 'MOHC',
@@ -158,17 +159,21 @@ def read_config_file(project, cfg_file=None):
         for the given project
     """
 
-    dict = {}
-    if (cfg_file is None):
+    if cfg_file is None:
         cfg_file = os.path.join(
-            os.path.dirname(__file__), '../config-developer.yml')
-        dict = yaml.load(file(cfg_file, 'r'))
+            os.path.dirname(os.path.dirname(__file__)),
+            'config-developer.yml',
+        )
 
-    if project in dict:
-        return dict[project]
+    with open(cfg_file, 'r') as file:
+        cfg = yaml.safe_load(file)
 
-    raise KeyError('Specifications for {} not found in config-developer file'.
-                   format(project))
+    if project in cfg:
+        return cfg[project]
+
+    raise KeyError(
+        'Specifications for {} not found in config-developer file'.format(
+            project))
 
 
 def get_input_filelist(project_info, model, var):
@@ -177,7 +182,7 @@ def get_input_filelist(project_info, model, var):
 
     project = model['project']
 
-    dict = read_config_file(project)
+    cfg = read_config_file(project)
 
     # Apply variable-dependent model keys
     if 'mip' in var:
@@ -205,8 +210,8 @@ def get_input_filelist(project_info, model, var):
     else:
         drs = 'default'
 
-    if drs in dict['input_dir']:
-        dir2 = replace_tags(dict['input_dir'][drs], model, var)
+    if drs in cfg['input_dir']:
+        dir2 = replace_tags(cfg['input_dir'][drs], model, var)
     else:
         raise KeyError(
             'drs %s for %s project not specified in config-developer file' %
@@ -227,7 +232,7 @@ def get_input_filelist(project_info, model, var):
         raise OSError('directory not found', dirname)
 
     # Set the filename
-    filename = replace_tags(dict['input_file'], model, var)
+    filename = replace_tags(cfg['input_file'], model, var)
 
     # Full path to files
     files = veto_files(model, dirname, filename)
@@ -239,11 +244,11 @@ def get_output_file(project_info, model, var):
     """ Returns the full path to the output (preprocessed) file
     """
 
-    dict = read_config_file(model['project'])
+    cfg = read_config_file(model['project'])
 
     outfile = os.path.join(project_info['GLOBAL']['preproc_dir'],
                            model['project'],
-                           replace_tags(dict['output_file'], model, var))
+                           replace_tags(cfg['output_file'], model, var))
     outfile = ''.join((outfile, '.nc'))
 
     return outfile
@@ -259,7 +264,8 @@ def find_files(dirname, filename):
     # work only with existing dirs or allowed permission dirs
     strfindic = 'find {dirname} -follow -type f -iname *{filename}*'.format(
         dirname=dirname, filename=filename)
-    proc = subprocess.Popen(strfindic, stdout=subprocess.PIPE, shell=True)
+    proc = subprocess.Popen(strfindic, stdout=subprocess.PIPE, shell=True,
+                            universal_newlines=True)
     out, err = proc.communicate()
     if err:
         logger.warning("'%s' says:\n%s", strfindic, err)

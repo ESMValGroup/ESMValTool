@@ -4,20 +4,17 @@ or vertical level interpolation.
 
 """
 
-from __future__ import (absolute_import, division, print_function)
-from six.moves import (filter, input, map, range, zip)  # noqa
-import six  # noqa
+from __future__ import absolute_import, division, print_function
 
-from copy import deepcopy
-from glob import glob
-import os
 import re
+from copy import deepcopy
 
 import iris
+import numpy as np
+import six
+import stratify
 from iris.analysis import AreaWeighted, Linear, Nearest, UnstructuredNearest
 from numpy import ma
-import numpy as np
-import stratify
 
 # Regular expression to parse a "MxN" cell-specification.
 _CELL_SPEC = re.compile(r'''\A

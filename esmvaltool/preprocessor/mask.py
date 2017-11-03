@@ -2,6 +2,8 @@
 # MASKING
 # V.Predoi, University of Reading, May 2017
 ########################################################################
+from __future__ import print_function
+
 import iris
 import numpy as np
 from iris.analysis import Aggregator
@@ -79,7 +81,7 @@ def cube_shape(mycube):
     import shapely.geometry as sg
     lon = mycube.coord('longitude')
     lat = mycube.coord('latitude')
-    region = sg.MultiPoint(zip(lon.points.flat, lat.points.flat))
+    region = sg.MultiPoint(list(zip(lon.points.flat, lat.points.flat)))
     return region
 
 
@@ -119,7 +121,7 @@ def mask_2d(mycube, geom):
     p = -1
     for i in np.ndindex(ccube.data.shape):
         if i[0] != p:
-            print i[0],
+            print(i[0], end=' ')
             p = i[0]
         this_cube = ccube[i]
         this_lat = this_cube.coord('latitude').points[0]

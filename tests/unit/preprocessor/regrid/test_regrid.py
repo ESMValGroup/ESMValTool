@@ -79,30 +79,30 @@ class Test(tests.Test):
     def test_invalid_tgt_grid__None(self):
         dummy = mock.sentinel.dummy
         emsg = 'A target grid must be specified'
-        with self.assertRaisesRegexp(ValueError, emsg):
+        with self.assertRaisesRegex(ValueError, emsg):
             regrid(dummy, None, dummy)
 
     def test_invalid_tgt_grid__unknown(self):
         dummy = mock.sentinel.dummy
         scheme = 'linear'
         emsg = 'Expecting a cube or cell-specification'
-        with self.assertRaisesRegexp(ValueError, emsg):
+        with self.assertRaisesRegex(ValueError, emsg):
             regrid(self.src_cube, dummy, scheme)
 
     def test_invalid_scheme__None(self):
         dummy = mock.sentinel.dummy
         emsg = 'A scheme must be specified'
-        with self.assertRaisesRegexp(ValueError, emsg):
+        with self.assertRaisesRegex(ValueError, emsg):
             regrid(dummy, dummy, None)
 
     def test_invalid_scheme__unknown(self):
         dummy = mock.sentinel.dummy
         emsg = 'Unknown regridding scheme'
-        with self.assertRaisesRegexp(ValueError, emsg):
+        with self.assertRaisesRegex(ValueError, emsg):
             regrid(dummy, dummy, 'wibble')
 
     def test_horizontal_schemes(self):
-        self.assertEqual(horizontal_schemes.viewkeys(),
+        self.assertEqual(set(horizontal_schemes.keys()),
                          set(self.regrid_schemes))
 
     def test_regrid__horizontal_schemes(self):
@@ -118,7 +118,7 @@ class Test(tests.Test):
             result = regrid(self.src_cube, spec, scheme)
             self.assertEqual(result, self.regridded_cube)
             self._check(spec, scheme, spec=True)
-        self.assertEqual(_cache.viewkeys(), set(specs))
+        self.assertEqual(set(_cache.keys()), set(specs))
 
 
 if __name__ == '__main__':

@@ -1,6 +1,7 @@
-from esmvaltool.interface_scripts.fixes.fix import Fix
-from netCDF4 import Dataset
 from cf_units import Unit
+from netCDF4 import Dataset
+
+from esmvaltool.interface_scripts.fixes.fix import Fix
 
 
 class nbp(Fix):

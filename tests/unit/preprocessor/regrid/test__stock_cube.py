@@ -71,22 +71,22 @@ class Test(tests.Test):
 
     def test_invalid_cell_spec__alpha(self):
         emsg = 'Invalid MxN cell specification'
-        with self.assertRaisesRegexp(ValueError, emsg):
+        with self.assertRaisesRegex(ValueError, emsg):
             stock_cube('Ax1')
 
     def test_invalid_cell_spec__separator(self):
         emsg = 'Invalid MxN cell specification'
-        with self.assertRaisesRegexp(ValueError, emsg):
+        with self.assertRaisesRegex(ValueError, emsg):
             stock_cube('1y1')
 
     def test_invalid_cell_spec__longitude(self):
         emsg = 'Invalid longitude delta in MxN cell specification'
-        with self.assertRaisesRegexp(ValueError, emsg):
+        with self.assertRaisesRegex(ValueError, emsg):
             stock_cube('1.3x1')
 
     def test_invalid_cell_spec__latitude(self):
         emsg = 'Invalid latitude delta in MxN cell specification'
-        with self.assertRaisesRegexp(ValueError, emsg):
+        with self.assertRaisesRegex(ValueError, emsg):
             stock_cube('1x2.3')
 
     def test_specs(self):
@@ -94,7 +94,7 @@ class Test(tests.Test):
         for spec in specs:
             result = stock_cube(spec)
             self.assertEqual(result, self.Cube)
-            self._check(*map(float, spec.split('x')))
+            self._check(*list(map(float, spec.split('x'))))
 
 
 if __name__ == '__main__':

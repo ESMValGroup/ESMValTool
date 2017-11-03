@@ -38,20 +38,20 @@ class Test(tests.Test):
 
     def test_invalid_levels__None(self):
         emsg = 'Target levels must be specified'
-        with self.assertRaisesRegexp(ValueError, emsg):
+        with self.assertRaisesRegex(ValueError, emsg):
             vinterp(self.cube, None, 'linear')
 
     def test_invalid_scheme__None(self):
         levels = mock.sentinel.levels
         emsg = 'A scheme must be specified'
-        with self.assertRaisesRegexp(ValueError, emsg):
+        with self.assertRaisesRegex(ValueError, emsg):
             vinterp(self.cube, levels, None)
 
     def test_invalid_scheme__unknown(self):
         levels = mock.sentinel.levels
         scheme = mock.sentinel.scheme
         emsg = 'Unknown vertical interpolation scheme'
-        with self.assertRaisesRegexp(ValueError, emsg):
+        with self.assertRaisesRegex(ValueError, emsg):
             vinterp(self.cube, levels, scheme)
 
     def test_vertical_schemes(self):
@@ -81,7 +81,7 @@ class Test(tests.Test):
         levels = [0, 2]
         with mock.patch('iris.cube.Cube.extract', return_value=None):
             emsg = 'Failed to extract levels'
-            with self.assertRaisesRegexp(ValueError, emsg):
+            with self.assertRaisesRegex(ValueError, emsg):
                 vinterp(self.cube, levels, 'linear')
 
     def test_interpolation(self):

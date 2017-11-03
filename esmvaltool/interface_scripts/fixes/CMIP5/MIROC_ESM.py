@@ -1,8 +1,8 @@
+import cf_units
 from iris.coords import DimCoord
+from iris.exceptions import CoordinateNotFoundError
 
 from esmvaltool.interface_scripts.fixes.fix import Fix
-import cf_units
-from iris.exceptions import CoordinateNotFoundError
 
 
 class tro3(Fix):
@@ -51,7 +51,7 @@ class allvars(Fix):
             plev.standard_name = 'air_pressure'
             plev.long_name = 'Pressure '
             cube.add_dim_coord(plev, dims)
-            print cube
+            print(cube)
         except CoordinateNotFoundError:
             pass
 
