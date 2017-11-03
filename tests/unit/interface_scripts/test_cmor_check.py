@@ -292,18 +292,24 @@ class TestCMORCheck(unittest.TestCase):
     def test_data_not_valid_max(self):
         self.var_info.valid_max = '10000'
         self.cube.data[0] = 100000000000
-        self._check_fails_on_data()
+        self._check_warnings_on_data()
 
     def test_data_not_valid_min(self):
         self.var_info.valid_min = '-100'
         self.cube.data[0] = -100000000000
-        self._check_fails_on_data()
+        self._check_warnings_on_data()
 
     def _check_fails_on_data(self):
         checker = CMORCheck(self.cube, self.var_info)
         checker.check_metadata()
         with self.assertRaises(CMORCheckError):
             checker.check_data()
+
+    def _check_warnings_on_data(self):
+        checker = CMORCheck(self.cube, self.var_info)
+        checker.check_metadata()
+        checker.check_data()
+        self.assertTrue(checker.has_warnings())
 
     def get_cube(self,
                  var_info,

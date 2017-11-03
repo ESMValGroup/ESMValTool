@@ -47,6 +47,7 @@ import os
 import shutil
 import sys
 
+import iris
 import yaml
 
 # Hack to make this file executable
@@ -224,6 +225,7 @@ def main():
     # check NCL version
     ncl_version_check()
 
+    iris.FUTURE.netcdf_no_unlimited = True
     process_namelist(namelist_file=namelist_file, global_config=cfg)
 
 

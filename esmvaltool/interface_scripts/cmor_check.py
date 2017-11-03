@@ -1,6 +1,7 @@
 """
 CMOR checker for Iris cubes
 """
+import logging
 
 import numpy as np
 import iris
@@ -67,7 +68,7 @@ class CMORCheck(object):
         self.frequency = frequency
         self.automatic_fixes = automatic_fixes
 
-    def check_metadata(self):
+    def check_metadata(self, logger=None):
         """
         Checks the cube metadata, performing all the tests that do not require
         to have the data in memory
@@ -85,6 +86,9 @@ class CMORCheck(object):
             raises as soon as an error if defected. If set to False, it perform
             all checks and the raises.
         """
+        if logger is None:
+            logger = logging.getLogger(__name__)
+
         self._check_rank()
         self._check_var_metadata()
         self._check_fill_value()
@@ -92,7 +96,7 @@ class CMORCheck(object):
         self._check_coords()
         self._check_time_coord()
 
-        self.report_warnings()
+        self.report_warnings(logger)
         self.report_errors()
 
         self._add_auxiliar_time_coordinates()
@@ -103,13 +107,13 @@ class CMORCheck(object):
             msg = msg.format(self._cube.var_name, '\n '.join(self._errors))
             raise CMORCheckError(msg)
 
-    def report_warnings(self):
+    def report_warnings(self, logger):
         if self.has_warnings():
             msg = 'There were warnings in variable {0}:\n {1}'
             msg = msg.format(self._cube.var_name, '\n '.join(self._warnings))
-            print(msg)
+            logger.warning(msg)
 
-    def check_data(self):
+    def check_data(self, logger=None):
         """
         Checks the cube data, performing all the tests that require
         to have the data in memory.
@@ -126,12 +130,16 @@ class CMORCheck(object):
             raises as soon as an error if defected. If set to False, it perform
             all checks and the raises.
         """
+        if logger is None:
+            logger = logging.getLogger(__name__)
+
         if self._cmor_var.units:
             if str(self._cube.units) != self._cmor_var.units:
                 self._cube.convert_units(self._cmor_var.units)
 
         self._check_data_range()
 
+        self.report_warnings(logger)
         self.report_errors()
 
     def _check_fill_value(self):
@@ -173,14 +181,14 @@ class CMORCheck(object):
         if self._cmor_var.valid_min:
             valid_min = float(self._cmor_var.valid_min)
             if np.any(self._cube.data < valid_min):
-                self.report_error(self._vals_msg, self._cube.var_name,
-                                  '< {} ='.format('valid_min'), valid_min)
+                self.report_warning(self._vals_msg, self._cube.var_name,
+                                    '< {} ='.format('valid_min'), valid_min)
         # Check data is not greater than valid_max
         if self._cmor_var.valid_max:
             valid_max = float(self._cmor_var.valid_max)
             if np.any(self._cube.data > valid_max):
-                self.report_error(self._vals_msg, self._cube.var_name,
-                                  '> {} ='.format('valid_max'), valid_max)
+                self.report_warning(self._vals_msg, self._cube.var_name,
+                                    '> {} ='.format('valid_max'), valid_max)
 
     def _check_rank(self):
         # Count rank, excluding scalar dimensions
