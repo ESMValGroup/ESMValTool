@@ -1,5 +1,5 @@
 """
-Unit tests for the :func:`esmvaltool.interface_scripts.regrid._create_cube`
+Unit tests for the :func:`esmvaltool.preprocessor.regrid._create_cube`
 function.
 
 """
@@ -11,8 +11,8 @@ import unittest
 import numpy as np
 
 import tests
-from esmvaltool.interface_scripts.regrid import _create_cube as create_cube
-from tests.unit.interface_scripts.regrid import _make_cube, _make_vcoord
+from esmvaltool.preprocessor.regrid import _create_cube as create_cube
+from tests.unit.preprocessor.regrid import _make_cube, _make_vcoord
 
 
 class Test(tests.Test):

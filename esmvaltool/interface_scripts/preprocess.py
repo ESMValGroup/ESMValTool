@@ -15,12 +15,14 @@ import iris
 import iris.exceptions
 import numpy as np
 
-import data_interface as dint
-import launchers
-import preprocessing_tools as pt
-from data_finder import get_input_filelist, get_output_file
-from fixes.fix import Fix
-from regrid import regrid, vertical_schemes, vinterp
+from . import data_interface as dint
+from . import launchers
+from ..preprocessor.mask import fx_mask, mask_cube_counts
+from ..preprocessor.regrid import regrid, vertical_schemes, vinterp
+from ..preprocessor.time_area import time_slice
+from .data_finder import get_input_filelist, get_output_file
+from .fixes.fix import Fix
+from .preprocessing_tools import glob, merge_callback
 
 logger = logging.getLogger(__name__)
 
@@ -215,32 +217,6 @@ def get_cf_areafile(project_info, model):
     return os.path.join(areadir, areafile)
 
 
-# a couple functions needed by cmor reformatting (the new python one)
-def get_attr_from_field_coord(ncfield, coord_name, attr):
-    if coord_name is not None:
-        attrs = ncfield.cf_group[coord_name].cf_attrs()
-        attr_val = [value for (key, value) in attrs if key == attr]
-        if attr_val:
-            return attr_val[0]
-    return None
-
-
-# Use this callback to fix anything Iris tries to break!
-# noinspection PyUnusedLocal
-def merge_callback(raw_cube, field, filename):
-    # Remove attributes that cause issues with merging and concatenation
-    for attr in ['creation_date', 'tracking_id', 'history']:
-        if attr in raw_cube.attributes:
-            del raw_cube.attributes[attr]
-    for coord in raw_cube.coords():
-        # Iris chooses to change longitude and latitude units to degrees
-        #  regardless of value in file, so reinstating file value
-        if coord.standard_name in ['longitude', 'latitude']:
-            units = get_attr_from_field_coord(field, coord.var_name, 'units')
-            if units is not None:
-                coord.units = units
-
-
 def preprocess(project_info, variable, model, current_diag,
                cmor_reformat_type):
 
@@ -297,7 +273,8 @@ def preprocess(project_info, variable, model, current_diag,
                     'fx',
                     'sftlf',
                     model["name"],
-                    'r0i0p0', )
+                    'r0i0p0',
+                )
                 lmaskfile = 'sftlf_fx_{}_{}_r0i0p0.nc'.format(
                     model["name"], model["exp"])
                 lmaskfile_path = os.path.join(lmaskdir, lmaskfile)
@@ -328,7 +305,8 @@ def preprocess(project_info, variable, model, current_diag,
                     'fx',
                     'mrsofc',
                     model["name"],
-                    'r0i0p0', )
+                    'r0i0p0',
+                )
                 pormaskfile = 'mrsofc_fx_{}_{}_r0i0p0.nc'.format(
                     model["name"], model["exp"])
                 porofile_path = os.path.join(pormaskdir, pormaskfile)
@@ -555,7 +533,7 @@ def preprocess(project_info, variable, model, current_diag,
             # apply time gating so we minimize cube size
             yr1 = int(model['start_year'])
             yr2 = int(model['end_year'])
-            reft_cube = pt.time_slice(reft_cube_0, yr1, 1, 1, yr2, 12, 31)
+            reft_cube = time_slice(reft_cube_0, yr1, 1, 1, yr2, 12, 31)
 
             for fix in fixes:
                 reft_cube = fix.fix_data(reft_cube)
@@ -583,7 +561,7 @@ def preprocess(project_info, variable, model, current_diag,
     else:
         # check if we need to concatenate
         if len(infiles) > 1:
-            reft_cube = pt.glob(infiles, variable.name)
+            reft_cube = glob(infiles, variable.name)
         else:
             reft_cube = iris.load_cube(infiles)
         iris.save(reft_cube, project_info['TEMPORARY']['outfile_fullpath'])
@@ -597,7 +575,7 @@ def preprocess(project_info, variable, model, current_diag,
             logger.info(" Using mask file %s", lmaskfile_path)
             l_mask = iris.load_cube(lmaskfile_path)
 
-            reft_cube = pt.fx_mask(reft_cube, l_mask)
+            reft_cube = fx_mask(reft_cube, l_mask)
 
             # check cube
             ######################
@@ -625,7 +603,7 @@ def preprocess(project_info, variable, model, current_diag,
             logger.info("Using OCEAN mask file %s", omaskfile_path)
             o_mask = iris.load_cube(omaskfile_path)
 
-            reft_cube = pt.fx_mask(reft_cube, o_mask)
+            reft_cube = fx_mask(reft_cube, o_mask)
 
             # check cube
             ######################
@@ -653,7 +631,7 @@ def preprocess(project_info, variable, model, current_diag,
             logger.info(" Using PORO mask file %s", pormaskfile_path)
             por_mask = iris.load_cube(pormaskfile_path)
 
-            reft_cube = pt.fx_mask(reft_cube, por_mask)
+            reft_cube = fx_mask(reft_cube, por_mask)
 
             # check cube
             ######################
@@ -855,7 +833,7 @@ def preprocess(project_info, variable, model, current_diag,
 
                                     # check if we need to concatenate
                                     if len([tgt_nc_grid]) > 1:
-                                        tgt_grid_cube = pt.glob(
+                                        tgt_grid_cube = glob(
                                             tgt_nc_grid, variable.name)
                                     else:
                                         tgt_grid_cube = iris.load_cube(
@@ -992,8 +970,8 @@ def preprocess(project_info, variable, model, current_diag,
                 count_thr = int(max_counts_per_time_window * percentage)
 
                 # apply the mask
-                reft_cube = pt.mask_cube_counts(reft_cube, val_thr, count_thr,
-                                                time_window)[2]
+                reft_cube = mask_cube_counts(reft_cube, val_thr, count_thr,
+                                             time_window)[2]
 
                 # save if needed
                 if save_intermediary_cubes is True:
@@ -1039,7 +1017,7 @@ def multimodel_mean(cube_collection, path_collection):
 
     # seasonal mean
     # need to fix this !
-    # smeans_cubes = [pt.seasonal_mean(mycube) for mycube in cube_collection]
+    # smeans_cubes = [seasonal_mean(mycube) for mycube in cube_collection]
     # print(smeans_cubes)
     # smeans = [np.mean(c.data) for c in smeans_cubes]
     # logger.info("Multimodel seasonal global means: %s", smeans)

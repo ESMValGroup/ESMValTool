@@ -24,13 +24,12 @@ class Diagnostic(yaml.YAMLObject):
 
     def __repr__(self):
         txt = ("{}(id={!r}, description={!r}, variables={!r}, "
-               "scripts={!r}, additional_models={!r})".format(
+               "scripts={!r})".format(
                    self.__class__.__name__,
                    self.id,
                    self.description,
                    self.variables,
-                   self.scripts,
-                   self.additional_models, ))
+                   self.scripts, ))
         return txt
 
 

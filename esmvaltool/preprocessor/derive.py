@@ -1,16 +1,11 @@
-"""
-Miscellaneous functions for deriving variables.
-
-"""
-
+"""Miscellaneous functions for deriving variables."""
 
 import cf_units
+import iris
 import numba
 import numpy as np
-import iris
 from iris import Constraint
 from scipy import constants
-
 
 Avogadro_const = constants.value('Avogadro constant')
 Avogadro_const_unit = constants.unit('Avogadro constant')
@@ -45,16 +40,17 @@ def calc_lwp(cubes):
     project = clwvi_cube.attributes['project_id']
     # Should we check that the model/project_id are the same on both cubes?
 
-    BAD_MODELS = ['CESM1-CAM5-1-FV2', 'CESM1-CAM5', 'CMCC-CESM', 'CMCC-CM',
-                  'CMCC-CMS', 'IPSL-CM5A-MR', 'IPSL-CM5A-LR', 'IPSL-CM5B-LR',
-                  'CCSM4', 'IPSL-CM5A-MR', 'MIROC-ESM', 'MIROC-ESM-CHEM',
-                  'MIROC-ESM', 'CSIRO-Mk3-6-0', 'MPI-ESM-MR', 'MPI-ESM-LR',
-                  'MPI-ESM-P']
-    if (project in ["CMIP5", "CMIP5_ETHZ"] and model in BAD_MODELS) or \
-        (project == 'OBS' and model == 'UWisc'):
-            print("INFO: assuming that variable clwvi from {} model {} "
-                  "contains only liquid water".format(project, model))
-            lwp_cube = clwvi_cube
+    BAD_MODELS = [
+        'CESM1-CAM5-1-FV2', 'CESM1-CAM5', 'CMCC-CESM', 'CMCC-CM', 'CMCC-CMS',
+        'IPSL-CM5A-MR', 'IPSL-CM5A-LR', 'IPSL-CM5B-LR', 'CCSM4',
+        'IPSL-CM5A-MR', 'MIROC-ESM', 'MIROC-ESM-CHEM', 'MIROC-ESM',
+        'CSIRO-Mk3-6-0', 'MPI-ESM-MR', 'MPI-ESM-LR', 'MPI-ESM-P'
+    ]
+    if ((project in ["CMIP5", "CMIP5_ETHZ"] and model in BAD_MODELS)
+            or (project == 'OBS' and model == 'UWisc')):
+        print("INFO: assuming that variable clwvi from {} model {} "
+              "contains only liquid water".format(project, model))
+        lwp_cube = clwvi_cube
     else:
         lwp_cube = clwvi_cube - clivi_cube
 
@@ -86,8 +82,8 @@ def calc_toz(cubes):
     p_layer_widths = _pressure_level_widths(tro3_cube, ps_cube, top_limit=100)
     toz = tro3_cube * p_layer_widths / g * mw_O3 / mw_air
     toz = toz.collapsed('air_pressure', iris.analysis.SUM)
-    toz.units = (tro3_cube.units * p_layer_widths.units /
-                 g_unit * mw_O3_unit / mw_air_unit)
+    toz.units = (tro3_cube.units * p_layer_widths.units / g_unit * mw_O3_unit /
+                 mw_air_unit)
     toz.rename('atmosphere mass content of ozone')
 
     # Convert from kg m^-2 to Dobson unit (2.69e20 m^-2 )
@@ -197,17 +193,17 @@ def _p_level_widths(array):
             bounds_width = 0
         else:
             # distance to lower bound
-            if i == 0 or np.isnan(array[i-1]):
+            if i == 0 or np.isnan(array[i - 1]):
                 # first pressure level with value
                 dist_to_lower_bound = surface_pressure - val
             else:
-                dist_to_lower_bound = 0.5*(array[i-1] - val)
+                dist_to_lower_bound = 0.5 * (array[i - 1] - val)
 
             # distance to upper bound
-            if i == last_pressure_level:        # last pressure level
+            if i == last_pressure_level:  # last pressure level
                 dist_to_upper_bound = val - top_limit
             else:
-                dist_to_upper_bound = 0.5*(val - array[i+1])
+                dist_to_upper_bound = 0.5 * (val - array[i + 1])
 
             # Check monotonicity - all distances must be >= 0
             if dist_to_lower_bound < 0.0 or dist_to_upper_bound < 0.0:

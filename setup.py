@@ -155,13 +155,13 @@ with open('README.md') as readme:
             'cdo',
             'cf_units',
             'coverage',
-            'cython',
             'esgf-pyclient',
             'numpy',
             'netCDF4',
             'matplotlib',
             'pyyaml',
             'shapely',
+            'pillow',
         ],
         tests_require=[
             # TODO: add dummydata package once up to date PyPI version
