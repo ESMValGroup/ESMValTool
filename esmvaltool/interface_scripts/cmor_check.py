@@ -173,14 +173,14 @@ class CMORCheck(object):
         if self._cmor_var.valid_min:
             valid_min = float(self._cmor_var.valid_min)
             if np.any(self._cube.data < valid_min):
-                self.report_error(self._vals_msg, self._cube.var_name,
-                                  '< {} ='.format('valid_min'), valid_min)
+                self.report_warning(self._vals_msg, self._cube.var_name,
+                                    '< {} ='.format('valid_min'), valid_min)
         # Check data is not greater than valid_max
         if self._cmor_var.valid_max:
             valid_max = float(self._cmor_var.valid_max)
             if np.any(self._cube.data > valid_max):
-                self.report_error(self._vals_msg, self._cube.var_name,
-                                  '> {} ='.format('valid_max'), valid_max)
+                self.report_warning(self._vals_msg, self._cube.var_name,
+                                    '> {} ='.format('valid_max'), valid_max)
 
     def _check_rank(self):
         # Count rank, excluding scalar dimensions
