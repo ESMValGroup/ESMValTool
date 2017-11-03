@@ -1,9 +1,9 @@
 !Namelist
 
   MODELS:
-    - {name: MPI-ESM-LR, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-    - {name: MPI-ESM-MR, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-    - {name: bcc-csm1-1, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+#    - {name: GFDL-ESM2M, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+    - {name: CMCC-CESM, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+    - {name: CMCC-CMS, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
 
   PREPROCESS:
       # note: all functional; for instructions see namelist_helper.txt
@@ -13,14 +13,14 @@
   CONFIG:
     var_def_scripts: ./variable_defs
     var_only_case: 0
-  
+
   DIAGNOSTICS:
 
     DIAG_shit_1:
       !Diagnostic
       id: MyDiagShit1
       description: tutorial diagnostic
-      variables: 
+      variables:
         - {name: ta, ref_model: ['ERA-Interim','NCEP'], field: T3M, only: None, preproc_id: pp1}
       scripts:
         # Annual cycle plot
