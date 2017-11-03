@@ -5,8 +5,10 @@ from cf_units import Unit
 class allvars(Fix):
     def fix_metadata(self, cube):
         time = cube.coord('time')
-        time.units = Unit('days since 1850-01-01 00:00:00',
-                          time.units.calendar)
+        if time.units.name in ("days since 0001-01-01 00:00:00",
+                               "days since 1-01-01 00:00:00"):
+            time.units = Unit('days since 1850-01-01 00:00:00',
+                              time.units.calendar)
         return cube
 
 

@@ -522,7 +522,7 @@ def preprocess(project_info, variable, model, current_diag,
                     logger.debug('Cubes to concatenate:')
                     for cube in cfilelist:
                         logger.debug(str(cube))
-                    return
+                    return None, None
 
             else:
                 reft_cube_0 = cfilelist[0]
@@ -561,7 +561,7 @@ def preprocess(project_info, variable, model, current_diag,
 
         except (iris.exceptions.ConstraintMismatchError, CCE) as ex:
             logger.error("%s", ex)
-            return
+            return None, None
 
     else:
         # check if we need to concatenate
