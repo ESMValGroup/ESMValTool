@@ -28,11 +28,11 @@ def _get_files_in_directory(directory, pattern, asstring=True):
     if directory[-1] != os.sep:
         directory += os.sep
 
-    L = glob.glob(directory + pattern)
-    N = len(L)
+    file_list = glob.glob(directory + pattern)
+    n = len(file_list)
     if asstring:
-        L = ' '.join(L)
-    return L, N
+        file_list = ' '.join(file_list)
+    return file_list, n
 
 
 def _get_subdirectories_in_directory(directory, asstring=True):
@@ -41,11 +41,11 @@ def _get_subdirectories_in_directory(directory, asstring=True):
     if directory[-1] != os.sep:
         directory += os.sep
 
-    L = glob.glob(directory)
-    N = len(L)
+    folder_list = glob.glob(directory)
+    n = len(folder_list)
     if asstring:
-        L = ' '.join(L)
-    return L, N
+        folder_list = ' '.join(folder_list)
+    return folder_list, n
 
 
 def _aggregate_obs_from_files(work_dir, file_list):
@@ -89,8 +89,8 @@ def _aggregate_specific_years(work_dir, infile, times, remove=True):
     """ aggregate infile to times with mean and sd"""
 
     cdo = Cdo()
-    onameM = _get_temp_file_path(work_dir)
-    onameS = _get_temp_file_path(work_dir)
+    oname_m = _get_temp_file_path(work_dir)
+    oname_s = _get_temp_file_path(work_dir)
     oname = _get_temp_file_path(work_dir)
     tmpname = _get_temp_file_path(work_dir)
     cdo.selyear(
@@ -98,20 +98,20 @@ def _aggregate_specific_years(work_dir, infile, times, remove=True):
         input=infile,
         output=tmpname,
         options='-f nc4 -b F32')
-    cdo.timselmean(12, input=tmpname, output=onameM, options='-f nc4 -b F32')
-    # cdo.timselstd(12,input=tmpname,output=onameS,options='-f nc4 -b F32')
-    name = cdo.showname(input=onameM)
+    cdo.timselmean(12, input=tmpname, output=oname_m, options='-f nc4 -b F32')
+    # cdo.timselstd(12,input=tmpname,output=oname_s,options='-f nc4 -b F32')
+    name = cdo.showname(input=oname_m)
     cdo.setname(
         name[0] + "_std -timselstd,12",
         input=tmpname,
-        output=onameS,
+        output=oname_s,
         options='-L -f nc4 -b F32')
-    cdo.merge(input=[onameM, onameS], output=oname)
+    cdo.merge(input=[oname_m, oname_s], output=oname)
     if remove:
         os.remove(infile)
     os.remove(tmpname)
-    os.remove(onameM)
-    os.remove(onameS)
+    os.remove(oname_m)
+    os.remove(oname_s)
 
     return oname
 
