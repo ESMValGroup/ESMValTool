@@ -49,8 +49,8 @@ import sys
 import tempfile
 
 import numpy as np
-
 from cdo import Cdo
+
 from preprocessing_basics import _get_files_in_directory
 
 inpath = "/Work/Reference/OBS_ESACCI_LC/"

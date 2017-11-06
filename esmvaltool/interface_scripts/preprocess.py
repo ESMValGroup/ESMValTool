@@ -5,22 +5,23 @@ toolbox. Author: Valeriu Predoi, University of Reading,
 Initial version: August 2017
 contact: valeriu.predoi@ncas.ac.uk
 """
+from __future__ import print_function
+
 import copy
-import exceptions
 import logging
 import os
-import subprocess
 
 import iris
 import iris.exceptions
 import numpy as np
 
-import data_interface as dint
-import launchers
-import preprocessing_tools as pt
-from data_finder import get_input_filelist, get_output_file
-from fixes.fix import Fix
-from regrid import regrid, vertical_schemes, vinterp
+from ..preprocessor.mask import fx_mask, mask_cube_counts
+from ..preprocessor.regrid import regrid, vertical_schemes, vinterp
+from ..preprocessor.time_area import time_slice
+from .data_finder import get_input_filelist, get_output_file
+from .fixes.fix import Fix
+from .launchers import run_executable
+from .preprocessing_tools import glob, merge_callback
 
 logger = logging.getLogger(__name__)
 
@@ -29,141 +30,6 @@ logger = logging.getLogger(__name__)
 # It contains all variables to call other
 # more specialized modules for prerocessing purposes
 ########################################################
-
-
-def write_data_interface(executable, project_info):
-    """ @brief Write Python data structures to target script format interface
-        @param executable String pointing to the script/binary to execute
-        @param project_info Current namelist in dictionary format
-
-        Data structures in Python are rewritten to the interface folder in
-        a format appropriate for the target script/binary
-    """
-    suffix = os.path.splitext(executable)[1][1:]
-    curr_interface = vars(dint)[suffix.title()
-                                + '_data_interface'](project_info)
-    curr_interface.write_data_to_interface()
-
-
-def run_executable(string_to_execute,
-                   project_info,
-                   verbosity,
-                   exit_on_warning,
-                   launcher_arguments=None,
-                   write_di=True):
-    """ @brief Executes script/binary
-        @param executable String pointing to the script/binary to execute
-        @param project_info Current namelist in dictionary format
-        @param verbosity The requested verbosity level
-        @param exit_on_warning Boolean defining whether the wrapper should
-                               crash on warnings
-
-        Check the type of script/binary from the executable string suffix and
-        execute the script/binary properly.
-    """
-
-    if write_di:
-        write_data_interface(string_to_execute, project_info)
-
-    suffix = os.path.splitext(string_to_execute)[1][1:]
-    interface_data = project_info['RUNTIME']['interface_data']
-    curr_launcher = vars(launchers)[suffix + '_launcher'](
-        interface_data=interface_data)
-    if launcher_arguments is not None:
-        curr_launcher.arguments = launcher_arguments
-    curr_launcher.execute(string_to_execute, project_info, verbosity,
-                          exit_on_warning)
-
-
-def get_figure_file_names(project_info, model):
-    """ @brief Returns names for plots
-        @param project_info Current namelist in dictionary format
-        @param some model from namelist
-    """
-    #     return "_".join([
-    #         model['project'],
-    #         model['name'],
-    #         model['mip'],
-    #         model['exp'],
-    #         model['ensemble'],
-    #         str(model['start_year']) + "-" + str(model['end_year']),
-    #     ])
-    return "_".join([
-        model['project'],
-        model['name'],
-        str(model['start_year']) + "-" + str(model['end_year']),
-    ])
-
-
-def get_cf_fullpath(project_info, model, variable):
-    """ @brief Returns the path (only) to the output file used in reformat
-            @param project_info Current namelist in dictionary format
-            @param model One of the <model>-tags in the XML namelist file
-            @param field The field (see tutorial.pdf for available fields)
-            @param variable The variable (defaults to the variable in
-
-            This function specifies the full output path (directory + file) to
-            the outupt file to use in the reformat routines and in climate.ncl
-    """
-    fullpath = get_output_file(project_info, model, variable)
-    return fullpath
-
-
-def get_cf_outpath(project_info, model):
-    """ @brief Returns the path (only) to the output file used in reformat
-            @param project_info Current namelist in dictionary format
-            @param model One of the <model>-tags in the XML namelist file
-            @return A string (output path)
-
-            Standard path: dir_output/preproc_dir/projectname/
-                projectname_expname_ens_field_var_yrstart-yrend.nc
-    """
-    outdir1 = project_info['GLOBAL']['preproc_dir']
-    outdir2 = model['project']
-    # let's check if directories exist, if not create them
-    if not os.path.isdir(outdir1):
-        mkd = 'mkdir -p ' + project_info['GLOBAL']['preproc_dir']
-        proc = subprocess.Popen(mkd, stdout=subprocess.PIPE, shell=True)
-        (out, err) = proc.communicate()
-    if not os.path.isdir(os.path.join(outdir1, outdir2)):
-        mkd = 'mkdir -p ' + os.path.join(outdir1, outdir2)
-        proc = subprocess.Popen(mkd, stdout=subprocess.PIPE, shell=True)
-        (out, err) = proc.communicate()
-    return os.path.join(outdir1, outdir2)
-
-
-def get_dict_key(model):
-    """ @brief Returns a unique key based on the model entries provided.
-            @param model One of the <model>-tags in the yaml namelist file
-            @return A string
-
-            This function creates and returns a key used in a number of NCL
-            scripts to refer to a specific dataset, see e.g., the variable
-            'cn' in 'interface_scripts/read_data.ncl'
-    """
-
-    # allow for different projects
-
-    # CMIP5
-    if model['project'] == 'CMIP5':
-        dict_key = "_".join([
-            model['project'],
-            model['name'],
-            model['mip'],
-            model['exp'],
-            model['ensemble'],
-            str(model['start_year']),
-            str(model['end_year']),
-        ])
-    else:
-        dict_key = "_".join([
-            model['project'],
-            model['name'],
-            str(model['start_year']),
-            str(model['end_year']),
-        ])
-
-    return dict_key
 
 
 def get_cf_infile(project_info, current_diag, model, current_var_dict):
@@ -175,29 +41,14 @@ def get_cf_infile(project_info, current_diag, model, current_var_dict):
        and operates on a single diagnostic
        Returns a dictionary {var1:[model_data], var2:[model_data], ...}
     """
-    # assert verbosity level
-    verbosity = project_info['GLOBAL']['verbosity']
-
-    # look for files keyed by project name
-    proj_name = model['project']
-
     # get variables; data files is a dictionary keyed on variable
     data_files = {}
     variables = current_diag.variables
 
     for var in variables:
-
         full_paths = get_input_filelist(project_info, model, var)
-        # Need this call to create subdir in preproc
-        # (FIX-ME: get_cf_outpath and get_cf_fullpath shall be merged
-        # in a single function get_cf_outfile)
-        standard_path = get_cf_outpath(project_info, model)
-        standard_name = get_cf_fullpath(project_info, model, var)
-        standard_name = standard_name.replace('.nc', '_GLOB.nc')
-
         if len(full_paths) == 0:
             logger.info("Could not find any data files for %s", model['name'])
-
         else:
             data_files[var['name']] = full_paths
 
@@ -213,32 +64,6 @@ def get_cf_areafile(project_info, model):
                "_r0i0p0.nc"
 
     return os.path.join(areadir, areafile)
-
-
-# a couple functions needed by cmor reformatting (the new python one)
-def get_attr_from_field_coord(ncfield, coord_name, attr):
-    if coord_name is not None:
-        attrs = ncfield.cf_group[coord_name].cf_attrs()
-        attr_val = [value for (key, value) in attrs if key == attr]
-        if attr_val:
-            return attr_val[0]
-    return None
-
-
-# Use this callback to fix anything Iris tries to break!
-# noinspection PyUnusedLocal
-def merge_callback(raw_cube, field, filename):
-    # Remove attributes that cause issues with merging and concatenation
-    for attr in ['creation_date', 'tracking_id', 'history']:
-        if attr in raw_cube.attributes:
-            del raw_cube.attributes[attr]
-    for coord in raw_cube.coords():
-        # Iris chooses to change longitude and latitude units to degrees
-        #  regardless of value in file, so reinstating file value
-        if coord.standard_name in ['longitude', 'latitude']:
-            units = get_attr_from_field_coord(field, coord.var_name, 'units')
-            if units is not None:
-                coord.units = units
 
 
 def preprocess(project_info, variable, model, current_diag,
@@ -297,7 +122,8 @@ def preprocess(project_info, variable, model, current_diag,
                     'fx',
                     'sftlf',
                     model["name"],
-                    'r0i0p0', )
+                    'r0i0p0',
+                )
                 lmaskfile = 'sftlf_fx_{}_{}_r0i0p0.nc'.format(
                     model["name"], model["exp"])
                 lmaskfile_path = os.path.join(lmaskdir, lmaskfile)
@@ -328,7 +154,8 @@ def preprocess(project_info, variable, model, current_diag,
                     'fx',
                     'mrsofc',
                     model["name"],
-                    'r0i0p0', )
+                    'r0i0p0',
+                )
                 pormaskfile = 'mrsofc_fx_{}_{}_r0i0p0.nc'.format(
                     model["name"], model["exp"])
                 porofile_path = os.path.join(pormaskdir, pormaskfile)
@@ -438,6 +265,11 @@ def preprocess(project_info, variable, model, current_diag,
     logger.info("Full IN path is %s", str(infiles))
     logger.info("Full OUT path is %s", fullpath)
 
+    preproc_model_path = os.path.join(project_info['GLOBAL']['preproc_dir'],
+                                      model['project'])
+    if not os.path.isdir(preproc_model_path):
+        os.makedirs(preproc_model_path)
+
     #################################################################
     # START CHANGING STUFF
 
@@ -474,9 +306,8 @@ def preprocess(project_info, variable, model, current_diag,
         else:
             if (not os.path.isfile(
                     project_info['TEMPORARY']['outfile_fullpath'])):
-                raise exceptions.IOError(
-                    2, "Expected reformatted file isn't available: ",
-                    project_info['TEMPORARY']['outfile_fullpath'])
+                raise IOError(2, "Expected reformatted file isn't available: ",
+                              project_info['TEMPORARY']['outfile_fullpath'])
 
         # load cube now, if available
         reft_cube = iris.load_cube(
@@ -488,10 +319,10 @@ def preprocess(project_info, variable, model, current_diag,
     # New code: cmor_check.py (by Javier Vegas)
     elif cmor_reformat_type == 'py' and project_name == 'CMIP5':
         # needed imports
-        from cmor_check import CMORCheck as CC
-        from cmor_check import CMORCheckError as CCE
+        from .cmor_check import CMORCheck as CC
+        from .cmor_check import CMORCheckError as CCE
         import warnings
-        from variable_info import CMIP5Info
+        from .variable_info import CMIP5Info
 
         variables_info = CMIP5Info()
 
@@ -555,7 +386,7 @@ def preprocess(project_info, variable, model, current_diag,
             # apply time gating so we minimize cube size
             yr1 = int(model['start_year'])
             yr2 = int(model['end_year'])
-            reft_cube = pt.time_slice(reft_cube_0, yr1, 1, 1, yr2, 12, 31)
+            reft_cube = time_slice(reft_cube_0, yr1, 1, 1, yr2, 12, 31)
 
             for fix in fixes:
                 reft_cube = fix.fix_data(reft_cube)
@@ -582,7 +413,7 @@ def preprocess(project_info, variable, model, current_diag,
     else:
         # check if we need to concatenate
         if len(infiles) > 1:
-            reft_cube = pt.glob(infiles, variable.name)
+            reft_cube = glob(infiles, variable.name)
         else:
             reft_cube = iris.load_cube(infiles)
         iris.save(reft_cube, project_info['TEMPORARY']['outfile_fullpath'])
@@ -596,7 +427,7 @@ def preprocess(project_info, variable, model, current_diag,
             logger.info(" Using mask file %s", lmaskfile_path)
             l_mask = iris.load_cube(lmaskfile_path)
 
-            reft_cube = pt.fx_mask(reft_cube, l_mask)
+            reft_cube = fx_mask(reft_cube, l_mask)
 
             # check cube
             ######################
@@ -624,7 +455,7 @@ def preprocess(project_info, variable, model, current_diag,
             logger.info("Using OCEAN mask file %s", omaskfile_path)
             o_mask = iris.load_cube(omaskfile_path)
 
-            reft_cube = pt.fx_mask(reft_cube, o_mask)
+            reft_cube = fx_mask(reft_cube, o_mask)
 
             # check cube
             ######################
@@ -652,7 +483,7 @@ def preprocess(project_info, variable, model, current_diag,
             logger.info(" Using PORO mask file %s", pormaskfile_path)
             por_mask = iris.load_cube(pormaskfile_path)
 
-            reft_cube = pt.fx_mask(reft_cube, por_mask)
+            reft_cube = fx_mask(reft_cube, por_mask)
 
             # check cube
             ######################
@@ -709,7 +540,7 @@ def preprocess(project_info, variable, model, current_diag,
             nsl = 0
 
         # check levels value
-        if isinstance(levels, basestring):
+        if isinstance(levels, str):
             try:
                 vlevels = levels.split(',')
                 psl = 2
@@ -848,7 +679,7 @@ def preprocess(project_info, variable, model, current_diag,
 
                                     # check if we need to concatenate
                                     if len([tgt_nc_grid]) > 1:
-                                        tgt_grid_cube = pt.glob(
+                                        tgt_grid_cube = glob(
                                             tgt_nc_grid, variable.name)
                                     else:
                                         tgt_grid_cube = iris.load_cube(
@@ -905,9 +736,8 @@ def preprocess(project_info, variable, model, current_diag,
 
             else:
                 # assume and check it is of XxY form
-                if isinstance(target_grid.split('x')[0],
-                              basestring) and isinstance(
-                                  target_grid.split('x')[1], basestring):
+                if isinstance(target_grid.split('x')[0], str) and isinstance(
+                        target_grid.split('x')[1], str):
                     logger.info("Target regrid is XxY: %s", target_grid)
                     if regrid_scheme:
                         rgc = regrid(src_cube, target_grid, regrid_scheme)
@@ -985,8 +815,8 @@ def preprocess(project_info, variable, model, current_diag,
                 count_thr = int(max_counts_per_time_window * percentage)
 
                 # apply the mask
-                reft_cube = pt.mask_cube_counts(reft_cube, val_thr, count_thr,
-                                                time_window)[2]
+                reft_cube = mask_cube_counts(reft_cube, val_thr, count_thr,
+                                             time_window)[2]
 
                 # save if needed
                 if save_intermediary_cubes is True:
@@ -1032,7 +862,7 @@ def multimodel_mean(cube_collection, path_collection):
 
     # seasonal mean
     # need to fix this !
-    # smeans_cubes = [pt.seasonal_mean(mycube) for mycube in cube_collection]
+    # smeans_cubes = [seasonal_mean(mycube) for mycube in cube_collection]
     # print(smeans_cubes)
     # smeans = [np.mean(c.data) for c in smeans_cubes]
     # logger.info("Multimodel seasonal global means: %s", smeans)
@@ -1050,7 +880,7 @@ class Var:
     def __init__(self, merged_dict, var0, fld0):
         # Write the variable attributes in 'merged_dict'
         # to class object attributes
-        for name, value in merged_dict.iteritems():
+        for name, value in merged_dict.items():
             setattr(self, name, value)
 
         # Special cases, actually not sure what they do
@@ -1147,8 +977,7 @@ class Diag:
                                        vari)[base_var.name]
 
                 if len(infile) == 0:
-                    raise exceptions.IOError(2, "No input files found in ",
-                                             infile)
+                    raise IOError(2, "No input files found in ", infile)
                 else:
                     logger.info("Using %s (%s)", base_var.name, base_var.field)
                     base_vars = [base_var]

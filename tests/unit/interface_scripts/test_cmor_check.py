@@ -1,14 +1,7 @@
-"""
-
-Unit tests for the CMORCheck class.
-
-"""
+"""Unit tests for the CMORCheck class."""
 
 import sys
-# Standard library imports
 import unittest
-# Third-party imports
-from StringIO import StringIO
 
 import iris
 import iris.coord_categorisation
@@ -107,13 +100,17 @@ class TestCMORCheck(unittest.TestCase):
         self.assertTrue(checker.has_warnings())
 
     def test_report_warning_with_fail_error(self):
+        if sys.version_info[0] == 2:
+            from StringIO import StringIO
+        else:
+            from io import StringIO
         checker = CMORCheck(self.cube, self.var_info, fail_on_error=True)
         stdout = sys.stdout
         sys.stdout = StringIO()
         checker.report_warning('New error: {}', 'something failed')
         output = sys.stdout.getvalue().strip()
         sys.stdout = stdout
-        self.assertEquals(output, 'WARNING: New error: something failed')
+        self.assertEqual(output, 'WARNING: New error: something failed')
 
     def test_check(self):
         self._check_cube()
@@ -351,7 +348,8 @@ class TestCMORCheck(unittest.TestCase):
             long_name=var_info.long_name,
             var_name=var_info.short_name,
             units=var_info.units,
-            attributes=None, )
+            attributes=None,
+        )
         if var_info.positive:
             cube.attributes['positive'] = var_info.positive
 
@@ -398,7 +396,8 @@ class TestCMORCheck(unittest.TestCase):
             long_name=dim_spec.long_name,
             var_name=dim_spec.out_name,
             attributes=coord_atts,
-            units=unit, )
+            units=unit,
+        )
         return coord
 
     @staticmethod

@@ -97,7 +97,8 @@ def configure_logging(cfg_file=None, output=None, console_log_level=None):
 
 def read_config_file(config_file, namelist_name):
     """Read config file and store settings in a dictionary."""
-    cfg = yaml.safe_load(file(config_file, 'r'))
+    with open(config_file, 'r') as file:
+        cfg = yaml.safe_load(file)
 
     # set defaults
     defaults = {
@@ -242,6 +243,7 @@ def process_namelist(namelist_file, global_config):
 
     preprocess_id = None
     script_root = os.path.abspath(os.path.dirname(__file__))
+    esmvaltool_root = os.path.dirname(script_root)
 
     # project_info is a dictionary with all info from the namelist.
     namelist = load_namelist(namelist_file)
@@ -296,9 +298,10 @@ def process_namelist(namelist_file, global_config):
     project_info['RUNTIME']['regridtarget'] = []
 
     # master references-acknowledgements file (hard coded)
-    in_refs = os.path.join(script_root, 'doc',
+    in_refs = os.path.join(esmvaltool_root, 'doc',
                            'MASTER_authors-refs-acknow.txt')
     project_info['RUNTIME']['in_refs'] = in_refs
+    logger.info("Using references from %s", in_refs)
 
     # create workdir
     if not os.path.isdir(project_info['GLOBAL']['work_dir']):

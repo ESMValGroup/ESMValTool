@@ -7,7 +7,7 @@
 import os
 import unittest
 
-from esmvaltool_testlib import ESMValToolTest
+from .esmvaltool_testlib import ESMValToolTest
 from xml.etree import ElementTree as et
 
 

@@ -5,13 +5,94 @@ toolbox. Author: Valeriu Predoi, University of Reading,
 Initial version: August 2017
 contact: valeriu.predoi@ncas.ac.uk
 """
-from auxiliary import writeProjinfoError
-from operator import itemgetter
 import os
-import pdb
 import re
-from auxiliary import info
-import preprocess as pp
+from operator import itemgetter
+
+from .auxiliary import writeProjinfoError
+from .data_finder import get_output_file
+
+
+def get_figure_file_names(project_info, model):
+    """ @brief Returns names for plots
+        @param project_info Current namelist in dictionary format
+        @param some model from namelist
+    """
+    #     return "_".join([
+    #         model['project'],
+    #         model['name'],
+    #         model['mip'],
+    #         model['exp'],
+    #         model['ensemble'],
+    #         str(model['start_year']) + "-" + str(model['end_year']),
+    #     ])
+    return "_".join([
+        model['project'],
+        model['name'],
+        str(model['start_year']) + "-" + str(model['end_year']),
+    ])
+
+
+def get_cf_fullpath(project_info, model, variable):
+    """ @brief Returns the path (only) to the output file used in reformat
+            @param project_info Current namelist in dictionary format
+            @param model One of the <model>-tags in the XML namelist file
+            @param field The field (see tutorial.pdf for available fields)
+            @param variable The variable (defaults to the variable in
+
+            This function specifies the full output path (directory + file) to
+            the outupt file to use in the reformat routines and in climate.ncl
+    """
+    fullpath = get_output_file(project_info, model, variable)
+    return fullpath
+
+
+def get_cf_outpath(project_info, model):
+    """ @brief Returns the path (only) to the output file used in reformat
+            @param project_info Current namelist in dictionary format
+            @param model One of the <model>-tags in the XML namelist file
+            @return A string (output path)
+
+            Standard path: dir_output/preproc_dir/projectname/
+                projectname_expname_ens_field_var_yrstart-yrend.nc
+    """
+    outdir1 = project_info['GLOBAL']['preproc_dir']
+    outdir2 = model['project']
+    return os.path.join(outdir1, outdir2)
+
+
+def get_dict_key(model):
+    """ @brief Returns a unique key based on the model entries provided.
+            @param model One of the <model>-tags in the yaml namelist file
+            @return A string
+
+            This function creates and returns a key used in a number of NCL
+            scripts to refer to a specific dataset, see e.g., the variable
+            'cn' in 'interface_scripts/read_data.ncl'
+    """
+
+    # allow for different projects
+
+    # CMIP5
+    if model['project'] == 'CMIP5':
+        dict_key = "_".join([
+            model['project'],
+            model['name'],
+            model['mip'],
+            model['exp'],
+            model['ensemble'],
+            str(model['start_year']),
+            str(model['end_year']),
+        ])
+    else:
+        dict_key = "_".join([
+            model['project'],
+            model['name'],
+            str(model['start_year']),
+            str(model['end_year']),
+        ])
+
+    return dict_key
 
 
 class ESMValTool_interface(object):
@@ -86,8 +167,8 @@ class Data_interface(object):
             # supporting the 'AUXILIARIES'-tag
             fx_project = getattr(globals()['projects'], 'CMIP5_fx')()
             fx_files = fx_project.get_fx_files(project_info)
-            self.interface.fx_keys = project_info['AUXILIARIES'][
-                'FX_files'].fx_files.keys()
+            self.interface.fx_keys = list(
+                project_info['AUXILIARIES']['FX_files'].fx_files.keys())
             self.interface.fx_values = [
                 os.path.join(indata_root, item.get_fullpath())
                 for item in project_info['AUXILIARIES']['FX_files']
@@ -107,8 +188,8 @@ class Data_interface(object):
         model_specifiers, models, model_attr_id, model_attr_skip = \
             self.get_modelinfo(project_info)
         for modelpart in model_specifiers:
-            current_column = map(
-                itemgetter(model_specifiers.index(modelpart)), models)
+            current_column = list(
+                map(itemgetter(model_specifiers.index(modelpart)), models))
             vars(self.interface)["models_" + modelpart] = current_column
 
         vars(self.interface)["model_attr_id"] = model_attr_id
@@ -163,24 +244,27 @@ class Data_interface(object):
         for model in project_info['ALLMODELS']:
             currProject = model
 
-            figfiles_suffix.append(
-                pp.get_figure_file_names(project_info, model))
+            figfiles_suffix.append(get_figure_file_names(project_info, model))
 
             # Get reformatted infiles
             # need the input dict because of old variable derivation
             infile_fullpaths.append(
-                pp.get_cf_fullpath(
+                get_cf_fullpath(
                     project_info,
                     model,
-                    variable={'name': "${VARIABLE}",
-                              'field': "${FIELD}"}))
-            singfile = pp.get_cf_fullpath(
+                    variable={
+                        'name': "${VARIABLE}",
+                        'field': "${FIELD}"
+                    }))
+            singfile = get_cf_fullpath(
                 project_info,
                 model,
-                variable={'name': "${VARIABLE}",
-                          'field': "${FIELD}"}).split('/')[-1]
+                variable={
+                    'name': "${VARIABLE}",
+                    'field': "${FIELD}"
+                }).split('/')[-1]
             infiles.append(singfile)
-            infile_paths.append(pp.get_cf_outpath(project_info, model))
+            infile_paths.append(get_cf_outpath(project_info, model))
 
         return figfiles_suffix,\
             infiles,\
@@ -360,7 +444,7 @@ class Ncl_data_interface(Data_interface):
         for model in project_info['ALLMODELS']:
             currProject = model
 
-            self.interface.dict_keys.append(pp.get_dict_key(model))
+            self.interface.dict_keys.append(get_dict_key(model))
         # Remove the diag_script_cfg entry if it is not NCL code
         # (e.g., R, python, etc..)
         class_prefix = re.search("([a-zA-Z]*)_.*",
@@ -383,7 +467,8 @@ class Ncl_data_interface(Data_interface):
             os.path.dirname(os.path.dirname(__file__)),
             "interface_data",
             "ncl_interface_templates",
-            "ncl.tmpl", )
+            "ncl.tmpl",
+        )
         interface_data = self.project_info['RUNTIME']['interface_data']
         fsource = open(template, "r")
         ftarget = open(os.path.join(interface_data, "ncl.interface"), "w")
@@ -490,7 +575,8 @@ class R_data_interface(Data_interface):
             os.path.dirname(os.path.dirname(__file__)),
             "interface_data",
             "r_interface_templates",
-            "r.tmpl", )
+            "r.tmpl",
+        )
         interface_data = self.project_info['RUNTIME']['interface_data']
         fsource = open(template, "r")
         ftarget = open(os.path.join(interface_data, "r.interface"), "w")
@@ -572,3 +658,17 @@ class Py_data_interface(Data_interface):
     def write_data_to_interface(self):
         """ @brief Write the configuration data to Matlab format
         """
+
+
+def write_data_interface(executable, project_info):
+    """ @brief Write Python data structures to target script format interface
+        @param executable String pointing to the script/binary to execute
+        @param project_info Current namelist in dictionary format
+
+        Data structures in Python are rewritten to the interface folder in
+        a format appropriate for the target script/binary
+    """
+    suffix = os.path.splitext(executable)[1][1:]
+    curr_interface = globals()[suffix.title()
+                               + '_data_interface'](project_info)
+    curr_interface.write_data_to_interface()

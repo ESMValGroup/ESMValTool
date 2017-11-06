@@ -8,13 +8,19 @@ engines:
         exclude_paths: [
             'tests',
         ]
+    metrics:
+        enabled: true
+    duplication:
+        enabled: true
+    prospector:
+        enabled: true
     pylint:
         enabled: true
         python_version: 3
 
 exclude_paths: [
     'doc/sphinx/**',
-    'esmvaltool/doc/sphinx/**'
+    'esmvaltool/doc/sphinx/**',
     # cmor tables
     'esmvaltool/interface_scripts/cmip*-cmor-tables/**',
     # old stuff
