@@ -65,7 +65,8 @@ class RunTests(CustomCommand):
 
         import pytest
 
-        report_dir = 'test-reports'
+        version = sys.version_info[0]
+        report_dir = 'test-reports/python{}'.format(version)
         errno = pytest.main([
             'tests',
             '--ignore=tests/test_diagnostics',
