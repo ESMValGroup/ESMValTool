@@ -82,8 +82,8 @@ def configure_logging(cfg_file=None, output=None, console_log_level=None):
         output = os.getcwd()
 
     cfg_file = os.path.abspath(cfg_file)
-    with open(cfg_file) as file:
-        cfg = yaml.safe_load(file)
+    with open(cfg_file) as file_handler:
+        cfg = yaml.safe_load(file_handler)
 
     for handler in cfg['handlers'].values():
         if 'filename' in handler:
@@ -347,8 +347,10 @@ def process_namelist(namelist_file, global_config):
             project_info['ADDITIONAL_MODELS'] = curr_diag.additional_models
             project_info['ALLMODELS'] = \
                 project_info['MODELS'] + project_info['ADDITIONAL_MODELS']
-        except (AttributeError, "'Diagnostic' object has no attribute 'additional_models'"):
-            logger.warning("Current diagnostic has no Additional Models field; setting ALLMODELS to MODELS")
+        except (AttributeError, "'Diagnostic' object has no attribute "
+                                "'additional_models'"):
+            logger.warning("Current diagnostic has no Additional Models field;"
+                           " setting ALLMODELS to MODELS")
             project_info['ALLMODELS'] = project_info['MODELS']
 
         # initialize empty lists to hold preprocess cubes and file paths

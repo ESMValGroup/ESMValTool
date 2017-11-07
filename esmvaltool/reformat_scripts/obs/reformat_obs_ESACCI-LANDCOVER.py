@@ -97,7 +97,7 @@ def main():
         file_list, list_length = _get_files_in_directory(
             inpath, '*P5Y-' + str(year) + '*.nc', False)
         for locfile in file_list:
-            lctool_Command = [
+            lctool_command = [
                 "bash",
                 os.path.join(path2lctool, "bin", "aggregate-map.sh"),
                 "-PgridName=GEOGRAPHIC_LAT_LON",
@@ -107,7 +107,7 @@ def main():
                 "-PoutputLCCSClasses=false",
                 locfile,
             ]
-            process = subprocess.Popen(lctool_Command, stdout=subprocess.PIPE)
+            process = subprocess.Popen(lctool_command, stdout=subprocess.PIPE)
             for line in iter(process.stdout.readline, b''):
                 print line,
                 process.stdout.close()

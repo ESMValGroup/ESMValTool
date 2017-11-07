@@ -17,19 +17,12 @@ def time_slice(mycube, yr1, mo1, d1, yr2, mo2, d2):
     Returns a cube
     """
     import datetime
-    time_units = mycube.coord('time').units
-    if time_units.calendar == '360_day':
-        if d1 > 30:
-            d1 = 30
-        if d2 > 30:
-            d2 = 30
     my_date1 = datetime.datetime(int(yr1), int(mo1), int(d1))
     my_date2 = datetime.datetime(int(yr2), int(mo2), int(d2))
-
-    t1 = time_units.date2num(my_date1)
-    t2 = time_units.date2num(my_date2)
+    t1 = mycube.coord('time').units.date2num(my_date1)
+    t2 = mycube.coord('time').units.date2num(my_date2)
     my_constraint = iris.Constraint(time=lambda t: (
-        t1 < time_units.date2num(t.point) < t2))
+        t1 < mycube.coord('time').units.date2num(t.point) < t2))
     cube_slice = mycube.extract(my_constraint)
     return cube_slice
 
