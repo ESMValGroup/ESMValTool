@@ -68,7 +68,7 @@ dependencies:
   - esgf-pyclient
   - geoval
   # TODO: replace dummydata by conda/PyPI package and move to testing
-  - "--editable=git+https://github.com/esmvalgroup/dummydata.git#egg=dummydata-dev"
+  - "git+https://github.com/esmvalgroup/dummydata.git#egg=dummydata-dev"
   # code style (pip versions are more up to date)
   - isort
   - prospector[with_pyroma]
