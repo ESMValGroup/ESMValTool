@@ -123,7 +123,7 @@ Example plots
 -------------
 
 .. fig_cvdp_1:
-.. figure:: ../../source/namelists/figures/cvdp/figure_namelists_cvdp_EOF-SST-NorthPacific.png
+.. figure:: /namelists/figures/cvdp/figure_namelists_cvdp_EOF-SST-NorthPacific.png
    :align:  center
    :width:  90%
 
@@ -131,7 +131,7 @@ Example plots
 
 
 .. fig_cvdp_2:
-.. figure:: ../../source/namelists/figures/cvdp/figure_namelists_cvdp_Nino34-Index.png
+.. figure:: /namelists/figures/cvdp/figure_namelists_cvdp_Nino34-Index.png
    :align:  center
    :width:  100%
 
@@ -139,7 +139,7 @@ Example plots
 
 
 .. fig_cvdp_3:
-.. figure:: ../../source/namelists/figures/cvdp/figure_namelists_cvdp_LaNina-Composite.png
+.. figure:: /namelists/figures/cvdp/figure_namelists_cvdp_LaNina-Composite.png
    :align:  center
    :width:  80%
 
@@ -147,7 +147,7 @@ Example plots
 
 
 .. fig_cvdp_4:
-.. figure:: ../../source/namelists/figures/cvdp/figure_namelists_cvdp_AMO-Monthly.png
+.. figure:: /namelists/figures/cvdp/figure_namelists_cvdp_AMO-Monthly.png
    :align:  center
    :width:  80%
 

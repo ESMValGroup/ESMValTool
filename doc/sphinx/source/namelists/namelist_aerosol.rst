@@ -35,9 +35,9 @@ User settings
 User setting files (cfg files) are stored in nml/cfg_aerosol/CMIP5/ and nml/cfg_aerosol/EMAC/:
 
 **! NOTE ! The cfg files may contain hard coded pathnames (attribute "datapath", see below) for the observational data that have to be set by the user!**
-  
+
 1.	aerosol_stations.ncl (AERONET, CASTNET, EANET, EMEP, IMPROVE)
-      
+
    * cfg_aerosol_stations_AERONET.ncl
    * cfg_aerosol_stations_CASTNET.ncl
    * cfg_aerosol_stations_EANET.ncl
@@ -64,7 +64,7 @@ User setting files (cfg files) are stored in nml/cfg_aerosol/CMIP5/ and nml/cfg_
    * cfg_aerosol_profiles_ACCESS-2.ncl
    * cfg_aerosol_profiles_Asmi11.ncl
    * cfg_aerosol_profiles_CIRRUS.ncl
-   * cfg_aerosol_profiles_CONCERT.ncl 
+   * cfg_aerosol_profiles_CONCERT.ncl
    * cfg_aerosol_profiles_CR-AVE.ncl
    * cfg_aerosol_profiles_DC3.ncl
    * cfg_aerosol_profiles_HIPPO.ncl
@@ -77,7 +77,7 @@ User setting files (cfg files) are stored in nml/cfg_aerosol/CMIP5/ and nml/cfg_
    * cfg_aerosol_profiles_Texas.ncl
    * cfg_aerosol_profiles_UCN-Pacific.ncl
 
-   *Required diag_script_info attributes*      
+   *Required diag_script_info attributes*
 
    * campaign: name of measurement campaign (e.g., INCA, LACE, Texas)
    * styleset: "DEFAULT"
@@ -138,7 +138,7 @@ References
 
 * Aquila, V. et al., MADE-in: a new aerosol microphysics submodel for global simulation of insoluble particles and their mixing state. Geosci. Model Dev. 4 (2), 325-355 (2011).
 
-* Lauer, A. et al., Simulating aerosol microphysics with the EMAC/MADE GCM - Part I: Model description and comparisons with observations. Atmos. Chem. Phys. 5 (12), 3251-3276 (2005). 
+* Lauer, A. et al., Simulating aerosol microphysics with the EMAC/MADE GCM - Part I: Model description and comparisons with observations. Atmos. Chem. Phys. 5 (12), 3251-3276 (2005).
 
 * Righi, M. et al.. The global impact of the transport sectors on atmospheric aerosol: Simulations for year 2000 emissions. Atmos. Chem. Phys. 13 (19), 9939-9970 (2013).
 
@@ -148,29 +148,29 @@ Example plots
 
 .. centered:: |pic_aerosol_1| |pic_aerosol_2|
 
-.. |pic_aerosol_1| image:: ../../source/namelists/figures/aerosol/figure_namelist_aerosol_conc_SO4_ts.png
+.. |pic_aerosol_1| image:: /namelists/figures/aerosol/figure_namelist_aerosol_conc_SO4_ts.png
    :width: 45%
 
-.. |pic_aerosol_2| image:: ../../source/namelists/figures/aerosol/figure_namelist_aerosol_conc_SO4_scatter.png
+.. |pic_aerosol_2| image:: /namelists/figures/aerosol/figure_namelist_aerosol_conc_SO4_scatter.png
    :width: 45%
 
-.. image::  ../../source/namelists/figures/aerosol/figure_namelist_aerosol_conc_SO4_spatial.png
+.. image::  /namelists/figures/aerosol/figure_namelist_aerosol_conc_SO4_spatial.png
    :height: 7cm
    :align:  center
 
 .. centered:: |pic_aerosol_3| |pic_aerosol_4|
 
-.. |pic_aerosol_3| image:: ../../source/namelists/figures/aerosol/figure_namelist_aerosol_conc_SO4_spatial_global.png
+.. |pic_aerosol_3| image:: /namelists/figures/aerosol/figure_namelist_aerosol_conc_SO4_spatial_global.png
    :width: 45%
 
-.. |pic_aerosol_4| image:: ../../source/namelists/figures/aerosol/figure_namelist_aerosol_conc_SO4_spatial_global_diff.png
+.. |pic_aerosol_4| image:: /namelists/figures/aerosol/figure_namelist_aerosol_conc_SO4_spatial_global_diff.png
    :width: 45%
 
 .. centered:: |pic_aerosol_5| |pic_aerosol_6|
 
-.. |pic_aerosol_5| image:: ../../source/namelists/figures/aerosol/figure_namelist_aerosol_conc_SO4_plevel.png
+.. |pic_aerosol_5| image:: /namelists/figures/aerosol/figure_namelist_aerosol_conc_SO4_plevel.png
    :width: 45%
 
-.. |pic_aerosol_6| image:: ../../source/namelists/figures/aerosol/figure_namelist_aerosol_conc_SO4_size.png
+.. |pic_aerosol_6| image:: /namelists/figures/aerosol/figure_namelist_aerosol_conc_SO4_size.png
    :width: 45%
 

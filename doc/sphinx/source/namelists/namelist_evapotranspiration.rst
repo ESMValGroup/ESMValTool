@@ -55,7 +55,7 @@ Observations and deformat scripts
 
 *Note:* see also header of reformat script for downloading instructions.
 
-* The LandFlux-EVAL data set 
+* The LandFlux-EVAL data set
   (http://www.iac.ethz.ch/groups/seneviratne/research/LandFlux-EVAL).
   The data set is document in Mueller et al (2013). Download data at the
   above link, then follow the instructions in the reformat script available
@@ -85,15 +85,15 @@ References
 Example plots
 -------------
 
-.. figure::  ../../source/namelists/figures/evapotranspiration/fig_evapo_1.png
+.. figure::  /namelists/figures/evapotranspiration/fig_evapo_1.png
    :align:   center
    :width:   70%
 
-.. figure::  ../../source/namelists/figures/evapotranspiration/fig_evapo_2.png
+.. figure::  /namelists/figures/evapotranspiration/fig_evapo_2.png
    :align:   center
    :width:   70%
-   
-.. figure::  ../../source/namelists/figures/evapotranspiration/fig_evapo_3.png
+
+.. figure::  /namelists/figures/evapotranspiration/fig_evapo_3.png
    :align:   center
    :width:   50%
 

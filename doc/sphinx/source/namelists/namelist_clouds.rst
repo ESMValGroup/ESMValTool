@@ -193,35 +193,35 @@ Example plots
 -------------
 
 .. _fig_cloud_1:
-.. figure::  ../../source/namelists/figures/clouds/figure_namelist_clouds_liq_h2o_path_multi.png
+.. figure::  /namelists/figures/clouds/figure_namelist_clouds_liq_h2o_path_multi.png
    :align:   center
 
    The 20-yr average LWP (1986-2005) from the CMIP5 historical model runs and the multi-model mean in comparison with the UWisc satellite climatology (1988-2007) based on SSM/I, TMI, and AMSR-E (O'Dell et al. 2008).
 
 .. _fig_cloud_2:
-.. figure::  ../../source/namelists/figures/clouds/figure_namelist_clouds_liq_h2o_taylor.png
+.. figure::  /namelists/figures/clouds/figure_namelist_clouds_liq_h2o_taylor.png
    :align:   center
    :width:   7cm
 
    Taylor diagram showing the 20-yr annual average performance of CMIP5 models for total cloud fraction as compared to MODIS satellite observations.
 
 .. _fig_cloud_3:
-.. figure::  ../../source/namelists/figures/clouds/figure_namelist_clouds_cloud_sweffect.png
+.. figure::  /namelists/figures/clouds/figure_namelist_clouds_cloud_sweffect.png
    :align:   center
    :width:   9cm
 
-.. figure::  ../../source/namelists/figures/clouds/figure_namelist_clouds_cloud_lweffect.png
+.. figure::  /namelists/figures/clouds/figure_namelist_clouds_cloud_lweffect.png
    :align:   center
    :width:   9cm
 
-.. figure::  ../../source/namelists/figures/clouds/figure_namelist_clouds_cloud_neteffect.png
+.. figure::  /namelists/figures/clouds/figure_namelist_clouds_cloud_neteffect.png
    :align:   center
    :width:   9cm
 
    20-year average (1986-2005) annual mean cloud radiative effects of CMIP5 models against the CERES EBAF (2001–2012). Top row shows the shortwave effect; middle row the longwave effect, and bottom row the net effect. Multi-model mean biases against CERES EBAF are shown on the left, whereas the right panels show zonal averages from CERES EBAF (thick black), the individual CMIP5 models (thin gray lines) and the multi-model mean (thick red line). Similar to Figure 9.5 of Flato et al. (2013).
 
 .. _fig_cloud_4:
-.. figure::  ../../source/namelists/figures/clouds/figure_namelist_clouds_cloud_var_multi.png
+.. figure::  /namelists/figures/clouds/figure_namelist_clouds_cloud_var_multi.png
    :align:   center
 
    Interannual variability of modeled and observed (GPCP) precipitation rates estimated as relative temporal standard deviation from 20 years (1986-2005) of data. The temporal standard devitions are calculated from monthly anomalies after subtracting the climatological mean seasonal cycle.

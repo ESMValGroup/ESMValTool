@@ -123,20 +123,20 @@ References
 Example plots
 -------------
 
-.. figure:: ../../source/namelists/figures/marine_bgc/marine_bgc_fig_1.png
+.. figure:: /namelists/figures/marine_bgc/marine_bgc_fig_1.png
    :width: 80%
 
 .. centered:: |pic_marinebgc_1| |pic_marinebgc_2|
 
-.. |pic_marinebgc_1| image:: ../../source/namelists/figures/marine_bgc/marine_bgc_fig_2a.png
+.. |pic_marinebgc_1| image:: /namelists/figures/marine_bgc/marine_bgc_fig_2a.png
    :width: 45%
 
-.. |pic_marinebgc_2| image:: ../../source/namelists/figures/marine_bgc/marine_bgc_fig_2b.png
+.. |pic_marinebgc_2| image:: /namelists/figures/marine_bgc/marine_bgc_fig_2b.png
    :width: 45%
 
-.. figure:: ../../source/namelists/figures/marine_bgc/marine_bgc_fig_3.png
+.. figure:: /namelists/figures/marine_bgc/marine_bgc_fig_3.png
    :width: 50%
 
-.. figure:: ../../source/namelists/figures/marine_bgc/marine_bgc_fig_4.png
+.. figure:: /namelists/figures/marine_bgc/marine_bgc_fig_4.png
    :width: 90%
 
