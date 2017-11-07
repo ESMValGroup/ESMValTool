@@ -1,15 +1,10 @@
-"""
-
-"""
-
-import ConfigParser
 import os
-import pdb
 import sys
-import projects
-import numpy as np
 
+import numpy as np
 from netCDF4 import Dataset
+
+from esmvaltool.interface_scripts.launchers import run_executable
 
 
 class ESMValProject(object):
@@ -214,7 +209,6 @@ class ESMValProject(object):
             returned values are monthly (e.g. monthly=True)
             returns 12 fields of data
         """
-        import projects
         if variable is None:
             raise ValueError('You need to specify a variable!')
 
@@ -492,7 +486,11 @@ class ESMValProject(object):
 
         style_file = './diag_scripts/lib/python/style.cfg'
         if os.path.isfile(style_file):
-            styleconfig = ConfigParser.ConfigParser()
+            if sys.version_info[0] == 2:
+                from ConfigParser import ConfigParser
+            else:
+                from configparser import ConfigParser
+            styleconfig = ConfigParser()
             styleconfig.read(style_file)
         else:
             print("PY  ERROR: I didn't find the file for plotting styles.")
@@ -746,7 +744,6 @@ class ESMValProject(object):
         This is usefull if entire processing (including preprocessing)
         shall be done in the diag script itself
         """
-        import projects
 
         res = {}
         for currDiag in self.project_info['DIAGNOSTICS']:
@@ -817,8 +814,8 @@ class ESMValProject(object):
         self.project_info['TEMPORARY']['ref_diag'] = ref_proj
         self.project_info['TEMPORARY']['ref_script'] = ref_script
 
-        projects.run_executable("interface_scripts/write_references.ncl",
-                                project_info, verbosity, exit_on_warning)
+        run_executable("interface_scripts/write_references.ncl",
+                       project_info, verbosity, exit_on_warning)
 
     # ###################################
     # write info on file read to log file
