@@ -1,0 +1,96 @@
+  model_sets:
+    - id: model_set_1
+      models:
+        - model: [MPI-ESM-LR, MPI-ESM-MR, bcc-csm1-1]
+          project: CMIP5
+          mip: Amon
+          experiment: historical
+          ensemble: r1i1p1
+          start_year: 2000
+          end_year: 2002
+    - id: observation_set_1
+      models:
+        - name: ERA-Interim
+          project: OBS
+          type1
+          start_year: 2000
+          end_year: 2002
+          tier: 3
+        - name: NCEP
+          project: OBS: reanaly
+          version:
+          type: reanaly
+          version: 1
+          start_year: 2000
+          end_year: 2002
+          tier: 2
+
+  preprocess_profiles:
+    - id: profile1
+      level_selection:
+        levels: [2000, 7000]
+        scheme: nearest
+      regridding:
+        target_grid: ref_model
+        scheme: linear
+      masking:
+        fillvalues:
+          min_value: 1.0
+          threshold_percent: 0.9
+          time_window: 3
+        landocean: None
+      multimodel_mean: True
+    - id: profile2
+      level_selection:
+        levels: 2000
+        scheme: linear
+      regridding:
+        target_grid: 1x1
+        scheme: linear
+      masking:
+        fillvalues: None
+        landocean: None
+      multimodel_mean: True
+
+  diagnostics:
+    - id: my_diagnostic
+      description: Annual cycle plot
+      variables: 
+        - name: ta
+          ref_model: ['ERA-Interim','NCEP']
+          preprocess_preset: preset1
+      settings:
+        - script: esmdiagnostics/perfmetrics/perfmetrics_main.ncl
+          #all these are diagnostic specific
+          plot_type: cycle
+          time_avg: monthlyclim
+          plot_stddev: ref_model
+          valid_fraction: 0.95
+          region: Global
+          legend_outside: True
+          styleset: CMIP5
+          t_test: False
+          conf_level: 0.95
+        - script: perfmetrics_main.ncl
+          cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_zonal_annualclim_all_glob.ncl
+      models:
+        - set: model_set_1
+        - set: observation_set_1
+        - {model: GFDL-ESM2G, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+        [ERA-Interim, {name: GFDL-ESM2G, ensemble: r1i1p1}, {name: GFDL-ESM2G, ensemble: r1i1p2}, ]
+
+
+
+
+
+        # Annual cycle plot
+        - {script: perfmetrics_main.ncl,  cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_cycle_monthlyclim_200_glob.ncl}
+        # Zonal mean plot
+        - {script: perfmetrics_main.ncl,  cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_zonal_annualclim_all_glob.ncl}
+        # Taylor and grading precalculations
+        - {script: perfmetrics_main.ncl,     cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_grading_RMSD_200_glob.ncl}
+        - {script: perfmetrics_grading.ncl,  cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_grading_RMSD_200_glob.ncl}
+        - {script: perfmetrics_taylor.ncl,   cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_grading_RMSD_200_glob.ncl}
+      models:
+##        - {name: GFDL-ESM2G, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+
