@@ -12,7 +12,7 @@
 
 test:
   # Execute system/diagnostic tests [false]/true
-  run: true
+  run: false
   # Simulate input data using the dummydata module [true]/false
   simulate_input: true
   # Limit testing/generating reference data to the following namelists
