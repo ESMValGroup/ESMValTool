@@ -516,8 +516,13 @@ def preprocess(project_info, variable, model, current_diag,
                 try:
                     reft_cube_0 = c.concatenate()[0]
                 except iris.exceptions.ConcatenateError as exc:
-                    error_message = "Problem trying to concatenate cubes"
-                    logger.warning(error_message)
+                    error_message = "Problem trying to concatenate cubes: %s"
+                    logger.error(error_message, exc)
+                    logger.debug('Cubes to concatenate:')
+                    for cube in cfilelist:
+                        logger.debug(str(cube))
+                    return None, None
+
             else:
                 reft_cube_0 = cfilelist[0]
 
@@ -556,7 +561,7 @@ def preprocess(project_info, variable, model, current_diag,
         except (iris.exceptions.ConstraintMismatchError,
                 iris.exceptions.ConcatenateError, CMORCheckError) as ex:
             logger.error("%s", ex)
-            return
+            return None, None
 
     else:
         # check if we need to concatenate
