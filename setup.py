@@ -69,6 +69,8 @@ class RunTests(CustomCommand):
         report_dir = 'test-reports/python{}'.format(version)
         errno = pytest.main([
             'tests',
+            'esmvaltool',  # for doctests
+            '--doctest-modules',
             '--ignore=tests/test_diagnostics',
             '--cov=esmvaltool',
             '--cov-report=term',
