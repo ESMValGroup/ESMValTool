@@ -282,43 +282,43 @@ Example plots
 
 
 .. _fig_ozone01:
-.. figure:: ../../source/namelists/figures/ozone_climate/fig_ozone_climate_1.png
+.. figure:: /namelists/figures/ozone_climate/fig_ozone_climate_1.png
    :width: 75%
    
    Produced with "eyring13jgr_fig01.ncl".
 
 .. _fig_ozone02:
-.. figure:: ../../source/namelists/figures/ozone_climate/fig_ozone_climate_2.png
+.. figure:: /namelists/figures/ozone_climate/fig_ozone_climate_2.png
    :width: 60%
    
    Produced with "eyring13jgr_fig02.ncl".
 
 .. _fig_ozone04:
-.. figure:: ../../source/namelists/figures/ozone_climate/fig_ozone_climate_3.png
+.. figure:: /namelists/figures/ozone_climate/fig_ozone_climate_3.png
    :width: 90%
    
    Produced with "eyring13jgr_fig04.ncl".
 
 .. _fig_ozone06:
-.. figure:: ../../source/namelists/figures/ozone_climate/eyring13jgr_fig06.png
+.. figure:: /namelists/figures/ozone_climate/eyring13jgr_fig06.png
    :width: 60%
    
    Produced with "eyring13jgr_fig06.ncl".
 
 .. _fig_ozone07:
-.. figure:: ../../source/namelists/figures/ozone_climate/fig_ozone_climate_4.png
+.. figure:: /namelists/figures/ozone_climate/fig_ozone_climate_4.png
    :width: 60%
    
    Produced with "eyring13jgr_fig07.ncl".
 
 .. _fig_ozone10:
-.. figure:: ../../source/namelists/figures/ozone_climate/fig_ozone_climate_5.png
+.. figure:: /namelists/figures/ozone_climate/fig_ozone_climate_5.png
    :width: 100%
    
    Produced with "eyring13jgr_fig10.ncl".
 
 .. _fig_ozone11:
-.. figure:: ../../source/namelists/figures/ozone_climate/fig_ozone_climate_6.png
+.. figure:: /namelists/figures/ozone_climate/fig_ozone_climate_6.png
    :width: 70%
 
    Produced with "eyring13_jgr_fig11.ncl"

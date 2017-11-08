@@ -211,41 +211,41 @@ Example plots
 
 .. centered:: |pic_wamonsoon_1| |pic_wamonsoon_2|
 
-.. |pic_wamonsoon_1| image:: ../../source/namelists/figures/wam/fig1.png
+.. |pic_wamonsoon_1| image:: /namelists/figures/wam/fig1.png
    :width: 45%
 
-.. |pic_wamonsoon_2| image:: ../../source/namelists/figures/wam/fig2.png
+.. |pic_wamonsoon_2| image:: /namelists/figures/wam/fig2.png
    :width: 45%
 
 .. centered:: |pic_wamonsoon_3| |pic_wamonsoon_4|
 
-.. |pic_wamonsoon_3| image:: ../../source/namelists/figures/wam/fig3.png
+.. |pic_wamonsoon_3| image:: /namelists/figures/wam/fig3.png
    :width: 45%
 
-.. |pic_wamonsoon_4| image:: ../../source/namelists/figures/wam/fig4.png
+.. |pic_wamonsoon_4| image:: /namelists/figures/wam/fig4.png
    :width: 45%
 
 .. centered:: |pic_wamonsoon_5| |pic_wamonsoon_5|
 
-.. |pic_wamonsoon_5| image:: ../../source/namelists/figures/wam/fig5.png
+.. |pic_wamonsoon_5| image:: /namelists/figures/wam/fig5.png
    :width: 45%
 
-.. |pic_wamonsoon_6| image:: ../../source/namelists/figures/wam/fig6.png
+.. |pic_wamonsoon_6| image:: /namelists/figures/wam/fig6.png
    :width: 45%
 
 .. centered:: |pic_wamonsoon_7| |pic_wamonsoon_8|
 
-.. |pic_wamonsoon_7| image:: ../../source/namelists/figures/wam/fig7.png
+.. |pic_wamonsoon_7| image:: /namelists/figures/wam/fig7.png
    :width: 45%
 
-.. |pic_wamonsoon_8| image:: ../../source/namelists/figures/wam/fig8.png
+.. |pic_wamonsoon_8| image:: /namelists/figures/wam/fig8.png
    :width: 45%
 
 .. centered:: |pic_wamonsoon_9| |pic_wamonsoon_10|
 
-.. |pic_wamonsoon_9| image:: ../../source/namelists/figures/wam/fig9.png
+.. |pic_wamonsoon_9| image:: /namelists/figures/wam/fig9.png
    :width: 45%
 
-.. |pic_wamonsoon_10| image:: ../../source/namelists/figures/wam/fig10.png
+.. |pic_wamonsoon_10| image:: /namelists/figures/wam/fig10.png
    :width: 45%
 

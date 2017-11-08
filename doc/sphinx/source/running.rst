@@ -28,7 +28,7 @@ The following section gives a brief description of the steps required by a user 
 5. The output will be written to a subdirectory named like the diagnostics package (e.g., *MyDiag*) in the directories specified in the <GLOBAL> section of the namelist (see step 1 and also :numref:`nml_config`). The default directories are: *work/MyDiag* for the NetCDF output and *work/plots/MyDiag* for the plot(s) (see also :numref:`fig_example`). Acknowledgements and references are written to the file *work/refs-acknows_MyDiag.txt*.
 
 .. _fig_example:
-.. figure::  ../../source/figures/example_figure3.png
+.. figure::  /figures/example_figure3.png
    :align:   center
    :width:   50%
    

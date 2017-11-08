@@ -127,7 +127,7 @@ Observations and Scripts
 Example Plots
 -------------
 
-.. image::  ../../source/namelists/figures/autoassess_rad/fig-1.png
+.. image::  /namelists/figures/autoassess_rad/fig-1.png
    :width: 80%
    :align:  center
 

@@ -61,7 +61,7 @@ References
 Example plots
 -------------
 
-.. figure:: ../../source/namelists/figures/crem/crem_error_metric.png
+.. figure:: /namelists/figures/crem/crem_error_metric.png
    :width: 10cm
    :alt: xxxxx
 
