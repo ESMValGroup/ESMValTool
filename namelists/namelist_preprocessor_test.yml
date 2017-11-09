@@ -1,0 +1,143 @@
+---
+
+MODELS:
+  - name: MPI-ESM-LR
+    project: CMIP5
+    mip: Amon
+    exp: historical
+    ensemble: r1i1p1
+    start_year: 2000
+    end_year: 2002
+
+  - name: bcc-csm1-1
+    project: CMIP5
+    mip: Amon
+    exp: historical
+    ensemble: r1i1p1
+    start_year: 2000
+    end_year: 2002
+
+PREPROCESS:
+  # Preprocessor steps that can be configured here:
+  # 1. LAND/OCEAN/PORO MASK VIA sftlf/sftof/mrsofc FILE -> PORO mask broken
+  # 2. LEVEL/TIME/AREA OPS -> time/area ops not implemented
+  # 3. REGRID
+  # 4. MASK FILL VALUES
+  # 5. MULTIMODEL MEAN -> not implemented
+  #
+  # Description of options:
+  # - id: string
+  #   mask_landocean: land/ocean/None
+  #   mask_poro: true/false
+  #   select_level: {levels: list of numbers or number,
+  #                  scheme: linear/nearest}/None
+  #   target_grid: NetCDF file name/ref_model/MxN/None
+  #                where MxN is an M x N degree cell
+  #   regrid_scheme: linear/nearest/None
+  #   mask_fillvalues: {min_value: number,
+  #                     threshold_percent: number < 1.0,
+  #                     time_window: number}/None
+  #   multimodel_mean: true/false
+
+  pp1:
+    mask_landocean: None
+    mask_poro: false
+    select_level: {levels: [2000, 7000], scheme: linear}
+    target_grid: ref_model
+    regrid_scheme: linear
+    mask_fillvalues: {min_value: 1.0, threshold_percent: 0.9, time_window: 3}
+    multimodel_mean: false
+
+  pp2:
+    mask_landocean: None
+    mask_poro: false
+    select_level: {levels: 85000, scheme: nearest}
+    target_grid: 1x1
+    regrid_scheme: nearest
+    mask_fillvalues: None
+    multimodel_mean: false
+
+  pp3:
+    mask_landocean: None
+    mask_poro: false
+    select_level: None
+    target_grid: None
+    regrid_scheme: None
+    mask_fillvalues: None
+    multimodel_mean: false
+   
+    
+CONFIG:
+  var_def_scripts: ./variable_defs
+  var_only_case: 0
+
+DIAGNOSTICS:
+
+  diag_pp1:
+    description: preprocessor test diagnostic 1
+    variables:
+      - name: ta
+        ref_model: ['ERA-Interim', 'NCEP']
+        field: T3M
+        only: "None"
+        preproc_id: pp1
+      - name: tb
+        ref_model: ['ERA-Interim', 'NCEP']
+        field: T3M
+        only: "None"
+        preproc_id: pp1
+      - name: tc
+        ref_model: ['ERA-Interim', 'NCEP']
+        field: T3M
+        only: "None"
+        preproc_id: ppderive        
+    scripts: []
+    models: []
+    additional_models: &additional_models
+      - &additional_model_1
+        name: GFDL-ESM2G
+        project: CMIP5
+        mip: Amon
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 2000
+        end_year: 2002
+      - &additional_model_2
+        name: ERA-Interim
+        project: OBS
+        type: reanaly
+        version: 1
+        tier: 3
+        start_year: 2000
+        end_year: 2002
+      - name: NCEP
+        project: OBS
+        type: reanaly
+        version: 1
+        tier: 2
+        start_year: 2000
+        end_year: 2002
+
+  diag_pp2:
+    description: preprocessor test diagnostic 2
+    variables:
+      - name: ta
+        ref_model: ['ERA-Interim', 'NCEP']
+        field: T3M
+        only: "None"
+        preprocessor: pp2
+    scripts: []
+    additional_models: *additional_models
+
+  diag_pp3:
+    description: preprocessor test diagnostic 3
+    variables:
+      - name: pr
+        ref_model: ['ERA-Interim']
+        field: T2Ms
+        only: "None"
+        preprocessor: pp3
+    scripts: []
+    additional_models:
+      - *additional_model_1
+      - *additional_model_2
