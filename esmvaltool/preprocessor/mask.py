@@ -9,6 +9,11 @@ import numpy as np
 from iris.analysis import Aggregator
 from iris.util import rolling_window
 
+def mask(cube, land_mask=None, ocean_mask=None):
+    """Mask land or ocean"""
+    if land_mask or ocean_mask:
+        raise NotImplementedError
+
 
 def fx_mask(mycube, fx):
     masked_cube = mycube.copy()

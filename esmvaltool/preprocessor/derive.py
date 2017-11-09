@@ -17,6 +17,18 @@ mw_O3 = 48
 mw_O3_unit = cf_units.Unit('g mol^-1')
 Dobson_unit = cf_units.Unit('2.69e20 m^-2')
 
+def derive(cubes, short_name):
+    
+    functions = {
+        'lwp': calc_lwp,
+        'toz': calc_toz,
+    }
+    
+    if short_name in functions:
+        return functions[short_name](cubes)
+    
+    raise NotImplementedError("Don't know how to derive {}".format(short_name))
+
 
 def calc_lwp(cubes):
     """
