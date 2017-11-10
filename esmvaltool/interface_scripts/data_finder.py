@@ -122,7 +122,7 @@ def replace_tags(path, model, var):
     for tag in tlist:
 
         if tag == 'var':
-            replacewith = var['name']
+            replacewith = var['short_name']
         elif tag == 'field':
             replacewith = var['field']
         elif tag in ('institute', 'freq', 'realm'):
@@ -185,6 +185,7 @@ def get_input_filelist(project_info, model, var):
     cfg = read_config_file(project)
 
     # Apply variable-dependent model keys
+    model = dict(model)  # copy model before modifying
     if 'mip' in var:
         model['mip'] = var['mip']
     if 'ensemble' in var:

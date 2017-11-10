@@ -111,7 +111,7 @@ def _stock_cube(spec):
     return cube
 
 
-def regrid(src_cube, tgt_grid, scheme):
+def regrid(src_cube, target_grid, scheme):
     """
     Perform horizontal regridding.
 
@@ -136,11 +136,11 @@ def regrid(src_cube, tgt_grid, scheme):
     vinterp : Perform vertical regridding.
 
     """
-    if tgt_grid is None and scheme is None:
+    if target_grid is None and scheme is None:
         # nop
         return src_cube
 
-    if tgt_grid is None:
+    if target_grid is None:
         emsg = 'A target grid must be specified for horizontal regridding.'
         raise ValueError(emsg)
 
@@ -152,20 +152,20 @@ def regrid(src_cube, tgt_grid, scheme):
         emsg = 'Unknown regridding scheme, got {!r}.'
         raise ValueError(emsg.format(scheme))
 
-    if isinstance(tgt_grid, six.string_types):
+    if isinstance(target_grid, six.string_types):
         # Generate a target grid from the provided cell-specification,
         # and cache the resulting stock cube for later use.
-        tgt_grid = _cache.setdefault(tgt_grid, _stock_cube(tgt_grid))
+        target_grid = _cache.setdefault(target_grid, _stock_cube(target_grid))
         # Align the target grid coordinate system to the source
         # coordinate system.
         src_cs = src_cube.coord_system()
-        xcoord = tgt_grid.coord(axis='x', dim_coords=True)
-        ycoord = tgt_grid.coord(axis='y', dim_coords=True)
+        xcoord = target_grid.coord(axis='x', dim_coords=True)
+        ycoord = target_grid.coord(axis='y', dim_coords=True)
         xcoord.coord_system = src_cs
         ycoord.coord_system = src_cs
-    elif not isinstance(tgt_grid, iris.cube.Cube):
+    elif not isinstance(target_grid, iris.cube.Cube):
         emsg = 'Expecting a cube or cell-specification, got {}.'
-        raise ValueError(emsg.format(type(tgt_grid)))
+        raise ValueError(emsg.format(type(target_grid)))
 
     # Unstructured regridding requires x2 2d spatial coordinates,
     # so ensure to purge any 1d native spatial dimension coordinates
@@ -178,7 +178,7 @@ def regrid(src_cube, tgt_grid, scheme):
                 src_cube.remove_coord(coord)
 
     # Perform the horizontal regridding.
-    result = src_cube.regrid(tgt_grid, horizontal_schemes[scheme])
+    result = src_cube.regrid(target_grid, horizontal_schemes[scheme])
 
     return result
 
