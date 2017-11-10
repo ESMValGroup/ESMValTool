@@ -49,8 +49,8 @@ class AllFXfiles:
 
             Note: run this as .__str__(), not from within a print statement
         """
-        for Id in self.fx_files:
-            print(str(self.fx_files[Id]))
+        for identifier in self.fx_files:
+            print str(self.fx_files[identifier])
 
     def __iter__(self):
         for identifier in self.fx_files:

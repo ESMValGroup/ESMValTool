@@ -319,8 +319,8 @@ def preprocess(project_info, variable, model, current_diag,
     # New code: cmor_check.py (by Javier Vegas)
     elif cmor_reformat_type == 'py' and project_name == 'CMIP5':
         # needed imports
-        from .cmor_check import CMORCheck as CC
-        from .cmor_check import CMORCheckError as CCE
+        from .cmor_check import CMORCheck
+        from .cmor_check import CMORCheckError
         import warnings
         from .variable_info import CMIP5Info
 
@@ -343,7 +343,7 @@ def preprocess(project_info, variable, model, current_diag,
 
             # infiles are fullpaths
             files = [apply_file_fixes(infile) for infile in infiles]
-            cfilelist = []
+            cfilelist = iris.cube.CubeList()
 
             with warnings.catch_warnings():
                 warnings.filterwarnings('ignore',
@@ -365,9 +365,9 @@ def preprocess(project_info, variable, model, current_diag,
 
             # concatenate if needed
             if len(cfilelist) > 1:
-                c = iris.cube.CubeList(cfilelist)
                 try:
-                    reft_cube_0 = c.concatenate()[0]
+                    iris.util.unify_time_units(cfilelist)
+                    reft_cube_0 = cfilelist.concatenate_cube()
                 except iris.exceptions.ConcatenateError as exc:
                     error_message = "Problem trying to concatenate cubes: %s"
                     logger.error(error_message, exc)
@@ -385,7 +385,7 @@ def preprocess(project_info, variable, model, current_diag,
 
             # Check metadata before any preprocessing start
             var_info = variables_info.get_variable(table, var_name)
-            checker = CC(reft_cube_0, var_info, automatic_fixes=True)
+            checker = CMORCheck(reft_cube_0, var_info, automatic_fixes=True)
             checker.check_metadata()
 
             # apply time gating so we minimize cube size
@@ -397,7 +397,7 @@ def preprocess(project_info, variable, model, current_diag,
                 reft_cube = fix.fix_data(reft_cube)
 
             # Check data after time (and maybe lat-lon slicing)
-            checker = CC(reft_cube, var_info, automatic_fixes=True)
+            checker = CMORCheck(reft_cube, var_info, automatic_fixes=True)
             checker.check_data()
 
             # save reformatted cube
@@ -411,8 +411,7 @@ def preprocess(project_info, variable, model, current_diag,
             # every iteration of preprocess step)
             iris.save(reft_cube, project_info['TEMPORARY']['outfile_fullpath'])
 
-        except (iris.exceptions.ConstraintMismatchError,
-                iris.exceptions.ConcatenateError, CCE) as ex:
+        except (iris.exceptions.ConcatenateError, CMORCheckError) as ex:
             logger.error("%s", ex)
             return None, None
 
@@ -440,7 +439,7 @@ def preprocess(project_info, variable, model, current_diag,
             if project_name == 'CMIP5':
                 logger.info(
                     " CMIP5 - checking cube after applying land mask...")
-                checker = CC(reft_cube, var_info, automatic_fixes=True)
+                checker = CMORCheck(reft_cube, var_info, automatic_fixes=True)
                 checker.check_data()
             #######################
 
@@ -468,7 +467,7 @@ def preprocess(project_info, variable, model, current_diag,
             if project_name == 'CMIP5':
                 logger.info(
                     " CMIP5 - checking cube after applying ocean mask...")
-                checker = CC(reft_cube, var_info, automatic_fixes=True)
+                checker = CMORCheck(reft_cube, var_info, automatic_fixes=True)
                 checker.check_data()
             #######################
 
@@ -496,7 +495,7 @@ def preprocess(project_info, variable, model, current_diag,
             if project_name == 'CMIP5':
                 logger.info(
                     " CMIP5 - checking cube after applying poro mask...")
-                checker = CC(reft_cube, var_info, automatic_fixes=True)
+                checker = CMORCheck(reft_cube, var_info, automatic_fixes=True)
                 checker.check_data()
             #######################
 
@@ -598,7 +597,7 @@ def preprocess(project_info, variable, model, current_diag,
                 if project_name == 'CMIP5':
                     logger.info(
                         " CMIP5 - checking cube after selecting level(s)...")
-                    checker = CC(reft_cube, var_info,
+                    checker = CMORCheck(reft_cube, var_info,
                                         automatic_fixes=True)
                     checker.check_data()
                 #########################
@@ -654,7 +653,7 @@ def preprocess(project_info, variable, model, current_diag,
             if project_name == 'CMIP5':
                 logger.info("CMIP5 - checking cube after regridding on "
                             "input netCDF file...")
-                checker = CC(reft_cube, var_info, automatic_fixes=True)
+                checker = CMORCheck(reft_cube, var_info, automatic_fixes=True)
                 checker.check_data()
             #######################
 
@@ -723,7 +722,7 @@ def preprocess(project_info, variable, model, current_diag,
                                         logger.info(
                                             "CMIP5 - checking cube after "
                                             "regridding on REF model...")
-                                        checker = CC(
+                                        checker = CMORCheck(
                                             reft_cube,
                                             var_info,
                                             automatic_fixes=True)
@@ -769,7 +768,7 @@ def preprocess(project_info, variable, model, current_diag,
                     if project_name == 'CMIP5':
                         logger.info("CMIP5 - checking cube after regridding "
                                     "on MxN cells...")
-                        checker = CC(reft_cube, var_info,
+                        checker = CMORCheck(reft_cube, var_info,
                                             automatic_fixes=True)
                         checker.check_data()
                     #######################
