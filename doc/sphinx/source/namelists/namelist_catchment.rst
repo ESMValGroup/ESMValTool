@@ -76,21 +76,21 @@ Example plots
 
 .. centered:: |pic_catchment_1| |pic_catchment_2|
 
-.. |pic_catchment_1| image:: ../../source/namelists/figures/catchment/fig_catchment_1.png
+.. |pic_catchment_1| image:: /namelists/figures/catchment/fig_catchment_1.png
    :width: 45%
 
-.. |pic_catchment_2| image:: ../../source/namelists/figures/catchment/fig_catchment_2.png
+.. |pic_catchment_2| image:: /namelists/figures/catchment/fig_catchment_2.png
    :width: 45%
 
-.. image:: ../../source/namelists/figures/catchment/fig_catchment_3.png
+.. image:: /namelists/figures/catchment/fig_catchment_3.png
    :width: 45%
    :align:  center
 
 .. centered:: |pic_catchment_3| |pic_catchment_4|
 
-.. |pic_catchment_3| image:: ../../source/namelists/figures/catchment/fig_catchment_4.png
+.. |pic_catchment_3| image:: /namelists/figures/catchment/fig_catchment_4.png
    :width: 45%
 
-.. |pic_catchment_4| image:: ../../source/namelists/figures/catchment/fig_catchment_5.png
+.. |pic_catchment_4| image:: /namelists/figures/catchment/fig_catchment_5.png
    :width: 45%
 

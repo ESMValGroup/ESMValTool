@@ -8,38 +8,35 @@ jobs:
       - checkout
       - run:
           # Add some system packages (mostly since geoval needs them)
-          command : |
+          command: |
             apt-get update -y && apt-get install -y build-essential
-      - run:
-          # Create Conda Environment
-          command : |
-            conda create -n esmvaltool -y
       - restore_cache:
           key: deps2-{{ .Branch }}-{{ checksum "environment.yml" }}
       - run:
-          # Update Conda Environment (result is cached, only run again if environment.yml was changed)
-          command : |
-            conda env update --quiet --file environment.yml --name esmvaltool
+          # Update/Create Conda Environment
+          command: |
+            conda env update --quiet --file environment.yml --name esmvaltool2
+            conda env update --quiet --file environment.yml --name esmvaltool3
       - save_cache:
           key: deps2-{{ .Branch }}-{{ checksum "environment.yml" }}
           paths:
-            - "/opt/conda/envs/esmvaltool"
-      - run:
-          # Update Conda Environment (for any changes since cache was created)
-          command : |
-            conda env update --quiet --file environment.yml --name esmvaltool
+            - "/opt/conda/envs/esmvaltool2"
+            - "/opt/conda/envs/esmvaltool3"
       - run:
           # Activate Conda environment and run tests
-          command : |
-            source activate esmvaltool
+          command: |
+            source activate esmvaltool2
+            ./setup.py test
+            source activate esmvaltool3
             ./setup.py test
       - store_test_results:
           path: test-reports/
       - store_artifacts:
           path: test-reports/
       - run:
-          # Upload test results to codacy, even when the actual running of the tests fails
+          # Upload Python 3 test coverage to codacy, even when the actual
+          # running of the tests fails.
           when: always
-          command : |
+          command: |
             pip install codacy-coverage
-            python-codacy-coverage -r test-reports/coverage.xml
+            python-codacy-coverage -r test-reports/python3/coverage.xml

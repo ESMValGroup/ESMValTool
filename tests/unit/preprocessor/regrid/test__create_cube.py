@@ -24,7 +24,7 @@ class Test(tests.Test):
     def test_invalid_shape__data_mismatch_with_levels(self):
         levels = np.array([0, 1])
         emsg = 'Mismatch between data and levels'
-        with self.assertRaisesRegexp(ValueError, emsg):
+        with self.assertRaisesRegex(ValueError, emsg):
             create_cube(self.cube, self.cube.data, levels)
 
     def test(self):

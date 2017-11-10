@@ -271,7 +271,7 @@ def preprocess_checks(preprocess):
                       m)
                 sys.exit(1)
             else:
-                if isinstance(tg, basestring) is False:
+                if isinstance(tg, str) is False:
                     print('namelistchecks.py ERROR preprocess target_grid '
                           'needs to be a string: None, ref_model or XxY', m)
                     sys.exit(1)

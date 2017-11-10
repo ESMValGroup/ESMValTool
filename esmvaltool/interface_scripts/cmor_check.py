@@ -3,12 +3,12 @@ CMOR checker for Iris cubes
 """
 import logging
 
-import numpy as np
+import cf_units
 import iris
+import iris.coord_categorisation
 import iris.coords
 import iris.exceptions
-import iris.coord_categorisation
-import cf_units
+import numpy as np
 
 iris.FUTURE.cell_datetime_objects = True
 iris.FUTURE.netcdf_promote = True

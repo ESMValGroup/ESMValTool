@@ -200,17 +200,17 @@ Example plots
 
 .. centered:: |pic_ozone_prec1| |pic_ozone_prec2|
 
-.. |pic_ozone_prec1| image:: ../../source/namelists/figures/ozone_precursors/figure_namelist_precursors_trop_col_Oz.png
+.. |pic_ozone_prec1| image:: /namelists/figures/ozone_precursors/figure_namelist_precursors_trop_col_Oz.png
    :width: 45%
 
-.. |pic_ozone_prec2| image:: ../../source/namelists/figures/ozone_precursors/figure_namelist_precursors_trop_col_Oz_ref.png
+.. |pic_ozone_prec2| image:: /namelists/figures/ozone_precursors/figure_namelist_precursors_trop_col_Oz_ref.png
    :width: 45%
 
 .. centered:: |pic_ozone_prec3| |pic_ozone_prec4|
 
-.. |pic_ozone_prec3| image:: ../../source/namelists/figures/ozone_precursors/figure_namelist_precursors_Oz_plevel.png
+.. |pic_ozone_prec3| image:: /namelists/figures/ozone_precursors/figure_namelist_precursors_Oz_plevel.png
    :width: 45%
 
-.. |pic_ozone_prec4| image:: ../../source/namelists/figures/ozone_precursors/figure_namelist_precursors_Oz_TS.png
+.. |pic_ozone_prec4| image:: /namelists/figures/ozone_precursors/figure_namelist_precursors_Oz_TS.png
    :width: 45%
 

@@ -2,12 +2,11 @@
 Classes to read variable information from CMIP6 tables and make it easily
 available for the other components of ESMValTool
 """
-import os
-import json
-import glob
-import sys
 import errno
+import glob
+import json
 import logging
+import os
 
 logger = logging.getLogger(__name__)
 

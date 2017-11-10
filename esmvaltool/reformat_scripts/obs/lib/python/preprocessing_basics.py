@@ -67,7 +67,7 @@ def _aggregate_obs_from_files(work_dir, file_list):
             os.remove(soname)
             return oname
         else:
-            print "package too small"
+            print("package too small")
 
 
 def _aggregate_timestep(work_dir, infile, timestep, remove=True):

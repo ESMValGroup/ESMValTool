@@ -1,5 +1,6 @@
-from esmvaltool.interface_scripts.fixes.fix import Fix
 from cf_units import Unit
+
+from esmvaltool.interface_scripts.fixes.fix import Fix
 
 
 class allvars(Fix):
