@@ -14,7 +14,7 @@ from esmvaltool.interface_scripts.yaml_parser import load_namelist
 from esmvaltool.main import read_config_file
 
 
-def write_data_file(var_name, filename, field, start_year, end_year):
+def write_data_file(short_name, filename, field, start_year, end_year):
     """Write a file containing simulated data."""
     if 'T2M' in field:
         writer = Model2
@@ -38,10 +38,10 @@ def write_data_file(var_name, filename, field, start_year, end_year):
         }
     }
 
-    kwargs = cfg[var_name] if var_name in cfg else {}
+    kwargs = cfg[short_name] if short_name in cfg else {}
 
     writer(
-        var=var_name,
+        var=short_name,
         oname=filename,
         start_year=start_year,
         stop_year=end_year,
@@ -59,6 +59,7 @@ def get_input_filename(project_info, model, var):
     cfg = data_finder.read_config_file(project)
 
     # Apply variable-dependent model keys
+    model = dict(model)
     for key in 'mip', 'ensemble', 'exp':
         if key in var:
             model[key] = var[key]
@@ -134,7 +135,7 @@ def simulate_input_data(namelist_file, config_user_file=None):
 
                 print("Writing {}".format(filename))
                 write_data_file(
-                    var_name=variable['name'],
+                    short_name=variable['short_name'],
                     filename=filename,
                     field=variable['field'],
                     start_year=model['start_year'],
