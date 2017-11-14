@@ -317,7 +317,7 @@ def preprocess(project_info, variable, model, current_diag,
     # 0. CMOR_REFORMAT (PY version)
 
     # New code: cmor_check.py (by Javier Vegas)
-    elif cmor_reformat_type == 'py' and project_name == 'CMIP5':
+    elif cmor_reformat_type == 'py':
         # needed imports
         from .cmor_check import CMORCheck
         from .cmor_check import CMORCheckError
@@ -327,7 +327,10 @@ def preprocess(project_info, variable, model, current_diag,
         variables_info = CMIP5Info()
 
         var_name = variable.name
-        table = model['mip']
+        if project_name == 'CMIP5':
+            table = model['mip']
+        else:
+            table = project_info['MODELS'][0]['mip'] 
 
         try:
             # Load cubes for requested variable in given files
@@ -868,7 +871,7 @@ def multimodel_mean(cube_collection, path_collection):
     # time average
     means_list = [
         mycube.collapsed('time', iris.analysis.MEAN)
-        for mycube in cube_collection
+        for mycube in cube_collection if mycube is not None
     ]
 
     # global mean
