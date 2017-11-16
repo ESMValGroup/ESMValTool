@@ -370,7 +370,7 @@ def preprocess(project_info, variable, model, current_diag,
             if len(cfilelist) > 1:
                 try:
                     iris.util.unify_time_units(cfilelist)
-                    reft_cube_0 = cfilelist.concatenate_cube()
+                    reft_cube_0 = cfilelist.concatenate()[0]
                 except iris.exceptions.ConcatenateError as exc:
                     error_message = "Problem trying to concatenate cubes: %s"
                     logger.error(error_message, exc)
