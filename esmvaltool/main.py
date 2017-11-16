@@ -58,7 +58,7 @@ if __name__ == '__main__':  # noqa
 from esmvaltool.interface_scripts import namelistchecks
 from esmvaltool.interface_scripts.auxiliary import ncl_version_check
 from esmvaltool.interface_scripts.preprocess import (
-    Diag, multimodel_mean, preprocess, run_executable)
+    Diag, multimodel_mean, fillvalues_mask, preprocess, run_executable)
 from esmvaltool.interface_scripts.yaml_parser import load_namelist
 
 # Define ESMValTool version
@@ -357,6 +357,7 @@ def process_namelist(namelist_file, global_config):
         # initialize empty lists to hold preprocess cubes and file paths
         # for each model
         models_cubes = []
+        masks_cubes = []
         models_fullpaths = []
 
         # prepare/reformat model data for each model
@@ -401,21 +402,26 @@ def process_namelist(namelist_file, global_config):
                         logger.info('Preprocess id: %s', preprocess_id)
                         project_info['PREPROCESS'] = preproc_dict
 
-                cube, path = preprocess(
-                    project_info,
-                    base_var,
-                    model,
-                    curr_diag,
-                    cmor_reformat_type='py')
+                cube, path, maskdata = preprocess(
+                             project_info,
+                             base_var,
+                             model,
+                             curr_diag,
+                             cmor_reformat_type='py')
 
                 # add only if we need multimodel statistics
-                if project_info['PREPROCESS']['multimodel_mean']:
+                # or mask_fillvalues
+                if project_info['PREPROCESS']['multimodel_mean'] or project_info['PREPROCESS']['mask_fillvalues']:
                     models_cubes.append(cube)
                     models_fullpaths.append(path)
+                if project_info['PREPROCESS']['mask_fillvalues']:
+                    masks_cubes.append(maskdata)
 
         # before we proceed more, we call multimodel operations
         if project_info['PREPROCESS']['multimodel_mean']:
             multimodel_mean(models_cubes, models_fullpaths)
+        if project_info['PREPROCESS']['mask_fillvalues']:
+            fillvalues_mask(masks_cubes, models_cubes, models_fullpaths)
 
         vardicts = curr_diag.variables
         variables = []

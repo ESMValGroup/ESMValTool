@@ -263,8 +263,9 @@ def mask_cube_counts(mycube, value_threshold, counts_threshold, window_size):
     newmask = dummyar * mask
     newmask[newmask == 0] = np.nan
     masked_cube = mycube.copy()
-    masked_cube.data = masked_cube.data * newmask
-    return counts_windowed_cube, mask, masked_cube
+    #masked_cube.data = masked_cube.data * newmask
+    masked_cube.data = newmask
+    return counts_windowed_cube, newmask, masked_cube
 
 
 def mask_threshold(mycube, threshold):

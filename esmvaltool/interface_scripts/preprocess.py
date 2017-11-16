@@ -814,9 +814,15 @@ def preprocess(project_info, variable, model, current_diag,
 
             # try get the parameters
             try:
-                val_thr = mask_fillvalues['min_value']
+                if 'min_value' in mask_fillvalues.keys():
+                    val_thr = mask_fillvalues['min_value']
+                else:
+                    val_thr = -1.e+10
                 percentage = mask_fillvalues['threshold_percent']
-                time_window = int(mask_fillvalues['time_window'])
+                if 'time_window' in mask_fillvalues.keys():
+                    time_window = int(mask_fillvalues['time_window'])
+                else:
+                    time_window = 12
 
                 logger.info("Creating fillvalues mask...")
                 # basic checks
@@ -829,25 +835,21 @@ def preprocess(project_info, variable, model, current_diag,
                                    "than total time span")
 
                 # round to lower integer always
-                max_counts_per_time_window = int(nr_time_points / time_window)
+                max_counts_per_time_window = float(nr_time_points) / float(time_window)
                 count_thr = int(max_counts_per_time_window * percentage)
 
-                # apply the mask
-                reft_cube = mask_cube_counts(reft_cube, val_thr, count_thr,
+                # return the mask as a cube structure
+                mask_reft_cube = mask_cube_counts(reft_cube, val_thr, count_thr,
                                              time_window)[2]
 
-                # save if needed
-                if save_intermediary_cubes is True:
-                    latest_saver = latest_saver.strip('.nc') + '_mfv.nc'
-                    iris.save(reft_cube, latest_saver)
-
-                # save-append to outfile fullpath list to be further processed
-                iris.save(reft_cube,
-                          project_info['TEMPORARY']['outfile_fullpath'])
+                # save only the mask
+                logger.info("Saving fillvalues mask...")
+                mfv_saver = latest_saver.strip('.nc') + '_mfv-MASK.nc'
+                iris.save(mask_reft_cube, mfv_saver)
 
             except KeyError:
-                logger.warning("select_level keys must be levels: and "
-                               "scheme: - no select level!")
+                logger.warning("mask_fillvalues: dict must "
+                               "contain at least percentage: !")
 
     #################################################################
     # 5. MULTIMODEL MEAN and anything else that needs ALL models
@@ -861,7 +863,7 @@ def preprocess(project_info, variable, model, current_diag,
     del (project_info['TEMPORARY'])
 
     # return the latest cube, and latest path
-    return reft_cube, latest_saver
+    return reft_cube, latest_saver, mfv_saver
 
 
 # functions that perform collective models analysis
@@ -878,12 +880,28 @@ def multimodel_mean(cube_collection, path_collection):
     means = [np.mean(m.data) for m in means_list]
     logger.info("Multimodel global means: %s", means)
 
-    # seasonal mean
-    # need to fix this !
-    # smeans_cubes = [seasonal_mean(mycube) for mycube in cube_collection]
-    # print(smeans_cubes)
-    # smeans = [np.mean(c.data) for c in smeans_cubes]
-    # logger.info("Multimodel seasonal global means: %s", smeans)
+def loop_sum(arrlist):
+    if len(arrlist) > 0:
+        arrsum = arrlist[0].copy()
+        for a in arrlist[1:]:
+            arrsum += a
+        return arrsum
+    else:
+        return 0
+
+def fillvalues_mask(mask_collection, cube_collection, path_collection):
+    # get the masks from all models
+    masks = [iris.load_cube(c).data for c in mask_collection if c is not None]
+    # remove masks that are all NaN's
+    masks_reduced = [np.array(m) for m in masks if not np.all(np.isnan(m)) is True]
+    # aggregate (sum) masks
+    if len(masks_reduced) > 0:
+        agg_mask = loop_sum(masks_reduced) / len(masks_reduced)
+        for cube, path in zip(cube_collection, path_collection):
+            cube.data = cube.data * agg_mask
+            iris.save(cube, path)
+    else:
+        logger.info("All masks are populated with False. Aborting.")
 
 
 #################################################################
