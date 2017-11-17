@@ -823,7 +823,7 @@ def preprocess(project_info, variable, model, current_diag,
                 if 'time_window' in mask_fillvalues.keys():
                     time_window = int(mask_fillvalues['time_window'])
                 else:
-                    time_window = 12
+                    time_window = 1
 
                 logger.info("Creating fillvalues mask...")
                 # basic checks
