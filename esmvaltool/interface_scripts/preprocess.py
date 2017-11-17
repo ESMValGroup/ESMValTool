@@ -893,7 +893,7 @@ def fillvalues_mask(mask_collection, cube_collection, path_collection):
     # get the masks from all models
     masks = [iris.load_cube(c).data for c in mask_collection if c is not None]
     # remove masks that are all NaN's
-    masks_reduced = [np.array(m) for m in masks if not np.all(np.isnan(m)) is True]
+    masks_reduced = [m for m in masks if np.all(np.isnan(m)) == False]
     # aggregate (sum) masks
     if len(masks_reduced) > 0:
         agg_mask = loop_sum(masks_reduced) / len(masks_reduced)
