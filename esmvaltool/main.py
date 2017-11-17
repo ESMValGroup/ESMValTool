@@ -415,14 +415,14 @@ def process_namelist(namelist_file, global_config):
                 if project_info['PREPROCESS']['multimodel_mean'] or project_info['PREPROCESS']['mask_fillvalues']:
                     models_cubes.append(cube)
                     models_fullpaths.append(path)
-                if project_info['PREPROCESS']['mask_fillvalues']:
+                if project_info['PREPROCESS']['mask_fillvalues'] and project_info['PREPROCESS']['target_grid'] != 'None':
                     masks_cubes.append(maskdata)
                     diagnc_fullpaths.append(diagncpath)
 
         # before we proceed more, we call multimodel operations
         if project_info['PREPROCESS']['multimodel_mean']:
             multimodel_mean(models_cubes, models_fullpaths)
-        if project_info['PREPROCESS']['mask_fillvalues']:
+        if project_info['PREPROCESS']['mask_fillvalues'] and project_info['PREPROCESS']['target_grid'] != 'None':
             fillvalues_mask(masks_cubes, models_cubes, models_fullpaths, diagnc_fullpaths)
 
         vardicts = curr_diag.variables

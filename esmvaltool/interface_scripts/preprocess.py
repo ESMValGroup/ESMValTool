@@ -790,7 +790,7 @@ def preprocess(project_info, variable, model, current_diag,
     #################################################################
     # 4. MASK FILL VALUES
 
-    if mask_fillvalues != 'None':
+    if mask_fillvalues != 'None' and target_grid != 'None':
 
         # Brief explanation of functionality:
         # Mask fill values
