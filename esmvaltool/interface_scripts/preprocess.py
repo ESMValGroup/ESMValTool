@@ -277,6 +277,7 @@ def preprocess(project_info, variable, model, current_diag,
     save_intermediary_cubes = project_info['GLOBAL']['save_intermediary_cubes']
     # and initialize the latest_saver iterative variable
     latest_saver = project_info['TEMPORARY']['outfile_fullpath']
+    mfv_saver = None
 
     #################################################################
     # 0. CMOR_REFORMAT (NCL version)
