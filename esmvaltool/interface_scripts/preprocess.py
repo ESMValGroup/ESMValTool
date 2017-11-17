@@ -845,8 +845,15 @@ def preprocess(project_info, variable, model, current_diag,
 
                 # save only the mask
                 logger.info("Saving fillvalues mask...")
-                mfv_saver = latest_saver.strip('.nc') + '_mfv-MASK.nc'
+                mfv_saver = latest_saver.strip('.nc') + '_MaskFillVal_MASK.nc'
                 iris.save(mask_reft_cube, mfv_saver)
+
+                # one last save so we apply the mask
+                # on the copy of reft_cube
+                if save_intermediary_cubes is True:
+                    latest_saver = latest_saver.strip(
+                        '.nc') + '_MaskFillVal' + '.nc'
+                    iris.save(reft_cube, latest_saver)
 
             except KeyError:
                 logger.warning("mask_fillvalues: dict must "
