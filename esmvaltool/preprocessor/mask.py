@@ -256,7 +256,7 @@ def mask_cube_counts(mycube, value_threshold, counts_threshold, window_size):
         threshold=value_threshold,
         spell_length=window_size)
 
-    mask = counts_windowed_cube.data > counts_threshold
+    mask = counts_windowed_cube.data >= counts_threshold
     mask.astype(np.int)
     # preserving the original cube metadata
     dummyar = np.ones(mycube.data.shape)
