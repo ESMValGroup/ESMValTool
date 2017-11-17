@@ -860,10 +860,14 @@ def preprocess(project_info, variable, model, current_diag,
     #################################################################
     # FINISH all PREPROCESSING and delete environment
 
+    # make a copy of the file path
+    diag_nc_file = project_info['TEMPORARY']['outfile_fullpath']
+
+    # ...and now delete all
     del (project_info['TEMPORARY'])
 
     # return the latest cube, and latest path
-    return reft_cube, latest_saver, mfv_saver
+    return reft_cube, latest_saver, mfv_saver, diag_nc_file
 
 
 # functions that perform collective models analysis
@@ -889,7 +893,7 @@ def loop_sum(arrlist):
     else:
         return 0
 
-def fillvalues_mask(mask_collection, cube_collection, path_collection):
+def fillvalues_mask(mask_collection, cube_collection, path_collection, diag_nc_filepath):
     # get the masks from all models
     masks = [iris.load_cube(c).data for c in mask_collection if c is not None]
     # remove masks that are all NaN's
@@ -897,9 +901,15 @@ def fillvalues_mask(mask_collection, cube_collection, path_collection):
     # aggregate (sum) masks
     if len(masks_reduced) > 0:
         agg_mask = loop_sum(masks_reduced) / len(masks_reduced)
-        for cube, path in zip(cube_collection, path_collection):
+        for cube, path, diagncpath in zip(cube_collection, path_collection, diag_nc_filepath):
             cube.data = cube.data * agg_mask
-            iris.save(cube, path)
+            if path != diagncpath:
+                logger.info("Updating with mask and saving last preproc nc file")
+                iris.save(cube, path)
+                iris.save(cube, diagncpath)
+            else:
+                logger.info("Updating with mask and saving master nc file")
+                iris.save(cube, path)
     else:
         logger.info("All masks are populated with False. Aborting.")
 

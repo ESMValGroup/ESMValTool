@@ -359,6 +359,7 @@ def process_namelist(namelist_file, global_config):
         models_cubes = []
         masks_cubes = []
         models_fullpaths = []
+        diagnc_fullpaths = []
 
         # prepare/reformat model data for each model
         for model in project_info['ALLMODELS']:
@@ -402,12 +403,12 @@ def process_namelist(namelist_file, global_config):
                         logger.info('Preprocess id: %s', preprocess_id)
                         project_info['PREPROCESS'] = preproc_dict
 
-                cube, path, maskdata = preprocess(
-                             project_info,
-                             base_var,
-                             model,
-                             curr_diag,
-                             cmor_reformat_type='py')
+                cube, path, maskdata, diagncpath = preprocess(
+                                        project_info,
+                                        base_var,
+                                        model,
+                                        curr_diag,
+                                        cmor_reformat_type='py')
 
                 # add only if we need multimodel statistics
                 # or mask_fillvalues
@@ -416,12 +417,13 @@ def process_namelist(namelist_file, global_config):
                     models_fullpaths.append(path)
                 if project_info['PREPROCESS']['mask_fillvalues']:
                     masks_cubes.append(maskdata)
+                    diagnc_fullpaths.append(diagncpath)
 
         # before we proceed more, we call multimodel operations
         if project_info['PREPROCESS']['multimodel_mean']:
             multimodel_mean(models_cubes, models_fullpaths)
         if project_info['PREPROCESS']['mask_fillvalues']:
-            fillvalues_mask(masks_cubes, models_cubes, models_fullpaths)
+            fillvalues_mask(masks_cubes, models_cubes, models_fullpaths, diagnc_fullpaths)
 
         vardicts = curr_diag.variables
         variables = []
