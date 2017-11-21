@@ -208,6 +208,7 @@ This reformat namelist file contains the tag <REFORMAT> that can hold multiple
 <reformat_script>-tags specifying the reformat scripts to be called: 
 
 .. code-block:: xml
+
      <REFORMAT>
      <reformat_script> /PATH/TO/REFORMATSCRIPT</reformat_script>
      </REFORMAT>
@@ -248,9 +249,9 @@ are given in :numref:`tab_obs_data`.
    **Table S9** Observational data for use with the ESMValTool. See headers of the
    reformatting routines for downloading and processing instructions.
 
-.. _tab_obs_data:
-
 .. tabularcolumns:: |p{1.8cm}|p{0.6cm}|p{2.3cm}|p{1.6cm}|p{1.5cm}|p{1.9cm}|p{4.2cm}|
+
+.. _tab_obs_data:
 
 +--------------------+---------+-------------------------------+---------------------+-------------+----------------+-------------------------------+
 | **Name**           |**Tier** |**Description**                | **Variables**       | **Type**    | **Time range** | **Script name**               |

@@ -696,7 +696,7 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 
 **Naming convention for ESMValTool namelists:**
 
-Typically, all namelists are stored in the folder *nml*, the naming convention is *namelist_xxx.xml* with "xxx" being the name of the diagnostic and/or a description of the purpose of the namelist::
+Typically, all namelists are stored in the folder *nml*, the naming convention is *namelist_xxx.xml* with "xxx" being the name of the diagnostic and/or a description of the purpose of the namelist:
 	
 1. **For papers:**
 
