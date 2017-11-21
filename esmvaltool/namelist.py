@@ -73,18 +73,19 @@ def configure_preprocessor(user_config, preprocessor_profile, all_models,
                            model, variable):
     """Write preprocessor configuration"""
 
-    # Preprocessor configuration
-    pre = {}
-
     # Configure cube loading
     files = get_input_filelist(
         project_info={'GLOBAL': user_config}, model=model, var=variable)
     if not files:
         raise NamelistError("No input files found for model {} "
                             "variable {}".format(model, variable))
+
+    # Preprocessor configuration
+    pre = {}
+
     pre['load'] = {
         'uris': files,
-        'contstraint': variable['short_name'],
+        'constraint': variable['short_name'],
     }
 
     # Configure fixes

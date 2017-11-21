@@ -1,11 +1,15 @@
 """Miscellaneous functions for deriving variables."""
 
+import logging
+
 import cf_units
 import iris
 import numba
 import numpy as np
 from iris import Constraint
 from scipy import constants
+
+logger = logging.getLogger(__name__)
 
 Avogadro_const = constants.value('Avogadro constant')
 Avogadro_const_unit = constants.unit('Avogadro constant')
@@ -17,9 +21,21 @@ mw_O3 = 48
 mw_O3_unit = cf_units.Unit('g mol^-1')
 Dobson_unit = cf_units.Unit('2.69e20 m^-2')
 
+def get_required(short_name):
+    """Get variables required to derive variable `short_name`"""
+    required = {
+        'lwp': ['clwvi', 'clivi'],
+        'toz': ['o3', 'ps'],
+    }
+
+    if short_name in required:
+        return required[short_name]
+
+    raise NotImplementedError("Don't know how to derive {}".format(short_name))
+
 
 def derive(cubes, short_name):
-
+    """Derive variable `short_name`"""
     functions = {
         'lwp': calc_lwp,
         'toz': calc_toz,
@@ -61,8 +77,8 @@ def calc_lwp(cubes):
     ]
     if ((project in ["CMIP5", "CMIP5_ETHZ"] and model in BAD_MODELS)
             or (project == 'OBS' and model == 'UWisc')):
-        print("INFO: assuming that variable clwvi from {} model {} "
-              "contains only liquid water".format(project, model))
+        logger.info("Assuming that variable clwvi from %s model %s "
+                    "contains only liquid water", project, model)
         lwp_cube = clwvi_cube
     else:
         lwp_cube = clwvi_cube - clivi_cube
