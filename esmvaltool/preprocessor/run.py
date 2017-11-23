@@ -2,10 +2,11 @@
 
 import copy
 import logging
+import os
+import pprint
 from collections import OrderedDict
 
 import iris
-from iris.cube import CubeList
 
 from esmvaltool.preprocessor.derive import get_required
 from esmvaltool.task import AbstractTask
@@ -38,12 +39,22 @@ def load_cubes(files, mode='merge', **kwargs):
     raise NotImplementedError("mode={} not supported".format(mode))
 
 
+def save_cubes(cubes, **args):
+    """Save iris cubes to file."""
+    filename = args['target']
+    dirname = os.path.dirname(filename)
+    if not os.path.isdir(dirname):
+        os.makedirs(dirname)
+    iris.save(cubes, **args)
+    return filename
+
+
 # TODO: review preprocessor functions
 FUNCTIONS = {
     # File reformatting/CMORization
     'fix_file': fix_file,
     # Load cube from file
-    'load': load_cubes,
+    'load': iris.load_cube,
     # Metadata reformatting/CMORization
     'fix_metadata': fix_metadata,
     # Time extraction
@@ -70,28 +81,38 @@ FUNCTIONS = {
     'seasonal_mean': seasonal_mean,
     'multi_model_mean': multi_model_mean,
     # Save to file
-    'save': iris.save,
+    'save': save_cubes,
 }
 
-DEFAULT_ORDER = [
+DEFAULT_ORDER = (
     # TODO: add more steps as they become available
     'fix_file',
     'load',
     'fix_metadata',
-    'select_time',
+    'extract_time',
     'fix_data',
     'derive',
-    'extract_level',
+    'extract_levels',
     'regrid',
     'mask',
+    'extract_region',
+    'average_region',
+    'seasonal_mean',
     'multi_model_mean',
     'save',
-]
+)
 
-_MULTI_CUBE_FUNCTIONS = {
+assert set(DEFAULT_ORDER) == set(FUNCTIONS)
+
+# Preprocessor functions that take a CubeList instead of a Cube as input.
+_LIST_INPUT_FUNCTIONS = {
+    'load',
     'derive',
     'multi_model_mean',
+    'save',
 }
+
+assert _LIST_INPUT_FUNCTIONS.issubset(set(FUNCTIONS))
 
 
 def _as_ordered_dict(settings, order):
@@ -122,26 +143,25 @@ def _get_fix_settings(short_name, model, project, mip=None):
     return settings
 
 
-def get_default_settings(files, settings, **kwargs):
+def get_default_settings(settings, **kwargs):
 
     cfg = {}
 
-    # Configure loading
-    cfg['load'] = {
-        'uris': files,
-        'method': 'concatenate',
-    }
+    # Configure load
+    cfg['load'] = {}
     if 'short_name' in kwargs:
-        cfg['load']['constraint'] = kwargs['short_name']
+        cfg['load']['constraints'] = kwargs['short_name']
 
     # Configure fixes
-    if any(function.startswith('fix_') for function in settings):
+    if any(step.startswith('fix_') for step in settings):
         fixcfg = _get_fix_settings(
             short_name=kwargs['short_name'],
             model=kwargs['model'],
             project=kwargs['project'],
             mip=kwargs.get('mip', None))
-        cfg.update(fixcfg)
+        for step in fixcfg:
+            if step in cfg:
+                cfg[step].update(fixcfg[step])
 
     # Configure time extraction
     if 'start_year' in kwargs and 'end_year' in kwargs:
@@ -160,7 +180,7 @@ def get_default_settings(files, settings, **kwargs):
     return cfg
 
 
-def get_multi_model_task(files_list, settings_list, **kwargs):
+def get_multi_model_task(settings, **kwargs):
     """Get a task for preprocessing multiple models"""
 
 
@@ -174,9 +194,9 @@ def _split_settings(step, settings):
     return before, after
 
 
-def get_single_model_task(files, settings, **kwargs):
+def get_single_model_task(settings, **kwargs):
     """Get a task for preprocessing a single model"""
-    settings = get_default_settings(files, settings, **kwargs)
+    settings = get_default_settings(settings, **kwargs)
 
     if 'derive' in settings:
         before_settings, after_settings = _split_settings(
@@ -185,7 +205,7 @@ def get_single_model_task(files, settings, **kwargs):
         # create tasks that should be done before derive step
         before_tasks = []
         for short_name in get_required(kwargs['short_name']):
-            before_settings['load']['constraint'] = short_name
+            before_settings['load']['constraints'] = short_name
             task = PreprocessingTask(settings=before_settings)
             before_tasks.append(task)
 
@@ -201,65 +221,44 @@ def get_single_model_task(files, settings, **kwargs):
 class PreprocessingTask(AbstractTask):
     """Task for running the preprocessor"""
 
-    def __init__(self, settings, ancestors=None):
+    def __init__(self, settings, order=DEFAULT_ORDER, ancestors=None):
         """Initialize"""
         super(PreprocessingTask, self).__init__(settings, ancestors)
-
-        self.order = list(DEFAULT_ORDER)
+        self.order = list(order)
 
     def _run(self, input_data):
         settings = _as_ordered_dict(settings=self.settings, order=self.order)
-        self.output_data = _preprocess(input_data, settings)
+        # If input_data is not available from ancestors and also not
+        # specified in self.run(input_data), try to get it from settings
+        if not self.ancestors and not input_data:
+            if 'load' in settings and 'uris' in settings['load']:
+                input_data = settings['load'].pop('uris')
+        self.output_data = preprocess(input_data, settings)
+
+    def __str__(self):
+        def indent(txt):
+            return '\n'.join('\t' + line for line in txt.split('\n'))
+
+        txt = 'PreprocessingTask:\norder: {}\nsettings:\n{}\nancestors:\n{}'.format(
+            self.order,
+            pprint.pformat(self.settings, indent=2),
+            '\n\n'.join(indent(str(task)) for task in self.ancestors)
+            if self.ancestors else 'None',
+        )
+        return txt
 
 
-def _preprocess(input_data, settings):
+def preprocess(input_data, settings):
     """Run preprocessor"""
-    settings = copy.deepcopy(settings)
-
-    # Apply file fixes
-    if 'fix_file' in settings:
-        fix_args = settings.pop('fix_file')
-        fix = FUNCTIONS['fix_file']
-        for file in input_data:
-            fix(file, **fix_args)
-
-    if 'load' in settings:
-        # Load cubes from file if configured
-        load_args = settings.pop('load')
-        load = FUNCTIONS['load']
-        cubes = load(input_data, **load_args)
-    else:
-        # Else assume input_data is a CubeList
-        cubes = input_data
-
-    # Remove save arguments from settings and store for later use
-    save_args = settings.pop('save', None)
-
-    # Run preprocessor
-    cubes = _preprocess_cubes(cubes=cubes, settings=settings)
-
-    # Return a CubeList if no save function is configured
-    if save_args is None:
-        return cubes
-    # Else save cubes to file and return the configured filename
-    save = FUNCTIONS['save']
-    save(cubes, **save_args)
-    filename = save_args['target']
-    return filename
-
-
-def _preprocess_cubes(cubes, settings):
-    """Apply preprocessor steps defined in `settings` to `cubes`."""
-    settings = copy.deepcopy(settings)
-
-    while True:
-        try:
-            step, args = settings.popitem(0)
-        except KeyError:
-            return cubes
-
+    cubes = list(input_data)
+    for step, args in settings.items():
         function = FUNCTIONS[step]
-        if function in _MULTI_CUBE_FUNCTIONS:
-            cubes = function(cubes, **args)
+        if function in _LIST_INPUT_FUNCTIONS:
+            logger.debug("Running %s(%s, %s)", step, cubes, args)
+            cubes = [function(cubes, **args)]
         else:
-            cubes = CubeList(function(cube, **args) for cube in cubes)
+            for i, cube in enumerate(cubes):
+                logger.debug("Running %s(%s, %s)", step, cube, args)
+                cubes[i] = function(cube, **args)
+
+    return cubes

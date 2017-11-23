@@ -37,6 +37,8 @@ def fix_file(filename, short_name, project, model):
     for fix in Fix.get_fixes(
             project=project, model=model, variable=short_name):
         fix.fix_file(filename)
+    # TODO: create a copy if file needs to be changed and return name to copy
+    return filename
 
 
 def fix_metadata(cube, short_name, project, model, mip=None):
@@ -52,6 +54,7 @@ def fix_metadata(cube, short_name, project, model, mip=None):
             fail_on_error=False,
             automatic_fixes=True)
         checker(cube).check_metadata()
+    return cube
 
 
 def fix_data(cube, short_name, project, model, mip=None):
@@ -67,6 +70,7 @@ def fix_data(cube, short_name, project, model, mip=None):
             fail_on_error=False,
             automatic_fixes=True)
         checker(cube).check_data()
+    return cube
 
 
 def cmor_check_metadata(cube, short_name, project, mip):

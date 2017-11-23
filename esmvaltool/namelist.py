@@ -3,9 +3,15 @@ from __future__ import print_function
 
 import copy
 import logging
+import os
 import pprint
 
 import yaml
+
+from esmvaltool.interface_scripts.data_finder import get_output_file
+from esmvaltool.preprocessor.reformat import CMOR_TABLES
+from esmvaltool.preprocessor.run import PreprocessingTask
+from esmvaltool.task import DiagnosticTask
 
 from .interface_scripts.data_finder import get_input_filelist
 
@@ -69,24 +75,51 @@ def _find_model(full_models, short_model, warn=False):
                            matches, short_model)
 
 
-def configure_preprocessor(user_config, preprocessor_profile, all_models,
-                           model, variable):
-    """Write preprocessor configuration"""
-
-    # Configure cube loading
-    files = get_input_filelist(
-        project_info={'GLOBAL': user_config}, model=model, var=variable)
-    if not files:
-        raise NamelistError("No input files found for model {} "
-                            "variable {}".format(model, variable))
+def get_default_preprocessor_task(settings, all_models, model, variable,
+                                  user_config):
+    """Get a preprocessor task for a single model"""
 
     # Preprocessor configuration
     pre = {}
 
+    # Configure loading and saving
+    project_info = {'GLOBAL': user_config}
+    input_files = get_input_filelist(
+        project_info=project_info, model=model, var=variable)
+    if not input_files:
+        raise NamelistError("No input files found for model {} "
+                            "variable {}".format(model, variable))
+    output_file = get_output_file(
+        project_info=project_info, model=model, var=variable)
+
     pre['load'] = {
-        'uris': files,
-        'constraint': variable['short_name'],
+        'uris': input_files,
     }
+    pre['save'] = {
+        'target': output_file,
+    }
+
+    # figure out the mip
+    mip = None
+    if 'mip' in model:
+        mip = model['mip']
+    elif 'mip' in variable:
+        mip = variable['mip']
+    else:
+        for _model in all_models:
+            if 'mip' in _model:
+                if mip is None:
+                    mip = _model['mip']
+                elif mip != _model['mip']:
+                    raise NamelistError("Ambigous mip for variable {}"
+                                        .format(variable))
+
+    # constrain loading to a cube with required standard_name
+    if mip and model['project'] in CMOR_TABLES:
+        variable_info = CMOR_TABLES[model['project']].get_variable(
+            mip, variable['short_name'])
+        if variable_info.standard_name:
+            pre['load']['constraint'] = variable_info.standard_name
 
     # Configure fixes
     cfg = {
@@ -95,8 +128,8 @@ def configure_preprocessor(user_config, preprocessor_profile, all_models,
         'short_name': variable['short_name'],
     }
     pre['fix_file'] = dict(cfg)
-    if 'mip' in model:
-        cfg['mip'] = model['mip']
+
+    cfg['mip'] = mip
     pre['fix_metadata'] = dict(cfg)
     pre['fix_data'] = dict(cfg)
 
@@ -111,7 +144,7 @@ def configure_preprocessor(user_config, preprocessor_profile, all_models,
     }
 
     # Override with settings from preprocessor profile
-    pre.update(copy.deepcopy(preprocessor_profile))
+    pre.update(copy.deepcopy(settings))
 
     # Remove disabled preprocessor functions
     for function, args in pre.items():
@@ -133,7 +166,8 @@ def configure_preprocessor(user_config, preprocessor_profile, all_models,
                     var=variable)
                 pre['regrid']['target_grid'] = files[0]
 
-    return pre
+    task = PreprocessingTask(settings=pre)
+    return task
 
 
 class Namelist(object):
@@ -147,57 +181,122 @@ class Namelist(object):
         self._models = copy.deepcopy(raw_namelist['models'])
 
         self.diagnostics = {}
-        for name, raw_diagnostic in raw_namelist['diagnostics'].items():
-            diag = self.diagnostics[name] = {}
-            diag['name'] = name
-            diag['script'] = raw_diagnostic['script']
-            diag['settings'] = copy.deepcopy(raw_diagnostic['settings'])
-            diag['models'] = self._initialize_models(name,
+        for diagnostic_name, raw_diagnostic in raw_namelist[
+                'diagnostics'].items():
+            diag = self.diagnostics[diagnostic_name] = {}
+            diag['name'] = diagnostic_name
+            diag['models'] = self._initialize_models(diagnostic_name,
                                                      raw_diagnostic['models'])
             diag['variables'] = self._initialize_variables(
-                name, raw_diagnostic['variables'])
+                diagnostic_name, raw_diagnostic['variables'])
+            diag['script'] = self._initialize_script(diagnostic_name,
+                                                     raw_diagnostic['script'])
+            diag['settings'] = copy.deepcopy(raw_diagnostic['settings'])
 
-    def _initialize_models(self, name, raw_models):
+        self.tasks = self._initialize_tasks()
+
+    def _initialize_models(self, diagnostic_name, raw_models):
         """Add models to diagnostic"""
 
-        logger.debug("Resolving models for diagnostic %s", name)
+        logger.debug("Resolving models for diagnostic %s", diagnostic_name)
 
-        result = []
+        models = []
         for short_model in raw_models:
             model = _find_model(
                 full_models=self._models, short_model=short_model, warn=True)
             if not model:
                 raise NamelistError("Unable to find model matching {} in "
-                                    "diagnostic {}".format(short_model, name))
-            result.append(model)
+                                    "diagnostic {}".format(
+                                        short_model, diagnostic_name))
+            models.append(model)
 
-        return result
+        return models
 
-    def _initialize_variables(self, name, raw_variables):
+    @staticmethod
+    def _initialize_variables(diagnostic_name, raw_variables):
+        """Add variables to diagnostic"""
+        logger.debug("Populating list of variables for diagnostic %s",
+                     diagnostic_name)
 
-        logger.debug("Populating list of variables for diagnostic %s", name)
-
-        result = []
-        for raw_variable in raw_variables:
+        variables = []
+        for variable_name, raw_variable in raw_variables.items():
             variable = copy.deepcopy(raw_variable)
+            if not 'short_name' in variable:
+                variable['short_name'] = variable_name
+            variables.append(variable)
 
-            # Preprocessor settings
-            variable['preprocessor'] = {}
-            for model in self.diagnostics[name]['models']:
-                # Add preprocessor settings for each model
-                modelkey = '_'.join(str(model[key]) for key in sorted(model))
-                variable['preprocessor'][modelkey] = configure_preprocessor(
-                    user_config=self._cfg,
-                    preprocessor_profile=self._preprocessors[raw_variable[
-                        'preprocessor']],
-                    all_models=self.diagnostics[name]['models'],
-                    model=model,
-                    variable=raw_variable,
-                )
+        return variables
 
-            result.append(variable)
+    @staticmethod
+    def _initialize_script(diagnostic_name, raw_script):
+        """Add script to diagnostic"""
+        logger.debug("Settings script for diagnostic %s", diagnostic_name)
+        # Dummy diagnostic for running only preprocessors
+        if raw_script == 'None':
+            return
 
-        return result
+        diagnostics_root = None  # TODO: set
+        script_file = os.path.abspath(
+            os.path.join(diagnostics_root, raw_script))
+
+        bad_script = NamelistError(
+            "Cannot execute script {} ({}) of diagnostic {}".format(
+                raw_script, script_file, diagnostic_name))
+
+        if not os.path.isfile(script_file):
+            raise bad_script
+
+        script = []
+        if not os.access(script_file, os.X_OK):  # if not executable
+            extension = os.path.splitext(raw_script).lower()[1:]
+            executables = {
+                'py': ['python'],
+                'ncl': ['ncl'],
+                'r': ['Rscript', '--slave', '--quiet'],
+            }
+            if not extension in executables:
+                raise bad_script
+            script.append(executables[extension])
+        script.append(script_file)
+
+        return script
+
+    def _initialize_tasks(self):
+        """Add tasks to namelist"""
+
+        tasks = []
+        all_preproc_tasks = {}
+        for diagnostic_name, diagnostic in self.diagnostics.items():
+            logger.debug("Creating tasks for diagnostic %s", diagnostic_name)
+
+            # Create preprocessor tasks
+            preproc_tasks = []
+            for variable in diagnostic['variables']:
+                for model in diagnostic['models']:
+                    task_id = '_'.join(
+                        str(item[key])
+                        for item in (variable, model) for key in sorted(item))
+                    if task_id not in all_preproc_tasks:
+                        preproc_id = variable['preprocessor']
+                        task = get_default_preprocessor_task(
+                            settings=self._preprocessors[preproc_id],
+                            all_models=diagnostic['models'],
+                            model=model,
+                            variable=variable,
+                            user_config=self._cfg,
+                        )
+                        all_preproc_tasks[task_id] = task
+                    preproc_tasks.append(all_preproc_tasks[task_id])
+
+            # Create diagnostic task
+            task = DiagnosticTask(
+                script=diagnostic['script'],
+                settings=diagnostic['settings'],
+                ancestors=preproc_tasks,
+            )
+            tasks.append(task)
+
+        return tasks
 
     def __str__(self):
         return pprint.pformat(self.diagnostics, indent=2)

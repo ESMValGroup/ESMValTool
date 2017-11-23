@@ -15,6 +15,7 @@ import six
 import stratify
 from iris.analysis import AreaWeighted, Linear, Nearest, UnstructuredNearest
 from numpy import ma
+import os
 
 # Regular expression to parse a "MxN" cell-specification.
 _CELL_SPEC = re.compile(r'''\A
@@ -153,17 +154,21 @@ def regrid(src_cube, target_grid, scheme):
         raise ValueError(emsg.format(scheme))
 
     if isinstance(target_grid, six.string_types):
-        # Generate a target grid from the provided cell-specification,
-        # and cache the resulting stock cube for later use.
-        target_grid = _cache.setdefault(target_grid, _stock_cube(target_grid))
-        # Align the target grid coordinate system to the source
-        # coordinate system.
-        src_cs = src_cube.coord_system()
-        xcoord = target_grid.coord(axis='x', dim_coords=True)
-        ycoord = target_grid.coord(axis='y', dim_coords=True)
-        xcoord.coord_system = src_cs
-        ycoord.coord_system = src_cs
-    elif not isinstance(target_grid, iris.cube.Cube):
+        if os.path.isfile(target_grid):
+            target_grid = iris.load_cube(target_grid)
+        else:
+            # Generate a target grid from the provided cell-specification,
+            # and cache the resulting stock cube for later use.
+            target_grid = _cache.setdefault(target_grid, _stock_cube(target_grid))
+            # Align the target grid coordinate system to the source
+            # coordinate system.
+            src_cs = src_cube.coord_system()
+            xcoord = target_grid.coord(axis='x', dim_coords=True)
+            ycoord = target_grid.coord(axis='y', dim_coords=True)
+            xcoord.coord_system = src_cs
+            ycoord.coord_system = src_cs
+
+    if not isinstance(target_grid, iris.cube.Cube):
         emsg = 'Expecting a cube or cell-specification, got {}.'
         raise ValueError(emsg.format(type(target_grid)))
 

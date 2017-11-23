@@ -15,18 +15,18 @@ preprocessors:
       levels: [2000, 7000]
       scheme: linear
     regrid:
-        target_grid: 'ERA-Interim'
-        scheme: linear
-    mask: false        
-    multimodel_mean: false 
+      target_grid: 'ERA-Interim'
+      scheme: linear
+    mask: false
+    multimodel_mean: false
 
   preprocessor_2:
     extract_level:
       levels: 85000
       scheme: nearest
     regrid:
-        target_grid: 1x1
-        scheme: nearest
+      target_grid: 1x1
+      scheme: nearest
     mask: false
     multimodel_mean: false
 
@@ -41,38 +41,38 @@ diagnostics:
   diagnostic_1:
     description: Preprocessor test diagnostic 1.
     variables:
-      - short_name: ta
-        field: T3M
+      ta:
         preprocessor: preprocessor_1
-    script: None
-    settings: {}
+        field: T3M
     models: [
       MPI-ESM-LR, {name: bcc-csm1-1, ensemble: r1i1p1}, GFDL-ESM2G,
       NCEP, ERA-Interim,
     ]
+    script: None
+    settings: {}
 
   diagnostic_2:
     description: Preprocessor test diagnostic 2.
     variables:
-      - short_name: ta
-        field: T3M
+      ta:
         preprocessor: preprocessor_2
-    script: None
-    settings: {}
+        field: T3M
     models: [
       MPI-ESM-LR, {name: bcc-csm1-1, ensemble: r1i1p2}, GFDL-ESM2G,
       NCEP, ERA-Interim,
     ]
+    script: None
+    settings: {}
 
   diagnostic_3:
     description: Preprocessor test diagnostic 3.
     variables:
-      - short_name: pr
-        field: T2Ms
+      pr:
         preprocessor: preprocessor_3
-    script: None
-    settings: {}
+        field: T2Ms
     models: [
       MPI-ESM-LR, {name: bcc-csm1-1, ensemble: r1i1p1}, GFDL-ESM2G,
       ERA-Interim,
     ]
+    script: None
+    settings: {}

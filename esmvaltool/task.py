@@ -1,5 +1,5 @@
 """ESMValtool task definition"""
-import os
+import pprint
 import subprocess
 import time
 
@@ -13,10 +13,9 @@ class AbstractTask(object):
 
     def run(self, input_data=None):
 
-        if input_data is None:
-            input_data = []
-
         if not self.output_data:
+            if input_data is None:
+                input_data = []
             for task in self.ancestors:
                 input_data.extend(task.run())
             self._run(input_data)
@@ -34,20 +33,15 @@ class DiagnosticError(Exception):
 
 class DiagnosticTask(AbstractTask):
     """Task for running a diagnostic"""
-    
+
     def __init__(self, script, settings, ancestors=None):
         """Initialize"""
         super(DiagnosticTask, self).__init__(settings, ancestors)
         self.script = script
-        self.executables = {
-            'py': ['python'],
-            'ncl': ['ncl'],
-            'r': ['Rscript', '--slave', '--quiet'],
-        }
 
     def _write_settings(self):
         """Write settings to file
-        
+
         In yaml format or a custom format interface file if that is preferred.
         """
         # TODO; implement or copy write_data_to_interface from
@@ -55,14 +49,13 @@ class DiagnosticTask(AbstractTask):
 
     def _run(self, input_data):
         """Run the diagnostic script."""
+        # Run only preprocessor
+        if self.script is None:
+            return
+
         self.settings['input_files'] = input_data
 
-        cmd = []        
-        if os.path.isfile(self.script):
-            extension = os.path.splitext(self.script).lower()[1:]
-            cmd.append(self.executables[extension])
-        cmd.append(self.script)
-
+        cmd = list(self.script)
         settings_file = self._write_settings()
         cmd.append(settings_file)
 
@@ -84,3 +77,15 @@ class DiagnosticTask(AbstractTask):
         raise DiagnosticError(
             "Diagnostic script {} failed with return code {}".format(
                 self.script, returncode))
+
+    def __str__(self):
+        def indent(txt):
+            return '\n'.join('\t' + line for line in txt.split('\n'))
+
+        txt = 'DiagnosticTask:\nscript: {}\nsettings:\n{}\nancestors:\n{}'.format(
+            self.script,
+            pprint.pformat(self.settings, indent=2),
+            '\n\n'.join(indent(str(task)) for task in self.ancestors)
+            if self.ancestors else 'None',
+        )
+        return txt
