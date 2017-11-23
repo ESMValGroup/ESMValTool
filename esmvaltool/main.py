@@ -360,6 +360,8 @@ def process_namelist(namelist_file, global_config):
         masks_cubes = []
         models_fullpaths = []
         diagnc_fullpaths = []
+        miptables = []
+        varnames = []
 
         # prepare/reformat model data for each model
         for model in project_info['ALLMODELS']:
@@ -403,7 +405,7 @@ def process_namelist(namelist_file, global_config):
                         logger.info('Preprocess id: %s', preprocess_id)
                         project_info['PREPROCESS'] = preproc_dict
 
-                cube, path, maskdata, diagncpath = preprocess(
+                cube, path, maskdata, diagncpath, miptable, varname = preprocess(
                                         project_info,
                                         base_var,
                                         model,
@@ -418,12 +420,14 @@ def process_namelist(namelist_file, global_config):
                 if project_info['PREPROCESS']['mask_fillvalues'] and project_info['PREPROCESS']['target_grid'] != 'None':
                     masks_cubes.append(maskdata)
                     diagnc_fullpaths.append(diagncpath)
+                    miptables.append(miptable)
+                    varnames.append(varname)
 
         # before we proceed more, we call multimodel operations
         if project_info['PREPROCESS']['multimodel_mean']:
             multimodel_mean(models_cubes, models_fullpaths)
         if project_info['PREPROCESS']['mask_fillvalues'] and project_info['PREPROCESS']['target_grid'] != 'None':
-            fillvalues_mask(masks_cubes, models_cubes, models_fullpaths, diagnc_fullpaths)
+            fillvalues_mask(masks_cubes, models_cubes, models_fullpaths, diagnc_fullpaths, miptables, varnames)
 
         vardicts = curr_diag.variables
         variables = []

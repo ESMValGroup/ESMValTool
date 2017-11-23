@@ -23,6 +23,12 @@ from .fixes.fix import Fix
 from .launchers import run_executable
 from .preprocessing_tools import glob, merge_callback
 
+# cmor imports
+from .cmor_check import CMORCheck
+from .cmor_check import CMORCheckError
+import warnings
+from .variable_info import CMIP5Info
+
 logger = logging.getLogger(__name__)
 
 #######################################################
@@ -319,11 +325,6 @@ def preprocess(project_info, variable, model, current_diag,
 
     # New code: cmor_check.py (by Javier Vegas)
     elif cmor_reformat_type == 'py':
-        # needed imports
-        from .cmor_check import CMORCheck
-        from .cmor_check import CMORCheckError
-        import warnings
-        from .variable_info import CMIP5Info
 
         variables_info = CMIP5Info()
 
@@ -440,11 +441,10 @@ def preprocess(project_info, variable, model, current_diag,
 
             # check cube
             ######################
-            if project_name == 'CMIP5':
-                logger.info(
-                    " CMIP5 - checking cube after applying land mask...")
-                checker = CMORCheck(reft_cube, var_info, automatic_fixes=True)
-                checker.check_data()
+            logger.info(
+                " Checking cube after applying land mask...")
+            checker = CMORCheck(reft_cube, var_info, automatic_fixes=True)
+            checker.check_data()
             #######################
 
             if save_intermediary_cubes is True:
@@ -468,11 +468,10 @@ def preprocess(project_info, variable, model, current_diag,
 
             # check cube
             ######################
-            if project_name == 'CMIP5':
-                logger.info(
-                    " CMIP5 - checking cube after applying ocean mask...")
-                checker = CMORCheck(reft_cube, var_info, automatic_fixes=True)
-                checker.check_data()
+            logger.info(
+                " Checking cube after applying ocean mask...")
+            checker = CMORCheck(reft_cube, var_info, automatic_fixes=True)
+            checker.check_data()
             #######################
 
             if save_intermediary_cubes is True:
@@ -496,11 +495,10 @@ def preprocess(project_info, variable, model, current_diag,
 
             # check cube
             ######################
-            if project_name == 'CMIP5':
-                logger.info(
-                    " CMIP5 - checking cube after applying poro mask...")
-                checker = CMORCheck(reft_cube, var_info, automatic_fixes=True)
-                checker.check_data()
+            logger.info(
+                " Checking cube after applying poro mask...")
+            checker = CMORCheck(reft_cube, var_info, automatic_fixes=True)
+            checker.check_data()
             #######################
 
             if save_intermediary_cubes is True:
@@ -598,12 +596,11 @@ def preprocess(project_info, variable, model, current_diag,
 
                 # check cube
                 #########################
-                if project_name == 'CMIP5':
-                    logger.info(
-                        " CMIP5 - checking cube after selecting level(s)...")
-                    checker = CMORCheck(reft_cube, var_info,
-                                        automatic_fixes=True)
-                    checker.check_data()
+                logger.info(
+                    " Checking cube after selecting level(s)...")
+                checker = CMORCheck(reft_cube, var_info,
+                                    automatic_fixes=True)
+                checker.check_data()
                 #########################
 
                 # save intermediary
@@ -654,11 +651,10 @@ def preprocess(project_info, variable, model, current_diag,
 
             # check cube
             ######################
-            if project_name == 'CMIP5':
-                logger.info("CMIP5 - checking cube after regridding on "
-                            "input netCDF file...")
-                checker = CMORCheck(reft_cube, var_info, automatic_fixes=True)
-                checker.check_data()
+            logger.info("Checking cube after regridding on "
+                        "input netCDF file...")
+            checker = CMORCheck(reft_cube, var_info, automatic_fixes=True)
+            checker.check_data()
             #######################
 
             # save-append to outfile fullpath list to be further processed
@@ -722,15 +718,14 @@ def preprocess(project_info, variable, model, current_diag,
                                     # check cube
                                     ###################
                                     reft_cube = rgc
-                                    if project_name == 'CMIP5':
-                                        logger.info(
-                                            "CMIP5 - checking cube after "
-                                            "regridding on REF model...")
-                                        checker = CMORCheck(
-                                            reft_cube,
-                                            var_info,
-                                            automatic_fixes=True)
-                                        checker.check_data()
+                                    logger.info(
+                                        "Checking cube after "
+                                        "regridding on REF model...")
+                                    checker = CMORCheck(
+                                        reft_cube,
+                                        var_info,
+                                        automatic_fixes=True)
+                                    checker.check_data()
                                     ####################
 
                                     # save-append to outfile fullpath list
@@ -769,12 +764,11 @@ def preprocess(project_info, variable, model, current_diag,
                     # check cube
                     ######################
                     reft_cube = rgc
-                    if project_name == 'CMIP5':
-                        logger.info("CMIP5 - checking cube after regridding "
-                                    "on MxN cells...")
-                        checker = CMORCheck(reft_cube, var_info,
-                                            automatic_fixes=True)
-                        checker.check_data()
+                    logger.info("Checking cube after regridding "
+                                "on MxN cells...")
+                    checker = CMORCheck(reft_cube, var_info,
+                                        automatic_fixes=True)
+                    checker.check_data()
                     #######################
 
                     # save-append to outfile fullpath list to be
@@ -874,8 +868,9 @@ def preprocess(project_info, variable, model, current_diag,
     # ...and now delete all
     del (project_info['TEMPORARY'])
 
-    # return the latest cube, and latest path
-    return reft_cube, latest_saver, mfv_saver, diag_nc_file
+    # return the latest cube, and latest path,
+    # also the mip table and var name
+    return reft_cube, latest_saver, mfv_saver, diag_nc_file, table, var_name
 
 
 # functions that perform collective models analysis
@@ -901,7 +896,7 @@ def loop_sum(arrlist):
     else:
         return 0
 
-def fillvalues_mask(mask_collection, cube_collection, path_collection, diag_nc_filepath):
+def fillvalues_mask(mask_collection, cube_collection, path_collection, diag_nc_filepath, miptables, varnames):
     # get the masks from all models
     masks = [iris.load_cube(c).data for c in mask_collection if c is not None]
     # remove masks that are all NaN's
@@ -910,8 +905,19 @@ def fillvalues_mask(mask_collection, cube_collection, path_collection, diag_nc_f
     # aggregate (sum) masks
     if len(masks_reduced) > 0:
         agg_mask = loop_sum(masks_reduced) / len(masks_reduced)
-        for cube, path, diagncpath in zip(cube_collection, path_collection, diag_nc_filepath):
+        for cube, path, diagncpath, miptable, varname in zip(cube_collection, path_collection, diag_nc_filepath, miptables, varnames):
             cube.data = cube.data * agg_mask
+
+            # check cube
+            ######################
+            variables_info = CMIP5Info()
+            var_info = variables_info.get_variable(miptable, varname)
+            logger.info("Checking cube after applying "
+                        "fillvalues mask...")
+            checker = CMORCheck(cube, var_info, automatic_fixes=True)
+            checker.check_data()
+            #######################
+
             if path != diagncpath:
                 logger.info("Updating with mask and saving last preproc nc file")
                 iris.save(cube, path)
