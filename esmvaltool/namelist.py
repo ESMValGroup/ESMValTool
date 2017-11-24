@@ -75,31 +75,13 @@ def _find_model(full_models, short_model, warn=False):
                            matches, short_model)
 
 
-def get_default_preprocessor_task(settings, all_models, model, variable,
-                                  user_config):
-    """Get a preprocessor task for a single model"""
+def _get_mip(variable, model, all_models):
+    """Try to get mip.
 
-    # Preprocessor configuration
-    pre = {}
-
-    # Configure loading and saving
-    project_info = {'GLOBAL': user_config}
-    input_files = get_input_filelist(
-        project_info=project_info, model=model, var=variable)
-    if not input_files:
-        raise NamelistError("No input files found for model {} "
-                            "variable {}".format(model, variable))
-    output_file = get_output_file(
-        project_info=project_info, model=model, var=variable)
-
-    pre['load'] = {
-        'uris': input_files,
-    }
-    pre['save'] = {
-        'target': output_file,
-    }
-
-    # figure out the mip
+    First look in variable, then in model, then in all models.
+    Raises a NamelistError if it has to resort to all models,
+    but the mip is not the same for all models.
+    """
     mip = None
     if 'mip' in model:
         mip = model['mip']
@@ -113,13 +95,56 @@ def get_default_preprocessor_task(settings, all_models, model, variable,
                 elif mip != _model['mip']:
                     raise NamelistError("Ambigous mip for variable {}"
                                         .format(variable))
+    return mip
 
-    # constrain loading to a cube with required standard_name
-    if mip and model['project'] in CMOR_TABLES:
+
+def _get_standard_name(variable, model, mip=None):
+    """Get standard_name.
+
+    First look in variable, then try to look it up in CMOR tables.
+    """
+    standard_name = None
+    if 'standard_name' in variable:
+        standard_name = variable['standard_name']
+    elif mip and model['project'] in CMOR_TABLES:
         variable_info = CMOR_TABLES[model['project']].get_variable(
             mip, variable['short_name'])
         if variable_info.standard_name:
-            pre['load']['constraint'] = variable_info.standard_name
+            standard_name = variable_info.standard_name
+
+    return standard_name
+
+
+def get_default_preprocessor_task(settings, all_models, model, variable,
+                                  user_config):
+    """Get a preprocessor task for a single model"""
+
+    # Preprocessor configuration
+    pre = {}
+
+    # Configure loading and saving
+    input_files = get_input_filelist(
+        project_info={'GLOBAL': user_config}, model=model, var=variable)
+    if not input_files:
+        raise NamelistError("No input files found for model {} "
+                            "variable {}".format(model, variable))
+    output_file = get_output_file(
+        project_info={'GLOBAL': user_config}, model=model, var=variable)
+
+    pre['load'] = {
+        'uris': input_files,
+    }
+    pre['save'] = {
+        'target': output_file,
+    }
+
+    # Find mip for CMOR fixes and determining standard_name.
+    mip = _get_mip(variable, model, all_models)
+
+    # If possible, constrain loading to a cube with required standard_name.
+    standard_name = _get_standard_name(variable, model, mip)
+    if standard_name:
+        pre['load']['constraint'] = standard_name
 
     # Configure fixes
     cfg = {
@@ -128,8 +153,9 @@ def get_default_preprocessor_task(settings, all_models, model, variable,
         'short_name': variable['short_name'],
     }
     pre['fix_file'] = dict(cfg)
-
-    cfg['mip'] = mip
+    # Only supply mip if the CMOR check fixes are implemented.
+    if model['project'] in CMOR_TABLES:
+        cfg['mip'] = mip
     pre['fix_metadata'] = dict(cfg)
     pre['fix_data'] = dict(cfg)
 
@@ -166,8 +192,7 @@ def get_default_preprocessor_task(settings, all_models, model, variable,
                     var=variable)
                 pre['regrid']['target_grid'] = files[0]
 
-    task = PreprocessingTask(settings=pre)
-    return task
+    return PreprocessingTask(settings=pre)
 
 
 class Namelist(object):

@@ -1,9 +1,6 @@
 """Run the preprocessor."""
-
-import copy
 import logging
 import os
-import pprint
 from collections import OrderedDict
 
 import iris
@@ -125,65 +122,6 @@ def _as_ordered_dict(settings, order):
     return ordered_settings
 
 
-def _get_fix_settings(short_name, model, project, mip=None):
-    """Get fixes preprocessor configuration"""
-    fixcfg = {
-        'project': project,
-        'model': model,
-        'short_name': short_name,
-    }
-
-    settings = {}
-    settings['fix_file'] = dict(fixcfg)
-    if mip:
-        fixcfg['mip'] = mip
-    settings['fix_metadata'] = dict(fixcfg)
-    settings['fix_data'] = dict(fixcfg)
-
-    return settings
-
-
-def get_default_settings(settings, **kwargs):
-
-    cfg = {}
-
-    # Configure load
-    cfg['load'] = {}
-    if 'short_name' in kwargs:
-        cfg['load']['constraints'] = kwargs['short_name']
-
-    # Configure fixes
-    if any(step.startswith('fix_') for step in settings):
-        fixcfg = _get_fix_settings(
-            short_name=kwargs['short_name'],
-            model=kwargs['model'],
-            project=kwargs['project'],
-            mip=kwargs.get('mip', None))
-        for step in fixcfg:
-            if step in cfg:
-                cfg[step].update(fixcfg[step])
-
-    # Configure time extraction
-    if 'start_year' in kwargs and 'end_year' in kwargs:
-        cfg['extract_time'] = {
-            'yr1': kwargs['start_year'],
-            'yr2': kwargs['end_year'] + 1,
-            'mo1': 1,
-            'mo2': 1,
-            'd1': 1,
-            'd2': 1,
-        }
-
-    # Override with settings from preprocessor profile
-    cfg.update(copy.deepcopy(settings))
-
-    return cfg
-
-
-def get_multi_model_task(settings, **kwargs):
-    """Get a task for preprocessing multiple models"""
-
-
 def _split_settings(step, settings):
     """Split settings in before and after `step`"""
     index = DEFAULT_ORDER.index(step)
@@ -194,18 +132,19 @@ def _split_settings(step, settings):
     return before, after
 
 
-def get_single_model_task(settings, **kwargs):
+def get_single_model_task(settings, short_name=None):
     """Get a task for preprocessing a single model"""
-    settings = get_default_settings(settings, **kwargs)
 
     if 'derive' in settings:
+        if not short_name:
+            raise ValueError("Cannot determine input variables.")
         before_settings, after_settings = _split_settings(
             step='derive', settings=settings)
 
         # create tasks that should be done before derive step
         before_tasks = []
-        for short_name in get_required(kwargs['short_name']):
-            before_settings['load']['constraints'] = short_name
+        for input_short_name in get_required(short_name):
+            before_settings['load']['constraints'] = input_short_name
             task = PreprocessingTask(settings=before_settings)
             before_tasks.append(task)
 
@@ -216,6 +155,10 @@ def get_single_model_task(settings, **kwargs):
         task = PreprocessingTask(settings=settings)
 
     return task
+
+
+def get_multi_model_task(settings):
+    """Get a task for preprocessing multiple models"""
 
 
 class PreprocessingTask(AbstractTask):
@@ -236,29 +179,20 @@ class PreprocessingTask(AbstractTask):
         self.output_data = preprocess(input_data, settings)
 
     def __str__(self):
-        def indent(txt):
-            return '\n'.join('\t' + line for line in txt.split('\n'))
-
-        txt = 'PreprocessingTask:\norder: {}\nsettings:\n{}\nancestors:\n{}'.format(
+        txt = "{}:\norder: {}\n{}".format(
+            self.__class__.__name__,
             self.order,
-            pprint.pformat(self.settings, indent=2),
-            '\n\n'.join(indent(str(task)) for task in self.ancestors)
-            if self.ancestors else 'None',
+            super(PreprocessingTask, self).str(),
         )
         return txt
 
 
-def preprocess(input_data, settings):
+def preprocess(items, settings):
     """Run preprocessor"""
-    cubes = list(input_data)
     for step, args in settings.items():
         function = FUNCTIONS[step]
-        if function in _LIST_INPUT_FUNCTIONS:
-            logger.debug("Running %s(%s, %s)", step, cubes, args)
-            cubes = [function(cubes, **args)]
-        else:
-            for i, cube in enumerate(cubes):
-                logger.debug("Running %s(%s, %s)", step, cube, args)
-                cubes[i] = function(cube, **args)
+        if step in _LIST_INPUT_FUNCTIONS:
+            items = (items, )
+        items = tuple(function(item, **args) for item in items)
 
-    return cubes
+    return items

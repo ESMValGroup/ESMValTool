@@ -5,6 +5,7 @@ import time
 
 
 class AbstractTask(object):
+    """Base class for defining task classes"""
     def __init__(self, settings, ancestors=None):
 
         self.settings = settings
@@ -12,7 +13,7 @@ class AbstractTask(object):
         self.output_data = None
 
     def run(self, input_data=None):
-
+        """Run task."""
         if not self.output_data:
             if input_data is None:
                 input_data = []
@@ -25,6 +26,18 @@ class AbstractTask(object):
     def _run(self, input_data):
         raise NotImplementedError(
             "Method should be implemented by child class")
+
+    def str(self):
+        """Return a nicely formatted description."""
+        def _indent(txt):
+            return '\n'.join('\t' + line for line in txt.split('\n'))
+
+        txt = 'settings:\n{}\nancestors:\n{}'.format(
+            pprint.pformat(self.settings, indent=2),
+            '\n\n'.join(_indent(str(task)) for task in self.ancestors)
+            if self.ancestors else 'None',
+        )
+        return txt
 
 
 class DiagnosticError(Exception):
@@ -79,13 +92,9 @@ class DiagnosticTask(AbstractTask):
                 self.script, returncode))
 
     def __str__(self):
-        def indent(txt):
-            return '\n'.join('\t' + line for line in txt.split('\n'))
-
-        txt = 'DiagnosticTask:\nscript: {}\nsettings:\n{}\nancestors:\n{}'.format(
+        txt = "{}:\nscript: {}\n{}".format(
+            self.__class__.__name__,
             self.script,
-            pprint.pformat(self.settings, indent=2),
-            '\n\n'.join(indent(str(task)) for task in self.ancestors)
-            if self.ancestors else 'None',
+            super(DiagnosticTask, self).str(),
         )
         return txt
