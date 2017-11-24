@@ -159,7 +159,7 @@ def get_single_model_task(settings, short_name=None):
 
 def get_multi_model_task(settings):
     """Get a task for preprocessing multiple models"""
-
+    raise NotImplementedError
 
 class PreprocessingTask(AbstractTask):
     """Task for running the preprocessor"""

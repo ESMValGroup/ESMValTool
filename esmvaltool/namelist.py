@@ -4,7 +4,6 @@ from __future__ import print_function
 import copy
 import logging
 import os
-import pprint
 
 import yaml
 
@@ -115,8 +114,7 @@ def _get_standard_name(variable, model, mip=None):
     return standard_name
 
 
-def get_default_preprocessor_task(settings, all_models, model, variable,
-                                  user_config):
+def get_preprocessor_task(settings, all_models, model, variable, user_config):
     """Get a preprocessor task for a single model"""
 
     # Preprocessor configuration
@@ -303,7 +301,7 @@ class Namelist(object):
                         for item in (variable, model) for key in sorted(item))
                     if task_id not in all_preproc_tasks:
                         preproc_id = variable['preprocessor']
-                        task = get_default_preprocessor_task(
+                        task = get_preprocessor_task(
                             settings=self._preprocessors[preproc_id],
                             all_models=diagnostic['models'],
                             model=model,
@@ -324,4 +322,4 @@ class Namelist(object):
         return tasks
 
     def __str__(self):
-        return pprint.pformat(self.diagnostics, indent=2)
+        return '\n\n'.join(str(task) for task in self.tasks)
