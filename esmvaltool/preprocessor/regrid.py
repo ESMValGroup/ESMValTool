@@ -159,7 +159,8 @@ def regrid(src_cube, target_grid, scheme):
         else:
             # Generate a target grid from the provided cell-specification,
             # and cache the resulting stock cube for later use.
-            target_grid = _cache.setdefault(target_grid, _stock_cube(target_grid))
+            target_grid = _cache.setdefault(target_grid,
+                                            _stock_cube(target_grid))
             # Align the target grid coordinate system to the source
             # coordinate system.
             src_cs = src_cube.coord_system()

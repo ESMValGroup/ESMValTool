@@ -252,7 +252,7 @@ class Namelist(object):
         variables = []
         for variable_name, raw_variable in raw_variables.items():
             variable = copy.deepcopy(raw_variable)
-            if not 'short_name' in variable:
+            if 'short_name' not in variable:
                 variable['short_name'] = variable_name
             variables.append(variable)
 
@@ -287,7 +287,7 @@ class Namelist(object):
                 'ncl': ['ncl'],
                 'r': ['Rscript', '--slave', '--quiet'],
             }
-            if not extension in executables:
+            if extension not in executables:
                 raise bad_script
             script.append(executables[extension])
         script.append(script_file)

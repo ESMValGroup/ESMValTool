@@ -6,6 +6,7 @@ import time
 
 class AbstractTask(object):
     """Base class for defining task classes"""
+
     def __init__(self, settings, ancestors=None):
 
         self.settings = settings
@@ -29,6 +30,7 @@ class AbstractTask(object):
 
     def str(self):
         """Return a nicely formatted description."""
+
         def _indent(txt):
             return '\n'.join('\t' + line for line in txt.split('\n'))
 
@@ -72,8 +74,8 @@ class DiagnosticTask(AbstractTask):
         settings_file = self._write_settings()
         cmd.append(settings_file)
 
-        with open(self.stdout, 'a') as stdout, \
-            open(self.stderr, 'a') as stderr:
+        with open(self.stdout, 'a') as stdout, open(self.stderr,
+                                                    'a') as stderr:
 
             process = subprocess.Popen(
                 cmd, stdout=stdout, stderr=stderr, env=self.settings['env'])
