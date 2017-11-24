@@ -8,14 +8,8 @@ diag_script_info@plot_type = "cycle"
 ;; Time average ("opt" argument of time_operations.ncl)
 diag_script_info@time_avg = "monthlyclim"
 
-;; Required fraction of valid values
-diag_script_info@valid_fraction = 0.95
-
 ;; Selected region ("Global", "Tropics", "NH extratropics", "SH extratropics")
 diag_script_info@region = "Global"
-
-;; Regridding option
-diag_script_info@grid = "ref"
 
 ;; Draw plots
 diag_script_info@draw_plots = True
