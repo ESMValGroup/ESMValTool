@@ -259,7 +259,7 @@ def mask_cube_counts(mycube, value_threshold, counts_threshold, window_size):
     mask = counts_windowed_cube.data >= counts_threshold
     mask.astype(np.int)
     # preserving the original cube metadata
-    dummyar = np.ones(mycube.data.shape)
+    dummyar = np.ones(mycube.data.shape, dtype=mycube.data.dtype)
     newmask = dummyar * mask
     newmask[newmask == 0] = 1e+20 #np.nan
     masked_cube = mycube.copy()
