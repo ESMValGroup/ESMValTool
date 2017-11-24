@@ -1,15 +1,16 @@
 <ESGF>
 
-    <!-- Name of the ESGF node for which you have direct cache access 
-         A <node_cache_root>, and at least one <node_cache_template>, 
+    <!-- Name of the ESGF node for which you have direct cache access
+         A <node_cache_root>, and at least one <node_cache_template>,
          must be specified for this node within this <ESGF> section.
-         If you are not running on an ESGF node, put 'None' here  -->   
+         If you are not running on an ESGF node, put 'None' here  -->
     <!--local_node> BADC </local_node-->
     <local_node> DKRZ_CMIP5 </local_node>
 
     <!-- User control options -->
     <!-- 1. Search ESGF if dataset not found locally (True/False) -->
     <search_ESGF> False </search_ESGF>
+    <use_climofiles>True</use_climofiles>
 
     <!-- Start of online search configuration options -->
     <!-- Note: if ESGF_search = False all these can be left blank -->
@@ -39,7 +40,7 @@
         </cache_template>
     </DKRZ_CMIP5>
 
-    <!-- Location of user downloaded files on local machine 
+    <!-- Location of user downloaded files on local machine
          (this element is optional and can be omitted) -->
     <USER_CACHE>
         <cache_root> /work/bd0854/b309070/puc_esgf </cache_root>

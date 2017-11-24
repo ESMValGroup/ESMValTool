@@ -3403,6 +3403,9 @@ class ESGF:
                 pass
                 # result += "No dataset found in user cache.\n\n"
 
+            if esgf_config.use_climofiles is True:
+                return "/path/to/nowhere"
+
             # Otherwise, try to search for dataset on ESGF
             # If ESGF search option switched off, add message
             # to missing dataset report, and exit

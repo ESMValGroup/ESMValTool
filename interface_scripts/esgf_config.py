@@ -50,6 +50,7 @@ class ESGFConfig(object):
         self.all_nodes = {}  # This will include the user cache
         self.user_cache = None
         self.search_ESGF = False
+        self.use_climofiles = False
         self.config_file_name = None  # This is set manually
         self.user_openid = None
         self.search_service_url = None
@@ -422,6 +423,11 @@ class ESGFTag(object):
         # Handle elements that are not within a node element
         if element_name == 'local_node':
             self.config.set_local_node(element_string)
+
+        elif element_name == 'use_climofiles':
+            self.config.use_climofiles = _process_bool_element(
+                element_name,
+                element_string)
 
         elif element_name == 'search_ESGF':
             self.config.search_ESGF = _process_bool_element(
