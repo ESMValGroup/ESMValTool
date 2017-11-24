@@ -8,6 +8,7 @@ import os
 import yaml
 
 from .interface_scripts.data_finder import get_input_filelist, get_output_file
+from .interface_scripts.preprocessing_tools import merge_callback
 from .preprocessor.reformat import CMOR_TABLES
 from .preprocessor.run import DEFAULT_ORDER, PreprocessingTask
 from .task import DiagnosticTask
@@ -137,6 +138,7 @@ def get_preprocessor_task(settings, all_models, model, variable, user_config):
 
     pre['load'] = {
         'uris': input_files,
+        'callback': merge_callback,
     }
     pre['save'] = {
         'target': output_file,
