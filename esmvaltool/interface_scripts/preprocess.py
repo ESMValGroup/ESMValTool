@@ -10,6 +10,7 @@ from __future__ import print_function
 import copy
 import logging
 import os
+import warnings
 
 import iris
 import iris.exceptions
@@ -18,15 +19,11 @@ import numpy as np
 from ..preprocessor.mask import fx_mask, mask_cube_counts
 from ..preprocessor.regrid import regrid, vertical_schemes, vinterp
 from ..preprocessor.time_area import time_slice
+from .cmor_check import CMORCheck, CMORCheckError
 from .data_finder import get_input_filelist, get_output_file
 from .fixes.fix import Fix
 from .launchers import run_executable
 from .preprocessing_tools import glob, merge_callback
-
-# cmor imports
-from .cmor_check import CMORCheck
-from .cmor_check import CMORCheckError
-import warnings
 from .variable_info import CMIP5Info
 
 logger = logging.getLogger(__name__)
@@ -331,7 +328,7 @@ def preprocess(project_info, variable, model, current_diag,
         if project_name == 'CMIP5':
             table = model['mip']
         else:
-            table = project_info['MODELS'][0]['mip'] 
+            table = project_info['MODELS'][0]['mip']
 
         try:
             # Load cubes for requested variable in given files
@@ -593,8 +590,7 @@ def preprocess(project_info, variable, model, current_diag,
                 # check cube
                 #########################
                 logger.info("Checking cube after selecting level(s)...")
-                checker = CMORCheck(reft_cube, var_info,
-                                    automatic_fixes=True)
+                checker = CMORCheck(reft_cube, var_info, automatic_fixes=True)
                 checker.check_data()
                 #########################
 
@@ -661,7 +657,7 @@ def preprocess(project_info, variable, model, current_diag,
                     if additional_models_dicts is None:
                         additional_models_dicts = project_info['ALLMODELS']
                 except (AttributeError, "'Diagnostic' object has no attribute "
-                                        "'additional_models'"):
+                        "'additional_models'"):
                     logger.info("Regridding on one of the MODELS, "
                                 "no ADDITIONAL MODELS specified")
                     additional_models_dicts = project_info['ALLMODELS']
@@ -705,14 +701,13 @@ def preprocess(project_info, variable, model, current_diag,
                                         rgc = regrid(src_cube, tgt_grid_cube,
                                                      'linear')
                                     logger.debug("Regridded cube summary"
-                                                " --->\n%s", rgc)
+                                                 " --->\n%s", rgc)
 
                                     # check cube
                                     ###################
                                     reft_cube = rgc
-                                    logger.info(
-                                        "Checking cube after "
-                                        "regridding on REF model...")
+                                    logger.info("Checking cube after "
+                                                "regridding on REF model...")
                                     checker = CMORCheck(
                                         reft_cube,
                                         var_info,
@@ -755,8 +750,8 @@ def preprocess(project_info, variable, model, current_diag,
                     reft_cube = rgc
                     logger.info("Checking cube after regridding "
                                 "on MxN cells...")
-                    checker = CMORCheck(reft_cube, var_info,
-                                        automatic_fixes=True)
+                    checker = CMORCheck(
+                        reft_cube, var_info, automatic_fixes=True)
                     checker.check_data()
                     #######################
 
@@ -817,12 +812,13 @@ def preprocess(project_info, variable, model, current_diag,
                                    "than total time span")
 
                 # round to lower integer always
-                max_counts_per_time_window = float(nr_time_points) / float(time_window)
+                max_counts_per_time_window = float(nr_time_points) / float(
+                    time_window)
                 count_thr = int(max_counts_per_time_window * percentage)
 
                 # return the mask as a cube structure
-                mask_reft_cube = mask_cube_counts(reft_cube, val_thr, count_thr,
-                                             time_window)[2]
+                mask_reft_cube = mask_cube_counts(reft_cube, val_thr,
+                                                  count_thr, time_window)[2]
 
                 # save only the mask
                 logger.info("Saving fillvalues mask...")
@@ -873,6 +869,7 @@ def multimodel_mean(cube_collection, path_collection):
     means = [np.mean(m.data) for m in means_list]
     logger.info("Multimodel global means: %s", means)
 
+
 def loop_sum(arrlist):
     if len(arrlist) > 0:
         arrsum = arrlist[0].copy()
@@ -882,30 +879,34 @@ def loop_sum(arrlist):
     else:
         return 0
 
-def fillvalues_mask(mask_collection, cube_collection, path_collection, diag_nc_filepath, miptables, varnames):
+
+def fillvalues_mask(mask_collection, cube_collection, path_collection,
+                    diag_nc_filepath, miptables, varnames):
     # get the masks from all models
     masks = [iris.load_cube(c).data for c in mask_collection if c is not None]
     # remove masks that are all NaN's
-    #masks_reduced = [m for m in masks if np.all(np.isnan(m)) == False]
+    # masks_reduced = [m for m in masks if np.all(np.isnan(m)) == False]
     masks_reduced = [m for m in masks if np.all(m) != 1e+20]
     # aggregate (sum) masks
     if len(masks_reduced) > 0:
         agg_mask = loop_sum(masks_reduced) / len(masks_reduced)
-        for cube, path, diagncpath, miptable, varname in zip(cube_collection, path_collection, diag_nc_filepath, miptables, varnames):
+        for cube, path, diagncpath, miptable, varname in zip(
+                cube_collection, path_collection, diag_nc_filepath, miptables,
+                varnames):
             cube.data = cube.data * agg_mask
 
             # check cube
             ######################
             variables_info = CMIP5Info()
             var_info = variables_info.get_variable(miptable, varname)
-            logger.info("Checking cube after applying "
-                        "fillvalues mask...")
+            logger.info("Checking cube after applying " "fillvalues mask...")
             checker = CMORCheck(cube, var_info, automatic_fixes=True)
             checker.check_data()
             #######################
 
             if path != diagncpath:
-                logger.info("Updating with mask and saving last preproc nc file")
+                logger.info(
+                    "Updating with mask and saving last preproc nc file")
                 iris.save(cube, path)
                 iris.save(cube, diagncpath)
             else:

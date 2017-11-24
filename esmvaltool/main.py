@@ -52,8 +52,9 @@ import yaml
 
 # Hack to make this file executable
 if __name__ == '__main__':  # noqa
-    sys.path.insert(
-        0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # noqa
+    sys.path.insert(0,
+                    os.path.dirname(
+                        os.path.dirname(os.path.abspath(__file__))))  # noqa
 
 from esmvaltool.interface_scripts import namelistchecks
 from esmvaltool.interface_scripts.auxiliary import ncl_version_check
@@ -169,7 +170,8 @@ def create_interface_data_dir(project_info, executable):
         project_info['GLOBAL']['work_dir'],
         'interface_data',
         project_info['RUNTIME']['currDiag'].id,
-        now + '_' + os.path.splitext(os.path.basename(executable))[0], )
+        now + '_' + os.path.splitext(os.path.basename(executable))[0],
+    )
     os.makedirs(interface_data)
     return interface_data
 
@@ -349,7 +351,7 @@ def process_namelist(namelist_file, global_config):
             project_info['ALLMODELS'] = \
                 project_info['MODELS'] + project_info['ADDITIONAL_MODELS']
         except (AttributeError, "'Diagnostic' object has no attribute "
-                                "'additional_models'"):
+                "'additional_models'"):
             logger.warning("Current diagnostic has no Additional Models field;"
                            " setting ALLMODELS to MODELS")
             project_info['ALLMODELS'] = project_info['MODELS']
@@ -405,19 +407,22 @@ def process_namelist(namelist_file, global_config):
                         logger.info('Preprocess id: %s', preprocess_id)
                         project_info['PREPROCESS'] = preproc_dict
 
-                cube, path, maskdata, diagncpath, miptable, varname = preprocess(
-                                        project_info,
-                                        base_var,
-                                        model,
-                                        curr_diag,
-                                        cmor_reformat_type='py')
+                cube, path, maskdata, diagncpath, miptable, varname = \
+                    preprocess(
+                        project_info,
+                        base_var,
+                        model,
+                        curr_diag,
+                        cmor_reformat_type='py')
 
                 # add only if we need multimodel statistics
                 # or mask_fillvalues
-                if project_info['PREPROCESS']['multimodel_mean'] or project_info['PREPROCESS']['mask_fillvalues']:
+                if (project_info['PREPROCESS']['multimodel_mean']
+                        or project_info['PREPROCESS']['mask_fillvalues']):
                     models_cubes.append(cube)
                     models_fullpaths.append(path)
-                if project_info['PREPROCESS']['mask_fillvalues'] and project_info['PREPROCESS']['target_grid'] != 'None':
+                if (project_info['PREPROCESS']['mask_fillvalues'] and
+                        project_info['PREPROCESS']['target_grid'] != 'None'):
                     masks_cubes.append(maskdata)
                     diagnc_fullpaths.append(diagncpath)
                     miptables.append(miptable)
@@ -426,8 +431,10 @@ def process_namelist(namelist_file, global_config):
         # before we proceed more, we call multimodel operations
         if project_info['PREPROCESS']['multimodel_mean']:
             multimodel_mean(models_cubes, models_fullpaths)
-        if project_info['PREPROCESS']['mask_fillvalues'] and project_info['PREPROCESS']['target_grid'] != 'None':
-            fillvalues_mask(masks_cubes, models_cubes, models_fullpaths, diagnc_fullpaths, miptables, varnames)
+        if (project_info['PREPROCESS']['mask_fillvalues']
+                and project_info['PREPROCESS']['target_grid'] != 'None'):
+            fillvalues_mask(masks_cubes, models_cubes, models_fullpaths,
+                            diagnc_fullpaths, miptables, varnames)
 
         vardicts = curr_diag.variables
         variables = []
@@ -475,7 +482,8 @@ def process_namelist(namelist_file, global_config):
                     executable,
                     project_info,
                     verbosity,
-                    project_info['GLOBAL']['exit_on_warning'], )
+                    project_info['GLOBAL']['exit_on_warning'],
+                )
 
                 # run diagnostics...
                 # ...unless run_diagnostic is specifically set to False
@@ -493,7 +501,8 @@ def process_namelist(namelist_file, global_config):
                         executable,
                         project_info,
                         verbosity,
-                        project_info['GLOBAL']['exit_on_warning'], )
+                        project_info['GLOBAL']['exit_on_warning'],
+                    )
 
     # delete environment variable
     del os.environ['0_ESMValTool_version']
