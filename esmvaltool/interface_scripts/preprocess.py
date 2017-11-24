@@ -304,7 +304,7 @@ def preprocess(project_info, variable, model, current_diag,
             "reformat_" + which_reformat + "_main.ncl")
         if not os.path.isfile(output_file):
 
-            logger.info(" Calling %s to check/reformat model data",
+            logger.info("Calling %s to check/reformat model data",
                         reformat_script)
 
             run_executable(reformat_script, project_info, verbosity,
@@ -433,14 +433,14 @@ def preprocess(project_info, variable, model, current_diag,
     # Land Mask
     if mask_land is True:
         if os.path.isfile(lmaskfile_path):
-            logger.info(" Using mask file %s", lmaskfile_path)
+            logger.info("Using mask file %s", lmaskfile_path)
             l_mask = iris.load_cube(lmaskfile_path)
 
             reft_cube = fx_mask(reft_cube, l_mask)
 
             # check cube
             ######################
-            logger.info(" Checking cube after applying land mask...")
+            logger.info("Checking cube after applying land mask...")
             checker = CMORCheck(reft_cube, var_info, automatic_fixes=True)
             checker.check_data()
             #######################
@@ -466,7 +466,7 @@ def preprocess(project_info, variable, model, current_diag,
 
             # check cube
             ######################
-            logger.info(" Checking cube after applying ocean mask...")
+            logger.info("Checking cube after applying ocean mask...")
             checker = CMORCheck(reft_cube, var_info, automatic_fixes=True)
             checker.check_data()
             #######################
@@ -485,14 +485,14 @@ def preprocess(project_info, variable, model, current_diag,
     # Poro Mask
     if mask_poro is True:
         if os.path.isfile(pormaskfile_path):
-            logger.info(" Using PORO mask file %s", pormaskfile_path)
+            logger.info("Using PORO mask file %s", pormaskfile_path)
             por_mask = iris.load_cube(pormaskfile_path)
 
             reft_cube = fx_mask(reft_cube, por_mask)
 
             # check cube
             ######################
-            logger.info(" Checking cube after applying poro mask...")
+            logger.info("Checking cube after applying poro mask...")
             checker = CMORCheck(reft_cube, var_info, automatic_fixes=True)
             checker.check_data()
             #######################
@@ -592,7 +592,7 @@ def preprocess(project_info, variable, model, current_diag,
 
                 # check cube
                 #########################
-                logger.info(" Checking cube after selecting level(s)...")
+                logger.info("Checking cube after selecting level(s)...")
                 checker = CMORCheck(reft_cube, var_info,
                                     automatic_fixes=True)
                 checker.check_data()
