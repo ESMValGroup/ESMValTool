@@ -331,3 +331,8 @@ class Namelist(object):
 
     def __str__(self):
         return '\n\n'.join(str(task) for task in self.tasks)
+
+    def run(self):
+        """Run all tasks in the namelist."""
+        for task in self.tasks:
+            task.run()
