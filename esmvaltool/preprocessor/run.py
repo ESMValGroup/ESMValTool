@@ -5,10 +5,8 @@ from collections import OrderedDict
 
 import iris
 
-from esmvaltool.preprocessor.derive import get_required
-from esmvaltool.task import AbstractTask
-
-from .derive import derive
+from ..task import AbstractTask
+from .derive import derive, get_required
 from .mask import mask
 from .multimodel import multi_model_mean
 from .reformat import fix_data, fix_file, fix_metadata
@@ -47,7 +45,7 @@ def save_cubes(cubes, **args):
 
 
 # TODO: review preprocessor functions
-FUNCTIONS = {
+PREPROCESSOR_FUNCTIONS = {
     # File reformatting/CMORization
     'fix_file': fix_file,
     # Load cube from file
@@ -99,7 +97,7 @@ DEFAULT_ORDER = (
     'save',
 )
 
-assert set(DEFAULT_ORDER) == set(FUNCTIONS)
+assert set(DEFAULT_ORDER) == set(PREPROCESSOR_FUNCTIONS)
 
 # Preprocessor functions that take a CubeList instead of a Cube as input.
 _LIST_INPUT_FUNCTIONS = {
@@ -109,7 +107,7 @@ _LIST_INPUT_FUNCTIONS = {
     'save',
 }
 
-assert _LIST_INPUT_FUNCTIONS.issubset(set(FUNCTIONS))
+assert _LIST_INPUT_FUNCTIONS.issubset(set(PREPROCESSOR_FUNCTIONS))
 
 
 def _as_ordered_dict(settings, order):
@@ -161,6 +159,7 @@ def get_multi_model_task(settings):
     """Get a task for preprocessing multiple models"""
     raise NotImplementedError
 
+
 class PreprocessingTask(AbstractTask):
     """Task for running the preprocessor"""
 
@@ -190,7 +189,8 @@ class PreprocessingTask(AbstractTask):
 def preprocess(items, settings):
     """Run preprocessor"""
     for step, args in settings.items():
-        function = FUNCTIONS[step]
+        logger.debug("Running preprocessor step %s", step)
+        function = PREPROCESSOR_FUNCTIONS[step]
         if step in _LIST_INPUT_FUNCTIONS:
             items = (items, )
         items = tuple(function(item, **args) for item in items)

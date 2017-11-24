@@ -7,12 +7,10 @@ import os
 
 import yaml
 
-from esmvaltool.interface_scripts.data_finder import get_output_file
-from esmvaltool.preprocessor.reformat import CMOR_TABLES
-from esmvaltool.preprocessor.run import PreprocessingTask
-from esmvaltool.task import DiagnosticTask
-
-from .interface_scripts.data_finder import get_input_filelist
+from .interface_scripts.data_finder import get_input_filelist, get_output_file
+from .preprocessor.reformat import CMOR_TABLES
+from .preprocessor.run import DEFAULT_ORDER, PreprocessingTask
+from .task import DiagnosticTask
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +38,14 @@ def check_namelist(filename):
             raise NamelistError(
                 "Duplicate model {} in models section".format(model))
         models.append(model)
+
+    for name, settings in raw_namelist['preprocessors'].items():
+        for step in settings:
+            if step not in DEFAULT_ORDER:
+                raise NamelistError(
+                    "Unknown function {} in preprocessor {}, choose from: {}"
+                    .format(step, name, ', '.join(DEFAULT_ORDER)))
+            # TODO: check for correct keyword arguments?
 
     return raw_namelist
 
@@ -254,6 +260,8 @@ class Namelist(object):
     def _initialize_script(diagnostic_name, raw_script):
         """Add script to diagnostic"""
         logger.debug("Settings script for diagnostic %s", diagnostic_name)
+        return  # TODO: remove this line once DiagnosticTask works
+
         # Dummy diagnostic for running only preprocessors
         if raw_script == 'None':
             return
