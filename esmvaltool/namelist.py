@@ -262,13 +262,13 @@ class Namelist(object):
     def _initialize_script(diagnostic_name, raw_script):
         """Add script to diagnostic"""
         logger.debug("Settings script for diagnostic %s", diagnostic_name)
-        return  # TODO: remove this line once DiagnosticTask works
 
         # Dummy diagnostic for running only preprocessors
         if raw_script == 'None':
             return
 
-        diagnostics_root = None  # TODO: set
+        diagnostics_root = os.path.join(
+            os.path.dirname(__file__), 'diag_scripts')
         script_file = os.path.abspath(
             os.path.join(diagnostics_root, raw_script))
 
@@ -281,7 +281,7 @@ class Namelist(object):
 
         script = []
         if not os.access(script_file, os.X_OK):  # if not executable
-            extension = os.path.splitext(raw_script).lower()[1:]
+            extension = os.path.splitext(raw_script)[1].lower()[1:]
             executables = {
                 'py': ['python'],
                 'ncl': ['ncl'],
@@ -289,7 +289,7 @@ class Namelist(object):
             }
             if extension not in executables:
                 raise bad_script
-            script.append(executables[extension])
+            script = executables[extension]
         script.append(script_file)
 
         return script
@@ -323,7 +323,8 @@ class Namelist(object):
 
             # Create diagnostic task
             task = DiagnosticTask(
-                script=diagnostic['script'],
+                # TODO: enable once DiagnosticTask.run() implemented
+                script=None,  # diagnostic['script'],
                 settings=diagnostic['settings'],
                 ancestors=preproc_tasks,
             )
