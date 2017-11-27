@@ -27,9 +27,9 @@ jobs:
       - run:
           # Activate Conda environment and run tests
           command: |
-            source activate esmvaltool2
-            ./setup.py test
             source activate esmvaltool3
+            ./setup.py test
+            source activate esmvaltool2
             ./setup.py test
       - store_test_results:
           path: test-reports/
