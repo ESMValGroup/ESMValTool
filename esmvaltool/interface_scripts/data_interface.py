@@ -253,14 +253,14 @@ class Data_interface(object):
                     project_info,
                     model,
                     variable={
-                        'name': "${VARIABLE}",
+                        'short_name': "${VARIABLE}",
                         'field': "${FIELD}"
                     }))
             singfile = get_cf_fullpath(
                 project_info,
                 model,
                 variable={
-                    'name': "${VARIABLE}",
+                    'short_name': "${VARIABLE}",
                     'field': "${FIELD}"
                 }).split('/')[-1]
             infiles.append(singfile)

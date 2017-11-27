@@ -391,7 +391,7 @@ def process_namelist(namelist_file, global_config):
                 if namelist.CONFIG['var_only_case'] > 0:
                     if diagnostic.id_is_explicitly_excluded(base_var, model):
                         continue
-                logger.info("VARIABLE = %s (%s)", base_var.name,
+                logger.info("VARIABLE = %s (%s)", base_var.short_name,
                             base_var.field)
 
                 # rewrite netcdf to expected input format.

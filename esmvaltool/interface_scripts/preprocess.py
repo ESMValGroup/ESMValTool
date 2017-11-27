@@ -53,7 +53,7 @@ def get_cf_infile(project_info, current_diag, model, current_var_dict):
         if len(full_paths) == 0:
             logger.info("Could not find any data files for %s", model['name'])
         else:
-            data_files[var['name']] = full_paths
+            data_files[var['short_name']] = full_paths
 
     return data_files
 
@@ -229,19 +229,19 @@ def preprocess(project_info, variable, model, current_diag,
     exit_on_warning = project_info['GLOBAL'].get('exit_on_warning', False)
 
     # Variable put in environment
-    os.environ['__ESMValTool_base_var'] = variable.name
+    os.environ['__ESMValTool_base_var'] = variable.short_name
 
     #############################
     # need this since we are still using the old variable derivation through
     # Var() object
     vari = {}
-    vari['name'] = variable.name
+    vari['short_name'] = variable.short_name
     vari['field'] = variable.field
     ##############################
 
     # Build input and output file names
     infiles = get_cf_infile(project_info, current_diag, model,
-                            vari)[variable.name]
+                            vari)[variable.short_name]
 
     outfilename = get_output_file(project_info, model, vari).split('/')[-1]
     logger.info("Reformatted file name: %s", outfilename)
@@ -258,7 +258,7 @@ def preprocess(project_info, variable, model, current_diag,
     project_info['TEMPORARY']['end_year'] = model['end_year']
     if project_name == 'CMIP5':
         project_info['TEMPORARY']['ensemble'] = model['ensemble']
-    project_info['TEMPORARY']['variable'] = variable.name
+    project_info['TEMPORARY']['variable'] = variable.short_name
     project_info['TEMPORARY']['field'] = variable.field
     logger.info("Gathering runtime variables:")
     logger.info("Project is %s", model['project'])
@@ -324,7 +324,7 @@ def preprocess(project_info, variable, model, current_diag,
 
         variables_info = CMIP5Info()
 
-        var_name = variable.name
+        var_name = variable.short_name
         if project_name == 'CMIP5':
             table = model['mip']
         else:
@@ -663,7 +663,7 @@ def preprocess(project_info, variable, model, current_diag,
                     additional_models_dicts = project_info['ALLMODELS']
                 # identify the current variable
                 for var in current_diag.variables:
-                    if var['name'] == variable.name:
+                    if var['short_name'] == variable.short_name:
                         ref_model_list = var['ref_model']
 
                         # check if the ref_model list is populated
@@ -677,12 +677,12 @@ def preprocess(project_info, variable, model, current_diag,
                                                 ref_model)
                                     tgt_nc_grid = get_cf_infile(
                                         project_info, current_diag, obs_model,
-                                        vari)[variable.name][0]
+                                        vari)[variable.short_name][0]
 
                                     # check if we need to concatenate
                                     if len([tgt_nc_grid]) > 1:
                                         tgt_grid_cube = glob(
-                                            tgt_nc_grid, variable.name)
+                                            tgt_nc_grid, variable.short_name)
                                     else:
                                         tgt_grid_cube = iris.load_cube(
                                             tgt_nc_grid)
@@ -933,7 +933,7 @@ class Var:
 
         # Special cases, actually not sure what they do
         if var0 == "none":
-            self.var0 = merged_dict['name']
+            self.var0 = merged_dict['short_name']
         else:
             self.var0 = var0
         if fld0 == "none":
@@ -958,7 +958,7 @@ class Diag:
         for variable in variables:
 
             f = open(
-                os.path.join(variable_def_dir, variable['name'] + ".ncl"), 'r')
+                os.path.join(variable_def_dir, variable['short_name'] + ".ncl"), 'r')
             for line in f:
                 tokens = line.split()
 
@@ -984,7 +984,7 @@ class Diag:
                             del keys
                             del vars
                             dep_var = copy.deepcopy(variable)
-                            dep_var['name'] = e_var
+                            dep_var['short_name'] = e_var
                             dep_var['field'] = e_fld
 
                             dep_vars.append(
@@ -1001,20 +1001,20 @@ class Diag:
                 continue
 
             # first try: use base variables provided by variable_defs script
-            os.environ['__ESMValTool_base_var'] = base_var.name
+            os.environ['__ESMValTool_base_var'] = base_var.short_name
 
             # need this since we are still using the old variable derivation
             # through Var() object
             vari = {}
-            vari['name'] = base_var.name
+            vari['short_name'] = base_var.short_name
             vari['field'] = base_var.field
             ##############################
 
             infiles = get_cf_infile(project_info, current_diag, model,
-                                    vari)[base_var.name]
+                                    vari)[base_var.short_name]
 
             if len(infiles) == 0:
-                logger.info("No input files found for %s (%s)", base_var.name,
+                logger.info("No input files found for %s (%s)", base_var.short_name,
                             base_var.field)
 
                 base_var.var = base_var.var0
@@ -1022,12 +1022,12 @@ class Diag:
 
                 # try again with input variable = base variable (non derived)
                 infile = get_cf_infile(project_info, current_diag, model,
-                                       vari)[base_var.name]
+                                       vari)[base_var.short_name]
 
                 if len(infile) == 0:
                     raise IOError(2, "No input files found in ", infile)
                 else:
-                    logger.info("Using %s (%s)", base_var.name, base_var.field)
+                    logger.info("Using %s (%s)", base_var.short_name, base_var.field)
                     base_vars = [base_var]
                     break  # discard other base vars
 
