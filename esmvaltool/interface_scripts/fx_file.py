@@ -6,6 +6,7 @@
 # Currently holds just an unique ID value (string)
 # and the full path of the file (including name and extension)
 #
+from __future__ import print_function
 
 
 class FX_file_exception(Exception):
@@ -50,7 +51,7 @@ class AllFXfiles:
             Note: run this as .__str__(), not from within a print statement
         """
         for identifier in self.fx_files:
-            print str(self.fx_files[identifier])
+            print(str(self.fx_files[identifier]))
 
     def __iter__(self):
         for identifier in self.fx_files:
