@@ -16,6 +16,7 @@ from setuptools import Command, setup
 
 PACKAGES = [
     'esmvaltool',
+    'doc', # install doc/MASTER_authors-refs-acknow.txt
 ]
 
 
@@ -102,7 +103,7 @@ class RunLinter(CustomCommand):
             'util',
         ]
         ignore = [
-            'esmvaltool/doc/sphinx',
+            'doc/',
         ]
 
         # try to install missing dependencies and import prospector

@@ -13,14 +13,14 @@
   CONFIG:
     var_def_scripts: ./variable_defs
     var_only_case: 0
-  
+
   DIAGNOSTICS:
 
     DIAG_shit_1:
       !Diagnostic
       id: MyDiagShit1
       description: tutorial diagnostic
-      variables: 
+      variables:
         - {name: ta, ref_model: ['ERA-Interim','NCEP'], field: T3M, only: None, preproc_id: pp1}
       scripts:
         # Annual cycle plot
