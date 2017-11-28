@@ -9,8 +9,11 @@ import os
 import re
 from operator import itemgetter
 
-from .auxiliary import writeProjinfoError
 from .data_finder import get_output_file
+
+
+class writeProjinfoError(Exception):
+    """Error writing project_info."""
 
 
 def get_figure_file_names(project_info, model):
