@@ -222,7 +222,8 @@ class Namelist(object):
                 diagnostic_name, raw_diagnostic['variables'])
             diag['script'] = self._initialize_script(diagnostic_name,
                                                      raw_diagnostic['script'])
-            diag['settings'] = copy.deepcopy(raw_diagnostic['settings'])
+            diag['settings'] = self._initialize_settings(
+                diagnostic_name, raw_diagnostic['settings'])
 
         self.tasks = self._initialize_tasks()
 
@@ -261,7 +262,7 @@ class Namelist(object):
     @staticmethod
     def _initialize_script(diagnostic_name, raw_script):
         """Add script to diagnostic"""
-        logger.debug("Settings script for diagnostic %s", diagnostic_name)
+        logger.debug("Setting script for diagnostic %s", diagnostic_name)
 
         # Dummy diagnostic for running only preprocessors
         if raw_script == 'None':
@@ -293,6 +294,27 @@ class Namelist(object):
         script.append(script_file)
 
         return script
+
+    def _initialize_settings(self, diagnostic_name, raw_settings):
+        """Add settings to diagnostic"""
+        logger.debug("Setting script for diagnostic %s", diagnostic_name)
+        _settings = copy.deepcopy(raw_settings)
+
+        settings = {}
+        # compatibility with older diagnostics
+        if 'ref_model' in _settings:
+            settings['var_attr_ref'] = _settings['ref_model']
+            if 'alt_model' in _settings:
+                settings['var_attr_ref'] += ',' + _settings['alt_model']
+        settings['diag_script_info'] = {}
+        for key, value in _settings.items():
+            if not isinstance(value, dict):
+                settings['diag_script_info'][key] = value
+
+        # used by new diagnostics
+        settings.update(_settings)
+
+        return settings
 
     def _initialize_tasks(self):
         """Add tasks to namelist"""

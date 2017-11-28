@@ -32,7 +32,7 @@ diagnostics:
     models: [bcc-csm1-1, ERA-Interim, GFDL-ESM2G, MPI-ESM-LR, NCEP]
     script: MyDiag_test_ta.ncl
     settings:
-      cfg_file: nml/cfg_MyDiag/cfg_MyDiag.ncl  # TODO: remove this line
+      ref_model: ERA-Interim
       projection: Mollweide
       styleset: CMIP5
       colormap: WhiteBlueGreenYellowRed
@@ -47,7 +47,7 @@ diagnostics:
     models: [bcc-csm1-1, ERA-Interim, GFDL-ESM2G, MPI-ESM-LR, NCEP]
     script: MyDiag_test_ta_no2.ncl
     settings:
-      cfg_file: nml/cfg_MyDiag/cfg_MyDiag.ncl  # TODO: remove this line
+      ref_model: ERA-Interim
       projection: Mollweide
       styleset: CMIP5
       colormap: WhiteBlueGreenYellowRed
@@ -62,7 +62,7 @@ diagnostics:
     models: [bcc-csm1-1, ERA-Interim, GFDL-ESM2G, MPI-ESM-LR]
     script: MyDiag_test_pr.ncl
     settings:
-      cfg_file: nml/cfg_MyDiag/cfg_MyDiag.ncl  # TODO: remove this line
+      ref_model: ERA-Interim
       projection: Mollweide
       styleset: CMIP5
       colormap: WhiteBlueGreenYellowRed

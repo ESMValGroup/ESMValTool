@@ -21,7 +21,8 @@ class writeProjinfoError(Exception):
 def write_settings(settings, filename):
     """Write settings to file."""
     ext = os.path.splitext(filename)[1][1:].lower()
-    if ext == 'ncl':       
+    if ext == 'ncl':
+
         def _format(value):
             """Format string or list as NCL"""
             if isinstance(value, str):
@@ -39,9 +40,9 @@ def write_settings(settings, filename):
                 lines.append('{}@{} = {}'.format(name, key, _format(value)))
             txt = '\n'.join(lines)
             return txt
-        
+
         lines = []
-        for key, value in settings.items():
+        for key, value in sorted(settings.items()):
             if isinstance(value, dict):
                 txt = _format_dict(name=key, dictionary=value)
             else:
@@ -149,9 +150,15 @@ class ESMValTool_interface(object):
         self.infiles_suffix = []
 
         self.repackage_these = [
-            "diag_script", "diag_script_cfg", "variables", "field_types",
-            "var_attr_mip", "var_attr_exp", # "var_attr_ref", 
-            "var_attr_exclude", "variable_def_dir"
+            "diag_script",
+            "diag_script_cfg",
+            "variables",
+            "field_types",
+            "var_attr_mip",
+            "var_attr_exp",
+            # "var_attr_ref",
+            "var_attr_exclude",
+            "variable_def_dir"
         ]
 
         self.from_proj_info = ["output_file_type"]
@@ -180,14 +187,14 @@ def get_diag_value(di, projinfomodels, v):
         currentry = [s['mip'] for s in projinfomodels if 'mip' in s.keys()]
     elif v == 'var_attr_exp':
         currentry = [s['exp'] for s in projinfomodels if 'exp' in s.keys()]
-#     elif v == 'var_attr_ref':
-#         currentry_list = [s['ref_model'] for s in di['variables']]
-#         currentry = [item for sublist in currentry_list for item in sublist]
+    # elif v == 'var_attr_ref':
+    #     currentry_list = [s['ref_model'] for s in di['variables']]
+    #     currentry = [item for sublist in currentry_list for item in sublist]
     elif v == 'var_attr_exclude':
         currentry = ['False' for s in projinfomodels]
     elif v == 'variable_def_dir':
-        currentry = os.path.join(os.path.dirname(os.path.dirname(__file__)),
-                                 'variable_defs')
+        currentry = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)), 'variable_defs')
     return currentry
 
 
@@ -249,8 +256,7 @@ class Data_interface(object):
             if "currDiag" in project_info['RUNTIME']:
                 currDiag = project_info['RUNTIME']['currDiag']
                 curr_entry = get_diag_value(currDiag,
-                                            project_info['ALLMODELS'],
-                                            var)
+                                            project_info['ALLMODELS'], var)
                 if isinstance(curr_entry, list):
                     vars(self.interface)[var] = curr_entry
                 else:
@@ -366,7 +372,7 @@ class Data_interface(object):
                     model['exp'],
                     model['mip'],
                     model['end_year'],
-                    'ref', # model['ref'],
+                    'ref',  # model['ref'],
                     model['ensemble'],
                 ]
 
@@ -379,7 +385,7 @@ class Data_interface(object):
                     'exp',
                     'mip',
                     model['end_year'],
-                    'ref', # model['ref'],
+                    'ref',  # model['ref'],
                     'ensemble',
                 ]
 
