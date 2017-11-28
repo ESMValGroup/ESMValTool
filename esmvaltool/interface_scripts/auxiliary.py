@@ -9,7 +9,7 @@ def ncl_version_check():
     """ @brief Check the NCL version"""
     try:
         cmd = ['ncl', '-V']
-        version = subprocess.check_output()
+        version = subprocess.check_output(cmd)
     except subprocess.CalledProcessError:
         logger.error("Failed to execute '%s'", ' '.join(cmd))
         raise
