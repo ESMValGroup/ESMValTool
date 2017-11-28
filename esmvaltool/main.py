@@ -56,11 +56,10 @@ if __name__ == '__main__':  # noqa
                     os.path.dirname(
                         os.path.dirname(os.path.abspath(__file__))))  # noqa
 
-from esmvaltool.interface_scripts import namelistchecks
 from esmvaltool.interface_scripts.auxiliary import ncl_version_check
-from esmvaltool.interface_scripts.preprocess import (
-    Diag, multimodel_mean, fillvalues_mask, preprocess, run_executable)
-from esmvaltool.interface_scripts.yaml_parser import load_namelist
+from esmvaltool.interface_scripts.data_interface import write_settings
+from esmvaltool.interface_scripts.preprocess import run_executable
+from esmvaltool.namelist import read_namelist_file
 
 # Define ESMValTool version
 __version__ = "2.0.0"
@@ -152,7 +151,7 @@ def read_config_file(config_file, namelist_name):
     return cfg
 
 
-def create_interface_data_dir(project_info, executable):
+def create_interface_data_dir(project_info, diagnostic_name):
     """Create a directory for storing temporary files needed by esmvaltool.
 
     ESMValTool transfers information from the `esmvaltool` program to the
@@ -165,12 +164,10 @@ def create_interface_data_dir(project_info, executable):
         The name of the created directory.
 
     """
-    now = datetime.datetime.utcnow().strftime("%Y%m%d_%H%M%S")
     interface_data = os.path.join(
         project_info['GLOBAL']['work_dir'],
         'interface_data',
-        project_info['RUNTIME']['currDiag'].id,
-        now + '_' + os.path.splitext(os.path.basename(executable))[0],
+        diagnostic_name,
     )
     os.makedirs(interface_data)
     return interface_data
@@ -243,24 +240,24 @@ def process_namelist(namelist_file, global_config):
     # copy namelist to run_dir for future reference
     shutil.copy2(namelist_file, global_config['run_dir'])
 
+    # parse namelist
+    namelist = read_namelist_file(namelist_file, global_config)
+    # run (only preprocessors for now)
+    namelist.run()
+
     os.environ['0_ESMValTool_version'] = __version__
 
-    preprocess_id = None
     script_root = os.path.abspath(os.path.dirname(__file__))
     esmvaltool_root = os.path.dirname(script_root)
 
     # project_info is a dictionary with all info from the namelist.
-    namelist = load_namelist(namelist_file)
-
-    # project_info is a dictionary with all info from the namelist.
     project_info = {}
     project_info['GLOBAL'] = global_config
-    project_info['MODELS'] = namelist.MODELS
-    project_info['DIAGNOSTICS'] = namelist.DIAGNOSTICS
+    project_info['MODELS'] = namelist._models
+    project_info['DIAGNOSTICS'] = namelist.diagnostics
 
     # FIX-ME: outdated, keep until standard logging is fully implemented
     project_info['GLOBAL']['verbosity'] = 1
-    verbosity = 1
 
     # additional entries to 'project_info'
     project_info['RUNTIME'] = {}
@@ -284,22 +281,6 @@ def process_namelist(namelist_file, global_config):
     logger.info("PLOTDIR    = %s", project_info["GLOBAL"]["plot_dir"])
     logger.info("LOGFILE    = %s", project_info['RUNTIME']['out_refs'])
     logger.info(70 * "-")
-
-    # perform options integrity checks
-    logger.info('Checking integrity of namelist')
-    tchk1 = datetime.datetime.utcnow()
-    namelistchecks.models_checks(project_info['MODELS'])
-    namelistchecks.diags_checks(project_info['DIAGNOSTICS'])
-    namelistchecks.preprocess_checks(namelist.PREPROCESS)
-    tchk2 = datetime.datetime.utcnow()
-    dtchk = tchk2 - tchk1
-    logger.info('Namelist check successful! Time: %s', dtchk)
-
-    # this will have to be purget at some point in the future
-    project_info['CONFIG'] = namelist.CONFIG
-
-    # tell the environment about regridding
-    project_info['RUNTIME']['regridtarget'] = []
 
     # master references-acknowledgements file (hard coded)
     in_refs = os.path.join(esmvaltool_root, 'doc',
@@ -332,177 +313,31 @@ def process_namelist(namelist_file, global_config):
         "Starting the Earth System Model Evaluation Tool v%s at time: %s ...",
         __version__, timestamp1.strftime(timestamp_format))
 
-    # variables needed for target variable, according to variable_defs
-    if not os.path.isabs(project_info['CONFIG']['var_def_scripts']):
-        project_info['CONFIG']['var_def_scripts'] = os.path.join(
-            script_root, project_info['CONFIG']['var_def_scripts'])
+    for diag_name, diag in project_info['DIAGNOSTICS'].items():
 
-    # loop over all diagnostics defined in project_info and create/prepare
-    # netCDF files for each variable
-    for curr_diag in project_info['DIAGNOSTICS'].values():
+        project_info['RUNTIME']['currDiag'] = copy.deepcopy(diag)
+        project_info['ALLMODELS'] = diag['models']
 
-        # Are the requested variables derived from other,
-        # more basic, variables?
-        requested_vars = curr_diag.variables
+        for var in diag['variables']:
+            project_info['RUNTIME']['derived_var'] = var['short_name']
+            project_info['RUNTIME']['derived_field_type'] = var['field']
 
-        # get all models
-        try:
-            project_info['ADDITIONAL_MODELS'] = curr_diag.additional_models
-            project_info['ALLMODELS'] = \
-                project_info['MODELS'] + project_info['ADDITIONAL_MODELS']
-        except (AttributeError, "'Diagnostic' object has no attribute "
-                "'additional_models'"):
-            logger.warning("Current diagnostic has no Additional Models field;"
-                           " setting ALLMODELS to MODELS")
-            project_info['ALLMODELS'] = project_info['MODELS']
-
-        # initialize empty lists to hold preprocess cubes and file paths
-        # for each model
-        models_cubes = []
-        masks_cubes = []
-        models_fullpaths = []
-        diagnc_fullpaths = []
-        miptables = []
-        varnames = []
-
-        # prepare/reformat model data for each model
-        for model in project_info['ALLMODELS']:
-            model_name = model['name']
-            project_name = model['project']
-            logger.info("MODEL = %s (%s)", model_name, project_name)
-
-            # start calling preprocess
-            diagnostic = Diag()
-
-            # FIX-ME old packaging of variable objects (legacy from initial
-            # version), this needs to be changed once we have the new variable
-            # definition codes in place
-            variable_defs_base_vars = diagnostic.add_base_vars_fields(
-                requested_vars, model,
-                project_info['CONFIG']['var_def_scripts'])
-
-            # if not all variable_defs_base_vars are available, try to fetch
-            # the target variable directly (relevant for derived variables)
-            base_vars = diagnostic.select_base_vars(
-                variable_defs_base_vars, model, curr_diag, project_info)
-
-            # process base variables
-            for base_var in base_vars:
-                if namelist.CONFIG['var_only_case'] > 0:
-                    if diagnostic.id_is_explicitly_excluded(base_var, model):
-                        continue
-                logger.info("VARIABLE = %s (%s)", base_var.short_name,
-                            base_var.field)
-
-                # rewrite netcdf to expected input format.
-                logger.info("Calling preprocessor")
-                # REFORMAT: for backwards compatibility we can revert to ncl
-                # reformatting by changing cmor_reformat_type = 'ncl'
-                # for python cmor_check one, use cmor_reformat_type = 'py'
-                # PREPROCESS ID: extracted from variable dictionary
-
-                preprocess_id = base_var.preproc_id
-                for preproc_dict in namelist.PREPROCESS:
-                    if preproc_dict['id'] == preprocess_id:
-                        logger.info('Preprocess id: %s', preprocess_id)
-                        project_info['PREPROCESS'] = preproc_dict
-
-                cube, path, maskdata, diagncpath, miptable, varname = \
-                    preprocess(
-                        project_info,
-                        base_var,
-                        model,
-                        curr_diag,
-                        cmor_reformat_type='py')
-
-                # add only if we need multimodel statistics
-                # or mask_fillvalues
-                if (project_info['PREPROCESS']['multimodel_mean']
-                        or project_info['PREPROCESS']['mask_fillvalues']):
-                    models_cubes.append(cube)
-                    models_fullpaths.append(path)
-                if (project_info['PREPROCESS']['mask_fillvalues'] and
-                        project_info['PREPROCESS']['target_grid'] != 'None'):
-                    masks_cubes.append(maskdata)
-                    diagnc_fullpaths.append(diagncpath)
-                    miptables.append(miptable)
-                    varnames.append(varname)
-
-        # before we proceed more, we call multimodel operations
-        if project_info['PREPROCESS']['multimodel_mean']:
-            multimodel_mean(models_cubes, models_fullpaths)
-        if (project_info['PREPROCESS']['mask_fillvalues']
-                and project_info['PREPROCESS']['target_grid'] != 'None'):
-            fillvalues_mask(masks_cubes, models_cubes, models_fullpaths,
-                            diagnc_fullpaths, miptables, varnames)
-
-        vardicts = curr_diag.variables
-        variables = []
-        field_types = []
-        # hack: needed by diags that
-        # perform regridding on ref_model
-        # and expect that to be a model attribute
-        ref_models = []
-        ###############
-        for var in vardicts:
-            variables.append(var['name'])
-            field_types.append(var['field'])
-            ref_models.append(var['ref_model'][0])
-
-        project_info['RUNTIME']['currDiag'] = curr_diag
-
-        for derived_var, derived_field, refmodel in zip(
-                variables, field_types, ref_models):
-
-            # needed by external diag to perform regridding
-            for model in project_info['ALLMODELS']:
-                model['ref'] = refmodel
-            logger.info("External diagnostic will use ref_model: %s",
-                        model['ref'])
-
-            project_info['RUNTIME']['derived_var'] = derived_var
-            project_info['RUNTIME']['derived_field_type'] = derived_field
-
-            # iteration over diagnostics for each variable
-            scrpts = copy.deepcopy(curr_diag.scripts)
-            for i in range(len(curr_diag.scripts)):
-
-                # because the NCL environment is dumb, it is important to
-                # tell the environment which diagnostic script to use
-                project_info['RUNTIME']['currDiag'].scripts = [scrpts[i]]
-
-                # this is hardcoded, maybe make it an option
-                executable = os.path.join(script_root, "interface_scripts",
-                                          "derive_var.ncl")
-                logger.info("Calling %s for '%s'", executable, derived_var)
-                interface_data = create_interface_data_dir(
-                    project_info, executable)
-                project_info['RUNTIME']['interface_data'] = interface_data
-                run_executable(
-                    executable,
-                    project_info,
-                    verbosity,
-                    project_info['GLOBAL']['exit_on_warning'],
-                )
-
-                # run diagnostics...
-                # ...unless run_diagnostic is specifically set to False
-                if project_info['GLOBAL']['run_diagnostic']:
-                    executable = os.path.join(script_root, "diag_scripts",
-                                              scrpts[i]['script'])
-                    configfile = os.path.join(script_root,
-                                              scrpts[i]['cfg_file'])
-                    logger.info("Running diag_script: %s", executable)
-                    logger.info("with configuration file: %s", configfile)
-                    interface_data = create_interface_data_dir(
-                        project_info, executable)
-                    project_info['RUNTIME']['interface_data'] = interface_data
-                    run_executable(
-                        executable,
-                        project_info,
-                        verbosity,
-                        project_info['GLOBAL']['exit_on_warning'],
-                    )
+            executable = diag['script'][-1]
+            logger.info("Running diag_script: %s", executable)
+            interface_data = create_interface_data_dir(
+                project_info, diag_name)
+            ext = 'ncl' if executable.lower().endswith('.ncl') else 'yml'
+            cfg_file = os.path.join(interface_data, 'settings.' + ext)
+            logger.info("with configuration file: %s", cfg_file)
+            write_settings(diag['settings'], cfg_file)
+            project_info['RUNTIME']['currDiag']['cfg_file'] = cfg_file
+            project_info['RUNTIME']['interface_data'] = interface_data
+            run_executable(
+                executable,
+                project_info,
+                project_info['GLOBAL']['verbosity'],
+                project_info['GLOBAL']['exit_on_warning'],
+            )
 
     # delete environment variable
     del os.environ['0_ESMValTool_version']

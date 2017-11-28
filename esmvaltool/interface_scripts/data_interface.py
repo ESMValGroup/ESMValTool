@@ -9,11 +9,50 @@ import os
 import re
 from operator import itemgetter
 
+import yaml
+
 from .data_finder import get_output_file
 
 
 class writeProjinfoError(Exception):
     """Error writing project_info."""
+
+
+def write_settings(settings, filename):
+    """Write settings to file."""
+    ext = os.path.splitext(filename)[1][1:].lower()
+    if ext == 'ncl':       
+        def _format(value):
+            """Format string or list as NCL"""
+            if isinstance(value, str):
+                txt = '"{}"'.format(value)
+            elif isinstance(value, (list, tuple)):
+                txt = '(/{}/)'.format(', '.join(_format(v) for v in value))
+            else:
+                txt = str(value)
+            return txt
+
+        def _format_dict(name, dictionary):
+            """Format dict as NCL"""
+            lines = ['{} = True'.format(name)]
+            for key, value in sorted(dictionary.items()):
+                lines.append('{}@{} = {}'.format(name, key, _format(value)))
+            txt = '\n'.join(lines)
+            return txt
+        
+        lines = []
+        for key, value in settings.items():
+            if isinstance(value, dict):
+                txt = _format_dict(name=key, dictionary=value)
+            else:
+                txt = '{} = {}'.format(key, _format(value))
+            lines.append(txt)
+        with open(filename, 'wt') as file:
+            file.write('\n'.join(lines))
+            file.write('\n')
+    else:
+        with open(filename, 'w') as file:
+            yaml.safe_dump(settings, file)
 
 
 def get_figure_file_names(project_info, model):
@@ -111,8 +150,8 @@ class ESMValTool_interface(object):
 
         self.repackage_these = [
             "diag_script", "diag_script_cfg", "variables", "field_types",
-            "var_attr_mip", "var_attr_exp", "var_attr_ref", "var_attr_exclude",
-            "variable_def_dir"
+            "var_attr_mip", "var_attr_exp", # "var_attr_ref", 
+            "var_attr_exclude", "variable_def_dir"
         ]
 
         self.from_proj_info = ["output_file_type"]
@@ -122,26 +161,33 @@ class ESMValTool_interface(object):
             yield interface_object
 
 
-def get_diag_value(di, projinfomodels, projinfoconfig, v):
+def get_diag_value(di, projinfomodels, v):
     if v == 'diag_script':
-        currentry = [s['script'] for s in di.scripts]
+        # perfmetrics_main.ncl expects diag_script to be a relative path
+        diag_path = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)), 'diag_scripts')
+        diag_script = di['script'][-1]
+        if diag_script.startswith(diag_path):
+            diag_script = os.path.relpath(diag_script, diag_path)
+        currentry = [diag_script]
     elif v == 'diag_script_cfg':
-        currentry = [s['cfg_file'] for s in di.scripts]
+        currentry = [di['cfg_file']]
     elif v == 'variables':
-        currentry = [s['name'] for s in di.variables]
+        currentry = [s['short_name'] for s in di['variables']]
     elif v == 'field_types':
-        currentry = [s['field'] for s in di.variables]
+        currentry = [s['field'] for s in di['variables']]
     elif v == 'var_attr_mip':
         currentry = [s['mip'] for s in projinfomodels if 'mip' in s.keys()]
     elif v == 'var_attr_exp':
         currentry = [s['exp'] for s in projinfomodels if 'exp' in s.keys()]
-    elif v == 'var_attr_ref':
-        currentry_list = [s['ref_model'] for s in di.variables]
-        currentry = [item for sublist in currentry_list for item in sublist]
+#     elif v == 'var_attr_ref':
+#         currentry_list = [s['ref_model'] for s in di['variables']]
+#         currentry = [item for sublist in currentry_list for item in sublist]
     elif v == 'var_attr_exclude':
         currentry = ['False' for s in projinfomodels]
     elif v == 'variable_def_dir':
-        currentry = projinfoconfig['var_def_scripts']
+        currentry = os.path.join(os.path.dirname(os.path.dirname(__file__)),
+                                 'variable_defs')
     return currentry
 
 
@@ -204,7 +250,7 @@ class Data_interface(object):
                 currDiag = project_info['RUNTIME']['currDiag']
                 curr_entry = get_diag_value(currDiag,
                                             project_info['ALLMODELS'],
-                                            project_info['CONFIG'], var)
+                                            var)
                 if isinstance(curr_entry, list):
                     vars(self.interface)[var] = curr_entry
                 else:
@@ -320,7 +366,7 @@ class Data_interface(object):
                     model['exp'],
                     model['mip'],
                     model['end_year'],
-                    model['ref'],
+                    'ref', # model['ref'],
                     model['ensemble'],
                 ]
 
@@ -333,7 +379,7 @@ class Data_interface(object):
                     'exp',
                     'mip',
                     model['end_year'],
-                    model['ref'],
+                    'ref', # model['ref'],
                     'ensemble',
                 ]
 
