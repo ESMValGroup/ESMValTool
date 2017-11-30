@@ -958,7 +958,8 @@ class Diag:
         for variable in variables:
 
             f = open(
-                os.path.join(variable_def_dir, variable['short_name'] + ".ncl"), 'r')
+                os.path.join(variable_def_dir,
+                             variable['short_name'] + ".ncl"), 'r')
             for line in f:
                 tokens = line.split()
 
@@ -1014,8 +1015,8 @@ class Diag:
                                     vari)[base_var.short_name]
 
             if len(infiles) == 0:
-                logger.info("No input files found for %s (%s)", base_var.short_name,
-                            base_var.field)
+                logger.info("No input files found for %s (%s)",
+                            base_var.short_name, base_var.field)
 
                 base_var.var = base_var.var0
                 base_var.fld = base_var.fld0
@@ -1027,7 +1028,8 @@ class Diag:
                 if len(infile) == 0:
                     raise IOError(2, "No input files found in ", infile)
                 else:
-                    logger.info("Using %s (%s)", base_var.short_name, base_var.field)
+                    logger.info("Using %s (%s)", base_var.short_name,
+                                base_var.field)
                     base_vars = [base_var]
                     break  # discard other base vars
 
