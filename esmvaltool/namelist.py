@@ -126,19 +126,30 @@ def get_preprocessor_task(settings, all_models, model, variable, user_config):
     # Preprocessor configuration
     pre = {}
 
-    # Configure loading and saving
-    input_files = get_input_filelist(
-        project_info={'GLOBAL': user_config}, model=model, var=variable)
-    if not input_files:
-        raise NamelistError("No input files found for model {} "
-                            "variable {}".format(model, variable))
+    if 'download' in settings and settings['download'] is True:
+        pre['download'] = {
+            'model': model,
+            'variable': variable,
+            'user_config': user_config,
+        }
+
+    # Configure loading
+    pre['load'] = {
+        'callback': merge_callback,
+    }
+
+    if 'download' not in settings or settings['download'] is False:
+        input_files = get_input_filelist(
+            project_info={'GLOBAL': user_config}, model=model, var=variable)
+        if not input_files:
+            raise NamelistError("No input files found for model {} "
+                                "variable {}".format(model, variable))
+        pre['load']['uris'] = input_files
+
+    # Configure saving
     output_file = get_output_file(
         project_info={'GLOBAL': user_config}, model=model, var=variable)
 
-    pre['load'] = {
-        'uris': input_files,
-        'callback': merge_callback,
-    }
     pre['save'] = {
         'target': output_file,
     }
@@ -175,7 +186,12 @@ def get_preprocessor_task(settings, all_models, model, variable, user_config):
     }
 
     # Override with settings from preprocessor profile
-    pre.update(copy.deepcopy(settings))
+    settings = copy.deepcopy(settings)
+    settings = {
+        step: pre.get(step, {})
+        for step, args in settings.items() if args is True
+    }
+    pre.update(settings)
 
     # Remove disabled preprocessor functions
     pre = {step: args for step, args in pre.items() if args is not False}
@@ -315,9 +331,9 @@ class Namelist(object):
 
                 # Create single model tasks
                 for model in diagnostic['models']:
-                    task_id = '_'.join(str(item[key])
-                                       for item in (variable, model)
-                                       for key in sorted(item))
+                    task_id = '_'.join(
+                        str(item[key])
+                        for item in (variable, model) for key in sorted(item))
                     if task_id not in all_preproc_tasks:
                         task = get_preprocessor_task(
                             settings=settings,

@@ -7,6 +7,7 @@ import iris
 
 from ..task import AbstractTask
 from .derive import derive, get_required
+from .download import download
 from .mask import mask
 from .multimodel import multi_model_mean
 from .reformat import fix_data, fix_file, fix_metadata
@@ -46,6 +47,7 @@ def save_cubes(cubes, **args):
 
 # TODO: review preprocessor functions
 PREPROCESSOR_FUNCTIONS = {
+    'download': download,
     # File reformatting/CMORization
     'fix_file': fix_file,
     # Load cube from file
@@ -81,6 +83,7 @@ PREPROCESSOR_FUNCTIONS = {
 
 DEFAULT_ORDER = (
     # TODO: add more steps as they become available
+    'download',
     'fix_file',
     'load',
     'fix_metadata',
@@ -101,10 +104,15 @@ assert set(DEFAULT_ORDER) == set(PREPROCESSOR_FUNCTIONS)
 
 # Preprocessor functions that take a CubeList instead of a Cube as input.
 _LIST_INPUT_FUNCTIONS = {
+    'download',
     'load',
     'derive',
     'multi_model_mean',
     'save',
+}
+
+_LIST_OUTPUT_FUNCTIONS = {
+    'download',
 }
 
 assert _LIST_INPUT_FUNCTIONS.issubset(set(PREPROCESSOR_FUNCTIONS))
@@ -132,7 +140,6 @@ def _split_settings(step, settings):
 
 def get_single_model_task(settings, short_name=None):
     """Get a task for preprocessing a single model"""
-
     if 'derive' in settings:
         if not short_name:
             raise ValueError("Cannot determine input variables.")
@@ -178,6 +185,7 @@ class PreprocessingTask(AbstractTask):
         self.output_data = preprocess(input_data, settings)
 
     def __str__(self):
+        """Get human readable description."""
         txt = "{}:\norder: {}\n{}".format(
             self.__class__.__name__,
             self.order,
@@ -194,5 +202,6 @@ def preprocess(items, settings):
         if step in _LIST_INPUT_FUNCTIONS:
             items = (items, )
         items = tuple(function(item, **args) for item in items)
-
+        if step in _LIST_OUTPUT_FUNCTIONS:
+            items = tuple(item for subitem in items for item in subitem)
     return items
