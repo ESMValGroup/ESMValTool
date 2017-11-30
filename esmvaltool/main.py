@@ -254,7 +254,7 @@ def process_namelist(namelist_file, global_config):
     project_info = {}
     project_info['GLOBAL'] = global_config
     project_info['MODELS'] = namelist._models
-    project_info['DIAGNOSTICS'] = namelist.diagnostics
+    project_info['DIAGNOSTICS'] = namelist._diagnostics
 
     # FIX-ME: outdated, keep until standard logging is fully implemented
     project_info['GLOBAL']['verbosity'] = 1

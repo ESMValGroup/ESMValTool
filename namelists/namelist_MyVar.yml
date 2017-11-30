@@ -32,11 +32,11 @@ diagnostics:
     models: [bcc-csm1-1, ERA-Interim, GFDL-ESM2G, MPI-ESM-LR, NCEP]
     script: MyDiag_test_ta.ncl
     settings:
-      ref_model: ERA-Interim
-      projection: Mollweide
-      styleset: CMIP5
-      colormap: WhiteBlueGreenYellowRed
-      ncdf: default
+      diag_script_info:
+        projection: Mollweide
+        styleset: CMIP5
+        colormap: WhiteBlueGreenYellowRed
+        ncdf: default
 
   ta_diagnostic_2:
     description: Yet another air temperature tutorial diagnostic.
@@ -47,11 +47,11 @@ diagnostics:
     models: [bcc-csm1-1, ERA-Interim, GFDL-ESM2G, MPI-ESM-LR, NCEP]
     script: MyDiag_test_ta_no2.ncl
     settings:
-      ref_model: ERA-Interim
-      projection: Mollweide
-      styleset: CMIP5
-      colormap: WhiteBlueGreenYellowRed
-      ncdf: default
+      diag_script_info:
+        projection: Mollweide
+        styleset: CMIP5
+        colormap: WhiteBlueGreenYellowRed
+        ncdf: default
 
   pr_diagnostic:
     description: Precipitation tutorial diagnostic.
@@ -62,8 +62,8 @@ diagnostics:
     models: [bcc-csm1-1, ERA-Interim, GFDL-ESM2G, MPI-ESM-LR]
     script: MyDiag_test_pr.ncl
     settings:
-      ref_model: ERA-Interim
-      projection: Mollweide
-      styleset: CMIP5
-      colormap: WhiteBlueGreenYellowRed
-      ncdf: default
+      diag_script_info:
+        projection: Mollweide
+        styleset: CMIP5
+        colormap: WhiteBlueGreenYellowRed
+        ncdf: default

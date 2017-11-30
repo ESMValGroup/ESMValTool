@@ -123,7 +123,6 @@ def _get_standard_name(variable, model, mip=None):
 
 def get_preprocessor_task(settings, all_models, model, variable, user_config):
     """Get a preprocessor task for a single model"""
-
     # Preprocessor configuration
     pre = {}
 
@@ -179,9 +178,7 @@ def get_preprocessor_task(settings, all_models, model, variable, user_config):
     pre.update(copy.deepcopy(settings))
 
     # Remove disabled preprocessor functions
-    for function, args in pre.items():
-        if args is False:
-            del pre[function]
+    pre = {step: args for step, args in pre.items() if args is not False}
 
     # Configure regrid if enabled
     if 'regrid' in pre and 'target_grid' in pre['regrid']:
@@ -206,30 +203,35 @@ class Namelist(object):
 
     def __init__(self, raw_namelist, config_user):
         """Parse a namelist file into an object."""
-
         self._cfg = config_user
         self._preprocessors = copy.deepcopy(raw_namelist['preprocessors'])
         self._models = copy.deepcopy(raw_namelist['models'])
-
-        self.diagnostics = {}
-        for diagnostic_name, raw_diagnostic in raw_namelist[
-                'diagnostics'].items():
-            diag = self.diagnostics[diagnostic_name] = {}
-            diag['name'] = diagnostic_name
-            diag['models'] = self._initialize_models(diagnostic_name,
-                                                     raw_diagnostic['models'])
-            diag['variables'] = self._initialize_variables(
-                diagnostic_name, raw_diagnostic['variables'])
-            diag['script'] = self._initialize_script(diagnostic_name,
-                                                     raw_diagnostic['script'])
-            diag['settings'] = self._initialize_settings(
-                diagnostic_name, raw_diagnostic['settings'])
-
+        self._diagnostics = self._initialize_diagnostics(
+            raw_namelist['diagnostics'])
         self.tasks = self._initialize_tasks()
 
-    def _initialize_models(self, diagnostic_name, raw_models):
-        """Add models to diagnostic"""
+    def _initialize_diagnostics(self, raw_diagnostics):
+        """Define diagnostics in namelist"""
+        logger.debug("Retrieving diagnostics from namelist")
 
+        diagnostics = {}
+
+        for name, raw_diagnostic in raw_diagnostics.items():
+            diagnostic = {}
+            diagnostic['name'] = name
+            diagnostic['models'] = self._initialize_models(
+                name, raw_diagnostic['models'])
+            diagnostic['variables'] = self._initialize_variables(
+                name, raw_diagnostic['variables'])
+            diagnostic['script'] = self._initialize_script(
+                name, raw_diagnostic['script'])
+            diagnostic['settings'] = copy.deepcopy(raw_diagnostic['settings'])
+            diagnostics[name] = diagnostic
+
+        return diagnostics
+
+    def _initialize_models(self, diagnostic_name, raw_models):
+        """Define models in diagnostic"""
         logger.debug("Resolving models for diagnostic %s", diagnostic_name)
 
         models = []
@@ -246,7 +248,7 @@ class Namelist(object):
 
     @staticmethod
     def _initialize_variables(diagnostic_name, raw_variables):
-        """Add variables to diagnostic"""
+        """Define variables in diagnostic"""
         logger.debug("Populating list of variables for diagnostic %s",
                      diagnostic_name)
 
@@ -261,7 +263,7 @@ class Namelist(object):
 
     @staticmethod
     def _initialize_script(diagnostic_name, raw_script):
-        """Add script to diagnostic"""
+        """Define script in diagnostic"""
         logger.debug("Setting script for diagnostic %s", diagnostic_name)
 
         # Dummy diagnostic for running only preprocessors
@@ -295,33 +297,14 @@ class Namelist(object):
 
         return script
 
-    def _initialize_settings(self, diagnostic_name, raw_settings):
-        """Add settings to diagnostic"""
-        logger.debug("Setting script for diagnostic %s", diagnostic_name)
-        _settings = copy.deepcopy(raw_settings)
-
-        settings = {}
-        # compatibility with older diagnostics
-        if 'ref_model' in _settings:
-            settings['var_attr_ref'] = _settings['ref_model']
-            if 'alt_model' in _settings:
-                settings['var_attr_ref'] += ',' + _settings['alt_model']
-        settings['diag_script_info'] = {}
-        for key, value in _settings.items():
-            if not isinstance(value, dict):
-                settings['diag_script_info'][key] = value
-
-        # used by new diagnostics
-        settings.update(_settings)
-
-        return settings
-
     def _initialize_tasks(self):
-        """Add tasks to namelist"""
+        """Define tasks in namelist"""
+        logger.debug("Creating tasks from namelist")
 
         tasks = []
+
         all_preproc_tasks = {}
-        for diagnostic_name, diagnostic in self.diagnostics.items():
+        for diagnostic_name, diagnostic in self._diagnostics.items():
             logger.debug("Creating tasks for diagnostic %s", diagnostic_name)
 
             # Create preprocessor tasks
@@ -355,6 +338,7 @@ class Namelist(object):
         return tasks
 
     def __str__(self):
+        """Get human readable summary."""
         return '\n\n'.join(str(task) for task in self.tasks)
 
     def run(self):
