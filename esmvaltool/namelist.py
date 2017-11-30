@@ -310,14 +310,17 @@ class Namelist(object):
             # Create preprocessor tasks
             preproc_tasks = []
             for variable in diagnostic['variables']:
+                preproc_id = variable['preprocessor']
+                settings = self._preprocessors[preproc_id]
+
+                # Create single model tasks
                 for model in diagnostic['models']:
-                    task_id = '_'.join(
-                        str(item[key])
-                        for item in (variable, model) for key in sorted(item))
+                    task_id = '_'.join(str(item[key])
+                                       for item in (variable, model)
+                                       for key in sorted(item))
                     if task_id not in all_preproc_tasks:
-                        preproc_id = variable['preprocessor']
                         task = get_preprocessor_task(
-                            settings=self._preprocessors[preproc_id],
+                            settings=settings,
                             all_models=diagnostic['models'],
                             model=model,
                             variable=variable,
@@ -325,6 +328,9 @@ class Namelist(object):
                         )
                         all_preproc_tasks[task_id] = task
                     preproc_tasks.append(all_preproc_tasks[task_id])
+
+                # Create multi model tasks
+                # TODO: create tasks
 
             # Create diagnostic task
             task = DiagnosticTask(
