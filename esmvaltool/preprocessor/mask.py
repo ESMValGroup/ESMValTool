@@ -114,7 +114,6 @@ def mask_2d(mycube, geom):
     it is adusted to save time and loop over only lon-lat points
 
     """
-    import numpy as np
     from shapely.geometry import Point
     ccube = mycube.collapsed('time', iris.analysis.MEAN)
     mask = np.ones(ccube.data.shape)
@@ -225,13 +224,13 @@ def window_counts(mycube, value_threshold, window_size, pctile):
     """
 
     # Make an aggregator from the user function.
-    SPELL_COUNT = Aggregator(
+    spell_count = Aggregator(
         'spell_count', count_spells, units_func=lambda units: 1)
 
     # Calculate the statistic.
     counts_windowed_cube = mycube.collapsed(
         'time',
-        SPELL_COUNT,
+        spell_count,
         threshold=value_threshold,
         spell_length=window_size)
 
@@ -247,22 +246,26 @@ def window_counts(mycube, value_threshold, window_size, pctile):
 def mask_cube_counts(mycube, value_threshold, counts_threshold, window_size):
 
     # Make an aggregator from the user function.
-    SPELL_COUNT = Aggregator(
+    spell_count = Aggregator(
         'spell_count', count_spells, units_func=lambda units: 1)
 
     # Calculate the statistic.
     counts_windowed_cube = mycube.collapsed(
         'time',
-        SPELL_COUNT,
+        spell_count,
         threshold=value_threshold,
         spell_length=window_size)
 
-    mask = counts_windowed_cube.data > counts_threshold
+    mask = counts_windowed_cube.data >= counts_threshold
     mask.astype(np.int)
     # preserving the original cube metadata
+    dummyar = np.ones(mycube.data.shape, dtype=mycube.data.dtype)
+    newmask = dummyar * mask
+    newmask[newmask == 0] = 1e+20  # np.nan
     masked_cube = mycube.copy()
-    masked_cube.data = mycube.data * mask
-    return counts_windowed_cube, mask, masked_cube
+    # masked_cube.data = masked_cube.data * newmask
+    masked_cube.data = newmask
+    return counts_windowed_cube, newmask, masked_cube
 
 
 def mask_threshold(mycube, threshold):

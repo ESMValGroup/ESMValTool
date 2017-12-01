@@ -6,6 +6,7 @@
 # Currently holds just an unique ID value (string)
 # and the full path of the file (including name and extension)
 #
+from __future__ import print_function
 
 
 class FX_file_exception(Exception):
@@ -13,18 +14,18 @@ class FX_file_exception(Exception):
 
 
 class FX_file(object):
-    def __init__(self, Id, fullpath):
-        self.Id = str(Id)  # Note ID forced to string
+    def __init__(self, identifier, fullpath):
+        self.id = str(identifier)  # Note ID forced to string
         self.fullpath = fullpath
 
-    def get_Id(self):
-        return self.Id
+    def get_id(self):
+        return self.id
 
     def get_fullpath(self):
         return self.fullpath
 
     def __str__(self):
-        return "fx file '" + self.Id + "' <" + self.fullpath + ">"
+        return "fx file '" + self.id + "' <" + self.fullpath + ">"
 
 
 class AllFXfiles:
@@ -35,26 +36,26 @@ class AllFXfiles:
         """ @brief Add fx_file, or raise exception if fx_file ID not unique
             @param FX_file object
         """
-        Id = fx_file.get_Id()
-        if Id in self.fx_files:
-            msg = "a fx_file with ID '" + Id +\
+        identifier = fx_file.get_id()
+        if identifier in self.fx_files:
+            msg = "a fx_file with ID '" + identifier +\
                   "' already exists in this namelist. " +\
                   "Each fx_file ID must be unique."
             raise FX_file_exception(msg)
         else:
-            self.fx_files[Id] = fx_file
+            self.fx_files[identifier] = fx_file
 
     def __str__(self):
         """ @brief print all fx_files contained within AllFXfiles object
 
             Note: run this as .__str__(), not from within a print statement
         """
-        for Id in self.fx_files:
-            print(str(self.fx_files[Id]))
+        for identifier in self.fx_files:
+            print(str(self.fx_files[identifier]))
 
     def __iter__(self):
-        for Id in self.fx_files:
-            yield Id
+        for identifier in self.fx_files:
+            yield identifier
 
-    def __getitem__(self, Id):
-        return self.fx_files[Id]
+    def __getitem__(self, identifier):
+        return self.fx_files[identifier]

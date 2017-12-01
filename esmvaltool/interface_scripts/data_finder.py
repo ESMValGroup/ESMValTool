@@ -205,7 +205,8 @@ def get_input_filelist(project_info, model, var):
         raise OSError('directory not found', dir1)
 
     # Set the drs
-    if project in project_info['GLOBAL']['drs']:
+    if 'drs' in project_info['GLOBAL'] and \
+            project in project_info['GLOBAL']['drs']:
         drs = project_info['GLOBAL']['drs'][project]
     else:
         drs = 'default'

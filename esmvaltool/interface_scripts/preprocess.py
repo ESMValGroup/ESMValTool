@@ -10,6 +10,7 @@ from __future__ import print_function
 import copy
 import logging
 import os
+import warnings
 
 import iris
 import iris.exceptions
@@ -18,10 +19,12 @@ import numpy as np
 from ..preprocessor.mask import fx_mask, mask_cube_counts
 from ..preprocessor.regrid import regrid, vertical_schemes, vinterp
 from ..preprocessor.time_area import time_slice
+from .cmor_check import CMORCheck, CMORCheckError
 from .data_finder import get_input_filelist, get_output_file
 from .fixes.fix import Fix
 from .launchers import run_executable
 from .preprocessing_tools import glob, merge_callback
+from .variable_info import CMIP5Info
 
 logger = logging.getLogger(__name__)
 
@@ -276,7 +279,9 @@ def preprocess(project_info, variable, model, current_diag,
     # check if we want to save at each step
     save_intermediary_cubes = project_info['GLOBAL']['save_intermediary_cubes']
     # and initialize the latest_saver iterative variable
-    latest_saver = project_info['TEMPORARY']['outfile_fullpath']
+    output_file = project_info['TEMPORARY']['outfile_fullpath']
+    latest_saver = output_file
+    mfv_saver = None
 
     #################################################################
     # 0. CMOR_REFORMAT (NCL version)
@@ -286,7 +291,7 @@ def preprocess(project_info, variable, model, current_diag,
     # otherwise use default
     # the cmor reformat is applied only once per variable
     if cmor_reformat_type == 'ncl':
-        if (os.path.isdir("reformat_scripts/" + model['project'])):
+        if os.path.isdir("reformat_scripts/" + model['project']):
             which_reformat = model['project']
         else:
             which_reformat = 'default'
@@ -294,9 +299,9 @@ def preprocess(project_info, variable, model, current_diag,
         reformat_script = os.path.join(
             "reformat_scripts", which_reformat,
             "reformat_" + which_reformat + "_main.ncl")
-        if not os.path.isfile(project_info['TEMPORARY']['outfile_fullpath']):
+        if not os.path.isfile(output_file):
 
-            logger.info(" Calling %s to check/reformat model data",
+            logger.info("Calling %s to check/reformat model data",
                         reformat_script)
 
             run_executable(reformat_script, project_info, verbosity,
@@ -304,36 +309,32 @@ def preprocess(project_info, variable, model, current_diag,
         if 'NO_REFORMAT' in reformat_script:
             pass
         else:
-            if (not os.path.isfile(
-                    project_info['TEMPORARY']['outfile_fullpath'])):
+            if (not os.path.isfile(output_file)):
                 raise IOError(2, "Expected reformatted file isn't available: ",
-                              project_info['TEMPORARY']['outfile_fullpath'])
+                              output_file)
 
         # load cube now, if available
-        reft_cube = iris.load_cube(
-            project_info['TEMPORARY']['outfile_fullpath'])
+        reft_cube = iris.load_cube(output_file)
 
     #################################################################
     # 0. CMOR_REFORMAT (PY version)
 
     # New code: cmor_check.py (by Javier Vegas)
-    elif cmor_reformat_type == 'py' and project_name == 'CMIP5':
-        # needed imports
-        from .cmor_check import CMORCheck as CC
-        from .cmor_check import CMORCheckError as CCE
-        import warnings
-        from .variable_info import CMIP5Info
+    elif cmor_reformat_type == 'py':
 
         variables_info = CMIP5Info()
 
         var_name = variable.name
-        table = model['mip']
+        if project_name == 'CMIP5':
+            table = model['mip']
+        else:
+            table = project_info['MODELS'][0]['mip']
 
         try:
             # Load cubes for requested variable in given files
             # remember naming conventions
             # IN: infiles
-            # OUT: project_info['TEMPORARY']['outfile_fullpath']
+            # OUT: output_file
             fixes = Fix.get_fixes(project_name, model_name, var_name)
 
             def apply_file_fixes(file_to_fix):
@@ -343,7 +344,7 @@ def preprocess(project_info, variable, model, current_diag,
 
             # infiles are fullpaths
             files = [apply_file_fixes(infile) for infile in infiles]
-            cfilelist = []
+            cfilelist = iris.cube.CubeList()
 
             with warnings.catch_warnings():
                 warnings.filterwarnings('ignore',
@@ -365,12 +366,17 @@ def preprocess(project_info, variable, model, current_diag,
 
             # concatenate if needed
             if len(cfilelist) > 1:
-                c = iris.cube.CubeList(cfilelist)
                 try:
-                    reft_cube_0 = c.concatenate()[0]
+                    iris.util.unify_time_units(cfilelist)
+                    reft_cube_0 = cfilelist.concatenate()[0]
                 except iris.exceptions.ConcatenateError as exc:
-                    error_message = "Problem trying to concatenate cubes"
-                    logger.warning(error_message)
+                    error_message = "Problem trying to concatenate cubes: %s"
+                    logger.error(error_message, exc)
+                    logger.debug('Cubes to concatenate:')
+                    for cube in cfilelist:
+                        logger.debug(str(cube))
+                    return None, None
+
             else:
                 reft_cube_0 = cfilelist[0]
 
@@ -380,7 +386,7 @@ def preprocess(project_info, variable, model, current_diag,
 
             # Check metadata before any preprocessing start
             var_info = variables_info.get_variable(table, var_name)
-            checker = CC(reft_cube_0, var_info, automatic_fixes=True)
+            checker = CMORCheck(reft_cube_0, var_info, automatic_fixes=True)
             checker.check_metadata()
 
             # apply time gating so we minimize cube size
@@ -392,23 +398,23 @@ def preprocess(project_info, variable, model, current_diag,
                 reft_cube = fix.fix_data(reft_cube)
 
             # Check data after time (and maybe lat-lon slicing)
-            checker = CC(reft_cube, var_info, automatic_fixes=True)
+            checker = CMORCheck(reft_cube, var_info, automatic_fixes=True)
             checker.check_data()
 
             # save reformatted cube
             # saving the cube allows for more steps to be performed
             # on the (un)regridded files
             if save_intermediary_cubes is True:
-                latest_saver = latest_saver.strip('.nc') + '_cmor.nc'
+                latest_saver = latest_saver.strip('.nc') + '-cmor.nc'
                 iris.save(reft_cube, latest_saver)
 
             # save to default path (this file will change with
             # every iteration of preprocess step)
-            iris.save(reft_cube, project_info['TEMPORARY']['outfile_fullpath'])
+            iris.save(reft_cube, output_file)
 
-        except (iris.exceptions.ConstraintMismatchError,
-                iris.exceptions.ConcatenateError, CCE) as ex:
-            logger.warning("%s", ex)
+        except (iris.exceptions.ConcatenateError, CMORCheckError) as ex:
+            logger.error("%s", ex)
+            return None, None
 
     else:
         # check if we need to concatenate
@@ -416,7 +422,7 @@ def preprocess(project_info, variable, model, current_diag,
             reft_cube = glob(infiles, variable.name)
         else:
             reft_cube = iris.load_cube(infiles)
-        iris.save(reft_cube, project_info['TEMPORARY']['outfile_fullpath'])
+        iris.save(reft_cube, output_file)
 
     #################################################################
     # 1. LAND/OCEAN/PORO MASK VIA sftlf/sftof/mrsofc FILE
@@ -424,27 +430,25 @@ def preprocess(project_info, variable, model, current_diag,
     # Land Mask
     if mask_land is True:
         if os.path.isfile(lmaskfile_path):
-            logger.info(" Using mask file %s", lmaskfile_path)
+            logger.info("Using mask file %s", lmaskfile_path)
             l_mask = iris.load_cube(lmaskfile_path)
 
             reft_cube = fx_mask(reft_cube, l_mask)
 
             # check cube
             ######################
-            if project_name == 'CMIP5':
-                logger.info(
-                    " CMIP5 - checking cube after applying land mask...")
-                checker = CC(reft_cube, var_info, automatic_fixes=True)
-                checker.check_data()
+            logger.info("Checking cube after applying land mask...")
+            checker = CMORCheck(reft_cube, var_info, automatic_fixes=True)
+            checker.check_data()
             #######################
 
             if save_intermediary_cubes is True:
-                latest_saver = latest_saver.strip('.nc') + '_land-mask.nc'
+                latest_saver = latest_saver.strip('.nc') + '-landmask.nc'
                 iris.save(reft_cube, latest_saver)
 
             # save to default path (this file will change with
             # every iteration of preprocess step)
-            iris.save(reft_cube, project_info['TEMPORARY']['outfile_fullpath'])
+            iris.save(reft_cube, output_file)
 
         else:
             logger.info("Could not find LAND mask file %s", lmaskfile)
@@ -459,20 +463,18 @@ def preprocess(project_info, variable, model, current_diag,
 
             # check cube
             ######################
-            if project_name == 'CMIP5':
-                logger.info(
-                    " CMIP5 - checking cube after applying ocean mask...")
-                checker = CC(reft_cube, var_info, automatic_fixes=True)
-                checker.check_data()
+            logger.info("Checking cube after applying ocean mask...")
+            checker = CMORCheck(reft_cube, var_info, automatic_fixes=True)
+            checker.check_data()
             #######################
 
             if save_intermediary_cubes is True:
-                latest_saver = latest_saver.strip('.nc') + '_ocean-mask.nc'
+                latest_saver = latest_saver.strip('.nc') + '-oceanmask.nc'
                 iris.save(reft_cube, latest_saver)
 
             # save to default path (this file will change with
             # every iteration of preprocess step)
-            iris.save(reft_cube, project_info['TEMPORARY']['outfile_fullpath'])
+            iris.save(reft_cube, output_file)
 
         else:
             logger.info("Could not find OCEAN mask file %s", omaskfile)
@@ -480,27 +482,25 @@ def preprocess(project_info, variable, model, current_diag,
     # Poro Mask
     if mask_poro is True:
         if os.path.isfile(pormaskfile_path):
-            logger.info(" Using PORO mask file %s", pormaskfile_path)
+            logger.info("Using PORO mask file %s", pormaskfile_path)
             por_mask = iris.load_cube(pormaskfile_path)
 
             reft_cube = fx_mask(reft_cube, por_mask)
 
             # check cube
             ######################
-            if project_name == 'CMIP5':
-                logger.info(
-                    " CMIP5 - checking cube after applying poro mask...")
-                checker = CC(reft_cube, var_info, automatic_fixes=True)
-                checker.check_data()
+            logger.info("Checking cube after applying poro mask...")
+            checker = CMORCheck(reft_cube, var_info, automatic_fixes=True)
+            checker.check_data()
             #######################
 
             if save_intermediary_cubes is True:
-                latest_saver = latest_saver.strip('.nc') + '_poro-mask.nc'
+                latest_saver = latest_saver.strip('.nc') + '-poromask.nc'
                 iris.save(reft_cube, latest_saver)
 
             # save to default path (this file will change with
             # every iteration of preprocess step)
-            iris.save(reft_cube, project_info['TEMPORARY']['outfile_fullpath'])
+            iris.save(reft_cube, output_file)
 
         else:
             logger.info("Could not find OCEAN mask file %s", omaskfile)
@@ -527,7 +527,7 @@ def preprocess(project_info, variable, model, current_diag,
         try:
             levels = select_level['levels']
             scheme = select_level['scheme']
-        except (KeyError):
+        except KeyError:
             logger.warning("select_level keys must be levels: and scheme: "
                            "- no select level!")
             nsl = 0
@@ -589,24 +589,19 @@ def preprocess(project_info, variable, model, current_diag,
 
                 # check cube
                 #########################
-                if project_name == 'CMIP5':
-                    logger.info(
-                        " CMIP5 - checking cube after selecting level(s)...")
-                    checker = CC(reft_cube, var_info, automatic_fixes=True)
-                    checker.check_data()
+                logger.info("Checking cube after selecting level(s)...")
+                checker = CMORCheck(reft_cube, var_info, automatic_fixes=True)
+                checker.check_data()
                 #########################
 
                 # save intermediary
                 if save_intermediary_cubes is True:
-                    vnames = '_'.join(['SL' + str(v) for v in vlevels])
-                    latest_saver = latest_saver.strip(
-                        '.nc') + '_' + vnames + '.nc'
+                    latest_saver = latest_saver.strip('.nc') + '-level.nc'
                     iris.save(reft_cube, latest_saver)
 
                 # save to default path (this file will change with
                 # every iteration of preprocess step)
-                iris.save(reft_cube,
-                          project_info['TEMPORARY']['outfile_fullpath'])
+                iris.save(reft_cube, output_file)
 
     #################################################################
     # 3. REGRID
@@ -623,7 +618,7 @@ def preprocess(project_info, variable, model, current_diag,
         # get the floating cube
         src_cube = reft_cube
 
-        logger.info("Source cube to be regridded --->\n%s", src_cube)
+        logger.debug("Source cube to be regridded --->\n%s", src_cube)
 
         # try return a cube for regrid target
         # target_grid = could simply be a netCDF file or string model
@@ -631,34 +626,41 @@ def preprocess(project_info, variable, model, current_diag,
         # labels are implemented
         try:
             tgt_grid_cube = iris.load_cube(target_grid)
-            logger.info("Target regrid cube summary --->\n%s", tgt_grid_cube)
+            logger.debug("Target regrid cube summary --->\n%s", tgt_grid_cube)
             if regrid_scheme:
                 rgc = regrid(src_cube, tgt_regrid_cube, regrid_scheme)
             else:
                 logger.info("No regrid scheme specified, assuming linear")
                 rgc = regrid(src_cube, tgt_regrid_cube, 'linear')
 
-            logger.info("Regridded cube summary --->\n%s", rgc)
+            logger.debug("Regridded cube summary --->\n%s", rgc)
             reft_cube = rgc
             print(reft_cube)
 
             # check cube
             ######################
-            if project_name == 'CMIP5':
-                logger.info("CMIP5 - checking cube after regridding on "
-                            "input netCDF file...")
-                checker = CC(reft_cube, var_info, automatic_fixes=True)
-                checker.check_data()
+            logger.info("Checking cube after regridding on "
+                        "input netCDF file...")
+            checker = CMORCheck(reft_cube, var_info, automatic_fixes=True)
+            checker.check_data()
             #######################
 
             # save-append to outfile fullpath list to be further processed
-            iris.save(reft_cube, project_info['TEMPORARY']['outfile_fullpath'])
+            iris.save(reft_cube, output_file)
         except (IOError, iris.exceptions.IrisError) as exc:
             logger.info("Target %s is not a netCDF file", target_grid)
             # continue to see what regridding we need
             # ref_model regrid string descriptor
             if target_grid == 'ref_model':
-                additional_models_dicts = current_diag.additional_models
+                try:
+                    additional_models_dicts = current_diag.additional_models
+                    if additional_models_dicts is None:
+                        additional_models_dicts = project_info['ALLMODELS']
+                except (AttributeError, "'Diagnostic' object has no attribute "
+                        "'additional_models'"):
+                    logger.info("Regridding on one of the MODELS, "
+                                "no ADDITIONAL MODELS specified")
+                    additional_models_dicts = project_info['ALLMODELS']
                 # identify the current variable
                 for var in current_diag.variables:
                     if var['name'] == variable.name:
@@ -685,7 +687,7 @@ def preprocess(project_info, variable, model, current_diag,
                                         tgt_grid_cube = iris.load_cube(
                                             tgt_nc_grid)
 
-                                    logger.info(
+                                    logger.debug(
                                         "Target regrid cube summary --->\n%s",
                                         tgt_grid_cube)
 
@@ -693,39 +695,34 @@ def preprocess(project_info, variable, model, current_diag,
                                         rgc = regrid(src_cube, tgt_grid_cube,
                                                      regrid_scheme)
                                     else:
-                                        logger.info(
+                                        logger.debug(
                                             "No regrid scheme specified, "
                                             "assuming linear")
                                         rgc = regrid(src_cube, tgt_grid_cube,
                                                      'linear')
-                                    logger.info("Regridded cube summary"
-                                                " --->\n%s", rgc)
+                                    logger.debug("Regridded cube summary"
+                                                 " --->\n%s", rgc)
 
                                     # check cube
                                     ###################
                                     reft_cube = rgc
-                                    if project_name == 'CMIP5':
-                                        logger.info(
-                                            "CMIP5 - checking cube after "
-                                            "regridding on REF model...")
-                                        checker = CC(
-                                            reft_cube,
-                                            var_info,
-                                            automatic_fixes=True)
-                                        checker.check_data()
+                                    logger.info("Checking cube after "
+                                                "regridding on REF model...")
+                                    checker = CMORCheck(
+                                        reft_cube,
+                                        var_info,
+                                        automatic_fixes=True)
+                                    checker.check_data()
                                     ####################
 
                                     # save-append to outfile fullpath list
                                     # to be further processed
-                                    iris.save(reft_cube, project_info[
-                                        'TEMPORARY']['outfile_fullpath'])
+                                    iris.save(reft_cube, output_file)
 
                                     if save_intermediary_cubes is True:
-                                        latest_saver = '_'.join([
-                                            latest_saver.strip('.nc'),
-                                            'regridded_on',
-                                            ref_model + '.nc',
-                                        ])
+                                        latest_saver = \
+                                            latest_saver.strip('.nc') + \
+                                            '-regrid.nc'
                                         iris.save(reft_cube, latest_saver)
 
                         # otherwise don't do anything
@@ -746,32 +743,30 @@ def preprocess(project_info, variable, model, current_diag,
                             "No regrid scheme specified, assuming linear")
                         rgc = regrid(src_cube, target_grid, 'linear')
 
-                    logger.info("Regridded cube summary --->\n%s", rgc)
+                    logger.debug("Regridded cube summary --->\n%s", rgc)
 
                     # check cube
                     ######################
                     reft_cube = rgc
-                    if project_name == 'CMIP5':
-                        logger.info("CMIP5 - checking cube after regridding "
-                                    "on MxN cells...")
-                        checker = CC(reft_cube, var_info, automatic_fixes=True)
-                        checker.check_data()
+                    logger.info("Checking cube after regridding "
+                                "on MxN cells...")
+                    checker = CMORCheck(
+                        reft_cube, var_info, automatic_fixes=True)
+                    checker.check_data()
                     #######################
 
                     # save-append to outfile fullpath list to be
                     # further processed
-                    iris.save(reft_cube,
-                              project_info['TEMPORARY']['outfile_fullpath'])
+                    iris.save(reft_cube, output_file)
 
                     if save_intermediary_cubes is True:
-                        latest_saver = latest_saver.strip(
-                            '.nc') + '_regrid_' + target_grid + '.nc'
+                        latest_saver = latest_saver.strip('.nc') + '-regrid.nc'
                         iris.save(reft_cube, latest_saver)
 
     #################################################################
     # 4. MASK FILL VALUES
 
-    if mask_fillvalues != 'None':
+    if mask_fillvalues != 'None' and target_grid != 'None':
 
         # Brief explanation of functionality:
         # Mask fill values
@@ -796,9 +791,15 @@ def preprocess(project_info, variable, model, current_diag,
 
             # try get the parameters
             try:
-                val_thr = mask_fillvalues['min_value']
+                if 'min_value' in mask_fillvalues.keys():
+                    val_thr = mask_fillvalues['min_value']
+                else:
+                    val_thr = -1.e+10
                 percentage = mask_fillvalues['threshold_percent']
-                time_window = int(mask_fillvalues['time_window'])
+                if 'time_window' in mask_fillvalues.keys():
+                    time_window = int(mask_fillvalues['time_window'])
+                else:
+                    time_window = 1
 
                 logger.info("Creating fillvalues mask...")
                 # basic checks
@@ -811,25 +812,28 @@ def preprocess(project_info, variable, model, current_diag,
                                    "than total time span")
 
                 # round to lower integer always
-                max_counts_per_time_window = int(nr_time_points / time_window)
+                max_counts_per_time_window = float(nr_time_points) / float(
+                    time_window)
                 count_thr = int(max_counts_per_time_window * percentage)
 
-                # apply the mask
-                reft_cube = mask_cube_counts(reft_cube, val_thr, count_thr,
-                                             time_window)[2]
+                # return the mask as a cube structure
+                mask_reft_cube = mask_cube_counts(reft_cube, val_thr,
+                                                  count_thr, time_window)[2]
 
-                # save if needed
+                # save only the mask
+                logger.info("Saving fillvalues mask...")
+                mfv_saver = latest_saver.strip('.nc') + '-fillmaskonly.nc'
+                iris.save(mask_reft_cube, mfv_saver)
+
+                # one last save so we apply the mask
+                # on the copy of reft_cube
                 if save_intermediary_cubes is True:
-                    latest_saver = latest_saver.strip('.nc') + '_mfv.nc'
+                    latest_saver = latest_saver.strip('.nc') + '-fillmask.nc'
                     iris.save(reft_cube, latest_saver)
 
-                # save-append to outfile fullpath list to be further processed
-                iris.save(reft_cube,
-                          project_info['TEMPORARY']['outfile_fullpath'])
-
             except KeyError:
-                logger.warning("select_level keys must be levels: and "
-                               "scheme: - no select level!")
+                logger.warning("mask_fillvalues: dict must "
+                               "contain at least percentage: !")
 
     #################################################################
     # 5. MULTIMODEL MEAN and anything else that needs ALL models
@@ -840,10 +844,15 @@ def preprocess(project_info, variable, model, current_diag,
     #################################################################
     # FINISH all PREPROCESSING and delete environment
 
+    # make a copy of the file path
+    diag_nc_file = output_file
+
+    # ...and now delete all
     del (project_info['TEMPORARY'])
 
-    # return the latest cube, and latest path
-    return reft_cube, latest_saver
+    # return the latest cube, and latest path,
+    # also the mip table and var name
+    return reft_cube, latest_saver, mfv_saver, diag_nc_file, table, var_name
 
 
 # functions that perform collective models analysis
@@ -853,19 +862,58 @@ def multimodel_mean(cube_collection, path_collection):
     # time average
     means_list = [
         mycube.collapsed('time', iris.analysis.MEAN)
-        for mycube in cube_collection
+        for mycube in cube_collection if mycube is not None
     ]
 
     # global mean
     means = [np.mean(m.data) for m in means_list]
     logger.info("Multimodel global means: %s", means)
 
-    # seasonal mean
-    # need to fix this !
-    # smeans_cubes = [seasonal_mean(mycube) for mycube in cube_collection]
-    # print(smeans_cubes)
-    # smeans = [np.mean(c.data) for c in smeans_cubes]
-    # logger.info("Multimodel seasonal global means: %s", smeans)
+
+def loop_sum(arrlist):
+    if len(arrlist) > 0:
+        arrsum = arrlist[0].copy()
+        for a in arrlist[1:]:
+            arrsum += a
+        return arrsum
+    else:
+        return 0
+
+
+def fillvalues_mask(mask_collection, cube_collection, path_collection,
+                    diag_nc_filepath, miptables, varnames):
+    # get the masks from all models
+    masks = [iris.load_cube(c).data for c in mask_collection if c is not None]
+    # remove masks that are all NaN's
+    # masks_reduced = [m for m in masks if np.all(np.isnan(m)) == False]
+    masks_reduced = [m for m in masks if np.all(m) != 1e+20]
+    # aggregate (sum) masks
+    if len(masks_reduced) > 0:
+        agg_mask = loop_sum(masks_reduced) / len(masks_reduced)
+        for cube, path, diagncpath, miptable, varname in zip(
+                cube_collection, path_collection, diag_nc_filepath, miptables,
+                varnames):
+            cube.data = cube.data * agg_mask
+
+            # check cube
+            ######################
+            variables_info = CMIP5Info()
+            var_info = variables_info.get_variable(miptable, varname)
+            logger.info("Checking cube after applying " "fillvalues mask...")
+            checker = CMORCheck(cube, var_info, automatic_fixes=True)
+            checker.check_data()
+            #######################
+
+            if path != diagncpath:
+                logger.info(
+                    "Updating with mask and saving last preproc nc file")
+                iris.save(cube, path)
+                iris.save(cube, diagncpath)
+            else:
+                logger.info("Updating with mask and saving master nc file")
+                iris.save(cube, path)
+    else:
+        logger.info("All masks are populated with False. Aborting.")
 
 
 #################################################################
@@ -884,11 +932,11 @@ class Var:
             setattr(self, name, value)
 
         # Special cases, actually not sure what they do
-        if (var0 == "none"):
+        if var0 == "none":
             self.var0 = merged_dict['name']
         else:
             self.var0 = var0
-        if (fld0 == "none"):
+        if fld0 == "none":
             self.fld0 = merged_dict['field']
         else:
             self.fld0 = fld0
@@ -916,7 +964,7 @@ class Diag:
 
                 if "Requires:" in tokens:
                     # If 'none', return orig. field
-                    if (tokens[2] == "none" or model_der == "True"):
+                    if tokens[2] == "none" or model_der == "True":
                         dep_vars.append(Var(variable, "none", "none"))
                     else:
                         sub_tokens = tokens[2].split(",")
