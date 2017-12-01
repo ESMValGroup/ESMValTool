@@ -33,6 +33,8 @@ models: &all
 preprocessors:
   preprocessor:
     download: true
+    load:
+      mode: concatenate
     extract_levels:
       levels: 85000
       scheme: linear

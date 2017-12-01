@@ -176,6 +176,57 @@ def read_config_file(project, cfg_file=None):
             project))
 
 
+def get_input_filename(model, variable, rootpath, drs):
+    """Return the expected path to input file.
+
+    This function should match the function get_input_filelist below.
+    """
+    project = model['project']
+
+    cfg = read_config_file(project)
+
+    # Apply variable-dependent model keys
+    model = dict(model)
+    for key in 'mip', 'ensemble', 'exp':
+        if key in variable:
+            model[key] = variable[key]
+
+    # Set the rootpath
+    if project in rootpath:
+        dir1 = rootpath[project]
+    elif 'default' in rootpath:
+        dir1 = rootpath['default']
+    else:
+        raise KeyError(
+            'default rootpath must be specified in config-user file')
+
+    # Set the drs
+    _drs = drs.get(project, 'default')
+
+    if _drs in cfg['input_dir']:
+        dir2 = replace_tags(cfg['input_dir'][_drs], model, variable)
+    else:
+        raise KeyError(
+            'drs {} for {} project not specified in config-developer file'
+            .format(_drs, project))
+
+    dirname = os.path.join(dir1, dir2)
+
+    # Simulate a latest version if required
+    if '[latestversion]' in dirname:
+        part1, part2 = dirname.split('[latestversion]')
+        dirname = os.path.join(part1, 'dummy', part2)
+
+    # Set the filename
+    filename = replace_tags(cfg['input_file'], model, variable)
+    if filename.endswith('*'):
+        filename = filename.rstrip(
+            '*') + "{start_year}01-{end_year}12.nc".format(**model)
+
+    # Full path to files
+    return os.path.join(dirname, filename)
+
+
 def get_input_filelist(project_info, model, var):
     """ Returns the full path to input files
     """
@@ -266,8 +317,8 @@ def find_files(dirname, filename):
     # work only with existing dirs or allowed permission dirs
     strfindic = 'find {dirname} -follow -type f -iname *{filename}*'.format(
         dirname=dirname, filename=filename)
-    proc = subprocess.Popen(strfindic, stdout=subprocess.PIPE, shell=True,
-                            universal_newlines=True)
+    proc = subprocess.Popen(
+        strfindic, stdout=subprocess.PIPE, shell=True, universal_newlines=True)
     out, err = proc.communicate()
     if err:
         logger.warning("'%s' says:\n%s", strfindic, err)

@@ -51,7 +51,7 @@ PREPROCESSOR_FUNCTIONS = {
     # File reformatting/CMORization
     'fix_file': fix_file,
     # Load cube from file
-    'load': iris.load_cube,
+    'load': load_cubes,
     # Metadata reformatting/CMORization
     'fix_metadata': fix_metadata,
     # Time extraction
@@ -113,6 +113,7 @@ _LIST_INPUT_FUNCTIONS = {
 
 _LIST_OUTPUT_FUNCTIONS = {
     'download',
+    'load',
 }
 
 assert _LIST_INPUT_FUNCTIONS.issubset(set(PREPROCESSOR_FUNCTIONS))
@@ -170,18 +171,22 @@ def get_multi_model_task(settings):
 class PreprocessingTask(AbstractTask):
     """Task for running the preprocessor"""
 
-    def __init__(self, settings, order=DEFAULT_ORDER, ancestors=None):
+    def __init__(self,
+                 settings,
+                 order=DEFAULT_ORDER,
+                 ancestors=None,
+                 input_data=None):
         """Initialize"""
         super(PreprocessingTask, self).__init__(settings, ancestors)
         self.order = list(order)
+        self._input_data = input_data
 
     def _run(self, input_data):
         settings = _as_ordered_dict(settings=self.settings, order=self.order)
         # If input_data is not available from ancestors and also not
-        # specified in self.run(input_data), try to get it from settings
+        # specified in self.run(input_data), use default
         if not self.ancestors and not input_data:
-            if 'load' in settings and 'uris' in settings['load']:
-                input_data = settings['load'].pop('uris')
+            input_data = self._input_data
         self.output_data = preprocess(input_data, settings)
 
     def __str__(self):
@@ -191,6 +196,8 @@ class PreprocessingTask(AbstractTask):
             self.order,
             super(PreprocessingTask, self).str(),
         )
+        if self._input_data is not None:
+            txt += '\ninput_data: {}'.format(self._input_data)
         return txt
 
 
@@ -199,9 +206,19 @@ def preprocess(items, settings):
     for step, args in settings.items():
         logger.debug("Running preprocessor step %s", step)
         function = PREPROCESSOR_FUNCTIONS[step]
+
         if step in _LIST_INPUT_FUNCTIONS:
-            items = (items, )
-        items = tuple(function(item, **args) for item in items)
+            logger.debug("Running %s(%s, %s)", function, items, args)
+            result = [function(items, **args)]
+        else:
+            result = []
+            for item in items:
+                logger.debug("Running %s(%s, %s)", function, item, args)
+                result.append(function(item, **args))
+
         if step in _LIST_OUTPUT_FUNCTIONS:
-            items = tuple(item for subitem in items for item in subitem)
+            items = tuple(item for subitem in result for item in subitem)
+        else:
+            items = tuple(result)
+
     return items

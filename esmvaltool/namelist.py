@@ -9,6 +9,7 @@ import yaml
 
 from .interface_scripts.data_finder import get_input_filelist, get_output_file
 from .interface_scripts.preprocessing_tools import merge_callback
+from .preprocessor.download import synda_search
 from .preprocessor.reformat import CMOR_TABLES
 from .preprocessor.run import DEFAULT_ORDER, PreprocessingTask
 from .task import DiagnosticTask
@@ -121,62 +122,36 @@ def _get_standard_name(variable, model, mip=None):
     return standard_name
 
 
-def get_preprocessor_task(settings, all_models, model, variable, user_config):
-    """Get a preprocessor task for a single model"""
-    # Preprocessor configuration
-    pre = {}
+def get_default_settings(variable, model):
+    """Get default preprocessor settings."""
+    mip = model['mip'] if 'mip' in model else variable.get('mip')
 
-    if 'download' in settings and settings['download'] is True:
-        pre['download'] = {
-            'model': model,
-            'variable': variable,
-            'user_config': user_config,
-        }
+    cfg = {}
 
     # Configure loading
-    pre['load'] = {
+    cfg['load'] = {
         'callback': merge_callback,
     }
-
-    if 'download' not in settings or settings['download'] is False:
-        input_files = get_input_filelist(
-            project_info={'GLOBAL': user_config}, model=model, var=variable)
-        if not input_files:
-            raise NamelistError("No input files found for model {} "
-                                "variable {}".format(model, variable))
-        pre['load']['uris'] = input_files
-
-    # Configure saving
-    output_file = get_output_file(
-        project_info={'GLOBAL': user_config}, model=model, var=variable)
-
-    pre['save'] = {
-        'target': output_file,
-    }
-
-    # Find mip for CMOR fixes and determining standard_name.
-    mip = _get_mip(variable, model, all_models)
-
     # If possible, constrain loading to a cube with required standard_name.
     standard_name = _get_standard_name(variable, model, mip)
     if standard_name:
-        pre['load']['constraint'] = standard_name
+        cfg['load']['constraints'] = standard_name
 
     # Configure fixes
-    cfg = {
+    fixcfg = {
         'project': model['project'],
         'model': model['name'],
         'short_name': variable['short_name'],
     }
-    pre['fix_file'] = dict(cfg)
+    cfg['fix_file'] = dict(fixcfg)
     # Only supply mip if the CMOR check fixes are implemented.
     if model['project'] in CMOR_TABLES:
-        cfg['mip'] = mip
-    pre['fix_metadata'] = dict(cfg)
-    pre['fix_data'] = dict(cfg)
+        fixcfg['mip'] = mip
+    cfg['fix_metadata'] = dict(fixcfg)
+    cfg['fix_data'] = dict(fixcfg)
 
     # Configure time extraction
-    pre['extract_time'] = {
+    cfg['extract_time'] = {
         'yr1': model['start_year'],
         'yr2': model['end_year'] + 1,
         'mo1': 1,
@@ -185,16 +160,64 @@ def get_preprocessor_task(settings, all_models, model, variable, user_config):
         'd2': 1,
     }
 
-    # Override with settings from preprocessor profile
-    settings = copy.deepcopy(settings)
-    settings = {
-        step: pre.get(step, {})
-        for step, args in settings.items() if args is True
-    }
-    pre.update(settings)
+    return cfg
 
-    # Remove disabled preprocessor functions
-    pre = {step: args for step, args in pre.items() if args is not False}
+
+def get_preprocessor_task(settings, all_models, model, variable, user_config):
+    """Get a preprocessor task for a single model"""
+    settings = copy.deepcopy(settings)
+
+    # Find mip for CMOR fixes and determining standard_name.
+    if not ('mip' in model or 'mip' in variable):
+        mip = _get_mip(variable, model, all_models)
+        if mip:
+            variable['mip'] = mip
+
+    # Get default preprocessor configuration
+    pre = get_default_settings(variable, model)
+
+    # Set up input files
+    input_files = get_input_filelist(
+        project_info={'GLOBAL': user_config}, model=model, var=variable)
+
+    # Do not download if files are already available locally
+    if input_files and 'download' in settings:
+        del settings['download']
+
+    if 'download' in settings and settings['download'] is True:
+        input_files = synda_search(model, variable)
+        pre['download'] = {
+            'model': model,
+            'variable': variable,
+            'rootpath': user_config['rootpath'],
+            'drs': user_config['drs'],
+        }
+
+    if not input_files:
+        raise NamelistError("No input files found for model {} "
+                            "variable {}".format(model, variable))
+
+    # Configure saving to output files
+    output_file = get_output_file(
+        project_info={'GLOBAL': user_config}, model=model, var=variable)
+
+    pre['save'] = {
+        'target': output_file,
+    }
+
+    # Use settings from preprocessor profile
+    for step, args in settings.items():
+        # Remove disabled preprocessor functions
+        if args is False:
+            if step in pre:
+                del pre[step]
+            continue
+        # Enable/update functions without keywords
+        if step not in pre:
+            pre[step] = {}
+        if args is not True:
+            for arg, value in args.items():
+                pre[step][arg] = value
 
     # Configure regrid if enabled
     if 'regrid' in pre and 'target_grid' in pre['regrid']:
@@ -211,7 +234,7 @@ def get_preprocessor_task(settings, all_models, model, variable, user_config):
                     var=variable)
                 pre['regrid']['target_grid'] = files[0]
 
-    return PreprocessingTask(settings=pre)
+    return PreprocessingTask(settings=pre, input_data=input_files)
 
 
 class Namelist(object):
