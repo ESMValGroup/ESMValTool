@@ -465,7 +465,8 @@ class Ncl_data_interface(Data_interface):
 
         template = os.path.join(
             os.path.dirname(os.path.dirname(__file__)),
-            "interface_data",
+            "interface_scripts",
+            "templates",
             "ncl_interface_templates",
             "ncl.tmpl",
         )
@@ -573,7 +574,8 @@ class R_data_interface(Data_interface):
         """
         template = os.path.join(
             os.path.dirname(os.path.dirname(__file__)),
-            "interface_data",
+            "interface_scripts",
+            "templates",
             "r_interface_templates",
             "r.tmpl",
         )
