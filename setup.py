@@ -176,6 +176,7 @@ with open('README.md') as readme:
             'pytest',
             'pytest-cov',
             'pytest-html',
+            'pytest-metadata>=1.5.1',
         ],
         entry_points={
             'console_scripts': [
