@@ -170,12 +170,33 @@ begin
 
         ;; Read data precalcualted in perfmetrics_main.ncl
         do imod = 0, dim_MOD - 1
-            new_path = clim_diag_file_path(var0, field_type0, imod, \
-                                           "perfmetrics_main", \
-                                           diag_script_info)
+
+             ;; Set path for saving processed data
+            fullpath = getenv("ESMValTool_work_dir") + "/" + \
+                basename(diag_script) + "/"
+            if (.not.isfilepresent_esmval(fullpath)) then
+                system("mkdir -p " + fullpath)
+            end if
+            fname = basename(systemfunc("basename " + \
+                             interface_get_fullpath(var0, field_type0, imod)))
+            fname = fname + "_" + basename(diag_script)
+            if (isatt(diag_script_info, "plot_type")) then
+                fname = fname + "_" + diag_script_info@plot_type
+            end if
+            if (isatt(diag_script_info, "time_avg")) then
+                fname = fname + "_" + diag_script_info@time_avg
+            end if
+            if (isatt(diag_script_info, "level")) then
+                fname = fname + "_" + diag_script_info@level
+            end if
+            if (isatt(diag_script_info, "region")) then
+                fname = fname + "_" + \
+                    str_sub_str(diag_script_info@region, " ", "")
+            end if
+            procpath = fullpath + fname + ".nc"
 
             ;; Skip current model if no data available
-            if (.not.isfilepresent_esmval(new_path)) then
+            if (.not.isfilepresent_esmval(procpath)) then
                 info_output("No data available for model:" + \
                             modelnames(imod), verbosity, 1)
                 info_output("Skipping", verbosity, 1)
@@ -183,8 +204,8 @@ begin
             end if
 
             ;; Store into global array
-            info_output("Read in: " + new_path, verbosity, 1)
-            tmp = ncdf_read(new_path, var0)
+            info_output("Read in: " + procpath, verbosity, 1)
+            tmp = ncdf_read(procpath, var0)
             if (.not.isdefined("super_array")) then
                 dim_super_array = \
                     array_append_record(dim_MOD, dimsizes(tmp), 0)

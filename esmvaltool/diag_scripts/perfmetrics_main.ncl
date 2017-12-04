@@ -229,6 +229,20 @@ begin
 
     ;; ### DEFINE GLOBAL ARRAYS FOR COLLECTING MODEL DATA #####################
 
+    ;; Read common grid from the first model
+    ;; (all models are expected to be regridded to a common grid)
+    data = read_data(0, var0, field_type0)
+    tmp = extract_data_extended(0, var0, data, -1, 0, 0)
+    rank = dimsizes(dimsizes(tmp))
+    if (rank.eq.4) then
+        grid = tmp(0, :, :, :)  ; plev, lat, lon
+    end if
+    if (rank.eq.3) then
+        grid = tmp(0, :, :)  ; lat, lon
+    end if
+    delete(data)
+    delete(tmp)
+
     ;; Case cycle: (model, time, stats)
     if (ptype.eq."cycle") then
         if (time_avg.eq."seasonalclim") then
@@ -435,7 +449,7 @@ begin
             ;; Calculate time average
             var_avg = time_operations(var_reg, start_year, end_year, \
                                       "average", time_avg, True)
-            delete(var_lev)
+            delete(var_reg)
 
             ;; Standard deviation calculation for this rank is not implemented
             ;; yet in statistics.ncl (but is anyway not required here)
