@@ -22,72 +22,72 @@
 ###############################################################################
 
 models: &all
-  - {name: ACCESS1-0,        project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: ACCESS1-3,        project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: bcc-csm1-1,       project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: bcc-csm1-1-m,     project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  # - {name: BNU-ESM,          project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: CanCM4,           project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: CanESM2,          project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: CCSM4,            project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: CESM1-BGC,        project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: CESM1-CAM5,       project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  # - {name: CESM1-CAM5-1-FV2, project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: CESM1-FASTCHEM,   project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: CESM1-WACCM,      project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: CMCC-CESM,        project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: CMCC-CM,          project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: CMCC-CMS,         project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: CNRM-CM5,         project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: CNRM-CM5-2,       project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: CSIRO-Mk3-6-0,    project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  # - {name: EC-EARTH,         project: CMIP5, mip: Amon, exp: historical, ensemble: r6i1p1, start_year: 2000, end_year: 2002}
-  - {name: FGOALS-g2,        project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  # - {name: FGOALS-s2,        project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: FIO-ESM,          project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: GFDL-CM2p1,       project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: GFDL-CM3,         project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: GFDL-ESM2G,       project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: GFDL-ESM2M,       project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: GISS-E2-H,        project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p2, start_year: 2000, end_year: 2002}
-  - {name: GISS-E2-H-CC,     project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: GISS-E2-R,        project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p2, start_year: 2000, end_year: 2002}
-  - {name: GISS-E2-R-CC,     project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: HadCM3,           project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: HadGEM2-AO,       project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: HadGEM2-CC,       project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: HadGEM2-ES,       project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: inmcm4,           project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: IPSL-CM5A-LR,     project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: IPSL-CM5A-MR,     project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: IPSL-CM5B-LR,     project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: MIROC4h,          project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: MIROC5,           project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: MIROC-ESM,        project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: MIROC-ESM-CHEM,   project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: MPI-ESM-LR,       project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: MPI-ESM-MR,       project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: MPI-ESM-P,        project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: MRI-CGCM3,        project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: MRI-ESM1,         project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: NorESM1-M,        project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: NorESM1-ME,       project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 3}
-  - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 2}
+  - {model: ACCESS1-0,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: ACCESS1-3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: bcc-csm1-1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: bcc-csm1-1-m,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  # - {model: BNU-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: CanCM4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: CanESM2,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: CCSM4,            project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: CESM1-BGC,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: CESM1-CAM5,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  # - {model: CESM1-CAM5-1-FV2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: CESM1-FASTCHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: CESM1-WACCM,      project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: CMCC-CESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: CMCC-CM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: CMCC-CMS,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: CNRM-CM5,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: CNRM-CM5-2,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: CSIRO-Mk3-6-0,    project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  # - {model: EC-EARTH,         project: CMIP5, exp: historical, ensemble: r6i1p1, start_year: 2000, end_year: 2002}
+  - {model: FGOALS-g2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  # - {model: FGOALS-s2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: FIO-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  # - {model: GFDL-CM2p1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002} # fails
+  - {model: GFDL-CM3,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: GFDL-ESM2G,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: GFDL-ESM2M,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: GISS-E2-H,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2000, end_year: 2002}
+  - {model: GISS-E2-H-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: GISS-E2-R,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2000, end_year: 2002}
+  - {model: GISS-E2-R-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: HadCM3,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: HadGEM2-AO,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: HadGEM2-CC,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: HadGEM2-ES,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: inmcm4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: IPSL-CM5A-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: IPSL-CM5A-MR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: IPSL-CM5B-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: MIROC4h,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: MIROC5,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: MIROC-ESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: MIROC-ESM-CHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: MPI-ESM-LR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: MPI-ESM-MR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: MPI-ESM-P,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: MRI-CGCM3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: MRI-ESM1,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: NorESM1-M,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: NorESM1-ME,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 3}
+  - {model: NCEP,         project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 2}
 
 preprocessors:
   preprocessor:
     download: true
     load:
-        mode: concatenate
+      mode: concatenate
     extract_levels:
       levels: 85000
       scheme: linear
     regrid:
       target_grid: ERA-Interim
       scheme: linear
-#     mask_fillvalues:
-#       threshold_percent: 0.95
+    mask_fillvalues:
+      threshold_fraction: 0.95
 
 diagnostics:
   annual_cycle_ta:
@@ -95,6 +95,7 @@ diagnostics:
     variables:
       ta:
         preprocessor: preprocessor
+        mip: Amon
         field: T3M
     models: *all
     script: perfmetrics_main.ncl

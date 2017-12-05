@@ -2,20 +2,17 @@ import subprocess
 import logging
 import os
 
-from ..interface_scripts.data_finder import get_input_filename
-
 logger = logging.getLogger(__name__)
 
 
-def synda_search(model, variable):
+def synda_search(variable):
     """Search files using synda."""
-    mip = model['mip'] if 'mip' in model else variable.get('mip')
     query = {
-        'model': model.get('name'),
-        'project': model.get('project'),
-        'cmor_table': mip,
-        'ensemble': model.get('ensemble'),
-        'experiment': model.get('exp'),
+        'model': variable.get('model'),
+        'project': variable.get('project'),
+        'cmor_table': variable.get('mip'),
+        'ensemble': variable.get('ensemble'),
+        'experiment': variable.get('exp'),
         'variable': variable.get('short_name'),
     }
 
@@ -33,41 +30,41 @@ def synda_search(model, variable):
     files = []
     for line in result.split('\n'):
         if line.startswith('new'):
-            filename = line.split()[-1]
-            name = os.path.splitext(filename)[0]
+            synda_name = line.split()[-1]
+            name = os.path.splitext(synda_name)[0]
             start, end = name.split('_')[-1].split('-')
             start_year, end_year = int(start[:4]), int(end[:4])
-            if (start_year <= model['end_year']
-                    and end_year >= model['start_year']):
-                files.append(filename)
+            if (start_year <= variable['end_year']
+                    and end_year >= variable['start_year']):
+                files.append(synda_name)
 
     return files
 
 
-def synda_download(filename, dest_folder):
+def synda_download(synda_name, dest_folder):
     """Download file using synda."""
-    cmd = [
-        'synda', 'get', '--dest_folder={}'.format(dest_folder),
-        '--verify_checksum', filename
-    ]
-    cmd = ' '.join(cmd)
-    logger.debug("Running: %s", cmd)
-    subprocess.check_call(cmd, shell=True)
+    filename = '.'.join(synda_name.split('.')[-2:])
+    local_file = os.path.join(dest_folder, filename)
+
+    if not os.path.exists(local_file):
+        cmd = [
+            'synda', 'get', '--dest_folder={}'.format(dest_folder),
+            '--verify_checksum', synda_name
+        ]
+        cmd = ' '.join(cmd)
+        logger.debug("Running: %s", cmd)
+        subprocess.check_call(cmd, shell=True)
+
+    return local_file
 
 
-def download(files, model, variable, rootpath, drs):
+def download(files, dest_folder):
     """Download files that are not available locally"""
-    local_dir = os.path.dirname(
-        get_input_filename(
-            model=model, variable=variable, rootpath=rootpath, drs=drs))
-    os.makedirs(local_dir, exist_ok=True)
+    os.makedirs(dest_folder, exist_ok=True)
 
     local_files = []
     for name in files:
-        filename = name[name.index(variable['short_name'] + '_'):]
-        local_file = os.path.join(local_dir, filename)
+        local_file = synda_download(synda_name=name, dest_folder=dest_folder)
         local_files.append(local_file)
-        if not os.path.exists(local_file):
-            synda_download(filename=name, dest_folder=local_dir)
 
     return local_files

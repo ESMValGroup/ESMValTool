@@ -7,11 +7,14 @@ import os
 
 import yaml
 
-from .interface_scripts.data_finder import get_input_filelist, get_output_file
+from .interface_scripts.data_finder import (
+    get_input_filelist, get_input_filename, get_output_file)
 from .interface_scripts.preprocessing_tools import merge_callback
 from .preprocessor.download import synda_search
 from .preprocessor.reformat import CMOR_TABLES
-from .preprocessor.run import DEFAULT_ORDER, PreprocessingTask
+from .preprocessor.run import (DEFAULT_ORDER, PreprocessingTask,
+                               select_multi_model_settings,
+                               select_single_model_settings)
 from .task import DiagnosticTask
 
 logger = logging.getLogger(__name__)
@@ -82,78 +85,55 @@ def _find_model(full_models, short_model, warn=False):
                            matches, short_model)
 
 
-def _get_mip(variable, model, all_models):
-    """Try to get mip.
+def _get_value(key, variables):
+    """Get a value for key by looking at the other variables."""
+    values = {variable[key] for variable in variables if key in variable}
 
-    First look in variable, then in model, then in all models.
-    Raises a NamelistError if it has to resort to all models,
-    but the mip is not the same for all models.
-    """
-    mip = None
-    if 'mip' in model:
-        mip = model['mip']
-    elif 'mip' in variable:
-        mip = variable['mip']
-    else:
-        for _model in all_models:
-            if 'mip' in _model:
-                if mip is None:
-                    mip = _model['mip']
-                elif mip != _model['mip']:
-                    raise NamelistError("Ambigous mip for variable {}"
-                                        .format(variable))
-    return mip
+    if len(values) > 1:
+        raise NamelistError("Ambigous values {} for property {}".format(
+            values, key))
+    return values.pop()
 
 
-def _get_standard_name(variable, model, mip=None):
-    """Get standard_name.
-
-    First look in variable, then try to look it up in CMOR tables.
-    """
+def _get_standard_name(variable):
+    """Get variable standard_name."""
     standard_name = None
-    if 'standard_name' in variable:
-        standard_name = variable['standard_name']
-    elif mip and model['project'] in CMOR_TABLES:
-        variable_info = CMOR_TABLES[model['project']].get_variable(
-            mip, variable['short_name'])
+    if variable['project'] in CMOR_TABLES:
+        variable_info = CMOR_TABLES[variable['project']].get_variable(
+            variable['mip'], variable['short_name'])
         if variable_info.standard_name:
             standard_name = variable_info.standard_name
 
     return standard_name
 
 
-def get_default_settings(variable, model):
+def get_single_model_settings(variable):
     """Get default preprocessor settings."""
-    mip = model['mip'] if 'mip' in model else variable.get('mip')
-
     cfg = {}
 
     # Configure loading
     cfg['load'] = {
+        'constraints': variable['standard_name'],
         'callback': merge_callback,
     }
-    # If possible, constrain loading to a cube with required standard_name.
-    standard_name = _get_standard_name(variable, model, mip)
-    if standard_name:
-        cfg['load']['constraints'] = standard_name
 
     # Configure fixes
     fixcfg = {
-        'project': model['project'],
-        'model': model['name'],
+        'project': variable['project'],
+        'model': variable['model'],
         'short_name': variable['short_name'],
     }
     cfg['fix_file'] = dict(fixcfg)
     # Only supply mip if the CMOR check fixes are implemented.
-    if model['project'] in CMOR_TABLES:
-        fixcfg['mip'] = mip
+    if variable['project'] in CMOR_TABLES:
+        fixcfg['mip'] = variable['mip']
     cfg['fix_metadata'] = dict(fixcfg)
     cfg['fix_data'] = dict(fixcfg)
 
     # Configure time extraction
     cfg['extract_time'] = {
-        'yr1': model['start_year'],
-        'yr2': model['end_year'] + 1,
+        'yr1': variable['start_year'],
+        'yr2': variable['end_year'] + 1,
         'mo1': 1,
         'mo2': 1,
         'd1': 1,
@@ -163,45 +143,43 @@ def get_default_settings(variable, model):
     return cfg
 
 
-def get_preprocessor_task(settings, all_models, model, variable, user_config):
+def get_single_model_task(variable, settings, user_config, debug=False):
     """Get a preprocessor task for a single model"""
-    settings = copy.deepcopy(settings)
-
-    # Find mip for CMOR fixes and determining standard_name.
-    if not ('mip' in model or 'mip' in variable):
-        mip = _get_mip(variable, model, all_models)
-        if mip:
-            variable['mip'] = mip
+    logger.info("Configuring single-model task for %s variable %s",
+                variable['model'], variable['short_name'])
+    settings = select_single_model_settings(settings)
 
     # Get default preprocessor configuration
-    pre = get_default_settings(variable, model)
+    cfg = get_single_model_settings(variable)
 
     # Set up input files
     input_files = get_input_filelist(
-        project_info={'GLOBAL': user_config}, model=model, var=variable)
+        project_info={'GLOBAL': user_config}, model=variable, var=variable)
 
     # Do not download if files are already available locally
     if input_files and 'download' in settings:
         del settings['download']
 
     if 'download' in settings and settings['download'] is True:
-        input_files = synda_search(model, variable)
-        pre['download'] = {
-            'model': model,
-            'variable': variable,
-            'rootpath': user_config['rootpath'],
-            'drs': user_config['drs'],
+        input_files = synda_search(variable)
+        local_dir = os.path.dirname(
+            get_input_filename(
+                variable=variable,
+                rootpath=user_config['rootpath'],
+                drs=user_config['drs']))
+        cfg['download'] = {
+            'dest_folder': local_dir,
         }
 
     if not input_files:
-        raise NamelistError("No input files found for model {} "
-                            "variable {}".format(model, variable))
+        raise NamelistError("No input files found for variable {} "
+                            .format(variable))
 
     # Configure saving to output files
     output_file = get_output_file(
-        project_info={'GLOBAL': user_config}, model=model, var=variable)
+        project_info={'GLOBAL': user_config}, model=variable, var=variable)
 
-    pre['save'] = {
+    cfg['save'] = {
         'target': output_file,
     }
 
@@ -209,32 +187,48 @@ def get_preprocessor_task(settings, all_models, model, variable, user_config):
     for step, args in settings.items():
         # Remove disabled preprocessor functions
         if args is False:
-            if step in pre:
-                del pre[step]
+            if step in cfg:
+                del cfg[step]
             continue
         # Enable/update functions without keywords
-        if step not in pre:
-            pre[step] = {}
-        if args is not True:
-            for arg, value in args.items():
-                pre[step][arg] = value
+        if step not in cfg:
+            cfg[step] = {}
+        if isinstance(args, dict):
+            cfg[step].update(args)
 
-    # Configure regrid if enabled
-    if 'regrid' in pre and 'target_grid' in pre['regrid']:
-        # if the target grid is a model, replace with filename
-        target_grid_model = _find_model(
-            full_models=all_models, short_model=pre['regrid']['target_grid'])
-        if target_grid_model:
-            if target_grid_model == model:
-                del pre['regrid']
-            else:
-                files = get_input_filelist(
-                    project_info={'GLOBAL': user_config},
-                    model=target_grid_model,
-                    var=variable)
-                pre['regrid']['target_grid'] = files[0]
+    if debug is True:
+        debug = {'paths': [output_file[:-3]]}
+    return PreprocessingTask(settings=cfg, input_data=input_files, debug=debug)
 
-    return PreprocessingTask(settings=pre, input_data=input_files)
+
+def get_multi_model_task(standard_name, settings, ancestors, debug=False):
+    """Get multi-model preprocessor tasks."""
+    logger.info("Configuring multi-model task")
+    settings = select_multi_model_settings(settings)
+
+    # Remove disabled steps
+    settings = {
+        step: settings[step]
+        for step in settings if settings[step] is not False
+    }
+    # Provide default keyword arguments for enabled steps
+    for step in settings:
+        if settings[step] is True:
+            settings[step] = {}
+
+    # Configure loading
+    settings['load'] = {'constraint': standard_name, 'mode': 'ordered'}
+
+    # Configure saving
+    files = [task.settings['save']['target'] for task in ancestors]
+    settings['save'] = {'targets': files}
+
+    if debug is True:
+        debug = {'paths': [f[:-3] for f in files]}
+    task = PreprocessingTask(
+        settings=settings, ancestors=ancestors, debug=debug)
+
+    return task
 
 
 class Namelist(object):
@@ -243,8 +237,8 @@ class Namelist(object):
     def __init__(self, raw_namelist, config_user):
         """Parse a namelist file into an object."""
         self._cfg = config_user
-        self._preprocessors = copy.deepcopy(raw_namelist['preprocessors'])
-        self._models = copy.deepcopy(raw_namelist['models'])
+        self._preprocessors = raw_namelist['preprocessors']
+        self._models = raw_namelist['models']
         self._diagnostics = self._initialize_diagnostics(
             raw_namelist['diagnostics'])
         self.tasks = self._initialize_tasks()
@@ -258,10 +252,10 @@ class Namelist(object):
         for name, raw_diagnostic in raw_diagnostics.items():
             diagnostic = {}
             diagnostic['name'] = name
-            diagnostic['models'] = self._initialize_models(
-                name, raw_diagnostic['models'])
+            models = self._initialize_models(name, raw_diagnostic['models'])
+            diagnostic['models'] = models
             diagnostic['variables'] = self._initialize_variables(
-                name, raw_diagnostic['variables'])
+                name, raw_diagnostic['variables'], models)
             diagnostic['script'] = self._initialize_script(
                 name, raw_diagnostic['script'])
             diagnostic['settings'] = copy.deepcopy(raw_diagnostic['settings'])
@@ -286,17 +280,31 @@ class Namelist(object):
         return models
 
     @staticmethod
-    def _initialize_variables(diagnostic_name, raw_variables):
+    def _initialize_variables(diagnostic_name, raw_variables, models):
         """Define variables in diagnostic"""
+
         logger.debug("Populating list of variables for diagnostic %s",
                      diagnostic_name)
 
-        variables = []
+        variables = {}
         for variable_name, raw_variable in raw_variables.items():
-            variable = copy.deepcopy(raw_variable)
-            if 'short_name' not in variable:
-                variable['short_name'] = variable_name
-            variables.append(variable)
+            variables[variable_name] = []
+            for model in models:
+                variable = copy.deepcopy(raw_variable)
+                variable.update(model)
+                if 'short_name' not in variable:
+                    variable['short_name'] = variable_name
+                if 'standard_name' not in variable:
+                    standard_name = _get_standard_name(variable)
+                    if standard_name:
+                        variable['standard_name'] = standard_name
+                variables[variable_name].append(variable)
+
+            for variable in variables[variable_name]:
+                for key in ('mip', 'standard_name'):
+                    if key not in variable:
+                        variable[key] = _get_value(key,
+                                                   variables[variable_name])
 
         return variables
 
@@ -336,9 +344,34 @@ class Namelist(object):
 
         return script
 
+    def _update_target_grid(self, variable, settings, all_models):
+        """Configure regrid target_grid in preprocessor settings."""
+
+        def issubset(sub, ref):
+            """Check if dict sub is a subset of dict ref."""
+            return all(ref.get(key, object()) == sub[key] for key in sub)
+
+        if 'regrid' in settings and 'target_grid' in settings['regrid']:
+            # if the target grid is a model, replace with filename
+            target_grid_model = _find_model(
+                full_models=all_models,
+                short_model=settings['regrid']['target_grid'])
+            if target_grid_model:
+                if issubset(target_grid_model, variable):
+                    # No need to regrid model onto itself
+                    del settings['regrid']
+                else:
+                    files = get_input_filelist(
+                        project_info={'GLOBAL': self._cfg},
+                        model=target_grid_model,
+                        var=variable)
+                    settings['regrid']['target_grid'] = files[0]
+
     def _initialize_tasks(self):
         """Define tasks in namelist"""
         logger.debug("Creating tasks from namelist")
+
+        debug_preprocessor = False
 
         tasks = []
 
@@ -347,38 +380,48 @@ class Namelist(object):
             logger.debug("Creating tasks for diagnostic %s", diagnostic_name)
 
             # Create preprocessor tasks
-            preproc_tasks = []
-            for variable in diagnostic['variables']:
-                preproc_id = variable['preprocessor']
-                settings = self._preprocessors[preproc_id]
-
+            for variable_name in diagnostic['variables']:
                 # Create single model tasks
-                for model in diagnostic['models']:
+                single_model_tasks = []
+                for variable in diagnostic['variables'][variable_name]:
+                    preproc_id = variable['preprocessor']
+                    settings = copy.deepcopy(self._preprocessors[preproc_id])
+                    self._update_target_grid(variable, settings,
+                                             diagnostic['models'])
+
                     task_id = '_'.join(
-                        str(item[key])
-                        for item in (variable, model) for key in sorted(item))
+                        str(variable[key]) for key in sorted(variable))
                     if task_id not in all_preproc_tasks:
-                        task = get_preprocessor_task(
-                            settings=settings,
-                            all_models=diagnostic['models'],
-                            model=model,
+                        task = get_single_model_task(
                             variable=variable,
+                            settings=settings,
                             user_config=self._cfg,
+                            debug=debug_preprocessor,
                         )
                         all_preproc_tasks[task_id] = task
-                    preproc_tasks.append(all_preproc_tasks[task_id])
+                    single_model_tasks.append(all_preproc_tasks[task_id])
 
-                # Create multi model tasks
-                # TODO: create tasks
+                # Create multi model task
+                task_id = variable_name
+                standard_name = variable['standard_name']
+                if task_id not in all_preproc_tasks:
+                    task = get_multi_model_task(
+                        standard_name=standard_name,
+                        settings=settings,
+                        ancestors=list(single_model_tasks),
+                        debug=debug_preprocessor,
+                    )
+                    all_preproc_tasks[task_id] = task
+                multi_model_task = all_preproc_tasks[task_id]
 
             # Create diagnostic task
-            task = DiagnosticTask(
+            diagnostic_task = DiagnosticTask(
                 # TODO: enable once DiagnosticTask.run() implemented
                 script=None,  # diagnostic['script'],
                 settings=diagnostic['settings'],
-                ancestors=preproc_tasks,
+                ancestors=[multi_model_task],
             )
-            tasks.append(task)
+            tasks.append(diagnostic_task)
 
         return tasks
 

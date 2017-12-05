@@ -130,7 +130,7 @@ def replace_tags(path, model, var):
                 replacewith = str(model[tag])
             else:
                 if tag == 'institute':
-                    replacewith = cmip5_model2inst(model['name'])
+                    replacewith = cmip5_model2inst(model['model'])
                 elif tag == 'freq':
                     replacewith = cmip5_mip2realm_freq(model['mip'])[1]
                 elif tag == 'realm':
@@ -140,7 +140,7 @@ def replace_tags(path, model, var):
         elif tag == 'tier':
             replacewith = ''.join(('Tier', str(model['tier'])))
         elif tag == 'model':
-            replacewith = model['name']
+            replacewith = model['model']
         else:  # all other cases use the corrsponding model dictionary key
             if tag in model:
                 replacewith = str(model[tag])
@@ -176,20 +176,14 @@ def read_config_file(project, cfg_file=None):
             project))
 
 
-def get_input_filename(model, variable, rootpath, drs):
+def get_input_filename(variable, rootpath, drs):
     """Return the expected path to input file.
 
     This function should match the function get_input_filelist below.
     """
-    project = model['project']
+    project = variable['project']
 
     cfg = read_config_file(project)
-
-    # Apply variable-dependent model keys
-    model = dict(model)
-    for key in 'mip', 'ensemble', 'exp':
-        if key in variable:
-            model[key] = variable[key]
 
     # Set the rootpath
     if project in rootpath:
@@ -204,7 +198,7 @@ def get_input_filename(model, variable, rootpath, drs):
     _drs = drs.get(project, 'default')
 
     if _drs in cfg['input_dir']:
-        dir2 = replace_tags(cfg['input_dir'][_drs], model, variable)
+        dir2 = replace_tags(cfg['input_dir'][_drs], variable, variable)
     else:
         raise KeyError(
             'drs {} for {} project not specified in config-developer file'
@@ -218,10 +212,10 @@ def get_input_filename(model, variable, rootpath, drs):
         dirname = os.path.join(part1, 'dummy', part2)
 
     # Set the filename
-    filename = replace_tags(cfg['input_file'], model, variable)
+    filename = replace_tags(cfg['input_file'], variable, variable)
     if filename.endswith('*'):
         filename = filename.rstrip(
-            '*') + "{start_year}01-{end_year}12.nc".format(**model)
+            '*') + "{start_year}01-{end_year}12.nc".format(**variable)
 
     # Full path to files
     return os.path.join(dirname, filename)

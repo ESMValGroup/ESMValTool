@@ -4,13 +4,17 @@
 ########################################################################
 from __future__ import print_function
 
+import logging
+
 import iris
 import numpy as np
 from iris.analysis import Aggregator
 from iris.util import rolling_window
 
+logger = logging.getLogger(__name__)
 
-def mask(cube, land_mask=None, ocean_mask=None):
+
+def mask_landocean(cube, land_mask=None, ocean_mask=None):
     """Mask land or ocean"""
     if land_mask or ocean_mask:
         raise NotImplementedError
@@ -284,3 +288,68 @@ def mask_threshold(mycube, threshold):
     # apply masking for threshold of MINIMUM value threshold
     mcube.data = ma.masked_less(mycube.data, threshold)
     return mcube
+
+
+def mask_fillvalues(cubes, threshold_fraction, min_value=-1.e10,
+                    time_window=1):
+    # function idea copied from preprocess.py
+
+    # Get the masks from all models
+    masks = (_get_fillvalues_mask(cube, threshold_fraction, min_value,
+                                  time_window) for cube in cubes)
+
+    # Combine all masks
+    combined_mask = None
+    for mask in masks:
+        if not np.all(mask):  # remove masks that mask everything
+            if combined_mask is None:
+                combined_mask = mask
+            else:
+                combined_mask |= mask
+
+    if np.any(combined_mask):
+        # Apply masks
+        logger.debug("Applying fillvalues mask")
+        for cube in cubes:
+            if not np.ma.isMaskedArray(cube.data):
+                cube.data = np.ma.asarray(cube.data)
+            cube.data.mask = combined_mask
+
+    return cubes
+
+
+def _get_fillvalues_mask(cube, threshold_fraction, min_value, time_window):
+    # function idea copied from preprocess.py
+    logger.info("Creating fillvalues mask")
+
+    # basic checks
+    if threshold_fraction < 0 or threshold_fraction > 1.0:
+        raise ValueError(
+            "Fraction of missing values {} should be between 0 and 1.0"
+            .format(threshold_fraction))
+    nr_time_points = len(cube.coord('time').points)
+    if time_window > nr_time_points:
+        logger.warning("Time window (in time units) larger "
+                       "than total time span")
+
+    max_counts_per_time_window = nr_time_points / time_window
+    # round to lower integer
+    counts_threshold = int(max_counts_per_time_window * threshold_fraction)
+
+    # Make an aggregator
+    spell_count = Aggregator(
+        'spell_count', count_spells, units_func=lambda units: 1)
+
+    # Calculate the statistic.
+    counts_windowed_cube = cube.collapsed(
+        'time',
+        spell_count,
+        threshold=min_value,
+        spell_length=time_window)
+
+    # Create mask
+    mask = counts_windowed_cube.data < counts_threshold
+    if np.ma.isMaskedArray(mask):
+        mask = mask.data | mask.mask
+
+    return mask

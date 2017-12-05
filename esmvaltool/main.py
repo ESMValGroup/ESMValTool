@@ -243,6 +243,7 @@ def process_namelist(namelist_file, global_config):
     # parse namelist
     namelist = read_namelist_file(namelist_file, global_config)
     # run (only preprocessors for now)
+    logger.debug("Namelist %s", namelist)
     namelist.run()
 
     os.environ['0_ESMValTool_version'] = __version__
@@ -316,11 +317,12 @@ def process_namelist(namelist_file, global_config):
     for diag_name, diag in project_info['DIAGNOSTICS'].items():
 
         project_info['RUNTIME']['currDiag'] = copy.deepcopy(diag)
-        project_info['ALLMODELS'] = diag['models']
 
-        for var in diag['variables']:
+        for name, variables in diag['variables'].items():
+            var = variables[0]
             project_info['RUNTIME']['derived_var'] = var['short_name']
             project_info['RUNTIME']['derived_field_type'] = var['field']
+            project_info['ALLMODELS'] = variables
 
             executable = diag['script'][-1]
             logger.info("Running diag_script: %s", executable)

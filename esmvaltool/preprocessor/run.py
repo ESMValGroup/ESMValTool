@@ -8,7 +8,7 @@ import iris
 from ..task import AbstractTask
 from .derive import derive, get_required
 from .download import download
-from .mask import mask
+from .mask import mask_fillvalues, mask_landocean
 from .multimodel import multi_model_mean
 from .reformat import fix_data, fix_file, fix_metadata
 from .regrid import vinterp as extract_levels
@@ -23,6 +23,14 @@ logger = logging.getLogger(__name__)
 
 def load_cubes(files, mode='merge', **kwargs):
     """Load iris cubes from files"""
+    if mode == 'ordered':
+        # load cubes in order of files
+        cubes = []
+        for path in files:
+            cube = iris.load_cube(path, **kwargs)
+            cubes.append(cube)
+        return cubes
+
     if mode == 'merge':
         cubes = iris.load(files, **kwargs)
         return cubes
@@ -35,14 +43,47 @@ def load_cubes(files, mode='merge', **kwargs):
     raise NotImplementedError("mode={} not supported".format(mode))
 
 
+def _save_cubes(cubes, **args):
+    """Save iris cube to file."""
+    filename = args['target']
+
+    dirname = os.path.dirname(filename)
+    os.makedirs(dirname, exist_ok=True)
+
+    if (os.path.exists(filename)
+            and all(cube.has_lazy_data() for cube in cubes)):
+        logger.warning("Not saving cubes %s to %s to avoid data loss. "
+                       "The cube is probably unchanged.", cubes, filename)
+    else:
+        logger.debug("Saving cubes %s to %s", cubes, filename)
+        iris.save(cubes, **args)
+
+    return filename
+
+
 def save_cubes(cubes, **args):
     """Save iris cubes to file."""
-    filename = args['target']
-    dirname = os.path.dirname(filename)
-    if not os.path.isdir(dirname):
-        os.makedirs(dirname)
-    iris.save(cubes, **args)
-    return filename
+    filenames = []
+
+    if 'target' in args:
+        filename = _save_cubes(cubes, **args)
+        filenames.append(filename)
+    elif 'targets' in args:
+        n_targets, n_cubes = len(args['targets']), len(cubes)
+        if n_targets < n_cubes:
+            logger.error("Only %s targets specified  for %s cubes:\n"
+                         "targets: %s\n"
+                         "cubes: %s", n_targets, n_cubes, args['targets'],
+                         cubes)
+            raise ValueError("Unable to save all cubes.")
+
+        for cube, target in zip(cubes, args.pop('targets')):
+            filename = _save_cubes([cube], target=target, **args)
+            filenames.append(filename)
+    else:
+        raise ValueError("No target(s) specified.")
+
+    return filenames
 
 
 # TODO: review preprocessor functions
@@ -65,7 +106,7 @@ PREPROCESSOR_FUNCTIONS = {
     # Regridding
     'regrid': regrid,
     # Masking
-    'mask': mask,
+    'mask_landocean': mask_landocean,
     # Region selection
     'extract_region': extract_region,
     # Grid-point operations
@@ -77,6 +118,7 @@ PREPROCESSOR_FUNCTIONS = {
     # 'diurnal_cycle': diurnal_cycle,
     'seasonal_mean': seasonal_mean,
     'multi_model_mean': multi_model_mean,
+    'mask_fillvalues': mask_fillvalues,
     # Save to file
     'save': save_cubes,
 }
@@ -92,31 +134,61 @@ DEFAULT_ORDER = (
     'derive',
     'extract_levels',
     'regrid',
-    'mask',
+    'mask_landocean',
+    'mask_fillvalues',
     'extract_region',
     'average_region',
     'seasonal_mean',
     'multi_model_mean',
     'save',
 )
-
 assert set(DEFAULT_ORDER) == set(PREPROCESSOR_FUNCTIONS)
 
-# Preprocessor functions that take a CubeList instead of a Cube as input.
+MULTI_MODEL_FUNCTIONS = {
+    'multi_model_mean',
+    'mask_fillvalues',
+}
+assert MULTI_MODEL_FUNCTIONS.issubset(set(PREPROCESSOR_FUNCTIONS))
+
+# Preprocessor functions that take a list instead of a file/Cube as input.
 _LIST_INPUT_FUNCTIONS = {
     'download',
     'load',
     'derive',
+    'mask_fillvalues',
     'multi_model_mean',
     'save',
 }
+assert _LIST_INPUT_FUNCTIONS.issubset(set(PREPROCESSOR_FUNCTIONS))
 
+# Preprocessor functions that return a list instead of a file/Cube.
 _LIST_OUTPUT_FUNCTIONS = {
     'download',
     'load',
+    'mask_fillvalues',
+    'save',
 }
+assert _LIST_OUTPUT_FUNCTIONS.issubset(set(PREPROCESSOR_FUNCTIONS))
 
-assert _LIST_INPUT_FUNCTIONS.issubset(set(PREPROCESSOR_FUNCTIONS))
+
+def select_single_model_settings(settings):
+    """Select settings that belong to a single model function."""
+    settings = {
+        step: settings[step]
+        for step in settings if step not in MULTI_MODEL_FUNCTIONS
+    }
+
+    return settings
+
+
+def select_multi_model_settings(settings):
+    """Select settings that belong to a multi model function."""
+    settings = {
+        step: settings[step]
+        for step in settings if step in MULTI_MODEL_FUNCTIONS
+    }
+
+    return settings
 
 
 def _as_ordered_dict(settings, order):
@@ -163,11 +235,6 @@ def get_single_model_task(settings, short_name=None):
     return task
 
 
-def get_multi_model_task(settings):
-    """Get a task for preprocessing multiple models"""
-    raise NotImplementedError
-
-
 class PreprocessingTask(AbstractTask):
     """Task for running the preprocessor"""
 
@@ -175,10 +242,12 @@ class PreprocessingTask(AbstractTask):
                  settings,
                  order=DEFAULT_ORDER,
                  ancestors=None,
-                 input_data=None):
+                 input_data=None,
+                 debug=None):
         """Initialize"""
         super(PreprocessingTask, self).__init__(settings, ancestors)
         self.order = list(order)
+        self.debug = debug
         self._input_data = input_data
 
     def _run(self, input_data):
@@ -187,7 +256,7 @@ class PreprocessingTask(AbstractTask):
         # specified in self.run(input_data), use default
         if not self.ancestors and not input_data:
             input_data = self._input_data
-        self.output_data = preprocess(input_data, settings)
+        self.output_data = preprocess(input_data, settings, debug=self.debug)
 
     def __str__(self):
         """Get human readable description."""
@@ -201,24 +270,39 @@ class PreprocessingTask(AbstractTask):
         return txt
 
 
-def preprocess(items, settings):
+def preprocess(items, settings, debug=None):
     """Run preprocessor"""
     for step, args in settings.items():
         logger.debug("Running preprocessor step %s", step)
         function = PREPROCESSOR_FUNCTIONS[step]
 
         if step in _LIST_INPUT_FUNCTIONS:
-            logger.debug("Running %s(%s, %s)", function, items, args)
+            logger.debug("Running %s(%s, %s)", function.__name__, items, args)
             result = [function(items, **args)]
         else:
             result = []
             for item in items:
-                logger.debug("Running %s(%s, %s)", function, item, args)
+                logger.debug("Running %s(%s, %s)", function.__name__, item,
+                             args)
                 result.append(function(item, **args))
 
         if step in _LIST_OUTPUT_FUNCTIONS:
             items = tuple(item for subitem in result for item in subitem)
         else:
             items = tuple(result)
+
+        if debug:
+            logger.debug("Result %s", items)
+            cubes = [
+                item for item in items if isinstance(item, iris.cube.Cube)
+            ]
+            if cubes:
+                targets = []
+                for path in debug['paths']:
+                    target = os.path.join(path, step + '.nc')
+                    if os.path.exists(target):
+                        target = target[:-3] + '_1.nc'
+                    targets.append(target)
+                save_cubes(cubes, targets=targets)
 
     return items

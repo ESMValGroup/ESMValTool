@@ -71,7 +71,7 @@ def get_figure_file_names(project_info, model):
     #     ])
     return "_".join([
         model['project'],
-        model['name'],
+        model['model'],
         str(model['start_year']) + "-" + str(model['end_year']),
     ])
 
@@ -120,7 +120,7 @@ def get_dict_key(model):
     if model['project'] == 'CMIP5':
         dict_key = "_".join([
             model['project'],
-            model['name'],
+            model['model'],
             model['mip'],
             model['exp'],
             model['ensemble'],
@@ -130,7 +130,7 @@ def get_dict_key(model):
     else:
         dict_key = "_".join([
             model['project'],
-            model['name'],
+            model['model'],
             str(model['start_year']),
             str(model['end_year']),
         ])
@@ -180,9 +180,14 @@ def get_diag_value(di, projinfomodels, v):
     elif v == 'diag_script_cfg':
         currentry = [di['cfg_file']]
     elif v == 'variables':
-        currentry = [s['short_name'] for s in di['variables']]
+        currentry = [
+            di['variables'][v][0]['short_name']
+            for v in sorted(di['variables'])
+        ]
     elif v == 'field_types':
-        currentry = [s['field'] for s in di['variables']]
+        currentry = [
+            di['variables'][v][0]['field'] for v in sorted(di['variables'])
+        ]
     elif v == 'var_attr_mip':
         currentry = [s['mip'] for s in projinfomodels if 'mip' in s.keys()]
     elif v == 'var_attr_exp':
@@ -344,7 +349,7 @@ class Data_interface(object):
         model_specifiers = [
             'project',
             'start_year',
-            'name',
+            'model',
             'exp',
             'mip',
             'end_year',
@@ -368,7 +373,7 @@ class Data_interface(object):
                 mdls = [
                     model['project'],
                     model['start_year'],
-                    model['name'],
+                    model['model'],
                     model['exp'],
                     model['mip'],
                     model['end_year'],
@@ -381,7 +386,7 @@ class Data_interface(object):
                 mdls = [
                     model['project'],
                     model['start_year'],
-                    model['name'],
+                    model['model'],
                     'exp',
                     'mip',
                     model['end_year'],
