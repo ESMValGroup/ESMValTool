@@ -50,22 +50,9 @@
 ;;    plot_units: plotting units (if different from standard CMOR units)
 ;;
 ;; Caveats
-;;    The reference model must be specified in the main namelsit in the
-;;    <variable> tag as <variable ref_model="XX">. An alternative model
-;;    can be also given, separated by a comme <variable ref_model="XX,"YY">.
-;;    Consistent regridding and a uniform missing value mask are applied to all
-;;    models before the diagnostics are calculated. Regarding the masking, the
-;;    following shall be considered:
-;;        - timesteps containg more than 100 * (1 - valid_fraction) % of
-;;          missing values are excluded from this procedure, to avoid
-;;          propagating missing values due to incomplete data coverage (e.g.,
-;;          vmrh2o in HALOE or hus in AIRS). The threshold can be set via
-;;          namelist (0.95 seem to work fine for most cases)
-;;        - for T3M fields, the operation is performed on a level basis, to
-;;          avoid propagating missing levels (from models/observations with
-;;          lower vertical extent, e.g., hus in AIRS) to other models.
-;;        - in any case, masks resulting only in missing values are excluded
-;;          and a warning is issued.
+;;    The reference model must be specified in the main namelist in the
+;;    variables dictionary as ref_model key. An alternative model can be also
+;;    given, using a python list.
 ;;
 ;; Modification history
 ;;    20171124_A_righ_ma: completely revised to adapt it to the new backend
