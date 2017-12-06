@@ -1,31 +1,29 @@
 #! /usr/bin/env python
-r"""ESMValTool - Earth System Model Evaluation Tool
+r"""
+ ______________________________________________________________________
+           _____ ____  __  ____     __    _ _____           _
+          | ____/ ___||  \/  \ \   / /_ _| |_   _|__   ___ | |
+          |  _| \___ \| |\/| |\ \ / / _` | | | |/ _ \ / _ \| |
+          | |___ ___) | |  | | \ V / (_| | | | | (_) | (_) | |
+          |_____|____/|_|  |_|  \_/ \__,_|_| |_|\___/ \___/|_|
+ ______________________________________________________________________
 
-______________________________________________________
-  _____ ____  __  ____     __    _ _____           _
- | ____/ ___||  \/  \ \   / /_ _| |_   _|__   ___ | |
- |  _| \___ \| |\/| |\ \ / / _` | | | |/ _ \ / _ \| |
- | |___ ___) | |  | | \ V / (_| | | | | (_) | (_) | |
- |_____|____/|_|  |_|  \_/ \__,_|_| |_|\___/ \___/|_|
-______________________________________________________
-
+ ESMValTool - Earth System Model Evaluation Tool
  http://www.esmvaltool.org/
-______________________________________________________________________
 
-CORE DEVELOPMENT TEAM AND CONTACTS:
-  Veronika Eyring (PI; DLR, Germany - veronika.eyring@dlr.de)
-  Bjoern Broetz (DLR, Germany - bjoern.broetz@dlr.de)
-  Nikolay Koldunov (AWI, Germany - nikolay.koldunov@awi.de)
-  Axel Lauer (DLR, Germany - axel.lauer@dlr.de)
-  Benjamin Mueller (LMU, Germany - b.mueller@iggf.geo.uni-muenchen.de)
-  Valeriu Predoi (URead, UK - valeriu.predoi@ncas.ac.uk)
-  Mattia Righi (DLR, Germany - mattia.righi@dlr.de)
-  Javier Vegas-Regidor (BSC, Spain - javier.vegas@bsc.es)
-______________________________________________________________________
-
-
-For further help, check the doc/-folder for pdfs
-and references therein. Have fun!
+ CORE DEVELOPMENT TEAM AND CONTACTS:
+   Veronika Eyring (PI; DLR, Germany - veronika.eyring@dlr.de)
+   Bjoern Broetz (DLR, Germany - bjoern.broetz@dlr.de)
+   Nikolay Koldunov (AWI, Germany - nikolay.koldunov@awi.de)
+   Axel Lauer (DLR, Germany - axel.lauer@dlr.de)
+   Benjamin Mueller (LMU, Germany - b.mueller@iggf.geo.uni-muenchen.de)
+   Valeriu Predoi (URead, UK - valeriu.predoi@ncas.ac.uk)
+   Mattia Righi (DLR, Germany - mattia.righi@dlr.de)
+   Javier Vegas-Regidor (BSC, Spain - javier.vegas@bsc.es)
+ ______________________________________________________________________
+ 
+ For further help, check the doc/-folder for pdfs
+ and references therein. Have fun!
 """
 
 # ESMValTool main script
@@ -109,13 +107,9 @@ def read_config_file(config_file, namelist_name):
         'exit_on_warning': False,
         'max_data_filesize': 100,
         'output_file_type': 'ps',
-        'run_dir': './',
-        'preproc_dir': './preproc/',
-        'work_dir': './work/',
-        'plot_dir': './plots/',
+        'output_dir': './output_dir',
         'save_intermediary_cubes': False,
         'run_diagnostic': True,
-        'user_tag': '',
     }
 
     for key in defaults:
@@ -124,31 +118,20 @@ def read_config_file(config_file, namelist_name):
                            "defaulting to %s", key, defaults[key])
             cfg[key] = defaults[key]
 
-    # expand ~ to /home/username in directory names and normalize paths
-    for key in cfg:
-        if key.endswith('_dir'):
-            cfg[key] = os.path.abspath(os.path.expanduser(cfg[key]))
-
-    for key in cfg['rootpath']:
-        cfg['rootpath'][key] = os.path.abspath(
-            os.path.expanduser(cfg['rootpath'][key]))
+    # expand ~ to /home/username in output directory and normalize path
+    cfg['output_dir'] = os.path.abspath(os.path.expanduser(cfg['output_dir']))
 
     # insert a directory date_time_namelist_usertag in the output paths
     now = datetime.datetime.utcnow().strftime("%Y%m%d_%H%M%S")
-    new_subdir = '_'.join((now, namelist_name))
-    if cfg['user_tag']:
-        new_subdir += '_' + cfg['user_tag']
+    new_subdir = '_'.join((namelist_name, now))
+    cfg['output_dir'] = os.path.join(cfg['output_dir'], new_subdir)
 
-    for key in 'preproc_dir', 'work_dir', 'plot_dir':
-        path = cfg[key]
-        if path.startswith(cfg['run_dir']):
-            cfg[key] = os.path.join(
-                os.path.dirname(path), new_subdir, os.path.basename(path))
-        else:
-            cfg[key] = os.path.join(path, new_subdir)
-
-    cfg['run_dir'] = os.path.join(cfg['run_dir'], new_subdir)
-
+    # create subdirectories
+    cfg['preproc_dir'] = os.path.join(cfg['output_dir'], 'preproc')
+    cfg['work_dir'] = os.path.join(cfg['output_dir'], 'work')
+    cfg['plot_dir'] = os.path.join(cfg['output_dir'], 'plots')
+    cfg['run_dir'] = os.path.join(cfg['output_dir'], 'tmp')
+    
     return cfg
 
 
@@ -165,12 +148,9 @@ def create_interface_data_dir(project_info, executable):
         The name of the created directory.
 
     """
-    now = datetime.datetime.utcnow().strftime("%Y%m%d_%H%M%S")
     interface_data = os.path.join(
-        project_info['GLOBAL']['work_dir'],
-        'interface_data',
-        project_info['RUNTIME']['currDiag'].id,
-        now + '_' + os.path.splitext(os.path.basename(executable))[0],
+        project_info['GLOBAL']['run_dir'],
+        project_info['RUNTIME']['currDiag'].id
     )
     os.makedirs(interface_data)
     return interface_data
@@ -307,15 +287,13 @@ def process_namelist(namelist_file, global_config):
     project_info['RUNTIME']['in_refs'] = in_refs
     logger.info("Using references from %s", in_refs)
 
-    # create workdir
-    if not os.path.isdir(project_info['GLOBAL']['work_dir']):
-        logger.info('Creating work_dir %s', project_info['GLOBAL']['work_dir'])
-        os.makedirs(project_info['GLOBAL']['work_dir'])
-
-    # create rundir
-    if not os.path.isdir(project_info['GLOBAL']['run_dir']):
-        logger.info('Creating run_dir %s', project_info['GLOBAL']['run_dir'])
-        os.makedirs(project_info['GLOBAL']['run_dir'])
+    # create directories
+    for key in project_info['GLOBAL']:
+        if key.endswith('_dir'):
+            print(key)
+            if not os.path.isdir(project_info['GLOBAL'][key]):
+                logger.info('Creating work_dir %s', project_info['GLOBAL'][key])
+                os.makedirs(project_info['GLOBAL'][key])
 
     # create refs-acknows file in run_dir (empty if existing)
     with open(out_refs, "w"):
