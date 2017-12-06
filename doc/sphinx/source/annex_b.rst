@@ -15,10 +15,10 @@ changes into the ESMValTool. For general information on Git, see e.g. the online
 https://www.git-scm.com/doc.
 
 .. .. _fig_1:
-.. .. figure::  ../../source/figures/Attention.png
+.. .. figure::  /figures/Attention.png
 ..    :align:   center
 .. note::
-   .. figure::  ../../source/figures/Attention.png
+   .. figure::  /figures/Attention.png
    The OPEN ESMValTool repository is located at https://github.com/ESMValGroup/ESMValTool.
    The PRIVATE ESMValTool repository for the ESMValTool development team is located at https://github.com/ESMValGroup/ESMValTool-private
 
@@ -65,7 +65,7 @@ a Unix-like operating system. For a general introduction to Git tutorials such a
 https://www.git-scm.com/docs/gittutorial are recommended.
 
 .. _fig_git:
-.. figure::  ../../source/figures/git_diagram.png
+.. figure::  /figures/git_diagram.png
    :align:   center
 
    Schematic diagram of the ESMValTool GitHub repositories. *FEATURE BRANCHES* can only be created by members of the ESMValTool Development Team. The naming convention for *FEATURE BRANCHES* is <Project>_<myfeature>.
@@ -99,12 +99,12 @@ open domain!
 * Login to GitHub.com
 * On GitHub, go to the website of the ESMValTool repository (e.g., https://github.com/ESMValGroup/ESMValTool) and click on the button "fork"
 
-.. figure::  ../../source/figures/git_fork.png
+.. figure::  /figures/git_fork.png
 
 * Choose to create the fork of the ESMValTool repository under your account
 * Select the "*DEVELOPMENT BRANCH*" and create a new *FEATURE BRANCH* for the diagnostic/feature you want to implement. Please follow the following naming convention for your new *FEATURE BRANCH*: <Project>_<myfeature>.
 
-.. figure::  ../../source/figures/git_branch.png
+.. figure::  /figures/git_branch.png
 
 * On this fork click the button "Clone or Download" and copy the URL shown there
 * Open a terminal window and go to the folder where you would like to store your local copy of the ESMValTool source code
@@ -198,7 +198,7 @@ developments (>2 weeks).
 * Click on the button create *FEATURE BRANCH*
 * Select the *"DEVELOPMENT" BRANCH* and create a new feature branch for the diagnostic/feature you want to implement. Please follow the following naming convention for your new *FEATURE BRANCH*: <Project>_<myfeature>.
 
-.. figure::  ../../source/figures/git_branch_2.png
+.. figure::  ./figures/git_branch_2.png
 
 * Click the button “Clone or Download” and copy the URL shown there
 * Open a terminal window and go to the folder where you would like to store your local copy of the ESMValTool source

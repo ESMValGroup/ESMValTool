@@ -149,114 +149,114 @@ Example plots
 -------------
 
 .. _fig_esacci_1:
-.. figure::  ../../source/namelists/figures/esacci/Lauer17_fig01.png
+.. figure::  /namelists/figures/esacci/Lauer17_fig01.png
    :align:   center
    :width:   14cm
 
    Relative space-time root-mean-square deviation (RMSD) calculated from the climatological seasonal cycle of the CMIP5 simulations (Lauer et al. 2017, Fig. 1).
 
 .. _fig_esacci_2:
-.. figure::  ../../source/namelists/figures/esacci/Lauer17_fig02.png
+.. figure::  /namelists/figures/esacci/Lauer17_fig02.png
    :align:   center
 
    Extended Taylor diagrams showing the multi-year annual average performance of CMIP5 models in comparison with ESA CCI data (Lauer et al. 2017, Fig. 2).
 
 .. _fig_esacci_3:
-.. figure::  ../../source/namelists/figures/esacci/Lauer17_fig03.png
+.. figure::  /namelists/figures/esacci/Lauer17_fig03.png
    :align:   center
    :width:   14cm
 
    Temporal means of SST in K for the ESA CCI data set (top right) and the CMIP5 model MPI-ESM (top left) as well as absolute (bottom left) and relative differences (bottom right) (Lauer et al. 2017, Fig. 3).
 
 .. _fig_esacci_4:
-.. figure::  ../../source/namelists/figures/esacci/Lauer17_fig04.png
+.. figure::  /namelists/figures/esacci/Lauer17_fig04.png
    :align:   center
    :width:   11cm
 
    Time series of SST for different ocean basins from 7 CMIP5 models compared with the ESA CCI SST data (Lauer et al. 2017, Fig. 4).
 
 .. _fig_esacci_5:
-.. figure::  ../../source/namelists/figures/esacci/Lauer17_fig05.png
+.. figure::  /namelists/figures/esacci/Lauer17_fig05.png
    :align:   center
    :width:   10cm
 
    Evolution (1960-2020) of September Arctic sea ice extent in million km\ :sup:`2`\  from the CMIP5 models (colored lines) and from observations (thick black lines) (Lauer et al. 2017, Fig. 5).
 
 .. _fig_esacci_6:
-.. figure::  ../../source/namelists/figures/esacci/Lauer17_fig06.png
+.. figure::  /namelists/figures/esacci/Lauer17_fig06.png
    :align:   center
    :width:   12cm
 
    Polar-stereographic map of Arctic September (upper row) and Antarctic March (lower row) sea ice concentration from ESA CCI SI SSM/I (left column) and NSIDC-NT (middle column) observations averaged over the years 1992-2008. The right column depicts the differences between the CMIP5 multi-model mean and the ESA CCI SI SSM/I observations averaged over the years 1992-2005 (Lauer et al. 2017, Fig. 6).
 
 .. _fig_esacci_7
-.. figure::  ../../source/namelists/figures/esacci/Lauer17_fig07.png
+.. figure::  /namelists/figures/esacci/Lauer17_fig07.png
    :align:   center
 
    Maps of the multi-years seasonal mean of total cloud cover, 1-sigma uncertainty from ESA CCI cloud, the differences between the ESA CCI data and the CMIP5 multi-model mean, and zonal means (Lauer et al. 2017, Fig. 7).
 
 .. _fig_esacci_8
-.. figure::  ../../source/namelists/figures/esacci/Lauer17_fig08.png
+.. figure::  /namelists/figures/esacci/Lauer17_fig08.png
    :align:   center
 
    Interannual variability in total cloud cover estimate from relative temporal standard deviation of the deseasonalized monthly means time series from 1982 to 2014 (Lauer et al. 2017, Fig. 8).
 
 .. _fig_esacci_9:
-.. figure::  ../../source/namelists/figures/esacci/Lauer17_fig09.png
+.. figure::  /namelists/figures/esacci/Lauer17_fig09.png
    :align:   center
 
    Temporal mean fields of volumetric soil moisture from the CNRM-CM5 model (top left), the ESA CCI soil moisture data set (top right) as well as their absolute (bottom left) and relative differenecs (bottom right) (Lauer et al. 2017, Fig. 9).
 
 .. _fig_esacci_10:
-.. figure::  ../../source/namelists/figures/esacci/Lauer17_fig10.png
+.. figure::  /namelists/figures/esacci/Lauer17_fig10.png
    :align:   center
 
    Temporal trend in soil moisture over the period 1988-2008 as derived from the CNRM-CM5 model (left) and the ESA CCI soil moisture data sets (right) (Lauer et al. 2017, Fig. 10).
 
 .. _fig_esacci_11:
-.. figure::  ../../source/namelists/figures/esacci/Lauer17_fig11.png
+.. figure::  /namelists/figures/esacci/Lauer17_fig11.png
    :align:   center
    :width:   11cm
 
    Percentile maps for ESA CCI soil moisture (left column) and soil moisture from CNRM-CM5 (right column) (Lauer et al. 2017, Fig. 11).
 
 .. _fig_esacci_12:
-.. figure::  ../../source/namelists/figures/esacci/Lauer17_fig12.png
+.. figure::  /namelists/figures/esacci/Lauer17_fig12.png
    :align:   center
    :width:   11cm
 
    Area fraction (%) of forest and shrub cover in the MPI-ESM-MR model (top left) and the ESA CCI land cover data set (top right) and absolute (bottom left) and relative differences (bottom right) (Lauer et al. 2017, Fig. 12).
 
 .. _fig_esacci_13:
-.. figure::  ../../source/namelists/figures/esacci/Lauer17_fig14.png
+.. figure::  /namelists/figures/esacci/Lauer17_fig14.png
    :align:   center
    :width:   14cm
 
    Climatological mean AOD (left column), fine mode optical depth (middle) and absorption optical depth (right column) at 550 nm averaged over the period 1997-2011. The first row shows the the observations (ESA CCI ATSR SU v4.21), the other rows the differences between selected CMIP5 models with interactive aerosols and the ESA CCI data (Lauer et al. 2017, Fig. 14).
 
 .. _fig_esacci_14:
-.. figure::  ../../source/namelists/figures/esacci/Lauer17_fig15.png
+.. figure::  /namelists/figures/esacci/Lauer17_fig15.png
    :align:   center
    :width:   12cm
 
    Comparison of AOD at 550 nm from the ESA CCI ATSR SU v4.21 and the MODIS Terra C6 satellite products against the AERONET ground-based measurements for the period 2003-2011. The top row shows the AERONET values as open circles plotted on top of the satellite data averaged over the same time period. The bottom row shows scatter plots of spatially and temporally collocated measurements on a monthly-mean basis (Lauer et al. 2017, Fig. 15).
 
 .. _fig_esacci_15:
-.. figure::  ../../source/namelists/figures/esacci/Lauer17_fig16.png
+.. figure::  /namelists/figures/esacci/Lauer17_fig16.png
    :align:   center
    :width:   12cm
 
    Time series of area-weighted total column ozone from 1960 to 2010 for a) global annual mean (90°S-90°N) and b) Antarctic October mean (60°S-90°S). The figure shows the multi-model mean (black line) and standard deviation (gray shading) as well as individual CMIP5 models with interactive chemistry (colored lines) compared with ESA CCI (filled circles) and NIWA (open triangles) data (Lauer et al. 2017, Fig. 16).
 
 .. _fig_esacci_16:
-.. figure::  ../../source/namelists/figures/esacci/Lauer17_fig17.png
+.. figure::  /namelists/figures/esacci/Lauer17_fig17.png
    :align:   center
    :width:   14cm
 
    Vertical ozone profile climatologies (2007-2008) at a) 80°N in March, b) the equator in March, and c) at 80°S in October from individual CMIP5 models with interactive chemistry (colored lines) and the ESA CCI ozone data set (solid black line). The multi-model mean (MMM) is shown as a red solid line with one standard deviation of the inter-model spread shown as the light-blue shaded area (Lauer et al. 2017, Fig. 17).
 
 .. _fig_esacci_17:
-.. figure::  ../../source/namelists/figures/esacci/Lauer17_fig18.png
+.. figure::  /namelists/figures/esacci/Lauer17_fig18.png
    :align:   center
    :width:   12cm
 
@@ -267,14 +267,14 @@ Example plots
     \clearpage 
 
 .. _fig_esacci_18:
-.. figure::  ../../source/namelists/figures/esacci/Lauer17_fig19.png
+.. figure::  /namelists/figures/esacci/Lauer17_fig19.png
    :align:   center
    :width:   13cm
 
    Time series of column averaged carbon dioxide (XCO\ :sub:`2`\) from 2003 to 2014 from the CMIP5 emission driven simulations for the historical period (2003 to 2005) extended with RCP8.5 simulations (from 2006 to 2014) in comparison with the ESA CCI GHG XCO\ :sub:`2` data (Lauer et al. 2017, Fig. 19).
 
 .. _fig_esacci_19:
-.. figure::  ../../source/namelists/figures/esacci/Lauer17_fig20.png
+.. figure::  /namelists/figures/esacci/Lauer17_fig20.png
    :align:   center
    :width:   14cm
 

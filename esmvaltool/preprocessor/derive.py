@@ -40,13 +40,13 @@ def calc_lwp(cubes):
     project = clwvi_cube.attributes['project_id']
     # Should we check that the model/project_id are the same on both cubes?
 
-    BAD_MODELS = [
+    bad_models = [
         'CESM1-CAM5-1-FV2', 'CESM1-CAM5', 'CMCC-CESM', 'CMCC-CM', 'CMCC-CMS',
         'IPSL-CM5A-MR', 'IPSL-CM5A-LR', 'IPSL-CM5B-LR', 'CCSM4',
         'IPSL-CM5A-MR', 'MIROC-ESM', 'MIROC-ESM-CHEM', 'MIROC-ESM',
         'CSIRO-Mk3-6-0', 'MPI-ESM-MR', 'MPI-ESM-LR', 'MPI-ESM-P'
     ]
-    if ((project in ["CMIP5", "CMIP5_ETHZ"] and model in BAD_MODELS)
+    if ((project in ["CMIP5", "CMIP5_ETHZ"] and model in bad_models)
             or (project == 'OBS' and model == 'UWisc')):
         print("INFO: assuming that variable clwvi from {} model {} "
               "contains only liquid water".format(project, model))
@@ -127,16 +127,16 @@ def _create_pressure_array(tro3_cube, ps_cube, top_limit):
     """
     # create 4D array filled with pressure level values
     p_levels = tro3_cube.coord('air_pressure').points
-    p_4D_array = iris.util.broadcast_to_shape(p_levels, tro3_cube.shape, [1])
-    assert p_4D_array.shape == tro3_cube.shape
+    p_4d_array = iris.util.broadcast_to_shape(p_levels, tro3_cube.shape, [1])
+    assert p_4d_array.shape == tro3_cube.shape
 
     # create 4d array filled with surface pressure values
     shape = tro3_cube.shape
-    ps_4D_array = iris.util.broadcast_to_shape(ps_cube.data, shape, [0, 2, 3])
-    assert ps_4D_array.shape == tro3_cube.shape
+    ps_4d_array = iris.util.broadcast_to_shape(ps_cube.data, shape, [0, 2, 3])
+    assert ps_4d_array.shape == tro3_cube.shape
 
     # set pressure levels below the surface pressure to NaN
-    pressure_4d = np.where((ps_4D_array - p_4D_array) < 0, np.NaN, p_4D_array)
+    pressure_4d = np.where((ps_4d_array - p_4d_array) < 0, np.NaN, p_4d_array)
 
     # make top_limit last pressure level
     top_limit_array = np.ones(ps_cube.shape) * top_limit
@@ -172,11 +172,10 @@ def _p_level_widths(array):
     elements less.
 
     >>> _p_level_widths(np.array([1020, 1000, 700, 500, 5]))
-    [170 250 595]
-
+    array([ 170.,  250.,  595.])
 
     >>> _p_level_widths(np.array([990, np.NaN, 700, 500, 5]))
-    [0 390 595]
+    array([   0.,  390.,  595.])
     """
     surface_pressure = array[0]
     top_limit = array[-1]

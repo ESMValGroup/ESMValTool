@@ -68,7 +68,7 @@ Example plots
 -------------
 
 .. _fig_precip_sm:
-.. figure:: ../../source/namelists/figures/precip_sm/precip_sm_fig1.png
+.. figure:: /namelists/figures/precip_sm/precip_sm_fig1.png
    :width: 60%
 
    CNRM-CM5_sm_pr_diag_plot (CNRM-CM5, 3hr, amip, r1i1p1, 1999-2008).

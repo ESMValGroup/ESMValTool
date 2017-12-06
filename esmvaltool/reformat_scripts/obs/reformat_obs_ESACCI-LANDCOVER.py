@@ -41,6 +41,7 @@
 ##
 ###############################################################################
 """
+from __future__ import print_function
 
 import datetime
 import os
@@ -51,6 +52,7 @@ import tempfile
 import numpy as np
 from cdo import Cdo
 
+sys.path.append(os.path.join(os.path.dirname(__file__), 'lib', 'python'))  # noqa
 from preprocessing_basics import _get_files_in_directory
 
 inpath = "/Work/Reference/OBS_ESACCI_LC/"
@@ -79,11 +81,8 @@ field = "T2Ms"
 
 timestep = "monthly"
 
-basicpath = "./lib/python/"
-
 pathname = os.path.dirname(sys.argv[0])
 os.chdir(os.path.abspath(pathname))
-sys.path.append(basicpath)
 
 
 def main():
@@ -97,7 +96,7 @@ def main():
         file_list, list_length = _get_files_in_directory(
             inpath, '*P5Y-' + str(year) + '*.nc', False)
         for locfile in file_list:
-            lctool_Command = [
+            lctool_command = [
                 "bash",
                 os.path.join(path2lctool, "bin", "aggregate-map.sh"),
                 "-PgridName=GEOGRAPHIC_LAT_LON",
@@ -107,9 +106,9 @@ def main():
                 "-PoutputLCCSClasses=false",
                 locfile,
             ]
-            process = subprocess.Popen(lctool_Command, stdout=subprocess.PIPE)
+            process = subprocess.Popen(lctool_command, stdout=subprocess.PIPE)
             for line in iter(process.stdout.readline, b''):
-                print line,
+                print(line, end=' ')
                 process.stdout.close()
             process.wait()
 
@@ -230,7 +229,7 @@ def _preprocess_observations(mainfile,
         os.remove(tmpfile2)
 
     else:
-        print mainfile
+        print(mainfile)
         assert False, "cannot find any files!"
 
 

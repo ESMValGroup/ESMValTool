@@ -37,13 +37,13 @@ References
 
 TBD
 
-
+q
 Example plots
 -------------
 
 TBD
 
-.. figure:: ../../source/namelists/figures/TBDNAMELIST/TBDFIG.png
+.. figure:: /namelists/figures/TBDNAMELIST/TBDnnFIG.png
    :scale: 50 %
    :alt: xxxx
    

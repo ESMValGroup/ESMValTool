@@ -130,21 +130,21 @@ Example plots
 
 .. centered:: |pic_carbcyc_1| |pic_carbcyc_2|
 
-.. |pic_carbcyc_1| image:: ../../source/namelists/figures/carbon_cycle/fig_carbon_cycle_1.png
+.. |pic_carbcyc_1| image:: /namelists/figures/carbon_cycle/fig_carbon_cycle_1.png
    :width: 45%
 
-.. |pic_carbcyc_2| image:: ../../source/namelists/figures/carbon_cycle/fig_carbon_cycle_2.png
+.. |pic_carbcyc_2| image:: /namelists/figures/carbon_cycle/fig_carbon_cycle_2.png
    :width: 45%
 
 .. centered:: |pic_carbcyc_3| |pic_carbcyc_4|
 
-.. |pic_carbcyc_3| image:: ../../source/namelists/figures/carbon_cycle/fig_carbon_cycle_3.png
+.. |pic_carbcyc_3| image:: /namelists/figures/carbon_cycle/fig_carbon_cycle_3.png
    :width: 45%
 
-.. |pic_carbcyc_4| image:: ../../source/namelists/figures/carbon_cycle/fig_carbon_cycle_4.png
+.. |pic_carbcyc_4| image:: /namelists/figures/carbon_cycle/fig_carbon_cycle_4.png
    :width: 45%
 
-.. figure:: ../../source/namelists/figures/carbon_cycle/fig_carbon_cycle_5.png
+.. figure:: /namelists/figures/carbon_cycle/fig_carbon_cycle_5.png
    :width: 50%
    :align: center
 

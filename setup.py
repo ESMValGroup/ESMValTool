@@ -16,6 +16,7 @@ from setuptools import Command, setup
 
 PACKAGES = [
     'esmvaltool',
+    'doc', # install doc/MASTER_authors-refs-acknow.txt
 ]
 
 
@@ -69,6 +70,8 @@ class RunTests(CustomCommand):
         report_dir = 'test-reports/python{}'.format(version)
         errno = pytest.main([
             'tests',
+            'esmvaltool',  # for doctests
+            '--doctest-modules',
             '--ignore=tests/test_diagnostics',
             '--cov=esmvaltool',
             '--cov-report=term',
@@ -100,7 +103,7 @@ class RunLinter(CustomCommand):
             'util',
         ]
         ignore = [
-            'esmvaltool/doc/sphinx',
+            'doc/',
         ]
 
         # try to install missing dependencies and import prospector
@@ -173,6 +176,7 @@ with open('README.md') as readme:
             'pytest',
             'pytest-cov',
             'pytest-html',
+            'pytest-metadata>=1.5.1',
         ],
         entry_points={
             'console_scripts': [

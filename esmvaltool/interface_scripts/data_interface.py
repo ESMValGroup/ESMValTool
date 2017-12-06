@@ -452,7 +452,7 @@ class Ncl_data_interface(Data_interface):
         class_regex = re.compile(class_prefix + '$')
         if 'diag_script_cfg' in vars(self.interface).keys():
             if class_regex.search(self.interface.diag_script_cfg[0]) is None:
-                del (self.interface.diag_script_cfg)
+                del self.interface.diag_script_cfg
 
     def write_data_to_interface(self):
         """ @brief Write the configuration data to NCL format
@@ -465,7 +465,8 @@ class Ncl_data_interface(Data_interface):
 
         template = os.path.join(
             os.path.dirname(os.path.dirname(__file__)),
-            "interface_data",
+            "interface_scripts",
+            "templates",
             "ncl_interface_templates",
             "ncl.tmpl",
         )
@@ -573,7 +574,8 @@ class R_data_interface(Data_interface):
         """
         template = os.path.join(
             os.path.dirname(os.path.dirname(__file__)),
-            "interface_data",
+            "interface_scripts",
+            "templates",
             "r_interface_templates",
             "r.tmpl",
         )

@@ -71,7 +71,7 @@ References
 Example plots
 -------------
 
-.. figure:: ../../source/namelists/figures/spi/fig1.png
+.. figure:: /namelists/figures/spi/fig1.png
    :width: 100%
    
 

@@ -25,7 +25,7 @@ CMIP5:
     ETHZ: '[exp]/[mip]/[var]/[model]/[ensemble]/'
     SMHI: '[model]/[ensemble]/[exp]/[freq]'
   input_file: '[var]_[mip]_[model]_[exp]_[ensemble]_*'
-  output_file: '[model]_[mip]_[exp]_[ensemble]_[field]_[var]_[start_year]-[end_year]'
+  output_file: '[project]_[model]_[mip]_[exp]_[ensemble]_[field]_[var]_[start_year]-[end_year]'
 
 OBS:
   input_dir:

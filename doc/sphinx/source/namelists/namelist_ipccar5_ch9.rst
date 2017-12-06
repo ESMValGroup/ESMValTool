@@ -165,82 +165,82 @@ Example plots
 -------------
 
 
-.. figure:: ../../source/namelists/figures/ipccar5_ch9/fig-9-2.png
+.. figure:: /namelists/figures/ipccar5_ch9/fig-9-2.png
    :width: 80%
 
    Resembling Flato et al. (2013), Fig. 9.2a,b,c.
 
-.. figure:: ../../source/namelists/figures/ipccar5_ch9/fig-9-3.png
+.. figure:: /namelists/figures/ipccar5_ch9/fig-9-3.png
    :width: 80%
 
    Resembling Flato et al. (2013), Fig. 9.3.
 
-.. figure:: ../../source/namelists/figures/ipccar5_ch9/fig-9-4.png
+.. figure:: /namelists/figures/ipccar5_ch9/fig-9-4.png
    :width: 80%
 
    Resembling Flato et al. (2013), Fig. 9.4.
 
-.. figure:: ../../source/namelists/figures/ipccar5_ch9/fig3_ipccar5_ch9.png
+.. figure:: /namelists/figures/ipccar5_ch9/fig3_ipccar5_ch9.png
    :width: 60%
 
    Resembling Flato et al. (2013), Fig. 9.5 (Eyring et al., 2016: Fig. 12).
 
-.. figure:: ../../source/namelists/figures/ipccar5_ch9/fig4_ipccar5_ch9.png
+.. figure:: /namelists/figures/ipccar5_ch9/fig4_ipccar5_ch9.png
    :width: 80%
 
    Resembling Flato et al. (2013), Fig. 9.7 (Eyring et al., 2016: Fig. 2).
 
-.. figure:: ../../source/namelists/figures/ipccar5_ch9/fig-9-8.png
+.. figure:: /namelists/figures/ipccar5_ch9/fig-9-8.png
    :width: 80%
 
    Resembling Flato et al. (2013), Fig. 9.8.
 
-.. figure:: ../../source/namelists/figures/ipccar5_ch9/fig5_ipccar5_ch9.png
+.. figure:: /namelists/figures/ipccar5_ch9/fig5_ipccar5_ch9.png
    :width: 60%
 
    Resembling Flato et al. (2013), Fig. 9.10 (Eyring et al., 2016: Fig. 25).
 
-.. figure:: ../../source/namelists/figures/ipccar5_ch9/fig6_ipccar5_ch9.png
+.. figure:: /namelists/figures/ipccar5_ch9/fig6_ipccar5_ch9.png
    :width: 80%
 
    Resembling Flato et al. (2013), Fig. 9.24 (Eyring et al., 2016: Fig. 17).
 
-.. figure:: ../../source/namelists/figures/ipccar5_ch9/fig7_ipccar5_ch9.png
+.. figure:: /namelists/figures/ipccar5_ch9/fig7_ipccar5_ch9.png
    :width: 80%
 
    Similar to Flato et al. (2013), Fig. 9.28.
 
-.. figure:: ../../source/namelists/figures/ipccar5_ch9/fig8_ipccar5_ch9.png
+.. figure:: /namelists/figures/ipccar5_ch9/fig8_ipccar5_ch9.png
    :width: 60%
 
    Resembling Flato et al. (2013), Fig. 9.29 (Eyring et al., 2016: Fig. 23).
 
-.. figure:: ../../source/namelists/figures/ipccar5_ch9/fig-9-30.png
+.. figure:: /namelists/figures/ipccar5_ch9/fig-9-30.png
    :width: 80%
 
    Similar to Flato et al. (2013), Fig. 9.30.
 
-.. figure:: ../../source/namelists/figures/ipccar5_ch9/fig-9-31.png
+.. figure:: /namelists/figures/ipccar5_ch9/fig-9-31.png
    :width: 60%
 
    Similar to Flato et al. (2013), Fig. 9.31.
 
-.. figure:: ../../source/namelists/figures/ipccar5_ch9/fig10_ipccar5_ch9.png
+.. figure:: /namelists/figures/ipccar5_ch9/fig10_ipccar5_ch9.png
    :width: 60%
 
    Resembling Flato et al. (2013), Fig. 9.32 (Eyring et al., 2016: Fig. 5).
 
-.. figure:: ../../source/namelists/figures/ipccar5_ch9/fig-9-35.png
+.. figure:: /namelists/figures/ipccar5_ch9/fig-9-35.png
    :width: 60%
 
    Resembling Flato et al. (2013), Fig. 9.35.
 
-.. figure:: ../../source/namelists/figures/ipccar5_ch9/fig-9-36.png
+.. figure:: /namelists/figures/ipccar5_ch9/fig-9-36.png
    :width: 60%
 
    Resembling Flato et al. (2013), Fig. 9.36.
 
-.. figure:: ../../source/namelists/figures/ipccar5_ch9/fig11_ipccar5_ch9.png
+.. figure:: /namelists/figures/ipccar5_ch9/fig11_ipccar5_ch9.png
    :width: 80%
 
    Resembling Flato et al. (2013), Fig. 9.45b (Eyring et al., 2016: Fig. 26).

@@ -34,7 +34,6 @@ dependencies:
 #- iris
 #- cartopy=0.15.*
 #- matplotlib=1.5.*
-#
 #- ncl
 #- hdf4=4.2.12
 #- hdf5=1.8.17

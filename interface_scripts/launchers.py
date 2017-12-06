@@ -228,7 +228,6 @@ class r_launcher(launchers):
                                            stdin=open(os.devnull),
                                            stdout=subprocess.PIPE,
                                            stderr=subprocess.STDOUT)
-        run_application.wait()
         std_outerr = run_application.communicate()[0].split('\n')
         self.write_stdouterr(std_outerr, verbosity, exit_on_warning)
 
@@ -332,7 +331,6 @@ class py_launcher(launchers):
         run_application = subprocess.Popen("python " + python_executable, shell=True,
                                            stdin=open(os.devnull),
                                            stdout=subprocess.PIPE)
-        run_application.wait()
         std_outerr = run_application.communicate()[0].split('\n')
         self.write_stdouterr(std_outerr, verbosity, exit_on_warning)
 
@@ -366,7 +364,6 @@ class shell_launcher(launchers):
                                            stdin=open(os.devnull),                         
                                            stdout=subprocess.PIPE,                         
                                            stderr=subprocess.PIPE)                         
-              run_application.wait()                                                       
               output = run_application.communicate()                                       
               std_out = filter(None,output[0].split('\n'))                                 
               std_err = filter(None,output[1].split('\n'))                                 
