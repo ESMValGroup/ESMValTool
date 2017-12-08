@@ -1702,7 +1702,7 @@ end
 ;;#############################################################################
 undef("get_ref_model_idx")
 function get_ref_model_idx(models[1]:logical,\
-                           model_ref_name[1]:string)
+                           model_ref_name:string)
 ;;
 ;; Arguments
 ;;    models: list of all models
@@ -1716,10 +1716,11 @@ function get_ref_model_idx(models[1]:logical,\
 ;; References
 ;;
 ;; Modification history
+;;    20171208-A_righ_ma: rewritten for the new backend
 ;;    20151109-A_righ_ma: moved from diag_scripts/aux/SAMonsson.ncl to here.
 ;;    2015????-A_eval_ma: written.
 ;;
-local funcname, scriptname, verbosity, idx_ref, idx_ref_sizes, idx_ref_tmp, idx, idx_ref_size
+local funcname, scriptname, verbosity, nrefs, idx_ref
 begin
 
     funcname = "get_ref_model_idx"
@@ -1727,19 +1728,18 @@ begin
     verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
     enter_msg(scriptname, funcname, 6)
 
-    model_refs = str_split(model_ref_name, ",")
+    nrefs = dimsizes(model_ref_name)
 
-    if (dimsizes(model_refs) .eq. 1) then
-         idx_ref = get_single_ref(models, model_refs)
-    else if (dimsizes(model_refs) .gt. 1) then
-        idx_ref_size = dimsizes(model_refs)
-        idx_ref = new(idx_ref_size, integer)
-        do idx = 0, idx_ref_size - 1
-            idx_ref(idx) = get_single_ref(models, model_refs(idx))
-        end do
-    end if
-    end if
+    idx_ref = new(nrefs, integer)
+    do ii = 0, nrefs - 1
+        idx_ref(ii) = ind(models@name .eq. str_squeeze(model_ref_name(ii)))
+        if (ismissing(idx_ref(ii))) then
+            error_msg("f", scriptname, funcname, "reference model " + \
+                      model_ref_name(ii) + " not found in the models list")
+        end if
+    end do
 
     leave_msg(scriptname, funcname, 6)
     return(idx_ref)
+
 end

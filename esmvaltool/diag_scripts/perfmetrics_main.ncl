@@ -204,7 +204,7 @@ begin
     end if
 
     ;; Determine reference (and alternative) model
-    ref_ind = get_ref_model_idx(models, var_attr_ref(0))
+    ref_ind = get_ref_model_idx(models, var_attr_ref)
     if (dimsizes(ref_ind).gt.1) then
         alt_ind = ref_ind(1)
         ref_ind := ref_ind(0)

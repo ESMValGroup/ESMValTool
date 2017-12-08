@@ -226,16 +226,11 @@ begin
         end do
 
         ;; Get the index of the reference/alternative model
-        refs_ind = get_ref_model_idx(models, var_attr_ref(0))
+        refs_ind = get_ref_model_idx(models, var_attr_ref)
         l_altern = dimsizes(refs_ind).gt.1
 
-        print(refs_ind)
-        print(l_altern)
-      
         ;; Calculate multi-model mean/median
         models_only = remove_index(super_array, refs_ind)
-
-        printVarSummary(models_only)
 
         if (isatt(diag_script_info, "MultiModelMedian")) then
             if (diag_script_info@MultiModelMean) then
