@@ -45,7 +45,6 @@ import os
 import shutil
 import sys
 
-import iris
 import yaml
 
 # Hack to make this file executable
@@ -154,6 +153,12 @@ def main():
         '--config-file',
         default=os.path.join(os.path.dirname(__file__), 'config-user.yml'),
         help='Config file')
+    parser.add_argument(
+        '-s',
+        '--synda-download',
+        action='store_true',
+        help='Download input data using synda. This requires a working '
+        'synda installation.')
     args = parser.parse_args()
 
     namelist_file = os.path.abspath(
@@ -190,7 +195,8 @@ def main():
     # check NCL version
     ncl_version_check()
 
-    iris.FUTURE.netcdf_no_unlimited = True
+    cfg['synda_download'] = args.synda_download
+
     process_namelist(namelist_file=namelist_file, global_config=cfg)
 
 
@@ -208,7 +214,7 @@ def process_namelist(namelist_file, global_config):
     # parse namelist
     namelist = read_namelist_file(namelist_file, global_config)
     # run (only preprocessors for now)
-    logger.debug("Namelist %s", namelist)
+    logger.debug("Namelist summary:\n%s", namelist)
     namelist.run()
 
     os.environ['0_ESMValTool_version'] = __version__
@@ -257,10 +263,8 @@ def process_namelist(namelist_file, global_config):
     # create directories
     for key in project_info['GLOBAL']:
         if key.endswith('_dir'):
-            print(key)
             if not os.path.isdir(project_info['GLOBAL'][key]):
-                logger.info(
-                    'Creating work_dir %s', project_info['GLOBAL'][key])
+                logger.info('Creating dir %s', project_info['GLOBAL'][key])
                 os.makedirs(project_info['GLOBAL'][key])
 
     # create refs-acknows file in run_dir (empty if existing)
@@ -279,10 +283,14 @@ def process_namelist(namelist_file, global_config):
         __version__, timestamp1.strftime(timestamp_format))
 
     for diag_name, diag in project_info['DIAGNOSTICS'].items():
+        if not diag['script']:
+            continue
 
+        logger.info("Running diagnostic %s", diag_name)
         project_info['RUNTIME']['currDiag'] = copy.deepcopy(diag)
 
         for name, variables in diag['variables'].items():
+            logger.info("Processing variable %s", name)
             var = variables[0]
             project_info['RUNTIME']['derived_var'] = var['short_name']
             project_info['RUNTIME']['derived_field_type'] = var['field']
@@ -290,8 +298,8 @@ def process_namelist(namelist_file, global_config):
 
             executable = diag['script'][-1]
             logger.info("Running diag_script: %s", executable)
-            interface_data = os.path.join(
-                project_info['GLOBAL']['run_dir'], diag_name)
+            interface_data = os.path.join(project_info['GLOBAL']['run_dir'],
+                                          diag_name)
             os.makedirs(interface_data)
             ext = 'ncl' if executable.lower().endswith('.ncl') else 'yml'
             cfg_file = os.path.join(interface_data, 'settings.' + ext)

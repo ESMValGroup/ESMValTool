@@ -1,39 +1,40 @@
 ---
 
 models:
-  - {name: MPI-ESM-LR,   project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  - {name: bcc-csm1-1,   project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  - {name: bcc-csm1-1,   project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p2,  start_year: 2000,  end_year: 2002}
-  - {name: GFDL-ESM2G,   project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  - {name: NCEP,         project: OBS,    tier: 2,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
-  - {name: ERA-Interim,  project: OBS,    tier: 3,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
+  - {model: MPI-ESM-LR,   project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {model: bcc-csm1-1,   project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {model: bcc-csm1-1,   project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r2i1p1,  start_year: 2000,  end_year: 2002}
+  - {model: GFDL-ESM2G,   project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {model: NCEP,         project: OBS,    tier: 2,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
+  - {model: ERA-Interim,  project: OBS,    tier: 3,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
 
 preprocessors:
 
   preprocessor_1:
-    extract_level:
+    extract_levels:
       levels: [2000, 7000]
       scheme: linear
     regrid:
       target_grid: 'ERA-Interim'
       scheme: linear
-    mask: false
+    mask_fillvalues:
+      threshold_fraction: 0.90
     multi_model_mean: false
 
   preprocessor_2:
-    extract_level:
+    extract_levels:
       levels: 85000
       scheme: nearest
     regrid:
       target_grid: 1x1
       scheme: nearest
-    mask: false
+    mask_fillvalues: false
     multi_model_mean: false
 
   preprocessor_3:
-    extract_level: false
+    extract_levels: false
     regrid: false
-    mask: false
+    mask_fillvalues: false
     multi_model_mean: false
 
 diagnostics:
@@ -45,7 +46,7 @@ diagnostics:
         preprocessor: preprocessor_1
         field: T3M
     models: [
-      MPI-ESM-LR, {name: bcc-csm1-1, ensemble: r1i1p1}, GFDL-ESM2G,
+      MPI-ESM-LR, {model: bcc-csm1-1, ensemble: r1i1p1}, GFDL-ESM2G,
       NCEP, ERA-Interim,
     ]
     script: None
@@ -58,7 +59,7 @@ diagnostics:
         preprocessor: preprocessor_2
         field: T3M
     models: [
-      MPI-ESM-LR, {name: bcc-csm1-1, ensemble: r1i1p2}, GFDL-ESM2G,
+      MPI-ESM-LR, {model: bcc-csm1-1, ensemble: r2i1p1}, GFDL-ESM2G,
       NCEP, ERA-Interim,
     ]
     script: None
@@ -71,7 +72,7 @@ diagnostics:
         preprocessor: preprocessor_3
         field: T2Ms
     models: [
-      MPI-ESM-LR, {name: bcc-csm1-1, ensemble: r1i1p1}, GFDL-ESM2G,
+      MPI-ESM-LR, {model: bcc-csm1-1, ensemble: r1i1p1}, GFDL-ESM2G,
       ERA-Interim,
     ]
     script: None

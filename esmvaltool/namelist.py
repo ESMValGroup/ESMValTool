@@ -113,6 +113,7 @@ def get_single_model_settings(variable):
 
     # Configure loading
     cfg['load'] = {
+        'mode': 'concatenate',
         'constraints': variable['standard_name'],
         'callback': merge_callback,
     }
@@ -167,18 +168,16 @@ def get_single_model_task(variable, settings, user_config, debug=False):
                 variable['model'], variable['short_name'])
     settings = select_single_model_settings(settings)
 
-    # Get default preprocessor configuration
+    # Get default preprocessor configuration.
     cfg = get_single_model_settings(variable)
 
-    # Set up input files
+    # Set up input files.
     input_files = get_input_filelist(
         project_info={'GLOBAL': user_config}, model=variable, var=variable)
 
-    # Do not download if files are already available locally
-    if input_files and 'download' in settings:
-        del settings['download']
-
-    if 'download' in settings and settings['download'] is True:
+    # Set up downloading using synda if requested.
+    # Do not download if files are already available locally.
+    if not input_files and user_config['synda_download']:
         input_files = synda_search(variable)
         local_dir = os.path.dirname(
             get_input_filename(
@@ -299,7 +298,6 @@ class Namelist(object):
     @staticmethod
     def _initialize_variables(diagnostic_name, raw_variables, models):
         """Define variables in diagnostic"""
-
         logger.debug("Populating list of variables for diagnostic %s",
                      diagnostic_name)
 
@@ -368,7 +366,8 @@ class Namelist(object):
             """Check if dict sub is a subset of dict ref."""
             return all(ref.get(key, object()) == sub[key] for key in sub)
 
-        if 'regrid' in settings and 'target_grid' in settings['regrid']:
+        if ('regrid' in settings and settings['regrid'] is not False
+                and 'target_grid' in settings['regrid']):
             # if the target grid is a model, replace with filename
             target_grid_model = _find_model(
                 full_models=all_models,
@@ -419,11 +418,10 @@ class Namelist(object):
                     single_model_tasks.append(all_preproc_tasks[task_id])
 
                 # Create multi model task
-                task_id = variable_name
-                standard_name = variable['standard_name']
+                task_id = diagnostic_name + '_' + variable_name
                 if task_id not in all_preproc_tasks:
                     task = get_multi_model_task(
-                        standard_name=standard_name,
+                        standard_name=variable['standard_name'],
                         settings=settings,
                         ancestors=list(single_model_tasks),
                         debug=debug_preprocessor,

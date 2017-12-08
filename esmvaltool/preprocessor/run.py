@@ -19,6 +19,7 @@ from .time_area import time_slice as extract_time
 from .time_area import seasonal_mean
 
 iris.FUTURE.netcdf_promote = True
+iris.FUTURE.netcdf_no_unlimited = True
 
 logger = logging.getLogger(__name__)
 
@@ -59,8 +60,8 @@ def _save_cubes(cubes, **args):
 
     if (os.path.exists(filename)
             and all(cube.has_lazy_data() for cube in cubes)):
-        logger.warning("Not saving cubes %s to %s to avoid data loss. "
-                       "The cube is probably unchanged.", cubes, filename)
+        logger.info("Not saving cubes %s to %s to avoid data loss. "
+                    "The cube is probably unchanged.", cubes, filename)
     else:
         logger.debug("Saving cubes %s to %s", cubes, filename)
         iris.save(cubes, **args)

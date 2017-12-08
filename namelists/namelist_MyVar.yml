@@ -1,9 +1,11 @@
+---
+
 models:
-  - {name: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  - {name: ERA-Interim, project: OBS,    tier: 3,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
-  - {name: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  - {name: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  - {name: NCEP,        project: OBS,    tier: 2,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
+  - {model: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {model: ERA-Interim, project: OBS,    tier: 3,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
+  - {model: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {model: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {model: NCEP,        project: OBS,    tier: 2,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
 
 preprocessors:
   preprocessor_1:
@@ -11,7 +13,7 @@ preprocessors:
       levels: 85000
       scheme: nearest
     regrid: false
-    mask: false
+    mask_landocean: false
     multi_model_mean: false
 
   preprocessor_2:
@@ -19,7 +21,7 @@ preprocessors:
     regrid:
       target_grid: ERA-Interim
       scheme: linear
-    mask: false
+    mask_landocean: false
     multi_model_mean: false
 
 diagnostics:
