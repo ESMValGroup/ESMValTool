@@ -18,6 +18,8 @@ from .time_area import area_slice as extract_region
 from .time_area import time_slice as extract_time
 from .time_area import seasonal_mean
 
+iris.FUTURE.netcdf_promote = True
+
 logger = logging.getLogger(__name__)
 
 
@@ -27,17 +29,21 @@ def load_cubes(files, mode='merge', **kwargs):
         # load cubes in order of files
         cubes = []
         for path in files:
+            logger.debug("Loading %s", path)
             cube = iris.load_cube(path, **kwargs)
             cubes.append(cube)
         return cubes
 
     if mode == 'merge':
+        logger.debug("Loading and merging:\n%s", "\n".join(files))
         cubes = iris.load(files, **kwargs)
         return cubes
 
     if mode == 'concatenate':
+        logger.debug("Loading and concatenating:\n%s", "\n".join(files))
         cubes = iris.load_raw(files, **kwargs)
-        cubes.concatenate()
+        iris.util.unify_time_units(cubes)
+        cubes = cubes.concatenate()
         return cubes
 
     raise NotImplementedError("mode={} not supported".format(mode))
