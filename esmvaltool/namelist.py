@@ -7,9 +7,8 @@ import os
 
 import yaml
 
-from .interface_scripts.data_finder import (get_input_filelist,
-                                            get_input_filename,
-                                            get_output_file)
+from .interface_scripts.data_finder import (
+    get_input_filelist, get_input_filename, get_output_file)
 from .interface_scripts.preprocessing_tools import merge_callback
 from .preprocessor import (DEFAULT_ORDER, PreprocessingTask,
                            select_multi_model_settings,
@@ -173,19 +172,19 @@ def get_single_model_task(variable, settings, user_config, debug=False):
     # Get default preprocessor configuration.
     cfg = get_single_model_settings(variable)
 
+    rootpath = user_config['rootpath']
+    drs = user_config['drs']
+
     # Set up input files.
     input_files = get_input_filelist(
-        project_info={'GLOBAL': user_config}, model=variable, var=variable)
+        variable=variable, rootpath=rootpath, drs=drs)
 
     # Set up downloading using synda if requested.
     # Do not download if files are already available locally.
     if not input_files and user_config['synda_download']:
         input_files = synda_search(variable)
         local_dir = os.path.dirname(
-            get_input_filename(
-                variable=variable,
-                rootpath=user_config['rootpath'],
-                drs=user_config['drs']))
+            get_input_filename(variable=variable, rootpath=rootpath, drs=drs))
         cfg['download'] = {
             'dest_folder': local_dir,
         }
@@ -195,7 +194,7 @@ def get_single_model_task(variable, settings, user_config, debug=False):
 
     # Configure saving to output files
     output_file = get_output_file(
-        project_info={'GLOBAL': user_config}, model=variable, var=variable)
+        variable=variable, preproc_dir=user_config['preproc_dir'])
 
     cfg['save'] = {
         'target': output_file,
@@ -379,10 +378,12 @@ class Namelist(object):
                     # No need to regrid model onto itself
                     del settings['regrid']
                 else:
+                    target_variable = dict(variable)
+                    target_variable.update(target_grid_model)
                     files = get_input_filelist(
-                        project_info={'GLOBAL': self._cfg},
-                        model=target_grid_model,
-                        var=variable)
+                        variable=target_variable,
+                        rootpath=self._cfg['rootpath'],
+                        drs=self._cfg['drs'])
                     settings['regrid']['target_grid'] = files[0]
 
     def initialize_tasks(self):

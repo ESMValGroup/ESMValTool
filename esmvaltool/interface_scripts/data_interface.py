@@ -86,7 +86,10 @@ def get_cf_fullpath(project_info, model, variable):
             This function specifies the full output path (directory + file) to
             the outupt file to use in the reformat routines and in climate.ncl
     """
-    fullpath = get_output_file(project_info, model, variable)
+    var = dict(variable)
+    var.update(model)
+    fullpath = get_output_file(variable=var,
+                               preproc_dir=project_info['GLOBAL']['preproc_dir'])
     return fullpath
 
 
