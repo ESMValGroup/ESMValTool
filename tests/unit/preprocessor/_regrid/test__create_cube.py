@@ -11,8 +11,8 @@ import unittest
 import numpy as np
 
 import tests
-from esmvaltool.preprocessor.regrid import _create_cube as create_cube
-from tests.unit.preprocessor.regrid import _make_cube, _make_vcoord
+from esmvaltool.preprocessor._regrid import _create_cube as create_cube
+from tests.unit.preprocessor._regrid import _make_cube, _make_vcoord
 
 
 class Test(tests.Test):

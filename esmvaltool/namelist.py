@@ -7,14 +7,15 @@ import os
 
 import yaml
 
-from .interface_scripts.data_finder import (
-    get_input_filelist, get_input_filename, get_output_file)
+from .interface_scripts.data_finder import (get_input_filelist,
+                                            get_input_filename,
+                                            get_output_file)
 from .interface_scripts.preprocessing_tools import merge_callback
-from .preprocessor.download import get_start_end_year, synda_search
-from .preprocessor.reformat import CMOR_TABLES
-from .preprocessor.run import (DEFAULT_ORDER, PreprocessingTask,
-                               select_multi_model_settings,
-                               select_single_model_settings)
+from .preprocessor import (DEFAULT_ORDER, PreprocessingTask,
+                           select_multi_model_settings,
+                           select_single_model_settings)
+from .preprocessor._download import get_start_end_year, synda_search
+from .preprocessor._reformat import CMOR_TABLES
 from .task import DiagnosticTask
 
 logger = logging.getLogger(__name__)
@@ -167,6 +168,7 @@ def get_single_model_task(variable, settings, user_config, debug=False):
     logger.info("Configuring single-model task for %s variable %s",
                 variable['model'], variable['short_name'])
     settings = select_single_model_settings(settings)
+    # TODO: implement variable derivation task
 
     # Get default preprocessor configuration.
     cfg = get_single_model_settings(variable)

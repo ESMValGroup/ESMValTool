@@ -13,8 +13,8 @@ import numpy as np
 from numpy import ma
 
 import tests
-from esmvaltool.preprocessor.regrid import regrid
-from tests.unit.preprocessor.regrid import _make_cube
+from esmvaltool.preprocessor import regrid
+from tests.unit.preprocessor._regrid import _make_cube
 
 
 class Test(tests.Test):

@@ -13,8 +13,8 @@ import numpy as np
 from numpy import ma
 
 import tests
-from esmvaltool.preprocessor.regrid import _MDI, vertical_schemes, vinterp
-from tests.unit.preprocessor.regrid import _make_cube, _make_vcoord
+from esmvaltool.preprocessor._regrid import _MDI, vertical_schemes, vinterp
+from tests.unit.preprocessor._regrid import _make_cube, _make_vcoord
 
 
 class Test(tests.Test):
@@ -27,7 +27,7 @@ class Test(tests.Test):
         self.cube = _make_cube(data, dtype=self.dtype)
         self.created_cube = mock.sentinel.created_cube
         self.mock_create_cube = self.patch(
-            'esmvaltool.preprocessor.regrid._create_cube',
+            'esmvaltool.preprocessor._regrid._create_cube',
             return_value=self.created_cube)
         self.vinterp_schemes = ['linear', 'nearest']
 

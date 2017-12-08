@@ -11,7 +11,8 @@ import iris
 import mock
 
 import tests
-from esmvaltool.preprocessor.regrid import _cache, horizontal_schemes, regrid
+from esmvaltool.preprocessor import regrid
+from esmvaltool.preprocessor._regrid import _cache, horizontal_schemes
 
 
 class Test(tests.Test):
@@ -64,7 +65,7 @@ class Test(tests.Test):
             'linear', 'nearest', 'area_weighted', 'unstructured_nearest'
         ]
         self.mock_stock = self.patch(
-            'esmvaltool.preprocessor.regrid._stock_cube',
+            'esmvaltool.preprocessor._regrid._stock_cube',
             side_effect=lambda arg: self.tgt_grid)
         self.mocks = [
             self.coord_system, self.coords, self.regrid, self.src_cube,

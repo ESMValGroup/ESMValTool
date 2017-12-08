@@ -16,9 +16,9 @@ import iris
 import iris.exceptions
 import numpy as np
 
-from ..preprocessor.mask import fx_mask, mask_cube_counts
-from ..preprocessor.regrid import regrid, vertical_schemes, vinterp
-from ..preprocessor.time_area import time_slice
+from ..preprocessor._mask import fx_mask, mask_cube_counts
+from ..preprocessor._regrid import regrid, vertical_schemes, vinterp
+from ..preprocessor._time_area import time_slice
 from .cmor_check import CMORCheck, CMORCheckError
 from .data_finder import get_input_filelist, get_output_file
 from .fixes.fix import Fix
