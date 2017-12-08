@@ -152,7 +152,9 @@ def create_interface_data_dir(project_info, executable):
         project_info['GLOBAL']['run_dir'],
         project_info['RUNTIME']['currDiag'].id
     )
-    os.makedirs(interface_data)
+
+    if not os.path.exists(interface_data):
+        os.makedirs(interface_data)
     return interface_data
 
 
