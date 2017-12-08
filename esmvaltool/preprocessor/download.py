@@ -82,7 +82,8 @@ def synda_download(synda_name, dest_folder):
 
 def download(files, dest_folder):
     """Download files that are not available locally"""
-    os.makedirs(dest_folder, exist_ok=True)
+    if not os.path.exists(dest_folder):
+        os.makedirs(dest_folder)
 
     local_files = []
     for name in files:

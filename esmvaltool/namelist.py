@@ -24,10 +24,10 @@ class NamelistError(Exception):
     """Namelist contains an error."""
 
 
-def read_namelist_file(filename, config_user):
+def read_namelist_file(filename, config_user, initialize_tasks=True):
     """Read a namelist from file."""
     raw_namelist = check_namelist(filename)
-    return Namelist(raw_namelist, config_user)
+    return Namelist(raw_namelist, config_user, initialize_tasks)
 
 
 def check_namelist(filename):
@@ -251,14 +251,14 @@ def get_multi_model_task(standard_name, settings, ancestors, debug=False):
 class Namelist(object):
     """Namelist object"""
 
-    def __init__(self, raw_namelist, config_user):
+    def __init__(self, raw_namelist, config_user, initialize_tasks=True):
         """Parse a namelist file into an object."""
         self._cfg = config_user
         self._preprocessors = raw_namelist['preprocessors']
         self._models = raw_namelist['models']
-        self._diagnostics = self._initialize_diagnostics(
+        self.diagnostics = self._initialize_diagnostics(
             raw_namelist['diagnostics'])
-        self.tasks = self._initialize_tasks()
+        self.tasks = self.initialize_tasks() if initialize_tasks else None
 
     def _initialize_diagnostics(self, raw_diagnostics):
         """Define diagnostics in namelist"""
@@ -384,7 +384,7 @@ class Namelist(object):
                         var=variable)
                     settings['regrid']['target_grid'] = files[0]
 
-    def _initialize_tasks(self):
+    def initialize_tasks(self):
         """Define tasks in namelist"""
         logger.debug("Creating tasks from namelist")
 
@@ -393,7 +393,7 @@ class Namelist(object):
         tasks = []
 
         all_preproc_tasks = {}
-        for diagnostic_name, diagnostic in self._diagnostics.items():
+        for diagnostic_name, diagnostic in self.diagnostics.items():
             logger.debug("Creating tasks for diagnostic %s", diagnostic_name)
 
             # Create preprocessor tasks

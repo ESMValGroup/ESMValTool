@@ -6,10 +6,7 @@ log_level: info
 exit_on_warning: False
 output_file_type: ps
 
-run_dir:  /group_workspaces/jasmin/ncas_cms/valeriu/ESMValTool/orchestrator/parser_backend_06Sep17/test_output/tmp
-preproc_dir: /group_workspaces/jasmin/ncas_cms/valeriu/ESMValTool/orchestrator/parser_backend_06Sep17/test_output/preproc
-work_dir: /group_workspaces/jasmin/ncas_cms/valeriu/ESMValTool/orchestrator/parser_backend_06Sep17/test_output/work
-plot_dir: /group_workspaces/jasmin/ncas_cms/valeriu/ESMValTool/orchestrator/parser_backend_06Sep17/test_output/plots
+output_dir:  /group_workspaces/jasmin/ncas_cms/valeriu/ESMValTool/orchestrator/parser_backend_06Sep17/test_output/
 
 save_intermediary_cubes: True
 

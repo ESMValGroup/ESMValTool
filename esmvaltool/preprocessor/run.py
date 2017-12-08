@@ -54,7 +54,8 @@ def _save_cubes(cubes, **args):
     filename = args['target']
 
     dirname = os.path.dirname(filename)
-    os.makedirs(dirname, exist_ok=True)
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
 
     if (os.path.exists(filename)
             and all(cube.has_lazy_data() for cube in cubes)):

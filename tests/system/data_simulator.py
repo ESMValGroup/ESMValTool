@@ -10,8 +10,8 @@ from dummydata.model2 import Model2
 from dummydata.model3 import Model3
 
 from esmvaltool.interface_scripts.data_finder import get_input_filename
-from esmvaltool.interface_scripts.yaml_parser import load_namelist
 from esmvaltool.main import read_config_file
+from esmvaltool.namelist import read_namelist_file
 
 
 def write_data_file(short_name, filename, field, start_year, end_year):
@@ -61,17 +61,17 @@ def simulate_input_data(namelist_file, config_user_file=None):
             'drs': {},
         }
 
-    namelist = load_namelist(namelist_file)
+    namelist = read_namelist_file(
+        namelist_file, user_config, initialize_tasks=False)
 
     start_time = time.time()
 
-    for diagnostic in namelist.DIAGNOSTICS.values():
+    for diagnostic in namelist.diagnostics.values():
         np.random.seed(0)
-        for model in namelist.MODELS + diagnostic.additional_models:
-            for variable in diagnostic.variables:
+        for variables in diagnostic['variables'].values():
+            for variable in variables:
                 filename = get_input_filename(
                     variable=variable,
-                    model=model,
                     rootpath=user_config['rootpath'],
                     drs=user_config['drs'])
                 dirname = os.path.dirname(filename)
@@ -84,8 +84,8 @@ def simulate_input_data(namelist_file, config_user_file=None):
                     short_name=variable['short_name'],
                     filename=filename,
                     field=variable['field'],
-                    start_year=model['start_year'],
-                    end_year=model['end_year'],
+                    start_year=variable['start_year'],
+                    end_year=variable['end_year'],
                 )
 
     print("Simulating data took {:.0f} seconds"
