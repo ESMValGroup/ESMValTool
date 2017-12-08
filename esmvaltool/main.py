@@ -21,7 +21,7 @@ r"""
    Mattia Righi (DLR, Germany - mattia.righi@dlr.de)
    Javier Vegas-Regidor (BSC, Spain - javier.vegas@bsc.es)
  ______________________________________________________________________
- 
+
  For further help, check the doc/-folder for pdfs
  and references therein. Have fun!
 """
@@ -131,7 +131,7 @@ def read_config_file(config_file, namelist_name):
     cfg['work_dir'] = os.path.join(cfg['output_dir'], 'work')
     cfg['plot_dir'] = os.path.join(cfg['output_dir'], 'plots')
     cfg['run_dir'] = os.path.join(cfg['output_dir'], 'tmp')
-    
+
     return cfg
 
 
@@ -294,7 +294,8 @@ def process_namelist(namelist_file, global_config):
         if key.endswith('_dir'):
             print(key)
             if not os.path.isdir(project_info['GLOBAL'][key]):
-                logger.info('Creating work_dir %s', project_info['GLOBAL'][key])
+                logger.info(
+                    'Creating work_dir %s', project_info['GLOBAL'][key])
                 os.makedirs(project_info['GLOBAL'][key])
 
     # create refs-acknows file in run_dir (empty if existing)
