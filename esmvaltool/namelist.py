@@ -10,7 +10,7 @@ import yaml
 from .interface_scripts.data_finder import (
     get_input_filelist, get_input_filename, get_output_file)
 from .interface_scripts.preprocessing_tools import merge_callback
-from .preprocessor.download import synda_search
+from .preprocessor.download import get_start_end_year, synda_search
 from .preprocessor.reformat import CMOR_TABLES
 from .preprocessor.run import (DEFAULT_ORDER, PreprocessingTask,
                                select_multi_model_settings,
@@ -143,6 +143,24 @@ def get_single_model_settings(variable):
     return cfg
 
 
+def check_data_availability(input_files, start_year, end_year):
+    """Check if the required input data is available"""
+    if not input_files:
+        raise NamelistError("No input files found")
+
+    required_years = set(range(start_year, end_year + 1))
+    available_years = set()
+    for filename in input_files:
+        start, end = get_start_end_year(filename)
+        available_years.update(range(start, end + 1))
+
+    missing_years = required_years - available_years
+    if missing_years:
+        raise NamelistError(
+            "No input data available for years {} in files {}".format(
+                ", ".join(str(year) for year in missing_years), input_files))
+
+
 def get_single_model_task(variable, settings, user_config, debug=False):
     """Get a preprocessor task for a single model"""
     logger.info("Configuring single-model task for %s variable %s",
@@ -171,9 +189,8 @@ def get_single_model_task(variable, settings, user_config, debug=False):
             'dest_folder': local_dir,
         }
 
-    if not input_files:
-        raise NamelistError("No input files found for variable {} "
-                            .format(variable))
+    check_data_availability(input_files, variable['start_year'],
+                            variable['end_year'])
 
     # Configure saving to output files
     output_file = get_output_file(
