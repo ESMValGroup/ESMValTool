@@ -23,11 +23,12 @@
 ;; Optional variable_info attributes (variable specific)
 ;;
 ;; Caveats
-;;    The reference model must be specified in the main namelsit in the 
-;;    <variable> tag as <variable ref_model="XX">. An alternative model
-;;    can be also given, separated by a comme <variable ref_model="XX,"YY">.
+;;    The reference model must be specified in the main namelist in the
+;;    variables dictionary as ref_model key. An alternative model can be also
+;;    given, using a python list.
 ;;
 ;; Modification history
+;;    20171124_A_righ_ma: completely revised to adapt it to the new backend
 ;;    20160628_A_righ_ma: moving ref_model specification from cfg- files to
 ;;                        main namelist, some code restructuring necessary
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
@@ -49,7 +50,6 @@ load "./interface_scripts/messaging.ncl"
 load "./diag_scripts/lib/ncl/statistics.ncl"
 load "./diag_scripts/lib/ncl/latlon.ncl"
 load "./diag_scripts/lib/ncl/style.ncl"
-load "./diag_scripts/aux/perfmetrics/aux_perfmetrics.ncl"
 
 begin
 
@@ -170,12 +170,32 @@ begin
 
         ;; Read data precalcualted in perfmetrics_main.ncl
         do imod = 0, dim_MOD - 1
-            new_path = clim_diag_file_path(var0, field_type0, imod, \
-                                           "perfmetrics_main", \
-                                           diag_script_info)
+
+             ;; Set path for saving processed data
+            fullpath = getenv("ESMValTool_work_dir") + "/perfmetrics_main/"
+            if (.not.isfilepresent_esmval(fullpath)) then
+                system("mkdir -p " + fullpath)
+            end if
+            fname = basename(systemfunc("basename " + \
+                             interface_get_fullpath(var0, field_type0, imod)))
+            fname = fname + "_perfmetrics_main"
+            if (isatt(diag_script_info, "plot_type")) then
+                fname = fname + "_" + diag_script_info@plot_type
+            end if
+            if (isatt(diag_script_info, "time_avg")) then
+                fname = fname + "_" + diag_script_info@time_avg
+            end if
+            if (isatt(diag_script_info, "level")) then
+                fname = fname + "_" + diag_script_info@level
+            end if
+            if (isatt(diag_script_info, "region")) then
+                fname = fname + "_" + \
+                    str_sub_str(diag_script_info@region, " ", "")
+            end if
+            procpath = fullpath + fname + ".nc"
 
             ;; Skip current model if no data available
-            if (.not.isfilepresent_esmval(new_path)) then
+            if (.not.isfilepresent_esmval(procpath)) then
                 info_output("No data available for model:" + \
                             modelnames(imod), verbosity, 1)
                 info_output("Skipping", verbosity, 1)
@@ -183,8 +203,8 @@ begin
             end if
 
             ;; Store into global array
-            info_output("Read in: " + new_path, verbosity, 1)
-            tmp = ncdf_read(new_path, var0)
+            info_output("Read in: " + procpath, verbosity, 1)
+            tmp = ncdf_read(procpath, var0)
             if (.not.isdefined("super_array")) then
                 dim_super_array = \
                     array_append_record(dim_MOD, dimsizes(tmp), 0)
@@ -206,11 +226,12 @@ begin
         end do
 
         ;; Get the index of the reference/alternative model
-        refs_ind = get_ref_model_idx(models, var_attr_ref(0))
+        refs_ind = get_ref_model_idx(models, var_attr_ref)
         l_altern = dimsizes(refs_ind).gt.1
-      
+
         ;; Calculate multi-model mean/median
         models_only = remove_index(super_array, refs_ind)
+
         if (isatt(diag_script_info, "MultiModelMedian")) then
             if (diag_script_info@MultiModelMean) then
                 if (rank.eq.3) then
@@ -225,7 +246,7 @@ begin
                     median = models_only(0:0, :, :, :, :)
                     median(0, :, :, :, :) = dim_median_n(models_only, 0)
                 end if
-                median&model = "Median-model"
+                median&model = "multi-model-median"
                 super_array := array_append_record(median, super_array, 0)
                 delete(median)
                 refs_ind = refs_ind + 1  ; update ref model index
@@ -245,7 +266,7 @@ begin
                     mean = models_only(0:0, :, :, :, :)
                     mean(0, :, :, :, :) = dim_avg_n(models_only, 0)
                 end if
-                mean&model = "Mean-model"
+                mean&model = "multi-model-mean"
                 super_array := array_append_record(mean, super_array, 0)
                 delete(mean)
                 refs_ind = refs_ind + 1  ; update ref model index
@@ -331,6 +352,13 @@ begin
         val@diag_script = (/diag_script/)
         val@var = "grade"
         val@region = location
+        val@num_climofiles = dimsizes(models@name)  ; climofiles for tagging
+        do imod = 0, dimsizes(models@name) - 1
+            num_climo = "climofile_"+imod
+            climofile = interface_get_inpaths(imod) + "/" + \
+                 interface_get_infile(variables(0), field_types(0), imod)
+            val@$num_climo$ = climofile
+        end do 
 
         ;; Write NetCDF output
         ncdf_outfile = ncdf_write(val, val@ncdf_dir)

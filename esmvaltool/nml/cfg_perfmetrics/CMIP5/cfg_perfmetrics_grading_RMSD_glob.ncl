@@ -8,17 +8,8 @@ diag_script_info@plot_type = "cycle_latlon"
 ;; Time average ("opt" argument of time_operations.ncl)
 diag_script_info@time_avg = "monthlyclim"
 
-;; Required fraction of valid values
-diag_script_info@valid_fraction = 0.95
-
-;; Selected level (hPA, "all" for no selection)
-diag_script_info@level = 850.
-
-;; Selected region (Global, Tropics, NH extratropics, SH extratropics)
+;; Selected region ("Global", "Tropics", "NH extratropics", "SH extratropics")
 diag_script_info@region = "Global"
-
-;; Selected grid ("ref", "coarest", "finest")
-diag_script_info@grid = "ref"
 
 ;; Draw plots
 diag_script_info@draw_plots = False
