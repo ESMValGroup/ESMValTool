@@ -26,7 +26,7 @@ models: &all
   - {model: ACCESS1-3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
   - {model: bcc-csm1-1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
   - {model: bcc-csm1-1-m,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  # - {model: BNU-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: BNU-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
   - {model: CanCM4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
   - {model: CanESM2,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
   - {model: CCSM4,            project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
@@ -45,7 +45,7 @@ models: &all
   - {model: FGOALS-g2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
   # - {model: FGOALS-s2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
   - {model: FIO-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
-  # - {model: GFDL-CM2p1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002} # fails
+  - {model: GFDL-CM2p1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
   - {model: GFDL-CM3,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
   - {model: GFDL-ESM2G,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
   - {model: GFDL-ESM2M,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
