@@ -33,7 +33,7 @@ diagnostics:
         field: T3M
     models: [bcc-csm1-1, ERA-Interim, GFDL-ESM2G, MPI-ESM-LR, NCEP]
     script: MyDiag_test_ta.ncl
-    settings:
+    settings: &settings
       diag_script_info:
         projection: Mollweide
         styleset: CMIP5
@@ -48,12 +48,7 @@ diagnostics:
         field: T3M
     models: [bcc-csm1-1, ERA-Interim, GFDL-ESM2G, MPI-ESM-LR, NCEP]
     script: MyDiag_test_ta_no2.ncl
-    settings:
-      diag_script_info:
-        projection: Mollweide
-        styleset: CMIP5
-        colormap: WhiteBlueGreenYellowRed
-        ncdf: default
+    settings: *settings
 
   pr_diagnostic:
     description: Precipitation tutorial diagnostic.
@@ -63,9 +58,4 @@ diagnostics:
         field: T2Ms
     models: [bcc-csm1-1, ERA-Interim, GFDL-ESM2G, MPI-ESM-LR]
     script: MyDiag_test_pr.ncl
-    settings:
-      diag_script_info:
-        projection: Mollweide
-        styleset: CMIP5
-        colormap: WhiteBlueGreenYellowRed
-        ncdf: default
+    settings: *settings
