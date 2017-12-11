@@ -83,16 +83,22 @@
     var_only_case: 0
   
   DIAGNOSTICS:
-
-    ANNUAL_CYCLE_ta:
+    ta_850_global:
       !Diagnostic
-      id: ANNUAL_CYCLE_ta
-      description: tutorial diagnostic
+      id: ta_850_global
+      description: air temperature at 850 hPa global
       variables: 
         - {name: ta, ref_model: ['ERA-Interim','NCEP'], field: T3M, only: None, preproc_id: pp1}
       scripts:
-        # Annual cycle plot
-        - {script: perfmetrics_main.ncl,  cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_cycle_monthlyclim_glob.ncl}
+        - {script: perfmetrics_main.ncl,     cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_cycle_monthlyclim_glob.ncl}
+        - {script: perfmetrics_main.ncl,     cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_grading_RMSD_glob.ncl}
+        - {script: perfmetrics_grading.ncl,  cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_grading_RMSD_glob.ncl}
       additional_models:
         - {name: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 3}
         - {name: NCEP,         project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 2}
+
+
+#     GRADING_collect: ## NEED ISSUE 169 FIXED
+#       !Diagnostic
+#       scripts:
+#         - {script: perfmetrics_grading_collect.ncl,  cfg_file: ./nml/cfg_perfmetrics/CMIP5/cfg_perfmetrics_grading_collect.ncl}

@@ -403,10 +403,8 @@ class Data_interface(object):
         for model in project_info['ALLMODELS']:
             # print('Model is:')
             # print(model)
-            if "id" in model.keys():
-                model_ids.append(model['id'])
-            if "ref" in model.keys():
-                model_ids.append(model['ref'])
+            if "name" in model.keys():
+                model_ids.append(model['name'])
             else:
                 model_ids.append("None")
 
