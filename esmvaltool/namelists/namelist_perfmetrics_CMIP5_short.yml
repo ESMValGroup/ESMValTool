@@ -22,13 +22,11 @@
 ###############################################################################
 ---
 
-models: &all
+models:
   - {model: bcc-csm1-1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2002}
   - {model: GFDL-ESM2G,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2002}
   - {model: MPI-ESM-LR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2002}
   - {model: MPI-ESM-MR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2002}
-  - {model: ERA-Interim,      project: OBS,   tier: 3,   type: reanaly,   version: 1,       start_year: 2001, end_year: 2002}
-  - {model: NCEP,             project: OBS,   tier: 2,   type: reanaly,   version: 1,       start_year: 2001, end_year: 2002}
 
 preprocessors:
   preprocessor:
@@ -49,7 +47,9 @@ diagnostics:
         preprocessor: preprocessor
         mip: Amon
         field: T3M
-    models: *all
+    additional_models:
+      - {model: ERA-Interim,      project: OBS,   tier: 3,   type: reanaly,   version: 1,       start_year: 2001, end_year: 2002}
+      - {model: NCEP,             project: OBS,   tier: 2,   type: reanaly,   version: 1,       start_year: 2001, end_year: 2002}    
     script: perfmetrics_main.ncl
     settings:
       var_attr_ref: ERA-Interim

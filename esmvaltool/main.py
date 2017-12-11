@@ -225,7 +225,7 @@ def process_namelist(namelist_file, global_config):
     # project_info is a dictionary with all info from the namelist.
     project_info = {}
     project_info['GLOBAL'] = global_config
-    project_info['MODELS'] = namelist._models
+    project_info['MODELS'] = namelist.models
     project_info['DIAGNOSTICS'] = namelist.diagnostics
 
     # FIX-ME: outdated, keep until standard logging is fully implemented

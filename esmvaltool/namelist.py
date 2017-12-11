@@ -255,7 +255,7 @@ class Namelist(object):
         """Parse a namelist file into an object."""
         self._cfg = config_user
         self._preprocessors = raw_namelist['preprocessors']
-        self._models = raw_namelist['models']
+        self.models = raw_namelist['models']
         self.diagnostics = self._initialize_diagnostics(
             raw_namelist['diagnostics'])
         self.tasks = self.initialize_tasks() if initialize_tasks else None
@@ -269,7 +269,8 @@ class Namelist(object):
         for name, raw_diagnostic in raw_diagnostics.items():
             diagnostic = {}
             diagnostic['name'] = name
-            models = self._initialize_models(name, raw_diagnostic['models'])
+            models = self._initialize_models(
+                name, raw_diagnostic['additional_models'])
             diagnostic['models'] = models
             diagnostic['variables'] = self._initialize_variables(
                 name, raw_diagnostic['variables'], models)
@@ -280,19 +281,11 @@ class Namelist(object):
 
         return diagnostics
 
-    def _initialize_models(self, diagnostic_name, raw_models):
+    def _initialize_models(self, diagnostic_name, raw_additional_models):
         """Define models in diagnostic"""
-        logger.debug("Resolving models for diagnostic %s", diagnostic_name)
+        logger.debug("Setting models for diagnostic %s", diagnostic_name)
 
-        models = []
-        for short_model in raw_models:
-            model = _find_model(
-                full_models=self._models, short_model=short_model, warn=True)
-            if not model:
-                raise NamelistError("Unable to find model matching {} in "
-                                    "diagnostic {}".format(
-                                        short_model, diagnostic_name))
-            models.append(model)
+        models = self.models + raw_additional_models
 
         return models
 

@@ -2,10 +2,9 @@
 
 models:
   - {model: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  - {model: ERA-Interim, project: OBS,    tier: 3,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
   - {model: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
   - {model: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  - {model: NCEP,        project: OBS,    tier: 2,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
+  - {model: ERA-Interim, project: OBS,    tier: 3,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
 
 preprocessors:
   preprocessor_1:
@@ -31,7 +30,8 @@ diagnostics:
       ta:
         preprocessor: preprocessor_1
         field: T3M
-    models: [bcc-csm1-1, ERA-Interim, GFDL-ESM2G, MPI-ESM-LR, NCEP]
+    additional_models:
+      - {model: NCEP,        project: OBS,    tier: 2,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
     script: MyDiag_test_ta.ncl
     settings: &settings
       diag_script_info:
@@ -46,7 +46,8 @@ diagnostics:
       ta:
         preprocessor: preprocessor_1
         field: T3M
-    models: [bcc-csm1-1, ERA-Interim, GFDL-ESM2G, MPI-ESM-LR, NCEP]
+    additional_models:
+      - {model: NCEP,        project: OBS,    tier: 2,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
     script: MyDiag_test_ta_no2.ncl
     settings: *settings
 
@@ -56,6 +57,6 @@ diagnostics:
       pr:
         preprocessor: preprocessor_2
         field: T2Ms
-    models: [bcc-csm1-1, ERA-Interim, GFDL-ESM2G, MPI-ESM-LR]
+    additional_models: []
     script: MyDiag_test_pr.ncl
     settings: *settings
