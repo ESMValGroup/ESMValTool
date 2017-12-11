@@ -214,13 +214,15 @@ def find_files(dirname, filename):
     flist = []
 
     # work only with existing dirs or allowed permission dirs
-    strfindic = 'find {dirname} -follow -type f -iname *{filename}*'.format(
+    strfindic = 'find {dirname} -follow -type f -iname "*{filename}*"'.format(
         dirname=dirname, filename=filename)
+    logger.debug("Running %s", strfindic)
     proc = subprocess.Popen(
         strfindic, stdout=subprocess.PIPE, shell=True, universal_newlines=True)
     out, err = proc.communicate()
     if err:
         logger.warning("'%s' says:\n%s", strfindic, err)
+    logger.debug("Result:\n%s", out)
     for line in out.split('\n')[0:-1]:
         flist.append(line)
     return flist
