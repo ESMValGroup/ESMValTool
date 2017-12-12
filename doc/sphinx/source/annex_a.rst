@@ -1,5 +1,5 @@
-Annex A -- More tables
-**********************
+More tables
+***********
 
 :numref:`tab_direc_struc` Directory structure of the ESMValTool sorted by file type.
 
@@ -188,7 +188,7 @@ Annex A -- More tables
 .. _workflow_reformat:
 
 Workflow of reformat routines
------------------------------
+*****************************
 
 **Control flow of reformat_default**
 

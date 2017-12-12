@@ -316,7 +316,7 @@ Each standard variable (non-derived) also needs a configuration file indicating 
 
 **Example, reformat_scripts/cmor/CMOR_pr.dat**
 
-.. code-block::
+.. code-block:: none
 
    SOURCE: CMIP5   
    !============
