@@ -26,7 +26,6 @@ sys.path.insert(0, os.path.abspath('../../../interface_scripts'))
 
 
 
-
 # not the best way to set the pathes, but working for autodoc ...
 
 
@@ -386,6 +385,7 @@ epub_exclude_files = ['search.html']
 #epub_use_index = True
 
 numfig = True
+numfig_format = {'figure': 'Figure %s', 'table': 'Table %s', 'code-block': 'Listing %s', 'section': 'Section %s'}
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'http://docs.python.org/': None}
