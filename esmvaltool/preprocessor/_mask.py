@@ -320,7 +320,7 @@ def mask_fillvalues(cubes, threshold_fraction, min_value=-1.e10,
 
 def _get_fillvalues_mask(cube, threshold_fraction, min_value, time_window):
     # function idea copied from preprocess.py
-    logger.info("Creating fillvalues mask")
+    logger.debug("Creating fillvalues mask")
 
     # basic checks
     if threshold_fraction < 0 or threshold_fraction > 1.0:
