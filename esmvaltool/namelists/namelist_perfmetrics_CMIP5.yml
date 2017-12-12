@@ -75,7 +75,7 @@ models:
   - {model: NorESM1-ME,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
 
 preprocessors:
-  preprocessor:
+  pp850:
     extract_levels:
       levels: 85000
       scheme: linear
@@ -90,7 +90,7 @@ diagnostics:
     description: Air temperature at 850 hPa global.
     variables:
       ta:
-        preprocessor: preprocessor
+        preprocessor: pp850
         reference_model: [ERA-Interim, NCEP]
         mip: Amon
         field: T3M
@@ -100,26 +100,13 @@ diagnostics:
     scripts:
       main: &main_script_settings
         script: perfmetrics_main.ncl
-        # Plot type ('cycle' (time), 'zonal' (plev, lat), 'latlon' (lat, lon))
-        plot_type: cycle
-        # Time average ('opt' argument of time_operations.ncl)
-        time_avg: monthlyclim
-        # Selected region ('Global', 'Tropics', 'NH extratropics', 'SH extratropics')
-        region: Global
-        # Draw plots
-        draw_plots: true
-        # Draw difference plots
-        plot_diff: true
-        # Plot standard deviation ('all', 'none', 'ref_model' or given model name)
-        plot_stddev: ref_model
-        # Plot legend in a separate file (for cycle)
-        legend_outside: true
-        # Plot style (for cycle)
-        styleset: CMIP5
-        # Calculate t-test in difference plot (for zonal and lat-lon)
-        t_test: false
-        # Confidence level for the t-test (for zonal and lat-lon)
-        conf_level: 0.95
+        plot_type: cycle       # Plot type ('cycle' (time), 'zonal' (plev, lat), 'latlon' (lat, lon))
+        time_avg: monthlyclim  # Time average ('opt' argument of time_operations.ncl)
+        region: Global         # Selected region ('Global', 'Tropics', 'NH extratropics', 'SH extratropics')
+        draw_plots: true       # Draw plots
+        plot_stddev: ref_model # Plot standard deviation ('all', 'none', 'ref_model' or given model name)
+        legend_outside: true   # Plot legend in a separate file
+        styleset: CMIP5        # Plot style
       main_grading: &main_grading_script_settings
         <<: *main_script_settings
         plot_type: cycle_latlon

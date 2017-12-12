@@ -14,6 +14,7 @@ r"""
  CORE DEVELOPMENT TEAM AND CONTACTS:
    Veronika Eyring (PI; DLR, Germany - veronika.eyring@dlr.de)
    Bjoern Broetz (DLR, Germany - bjoern.broetz@dlr.de)
+   Niels Drost (NLESC, Netherlands - n.drost@esciencecenter.nl)
    Nikolay Koldunov (AWI, Germany - nikolay.koldunov@awi.de)
    Axel Lauer (DLR, Germany - axel.lauer@dlr.de)
    Benjamin Mueller (LMU, Germany - b.mueller@iggf.geo.uni-muenchen.de)
