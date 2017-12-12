@@ -162,7 +162,7 @@ def check_data_availability(input_files, start_year, end_year):
                 ", ".join(str(year) for year in missing_years), input_files))
 
 
-def get_single_model_task(variable, settings, user_config, debug=False):
+def get_single_model_task(variable, settings, user_config):
     """Get a preprocessor task for a single model"""
     logger.info("Configuring single-model task for %s variable %s",
                 variable['model'], variable['short_name'])
@@ -213,12 +213,14 @@ def get_single_model_task(variable, settings, user_config, debug=False):
         if isinstance(args, dict):
             cfg[step].update(args)
 
-    if debug is True:
-        debug = {'paths': [output_file[:-3]]}
+    if user_config['save_intermediary_cubes']:
+        debug = {'paths': [os.path.splitext(output_file)[0]]}
+    else:
+        debug = None
     return PreprocessingTask(settings=cfg, input_data=input_files, debug=debug)
 
 
-def get_multi_model_task(standard_name, settings, ancestors, debug=False):
+def get_multi_model_task(standard_name, settings, ancestors, user_config):
     """Get multi-model preprocessor tasks."""
     logger.info("Configuring multi-model task")
     settings = select_multi_model_settings(settings)
@@ -240,8 +242,10 @@ def get_multi_model_task(standard_name, settings, ancestors, debug=False):
     files = [task.settings['save']['target'] for task in ancestors]
     settings['save'] = {'targets': files}
 
-    if debug is True:
-        debug = {'paths': [f[:-3] for f in files]}
+    if user_config['save_intermediary_cubes']:
+        debug = {'paths': [os.path.splitext(f)[0] for f in files]}
+    else:
+        debug = None
     task = PreprocessingTask(
         settings=settings, ancestors=ancestors, debug=debug)
 
@@ -396,8 +400,6 @@ class Namelist(object):
         """Define tasks in namelist"""
         logger.debug("Creating tasks from namelist")
 
-        debug_preprocessor = False
-
         tasks = []
 
         all_preproc_tasks = {}
@@ -421,7 +423,6 @@ class Namelist(object):
                             variable=variable,
                             settings=settings,
                             user_config=self._cfg,
-                            debug=debug_preprocessor,
                         )
                         all_preproc_tasks[task_id] = task
                     single_model_tasks.append(all_preproc_tasks[task_id])
@@ -433,7 +434,7 @@ class Namelist(object):
                         standard_name=variable['standard_name'],
                         settings=settings,
                         ancestors=list(single_model_tasks),
-                        debug=debug_preprocessor,
+                        user_config=self._cfg,
                     )
                     all_preproc_tasks[task_id] = task
                 multi_model_task = all_preproc_tasks[task_id]

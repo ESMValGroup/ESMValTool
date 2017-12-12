@@ -310,7 +310,7 @@ def preprocess(items, settings, debug=None):
                 for path in debug['paths']:
                     target = os.path.join(path, step + '.nc')
                     if os.path.exists(target):
-                        target = target[:-3] + '_1.nc'
+                        target = os.path.splitext(target)[0] + '_1.nc'
                     targets.append(target)
                 save_cubes(cubes, targets=targets)
 
