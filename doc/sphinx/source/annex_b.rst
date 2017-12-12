@@ -19,6 +19,7 @@ https://www.git-scm.com/doc.
 ..    :align:   center
 .. note::
    .. figure::  /figures/Attention.png
+
    The OPEN ESMValTool repository is located at https://github.com/ESMValGroup/ESMValTool.
    The PRIVATE ESMValTool repository for the ESMValTool development team is located at https://github.com/ESMValGroup/ESMValTool-private
 

@@ -189,13 +189,13 @@ Example plots
 
    Polar-stereographic map of Arctic September (upper row) and Antarctic March (lower row) sea ice concentration from ESA CCI SI SSM/I (left column) and NSIDC-NT (middle column) observations averaged over the years 1992-2008. The right column depicts the differences between the CMIP5 multi-model mean and the ESA CCI SI SSM/I observations averaged over the years 1992-2005 (Lauer et al. 2017, Fig. 6).
 
-.. _fig_esacci_7
+.. _fig_esacci_7:
 .. figure::  /namelists/figures/esacci/Lauer17_fig07.png
    :align:   center
 
    Maps of the multi-years seasonal mean of total cloud cover, 1-sigma uncertainty from ESA CCI cloud, the differences between the ESA CCI data and the CMIP5 multi-model mean, and zonal means (Lauer et al. 2017, Fig. 7).
 
-.. _fig_esacci_8
+.. _fig_esacci_8:
 .. figure::  /namelists/figures/esacci/Lauer17_fig08.png
    :align:   center
 

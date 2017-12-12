@@ -191,7 +191,7 @@ User setting files (cfg files) are stored in nml/cfg_eyring13jgr
    * e13fig07_period1: start and end year of "period1" (= 2000s), e.g.,
      (/2000., 2009/)
    * e13fig07_period2: start and end year of "period2" (= 2090s), e.g.,
-    (/2090., 2099/)
+     (/2090., 2099/)
    * e13fig07_XMin: min. x-values for plotting (n-element array, e.g.,
      (/-2., -2./)); array is required to have the same number of elements
      as "seasons" (see above)

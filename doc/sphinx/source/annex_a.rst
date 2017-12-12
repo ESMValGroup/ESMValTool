@@ -65,7 +65,7 @@ Annex A -- More tables
 |   - ...                       |                                               |
 |                               |                                               |
 | - ... for other languages     |                                               |
-| (e.g., R)                     |                                               |
+|   (e.g., R)                   |                                               |
 +-------------------------------+-----------------------------------------------+
 
 .. tabularcolumns:: |p{5.2cm}|p{10.3cm}|
@@ -85,7 +85,7 @@ Annex A -- More tables
 |   - plotting2.py              |                                               |
 |                               |                                               |
 | - ... for other languages     |                                               |
-| (e.g., R)                     |                                               |
+|   (e.g., R)                   |                                               |
 +-------------------------------+-----------------------------------------------+
 | interface_data/               | Inter-process communication, e.g., between    |
 |                               | Python and NCL/R, is done by sourcing NCL/R   |
@@ -143,16 +143,16 @@ Annex A -- More tables
 |                               | procedure, called by the default, the         |
 |                               | ECEARTH- and the EMAC-specific routines.      |
 +-------------------------------+-----------------------------------------------+
-| reformat_scripts/recognized_  | Provides a list of possible alternative units |
+| reformat_scripts/recognized\_ | Provides a list of possible alternative units |
 | units.dat                     | to the CMOR standard and the corresponding    |
 |                               | conversion factor. Can be extended by the     |
 |                               | user.                                         |
 +-------------------------------+-----------------------------------------------+
-| reformat_scripts/recognized_  | Provides a list of possible alternative       |
+| reformat_scripts/recognized\_ | Provides a list of possible alternative       |
 | vars.dat                      | variable names to the CMOR standard           |
 |                               | names. Can be extended by the user.           |
 +-------------------------------+-----------------------------------------------+
-| reformat_scripts/variable_    | Declaration of variables, variable specific   |
+| reformat_scripts/variable\_   | Declaration of variables, variable specific   |
 | defs/                         | attributes and calculation of derived         |
 |                               | variables                                     |
 +-------------------------------+-----------------------------------------------+
