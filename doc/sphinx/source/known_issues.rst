@@ -1,10 +1,5 @@
-.. raw:: latex
-
-   \section*{Known issues}
-
-.. raw:: html
-
-   <h1> Known issues </h1>
+ESMValTool Known Issues
+***********************
 
 **NCL 6.2.1+**
 

@@ -1,12 +1,7 @@
-.. _annex_b:
-
-Annex B - development environment
-*********************************
-
 .. _git_repository:
 
 Git repository
-==============
+**************
 
 The development of the ESMValTool source code is managed by the version control system Git
 (https://www.git-scm.com/). The ESMValTool development environment is hosted on GitHub. The following
@@ -53,7 +48,7 @@ The OPEN and the PRIVATE repository both contain the following kinds of branches
 * *FEATURE BRANCHES* in both the PUBLIC and the PRIVATE repository can be created by all members of the ESMValTool development team (i.e. members team "ESMValTool-DevelopmentTeam" in the GitHub organization "ESMValGroup"). If needed, branches can be individually write-protected within each repository so that other developers cannot accidently push changes to these branches.
 
 Workflow
-========
+********
 
 The *MASTER BRANCH* of the PRIVATE repository will be synchronized with the *MASTER BRANCH* of the OPEN repository
 in an automated manner. This ensures that they are identical at all times (see schematic in :numref:`fig_git`). The
@@ -285,7 +280,7 @@ Development Team by clicking on the button "Pull request". Your changes will the
 implemented into the *DEVELPOMENT BRANCH*.
 
 General do-s and don't-s
-========================
+************************
 
 **Do-s**
 
@@ -308,7 +303,7 @@ General do-s and don't-s
 .. _wiki:
 
 ESMValTool development team wiki
-================================
+********************************
 
 The latest information on the ESMValTool and diagnostics under development can be found on the wiki of the OPEN
 and PRIVATE GitHub repository:

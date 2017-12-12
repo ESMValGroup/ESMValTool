@@ -1,10 +1,5 @@
-.. raw:: latex
-
-   \section*{Preface}
-
-.. raw:: html
-
-   <h1> Preface </h1>
+Foreword
+********
 
 This user's and developer's guide consists of parts targeting two overlapping categories of scientists working with the Earth System Model Evaluation Tool (ESMValTool):
 
