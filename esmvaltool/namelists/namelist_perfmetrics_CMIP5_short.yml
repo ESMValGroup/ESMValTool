@@ -54,23 +54,10 @@ diagnostics:
     settings:
       var_attr_ref: ERA-Interim
       diag_script_info:
-        # Plot type ('cycle' (time), 'zonal' (plev, lat), 'latlon' (lat, lon))
-        plot_type: cycle
-        # Time average ('opt' argument of time_operations.ncl)
-        time_avg: monthlyclim
-        # Selected region ('Global', 'Tropics', 'NH extratropics', 'SH extratropics')
-        region: Global
-        # Draw plots
-        draw_plots: true
-        # Draw difference plots
-        plot_diff: true
-        # Plot standard deviation ('all', 'none', 'ref_model' or given model name)
-        plot_stddev: ref_model
-        # Plot legend in a separate file (for cycle)
-        legend_outside: true
-        # Plot style (for cycle)
-        styleset: CMIP5
-        # Calculate t-test in difference plot (for zonal and lat-lon)
-        t_test: false
-        # Confidence level for the t-test (for zonal and lat-lon)
-        conf_level: 0.95
+        plot_type: cycle       # Plot type ('cycle' (time), 'zonal' (plev, lat), 'latlon' (lat, lon))
+        time_avg: monthlyclim  # Time average ('opt' argument of time_operations.ncl)
+        region: Global         # Selected region ('Global', 'Tropics', 'NH extratropics', 'SH extratropics')
+        draw_plots: true       # Draw plots
+        plot_stddev: ref_model # Plot standard deviation ('all', 'none', 'ref_model' or given model name)
+        legend_outside: true   # Plot legend in a separate file
+        styleset: CMIP5        # Plot style
