@@ -274,9 +274,8 @@ class Namelist(object):
             diagnostic['models'] = models
             diagnostic['variables'] = self._initialize_variables(
                 name, raw_diagnostic['variables'], models)
-            diagnostic['script'] = self._initialize_script(
-                name, raw_diagnostic['script'])
-            diagnostic['settings'] = copy.deepcopy(raw_diagnostic['settings'])
+            diagnostic['scripts'] = self._initialize_scripts(
+                name, raw_diagnostic['scripts'])
             diagnostics[name] = diagnostic
 
         return diagnostics
@@ -318,40 +317,54 @@ class Namelist(object):
         return variables
 
     @staticmethod
-    def _initialize_script(diagnostic_name, raw_script):
+    def _initialize_scripts(diagnostic_name, raw_scripts):
         """Define script in diagnostic"""
         logger.debug("Setting script for diagnostic %s", diagnostic_name)
 
+        scripts = {}
+
         # Dummy diagnostic for running only preprocessors
-        if raw_script == 'None':
-            return
+        if raw_scripts == 'None':
+            return scripts
 
-        diagnostics_root = os.path.join(
-            os.path.dirname(__file__), 'diag_scripts')
-        script_file = os.path.abspath(
-            os.path.join(diagnostics_root, raw_script))
+        for name, raw_settings in raw_scripts.items():
+            raw_script = raw_settings.pop('script')
+            ancestors = raw_settings.pop('ancestors', None)
+            settings = copy.deepcopy(raw_settings)
 
-        bad_script = NamelistError(
-            "Cannot execute script {} ({}) of diagnostic {}".format(
-                raw_script, script_file, diagnostic_name))
+            diagnostics_root = os.path.join(
+                os.path.dirname(__file__), 'diag_scripts')
+            script_file = os.path.abspath(
+                os.path.join(diagnostics_root, raw_script))
 
-        if not os.path.isfile(script_file):
-            raise bad_script
+            bad_script = NamelistError(
+                "Cannot execute script {} ({}) of diagnostic {}".format(
+                    raw_script, script_file, diagnostic_name))
 
-        script = []
-        if not os.access(script_file, os.X_OK):  # if not executable
-            extension = os.path.splitext(raw_script)[1].lower()[1:]
-            executables = {
-                'py': ['python'],
-                'ncl': ['ncl'],
-                'r': ['Rscript', '--slave', '--quiet'],
-            }
-            if extension not in executables:
+            if not os.path.isfile(script_file):
                 raise bad_script
-            script = executables[extension]
-        script.append(script_file)
 
-        return script
+            cmd = []
+            if not os.access(script_file, os.X_OK):  # if not executable
+                extension = os.path.splitext(raw_script)[1].lower()[1:]
+                executables = {
+                    'py': ['python'],
+                    'ncl': ['ncl'],
+                    'r': ['Rscript', '--slave', '--quiet'],
+                }
+                if extension not in executables:
+                    raise bad_script
+                cmd = executables[extension]
+            cmd.append(script_file)
+
+            scripts[name] = {
+                'script': script_file,
+                'command': cmd,
+                'settings': settings,
+                'ancestors': ancestors,
+            }
+
+        return scripts
 
     def _update_target_grid(self, variable, settings, all_models):
         """Configure regrid target_grid in preprocessor settings."""
@@ -425,14 +438,34 @@ class Namelist(object):
                     all_preproc_tasks[task_id] = task
                 multi_model_task = all_preproc_tasks[task_id]
 
-            # Create diagnostic task
-            diagnostic_task = DiagnosticTask(
-                # TODO: enable once DiagnosticTask.run() implemented
-                script=None,  # diagnostic['script'],
-                settings=diagnostic['settings'],
-                ancestors=[multi_model_task],
-            )
-            tasks.append(diagnostic_task)
+            # Create diagnostic tasks
+            diagnostic_tasks = {}
+            for task_id, script_cfg in diagnostic['scripts'].items():
+                diagnostic_task = DiagnosticTask(
+                    # TODO: enable once DiagnosticTask.run() implemented
+                    script=None,  # script_cfg['script'],
+                    settings=script_cfg['settings'],
+                )
+                diagnostic_tasks[task_id] = diagnostic_task
+
+            # Preprocessor run only
+            if not diagnostic_tasks:
+                tasks.append(multi_model_task)
+
+            # Add diagnostic tasks
+            tasks.extend(diagnostic_tasks.values())
+
+            # Establish relations between diagnostic tasks and minimize `tasks`
+            for task_id, script_cfg in diagnostic['scripts'].items():
+                if script_cfg['ancestors']:
+                    ancestors = []
+                    for ancestor_id in script_cfg['ancestors']:
+                        diagnostic_task = diagnostic_tasks[ancestor_id]
+                        ancestors.append(diagnostic_task)
+                        tasks.remove(diagnostic_task)
+                else:
+                    ancestors = [multi_model_task]
+                diagnostic_tasks[task_id].ancestors = ancestors
 
         return tasks
 

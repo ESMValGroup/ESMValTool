@@ -176,7 +176,7 @@ def get_diag_value(di, projinfomodels, v):
         # perfmetrics_main.ncl expects diag_script to be a relative path
         diag_path = os.path.join(
             os.path.dirname(os.path.dirname(__file__)), 'diag_scripts')
-        diag_script = di['script'][-1]
+        diag_script = di['script']
         if diag_script.startswith(diag_path):
             diag_script = os.path.relpath(diag_script, diag_path)
         currentry = [diag_script]

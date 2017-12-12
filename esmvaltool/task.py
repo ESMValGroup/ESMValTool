@@ -66,6 +66,7 @@ class DiagnosticTask(AbstractTask):
         """Run the diagnostic script."""
         # Run only preprocessor
         if self.script is None:
+            self.output_data = []
             return
 
         self.settings['input_files'] = input_data

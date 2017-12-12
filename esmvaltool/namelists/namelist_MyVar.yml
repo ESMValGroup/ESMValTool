@@ -32,9 +32,9 @@ diagnostics:
         field: T3M
     additional_models:
       - {model: NCEP,        project: OBS,    tier: 2,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
-    script: MyDiag_test_ta.ncl
-    settings: &settings
-      diag_script_info:
+    scripts:
+      test_ta: &settings
+        script: MyDiag_test_ta.ncl
         projection: Mollweide
         styleset: CMIP5
         colormap: WhiteBlueGreenYellowRed
@@ -48,8 +48,10 @@ diagnostics:
         field: T3M
     additional_models:
       - {model: NCEP,        project: OBS,    tier: 2,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
-    script: MyDiag_test_ta_no2.ncl
-    settings: *settings
+    scripts:
+      test_ta_no2:
+        <<: *settings
+        script: MyDiag_test_ta_no2.ncl
 
   pr_diagnostic:
     description: Precipitation tutorial diagnostic.
@@ -58,5 +60,7 @@ diagnostics:
         preprocessor: preprocessor_2
         field: T2Ms
     additional_models: []
-    script: MyDiag_test_pr.ncl
-    settings: *settings
+    scripts:
+      test_pr:
+        <<: *settings
+        script: MyDiag_test_pr.ncl

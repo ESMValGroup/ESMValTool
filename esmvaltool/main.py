@@ -213,7 +213,7 @@ def process_namelist(namelist_file, global_config):
 
     # parse namelist
     namelist = read_namelist_file(namelist_file, global_config)
-    # run (only preprocessors for now)
+    # run (only preprocessors for now) # TODO: also run diagnostics from here
     logger.debug("Namelist summary:\n%s", namelist)
     namelist.run()
 
@@ -282,37 +282,77 @@ def process_namelist(namelist_file, global_config):
         "Starting the Earth System Model Evaluation Tool v%s at time: %s ...",
         __version__, timestamp1.strftime(timestamp_format))
 
+    def _add_to_order(all_scripts, order, script_name):
+        """Add scripts to order depth first"""
+        # skip scripts that have already been added earlier
+        if script_name in order:
+            return
+
+        # if the script has ancestors, add those to order first
+        if all_scripts[script_name]['ancestors']:
+            for ancestor_name in all_scripts[script_name]['ancestors']:
+                _add_to_order(all_scripts, order, ancestor_name)
+
+        # add script to order and remove from todo list
+        order.append(script_name)
+        all_scripts.pop(script_name)
+
+    def get_order(all_scripts, order):
+        """Determine the order in which scripts should be run."""
+        while all_scripts:
+            # select a random script
+            script_name, script_cfg = all_scripts.popitem()
+            all_scripts[script_name] = script_cfg
+
+            # add ancestors and script to order
+            _add_to_order(all_scripts, order, script_name)
+
     for diag_name, diag in project_info['DIAGNOSTICS'].items():
-        if not diag['script']:
-            continue
 
-        logger.info("Running diagnostic %s", diag_name)
-        project_info['RUNTIME']['currDiag'] = copy.deepcopy(diag)
+        script_order = []
+        get_order(dict(diag['scripts']), script_order)
+        for script_name in script_order:
+            script_cfg = diag['scripts'][script_name]
+            if not script_cfg['script']:
+                continue
 
-        for name, variables in diag['variables'].items():
-            logger.info("Processing variable %s", name)
-            var = variables[0]
-            project_info['RUNTIME']['derived_var'] = var['short_name']
-            project_info['RUNTIME']['derived_field_type'] = var['field']
-            project_info['ALLMODELS'] = variables
+            logger.info("Running diagnostic script %s of diagnostic %s",
+                        script_name, diag_name)
+            project_info['RUNTIME']['currDiag'] = copy.deepcopy(diag)
 
-            executable = diag['script'][-1]
-            logger.info("Running diag_script: %s", executable)
-            interface_data = os.path.join(project_info['GLOBAL']['run_dir'],
-                                          diag_name)
-            os.makedirs(interface_data)
-            ext = 'ncl' if executable.lower().endswith('.ncl') else 'yml'
-            cfg_file = os.path.join(interface_data, 'settings.' + ext)
-            logger.info("with configuration file: %s", cfg_file)
-            write_settings(diag['settings'], cfg_file)
-            project_info['RUNTIME']['currDiag']['cfg_file'] = cfg_file
-            project_info['RUNTIME']['interface_data'] = interface_data
-            run_executable(
-                executable,
-                project_info,
-                project_info['GLOBAL']['verbosity'],
-                project_info['GLOBAL']['exit_on_warning'],
-            )
+            for name, variables in diag['variables'].items():
+                logger.info("Processing variable %s", name)
+
+                var = variables[0]
+                project_info['RUNTIME']['derived_var'] = var['short_name']
+                project_info['RUNTIME']['derived_field_type'] = var['field']
+                project_info['ALLMODELS'] = variables
+
+                script = script_cfg['script']
+                logger.info("Running diag_script: %s", script)
+                interface_data = os.path.join(
+                    project_info['GLOBAL']['run_dir'], diag_name, script_name)
+                os.makedirs(interface_data)
+                ext = 'ncl' if script.lower().endswith('.ncl') else 'yml'
+                cfg_file = os.path.join(interface_data, 'settings.' + ext)
+                logger.info("with configuration file: %s", cfg_file)
+                settings = script_cfg['settings']
+                if ext == 'ncl':
+                    settings = {'diag_script_info': settings}
+                    # TODO: move reference_model to variable
+                    if 'reference_model' in var:
+                        settings['var_attr_ref'] = var['reference_model']
+
+                write_settings(settings, cfg_file)
+                project_info['RUNTIME']['currDiag']['script'] = script
+                project_info['RUNTIME']['currDiag']['cfg_file'] = cfg_file
+                project_info['RUNTIME']['interface_data'] = interface_data
+                run_executable(
+                    script,
+                    project_info,
+                    project_info['GLOBAL']['verbosity'],
+                    project_info['GLOBAL']['exit_on_warning'],
+                )
 
     # delete environment variable
     del os.environ['0_ESMValTool_version']

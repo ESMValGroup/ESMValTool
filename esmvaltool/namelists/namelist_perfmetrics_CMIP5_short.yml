@@ -40,20 +40,20 @@ preprocessors:
       threshold_fraction: 0.95
 
 diagnostics:
-  annual_cycle_ta:
-    description: Air temperature annual cycle plot.
+  ta_850_global:
+    description: Air temperature at 850 hPa global.
     variables:
       ta:
         preprocessor: preprocessor
+        reference_model: [ERA-Interim, NCEP]
         mip: Amon
         field: T3M
     additional_models:
-      - {model: ERA-Interim,      project: OBS,   tier: 3,   type: reanaly,   version: 1,       start_year: 2001, end_year: 2002}
-      - {model: NCEP,             project: OBS,   tier: 2,   type: reanaly,   version: 1,       start_year: 2001, end_year: 2002}    
-    script: perfmetrics_main.ncl
-    settings:
-      var_attr_ref: ERA-Interim
-      diag_script_info:
+      - {model: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 3}
+      - {model: NCEP,         project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 2}
+    scripts:
+      main: &main_script_settings
+        script: perfmetrics_main.ncl
         # Plot type ('cycle' (time), 'zonal' (plev, lat), 'latlon' (lat, lon))
         plot_type: cycle
         # Time average ('opt' argument of time_operations.ncl)
@@ -74,3 +74,21 @@ diagnostics:
         t_test: false
         # Confidence level for the t-test (for zonal and lat-lon)
         conf_level: 0.95
+      main_grading: &main_grading_script_settings
+        <<: *main_script_settings
+        plot_type: cycle_latlon
+        draw_plots: false
+        plot_stddev: all
+        legend_outside: false
+      grading:
+        <<: *main_grading_script_settings
+        script: perfmetrics_grading.ncl
+        ancestors: [main_grading]
+        # MultiModelMean
+        MultiModelMean: true
+        # MultiModelMedian
+        MultiModelMedian: true
+        # Metric ("RMSD", "BIAS")
+        metric: RMSD
+        # Normalization ("mean", "median", "centered_median")
+        normalization: centered_median
