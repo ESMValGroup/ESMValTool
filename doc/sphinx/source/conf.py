@@ -235,7 +235,7 @@ latex_elements = {
      {\Huge \bf \sffamily User's and Developer's Guide \par}
      \vspace{1cm}
      {\Large \sffamily \MONTH ~ \the\year \par}
-     \vspace{12cm}
+     \vspace{14cm}
      Deutsches Zentrum f\"ur Luft- und Raumfahrt (DLR), Institut f\"ur Physik der Atmosph\"are, Oberpfaffenhofen, Germany \par
      \vspace{0.5cm}
      http://www.esmvaltool.org/ \par

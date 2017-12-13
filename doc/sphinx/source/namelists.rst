@@ -9,7 +9,6 @@ For any given namelist *"namelist.xml"*, the ESMValTool is invoked from the comm
 
 	python main.py nml/namelist.xml
 
- 
 The Python "workflow manager" *main.py* will parse the namelist (namelist.xml) and call all diagnostic scripts listed in the namelist. This sequence is schematicallypython main.py nml/namelist.xml depicted in :numref:`fig_controlflow` and involves the following steps:
 
 1.	Parse the namelist
@@ -18,7 +17,6 @@ The Python "workflow manager" *main.py* will parse the namelist (namelist.xml) a
 4.	If needed, run a NCL script to compute derived variables such as, for instance, climate indices
 5.	Run the diagnostic script (NCL/Python/R/etc.)
 6.	Repeat previous steps until all diagnostics listed in the namelist are processed
-
 
 .. _fig_controlflow:
 .. figure:: ./figures/figure_ESMValTool_controlflow.png
@@ -63,49 +61,51 @@ More on the <GLOBAL>-tag
 
 :numref:`tab_glob_tags` summarizes the tags defined in the <GLOBAL> section of the namelist. Some of these tags (e.g., regridding_dir) are specific to some diagnostics and not generally defined in all namelists.
 
+|
+
 :numref:`tab_glob_tags` Tags of the <GLOBAL> section of the namelist. Note that not all tags might be used by a diagnostic.
 
 .. _tab_glob_tags:
 
-+----------------------+----------+------------------------------------------------------------------------------------------------+
-| Name                 | Type     | Description                                                                                    |
-+======================+==========+================================================================================================+
-| climo_dir            | string   | Path for intermediate files (netCDF)                                                           |
-+----------------------+----------+------------------------------------------------------------------------------------------------+
-| exit_on_warning      | boolean  | Stop on warnings                                                                               |
-+----------------------+----------+------------------------------------------------------------------------------------------------+
-| force_calc           | boolean  | Force diagnostic specific files to be recreated                                                |
-+----------------------+----------+------------------------------------------------------------------------------------------------+
-| force_gradecalc      | boolean  | Force recalculation of model grading (perfmetrics)                                             |
-+----------------------+----------+------------------------------------------------------------------------------------------------+
-| force_processing     | boolean  | Force certain intermediate files (netCDF) to be recreated instead of using cached files        |
-+----------------------+----------+------------------------------------------------------------------------------------------------+
-| force_taylorcalc     | boolean  | Force recalculation of data for Taylor plot (perfmetrics)                                      |
-+----------------------+----------+------------------------------------------------------------------------------------------------+
-| max_data_blocksize   | integer  | Currently not used                                                                             |
-+----------------------+----------+------------------------------------------------------------------------------------------------+
-| max_data_filesize    | integer  | Limits internal memory handling in some core NCL scripts                                       |
-+----------------------+----------+------------------------------------------------------------------------------------------------+
-| output_file_type     | string   | File format of plots (ps, pdf, eps, png); not all formats supported by all diagnostic scripts  |
-+----------------------+----------+------------------------------------------------------------------------------------------------+
-| plot_dir             | string   | Output path for plots                                                                          |
-+----------------------+----------+------------------------------------------------------------------------------------------------+
-| read_from_vault      | boolean  | Retrieve computed diagnostic fields from netCDF                                                |
-+----------------------+----------+------------------------------------------------------------------------------------------------+
-| regridding_dir       | string   | Path for intermediate files used by NCL regridding routines                                    |
-+----------------------+----------+------------------------------------------------------------------------------------------------+
-| show_debuginfo       | string   | Generate a second version of each figure with explanatory text overlayed                       |
-+----------------------+----------+------------------------------------------------------------------------------------------------+
-| verbosity            | integer  | Verbosity level (0 = minimum output, 4=maximum output)                                         |
-+----------------------+----------+------------------------------------------------------------------------------------------------+
-| write_netcdf         | boolean  | Write results to netCDF file                                                                   |
-+----------------------+----------+------------------------------------------------------------------------------------------------+
-| write_plot_vars      | boolean  | Currenntly not used                                                                            |
-+----------------------+----------+------------------------------------------------------------------------------------------------+
-| write_plots          | boolean  | Produce plots                                                                                  |
-+----------------------+----------+------------------------------------------------------------------------------------------------+
-| wrk_dir              | string   | Output path for data (netCDF, acknowledgements)                                                |
-+----------------------+----------+------------------------------------------------------------------------------------------------+
++----------------------+----------+-----------------------------------------------------------------------------------------------+
+| Name                 | Type     | Description                                                                                   |
++======================+==========+===============================================================================================+
+| climo_dir            | string   | Path for intermediate files (netCDF)                                                          |
++----------------------+----------+-----------------------------------------------------------------------------------------------+
+| exit_on_warning      | boolean  | Stop on warnings                                                                              |
++----------------------+----------+-----------------------------------------------------------------------------------------------+
+| force_calc           | boolean  | Force diagnostic specific files to be recreated                                               |
++----------------------+----------+-----------------------------------------------------------------------------------------------+
+| force_gradecalc      | boolean  | Force recalculation of model grading (perfmetrics)                                            |
++----------------------+----------+-----------------------------------------------------------------------------------------------+
+| force_processing     | boolean  | Force certain intermediate files (netCDF) to be recreated instead of using cached files       |
++----------------------+----------+-----------------------------------------------------------------------------------------------+
+| force_taylorcalc     | boolean  | Force recalculation of data for Taylor plot (perfmetrics)                                     |
++----------------------+----------+-----------------------------------------------------------------------------------------------+
+| max_data_blocksize   | integer  | Currently not used                                                                            |
++----------------------+----------+-----------------------------------------------------------------------------------------------+
+| max_data_filesize    | integer  | Limits internal memory handling in some core NCL scripts                                      |
++----------------------+----------+-----------------------------------------------------------------------------------------------+
+| output_file_type     | string   | File format of plots (ps, pdf, eps, png); not all formats supported by all diagnostic scripts |
++----------------------+----------+-----------------------------------------------------------------------------------------------+
+| plot_dir             | string   | Output path for plots                                                                         |
++----------------------+----------+-----------------------------------------------------------------------------------------------+
+| read_from_vault      | boolean  | Retrieve computed diagnostic fields from netCDF                                               |
++----------------------+----------+-----------------------------------------------------------------------------------------------+
+| regridding_dir       | string   | Path for intermediate files used by NCL regridding routines                                   |
++----------------------+----------+-----------------------------------------------------------------------------------------------+
+| show_debuginfo       | string   | Generate a second version of each figure with explanatory text overlayed                      |
++----------------------+----------+-----------------------------------------------------------------------------------------------+
+| verbosity            | integer  | Verbosity level (0 = minimum output, 4=maximum output)                                        |
++----------------------+----------+-----------------------------------------------------------------------------------------------+
+| write_netcdf         | boolean  | Write results to netCDF file                                                                  |
++----------------------+----------+-----------------------------------------------------------------------------------------------+
+| write_plot_vars      | boolean  | Currenntly not used                                                                           |
++----------------------+----------+-----------------------------------------------------------------------------------------------+
+| write_plots          | boolean  | Produce plots                                                                                 |
++----------------------+----------+-----------------------------------------------------------------------------------------------+
+| wrk_dir              | string   | Output path for data (netCDF, acknowledgements)                                               |
++----------------------+----------+-----------------------------------------------------------------------------------------------+
 
 .. _mod_tag:
 
@@ -144,6 +144,8 @@ Example:
 
 The attribute *id* specifies a string that can be used to refer to the model in other places of the namelist. :numref:`tab_mod_tags` gives a summary of valid attributes in <model>-tags.
 
+|
+
 :numref:`tab_proj_spec` Project specifiers and corresponding arguments.
 
 .. _tab_proj_spec:
@@ -181,6 +183,7 @@ The attribute *id* specifies a string that can be used to refer to the model in 
 | obs4mips          | Name       | process level | ensemble   | start year | end year   | path	     |            |            |
 +-------------------+------------+---------------+------------+------------+------------+------------+------------+------------+
 
+|
 
 :numref:`tab_mod_tags` Optional attributes of the <model> tag.
 
@@ -192,7 +195,7 @@ The attribute *id* specifies a string that can be used to refer to the model in 
 | id    | String  | Define a name used to refer to the model data in other parts of the namelist |
 +-------+---------+------------------------------------------------------------------------------+
 
-
+|
 
 :numref:`tab_opt_att` Optional attributes of the <variable> tag.
 
@@ -200,19 +203,19 @@ The attribute *id* specifies a string that can be used to refer to the model in 
 
 .. _tab_opt_att:
 
-+-----------+----------+---------------------------------------------------------------------------------------------+
-| Name      | Type     | Description                                                                                 |
-+===========+==========+=============================================================================================+
-| exclude   | String   | Model (id) to exclude from processing                                                       |
-+-----------+----------+---------------------------------------------------------------------------------------------+
-| EXP       | String   | Define a name used to the CMIP5 experiment, e.g., historical                                |
-+-----------+----------+---------------------------------------------------------------------------------------------+
-| MIP       | String   | Define a name used to refer to the CMIP5 data stream, e.g., "Amon", "Omon", "day", "fx";    |
-|           |          | to be used in combination with "MIP_VAR_DEF" replacing the CMIP5 stream in the definition   |
-|           |          | of a <model> tag.                                                                           |
-+-----------+----------+---------------------------------------------------------------------------------------------+
-| ref_model | String   | Define a reference model (model id)                                                         |
-+-----------+----------+---------------------------------------------------------------------------------------------+
++-----------+----------+-------------------------------------------------------------------------------------------+
+| Name      | Type     | Description                                                                               |
++===========+==========+===========================================================================================+
+| exclude   | String   | Model (id) to exclude from processing                                                     |
++-----------+----------+-------------------------------------------------------------------------------------------+
+| EXP       | String   | Define a name used to the CMIP5 experiment, e.g., historical                              |
++-----------+----------+-------------------------------------------------------------------------------------------+
+| MIP       | String   | Define a name used to refer to the CMIP5 data stream, e.g., "Amon", "Omon", "day", "fx";  |
+|           |          | to be used in combination with "MIP_VAR_DEF" replacing the CMIP5 stream in the definition |
+|           |          | of a <model> tag.                                                                         |
++-----------+----------+-------------------------------------------------------------------------------------------+
+| ref_model | String   | Define a reference model (model id)                                                       |
++-----------+----------+-------------------------------------------------------------------------------------------+
 
 
 .. _diag_tag:
@@ -221,6 +224,8 @@ More on the <DIAGNOSTICS>-tag
 =============================
 
 Each <diag> entry refers to one or several scripts in the folder *diag_scripts/* complemented by a variable name (see :numref:`tab_var_def` for a list of variables) and the corresponding (input) field type (see :numref:`tab_fld_typ`). Optionally the <diag>-tag may contain additional <model>-tags; these data sets will be processed only by the diagnostic(s) listed in the current <diag> entry. In this way it is possible to define a set of models to be analyzed by all diagnostics in the namelist (in the <MODELS> section) and a set of models to be analyzed only by specific diagnostics (in the <diag> section). Available <diag>-tags are listed in :numref:`tab_diag_tags`, their optional attributes in :numref:`tab_diag_att`.
+
+|
 
 :numref:`tab_diag_tags` Tags of the <diag> section within the <DIAGNOSTICS> section of the namelist. There are no default values.
 
@@ -256,6 +261,7 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 |                      |          | the ones defined in the MODELS section (see above) but will be ignored by other <diag>-sections.                |
 +----------------------+----------+-----------------------------------------------------------------------------------------------------------------+
 
+|
 
 :numref:`tab_diag_att` Optional attributes of selected tags in the <diag> section. 
 
@@ -263,66 +269,67 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 
 .. _tab_diag_att:
 
-+------------+----------+---------------+--------------------------------------------------------------------------------------------------+
-| Name       | Type     | Parent tag    | Description                                                                                      |
-+============+==========+===============+==================================================================================================+
-| ref_model  | string   | <variable>    | Defines this data set as the reference data set within the diagnostic. The string ref_model      |
-|            |          |               | refers to either the model name, as specified in Table S2, or the model attribute id as specified|
-|            |          |               | in Table S3. Note that because both model and observational data sets are specified via the      |
-|            |          |               | <model>-tag any of them can be used as a reference data set.                                     |
-+------------+----------+---------------+--------------------------------------------------------------------------------------------------+
-| exclude    | string   | <variable>    | When using more than one variable corresponding to different observational data sets (e.g.,      |
-|            |          |               | precipitation and skin temperature), it is necessary to use this attribute to match which        |
-|            |          |               | variable goes with which data set, e.g., pr with TRMM and ts with HadISST using,                 |
-|            |          |               |                                                                                                  |
-|            |          |               | <variable ref_model="trmm" exclude="hadisst">  pr ...                                            |
-|            |          |               | <variable ref_model="hadisst" exclude="trmm">  ts ...                                            |
-+------------+----------+---------------+--------------------------------------------------------------------------------------------------+
-| cfg        | string   | <diag_script> | Configuration file for the diagnostic script                                                     |
-+------------+----------+---------------+--------------------------------------------------------------------------------------------------+
++------------+----------+---------------+---------------------------------------------------------------------------------------------------+
+| Name       | Type     | Parent tag    | Description                                                                                       |
++============+==========+===============+===================================================================================================+
+| ref_model  | string   | <variable>    | Defines this data set as the reference data set within the diagnostic. The string ref_model       |
+|            |          |               | refers to either the model name, as specified in Table S2, or the model attribute id as specified |
+|            |          |               | in Table S3. Note that because both model and observational data sets are specified via the       |
+|            |          |               | <model>-tag any of them can be used as a reference data set.                                      |
++------------+----------+---------------+---------------------------------------------------------------------------------------------------+
+| exclude    | string   | <variable>    | When using more than one variable corresponding to different observational data sets (e.g.,       |
+|            |          |               | precipitation and skin temperature), it is necessary to use this attribute to match which         |
+|            |          |               | variable goes with which data set, e.g., pr with TRMM and ts with HadISST using,                  |
+|            |          |               |                                                                                                   |
+|            |          |               | <variable ref_model="trmm" exclude="hadisst">  pr ...                                             |
+|            |          |               | <variable ref_model="hadisst" exclude="trmm">  ts ...                                             |
++------------+----------+---------------+---------------------------------------------------------------------------------------------------+
+| cfg        | string   | <diag_script> | Configuration file for the diagnostic script                                                      |
++------------+----------+---------------+---------------------------------------------------------------------------------------------------+
+
+|
 
 :numref:`tab_fld_typ` Field types.
 
 .. _tab_fld_typ:
 
-+-------+---------------------------------------------------------------------------------------------------------------+
-| Name	| Description													|
-+=======+===============================================================================================================+
-| T2Ms	| Monthly-mean 2d atmosphere or land surface data (longitude, latitude, time:month)                             |             
-+-------+---------------------------------------------------------------------------------------------------------------+
-| T3M	| Monthly-mean 3d atmosphere data (longitude, latitude, pressure, time:month)                                   |
-+-------+---------------------------------------------------------------------------------------------------------------+
-| T2Mz	| Monthly-mean zonal mean 2d atmosphere or land surface data (longitude, pressure, time:month)                  |
-+-------+---------------------------------------------------------------------------------------------------------------+
-| T1Ms	| Monthly-mean 1d atmosphere or land surface data on a certain pressure level (latitude, time:month)            |
-+-------+---------------------------------------------------------------------------------------------------------------+
-| T2Ds	| Daily-mean 2d atmosphere data (longitude, latitude, time:day)                                                 |
-+-------+---------------------------------------------------------------------------------------------------------------+
-| T3D	| Daily-mean 3d atmosphere data (longitude, latitude, pressure, time:day)                                       |
-+-------+---------------------------------------------------------------------------------------------------------------+
-| T2Dz	| Daily-mean zonal mean 2d atmosphere data (latitude, pressure, time:month)                                     |
-+-------+---------------------------------------------------------------------------------------------------------------+
-| T2Is	| Daily instantaneous 2d atmosphere data for all years (longitude, latitude, time:day)                          |
-+-------+---------------------------------------------------------------------------------------------------------------+
-| T3I	| Daily-instantaneous 3d atmosphere data for selected years (longitude, latitude, model level, time:day)        |
-+-------+---------------------------------------------------------------------------------------------------------------+
-| T2Iz	| Daily instantaneous zonal mean 2d atmosphere data for all years (latitude, pressure, time:day)                |
-+-------+---------------------------------------------------------------------------------------------------------------+
-| T1Iz	| Daily instantaneous 1d field for all years (latitude-pressure, time:day)                                      |
-+-------+---------------------------------------------------------------------------------------------------------------+
-| T0I	| Daily instantaneous 0d field for all years (time:day)                                                         |
-+-------+---------------------------------------------------------------------------------------------------------------+
-| T0As	| Annual-mean 0d atmosphere or land surface data on a certain pressure level (latitude, time:year)              |
-+-------+---------------------------------------------------------------------------------------------------------------+
-| F2Ms	| Constant 2d land surface data (latitude, longitude)                                                           |
-+-------+---------------------------------------------------------------------------------------------------------------+
-| TO2Ms	| Monthly-mean 2d ocean or sea ice data (longitude, latitude, time:month)                                       |
-+-------+---------------------------------------------------------------------------------------------------------------+
-| TO3M	| Monthly-mean 3d ocean or sea ice data (longitude, latitude, model level, time:month)                          |
-+-------+---------------------------------------------------------------------------------------------------------------+
++-------+--------------------------------------------------------------------------------------------------------+
+| Name  | Description                                                                                            |
++=======+========================================================================================================+
+| T2Ms  | Monthly-mean 2d atmosphere or land surface data (longitude, latitude, time:month)                      |             
++-------+--------------------------------------------------------------------------------------------------------+
+| T3M   | Monthly-mean 3d atmosphere data (longitude, latitude, pressure, time:month)                            |
++-------+--------------------------------------------------------------------------------------------------------+
+| T2Mz  | Monthly-mean zonal mean 2d atmosphere or land surface data (longitude, pressure, time:month)           |
++-------+--------------------------------------------------------------------------------------------------------+
+| T1Ms  | Monthly-mean 1d atmosphere or land surface data on a certain pressure level (latitude, time:month)     |
++-------+--------------------------------------------------------------------------------------------------------+
+| T2Ds  | Daily-mean 2d atmosphere data (longitude, latitude, time:day)                                          |
++-------+--------------------------------------------------------------------------------------------------------+
+| T3D   | Daily-mean 3d atmosphere data (longitude, latitude, pressure, time:day)                                |
++-------+--------------------------------------------------------------------------------------------------------+
+| T2Dz  | Daily-mean zonal mean 2d atmosphere data (latitude, pressure, time:month)                              |
++-------+--------------------------------------------------------------------------------------------------------+
+| T2Is  | Daily instantaneous 2d atmosphere data for all years (longitude, latitude, time:day)                   |
++-------+--------------------------------------------------------------------------------------------------------+
+| T3I   | Daily-instantaneous 3d atmosphere data for selected years (longitude, latitude, model level, time:day) |
++-------+--------------------------------------------------------------------------------------------------------+
+| T2Iz  | Daily instantaneous zonal mean 2d atmosphere data for all years (latitude, pressure, time:day)         |
++-------+--------------------------------------------------------------------------------------------------------+
+| T1Iz  | Daily instantaneous 1d field for all years (latitude-pressure, time:day)                               |
++-------+--------------------------------------------------------------------------------------------------------+
+| T0I   | Daily instantaneous 0d field for all years (time:day)                                                  |
++-------+--------------------------------------------------------------------------------------------------------+
+| T0As  | Annual-mean 0d atmosphere or land surface data on a certain pressure level (latitude, time:year)       |
++-------+--------------------------------------------------------------------------------------------------------+
+| F2Ms  | Constant 2d land surface data (latitude, longitude)                                                    |
++-------+--------------------------------------------------------------------------------------------------------+
+| TO2Ms | Monthly-mean 2d ocean or sea ice data (longitude, latitude, time:month)                                |
++-------+--------------------------------------------------------------------------------------------------------+
+| TO3M  | Monthly-mean 3d ocean or sea ice data (longitude, latitude, model level, time:month)                   |
++-------+--------------------------------------------------------------------------------------------------------+
 
-
-
+|
 
 :numref:`tab_var_def` Variable definition scripts.
 
@@ -413,7 +420,7 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 +--------------------------+-----------------------------------------------------------------------------------+
 | lai.ncl                  | Leaf area index                                                                   |
 +--------------------------+-----------------------------------------------------------------------------------+
-| LW_CRE.ncl               | Longwave cloud radiative forcing                                                  |
+| LW\_CRE.ncl              | Longwave cloud radiative forcing                                                  |
 +--------------------------+-----------------------------------------------------------------------------------+
 | lwp.ncl                  | Vertically integrated cloud water (liquid only)                                   |
 +--------------------------+-----------------------------------------------------------------------------------+
@@ -437,11 +444,11 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 +--------------------------+-----------------------------------------------------------------------------------+
 | nbp.ncl                  | Carbon mass flux out of atmosphere due to net biospheric production on land       |
 +--------------------------+-----------------------------------------------------------------------------------+
-| NET_CRE.ncl              | Net cloud forcing                                                                 |
+| NET\_CRE.ncl             | Net cloud forcing                                                                 |
 +--------------------------+-----------------------------------------------------------------------------------+
 | o2.ncl                   | O2 (ocean)                                                                        |
 +--------------------------+-----------------------------------------------------------------------------------+
-| o2_onelev.ncl            | O2 (ocean) on a single level                                                      |
+| o2\_onelev.ncl           | O2 (ocean) on a single level                                                      |
 +--------------------------+-----------------------------------------------------------------------------------+
 | od550aer.ncl             | Aerosol optical depth (550 nm)                                                    |
 +--------------------------+-----------------------------------------------------------------------------------+
@@ -465,11 +472,11 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 +--------------------------+-----------------------------------------------------------------------------------+
 | pr.ncl                   | Precipitation (total)                                                             |
 +--------------------------+-----------------------------------------------------------------------------------+
-| prStderr.ncl	           | Precipitation (total) standard error (observations)                               |
+| prStderr.ncl             | Precipitation (total) standard error (observations)                               |
 +--------------------------+-----------------------------------------------------------------------------------+
 | prw.ncl                  | Water vapor path                                                                  |
 +--------------------------+-----------------------------------------------------------------------------------+
-| prwStderr.ncl	           | Water vapor path standard error (observations)                                    |
+| prwStderr.ncl            | Water vapor path standard error (observations)                                    |
 +--------------------------+-----------------------------------------------------------------------------------+
 | psl.ncl                  | Surface pressure                                                                  |
 +--------------------------+-----------------------------------------------------------------------------------+
@@ -483,7 +490,7 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 +--------------------------+-----------------------------------------------------------------------------------+
 | rlut.ncl                 | TOA outgoing all-sky longwave radiation                                           |
 +--------------------------+-----------------------------------------------------------------------------------+
-| rsdscs.ncl               | Surface downwelling shortwave flux (clear_sky)                                    |
+| rsdscs.ncl               | Surface downwelling shortwave flux (clear sky)                                    |
 +--------------------------+-----------------------------------------------------------------------------------+
 | rsds.ncl                 | Surface downwelling shortwave flux (all sky)                                      |
 +--------------------------+-----------------------------------------------------------------------------------+
@@ -539,9 +546,9 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 +--------------------------+-----------------------------------------------------------------------------------+
 | spco2.ncl                | pCO2 (ocean)                                                                      |
 +--------------------------+-----------------------------------------------------------------------------------+
-| stratospheric_column.ncl | Stratospheric ozone column                                                        |
+| stratospheric\_column.ncl| Stratospheric ozone column                                                        |
 +--------------------------+-----------------------------------------------------------------------------------+
-| SW_CRE.ncl               | Shortwave cloud radiative forcing                                                 |
+| SW\_CRE.ncl              | Shortwave cloud radiative forcing                                                 |
 +--------------------------+-----------------------------------------------------------------------------------+
 | talk.ncl                 | Total alkalinity (ocean)                                                          |
 +--------------------------+-----------------------------------------------------------------------------------+
@@ -565,7 +572,7 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 +--------------------------+-----------------------------------------------------------------------------------+
 | tos.ncl                  | Sea surface temperature                                                           |
 +--------------------------+-----------------------------------------------------------------------------------+
-| total_column.ncl         | Total ozone column                                                                |
+| total\_column.ncl        | Total ozone column                                                                |
 +--------------------------+-----------------------------------------------------------------------------------+
 | toz.ncl                  | Total ozone column (alternative name)                                             |
 +--------------------------+-----------------------------------------------------------------------------------+
@@ -575,15 +582,15 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 +--------------------------+-----------------------------------------------------------------------------------+
 | tro3.ncl                 | Ozone volume mixing ratio                                                         |
 +--------------------------+-----------------------------------------------------------------------------------+
-| tro3_NHext.ncl           | Ozone volume mixing ratio restricted to northern hemisphere extra tropics         |
+| tro3\_NHext.ncl          | Ozone volume mixing ratio restricted to northern hemisphere extra tropics         |
 +--------------------------+-----------------------------------------------------------------------------------+
 | tro3prof.ncl             | Vertical profile of zonally averaged ozone mixing ratio                           |
 +--------------------------+-----------------------------------------------------------------------------------+
-| tro3_SHext.ncl           | Ozone volume mixing ratio restricted to southern hemisphere extra tropics         |
+| tro3\_SHext.ncl          | Ozone volume mixing ratio restricted to southern hemisphere extra tropics         |
 +--------------------------+-----------------------------------------------------------------------------------+
-| tro3_Trop.ncl            | Ozone volume mixing ratio restricted to tropics                                   |
+| tro3\_Trop.ncl           | Ozone volume mixing ratio restricted to tropics                                   |
 +--------------------------+-----------------------------------------------------------------------------------+
-| tropospheric_column.ncl  | Tropospheric ozone column                                                         |
+| tropospheric\_column.ncl | Tropospheric ozone column                                                         |
 +--------------------------+-----------------------------------------------------------------------------------+
 | tropoz.ncl               | Tropospheric ozone column (alternative name)                                      |
 +--------------------------+-----------------------------------------------------------------------------------+
@@ -629,25 +636,25 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 +--------------------------+-----------------------------------------------------------------------------------+
 | vmrch3coch3.ncl          | EMAC chemistry variable                                                           |
 +--------------------------+-----------------------------------------------------------------------------------+
-| vmrco_alt.ncl            | EMAC chemistry variable                                                           |
+| vmrco\_alt.ncl           | EMAC chemistry variable                                                           |
 +--------------------------+-----------------------------------------------------------------------------------+
-| vmrco_azr.ncl            | EMAC chemistry variable                                                           |
+| vmrco\_azr.ncl           | EMAC chemistry variable                                                           |
 +--------------------------+-----------------------------------------------------------------------------------+
-| vmrco_chr.ncl            | EMAC chemistry variable                                                           |
+| vmrco\_chr.ncl           | EMAC chemistry variable                                                           |
 +--------------------------+-----------------------------------------------------------------------------------+
-| vmrco_eic.ncl            | EMAC chemistry variable                                                           |
+| vmrco\_eic.ncl           | EMAC chemistry variable                                                           |
 +--------------------------+-----------------------------------------------------------------------------------+
-| vmrco_gmi.ncl            | EMAC chemistry variable                                                           |
+| vmrco\_gmi.ncl           | EMAC chemistry variable                                                           |
 +--------------------------+-----------------------------------------------------------------------------------+
-| vmrco_hpb.ncl            | EMAC chemistry variable                                                           |
+| vmrco\_hpb.ncl           | EMAC chemistry variable                                                           |
 +--------------------------+-----------------------------------------------------------------------------------+
-| vmrco_lef.ncl            | EMAC chemistry variable                                                           |
+| vmrco\_lef.ncl           | EMAC chemistry variable                                                           |
 +--------------------------+-----------------------------------------------------------------------------------+
-| vmrco_mlo.ncl            | EMAC chemistry variable                                                           |
+| vmrco\_mlo.ncl           | EMAC chemistry variable                                                           |
 +--------------------------+-----------------------------------------------------------------------------------+
 | vmrco.ncl                | CO volume mixing ratio                                                            |
 +--------------------------+-----------------------------------------------------------------------------------+
-| vmrco_nwr.ncl            | EMAC chemistry variable                                                           |
+| vmrco\_nwr.ncl           | EMAC chemistry variable                                                           |
 +--------------------------+-----------------------------------------------------------------------------------+
 | vmrh2o.ncl               | EMAC chemistry variable                                                           |
 +--------------------------+-----------------------------------------------------------------------------------+
@@ -669,7 +676,7 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 **Naming convention for ESMValTool namelists:**
 
 Typically, all namelists are stored in the folder *nml*, the naming convention is *namelist_xxx.xml* with "xxx" being the name of the diagnostic and/or a description of the purpose of the namelist:
-	
+
 1. **For papers:**
 
    xxx = SurnameYearJournalabbreviation (e.g., stocker12jgr, stocker12sci1, stocker12sci2). 

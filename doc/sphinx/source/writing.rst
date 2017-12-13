@@ -50,7 +50,7 @@ scripts. The parts marked as *[text]* are the ones to be modified by the author.
 	* All lines should be limited to a maximum of 79 characters (see :numref:`rules`). Exceptions can be made to improve the readability of the code.
 
 
-.. code-block:: ncl
+.. code-block:: none
 
    ;;#############################################################################
    ;; TITLE OF THE DIAGNOSTIC
@@ -256,7 +256,7 @@ of currently available variable definition scripts).
 
 **Example (precipitation, standard variable)**
 
-.. code-block:: ncl
+.. code-block:: none
 
    ; Requires: none
    variable_info = True
@@ -264,7 +264,7 @@ of currently available variable definition scripts).
 
 **Example (shortwave cloud forcing, derived variable)**
 
-.. code-block:: ncl
+.. code-block:: none
 
    ; Requires: rsut:T2*s,rsutcs:T2*s
 
@@ -426,7 +426,7 @@ The acknowledgements log file automatically created by each diagnostic (see also
 
 The function write_references (defined in *interface_scripts/messaging.ncl*) should be called at the end of each diagnostic script in order to write the acknowledgements log file. The function has the arguments “author(s)”, “contributors”, “diagnostics”, “observations”, “projects” which are arrays of strings. All strings (“tags”) used must be defined in the master reference file *doc/MASTER_authors-refs-acknow.txt*. The tags are then replaced by the function *write_references* with their definition when writing the acknowledgements log file. All tags in the master reference file are sorted by category of which there are four in total:
 
-.. code-block:: ncl
+.. code-block:: none
 
 	A_xxx = authors, contributors (xxx = author name)
 	e.g., A_###

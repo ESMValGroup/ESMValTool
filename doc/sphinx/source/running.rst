@@ -246,8 +246,7 @@ An example reformat namelist file is listed below:
 A list of available data sets and their corresponding reformatting routines
 are given in :numref:`tab_obs_data`.
 
-   **Table S9** Observational data for use with the ESMValTool. See headers of the
-   reformatting routines for downloading and processing instructions.
+:numref:`tab_obs_data` Observational data for use with the ESMValTool. See headers of the reformatting routines for downloading and processing instructions.
 
 .. tabularcolumns:: |p{1.8cm}|p{0.6cm}|p{2.3cm}|p{1.6cm}|p{1.5cm}|p{1.9cm}|p{4.2cm}|
 

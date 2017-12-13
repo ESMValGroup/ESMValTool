@@ -25,6 +25,7 @@ Core development team
 * Alfred-Wegener-Institute Bremerhaven (AWI), Germany (overseeing EU Horizon 2020 APPLICATE and TRR181 ESMValTool work)
 * Barcelona Computing Center (BSC), Spain (overseeing EU Horizon 2020 PRIMAVERA ESMValTool work)
 * Ludwig Maximilian University of Munich, Germany (overseeing EU Horizon 2020 CRESCENDO ESMValTool work)
+* Netherlands e-Science Center (NLeSC), The Netherlands
 * University of Reading, United Kingdom
 
 Contacts for specific diagnostic sets are the respective authors, as listed in the corresponding diagnostic
