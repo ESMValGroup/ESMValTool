@@ -61,9 +61,9 @@ More on the <GLOBAL>-tag
 
 :numref:`tab_glob_tags` summarizes the tags defined in the <GLOBAL> section of the namelist. Some of these tags (e.g., regridding_dir) are specific to some diagnostics and not generally defined in all namelists.
 
-|
-
 :numref:`tab_glob_tags` Tags of the <GLOBAL> section of the namelist. Note that not all tags might be used by a diagnostic.
+
+..
 
 .. _tab_glob_tags:
 
@@ -144,9 +144,9 @@ Example:
 
 The attribute *id* specifies a string that can be used to refer to the model in other places of the namelist. :numref:`tab_mod_tags` gives a summary of valid attributes in <model>-tags.
 
-|
-
 :numref:`tab_proj_spec` Project specifiers and corresponding arguments.
+
+..
 
 .. _tab_proj_spec:
 
@@ -183,9 +183,9 @@ The attribute *id* specifies a string that can be used to refer to the model in 
 | obs4mips          | Name       | process level | ensemble   | start year | end year   | path	     |            |            |
 +-------------------+------------+---------------+------------+------------+------------+------------+------------+------------+
 
-|
-
 :numref:`tab_mod_tags` Optional attributes of the <model> tag.
+
+..
 
 .. _tab_mod_tags:
 
@@ -195,9 +195,10 @@ The attribute *id* specifies a string that can be used to refer to the model in 
 | id    | String  | Define a name used to refer to the model data in other parts of the namelist |
 +-------+---------+------------------------------------------------------------------------------+
 
-|
 
 :numref:`tab_opt_att` Optional attributes of the <variable> tag.
+
+..
 
 .. tabularcolumns:: |l|l|p{12.75cm}|
 
@@ -225,9 +226,10 @@ More on the <DIAGNOSTICS>-tag
 
 Each <diag> entry refers to one or several scripts in the folder *diag_scripts/* complemented by a variable name (see :numref:`tab_var_def` for a list of variables) and the corresponding (input) field type (see :numref:`tab_fld_typ`). Optionally the <diag>-tag may contain additional <model>-tags; these data sets will be processed only by the diagnostic(s) listed in the current <diag> entry. In this way it is possible to define a set of models to be analyzed by all diagnostics in the namelist (in the <MODELS> section) and a set of models to be analyzed only by specific diagnostics (in the <diag> section). Available <diag>-tags are listed in :numref:`tab_diag_tags`, their optional attributes in :numref:`tab_diag_att`.
 
-|
 
 :numref:`tab_diag_tags` Tags of the <diag> section within the <DIAGNOSTICS> section of the namelist. There are no default values.
+
+..
 
 .. tabularcolumns:: |l|l|p{11.5cm}|
 
@@ -261,9 +263,9 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 |                      |          | the ones defined in the MODELS section (see above) but will be ignored by other <diag>-sections.                |
 +----------------------+----------+-----------------------------------------------------------------------------------------------------------------+
 
-|
-
 :numref:`tab_diag_att` Optional attributes of selected tags in the <diag> section. 
+
+..
 
 .. tabularcolumns:: |l|l|l|p{10cm}|
 
@@ -287,9 +289,10 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 | cfg        | string   | <diag_script> | Configuration file for the diagnostic script                                                      |
 +------------+----------+---------------+---------------------------------------------------------------------------------------------------+
 
-|
 
 :numref:`tab_fld_typ` Field types.
+
+..
 
 .. _tab_fld_typ:
 
@@ -329,9 +332,9 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 | TO3M  | Monthly-mean 3d ocean or sea ice data (longitude, latitude, model level, time:month)                   |
 +-------+--------------------------------------------------------------------------------------------------------+
 
-|
-
 :numref:`tab_var_def` Variable definition scripts.
+
+..
 
 .. _tab_var_def:
 
