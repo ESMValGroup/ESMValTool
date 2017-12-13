@@ -146,10 +146,6 @@ The attribute *id* specifies a string that can be used to refer to the model in 
 
 :numref:`tab_proj_spec` Project specifiers and corresponding arguments.
 
-.. raw:: latex
-
-    \newline
-
 .. _tab_proj_spec:
 
 +-------------------+------------+---------------+------------+------------+------------+------------+------------+------------+
@@ -188,10 +184,6 @@ The attribute *id* specifies a string that can be used to refer to the model in 
 
 :numref:`tab_mod_tags` Optional attributes of the <model> tag.
 
-.. raw:: latex
-
-    \newline
-
 .. _tab_mod_tags:
 
 +-------+---------+------------------------------------------------------------------------------+
@@ -203,10 +195,6 @@ The attribute *id* specifies a string that can be used to refer to the model in 
 
 
 :numref:`tab_opt_att` Optional attributes of the <variable> tag.
-
-.. raw:: latex
-
-    \newline
 
 .. tabularcolumns:: |l|l|p{12.75cm}|
 
@@ -235,10 +223,6 @@ More on the <DIAGNOSTICS>-tag
 Each <diag> entry refers to one or several scripts in the folder *diag_scripts/* complemented by a variable name (see :numref:`tab_var_def` for a list of variables) and the corresponding (input) field type (see :numref:`tab_fld_typ`). Optionally the <diag>-tag may contain additional <model>-tags; these data sets will be processed only by the diagnostic(s) listed in the current <diag> entry. In this way it is possible to define a set of models to be analyzed by all diagnostics in the namelist (in the <MODELS> section) and a set of models to be analyzed only by specific diagnostics (in the <diag> section). Available <diag>-tags are listed in :numref:`tab_diag_tags`, their optional attributes in :numref:`tab_diag_att`.
 
 :numref:`tab_diag_tags` Tags of the <diag> section within the <DIAGNOSTICS> section of the namelist. There are no default values.
-
-.. raw:: latex
-
-    \newline
 
 .. tabularcolumns:: |l|l|p{11.5cm}|
 
@@ -275,10 +259,6 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 
 :numref:`tab_diag_att` Optional attributes of selected tags in the <diag> section. 
 
-.. raw:: latex
-
-    \newline
-
 .. tabularcolumns:: |l|l|l|p{10cm}|
 
 .. _tab_diag_att:
@@ -302,10 +282,6 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 +------------+----------+---------------+--------------------------------------------------------------------------------------------------+
 
 :numref:`tab_fld_typ` Field types.
-
-.. raw:: latex
-
-    \newline
 
 .. _tab_fld_typ:
 
@@ -349,10 +325,6 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 
 
 :numref:`tab_var_def` Variable definition scripts.
-
-.. raw:: latex
-
-    \newline
 
 .. _tab_var_def:
 
@@ -858,13 +830,13 @@ Example namelist
         unless you want to modify the standard diagnostic settings. -->
    <DIAGNOSTICS>
        <diag>
-           <description> Cloud diagnostics</description>
-           <variable_def_dir>     ./variable_defs/                            </variable_def_dir>
-           <variable>             lwp                                         </variable>
-           <field_type>           T2Ms                                        </field_type>
-           <diag_script_cfg_dir>  ./nml/cfg_clouds/                           </diag_script_cfg_dir>
-           <model>                OBS UWisc sat v2 1988 2007 @{OBSPATH}/UWisc </model>
-           <diag_script cfg="cfg_clouds.ncl">    clouds.ncl                   </diag_script>
+           <description> Cloud diagnostics                     </description>
+           <variable_def_dir>     ./variable_defs/             </variable_def_dir>
+           <variable>             lwp                          </variable>
+           <field_type>           T2Ms                         </field_type>
+           <diag_script_cfg_dir>  ./nml/cfg_clouds/            </diag_script_cfg_dir>
+           <model> OBS UWisc sat v2 1988 2007 @{OBSPATH}/UWisc </model>
+           <diag_script cfg="cfg_clouds.ncl"> clouds.ncl       </diag_script>
        </diag>
    </DIAGNOSTICS>
    

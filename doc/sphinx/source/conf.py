@@ -65,7 +65,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'ESMValTool'
-copyright = u'2015, Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al.'
+copyright = u'2017, Veronika Eyring, Axel Lauer, Mattia Righi, Bjoern Broetz et al.'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -204,7 +204,7 @@ htmlhelp_basename = 'ESMValTooldoc'
 
 latex_elements = {
 # The paper size ('letterpaper' or 'a4paper').
-#'papersize': 'letterpaper',
+'papersize': 'a4paper',
 
 # The font size ('10pt', '11pt' or '12pt').
 #'pointsize': '10pt',
@@ -230,7 +230,7 @@ latex_elements = {
      \fi}
      \begin{titlepage}
      \begin{center}
-     \sphinxincludegraphics[width=\textwidth]{{ESMValTool-logo}.pdf}\par
+     \sphinxincludegraphics[width=\textwidth]{ESMValTool-logo.pdf}\par
      \vspace{2cm}
      {\Huge \bf \sffamily User's and Developer's Guide \par}
      \vspace{1cm}
@@ -253,12 +253,12 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
   ('index', 'ESMValTool_Users_Guide.tex', u'ESMValTool User\'s and Developer\'s Guide',
-   u'Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al.', 'manual'),
+   u'Veronika Eyring, Axel Lauer, Mattia Righi, Bjoern Broetz et al.', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
-#latex_logo = None
+latex_logo = 'figures/ESMValTool-logo.pdf'
 
 # For "manual" documents, if this is true, then toplevel headings are parts,
 # not chapters.
@@ -319,9 +319,9 @@ latex_toplevel_sectioning = "part"
 
 # Bibliographic Dublin Core info.
 epub_title = u'ESMValTool'
-epub_author = u'Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al.'
-epub_publisher = u'Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al.'
-epub_copyright = u'2015, Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al.'
+epub_author = u'Veronika Eyring, Axel Lauer, Mattia Righi, Bjoern Broetz et al.'
+epub_publisher = u'Veronika Eyring, Axel Lauer, Mattia Righi, Bjoern Broetz et al.'
+epub_copyright = u'2008-2017, Veronika Eyring, Axel Lauer, Mattia Righi, Bjoern Broetz et al.'
 
 # The basename for the epub file. It defaults to the project name.
 #epub_basename = u'ESMValTool'
