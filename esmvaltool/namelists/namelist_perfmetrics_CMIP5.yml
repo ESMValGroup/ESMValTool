@@ -109,19 +109,13 @@ diagnostics:
         styleset: CMIP5        # Plot style
       main_grading: &main_grading_script_settings
         <<: *main_script_settings
-        plot_type: cycle_latlon
-        draw_plots: false
-        plot_stddev: all
-        legend_outside: false
+        plot_type: cycle_latlon # Plot type ('cycle' (time), 'zonal' (plev, lat), 'latlon' (lat, lon))
+        draw_plots: false       # Draw plots
       grading:
         <<: *main_grading_script_settings
         script: perfmetrics_grading.ncl
         ancestors: [main_grading]
-        # MultiModelMean
-        MultiModelMean: true
-        # MultiModelMedian
-        MultiModelMedian: true
-        # Metric ("RMSD", "BIAS")
-        metric: RMSD
-        # Normalization ("mean", "median", "centered_median")
-        normalization: centered_median
+        MultiModelMean: true           # Multi-model mean
+        MultiModelMedian: true         # Multi-model median
+        metric: RMSD                   # Metric ("RMSD", "BIAS")
+        normalization: centered_median # Normalization ("mean", "median", "centered_median")
