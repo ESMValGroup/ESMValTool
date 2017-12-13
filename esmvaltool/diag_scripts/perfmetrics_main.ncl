@@ -18,20 +18,15 @@
 ;;    plot_type: cycle (time), zonal (plev, lat), latlon (lat, lon) or
 ;;               cycle_latlon (time, lat, lon)
 ;;    time_avg: type of time average
-;;    valid_fraction: exclude gridbox with less than this fraction of non-
-;;                    missing values in the time coordinate
+;;    region: selected region
 ;;    draw_plots: switch on/off plots drawing
-;;    plot_diff: switch on/off difference plots
-;;    plot_stddev: plot standard deviation
-;;    legend_outside: save legend in a separate file
-;;    styleset: as in lib/ncl/style.ncl functions
-;;    t_test: calculate t-test in difference plots
-;;    conf_level: confidence level for the t-test
 ;;
 ;; Optional diag_script_info attributes (diagnostic specific)
-;;    grid: regridding option
-;;    region: selected region
-;;    level: pressure level in hPa (for T3M fields only)
+;;    legend_outside: save legend in a separate file
+;;    styleset: as in lib/ncl/style.ncl functions
+;;    plot_stddev: plot standard deviation
+;;    t_test: calculate t-test in difference plots
+;;    conf_level: confidence level for the t-test
 ;;    range_option: time range selection option (default 0)
 ;;    projection: map projection for lat-lon plots (default = cylind. equid.)
 ;;    stippling: True = use stippling to mark stat. significant differences
@@ -138,9 +133,7 @@ begin
     end if
 
     ;; Check required diag_script_info attributes
-    req_atts = (/"plot_type", "time_avg", "draw_plots", "plot_diff", \
-                 "plot_stddev", "legend_outside", "styleset", "t_test", \
-                 "conf_level"/)
+    req_atts = (/"plot_type", "time_avg", "draw_plots"/)
     exit_if_missing_atts(diag_script_info, req_atts)
 
     ;; Set plot type
@@ -149,6 +142,16 @@ begin
         error_msg("f", diag_script, "", "plot_type " + ptype + " is not a " + \
                   "valid plot_type")
     end if
+
+    ;; Check for plot-type specific settings
+    if (ptype.eq."cycle") then
+        exit_if_missing_atts(diag_script_info, \
+                             (/"legend_outside", "styleset", "plot_stddev"/))
+    end if
+    if (ptype.eq."zonal" .or. ptype.eq."lat-lon") then
+        exit_if_missing_atts(diag_script_info, (/"t_test", "conf_level"/))
+    end if
+
 
     ;; Check valid field
     if ((ptype.eq."zonal" .and. \
@@ -190,13 +193,6 @@ begin
 
     ;; Unique names for models
     modelnames = project_style(diag_script_info, "annots")
-
-    ;; Check for confidence level
-    if (diag_script_info@t_test .and. \
-        .not.isatt(diag_script_info, "conf_level")) then
-        error_msg("f", diag_script, "", "a confidence level must be " + \
-                  "specified for the t-test to be executed")
-    end if
 
     ;; Check for reference model definition
     if (var_attr_ref(0).eq."None") then

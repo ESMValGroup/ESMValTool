@@ -1,75 +1,18 @@
 import logging
 import subprocess
 import sys
-import warnings
 
 logger = logging.getLogger(__name__)
 
 
-class nclExecuteError(Exception):
-    def __init__(self, value):
-        self.value = value
-
-    def __str__(self):
-        return repr(self.value)
-
-
-class ymlTagError(Exception):
-    def __init__(self, value):
-        self.value = value
-
-    def __str__(self):
-        return repr(self.value)
-
-
-class nclExecuteWarning(Exception):
-    def __init__(self, value):
-        self.value = value
-
-    def __str__(self):
-        return repr(self.value)
-
-
-class writeProjinfoError(Exception):
-    def __init__(self, value):
-        self.value = value
-
-    def __str__(self):
-        return repr(self.value)
-
-
-def info(string, verbosity, required_verbosity):
-    """ @brief Print an info string to standard out
-        @param string the info message to print
-        @param verbosity the requested verbosity level
-        @param required_verbosity level required to print something
-    """
-    warnings.warn("function info() is deprecated and will be removed "
-                  "in the future", DeprecationWarning)
-    if verbosity <= 1:
-        logger.info("%s", string)
-    else:
-        logger.debug("%s", string)
-
-
-def error(string):
-    """ @brief Print an info string to standard error and exit execution
-        @param string the info message to print
-    """
-    warnings.warn("function error() is deprecated and will be removed "
-                  "in the future", DeprecationWarning)
-    logger.error("%s", string)
-    sys.exit(1)
-
-
 def ncl_version_check():
-    """ @brief Check the NCL version
-    """
-
+    """ @brief Check the NCL version"""
     try:
-        version = subprocess.check_output(['ncl', '-V'])
+        cmd = ['ncl', '-V']
+        version = subprocess.check_output(cmd)
     except subprocess.CalledProcessError:
-        logger.error("NCL not found")
+        logger.error("Failed to execute '%s'", ' '.join(cmd))
+        raise
 
     version = version.decode(sys.stdout.encoding)
 

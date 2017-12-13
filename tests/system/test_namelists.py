@@ -22,7 +22,7 @@ def test_namelist(output_directory, namelist):  # noqa
     test = ESMValToolTest(
         namelist=namelist,
         output_directory=output_directory,
-        ignore=['work/interface_data/*/*/*', '*log*.txt', '*.log'],
+        ignore=['tmp/*/*', '*log*.txt', '*.log'],
         checksum_exclude=['pdf', 'ps', 'png', 'eps', 'epsi', 'nc'])
 
     test.run(

@@ -13,8 +13,8 @@ import mock
 import numpy as np
 
 import tests
-from esmvaltool.preprocessor.regrid import _stock_cube as stock_cube
-from esmvaltool.preprocessor.regrid import (
+from esmvaltool.preprocessor._regrid import _stock_cube as stock_cube
+from esmvaltool.preprocessor._regrid import (
     _LAT_MAX, _LAT_MIN, _LAT_RANGE, _LON_MAX, _LON_MIN, _LON_RANGE)
 
 

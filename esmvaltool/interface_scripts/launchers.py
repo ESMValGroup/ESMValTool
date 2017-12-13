@@ -8,8 +8,15 @@ import sys
 import tempfile
 import traceback
 
-from .auxiliary import nclExecuteError, nclExecuteWarning
 from .data_interface import write_data_interface
+
+
+class nclExecuteError(Exception):
+    """Error occurred while executing NCL script."""
+
+
+class nclExecuteWarning(Exception):
+    """Warning occurred while executing NCL script."""
 
 
 @contextlib.contextmanager

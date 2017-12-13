@@ -59,9 +59,7 @@ def _create_config_user_file(output_directory):
     """
     cfg = _CFG['user']
 
-    cfg['run_dir'] = output_directory
-    for task in ('preproc', 'work', 'plot'):
-        cfg[task + '_dir'] = os.path.join(output_directory, task)
+    cfg['output_dir'] = output_directory
 
     # write to file
     filename = os.path.join(output_directory, 'config-user.yml')
@@ -95,7 +93,10 @@ class ESMValToolTest(EasyTest):
 
         # Set namelist path
         if not os.path.exists(namelist):
-            namelist = os.path.join(script_root, 'nml', namelist)
+            namelist = os.path.join(
+                os.path.dirname(script_root),
+                'namelists',
+                namelist)
         self.namelist_file = os.path.abspath(namelist)
 
         # Simulate input data?

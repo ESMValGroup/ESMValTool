@@ -163,10 +163,10 @@ def diags_checks(diags_dict):
             variables = D.variables
             for v in variables:
                 try:
-                    vname = v['name']
+                    vname = v['short_name']
                     if vname is None:
-                        print('namelistchecks.py ERROR variable name is None',
-                              v, c)
+                        print('namelistchecks.py ERROR variable short_name '
+                              'is None', v, c)
                         sys.exit(1)
                 except KeyError as e:
                     print('namelistchecks.py ERROR ', e,

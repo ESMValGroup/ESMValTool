@@ -9,8 +9,51 @@ import os
 import re
 from operator import itemgetter
 
-from .auxiliary import writeProjinfoError
+import yaml
+
 from .data_finder import get_output_file
+
+
+class writeProjinfoError(Exception):
+    """Error writing project_info."""
+
+
+def write_settings(settings, filename):
+    """Write settings to file."""
+    ext = os.path.splitext(filename)[1][1:].lower()
+    if ext == 'ncl':
+
+        def _format(value):
+            """Format string or list as NCL"""
+            if isinstance(value, str):
+                txt = '"{}"'.format(value)
+            elif isinstance(value, (list, tuple)):
+                txt = '(/{}/)'.format(', '.join(_format(v) for v in value))
+            else:
+                txt = str(value)
+            return txt
+
+        def _format_dict(name, dictionary):
+            """Format dict as NCL"""
+            lines = ['{} = True'.format(name)]
+            for key, value in sorted(dictionary.items()):
+                lines.append('{}@{} = {}'.format(name, key, _format(value)))
+            txt = '\n'.join(lines)
+            return txt
+
+        lines = []
+        for key, value in sorted(settings.items()):
+            if isinstance(value, dict):
+                txt = _format_dict(name=key, dictionary=value)
+            else:
+                txt = '{} = {}'.format(key, _format(value))
+            lines.append(txt)
+        with open(filename, 'wt') as file:
+            file.write('\n'.join(lines))
+            file.write('\n')
+    else:
+        with open(filename, 'w') as file:
+            yaml.safe_dump(settings, file)
 
 
 def get_figure_file_names(project_info, model):
@@ -28,7 +71,7 @@ def get_figure_file_names(project_info, model):
     #     ])
     return "_".join([
         model['project'],
-        model['name'],
+        model['model'],
         str(model['start_year']) + "-" + str(model['end_year']),
     ])
 
@@ -43,7 +86,10 @@ def get_cf_fullpath(project_info, model, variable):
             This function specifies the full output path (directory + file) to
             the outupt file to use in the reformat routines and in climate.ncl
     """
-    fullpath = get_output_file(project_info, model, variable)
+    var = dict(variable)
+    var.update(model)
+    fullpath = get_output_file(
+        variable=var, preproc_dir=project_info['GLOBAL']['preproc_dir'])
     return fullpath
 
 
@@ -77,7 +123,7 @@ def get_dict_key(model):
     if model['project'] == 'CMIP5':
         dict_key = "_".join([
             model['project'],
-            model['name'],
+            model['model'],
             model['mip'],
             model['exp'],
             model['ensemble'],
@@ -87,7 +133,7 @@ def get_dict_key(model):
     else:
         dict_key = "_".join([
             model['project'],
-            model['name'],
+            model['model'],
             str(model['start_year']),
             str(model['end_year']),
         ])
@@ -107,8 +153,14 @@ class ESMValTool_interface(object):
         self.infiles_suffix = []
 
         self.repackage_these = [
-            "diag_script", "diag_script_cfg", "variables", "field_types",
-            "var_attr_mip", "var_attr_exp", "var_attr_ref", "var_attr_exclude",
+            "diag_script",
+            "diag_script_cfg",
+            "variables",
+            "field_types",
+            "var_attr_mip",
+            "var_attr_exp",
+            # "var_attr_ref",
+            "var_attr_exclude",
             "variable_def_dir"
         ]
 
@@ -119,26 +171,38 @@ class ESMValTool_interface(object):
             yield interface_object
 
 
-def get_diag_value(di, projinfomodels, projinfoconfig, v):
+def get_diag_value(di, projinfomodels, v):
     if v == 'diag_script':
-        currentry = [s['script'] for s in di.scripts]
+        # perfmetrics_main.ncl expects diag_script to be a relative path
+        diag_path = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)), 'diag_scripts')
+        diag_script = di['script']
+        if diag_script.startswith(diag_path):
+            diag_script = os.path.relpath(diag_script, diag_path)
+        currentry = [diag_script]
     elif v == 'diag_script_cfg':
-        currentry = [s['cfg_file'] for s in di.scripts]
+        currentry = [di['cfg_file']]
     elif v == 'variables':
-        currentry = [s['name'] for s in di.variables]
+        currentry = [
+            di['variables'][v][0]['short_name']
+            for v in sorted(di['variables'])
+        ]
     elif v == 'field_types':
-        currentry = [s['field'] for s in di.variables]
+        currentry = [
+            di['variables'][v][0]['field'] for v in sorted(di['variables'])
+        ]
     elif v == 'var_attr_mip':
         currentry = [s['mip'] for s in projinfomodels if 'mip' in s.keys()]
     elif v == 'var_attr_exp':
         currentry = [s['exp'] for s in projinfomodels if 'exp' in s.keys()]
-    elif v == 'var_attr_ref':
-        currentry_list = [s['ref_model'] for s in di.variables]
-        currentry = [item for sublist in currentry_list for item in sublist]
+    # elif v == 'var_attr_ref':
+    #     currentry_list = [s['ref_model'] for s in di['variables']]
+    #     currentry = [item for sublist in currentry_list for item in sublist]
     elif v == 'var_attr_exclude':
         currentry = ['False' for s in projinfomodels]
     elif v == 'variable_def_dir':
-        currentry = projinfoconfig['var_def_scripts']
+        currentry = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)), 'variable_defs')
     return currentry
 
 
@@ -200,8 +264,7 @@ class Data_interface(object):
             if "currDiag" in project_info['RUNTIME']:
                 currDiag = project_info['RUNTIME']['currDiag']
                 curr_entry = get_diag_value(currDiag,
-                                            project_info['ALLMODELS'],
-                                            project_info['CONFIG'], var)
+                                            project_info['ALLMODELS'], var)
                 if isinstance(curr_entry, list):
                     vars(self.interface)[var] = curr_entry
                 else:
@@ -253,14 +316,14 @@ class Data_interface(object):
                     project_info,
                     model,
                     variable={
-                        'name': "${VARIABLE}",
+                        'short_name': "${VARIABLE}",
                         'field': "${FIELD}"
                     }))
             singfile = get_cf_fullpath(
                 project_info,
                 model,
                 variable={
-                    'name': "${VARIABLE}",
+                    'short_name': "${VARIABLE}",
                     'field': "${FIELD}"
                 }).split('/')[-1]
             infiles.append(singfile)
@@ -289,7 +352,7 @@ class Data_interface(object):
         model_specifiers = [
             'project',
             'start_year',
-            'name',
+            'model',
             'exp',
             'mip',
             'end_year',
@@ -313,11 +376,11 @@ class Data_interface(object):
                 mdls = [
                     model['project'],
                     model['start_year'],
-                    model['name'],
+                    model['model'],
                     model['exp'],
                     model['mip'],
                     model['end_year'],
-                    model['ref'],
+                    'ref',  # model['ref'],
                     model['ensemble'],
                 ]
 
@@ -326,11 +389,11 @@ class Data_interface(object):
                 mdls = [
                     model['project'],
                     model['start_year'],
-                    model['name'],
+                    model['model'],
                     'exp',
                     'mip',
                     model['end_year'],
-                    model['ref'],
+                    'ref',  # model['ref'],
                     'ensemble',
                 ]
 
@@ -340,8 +403,8 @@ class Data_interface(object):
         for model in project_info['ALLMODELS']:
             # print('Model is:')
             # print(model)
-            if "name" in model.keys():
-                model_ids.append(model['name'])
+            if "model" in model.keys():
+                model_ids.append(model['model'])
             else:
                 model_ids.append("None")
 
