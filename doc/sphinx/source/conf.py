@@ -65,7 +65,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'ESMValTool'
-copyright = u'2017, Veronika Eyring, Axel Lauer, Mattia Righi, Bjoern Broetz et al.'
+copyright = u'2008-2017, Veronika Eyring, Axel Lauer, Mattia Righi, Bjoern Broetz et al.'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
