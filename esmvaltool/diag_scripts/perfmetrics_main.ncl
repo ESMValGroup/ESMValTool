@@ -17,20 +17,28 @@
 ;; Required diag_script_info attributes (diagnostics specific)
 ;;    plot_type: cycle (time), zonal (plev, lat), latlon (lat, lon) or
 ;;               cycle_latlon (time, lat, lon)
-;;    time_avg: type of time average
-;;    region: selected region
-;;    draw_plots: switch on/off plots drawing
+;;    time_avg: type of time average (see time_operations in 
+;;              diag_scripts/lib/ncl/statistics.ncl)
+;;    region: selected region (see select_region in 
+;;            diag_scripts/lib/ncl/latlon.ncl)
+;;    t_test (for zonal and latlon): calculate t-test in difference plots
+;;    conf_level (for zonal and latlon): confidence level for the t-test
+;;    styleset (for cycle): as in lib/ncl/style.ncl functions
+;;    plot_stddev (for cycle): plot standard deviation
+;;    legend_outside (for cycle): save legend in a separate file
 ;;
 ;; Optional diag_script_info attributes (diagnostic specific)
-;;    legend_outside: save legend in a separate file
-;;    styleset: as in lib/ncl/style.ncl functions
-;;    plot_stddev: plot standard deviation
-;;    t_test: calculate t-test in difference plots
-;;    conf_level: confidence level for the t-test
-;;    range_option: time range selection option (default 0)
-;;    projection: map projection for lat-lon plots (default = cylind. equid.)
-;;    stippling: True = use stippling to mark stat. significant differences
-;;               False = mask out non-significant differences in gray (default)
+;;    range_option: time range selection option (default: 0)
+;;    projection: map projection for lat-lon plots (default:
+;;                CylindricalEquidistant)
+;;    draw_plots: draw plots (default: True)
+;;    plot_diff: draw difference plots (default: False)
+;;    calc_grading: calculate grading (default: False)
+;;    stippling: use stippling to mark stat. significant differences (default:
+;;               False = mask out non-significant differences in gray)
+;;    aux_info: additional information for stations data
+;;    location: additional information for stations data (location)
+;;    altitude: additional information for stations data (altitude)
 ;;
 ;; Required variable_info attributes (variable specific)
 ;;    map_ref_Levels: contour levels for the latlon plot
@@ -126,18 +134,15 @@ begin
 
     ;; ### CHECK CONFIGURATION SETTINGS AND SET DEFAULTS ######################
 
-    ;; Get environment variables
-    file_type = getenv("ESMValTool_output_file_type")
-    if (ismissing(file_type)) then
-        file_type = "ps"
-    end if
-
     ;; Check required diag_script_info attributes
-    req_atts = (/"plot_type", "time_avg", "draw_plots"/)
+    req_atts = (/"plot_type", "time_avg", "region"/)
     exit_if_missing_atts(diag_script_info, req_atts)
 
-    ;; Set plot type
+    ;; Store required attributes
     ptype = diag_script_info@plot_type
+    time_avg = diag_script_info@time_avg
+    region = select_region(diag_script_info@region)
+
     if (all(ptype.ne.(/"cycle", "zonal", "latlon", "cycle_latlon"/))) then
         error_msg("f", diag_script, "", "plot_type " + ptype + " is not a " + \
                   "valid plot_type")
@@ -152,7 +157,6 @@ begin
         exit_if_missing_atts(diag_script_info, (/"t_test", "conf_level"/))
     end if
 
-
     ;; Check valid field
     if ((ptype.eq."zonal" .and. \
          all(field_type0.ne.(/"T3M", "T2Mz"/))) .or. \
@@ -166,27 +170,14 @@ begin
                   " is not compatible with plot_type " + ptype)
     end if
 
-    ;; Set stippling or masking of significant/non-significant differences
-    if (isatt(diag_script_info, "stippling")) then
-        stippling = diag_script_info@stippling
-    else
-        stippling = False  ; default = mask non-significant values in gray
-    end if
-
-    ;; Selected time average
-    if (isatt(diag_script_info, "time_avg")) then
-        time_avg = diag_script_info@time_avg
-    end if
-
-    ;; Selected region
-    if (isatt(diag_script_info, "region")) then
-        region = select_region(diag_script_info@region)
-    end if
-
-    ;; Determine time range (years) of all models
-    if (.not.isatt(diag_script_info, "range_option")) then
-        diag_script_info@range_option = 0  ; every model uses its own range
-    end if
+    ;; Set default values for non-required diag_script_info attributes
+    set_default_att(diag_script_info, "range_option", 0)
+    set_default_att(diag_script_info, "projection", "CylindricalEquidistant")
+    set_default_att(diag_script_info, "draw_plots", True)
+    set_default_att(diag_script_info, "plot_diff", False)
+    set_default_att(diag_script_info, "calc_grading", False)
+    set_default_att(diag_script_info, "stippling", False)
+    set_default_att(diag_script_info, "t_test", False)
 
     ;; Basename of diag_script
     diag_script_base = basename(diag_script)
@@ -209,6 +200,12 @@ begin
     ;; Output plot directory
     plot_dir = getenv("ESMValTool_plot_dir")
     output_dir = get_output_dir(plot_dir, diag_script_base)
+
+    ;; Plot file type
+    file_type = getenv("ESMValTool_output_file_type")
+    if (ismissing(file_type)) then
+        file_type = "ps"
+    end if
 
     ;; ### DEFINE GLOBAL ARRAYS FOR COLLECTING MODEL DATA #####################
 
@@ -312,10 +309,8 @@ begin
     end if
 
     ; If needed, create array for statistically significant grid cells
-    if (isatt(diag_script_info, "t_test")) then
-        if (diag_script_info@t_test) then
-            var_sig = var_diff
-        end if
+    if (diag_script_info@t_test) then
+        var_sig = var_diff
     end if
 
     ;; Variable rank: cycle:3, zonal/latlon:4, cycle_latlon:5
@@ -343,18 +338,12 @@ begin
         fname = basename(systemfunc("basename " + \
                          interface_get_fullpath(var0, field_type0, imod)))
         fname = fname + "_" + basename(diag_script)
-        if (isatt(diag_script_info, "plot_type")) then
-            fname = fname + "_" + diag_script_info@plot_type
-        end if
-        if (isatt(diag_script_info, "time_avg")) then
-            fname = fname + "_" + diag_script_info@time_avg
-        end if
+        fname = fname + "_" + diag_script_info@plot_type
+        fname = fname + "_" + diag_script_info@time_avg
         if (isatt(diag_script_info, "level")) then
-            fname = fname + "_" + diag_script_info@level
+            fname = fname + "_" + diag_script_info@level ;; FIX-ME
         end if
-        if (isatt(diag_script_info, "region")) then
-            fname = fname + "_" + str_sub_str(diag_script_info@region, " ", "")
-        end if
+        fname = fname + "_" + str_sub_str(diag_script_info@region, " ", "")
         procpath = fullpath + fname + ".nc"
 
         ;; Do not process data if already processed
@@ -500,12 +489,6 @@ begin
     ;; ### CALCULATE DIFFERENCES AND APPLY STATISTICAL TESTS ##################
 
     ;; Calculate differences and apply t-test
-    if (.not.isatt(diag_script_info, "plot_diff")) then
-        diag_script_info@plot_diff = False
-    end if
-    if (.not.isatt(diag_script_info, "t_test")) then
-        diag_script_info@t_test = False
-    end if
     if (diag_script_info@plot_diff .or. diag_script_info@t_test) then
 
         do imod = 0, dim_MOD - 1
@@ -531,10 +514,6 @@ begin
                     n1 = get_end_year(imod) - get_start_year(imod) + 1
                     n2 = get_end_year(ref_ind) - get_start_year(ref_ind) + 1
                     prob = ttest(x1, s1, n1, x2, s2, n2, True, False)
-;                    prob = 1. - prob
-;                    var_diff(imod, :, :) = \
-;                        where(prob.gt.diag_script_info@conf_level, \
-;                              var_diff(imod, :, :), var_diff@_FillValue)
                     var_sig(imod, :, :) = 1. - prob
                     var_diff@conf_level = diag_script_info@conf_level
                     delete(prob)
@@ -558,11 +537,6 @@ begin
                     n1 = get_end_year(imod) - get_start_year(imod) + 1
                     n2 = get_end_year(ref_ind) - get_start_year(ref_ind) + 1
                     prob = ttest(x1, s1, n1, x2, s2, n2, True, False)
-;                    prob = 1. - prob
-;                    var_diff(imod, :) = \
-;                        where(prob.gt.diag_script_info@conf_level, \
-;                              var_diff(imod, :), var_diff@_FillValue)
-;                    var_diff@conf_level = diag_script_info@conf_level
                     var_sig(imod, :) = 1. - prob
                     delete(prob)
                 end if
@@ -570,6 +544,16 @@ begin
             end if
 
         end do
+    end if
+
+    ;; ### GRADING ############################################################
+    if (diag_script_info@calc_grading) then
+
+
+
+
+
+
     end if
 
     ;; ### PLOTTING ###########################################################
@@ -617,7 +601,7 @@ begin
                 altitude = " - " + diag_script_info@altitude  ; priority 1
             end if
         else
-            if (isatt(diag_script_info, "level")) then
+            if (isatt(diag_script_info, "level")) then ;; FIX-ME
                 if (diag_script_info@level.ne."all") then
                     altitude = " - " + diag_script_info@level + " hPa"
                 end if
@@ -735,9 +719,7 @@ begin
                     modelnames(imod) + "_" + var0 + "_" + ptype + "_" + \
                     time_avg + "_" + level + region_name
                 var = var_all(imod, :, :, 0)
-                if (isatt(diag_script_info, "projection")) then
-                    var@projection = diag_script_info@projection
-                end if
+                var@projection = diag_script_info@projection
                 var@res_cnLinesOn = False
                 var@res_cnLevelSelectionMode = "ExplicitLevels"
                 var@res_tiMainString = modelnames(imod)
@@ -791,9 +773,7 @@ begin
                         var@res_cnLevels = variable_info@map_diff_Levels
                         var@res_cnMissingValFillColor = "gray70"
                         var@res_gsnSpreadColorEnd = -2
-                        if (isatt(diag_script_info, "projection")) then
-                            var@projection = diag_script_info@projection
-                        end if
+                        var@projection = diag_script_info@projection
 
                         ;; Append global field average
                         if (isatt(variable_info, "show_global_avg")) then
