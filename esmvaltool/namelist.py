@@ -8,12 +8,13 @@ import os
 import yaml
 
 from .interface_scripts.data_finder import (
-    get_input_filelist, get_input_filename, get_output_file)
+    get_input_filelist, get_input_filename, get_output_file,
+    get_start_end_year)
 from .interface_scripts.preprocessing_tools import merge_callback
 from .preprocessor import (DEFAULT_ORDER, PreprocessingTask,
                            select_multi_model_settings,
                            select_single_model_settings)
-from .preprocessor._download import get_start_end_year, synda_search
+from .preprocessor._download import synda_search
 from .preprocessor._reformat import CMOR_TABLES
 from .task import DiagnosticTask
 

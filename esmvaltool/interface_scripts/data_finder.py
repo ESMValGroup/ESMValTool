@@ -7,7 +7,6 @@ import logging
 import os
 import re
 import subprocess
-from datetime import datetime
 
 import yaml
 
@@ -97,11 +96,8 @@ def read_config_file(project, cfg_file=None):
     return cfg[project]
 
 
-def get_input_filename(variable, rootpath, drs):
-    """Return the expected path to input file.
-
-    This function should match the function get_input_filelist below.
-    """
+def get_input_dirname_template(variable, rootpath, drs):
+    """Return a template of the full path to input directory."""
     project = variable['project']
 
     cfg = read_config_file(project)
@@ -125,14 +121,26 @@ def get_input_filename(variable, rootpath, drs):
             'drs {} for {} project not specified in config-developer file'
             .format(_drs, project))
 
-    dirname = os.path.join(dir1, dir2)
+    dirname_template = os.path.join(dir1, dir2)
 
+    return dirname_template
+
+
+def get_input_filename(variable, rootpath, drs):
+    """Simulate a path to input file.
+
+    This function should match the function get_input_filelist below.
+    """
+    dirname_template = get_input_dirname_template(variable, rootpath, drs)
     # Simulate a latest version if required
-    if '[latestversion]' in dirname:
-        part1, part2 = dirname.split('[latestversion]')
-        dirname = os.path.join(part1, 'dummy', part2)
+    if '[latestversion]' in dirname_template:
+        part1, part2 = dirname_template.split('[latestversion]')
+        dirname = os.path.join(part1, 'latestversion', part2)
+    else:
+        dirname = dirname_template
 
     # Set the filename
+    cfg = read_config_file(variable['project'])
     filename = replace_tags(cfg['input_file'], variable)
     if filename.endswith('*'):
         filename = filename.rstrip(
@@ -144,51 +152,37 @@ def get_input_filename(variable, rootpath, drs):
 
 def get_input_filelist(variable, rootpath, drs):
     """Return the full path to input files."""
-    project = variable['project']
+    dirname_template = get_input_dirname_template(variable, rootpath, drs)
 
-    cfg = read_config_file(project)
+    def check_isdir(path):
+        """Raise an OSError if path is not a directory."""
+        path = os.path.abspath(path)
+        if not os.path.isdir(path):
+            raise OSError('Directory not found: {}'.format(path))
 
-    # Set the rootpath
-    if project in rootpath:
-        dir1 = rootpath[project]
-    elif 'default' in rootpath:
-        dir1 = rootpath['default']
-    else:
-        raise KeyError(
-            'default rootpath must be specified in config-user file')
-
-    if not os.path.isdir(dir1):
-        raise OSError('directory not found', dir1)
-
-    # Set the drs
-    _drs = drs.get(project, 'default')
-
-    if _drs in cfg['input_dir']:
-        dir2 = replace_tags(cfg['input_dir'][_drs], variable)
-    else:
-        raise KeyError(
-            'drs %s for %s project not specified in config-developer file' %
-            (_drs, project))
-
-    dirname = os.path.join(dir1, dir2)
+    check_isdir(os.path.dirname(dirname_template))
 
     # Find latest version if required
-    if '[latestversion]' in dirname:
-        part1 = dirname.split('[latestversion]')[0]
-        part2 = dirname.split('[latestversion]')[1]
+    if '[latestversion]' in dirname_template:
+        part1, part2 = dirname_template.split('[latestversion]')
         list_versions = os.listdir(part1)
         list_versions.sort()
         latest = os.path.basename(list_versions[-1])
         dirname = os.path.join(part1, latest, part2)
+    else:
+        dirname = dirname_template
 
-    if not os.path.isdir(dirname):
-        raise OSError('directory not found', dirname)
+    check_isdir(dirname)
 
-    # Set the filename
-    filename = replace_tags(cfg['input_file'], variable)
+    # Set the filename glob
+    cfg = read_config_file(variable['project'])
+    filename_glob = replace_tags(cfg['input_file'], variable)
 
-    # Full path to files
-    files = veto_files(variable, dirname, filename)
+    # Find files
+    files = find_files(dirname, filename_glob)
+
+    # Select files within the required time interval
+    files = select_files(files, variable['start_year'], variable['end_year'])
 
     return files
 
@@ -197,8 +191,7 @@ def get_output_file(variable, preproc_dir):
     """Return the full path to the output (preprocessed) file"""
     cfg = read_config_file(variable['project'])
 
-    outfile = os.path.join(preproc_dir,
-                           variable['project'],
+    outfile = os.path.join(preproc_dir, variable['project'],
                            replace_tags(cfg['output_file'], variable))
     outfile = ''.join((outfile, '.nc'))
 
@@ -228,110 +221,25 @@ def find_files(dirname, filename):
     return flist
 
 
-def veto_files(variable, dirname, filename):
-    """Find files between start_year and end_year.
+def get_start_end_year(filename):
+    """Get the start and end year from a file name.
 
-    Function that does direct parsing of available datasource files
-    and establishes if files are the needed ones or not.
+    This works for filenames matching *_YYYY*-YYYY*.*
     """
-    files = find_files(dirname, filename)
-
-    yr1 = int(variable['start_year'])
-    yr2 = int(variable['end_year'])
-    files = [s for s in files if time_check(s, yr1, yr2)]
-
-    return files
+    name = os.path.splitext(filename)[0]
+    start, end = name.split('_')[-1].split('-')
+    start_year, end_year = int(start[:4]), int(end[:4])
+    return start_year, end_year
 
 
-# TODO: simplify: the functions below are way to complicated for what they do
-def time_handling(year1, year1_model, year2, year2_model):
+def select_files(filenames, start_year, end_year):
+    """Select files containing data between start_year and end_year.
+
+    This works for filenames matching *_YYYY*-YYYY*.*
     """
-
-    This function is responsible for finding the correct
-    files for the needed timespan:
-
-    year1 - the start year in files
-    year1_model - the needed start year of data
-    year2 - the last year in files
-    year2_model - the needed last year of data
-    WARNINGS:
-    we reduce our analysis only to years
-
-    """
-    # model interval < data interval / file
-    # model requirements completely within data stretch
-    if year1 <= int(year1_model) and year2 >= int(year2_model):
-        return True
-    # model interval > data interval / file
-    # data stretch completely within model requirements
-    elif year1 >= int(year1_model) and year2 <= int(year2_model):
-        return True
-    # left/right overlaps and complete misses
-    elif year1 <= int(year1_model) and year2 <= int(year2_model):
-        # data is entirely before model
-        if year2 < int(year1_model):
-            return False
-        # edge on
-        elif year2 == int(year1_model):
-            return True
-        # data overlaps to the left
-        elif year2 > int(year1_model):
-            return True
-    elif year1 >= int(year1_model) and year2 >= int(year2_model):
-        # data is entirely after model
-        if year1 > int(year2_model):
-            return False
-        # edge on
-        elif year1 == int(year2_model):
-            return True
-        # data overlaps to the right
-        elif year1 < int(year2_model):
-            return True
-
-
-# ---- function to handle various date formats
-def date_handling(time1, time2):
-    """
-    This function deals with different input date formats e.g.
-    time1 = 198204 or
-    time1 = 19820422 or
-    time1 = 198204220511 etc
-    More formats can be coded in at this stage.
-    Returns year 1 and year 2
-    """
-    # yyyymm
-    if len(list(time1)) == 6 and len(list(time2)) == 6:
-        y1 = datetime.strptime(time1, '%Y%m')
-        year1 = y1.year
-        y2 = datetime.strptime(time2, '%Y%m')
-        year2 = y2.year
-    else:
-        # yyyymmdd
-        if len(list(time1)) == 8 and len(list(time2)) == 8:
-            y1 = datetime.strptime(time1, '%Y%m%d')
-            year1 = y1.year
-            y2 = datetime.strptime(time2, '%Y%m%d')
-            year2 = y2.year
-        # yyyymmddHHMM
-        if len(list(time1)) == 12 and len(list(time2)) == 12:
-            y1 = datetime.strptime(time1, '%Y%m%d%H%M')
-            year1 = y1.year
-            y2 = datetime.strptime(time2, '%Y%m%d%H%M')
-            year2 = y2.year
-    return year1, year2
-
-
-# ---- function that does time checking on a file
-def time_check(fpath, yr1, yr2):
-    """
-    fpath: full path to file
-    yr1, yr2: model['start_year'], model['end_year']
-    """
-    ssp = fpath.split('/')
-    av = ssp[-1]
-    time_range = av.split('_')[-1].strip('.nc')
-    time1 = time_range.split('-')[0]
-    time2 = time_range.split('-')[1]
-    year1 = date_handling(time1, time2)[0]
-    year2 = date_handling(time1, time2)[1]
-    return time_handling(year1, yr1, year2, yr2)
+    selection = []
+    for filename in filenames:
+        start, end = get_start_end_year(filename)
+        if start <= end_year and end >= start_year:
+            selection.append(filename)
+    return selection

@@ -1,19 +1,11 @@
+"""Functions for downloading climate data files"""
 import logging
 import os
 import subprocess
 
+from ..interface_scripts.data_finder import get_start_end_year, select_files
+
 logger = logging.getLogger(__name__)
-
-
-def get_start_end_year(filename):
-    """Get the start and end year from a file name.
-
-    This works for filenames matching *_YYYY*-YYYY*.*
-    """
-    name = os.path.splitext(filename)[0]
-    start, end = name.split('_')[-1].split('-')
-    start_year, end_year = int(start[:4]), int(end[:4])
-    return start_year, end_year
 
 
 def synda_search(variable):
@@ -38,13 +30,8 @@ def synda_search(variable):
     result = subprocess.check_output(cmd, shell=True, universal_newlines=True)
     logger.debug('Result:\n%s', result.strip())
 
-    files = []
-    for line in result.split('\n'):
-        if line.startswith('new'):
-            synda_name = line.split()[-1]
-            start, end = get_start_end_year(synda_name)
-            if start <= variable['end_year'] and end >= variable['start_year']:
-                files.append(synda_name)
+    files = (l.split()[-1] for l in result.split('\n') if l.startswith('new'))
+    files = select_files(files, variable['start_year'], variable['end_year'])
 
     # filter partially overlapping files
     intervals = {get_start_end_year(name): name for name in files}
