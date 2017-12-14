@@ -20,7 +20,7 @@ class AbstractTask(object):
                 input_data = []
             for task in self.ancestors:
                 input_data.extend(task.run())
-            self._run(input_data)
+            self.output_data = self._run(input_data)
 
         return self.output_data
 
@@ -66,8 +66,8 @@ class DiagnosticTask(AbstractTask):
         """Run the diagnostic script."""
         # Run only preprocessor
         if self.script is None:
-            self.output_data = []
-            return
+            output_data = []
+            return output_data
 
         self.settings['input_files'] = input_data
 
