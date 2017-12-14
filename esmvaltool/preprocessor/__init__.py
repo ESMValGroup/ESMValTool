@@ -265,7 +265,7 @@ class PreprocessingTask(AbstractTask):
         # specified in self.run(input_data), use default
         if not self.ancestors and not input_data:
             input_data = self._input_data
-        output_data = preprocess(input_data, settings, debug=self.debug) 
+        output_data = preprocess(input_data, settings, debug=self.debug)
         return output_data
 
     def __str__(self):
