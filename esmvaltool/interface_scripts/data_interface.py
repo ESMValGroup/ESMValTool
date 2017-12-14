@@ -5,6 +5,7 @@ toolbox. Author: Valeriu Predoi, University of Reading,
 Initial version: August 2017
 contact: valeriu.predoi@ncas.ac.uk
 """
+import logging
 import os
 import re
 from operator import itemgetter
@@ -13,6 +14,8 @@ import yaml
 
 from .data_finder import get_output_file
 
+logger = logging.getLogger(__name__)
+
 
 class writeProjinfoError(Exception):
     """Error writing project_info."""
@@ -20,12 +23,13 @@ class writeProjinfoError(Exception):
 
 def write_settings(settings, filename):
     """Write settings to file."""
+    logger.debug("Writing configuration file %s", filename)
     ext = os.path.splitext(filename)[1][1:].lower()
     if ext == 'ncl':
 
         def _format(value):
             """Format string or list as NCL"""
-            if isinstance(value, str):
+            if value is None or isinstance(value, str):
                 txt = '"{}"'.format(value)
             elif isinstance(value, (list, tuple)):
                 txt = '(/{}/)'.format(', '.join(_format(v) for v in value))
@@ -56,7 +60,127 @@ def write_settings(settings, filename):
             yaml.safe_dump(settings, file)
 
 
-def get_figure_file_names(project_info, model):
+def get_backward_compatible_ncl_interface(variables, config_user,
+                                          namelist_file, script):
+    """Get a dictionary with the contents of the former ncl.interface file."""
+    esmvaltool_root = os.path.dirname(os.path.dirname(__file__))
+    project_root = os.path.dirname(esmvaltool_root)
+
+    # select random variable
+    tmp, single_variable = variables.popitem()
+    variables[tmp] = single_variable
+
+    # ordered variables
+    variable_keys = sorted(variables)
+
+    infiles = [
+        get_output_file_template(v, config_user['preproc_dir'])
+        for v in single_variable
+    ]
+
+    # perfmetrics_main.ncl expects diag_script to be a relative path
+    diag_path = os.path.join(esmvaltool_root, 'diag_scripts')
+    if script.startswith(diag_path):
+        script = os.path.relpath(script, diag_path)
+
+    ncl_interface = {
+        'dictkeys': {
+            'dictkeys': [get_dict_key(v) for v in single_variable],
+        },
+        'figfiles_suffix': [get_figure_file_names(v) for v in single_variable],
+        'infile_paths': [os.path.dirname(p) for p in infiles],
+        'infiles': [os.path.basename(p) for p in infiles],
+        'fullpaths': [p for p in infiles],
+        'diag_script':
+        script,
+        'var_attr_mip': [v.get('mip') for v in single_variable],
+        'var_attr_exp': [v.get('exp') for v in single_variable],
+        'var_attr_ref':
+        [variables[k][0]['reference_model'] for k in variable_keys],
+        'var_attr_exclude':
+        [v.get('exclude', "False") for v in single_variable],
+        'model_attr_skip': [v.get('skip') for v in single_variable],
+        'variable_def_dir':
+        os.path.join(esmvaltool_root, 'variable_defs'),
+        'variables': [variables[k][0]['short_name'] for k in variable_keys],
+        'derived_var': [variables[k][0]['short_name'] for k in variable_keys],
+        'field_types': [variables[k][0]['field'] for k in variable_keys],
+        'derived_field_type':
+        [variables[k][0]['field'] for k in variable_keys],
+        'in_refs': [
+            os.path.join(project_root, 'doc', 'MASTER_authors-refs-acknow.txt')
+        ],
+        'out_refs': [
+            os.path.join(config_user['run_dir'],
+                         'references-acknowledgements.txt')
+        ],
+        'yml': [namelist_file],
+        'yml_name': [os.path.basename(namelist_file)],
+        'output_file_type': [config_user['output_file_type']],
+        'plot_dir': [config_user['plot_dir']],
+        'work_dir': [config_user['work_dir']],
+        'regridding_dir': [],
+        'write_netcdf': [config_user['write_netcdf']],
+        'read_from_vault': [],
+        'cwd': [os.getcwd()],
+        'force_processing': [],
+        'show_debuginfo': [],
+        'show_diag_description': [],
+        # climate.ncl variables
+        'infilename': [],
+        'mfile': [],
+        'sfile': [],
+        'afile': [],
+        'base_variable': [],
+        'max_data_filesize': [config_user['max_data_filesize']],
+        'models': {
+            'project': [v['project'] for v in single_variable],
+            'name': [v['model'] for v in single_variable],
+            'mip': [v.get('mip', 'mip') for v in single_variable],
+            'experiment': [v.get('exp') for v in single_variable],
+            'ensemble':
+            [v.get('ensemble', 'ensemble') for v in single_variable],
+            'start_year': [v['start_year'] for v in single_variable],
+            'end_year': [v['end_year'] for v in single_variable],
+            'freq': [v.get('freq') for v in single_variable],
+            'dir': [v.get('dir') for v in single_variable],
+            'level': [v.get('level') for v in single_variable],
+            'case_name': [v.get('case_name') for v in single_variable],
+        },
+        'model_attr_id': [v.get('model') for v in single_variable],
+        'fx_keys': [],
+        'fx_values': [],
+        'str_vault_sep':
+        "-",
+        # Data structures to hold information on the
+        # reference/acknowledgement output file
+        'ref_auth': [],
+        'ref_contr': [],
+        'ref_diag': [],
+        'ref_obs': [],
+        'ref_proj': [],
+        'ref_script': [],
+    }
+
+    # remove items with no value
+    ncl_interface = {k: v for k, v in ncl_interface.items() if v}
+    # remove sub-dicts with lists containing no values
+    for key, value in ncl_interface.items():
+        if isinstance(value, dict):
+            ncl_interface[key] = {k: v for k, v in value.items() if any(v)}
+
+    return ncl_interface
+
+
+def get_output_file_template(variable, preproc_dir):
+    """Get output filename for backward compatible ncl interface."""
+    variable = dict(variable)
+    variable['short_name'] = '${VARIABLE}'
+    variable['field'] = '${FIELD}'
+    return get_output_file(variable, preproc_dir)
+
+
+def get_figure_file_names(variable):
     """ @brief Returns names for plots
         @param project_info Current namelist in dictionary format
         @param some model from namelist
@@ -70,9 +194,9 @@ def get_figure_file_names(project_info, model):
     #         str(model['start_year']) + "-" + str(model['end_year']),
     #     ])
     return "_".join([
-        model['project'],
-        model['model'],
-        str(model['start_year']) + "-" + str(model['end_year']),
+        variable['project'],
+        variable['model'],
+        str(variable['start_year']) + "-" + str(variable['end_year']),
     ])
 
 
@@ -307,7 +431,7 @@ class Data_interface(object):
         for model in project_info['ALLMODELS']:
             currProject = model
 
-            figfiles_suffix.append(get_figure_file_names(project_info, model))
+            figfiles_suffix.append(get_figure_file_names(model))
 
             # Get reformatted infiles
             # need the input dict because of old variable derivation
@@ -524,56 +648,7 @@ class Ncl_data_interface(Data_interface):
             NCL diag_scripts.
         """
 
-        template = os.path.join(
-            os.path.dirname(os.path.dirname(__file__)),
-            "interface_scripts",
-            "templates",
-            "ncl_interface_templates",
-            "ncl.tmpl",
-        )
         interface_data = self.project_info['RUNTIME']['interface_data']
-        fsource = open(template, "r")
-        ftarget = open(os.path.join(interface_data, "ncl.interface"), "w")
-
-        # Replace template file placeholders, <<[A-Z_]+>>, with
-        # configuration data
-        ncl_src = fsource.readlines()
-        for line in ncl_src:
-            if re.search("<<[A-Z_]+>>", line):
-                # left_hand_side, place_holder, right_hand_side
-                lhs, place_holder, rhs \
-                    = re.search("(.*)<<([A-Z_]+)>>(.*)", line).group(1, 2, 3)
-                if place_holder.lower() in vars(self.interface):
-                    place_holder = vars(self.interface)[place_holder.lower()]
-
-                    # Extend 'lhs' array with white space elements
-                    len_lhs = len(lhs)
-                    lhs = [lhs]
-                    lhs.extend([" " * len_lhs] * len(place_holder))
-
-                    # Zip lhs- and placeholder- arrays to a new array. The
-                    # whitespace entries in lhs-array provides alignment
-                    # if/when data is written to file
-                    if isinstance(place_holder[0], int):
-                        place_holder = [str(ph) for ph in place_holder]
-
-                    else:  # Assume string
-                        # but force it to be a string (VP)
-                        place_holder = [
-                            '"' + str(ph) + '"' for ph in place_holder
-                        ]
-
-                    place_holder = [
-                        item1 + item2
-                        for item1, item2 in zip(lhs, place_holder)
-                    ]
-                    ftarget.write(', \\\n'.join(place_holder) + rhs + '\n')
-                else:
-                    pass
-            else:
-                ftarget.write(line)
-        fsource.close()
-        ftarget.close()
 
         # Write proj_info to environment variables
         self.write_env_projinfo(self.project_info)

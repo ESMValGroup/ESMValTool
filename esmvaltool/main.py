@@ -55,7 +55,8 @@ if __name__ == '__main__':  # noqa
                         os.path.dirname(os.path.abspath(__file__))))  # noqa
 
 from esmvaltool.interface_scripts.auxiliary import ncl_version_check
-from esmvaltool.interface_scripts.data_interface import write_settings
+from esmvaltool.interface_scripts.data_interface import write_settings,\
+    get_backward_compatible_ncl_interface
 from esmvaltool.interface_scripts.preprocess import run_executable
 from esmvaltool.namelist import read_namelist_file
 
@@ -321,39 +322,38 @@ def process_namelist(namelist_file, global_config):
                         script_name, diag_name)
             project_info['RUNTIME']['currDiag'] = copy.deepcopy(diag)
 
-            for name, variables in diag['variables'].items():
-                logger.info("Processing variable %s", name)
+            tmp, models = diag['variables'].popitem()
+            diag['variables'][tmp] = models
+            project_info['ALLMODELS'] = models
 
-                var = variables[0]
-                project_info['RUNTIME']['derived_var'] = var['short_name']
-                project_info['RUNTIME']['derived_field_type'] = var['field']
-                project_info['ALLMODELS'] = variables
-
-                script = script_cfg['script']
-                logger.info("Running diag_script: %s", script)
-                interface_data = os.path.join(
-                    project_info['GLOBAL']['run_dir'], diag_name, script_name)
-                os.makedirs(interface_data)
-                ext = 'ncl' if script.lower().endswith('.ncl') else 'yml'
-                cfg_file = os.path.join(interface_data, 'settings.' + ext)
-                logger.info("with configuration file: %s", cfg_file)
-                settings = script_cfg['settings']
-                if ext == 'ncl':
-                    settings = {'diag_script_info': settings}
-                    # TODO: move reference_model to variable
-                    if 'reference_model' in var:
-                        settings['var_attr_ref'] = var['reference_model']
-
-                write_settings(settings, cfg_file)
-                project_info['RUNTIME']['currDiag']['script'] = script
-                project_info['RUNTIME']['currDiag']['cfg_file'] = cfg_file
-                project_info['RUNTIME']['interface_data'] = interface_data
-                run_executable(
-                    script,
-                    project_info,
-                    project_info['GLOBAL']['verbosity'],
-                    project_info['GLOBAL']['exit_on_warning'],
-                )
+            script = script_cfg['script']
+            logger.info("Running diag_script: %s", script)
+            interface_data = os.path.join(project_info['GLOBAL']['run_dir'],
+                                          diag_name, script_name)
+            os.makedirs(interface_data)
+            ext = 'ncl' if script.lower().endswith('.ncl') else 'yml'
+            cfg_file = os.path.join(interface_data, 'settings.' + ext)
+            logger.info("with configuration file: %s", cfg_file)
+            settings = script_cfg['settings']
+            if ext == 'ncl':
+                settings = {'diag_script_info': settings}
+                compatibility = get_backward_compatible_ncl_interface(
+                    diag['variables'], global_config, namelist_file,
+                    os.path.basename(script))
+                settings.update(compatibility)
+            write_settings(settings, cfg_file)
+            if ext == 'ncl':
+                os.rename(cfg_file,
+                          os.path.join(interface_data, 'ncl.interface'))
+            project_info['RUNTIME']['currDiag']['script'] = script
+            project_info['RUNTIME']['currDiag']['cfg_file'] = cfg_file
+            project_info['RUNTIME']['interface_data'] = interface_data
+            run_executable(
+                script,
+                project_info,
+                project_info['GLOBAL']['verbosity'],
+                project_info['GLOBAL']['exit_on_warning'],
+            )
 
     # delete environment variable
     del os.environ['0_ESMValTool_version']
