@@ -91,7 +91,8 @@ diagnostics:
     variables:
       ta:
         preprocessor: pp850
-        reference_model: [ERA-Interim, NCEP]
+        reference_model: ERA-Interim
+        alternative_model: NCEP
         mip: Amon
         field: T3M
     additional_models:
