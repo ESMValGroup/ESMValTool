@@ -103,7 +103,9 @@ def _add_cmor_info(variable, keys):
             variable['mip'], variable['short_name'])
         for key in keys:
             if key not in variable and hasattr(variable_info, key):
-                variable[key] = getattr(variable_info, key)
+                value = getattr(variable_info, key)
+                if value is not None:
+                    variable[key] = value
 
 
 def get_single_model_settings(variable):
@@ -313,7 +315,7 @@ class Namelist(object):
                 for key in ['mip'] + cmor_keys:
                     if key not in variable:
                         value = _get_value(key, variables[variable_name])
-                        if value:
+                        if value is not None:
                             variable[key] = value
 
         return variables
