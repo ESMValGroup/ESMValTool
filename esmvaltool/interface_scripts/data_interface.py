@@ -242,10 +242,7 @@ def get_output_file_template(variable, preproc_dir):
 
 
 def get_figure_file_names(variable):
-    """ @brief Returns names for plots
-        @param project_info Current namelist in dictionary format
-        @param some model from namelist
-    """
+    """Get plot filename."""
     #     return "_".join([
     #         model['project'],
     #         model['name'],
