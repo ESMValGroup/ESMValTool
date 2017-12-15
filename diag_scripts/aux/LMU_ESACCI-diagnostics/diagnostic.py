@@ -136,7 +136,10 @@ class Diagnostic(object):
         self._basetags = self._basetags + \
             [x.strip() for x in project_info.get('GLOBAL')['tags']]
 
-        self._basetags = self._basetags + [self.var]
+        if isinstance(self.var, str):
+            self._basetags = self._basetags + ['V_' + self.var]
+        elif isinstance(self.var, list):
+            self._basetags = self._basetags + ['V_' + item for item in self.var if isinstance(item, str)]
 
         if var == 'sm':
             self._vartype = 'soil moisture'
