@@ -264,7 +264,7 @@ begin
         var_all!2 = "statistic"
         var_all&model = modelnames
         var_all&statistic = (/"mean", "stddev"/)
-        if (diag_script_infoq@plot_diff) then
+        if (diag_script_info@plot_diff) then
             var_diff = var_all(:, :, 0)
         end if
     end if
@@ -297,7 +297,7 @@ begin
         var_all&lat = sgrid&lat
         var_all&lon = sgrid&lon
         var_all&statistic = (/"mean", "stddev"/)
-        if (diag_script_infoq@plot_diff) then
+        if (diag_script_info@plot_diff) then
             var_diff = var_all(:, :, :, :, 0)
         end if
         delete(sgrid)
@@ -315,7 +315,7 @@ begin
         var_all&plev = grid&plev
         var_all&lat = grid&lat
         var_all&statistic = (/"mean", "stddev"/)
-        if (diag_script_infoq@plot_diff) then
+        if (diag_script_info@plot_diff) then
             var_diff = var_all(:, :, :, 0)
         end if
     end if
@@ -332,7 +332,7 @@ begin
         var_all&lat = grid&lat
         var_all&lon = grid&lon
         var_all&statistic = (/"mean", "stddev"/)
-        if (diag_script_infoq@plot_diff) then
+        if (diag_script_info@plot_diff) then
             var_diff = var_all(:, :, :, 0)
         end if
     end if
