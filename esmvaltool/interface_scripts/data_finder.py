@@ -191,7 +191,7 @@ def get_output_file(variable, preproc_dir):
     """Return the full path to the output (preprocessed) file"""
     cfg = read_config_file(variable['project'])
 
-    outfile = os.path.join(preproc_dir, variable['project'],
+    outfile = os.path.join(preproc_dir, variable['preprocessor'],
                            replace_tags(cfg['output_file'], variable))
     outfile = ''.join((outfile, '.nc'))
 
