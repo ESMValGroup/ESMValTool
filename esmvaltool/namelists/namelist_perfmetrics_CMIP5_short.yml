@@ -54,22 +54,18 @@ diagnostics:
     scripts:
       main: &main_script_settings
         script: perfmetrics_main.ncl
-        plot_type: cycle       # Plot type ('cycle' (time), 'zonal' (plev, lat), 'latlon' (lat, lon))
+        plot_type: cycle       # Plot type ('cycle' (time), 'zonal' (plev, lat), 'latlon' (lat, lon), 'cycle_latlon' (time, lat, lon))
         time_avg: monthlyclim  # Time average ('opt' argument of time_operations.ncl)
         region: Global         # Selected region ('Global', 'Tropics', 'NH extratropics', 'SH extratropics')
-        draw_plots: true       # Draw plots
         plot_stddev: ref_model # Plot standard deviation ('all', 'none', 'ref_model' or given model name)
         legend_outside: true   # Plot legend in a separate file
         styleset: CMIP5        # Plot style
       main_grading: &main_grading_script_settings
         <<: *main_script_settings
-        plot_type: cycle_latlon # Plot type ('cycle' (time), 'zonal' (plev, lat), 'latlon' (lat, lon))
-        draw_plots: false       # Draw plots
-      grading:
-        <<: *main_grading_script_settings
-        script: perfmetrics_grading.ncl
-        ancestors: [main_grading]
-        MultiModelMean: true           # Multi-model mean
-        MultiModelMedian: true         # Multi-model median
+        plot_type: cycle_latlon        # Plot type ('cycle' (time), 'zonal' (plev, lat), 'latlon' (lat, lon), 'cycle_latlon' (time, lat, lon))
+        draw_plots: false              # Do not draw plots
+        calc_grading: true             # Calculate grading
         metric: RMSD                   # Metric ("RMSD", "BIAS")
         normalization: centered_median # Normalization ("mean", "median", "centered_median")
+        MultiModelMean: true           # Multi-model mean
+        MultiModelMedian: true         # Multi-model median
