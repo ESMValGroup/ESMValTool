@@ -7,12 +7,8 @@
 ;;    Calculates and (optionally) plots annual/seasonal cycles, zonal means,
 ;;    lat-lon fields and time-lat-lon fields from input T3M or T2Ms data.
 ;;    The calculated fields can be also plotted as difference w.r.t. a given
-;;    reference model. They are also used as input to calculate grading metrics
-;;    (see perfmetrics_grading.ncl).
-;;    Input data are regridded to a common grid and a consistent mask of
-;;    missing values is applied to all models and observations.
-;;    The user can select the target grid (the coarsest grid is used as
-;;    default). For irregular grids, the 1x1 grid must be selected.
+;;    reference model. It also calculates grading and taylor metrics.
+;;    Input data have to be regridded to a common grid in the preprocessor.
 ;;
 ;; Required diag_script_info attributes (diagnostics specific)
 ;;    plot_type: cycle (time), zonal (plev, lat), latlon (lat, lon) or
@@ -21,13 +17,15 @@
 ;;              diag_scripts/lib/ncl/statistics.ncl)
 ;;    region: selected region (see select_region in 
 ;;            diag_scripts/lib/ncl/latlon.ncl)
-;;    t_test (for zonal and latlon): calculate t-test in difference plots
-;;    conf_level (for zonal and latlon): confidence level for the t-test
 ;;    styleset (for cycle): as in lib/ncl/style.ncl functions
 ;;    plot_stddev (for cycle): plot standard deviation
 ;;    legend_outside (for cycle): save legend in a separate file
 ;;
 ;; Optional diag_script_info attributes (diagnostic specific)
+;;    t_test (for zonal and latlon): calculate t-test in difference plots
+;;                                   (default: False)
+;;    conf_level (for zonal and latlon): confidence level for the t-test
+;;                                       (default: False)
 ;;    range_option: time range selection option (default: 0)
 ;;    projection: map projection for lat-lon plots (default:
 ;;                CylindricalEquidistant)
@@ -38,6 +36,8 @@
 ;;               False = mask out non-significant differences in gray)
 ;;    show_global_avg: diplay global avaerage as right string on lat-lon plots
 ;;                     (default: False)
+;;    metric: grading metric (if calc_grading is True)
+;;    normalization: metric normalization (for RMSD and BIAS metrics)
 ;;    aux_info: additional information for stations data
 ;;    location: additional information for stations data (location)
 ;;    altitude: additional information for stations data (altitude)
@@ -60,17 +60,18 @@
 ;;    given, using a python list.
 ;;
 ;; Modification history
-;;    20171124_A_righ_ma: completely revised to adapt it to the new backend
+;;    20171215-A_righ_ma: merged with perfmetrics_grading/taylor.ncl
+;;    20171124-A_righ_ma: completely revised to adapt it to the new backend
 ;;                        (level selection, regridding and masking now done
 ;;                        by the python preprocessor)
-;;    20161220_A_laue_ax: added option to set map projection for lat-lon plots
+;;    20161220-A_laue_ax: added option to set map projection for lat-lon plots
 ;;                        (diag_script_info@projection)
 ;;                        added option to choose how to plot t-test results:
 ;;                        stippling or masking out in gray (lat-lon plots only)
-;;    20161019_A_laue_ax: changed plotting of t-test results:
+;;    20161019-A_laue_ax: changed plotting of t-test results:
 ;;                        now stippling significant grid cells (old version:
 ;;                        masking out non-significant values in gray)
-;;    20160628_A_righ_ma: moving ref_model specification from cfg- files to
+;;    20160628-A_righ_ma: moving ref_model specification from cfg- files to
 ;;                        main namelist
 ;;    20160628-A_senf_da: added regridding for irregular grids (ESMF_regrid).
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
@@ -137,8 +138,8 @@ begin
     ;; ### CHECK CONFIGURATION SETTINGS AND SET DEFAULTS ######################
 
     ;; Check required diag_script_info attributes
-    req_atts = (/"plot_type", "time_avg", "region"/)
-    exit_if_missing_atts(diag_script_info, req_atts)
+    exit_if_missing_atts(diag_script_info, \
+                         (/"plot_type", "time_avg", "region"/))
 
     ;; Store required attributes
     ptype = diag_script_info@plot_type
@@ -147,16 +148,13 @@ begin
 
     if (all(ptype.ne.(/"cycle", "zonal", "latlon", "cycle_latlon"/))) then
         error_msg("f", diag_script, "", "plot_type " + ptype + " is not a " + \
-                  "valid plot_type")
+                  "supported plot_type in this diagnostic")
     end if
 
     ;; Check for plot-type specific settings
     if (ptype.eq."cycle") then
         exit_if_missing_atts(diag_script_info, \
                              (/"legend_outside", "styleset", "plot_stddev"/))
-    end if
-    if (ptype.eq."zonal" .or. ptype.eq."lat-lon") then
-        exit_if_missing_atts(diag_script_info, (/"t_test", "conf_level"/))
     end if
 
     ;; Check valid field
@@ -182,9 +180,22 @@ begin
     set_default_att(diag_script_info, "t_test", False)
     set_default_att(diag_script_info, "show_global_avg", False)
 
+    ;; Check consistency of diff plots settings
+    if (diag_script_info@t_test .and. .not.diag_script_info@plot_diff) then
+        error_msg("f", diag_script, "", \
+                  "plot_diff must be True to apply t-test")
+    end if
+    if (diag_script_info@t_test .and. .not.diag_script_info@conf_level) then
+        error_msg("f", diag_script, "", \
+                  "conf_level must be specified to apply t-test")
+    end if
+
     ;; Check metric
     if (diag_script_info@calc_grading) then
-        exit_if_missing_atts(diag_script_info, (/"metric", "normalization"/))
+        exit_if_missing_atts(diag_script_info, (/"metric"/))
+        if (diag_script_info@metric.ne."taylor") then
+            exit_if_missing_atts(diag_script_info, (/"normalization"/))
+        end if
     end if
 
     ;; Basename of diag_script
@@ -253,7 +264,9 @@ begin
         var_all!2 = "statistic"
         var_all&model = modelnames
         var_all&statistic = (/"mean", "stddev"/)
-        var_diff = var_all(:, :, 0)
+        if (diag_script_infoq@plot_diff) then
+            var_diff = var_all(:, :, 0)
+        end if
     end if
 
     ;; Case cycle_latlon: (model, time, lat, lon, stats)
@@ -284,7 +297,9 @@ begin
         var_all&lat = sgrid&lat
         var_all&lon = sgrid&lon
         var_all&statistic = (/"mean", "stddev"/)
-        var_diff = var_all(:, :, :, :, 0)
+        if (diag_script_infoq@plot_diff) then
+            var_diff = var_all(:, :, :, :, 0)
+        end if
         delete(sgrid)
     end if
 
@@ -300,7 +315,9 @@ begin
         var_all&plev = grid&plev
         var_all&lat = grid&lat
         var_all&statistic = (/"mean", "stddev"/)
-        var_diff = var_all(:, :, :, 0)
+        if (diag_script_infoq@plot_diff) then
+            var_diff = var_all(:, :, :, 0)
+        end if
     end if
 
     ;; Case latlon: (model, lat, lon, stats)
@@ -315,7 +332,9 @@ begin
         var_all&lat = grid&lat
         var_all&lon = grid&lon
         var_all&statistic = (/"mean", "stddev"/)
-        var_diff = var_all(:, :, :, 0)
+        if (diag_script_infoq@plot_diff) then
+            var_diff = var_all(:, :, :, 0)
+        end if
     end if
 
     ; If needed, create array for statistically significant grid cells
@@ -339,7 +358,7 @@ begin
 
         info_output("Processing " + modelnames(imod), verbosity, 2)
 
-        ;; Set path for saving processed data
+        ;; Set path for saving processed data ;; FIX-ME add preproc_id
         fullpath = getenv("ESMValTool_work_dir") + "/" + \
             basename(diag_script) + "/"
         if (.not.isfilepresent_esmval(fullpath)) then
@@ -557,7 +576,8 @@ begin
     end if
 
     ;; ### GRADING ############################################################
-    if (diag_script_info@calc_grading) then
+
+    if (diag_script_info@calc_grading) then ;; FIX-ME loop over metrics?
 
         ;; Annotation & file names
         region_name = ""  ; priority 3
@@ -597,9 +617,7 @@ begin
         yml_name = getenv("ESMValTool_yml_name")
         suffix = get_file_suffix(yml_name, 0)
         name = str_sub_str(yml_name, suffix, "")
-
-        ;; FIX-ME use diagnostic name from main nml
-        ncdf_dir = get_output_dir(work_dir, diag_script_base) + \
+        ncdf_dir = get_output_dir(work_dir, diag_script_base) + \ ;; FIX-ME ?
             name + "_" + diag_script_info@metric + "_" + var0_new + ".nc"
 
         ;; Start calculation
@@ -613,7 +631,12 @@ begin
 ;; TO BE REMOVED ONCE AVAILABLE IN BACKEND+++
 
         ;; Calculate multi-model mean/median
-        models_only = remove_index(var_all, ref_inds)
+        if (diag_script_info@metric.eq."taylor") then
+            id_remove = ref_ind
+        else
+            id_remove = ref_inds
+        end if
+        models_only = remove_index(var_all, id_remove)
         super_array = var_all
         if (isatt(diag_script_info, "MultiModelMedian")) then
             if (diag_script_info@MultiModelMean) then
@@ -632,7 +655,7 @@ begin
                 median&model = "multi-model-median"
                 super_array := array_append_record(median, super_array, 0)
                 delete(median)
-                ref_inds = ref_inds + 1  ; update ref model index
+                id_remove = id_remove + 1  ; update ref model index
             end if
         end if
 
@@ -653,34 +676,34 @@ begin
                 mean&model = "multi-model-mean"
                 super_array := array_append_record(mean, super_array, 0)
                 delete(mean)
-                ref_inds = ref_inds + 1  ; update ref model index
+                id_remove = id_remove + 1  ; update ref model index
             end if
         end if
         delete(models_only)
 ;; TO BE REMOVED ONCE AVAILABLE IN BACKEND---
       
         ;; Create separate arrays for models and observations
-        models_only = remove_index(super_array, ref_inds)
+        models_only = remove_index(super_array, id_remove)
         nmodels = dimsizes(models_only&model)
-        if (l_altern) then
+        if (l_altern .and. diag_script_info@metric.ne."taylor") then
             if (irank.eq.3) then
-                obs_only = super_array(ref_inds, :, :)
+                obs_only = super_array(id_remove, :, :)
             end if
             if (irank.eq.4) then
-                obs_only = super_array(ref_inds, :, :, :)
+                obs_only = super_array(id_remove, :, :, :)
             end if
             if (irank.eq.5) then
-                obs_only = super_array(ref_inds, :, :, :, :)
+                obs_only = super_array(id_remove, :, :, :, :)
             end if
         else  ; avoid dimension reduction
             if (irank.eq.3) then
-                obs_only = super_array(ref_inds:ref_inds, :, :)
+                obs_only = super_array(id_remove:id_remove, :, :)
             end if
             if (irank.eq.4) then
-                obs_only = super_array(ref_inds:ref_inds, :, :, :)
+                obs_only = super_array(id_remove:id_remove, :, :, :)
             end if
             if (irank.eq.5) then
-                obs_only = super_array(ref_inds:ref_inds, :, :, :, :)
+                obs_only = super_array(id_remove:id_remove, :, :, :, :)
             end if
         end if
         nobs = dimsizes(obs_only&model)
@@ -689,13 +712,20 @@ begin
         ;; Define result variable
         ;; A dummy coordinate "diagnostics" (size 1) is added to facilitate
         ;; appending different variable in the _collect script
-        grading = new((/dim_VAR, nmodels, nobs/), float)
+        if (diag_script_info@metric.eq."taylor") then
+            grading = new((/dim_VAR, nmodels, 2/), float)
+            grading!2 = "statistic"
+            grading&statistic = (/"stddev_ratio", "correlation"/)
+        else
+            grading = new((/dim_VAR, nmodels, nobs/), float)
+            grading!2 = "reference"
+            grading&reference = obs_only&model
+        end if
         grading!0 = "diagnostics"
         grading!1 = "models"
-        grading!2 = "reference"
         grading&diagnostics = var0_new
         grading&models = models_only&model
-        grading&reference = obs_only&model
+
         grading@ncdf_dir = ncdf_dir
 
         ;; Loop over models, calculate metric
@@ -713,31 +743,40 @@ begin
                     model = models_only(imod, :, :, :, 0)
                     obs = obs_only(iobs, :, :, :, 0)
                 end if
-                grading(0, imod, iobs) = \
-                    calculate_metric(model, obs, diag_script_info@metric)
+                if (diag_script_info@metric.eq."taylor") then
+                    grading(0, imod, 0) = \
+                        calculate_metric(model, obs, "stddev_ratio")
+                    grading(0, imod, 1) = \
+                        calculate_metric(model, obs, "correlation")
+                else
+                    grading(0, imod, iobs) = \
+                        calculate_metric(model, obs, diag_script_info@metric)
+                end if
             end do
         end do
         
         ;; Apply normalization
-        do iobs = 0, nobs - 1
-            grading(:, :, iobs) = \
-            normalize_metric(grading(:, :, iobs), \
-            diag_script_info@normalization)
-        end do
+        if (diag_script_info@metric.ne."taylor") then
+            do iobs = 0, nobs - 1
+                grading(:, :, iobs) = \
+                    normalize_metric(grading(:, :, iobs), \
+                                     diag_script_info@normalization)
+            end do
+        end if
 
         ;; Reduce dimensionality if no alternative model
-        if (nobs.eq.1) then
+        if (.not.l_altern .and. diag_script_info@metric.ne."taylor") then
             grading := grading(:,:,0)
             delete(grading@reference)
         end if
 
         ;; Attach attributes to the results
-        grading@title = "metrics"
+        grading@title = diag_script_info@metric + "metric"
         grading@long_name = \
             "Grading table of metric " + diag_script_info@metric
         grading@metric = diag_script_info@metric
         grading@diag_script = (/diag_script/)
-        grading@var = "grade"
+        grading@var = "grade" ;; FIX-ME ?
         grading@region = location
         grading@num_climofiles = dimsizes(models@name)  ; for tagging
         do imod = 0, dimsizes(models@name) - 1
@@ -750,6 +789,36 @@ begin
         ;; Write NetCDF output
         ncdf_outfile = ncdf_write(grading, grading@ncdf_dir)
 
+        ;; Write results of temporary grading list
+        yml_name = getenv("ESMValTool_yml_name")
+        suffix = get_file_suffix(yml_name, 0)
+        name = str_sub_str(yml_name, suffix, "")
+        temp_dir = get_output_dir(getenv("ESMValTool_work_dir"), "temp") + \
+            name
+        if (diag_script_info@metric.eq."taylor") then
+            temp_dir = temp_dir + "_taylor.nc"
+        else
+            temp_dir = temp_dir + "_grading.nc"
+        end if
+
+        if (isfilepresent_esmval(temp_dir)) then
+            temp_file = addfile(temp_dir, "r")
+            temp_list = temp_file->temp_list
+            temp_list_string = tostring(temp_list)
+            temp_list_new_string = array_append_record(temp_list_string, \
+                                                       ncdf_dir, 0)
+            temp_list_new = tochar(temp_list_new_string)
+            system("rm -f " + temp_dir)
+        else
+            ncdf_char = tochar(ncdf_dir)
+            temp_list_new = new((/1, dimsizes(ncdf_char)/), character)
+            temp_list_new(0, :) = ncdf_char
+        end if
+
+        ;; Create new file and add list
+        temp = addfile(temp_dir, "c")
+        temp->temp_list = temp_list_new
+
     end if
 
     ;; ### PLOTTING ###########################################################
@@ -759,7 +828,7 @@ begin
         ;; Convert units for plotting (if required)
         if (isatt(variable_info, "plot_units")) then
             var_all = convert_units(var_all, variable_info@plot_units)
-            if (isdefined("var_diff")) then
+            if (diag_script_info@plot_diff) then
                 var_diff = convert_units(var_diff, variable_info@plot_units)
             end if
         end if
