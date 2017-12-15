@@ -1,4 +1,4 @@
-ESMValTool Known Issues
+ESMValTool known issues
 ***********************
 
 **NCL 6.2.1+**

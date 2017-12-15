@@ -78,7 +78,7 @@ User setting files (cfg files) are stored in nml/cfg_anav13jclim/
 
    *Diag_script_info attributes*
 
-   * see section :numref:`nml_perfmetrics`
+   * see Section :numref:`nml_perfmetrics`
 
 
 Variables
