@@ -96,16 +96,14 @@ def _get_value(key, variables):
     return values.pop()
 
 
-def _get_standard_name(variable):
-    """Get variable standard_name."""
-    standard_name = None
+def _add_cmor_info(variable, keys):
+    """Add information from CMOR tables to variable."""
     if variable['project'] in CMOR_TABLES:
         variable_info = CMOR_TABLES[variable['project']].get_variable(
             variable['mip'], variable['short_name'])
-        if variable_info.standard_name:
-            standard_name = variable_info.standard_name
-
-    return standard_name
+        for key in keys:
+            if key not in variable and hasattr(variable_info, key):
+                variable[key] = getattr(variable_info, key)
 
 
 def get_single_model_settings(variable):
@@ -300,6 +298,7 @@ class Namelist(object):
                      diagnostic_name)
 
         variables = {}
+        cmor_keys = ['standard_name', 'long_name', 'units']
         for variable_name, raw_variable in raw_variables.items():
             variables[variable_name] = []
             for model in models:
@@ -307,17 +306,15 @@ class Namelist(object):
                 variable.update(model)
                 if 'short_name' not in variable:
                     variable['short_name'] = variable_name
-                if 'standard_name' not in variable:
-                    standard_name = _get_standard_name(variable)
-                    if standard_name:
-                        variable['standard_name'] = standard_name
+                _add_cmor_info(variable, cmor_keys)
                 variables[variable_name].append(variable)
 
             for variable in variables[variable_name]:
-                for key in ('mip', 'standard_name'):
+                for key in ['mip'] + cmor_keys:
                     if key not in variable:
-                        variable[key] = _get_value(key,
-                                                   variables[variable_name])
+                        value = _get_value(key, variables[variable_name])
+                        if value:
+                            variable[key] = value
 
         return variables
 
