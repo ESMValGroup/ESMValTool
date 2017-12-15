@@ -3,8 +3,8 @@
 ;
 variable_info = True
 variable_info@derived = True
-variable_info@long_name  = "ISCCP Middle Level Medium-Thickness Cloud Area Fraction"
-variable_info@short_name = "ISCCP Middle Level Medium-Thickness Cloud Area Fraction"
+variable_info@long_name  = "CCI Middle Level Medium-Thickness Cloud Area Fraction"
+variable_info@short_name = "CCI Middle Level Medium-Thickness Cloud Area Fraction"
 variable_info@units      = "%"
 variable_info@plot_units = "%"
 

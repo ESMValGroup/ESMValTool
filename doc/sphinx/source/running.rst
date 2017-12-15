@@ -120,7 +120,7 @@ using the **obs4mips** or **ana4mips** project specifiers (see :numref:`tab_proj
 namelist.
 
 A collection of all observational data used by the diagnostics of the
-ESMValTool (master branch) is hosted at DLR and can be made available
+ESMValTool (*MASTER BRANCH*) is hosted at DLR and can be made available
 (restrictions by the data owner permitting) on request (see :numref:`tab_obs_data`). The
 reformatted observational data can be read using e.g., the **OBS** class in the
 namelist (see below).
@@ -200,9 +200,9 @@ scripts. These reformatting scripts can be found in:
 	    
 These reformat scripts can be specified in a namelist-file
 (e.g. *namelist_reformat_obs.xml*) and executed by calling the main.py script
-with the option "-r" or "--reformat": 
+with the option "-r": 
 
-     *python main.py –r namelist_reformat_obs.xml*
+     *python main.py -r namelist_reformat_obs.xml*
 
 This reformat namelist file contains the tag <REFORMAT> that can hold multiple
 <reformat_script>-tags specifying the reformat scripts to be called: 
@@ -523,7 +523,7 @@ An example excerpt of an acknowledgements log file is provided below.
    limitations under the License.
 
    Please acknowledge the use of the ESMValTool.
-   Please cite Eyring et al., ESMValTool (v1.0) – a community diagnostic and
+   Please cite Eyring et al., ESMValTool (v1.0) -- a community diagnostic and
    performance metrics tool for routine evaluation of Earth System Models in
    CMIP, Geosci. Model Dev., 2016.
    For the specific diagnostics, see below.

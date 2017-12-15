@@ -174,6 +174,7 @@ of currently available variable definition scripts). If the variable is a
 **non-derived** variable (explained in Section :numref:`var_def`) it also needs to be defined
 in a file named *reformat_scripts/cmor/CMOR_<variable>.dat* (see Section :numref:`cmor`).
 
+.. note: New variables have to be added to :numref:`tab_var_def` (in doc/sphinx/source/namelists.rst).
 
 .. _rec_vars:
 

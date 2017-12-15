@@ -317,6 +317,8 @@ where:
 
 It is also possible to split the output in multiple files, like in the CMIP5 class, e.g. _200101-200512.nc, 200601_201012.nc, 201101-201512.nc, etc. This is particularly useful for daily data, which are usually too large to be collected in a single file covering the whole time period.
 
+.. note:: When adding new observational datasets, these datasets have to be added to :numref:`tab_obs_data` (in doc/sphinx/source/running.rst).
+
 .. _std_reformat_obs:
 
 Standard header for the reformatting routines for observational data
