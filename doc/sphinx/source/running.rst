@@ -5,27 +5,27 @@ Running the ESMValTool
 
 The following section gives a brief description of the steps required by a user to run an existing diagnostic. As an example, the toy diagnostic *MyDiag* is chosen to illustrate the basic steps:
 
-1. Check/edit the “namelist configuration file” (e.g., *config_private.xml*) (see :numref:`nml_config`). If needed, set/change the base path names for the input data (model and observations) and the output data. Note: the use of a “namelist configuration file” is optional in order to allow for machine specific standard search paths for input (and output) data without having to change the actual namelists. Alternatively, explicit path names can be used in the namelists.
+1. Check/edit the "namelist configuration file" (e.g., *config_private.xml*) (see Section :numref:`nml_config`). If needed, set/change the base path names for the input data (model and observations) and the output data. Note: the use of a "namelist configuration file" is optional in order to allow for machine specific standard search paths for input (and output) data without having to change the actual namelists. Alternatively, explicit path names can be used in the namelists.
 
 2. Check/edit the main namelist *nml/namelist_MyDiag.xml*:
 
-   a. Set/check the file name of the “namelist configuration file” (defining the base path names) to be used by the ESMValTool (typically, this is the second line in the namelist, e.g., <include href="./config_private.xml"/>).
+   a. Set/check the file name of the "namelist configuration file" (defining the base path names) to be used by the ESMValTool (typically, this is the second line in the namelist, e.g., <include href="./config_private.xml"/>).
 
-   b. If needed, set the pathnames in the <GLOBAL> section for the “work” directory (wrk_dir), the directory for the plots (plot_dir) and the directory for reformatted files (climo_dir). See :numref:`glob_tag` for details and :numref:`tab_glob_tags` for a complete list of variables in the <GLOBAL> section.
+   b. If needed, set the pathnames in the <GLOBAL> section for the "work" directory (wrk_dir), the directory for the plots (plot_dir) and the directory for reformatted files (climo_dir). See Section :numref:`glob_tag` for details and :numref:`tab_glob_tags` for a complete list of variables in the <GLOBAL> section.
 
    c. In the <MODELS> section, define the model(s) to be used, including the root path for the actual model data, e.g.,
 
       *CMIP5_ETHZ MPI-ESM-LR Amon historical r1i1p1 2000 2004 @{MODELPATH}/ETHZ_CMIP5/*
 
-      (see step 1 and :numref:`nml_config` for details on how to set base path names such as @{MODELPATH}; alternatively, explicit path names can be used). See :numref:`mod_tag`, :numref:`tab_proj_spec` and :numref:`tab_mod_tags` for details. The first year (here: 2000) and last year (here: 2004) of the model data processed for each model is specified in this section.
+      (see step 1 and Section :numref:`nml_config` for details on how to set base path names such as @{MODELPATH}; alternatively, explicit path names can be used). See Section :numref:`mod_tag`, :numref:`tab_proj_spec` and :numref:`tab_mod_tags` for details. The first year (here: 2000) and last year (here: 2004) of the model data processed for each model is specified in this section.
 
-   d. Optionally, change variable and the field type in the <DIAGNOSTICS> section. See :numref:`diag_tag`, :numref:`tab_diag_tags` and :numref:`tab_diag_att` for details. An overview of the available “field types” is given in :numref:`tab_fld_typ`, :numref:`tab_var_def` lists the available variables. Please note that the diagnostic section may include additional models and/or observational data. 
+   d. Optionally, change variable and the field type in the <DIAGNOSTICS> section. See Section :numref:`diag_tag`, :numref:`tab_diag_tags` and :numref:`tab_diag_att` for details. An overview of the available "field types" is given in :numref:`tab_fld_typ`, :numref:`tab_var_def` lists the available variables. Please note that the diagnostic section may include additional models and/or observational data. 
 
 3. Check/edit the configuration file *nml/cfg_MyDiag/cfg_MyDiag.ncl*. In case of the toy diagnostics *MyDiag*, you can for example change the map projection for the contour plot by changing the value of the attribute diag_script_info\@projection.
 
 4. Run the ESMValTool (in the ESMValTool root directory): *python main.py nml/namelist_MyDiag.nml*
 
-5. The output will be written to a subdirectory named like the diagnostics package (e.g., *MyDiag*) in the directories specified in the <GLOBAL> section of the namelist (see step 1 and also :numref:`nml_config`). The default directories are: *work/MyDiag* for the NetCDF output and *work/plots/MyDiag* for the plot(s) (see also :numref:`fig_example`). Acknowledgements and references are written to the file *work/refs-acknows_MyDiag.txt*.
+5. The output will be written to a subdirectory named like the diagnostics package (e.g., *MyDiag*) in the directories specified in the <GLOBAL> section of the namelist (see step 1 and also Section :numref:`nml_config`). The default directories are: *work/MyDiag* for the NetCDF output and *work/plots/MyDiag* for the plot(s) (see also :numref:`fig_example`). Acknowledgements and references are written to the file *work/refs-acknows_MyDiag.txt*.
 
 .. _fig_example:
 .. figure::  /figures/example_figure3.png
@@ -41,7 +41,7 @@ The following section gives a brief description of the steps required by a user 
 Available diagnostics and metrics
 =================================
 
-An introduction to the available diagnostics and metrics packages implemented into the ESMValTool v1.1 including a description of the user settings, observational data used, references, and example plots is given in :numref:`annex_c`.
+An introduction to the available diagnostics and metrics packages implemented into the ESMValTool v1.1 including a description of the user settings, observational data used, references, and example plots is given in Part :numref:`annex_c`.
 
 .. _mod_obs_run:
 
@@ -53,57 +53,57 @@ Model data
 ----------
 
 The project specifier (see :numref:`tab_proj_spec`) used in the <MODELS> section of the
-namelist (see :numref:`mod_tag` for details) determines the directory structure and
+namelist (see Section :numref:`mod_tag` for details) determines the directory structure and
 file naming convention expected by the ESMValTool. The two most commonly used
 project specifiers are *CMIP5* and *CMIP5_ETHZ*. Both are used to process
 CMIP5 data available from the Earth System Federation Grid (e.g.,
 http://esgf.llnl.gov/). In order to download CMIP5 data, registration and
-creation of an “openID” is required. Instructions can be found here: http://cmip-pcmdi.llnl.gov/cmip5/data_getting_started.html. 
+creation of an "openID" is required. Instructions can be found here: http://cmip-pcmdi.llnl.gov/cmip5/data_getting_started.html. 
 
 Besides downloading files individually, the CMIP5 data portal is capable of
 generation a script for automated download of model data using GNU *wget* (https://www.gnu.org/software/wget/). The *wget* script generation is recommended for downloading a large number files and/or large data volume. 
 
-Any CMIP5 files downloaded to a single directory can be moved to a CMIP5 like directory structure using the NCL script *util/CMIP5_sort/CMIP5_sort.ncl*. The script *CMIP5_sort.ncl* expects all files to be moved to the CMIP5 like directory structure in the current directory (“.”). The root directory for creating the CMIP5 like directory structure is specified in the script *CMIP5_sort.ncl* via the variable *“outpath”*. The script is run via:
+Any CMIP5 files downloaded to a single directory can be moved to a CMIP5 like directory structure using the NCL script *util/CMIP5_sort/CMIP5_sort.ncl*. The script *CMIP5_sort.ncl* expects all files to be moved to the CMIP5 like directory structure in the current directory ("."). The root directory for creating the CMIP5 like directory structure is specified in the script *CMIP5_sort.ncl* via the variable *"outpath"*. The script is run via:
 
     *ncl <path of the ESMValTool>/util/CMIP5_sort/CMIP5_sort.ncl*  
 
-The CMIP5 files will be moved into the directories outpath/experiment/mip/variable/name/ensemble/ for direct usage with the roject specifier CMIP5_ETHZ (see below). “experiment”, “mip”, “variable” and “name” (= model name) are automatically extracted from the filename.
+The CMIP5 files will be moved into the directories outpath/experiment/mip/variable/name/ensemble/ for direct usage with the roject specifier CMIP5_ETHZ (see below). "experiment", "mip", "variable" and "name" (= model name) are automatically extracted from the filename.
 
 
 **The project specifier CMIP5**
 
-Syntax of the *CMIP5* specifier in the <model>-tag (see :numref:`mod_tag` and :numref:`tab_proj_spec`
+Syntax of the *CMIP5* specifier in the <model>-tag (see Section :numref:`mod_tag` and :numref:`tab_proj_spec`
 for details):
 
     *<model> CMIP5 name mip experiment ensemble start_year end_year* **path** *</model>*
 
-The project specifier CMIP5 will search for files in “**path**” with filenames
+The project specifier CMIP5 will search for files in "**path**" with filenames
 matching the pattern
 
 	 *variable_mip_name_experiment_ensemble_*.nc*
 
-Note: “variable” is specified in the <diag>-section (see :numref:`diag_tag` for
-details). If “variable” is a derived quantity, all variables needed to
+Note: "variable" is specified in the <diag>-section (see Section :numref:`diag_tag` for
+details). If "variable" is a derived quantity, all variables needed to
 calculate the derived quantity are processed automatically.
 
 **The project specifier CMIP5_ETHZ**
 
-Syntax of the *CMIP5_ETHZ* specifier in the <model>-tag (see :numref:`mod_tag` and
+Syntax of the *CMIP5_ETHZ* specifier in the <model>-tag (see Section :numref:`mod_tag` and
 :numref:`tab_proj_spec` for details):
 
       *<model> CMIP5_ETHZ name mip experiment ensemble start_year end_year*
        **path** *</model>*
 
 The project specifier *CMIP5_ETHZ* will search for files in
-“**path/experiment/mip/variable/name/ensemble**” with filenames matching the
+"**path/experiment/mip/variable/name/ensemble**" with filenames matching the
 pattern
 
 	:emphasis:`variable_mip_name_experiment_ensemble_*.nc`
 
 This directory structure resembles the ESGF CMIP5 directory structure.
 
-Note: “variable” is specified in the <diag>-section (see :numref:`diag_tag` for
-details). If “variable” is a derived quantity, all variables needed to
+Note: "variable" is specified in the <diag>-section (see Section :numref:`diag_tag` for
+details). If "variable" is a derived quantity, all variables needed to
 calculate the derived quantity are processed automatically.
 
 
@@ -133,39 +133,39 @@ All observations are tiered as follows:
 
 Observational data sets not available in the obs4MIPs/ana4MIPs archives need
 to be reformatted according to the CF/CMOR standard before they can be used
-(see :numref:`dl_obs` and :numref:`mod_obs_data` for more details).
+(see Section :numref:`dl_obs` for more details).
 
 **The project specifier OBS**
 
-Syntax of the *OBS* specifier in the <model>-tag (see :numref:`mod_tag` and :numref:`tab_proj_spec`
+Syntax of the *OBS* specifier in the <model>-tag (see Section :numref:`mod_tag` and :numref:`tab_proj_spec`
 for details):
 
     *<model> OBS name case_name ensemble start_year end_year* **path**
      *</model>*
 
-The project specifier OBS will search for files in “**path**” with filenames
+The project specifier OBS will search for files in "**path**" with filenames
 matching the pattern
 
 	:emphasis:`OBS_name_casename_ensemble_fieldtype_variable*.nc`
 
-Note: “variable” and “fieldtype” are specified in the <diag>-section (see
-:numref:`diag_tag` for details). If “variable” is a derived quantity, all variables
+Note: "variable" and "fieldtype" are specified in the <diag>-section (see
+Section :numref:`diag_tag` for details). If "variable" is a derived quantity, all variables
 needed to calculate the derived quantity are processed automatically.
 
 **The project specifier obs4mips**
 
-Syntax of the *obs4mips* specifier in the <model>-tag (see :numref:`mod_tag` and :numref:`tab_proj_spec` for details):
+Syntax of the *obs4mips* specifier in the <model>-tag (see Section :numref:`mod_tag` and :numref:`tab_proj_spec` for details):
 
    *<model> obs4mips name process_level ensemble start_year end_year* **path**
     *</model>*
 
-The project specifier obs4mips will search for files in “**path/name/**” with
+The project specifier obs4mips will search for files in "**path/name/**" with
 filenames matching the pattern
 	  
 	 :emphasis:`variable_name_processlevel_ensemble_*.nc`
 
-Note: “variable” is specified in the <diag>-section (see :numref:`diag_tag` for
-details). If “variable” is a derived quantity, all variables needed to
+Note: "variable" is specified in the <diag>-section (see Section :numref:`diag_tag` for
+details). If "variable" is a derived quantity, all variables needed to
 calculate the derived quantity are processed automatically.
 
 .. _dl_obs:
@@ -173,7 +173,7 @@ calculate the derived quantity are processed automatically.
 Downloading and creating observational data sets
 ------------------------------------------------
 
-obs4MIPS and ana4MIPs data sets (“tier 1”, see above) are freely available
+obs4MIPS and ana4MIPs data sets ("tier 1", see above) are freely available
 from the ESGF. These data sets can be used directly with the ESMValTool
 without the need for reformatting. Examples of such data sets include:
 
@@ -190,7 +190,7 @@ without the need for reformatting. Examples of such data sets include:
 	* TES
 	* TRMM, TRMM-L3
 
-**For the required file naming conventions and the expected directory structure see :numref:`obs_data`**
+**For the required file naming conventions and the expected directory structure see Section :numref:`obs_data`**
 
 For all other (non-obs4MIPs and non-ana4MIPs) data sets, reformatting routines
 are provided with downloading and processing instructions in the header of the
@@ -200,7 +200,7 @@ scripts. These reformatting scripts can be found in:
 	    
 These reformat scripts can be specified in a namelist-file
 (e.g. *namelist_reformat_obs.xml*) and executed by calling the main.py script
-with the option “-r” or “--reformat”: 
+with the option "-r" or "--reformat": 
 
      *python main.py –r namelist_reformat_obs.xml*
 
@@ -490,8 +490,8 @@ and observational data with the corresponding references.
 
 The log is created automatically when running the ESMValTool. The log file is
 named *refs-acknow_<diagnostics>.txt* and written to the directory defined in
-the <GLOBAL> section of the namelist (variable wrk_dir, see section :numref:`glob_tag`),
-e.g., *work/refs-acknows_MyDiag.txt* (see also :numref:`running`, step 4).
+the <GLOBAL> section of the namelist (variable wrk_dir, see Section :numref:`glob_tag`),
+e.g., *work/refs-acknows_MyDiag.txt* (see also Section :numref:`running`, step 4).
 
 An example excerpt of an acknowledgements log file is provided below.
 

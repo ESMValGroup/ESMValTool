@@ -72,7 +72,7 @@ copyright = u'2008-2017, Veronika Eyring, Axel Lauer, Mattia Righi, Bjoern Broet
 # built documents.
 #
 # The short X.Y version.
-version = '1.1.0'
+version = '1.1.0dev'
 # The full version, including alpha/beta/rc tags.
 release = '1.1.0'
 
@@ -385,7 +385,7 @@ epub_exclude_files = ['search.html']
 #epub_use_index = True
 
 numfig = True
-numfig_format = {'figure': 'Figure %s', 'table': 'Table %s', 'code-block': 'Listing %s', 'section': 'Section %s'}
+numfig_format = {'figure': 'Figure %s', 'table': 'Table %s', 'code-block': 'Listing %s', 'section': '%s'}
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'http://docs.python.org/': None}

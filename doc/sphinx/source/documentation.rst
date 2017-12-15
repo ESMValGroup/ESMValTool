@@ -3,83 +3,268 @@
 Scientific documentation of a diagnostic script or metrics set
 **************************************************************
 
-An important part of the implementation of a new diagnostic script is the documentation of the diagnostic itself as well as the documentation of the observational data sets used on the ESMValTool development team wiki (see :numref:`wiki` for details on the wiki, see also :numref:`writing` for general guidelines on documentation).
-The former should comply with the standard template for new diagnostics (see section :numref:`std_diag` below) and the latter should include instructions how to download the observational data and, if necessary, scripts to convert it to the format required in ESMValTool, see section :numref:`mod_obs_data` below.
+Basics
+======
 
-.. _std_diag:
+An important part of the implementation of a new diagnostic script is the documentation of the diagnostic itself as well as the documentation of the observational data sets (see also Section :numref:`writing`).
+The former should comply with the standard template for new diagnostics (see Section :numref:`std_diag` below) and the latter should include instructions how to download the observational data and, if necessary, scripts to convert it to the format required in ESMValTool (see Section :numref:`mod_obs_data` below).
+
+The documentation of a diagnostic requires the following steps:
+
+* creating a documentation in reStructuredText format (see, e.g., http://docutils.sourceforge.net/rst.html)
+  following the structure defined in the template *doc/sphinx/source/namelists/namelist_template.rst* (see also Section :numref:`std_diag`)
+* the new documentation file is saved as *doc/sphinx/source/namelists/namelist_<yourdiag>.rst*
+* all image files are stored in the directory (to be created) doc/sphinx/source/namelists/figures/<yourdiag>
+* the new documentation file is added to the alphabetically sorted list of all namelists in the main document *doc/sphinx/source/index.rst*
+  (under "Annex C - namelists")
+
+.. note:: Example image files are usually in the format .png and should have a maximum file size of a few hunderd kb or less.
+
+.. _std_sphinx:
 
 Standard template
 =================
 
-When implementing a new diagnostic script or metrics set, it should be documented on the ESMValTool development team wiki in the OPEN or PRIVATE Github repository (see :numref:`wiki`) starting from the standard template given below:
+When implementing a new diagnostic script or metrics set, it should be documented starting from the standard template given below.
+Examples can be found in Part :numref:`annex_c` (Annex C - namelists):
 
-.. tabularcolumns:: |p{4cm}|p{11cm}|
+.. code-block:: none
 
-+---------------------------+--------------------------------------------------------------------------+
-| **Title of diagnostic/performance metrict**                                                          |
-+===========================+==========================================================================+
-| **Developers**            | first name surname 1 (DLR tag 1), first name surname 2 (DLR tag 2), etc. |
-+---------------------------+--------------------------------------------------------------------------+
-| **Contributors**          | first name surname 1 (DLR tag 1), first name surname 2 (DLR tag 2), etc. |
-+---------------------------+--------------------------------------------------------------------------+
-| **Date of documentation** | yyyy-mm-dd                                                               |
-+---------------------------+--------------------------------------------------------------------------+
-| **Name of standard**      | For Xyz the following naming conventions is used:                        |
-| **namelist (XyZ)**        |                                                                          |
-|                           | For papers:                                                              |
-|                           |                                                                          |
-|                           | XyZ=SurnameYearJournalabbreviation                                       |
-|                           |                                                                          |
-|                           | (e.g., stocker12jgr, stocker12sci1, stocker12sci2).                      |
-|                           |                                                                          |
-|                           | For copies of reports that are not publicly available:                   |
-|                           |                                                                          |
-|                           | XyZ=OrgYearTitleabbrev                                                   |
-|                           |                                                                          |
-|                           | (e.g., unep10water, unep11gap,roysoc09geoengineering).                   |
-|                           |                                                                          |
-|                           |                                                                          |
-|                           | For grouped set of diagnostics and performance metrics that do not follow|
-|                           | a published paper or report:                                             |
-|                           |                                                                          |
-|                           | an intuitive name that describes the science theme                       |
-|                           |                                                                          |
-|                           | (e.g., XyZ=aerosol, MyDiag, SAMonsoon, SeaIce).                          |
-+---------------------------+--------------------------------------------------------------------------+
-| **User settings**         | list of all settings that have to be checked/changed by a user in order  |
-|                           | to run the diagnostic (e.g., pathnames, configuration files, color       |
-|                           | tables, supported model names, etc.)                                     |
-+---------------------------+--------------------------------------------------------------------------+
-| **Brief summary**         | 1-3 sentence summary                                                     |
-+---------------------------+--------------------------------------------------------------------------+
-| **Status**                | Planned/work in progress/finished and integrated into development branch |
-+---------------------------+--------------------------------------------------------------------------+
-| **CMOR variable name**    | e.g., tas (atmos, monthly mean, longitude latitude plevs time)           |
-| **(realm, frequency,**    |                                                                          |
-| **dimension)**            |                                                                          |
-+---------------------------+--------------------------------------------------------------------------+
-| **Link to git repository**| e.g., https://github.com/axel-lauer/ESMValTool/tree/cloud                |
-| **(feature branch)**      |                                                                          |
-+---------------------------+--------------------------------------------------------------------------+
-| ``1.`` Overview                                                                                      |
-| ... Insert text here                                                                                 |
-| ``2.`` Available Diagnostics                                                                         |
-| ... Insert text here                                                                                 |
-| ``3.`` Specific Routines                                                                             |
-| ... Contains a description of specific routines being developed for the given diagnostic that helps  |
-| ... to identify common code (which should then go in the ``lib/``)                                   |
-| ``4.`` Observations and Scripts (also see Model and observational data below)                        |
-| ... Insert text here                                                                                 |
-| ``5.`` Test Cases (see also Automated testing, section :numref:`auto_test`)                          |
-| ... Insert text here                                                                                 |
-| ``6.`` References                                                                                    |
-| ... REF1                                                                                             |
-| ... REF2                                                                                             |
-| ... etc.                                                                                             |
-| ``7.`` Sample Plots                                                                                  |
-| ... Please insert sample plots for all plot types produced by the namelist                           |
-+---------------------------+--------------------------------------------------------------------------+
+   Title of diagnostic/performance metric
+   ======================================
 
+   Overview
+   --------
+
+   Provide a brief scientific description of the diagnostic including references.
+
+   Available namelists and diagnostics
+   -----------------------------------
+
+   Namelists are stored in nml/
+
+   * namelist_mydiag_1.xml
+   * namelist_mydiag_2.xml
+
+   Diagnostics are stored in diag_scripts/
+
+   * mydiag_1.py
+   * mydiag_2.ncl
+
+   User settings
+   -------------
+
+   List and describe all settings and input parameters used by your diagnostic.
+
+   Variables
+   ---------
+
+   * variable 1 (...)
+   * variable 2 (...)
+
+   Observations and reformat scripts
+   ---------------------------------
+
+   * observational dataset 1, reformat script: reformat_scripts/obs/reformat\_obs\_mydata1.py
+
+   References
+   ----------
+
+   * reference 1
+   * reference 2
+
+   Example plots
+   -------------
+
+   .. figure:: /namelists/figures/mydiag/myexample1.png
+      :scale: 50 %
+      :alt: xxxx
+   
+   Caption can go here.
+
+.. _tagging:
+
+Provenance (tagging)
+====================
+
+In order to ensure provenance of the ESMValTool results a set of tags is added to all namelists and diagnostics. These tags are written as meta data to all figures produced by the ESMValTool and can be used for reporting and visualization. There are two kinds of tags: tags included in the namelist ("namelist tags") and tags in the individual diagnostics ("diagnostic tags"). Namelist tags include *global* tags such as "main reference" and "project" as well as *diagnostic specific* tags for each individual diagnostic block such as "theme" and "realm". Diagnostic tags include "domain", "plot type" and "statistics". 
+
+.. note:: All available standard tags are defined in *doc/MASTER_authors-refs-acknow.txt*:
+
+* D_xxxx (reference),
+* P_xxxx (project),
+* R_xxxx (CMIP6 realm),
+* T_xxxx (theme),
+* DM_xxxx (domain),
+* PT_xxxx (plot type),
+* ST_xxxx (statistics).
+
+In addition to the namelist and diagnostic tags, also the name of the actual namelist, variable name(s), model name(s), contibuting author(s) and tracking IDs of the input files are collected as meta-data to be written into the EXIF header of all figure files (.png).
+
+.. note:: For tagging to work properly, all plots must be written to individual output files, i.e. no multi-page (.ps) files are supported.
+
+Example namelist tags in <GLOBAL>
+---------------------------------
+
+All available tags are defined in *doc/MASTER_authors-refs-acknow.txt*.
+
+.. code-block:: none
+
+   <GLOBAL>
+   .
+   .
+   <tags> D_righi15gmd, P_cmug </tags>
+   </GLOBAL>
+
+Example namelist tags in <diag>
+-------------------------------
+
+All available tags are defined in *doc/MASTER_authors-refs-acknow.txt*.
+
+.. code-block:: none
+
+   <diag>
+   .
+   .
+   <tags> R_ocean, R_land, T_phys </tags>
+   </diag>
+
+Example diagnostic tags (NCL)
+-----------------------------
+
+**Header section**
+
+.. code-block:: none
+
+   ; this include defines the procedure ESMValMD used to write the
+   ; meta-data to the image file(s)
+
+   load "./diag_scripts/lib/ncl/meta_data.ncl"
+
+**Example code after writing figure**
+
+.. code-block:: none
+
+   ; the field 'tags' is generated by the ESMValTool framework and contains
+   ; all tags defined in the namelist;
+
+   ; add diagnostic specific tags e.g., domain (DM_xxxx), plot type (PT_xxxx),
+   ; statistics (ST_xxxx)
+   ; (all available tags are defined in doc/MASTER_authors-refs-acknow.txt)
+
+   alltags = array_append_record(tags, (/"DM_global", "PT_geo", "ST_mean"/), 0)
+
+   ; define caption for the plot produced by the ESMValTool
+
+   caption = "This is an example caption. Model: " + models@name(0) + ", \
+             variable: " + variables(0)
+
+   ; define an arbitrary but unique id for the image file
+
+   id = diag_script + "_example_id"
+
+   ; generate list of all input files processed for this particular figure
+
+   climofiles = interface_get_inpaths(imod) + "/" \
+                + interface_get_infile(variables(0), field_types(0), imod)
+
+   ; define list of contributing authors for this diagnostic script
+
+   contrib_authors = (/"A_gott_kl", "A_eval_ma"/)
+
+   ; =============================
+   ; write meta-data to image file
+   ; =============================
+
+   ; parameters for procedure ESMValMD
+   ; ---------------------------------
+   ; outfile: filename of image file created
+   ; alltags: concatenated list of all tags (from the namelist + diagnotic specific)
+   ; variables: list of all variables pocessed
+   ; models@name: list of all model/dataset names processed
+   ; climofiles: list of all input files processed
+   ; diag_script: name of diagnostic script (generated by the ESMValTool framework)
+   ; contrib_authors: list of contributing authors for this diagnostic script
+
+   ESMValMD(outfile, alltags, caption, id, variables(0), models@name(0), \
+            climofiles, diag_script, contrib_authors)
+
+   delete([/alltags, caption, id, climofiles/])
+
+Example diagnostic tags (Python)
+--------------------------------
+
+**Header section**
+
+.. code-block:: python
+
+   # this include defines the procedure ESMValMD used to write the
+   # meta-data to the image file(s)
+
+   from ESMValMD import ESMValMD
+
+**Example code after writing figure**
+
+.. code-block:: python
+
+   E = ESMValProject(project_info)
+   diag_script = E.get_diag_script_name()
+
+   # filename of plot
+   plot_type = project_info['GLOBAL']['output_file_type']
+   oname = plot_dir + 'ww09_metric_multimodel.' + plot_type
+
+   # tags from the ESMValTool framework (namelist)
+   basetags = [x.strip() for x in project_info.get('GLOBAL')['tags']]
+
+   # create list of model names
+   models = []
+   for model in E.project_info['MODELS']:
+       models.append(model.split_entries()[1])
+
+   # variable name(s)
+   variables = project_info['RUNTIME']['currDiag'].get_variables()
+
+   # all variable tags must be preceeded by "V_"
+   vartags = ['V_' + item for item in variables]
+
+   # all model tags must be preceeded by "M_"
+   modeltags = ['M_' + item for item in models]
+
+   # define caption for the plot produced by the ESMValTool
+   caption = 'Cloud Regime Error Metric (CREM) following Williams and Webb (2009, Clim. Dyn.).'
+
+   # list of all input files processed
+   tmp = []
+   for variable in variables:
+      tmp.append(E.get_clim_model_filenames(variable=variable))
+   model_filelist = [item for sublist in tmp for item in sublist]
+
+   # list of contributing authors
+   authors = 'A_will_ke'
+
+   # define an arbitrary but unique id for the image file
+   plot_id = '#ID_ww09_crem'
+
+   # =============================
+   # write meta-data to image file
+   # =============================
+
+   # parameters for procedure ESMValMD
+   # ---------------------------------
+   # oname: filename of image file created
+   # tags: concatenated list of all tags (from the namelist + diagnotic specific
+   #       + model tags + variable tags)
+   # model_filelist: list of all input files processed
+   # diag_script: name of diagnostic script (generated by the ESMValTool framework)
+   # authors: list of contributing authors for this diagnostic script
+
+   ESMValMD("both",
+            oname,
+            basetags + ['DM_global', 'PT_bar'] + modeltags + vartags,
+            caption,
+            plot_id,
+            model_filelist, diag_script, authors)
 
 .. _mod_obs_data:
 
@@ -89,8 +274,8 @@ Model and observational data
 Overview
 --------
 
-When possible, observations from the obs4MIPs/ana4MIPs archives are used in the model evaluation (see :numref:`diag_avail`).
-These data are freely available from the ESGF in the same format as the CMIP simulations and can be directly used in the ESMValTool using the obs4mips or ana4mips class in the namelist (see also section :numref:`mod_obs_run`).
+When possible, observations from the obs4MIPs/ana4MIPs archives are used in the model evaluation (see Section :numref:`diag_avail`).
+These data are freely available from the ESGF in the same format as the CMIP simulations and can be directly used in the ESMValTool using the obs4mips or ana4mips class in the namelist (see also Section :numref:`mod_obs_run`).
 
 Important links
 
@@ -100,7 +285,7 @@ Nightly scan across nodes
 
 https://www.earthsystemcog.org/search/obs4mips/?template=obs4mips&limit=200
 
-Observational data sets not available in these archives need to be reformatted according to the CF/CMOR standard before they can be used.
+Observational data sets not available in these archives need to be reformatted according to the CF/CMOR standard before they can be used (see guidelines in Section :numref:`data_processing`).
 In this case a reference to the official URL is provided such that a user can get the latest version of the data set as well as a description and a script how to convert the data set to the format required by the ESMValTool. These conversion scripts are collected in *reformat_scripts/obs/reformat_obs_<NAME>.ncl*.
 The reformatting routines must be documented with a standard header providing all information required to retrieve and process the data, as well as their availability (Tier 1, Tier 2, or Tier 3).
 
@@ -131,6 +316,8 @@ where:
 <ensemble> is the version number, processing level or station code (for ground-based networks), use 1 if not available.
 
 It is also possible to split the output in multiple files, like in the CMIP5 class, e.g. _200101-200512.nc, 200601_201012.nc, 201101-201512.nc, etc. This is particularly useful for daily data, which are usually too large to be collected in a single file covering the whole time period.
+
+.. _std_reformat_obs:
 
 Standard header for the reformatting routines for observational data
 --------------------------------------------------------------------

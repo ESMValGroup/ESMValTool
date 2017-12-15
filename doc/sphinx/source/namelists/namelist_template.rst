@@ -1,64 +1,52 @@
-TEMPLATE FOR NAMELIST
-=====================
+Title of diagnostic/performance metric
+======================================
 
 Overview
 --------
 
-TBD
-
+Provide a brief scientific description of the diagnostic including references.
 
 Available namelists and diagnostics
 -----------------------------------
 
-TBD
+Namelists are stored in nml/
 
+* namelist_mydiag_1.xml
+* namelist_mydiag_2.xml
+
+Diagnostics are stored in diag_scripts/
+
+* mydiag_1.py
+* mydiag_2.ncl
 
 User settings
 -------------
 
-TBD
-
+List and describe all settings and input parameters used by your diagnostic.
 
 Variables
 ---------
 
-TBD
-
+* variable 1 (...)
+* variable 2 (...)
 
 Observations and reformat scripts
 ---------------------------------
 
-TBD
-
-
+* observational dataset 1, reformat script: reformat_scripts/obs/reformat\_obs\_mydata1.py
 
 References
 ----------
 
-TBD
+* reference 1
+* reference 2
 
-q
 Example plots
 -------------
 
-TBD
-
-.. figure:: /namelists/figures/TBDNAMELIST/TBDnnFIG.png
+.. figure:: /namelists/figures/mydiag/myexample1.png
    :scale: 50 %
    :alt: xxxx
    
-   CAPTION CAN GO HERE
-
-
-
-
-
-
-
-
-
-
-
-
-
+Caption can go here.
 

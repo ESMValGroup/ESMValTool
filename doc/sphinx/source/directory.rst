@@ -3,14 +3,13 @@
 Directory structure of the ESMValTool
 *************************************
 
-An overview of the directory structure used in the ESMValTool is given in Table
-:numref:`tab_direc_struc`. This section summarizes the underlying principles
-of the structure.
+An overview of the directory structure used in the ESMValTool is given in :numref:`tab_direc_struc`.
+This section summarizes the underlying principles of the structure.
 
 * Common namelist settings (e.g., models, year ranges, diagnostics) are
   usually stored in one place.
 * Less common settings may be hidden deeper in the directory structure (see
-  also :numref:`config_files`).
+  also Section :numref:`config_files`).
 * Diagnostic scripts that can be used by namelist entries are also stored in
   one place and it generally possible to combine them in a modular way (e.g.,
   using the output of one routine as input for another).
