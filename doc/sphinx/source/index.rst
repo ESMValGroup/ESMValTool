@@ -7,7 +7,7 @@ Preface
 #######
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :numbered:
 
    preface
@@ -18,7 +18,7 @@ Known Issues
 ############
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :numbered:
 
    known_issues
@@ -60,7 +60,7 @@ Annex A - tables
 ################
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :numbered:
 
    annex_a
