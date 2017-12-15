@@ -71,7 +71,7 @@ Annex B - environment
 #####################
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :numbered:
 
    annex_b
