@@ -55,13 +55,11 @@ if __name__ == '__main__':  # noqa
                         os.path.dirname(os.path.abspath(__file__))))  # noqa
 
 from esmvaltool.interface_scripts.auxiliary import ncl_version_check
-from esmvaltool.interface_scripts.data_interface import write_settings,\
-    get_backward_compatible_ncl_interface
+from esmvaltool.interface_scripts.data_interface import (
+    write_settings, write_legacy_ncl_interface)
 from esmvaltool.interface_scripts.preprocess import run_executable
 from esmvaltool.namelist import read_namelist_file
-
-# Define ESMValTool version
-__version__ = "2.0.0"
+from esmvaltool.version import __version__
 
 # set up logging
 if __name__ == '__main__':
@@ -313,6 +311,7 @@ def process_namelist(namelist_file, global_config):
 
         script_order = []
         get_order(dict(diag['scripts']), script_order)
+
         for script_name in script_order:
             script_cfg = diag['scripts'][script_name]
             if not script_cfg['script']:
@@ -334,17 +333,17 @@ def process_namelist(namelist_file, global_config):
             ext = 'ncl' if script.lower().endswith('.ncl') else 'yml'
             cfg_file = os.path.join(interface_data, 'settings.' + ext)
             logger.info("with configuration file: %s", cfg_file)
-            settings = script_cfg['settings']
-            if ext == 'ncl':
-                settings = {'diag_script_info': settings}
-                compatibility = get_backward_compatible_ncl_interface(
-                    diag['variables'], global_config, namelist_file,
-                    os.path.basename(script))
-                settings.update(compatibility)
-            write_settings(settings, cfg_file)
-            if ext == 'ncl':
-                os.rename(cfg_file,
-                          os.path.join(interface_data, 'ncl.interface'))
+            if ext != 'ncl':
+                write_settings(script_cfg['settings'], cfg_file)
+            else:
+                write_legacy_ncl_interface(
+                    variables=diag['variables'],
+                    settings=script_cfg['settings'],
+                    config_user=global_config,
+                    interface_data_dir=interface_data,
+                    namelist_file=namelist_file,
+                    script=script)
+
             project_info['RUNTIME']['currDiag']['script'] = script
             project_info['RUNTIME']['currDiag']['cfg_file'] = cfg_file
             project_info['RUNTIME']['interface_data'] = interface_data

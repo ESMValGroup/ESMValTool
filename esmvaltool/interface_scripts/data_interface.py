@@ -13,6 +13,7 @@ from operator import itemgetter
 import yaml
 
 from .data_finder import get_output_file
+from ..version import __version__
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +22,7 @@ class writeProjinfoError(Exception):
     """Error writing project_info."""
 
 
-def write_settings(settings, filename):
+def write_settings(settings, filename, mode='wt'):
     """Write settings to file."""
     logger.debug("Writing configuration file %s", filename)
     ext = os.path.splitext(filename)[1][1:].lower()
@@ -52,16 +53,15 @@ def write_settings(settings, filename):
             else:
                 txt = '{} = {}'.format(key, _format(value))
             lines.append(txt)
-        with open(filename, 'wt') as file:
+        with open(filename, mode) as file:
             file.write('\n'.join(lines))
             file.write('\n')
     else:
-        with open(filename, 'w') as file:
+        with open(filename, mode) as file:
             yaml.safe_dump(settings, file)
 
 
-def get_backward_compatible_ncl_interface(variables, config_user,
-                                          namelist_file, script):
+def get_legacy_ncl_interface(variables, config_user, namelist_file, script):
     """Get a dictionary with the contents of the former ncl.interface file."""
     esmvaltool_root = os.path.dirname(os.path.dirname(__file__))
     project_root = os.path.dirname(esmvaltool_root)
@@ -83,6 +83,11 @@ def get_backward_compatible_ncl_interface(variables, config_user,
     if script.startswith(diag_path):
         script = os.path.relpath(script, diag_path)
 
+    # ref_model (only works if the same for all variables in diagnostic)
+    ref_model = [single_variable[0].get('reference_model')]
+    if 'alternative_model' in single_variable[0]:
+        ref_model.append(single_variable[0]['alternative_model'])
+
     ncl_interface = {
         'dictkeys': {
             'dictkeys': [get_dict_key(v) for v in single_variable],
@@ -96,7 +101,7 @@ def get_backward_compatible_ncl_interface(variables, config_user,
         'var_attr_mip': [v.get('mip') for v in single_variable],
         'var_attr_exp': [v.get('exp') for v in single_variable],
         'var_attr_ref':
-        [variables[k][0]['reference_model'] for k in variable_keys],
+        ref_model,
         'var_attr_exclude':
         [v.get('exclude', "False") for v in single_variable],
         'model_attr_skip': [v.get('skip') for v in single_variable],
@@ -107,9 +112,8 @@ def get_backward_compatible_ncl_interface(variables, config_user,
         'field_types': [variables[k][0]['field'] for k in variable_keys],
         'derived_field_type':
         [variables[k][0]['field'] for k in variable_keys],
-        'in_refs': [
-            os.path.join(project_root, 'doc', 'MASTER_authors-refs-acknow.txt')
-        ],
+        'in_refs':
+        [os.path.join(project_root, 'doc', 'MASTER_authors-refs-acknow.txt')],
         'out_refs': [
             os.path.join(config_user['run_dir'],
                          'references-acknowledgements.txt')
@@ -170,6 +174,63 @@ def get_backward_compatible_ncl_interface(variables, config_user,
             ncl_interface[key] = {k: v for k, v in value.items() if any(v)}
 
     return ncl_interface
+
+
+def write_legacy_ncl_interface(variables, settings, config_user,
+                               interface_data_dir, namelist_file, script):
+    """Write legacy ncl interface files."""
+    # get legacy ncl interface dictionary
+    ncl_interface = get_legacy_ncl_interface(variables, config_user,
+                                             namelist_file, script)
+    # add namelist script settings
+    ncl_interface['diag_script_info'] = settings
+
+    # write ncl.interface
+    interface_file = os.path.join(interface_data_dir, 'interface.ncl')
+    write_settings(ncl_interface, interface_file)
+    os.rename(interface_file, os.path.join(interface_data_dir,
+                                           'ncl.interface'))
+
+    # variable info files
+    for name, variable in variables.items():
+        info_file = os.path.join(interface_data_dir, name + '_info.ncl')
+        # write header
+        with open(info_file, 'wt') as file:
+            header = ('if (isvar("variable_info")) then\n'
+                      '    delete(variable_info)\n'
+                      'end if\n')
+            file.write(header)
+        # write content
+        common_items = {
+            k: v
+            for k, v in variable[0].items()
+            if all(v == w.get(k) for w in variable)
+        }
+        variable_info = {'variable_info': common_items}
+        write_settings(variable_info, info_file, mode='at')
+        os.rename(info_file, os.path.splitext(info_file)[0] + '.tmp')
+
+
+def get_legacy_ncl_env(config_user, interface_data_dir, namelist_basename):
+    """Get legacy ncl environmental variables."""
+    project_root = os.sep.join(__file__.split(os.sep))[:-3]
+    prefix = 'ESMValTool_'
+
+    env = {}
+    for key in ('work_dir', 'plot_dir', 'output_file_type', 'write_plots',
+                'write_netcdf'):
+        env[prefix + key] = config_user[key]
+    env[prefix + 'interface_data'] = interface_data_dir
+    env['0_ESMValTool_version'] = __version__
+    env[prefix + 'verbosity'] = 100 if config_user[
+        'log_level'].lower() == 'debug' else 1
+    env[prefix + 'in_refs'] = os.path.join(project_root, 'doc',
+                                           'MASTER_authors-refs-acknow.txt')
+    env[prefix + 'out_refs'] = os.path.join(config_user['run_dir'],
+                                            'references-acknowledgements.txt')
+    env[prefix + 'yml_name'] = namelist_basename
+
+    return env
 
 
 def get_output_file_template(variable, preproc_dir):
@@ -648,48 +709,8 @@ class Ncl_data_interface(Data_interface):
             NCL diag_scripts.
         """
 
-        interface_data = self.project_info['RUNTIME']['interface_data']
-
         # Write proj_info to environment variables
         self.write_env_projinfo(self.project_info)
-
-        # Read and parse the var_def/-file
-        if 'variables' in vars(self.interface):
-            for curr_var in self.interface.variables:
-                variable_def_dir = self.interface.variable_def_dir[0]
-
-                variable_info_true, variable_info\
-                    = self.reparse_variable_info(curr_var, variable_def_dir)
-
-                # Write parsed content to temp-file in interface_data
-                variable_info_file = os.path.join(interface_data,
-                                                  curr_var + "_info.tmp")
-                fvarinfo = open(variable_info_file, "w")
-
-                if variable_info_true:
-                    # A-laue_ax+
-                    # Attributes of "variable_info" that are arrays might
-                    # cause problems if more than one variable is used by
-                    # a diagnostic script as this effectively leads to a
-                    # redefinition of the already defined variable attributes.
-                    # The redefinition will fail if the number of array
-                    # elements does not match the "new" number of array
-                    # elements.
-                    # Work-around: delete "variable_info" if already defined.
-                    fvarinfo.write('if (isvar("variable_info")) then\n')
-                    fvarinfo.write('    delete(variable_info)\n')
-                    fvarinfo.write('end if\n')
-                    # A-laue_ax-
-                    variable_info = [
-                        "variable_info@" + key + "=" + value
-                        for key, value in variable_info
-                    ]
-
-                    fvarinfo.write('variable_info = True\n' +
-                                   '\n'.join(variable_info))
-                else:
-                    fvarinfo.write('variable_info = False')
-                fvarinfo.close()
 
 
 class R_data_interface(Data_interface):
