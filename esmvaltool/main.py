@@ -215,6 +215,7 @@ def process_namelist(namelist_file, global_config):
     namelist = read_namelist_file(namelist_file, global_config)
     # run (only preprocessors for now) # TODO: also run diagnostics from here
     logger.debug("Namelist summary:\n%s", namelist)
+    logger.info("Running preprocessor")
     namelist.run()
 
     os.environ['0_ESMValTool_version'] = __version__
@@ -332,8 +333,8 @@ def process_namelist(namelist_file, global_config):
             os.makedirs(interface_data)
             ext = 'ncl' if script.lower().endswith('.ncl') else 'yml'
             cfg_file = os.path.join(interface_data, 'settings.' + ext)
-            logger.info("with configuration file: %s", cfg_file)
             if ext != 'ncl':
+                logger.info("with configuration file: %s", cfg_file)
                 write_settings(script_cfg['settings'], cfg_file)
             else:
                 write_legacy_ncl_interface(

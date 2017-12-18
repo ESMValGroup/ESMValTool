@@ -193,9 +193,12 @@ def get_single_model_task(variable, settings, user_config):
     check_data_availability(input_files, variable['start_year'],
                             variable['end_year'])
 
+    logger.info("Using input files:\n%s", '\n'.join(input_files))
+
     # Configure saving to output files
     output_file = get_output_file(
         variable=variable, preproc_dir=user_config['preproc_dir'])
+    logger.info("Output will be written to:\n%s", output_file)
 
     cfg['save'] = {
         'target': output_file,
@@ -398,13 +401,13 @@ class Namelist(object):
 
     def initialize_tasks(self):
         """Define tasks in namelist"""
-        logger.debug("Creating tasks from namelist")
+        logger.info("Creating tasks from namelist")
 
         tasks = []
 
         all_preproc_tasks = {}
         for diagnostic_name, diagnostic in self.diagnostics.items():
-            logger.debug("Creating tasks for diagnostic %s", diagnostic_name)
+            logger.info("Creating tasks for diagnostic %s", diagnostic_name)
 
             # Create preprocessor tasks
             for variable_name in diagnostic['variables']:

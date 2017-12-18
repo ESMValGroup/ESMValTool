@@ -186,16 +186,17 @@ def write_legacy_ncl_interface(variables, settings, config_user,
     ncl_interface['diag_script_info'] = settings
 
     # write ncl.interface
-    interface_file = os.path.join(interface_data_dir, 'interface.ncl')
-    write_settings(ncl_interface, interface_file)
-    os.rename(interface_file, os.path.join(interface_data_dir,
-                                           'ncl.interface'))
+    interface_file_tmp = os.path.join(interface_data_dir, 'interface.ncl')
+    write_settings(ncl_interface, interface_file_tmp)
+    interface_file = os.path.join(interface_data_dir, 'ncl.interface')
+    os.rename(interface_file_tmp, interface_file)
+    logger.info("with configuration file %s", interface_file)
 
     # variable info files
     for name, variable in variables.items():
-        info_file = os.path.join(interface_data_dir, name + '_info.ncl')
+        info_file_tmp = os.path.join(interface_data_dir, name + '_info.ncl')
         # write header
-        with open(info_file, 'wt') as file:
+        with open(info_file_tmp, 'wt') as file:
             header = ('if (isvar("variable_info")) then\n'
                       '    delete(variable_info)\n'
                       'end if\n')
@@ -207,8 +208,10 @@ def write_legacy_ncl_interface(variables, settings, config_user,
             if all(v == w.get(k) for w in variable)
         }
         variable_info = {'variable_info': common_items}
-        write_settings(variable_info, info_file, mode='at')
-        os.rename(info_file, os.path.splitext(info_file)[0] + '.tmp')
+        write_settings(variable_info, info_file_tmp, mode='at')
+        info_file = os.path.splitext(info_file_tmp)[0] + '.tmp'
+        logger.info("and configuration file %s", interface_file)
+        os.rename(info_file_tmp, info_file)
 
 
 def get_legacy_ncl_env(config_user, interface_data_dir, namelist_basename):
