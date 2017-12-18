@@ -1,4 +1,4 @@
-; This is a temporary file updated by Python on the fly
+; TODO: add a description of the functions in this file
 ;------------------------------------------------------
 load "./interface_scripts/messaging.ncl"
 
