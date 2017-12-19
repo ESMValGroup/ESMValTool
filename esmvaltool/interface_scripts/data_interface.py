@@ -12,8 +12,8 @@ from operator import itemgetter
 
 import yaml
 
-from .data_finder import get_output_file
 from ..version import __version__
+from .data_finder import get_output_file
 
 logger = logging.getLogger(__name__)
 
@@ -176,8 +176,8 @@ def get_legacy_ncl_interface(variables, config_user, namelist_file, script):
     return ncl_interface
 
 
-def write_legacy_ncl_interface(variables, settings, config_user,
-                               interface_data_dir, namelist_file, script):
+def write_legacy_ncl_interface(variables, settings, config_user, output_dir,
+                               namelist_file, script):
     """Write legacy ncl interface files."""
     # get legacy ncl interface dictionary
     ncl_interface = get_legacy_ncl_interface(variables, config_user,
@@ -186,15 +186,15 @@ def write_legacy_ncl_interface(variables, settings, config_user,
     ncl_interface['diag_script_info'] = settings
 
     # write ncl.interface
-    interface_file_tmp = os.path.join(interface_data_dir, 'interface.ncl')
+    interface_file_tmp = os.path.join(output_dir, 'interface.ncl')
     write_settings(ncl_interface, interface_file_tmp)
-    interface_file = os.path.join(interface_data_dir, 'ncl.interface')
+    interface_file = os.path.join(output_dir, 'ncl.interface')
     os.rename(interface_file_tmp, interface_file)
     logger.info("with configuration file %s", interface_file)
 
     # variable info files
     for name, variable in variables.items():
-        info_file_tmp = os.path.join(interface_data_dir, name + '_info.ncl')
+        info_file_tmp = os.path.join(output_dir, name + '_info.ncl')
         # write header
         with open(info_file_tmp, 'wt') as file:
             header = ('if (isvar("variable_info")) then\n'
@@ -210,26 +210,26 @@ def write_legacy_ncl_interface(variables, settings, config_user,
         variable_info = {'variable_info': common_items}
         write_settings(variable_info, info_file_tmp, mode='at')
         info_file = os.path.splitext(info_file_tmp)[0] + '.tmp'
-        logger.info("and configuration file %s", interface_file)
+        logger.info("and configuration file %s", info_file)
         os.rename(info_file_tmp, info_file)
 
 
-def get_legacy_ncl_env(config_user, interface_data_dir, namelist_basename):
+def get_legacy_ncl_env(config_user, output_dir, namelist_basename):
     """Get legacy ncl environmental variables."""
-    project_root = os.sep.join(__file__.split(os.sep))[:-3]
+    project_root = os.sep.join(__file__.split(os.sep)[:-3])
     prefix = 'ESMValTool_'
 
     env = {}
     for key in ('work_dir', 'plot_dir', 'output_file_type', 'write_plots',
                 'write_netcdf'):
         env[prefix + key] = config_user[key]
-    env[prefix + 'interface_data'] = interface_data_dir
+    env[prefix + 'interface_data'] = output_dir
     env['0_ESMValTool_version'] = __version__
     env[prefix + 'verbosity'] = 100 if config_user[
         'log_level'].lower() == 'debug' else 1
     env[prefix + 'in_refs'] = os.path.join(project_root, 'doc',
                                            'MASTER_authors-refs-acknow.txt')
-    env[prefix + 'out_refs'] = os.path.join(config_user['run_dir'],
+    env[prefix + 'out_refs'] = os.path.join(output_dir,
                                             'references-acknowledgements.txt')
     env[prefix + 'yml_name'] = namelist_basename
 

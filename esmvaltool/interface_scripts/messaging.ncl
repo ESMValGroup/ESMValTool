@@ -535,7 +535,7 @@ begin
     s_close = str_get_dq + " >> " + output_refs
 
     ;; If first time (empty output_refs) write header
-    if (toint(systemfunc("wc -c < " + output_refs)) .eq. 0) then
+    if .not. isfilepresent_esmval(output_refs) then
 ; a_laue_ax+
 ;        system(s_open + hline + s_close)
 ;        system(s_open + "+++++++++++++ " + \

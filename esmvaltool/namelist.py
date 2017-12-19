@@ -10,6 +10,8 @@ import yaml
 from .interface_scripts.data_finder import (
     get_input_filelist, get_input_filename, get_output_file,
     get_start_end_year)
+from .interface_scripts.data_interface import (get_legacy_ncl_env,
+                                               write_legacy_ncl_interface)
 from .interface_scripts.preprocessing_tools import merge_callback
 from .preprocessor import (DEFAULT_ORDER, PreprocessingTask,
                            select_multi_model_settings,
@@ -28,7 +30,8 @@ class NamelistError(Exception):
 def read_namelist_file(filename, config_user, initialize_tasks=True):
     """Read a namelist from file."""
     raw_namelist = check_namelist(filename)
-    return Namelist(raw_namelist, config_user, initialize_tasks)
+    return Namelist(
+        raw_namelist, config_user, initialize_tasks, namelist_file=filename)
 
 
 def check_namelist(filename):
@@ -51,7 +54,7 @@ def check_namelist(filename):
                 raise NamelistError(
                     "Unknown function {} in preprocessor {}, choose from: {}"
                     .format(step, name, ', '.join(DEFAULT_ORDER)))
-            # TODO: check for correct keyword arguments?
+            # TODO: check for correct keyword arguments using inspect module
 
     return raw_namelist
 
@@ -165,8 +168,8 @@ def check_data_availability(input_files, start_year, end_year):
 
 def get_single_model_task(variable, settings, user_config):
     """Get a preprocessor task for a single model"""
-    logger.info("Configuring single-model task for %s variable %s",
-                variable['model'], variable['short_name'])
+    logger.info("Configuring single-model task for variable %s model %s",
+                variable['short_name'], variable['model'])
     settings = select_single_model_settings(settings)
     # TODO: implement variable derivation task
 
@@ -259,9 +262,14 @@ def get_multi_model_task(standard_name, settings, ancestors, user_config):
 class Namelist(object):
     """Namelist object"""
 
-    def __init__(self, raw_namelist, config_user, initialize_tasks=True):
+    def __init__(self,
+                 raw_namelist,
+                 config_user,
+                 initialize_tasks=True,
+                 namelist_file=None):
         """Parse a namelist file into an object."""
         self._cfg = config_user
+        self._namelist_file = namelist_file  # TODO: remove this dependency
         self._preprocessors = raw_namelist['preprocessors']
         self.models = raw_namelist['models']
         self.diagnostics = self._initialize_diagnostics(
@@ -323,8 +331,7 @@ class Namelist(object):
 
         return variables
 
-    @staticmethod
-    def _initialize_scripts(diagnostic_name, raw_scripts):
+    def _initialize_scripts(self, diagnostic_name, raw_scripts):
         """Define script in diagnostic"""
         logger.debug("Setting script for diagnostic %s", diagnostic_name)
 
@@ -334,39 +341,20 @@ class Namelist(object):
         if raw_scripts == 'None':
             return scripts
 
-        for name, raw_settings in raw_scripts.items():
+        for script_name, raw_settings in raw_scripts.items():
             raw_script = raw_settings.pop('script')
             ancestors = raw_settings.pop('ancestors', None)
             settings = copy.deepcopy(raw_settings)
+            # Add output dir to settings
+            settings['output_dir'] = os.path.join(
+                self._cfg['output_dir'],
+                diagnostic_name,
+                script_name,
+            )
+            settings['exit_on_ncl_warning'] = self._cfg['exit_on_warning']
 
-            diagnostics_root = os.path.join(
-                os.path.dirname(__file__), 'diag_scripts')
-            script_file = os.path.abspath(
-                os.path.join(diagnostics_root, raw_script))
-
-            bad_script = NamelistError(
-                "Cannot execute script {} ({}) of diagnostic {}".format(
-                    raw_script, script_file, diagnostic_name))
-
-            if not os.path.isfile(script_file):
-                raise bad_script
-
-            cmd = []
-            if not os.access(script_file, os.X_OK):  # if not executable
-                extension = os.path.splitext(raw_script)[1].lower()[1:]
-                executables = {
-                    'py': ['python'],
-                    'ncl': ['ncl'],
-                    'r': ['Rscript', '--slave', '--quiet'],
-                }
-                if extension not in executables:
-                    raise bad_script
-                cmd = executables[extension]
-            cmd.append(script_file)
-
-            scripts[name] = {
-                'script': script_file,
-                'command': cmd,
+            scripts[script_name] = {
+                'script': raw_script,
                 'settings': settings,
                 'ancestors': ancestors,
             }
@@ -445,12 +433,25 @@ class Namelist(object):
             # Create diagnostic tasks
             diagnostic_tasks = {}
             for task_id, script_cfg in diagnostic['scripts'].items():
+                logger.info("Creating diagnostic task %s", task_id)
                 diagnostic_task = DiagnosticTask(
-                    # TODO: enable once DiagnosticTask.run() implemented
-                    script=None,  # script_cfg['script'],
+                    script=script_cfg['script'],
                     settings=script_cfg['settings'],
                 )
                 diagnostic_tasks[task_id] = diagnostic_task
+                # TODO: remove code below once new interface implemented
+                os.makedirs(diagnostic_task.settings['output_dir'])
+                write_legacy_ncl_interface(
+                    variables=diagnostic['variables'],
+                    settings=diagnostic_task.settings,
+                    config_user=self._cfg,
+                    output_dir=diagnostic_task.settings['output_dir'],
+                    namelist_file=self._namelist_file,
+                    script=diagnostic_task.script)
+                diagnostic_task.settings['env'] = get_legacy_ncl_env(
+                    config_user=self._cfg,
+                    output_dir=diagnostic_task.settings['output_dir'],
+                    namelist_basename=os.path.basename(self._namelist_file))
 
             # Preprocessor run only
             if not diagnostic_tasks:
