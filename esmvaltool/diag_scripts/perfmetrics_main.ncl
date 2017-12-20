@@ -13,9 +13,9 @@
 ;; Required diag_script_info attributes (diagnostics specific)
 ;;    plot_type: cycle (time), zonal (plev, lat), latlon (lat, lon) or
 ;;               cycle_latlon (time, lat, lon)
-;;    time_avg: type of time average (see time_operations in 
+;;    time_avg: type of time average (see time_operations in
 ;;              diag_scripts/lib/ncl/statistics.ncl)
-;;    region: selected region (see select_region in 
+;;    region: selected region (see select_region in
 ;;            diag_scripts/lib/ncl/latlon.ncl)
 ;;    styleset (for cycle): as in lib/ncl/style.ncl functions
 ;;    plot_stddev (for cycle): plot standard deviation
@@ -60,7 +60,8 @@
 ;;    given, using a python list.
 ;;
 ;; Modification history
-;;    20171215-A_righ_ma: merged with perfmetrics_grading/taylor.ncl
+;;    20171215-A_righ_ma: merged with perfmetrics_grading and
+;;                        permetrics_taylor.ncl
 ;;    20171124-A_righ_ma: completely revised to adapt it to the new backend
 ;;                        (level selection, regridding and masking now done
 ;;                        by the python preprocessor)
@@ -370,7 +371,7 @@ begin
         fname = fname + "_" + diag_script_info@plot_type
         fname = fname + "_" + diag_script_info@time_avg
         if (isatt(diag_script_info, "level")) then
-            fname = fname + "_" + diag_script_info@level ;; FIX-ME
+            fname = fname + "_" + diag_script_info@level  ; FIX-ME
         end if
         fname = fname + "_" + str_sub_str(diag_script_info@region, " ", "")
         procpath = fullpath + fname + ".nc"
@@ -577,7 +578,7 @@ begin
 
     ;; ### GRADING ############################################################
 
-    if (diag_script_info@calc_grading) then ;; FIX-ME loop over metrics?
+    if (diag_script_info@calc_grading) then  ; FIX-ME loop over metrics?
 
         ;; Annotation & file names
         region_name = ""  ; priority 3
@@ -600,7 +601,7 @@ begin
             end if
         else
             if(isatt(diag_script_info, "level")) then
-                altitude = " - " + diag_script_info@level + " hPa"  ; priority 1
+                altitude = " - " + diag_script_info@level + " hPa"  ; priority1
             end if
         end if
 
@@ -617,7 +618,7 @@ begin
         yml_name = getenv("ESMValTool_yml_name")
         suffix = get_file_suffix(yml_name, 0)
         name = str_sub_str(yml_name, suffix, "")
-        ncdf_dir = get_output_dir(work_dir, diag_script_base) + \ ;; FIX-ME ?
+        ncdf_dir = get_output_dir(work_dir, diag_script_base) + \  ; FIX-ME ?
             name + "_" + diag_script_info@metric + "_" + var0_new + ".nc"
 
         ;; Start calculation
@@ -659,7 +660,7 @@ begin
             end if
         end if
 
-        if (isatt(diag_script_info, "MultiModelMean")) then ;; FIX-ME
+        if (isatt(diag_script_info, "MultiModelMean")) then  ; FIX-ME
             if (diag_script_info@MultiModelMean) then
                 if (irank.eq.3) then
                     mean = models_only(0:0, :, :)
@@ -681,7 +682,7 @@ begin
         end if
         delete(models_only)
 ;; TO BE REMOVED ONCE AVAILABLE IN BACKEND---
-      
+
         ;; Create separate arrays for models and observations
         models_only = remove_index(super_array, id_remove)
         nmodels = dimsizes(models_only&model)
@@ -754,7 +755,7 @@ begin
                 end if
             end do
         end do
-        
+
         ;; Apply normalization
         if (diag_script_info@metric.ne."taylor") then
             do iobs = 0, nobs - 1
@@ -766,7 +767,7 @@ begin
 
         ;; Reduce dimensionality if no alternative model
         if (.not.l_altern .and. diag_script_info@metric.ne."taylor") then
-            grading := grading(:,:,0)
+            grading := grading(:, :, 0)
             delete(grading@reference)
         end if
 
@@ -776,15 +777,15 @@ begin
             "Grading table of metric " + diag_script_info@metric
         grading@metric = diag_script_info@metric
         grading@diag_script = (/diag_script/)
-        grading@var = "grade" ;; FIX-ME ?
+        grading@var = "grade"  ; FIX-ME ?
         grading@region = location
         grading@num_climofiles = dimsizes(models@name)  ; for tagging
         do imod = 0, dimsizes(models@name) - 1
-            num_climo = "climofile_"+imod
+            num_climo = "climofile_" + imod
             climofile = interface_get_inpaths(imod) + "/" + \
                 interface_get_infile(variables(0), field_types(0), imod)
                 grading@$num_climo$ = climofile
-        end do 
+        end do
 
         ;; Write NetCDF output
         ncdf_outfile = ncdf_write(grading, grading@ncdf_dir)
@@ -866,7 +867,7 @@ begin
                 altitude = " - " + diag_script_info@altitude  ; priority 1
             end if
         else
-            if (isatt(diag_script_info, "level")) then ;; FIX-ME
+            if (isatt(diag_script_info, "level")) then  ; FIX-ME
                 if (diag_script_info@level.ne."all") then
                     altitude = " - " + diag_script_info@level + " hPa"
                 end if
@@ -930,11 +931,11 @@ begin
                     var0 + "_" + ptype + "_" + time_avg + "_" + \
                     level + region_name
                 var@res_tiMainString = modelnames(imod) + " - " + \
-                modelnames(ref_ind)
+                    modelnames(ref_ind)
                 if (isatt(diag_script_info, "conf_level")) then
                     var@res_gsnLeftString = var@res_gsnLeftString + " - " + \
                     sprinti("%2i", toint(100 * diag_script_info@conf_level)) \
-                            + "% c.l."
+                    + "% c.l."
                 end if
                 var@res_cnLevelSelectionMode = "ExplicitLevels"
                 var@res_cnLevels = variable_info@zonal_diff_Levels
@@ -1019,7 +1020,7 @@ begin
                     var0 + "_" + ptype + "_" + time_avg + "_" + level + \
                     region_name
                 var@res_tiMainString = modelnames(imod) + " - " + \
-                modelnames(ref_ind)
+                    modelnames(ref_ind)
                 if (isatt(diag_script_info, "conf_level")) then
                     var@res_gsnLeftString = var@res_gsnLeftString + " - " + \
                     sprinti("%2i", toint(100 * diag_script_info@conf_level)) \
