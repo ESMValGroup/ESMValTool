@@ -170,10 +170,6 @@ class DiagnosticTask(AbstractTask):
 
         is_ncl_script = self.script.lower().endswith('.ncl')
         if is_ncl_script:
-            indent_filename = os.path.join(self.settings['output_dir'],
-                                           'curr_trace_indent.txt')
-            with open(indent_filename, 'wt') as indent_file:
-                indent_file.write('0')
             cwd = os.path.dirname(__file__)
         else:
             cmd.append(settings_file)

@@ -79,6 +79,11 @@ begin
     if (ismissing(curr_trace_indent)) then
         print("info: " + output_string)
     else  ; Full info output
+        ;; Initialize file that keeps track of indent on first run.
+        if .not. isfilepresent_esmval(curr_trace_indent) then
+            asciiwrite(curr_trace_indent, 0)
+        end if
+
         indent_step = 3
         if (verbosity .eq. 2) then
             padding_space = 13
