@@ -2,6 +2,7 @@
 from __future__ import print_function
 
 import copy
+import fnmatch
 import logging
 import os
 
@@ -21,6 +22,8 @@ from .preprocessor._reformat import CMOR_TABLES
 from .task import DiagnosticTask
 
 logger = logging.getLogger(__name__)
+
+TASKSEP = os.sep
 
 
 class NamelistError(Exception):
@@ -168,7 +171,8 @@ def check_data_availability(input_files, start_year, end_year):
 
 def get_single_model_task(variable, settings, user_config):
     """Get a preprocessor task for a single model"""
-    logger.info("Configuring single-model task for variable %s model %s",
+    logger.info("Configuring single-model task for preprocessor %s "
+                "variable %s model %s", variable['preprocessor'],
                 variable['short_name'], variable['model'])
     settings = select_single_model_settings(settings)
     # TODO: implement variable derivation task
@@ -286,12 +290,12 @@ class Namelist(object):
             diagnostic = {}
             diagnostic['name'] = name
             models = self._initialize_models(
-                name, raw_diagnostic['additional_models'])
+                name, raw_diagnostic.get('additional_models'))
             diagnostic['models'] = models
             diagnostic['variables'] = self._initialize_variables(
-                name, raw_diagnostic['variables'], models)
+                name, raw_diagnostic.get('variables'), models)
             diagnostic['scripts'] = self._initialize_scripts(
-                name, raw_diagnostic['scripts'])
+                name, raw_diagnostic.get('scripts'))
             diagnostics[name] = diagnostic
 
         return diagnostics
@@ -300,19 +304,27 @@ class Namelist(object):
         """Define models in diagnostic"""
         logger.debug("Setting models for diagnostic %s", diagnostic_name)
 
-        models = self.models + raw_additional_models
+        models = list(self.models)
+
+        if raw_additional_models and raw_additional_models != 'None':
+            models += raw_additional_models
 
         return models
 
     @staticmethod
     def _initialize_variables(diagnostic_name, raw_variables, models):
         """Define variables in diagnostic"""
+        if not raw_variables or raw_variables == 'None':
+            return {}
+
         logger.debug("Populating list of variables for diagnostic %s",
                      diagnostic_name)
 
         variables = {}
+
         cmor_keys = ['standard_name', 'long_name', 'units']
         for variable_name, raw_variable in raw_variables.items():
+            raw_variable['preprocessor'] = str(raw_variable['preprocessor'])
             variables[variable_name] = []
             for model in models:
                 variable = copy.deepcopy(raw_variable)
@@ -333,17 +345,20 @@ class Namelist(object):
 
     def _initialize_scripts(self, diagnostic_name, raw_scripts):
         """Define script in diagnostic"""
+        if not raw_scripts or raw_scripts == 'None':
+            return {}
+
         logger.debug("Setting script for diagnostic %s", diagnostic_name)
 
         scripts = {}
 
-        # Dummy diagnostic for running only preprocessors
-        if raw_scripts == 'None':
-            return scripts
-
         for script_name, raw_settings in raw_scripts.items():
             raw_script = raw_settings.pop('script')
-            ancestors = raw_settings.pop('ancestors', None)
+            ancestors = []
+            for id_glob in raw_settings.pop('ancestors', []):
+                if TASKSEP not in id_glob:
+                    id_glob = diagnostic_name + TASKSEP + id_glob
+                ancestors.append(id_glob)
             settings = copy.deepcopy(raw_settings)
             # Add output dir to settings
             settings['output_dir'] = os.path.join(
@@ -391,13 +406,13 @@ class Namelist(object):
         """Define tasks in namelist"""
         logger.info("Creating tasks from namelist")
 
-        tasks = []
-
-        all_preproc_tasks = {}
+        all_tasks = {}
+        later = object()
         for diagnostic_name, diagnostic in self.diagnostics.items():
             logger.info("Creating tasks for diagnostic %s", diagnostic_name)
 
             # Create preprocessor tasks
+            preproc_tasks = []
             for variable_name in diagnostic['variables']:
                 # Create single model tasks
                 single_model_tasks = []
@@ -409,36 +424,43 @@ class Namelist(object):
 
                     task_id = '_'.join(
                         str(variable[key]) for key in sorted(variable))
-                    if task_id not in all_preproc_tasks:
+                    if task_id not in all_tasks:
                         task = get_single_model_task(
                             variable=variable,
                             settings=settings,
                             user_config=self._cfg,
                         )
-                        all_preproc_tasks[task_id] = task
-                    single_model_tasks.append(all_preproc_tasks[task_id])
+                        all_tasks[task_id] = task
+                    single_model_tasks.append(all_tasks[task_id])
 
                 # Create multi model task
-                task_id = diagnostic_name + '_' + variable_name
-                if task_id not in all_preproc_tasks:
+                task_id = 'preproc{}{}_{}'.format(TASKSEP, preproc_id,
+                                                  variable_name)
+                if task_id not in all_tasks:
                     task = get_multi_model_task(
                         standard_name=variable['standard_name'],
                         settings=settings,
                         ancestors=list(single_model_tasks),
                         user_config=self._cfg,
                     )
-                    all_preproc_tasks[task_id] = task
-                multi_model_task = all_preproc_tasks[task_id]
+                    all_tasks[task_id] = task
+                multi_model_task = all_tasks[task_id]
+                preproc_tasks.append(multi_model_task)
 
             # Create diagnostic tasks
-            diagnostic_tasks = {}
-            for task_id, script_cfg in diagnostic['scripts'].items():
+            for script_name, script_cfg in diagnostic['scripts'].items():
+                task_id = diagnostic_name + TASKSEP + script_name
                 logger.info("Creating diagnostic task %s", task_id)
+                # Ancestors will be resolved after creating all tasks,
+                # unless there aren't any, in which case we set them to the
+                # preprocessor tasks.
+                ancestors = later if script_cfg['ancestors'] else preproc_tasks
                 diagnostic_task = DiagnosticTask(
                     script=script_cfg['script'],
                     settings=script_cfg['settings'],
+                    ancestors=ancestors,
                 )
-                diagnostic_tasks[task_id] = diagnostic_task
+                all_tasks[task_id] = diagnostic_task
                 # TODO: remove code below once new interface implemented
                 os.makedirs(diagnostic_task.settings['output_dir'])
                 write_legacy_ncl_interface(
@@ -453,24 +475,33 @@ class Namelist(object):
                     output_dir=diagnostic_task.settings['output_dir'],
                     namelist_basename=os.path.basename(self._namelist_file))
 
-            # Preprocessor run only
-            if not diagnostic_tasks:
-                tasks.append(multi_model_task)
-
-            # Add diagnostic tasks
-            tasks.extend(diagnostic_tasks.values())
-
-            # Establish relations between diagnostic tasks and minimize `tasks`
-            for task_id, script_cfg in diagnostic['scripts'].items():
-                if script_cfg['ancestors']:
+        # Resolve diagnostic ancestors
+        for diagnostic_name, diagnostic in self.diagnostics.items():
+            for script_name, script_cfg in diagnostic['scripts'].items():
+                task_id = diagnostic_name + TASKSEP + script_name
+                if all_tasks[task_id].ancestors is later:
+                    logger.debug("Linking tasks for diagnostic %s script %s",
+                                 diagnostic_name, script_name)
                     ancestors = []
-                    for ancestor_id in script_cfg['ancestors']:
-                        diagnostic_task = diagnostic_tasks[ancestor_id]
-                        ancestors.append(diagnostic_task)
-                        tasks.remove(diagnostic_task)
-                else:
-                    ancestors = [multi_model_task]
-                diagnostic_tasks[task_id].ancestors = ancestors
+                    for id_glob in script_cfg['ancestors']:
+                        ancestor_ids = fnmatch.filter(all_tasks, id_glob)
+                        if not ancestor_ids:
+                            raise NamelistError(
+                                "Could not find any ancestors matching {}"
+                                .format(id_glob))
+                        logger.debug("Pattern %s matches %s", id_glob,
+                                     ancestor_ids)
+                        ancestors.extend(all_tasks[ancestor_id]
+                                         for ancestor_id in ancestor_ids)
+                    all_tasks[task_id].ancestors = ancestors
+
+        # TODO: check that no loops are created (will throw RecursionError)
+
+        # Return smallest possible list of tasks
+        tasks = []
+        for task in all_tasks.values():
+            if not any(task in t.ancestors for t in all_tasks.values()):
+                tasks.append(task)
 
         return tasks
 
