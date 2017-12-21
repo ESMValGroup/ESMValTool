@@ -23,10 +23,10 @@
 ---
 
 models:
-  - {model: bcc-csm1-1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2002}
-  - {model: GFDL-ESM2G,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2002}
-  - {model: MPI-ESM-LR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2002}
-  - {model: MPI-ESM-MR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2002}
+  - {model: bcc-csm1-1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: GFDL-ESM2G,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: MPI-ESM-LR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {model: MPI-ESM-MR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
 
 preprocessors:
   pp850:
@@ -45,7 +45,8 @@ diagnostics:
     variables:
       ta:
         preprocessor: pp850
-        reference_model: [ERA-Interim, NCEP]
+        reference_model: ERA-Interim
+        alternative_model: NCEP
         mip: Amon
         field: T3M
     additional_models:
@@ -73,3 +74,15 @@ diagnostics:
         MultiModelMedian: true         # Multi-model median
         metric: RMSD                   # Metric ("RMSD", "BIAS")
         normalization: centered_median # Normalization ("mean", "median", "centered_median")
+
+#   grading_collect:
+#     description: Wrapper to collect and plot previously calculated gradings.
+#     scripts:
+#       grading_collect:
+#         script: perfmetrics_grading_collect.ncl
+#         ancestors: ['grading']
+#         label_bounds: [-0.5, 0.5]
+#         label_scale: 0.1
+#         disp_values: false
+#         cm_interval: [2, 241]
+#         sort: true  # Sort model in alphabetic order (excluding MMM)

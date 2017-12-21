@@ -55,12 +55,11 @@ if __name__ == '__main__':  # noqa
                         os.path.dirname(os.path.abspath(__file__))))  # noqa
 
 from esmvaltool.interface_scripts.auxiliary import ncl_version_check
-from esmvaltool.interface_scripts.data_interface import write_settings
+from esmvaltool.interface_scripts.data_interface import (
+    write_settings, write_legacy_ncl_interface)
 from esmvaltool.interface_scripts.preprocess import run_executable
 from esmvaltool.namelist import read_namelist_file
-
-# Define ESMValTool version
-__version__ = "2.0.0"
+from esmvaltool.version import __version__
 
 # set up logging
 if __name__ == '__main__':
@@ -216,6 +215,7 @@ def process_namelist(namelist_file, global_config):
     namelist = read_namelist_file(namelist_file, global_config)
     # run (only preprocessors for now) # TODO: also run diagnostics from here
     logger.debug("Namelist summary:\n%s", namelist)
+    logger.info("Running preprocessor")
     namelist.run()
 
     os.environ['0_ESMValTool_version'] = __version__
@@ -312,6 +312,7 @@ def process_namelist(namelist_file, global_config):
 
         script_order = []
         get_order(dict(diag['scripts']), script_order)
+
         for script_name in script_order:
             script_cfg = diag['scripts'][script_name]
             if not script_cfg['script']:
@@ -321,39 +322,38 @@ def process_namelist(namelist_file, global_config):
                         script_name, diag_name)
             project_info['RUNTIME']['currDiag'] = copy.deepcopy(diag)
 
-            for name, variables in diag['variables'].items():
-                logger.info("Processing variable %s", name)
+            tmp, models = diag['variables'].popitem()
+            diag['variables'][tmp] = models
+            project_info['ALLMODELS'] = models
 
-                var = variables[0]
-                project_info['RUNTIME']['derived_var'] = var['short_name']
-                project_info['RUNTIME']['derived_field_type'] = var['field']
-                project_info['ALLMODELS'] = variables
-
-                script = script_cfg['script']
-                logger.info("Running diag_script: %s", script)
-                interface_data = os.path.join(
-                    project_info['GLOBAL']['run_dir'], diag_name, script_name)
-                os.makedirs(interface_data)
-                ext = 'ncl' if script.lower().endswith('.ncl') else 'yml'
-                cfg_file = os.path.join(interface_data, 'settings.' + ext)
+            script = script_cfg['script']
+            logger.info("Running diag_script: %s", script)
+            interface_data = os.path.join(project_info['GLOBAL']['run_dir'],
+                                          diag_name, script_name)
+            os.makedirs(interface_data)
+            ext = 'ncl' if script.lower().endswith('.ncl') else 'yml'
+            cfg_file = os.path.join(interface_data, 'settings.' + ext)
+            if ext != 'ncl':
                 logger.info("with configuration file: %s", cfg_file)
-                settings = script_cfg['settings']
-                if ext == 'ncl':
-                    settings = {'diag_script_info': settings}
-                    # TODO: move reference_model to variable
-                    if 'reference_model' in var:
-                        settings['var_attr_ref'] = var['reference_model']
+                write_settings(script_cfg['settings'], cfg_file)
+            else:
+                write_legacy_ncl_interface(
+                    variables=diag['variables'],
+                    settings=script_cfg['settings'],
+                    config_user=global_config,
+                    interface_data_dir=interface_data,
+                    namelist_file=namelist_file,
+                    script=script)
 
-                write_settings(settings, cfg_file)
-                project_info['RUNTIME']['currDiag']['script'] = script
-                project_info['RUNTIME']['currDiag']['cfg_file'] = cfg_file
-                project_info['RUNTIME']['interface_data'] = interface_data
-                run_executable(
-                    script,
-                    project_info,
-                    project_info['GLOBAL']['verbosity'],
-                    project_info['GLOBAL']['exit_on_warning'],
-                )
+            project_info['RUNTIME']['currDiag']['script'] = script
+            project_info['RUNTIME']['currDiag']['cfg_file'] = cfg_file
+            project_info['RUNTIME']['interface_data'] = interface_data
+            run_executable(
+                script,
+                project_info,
+                project_info['GLOBAL']['verbosity'],
+                project_info['GLOBAL']['exit_on_warning'],
+            )
 
     # delete environment variable
     del os.environ['0_ESMValTool_version']
