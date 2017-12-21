@@ -66,52 +66,16 @@ def get_legacy_ncl_interface(variables, config_user, namelist_file, script):
     esmvaltool_root = os.path.dirname(os.path.dirname(__file__))
     project_root = os.path.dirname(esmvaltool_root)
 
-    # select random variable
-    tmp, single_variable = variables.popitem()
-    variables[tmp] = single_variable
-
-    # ordered variables
-    variable_keys = sorted(variables)
-
-    infiles = [
-        get_output_file_template(v, config_user['preproc_dir'])
-        for v in single_variable
-    ]
-
     # perfmetrics_main.ncl expects diag_script to be a relative path
     diag_path = os.path.join(esmvaltool_root, 'diag_scripts')
     if script.startswith(diag_path):
         script = os.path.relpath(script, diag_path)
 
-    # ref_model (only works if the same for all variables in diagnostic)
-    ref_model = [single_variable[0].get('reference_model')]
-    if 'alternative_model' in single_variable[0]:
-        ref_model.append(single_variable[0]['alternative_model'])
-
     ncl_interface = {
-        'dictkeys': {
-            'dictkeys': [get_dict_key(v) for v in single_variable],
-        },
-        'figfiles_suffix': [get_figure_file_names(v) for v in single_variable],
-        'infile_paths': [os.path.dirname(p) for p in infiles],
-        'infiles': [os.path.basename(p) for p in infiles],
-        'fullpaths': [p for p in infiles],
         'diag_script':
         script,
-        'var_attr_mip': [v.get('mip') for v in single_variable],
-        'var_attr_exp': [v.get('exp') for v in single_variable],
-        'var_attr_ref':
-        ref_model,
-        'var_attr_exclude':
-        [v.get('exclude', "False") for v in single_variable],
-        'model_attr_skip': [v.get('skip') for v in single_variable],
         'variable_def_dir':
         os.path.join(esmvaltool_root, 'variable_defs'),
-        'variables': [variables[k][0]['short_name'] for k in variable_keys],
-        'derived_var': [variables[k][0]['short_name'] for k in variable_keys],
-        'field_types': [variables[k][0]['field'] for k in variable_keys],
-        'derived_field_type':
-        [variables[k][0]['field'] for k in variable_keys],
         'in_refs':
         [os.path.join(project_root, 'doc', 'MASTER_authors-refs-acknow.txt')],
         'out_refs': [
@@ -137,21 +101,6 @@ def get_legacy_ncl_interface(variables, config_user, namelist_file, script):
         'afile': [],
         'base_variable': [],
         'max_data_filesize': [config_user['max_data_filesize']],
-        'models': {
-            'project': [v['project'] for v in single_variable],
-            'name': [v['model'] for v in single_variable],
-            'mip': [v.get('mip', 'mip') for v in single_variable],
-            'experiment': [v.get('exp') for v in single_variable],
-            'ensemble':
-            [v.get('ensemble', 'ensemble') for v in single_variable],
-            'start_year': [v['start_year'] for v in single_variable],
-            'end_year': [v['end_year'] for v in single_variable],
-            'freq': [v.get('freq') for v in single_variable],
-            'dir': [v.get('dir') for v in single_variable],
-            'level': [v.get('level') for v in single_variable],
-            'case_name': [v.get('case_name') for v in single_variable],
-        },
-        'model_attr_id': [v.get('model') for v in single_variable],
         'fx_keys': [],
         'fx_values': [],
         'str_vault_sep':
@@ -166,8 +115,70 @@ def get_legacy_ncl_interface(variables, config_user, namelist_file, script):
         'ref_script': [],
     }
 
+    # Add info that requires a variable
+    if variables:
+        # select random variable
+        tmp, single_variable = variables.popitem()
+        variables[tmp] = single_variable
+
+        # ordered variables
+        variable_keys = sorted(variables)
+
+        infiles = [
+            get_output_file_template(v, config_user['preproc_dir'])
+            for v in single_variable
+        ]
+
+        # ref_model (only works if the same for all variables in diagnostic)
+        ref_model = [single_variable[0].get('reference_model')]
+        if 'alternative_model' in single_variable[0]:
+            ref_model.append(single_variable[0]['alternative_model'])
+
+        ncl_interface.update({
+            'dictkeys': {
+                'dictkeys': [get_dict_key(v) for v in single_variable],
+            },
+            'figfiles_suffix':
+            [get_figure_file_names(v) for v in single_variable],
+            'infile_paths': [os.path.dirname(p) for p in infiles],
+            'infiles': [os.path.basename(p) for p in infiles],
+            'fullpaths': [p for p in infiles],
+            'var_attr_mip': [v.get('mip') for v in single_variable],
+            'var_attr_exp': [v.get('exp') for v in single_variable],
+            'var_attr_ref':
+            ref_model,
+            'var_attr_exclude':
+            [v.get('exclude', "False") for v in single_variable],
+            'model_attr_skip': [v.get('skip') for v in single_variable],
+            'variables':
+            [variables[k][0]['short_name'] for k in variable_keys],
+            'derived_var': [
+                variables[k][0]['short_name'] for k in variable_keys
+            ],
+            'field_types': [variables[k][0]['field'] for k in variable_keys],
+            'derived_field_type': [
+                variables[k][0]['field'] for k in variable_keys
+            ],
+            'models': {
+                'project': [v['project'] for v in single_variable],
+                'name': [v['model'] for v in single_variable],
+                'mip': [v.get('mip', 'mip') for v in single_variable],
+                'experiment': [v.get('exp') for v in single_variable],
+                'ensemble':
+                [v.get('ensemble', 'ensemble') for v in single_variable],
+                'start_year': [v['start_year'] for v in single_variable],
+                'end_year': [v['end_year'] for v in single_variable],
+                'freq': [v.get('freq') for v in single_variable],
+                'dir': [v.get('dir') for v in single_variable],
+                'level': [v.get('level') for v in single_variable],
+                'case_name': [v.get('case_name') for v in single_variable],
+            },
+            'model_attr_id': [v.get('model') for v in single_variable],
+        })
+
     # remove items with no value
     ncl_interface = {k: v for k, v in ncl_interface.items() if v}
+
     # remove sub-dicts with lists containing no values
     for key, value in ncl_interface.items():
         if isinstance(value, dict):
