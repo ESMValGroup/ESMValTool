@@ -1,4 +1,4 @@
-"""Run the preprocessor."""
+"""Preprocessor module."""
 import logging
 import os
 from collections import OrderedDict
