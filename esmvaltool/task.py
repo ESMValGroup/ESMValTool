@@ -4,6 +4,7 @@ import os
 import pprint
 import subprocess
 import time
+from multiprocessing import Pool, cpu_count
 
 from .interface_scripts.data_interface import write_settings
 
@@ -27,6 +28,14 @@ class AbstractTask(object):
         self.settings = settings
         self.ancestors = [] if ancestors is None else ancestors
         self.output_data = None
+
+    def flatten(self):
+        """Return a flattened set of all ancestor tasks and task itself."""
+        tasks = set()
+        for task in self.ancestors:
+            tasks.update(task.flatten())
+        tasks.add(self)
+        return tasks
 
     def run(self, input_data=None):
         """Run task."""
@@ -212,7 +221,7 @@ class DiagnosticTask(AbstractTask):
                 time.sleep(0.001)
 
         if returncode == 0:
-            return self.settings['output_dir']
+            return [self.settings['output_dir']]
 
         raise DiagnosticError(
             "Diagnostic script {} failed with return code {}. See the log "
@@ -226,3 +235,93 @@ class DiagnosticTask(AbstractTask):
             super(DiagnosticTask, self).str(),
         )
         return txt
+
+
+def get_flattened_tasks(tasks):
+    """Return a set of all tasks and their ancestors in `tasks`."""
+    return set(t for task in tasks for t in task.flatten())
+
+
+def get_independent_tasks(tasks):
+    """Return a set of independent tasks."""
+    independent_tasks = set()
+    all_tasks = get_flattened_tasks(tasks)
+    for task in all_tasks:
+        if not any(task in t.ancestors for t in all_tasks):
+            independent_tasks.add(task)
+    return independent_tasks
+
+
+def run_tasks(tasks, parallel=True):
+    """Run tasks."""
+    if parallel:
+        _run_tasks_parallel(tasks)
+    else:
+        _run_tasks_sequential(tasks)
+
+
+def _run_tasks_sequential(tasks):
+    """Run tasks sequentially"""
+    n_tasks = len(get_flattened_tasks(tasks))
+    logger.info("Running %s tasks sequentially", n_tasks)
+
+    for task in get_independent_tasks(tasks):
+        task.run()
+
+
+def _run_tasks_parallel(tasks):
+    """Run tasks in parallel"""
+    scheduled = list(get_flattened_tasks(tasks))
+    running = []
+    results = []
+
+    n_scheduled, n_running = len(scheduled), len(running)
+    n_tasks = n_scheduled
+
+    pool = Pool()
+
+    logger.info("Running %s tasks using at most %s processes", n_tasks,
+                cpu_count())
+
+    def done(task):
+        """Assume a task is done if it not scheduled or running."""
+        return not (task in scheduled or task in running)
+
+    while scheduled or running:
+        # Submit new tasks to pool
+        just_scheduled = []
+        for task in scheduled:
+            if not task.ancestors or all(done(t) for t in task.ancestors):
+                result = pool.apply_async(_run_task, [task])
+                results.append(result)
+                running.append(task)
+                just_scheduled.append(task)
+        for task in just_scheduled:
+            scheduled.remove(task)
+
+        # Handle completed tasks
+        for task, result in zip(running, results):
+            if result.ready():
+                task.output_data = result.get()
+                running.remove(task)
+                results.remove(result)
+
+        # Wait if there are still tasks running
+        if running:
+            time.sleep(0.1)
+
+        # Log progress message
+        if len(scheduled) != n_scheduled or len(running) != n_running:
+            n_scheduled, n_running = len(scheduled), len(running)
+            n_done = n_tasks - n_scheduled - n_running
+            logger.info("Progress: %s tasks running or queued, %s tasks "
+                        "waiting for ancestors, %s/%s done", n_running,
+                        n_scheduled, n_done, n_tasks)
+
+    pool.close()
+    pool.join()
+
+
+def _run_task(task):
+    """Run task and return the result."""
+    return task.run()

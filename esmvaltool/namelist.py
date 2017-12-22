@@ -19,7 +19,7 @@ from .preprocessor import (DEFAULT_ORDER, PreprocessingTask,
                            select_single_model_settings)
 from .preprocessor._download import synda_search
 from .preprocessor._reformat import CMOR_TABLES
-from .task import DiagnosticTask
+from .task import DiagnosticTask, get_independent_tasks, run_tasks
 
 logger = logging.getLogger(__name__)
 
@@ -497,11 +497,8 @@ class Namelist(object):
 
         # TODO: check that no loops are created (will throw RecursionError)
 
-        # Return smallest possible list of tasks
-        tasks = []
-        for task in all_tasks.values():
-            if not any(task in t.ancestors for t in all_tasks.values()):
-                tasks.append(task)
+        # Return smallest possible set of tasks
+        tasks = get_independent_tasks(all_tasks.values())
 
         return tasks
 
@@ -511,5 +508,5 @@ class Namelist(object):
 
     def run(self):
         """Run all tasks in the namelist."""
-        for task in self.tasks:
-            task.run()
+        parallel = self._cfg.get('parallel', True)
+        run_tasks(self.tasks, parallel=parallel)
