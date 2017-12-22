@@ -196,15 +196,6 @@ def get_single_model_task(variable, settings, user_config):
 
     logger.info("Using input files:\n%s", '\n'.join(input_files))
 
-    # Configure saving to output files
-    output_file = get_output_file(
-        variable=variable, preproc_dir=user_config['preproc_dir'])
-    logger.info("Output will be written to:\n%s", output_file)
-
-    cfg['save'] = {
-        'target': output_file,
-    }
-
     # Use settings from preprocessor profile
     for step, args in settings.items():
         # Remove disabled preprocessor functions
@@ -219,13 +210,15 @@ def get_single_model_task(variable, settings, user_config):
             cfg[step].update(args)
 
     if user_config['save_intermediary_cubes']:
+        output_file = get_output_file(
+            variable=variable, preproc_dir=user_config['preproc_dir'])
         debug = {'paths': [os.path.splitext(output_file)[0]]}
     else:
         debug = None
     return PreprocessingTask(settings=cfg, input_data=input_files, debug=debug)
 
 
-def get_multi_model_task(standard_name, settings, ancestors, user_config):
+def get_multi_model_task(variables, settings, ancestors, user_config):
     """Get multi-model preprocessor tasks."""
     logger.info("Configuring multi-model task")
     settings = select_multi_model_settings(settings)
@@ -240,11 +233,13 @@ def get_multi_model_task(standard_name, settings, ancestors, user_config):
         if settings[step] is True:
             settings[step] = {}
 
-    # Configure loading
-    settings['load'] = {'constraint': standard_name, 'mode': 'ordered'}
-
     # Configure saving
-    files = [task.settings['save']['target'] for task in ancestors]
+    files = [
+        get_output_file(
+            variable=variable, preproc_dir=user_config['preproc_dir'])
+        for variable in variables
+    ]
+
     settings['save'] = {'targets': files}
 
     if user_config['save_intermediary_cubes']:
@@ -294,9 +289,9 @@ def get_preprocessor_tasks(variables,
         task_id = 'preproc{}{}_{}'.format(TASKSEP, preproc_id, variable_name)
         if task_id not in all_tasks:
             task = get_multi_model_task(
-                standard_name=variable['standard_name'],
+                variables=variables[variable_name],
                 settings=settings,
-                ancestors=list(single_model_tasks),
+                ancestors=single_model_tasks,
                 user_config=config_user,
             )
             all_tasks[task_id] = task
