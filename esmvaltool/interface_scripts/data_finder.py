@@ -215,8 +215,9 @@ def find_files(dirname, filename):
     out, err = proc.communicate()
     if err:
         logger.warning("'%s' says:\n%s", strfindic, err)
+    out = out.strip()
     logger.debug("Result:\n%s", out)
-    for line in out.split('\n')[0:-1]:
+    for line in out.split('\n'):
         flist.append(line)
     return flist
 
