@@ -62,36 +62,6 @@ def check_namelist(filename):
     return raw_namelist
 
 
-def _models_match(full_model, short_model):
-    """Check if short_model description matches full_model."""
-    if isinstance(short_model, str):
-        return short_model in full_model.values()
-
-    if isinstance(short_model, dict):
-        for key, value in short_model.items():
-            if key not in full_model or value != full_model[key]:
-                return False
-        return True
-
-    raise ValueError("Cannot decide if short_model {} describes "
-                     "full_model {}".format(short_model, full_model))
-
-
-def _find_model(full_models, short_model, warn=False):
-
-    matches = [m for m in full_models if _models_match(m, short_model)]
-    if len(matches) == 1:
-        return matches[0]
-
-    if warn:
-        if not matches:
-            logger.warning("No model matching description %s found.",
-                           short_model)
-        else:
-            logger.warning("Found multiple models %s matching description %s.",
-                           matches, short_model)
-
-
 def _get_value(key, variables):
     """Get a value for key by looking at the other variables."""
     values = {variable[key] for variable in variables if key in variable}
@@ -112,6 +82,30 @@ def _add_cmor_info(variable, keys):
                 value = getattr(variable_info, key)
                 if value is not None:
                     variable[key] = value
+
+
+def _update_target_grid(variable, all_variables, settings, config_user):
+    """Replace the target grid model name with a filename if needed.
+
+    This only works if the file is found by get_input_filelist.
+    """
+    target_grid = settings['regrid']['target_grid']
+
+    if variable['model'] == target_grid:
+        # No need to regrid model onto itself.
+        del settings['regrid']
+        return
+
+    # Replace the target grid model name with a filename.
+    for target_variable in all_variables:
+        if target_variable['model'] == target_grid:
+            files = get_input_filelist(
+                variable=target_variable,
+                rootpath=config_user['rootpath'],
+                drs=config_user['drs'])
+            target_file = files[0]
+            settings['regrid']['target_grid'] = target_file
+            return
 
 
 def get_single_model_settings(variable):
@@ -263,6 +257,55 @@ def get_multi_model_task(standard_name, settings, ancestors, user_config):
     return task
 
 
+def get_preprocessor_tasks(variables,
+                           preprocessors,
+                           config_user,
+                           all_tasks=None):
+    """Get preprocessor tasks."""
+    if all_tasks is None:
+        all_tasks = {}
+
+    tasks = []
+    for variable_name in variables:
+        # Create single model tasks
+        single_model_tasks = []
+        for variable in variables[variable_name]:
+            preproc_id = variable['preprocessor']
+            settings = copy.deepcopy(preprocessors[preproc_id])
+            # if the target grid is a model, replace it with a file name
+            if ('regrid' in settings and settings['regrid'] is not False
+                    and 'target_grid' in settings['regrid']):
+                _update_target_grid(
+                    variable=variable,
+                    all_variables=variables[variable_name],
+                    settings=settings,
+                    config_user=config_user)
+            task_id = '_'.join(str(variable[key]) for key in sorted(variable))
+            if task_id not in all_tasks:
+                task = get_single_model_task(
+                    variable=variable,
+                    settings=settings,
+                    user_config=config_user,
+                )
+                all_tasks[task_id] = task
+            single_model_tasks.append(all_tasks[task_id])
+
+        # Create multi model task
+        task_id = 'preproc{}{}_{}'.format(TASKSEP, preproc_id, variable_name)
+        if task_id not in all_tasks:
+            task = get_multi_model_task(
+                standard_name=variable['standard_name'],
+                settings=settings,
+                ancestors=list(single_model_tasks),
+                user_config=config_user,
+            )
+            all_tasks[task_id] = task
+        multi_model_task = all_tasks[task_id]
+        tasks.append(multi_model_task)
+
+    return tasks
+
+
 class Namelist(object):
     """Namelist object"""
 
@@ -376,32 +419,6 @@ class Namelist(object):
 
         return scripts
 
-    def _update_target_grid(self, variable, settings, all_models):
-        """Configure regrid target_grid in preprocessor settings."""
-
-        def issubset(sub, ref):
-            """Check if dict sub is a subset of dict ref."""
-            return all(ref.get(key, object()) == sub[key] for key in sub)
-
-        if ('regrid' in settings and settings['regrid'] is not False
-                and 'target_grid' in settings['regrid']):
-            # if the target grid is a model, replace with filename
-            target_grid_model = _find_model(
-                full_models=all_models,
-                short_model=settings['regrid']['target_grid'])
-            if target_grid_model:
-                if issubset(target_grid_model, variable):
-                    # No need to regrid model onto itself
-                    del settings['regrid']
-                else:
-                    target_variable = dict(variable)
-                    target_variable.update(target_grid_model)
-                    files = get_input_filelist(
-                        variable=target_variable,
-                        rootpath=self._cfg['rootpath'],
-                        drs=self._cfg['drs'])
-                    settings['regrid']['target_grid'] = files[0]
-
     def initialize_tasks(self):
         """Define tasks in namelist"""
         logger.info("Creating tasks from namelist")
@@ -412,40 +429,11 @@ class Namelist(object):
             logger.info("Creating tasks for diagnostic %s", diagnostic_name)
 
             # Create preprocessor tasks
-            preproc_tasks = []
-            for variable_name in diagnostic['variables']:
-                # Create single model tasks
-                single_model_tasks = []
-                for variable in diagnostic['variables'][variable_name]:
-                    preproc_id = variable['preprocessor']
-                    settings = copy.deepcopy(self._preprocessors[preproc_id])
-                    self._update_target_grid(variable, settings,
-                                             diagnostic['models'])
-
-                    task_id = '_'.join(
-                        str(variable[key]) for key in sorted(variable))
-                    if task_id not in all_tasks:
-                        task = get_single_model_task(
-                            variable=variable,
-                            settings=settings,
-                            user_config=self._cfg,
-                        )
-                        all_tasks[task_id] = task
-                    single_model_tasks.append(all_tasks[task_id])
-
-                # Create multi model task
-                task_id = 'preproc{}{}_{}'.format(TASKSEP, preproc_id,
-                                                  variable_name)
-                if task_id not in all_tasks:
-                    task = get_multi_model_task(
-                        standard_name=variable['standard_name'],
-                        settings=settings,
-                        ancestors=list(single_model_tasks),
-                        user_config=self._cfg,
-                    )
-                    all_tasks[task_id] = task
-                multi_model_task = all_tasks[task_id]
-                preproc_tasks.append(multi_model_task)
+            preproc_tasks = get_preprocessor_tasks(
+                variables=diagnostic['variables'],
+                preprocessors=self._preprocessors,
+                config_user=self._cfg,
+                all_tasks=all_tasks)
 
             # Create diagnostic tasks
             for script_name, script_cfg in diagnostic['scripts'].items():
