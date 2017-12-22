@@ -271,7 +271,7 @@ def _run_tasks_sequential(tasks):
 
 def _run_tasks_parallel(tasks):
     """Run tasks in parallel"""
-    scheduled = list(get_flattened_tasks(tasks))
+    scheduled = get_flattened_tasks(tasks)
     running = []
     results = []
 
