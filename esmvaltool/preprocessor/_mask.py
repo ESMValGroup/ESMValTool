@@ -294,26 +294,27 @@ def mask_fillvalues(cubes, threshold_fraction, min_value=-1.e10,
                     time_window=1):
     # function idea copied from preprocess.py
 
-    # Get the masks from all models
+    # Ensure all cubes have masked arrays
+    for cube in cubes:
+        cube.data = np.ma.fix_invalid(cube.data, copy=False)
+
+    # Get the fillvalue masks from all models
     masks = (_get_fillvalues_mask(cube, threshold_fraction, min_value,
                                   time_window) for cube in cubes)
 
-    # Combine all masks
+    # Combine all fillvalue masks
     combined_mask = None
     for mask in masks:
         if not np.all(mask):  # remove masks that mask everything
             if combined_mask is None:
-                combined_mask = mask
-            else:
-                combined_mask |= mask
+                combined_mask = np.zeros_like(mask)
+            combined_mask |= mask
 
     if np.any(combined_mask):
         # Apply masks
         logger.debug("Applying fillvalues mask")
         for cube in cubes:
-            if not np.ma.isMaskedArray(cube.data):
-                cube.data = np.ma.asarray(cube.data)
-            cube.data.mask = combined_mask
+            cube.data.mask |= combined_mask
 
     return cubes
 
@@ -342,10 +343,7 @@ def _get_fillvalues_mask(cube, threshold_fraction, min_value, time_window):
 
     # Calculate the statistic.
     counts_windowed_cube = cube.collapsed(
-        'time',
-        spell_count,
-        threshold=min_value,
-        spell_length=time_window)
+        'time', spell_count, threshold=min_value, spell_length=time_window)
 
     # Create mask
     mask = counts_windowed_cube.data < counts_threshold
