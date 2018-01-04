@@ -182,13 +182,13 @@ class CMORCheck(object):
         # Check data is not less than valid_min
         if self._cmor_var.valid_min:
             valid_min = float(self._cmor_var.valid_min)
-            if np.any(self._cube.data < valid_min):
+            if self._cube.data.min() < valid_min:
                 self.report_warning(self._vals_msg, self._cube.var_name,
                                     '< {} ='.format('valid_min'), valid_min)
         # Check data is not greater than valid_max
         if self._cmor_var.valid_max:
             valid_max = float(self._cmor_var.valid_max)
-            if np.any(self._cube.data > valid_max):
+            if self._cube.data.max() > valid_max:
                 self.report_warning(self._vals_msg, self._cube.var_name,
                                     '> {} ='.format('valid_max'), valid_max)
 
