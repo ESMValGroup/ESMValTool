@@ -18,7 +18,8 @@ def _get_cmor_checker(short_name,
     if project in CMOR_TABLES:
         variables_info = CMOR_TABLES[project]
     else:
-        raise NotImplementedError
+        raise NotImplementedError("No CMOR checker implemented for project {}"
+                                  .format(project))
 
     var_info = variables_info.get_variable(mip, short_name)
 
@@ -77,15 +78,18 @@ def cmor_check_metadata(cube, short_name, project, mip):
     """Check if metadata conforms to CMOR."""
     checker = _get_cmor_checker(short_name, project, mip)
     checker(cube).check_metadata()
+    return cube
 
 
 def cmor_check_data(cube, short_name, project, mip):
     """Check if data conforms to CMOR."""
     checker = _get_cmor_checker(short_name, project, mip)
     checker(cube).check_data()
+    return cube
 
 
 def cmor_check(cube, short_name, project, mip):
     """Check if cube conforms to CMOR."""
     cmor_check_metadata(cube, short_name, project, mip)
     cmor_check_data(cube, short_name, project, mip)
+    return cube
