@@ -103,14 +103,16 @@ class CMORCheck(object):
 
     def report_errors(self):
         if self.has_errors():
-            msg = 'There were errors in variable {0}:\n {1}'
-            msg = msg.format(self._cube.var_name, '\n '.join(self._errors))
+            msg = 'There were errors in variable {}:\n{}\nin cube:\n{}'
+            msg = msg.format(self._cube.var_name, '\n '.join(self._errors),
+                             self._cube)
             raise CMORCheckError(msg)
 
     def report_warnings(self, logger):
         if self.has_warnings():
-            msg = 'There were warnings in variable {0}:\n {1}'
-            msg = msg.format(self._cube.var_name, '\n '.join(self._warnings))
+            msg = 'There were warnings in variable {}:\n{}\nin cube:\n{}'
+            msg = msg.format(self._cube.var_name, '\n '.join(self._warnings),
+                             self._cube)
             logger.warning(msg)
 
     def check_data(self, logger=None):
@@ -416,7 +418,7 @@ class CMORCheck(object):
         """
         msg = message.format(*args)
         if self._failerr:
-            raise CMORCheckError(msg)
+            raise CMORCheckError(msg + '\nin cube:\n{}'.format(self._cube))
         else:
             self._errors.append(msg)
 
