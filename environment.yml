@@ -3,6 +3,7 @@
 name: esmvaltool
 channels:
 - conda-forge
+- khallock # ncl package on conda-forge is broken
 #- defaults # in case of missing packages
 #- Clyde_Fare #for scientific python
 
