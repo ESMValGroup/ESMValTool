@@ -218,7 +218,8 @@ def find_files(dirname, filename):
     out = out.strip()
     logger.debug("Result:\n%s", out)
     for line in out.split('\n'):
-        flist.append(line)
+        if line:
+            flist.append(line)
     return flist
 
 
