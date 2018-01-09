@@ -8,12 +8,13 @@ import os
 import yaml
 
 from .interface_scripts.data_finder import (
-    get_input_filelist, get_input_filename, get_output_file)
+    get_input_filelist, get_input_filename, get_output_file,
+    get_start_end_year)
 from .interface_scripts.preprocessing_tools import merge_callback
 from .preprocessor import (DEFAULT_ORDER, PreprocessingTask,
                            select_multi_model_settings,
                            select_single_model_settings)
-from .preprocessor._download import get_start_end_year, synda_search
+from .preprocessor._download import synda_search
 from .preprocessor._reformat import CMOR_TABLES
 from .task import DiagnosticTask
 
@@ -95,16 +96,16 @@ def _get_value(key, variables):
     return values.pop()
 
 
-def _get_standard_name(variable):
-    """Get variable standard_name."""
-    standard_name = None
+def _add_cmor_info(variable, keys):
+    """Add information from CMOR tables to variable."""
     if variable['project'] in CMOR_TABLES:
         variable_info = CMOR_TABLES[variable['project']].get_variable(
             variable['mip'], variable['short_name'])
-        if variable_info.standard_name:
-            standard_name = variable_info.standard_name
-
-    return standard_name
+        for key in keys:
+            if key not in variable and hasattr(variable_info, key):
+                value = getattr(variable_info, key)
+                if value is not None:
+                    variable[key] = value
 
 
 def get_single_model_settings(variable):
@@ -192,9 +193,12 @@ def get_single_model_task(variable, settings, user_config):
     check_data_availability(input_files, variable['start_year'],
                             variable['end_year'])
 
+    logger.info("Using input files:\n%s", '\n'.join(input_files))
+
     # Configure saving to output files
     output_file = get_output_file(
         variable=variable, preproc_dir=user_config['preproc_dir'])
+    logger.info("Output will be written to:\n%s", output_file)
 
     cfg['save'] = {
         'target': output_file,
@@ -299,6 +303,7 @@ class Namelist(object):
                      diagnostic_name)
 
         variables = {}
+        cmor_keys = ['standard_name', 'long_name', 'units']
         for variable_name, raw_variable in raw_variables.items():
             variables[variable_name] = []
             for model in models:
@@ -306,17 +311,15 @@ class Namelist(object):
                 variable.update(model)
                 if 'short_name' not in variable:
                     variable['short_name'] = variable_name
-                if 'standard_name' not in variable:
-                    standard_name = _get_standard_name(variable)
-                    if standard_name:
-                        variable['standard_name'] = standard_name
+                _add_cmor_info(variable, cmor_keys)
                 variables[variable_name].append(variable)
 
             for variable in variables[variable_name]:
-                for key in ('mip', 'standard_name'):
+                for key in ['mip'] + cmor_keys:
                     if key not in variable:
-                        variable[key] = _get_value(key,
-                                                   variables[variable_name])
+                        value = _get_value(key, variables[variable_name])
+                        if value is not None:
+                            variable[key] = value
 
         return variables
 
@@ -398,13 +401,13 @@ class Namelist(object):
 
     def initialize_tasks(self):
         """Define tasks in namelist"""
-        logger.debug("Creating tasks from namelist")
+        logger.info("Creating tasks from namelist")
 
         tasks = []
 
         all_preproc_tasks = {}
         for diagnostic_name, diagnostic in self.diagnostics.items():
-            logger.debug("Creating tasks for diagnostic %s", diagnostic_name)
+            logger.info("Creating tasks for diagnostic %s", diagnostic_name)
 
             # Create preprocessor tasks
             for variable_name in diagnostic['variables']:

@@ -91,7 +91,8 @@ diagnostics:
     variables:
       ta:
         preprocessor: pp850
-        reference_model: [ERA-Interim, NCEP]
+        reference_model: ERA-Interim
+        alternative_model: NCEP
         mip: Amon
         field: T3M
     additional_models:
@@ -118,4 +119,17 @@ diagnostics:
       main_taylor: &main_taylor_script_settings
         <<: *main_grading_script_settings
         metric: taylor                 # Metric ('RMSD', 'BIAS', taylor')
+
+
+#   grading_collect:
+#     description: Wrapper to collect and plot previously calculated gradings.
+#     scripts:
+#       grading_collect:
+#         script: perfmetrics_grading_collect.ncl
+#         ancestors: ['grading']
+#         label_bounds: [-0.5, 0.5]
+#         label_scale: 0.1
+#         disp_values: false
+#         cm_interval: [2, 241]
+#         sort: true  # Sort model in alphabetic order (excluding MMM)
 
