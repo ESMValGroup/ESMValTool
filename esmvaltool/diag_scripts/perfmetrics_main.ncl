@@ -212,6 +212,7 @@ begin
     end if
 
     ;; Set index of the reference (and alternative) model
+    ;; FIX-ME: use variable_info@reference_model instead of var_attr_ref
     ref_inds = get_ref_model_idx(models, var_attr_ref)
     ref_ind = ref_inds(0)
     if (dimsizes(ref_inds).gt.1) then
