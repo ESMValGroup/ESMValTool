@@ -28,6 +28,7 @@
 ;;    function empty_str
 ;;    function write_info
 ;;    function remove_index
+;;    procedure set_default_att
 ;;    procedure tool_stop
 ;;    function filter_attrs
 ;;    procedure write_ignore_warnings
@@ -1540,6 +1541,43 @@ begin
 
     leave_msg(scriptname, funcname, 6)
     return(out)
+
+end
+
+
+;;#############################################################################
+undef("set_default_att")
+procedure set_default_att(info:logical,
+                          att:string,
+                          default)
+;;
+;; Arguments
+;;    info: a logical containing all attributes (usually diag_script_info)
+;;    att: the attribute to be checked for
+;;    value: the default value to be assigned if the attribute is not present
+;;
+;; Description
+;;    Check for a given attribute and assign the given default value if not
+;;    present
+;;
+;; References
+;;
+;; Modification history
+;;    20171214-A_righ_ma: written.
+;;
+local funcname, scriptname, verbosity
+begin
+
+    funcname = "set_default_att"
+    scriptname = "interface_scripts/auxiliary.ncl"
+    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    enter_msg(scriptname, funcname, 6)
+
+    if (.not.isatt(info, att)) then
+        info@$att$ = default
+    end if
+
+    leave_msg(scriptname, funcname, 6)
 
 end
 
