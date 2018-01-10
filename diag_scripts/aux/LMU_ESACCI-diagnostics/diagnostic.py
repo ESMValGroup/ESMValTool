@@ -136,10 +136,13 @@ class Diagnostic(object):
         self._basetags = self._basetags + \
             [x.strip() for x in project_info.get('GLOBAL')['tags']]
 
-        if isinstance(self.var, str):
+        if isinstance(self.var, str) or isinstance(self.var, unicode):
             self._basetags = self._basetags + ['V_' + self.var]
         elif isinstance(self.var, list):
-            self._basetags = self._basetags + ['V_' + item for item in self.var if isinstance(item, str)]
+            self._basetags = ( self._basetags + 
+                ['V_' + item for item in self.var if isinstance(item, str) or isinstance(item, unicode)] )
+        else:
+            raise ValueError('variable is of type {0}. str/unicode/`list of str` expected'.format(type(var)))
 
         if var == 'sm':
             self._vartype = 'soil moisture'
