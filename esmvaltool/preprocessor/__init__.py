@@ -1,13 +1,13 @@
 """Preprocessor module."""
 import logging
-import os
 from collections import OrderedDict
 
-import iris
+from iris.cube import Cube
 
 from ..task import AbstractTask
 from ._derive import derive
 from ._download import download
+from ._io import load_cubes, save_cubes
 from ._mask import mask_fillvalues, mask_landocean
 from ._multimodel import multi_model_mean
 from ._reformat import fix_data, fix_file, fix_metadata, cmor_check_data
@@ -18,66 +18,7 @@ from ._time_area import area_slice as extract_region
 from ._time_area import time_slice as extract_time
 from ._time_area import seasonal_mean
 
-iris.FUTURE.netcdf_promote = True
-iris.FUTURE.netcdf_no_unlimited = True
-
 logger = logging.getLogger(__name__)
-
-
-def load_cubes(files, **kwargs):
-    """Load iris cubes from files"""
-    logger.debug("Loading and concatenating:\n%s", "\n".join(files))
-    filename = kwargs.pop('filename')
-    cubes = iris.load_raw(files, **kwargs)
-    iris.util.unify_time_units(cubes)
-    cubes = cubes.concatenate()
-    for cube in cubes:
-        cube.attributes['_filename'] = filename
-    return cubes
-
-
-def _save_cubes(cubes, **args):
-    """Save iris cube to file."""
-    filename = args['target']
-
-    dirname = os.path.dirname(filename)
-    if not os.path.exists(dirname):
-        os.makedirs(dirname)
-
-    if (os.path.exists(filename)
-            and all(cube.has_lazy_data() for cube in cubes)):
-        logger.debug("Not saving cubes %s to %s to avoid data loss. "
-                     "The cube is probably unchanged.", cubes, filename)
-    else:
-        logger.debug("Saving cubes %s to %s", cubes, filename)
-        iris.save(cubes, **args)
-
-    return filename
-
-
-def save_cubes(cubes, debug=False, **args):
-    """Save iris cubes to the file specified in the _filename attribute."""
-    step = args.pop('step') if debug else None
-
-    paths = {}
-    for cube in cubes:
-        if '_filename' not in cube.attributes:
-            raise ValueError("No filename specified in cube {}".format(cube))
-        if debug:
-            filename = cube.attributes.get('_filename')
-            filename = os.path.splitext(filename)[0]
-            filename = os.path.join(filename, step + '.nc')
-        else:
-            filename = cube.attributes.pop('_filename')
-        if filename not in paths:
-            paths[filename] = []
-        paths[filename].append(cube)
-
-    for filename in paths:
-        _save_cubes(cubes=paths[filename], target=filename, **args)
-
-    return list(paths)
-
 
 # TODO: review preprocessor functions
 PREPROCESSOR_FUNCTIONS = {
@@ -259,9 +200,7 @@ def preprocess(items, settings, debug=False):
 
             if debug:
                 logger.debug("Result %s", items)
-                cubes = [
-                    item for item in items if isinstance(item, iris.cube.Cube)
-                ]
+                cubes = [item for item in items if isinstance(item, Cube)]
                 save_cubes(cubes, debug=debug, step=step)
 
     return items

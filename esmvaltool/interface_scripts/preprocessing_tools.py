@@ -5,32 +5,9 @@ import logging
 
 import iris
 
+from ..preprocessor._io import concatenate_callback
+
 logger = logging.getLogger(__name__)
-
-
-# a couple functions needed by cmor reformatting (the new python one)
-def get_attr_from_field_coord(ncfield, coord_name, attr):
-    if coord_name is not None:
-        attrs = ncfield.cf_group[coord_name].cf_attrs()
-        attr_val = [value for (key, value) in attrs if key == attr]
-        if attr_val:
-            return attr_val[0]
-    return None
-
-
-def merge_callback(raw_cube, field, filename):
-    """Use this callback to fix anything Iris tries to break."""
-    # Remove attributes that cause issues with merging and concatenation
-    for attr in ['creation_date', 'tracking_id', 'history']:
-        if attr in raw_cube.attributes:
-            del raw_cube.attributes[attr]
-    for coord in raw_cube.coords():
-        # Iris chooses to change longitude and latitude units to degrees
-        #  regardless of value in file, so reinstating file value
-        if coord.standard_name in ['longitude', 'latitude']:
-            units = get_attr_from_field_coord(field, coord.var_name, 'units')
-            if units is not None:
-                coord.units = units
 
 
 # merge multiple files assigned to a same diagnostic and variable
@@ -53,7 +30,7 @@ def glob(file_list, varname):
     var_cons = iris.Constraint(cube_func=cube_var_name)
     # force single cube; this function defaults a list of cubes
     cl = [
-        iris.load(a, var_cons, callback=merge_callback)[0] for a in file_list
+        iris.load(a, var_cons, callback=concatenate_callback)[0] for a in file_list
     ]
 
     c = iris.cube.CubeList(cl)

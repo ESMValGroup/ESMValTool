@@ -13,10 +13,10 @@ from .interface_scripts.data_finder import (
     get_start_end_year)
 from .interface_scripts.data_interface import (get_legacy_ncl_env,
                                                write_legacy_ncl_interface)
-from .interface_scripts.preprocessing_tools import merge_callback
 from .preprocessor import (DEFAULT_ORDER, MULTI_MODEL_FUNCTIONS,
                            PreprocessingTask)
 from .preprocessor._download import synda_search
+from .preprocessor._io import concatenate_callback
 from .preprocessor._reformat import CMOR_TABLES
 from .task import DiagnosticTask, get_independent_tasks, run_tasks
 
@@ -128,7 +128,7 @@ def _get_default_settings(variable, config_user):
     # Configure loading
     settings['load'] = {
         'constraints': variable['standard_name'],
-        'callback': merge_callback,
+        'callback': concatenate_callback,
         'filename': variable['filename'],
     }
 
