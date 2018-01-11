@@ -198,10 +198,10 @@ def preprocess(items, settings, debug=False):
         else:
             items = tuple(result)
 
-            if debug:
-                logger.debug("Result %s", items)
-                cubes = [item for item in items if isinstance(item, Cube)]
-                save_cubes(cubes, debug=debug, step=step)
+        if debug:
+            logger.debug("Result %s", items)
+            cubes = [item for item in items if isinstance(item, Cube)]
+            save_cubes(cubes, debug=debug, step=step)
 
     return items
 
