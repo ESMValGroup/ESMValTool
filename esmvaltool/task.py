@@ -147,10 +147,12 @@ class DiagnosticTask(AbstractTask):
             if line.strip() in ignore_warnings:
                 continue
             if 'warning:' in line:
+                logger.warning("NCL: %s", line)
                 warned = True
             for error in errors:
                 if error in line:
                     logger.error(msg)
+                    logger.error("NCL: %s", line)
                     try:
                         process.kill()
                     except OSError:  # ignore error if process already exited
