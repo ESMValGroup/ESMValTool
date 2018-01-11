@@ -27,7 +27,7 @@ class AbstractTask(object):
         """Initialize task."""
         self.settings = settings
         self.ancestors = [] if ancestors is None else ancestors
-        self.output_data = None
+        self.output_files = None
 
     def flatten(self):
         """Return a flattened set of all ancestor tasks and task itself."""
@@ -37,18 +37,18 @@ class AbstractTask(object):
         tasks.add(self)
         return tasks
 
-    def run(self, input_data=None):
+    def run(self, input_files=None):
         """Run task."""
-        if not self.output_data:
-            if input_data is None:
-                input_data = []
+        if not self.output_files:
+            if input_files is None:
+                input_files = []
             for task in self.ancestors:
-                input_data.extend(task.run())
-            self.output_data = self._run(input_data)
+                input_files.extend(task.run())
+            self.output_files = self._run(input_files)
 
-        return self.output_data
+        return self.output_files
 
-    def _run(self, input_data):
+    def _run(self, input_files):
         raise NotImplementedError(
             "Method should be implemented by child class")
 
@@ -164,13 +164,13 @@ class DiagnosticTask(AbstractTask):
                 "There were warnings during the execution of NCL script %s, "
                 "for details, see the log %s", self.script, self.log)
 
-    def _run(self, input_data):
+    def _run(self, input_files):
         """Run the diagnostic script."""
         if self.script is None:  # Run only preprocessor
-            output_data = []
-            return output_data
+            output_files = []
+            return output_files
 
-        self.settings['input_files'] = input_data
+        self.settings['input_files'] = input_files
         settings_file = self._write_settings()
 
         cmd = list(self.cmd)
@@ -302,7 +302,7 @@ def _run_tasks_parallel(tasks):
         # Handle completed tasks
         for task, result in zip(running, results):
             if result.ready():
-                task.output_data = result.get()
+                task.output_files = result.get()
                 running.remove(task)
                 results.remove(result)
 

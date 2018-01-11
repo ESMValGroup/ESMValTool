@@ -9,19 +9,18 @@ CMOR_TABLES = {
 }
 
 
-def _get_cmor_checker(short_name,
-                      project,
+def _get_cmor_checker(table,
                       mip,
+                      short_name,
                       fail_on_error=True,
                       automatic_fixes=False):
     """Get a CMOR checker/fixer."""
-    if project in CMOR_TABLES:
-        variables_info = CMOR_TABLES[project]
-    else:
-        raise NotImplementedError("No CMOR checker implemented for project {}"
-                                  .format(project))
+    if table not in CMOR_TABLES:
+        raise NotImplementedError("No CMOR checker implemented for table {}"
+                                  .format(table))
 
-    var_info = variables_info.get_variable(mip, short_name)
+    cmor_table = CMOR_TABLES[table]
+    var_info = cmor_table.get_variable(mip, short_name)
 
     def _checker(cube):
         return CMORCheck(
@@ -42,54 +41,54 @@ def fix_file(filename, short_name, project, model):
     return filename
 
 
-def fix_metadata(cube, short_name, project, model, mip=None):
+def fix_metadata(cube, short_name, project, model, cmor_table=None, mip=None):
     """Apply fixes to the metadata of the cube."""
     for fix in Fix.get_fixes(
             project=project, model=model, variable=short_name):
         fix.fix_metadata(cube)
-    if mip:
+    if cmor_table and mip:
         checker = _get_cmor_checker(
-            short_name=short_name,
-            project=project,
+            table=cmor_table,
             mip=mip,
+            short_name=short_name,
             fail_on_error=False,
             automatic_fixes=True)
         checker(cube).check_metadata()
     return cube
 
 
-def fix_data(cube, short_name, project, model, mip=None):
+def fix_data(cube, short_name, project, model, cmor_table=None, mip=None):
     """Apply fixes to the data of the cube."""
     for fix in Fix.get_fixes(
             project=project, model=model, variable=short_name):
         fix.fix_data(cube)
-    if mip:
+    if cmor_table and mip:
         checker = _get_cmor_checker(
-            short_name=short_name,
-            project=project,
+            table=cmor_table,
             mip=mip,
+            short_name=short_name,
             fail_on_error=False,
             automatic_fixes=True)
         checker(cube).check_data()
     return cube
 
 
-def cmor_check_metadata(cube, short_name, project, mip):
+def cmor_check_metadata(cube, cmor_table, mip, short_name):
     """Check if metadata conforms to CMOR."""
-    checker = _get_cmor_checker(short_name, project, mip)
+    checker = _get_cmor_checker(cmor_table, mip, short_name)
     checker(cube).check_metadata()
     return cube
 
 
-def cmor_check_data(cube, short_name, project, mip):
+def cmor_check_data(cube, cmor_table, mip, short_name):
     """Check if data conforms to CMOR."""
-    checker = _get_cmor_checker(short_name, project, mip)
+    checker = _get_cmor_checker(cmor_table, mip, short_name)
     checker(cube).check_data()
     return cube
 
 
-def cmor_check(cube, short_name, project, mip):
+def cmor_check(cube, cmor_table, mip, short_name):
     """Check if cube conforms to CMOR."""
-    cmor_check_metadata(cube, short_name, project, mip)
-    cmor_check_data(cube, short_name, project, mip)
+    cmor_check_metadata(cube, cmor_table, mip, short_name)
+    cmor_check_data(cube, cmor_table, mip, short_name)
     return cube
