@@ -30,7 +30,8 @@ def glob(file_list, varname):
     var_cons = iris.Constraint(cube_func=cube_var_name)
     # force single cube; this function defaults a list of cubes
     cl = [
-        iris.load(a, var_cons, callback=concatenate_callback)[0] for a in file_list
+        iris.load(a, var_cons, callback=concatenate_callback)[0]
+        for a in file_list
     ]
 
     c = iris.cube.CubeList(cl)

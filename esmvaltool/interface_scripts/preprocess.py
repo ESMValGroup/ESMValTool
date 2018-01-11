@@ -22,8 +22,7 @@ from ..preprocessor._time_area import time_slice
 from .cmor_check import CMORCheck, CMORCheckError
 from .data_finder import get_input_filelist, get_output_file
 from .fixes.fix import Fix
-from .launchers import run_executable
-from .preprocessing_tools import glob, merge_callback
+from .preprocessing_tools import glob, concatenate_callback
 from .variable_info import CMIP5Info
 
 logger = logging.getLogger(__name__)
@@ -361,7 +360,7 @@ def preprocess(project_info, variable, model, current_diag,
                 # force single cube; this function defaults a list of cubes
                 for cfile in files:
                     reft_cube_i = iris.load(
-                        cfile, var_cons, callback=merge_callback)[0]
+                        cfile, var_cons, callback=concatenate_callback)[0]
                     cfilelist.append(reft_cube_i)
 
             # concatenate if needed
