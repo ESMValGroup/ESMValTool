@@ -3,6 +3,7 @@ from __future__ import print_function
 
 import copy
 import fnmatch
+import inspect
 import logging
 import os
 
@@ -14,7 +15,7 @@ from .interface_scripts.data_finder import (
 from .interface_scripts.data_interface import (get_legacy_ncl_env,
                                                write_legacy_ncl_interface)
 from .preprocessor import (DEFAULT_ORDER, MULTI_MODEL_FUNCTIONS,
-                           PreprocessingTask)
+                           PREPROCESSOR_FUNCTIONS, PreprocessingTask)
 from .preprocessor._download import synda_search
 from .preprocessor._io import concatenate_callback
 from .preprocessor._reformat import CMOR_TABLES
@@ -38,27 +39,133 @@ def read_namelist_file(filename, config_user, initialize_tasks=True):
 
 def check_namelist(filename):
     """Check a namelist file and return it in raw form."""
+    # Note that many checks can only be performed after the automatically
+    # computed entries have been filled in by creating a Namelist object.
     # TODO: use yaml schema for checking basic properties
     with open(filename, 'r') as file:
         raw_namelist = yaml.safe_load(file)
 
-    # TODO: add more checks
-    models = []
-    for model in raw_namelist['models']:
-        if model in models:
+    # TODO: add more checks?
+    check_preprocessors(raw_namelist['preprocessors'])
+    check_diagnostics(raw_namelist['diagnostics'])
+    return raw_namelist
+
+
+def check_preprocessors(preprocessors):
+    """Check preprocessors in namelist"""
+    preprocessor_functions = set(DEFAULT_ORDER)
+    for name, settings in preprocessors.items():
+        invalid_functions = set(settings) - preprocessor_functions
+        if invalid_functions:
+            raise NamelistError(
+                "Unknown function(s) {} in preprocessor {}, choose from: {}"
+                .format(invalid_functions, name, ', '.join(DEFAULT_ORDER)))
+
+
+def check_diagnostics(diagnostics):
+    """Check diagnostics in namelist"""
+    for name, diagnostic in diagnostics.items():
+        if 'scripts' not in diagnostic:
+            raise NamelistError("Missing scripts section in diagnostic {}"
+                                .format(name))
+        if diagnostic['scripts'] is None:
+            continue
+        for script_name, script in diagnostic['scripts'].items():
+            if not script.get('script'):
+                raise NamelistError(
+                    "No script defined for script {} in diagnostic {}".format(
+                        script_name, name))
+
+
+def check_preprocessor_settings(settings):
+    """Check preprocessor settings."""
+    # The inspect functions getargspec and getcallargs are deprecated
+    # in Python 3, but their replacements are not available in Python 2.
+    # TODO: Use the new Python 3 inspect API
+    for step in settings:
+        if step not in DEFAULT_ORDER:
+            raise NamelistError(
+                "Unknown preprocessor function '{}', choose from: {}".format(
+                    step, ', '.join(DEFAULT_ORDER)))
+        function = PREPROCESSOR_FUNCTIONS[step]
+        argspec = inspect.getargspec(function)
+        args = argspec.args[1:]
+        # Check for invalid arguments
+        invalid_args = set(settings[step]) - set(args)
+        if invalid_args:
+            raise NamelistError(
+                "Invalid argument(s) {} encountered for preprocessor "
+                "function {}".format(invalid_args, step))
+        # Check for missing arguments
+        defaults = argspec.defaults
+        end = None if defaults is None else -len(defaults)
+        missing_args = set(args[:end]) - set(settings[step])
+        if missing_args:
+            raise NamelistError(
+                "Missing required argument(s) {} for preprocessor "
+                "function {}".format(missing_args, step))
+        # Final sanity check in case the above fails to catch a mistake
+        try:
+            inspect.getcallargs(function, None, **settings[step])
+        except TypeError:
+            logger.error("Wrong preprocessor function arguments in "
+                         "function '%s'", step)
+            raise
+
+
+def check_duplicate_models(models):
+    """Check for duplicate models."""
+    checked_models_ = []
+    for model in models:
+        if model in checked_models_:
             raise NamelistError(
                 "Duplicate model {} in models section".format(model))
-        models.append(model)
+        checked_models_.append(model)
 
-    for name, settings in raw_namelist['preprocessors'].items():
-        for step in settings:
-            if step not in DEFAULT_ORDER:
-                raise NamelistError(
-                    "Unknown function {} in preprocessor {}, choose from: {}"
-                    .format(step, name, ', '.join(DEFAULT_ORDER)))
-            # TODO: check for correct keyword arguments using inspect module
 
-    return raw_namelist
+def check_variables(variables):
+    """Check variables as derived from namelist"""
+    generic = {
+        'short_name', 'standard_name', 'field', 'model', 'project',
+        'start_year', 'end_year', 'preprocessor', 'diagnostic'
+    }
+    project_specific = {
+        # project: keys
+        'CMIP5': {'ensemble', 'mip', 'exp'},
+        'CCMVal1': {'ensemble', 'exp'},
+        'CCMVal2': {'ensemble', 'exp'},
+        'GFDL': {'ensemble', 'realm', 'shift'},
+        'OBS': {'type', 'version', 'tier'},
+    }
+    for variable in variables:
+        required = set(generic)
+        project = variable.get('project')
+        if project in project_specific:
+            required.update(project_specific[project])
+        missing = required - set(variable)
+        if missing:
+            raise NamelistError(
+                "Missing keys {} from variable {} in diagnostic {}".format(
+                    missing,
+                    variable.get('short_name'), variable.get('diagnostic')))
+
+
+def check_data_availability(input_files, start_year, end_year):
+    """Check if the required input data is available"""
+    if not input_files:
+        raise NamelistError("No input files found")
+
+    required_years = set(range(start_year, end_year + 1))
+    available_years = set()
+    for filename in input_files:
+        start, end = get_start_end_year(filename)
+        available_years.update(range(start, end + 1))
+
+    missing_years = required_years - available_years
+    if missing_years:
+        raise NamelistError(
+            "No input data available for years {} in files {}".format(
+                ", ".join(str(year) for year in missing_years), input_files))
 
 
 def _get_value(key, variables):
@@ -170,24 +277,6 @@ def _get_default_settings(variable, config_user):
     return settings
 
 
-def check_data_availability(input_files, start_year, end_year):
-    """Check if the required input data is available"""
-    if not input_files:
-        raise NamelistError("No input files found")
-
-    required_years = set(range(start_year, end_year + 1))
-    available_years = set()
-    for filename in input_files:
-        start, end = get_start_end_year(filename)
-        available_years.update(range(start, end + 1))
-
-    missing_years = required_years - available_years
-    if missing_years:
-        raise NamelistError(
-            "No input data available for years {} in files {}".format(
-                ", ".join(str(year) for year in missing_years), input_files))
-
-
 def _get_input_files(variable, config_user):
     """Get the input files for a single model"""
     # Find input files locally.
@@ -230,6 +319,10 @@ def _get_preprocessor_settings(variables, preprocessors, config_user):
         # Start out with default settings
         settings = _get_default_settings(variable, config_user)
         # Get preprocessor settings from profile and apply those
+        name = variable.get('preprocessor')
+        if name not in preprocessors:
+            raise NamelistError("Unknown preprocessor {} in variable {}"
+                                .format(name, variable['short_name']))
         profile_settings = preprocessors[variable['preprocessor']]
         _apply_preprocessor_settings(settings, profile_settings)
         # if the target grid is a model name, replace it with a file name
@@ -241,6 +334,7 @@ def _get_preprocessor_settings(variables, preprocessors, config_user):
         if 'derive' in settings:
             # create two pairs of settings?
             pass
+        check_preprocessor_settings(settings)
         all_settings[variable['filename']] = settings
 
     _check_multi_model_settings(all_settings)
@@ -313,8 +407,9 @@ class Namelist(object):
             models = self._initialize_models(
                 name, raw_diagnostic.get('additional_models'))
             diagnostic['models'] = models
-            diagnostic['variable_collection'] = self._initialize_variables(
-                name, raw_diagnostic.get('variables'), models)
+            diagnostic['variable_collection'] = \
+                self._initialize_variable_collection(
+                    name, raw_diagnostic.get('variables'), models)
             diagnostic['scripts'] = self._initialize_scripts(
                 name, raw_diagnostic.get('scripts'))
             diagnostics[name] = diagnostic
@@ -327,14 +422,44 @@ class Namelist(object):
 
         models = list(self.models)
 
-        if raw_additional_models and raw_additional_models != 'None':
+        if raw_additional_models:
             models += raw_additional_models
 
+        check_duplicate_models(models)
         return models
 
-    def _initialize_variables(self, diagnostic_name, raw_variables, models):
+    def _initialize_variables(self, raw_variable, models):
+        """Define variables for all models."""
+        variables = []
+        cmor_keys = ['standard_name', 'long_name', 'units']
+        for model in models:
+            variable = copy.deepcopy(raw_variable)
+            variable.update(model)
+            if ('cmor_table' not in variable
+                    and variable.get('project') in CMOR_TABLES):
+                variable['cmor_table'] = variable['project']
+            _add_cmor_info(variable, cmor_keys)
+            variables.append(variable)
+
+        for variable in variables:
+            for key in ['mip', 'cmor_table'] + cmor_keys:
+                if key not in variable:
+                    value = _get_value(key, variables)
+                    if value is not None:
+                        variable[key] = value
+
+        check_variables(variables)
+
+        for variable in variables:
+            variable['filename'] = get_output_file(variable,
+                                                   self._cfg['preproc_dir'])
+
+        return variables
+
+    def _initialize_variable_collection(self, diagnostic_name, raw_variables,
+                                        models):
         """Define variables in diagnostic"""
-        if not raw_variables or raw_variables == 'None':
+        if not raw_variables:
             return {}
 
         logger.debug("Populating list of variables for diagnostic %s",
@@ -342,38 +467,19 @@ class Namelist(object):
 
         variable_collection = {}
 
-        cmor_keys = ['standard_name', 'long_name', 'units']
         for variable_name, raw_variable in raw_variables.items():
+            if 'short_name' not in raw_variable:
+                raw_variable['short_name'] = variable_name
+            raw_variable['diagnostic'] = diagnostic_name
             raw_variable['preprocessor'] = str(raw_variable['preprocessor'])
-            variables = []
-            for model in models:
-                variable = copy.deepcopy(raw_variable)
-                variable['diagnostic'] = diagnostic_name
-                variable.update(model)
-                if 'short_name' not in variable:
-                    variable['short_name'] = variable_name
-                if ('cmor_table' not in variable
-                        and variable['project'] in CMOR_TABLES):
-                    variable['cmor_table'] = variable['project']
-                _add_cmor_info(variable, cmor_keys)
-                variables.append(variable)
-
-            for variable in variables:
-                for key in ['mip', 'cmor_table'] + cmor_keys:
-                    if key not in variable:
-                        value = _get_value(key, variables)
-                        if value is not None:
-                            variable[key] = value
-                variable['filename'] = get_output_file(
-                    variable, self._cfg['preproc_dir'])
-
-            variable_collection[variable_name] = variables
+            variable_collection[variable_name] = \
+                self._initialize_variables(raw_variable, models)
 
         return variable_collection
 
     def _initialize_scripts(self, diagnostic_name, raw_scripts):
         """Define script in diagnostic"""
-        if not raw_scripts or raw_scripts == 'None':
+        if not raw_scripts:
             return {}
 
         logger.debug("Setting script for diagnostic %s", diagnostic_name)
