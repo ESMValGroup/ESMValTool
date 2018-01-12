@@ -1,0 +1,39 @@
+# Generic namelist Yamale schema definition.
+# See https://github.com/23andMe/Yamale for help.
+
+---
+# Namelist schema
+models: list(include('model'), required=False)
+preprocessors: map(map(), min=1)
+diagnostics: map(include('diagnostic'), required=False)
+
+---
+# Namelist item definitions
+model:
+  model: str()
+  start_year: int(min=1750, max=2250)
+  end_year: int(min=1750, max=2250)
+  ensemble: str(required=False)
+  exp: str(required=False)
+  mip: str(required=False)
+  project: str(required=False)
+  realm: str(required=False)
+  shift: str(required=False)
+  tier: int(min=2, max=3, required=False)
+  type: str(required=False)
+
+variable:
+  preprocessor: str()
+  reference_model: str(required=False)
+  alternative_model: str(required=False)
+  field: str(required=False)
+  mip: str(required=False)
+
+diagnostic:
+  scripts: any(null(), map(include('script')))
+  additional_models: list(include('model'), required=False)
+  description: str(required=False)
+  variables: map(include('variable'), required=False)
+
+script:
+  script: str()

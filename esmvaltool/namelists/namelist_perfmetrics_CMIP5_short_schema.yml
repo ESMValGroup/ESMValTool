@@ -1,0 +1,35 @@
+# Namelist specific Yamale schema definition.
+# See https://github.com/23andMe/Yamale for help.
+---
+diagnostics: map(include('diagnostic'))
+
+---
+diagnostic:
+  scripts: map(include('perfmetrics_main'), include('perfmetrics_grading_collect'))
+
+perfmetrics_main:
+  script: enum('perfmetrics_main.ncl')
+  # Mandatory settings
+  legend_outside: bool()
+  plot_type: enum('cycle', 'zonal', 'latlon', 'cycle_latlon')
+  plot_stddev:  str()
+  region: enum('Global', 'Tropics', 'NH extratropics', 'SH extratropics')
+  styleset: str()
+  time_avg: str()
+  # Optional settings
+  draw_plots: bool(required=False)
+  calc_grading: bool(required=False)
+  metric: enum('RMSD', 'BIAS', 'taylor', required=False)
+  MultiModelMean: bool(required=False)
+  MultiModelMedian: bool(required=False)
+  normalization: enum('mean', 'median', 'centered_median', required=False)
+  
+perfmetrics_grading_collect:
+  script: enum('perfmetrics_grading_collect.ncl')
+  # Mandatory settings
+  ancestors: list(str())
+  cm_interval: list(int(), min=2, max=2)
+  disp_values: bool()
+  label_bounds: list(num(), min=2, max=2)
+  label_scale: num()
+  sort: bool()
