@@ -34,11 +34,10 @@ def concatenate_callback(raw_cube, field, _):
                 coord.units = units
 
 
-def load_cubes(files, **kwargs):
+def load_cubes(files, filename, constraints=None, callback=None):
     """Load iris cubes from files"""
     logger.debug("Loading and concatenating:\n%s", "\n".join(files))
-    filename = kwargs.pop('filename')
-    cubes = iris.load_raw(files, **kwargs)
+    cubes = iris.load_raw(files, constraints=constraints, callback=callback)
     iris.util.unify_time_units(cubes)
     cubes = cubes.concatenate()
     for cube in cubes:
@@ -65,10 +64,8 @@ def _save_cubes(cubes, **args):
     return filename
 
 
-def save_cubes(cubes, debug=False, **args):
+def save_cubes(cubes, debug=False, step=None):
     """Save iris cubes to the file specified in the _filename attribute."""
-    step = args.pop('step') if debug else None
-
     paths = {}
     for cube in cubes:
         if '_filename' not in cube.attributes:
@@ -84,6 +81,6 @@ def save_cubes(cubes, debug=False, **args):
         paths[filename].append(cube)
 
     for filename in paths:
-        _save_cubes(cubes=paths[filename], target=filename, **args)
+        _save_cubes(cubes=paths[filename], target=filename)
 
     return list(paths)
