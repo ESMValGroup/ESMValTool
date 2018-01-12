@@ -1,184 +1,79 @@
+---
+
 name: esmvaltool
 channels:
-- khallock
 - conda-forge
-- defaults
+- khallock # ncl package on conda-forge is broken
+#- defaults # in case of missing packages
+#- Clyde_Fare #for scientific python
+
+# ESMVALTOOL DEPENDENCIES
+
 dependencies:
-- alabaster=0.7.10=py35_1
-- asn1crypto=0.22.0=py35_0
-- attrs=17.4.0=py_0
-- babel=2.5.1=py35_0
-- backports=1.0=py35_1
-- backports.functools_lru_cache=1.4=py35_1
-- basemap=1.1.0=py35_3
-- biggus=0.15.0=py35_0
-- blas=1.1=openblas
-- bzip2=1.0.6=1
-- ca-certificates=2017.11.5=0
-- cairo=1.14.10=0
-- cartopy=0.15.1=py35_5
-- cdo=1.9.2=0
-- certifi=2017.11.5=py35_0
-- cf_units=1.1.3=py35_2
-- cffi=1.11.2=py35_0
-- chardet=3.0.4=py35_0
-- click=6.7=py_1
-- coverage=4.4.2=py35_0
-- cryptography=2.1.4=py35_0
-- curl=7.55.1=0
-- cycler=0.10.0=py35_0
-- cython=0.27.3=py35_0
-- dbus=1.10.22=0
-- docutils=0.14=py35_0
-- eccodes=2.5.0=0
-- expat=2.2.5=0
-- fftw=3.3.7=0
-- flask=0.12.2=py35_0
-- fontconfig=2.12.6=0
-- freetype=2.8.1=0
-- g2clib=1.6.0=5
-- geos=3.6.2=1
-- gettext=0.19.7=1
-- glib=2.55.0=0
-- gmp=6.1.2=0
-- gst-plugins-base=1.8.0=0
-- gstreamer=1.8.0=1
-- hdf4=4.2.13=0
-- hdf5=1.8.17=11
-- hdfeos2=2.19.1=8
-- hdfeos5=5.1.15=6
-- icu=58.2=0
-- idna=2.6=py35_1
-- imagesize=0.7.1=py35_0
-- iris=1.13.0=py35_1
-- itsdangerous=0.24=py_2
-- jasper=1.900.1=4
-- jinja2=2.10=py35_0
-- jpeg=9b=2
-- kealib=1.4.6=3
-- krb5=1.14.2=0
-- libffi=3.2.1=3
-- libiconv=1.15=0
-- libmo_unpack=3.0=1
-- libnetcdf=4.4.0=3
-- libpng=1.6.34=0
-- libssh2=1.8.0=2
-- libtiff=4.0.9=0
-- libxcb=1.12=1
-- libxml2=2.9.5=2
-- libxslt=1.1.32=0
-- llvmlite=0.21.0=py35_0
-- lxml=4.1.1=py35_0
-- markupsafe=1.0=py35_0
-- matplotlib=2.1.1=py35_2
-- mo_pack=0.2.0=py35_1
-- mock=2.0.0=py35_0
-- mpc=1.0.3=4
-- mpfr=3.1.5=0
-- nc_time_axis=1.0.2=py35_0
-- ncurses=5.9=10
-- netcdf4=1.2.8=np112py35_0
-- nose=1.3.7=py35_2
-- numpy=1.12.1=py35_blas_openblas_201
-- olefile=0.44=py35_0
-- openblas=0.2.20=6
-- openssl=1.0.2n=0
-- owslib=0.16.0=py_0
-- pbr=3.1.1=py35_0
-- pcre=8.39=0
-- pillow=4.3.0=py35_2
-- pip=9.0.1=py35_1
-- pixman=0.34.0=1
-- pluggy=0.6.0=py_0
-- proj4=4.9.3=5
-- py=1.5.2=py_0
-- pycparser=2.18=py35_0
-- pyepsg=0.3.2=py35_0
-- pygments=2.2.0=py35_0
-- pyke=1.1.1=py35_0
-- pyopenssl=17.4.0=py35_0
-- pyparsing=2.2.0=py35_0
-- pyproj=1.9.5.1=py35_0
-- pyqt=5.6.0=py35_4
-- pyshp=1.2.12=py_0
-- pysocks=1.6.8=py_0
-- pytest=3.3.2=py35_0
-- pytest-cov=2.5.1=py35_0
-- pytest-html=1.16.0=py35_0
-- pytest-metadata=1.5.1=py_0
-- python=3.5.4=3
-- python-cdo=1.3.4=py35_0
-- python-dateutil=2.6.1=py35_0
-- python-stratify=0.1a2=np112py35_0
-- pytz=2017.3=py_2
-- pyyaml=3.12=py35_1
-- qt=5.6.2=7
-- readline=7.0=0
-- requests=2.18.4=py35_1
-- scipy=1.0.0=py35_blas_openblas_201
-- setuptools=38.4.0=py35_0
-- shapely=1.6.3=py35_0
-- sip=4.18=py35_1
-- six=1.11.0=py35_1
-- snowballstemmer=1.2.1=py35_0
-- sphinx=1.6.6=py35_0
-- sphinxcontrib-websupport=1.0.1=py35_0
-- sqlite=3.20.1=2
-- tk=8.6.7=0
-- tornado=4.5.2=py35_0
-- typing=3.6.2=py35_0
-- udunits2=2.2.25=2
-- urllib3=1.22=py35_0
-- werkzeug=0.12.2=py_1
-- wheel=0.30.0=py35_2
-- xerces-c=3.2.0=0
-- xorg-libxau=1.0.8=3
-- xorg-libxdmcp=1.1.2=3
-- xz=5.2.3=0
-- yaml=0.1.6=0
-- zlib=1.2.11=0
-- cloog=0.18.0=0
-- gcc=4.8.5=7
-- isl=0.12.2=0
-- libgcc=7.2.0=h69d50b8_2
-- libgcc-ng=7.2.0=h7cc24e2_2
-- libgdal=2.0.0=1
-- libgfortran=3.0.0=1
-- libstdcxx-ng=7.2.0=h7a57d05_2
+# Needed by main, preprocessor, workflow, one or more diagnostics, shared diagnostic code.
+- basemap
+- cartopy
+- cf_units
+- cython
+- flask
+- iris
+- ncl
+- netcdf4
 - numba=0.35.0
-- util-linux=2.21=0
-- ncl=dev_r16542=ncdf440_1
-- szip=2.1=1
+- numpy
+- pillow # providing PIL package
+- python-cdo
+- python-stratify
+- pyyaml
+- scipy
+- shapely
+- six
+#- scientificpython
+
+# Old Iris and ncl dependency block. Simply using the top level packages should be enough now.
+# iris
+#- iris
+#- cartopy=0.15.*
+#- matplotlib=1.5.*
+#- ncl
+#- hdf4=4.2.12
+#- hdf5=1.8.17
+#- icu=58.1
+#- libnetcdf=4.4.1.1
+#- xorg-libsm=1.2.2
+#- xorg-libxext
+#- xorg-libxrender
+
+# DEVELOPMENT DEPENDENCIES
+#
+# Dependencies below that are required by 'setup.py test' and 'setup.py lint'
+# should also be automatically be installed by setup.py in a temporary
+# location when required to run the command.
+
+# documentation
+- sphinx
+
+# testing
+- mock
+- nose
+- pytest
+- pytest-cov
+- pytest-html
+
+# Note that there can be only one pip section
 - pip:
-  - astroid==1.6.0
-  - backports.functools-lru-cache==1.4
-  - cf-units==1.1.3
-  - dodgy==0.1.9
-  - dummydata==0.1.4
-  - easytest==0.1.5
-  - esgf-pyclient==0.1.8
-  - flake8==3.5.0
-  - flake8-polyfill==1.0.2
-  - geoval==0.1.5
-  - isort==4.2.15
-  - lazy-object-proxy==1.3.1
-  - mccabe==0.6.1
-  - mo-pack==0.2.0
-  - nc-time-axis==1.0.2
-  - pep8-naming==0.5.0
-  - prospector==0.12.7
-  - pycodestyle==2.3.1
-  - pydocstyle==2.1.1
-  - pyflakes==1.6.0
-  - pylint==1.8.1
-  - pylint-celery==0.3
-  - pylint-common==0.2.5
-  - pylint-django==0.7.2
-  - pylint-flask==0.5
-  - pylint-plugin-utils==0.2.6
-  - pyroma==2.0.2
-  - requirements-detector==0.5.2
-  - setoptconf==0.2.0
-  - stratify==0.1a0
-  - wrapt==1.10.11
-  - yapf==0.20.0
+  # TODO: replace esgf-pyclient and geoval by conda packages
+  # TODO: move esgf-pyclient and geoval to ESMVALTOOL DEPENDENCIES
+  - easytest
+  - esgf-pyclient
+  - geoval
+  # TODO: replace dummydata by conda/PyPI package and move to testing
+  # dummydata fetched from github as a zip file, contains latest version
+  - https://github.com/ESMValGroup/dummydata/archive/dev.zip
+  # code style (pip versions are more up to date)
+  - isort
+  - prospector[with_pyroma]
+  - pycodestyle  # also used for testing
+  - pydocstyle
+  - pylint
+  - yapf
