@@ -45,7 +45,7 @@ diagnostics:
         field: T3M
     additional_models:
       - {model: NCEP,        project: OBS,    tier: 2,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
-    scripts: None
+    scripts: Null
 
   diagnostic_2:
     description: Preprocessor test diagnostic 2.
@@ -55,7 +55,7 @@ diagnostics:
         field: T3M
     additional_models:
       - {model: NCEP,        project: OBS,    tier: 2,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
-    scripts: None
+    scripts: Null
 
   diagnostic_3:
     description: Preprocessor test diagnostic 3.
@@ -64,4 +64,4 @@ diagnostics:
         preprocessor: preprocessor_3
         field: T2Ms
     additional_models: []
-    scripts: None
+    scripts: Null
