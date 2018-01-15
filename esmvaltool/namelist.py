@@ -369,13 +369,13 @@ def _get_preprocessor_task(variables, preprocessors, config_user):
         v['filename']: _get_input_files(v, config_user)
         for v in variables
     }
-
+    metadata = {'variables': variables}
     output_dir = os.path.dirname(next(v['filename'] for v in variables))
     task = PreprocessingTask(
         settings=all_settings,
         output_dir=output_dir,
         input_files=input_files,
-        metadata=variables,
+        metadata=metadata,
         debug=config_user['save_intermediary_cubes'])
 
     return task
