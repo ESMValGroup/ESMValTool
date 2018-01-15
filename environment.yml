@@ -3,6 +3,7 @@
 name: esmvaltool
 channels:
 - conda-forge
+- khallock # ncl package on conda-forge is broken
 #- defaults # in case of missing packages
 #- Clyde_Fare #for scientific python
 
@@ -18,7 +19,7 @@ dependencies:
 - iris
 - ncl
 - netcdf4
-- numba
+- numba=0.35.0
 - numpy
 - pillow # providing PIL package
 - python-cdo
