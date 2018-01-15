@@ -11,22 +11,22 @@ diagnostics: map(include('diagnostic'), required=False)
 # Namelist item definitions
 model:
   model: str()
+  project: str()
   start_year: int(min=1750, max=2250)
   end_year: int(min=1750, max=2250)
   ensemble: str(required=False)
   exp: str(required=False)
   mip: str(required=False)
-  project: str(required=False)
   realm: str(required=False)
   shift: str(required=False)
   tier: int(min=2, max=3, required=False)
   type: str(required=False)
 
 variable:
+  field: str()
   preprocessor: str()
   reference_model: str(required=False)
   alternative_model: str(required=False)
-  field: str(required=False)
   mip: str(required=False)
 
 diagnostic:
