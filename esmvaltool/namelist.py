@@ -34,18 +34,12 @@ def read_namelist_file(filename, config_user, initialize_tasks=True):
 
 def check_namelist_with_schema(filename):
     """Check if the namelist content matches schema."""
-    namelist_file = filename
-    schema_files = [
-        os.path.join(os.path.dirname(__file__), 'namelist_schema.yml'),
-    ]
-    namelist_schema_file = os.path.splitext(filename)[0] + '_schema.yml'
-    if os.path.exists(namelist_schema_file):
-        schema_files.append(namelist_schema_file)
-    namelist = yamale.make_data(namelist_file)
-    for schema_file in schema_files:
-        logger.debug("Checking namelist against schema %s", schema_file)
-        schema = yamale.make_schema(schema_file)
-        yamale.validate(schema, namelist)
+    schema_file = os.path.join(
+        os.path.dirname(__file__), 'namelist_schema.yml')
+    logger.debug("Checking namelist against schema %s", schema_file)
+    namelist = yamale.make_data(filename)
+    schema = yamale.make_schema(schema_file)
+    yamale.validate(schema, namelist)
 
 
 def check_namelist(filename):
