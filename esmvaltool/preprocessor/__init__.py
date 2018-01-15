@@ -251,13 +251,13 @@ class PreprocessingTask(AbstractTask):
             k: [v.get(k) for v in self.metadata['variables']]
             for k in keys
         }
-        metadata_file = os.path.join(self.output_dir, 'metadata.ncl')
-        write_settings(metadata, metadata_file)
+        filename = os.path.join(self.output_dir, 'metadata.ncl')
+        write_settings(metadata, filename)
 
     def _write_metadata(self):
         """Write metadata to YAML file."""
-        metadata_file = os.path.join(self.output_dir, 'metadata.yml')
-        write_settings(self.metadata, metadata_file)
+        filename = os.path.join(self.output_dir, 'metadata.yml')
+        write_settings(self.metadata, filename)
 
     def __str__(self):
         """Get human readable description."""
