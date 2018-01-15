@@ -370,9 +370,12 @@ def _get_preprocessor_task(variables, preprocessors, config_user):
         for v in variables
     }
 
+    output_dir = os.path.dirname(next(v['filename'] for v in variables))
     task = PreprocessingTask(
         settings=all_settings,
+        output_dir=output_dir,
         input_files=input_files,
+        metadata=variables,
         debug=config_user['save_intermediary_cubes'])
 
     return task
@@ -500,16 +503,16 @@ class Namelist(object):
                     id_glob = diagnostic_name + TASKSEP + id_glob
                 ancestors.append(id_glob)
             settings = copy.deepcopy(raw_settings)
-            # Add output dir to settings
-            settings['output_dir'] = os.path.join(
+            settings['exit_on_ncl_warning'] = self._cfg['exit_on_warning']
+
+            output_dir = os.path.join(
                 self._cfg['output_dir'],
                 diagnostic_name,
                 script_name,
             )
-            settings['exit_on_ncl_warning'] = self._cfg['exit_on_warning']
-
             scripts[script_name] = {
                 'script': raw_script,
+                'output_dir': output_dir,
                 'settings': settings,
                 'ancestors': ancestors,
             }
@@ -570,22 +573,23 @@ class Namelist(object):
                 ancestors = later if script_cfg['ancestors'] else preproc_tasks
                 task = DiagnosticTask(
                     script=script_cfg['script'],
+                    output_dir=script_cfg['output_dir'],
                     settings=script_cfg['settings'],
                     ancestors=ancestors,
                 )
                 diagnostic_tasks[task_id] = task
                 # TODO: remove code below once new interface implemented
-                os.makedirs(task.settings['output_dir'])
+                os.makedirs(task.output_dir)
                 write_legacy_ncl_interface(
                     variables=diagnostic['variable_collection'],
                     settings=task.settings,
                     config_user=self._cfg,
-                    output_dir=task.settings['output_dir'],
+                    output_dir=task.output_dir,
                     namelist_file=self._namelist_file,
                     script=task.script)
                 task.settings['env'] = get_legacy_ncl_env(
                     config_user=self._cfg,
-                    output_dir=task.settings['output_dir'],
+                    output_dir=task.output_dir,
                     namelist_basename=os.path.basename(self._namelist_file))
 
         # Resolve diagnostic ancestors marked as 'later'

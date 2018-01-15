@@ -23,10 +23,11 @@ def which(executable):
 class AbstractTask(object):
     """Base class for defining task classes"""
 
-    def __init__(self, settings, ancestors=None):
+    def __init__(self, settings, output_dir, ancestors=None):
         """Initialize task."""
         self.settings = settings
         self.ancestors = [] if ancestors is None else ancestors
+        self.output_dir = output_dir
         self.output_files = None
 
     def flatten(self):
@@ -73,12 +74,13 @@ class DiagnosticError(Exception):
 class DiagnosticTask(AbstractTask):
     """Task for running a diagnostic"""
 
-    def __init__(self, script, settings, ancestors=None):
+    def __init__(self, script, settings, output_dir, ancestors=None):
         """Initialize"""
-        super(DiagnosticTask, self).__init__(settings, ancestors)
+        super(DiagnosticTask, self).__init__(
+            settings=settings, output_dir=output_dir, ancestors=ancestors)
         self.script = script
         self.cmd = self._initialize_cmd(script)
-        self.log = os.path.join(settings['output_dir'], 'log.txt')
+        self.log = os.path.join(self.output_dir, 'log.txt')
 
     @staticmethod
     def _initialize_cmd(script):
@@ -119,8 +121,7 @@ class DiagnosticTask(AbstractTask):
         ext = 'yml'
         if self.script.lower().endswith('.ncl'):
             ext = 'ncl'
-        filename = os.path.join(self.settings['output_dir'],
-                                'settings.{}'.format(ext))
+        filename = os.path.join(self.output_dir, 'settings.{}'.format(ext))
         write_settings(self.settings, filename)
         return filename
 
@@ -173,6 +174,7 @@ class DiagnosticTask(AbstractTask):
             return output_files
 
         self.settings['input_files'] = input_files
+        self.settings['output_dir'] = self.output_dir
         settings_file = self._write_settings()
 
         cmd = list(self.cmd)
@@ -188,7 +190,7 @@ class DiagnosticTask(AbstractTask):
         logger.info("Running command %s", cmd)
         logger.debug("in environment\n%s", pprint.pformat(env))
         logger.debug("in current working directory: %s", cwd)
-        logger.info("Writing (some) output to %s", self.settings['output_dir'])
+        logger.info("Writing (some) output to %s", self.output_dir)
         logger.info("Writing log to %s", self.log)
 
         process = subprocess.Popen(
@@ -223,7 +225,7 @@ class DiagnosticTask(AbstractTask):
                 time.sleep(0.001)
 
         if returncode == 0:
-            return [self.settings['output_dir']]
+            return [self.output_dir]
 
         raise DiagnosticError(
             "Diagnostic script {} failed with return code {}. See the log "
