@@ -42,15 +42,22 @@ def write_settings(settings, filename, mode='wt'):
             txt = '\n'.join(lines)
             return txt
 
+        def _header(name):
+            """Delete any existing NCL variable known as `name`."""
+            return ('if (isvar("{name}")) then\n'
+                    '    delete({name})\n'
+                    'end if\n'.format(name=name))
+
         lines = []
         for key, value in sorted(settings.items()):
+            txt = _header(name=key)
             if isinstance(value, dict):
-                txt = _format_dict(name=key, dictionary=value)
+                txt += _format_dict(name=key, dictionary=value)
             else:
-                txt = '{} = {}'.format(key, _format(value))
+                txt += '{} = {}'.format(key, _format(value))
             lines.append(txt)
         with open(filename, mode) as file:
-            file.write('\n'.join(lines))
+            file.write('\n\n'.join(lines))
             file.write('\n')
     else:
         with open(filename, mode) as file:
@@ -202,13 +209,6 @@ def write_legacy_ncl_interface(variables, settings, config_user, output_dir,
     # variable info files
     for name, variable in variables.items():
         info_file_tmp = os.path.join(output_dir, name + '_info.ncl')
-        # write header
-        with open(info_file_tmp, 'wt') as file:
-            header = ('if (isvar("variable_info")) then\n'
-                      '    delete(variable_info)\n'
-                      'end if\n')
-            file.write(header)
-        # write content
         common_items = {
             k: v
             for k, v in variable[0].items()
