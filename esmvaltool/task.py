@@ -78,7 +78,7 @@ class DiagnosticTask(AbstractTask):
         super(DiagnosticTask, self).__init__(settings, ancestors)
         self.script = script
         self.cmd = self._initialize_cmd(script)
-        self.log = os.path.join(settings['output_dir'], 'log.txt')
+        self.log = os.path.join(settings['run_dir'], 'log.txt')
 
     @staticmethod
     def _initialize_cmd(script):
@@ -119,7 +119,7 @@ class DiagnosticTask(AbstractTask):
         ext = 'yml'
         if self.script.lower().endswith('.ncl'):
             ext = 'ncl'
-        filename = os.path.join(self.settings['output_dir'],
+        filename = os.path.join(self.settings['run_dir'],
                                 'settings.{}'.format(ext))
         write_settings(self.settings, filename)
         return filename

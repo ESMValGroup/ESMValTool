@@ -177,13 +177,13 @@ def main():
     cfg = read_config_file(config_file, namelist_name)
 
     # Create run dir
-    if os.path.exists(cfg['output_dir']):
-        print("ERROR: output_dir {} already exists, aborting to "
+    if os.path.exists(cfg['run_dir']):
+        print("ERROR: run_dir {} already exists, aborting to "
               "prevent data loss".format(cfg['output_dir']))
-    os.makedirs(cfg['output_dir'])
+    os.makedirs(cfg['run_dir'])
 
     configure_logging(
-        output=cfg['output_dir'], console_log_level=cfg['log_level'])
+        output=cfg['run_dir'], console_log_level=cfg['log_level'])
 
     # log header
     logger.info(__doc__)
@@ -220,7 +220,7 @@ def process_namelist(namelist_file, config_user):
     logger.info(70 * "-")
 
     # copy namelist to run_dir for future reference
-    shutil.copy2(namelist_file, config_user['output_dir'])
+    shutil.copy2(namelist_file, config_user['run_dir'])
 
     # parse namelist
     namelist = read_namelist_file(namelist_file, config_user)

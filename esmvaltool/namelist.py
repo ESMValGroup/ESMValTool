@@ -506,12 +506,23 @@ class Namelist(object):
                 ancestors.append(id_glob)
             settings = copy.deepcopy(raw_settings)
             # Add output dir to settings
-            settings['output_dir'] = os.path.join(
+            output_dir = os.path.join(
                 self._cfg['output_dir'],
                 diagnostic_name,
                 script_name,
             )
+            settings['output_dir'] = output_dir
+            settings['run_dir'] = os.path.join(
+                self._cfg['output_dir'],
+                'tmp',
+                diagnostic_name,
+                script_name,
+            )
             settings['exit_on_ncl_warning'] = self._cfg['exit_on_warning']
+            for key in ('work_dir', 'plot_dir', 'preproc_dir',
+                        'max_data_filesize', 'output_file_type', 'write_plots',
+                        'write_netcdf', 'log_level'):
+                settings[key] = self._cfg[key]
 
             scripts[script_name] = {
                 'script': raw_script,
@@ -580,17 +591,16 @@ class Namelist(object):
                 )
                 diagnostic_tasks[task_id] = task
                 # TODO: remove code below once new interface implemented
-                os.makedirs(task.settings['output_dir'])
+                os.makedirs(task.settings['run_dir'])
                 write_legacy_ncl_interface(
                     variables=diagnostic['variable_collection'],
                     settings=task.settings,
-                    config_user=self._cfg,
-                    output_dir=task.settings['output_dir'],
+                    output_dir=task.settings['run_dir'],
                     namelist_file=self._namelist_file,
                     script=task.script)
                 task.settings['env'] = get_legacy_ncl_env(
-                    config_user=self._cfg,
-                    output_dir=task.settings['output_dir'],
+                    settings=task.settings,
+                    output_dir=task.settings['run_dir'],
                     namelist_basename=os.path.basename(self._namelist_file))
 
         # Resolve diagnostic ancestors marked as 'later'
