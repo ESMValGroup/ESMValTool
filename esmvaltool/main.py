@@ -104,7 +104,7 @@ def read_config_file(config_file, namelist_name):
         'output_file_type': 'ps',
         'output_dir': './output_dir',
         'save_intermediary_cubes': False,
-        'parallel': True,
+        'max_parallel_tasks': 1,
         'run_diagnostic': True,
     }
 

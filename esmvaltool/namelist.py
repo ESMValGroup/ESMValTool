@@ -8,6 +8,7 @@ import logging
 import os
 
 import yaml
+import yamale
 
 from .interface_scripts.data_finder import (
     get_input_filelist, get_input_filename, get_output_file,
@@ -37,11 +38,21 @@ def read_namelist_file(filename, config_user, initialize_tasks=True):
         raw_namelist, config_user, initialize_tasks, namelist_file=filename)
 
 
+def check_namelist_with_schema(filename):
+    """Check if the namelist content matches schema."""
+    schema_file = os.path.join(
+        os.path.dirname(__file__), 'namelist_schema.yml')
+    logger.debug("Checking namelist against schema %s", schema_file)
+    namelist = yamale.make_data(filename)
+    schema = yamale.make_schema(schema_file)
+    yamale.validate(schema, namelist)
+
+
 def check_namelist(filename):
     """Check a namelist file and return it in raw form."""
     # Note that many checks can only be performed after the automatically
     # computed entries have been filled in by creating a Namelist object.
-    # TODO: use yaml schema for checking basic properties
+    check_namelist_with_schema(filename)
     with open(filename, 'r') as file:
         raw_namelist = yaml.safe_load(file)
 
@@ -390,7 +401,6 @@ class Namelist(object):
                  initialize_tasks=True,
                  namelist_file=None):
         """Parse a namelist file into an object."""
-        self._max_n_models = 0
         self._cfg = config_user
         self._namelist_file = namelist_file  # TODO: remove this dependency
         self._preprocessors = raw_namelist['preprocessors']
@@ -430,11 +440,6 @@ class Namelist(object):
             models += raw_additional_models
 
         check_duplicate_models(models)
-
-        n_models = len(models)
-        if n_models > self._max_n_models:
-            self._max_n_models = n_models
-
         return models
 
     def _initialize_variables(self, raw_variable, models):
@@ -612,9 +617,5 @@ class Namelist(object):
 
     def run(self):
         """Run all tasks in the namelist."""
-        parallel = self._cfg.get('parallel', True)
-        if self._max_n_models > 10 and parallel:
-            logger.warning(
-                "Running the program in parallel with many models may "
-                "require more memory than is available in your system.")
-        run_tasks(self.tasks, parallel=parallel)
+        run_tasks(
+            self.tasks, max_parallel_tasks=self._cfg['max_parallel_tasks'])

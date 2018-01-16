@@ -179,7 +179,10 @@ class DiagnosticTask(AbstractTask):
 
         cmd = list(self.cmd)
         cwd = None
-        env = {str(k): str(v) for k, v in self.settings['env'].items()}
+        if 'env' in self.settings:
+            env = {str(k): str(v) for k, v in self.settings['env'].items()}
+        else:
+            env = None
 
         is_ncl_script = self.script.lower().endswith('.ncl')
         if is_ncl_script:
@@ -256,12 +259,12 @@ def get_independent_tasks(tasks):
     return independent_tasks
 
 
-def run_tasks(tasks, parallel=True):
+def run_tasks(tasks, max_parallel_tasks=None):
     """Run tasks."""
-    if parallel:
-        _run_tasks_parallel(tasks)
-    else:
+    if max_parallel_tasks == 1:
         _run_tasks_sequential(tasks)
+    else:
+        _run_tasks_parallel(tasks, max_parallel_tasks)
 
 
 def _run_tasks_sequential(tasks):
@@ -273,7 +276,7 @@ def _run_tasks_sequential(tasks):
         task.run()
 
 
-def _run_tasks_parallel(tasks):
+def _run_tasks_parallel(tasks, max_parallel_tasks=None):
     """Run tasks in parallel"""
     scheduled = get_flattened_tasks(tasks)
     running = []
@@ -282,10 +285,14 @@ def _run_tasks_parallel(tasks):
     n_scheduled, n_running = len(scheduled), len(running)
     n_tasks = n_scheduled
 
-    pool = Pool()
+    pool = Pool(processes=max_parallel_tasks)
 
     logger.info("Running %s tasks using at most %s processes", n_tasks,
-                cpu_count())
+                max_parallel_tasks or cpu_count())
+    logger.info(
+        "If your system hangs during execution, it may not have enough "
+        "memory for keeping this number of tasks in memory. In that case, "
+        "try reducing 'max_parallel_tasks' in your user configuration file.")
 
     def done(task):
         """Assume a task is done if it not scheduled or running."""

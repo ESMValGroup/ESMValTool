@@ -19,8 +19,10 @@ output_file_type: pdf
 output_dir: ./esmvaltool_output
 # Save intermediary cubes in the preprocessor true/[false]
 save_intermediary_cubes: false
-# Run tasks in parallel true/[false]
-parallel: true
+# Run at most this many tasks in parallel null/[1]/2/3/4/..
+# Set to null to use the number of available CPUs.
+# Make sure your system has enough memory for the specified number of tasks.
+max_parallel_tasks: 1
 
 rootpath:
   # Rootpath to CMIP5 data

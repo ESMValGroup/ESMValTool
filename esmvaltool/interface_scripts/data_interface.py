@@ -226,7 +226,7 @@ def get_legacy_ncl_env(config_user, output_dir, namelist_basename):
     project_root = os.sep.join(__file__.split(os.sep)[:-3])
     prefix = 'ESMValTool_'
 
-    env = {}
+    env = dict(os.environ)
     for key in ('work_dir', 'plot_dir', 'output_file_type', 'write_plots',
                 'write_netcdf'):
         env[prefix + key] = config_user[key]
