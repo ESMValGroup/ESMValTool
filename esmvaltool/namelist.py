@@ -8,6 +8,7 @@ import logging
 import os
 
 import yaml
+import yamale
 
 from .interface_scripts.data_finder import (
     get_input_filelist, get_input_filename, get_output_file,
@@ -37,11 +38,21 @@ def read_namelist_file(filename, config_user, initialize_tasks=True):
         raw_namelist, config_user, initialize_tasks, namelist_file=filename)
 
 
+def check_namelist_with_schema(filename):
+    """Check if the namelist content matches schema."""
+    schema_file = os.path.join(
+        os.path.dirname(__file__), 'namelist_schema.yml')
+    logger.debug("Checking namelist against schema %s", schema_file)
+    namelist = yamale.make_data(filename)
+    schema = yamale.make_schema(schema_file)
+    yamale.validate(schema, namelist)
+
+
 def check_namelist(filename):
     """Check a namelist file and return it in raw form."""
     # Note that many checks can only be performed after the automatically
     # computed entries have been filled in by creating a Namelist object.
-    # TODO: use yaml schema for checking basic properties
+    check_namelist_with_schema(filename)
     with open(filename, 'r') as file:
         raw_namelist = yaml.safe_load(file)
 
