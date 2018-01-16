@@ -387,7 +387,6 @@ class Namelist(object):
                  initialize_tasks=True,
                  namelist_file=None):
         """Parse a namelist file into an object."""
-        self._max_n_models = 0
         self._cfg = config_user
         self._namelist_file = namelist_file  # TODO: remove this dependency
         self._preprocessors = raw_namelist['preprocessors']
@@ -427,11 +426,6 @@ class Namelist(object):
             models += raw_additional_models
 
         check_duplicate_models(models)
-
-        n_models = len(models)
-        if n_models > self._max_n_models:
-            self._max_n_models = n_models
-
         return models
 
     def _initialize_variables(self, raw_variable, models):
@@ -608,9 +602,5 @@ class Namelist(object):
 
     def run(self):
         """Run all tasks in the namelist."""
-        parallel = self._cfg.get('parallel', True)
-        if self._max_n_models > 10 and parallel:
-            logger.warning(
-                "Running the program in parallel with many models may "
-                "require more memory than is available in your system.")
-        run_tasks(self.tasks, parallel=parallel)
+        run_tasks(
+            self.tasks, max_parallel_tasks=self._cfg['max_parallel_tasks'])
