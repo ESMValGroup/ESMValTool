@@ -177,7 +177,10 @@ class DiagnosticTask(AbstractTask):
 
         cmd = list(self.cmd)
         cwd = None
-        env = {str(k): str(v) for k, v in self.settings['env'].items()}
+        if 'env' in self.settings:
+            env = {str(k): str(v) for k, v in self.settings['env'].items()}
+        else:
+            env = None
 
         is_ncl_script = self.script.lower().endswith('.ncl')
         if is_ncl_script:
