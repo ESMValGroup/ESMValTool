@@ -110,9 +110,10 @@ class CMORCheck(object):
 
     def report_warnings(self, logger):
         if self.has_warnings():
-            msg = 'There were warnings in variable {}:\n{}\nin cube:\n{}'
+            msg = ('There were warnings in variable {}:\n{}\n'
+                   'in the cube that will be saved to file: {}')
             msg = msg.format(self._cube.var_name, '\n '.join(self._warnings),
-                             self._cube)
+                             self._cube.attributes.get('_filename'))
             logger.warning(msg)
 
     def check_data(self, logger=None):
