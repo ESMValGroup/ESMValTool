@@ -102,6 +102,7 @@ _LIST_OUTPUT_FUNCTIONS = {
     'download',
     'load',
     'mask_fillvalues',
+    'multi_model_mean',
     'save',
 }
 assert _LIST_OUTPUT_FUNCTIONS.issubset(set(PREPROCESSOR_FUNCTIONS))

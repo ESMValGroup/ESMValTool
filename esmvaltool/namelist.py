@@ -326,15 +326,17 @@ def _apply_preprocessor_settings(settings, profile_settings):
 def _get_preprocessor_settings(variables, preprocessors, config_user):
     """Get preprocessor settings for for a set of models."""
     all_settings = {}
+
+    # First set up the preprocessor profile
+    variable = variables[0]
+    preproc_name = variable.get('preprocessor')
+    if preproc_name not in preprocessors:
+        raise NamelistError("Unknown preprocessor {} in variable {}".format(
+            preproc_name, variable['short_name']))
+    profile_settings = preprocessors[variable['preprocessor']]
+
     for variable in variables:
-        # Start out with default settings
         settings = _get_default_settings(variable, config_user)
-        # Get preprocessor settings from profile and apply those
-        name = variable.get('preprocessor')
-        if name not in preprocessors:
-            raise NamelistError("Unknown preprocessor {} in variable {}"
-                                .format(name, variable['short_name']))
-        profile_settings = preprocessors[variable['preprocessor']]
         _apply_preprocessor_settings(settings, profile_settings)
         # if the target grid is a model name, replace it with a file name
         _update_target_grid(
@@ -354,17 +356,19 @@ def _get_preprocessor_settings(variables, preprocessors, config_user):
 
 def _check_multi_model_settings(all_settings):
     """Check that multi model settings are identical for all models."""
-    multi_model_steps = (step for step in MULTI_MODEL_FUNCTIONS
-                         if any(step in settings for settings in all_settings))
+    multi_model_steps = (
+        step for step in MULTI_MODEL_FUNCTIONS
+        if any(step in settings for settings in all_settings.values()))
     for step in multi_model_steps:
         result = None
-        for settings in all_settings:
+        for filename, settings in all_settings.items():
             if result is None:
                 result = settings[step]
             elif result != settings[step]:
                 raise NamelistError(
                     "Unable to combine differing multi-model settings "
-                    "{} and {}".format(result, settings[step]))
+                    "{} and {} for output file {}".format(
+                        result, settings[step], filename))
 
 
 def _get_preprocessor_task(variables, preprocessors, config_user):
