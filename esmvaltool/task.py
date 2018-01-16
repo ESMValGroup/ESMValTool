@@ -191,7 +191,6 @@ class DiagnosticTask(AbstractTask):
         logger.info("Running command %s", cmd)
         logger.debug("in environment\n%s", pprint.pformat(env))
         logger.debug("in current working directory: %s", cwd)
-        logger.info("Writing (some) output to %s", self.settings['output_dir'])
         logger.info("Writing log to %s", self.log)
 
         process = subprocess.Popen(
