@@ -188,8 +188,7 @@ def get_legacy_ncl_interface(variables, settings, namelist_file, script):
     return ncl_interface
 
 
-def write_legacy_ncl_interface(variables, settings, output_dir, namelist_file,
-                               script):
+def write_legacy_ncl_interface(variables, settings, namelist_file, script):
     """Write legacy ncl interface files."""
     # get legacy ncl interface dictionary
     ncl_interface = get_legacy_ncl_interface(variables, settings,
@@ -198,15 +197,18 @@ def write_legacy_ncl_interface(variables, settings, output_dir, namelist_file,
     ncl_interface['diag_script_info'] = settings
 
     # write ncl.interface
-    interface_file_tmp = os.path.join(output_dir, 'interface.ncl')
+    run_dir = settings['run_dir']
+    if not os.path.isdir(run_dir):
+        os.makedirs(run_dir)
+    interface_file_tmp = os.path.join(run_dir, 'interface.ncl')
     write_settings(ncl_interface, interface_file_tmp)
-    interface_file = os.path.join(output_dir, 'ncl.interface')
+    interface_file = os.path.join(run_dir, 'ncl.interface')
     os.rename(interface_file_tmp, interface_file)
     logger.info("with configuration file %s", interface_file)
 
     # variable info files
     for name, variable in variables.items():
-        info_file_tmp = os.path.join(output_dir, name + '_info.ncl')
+        info_file_tmp = os.path.join(run_dir, name + '_info.ncl')
         common_items = {
             k: v
             for k, v in variable[0].items()
@@ -219,7 +221,7 @@ def write_legacy_ncl_interface(variables, settings, output_dir, namelist_file,
         os.rename(info_file_tmp, info_file)
 
 
-def get_legacy_ncl_env(settings, output_dir, namelist_basename):
+def get_legacy_ncl_env(settings, namelist_basename):
     """Get legacy ncl environmental variables."""
     project_root = os.sep.join(__file__.split(os.sep)[:-3])
     prefix = 'ESMValTool_'
@@ -228,13 +230,13 @@ def get_legacy_ncl_env(settings, output_dir, namelist_basename):
     for key in ('work_dir', 'plot_dir', 'output_file_type', 'write_plots',
                 'write_netcdf'):
         env[prefix + key] = settings[key]
-    env[prefix + 'interface_data'] = output_dir
+    env[prefix + 'interface_data'] = settings['run_dir']
     env['0_ESMValTool_version'] = __version__
     env[prefix
         + 'verbosity'] = 100 if settings['log_level'].lower() == 'debug' else 1
     env[prefix + 'in_refs'] = os.path.join(project_root, 'doc',
                                            'MASTER_authors-refs-acknow.txt')
-    env[prefix + 'out_refs'] = os.path.join(output_dir,
+    env[prefix + 'out_refs'] = os.path.join(settings['run_dir'],
                                             'references-acknowledgements.txt')
     env[prefix + 'yml_name'] = namelist_basename
 
