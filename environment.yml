@@ -77,3 +77,4 @@ dependencies:
   - pydocstyle
   - pylint
   - yapf
+  - yamale
