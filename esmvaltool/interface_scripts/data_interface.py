@@ -64,7 +64,7 @@ def write_settings(settings, filename, mode='wt'):
             yaml.safe_dump(settings, file)
 
 
-def get_legacy_ncl_interface(variables, config_user, namelist_file, script):
+def get_legacy_ncl_interface(variables, settings, namelist_file, script):
     """Get a dictionary with the contents of the former ncl.interface file."""
     esmvaltool_root = os.path.dirname(os.path.dirname(__file__))
     project_root = os.path.dirname(esmvaltool_root)
@@ -81,17 +81,15 @@ def get_legacy_ncl_interface(variables, config_user, namelist_file, script):
         os.path.join(esmvaltool_root, 'variable_defs'),
         'in_refs':
         [os.path.join(project_root, 'doc', 'MASTER_authors-refs-acknow.txt')],
-        'out_refs': [
-            os.path.join(config_user['run_dir'],
-                         'references-acknowledgements.txt')
-        ],
+        'out_refs':
+        [os.path.join(settings['run_dir'], 'references-acknowledgements.txt')],
         'yml': [namelist_file],
         'yml_name': [os.path.basename(namelist_file)],
-        'output_file_type': [config_user['output_file_type']],
-        'plot_dir': [config_user['plot_dir']],
-        'work_dir': [config_user['work_dir']],
+        'output_file_type': [settings['output_file_type']],
+        'plot_dir': [settings['plot_dir']],
+        'work_dir': [settings['work_dir']],
         'regridding_dir': [],
-        'write_netcdf': [config_user['write_netcdf']],
+        'write_netcdf': [settings['write_netcdf']],
         'read_from_vault': [],
         'cwd': [os.getcwd()],
         'force_processing': [],
@@ -103,7 +101,7 @@ def get_legacy_ncl_interface(variables, config_user, namelist_file, script):
         'sfile': [],
         'afile': [],
         'base_variable': [],
-        'max_data_filesize': [config_user['max_data_filesize']],
+        'max_data_filesize': [settings['max_data_filesize']],
         'fx_keys': [],
         'fx_values': [],
         'str_vault_sep':
@@ -128,7 +126,7 @@ def get_legacy_ncl_interface(variables, config_user, namelist_file, script):
         variable_keys = sorted(variables)
 
         infiles = [
-            get_output_file_template(v, config_user['preproc_dir'])
+            get_output_file_template(v, settings['preproc_dir'])
             for v in single_variable
         ]
 
@@ -190,11 +188,11 @@ def get_legacy_ncl_interface(variables, config_user, namelist_file, script):
     return ncl_interface
 
 
-def write_legacy_ncl_interface(variables, settings, config_user, output_dir,
-                               namelist_file, script):
+def write_legacy_ncl_interface(variables, settings, output_dir, namelist_file,
+                               script):
     """Write legacy ncl interface files."""
     # get legacy ncl interface dictionary
-    ncl_interface = get_legacy_ncl_interface(variables, config_user,
+    ncl_interface = get_legacy_ncl_interface(variables, settings,
                                              namelist_file, script)
     # add namelist script settings
     ncl_interface['diag_script_info'] = settings
@@ -221,7 +219,7 @@ def write_legacy_ncl_interface(variables, settings, config_user, output_dir,
         os.rename(info_file_tmp, info_file)
 
 
-def get_legacy_ncl_env(config_user, output_dir, namelist_basename):
+def get_legacy_ncl_env(settings, output_dir, namelist_basename):
     """Get legacy ncl environmental variables."""
     project_root = os.sep.join(__file__.split(os.sep)[:-3])
     prefix = 'ESMValTool_'
@@ -229,11 +227,11 @@ def get_legacy_ncl_env(config_user, output_dir, namelist_basename):
     env = dict(os.environ)
     for key in ('work_dir', 'plot_dir', 'output_file_type', 'write_plots',
                 'write_netcdf'):
-        env[prefix + key] = config_user[key]
+        env[prefix + key] = settings[key]
     env[prefix + 'interface_data'] = output_dir
     env['0_ESMValTool_version'] = __version__
-    env[prefix + 'verbosity'] = 100 if config_user[
-        'log_level'].lower() == 'debug' else 1
+    env[prefix
+        + 'verbosity'] = 100 if settings['log_level'].lower() == 'debug' else 1
     env[prefix + 'in_refs'] = os.path.join(project_root, 'doc',
                                            'MASTER_authors-refs-acknow.txt')
     env[prefix + 'out_refs'] = os.path.join(output_dir,

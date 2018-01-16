@@ -326,15 +326,17 @@ def _apply_preprocessor_settings(settings, profile_settings):
 def _get_preprocessor_settings(variables, preprocessors, config_user):
     """Get preprocessor settings for for a set of models."""
     all_settings = {}
+
+    # First set up the preprocessor profile
+    variable = variables[0]
+    preproc_name = variable.get('preprocessor')
+    if preproc_name not in preprocessors:
+        raise NamelistError("Unknown preprocessor {} in variable {}".format(
+            preproc_name, variable['short_name']))
+    profile_settings = preprocessors[variable['preprocessor']]
+
     for variable in variables:
-        # Start out with default settings
         settings = _get_default_settings(variable, config_user)
-        # Get preprocessor settings from profile and apply those
-        name = variable.get('preprocessor')
-        if name not in preprocessors:
-            raise NamelistError("Unknown preprocessor {} in variable {}"
-                                .format(name, variable['short_name']))
-        profile_settings = preprocessors[variable['preprocessor']]
         _apply_preprocessor_settings(settings, profile_settings)
         # if the target grid is a model name, replace it with a file name
         _update_target_grid(
@@ -354,17 +356,19 @@ def _get_preprocessor_settings(variables, preprocessors, config_user):
 
 def _check_multi_model_settings(all_settings):
     """Check that multi model settings are identical for all models."""
-    multi_model_steps = (step for step in MULTI_MODEL_FUNCTIONS
-                         if any(step in settings for settings in all_settings))
+    multi_model_steps = (
+        step for step in MULTI_MODEL_FUNCTIONS
+        if any(step in settings for settings in all_settings.values()))
     for step in multi_model_steps:
         result = None
-        for settings in all_settings:
+        for filename, settings in all_settings.items():
             if result is None:
                 result = settings[step]
             elif result != settings[step]:
                 raise NamelistError(
                     "Unable to combine differing multi-model settings "
-                    "{} and {}".format(result, settings[step]))
+                    "{} and {} for output file {}".format(
+                        result, settings[step], filename))
 
 
 def _get_preprocessor_task(variables, preprocessors, config_user):
@@ -508,13 +512,20 @@ class Namelist(object):
                     id_glob = diagnostic_name + TASKSEP + id_glob
                 ancestors.append(id_glob)
             settings = copy.deepcopy(raw_settings)
-            settings['exit_on_ncl_warning'] = self._cfg['exit_on_warning']
-
+            # Add output dir to settings
             output_dir = os.path.join(
                 self._cfg['output_dir'],
                 diagnostic_name,
                 script_name,
             )
+            settings['output_dir'] = output_dir
+            settings['run_dir'] = os.path.join(output_dir, 'tmp')
+            settings['exit_on_ncl_warning'] = self._cfg['exit_on_warning']
+            for key in ('work_dir', 'plot_dir', 'preproc_dir',
+                        'max_data_filesize', 'output_file_type', 'write_plots',
+                        'write_netcdf', 'log_level'):
+                settings[key] = self._cfg[key]
+
             scripts[script_name] = {
                 'script': raw_script,
                 'output_dir': output_dir,
@@ -584,17 +595,13 @@ class Namelist(object):
                 )
                 diagnostic_tasks[task_id] = task
                 # TODO: remove code below once new interface implemented
-                os.makedirs(task.output_dir)
                 write_legacy_ncl_interface(
                     variables=diagnostic['variable_collection'],
                     settings=task.settings,
-                    config_user=self._cfg,
-                    output_dir=task.output_dir,
                     namelist_file=self._namelist_file,
                     script=task.script)
                 task.settings['env'] = get_legacy_ncl_env(
-                    config_user=self._cfg,
-                    output_dir=task.output_dir,
+                    settings=task.settings,
                     namelist_basename=os.path.basename(self._namelist_file))
 
         # Resolve diagnostic ancestors marked as 'later'
