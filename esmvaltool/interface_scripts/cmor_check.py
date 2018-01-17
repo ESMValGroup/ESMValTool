@@ -103,14 +103,17 @@ class CMORCheck(object):
 
     def report_errors(self):
         if self.has_errors():
-            msg = 'There were errors in variable {0}:\n {1}'
-            msg = msg.format(self._cube.var_name, '\n '.join(self._errors))
+            msg = 'There were errors in variable {}:\n{}\nin cube:\n{}'
+            msg = msg.format(self._cube.var_name, '\n '.join(self._errors),
+                             self._cube)
             raise CMORCheckError(msg)
 
     def report_warnings(self, logger):
         if self.has_warnings():
-            msg = 'There were warnings in variable {0}:\n {1}'
-            msg = msg.format(self._cube.var_name, '\n '.join(self._warnings))
+            msg = ('There were warnings in variable {}:\n{}\n'
+                   'in the cube that will be saved to file: {}')
+            msg = msg.format(self._cube.var_name, '\n '.join(self._warnings),
+                             self._cube.attributes.get('_filename'))
             logger.warning(msg)
 
     def check_data(self, logger=None):
@@ -180,13 +183,13 @@ class CMORCheck(object):
         # Check data is not less than valid_min
         if self._cmor_var.valid_min:
             valid_min = float(self._cmor_var.valid_min)
-            if np.any(self._cube.data < valid_min):
+            if self._cube.data.min() < valid_min:
                 self.report_warning(self._vals_msg, self._cube.var_name,
                                     '< {} ='.format('valid_min'), valid_min)
         # Check data is not greater than valid_max
         if self._cmor_var.valid_max:
             valid_max = float(self._cmor_var.valid_max)
-            if np.any(self._cube.data > valid_max):
+            if self._cube.data.max() > valid_max:
                 self.report_warning(self._vals_msg, self._cube.var_name,
                                     '> {} ='.format('valid_max'), valid_max)
 
@@ -416,7 +419,7 @@ class CMORCheck(object):
         """
         msg = message.format(*args)
         if self._failerr:
-            raise CMORCheckError(msg)
+            raise CMORCheckError(msg + '\nin cube:\n{}'.format(self._cube))
         else:
             self._errors.append(msg)
 

@@ -257,9 +257,6 @@ begin
 
     end if
 
-    ;; Remove temporary grading list
-    system("rm -f " + temp_dir)
-
     leave_msg(diag_script, "", 4)
 
 end

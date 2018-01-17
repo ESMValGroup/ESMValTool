@@ -24,8 +24,8 @@ preprocessors:
     multi_model_mean: false
 
 diagnostics:
-  ta_diagnostic_1:
-    description: Air temperature tutorial diagnostic.
+  ta_diagnostics:
+    description: Air temperature tutorial diagnostics.
     variables:
       ta:
         preprocessor: preprocessor_1
@@ -39,16 +39,6 @@ diagnostics:
         styleset: CMIP5
         colormap: WhiteBlueGreenYellowRed
         ncdf: default
-
-  ta_diagnostic_2:
-    description: Yet another air temperature tutorial diagnostic.
-    variables:
-      ta:
-        preprocessor: preprocessor_1
-        field: T3M
-    additional_models:
-      - {model: NCEP,        project: OBS,    tier: 2,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
-    scripts:
       test_ta_no2:
         <<: *settings
         script: MyDiag_test_ta_no2.ncl

@@ -191,9 +191,9 @@ def get_output_file(variable, preproc_dir):
     """Return the full path to the output (preprocessed) file"""
     cfg = read_config_file(variable['project'])
 
-    outfile = os.path.join(preproc_dir, variable['preprocessor'],
-                           replace_tags(cfg['output_file'], variable))
-    outfile = ''.join((outfile, '.nc'))
+    outfile = os.path.join(preproc_dir,
+                           '{preprocessor}_{diagnostic}'.format(**variable),
+                           replace_tags(cfg['output_file'], variable) + '.nc')
 
     return outfile
 
@@ -215,9 +215,11 @@ def find_files(dirname, filename):
     out, err = proc.communicate()
     if err:
         logger.warning("'%s' says:\n%s", strfindic, err)
+    out = out.strip()
     logger.debug("Result:\n%s", out)
-    for line in out.split('\n')[0:-1]:
-        flist.append(line)
+    for line in out.split('\n'):
+        if line:
+            flist.append(line)
     return flist
 
 

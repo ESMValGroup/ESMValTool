@@ -4,8 +4,6 @@ import sys
 import numpy as np
 from netCDF4 import Dataset
 
-from esmvaltool.interface_scripts.launchers import run_executable
-
 
 class ESMValProject(object):
     """
@@ -813,9 +811,13 @@ class ESMValProject(object):
         self.project_info['TEMPORARY']['ref_proj'] = ref_proj
         self.project_info['TEMPORARY']['ref_diag'] = ref_proj
         self.project_info['TEMPORARY']['ref_script'] = ref_script
-
-        run_executable("interface_scripts/write_references.ncl",
-                       project_info, verbosity, exit_on_warning)
+        raise NotImplementedError
+        # TODO: is this functionality still needed?
+        # If so, port to esmvaltool.task.DiagnosticTask
+        #
+        # from esmvaltool.interface_scripts.launchers import run_executable
+        # run_executable("interface_scripts/write_references.ncl",
+        #                project_info, verbosity, exit_on_warning)
 
     # ###################################
     # write info on file read to log file

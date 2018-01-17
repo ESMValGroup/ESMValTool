@@ -37,14 +37,15 @@ r"""
 from __future__ import print_function
 
 import argparse
-import copy
 import datetime
 import errno
+import glob
 import logging
 import logging.config
 import os
 import shutil
 import sys
+from multiprocessing import cpu_count
 
 import yaml
 
@@ -55,9 +56,6 @@ if __name__ == '__main__':  # noqa
                         os.path.dirname(os.path.abspath(__file__))))  # noqa
 
 from esmvaltool.interface_scripts.auxiliary import ncl_version_check
-from esmvaltool.interface_scripts.data_interface import (
-    write_settings, write_legacy_ncl_interface)
-from esmvaltool.interface_scripts.preprocess import run_executable
 from esmvaltool.namelist import read_namelist_file
 from esmvaltool.version import __version__
 
@@ -107,6 +105,7 @@ def read_config_file(config_file, namelist_name):
         'output_file_type': 'ps',
         'output_dir': './output_dir',
         'save_intermediary_cubes': False,
+        'max_parallel_tasks': 1,
         'run_diagnostic': True,
     }
 
@@ -180,8 +179,8 @@ def main():
 
     # Create run dir
     if os.path.exists(cfg['run_dir']):
-        print("ERROR: run_dir {} already exists, aborting to prevent data loss"
-              .format(cfg['run_dir']))
+        print("ERROR: run_dir {} already exists, aborting to "
+              "prevent data loss".format(cfg['output_dir']))
     os.makedirs(cfg['run_dir'])
 
     configure_logging(
@@ -197,85 +196,15 @@ def main():
 
     cfg['synda_download'] = args.synda_download
 
-    process_namelist(namelist_file=namelist_file, global_config=cfg)
+    process_namelist(namelist_file=namelist_file, config_user=cfg)
 
 
-def process_namelist(namelist_file, global_config):
+def process_namelist(namelist_file, config_user):
     """Process namelist"""
     if not os.path.isfile(namelist_file):
         raise OSError(errno.ENOENT, "Specified namelist file does not exist",
                       namelist_file)
 
-    logger.info("Processing namelist %s", namelist_file)
-
-    # copy namelist to run_dir for future reference
-    shutil.copy2(namelist_file, global_config['run_dir'])
-
-    # parse namelist
-    namelist = read_namelist_file(namelist_file, global_config)
-    # run (only preprocessors for now) # TODO: also run diagnostics from here
-    logger.debug("Namelist summary:\n%s", namelist)
-    logger.info("Running preprocessor")
-    namelist.run()
-
-    os.environ['0_ESMValTool_version'] = __version__
-
-    script_root = os.path.abspath(os.path.dirname(__file__))
-    esmvaltool_root = os.path.dirname(script_root)
-
-    # project_info is a dictionary with all info from the namelist.
-    project_info = {}
-    project_info['GLOBAL'] = global_config
-    project_info['MODELS'] = namelist.models
-    project_info['DIAGNOSTICS'] = namelist.diagnostics
-
-    # FIX-ME: outdated, keep until standard logging is fully implemented
-    project_info['GLOBAL']['verbosity'] = 1
-
-    # additional entries to 'project_info'
-    project_info['RUNTIME'] = {}
-    project_info['RUNTIME']['yml'] = namelist_file
-    project_info['RUNTIME']['yml_name'] = os.path.basename(namelist_file)
-
-    # set references/acknowledgement file
-    refs_acknows_file = str.replace(project_info['RUNTIME']['yml_name'],
-                                    "namelist_", "refs-acknows_")
-    refs_acknows_file = refs_acknows_file.split(os.extsep)[0] + ".log"
-    out_refs = os.path.join(project_info["GLOBAL"]['run_dir'],
-                            refs_acknows_file)
-    project_info['RUNTIME']['out_refs'] = out_refs
-
-    # print summary
-    logger.info(70 * "-")
-    logger.info("NAMELIST   = %s", project_info['RUNTIME']['yml_name'])
-    logger.info("RUNDIR     = %s", project_info["GLOBAL"]['run_dir'])
-    logger.info("WORKDIR    = %s", project_info["GLOBAL"]["work_dir"])
-    logger.info("PREPROCDIR = %s", project_info["GLOBAL"]["preproc_dir"])
-    logger.info("PLOTDIR    = %s", project_info["GLOBAL"]["plot_dir"])
-    logger.info("LOGFILE    = %s", project_info['RUNTIME']['out_refs'])
-    logger.info(70 * "-")
-
-    # master references-acknowledgements file (hard coded)
-    in_refs = os.path.join(esmvaltool_root, 'doc',
-                           'MASTER_authors-refs-acknow.txt')
-    project_info['RUNTIME']['in_refs'] = in_refs
-    logger.info("Using references from %s", in_refs)
-
-    # create directories
-    for key in project_info['GLOBAL']:
-        if key.endswith('_dir'):
-            if not os.path.isdir(project_info['GLOBAL'][key]):
-                logger.info('Creating dir %s', project_info['GLOBAL'][key])
-                os.makedirs(project_info['GLOBAL'][key])
-
-    # create refs-acknows file in run_dir (empty if existing)
-    with open(out_refs, "w"):
-        pass
-
-    # current working directory
-    project_info['RUNTIME']['cwd'] = os.getcwd()
-
-    # summary to std-out before starting the loop
     timestamp1 = datetime.datetime.utcnow()
     timestamp_format = "%Y-%m-%d --  %H:%M:%S"
 
@@ -283,80 +212,31 @@ def process_namelist(namelist_file, global_config):
         "Starting the Earth System Model Evaluation Tool v%s at time: %s ...",
         __version__, timestamp1.strftime(timestamp_format))
 
-    def _add_to_order(all_scripts, order, script_name):
-        """Add scripts to order depth first"""
-        # skip scripts that have already been added earlier
-        if script_name in order:
-            return
+    logger.info(70 * "-")
+    logger.info("NAMELIST   = %s", namelist_file)
+    logger.info("RUNDIR     = %s", config_user['run_dir'])
+    logger.info("WORKDIR    = %s", config_user["work_dir"])
+    logger.info("PREPROCDIR = %s", config_user["preproc_dir"])
+    logger.info("PLOTDIR    = %s", config_user["plot_dir"])
+    logger.info(70 * "-")
 
-        # if the script has ancestors, add those to order first
-        if all_scripts[script_name]['ancestors']:
-            for ancestor_name in all_scripts[script_name]['ancestors']:
-                _add_to_order(all_scripts, order, ancestor_name)
+    logger.info("Running tasks using at most %s processes",
+                config_user['max_parallel_tasks'] or cpu_count())
 
-        # add script to order and remove from todo list
-        order.append(script_name)
-        all_scripts.pop(script_name)
+    logger.info(
+        "If your system hangs during execution, it may not have enough "
+        "memory for keeping this number of tasks in memory. In that case, "
+        "try reducing 'max_parallel_tasks' in your user configuration file.")
 
-    def get_order(all_scripts, order):
-        """Determine the order in which scripts should be run."""
-        while all_scripts:
-            # select a random script
-            script_name, script_cfg = all_scripts.popitem()
-            all_scripts[script_name] = script_cfg
+    # copy namelist to run_dir for future reference
+    shutil.copy2(namelist_file, config_user['run_dir'])
 
-            # add ancestors and script to order
-            _add_to_order(all_scripts, order, script_name)
+    # parse namelist
+    namelist = read_namelist_file(namelist_file, config_user)
+    logger.debug("Namelist summary:\n%s", namelist)
 
-    for diag_name, diag in project_info['DIAGNOSTICS'].items():
-
-        script_order = []
-        get_order(dict(diag['scripts']), script_order)
-
-        for script_name in script_order:
-            script_cfg = diag['scripts'][script_name]
-            if not script_cfg['script']:
-                continue
-
-            logger.info("Running diagnostic script %s of diagnostic %s",
-                        script_name, diag_name)
-            project_info['RUNTIME']['currDiag'] = copy.deepcopy(diag)
-
-            tmp, models = diag['variables'].popitem()
-            diag['variables'][tmp] = models
-            project_info['ALLMODELS'] = models
-
-            script = script_cfg['script']
-            logger.info("Running diag_script: %s", script)
-            interface_data = os.path.join(project_info['GLOBAL']['run_dir'],
-                                          diag_name, script_name)
-            os.makedirs(interface_data)
-            ext = 'ncl' if script.lower().endswith('.ncl') else 'yml'
-            cfg_file = os.path.join(interface_data, 'settings.' + ext)
-            if ext != 'ncl':
-                logger.info("with configuration file: %s", cfg_file)
-                write_settings(script_cfg['settings'], cfg_file)
-            else:
-                write_legacy_ncl_interface(
-                    variables=diag['variables'],
-                    settings=script_cfg['settings'],
-                    config_user=global_config,
-                    interface_data_dir=interface_data,
-                    namelist_file=namelist_file,
-                    script=script)
-
-            project_info['RUNTIME']['currDiag']['script'] = script
-            project_info['RUNTIME']['currDiag']['cfg_file'] = cfg_file
-            project_info['RUNTIME']['interface_data'] = interface_data
-            run_executable(
-                script,
-                project_info,
-                project_info['GLOBAL']['verbosity'],
-                project_info['GLOBAL']['exit_on_warning'],
-            )
-
-    # delete environment variable
-    del os.environ['0_ESMValTool_version']
+    # run
+    namelist.run()
 
     # End time timing
     timestamp2 = datetime.datetime.utcnow()
@@ -366,8 +246,11 @@ def process_namelist(namelist_file, global_config):
     logger.info("Time for running namelist was: %s", timestamp2 - timestamp1)
 
     # Remind the user about reference/acknowledgement file
+    out_refs = glob.glob(
+        os.path.join(config_user['output_dir'], '*', '*',
+                     'references-acknowledgements.txt'))
     logger.info("For the required references/acknowledgements of these "
-                "diagnostics see: %s", out_refs)
+                "diagnostics see:\n%s", '\n'.join(out_refs))
 
 
 def run():

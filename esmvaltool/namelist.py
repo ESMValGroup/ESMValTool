@@ -2,6 +2,8 @@
 from __future__ import print_function
 
 import copy
+import fnmatch
+import inspect
 import logging
 import os
 
@@ -11,15 +13,18 @@ import yamale
 from .interface_scripts.data_finder import (
     get_input_filelist, get_input_filename, get_output_file,
     get_start_end_year)
-from .interface_scripts.preprocessing_tools import merge_callback
-from .preprocessor import (DEFAULT_ORDER, PreprocessingTask,
-                           select_multi_model_settings,
-                           select_single_model_settings)
+from .interface_scripts.data_interface import (get_legacy_ncl_env,
+                                               write_legacy_ncl_interface)
+from .preprocessor import (DEFAULT_ORDER, MULTI_MODEL_FUNCTIONS,
+                           PREPROCESSOR_FUNCTIONS, PreprocessingTask)
 from .preprocessor._download import synda_search
+from .preprocessor._io import concatenate_callback
 from .preprocessor._reformat import CMOR_TABLES
-from .task import DiagnosticTask
+from .task import DiagnosticTask, get_independent_tasks, run_tasks
 
 logger = logging.getLogger(__name__)
+
+TASKSEP = os.sep
 
 
 class NamelistError(Exception):
@@ -29,7 +34,8 @@ class NamelistError(Exception):
 def read_namelist_file(filename, config_user, initialize_tasks=True):
     """Read a namelist from file."""
     raw_namelist = check_namelist(filename)
-    return Namelist(raw_namelist, config_user, initialize_tasks)
+    return Namelist(
+        raw_namelist, config_user, initialize_tasks, namelist_file=filename)
 
 
 def check_namelist_with_schema(filename):
@@ -44,57 +50,133 @@ def check_namelist_with_schema(filename):
 
 def check_namelist(filename):
     """Check a namelist file and return it in raw form."""
+    # Note that many checks can only be performed after the automatically
+    # computed entries have been filled in by creating a Namelist object.
     check_namelist_with_schema(filename)
     with open(filename, 'r') as file:
         raw_namelist = yaml.safe_load(file)
 
-    # TODO: add more checks
-    models = []
-    for model in raw_namelist['models']:
-        if model in models:
-            raise NamelistError(
-                "Duplicate model {} in models section".format(model))
-        models.append(model)
-
-    for name, settings in raw_namelist['preprocessors'].items():
-        for step in settings:
-            if step not in DEFAULT_ORDER:
-                raise NamelistError(
-                    "Unknown function {} in preprocessor {}, choose from: {}"
-                    .format(step, name, ', '.join(DEFAULT_ORDER)))
-            # TODO: check for correct keyword arguments?
-
+    # TODO: add more checks?
+    check_preprocessors(raw_namelist['preprocessors'])
+    check_diagnostics(raw_namelist['diagnostics'])
     return raw_namelist
 
 
-def _models_match(full_model, short_model):
-    """Check if short_model description matches full_model."""
-    if isinstance(short_model, str):
-        return short_model in full_model.values()
-
-    if isinstance(short_model, dict):
-        for key, value in short_model.items():
-            if key not in full_model or value != full_model[key]:
-                return False
-        return True
-
-    raise ValueError("Cannot decide if short_model {} describes "
-                     "full_model {}".format(short_model, full_model))
+def check_preprocessors(preprocessors):
+    """Check preprocessors in namelist"""
+    preprocessor_functions = set(DEFAULT_ORDER)
+    for name, settings in preprocessors.items():
+        invalid_functions = set(settings) - preprocessor_functions
+        if invalid_functions:
+            raise NamelistError(
+                "Unknown function(s) {} in preprocessor {}, choose from: {}"
+                .format(invalid_functions, name, ', '.join(DEFAULT_ORDER)))
 
 
-def _find_model(full_models, short_model, warn=False):
+def check_diagnostics(diagnostics):
+    """Check diagnostics in namelist"""
+    for name, diagnostic in diagnostics.items():
+        if 'scripts' not in diagnostic:
+            raise NamelistError("Missing scripts section in diagnostic {}"
+                                .format(name))
+        if diagnostic['scripts'] is None:
+            continue
+        for script_name, script in diagnostic['scripts'].items():
+            if not script.get('script'):
+                raise NamelistError(
+                    "No script defined for script {} in diagnostic {}".format(
+                        script_name, name))
 
-    matches = [m for m in full_models if _models_match(m, short_model)]
-    if len(matches) == 1:
-        return matches[0]
 
-    if warn:
-        if not matches:
-            logger.warning("No model matching description %s found.",
-                           short_model)
-        else:
-            logger.warning("Found multiple models %s matching description %s.",
-                           matches, short_model)
+def check_preprocessor_settings(settings):
+    """Check preprocessor settings."""
+    # The inspect functions getargspec and getcallargs are deprecated
+    # in Python 3, but their replacements are not available in Python 2.
+    # TODO: Use the new Python 3 inspect API
+    for step in settings:
+        if step not in DEFAULT_ORDER:
+            raise NamelistError(
+                "Unknown preprocessor function '{}', choose from: {}".format(
+                    step, ', '.join(DEFAULT_ORDER)))
+        function = PREPROCESSOR_FUNCTIONS[step]
+        argspec = inspect.getargspec(function)
+        args = argspec.args[1:]
+        # Check for invalid arguments
+        invalid_args = set(settings[step]) - set(args)
+        if invalid_args:
+            raise NamelistError(
+                "Invalid argument(s) {} encountered for preprocessor "
+                "function {}".format(invalid_args, step))
+        # Check for missing arguments
+        defaults = argspec.defaults
+        end = None if defaults is None else -len(defaults)
+        missing_args = set(args[:end]) - set(settings[step])
+        if missing_args:
+            raise NamelistError(
+                "Missing required argument(s) {} for preprocessor "
+                "function {}".format(missing_args, step))
+        # Final sanity check in case the above fails to catch a mistake
+        try:
+            inspect.getcallargs(function, None, **settings[step])
+        except TypeError:
+            logger.error("Wrong preprocessor function arguments in "
+                         "function '%s'", step)
+            raise
+
+
+def check_duplicate_models(models):
+    """Check for duplicate models."""
+    checked_models_ = []
+    for model in models:
+        if model in checked_models_:
+            raise NamelistError(
+                "Duplicate model {} in models section".format(model))
+        checked_models_.append(model)
+
+
+def check_variables(variables):
+    """Check variables as derived from namelist"""
+    generic = {
+        'short_name', 'standard_name', 'field', 'model', 'project',
+        'start_year', 'end_year', 'preprocessor', 'diagnostic'
+    }
+    project_specific = {
+        # project: keys
+        'CMIP5': {'ensemble', 'mip', 'exp'},
+        'CCMVal1': {'ensemble', 'exp'},
+        'CCMVal2': {'ensemble', 'exp'},
+        'GFDL': {'ensemble', 'realm', 'shift'},
+        'OBS': {'type', 'version', 'tier'},
+    }
+    for variable in variables:
+        required = set(generic)
+        project = variable.get('project')
+        if project in project_specific:
+            required.update(project_specific[project])
+        missing = required - set(variable)
+        if missing:
+            raise NamelistError(
+                "Missing keys {} from variable {} in diagnostic {}".format(
+                    missing,
+                    variable.get('short_name'), variable.get('diagnostic')))
+
+
+def check_data_availability(input_files, start_year, end_year):
+    """Check if the required input data is available"""
+    if not input_files:
+        raise NamelistError("No input files found")
+
+    required_years = set(range(start_year, end_year + 1))
+    available_years = set()
+    for filename in input_files:
+        start, end = get_start_end_year(filename)
+        available_years.update(range(start, end + 1))
+
+    missing_years = required_years - available_years
+    if missing_years:
+        raise NamelistError(
+            "No input data available for years {} in files {}".format(
+                ", ".join(str(year) for year in missing_years), input_files))
 
 
 def _get_value(key, variables):
@@ -119,32 +201,71 @@ def _add_cmor_info(variable, keys):
                     variable[key] = value
 
 
-def get_single_model_settings(variable):
+def _update_target_grid(variable, all_variables, settings, config_user):
+    """Replace the target grid model name with a filename if needed.
+
+    This only works if the file is found by get_input_filelist.
+    """
+    if not settings.get('regrid') or 'target_grid' not in settings['regrid']:
+        return
+
+    target_grid = settings['regrid']['target_grid']
+
+    if variable['model'] == target_grid:
+        # No need to regrid model onto itself.
+        del settings['regrid']
+        return
+
+    # Replace the target grid model name with a filename.
+    for target_variable in all_variables:
+        if target_variable['model'] == target_grid:
+            files = get_input_filelist(
+                variable=target_variable,
+                rootpath=config_user['rootpath'],
+                drs=config_user['drs'])
+            target_file = files[0]
+            settings['regrid']['target_grid'] = target_file
+            return
+
+
+def _get_default_settings(variable, config_user):
     """Get default preprocessor settings."""
-    cfg = {}
+    settings = {}
+
+    # Set up downloading using synda if requested.
+    if config_user['synda_download']:
+        local_dir = os.path.dirname(
+            get_input_filename(
+                variable=variable,
+                rootpath=config_user['rootpath'],
+                drs=config_user['drs']))
+        settings['download'] = {
+            'dest_folder': local_dir,
+        }
 
     # Configure loading
-    cfg['load'] = {
-        'mode': 'concatenate',
+    settings['load'] = {
         'constraints': variable['standard_name'],
-        'callback': merge_callback,
+        'callback': concatenate_callback,
+        'filename': variable['filename'],
     }
 
     # Configure fixes
-    fixcfg = {
+    fix = {
         'project': variable['project'],
         'model': variable['model'],
         'short_name': variable['short_name'],
     }
-    cfg['fix_file'] = dict(fixcfg)
+    settings['fix_file'] = dict(fix)
     # Only supply mip if the CMOR check fixes are implemented.
-    if variable['project'] in CMOR_TABLES:
-        fixcfg['mip'] = variable['mip']
-    cfg['fix_metadata'] = dict(fixcfg)
-    cfg['fix_data'] = dict(fixcfg)
+    if variable.get('cmor_table'):
+        fix['cmor_table'] = variable['cmor_table']
+        fix['mip'] = variable['mip']
+    settings['fix_metadata'] = dict(fix)
+    settings['fix_data'] = dict(fix)
 
     # Configure time extraction
-    cfg['extract_time'] = {
+    settings['extract_time'] = {
         'yr1': variable['start_year'],
         'yr2': variable['end_year'] + 1,
         'mo1': 1,
@@ -153,116 +274,121 @@ def get_single_model_settings(variable):
         'd2': 1,
     }
 
-    return cfg
+    # Configure final CMOR data check
+    if variable.get('cmor_table'):
+        settings['cmor_check_data'] = {
+            'cmor_table': variable['cmor_table'],
+            'mip': variable['mip'],
+            'short_name': variable['short_name'],
+        }
+
+    # Configure saving cubes to file
+    settings['save'] = {}
+
+    return settings
 
 
-def check_data_availability(input_files, start_year, end_year):
-    """Check if the required input data is available"""
-    if not input_files:
-        raise NamelistError("No input files found")
-
-    required_years = set(range(start_year, end_year + 1))
-    available_years = set()
-    for filename in input_files:
-        start, end = get_start_end_year(filename)
-        available_years.update(range(start, end + 1))
-
-    missing_years = required_years - available_years
-    if missing_years:
-        raise NamelistError(
-            "No input data available for years {} in files {}".format(
-                ", ".join(str(year) for year in missing_years), input_files))
-
-
-def get_single_model_task(variable, settings, user_config):
-    """Get a preprocessor task for a single model"""
-    logger.info("Configuring single-model task for %s variable %s",
-                variable['model'], variable['short_name'])
-    settings = select_single_model_settings(settings)
-    # TODO: implement variable derivation task
-
-    # Get default preprocessor configuration.
-    cfg = get_single_model_settings(variable)
-
-    rootpath = user_config['rootpath']
-    drs = user_config['drs']
-
-    # Set up input files.
+def _get_input_files(variable, config_user):
+    """Get the input files for a single model"""
+    # Find input files locally.
     input_files = get_input_filelist(
-        variable=variable, rootpath=rootpath, drs=drs)
+        variable=variable,
+        rootpath=config_user['rootpath'],
+        drs=config_user['drs'])
 
     # Set up downloading using synda if requested.
     # Do not download if files are already available locally.
-    if not input_files and user_config['synda_download']:
+    if config_user['synda_download'] and not input_files:
         input_files = synda_search(variable)
-        local_dir = os.path.dirname(
-            get_input_filename(variable=variable, rootpath=rootpath, drs=drs))
-        cfg['download'] = {
-            'dest_folder': local_dir,
-        }
 
+    logger.info("Using input files:\n%s", '\n'.join(input_files))
     check_data_availability(input_files, variable['start_year'],
                             variable['end_year'])
 
-    logger.info("Using input files:\n%s", '\n'.join(input_files))
+    return input_files
 
-    # Configure saving to output files
-    output_file = get_output_file(
-        variable=variable, preproc_dir=user_config['preproc_dir'])
-    logger.info("Output will be written to:\n%s", output_file)
 
-    cfg['save'] = {
-        'target': output_file,
-    }
-
-    # Use settings from preprocessor profile
-    for step, args in settings.items():
+def _apply_preprocessor_settings(settings, profile_settings):
+    """Apply settings from preprocessor profile."""
+    for step, args in profile_settings.items():
         # Remove disabled preprocessor functions
         if args is False:
-            if step in cfg:
-                del cfg[step]
+            if step in settings:
+                del settings[step]
             continue
         # Enable/update functions without keywords
-        if step not in cfg:
-            cfg[step] = {}
-        if isinstance(args, dict):
-            cfg[step].update(args)
-
-    if user_config['save_intermediary_cubes']:
-        debug = {'paths': [os.path.splitext(output_file)[0]]}
-    else:
-        debug = None
-    return PreprocessingTask(settings=cfg, input_data=input_files, debug=debug)
-
-
-def get_multi_model_task(standard_name, settings, ancestors, user_config):
-    """Get multi-model preprocessor tasks."""
-    logger.info("Configuring multi-model task")
-    settings = select_multi_model_settings(settings)
-
-    # Remove disabled steps
-    settings = {
-        step: settings[step]
-        for step in settings if settings[step] is not False
-    }
-    # Provide default keyword arguments for enabled steps
-    for step in settings:
-        if settings[step] is True:
+        if step not in settings:
             settings[step] = {}
+        if isinstance(args, dict):
+            settings[step].update(args)
 
-    # Configure loading
-    settings['load'] = {'constraint': standard_name, 'mode': 'ordered'}
 
-    # Configure saving
-    files = [task.settings['save']['target'] for task in ancestors]
-    settings['save'] = {'targets': files}
+def _get_preprocessor_settings(variables, preprocessors, config_user):
+    """Get preprocessor settings for for a set of models."""
+    all_settings = {}
 
-    if user_config['save_intermediary_cubes']:
-        debug = {'paths': [os.path.splitext(f)[0] for f in files]}
-    else:
-        debug = None
+    # First set up the preprocessor profile
+    variable = variables[0]
+    preproc_name = variable.get('preprocessor')
+    if preproc_name not in preprocessors:
+        raise NamelistError("Unknown preprocessor {} in variable {}".format(
+            preproc_name, variable['short_name']))
+    profile_settings = preprocessors[variable['preprocessor']]
+
+    for variable in variables:
+        settings = _get_default_settings(variable, config_user)
+        _apply_preprocessor_settings(settings, profile_settings)
+        # if the target grid is a model name, replace it with a file name
+        _update_target_grid(
+            variable=variable,
+            all_variables=variables,
+            settings=settings,
+            config_user=config_user)
+        if 'derive' in settings:
+            # create two pairs of settings?
+            pass
+        check_preprocessor_settings(settings)
+        all_settings[variable['filename']] = settings
+
+    _check_multi_model_settings(all_settings)
+    return all_settings
+
+
+def _check_multi_model_settings(all_settings):
+    """Check that multi model settings are identical for all models."""
+    multi_model_steps = (
+        step for step in MULTI_MODEL_FUNCTIONS
+        if any(step in settings for settings in all_settings.values()))
+    for step in multi_model_steps:
+        result = None
+        for filename, settings in all_settings.items():
+            if result is None:
+                result = settings[step]
+            elif result != settings[step]:
+                raise NamelistError(
+                    "Unable to combine differing multi-model settings "
+                    "{} and {} for output file {}".format(
+                        result, settings[step], filename))
+
+
+def _get_preprocessor_task(variables, preprocessors, config_user):
+    """Create preprocessor tasks for a set of models."""
+    # Configure preprocessor
+    all_settings = _get_preprocessor_settings(
+        variables=variables,
+        preprocessors=preprocessors,
+        config_user=config_user)
+
+    # Input data, used by tasks without ancestors
+    input_files = {
+        v['filename']: _get_input_files(v, config_user)
+        for v in variables
+    }
+
     task = PreprocessingTask(
-        settings=settings, ancestors=ancestors, debug=debug)
+        settings=all_settings,
+        input_files=input_files,
+        debug=config_user['save_intermediary_cubes'])
 
     return task
 
@@ -270,9 +396,14 @@ def get_multi_model_task(standard_name, settings, ancestors, user_config):
 class Namelist(object):
     """Namelist object"""
 
-    def __init__(self, raw_namelist, config_user, initialize_tasks=True):
+    def __init__(self,
+                 raw_namelist,
+                 config_user,
+                 initialize_tasks=True,
+                 namelist_file=None):
         """Parse a namelist file into an object."""
         self._cfg = config_user
+        self._namelist_file = namelist_file  # TODO: remove this dependency
         self._preprocessors = raw_namelist['preprocessors']
         self.models = raw_namelist['models']
         self.diagnostics = self._initialize_diagnostics(
@@ -289,12 +420,13 @@ class Namelist(object):
             diagnostic = {}
             diagnostic['name'] = name
             models = self._initialize_models(
-                name, raw_diagnostic['additional_models'])
+                name, raw_diagnostic.get('additional_models'))
             diagnostic['models'] = models
-            diagnostic['variables'] = self._initialize_variables(
-                name, raw_diagnostic['variables'], models)
+            diagnostic['variable_collection'] = \
+                self._initialize_variable_collection(
+                    name, raw_diagnostic.get('variables'), models)
             diagnostic['scripts'] = self._initialize_scripts(
-                name, raw_diagnostic['scripts'])
+                name, raw_diagnostic.get('scripts'))
             diagnostics[name] = diagnostic
 
         return diagnostics
@@ -303,184 +435,189 @@ class Namelist(object):
         """Define models in diagnostic"""
         logger.debug("Setting models for diagnostic %s", diagnostic_name)
 
-        models = self.models + raw_additional_models
+        models = list(self.models)
 
+        if raw_additional_models:
+            models += raw_additional_models
+
+        check_duplicate_models(models)
         return models
 
-    @staticmethod
-    def _initialize_variables(diagnostic_name, raw_variables, models):
-        """Define variables in diagnostic"""
-        logger.debug("Populating list of variables for diagnostic %s",
-                     diagnostic_name)
-
-        variables = {}
+    def _initialize_variables(self, raw_variable, models):
+        """Define variables for all models."""
+        variables = []
         cmor_keys = ['standard_name', 'long_name', 'units']
-        for variable_name, raw_variable in raw_variables.items():
-            variables[variable_name] = []
-            for model in models:
-                variable = copy.deepcopy(raw_variable)
-                variable.update(model)
-                if 'short_name' not in variable:
-                    variable['short_name'] = variable_name
-                _add_cmor_info(variable, cmor_keys)
-                variables[variable_name].append(variable)
+        for model in models:
+            variable = copy.deepcopy(raw_variable)
+            variable.update(model)
+            if ('cmor_table' not in variable
+                    and variable.get('project') in CMOR_TABLES):
+                variable['cmor_table'] = variable['project']
+            _add_cmor_info(variable, cmor_keys)
+            variables.append(variable)
 
-            for variable in variables[variable_name]:
-                for key in ['mip'] + cmor_keys:
-                    if key not in variable:
-                        value = _get_value(key, variables[variable_name])
-                        if value is not None:
-                            variable[key] = value
+        for variable in variables:
+            for key in ['mip', 'cmor_table'] + cmor_keys:
+                if key not in variable:
+                    value = _get_value(key, variables)
+                    if value is not None:
+                        variable[key] = value
+
+        check_variables(variables)
+
+        for variable in variables:
+            variable['filename'] = get_output_file(variable,
+                                                   self._cfg['preproc_dir'])
 
         return variables
 
-    @staticmethod
-    def _initialize_scripts(diagnostic_name, raw_scripts):
+    def _initialize_variable_collection(self, diagnostic_name, raw_variables,
+                                        models):
+        """Define variables in diagnostic"""
+        if not raw_variables:
+            return {}
+
+        logger.debug("Populating list of variables for diagnostic %s",
+                     diagnostic_name)
+
+        variable_collection = {}
+
+        for variable_name, raw_variable in raw_variables.items():
+            if 'short_name' not in raw_variable:
+                raw_variable['short_name'] = variable_name
+            raw_variable['diagnostic'] = diagnostic_name
+            raw_variable['preprocessor'] = str(raw_variable['preprocessor'])
+            variable_collection[variable_name] = \
+                self._initialize_variables(raw_variable, models)
+
+        return variable_collection
+
+    def _initialize_scripts(self, diagnostic_name, raw_scripts):
         """Define script in diagnostic"""
+        if not raw_scripts:
+            return {}
+
         logger.debug("Setting script for diagnostic %s", diagnostic_name)
 
         scripts = {}
 
-        # Dummy diagnostic for running only preprocessors
-        if raw_scripts == 'None':
-            return scripts
-
-        for name, raw_settings in raw_scripts.items():
+        for script_name, raw_settings in raw_scripts.items():
             raw_script = raw_settings.pop('script')
-            ancestors = raw_settings.pop('ancestors', None)
+            ancestors = []
+            for id_glob in raw_settings.pop('ancestors', []):
+                if TASKSEP not in id_glob:
+                    id_glob = diagnostic_name + TASKSEP + id_glob
+                ancestors.append(id_glob)
             settings = copy.deepcopy(raw_settings)
+            # Add output dir to settings
+            output_dir = os.path.join(
+                self._cfg['output_dir'],
+                diagnostic_name,
+                script_name,
+            )
+            settings['output_dir'] = output_dir
+            settings['run_dir'] = os.path.join(
+                self._cfg['output_dir'],
+                'tmp',
+                diagnostic_name,
+                script_name,
+            )
+            settings['exit_on_ncl_warning'] = self._cfg['exit_on_warning']
+            for key in ('work_dir', 'plot_dir', 'preproc_dir',
+                        'max_data_filesize', 'output_file_type', 'write_plots',
+                        'write_netcdf', 'log_level'):
+                settings[key] = self._cfg[key]
 
-            diagnostics_root = os.path.join(
-                os.path.dirname(__file__), 'diag_scripts')
-            script_file = os.path.abspath(
-                os.path.join(diagnostics_root, raw_script))
-
-            bad_script = NamelistError(
-                "Cannot execute script {} ({}) of diagnostic {}".format(
-                    raw_script, script_file, diagnostic_name))
-
-            if not os.path.isfile(script_file):
-                raise bad_script
-
-            cmd = []
-            if not os.access(script_file, os.X_OK):  # if not executable
-                extension = os.path.splitext(raw_script)[1].lower()[1:]
-                executables = {
-                    'py': ['python'],
-                    'ncl': ['ncl'],
-                    'r': ['Rscript', '--slave', '--quiet'],
-                }
-                if extension not in executables:
-                    raise bad_script
-                cmd = executables[extension]
-            cmd.append(script_file)
-
-            scripts[name] = {
-                'script': script_file,
-                'command': cmd,
+            scripts[script_name] = {
+                'script': raw_script,
                 'settings': settings,
                 'ancestors': ancestors,
             }
 
         return scripts
 
-    def _update_target_grid(self, variable, settings, all_models):
-        """Configure regrid target_grid in preprocessor settings."""
-
-        def issubset(sub, ref):
-            """Check if dict sub is a subset of dict ref."""
-            return all(ref.get(key, object()) == sub[key] for key in sub)
-
-        if ('regrid' in settings and settings['regrid'] is not False
-                and 'target_grid' in settings['regrid']):
-            # if the target grid is a model, replace with filename
-            target_grid_model = _find_model(
-                full_models=all_models,
-                short_model=settings['regrid']['target_grid'])
-            if target_grid_model:
-                if issubset(target_grid_model, variable):
-                    # No need to regrid model onto itself
-                    del settings['regrid']
-                else:
-                    target_variable = dict(variable)
-                    target_variable.update(target_grid_model)
-                    files = get_input_filelist(
-                        variable=target_variable,
-                        rootpath=self._cfg['rootpath'],
-                        drs=self._cfg['drs'])
-                    settings['regrid']['target_grid'] = files[0]
+    def _resolve_diagnostic_ancestors(self, diagnostic_tasks, later):
+        """Resolve diagnostic ancestors"""
+        for diagnostic_name, diagnostic in self.diagnostics.items():
+            for script_name, script_cfg in diagnostic['scripts'].items():
+                task_id = diagnostic_name + TASKSEP + script_name
+                if diagnostic_tasks[task_id].ancestors is later:
+                    logger.debug("Linking tasks for diagnostic %s script %s",
+                                 diagnostic_name, script_name)
+                    ancestors = []
+                    for id_glob in script_cfg['ancestors']:
+                        ancestor_ids = fnmatch.filter(diagnostic_tasks,
+                                                      id_glob)
+                        if not ancestor_ids:
+                            raise NamelistError(
+                                "Could not find any ancestors matching {}"
+                                .format(id_glob))
+                        logger.debug("Pattern %s matches %s", id_glob,
+                                     ancestor_ids)
+                        ancestors.extend(diagnostic_tasks[ancestor_id]
+                                         for ancestor_id in ancestor_ids)
+                    diagnostic_tasks[task_id].ancestors = ancestors
 
     def initialize_tasks(self):
         """Define tasks in namelist"""
         logger.info("Creating tasks from namelist")
-
         tasks = []
 
-        all_preproc_tasks = {}
+        diagnostic_tasks = {}
+        later = object()
         for diagnostic_name, diagnostic in self.diagnostics.items():
             logger.info("Creating tasks for diagnostic %s", diagnostic_name)
 
             # Create preprocessor tasks
-            for variable_name in diagnostic['variables']:
-                # Create single model tasks
-                single_model_tasks = []
-                for variable in diagnostic['variables'][variable_name]:
-                    preproc_id = variable['preprocessor']
-                    settings = copy.deepcopy(self._preprocessors[preproc_id])
-                    self._update_target_grid(variable, settings,
-                                             diagnostic['models'])
-
-                    task_id = '_'.join(
-                        str(variable[key]) for key in sorted(variable))
-                    if task_id not in all_preproc_tasks:
-                        task = get_single_model_task(
-                            variable=variable,
-                            settings=settings,
-                            user_config=self._cfg,
-                        )
-                        all_preproc_tasks[task_id] = task
-                    single_model_tasks.append(all_preproc_tasks[task_id])
-
-                # Create multi model task
-                task_id = diagnostic_name + '_' + variable_name
-                if task_id not in all_preproc_tasks:
-                    task = get_multi_model_task(
-                        standard_name=variable['standard_name'],
-                        settings=settings,
-                        ancestors=list(single_model_tasks),
-                        user_config=self._cfg,
-                    )
-                    all_preproc_tasks[task_id] = task
-                multi_model_task = all_preproc_tasks[task_id]
+            preproc_tasks = []
+            for variable_name in diagnostic['variable_collection']:
+                logger.info("Creating preprocessor tasks for variable %s",
+                            variable_name)
+                task = _get_preprocessor_task(
+                    variables=diagnostic['variable_collection'][variable_name],
+                    preprocessors=self._preprocessors,
+                    config_user=self._cfg)
+                preproc_tasks.append(task)
+            tasks.extend(preproc_tasks)
 
             # Create diagnostic tasks
-            diagnostic_tasks = {}
-            for task_id, script_cfg in diagnostic['scripts'].items():
-                diagnostic_task = DiagnosticTask(
-                    # TODO: enable once DiagnosticTask.run() implemented
-                    script=None,  # script_cfg['script'],
+            for script_name, script_cfg in diagnostic['scripts'].items():
+                task_id = diagnostic_name + TASKSEP + script_name
+                logger.info("Creating diagnostic task %s", task_id)
+                # Ancestors will be resolved after creating all tasks,
+                # unless there aren't any, in which case we set them to the
+                # preprocessor tasks.
+                ancestors = later if script_cfg['ancestors'] else preproc_tasks
+                task = DiagnosticTask(
+                    script=script_cfg['script'],
                     settings=script_cfg['settings'],
+                    ancestors=ancestors,
                 )
-                diagnostic_tasks[task_id] = diagnostic_task
+                diagnostic_tasks[task_id] = task
+                # TODO: remove code below once new interface implemented
+                os.makedirs(task.settings['run_dir'])
+                write_legacy_ncl_interface(
+                    variables=diagnostic['variable_collection'],
+                    settings=task.settings,
+                    output_dir=task.settings['run_dir'],
+                    namelist_file=self._namelist_file,
+                    script=task.script)
+                task.settings['env'] = get_legacy_ncl_env(
+                    settings=task.settings,
+                    output_dir=task.settings['run_dir'],
+                    namelist_basename=os.path.basename(self._namelist_file))
 
-            # Preprocessor run only
-            if not diagnostic_tasks:
-                tasks.append(multi_model_task)
+        # Resolve diagnostic ancestors marked as 'later'
+        self._resolve_diagnostic_ancestors(diagnostic_tasks, later)
 
-            # Add diagnostic tasks
+        # TODO: check that no loops are created (will throw RecursionError)
+
+        # Only add diagnostic tasks if enabled
+        if self._cfg['run_diagnostic']:
             tasks.extend(diagnostic_tasks.values())
 
-            # Establish relations between diagnostic tasks and minimize `tasks`
-            for task_id, script_cfg in diagnostic['scripts'].items():
-                if script_cfg['ancestors']:
-                    ancestors = []
-                    for ancestor_id in script_cfg['ancestors']:
-                        diagnostic_task = diagnostic_tasks[ancestor_id]
-                        ancestors.append(diagnostic_task)
-                        tasks.remove(diagnostic_task)
-                else:
-                    ancestors = [multi_model_task]
-                diagnostic_tasks[task_id].ancestors = ancestors
+        # Return smallest possible set of tasks
+        tasks = get_independent_tasks(tasks)
 
         return tasks
 
@@ -490,5 +627,5 @@ class Namelist(object):
 
     def run(self):
         """Run all tasks in the namelist."""
-        for task in self.tasks:
-            task.run()
+        run_tasks(
+            self.tasks, max_parallel_tasks=self._cfg['max_parallel_tasks'])

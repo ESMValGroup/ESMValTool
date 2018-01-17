@@ -1,11 +1,13 @@
 # Logger configuration
+---
+
 version: 1
-disable_existing_loggers: False
+disable_existing_loggers: false
 formatters:
   console:
-    format: '%(asctime)s %(levelname)-7s %(message)s'
+    format: '%(asctime)s [%(process)d] %(levelname)-7s %(message)s'
   brief:
-    format: '%(levelname)-7s %(message)s'
+    format: '%(levelname)-7s [%(process)d] %(message)s'
   debug:
     format: '%(asctime)s [%(process)d] %(levelname)-7s %(filename)s:%(lineno)s %(message)s'
 handlers:
