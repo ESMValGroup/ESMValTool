@@ -339,6 +339,7 @@ def _get_preprocessor_settings(variables, preprocessors, config_user):
         settings = _get_default_settings(variable, config_user)
         _apply_preprocessor_settings(settings, profile_settings)
         # if the target grid is a model name, replace it with a file name
+        # TODO: call _update_target_grid only once per variable?
         _update_target_grid(
             variable=variable,
             all_variables=variables,
