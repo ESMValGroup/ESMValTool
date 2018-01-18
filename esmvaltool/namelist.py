@@ -7,8 +7,8 @@ import inspect
 import logging
 import os
 
-import yaml
 import yamale
+import yaml
 
 from .interface_scripts.data_finder import (
     get_input_filelist, get_input_filename, get_output_file,
@@ -20,7 +20,8 @@ from .preprocessor import (DEFAULT_ORDER, MULTI_MODEL_FUNCTIONS,
 from .preprocessor._download import synda_search
 from .preprocessor._io import concatenate_callback
 from .preprocessor._reformat import CMOR_TABLES
-from .task import DiagnosticTask, get_independent_tasks, run_tasks
+from .task import (DiagnosticTask, InterfaceTask, get_independent_tasks,
+                   run_tasks)
 
 logger = logging.getLogger(__name__)
 
@@ -386,16 +387,38 @@ def _get_preprocessor_task(variables, preprocessors, config_user):
         v['filename']: _get_input_files(v, config_user)
         for v in variables
     }
-    metadata = {'variables': variables}
-    output_dir = os.path.dirname(next(v['filename'] for v in variables))
+    output_dir = os.path.dirname(variables[0]['filename'])
     task = PreprocessingTask(
         settings=all_settings,
         output_dir=output_dir,
         input_files=input_files,
-        metadata=metadata,
         debug=config_user['save_intermediary_cubes'])
 
     return task
+
+
+def _get_interface_tasks(variable_collection, preprocessor_tasks):
+    """Create interface tasks between preprocessor and diagnostic script"""
+    metadata = {}
+    for variable_name, variables in variable_collection.items():
+        output_dir = os.path.dirname(variables[0]['filename'])
+        if output_dir not in metadata:
+            metadata[output_dir] = {}
+        metadata[output_dir][variable_name] = variables
+
+    tasks = []
+    for output_dir in metadata:
+        settings = {
+            'metadata': metadata[output_dir],
+        }
+        ancestors = [
+            t for t in preprocessor_tasks if t.output_dir == output_dir
+        ]
+        task = InterfaceTask(
+            settings=settings, output_dir=output_dir, ancestors=ancestors)
+        tasks.append(task)
+
+    return tasks
 
 
 class Namelist(object):
@@ -579,7 +602,12 @@ class Namelist(object):
                     preprocessors=self._preprocessors,
                     config_user=self._cfg)
                 preproc_tasks.append(task)
-            tasks.extend(preproc_tasks)
+
+            # Create interface tasks
+            if_tasks = _get_interface_tasks(
+                variable_collection=diagnostic['variable_collection'],
+                preprocessor_tasks=preproc_tasks)
+            tasks.extend(if_tasks)
 
             # Create diagnostic tasks
             for script_name, script_cfg in diagnostic['scripts'].items():
@@ -588,7 +616,7 @@ class Namelist(object):
                 # Ancestors will be resolved after creating all tasks,
                 # unless there aren't any, in which case we set them to the
                 # preprocessor tasks.
-                ancestors = later if script_cfg['ancestors'] else preproc_tasks
+                ancestors = later if script_cfg['ancestors'] else if_tasks
                 task = DiagnosticTask(
                     script=script_cfg['script'],
                     output_dir=script_cfg['output_dir'],

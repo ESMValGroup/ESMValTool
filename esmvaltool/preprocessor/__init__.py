@@ -1,11 +1,9 @@
 """Preprocessor module."""
 import logging
-import os
 from collections import OrderedDict
 
 from iris.cube import Cube
 
-from ..interface_scripts.data_interface import write_settings
 from ..task import AbstractTask
 from ._derive import derive
 from ._download import download
@@ -217,13 +215,11 @@ class PreprocessingTask(AbstractTask):
                  output_dir,
                  ancestors=None,
                  input_files=None,
-                 metadata=None,
                  order=DEFAULT_ORDER,
                  debug=None):
         """Initialize"""
         super(PreprocessingTask, self).__init__(
             settings=settings, output_dir=output_dir, ancestors=ancestors)
-        self.metadata = metadata
         self.order = list(order)
         self.debug = debug
         self._input_files = input_files
@@ -235,30 +231,7 @@ class PreprocessingTask(AbstractTask):
             input_files = self._input_files
         output_files = preprocess_multi_model(
             input_files, self.settings, self.order, debug=self.debug)
-        if self.metadata is not None:
-            # If metadata is written, assume it describes output_files
-            self._write_metadata()
-            self._write_ncl_metadata()
-            output_files = [self.output_dir]
         return output_files
-
-    def _write_ncl_metadata(self):
-        """Write metadata to NCL file."""
-        metadata = {}
-        # 'variables' is a list of dicts, but NCL does not support nested
-        # dicts, so convert to dict of lists.
-        keys = sorted({k for v in self.metadata['variables'] for k in v})
-        metadata['variables'] = {
-            k: [v.get(k) for v in self.metadata['variables']]
-            for k in keys
-        }
-        filename = os.path.join(self.output_dir, 'metadata.ncl')
-        write_settings(metadata, filename)
-
-    def _write_metadata(self):
-        """Write metadata to YAML file."""
-        filename = os.path.join(self.output_dir, 'metadata.yml')
-        write_settings(self.metadata, filename)
 
     def __str__(self):
         """Get human readable description."""

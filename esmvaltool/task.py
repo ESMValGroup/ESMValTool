@@ -6,6 +6,8 @@ import subprocess
 import time
 from multiprocessing import Pool, cpu_count
 
+import yaml
+
 from .interface_scripts.data_interface import write_settings
 
 logger = logging.getLogger(__name__)
@@ -65,6 +67,71 @@ class AbstractTask(object):
             if self.ancestors else 'None',
         )
         return txt
+
+
+class InterfaceTask(AbstractTask):
+    """Task for writing the preprocessor - diagnostic task interface"""
+
+    def __init__(self, settings, output_dir, ancestors=None):
+        """Initialize"""
+        super(InterfaceTask, self).__init__(
+            settings=settings, output_dir=output_dir, ancestors=ancestors)
+
+    def _run(self, input_files):
+        metadata = self.settings['metadata']
+        self._metadata_sanity_check(input_files, metadata)
+        self.write_metadata(metadata)
+        self.write_ncl_metadata(metadata)
+        return self.output_dir
+
+    def _metadata_sanity_check(self, input_files, metadata):
+        """Check that metadata matches input_files"""
+        # This should never fail for normal users
+        files = {
+            v['filename']
+            for variables in metadata.values() for v in variables
+        }
+        input_files = set(input_files)
+        msg = []
+
+        missing = input_files - files
+        if missing:
+            msg.append("No metadata provided for input files {}"
+                       .format(missing))
+
+        too_many = files - input_files
+        if too_many:
+            msg.append("Metadata provided for non-existent input files {}"
+                       .format(too_many))
+
+        wrong_place = {
+            f
+            for f in input_files if not f.startswith(self.output_dir)
+        }
+        if wrong_place:
+            msg.append("Input files {} are not located in output_dir {}"
+                       .format(wrong_place, self.output_dir))
+
+        if msg:
+            raise ValueError('\n'.join(msg))
+
+    def write_metadata(self, metadata):
+        """Write metadata file to output_dir"""
+        filename = os.path.join(self.output_dir, 'metadata.yml')
+        with open(filename, 'w') as file:
+            yaml.safe_dump(metadata, file)
+
+    def write_ncl_metadata(self, metadata):
+        """Write NCL metadata files to output_dir"""
+        for variable_name, variables in metadata.items():
+            filename = os.path.join(self.output_dir,
+                                    variable_name + '_info.ncl')
+            # 'variables' is a list of dicts, but NCL does not support nested
+            # dicts, so convert to dict of lists.
+            keys = sorted({k for v in variables for k in v})
+            variables = {k: [v.get(k) for v in variables] for k in keys}
+            variable_info = {'variable_info': variables}
+            write_settings(variable_info, filename)
 
 
 class DiagnosticError(Exception):
