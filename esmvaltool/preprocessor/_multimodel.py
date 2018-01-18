@@ -25,7 +25,7 @@ def _get_overlap(cubes):
 def multi_model_mean(cubes, span, filename, exclude):
     """Compute multi-model mean and median."""
 
-    logger.debug('Multi model statistics: excluding: %s' % str(exclude))
+    logger.debug('Multi model statistics: excluding files: %s' % str(exclude))
     selection = [
         cube for cube in cubes
         if not all(cube.attributes.get(k) in exclude[k] for k in exclude)
@@ -38,6 +38,7 @@ def multi_model_mean(cubes, span, filename, exclude):
     means = []
     medians = []
     data_size = []
+    file_names = []
     tx1, tx2 = _get_overlap(cubes)
 
     # check if we have any time overlap
@@ -47,6 +48,8 @@ def multi_model_mean(cubes, span, filename, exclude):
         return cubes
 
     for cube in selection:
+        file_name = cube.attributes.get('_filename').split('/')[-1]
+        file_names.append(file_name)
         for coord in cube.coords():
             if coord.standard_name == 'time':
                 if span == 'overlap':
@@ -89,14 +92,17 @@ def multi_model_mean(cubes, span, filename, exclude):
     logger.debug("Global means: %s", means)
     means_cube = iris.cube.Cube(means, long_name='means')
     means_cube.attributes['_filename'] = filename
+    means_cube.attributes['NCfiles'] = str(file_names)
 
     logger.debug("Global medians: %s", medians)
     medians_cube = iris.cube.Cube(medians, long_name='medians')
     medians_cube.attributes['_filename'] = filename
+    medians_cube.attributes['NCfiles'] = str(file_names)
 
     logger.debug("Data sizes: %s", data_size)
     datasize_cube = iris.cube.Cube(data_size, long_name='data_size')
     datasize_cube.attributes['_filename'] = filename
+    datasize_cube.attributes['NCfiles'] = str(file_names)
 
     save_cubes([means_cube, medians_cube, datasize_cube])
 
