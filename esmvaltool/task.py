@@ -8,7 +8,7 @@ from multiprocessing import Pool, cpu_count
 
 import yaml
 
-from .interface_scripts.data_interface import write_settings
+from .interface_scripts.data_interface import write_ncl_settings
 
 logger = logging.getLogger(__name__)
 
@@ -131,7 +131,7 @@ class InterfaceTask(AbstractTask):
             keys = sorted({k for v in variables for k in v})
             variables = {k: [v.get(k) for v in variables] for k in keys}
             variable_info = {'variable_info': variables}
-            write_settings(variable_info, filename)
+            write_ncl_settings(variable_info, filename)
 
 
 class DiagnosticError(Exception):
@@ -182,7 +182,12 @@ class DiagnosticTask(AbstractTask):
 
     def write_settings(self):
         """Write settings to file"""
-        filename = os.path.join(self.settings['run_dir'], 'settings.yml')
+        run_dir = self.settings['run_dir']
+        if not os.path.exists(run_dir):
+            os.makedirs(run_dir)
+
+        filename = os.path.join(run_dir, 'settings.yml')
+
         with open(filename, 'w') as file:
             yaml.safe_dump(self.settings, file)
 
@@ -204,7 +209,7 @@ class DiagnosticTask(AbstractTask):
             else:
                 settings[key] = value
 
-        write_settings(settings, filename)
+        write_ncl_settings(settings, filename)
 
     def _control_ncl_execution(self, process, lines):
         """Check if an error has occurred in an NCL script.

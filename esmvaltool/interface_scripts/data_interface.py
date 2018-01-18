@@ -10,58 +10,51 @@ contact: valeriu.predoi@ncas.ac.uk
 import logging
 import os
 
-import yaml
-
 from ..version import __version__
 from .data_finder import get_output_file
 
 logger = logging.getLogger(__name__)
 
 
-def write_settings(settings, filename, mode='wt'):
-    """Write settings to file."""
-    logger.debug("Writing configuration file %s", filename)
-    ext = os.path.splitext(filename)[1][1:].lower()
-    if ext == 'ncl':
+def write_ncl_settings(settings, filename, mode='wt'):
+    """Write settings to NCL file."""
+    logger.debug("Writing NCL configuration file %s", filename)
 
-        def _format(value):
-            """Format string or list as NCL"""
-            if value is None or isinstance(value, str):
-                txt = '"{}"'.format(value)
-            elif isinstance(value, (list, tuple)):
-                txt = '(/{}/)'.format(', '.join(_format(v) for v in value))
-            else:
-                txt = str(value)
-            return txt
+    def _format(value):
+        """Format string or list as NCL"""
+        if value is None or isinstance(value, str):
+            txt = '"{}"'.format(value)
+        elif isinstance(value, (list, tuple)):
+            txt = '(/{}/)'.format(', '.join(_format(v) for v in value))
+        else:
+            txt = str(value)
+        return txt
 
-        def _format_dict(name, dictionary):
-            """Format dict as NCL"""
-            lines = ['{} = True'.format(name)]
-            for key, value in sorted(dictionary.items()):
-                lines.append('{}@{} = {}'.format(name, key, _format(value)))
-            txt = '\n'.join(lines)
-            return txt
+    def _format_dict(name, dictionary):
+        """Format dict as NCL"""
+        lines = ['{} = True'.format(name)]
+        for key, value in sorted(dictionary.items()):
+            lines.append('{}@{} = {}'.format(name, key, _format(value)))
+        txt = '\n'.join(lines)
+        return txt
 
-        def _header(name):
-            """Delete any existing NCL variable known as `name`."""
-            return ('if (isvar("{name}")) then\n'
-                    '    delete({name})\n'
-                    'end if\n'.format(name=name))
+    def _header(name):
+        """Delete any existing NCL variable known as `name`."""
+        return ('if (isvar("{name}")) then\n'
+                '    delete({name})\n'
+                'end if\n'.format(name=name))
 
-        lines = []
-        for key, value in sorted(settings.items()):
-            txt = _header(name=key)
-            if isinstance(value, dict):
-                txt += _format_dict(name=key, dictionary=value)
-            else:
-                txt += '{} = {}'.format(key, _format(value))
-            lines.append(txt)
-        with open(filename, mode) as file:
-            file.write('\n\n'.join(lines))
-            file.write('\n')
-    else:
-        with open(filename, mode) as file:
-            yaml.safe_dump(settings, file)
+    lines = []
+    for key, value in sorted(settings.items()):
+        txt = _header(name=key)
+        if isinstance(value, dict):
+            txt += _format_dict(name=key, dictionary=value)
+        else:
+            txt += '{} = {}'.format(key, _format(value))
+        lines.append(txt)
+    with open(filename, mode) as file:
+        file.write('\n\n'.join(lines))
+        file.write('\n')
 
 
 def get_legacy_ncl_interface(variables, settings, namelist_file, script):
@@ -201,7 +194,7 @@ def write_legacy_ncl_interface(variables, settings, namelist_file, script):
     if not os.path.isdir(run_dir):
         os.makedirs(run_dir)
     interface_file_tmp = os.path.join(run_dir, 'interface.ncl')
-    write_settings(ncl_interface, interface_file_tmp)
+    write_ncl_settings(ncl_interface, interface_file_tmp)
     interface_file = os.path.join(run_dir, 'ncl.interface')
     os.rename(interface_file_tmp, interface_file)
     logger.info("with configuration file %s", interface_file)
@@ -215,7 +208,7 @@ def write_legacy_ncl_interface(variables, settings, namelist_file, script):
             if all(v == w.get(k) for w in variable)
         }
         variable_info = {'variable_info': common_items}
-        write_settings(variable_info, info_file_tmp, mode='at')
+        write_ncl_settings(variable_info, info_file_tmp, mode='at')
         info_file = os.path.splitext(info_file_tmp)[0] + '.tmp'
         logger.info("and configuration file %s", info_file)
         os.rename(info_file_tmp, info_file)
