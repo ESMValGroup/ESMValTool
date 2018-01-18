@@ -29,6 +29,8 @@ variable:
   alternative_model: str(required=False)
   mip: str(required=False)
 
+# TODO: add preprocessor item
+
 diagnostic:
   scripts: any(null(), map(include('script')))
   additional_models: list(include('model'), required=False)
