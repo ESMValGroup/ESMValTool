@@ -26,23 +26,6 @@ logger = logging.getLogger(__name__)
 
 TASKSEP = os.sep
 
-def run_once(f):
-    """
-    Decorator to call/execute a function f
-    only once if the output is identical
-    everytime; single output is only elem of m.
-    """
-    m = []
-    def wrapper(*args, **kwargs):
-        if not wrapper.has_run:
-            wrapper.has_run = True
-            y = f(*args, **kwargs)
-            m.append(y)
-            return m[0]
-        else:
-            return m[0]
-    wrapper.has_run = False
-    return wrapper
 
 class NamelistError(Exception):
     """Namelist contains an error."""
@@ -218,7 +201,6 @@ def _add_cmor_info(variable, keys):
                     variable[key] = value
 
 
-@run_once
 def _update_target_grid(variable, all_variables, settings, config_user):
     """Replace the target grid model name with a filename if needed.
 
@@ -242,9 +224,8 @@ def _update_target_grid(variable, all_variables, settings, config_user):
                 rootpath=config_user['rootpath'],
                 drs=config_user['drs'])
             target_file = files[0]
-            #decorator needs file output
-            #settings['regrid']['target_grid'] = target_file
-            return target_file
+            settings['regrid']['target_grid'] = target_file
+            return
 
 
 def _get_default_settings(variable, config_user):
@@ -379,12 +360,11 @@ def _get_preprocessor_settings(variables, preprocessors, config_user):
         settings = _get_default_settings(variable, config_user)
         _apply_preprocessor_settings(settings, profile_settings)
         # if the target grid is a model name, replace it with a file name
-        tgt_file = _update_target_grid(
-                       variable=variable,
-                       all_variables=variables,
-                       settings=settings,
-                       config_user=config_user)
-        settings['regrid']['target_grid'] = tgt_file
+        _update_target_grid(
+            variable=variable,
+            all_variables=variables,
+            settings=settings,
+            config_user=config_user)
         if 'derive' in settings:
             # create two pairs of settings?
             pass
