@@ -14,8 +14,6 @@ def ncl_version_check():
         logger.error("Failed to execute '%s'", ' '.join(cmd))
         raise
 
-    #version = version.decode(sys.stdout.encoding)
-
     if version == "6.3.0":
         logger.error("NCL version " + version + " not supported due to a bug "
                      + "(see Known Issues in the ESMValTool user guide)")
