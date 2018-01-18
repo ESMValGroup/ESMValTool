@@ -45,6 +45,7 @@ import logging.config
 import os
 import shutil
 import sys
+from multiprocessing import cpu_count
 
 import yaml
 
@@ -218,6 +219,14 @@ def process_namelist(namelist_file, config_user):
     logger.info("PREPROCDIR = %s", config_user["preproc_dir"])
     logger.info("PLOTDIR    = %s", config_user["plot_dir"])
     logger.info(70 * "-")
+
+    logger.info("Running tasks using at most %s processes",
+                config_user['max_parallel_tasks'] or cpu_count())
+
+    logger.info(
+        "If your system hangs during execution, it may not have enough "
+        "memory for keeping this number of tasks in memory. In that case, "
+        "try reducing 'max_parallel_tasks' in your user configuration file.")
 
     # copy namelist to run_dir for future reference
     shutil.copy2(namelist_file, config_user['run_dir'])

@@ -194,7 +194,7 @@ class DiagnosticTask(AbstractTask):
         logger.info("Running command %s", cmd)
         logger.debug("in environment\n%s", pprint.pformat(env))
         logger.debug("in current working directory: %s", cwd)
-        logger.info("Writing (some) output to %s", self.output_dir)
+        logger.info("Writing output to %s", self.output_dir)
         logger.info("Writing log to %s", self.log)
 
         process = subprocess.Popen(
@@ -290,10 +290,6 @@ def _run_tasks_parallel(tasks, max_parallel_tasks=None):
 
     logger.info("Running %s tasks using at most %s processes", n_tasks,
                 max_parallel_tasks or cpu_count())
-    logger.info(
-        "If your system hangs during execution, it may not have enough "
-        "memory for keeping this number of tasks in memory. In that case, "
-        "try reducing 'max_parallel_tasks' in your user configuration file.")
 
     def done(task):
         """Assume a task is done if it not scheduled or running."""
