@@ -9,23 +9,23 @@ from ._io import save_cubes
 
 logger = logging.getLogger(__name__)
 
+
 def _get_overlap(cubes):
     """Get discrete time overlaps."""
     all_times = [cube.coord('time').points for cube in cubes]
     bounds = [range(int(np.min(b)), int(np.max(b)) + 1) for b in all_times]
     time_pts = reduce(np.intersect1d, (i for i in bounds))
     if len(time_pts) > 1:
-        t1 = time_pts[0]
-        t2 = time_pts[-1]
-        return t1, t2
+        time1 = time_pts[0]
+        time2 = time_pts[-1]
+        return time1, time2
     else:
         return 0, 0
 
 
 def multi_model_mean(cubes, span, filename, exclude):
     """Compute multi-model mean and median."""
-
-    logger.debug('Multi model statistics: excluding files: %s' % str(exclude))
+    logger.debug('Multi model statistics: excluding files: %s', str(exclude))
     selection = [
         cube for cube in cubes
         if not all(cube.attributes.get(k) in exclude[k] for k in exclude)
@@ -54,18 +54,22 @@ def multi_model_mean(cubes, span, filename, exclude):
             if coord.standard_name == 'time':
                 if span == 'overlap':
 
-                    logger.debug("Using common time overlap between models to compute statistics.")
+                    logger.debug("Using common time overlap between \
+                                 models to compute statistics.")
                     # find the nearest points to the overlap region
                     all_times = list(cube.coord('time').points)
-                    a1 = min(all_times, key=lambda x: abs(x - tx1))
-                    a2 = min(all_times, key=lambda x: abs(x - tx2))
-                    i1 = all_times.index(a1)
-                    i2 = all_times.index(a2)
-                    logger.debug("Indexing time axis for overlap on indices %i and %i of %i" % (i1,i2,len(all_times)-1))
+                    min_t = min(all_times, key=lambda x: abs(x - tx1))
+                    max_t = min(all_times, key=lambda x: abs(x - tx2))
+                    id_min = all_times.index(min_t)
+                    id_max = all_times.index(max_t)
+                    tot = len(all_times) - 1
+                    logger.debug("Indexing time axis for overlap on \
+                                 indices %i and %i \
+                                 of %i", id_min, id_max, tot)
 
                     # index data on these points and
                     # get rid of masked values
-                    flat_data = cube.data[i1:i2+1,:,:]
+                    flat_data = cube.data[id_min:id_max + 1, :, :]
                     cdata = flat_data[~flat_data.mask]
                     data_size.append(cdata.shape[0])
 
@@ -77,7 +81,8 @@ def multi_model_mean(cubes, span, filename, exclude):
 
                 elif span == 'full':
 
-                    logger.debug("Using full time spans to compute statistics.")
+                    logger.debug("Using full time spans \
+                                 to compute statistics.")
                     # get rid of masked
                     flat_data = cube.data
                     cdata = flat_data[~flat_data.mask]
