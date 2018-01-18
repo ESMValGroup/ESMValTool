@@ -82,7 +82,7 @@ class InterfaceTask(AbstractTask):
         self._metadata_sanity_check(input_files, metadata)
         self.write_metadata(metadata)
         self.write_ncl_metadata(metadata)
-        return self.output_dir
+        return [self.output_dir]
 
     def _metadata_sanity_check(self, input_files, metadata):
         """Check that metadata matches input_files"""
@@ -180,18 +180,31 @@ class DiagnosticTask(AbstractTask):
 
         return cmd
 
-    def _write_settings(self):
-        """Write settings to file
+    def write_settings(self):
+        """Write settings to file"""
+        filename = os.path.join(self.settings['run_dir'], 'settings.yml')
+        with open(filename, 'w') as file:
+            yaml.safe_dump(self.settings, file)
 
-        In yaml format or a custom format interface file if that is preferred.
-        """
-        ext = 'yml'
+        # If running an NCL script:
         if self.script.lower().endswith('.ncl'):
-            ext = 'ncl'
-        filename = os.path.join(self.settings['run_dir'], 'settings.' + ext)
+            # Also write an NCL file and return the name of that instead.
+            return self._write_ncl_settings()
 
-        write_settings(self.settings, filename)
         return filename
+
+    def _write_ncl_settings(self):
+        """Write settings to NCL file"""
+        filename = os.path.join(self.settings['run_dir'], 'settings.ncl')
+
+        settings = {'diag_script_info': {}}
+        for key, value in self.settings.items():
+            if not isinstance(value, dict):
+                settings['diag_script_info'][key] = value
+            else:
+                settings[key] = value
+
+        write_settings(settings, filename)
 
     def _control_ncl_execution(self, process, lines):
         """Check if an error has occurred in an NCL script.
@@ -243,14 +256,14 @@ class DiagnosticTask(AbstractTask):
 
         self.settings['input_files'] = input_files
         self.settings['output_dir'] = self.output_dir
-        settings_file = self._write_settings()
 
         cmd = list(self.cmd)
         cwd = None
-        if 'env' in self.settings:
-            env = {str(k): str(v) for k, v in self.settings['env'].items()}
-        else:
-            env = None
+        env = self.settings.pop('env', None)
+        if env:
+            env = {str(k): str(v) for k, v in env.items()}
+
+        settings_file = self.write_settings()
 
         is_ncl_script = self.script.lower().endswith('.ncl')
         if is_ncl_script:
