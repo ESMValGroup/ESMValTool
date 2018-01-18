@@ -331,8 +331,9 @@ def _get_preprocessor_settings(variables, preprocessors, config_user):
     variable = variables[0]
     preproc_name = variable.get('preprocessor')
     if preproc_name not in preprocessors:
-        raise NamelistError("Unknown preprocessor {} in variable {}".format(
-            preproc_name, variable['short_name']))
+        raise NamelistError(
+            "Unknown preprocessor {} in variable {} of diagnostic {}".format(
+                preproc_name, variable['short_name'], variable['diagnostic']))
     profile_settings = preprocessors[variable['preprocessor']]
 
     for variable in variables:
