@@ -200,9 +200,9 @@ class LandCoverDiagnostic(BasicDiagnostics):
 
         ESMValMD("both",
                  oname,
-                 self._basetags + ['DM_global', 'PT_geo', self.refname,
-                                   self.modname, 'ST_mean', 'ST_stddev',
-                                   'ST_diff'],
+                 self._basetags + ['DM_global', 'PT_geo', 'M_' + self.refname]
+                                + ['M_{0}'.format(str(item)) for item in self.modelnames]
+                                + ['ST_mean', 'ST_stddev', 'ST_diff'],
                  'Difference of ' + self._vartype + ' between ' +
                  self.refname + ' and ' + self.modname +
                  ' data for the year ' + year + '. ' +

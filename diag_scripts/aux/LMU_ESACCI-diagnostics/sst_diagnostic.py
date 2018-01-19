@@ -114,8 +114,9 @@ class SeaSurfaceTemperatureDiagnostic(BasicDiagnostics):
 
         ESMValMD("xml",
                  oname,
-                 self._basetags + ['DM_global', self.refname,
-                                   self.modname, 'ST_corr', 'ST_perc'],
+                 self._basetags + ['DM_global', 'M_' + self.refname]
+                                + ['M_{0}'.format(str(item)) for item in self.modelnames]
+                                + ['ST_corr', 'ST_perc'],
                  'Development of global pattern correlation values over ' +
                  'different percentile levels for ' + self.refname + ' and ' +
                  self.modname + ' ' + self._vartype + ' data.',
@@ -205,8 +206,9 @@ class SeaSurfaceTemperatureDiagnostic(BasicDiagnostics):
 
         ESMValMD("both",
                  oname,
-                 self._basetags + ['DM_global', 'PT_geo', self.refname,
-                                   self.modname, 'ST_perc'],
+                 self._basetags + ['DM_global', 'PT_geo', 'M_' + self.refname]
+                                + ['M_{0}'.format(str(item)) for item in self.modelnames]
+                                + ['ST_perc'],
                  'Comparison of global patterns of ' + self._vartype +
                  ' for ' + str(int(p * 100)) + 'th-percentile of ' +
                  self.refname + ' and ' + self.modname + ' data. ' +
@@ -245,8 +247,9 @@ class SeaSurfaceTemperatureDiagnostic(BasicDiagnostics):
 
         ESMValMD("both",
                  oname,
-                 self._basetags + ['DM_global', 'PT_pro', self.refname,
-                                   self.modname, 'ST_corr', 'ST_perc'],
+                 self._basetags + ['DM_global', 'PT_pro', 'M_' + self.refname]
+                                + ['M_{0}'.format(str(item)) for item in self.modelnames]
+                                + ['ST_corr', 'ST_perc'],
                  'Development of global pattern correlation values over ' +
                  'different percentile levels for ' + self.refname + ' and ' +
                  self.modname + ' ' + self._vartype + ' data.',
