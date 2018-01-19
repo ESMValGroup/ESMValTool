@@ -193,25 +193,21 @@ def write_legacy_ncl_interface(variables, settings, namelist_file, script):
     run_dir = settings['run_dir']
     if not os.path.isdir(run_dir):
         os.makedirs(run_dir)
-    interface_file_tmp = os.path.join(run_dir, 'interface.ncl')
-    write_ncl_settings(ncl_interface, interface_file_tmp)
     interface_file = os.path.join(run_dir, 'ncl.interface')
-    os.rename(interface_file_tmp, interface_file)
+    write_ncl_settings(ncl_interface, interface_file)
     logger.info("with configuration file %s", interface_file)
 
     # variable info files
     for name, variable in variables.items():
-        info_file_tmp = os.path.join(run_dir, name + '_info.ncl')
+        info_file = os.path.join(run_dir, name + '_info.tmp')
         common_items = {
             k: v
             for k, v in variable[0].items()
             if all(v == w.get(k) for w in variable)
         }
         variable_info = {'variable_info': common_items}
-        write_ncl_settings(variable_info, info_file_tmp, mode='at')
-        info_file = os.path.splitext(info_file_tmp)[0] + '.tmp'
+        write_ncl_settings(variable_info, info_file, mode='at')
         logger.info("and configuration file %s", info_file)
-        os.rename(info_file_tmp, info_file)
 
 
 def get_legacy_ncl_env(settings, namelist_basename):
