@@ -325,7 +325,9 @@ def _apply_preprocessor_settings(settings, profile_settings):
 
 def _update_multi_model_mean(variables, settings, config_user):
     """Configure multi model mean."""
-    if 'multi_model_mean' in settings:
+    if settings.get('multi_model_mean', False):
+        if settings['multi_model_mean'] is True:
+            settings['multi_model_mean'] = {}
         variable = variables[0]
         filename = os.path.join(
             os.path.dirname(variable['filename']), 'multi_model_statistics.nc')
@@ -334,13 +336,11 @@ def _update_multi_model_mean(variables, settings, config_user):
         for key in 'reference_model', 'alternative_model':
             if key in variable:
                 exclude_models.add(variable[key])
-        exclude = {
-            '_filename': [
-                get_output_file(v, config_user['preproc_dir'])
-                for v in variables if v['model'] in exclude_models
-            ]
+        exclude_files = {
+            v['filename']
+            for v in variables if v['model'] in exclude_models
         }
-        settings['multi_model_mean']['exclude'] = exclude
+        settings['multi_model_mean']['exclude'] = {'_filename': exclude_files}
 
 
 def _get_preprocessor_settings(variables, preprocessors, config_user):
