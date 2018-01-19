@@ -11,13 +11,6 @@ from ._io import save_cubes
 logger = logging.getLogger(__name__)
 
 
-def _find_index(flist, idm):
-    """Find nearest element to idm in flist"""
-    max_t = min(flist, key=lambda x: abs(x - idm))
-    id_min = flist.index(max_t)
-    return id_min
-
-
 def _put_in_cube(stats, stats_name, ncfiles, fname):
     """quick cube building"""
     stats_cube = iris.cube.Cube(stats, long_name=stats_name)
@@ -54,8 +47,7 @@ def multi_model_mean(cubes, span, filename, exclude):
         return cubes
     else:
         # empty lists to hold data
-        means = []
-        medians = []
+        tmeans = []
         data_size = []
 
         # add file name info
@@ -70,46 +62,38 @@ def multi_model_mean(cubes, span, filename, exclude):
             for cube in selection:
                 logger.debug("Using common time overlap between "
                              "models to compute statistics.")
-                # find the nearest points to the overlap region
-                id_min = _find_index(list(cube.coord('time').points), tx1)
-                id_max = _find_index(list(cube.coord('time').points), tx2)
-                logger.debug("Indexing time axis for overlap on "
-                             "indices %i and %i "
-                             "of %i", id_min, id_max,
-                             len(list(cube.coord('time').points)) - 1)
+                # slice cube on time
+                cube = cube.extract(iris.Constraint(
+                    time=lambda t: t.point > tx1 and t.point < tx2))
 
-                # index data on these points and
-                # get rid of masked values
-                flat_data = cube.data[id_min:id_max + 1, :, :]
-                data_size.append(flat_data[~flat_data.mask].shape[0])
+                # store nr time points
+                data_size.append(len(list(cube.coord('time').points)))
 
                 # compute stats and append to lists
-                means.append(np.mean(flat_data[~flat_data.mask]))
-                medians.append(np.median(flat_data[~flat_data.mask]))
+                tmeans.append(cube.collapsed('time', iris.analysis.MEAN))
 
         elif span == 'full':
             for cube in selection:
                 logger.debug("Using full time spans "
                              "to compute statistics.")
-                # get rid of masked
-                data_size.append(cube.data[~cube.data.mask].shape[0])
+
+                # store nr time points
+                data_size.append(len(list(cube.coord('time').points)))
 
                 # compute stats and append to lists
-                means.append(np.mean(cube.data[~cube.data.mask]))
-                medians.append(np.median(cube.data[~cube.data.mask]))
+                tmeans.append(cube.collapsed('time', iris.analysis.MEAN))
 
         else:
             logger.debug("No type of time overlap specified "
                          "- will not compute cubes statistics")
             return cubes
 
-    logger.debug("Global means: %s", means)
-    c_mean = _put_in_cube(means, 'means', file_names, filename)
+    c_mean = _put_in_cube(np.mean([s.data for s in tmeans], axis=0),
+                          'means', file_names, filename)
 
-    logger.debug("Global medians: %s", medians)
-    c_med = _put_in_cube(medians, 'medians', file_names, filename)
+    c_med = _put_in_cube(np.median([s.data for s in tmeans], axis=0),
+                         'medians', file_names, filename)
 
-    logger.debug("Data sizes: %s", data_size)
     c_dat = _put_in_cube(data_size, 'data_size', file_names, filename)
 
     save_cubes([c_mean, c_med, c_dat])
