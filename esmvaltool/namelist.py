@@ -545,10 +545,11 @@ class Namelist(object):
             )
             settings['output_dir'] = output_dir
             settings['run_dir'] = os.path.join(output_dir, 'tmp')
+            settings['plot_dir'] = os.path.join(output_dir, 'plots')
             settings['exit_on_ncl_warning'] = self._cfg['exit_on_warning']
-            for key in ('work_dir', 'plot_dir', 'preproc_dir',
-                        'max_data_filesize', 'output_file_type', 'write_plots',
-                        'write_netcdf', 'log_level'):
+            for key in ('work_dir', 'preproc_dir', 'max_data_filesize',
+                        'output_file_type', 'write_plots', 'write_netcdf',
+                        'log_level'):
                 settings[key] = self._cfg[key]
 
             scripts[script_name] = {
