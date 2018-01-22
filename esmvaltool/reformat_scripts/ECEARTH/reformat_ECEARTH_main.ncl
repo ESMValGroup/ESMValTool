@@ -22,7 +22,7 @@ scriptname = "reformat_scripts/default/reformat_ECEARTH_main.ncl"
 ;;### GLOBAL SETTINGS #########################################################
 begin
 
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = diag_script_info@verbosity
     enter_msg(scriptname, "", 2)
 
     ;; Selected variable (standard name)
@@ -141,7 +141,7 @@ begin
     delete(tmp)
 
     ;; Write output
-    version  = getenv("0_ESMValTool_version")
+    version  = diag_script_info@version
     write_output(VARPROC, VAR, filelist, fixfile, version)
 
     ;; Add latitude and longitude

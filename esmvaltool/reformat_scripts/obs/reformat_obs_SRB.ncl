@@ -69,7 +69,7 @@ load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     diag_script = "reformat_obs_SRB.ncl"
     enter_msg(diag_script, "", 1)
 

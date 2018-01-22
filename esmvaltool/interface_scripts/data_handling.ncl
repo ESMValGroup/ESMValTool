@@ -15,7 +15,7 @@
 ;;
 ;;#############################################################################
 
-load "$ESMValTool_interface_data/ncl.interface"
+load "./interface_scripts/interface.ncl"
 load "./interface_scripts/messaging.ncl"
 
 ; a_laue_ax+
@@ -69,10 +69,10 @@ begin
 
     funcname = "add_data_var"
     scriptname = "interface_scripts/data_handling.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 2)
 
-    maxDataSize = max_data_filesize(0)
+    maxDataSize = diag_script_info@max_data_filesize
     field_type = derived_field_type
 
     output_data = True
@@ -185,7 +185,7 @@ begin
 ;
 ;    gFilesRead0 = ""
 
-    fAtt@version = getenv("0_ESMValTool_version")
+    fAtt@version = diag_script_info@version
 ; a_laue_ax-
 
     fileattdef(fout, fAtt)  ; copy file attributes
@@ -223,7 +223,7 @@ begin
 
     funcname = "get_varName_from_file"
     scriptname = "interface_scripts/data_handling.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 2)
 
     variable = new(1, string)
@@ -306,7 +306,7 @@ begin
 
     funcname = "extract_data_extended"
     scriptname = "interface_scripts/data_handling.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; 'cn' is the basic building block for the keys used in
@@ -556,7 +556,7 @@ begin
 
     funcname = "extract_data"
     scriptname = "interface_scripts/data_handling.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     data_new = extract_data_extended(index, "default", data_pointer, dim_id, \
@@ -611,7 +611,7 @@ begin
 
     funcname = "extract_data_region"
     scriptname = "interface_scripts/data_handling.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; 'cn' is the basic building block for the keys used in
@@ -887,7 +887,7 @@ begin
 
     funcname = "modify_data"
     scriptname = "interface_scripts/data_handling.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 2)
 
     ;; 'cn' is the basic building block for the keys used in the 'data_pointer'
@@ -1022,10 +1022,10 @@ begin
 
     funcname = "read_data"
     scriptname = "interface_scripts/data_handling.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
-    maxDataSize = max_data_filesize(0)
+    maxDataSize = diag_script_info@max_data_filesize
 
     temp = stringtochar(field_number)
     temp1 = stringtochar(derived_field_type)

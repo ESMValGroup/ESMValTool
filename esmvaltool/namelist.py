@@ -13,8 +13,6 @@ import yaml
 from .interface_scripts.data_finder import (
     get_input_filelist, get_input_filename, get_output_file,
     get_start_end_year)
-from .interface_scripts.data_interface import (get_legacy_ncl_env,
-                                               write_legacy_ncl_interface)
 from .preprocessor import (DEFAULT_ORDER, MULTI_MODEL_FUNCTIONS,
                            PREPROCESSOR_FUNCTIONS, PreprocessingTask)
 from .preprocessor._download import synda_search
@@ -22,6 +20,7 @@ from .preprocessor._io import concatenate_callback
 from .preprocessor._reformat import CMOR_TABLES
 from .task import (DiagnosticTask, InterfaceTask, get_independent_tasks,
                    run_tasks)
+from .version import __version__
 
 logger = logging.getLogger(__name__)
 
@@ -431,7 +430,7 @@ class Namelist(object):
                  namelist_file=None):
         """Parse a namelist file into an object."""
         self._cfg = config_user
-        self._namelist_file = namelist_file  # TODO: remove this dependency
+        self._namelist_file = os.path.basename(namelist_file)
         self._preprocessors = raw_namelist['preprocessors']
         self.models = raw_namelist['models']
         self.diagnostics = self._initialize_diagnostics(
@@ -537,6 +536,9 @@ class Namelist(object):
                     id_glob = diagnostic_name + TASKSEP + id_glob
                 ancestors.append(id_glob)
             settings = copy.deepcopy(raw_settings)
+            settings['namelist'] = self._namelist_file
+            settings['version'] = __version__
+            settings['script'] = script_name
             # Add output dir to settings
             output_dir = os.path.join(
                 self._cfg['output_dir'],
@@ -544,12 +546,14 @@ class Namelist(object):
                 script_name,
             )
             settings['output_dir'] = output_dir
-            settings['run_dir'] = os.path.join(output_dir, 'tmp')
-            settings['plot_dir'] = os.path.join(output_dir, 'plots')
+            for dir_name in ('run_dir', 'plot_dir', 'work_dir'):
+                path = os.path.basename(os.path.normpath(self._cfg[dir_name]))
+                path = os.path.join(output_dir, path)
+                settings[dir_name] = path
+            # Copy other settings
             settings['exit_on_ncl_warning'] = self._cfg['exit_on_warning']
-            for key in ('work_dir', 'preproc_dir', 'max_data_filesize',
-                        'output_file_type', 'write_plots', 'write_netcdf',
-                        'log_level'):
+            for key in ('max_data_filesize', 'output_file_type', 'log_level',
+                        'write_plots', 'write_netcdf'):
                 settings[key] = self._cfg[key]
 
             scripts[script_name] = {
@@ -625,15 +629,6 @@ class Namelist(object):
                     ancestors=ancestors,
                 )
                 diagnostic_tasks[task_id] = task
-                # TODO: remove code below once new interface implemented
-                write_legacy_ncl_interface(
-                    variables=diagnostic['variable_collection'],
-                    settings=task.settings,
-                    namelist_file=self._namelist_file,
-                    script=task.script)
-                task.settings['env'] = get_legacy_ncl_env(
-                    settings=task.settings,
-                    namelist_basename=os.path.basename(self._namelist_file))
 
         # Resolve diagnostic ancestors marked as 'later'
         self._resolve_diagnostic_ancestors(diagnostic_tasks, later)

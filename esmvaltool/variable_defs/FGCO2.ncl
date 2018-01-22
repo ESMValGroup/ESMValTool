@@ -42,7 +42,7 @@ begin
 
     funcname = "calculate"
     scriptname = "variable_defs/FGCO2.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Read original variable

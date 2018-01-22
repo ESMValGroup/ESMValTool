@@ -93,7 +93,7 @@ load "./diag_scripts/lib/ncl/statistics.ncl"
 
 begin
 
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     diag_script = "reformat_obs_Asmi11.ncl"
     enter_msg(diag_script, "", 1)
 

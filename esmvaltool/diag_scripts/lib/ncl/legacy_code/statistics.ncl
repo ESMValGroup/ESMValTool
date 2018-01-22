@@ -37,7 +37,7 @@ function time_idx(field:numeric)
 ;;
 local field, valid_time_dimensions, idx, dims
 begin
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = diag_script_info@verbosity
     info_output("<<<<<<<< Entering time_idx (statistics.ncl)", verbosity, 10)
     valid_time_dimensions = (/"time", "TIME", "Time"/)
     dims = getvardims(field)
@@ -79,7 +79,7 @@ function time_weights(time)
 ;;
 local time, utc_date, year, month, day, weights, uniq_y, uniq_m, uniq_d
 begin
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = diag_script_info@verbosity
     info_output("<<<<<<<< Entering time_weights (statistics.ncl)", \
                 verbosity, 10)
     weights = new(dimsizes(time), float)
@@ -153,7 +153,7 @@ function time_avg(field:numeric)
 ;;
 local field, valid_time_dimensions, idx, dims
 begin
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = diag_script_info@verbosity
     info_output("<<<<<<<< Entering time_avg (statistics.ncl)", verbosity, 10)
     ;; Check if there is a time dimension in field
     idx = time_idx(field)  ; Function in time_operators.ncl

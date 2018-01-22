@@ -34,7 +34,7 @@ begin
 ;   print (models@name(index))
 ;   print (models@project(index))
 
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
 
     project = models@project(index)
     model = models@name(index)

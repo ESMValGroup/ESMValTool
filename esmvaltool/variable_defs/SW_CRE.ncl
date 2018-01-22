@@ -28,7 +28,7 @@ function calculate(index [1] : integer,
 ;;    data_new - logical
 local tmp, tmp1, tmp2, dum1, dum2, dum, i, verbosity
 begin
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     info_output("<<<<<<<< Entering SW_CRE.ncl", verbosity, 4)
     data_new = True
     tmp1 = read_data(index, "rsut", "T2Ms")

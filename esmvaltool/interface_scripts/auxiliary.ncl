@@ -37,7 +37,7 @@
 ;;#############################################################################
 
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
-load "$ESMValTool_interface_data/ncl.interface"
+load "interface_scripts/interface.ncl"
 load "./interface_scripts/messaging.ncl"
 load "./diag_scripts/lib/ncl/set_operators.ncl"
 
@@ -69,7 +69,7 @@ begin
 
     funcname = "copy_VarCoords_l1"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     dims_from = getvardims(var_from)
@@ -140,7 +140,7 @@ begin
 
     funcname = "check_min_max_models"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     if (no_models .lt. min_no_models) then
@@ -187,7 +187,7 @@ begin
 
     funcname = "tstep"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; extract vectors
@@ -295,7 +295,7 @@ begin
 
     funcname = "ncdf_varname"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; Attributes names to check for, ordered by increasing priority
@@ -342,10 +342,11 @@ begin
 
     funcname = "get_work_dir"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
-    curr_work_dir = getenv("ESMValTool_work_dir")
+    curr_work_dir = diag_script_info@work_dir
+		system("mkdir -p " + curr_work_dir)
 
     ;; Make sure it ends with a slash
     if (str_get_cols(curr_work_dir, -1, -1).ne."/") then
@@ -359,44 +360,37 @@ end
 
 ;;#############################################################################
 undef("get_ncdf_name")
-function get_ncdf_name(diag_script[1]:string,
-                       var[1]:string)
+function get_ncdf_name(var[1]:string)
 ;;
 ;; Arguments
-;;    diag_script: name of diagnostic script(s).
 ;;    var: variable name.
 ;;
 ;; Return value
 ;;    A string with the full outfile name (incl. path)
-;;    output_dir + diag_script_base + var + ".nc".
+;;    work_dir + var + ".nc".
 ;;
 ;; Description
-;;    Fetches work_dir, diag_script_base, output_dir via other scripts.
-;;
-;; Caveats
-;;    diag_script may need to be extended by other contributing scripts.
+;;    Fetches work_dir via other scripts.
 ;;
 ;; References
 ;;
 ;; Modification history
 ;;    20131108-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, work_dir, diag_script_base, \
+local funcname, scriptname, verbosity, work_dir, \
     diag_script, output_dir, ncdf_dir
 begin
 
     funcname = "get_ncdf_name"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     ;; Collect parts of outfile name
     work_dir = get_work_dir()
-    diag_script_base = basename(diag_script)
-    ncdf_dir = get_ncdf_dir(work_dir, diag_script_base)
 
     ;; Assemble final name
-    outfile = ncdf_dir + diag_script_base + "_" + var + ".nc"
+    outfile = work_dir + var + ".nc"
 
     leave_msg(scriptname, funcname, 10)
     return(outfile)
@@ -431,7 +425,7 @@ begin
 
     funcname = "get_ncdf_dir"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     ncdf_dir = work_dir + subfolder + "/"
@@ -488,7 +482,7 @@ begin
 
     funcname = "ncdf_read"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     ;; Open file for reading
@@ -611,19 +605,17 @@ begin
 
     funcname = "ncdf_write"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     ;; Retrieve special attributes
-    diag_script = att2var(data, "diag_script")
     varname = att2var(data, "var")
 
     ;; Determine outfile
     defaulting = (/"default", "dummy"/)
     if (typeof(outfile_in) .ne. "string" .or. \
         .not.ismissing(ind(defaulting .eq. outfile_in))) then
-        diag_script = att2var(data, "diag_script")
-        outfile = get_ncdf_name(diag_script, varname)
+        outfile = get_ncdf_name(varname)
     else
         outfile = outfile_in
     end if
@@ -708,7 +700,7 @@ begin
 
     funcname = "ncdf_att"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     if (typeof(infile).eq."string") then
@@ -765,7 +757,7 @@ begin
 
     funcname = "ncdf_define"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     diag_script = att2var(data, "diag_script")
@@ -890,7 +882,7 @@ begin
 
     funcname = "att2var_default"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     result = att2var(data, meta)
@@ -943,7 +935,7 @@ begin
 
     funcname = "att2var"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     ;; Attribute "var"
@@ -1035,7 +1027,7 @@ begin
 
     funcname = "bname"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     b = a
@@ -1077,7 +1069,7 @@ begin
 
     funcname = "PRIORITY"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     valid_types = (/"integer", "float", "double", "string"/)
@@ -1140,7 +1132,7 @@ begin
 
     funcname = "get_output_dir"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     output_dir = plot_dir + "/" + subfolder + "/"
@@ -1178,7 +1170,7 @@ begin
 
     funcname = "basename"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     suffix = get_file_suffix(name, 0)
@@ -1212,7 +1204,7 @@ begin
 
     funcname = "extract_years"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     ds = dimsizes(data)
@@ -1269,7 +1261,7 @@ begin
 
     funcname = "extend_var_at"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     var_dim = dimsizes(var)
@@ -1373,7 +1365,7 @@ begin
 
     funcname = "copy_CoordNames_n"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     rank = dimsizes(dimsizes(var_from))
@@ -1423,7 +1415,7 @@ begin
 
     funcname = "empty_str"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     str = " "
@@ -1461,7 +1453,7 @@ begin
 
     funcname = "write_info"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 8)
 
     infobox = ""
@@ -1507,7 +1499,7 @@ begin
 
     funcname = "remove_index"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     dsize = dimsizes(array)
@@ -1570,7 +1562,7 @@ begin
 
     funcname = "set_default_att"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     if (.not.isatt(info, att)) then
@@ -1631,7 +1623,7 @@ begin
 
     funcname = "filter_attrs"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     source_attrs = getvaratts(source)
@@ -1671,7 +1663,7 @@ begin
 
     funcname = "write_ignore_warnings"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     if (isfilepresent_esmval(warn_file_str)) then
@@ -1709,7 +1701,7 @@ local idx_single_ref
 begin
     funcname = "get_single_ref"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     idx_single_ref = ind(model_attr_id .eq. model_refs)
@@ -1763,7 +1755,7 @@ begin
 
     funcname = "get_ref_model_idx"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     nrefs = dimsizes(model_ref_name)

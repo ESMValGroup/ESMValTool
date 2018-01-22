@@ -16,6 +16,7 @@
 ;;    procedure write_filelist
 ;;
 ;;#############################################################################
+MASTER_REFS = "../doc/MASTER_authors-refs-acknow.txt"
 
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
 ;; Warning: no other interface_scripts shall be loaded here, to avoid nested
@@ -75,7 +76,7 @@ begin
 
     required_verbosity = min((/required_verbosity, 4/))
 
-    curr_trace_indent = "$ESMValTool_interface_data/curr_trace_indent.txt"
+    curr_trace_indent = diag_script_info@run_dir + "/curr_trace_indent.txt"
     if (ismissing(curr_trace_indent)) then
         print("info: " + output_string)
     else  ; Full info output
@@ -169,7 +170,7 @@ procedure enter_msg(script[1]:string,
 local verbosity
 begin
 
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     if (func.eq."") then
         info_output("<<<<<<<< Entering " + script, verbosity, req_verbosity)
     else
@@ -203,7 +204,7 @@ procedure leave_msg(script[1]:string,
 local verbosity
 begin
 
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     if (func.eq."") then
         info_output(">>>>>>>> Leaving " + script, verbosity, req_verbosity)
     else
@@ -305,7 +306,7 @@ begin
 
     funcname = "exit_if_missing_atts"
     scriptname = "interface_scripts/messaging.ncl"
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     if (.not.all(isatt(in, reqatts))) then
@@ -369,7 +370,7 @@ begin
 
     funcname = "write_filelist"
     scriptname = "interface_scripts/messaging.ncl"
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     if (filelist(0).eq."") then  ; derived variable or no information
@@ -380,7 +381,7 @@ begin
     hline = hline + hline + hline
 
     ;; Output refs file
-    output_refs = getenv("ESMValTool_out_refs")
+    output_refs = diag_script_info@run_dir + "/references-acknowledgements.txt"
 
     s_open  = "echo " + str_get_dq
     s_close = str_get_dq + " >> " + output_refs
@@ -514,7 +515,7 @@ begin
 
     funcname = "write_references"
     scriptname = "interface_scripts/messaging.ncl"
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     hline      = "-------------------------"
@@ -527,14 +528,14 @@ begin
 
 ; a_laue_ax+
 ;    ;; Namelist in use
-;    namelist = getenv("ESMValTool_yml_name")
+;    namelist = diag_script_info@namelist
 ; a_laue_ax-
 
     ;; Master refs file
-    master_refs = getenv("ESMValTool_in_refs")
+    master_refs = MASTER_REFS
 
     ;; Output refs file
-    output_refs = getenv("ESMValTool_out_refs")
+    output_refs = diag_script_info@run_dir + "/references-acknowledgements.txt"
 
     s_open  = "echo " + str_get_dq
     s_close = str_get_dq + " >> " + output_refs

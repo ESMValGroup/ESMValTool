@@ -17,7 +17,7 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/shea_util.ncl"
 
-load "$ESMValTool_interface_data/ncl.interface"
+load "interface_scripts/interface.ncl"
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/data_handling.ncl"
 load "./interface_scripts/messaging.ncl"
@@ -298,7 +298,7 @@ local aux_filename_info,         blank_plot,          cn,\
     storage_record,            total_no_of_pages,   txres,\
     type_specifier,            var0,                verbosity,               wks
 begin
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = diag_script_info@verbosity
     info_output("<<<<<<<< Entering precip_domain", verbosity, 6)
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)

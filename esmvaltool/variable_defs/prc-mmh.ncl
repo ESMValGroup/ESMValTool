@@ -27,7 +27,7 @@ function calculate(index [1] : integer,
 ;;    Converts precipitation rate from units "kg m-2 s-1" to "mm h-1"
 local result, T, verbosity
 begin
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     info_output("<<<<<<<< Entering calculate (prc-mmh)", verbosity, 4)
     result = read_data(index, "prc", "T2*s")
     T = extract_data(index, result, -1, 0, 0)

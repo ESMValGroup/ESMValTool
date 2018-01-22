@@ -26,7 +26,7 @@ function calculate(index [1] : integer,
 local result, T, verbosity, et_latent_heat_of_vaporisation
 begin
     et_latent_heat_of_vaporisation = 2.465e6  ; [J kg-1]
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     info_output("<<<<<<<< Entering calculate (et)", verbosity, 4)
     result = read_data(index, "hfls", "T2*s")
     T = extract_data(index, result, -1, 0, 0)

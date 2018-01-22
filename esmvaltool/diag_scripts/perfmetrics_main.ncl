@@ -90,8 +90,30 @@
 ;;
 ;;#############################################################################
 
-load "$ESMValTool_interface_data/ncl.interface"
-load "./interface_scripts/interface.ncl"
+; Load diag_script_info
+load "interface_scripts/interface.ncl"
+
+; Load variable_info
+begin
+    vardeffile = diag_script_info@input_files(0)
+    loadscript(vardeffile)
+end
+
+; Copy some variable_info into legacy names
+begin
+  	variables = (/variable_info@short_name(0)/)
+  	derived_var = (/variable_info@short_name(0)/)
+  	field_types = (/variable_info@field(0)/)
+  	derived_field_type = (/variable_info@field(0)/)
+  	var_attr_mip = variable_info@mip
+  	var_attr_exp = variable_info@exp
+  	models = variable_info
+  	models@name = variable_info@model
+  	dictkeys = True
+  	dictkeys@dictkeys = variable_info@filename
+  	fullpaths = variable_info@filename
+end
+
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/data_handling.ncl"
 load "./interface_scripts/messaging.ncl"
@@ -109,7 +131,7 @@ load "./plot_scripts/ncl/contour_maps.ncl"
 
 begin
 
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = diag_script_info@verbosity
     enter_msg(diag_script, "", 4)
     info_output("++++++++++++++++++++++++++++++++++++++++++", verbosity, 1)
     info_output(diag_script + " (var: " + variables(0) + ")", verbosity, 1)
@@ -128,11 +150,6 @@ begin
                      (/"E_ncep", "E_erainterim", "E_airs", \
                        "E_ceresebaf", "E_srb"/), \
                      (/"P_embrace", "P_esmval"/))
-end
-
-begin
-    vardeffile = "$ESMValTool_interface_data/" + var0 + "_info.tmp"
-    loadscript(vardeffile)
 end
 
 begin
@@ -220,12 +237,14 @@ begin
         l_altern = True
     end if
 
-    ;; Output plot directory
-    plot_dir = getenv("ESMValTool_plot_dir")
-    output_dir = get_output_dir(plot_dir, diag_script_base)
+    ;; Create output plot directory
+    if (diag_script_info@draw_plots) then
+    	plot_dir = diag_script_info@plot_dir
+      system("mkdir -p " + plot_dir)
+		end if
 
     ;; Plot file type
-    file_type = getenv("ESMValTool_output_file_type")
+    file_type = diag_script_info@output_file_type
     if (ismissing(file_type)) then
         file_type = "ps"
     end if
@@ -362,8 +381,7 @@ begin
         info_output("Processing " + modelnames(imod), verbosity, 2)
 
         ;; Set path for saving processed data ;; FIX-ME add preproc_id
-        fullpath = getenv("ESMValTool_work_dir") + "/" + \
-            basename(diag_script) + "/"
+        fullpath = diag_script_info@work_dir + "/"
         if (.not.isfilepresent_esmval(fullpath)) then
             system("mkdir -p " + fullpath)
         end if
@@ -509,7 +527,7 @@ begin
         end if
 
         ;; Optional output to NetCDF
-        if (getenv("ESMValTool_write_netcdf").eq."True") then
+        if (diag_script_info@write_netcdf.eq."True") then
             var@ncdf = procpath
             ncdf_outfile = ncdf_write(var, procpath)
         end if
@@ -615,13 +633,8 @@ begin
             var0_new = var0_new + "-" + diag_script_info@level
         end if
 
-        ;; Define grading file directory
-        work_dir = getenv("ESMValTool_work_dir")
-        yml_name = getenv("ESMValTool_yml_name")
-        suffix = get_file_suffix(yml_name, 0)
-        name = str_sub_str(yml_name, suffix, "")
-        ncdf_dir = get_output_dir(work_dir, diag_script_base) + \  ; FIX-ME ?
-            name + "_" + diag_script_info@metric + "_" + var0_new + ".nc"
+        ;; Define grading filename
+        ncdf_dir = diag_script_info@work_dir + "/" + diag_script_info@metric + "_" + var0_new + ".nc"
 
         ;; Start calculation
 ;;DELETE        if (isfilepresent_esmval(ncdf_dir)) then
@@ -784,24 +797,18 @@ begin
         grading@num_climofiles = dimsizes(models@name)  ; for tagging
         do imod = 0, dimsizes(models@name) - 1
             num_climo = "climofile_" + imod
-            climofile = interface_get_inpaths(imod) + "/" + \
-                interface_get_infile(variables(0), field_types(0), imod)
-                grading@$num_climo$ = climofile
+            grading@$num_climo$ = variable_info@filename(imod)
         end do
 
         ;; Write NetCDF output
         ncdf_outfile = ncdf_write(grading, grading@ncdf_dir)
 
         ;; Write results of temporary grading list
-        yml_name = getenv("ESMValTool_yml_name")
-        suffix = get_file_suffix(yml_name, 0)
-        name = str_sub_str(yml_name, suffix, "")
-        temp_dir = get_output_dir(getenv("ESMValTool_work_dir"), "temp") + \
-            name
+        temp_dir = diag_script_info@output_dir + "/"
         if (diag_script_info@metric.eq."taylor") then
-            temp_dir = temp_dir + "_taylor.nc"
+            temp_dir = temp_dir + "taylor.nc"
         else
-            temp_dir = temp_dir + "_grading.nc"
+            temp_dir = temp_dir + "grading.nc"
         end if
 
         if (isfilepresent_esmval(temp_dir)) then
@@ -837,8 +844,7 @@ begin
         end if
 
         ;; Plot output directory
-        plot_dir = getenv("ESMValTool_plot_dir")
-        output_dir = get_output_dir(plot_dir, diag_script_base)
+        output_dir = diag_script_info@plot_dir + "/"
 
         ;; Annotation and file names
         region_name = ""  ; priority 3
@@ -878,7 +884,7 @@ begin
 
         ;; CASE: cycle ########################################################
         if (ptype.eq."cycle") then
-            outfile = output_dir + diag_script_base + "_" + var0 + "_" + \
+            outfile = output_dir + var0 + "_" + \
                 ptype + "_" + time_avg + "_" + region_name
             wks = gsn_open_wks(file_type, outfile)
             wks@legendfile = outfile + "_legend"
@@ -894,7 +900,7 @@ begin
         ;; CASE: zonal ########################################################
         if (ptype.eq."zonal") then
             do imod = 0, dim_MOD - 1
-                outfile = output_dir + diag_script_base + "_" + \
+                outfile = output_dir + \
                     modelnames(imod) + "_" + var0 + "_" + ptype + "_" + \
                     time_avg + "_" + level + region_name
                 var = var_all(imod, :, :, 0)
@@ -928,7 +934,7 @@ begin
                     continue
                 end if
                 var = var_diff(imod, :, :)
-                outfile = output_dir + diag_script_base + "_" + \
+                outfile = output_dir + \
                     modelnames(imod) + "-" + modelnames(ref_ind) + "_" + \
                     var0 + "_" + ptype + "_" + time_avg + "_" + \
                     level + region_name
@@ -978,7 +984,7 @@ begin
         ;; CASE: latlon #######################################################
         if (ptype.eq."latlon") then
             do imod = 0, dim_MOD - 1
-                outfile = output_dir + diag_script_base + "_" + \
+                outfile = output_dir + \
                     modelnames(imod) + "_" + var0 + "_" + ptype + "_" + \
                     time_avg + "_" + level + region_name
                 var = var_all(imod, :, :, 0)
@@ -1017,7 +1023,7 @@ begin
                     continue
                 end if
                 var = var_diff(imod, :, :)
-                outfile = output_dir + diag_script_base + "_" + \
+                outfile = output_dir + \
                     modelnames(imod) + "-" + modelnames(ref_ind) + "_" + \
                     var0 + "_" + ptype + "_" + time_avg + "_" + level + \
                     region_name

@@ -29,7 +29,7 @@
 ;;
 ;;#############################################################################
 
-load "$ESMValTool_interface_data/ncl.interface"
+load "interface_scripts/interface.ncl"
 load "./interface_scripts/messaging.ncl"
 
 scriptname = "reformat_scripts/EMAC/reformat_EMAC_main.ncl"
@@ -92,7 +92,7 @@ load "./reformat_scripts/EMAC/reformat_EMAC_func.ncl"
 
 begin
 
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = diag_script_info@verbosity
     enter_msg(scriptname, "", 2)
 
     info_output("INPATH = " + INPATH, verbosity, 1)
@@ -154,7 +154,7 @@ begin
 
     gNFiles = 0
     fixfile  = "none"  ; not applicable for EMAC files
-    version  = getenv("0_ESMValTool_version")  ; ESMValTool version number
+    version  = diag_script_info@version  ; ESMValTool version number
 ; a_laue_ax-
 
     ;; Time loop

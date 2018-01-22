@@ -76,7 +76,7 @@ begin
 
     funcname = "profile_plev"
     scriptname = "plot_scripts/ncl/xy_line.ncl"
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Set hardcoded parameters
@@ -543,7 +543,7 @@ begin
 
     funcname = "aerosol_profile"
     scriptname = "plot_scripts/ncl/xy_line.ncl"
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Get model data, either directly or via netCDF file
@@ -1065,7 +1065,7 @@ begin
 
     funcname = "aerosol_sizedist"
     scriptname = "plot_scripts/ncl/xy_line.ncl"
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Get model data, either directly or via netCDF file
@@ -1558,7 +1558,7 @@ begin
 
     funcname = "xy_line"
     scriptname = "plot_scripts/ncl/xy_line.ncl"
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Select colors and other plotting attributes
@@ -1845,7 +1845,7 @@ begin
 
     funcname = "timeseries_station"
     scriptname = "plot_scripts/ncl/xy_line.ncl"
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Get data, either directly or via netCDF file
@@ -2007,7 +2007,7 @@ begin
 
     funcname = "cycle_plot"
     scriptname = "plot_scripts/ncl/xy_line.ncl"
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Get data, either directly or via netCDF file
@@ -2221,7 +2221,7 @@ begin
 
     funcname = "errorbar_plot"
     scriptname = "plot_scripts/ncl/xy_line.ncl"
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Get data, either directly or via netCDF file

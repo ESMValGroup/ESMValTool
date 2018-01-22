@@ -61,7 +61,7 @@ begin
 
     funcname = "scatterplot"
     scriptname = "plot_scripts/ncl/scatterplot.ncl"
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Get data, either directly or via netCDF
@@ -303,7 +303,7 @@ begin
 
     funcname = "scatterplot3D"
     scriptname = "plot_scripts/ncl/scatterplot.ncl"
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Get data, either directly or via netCDF
@@ -479,7 +479,7 @@ begin
 
     funcname = "scatterplot_markers"
     scriptname = "plot_scripts/ncl/scatterplot.ncl"
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Get data, either directly or via netCDF

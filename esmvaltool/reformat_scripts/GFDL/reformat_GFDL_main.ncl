@@ -28,7 +28,7 @@
 ;;#############################################################################
 
 load "./interface_scripts/messaging.ncl"
-load "$ESMValTool_interface_data/ncl.interface"
+load "interface_scripts/interface.ncl"
 
 scriptname = "reformat_scripts/EMAC/reformat_GFDL_main.ncl"
 
@@ -93,7 +93,7 @@ load "./reformat_scripts/GFDL/reformat_GFDL_func.ncl"
 
 begin
 
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = diag_script_info@verbosity
     enter_msg(scriptname, "", 2)
 
     info_output("INPATH = " + INPATH, verbosity, 1)
@@ -158,7 +158,7 @@ begin
 ;    flist   = "none"
 ; A-laue_ax-
     fixfile = "none"
-    version = getenv("0_ESMValTool_version")
+    version = diag_script_info@version
 
     ; Write output
 ; A-laue_ax+

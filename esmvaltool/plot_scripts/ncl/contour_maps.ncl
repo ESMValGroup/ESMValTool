@@ -59,7 +59,7 @@ begin
 
     funcname = "contour_map"
 
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = diag_script_info@verbosity
     info_output("<<<<<<<< Entering contour_map", verbosity, 4)
 
     ;; Get data, either directly or via netCDF file
@@ -172,7 +172,7 @@ begin
 
     funcname = "contour_map_polar"
 
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = diag_script_info@verbosity
     info_output("<<<<<<<< Entering contour_map_polar", verbosity, 4)
 
     ;; Get data, either directly or via netCDF file
@@ -309,7 +309,7 @@ function contour_map_ce(wks_in[1],
 local verbosity, data, var, wks, res
 begin
 
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = diag_script_info@verbosity
     info_output("<<<<<<<< Entering contour_map_ce", verbosity, 4)
 
     ;; Get data, either directly or via netCDF
@@ -406,7 +406,7 @@ begin
 
     funcname = "add_markers_to_map"
 
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = diag_script_info@verbosity
     info_output("<<<<<<<< Entering markers_on_map", verbosity, 4)
 
     ;; Check data consistency

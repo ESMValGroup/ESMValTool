@@ -8,11 +8,11 @@
 
 ;; definition of functions write_header and write_diag_header
 load "./interface_scripts/write_header.ncl"
-load "$ESMValTool_interface_data/ncl.interface"
+load "interface_scripts/interface.ncl"
 
 begin
 
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = diag_script_info@verbosity
 ;    info_output("<<<<<<<< Entering write_references.ncl", \
 ;                verbosity, 2)
 

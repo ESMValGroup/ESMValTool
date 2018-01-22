@@ -29,7 +29,7 @@ begin
 
     funcname = "notextoverlap"
     scriptname = "plot_scripts/ncl/aux_plotting.ncl"
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     getvalues plot

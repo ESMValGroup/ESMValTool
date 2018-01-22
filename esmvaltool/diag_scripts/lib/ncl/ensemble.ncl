@@ -45,7 +45,7 @@ begin
 
     funcname = "get_start_year"
     scriptname = "diag_scripts/lib/ncl/ensemble.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     if (.not.isatt(diag_script_info, "range_option")) then
@@ -94,7 +94,7 @@ begin
 
     funcname = "get_end_year"
     scriptname = "diag_scripts/lib/ncl/ensemble.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     if (.not.isatt(diag_script_info, "range_option")) then
@@ -173,7 +173,7 @@ begin
 
     funcname = "multi_model_stats"
     scriptname = "diag_scripts/lib/ncl/ensemble.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; determine destination grid (regridding.ncl)

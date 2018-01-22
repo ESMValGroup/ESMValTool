@@ -50,12 +50,31 @@
 ;load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
 ;load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
 
-; A temporary file written by the invoking Python script
-; Passes on a number of variables from Python to NCL
-load "$ESMValTool_interface_data/ncl.interface"
+; Load diag_script_info
+load "interface_scripts/interface.ncl"
+
+; Load variable_info
+begin
+    vardeffile = diag_script_info@input_files(0)
+    loadscript(vardeffile)
+end
+
+; Copy some variable_info into legacy names
+begin
+  	variables = (/variable_info@short_name(0)/)
+	  derived_var = (/variable_info@short_name(0)/)
+	  field_types = (/variable_info@field(0)/)
+	  derived_field_type = (/variable_info@field(0)/)
+	  var_attr_mip = variable_info@mip
+	  var_attr_exp = variable_info@exp
+	  models = variable_info
+	  models@name = variable_info@model
+	  dictkeys = True
+	  dictkeys@dictkeys = variable_info@filename
+	  fullpaths = variable_info@filename
+end
 
 ; Auxiliary NCL routines
-load "./interface_scripts/interface.ncl"
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/data_handling.ncl"
 load "./interface_scripts/messaging.ncl"
@@ -64,13 +83,12 @@ load "./diag_scripts/lib/ncl/style.ncl"
 load "./diag_scripts/lib/ncl/statistics.ncl"
 load "./plot_scripts/ncl/contour_maps.ncl"
 
-
 begin
     ;;###########################################################
     ;;# Fetch general parameters, set in namelist_MyDiag.yml,   #
     ;;# passed via environment variables by python code         #
     ;;###########################################################
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = diag_script_info@verbosity
     info_output("<<<<<<<< Entering " + diag_script, verbosity, 4)
 
     ;; 'diag_script' and 'variables' are fetched from the
@@ -99,12 +117,6 @@ begin
     do idx_mod = 0, dim_MOD - 1
         data = read_data(idx_mod, var0, field_type0)
     end do
-end
-
-; Load variable_info
-begin
-    vardeffile = "$ESMValTool_interface_data/" + var0 + "_info.tmp"
-    loadscript(vardeffile)
 end
 
 begin
@@ -196,8 +208,8 @@ begin
     ;; Annotation
     data1@res_tiMainString      = "Test diag"  ; Main title
     data1@res_gsnLeftString     = annots(imod)
-    data1@res_gsnRightString    = variable_info@long_name + " in " \
-                                                          + variable_info@units
+    data1@res_gsnRightString    = variable_info@long_name(0) + " in " \
+                                                          + variable_info@units(0)
     ;; Specified in ./nml/cfg_MyDiag/cfg_MyDiag.ncl
     data1@res_mpProjection      = diag_script_info@projection
     ;; Set explicit contour levels
@@ -220,10 +232,10 @@ begin
     end if
     data1@var = var0  ; Overwrite existing entry
     if(isatt(variable_info, "long_name")) then
-        data1@var_long_name = variable_info@long_name
+        data1@var_long_name = variable_info@long_name(0)
     end if
     if(isatt(variable_info, "units")) then
-        data1@var_units     = variable_info@units
+        data1@var_units     = variable_info@units(0)
     end if
 
     ;;###########################################

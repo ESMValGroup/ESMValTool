@@ -22,7 +22,7 @@ function calculate(index [1] : integer,
 ;;    data_new - logical
 local tmp, dum, dimension 
 begin
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = diag_script_info@verbosity
     info_output("<<<<<<<< Entering o2.ncl", verbosity, 2)
 
   data_new = True
@@ -65,7 +65,7 @@ begin
       fout->area = fin->area
     end if 
 
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = diag_script_info@verbosity
     info_output("<<<<<<<< Leaving o2.ncl", verbosity, 2)
   return(data_new)
 end

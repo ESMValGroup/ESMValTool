@@ -8,8 +8,6 @@ from multiprocessing import Pool, cpu_count
 
 import yaml
 
-from .interface_scripts.data_interface import write_ncl_settings
-
 logger = logging.getLogger(__name__)
 
 
@@ -20,6 +18,51 @@ def which(executable):
             return os.path.join(path, executable)
 
     return None
+
+
+def write_ncl_settings(settings, filename, mode='wt'):
+    """Write settings to NCL file."""
+    logger.debug("Writing NCL configuration file %s", filename)
+
+    def _format(value):
+        """Format string or list as NCL"""
+        if value is None or isinstance(value, str):
+            txt = '"{}"'.format(value)
+        elif isinstance(value, (list, tuple)):
+            # TODO: convert None to fill value?
+            # If an array contains a str, make all items str
+            if any(isinstance(v, str) or v is None for v in value):
+                value = [(str(v)) for v in value]
+            txt = '(/{}/)'.format(', '.join(_format(v) for v in value))
+        else:
+            txt = str(value)
+        return txt
+
+    def _format_dict(name, dictionary):
+        """Format dict as NCL"""
+        lines = ['{} = True'.format(name)]
+        for key, value in sorted(dictionary.items()):
+            lines.append('{}@{} = {}'.format(name, key, _format(value)))
+        txt = '\n'.join(lines)
+        return txt
+
+    def _header(name):
+        """Delete any existing NCL variable known as `name`."""
+        return ('if (isvar("{name}")) then\n'
+                '    delete({name})\n'
+                'end if\n'.format(name=name))
+
+    lines = []
+    for key, value in sorted(settings.items()):
+        txt = _header(name=key)
+        if isinstance(value, dict):
+            txt += _format_dict(name=key, dictionary=value)
+        else:
+            txt += '{} = {}'.format(key, _format(value))
+        lines.append(txt)
+    with open(filename, mode) as file:
+        file.write('\n\n'.join(lines))
+        file.write('\n')
 
 
 class AbstractTask(object):
@@ -80,9 +123,10 @@ class InterfaceTask(AbstractTask):
     def _run(self, input_files):
         metadata = self.settings['metadata']
         self._metadata_sanity_check(input_files, metadata)
-        self.write_metadata(metadata)
-        self.write_ncl_metadata(metadata)
-        return [self.output_dir]
+        output_files = []
+        output_files.append(self.write_metadata(metadata))
+        output_files.extend(self.write_ncl_metadata(metadata))
+        return output_files
 
     def _metadata_sanity_check(self, input_files, metadata):
         """Check that metadata matches input_files"""
@@ -120,18 +164,23 @@ class InterfaceTask(AbstractTask):
         filename = os.path.join(self.output_dir, 'metadata.yml')
         with open(filename, 'w') as file:
             yaml.safe_dump(metadata, file)
+        return filename
 
     def write_ncl_metadata(self, metadata):
         """Write NCL metadata files to output_dir"""
+        filenames = []
         for variable_name, variables in metadata.items():
             filename = os.path.join(self.output_dir,
                                     variable_name + '_info.ncl')
+            filenames.append(filename)
             # 'variables' is a list of dicts, but NCL does not support nested
             # dicts, so convert to dict of lists.
             keys = sorted({k for v in variables for k in v})
             variables = {k: [v.get(k) for v in variables] for k in keys}
             variable_info = {'variable_info': variables}
             write_ncl_settings(variable_info, filename)
+
+        return filenames
 
 
 class DiagnosticError(Exception):
@@ -166,7 +215,7 @@ class DiagnosticTask(AbstractTask):
             extension = os.path.splitext(script)[1].lower()[1:]
             executables = {
                 'py': [which('python')],
-                'ncl': [which('ncl'), '-n'],
+                'ncl': [which('ncl'), '-n', '-p'],
                 'r': [which('Rscript'), '--slave', '--quiet'],
             }
             if extension not in executables:
@@ -210,6 +259,8 @@ class DiagnosticTask(AbstractTask):
                 settings[key] = value
 
         write_ncl_settings(settings, filename)
+
+        return filename
 
     def _control_ncl_execution(self, process, lines):
         """Check if an error has occurred in an NCL script.
@@ -259,6 +310,18 @@ class DiagnosticTask(AbstractTask):
             output_files = []
             return output_files
 
+        is_ncl_script = self.script.lower().endswith('.ncl')
+        if is_ncl_script:
+            input_files = [
+                f for f in input_files
+                if f.endswith('.ncl') or os.path.isdir(f)
+            ]
+        else:
+            input_files = [
+                f for f in input_files
+                if f.endswith('.yml') or os.path.isdir(f)
+            ]
+
         self.settings['input_files'] = input_files
         self.settings['output_dir'] = self.output_dir
 
@@ -270,9 +333,10 @@ class DiagnosticTask(AbstractTask):
 
         settings_file = self.write_settings()
 
-        is_ncl_script = self.script.lower().endswith('.ncl')
         if is_ncl_script:
             cwd = os.path.dirname(__file__)
+            env = dict(os.environ)
+            env['settings'] = settings_file
         else:
             cmd.append(settings_file)
 
@@ -282,13 +346,18 @@ class DiagnosticTask(AbstractTask):
         logger.info("Writing output to %s", self.output_dir)
         logger.info("Writing log to %s", self.log)
 
+        rerun_msg = ' '.join(
+            '{}="{}"'.format(k, env[k]) for k in env if k not in os.environ)
+        rerun_msg += '' if cwd is None else ' cd {}; '.format(cwd)
+        rerun_msg += ' ' + ' '.join(cmd)
+        logger.info("To re-run this diagnostic script, run:\n%s", rerun_msg)
+
         process = subprocess.Popen(
             cmd,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             cwd=cwd,
-            env=env,
-            universal_newlines=True)
+            env=env)
 
         returncode = None
         last_line = ['']
@@ -297,6 +366,7 @@ class DiagnosticTask(AbstractTask):
             while returncode is None:
                 returncode = process.poll()
                 txt = process.stdout.read()
+                txt = txt.decode(encoding='utf-8', errors='ignore')
                 log.write(txt)
 
                 # Check if an error occurred in an NCL script
