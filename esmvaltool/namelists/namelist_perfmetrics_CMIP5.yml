@@ -84,6 +84,8 @@ preprocessors:
       scheme: linear
     mask_fillvalues:
       threshold_fraction: 0.95
+    multi_model_mean:
+      span: overlap
 
 diagnostics:
   ta_850_global:
