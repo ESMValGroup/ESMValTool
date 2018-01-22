@@ -3,6 +3,7 @@ import logging
 from functools import reduce
 
 import os
+import datetime
 import iris
 import numpy as np
 
@@ -19,13 +20,31 @@ def _put_in_cube(stats, stats_name, ncfiles, fname):
     return stats_cube
 
 
+def _sdat(srl_no):
+    """convert to a datatime point"""
+    new_date = datetime.datetime(1950, 1, 1, 0) +\
+        datetime.timedelta(srl_no)
+    return new_date
+
+
 def _get_overlap(cubes):
     """Get discrete time overlaps."""
     all_times = [cube.coord('time').points for cube in cubes]
-    bounds = [range(int(np.min(b)), int(np.max(b)) + 1) for b in all_times]
+    bounds = [range(int(b[0]), int(b[-1]) + 1) for b in all_times]
     time_pts = reduce(np.intersect1d, (i for i in bounds))
     if len(time_pts) > 1:
-        return time_pts[0], time_pts[-1]
+        print(_sdat(time_pts[0]), _sdat(time_pts[-1]))
+        return _sdat(time_pts[0]), _sdat(time_pts[-1])
+
+
+def _slice_cube(cube, min_t, max_t):
+    """slice cube on time"""
+    irisConstr = 
+        iris.Constraint(time=lambda x:
+                        min_t <= datetime.datetime.strptime(x.point.strftime('%Y-%m-%d-%H'),
+                                                            '%Y-%m-%d-%H') <= max_t)
+    cube_slice = cube.extract(irisConstr)
+    return cube_slice
 
 
 def multi_model_mean(cubes, span, filename, exclude):
@@ -59,12 +78,13 @@ def multi_model_mean(cubes, span, filename, exclude):
         # look at overlap type
         if span == 'overlap':
             tx1, tx2 = _get_overlap(cubes)
+            print(tx1, tx2)
             for cube in selection:
                 logger.debug("Using common time overlap between "
                              "models to compute statistics.")
                 # slice cube on time
-                cube = cube.extract(iris.Constraint(
-                    time=lambda t: t.point > tx1 and t.point < tx2))
+                with iris.FUTURE.context(cell_datetime_objects=True):
+                    cube = _slice_cube(cube, tx1, tx2)
 
                 # store nr time points
                 data_size.append(len(list(cube.coord('time').points)))
