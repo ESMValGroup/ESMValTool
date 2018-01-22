@@ -33,7 +33,6 @@ def _get_overlap(cubes):
     bounds = [range(int(b[0]), int(b[-1]) + 1) for b in all_times]
     time_pts = reduce(np.intersect1d, (i for i in bounds))
     if len(time_pts) > 1:
-        print(_sdat(time_pts[0]), _sdat(time_pts[-1]))
         return _sdat(time_pts[0]), _sdat(time_pts[-1])
 
 
@@ -78,10 +77,10 @@ def multi_model_mean(cubes, span, filename, exclude):
         # look at overlap type
         if span == 'overlap':
             tx1, tx2 = _get_overlap(cubes)
-            print(tx1, tx2)
             for cube in selection:
                 logger.debug("Using common time overlap between "
                              "models to compute statistics.")
+                logger.debug("Bounds: %s and %s", str(tx1), str(tx2))
                 # slice cube on time
                 with iris.FUTURE.context(cell_datetime_objects=True):
                     cube = _slice_cube(cube, tx1, tx2)
