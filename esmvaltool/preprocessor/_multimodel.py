@@ -3,7 +3,8 @@ import logging
 from functools import reduce
 
 import os
-import datetime
+from datetime import datetime as dd
+from datetime import timedelta as td
 import iris
 import numpy as np
 
@@ -22,8 +23,7 @@ def _put_in_cube(stats, stats_name, ncfiles, fname):
 
 def _sdat(srl_no):
     """convert to a datatime point"""
-    new_date = datetime.datetime(1950, 1, 1, 0) +\
-        datetime.timedelta(srl_no)
+    new_date = dd(1950, 1, 1, 0) + td(srl_no)
     return new_date
 
 
@@ -39,11 +39,11 @@ def _get_overlap(cubes):
 
 def _slice_cube(cube, min_t, max_t):
     """slice cube on time"""
-    irisConstr = 
-        iris.Constraint(time=lambda x:
-                        min_t <= datetime.datetime.strptime(x.point.strftime('%Y-%m-%d-%H'),
-                                                            '%Y-%m-%d-%H') <= max_t)
-    cube_slice = cube.extract(irisConstr)
+    fmt = '%Y-%m-%d-%H'
+    ctr = iris.Constraint(time=lambda x:
+                          min_t <= dd.strptime(x.point.strftime(fmt),
+                                               fmt) <= max_t)
+    cube_slice = cube.extract(ctr)
     return cube_slice
 
 
