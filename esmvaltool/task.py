@@ -115,6 +115,8 @@ class AbstractTask(object):
 class InterfaceTask(AbstractTask):
     """Task for writing the preprocessor - diagnostic task interface"""
 
+    # TODO: check if it is possible to a PreprocessorTask to implement this
+
     def __init__(self, settings, output_dir, ancestors=None):
         """Initialize"""
         super(InterfaceTask, self).__init__(
