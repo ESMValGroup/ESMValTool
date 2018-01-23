@@ -17,6 +17,36 @@ begin
     end if
 end
 
+; Load variable_info
+begin
+    vardeffiles = str_match_ic_regex(diag_script_info@input_files, ".*_info\.ncl")
+end
+
+begin
+	  if (.not. ismissing(vardeffiles)) then
+	  	  vardeffile = diag_script_info@input_files(0)
+	  	  print("info: Loading input data description from " + vardeffile)
+	  	  loadscript(vardeffile)
+    end if
+end
+
+; Copy some variable_info into legacy names
+begin
+    if isvar("variable_info") then
+  	  	variables = (/variable_info@short_name(0)/)
+  	  	derived_var = (/variable_info@short_name(0)/)
+  	  	field_types = (/variable_info@field(0)/)
+  	  	derived_field_type = (/variable_info@field(0)/)
+  	  	var_attr_mip = variable_info@mip
+  	  	var_attr_exp = variable_info@exp
+  	  	models = variable_info
+  	  	models@name = variable_info@model
+  	  	dictkeys = True
+  	  	dictkeys@dictkeys = variable_info@filename
+  	  	fullpaths = variable_info@filename
+    end if
+end
+
 load "./interface_scripts/messaging.ncl"
 
 undef("interface_get_idx_var")

@@ -90,30 +90,8 @@
 ;;
 ;;#############################################################################
 
-; Load diag_script_info
+; Load diag_script_info anv variable_info
 load "interface_scripts/interface.ncl"
-
-; Load variable_info
-begin
-    vardeffile = diag_script_info@input_files(0)
-    loadscript(vardeffile)
-end
-
-; Copy some variable_info into legacy names
-begin
-  	variables = (/variable_info@short_name(0)/)
-  	derived_var = (/variable_info@short_name(0)/)
-  	field_types = (/variable_info@field(0)/)
-  	derived_field_type = (/variable_info@field(0)/)
-  	var_attr_mip = variable_info@mip
-  	var_attr_exp = variable_info@exp
-  	var_attr_ref = (/variable_info@reference_model(0), variable_info@alternative_model(0)/)
-  	models = variable_info
-  	models@name = variable_info@model
-  	dictkeys = True
-  	dictkeys@dictkeys = variable_info@filename
-  	fullpaths = variable_info@filename
-end
 
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/data_handling.ncl"
@@ -225,6 +203,7 @@ begin
     modelnames = project_style(diag_script_info, "annots")
 
     ;; Check for reference model definition
+  	var_attr_ref = (/variable_info@reference_model(0), variable_info@alternative_model(0)/)
     if (var_attr_ref(0).eq."None") then
         error_msg("f", diag_script, "", "no reference model is specified")
     end if

@@ -15,7 +15,6 @@
 ;;
 ;;#############################################################################
 
-load "./interface_scripts/interface.ncl"
 load "./interface_scripts/messaging.ncl"
 
 ; a_laue_ax+

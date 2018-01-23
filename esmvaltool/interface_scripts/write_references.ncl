@@ -8,7 +8,7 @@
 
 ;; definition of functions write_header and write_diag_header
 load "./interface_scripts/write_header.ncl"
-load "interface_scripts/interface.ncl"
+
 
 begin
 

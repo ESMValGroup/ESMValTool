@@ -21,7 +21,7 @@
 ;;
 ;;#############################################################################
 
-load "interface_scripts/interface.ncl"
+
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/messaging.ncl"
 

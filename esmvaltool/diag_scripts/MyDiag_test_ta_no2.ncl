@@ -53,27 +53,6 @@
 ; Load diag_script_info
 load "interface_scripts/interface.ncl"
 
-; Load variable_info
-begin
-    vardeffile = diag_script_info@input_files(0)
-    loadscript(vardeffile)
-end
-
-; Copy some variable_info into legacy names
-begin
-  	variables = (/variable_info@short_name(0)/)
-  	derived_var = (/variable_info@short_name(0)/)
-  	field_types = (/variable_info@field(0)/)
-  	derived_field_type = (/variable_info@field(0)/)
-  	var_attr_mip = variable_info@mip
-  	var_attr_exp = variable_info@exp
-  	models = variable_info
-  	models@name = variable_info@model
-  	dictkeys = True
-  	dictkeys@dictkeys = variable_info@filename
-  	fullpaths = variable_info@filename
-end
-
 ; Auxiliary NCL routines
 load "./interface_scripts/interface.ncl"
 load "./interface_scripts/auxiliary.ncl"
