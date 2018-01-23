@@ -107,6 +107,7 @@ begin
   	derived_field_type = (/variable_info@field(0)/)
   	var_attr_mip = variable_info@mip
   	var_attr_exp = variable_info@exp
+  	var_attr_ref = (/variable_info@reference_model(0), variable_info@alternative_model(0)/)
   	models = variable_info
   	models@name = variable_info@model
   	dictkeys = True
