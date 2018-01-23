@@ -346,9 +346,9 @@ class DiagnosticTask(AbstractTask):
         logger.info("Writing output to %s", self.output_dir)
         logger.info("Writing log to %s", self.log)
 
-        rerun_msg = ' '.join(
+        rerun_msg = '' if cwd is None else 'cd {}; '.format(cwd)
+        rerun_msg += ' '.join(
             '{}="{}"'.format(k, env[k]) for k in env if k not in os.environ)
-        rerun_msg += '' if cwd is None else ' cd {}; '.format(cwd)
         rerun_msg += ' ' + ' '.join(cmd)
         logger.info("To re-run this diagnostic script, run:\n%s", rerun_msg)
 
