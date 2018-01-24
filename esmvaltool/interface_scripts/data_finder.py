@@ -7,6 +7,7 @@ import logging
 import os
 import re
 import subprocess
+import six
 
 import yaml
 
@@ -113,9 +114,11 @@ def get_input_dirname_template(variable, rootpath, drs):
 
     # Set the drs
     _drs = drs.get(project, 'default')
-
-    if _drs in cfg['input_dir']:
-        dir2 = replace_tags(cfg['input_dir'][_drs], variable)
+    input_dir = cfg['input_dir']
+    if isinstance(input_dir, six.string_types):
+        dir2 = replace_tags(input_dir, variable)
+    elif _drs in input_dir:
+        dir2 = replace_tags(input_dir[_drs], variable)
     else:
         raise KeyError(
             'drs {} for {} project not specified in config-developer file'

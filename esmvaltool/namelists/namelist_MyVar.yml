@@ -1,10 +1,9 @@
 ---
 
 models:
-  - {model: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  - {model: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  - {model: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  - {model: ERA-Interim, project: OBS,    tier: 3,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
+  - {expid: a0qh, institute: EC-Earth-Consortium, model: EC-Earth3-HR,  project: PRIMAVERA, cmor_table: CMIP6,
+  mip: Amon, realm: atmos, frequency: mon, grid: gr,  version: v20171201,
+  exp: historical,  ensemble: r1i1p1f1,  start_year: 1951,  end_year: 1951}
 
 preprocessors:
   preprocessor_1:
@@ -17,9 +16,7 @@ preprocessors:
 
   preprocessor_2:
     extract_levels: false
-    regrid:
-      target_grid: ERA-Interim
-      scheme: linear
+    regrid: false
     mask_landocean: false
     multi_model_mean: false
 
@@ -27,11 +24,9 @@ diagnostics:
   ta_diagnostics:
     description: Air temperature tutorial diagnostics.
     variables:
-      ta:
-        preprocessor: preprocessor_1
-        field: T3M
-    additional_models:
-      - {model: NCEP,        project: OBS,    tier: 2,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
+      tas:
+        preprocessor: preprocessor_2
+        field: T2M
     scripts:
       test_ta: &settings
         script: MyDiag_test_ta.ncl
@@ -43,14 +38,4 @@ diagnostics:
         <<: *settings
         script: MyDiag_test_ta_no2.ncl
 
-  pr_diagnostic:
-    description: Precipitation tutorial diagnostic.
-    variables:
-      pr:
-        preprocessor: preprocessor_2
-        field: T2Ms
-    additional_models: []
-    scripts:
-      test_pr:
-        <<: *settings
-        script: MyDiag_test_pr.ncl
+

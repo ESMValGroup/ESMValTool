@@ -16,8 +16,16 @@
 #
 # Only the default drs is mandatory, the others are optional
 ###############################################################################
+PRIMAVERA:
+  input_dir: '[expid]/original_files/cmorfiles/CMIP/[institute]/[model]/[exp]/[ensemble]/[mip]/[var]/[grid]/[version]'
+  input_file: '[var]_[mip]_[model]_[exp]_[ensemble]_[grid]_*.nc'
+  output_file: '[project]_[model]_[mip]_[exp]_[ensemble]_[field]_[var]_[start_year]-[end_year]'
+  cmor_type: 'CMIP6'
+  cmor_tables: '~/PycharmProjects/earthdiagnostics/earthdiagnostics/cmor_tables/primavera'
+
 
 CMIP5:
+  cmor_type: 'CMIP5'
   input_dir:
     default: '/'
     BADC: '[institute]/[model]/[exp]/[freq]/[realm]/[mip]/[ensemble]/latest/[var]'
