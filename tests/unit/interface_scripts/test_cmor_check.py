@@ -184,7 +184,9 @@ class TestCMORCheck(unittest.TestCase):
         self.var_info.coordinates['lat'].stored_direction = 'decreasing'
         self._check_cube(automatic_fixes=True)
         self._check_cube()
-        self.assertEqual(self.cube.data[-1, 0, 0, 0, 0], 70)
+        index = [0, 0, 0, 0, 0]
+        index[self.cube.coord_dims('latitude')[0]] = -1
+        self.assertEqual(self.cube.data.item(tuple(index)), 70)
         self.assertEqual(self.cube.data[0, 0, 0, 0, 0], 50)
         cube_points = self.cube.coord('latitude').points
         reference = numpy.linspace(90, -90, 20, endpoint=True)
