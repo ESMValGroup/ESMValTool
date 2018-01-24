@@ -8,3 +8,4 @@ class allvars(Fix):
 
         longitude = cube.coord('longitude')
         longitude.var_name = 'lon'
+        return cube
