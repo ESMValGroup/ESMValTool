@@ -1,7 +1,7 @@
 ---
 
 models:
-  - {expid: a0qh, institute: EC-Earth-Consortium, model: EC-Earth3-HR,  project: PRIMAVERA, cmor_table: CMIP6,
+  - {expid: a0qh, institute: EC-Earth-Consortium, model: EC-Earth3-HR,  project: PRIMAVERA,
   mip: Amon, realm: atmos, frequency: mon, grid: gr,  version: v20171201,
   exp: historical,  ensemble: r1i1p1f1,  start_year: 1951,  end_year: 1951}
 
