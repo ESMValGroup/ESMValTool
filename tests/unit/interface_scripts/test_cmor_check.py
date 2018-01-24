@@ -6,6 +6,7 @@ import unittest
 import iris
 import iris.coord_categorisation
 import iris.coords
+import iris.util
 import numpy
 from cf_units import Unit
 
@@ -178,6 +179,19 @@ class TestCMORCheck(unittest.TestCase):
         self.var_info.coordinates['lat'].stored_direction = 'decreasing'
         self._check_fails_in_metadata()
 
+    def test_non_decreasing_fix(self):
+        self.cube.data[0, 0, 0, 0, 0] = 70
+        self.var_info.coordinates['lat'].stored_direction = 'decreasing'
+        self._check_cube(automatic_fixes=True)
+        self._check_cube()
+        self.assertEqual(self.cube.data[-1, 0, 0, 0, 0], 70)
+        self.assertEqual(self.cube.data[0, 0, 0, 0, 0], 50)
+        cube_points = self.cube.coord('latitude').points
+        reference = numpy.linspace(90, -90, 20, endpoint=True)
+        for x in range(20):
+            self.assertTrue(iris.util.approx_equal(cube_points[x],
+                                                   reference[x]))
+
     def test_not_correct_lons(self):
         self.cube = self.cube.intersection(longitude=(-180., 180.))
         self._check_fails_in_metadata()
@@ -342,7 +356,7 @@ class TestCMORCheck(unittest.TestCase):
             valid_min = 0
 
         if var_info.valid_max:
-            valid_max = float(var_info.valid_min)
+            valid_max = float(var_info.valid_max)
         else:
             valid_max = valid_min + 100
 

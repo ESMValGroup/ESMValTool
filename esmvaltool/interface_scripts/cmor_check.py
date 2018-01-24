@@ -7,6 +7,8 @@ import cf_units
 import iris
 import iris.coord_categorisation
 import iris.coords
+import iris.util
+import iris.cube
 import iris.exceptions
 import numpy as np
 
@@ -141,6 +143,7 @@ class CMORCheck(object):
                 self._cube.convert_units(self._cmor_var.units)
 
         self._check_data_range()
+        self._check_coords_data()
 
         self.report_warnings(logger)
         self.report_errors()
@@ -245,6 +248,23 @@ class CMORCheck(object):
 
             self._check_coord(coordinate, coord, var_name)
 
+    def _check_coords_data(self):
+        for (axis, coordinate) in self._cmor_var.coordinates.items():
+            # Cannot check generic_level coords as no CMOR information
+            if coordinate.generic_level:
+                continue
+            var_name = coordinate.out_name
+
+            # Get coordinate var_name as it exists!
+            try:
+                coord = self._cube.coord(
+                    var_name=var_name, dim_coords=True)
+            except iris.exceptions.CoordinateNotFoundError:
+                continue
+
+            self._check_coord_monotonicity_and_direction(coordinate, coord,
+                                                         var_name)
+
     def _check_coord(self, cmor, coord, var_name):
         if coord.var_name == 'time':
             return
@@ -262,22 +282,33 @@ class CMORCheck(object):
                 if not fixed:
                     self.report_error(self._attr_msg, var_name, 'units',
                                       cmor.units, coord.units)
-        self._check_coord_monotonicity_and_direction(cmor, coord, var_name)
         self._check_coord_values(cmor, coord, var_name)
+        if not self.automatic_fixes:
+            self._check_coord_monotonicity_and_direction(cmor, coord, var_name)
 
     def _check_coord_monotonicity_and_direction(self, cmor, coord, var_name):
-
         if not coord.is_monotonic():
             self.report_error(self._is_msg, var_name, 'monotonic')
 
         if cmor.stored_direction:
             if cmor.stored_direction == 'increasing':
                 if coord.points[0] > coord.points[1]:
-                    self.report_error(self._is_msg, var_name, 'increasing')
-
+                    if not self.automatic_fixes or coord.ndim > 1:
+                        self.report_error(self._is_msg, var_name, 'increasing')
+                    else:
+                        self._reverse_coord(coord)
             elif cmor.stored_direction == 'decreasing':
                 if coord.points[0] < coord.points[1]:
-                    self.report_error(self._is_msg, var_name, 'decreasing')
+                    if not self.automatic_fixes or coord.ndim > 1:
+                        self.report_error(self._is_msg, var_name, 'decreasing')
+                    else:
+                        self._reverse_coord(coord)
+
+    def _reverse_coord(self, coord):
+        if coord.ndim == 1:
+            self._cube.data = iris.util.reverse(self._cube.data,
+                                                self._cube.coord_dims(coord))
+            coord.points = iris.util.reverse(coord.points, 0)
 
     def _check_coord_values(self, coord_info, coord, var_name):
         # Check requested coordinate values exist in coord.points
