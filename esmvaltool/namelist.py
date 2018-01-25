@@ -192,13 +192,19 @@ def _get_value(key, variables):
 def _add_cmor_info(variable, keys):
     """Add information from CMOR tables to variable."""
     if variable['project'] in CMOR_TABLES:
-        variable_info = CMOR_TABLES[variable['project']].get_variable(
-            variable['mip'], variable['short_name'])
-        for key in keys:
-            if key not in variable and hasattr(variable_info, key):
-                value = getattr(variable_info, key)
-                if value is not None:
-                    variable[key] = value
+        table = variable['project']
+    elif 'cmor_table' in variable and variable['cmor_table'] in CMOR_TABLES:
+        table = variable['cmor_table']
+    else:
+        return
+
+    variable_info = CMOR_TABLES[table].get_variable(
+        variable['mip'], variable['short_name'])
+    for key in keys:
+        if key not in variable and hasattr(variable_info, key):
+            value = getattr(variable_info, key)
+            if value is not None:
+                variable[key] = value
 
 
 def _update_target_grid(variable, all_variables, settings, config_user):
