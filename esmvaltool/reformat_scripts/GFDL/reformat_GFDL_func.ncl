@@ -47,7 +47,7 @@ begin
     enter_msg(scriptname, funcname, 4)
 
     ;; Simulation path
-    if (.not.isfilepresent_esmval(INPATH)) then
+    if (.not.fileexists(INPATH)) then
         error_msg("f", "reformat_GFDL_func.ncl", funcname, "model data " + \
                   "path (INPATH) not found")
     end if
@@ -350,7 +350,7 @@ end
 
 ;;#############################################################################
 undef("extract_var")
-if (isfilepresent_esmval(RECIPEFILE)) then
+if (fileexists(RECIPEFILE)) then
     loadscript(RECIPEFILE)
 end if
 function extract_var(name:string,
@@ -391,7 +391,7 @@ begin
     if (name.ne."#RECIP") then  ; GFDL variable
         xx = find_and_read_var(name, True)
     else
-        if (isfilepresent_esmval(RECIPEFILE)) then
+        if (fileexists(RECIPEFILE)) then
             xx = GFDL_recipe(name)  ; complex variable
         else
             error_msg("f", "reformat_GFDL_func.ncl", funcname, \

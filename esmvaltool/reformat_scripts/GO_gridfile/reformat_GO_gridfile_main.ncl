@@ -61,8 +61,8 @@ begin
     fix_file_default = "./reformat_scripts/fixes/"  + project + "_default.ncl"
     info_output("fix_file " + fix_file, verbosity, 3)
     info_output("fix_file_default " + fix_file_default, verbosity, 3)
-    data_to_fix = isfilepresent_esmval(fix_file)
-    default_fix = isfilepresent_esmval(fix_file_default) 
+    data_to_fix = fileexists(fix_file)
+    default_fix = fileexists(fix_file_default) 
     if data_to_fix then
         info_output(" loading "+fix_file, verbosity, 2)
         loadscript(fix_file)
@@ -105,7 +105,7 @@ begin
     info_output("variable " + variable, verbosity, 3)
     info_output("experiment " + experiment, verbosity, 3)
     fn_out = outfile_path
-    if (isfilepresent_esmval(fn_out)) then
+    if (fileexists(fn_out)) then
         system("/bin/rm " + fn_out)
     end if
 

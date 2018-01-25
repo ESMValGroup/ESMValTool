@@ -34,7 +34,7 @@ load "./interface_scripts/messaging.ncl"
 load "$ESMValTool_interface_data/ncl.interface"
 
 begin
-    if (isfilepresent_esmval(FIXFILE)) then
+    if (fileexists(FIXFILE)) then
         loadscript(FIXFILE)
     end if
 end
@@ -64,7 +64,7 @@ begin
     enter_msg(scriptname, funcname, 4)
 
     ;; Simulation path
-    if (.not. isfilepresent_esmval(INPATH)) then
+    if (.not. fileexists(INPATH)) then
         error_msg("f", scriptname, funcname, \
                   "simulation path INPATH = " + INPATH + ", not found")
     end if
@@ -230,7 +230,7 @@ begin
     verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
     enter_msg(scriptname, funcname, 4)
 
-    if (isfilepresent_esmval(FIXFILE)) then
+    if (fileexists(FIXFILE)) then
         ret = fixing_func(var, name)
         if (ret.eq.0) then
             info_output("  A data-fixing function (" + FIXFILE + ") " + \
@@ -1311,7 +1311,7 @@ begin
     delete(vars)
 
     ;; Read, reformat and check the irregular grid area
-    if (.not. isfilepresent_esmval(AREAFILE)) then
+    if (.not. fileexists(AREAFILE)) then
         print("")
         print("Cannot find the specified area file")
         print("      " + AREAFILE)
@@ -1527,7 +1527,7 @@ begin
     vrank = dimsizes(vsize)
 
     lexist = False
-    if (isfilepresent_esmval(LMASKFILE)) then
+    if (fileexists(LMASKFILE)) then
         ff = addfile(LMASKFILE, "r")
         if (isfilevar(ff, "sftlf")) then
             lexist = True
@@ -1625,7 +1625,7 @@ begin
     vrank = dimsizes(vsize)
 
     lexist = False
-    if (isfilepresent_esmval(OMASKFILE)) then
+    if (fileexists(OMASKFILE)) then
         ff = addfile(OMASKFILE, "r")
         if (isfilevar(ff, "sftof")) then
             lexist = True
@@ -1724,7 +1724,7 @@ begin
     vrank = dimsizes(vsize)
 
     lexist = False
-    if (isfilepresent_esmval(POROFILE)) then
+    if (fileexists(POROFILE)) then
         ff = addfile(POROFILE, "r")
         if (isfilevar(ff, "mrsofc")) then
             lexist = True

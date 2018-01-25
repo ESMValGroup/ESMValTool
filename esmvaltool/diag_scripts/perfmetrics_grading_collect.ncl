@@ -81,7 +81,7 @@ begin
     temp_dir = get_output_dir(getenv("ESMValTool_work_dir"), "temp") + \
         name + "_grading.nc"
 
-    if (isfilepresent_esmval(temp_dir)) then
+    if (fileexists(temp_dir)) then
 
         ;; Read grading list
         temp_file = addfile(temp_dir, "r")

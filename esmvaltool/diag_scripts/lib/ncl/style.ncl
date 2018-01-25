@@ -219,7 +219,7 @@ begin
 
     ;; Styleset defined, search for corresponding style file
     stylefile = "./diag_scripts/lib/ncl/styles/" + styleset + ".style"
-    if (.not.isfilepresent_esmval(stylefile)) then
+    if (.not.fileexists(stylefile)) then
         error_msg("f", "style.ncl", funcname, \
                   "style file " + stylefile + " not found")
     end if

@@ -85,7 +85,7 @@ begin
 
     infile = INDIR + OBSNAME + "_2012_v1.3.txt"
 
-    if (isfilepresent_esmval(infile)) then
+    if (fileexists(infile)) then
 
         head = readAsciiHead(infile, "#Year")
         data = readAsciiTable(infile, 7, "float", dimsizes(head))

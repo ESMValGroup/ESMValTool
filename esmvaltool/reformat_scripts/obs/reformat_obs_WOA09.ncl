@@ -67,7 +67,7 @@ begin
     enter_msg(diag_script, "", 1)
 
     ;; Create output dir
-    if (.not. isfilepresent_esmval(OUTDIR)) then
+    if (.not. fileexists(OUTDIR)) then
         system("mkdir -p " + OUTDIR)
     end if
 
