@@ -1,0 +1,52 @@
+models:
+    # models functional and tested for CMIP5 only
+    # checks functional and tested in interface_scripts/namelistchecks.py for ALL model types
+    # TODO: EMAC, GFDL, CCMVal
+  - {model: EC-EARTH, project: SPECS, institute: BSC, mip: OImon,  exp: decadal, startdate: 20011101,  ensemble: r1i1p1,  start_year: 2002,  end_year: 2011}
+
+preprocessors:
+    # status of options:
+    # id: functional and tested (linked from DIAGNOSTICS->variables->preproc_id
+    # select_level: TODO (not implemented and not tested)
+    # target_grid: netCDF file functional and tested, ref_model functional and tested,
+    #              MxN cell functional and tested but with errors, see standing_issues 23/08/2017
+    # regrid_scheme: functional and tested
+    # mask_fillvalues: TODO
+    # mask_landocean: None,land,ocean,poro - all functional and tested
+    # multimodel_mean: TODO
+    pp1:
+      extract_levels: false
+      regrid: false
+      mask_landocean: false
+      multi_model_mean: false
+#    - {id: pp2, select_level: None, target_grid: ref_model, regrid_scheme: linear, mask_fillvalues: True, mask_landocean: None, multimodel_mean: True}
+
+config:
+  var_def_scripts: ./variable_defs
+  var_only_case: 0
+
+diagnostics:
+  NegativeSeaIceFeedback:
+    description: Computes the negative seaice feedback
+    variables:
+      sit:
+        field: T2M
+        ref_model: ['ERA-Interim']
+        preprocessor : pp1
+    scripts:
+      negative_seaice_feedback:
+        script: negative_seaice_feedback.py,
+
+  SeaIceEdge:
+    description: Plots the sea-ice edge
+    variables:
+      sic:
+        field: T2M
+        ref_model: ['ERA-Interim']
+        preprocessor : pp1
+    scripts:
+      sea_ice_edge:
+        script: sea_ice_edge.r
+        concentration_treshold: 15
+        plot_all_years: True
+        plot_climatology: True
