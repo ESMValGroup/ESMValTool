@@ -114,8 +114,7 @@ CMIP5:
 SPECS:
   cmor_type: 'CMIP5'
   input_dir: '[institute]/[model]/[exp]/S[startdate]/[freq]/[realm]/[var]/[ensemble]'
-  input_file:
-    default: '[var]_[mip]_[model]_[exp]_S[startdate]_[ensemble]_*'
+  input_file: '[var]_[mip]_[model]_[exp]_S[startdate]_[ensemble]_*'
   output_file: '[model]_[mip]_[exp]_[ensemble]_[field]_[var]_[start_year]-[end_year]'
 
 

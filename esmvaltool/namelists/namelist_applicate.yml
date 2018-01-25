@@ -35,18 +35,18 @@ diagnostics:
         preprocessor : pp1
     scripts:
       negative_seaice_feedback:
-        script: negative_seaice_feedback.py,
+        script: negative_seaice_feedback.py
 
-  SeaIceEdge:
-    description: Plots the sea-ice edge
-    variables:
-      sic:
-        field: T2M
-        ref_model: ['ERA-Interim']
-        preprocessor : pp1
-    scripts:
-      sea_ice_edge:
-        script: sea_ice_edge.r
-        concentration_treshold: 15
-        plot_all_years: True
-        plot_climatology: True
+#  SeaIceEdge:
+#    description: Plots the sea-ice edge
+#    variables:
+#      sic:
+#        field: T2M
+#        ref_model: ['ERA-Interim']
+#        preprocessor : pp1
+#    scripts:
+#      sea_ice_edge:
+#        script: sea_ice_edge.r
+#        concentration_treshold: 15
+#        plot_all_years: True
+#        plot_climatology: True
