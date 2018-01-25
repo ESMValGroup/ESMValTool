@@ -8,6 +8,7 @@ from __future__ import absolute_import, division, print_function
 
 import re
 from copy import deepcopy
+from  ..preprocessor._reformat import CMOR_TABLES
 
 import iris
 import numpy as np
@@ -315,6 +316,9 @@ def vinterp(src_cube, levels, scheme):
         emsg = 'Unknown vertical interpolation scheme, got {!r}.'
         raise ValueError(emsg.format(scheme))
 
+    if isinstance(levels, six.string_types):
+        levels = get_cmor_levels(levels)
+
     # Ensure we have a non-scalar array of levels.
     levels = np.array(levels, ndmin=1)
 
@@ -380,3 +384,22 @@ def vinterp(src_cube, levels, scheme):
             result = _create_cube(src_cube, new_data, levels)
 
     return result
+
+
+def get_cmor_levels(levels):
+    level_definition = levels.split('_')
+    cmor_type = level_definition[0]
+
+    if cmor_type not in CMOR_TABLES:
+        raise ValueError('Level definition {} not available'
+                         .format(levels))
+    if len(level_definition) == 2:
+        coord = level_definition[1]
+        cmor = CMOR_TABLES[cmor_type].coords[coord]
+    else:
+        table = level_definition[1]
+        var = level_definition[2]
+        cmor = CMOR_TABLES[cmor_type].get_variable(table, var)
+
+    levels = [float(level) for level in cmor.requested]
+    return levels
