@@ -5,7 +5,7 @@ ESMValTool namelists
 
 The ESMValTool namelists are the "control centers" acting as interfaces between the user and the various scripts and configuration files that make up the ESMValTool. A namelist specifies a list of diagnostics to run, global flags and a list of models and observations that are used within the diagnostics. Namelists are text files written in XML (EXtensible Markup Language) [XML]. As a simple text file, the XML-namelist can be easily modified by the user.
 
-For any given namelist *"namelist.xml"*, the ESMValTool is invoked from the command line via (see also :numref:`running`)::
+For any given namelist *"namelist.xml"*, the ESMValTool is invoked from the command line via (see also Section :numref:`running`)::
 
 	python main.py nml/namelist.xml
 
@@ -34,19 +34,19 @@ Note that the coupling between the namelist and the diagnostic scripts is "loose
  
 	**<GLOBAL>**
 	
-	controls the general settings (see :numref:`tab_glob_tags`) ; see :numref:`glob_tag`, "More on the <GLOBALS>-tag" below for details
+	controls the general settings (see :numref:`tab_glob_tags`) ; see Section :numref:`glob_tag`, "More on the <GLOBALS>-tag" below for details
 	
 	**</GLOBAL>**
 
 	**<MODELS>**
 	
-	defines the models/observations and years to be processed and their pathnames; see :numref:`mod_tag`, "More on the <MODELS>-tag" below for details
+	defines the models/observations and years to be processed and their pathnames; see Section :numref:`mod_tag`, "More on the <MODELS>-tag" below for details
 	
 	**</MODELS>**
 
 	**<DIAGNOSTIC>**
 	
-	defines which diagnostics are run (see :numref:`tab_diag_tags`); each diagnostic is enclosed in an opening <diag> and closing </diag>-tag; see :numref:`diag_tag`, "More on the <DIAGNOSTICS>-tag" below for details
+	defines which diagnostics are run (see :numref:`tab_diag_tags`); each diagnostic is enclosed in an opening <diag> and closing </diag>-tag; see Section :numref:`diag_tag`, "More on the <DIAGNOSTICS>-tag" below for details
 	
 	**</DIAGNOSTIC>**
 
@@ -61,51 +61,52 @@ More on the <GLOBAL>-tag
 
 :numref:`tab_glob_tags` summarizes the tags defined in the <GLOBAL> section of the namelist. Some of these tags (e.g., regridding_dir) are specific to some diagnostics and not generally defined in all namelists.
 
-:numref:`tab_glob_tags` Tags of the <GLOBAL> section of the namelist. Note that not all tags might be used by a diagnostic.
-
-..
+   :numref:`tab_glob_tags` Tags of the <GLOBAL> section of the namelist. Note that not all tags might be used by a diagnostic.
 
 .. _tab_glob_tags:
 
-+----------------------+----------+-----------------------------------------------------------------------------------------------+
-| Name                 | Type     | Description                                                                                   |
-+======================+==========+===============================================================================================+
-| climo_dir            | string   | Path for intermediate files (netCDF)                                                          |
-+----------------------+----------+-----------------------------------------------------------------------------------------------+
-| exit_on_warning      | boolean  | Stop on warnings                                                                              |
-+----------------------+----------+-----------------------------------------------------------------------------------------------+
-| force_calc           | boolean  | Force diagnostic specific files to be recreated                                               |
-+----------------------+----------+-----------------------------------------------------------------------------------------------+
-| force_gradecalc      | boolean  | Force recalculation of model grading (perfmetrics)                                            |
-+----------------------+----------+-----------------------------------------------------------------------------------------------+
-| force_processing     | boolean  | Force certain intermediate files (netCDF) to be recreated instead of using cached files       |
-+----------------------+----------+-----------------------------------------------------------------------------------------------+
-| force_taylorcalc     | boolean  | Force recalculation of data for Taylor plot (perfmetrics)                                     |
-+----------------------+----------+-----------------------------------------------------------------------------------------------+
-| max_data_blocksize   | integer  | Currently not used                                                                            |
-+----------------------+----------+-----------------------------------------------------------------------------------------------+
-| max_data_filesize    | integer  | Limits internal memory handling in some core NCL scripts                                      |
-+----------------------+----------+-----------------------------------------------------------------------------------------------+
-| output_file_type     | string   | File format of plots (ps, pdf, eps, png); not all formats supported by all diagnostic scripts |
-+----------------------+----------+-----------------------------------------------------------------------------------------------+
-| plot_dir             | string   | Output path for plots                                                                         |
-+----------------------+----------+-----------------------------------------------------------------------------------------------+
-| read_from_vault      | boolean  | Retrieve computed diagnostic fields from netCDF                                               |
-+----------------------+----------+-----------------------------------------------------------------------------------------------+
-| regridding_dir       | string   | Path for intermediate files used by NCL regridding routines                                   |
-+----------------------+----------+-----------------------------------------------------------------------------------------------+
-| show_debuginfo       | string   | Generate a second version of each figure with explanatory text overlayed                      |
-+----------------------+----------+-----------------------------------------------------------------------------------------------+
-| verbosity            | integer  | Verbosity level (0 = minimum output, 4=maximum output)                                        |
-+----------------------+----------+-----------------------------------------------------------------------------------------------+
-| write_netcdf         | boolean  | Write results to netCDF file                                                                  |
-+----------------------+----------+-----------------------------------------------------------------------------------------------+
-| write_plot_vars      | boolean  | Currenntly not used                                                                           |
-+----------------------+----------+-----------------------------------------------------------------------------------------------+
-| write_plots          | boolean  | Produce plots                                                                                 |
-+----------------------+----------+-----------------------------------------------------------------------------------------------+
-| wrk_dir              | string   | Output path for data (netCDF, acknowledgements)                                               |
-+----------------------+----------+-----------------------------------------------------------------------------------------------+
++--------------------+---------+-----------------------------------------------------------------------------------------------+
+| Name               | Type    | Description                                                                                   |
++====================+=========+===============================================================================================+
+| climo_dir          | string  | Path for intermediate files (netCDF)                                                          |
++--------------------+---------+-----------------------------------------------------------------------------------------------+
+| exit_on_warning    | boolean | Stop on warnings                                                                              |
++--------------------+---------+-----------------------------------------------------------------------------------------------+
+| force_calc         | boolean | Force diagnostic specific files to be recreated                                               |
++--------------------+---------+-----------------------------------------------------------------------------------------------+
+| force_gradecalc    | boolean | Force recalculation of model grading (perfmetrics)                                            |
++--------------------+---------+-----------------------------------------------------------------------------------------------+
+| force_processing   | boolean | Force certain intermediate files (netCDF) to be recreated instead of using cached files       |
++--------------------+---------+-----------------------------------------------------------------------------------------------+
+| force_taylorcalc   | boolean | Force recalculation of data for Taylor plot (perfmetrics)                                     |
++--------------------+---------+-----------------------------------------------------------------------------------------------+
+| max_data_blocksize | integer | Currently not used                                                                            |
++--------------------+---------+-----------------------------------------------------------------------------------------------+
+| max_data_filesize  | integer | Limits internal memory handling in some core NCL scripts                                      |
++--------------------+---------+-----------------------------------------------------------------------------------------------+
+| output_file_type   | string  | File format of plots (ps, pdf, eps, png); not all formats supported by all diagnostic scripts |
++--------------------+---------+-----------------------------------------------------------------------------------------------+
+| plot_dir           | string  | Output path for plots                                                                         |
++--------------------+---------+-----------------------------------------------------------------------------------------------+
+| read_from_vault    | boolean | Retrieve computed diagnostic fields from netCDF                                               |
++--------------------+---------+-----------------------------------------------------------------------------------------------+
+| regridding_dir     | string  | Path for intermediate files used by NCL regridding routines                                   |
++--------------------+---------+-----------------------------------------------------------------------------------------------+
+| show_debuginfo     | string  | Generate a second version of each figure with explanatory text overlayed                      |
++--------------------+---------+-----------------------------------------------------------------------------------------------+
+| tags               | string  | Comma separated list of tags used for reporting and visualization                             |
+|                    |         | (see Section :numref:`tagging` for details)                                                   |
++--------------------+---------+-----------------------------------------------------------------------------------------------+
+| verbosity          | integer | Verbosity level (0 = minimum output, 4=maximum output)                                        |
++--------------------+---------+-----------------------------------------------------------------------------------------------+
+| write_netcdf       | boolean | Write results to netCDF file                                                                  |
++--------------------+---------+-----------------------------------------------------------------------------------------------+
+| write_plot_vars    | boolean | Currenntly not used                                                                           |
++--------------------+---------+-----------------------------------------------------------------------------------------------+
+| write_plots        | boolean | Produce plots                                                                                 |
++--------------------+---------+-----------------------------------------------------------------------------------------------+
+| wrk_dir            | string  | Output path for data (netCDF, acknowledgements)                                               |
++--------------------+---------+-----------------------------------------------------------------------------------------------+
 
 .. _mod_tag:
 
@@ -134,7 +135,7 @@ The project specifier "CMIP5" will search for files in "path" with filenames mat
 
 Here, the leading asterisk is a placeholder for the variable, which is defined in the <DIAGNOSTICS>-tag (see below), the trailing asterisk is a placeholder for the start/end date of the data set. This naming convention conforms to the syntax used for CMIP5 DRS filenames (as implied by the project specifier name). By implementing their own project specifier classes into the Python code (*interface_scripts/projects.py*), the user can handle data sets that follow different file naming conventions or require additional information to be passed along in addition to the filename. :numref:`tab_proj_spec` gives a summary of the available project specifiers and arguments to be used in each <model> line. 
 
-[**Note: Examples for the most commonly used project specifiers CMIP5, CMIP5_ETHZ, OBS, and obs4mips as well as downloading instructions and information on the required local directory structure for the model / observational data can be found in :numref:`diag_avail`.**]
+[**Note: Examples for the most commonly used project specifiers CMIP5, CMIP5_ETHZ, OBS, and obs4mips as well as downloading instructions and information on the required local directory structure for the model / observational data can be found in Section :numref:`diag_avail`.**]
 
 The <model>-tag may also take the optional attribute "*id*":
 
@@ -144,9 +145,7 @@ Example:
 
 The attribute *id* specifies a string that can be used to refer to the model in other places of the namelist. :numref:`tab_mod_tags` gives a summary of valid attributes in <model>-tags.
 
-:numref:`tab_proj_spec` Project specifiers and corresponding arguments.
-
-..
+   :numref:`tab_proj_spec` Project specifiers and corresponding arguments.
 
 .. _tab_proj_spec:
 
@@ -183,9 +182,7 @@ The attribute *id* specifies a string that can be used to refer to the model in 
 | obs4mips          | Name       | process level | ensemble   | start year | end year   | path	     |            |            |
 +-------------------+------------+---------------+------------+------------+------------+------------+------------+------------+
 
-:numref:`tab_mod_tags` Optional attributes of the <model> tag.
-
-..
+   :numref:`tab_mod_tags` Optional attributes of the <model> tag.
 
 .. _tab_mod_tags:
 
@@ -196,9 +193,7 @@ The attribute *id* specifies a string that can be used to refer to the model in 
 +-------+---------+------------------------------------------------------------------------------+
 
 
-:numref:`tab_opt_att` Optional attributes of the <variable> tag.
-
-..
+   :numref:`tab_opt_att` Optional attributes of the <variable> tag.
 
 .. tabularcolumns:: |l|l|p{12.75cm}|
 
@@ -227,9 +222,7 @@ More on the <DIAGNOSTICS>-tag
 Each <diag> entry refers to one or several scripts in the folder *diag_scripts/* complemented by a variable name (see :numref:`tab_var_def` for a list of variables) and the corresponding (input) field type (see :numref:`tab_fld_typ`). Optionally the <diag>-tag may contain additional <model>-tags; these data sets will be processed only by the diagnostic(s) listed in the current <diag> entry. In this way it is possible to define a set of models to be analyzed by all diagnostics in the namelist (in the <MODELS> section) and a set of models to be analyzed only by specific diagnostics (in the <diag> section). Available <diag>-tags are listed in :numref:`tab_diag_tags`, their optional attributes in :numref:`tab_diag_att`.
 
 
-:numref:`tab_diag_tags` Tags of the <diag> section within the <DIAGNOSTICS> section of the namelist. There are no default values.
-
-..
+   :numref:`tab_diag_tags` Tags of the <diag> section within the <DIAGNOSTICS> section of the namelist. There are no default values.
 
 .. tabularcolumns:: |l|l|p{11.5cm}|
 
@@ -262,10 +255,10 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 | model (optional)     | string   | Additional data sets specific for this <diag>-section. Data sets defined here will be processed in addition to  |
 |                      |          | the ones defined in the MODELS section (see above) but will be ignored by other <diag>-sections.                |
 +----------------------+----------+-----------------------------------------------------------------------------------------------------------------+
+| tags                 | string   | Comma separated list of tags used for reporting and visualization (see Section :numref:`tagging` for details)   |
++----------------------+----------+-----------------------------------------------------------------------------------------------------------------+
 
-:numref:`tab_diag_att` Optional attributes of selected tags in the <diag> section. 
-
-..
+   :numref:`tab_diag_att` Optional attributes of selected tags in the <diag> section. 
 
 .. tabularcolumns:: |l|l|l|p{10cm}|
 
@@ -290,9 +283,7 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 +------------+----------+---------------+---------------------------------------------------------------------------------------------------+
 
 
-:numref:`tab_fld_typ` Field types.
-
-..
+   :numref:`tab_fld_typ` Field types.
 
 .. _tab_fld_typ:
 
@@ -332,9 +323,7 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 | TO3M  | Monthly-mean 3d ocean or sea ice data (longitude, latitude, model level, time:month)                   |
 +-------+--------------------------------------------------------------------------------------------------------+
 
-:numref:`tab_var_def` Variable definition scripts.
-
-..
+   :numref:`tab_var_def` Variable definition scripts.
 
 .. _tab_var_def:
 
@@ -347,17 +336,65 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 +--------------------------+-----------------------------------------------------------------------------------+
 | baresoilFrac.ncl         | Fraction of bare soil (land cover variable)                                       |
 +--------------------------+-----------------------------------------------------------------------------------+
+| burntArea.ncl            | Burned area (land cover variable)                                                 |
++--------------------------+-----------------------------------------------------------------------------------+
 | chl.ncl                  | Chlorophyll mass concentration at the surface (ocean)                             |
 +--------------------------+-----------------------------------------------------------------------------------+
+| clcci.ncl                | CCI Cloud Area Fraction                                                           |
++--------------------------+-----------------------------------------------------------------------------------+
+| clhmtcci.ncl             | CCI High Level Medium-Thickness Cloud Area Fraction                               |
++--------------------------+-----------------------------------------------------------------------------------+
+| clhmtisccp.ncl           | ISCCP high level medium-thickness cloud area fraction                             |
++--------------------------+-----------------------------------------------------------------------------------+
+| clhtkcci.ncl             | CCI High Level Thick Cloud Area Fraction                                          |
++--------------------------+-----------------------------------------------------------------------------------+
+| clhtkisccp.ncl           | ISCCP High Level Thick Cloud Area Fraction                                        |
++--------------------------+-----------------------------------------------------------------------------------+
+| clhtncci.ncl             | CCI High Level Thin Cloud Area Fraction                                           |
++--------------------------+-----------------------------------------------------------------------------------+
+| clhtnisccp.ncl           | ISCCP High Level Thin Cloud Area Fraction                                         |
++--------------------------+-----------------------------------------------------------------------------------+
+| clisccp.ncl              | ISCCP Cloud Area Fraction                                                         |
++--------------------------+-----------------------------------------------------------------------------------+
 | clivi.ncl                | Vertically integrated cloud ice                                                   |
++--------------------------+-----------------------------------------------------------------------------------+
+| cllmtcci.ncl             | CCI Low Level Medium-Thickness Cloud Area Fraction                                |
++--------------------------+-----------------------------------------------------------------------------------+
+| cllmtisccp.ncl           | ISCCP Low Level Medium-Thickness Cloud Area Fraction                              |
++--------------------------+-----------------------------------------------------------------------------------+
+| clltkcci.ncl             | CCI Low Level Thick Cloud Area Fraction                                           |
++--------------------------+-----------------------------------------------------------------------------------+
+| clltkisccp.ncl           | ISCCP Low Level Thick Cloud Area Fraction                                         |
++--------------------------+-----------------------------------------------------------------------------------+
+| clltncci.ncl             | CCI Low Level Thin Cloud Area Fraction                                            |
++--------------------------+-----------------------------------------------------------------------------------+
+| clltnisccp.ncl           | ISCCP Low Level Thin Cloud Area Fraction                                          |
++--------------------------+-----------------------------------------------------------------------------------+
+| clmmtcci.ncl             | CCI Middle Level Medium-Thickness Cloud Area Fraction                             |
++--------------------------+-----------------------------------------------------------------------------------+
+| clmmtisccp.ncl           | ISCCP Middle Level Medium-Thickness Cloud Area Fraction                           |
++--------------------------+-----------------------------------------------------------------------------------+
+| clmtkcci.ncl             | CCI Middle Level Thick Cloud Area Fraction                                        |
++--------------------------+-----------------------------------------------------------------------------------+
+| clmtkisccp.ncl           | ISCCP Middle Level Thick Cloud Area Fraction                                      |
++--------------------------+-----------------------------------------------------------------------------------+
+| clmtncci.ncl             | CCI Middle Level Thin Cloud Area Fraction                                         |
++--------------------------+-----------------------------------------------------------------------------------+
+| clmtnisccp.ncl           | ISCCP Middle Level Thin Cloud Area Fraction                                       |
 +--------------------------+-----------------------------------------------------------------------------------+
 | cl.ncl                   | Cloud area fraction (3d)                                                          |
 +--------------------------+-----------------------------------------------------------------------------------+
 | clt.ncl                  | Total cloud fraction                                                              |
 +--------------------------+-----------------------------------------------------------------------------------+
+| cltcci.ncl               | CCI Total Cloud Fraction                                                          |
++--------------------------+-----------------------------------------------------------------------------------+
 | cltisccp.ncl             | ISCCP-like total cloud fraction                                                   |
 +--------------------------+-----------------------------------------------------------------------------------+
 | cltStderr.ncl            | Standard error of total cloud fraction (observations)                             |
++--------------------------+-----------------------------------------------------------------------------------+
+| clwcci.ncl               | CCI Liquid Cloud Area Fraction                                                    |
++--------------------------+-----------------------------------------------------------------------------------+
+| clwtcci.ncl              | CCI Liquid Cloud Area Fraction                                                    |
 +--------------------------+-----------------------------------------------------------------------------------+
 | clwvi.ncl                | Vertically integrated total cloud water (ice + liquid)                            |
 +--------------------------+-----------------------------------------------------------------------------------+
@@ -366,6 +403,8 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 | conccnd10.ncl            | EMAC aerosol variable                                                             |
 +--------------------------+-----------------------------------------------------------------------------------+
 | conccnd5.ncl             | EMAC aerosol variable                                                             |
++--------------------------+-----------------------------------------------------------------------------------+
+| conccnd14.ncl            | EMAC aerosol variable                                                             |
 +--------------------------+-----------------------------------------------------------------------------------+
 | conccnmode.ncl           | EMAC aerosol variable                                                             |
 +--------------------------+-----------------------------------------------------------------------------------+
@@ -393,17 +432,19 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 +--------------------------+-----------------------------------------------------------------------------------+
 | dosStderr.ncl            | Degree of saturation standard error (observations)                                |
 +--------------------------+-----------------------------------------------------------------------------------+
+| ec532dust.ncl            | EMAC aerosol variable                                                             |
++--------------------------+-----------------------------------------------------------------------------------+
 | et.ncl                   | Evapotranspiration                                                                |
 +--------------------------+-----------------------------------------------------------------------------------+
 | evspsbl.ncl              | Evaporation                                                                       |
 +--------------------------+-----------------------------------------------------------------------------------+
 | fgco2.ncl                | Surface downward CO2 flux (ocean)                                                 |
 +--------------------------+-----------------------------------------------------------------------------------+
+| gpp.ncl                  | Carbon mass flux out of atmosphere due to gross primary production on land        |
++--------------------------+-----------------------------------------------------------------------------------+
 | grassFrac.ncl            | Fraction of grass (land cover variable)                                           |
 +--------------------------+-----------------------------------------------------------------------------------+
 | grassNcropFrac.ncl       | Fraction of grass + crop (land cover variable)                                    |
-+--------------------------+-----------------------------------------------------------------------------------+
-| gpp.ncl                  | Carbon mass flux out of atmosphere due to gross primary production on land        |
 +--------------------------+-----------------------------------------------------------------------------------+
 | hfds.ncl                 | Downward heat flux at sea surface                                                 |
 +--------------------------+-----------------------------------------------------------------------------------+
@@ -441,6 +482,8 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 +--------------------------+-----------------------------------------------------------------------------------+
 | mrso.ncl                 | Soil moisture content                                                             |
 +--------------------------+-----------------------------------------------------------------------------------+
+| mrsos.ncl                | Surface soil moisture content                                                     |
++--------------------------+-----------------------------------------------------------------------------------+
 | msftmyz.ncl              | Ocean meridional overturning mass streamfunction                                  |
 +--------------------------+-----------------------------------------------------------------------------------+
 | MyVar.ncl                | Template                                                                          |
@@ -465,7 +508,11 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 +--------------------------+-----------------------------------------------------------------------------------+
 | pastureFrac.ncl          | Fraction pasture (land cover variable)                                            |
 +--------------------------+-----------------------------------------------------------------------------------+
+| pctcci.ncl               | CCI Mean Cloud Top Pressure                                                       |
++--------------------------+-----------------------------------------------------------------------------------+
 | pctisccp.ncl             | ISCCP-like cloud top height                                                       |
++--------------------------+-----------------------------------------------------------------------------------+
+| phacci.ncl               | CCI Cloud Top Phase                                                               |
 +--------------------------+-----------------------------------------------------------------------------------+
 | prc-mmh.ncl              | Convective precipitation in mm per hour                                           |
 +--------------------------+-----------------------------------------------------------------------------------+
@@ -487,6 +534,8 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 +--------------------------+-----------------------------------------------------------------------------------+
 | rlds.ncl                 | Surface downwelling longwave flux (all sky)                                       |
 +--------------------------+-----------------------------------------------------------------------------------+
+| rlns.ncl                 | Surface Net downward Longwave Radiation                                           |
++--------------------------+-----------------------------------------------------------------------------------+
 | rlus.ncl                 | Surface upwelling longwave flux                                                   |
 +--------------------------+-----------------------------------------------------------------------------------+
 | rlutcs.ncl               | TOA outgoing clear-sky longwave radiation                                         |
@@ -497,9 +546,23 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 +--------------------------+-----------------------------------------------------------------------------------+
 | rsds.ncl                 | Surface downwelling shortwave flux (all sky)                                      |
 +--------------------------+-----------------------------------------------------------------------------------+
+| rsdt.ncl                 | TOA Incoming Shortwave Radiation                                                  |
++--------------------------+-----------------------------------------------------------------------------------+
+| rsns.ncl                 | Surface Net downward Shortwave Radiation                                          |
++--------------------------+-----------------------------------------------------------------------------------+
+| rsnt.ncl                 | TOA Net downward Shortwave Radiation                                              |
++--------------------------+-----------------------------------------------------------------------------------+
+| rsuscs.ncl               | SWupSFCclr                                                                        |
++--------------------------+-----------------------------------------------------------------------------------+
+| rsus.ncl                 | SWupSFC                                                                           |
++--------------------------+-----------------------------------------------------------------------------------+
 | rsutcs.ncl               | TOA outgoing clear-sky shortwave radiation                                        |
 +--------------------------+-----------------------------------------------------------------------------------+
 | rsut.ncl                 | TOA outgoing all-sky shortwave radiation                                          |
++--------------------------+-----------------------------------------------------------------------------------+
+| rtns.ncl                 | Surface Net downward Total Radiation                                              |
++--------------------------+-----------------------------------------------------------------------------------+
+| rtnt.ncl                 | TOA Net downward Total Radiation                                                  |
 +--------------------------+-----------------------------------------------------------------------------------+
 | sconcbc.ncl              | BC surface concentration                                                          |
 +--------------------------+-----------------------------------------------------------------------------------+
@@ -669,6 +732,10 @@ Each <diag> entry refers to one or several scripts in the folder *diag_scripts/*
 +--------------------------+-----------------------------------------------------------------------------------+
 | wfpe.ncl                 | Water flux from precipitation and evaporation                                     |
 +--------------------------+-----------------------------------------------------------------------------------+
+| xch4.ncl                 | Column averaged CH4 mixing ratio                                                  |
++--------------------------+-----------------------------------------------------------------------------------+
+| xch4Stderr.ncl           | Column averaged CH4 mixing ratio standard error (observations)                    |
++--------------------------+-----------------------------------------------------------------------------------+
 | xco2.ncl                 | Column averaged CO2 mixing ratio                                                  |
 +--------------------------+-----------------------------------------------------------------------------------+
 | xco2Stderr.ncl           | Column averaged CO2 mixing ratio standard error (observations)                    |
@@ -746,7 +813,7 @@ and referred to with the syntax:
 Note: alternatively, explicitely defined pathnames can be used at any time.
 
 
-.. _header:
+.. _std_namelist:
 
 Standard header for the namelist
 ================================

@@ -81,18 +81,6 @@ parser.parse(input_xml_full_path)
 # Project_info is a dictionary with all info from the namelist.
 project_info = Project.project_info
 
-# bn_muel++
-# add namelist to tags
-if 'GLOBAL' not in project_info.keys():
-    assert False, "This is a reporting namelist!"
-
-if "tags" in project_info.get('GLOBAL').keys():
-    project_info.get('GLOBAL')['tags'].\
-        append(input_xml_full_path.split('/')[-1])
-else:
-    project_info.get('GLOBAL')['tags'] = [input_xml_full_path.split('/')[-1]]
-# bn_muel++
-
 if options.reformat:
     if 'REFORMAT' not in project_info.keys():
         error('No REFORMAT tag specified in {0}'.format(input_xml_full_path))
@@ -104,6 +92,18 @@ if options.reformat:
             error('Path {0} does not exist'.format(v))
         projects.run_executable(v, project_info, 1, False, write_di=False)
         sys.exit(0)
+
+# bn_muel++
+# add namelist to tags
+if 'GLOBAL' not in project_info.keys():
+    assert False, "This is a reporting namelist!"
+
+if "tags" in project_info.get('GLOBAL').keys():
+    project_info.get('GLOBAL')['tags'].\
+        append(input_xml_full_path.split('/')[-1])
+else:
+    project_info.get('GLOBAL')['tags'] = [input_xml_full_path.split('/')[-1]]
+# bn_muel++
 
 verbosity = project_info['GLOBAL']['verbosity']
 climo_dir = project_info['GLOBAL']['climo_dir']

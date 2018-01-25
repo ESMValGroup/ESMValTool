@@ -67,6 +67,7 @@ This namelist is part of the ESMValTool
 <!--   <reformat_script id="HadISST">                 ./reformat_scripts/obs/reformat_obs_HadISST.ncl                 </reformat_script> -->
 <!--   <reformat_script id="HALOE">                   ./reformat_scripts/obs/reformat_obs_HALOE.ncl                   </reformat_script> -->
 <!--   <reformat_script id="HIPPO">                   ./reformat_scripts/obs/reformat_obs_HIPPO.ncl                   </reformat_script> -->
+<!--   <reformat_script id="IASI">                    ./reformat_scripts/obs/reformat_obs_IASI.ncl                    </reformat_script> -->
 <!--   <reformat_script id="IMPROVE">                 ./reformat_scripts/obs/reformat_obs_IMPROVE.ncl                 </reformat_script> -->
 <!--   <reformat_script id="INCA">                    ./reformat_scripts/obs/reformat_obs_INCA.ncl                    </reformat_script> -->
 <!--   <reformat_script id="LACE">                    ./reformat_scripts/obs/reformat_obs_LACE.ncl                    </reformat_script> -->

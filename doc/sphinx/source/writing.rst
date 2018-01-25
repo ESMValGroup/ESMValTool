@@ -1,53 +1,52 @@
-
-
 .. _writing:
 
 Writing a diagnostic script or a metrics set
 ********************************************
 
+Basics
+======
+
 The development of a new diagnostic (or set of diagnostics) requires the
 following steps before getting started:
 
-	* Creating a *FEATURE BRANCH* (see :numref:`annex_b`) in the applicable project subdirectory of the Git repository (via Git, see :numref:`git_repository`). Developers are encouraged to work actively through the Git repository. Regular “commits” to the repository help to document changes introduced to the ESMValTool and allow for efficient sharing of code with other developers.
-	* Setting up a wiki documentation page for the new diagnostic/performance metrics following the documentation templates (see :numref:`std_nml` and :numref:`documentation`). For details on the ESMValTool development team wiki see :numref:`wiki`.
-	* Creating a standard namelist following the template described in section :numref:`header`.
+	* Creating a *FEATURE BRANCH* (see Part :numref:`annex_b`) in the applicable project subdirectory of the Git repository (via Git, see Section :numref:`git_repository`). Developers are encouraged to work actively through the Git repository. Regular "commits" to the repository help to document changes introduced to the ESMValTool and allow for efficient sharing of code with other developers.
+	* Creating a standard namelist following the template described in Section :numref:`std_namelist`.
 
 **General coding rules and conventions**
 
-	* Regular updates of the *FEATURE BRANCH* (see :numref:`annex_b`) are strongly recommended in order to keep it synchronized with the *DEVELOPMENT BRANCH* (see :numref:`annex_b`).
+	* Regular updates of the *FEATURE BRANCH* (see Part :numref:`annex_b`) are strongly recommended in order to keep it synchronized with the *DEVELOPMENT BRANCH* (see Part :numref:`annex_b`).
 	* Modularizing all diagnostic scripts as much as possible, using the general-purpose code in *lib/* and separating the diagnostic calculations from the plotting routines.
-	* Before creating new functions or procedures, it should be considered to use or extend the existing routines within *lib/*. Each header (see :numref:`std_nml`) provides an overview of the already implemented functions and procedures.
-	* Functions and procedures specific to a given diagnostic shall go in the subdirectory diag_scripts/*aux/<diagnostic>* (see               :numref:`tab_direc_struc`).
-	* Main namelist, diag_scripts, functions and procedures shall be documented within the respective file using the templates (see :numref:`header`, :numref:`std_nml` and :numref:`std_diag`).
-	* Each diag_script shall contain a call to the function *write_reference* (see also :numref:`ack_log`) in order to generate a respective acknowledgements log file (:numref:`ack_log`).
+	* Before creating new functions or procedures, it should be considered to use or extend the existing routines within *lib/*. Each header (see Section :numref:`std_diag`) provides an overview of the already implemented functions and procedures.
+	* Functions and procedures specific to a given diagnostic shall go in the subdirectory diag_scripts/*aux/<diagnostic>* (see Section :numref:`tab_direc_struc`).
+	* Main namelist, diag_scripts, functions and procedures shall be documented within the respective file using the templates (see Section :numref:`std_namelist` and Section :numref:`std_diag`).
+	* Each diag_script shall contain a call to the function *write_reference* (see also Section :numref:`ack_log`) in order to generate a respective acknowledgements log file (Section :numref:`ack_log`).
 
-The reintegration of the feature branch into the *DEVELOPMENT BRANCH* (see
-:numref:`annex_b`) can only be done by the core development team (see :numref:`core_team`) who
+The reintegration of the feature branch into the *DEVELOPMENT BRANCH* (see Part 
+:numref:`annex_b`) can only be done by the core development team (see Section :numref:`core_dev_team`) who
 shall be contacted as soon as the *FEATURE BRANCH* is ready for integration into
 the *DEVELOPMENT BRANCH*. Before contacting the core development team the
 following items should be checked:
 
 	* The new *FEATURE BRANCH* runs with different configuration options.
-	* If the *lib/* routines have been modified, all the diagnostics using these routines have to be tested (see automated testing, :numref:`auto_test`).
-	* The new code complies with the coding rules and standards (see :numref:`doc_soft`) and follows the ESMValTool directory structure (see :numref:`tab_direc_struc`).
-	* All authors, contributors and data are properly acknowledged and referenced in the acknowledgements log file (see :numref:`ack_log`).
-	* If the new observational data are used, the scripts to “cmorize” these data shall also be made available and placed as *reformat_obs_<name>* into the folder *reformat_scripts/obs/*. Once the *FEATURE BRANCH* has been integrated into the *DEVELOPMENT BRANCH* (see :numref:`annex_b`), it shall be deleted from the repository.
+	* If the *lib/* routines have been modified, all the diagnostics using these routines have to be tested (see automated testing, Section :numref:`auto_test`).
+	* The new code complies with the coding rules and standards (see Section :numref:`doc_soft`) and follows the ESMValTool directory structure (see :numref:`tab_direc_struc`).
+	* All authors, contributors and data are properly acknowledged and referenced in the acknowledgements log file (see Section :numref:`ack_log`).
+	* If the new observational data are used, the scripts to "cmorize" these data shall also be made available and placed as *reformat_obs_<name>* into the folder *reformat_scripts/obs/*. Once the *FEATURE BRANCH* has been integrated into the *DEVELOPMENT BRANCH* (see Part :numref:`annex_b`), it shall be deleted from the repository.
 
 
-.. _std_nml:
+.. _std_diag:
 
 Standard template
 =================
 
-
 All (diagnostic) scripts and namelists in the ESMValTool are documented
-following the standards defined by templates (see :numref:`header` for the namelist
+following the standards defined by templates (see Section :numref:`std_namelist` for the namelist
 template). The following describes the standard header for diagnostics
 scripts. The parts marked as *[text]* are the ones to be modified by the author.
 
-	* The modification history is in reverse chronological order (i.e., most recent on top) and the last entry always contains the “written” statement (optionally with a statement such as “based on” if derived from existing code).
+	* The modification history is in reverse chronological order (i.e., most recent on top) and the last entry always contains the "written" statement (optionally with a statement such as "based on" if derived from existing code).
 	* The author of each entry in the modification history is indicated with the author id as given in the author list in the master reference file (*doc/MASTER_authors-refs-acknow.txt*, e.g., A_surn_na = surname, name).
-	* All lines should be limited to a maximum of 79 characters (see :numref:`rules`). Exceptions can be made to improve the readability of the code.
+	* All lines should be limited to a maximum of 79 characters (see Section :numref:`rules`). Exceptions can be made to improve the readability of the code.
 
 
 .. code-block:: none
@@ -127,7 +126,7 @@ Library routines are grouped into individual files by topic, some examples for t
 	* *diag_scripts/lib/ncl/style.ncl*: centralized control of NCL plot styles, e.g., defines line colors/dashes/thickness for each model name in CMIP5, based on the style files in *diag_scripts/lib/ncl/styles/*.
 
 For further details on the library functions, see the documentation given in
-the header of the functions themselves (see :numref:`std_nml` for a template).
+the header of the functions themselves (see Section :numref:`std_diag` for a template).
 
 
 
@@ -168,13 +167,14 @@ Adding new variables
 
 
 Adding new variables requires changes to *reformat_scripts/recognized_vars.dat*
-(:numref:`rec_vars`) and possibly also to *reformat_scripts/recognized_units.dat*
-(:numref:`rec_units`). In addition, a new definition file
-*variable_defs/<varname>.ncl* is needed (:numref:`var_def`; see :numref:`tab_var_def` for a list
+(Section :numref:`rec_vars`) and possibly also to *reformat_scripts/recognized_units.dat*
+(Section :numref:`rec_units`). In addition, a new definition file
+*variable_defs/<varname>.ncl* is needed (Section :numref:`var_def`; see :numref:`tab_var_def` for a list
 of currently available variable definition scripts). If the variable is a
-**non-derived** variable (explained in :numref:`var_def`) it also needs to be defined
-in a file named *reformat_scripts/cmor/CMOR_<variable>.dat* (see :numref:`cmor`).
+**non-derived** variable (explained in Section :numref:`var_def`) it also needs to be defined
+in a file named *reformat_scripts/cmor/CMOR_<variable>.dat* (see Section :numref:`cmor`).
 
+.. note: New variables have to be added to :numref:`tab_var_def` (in doc/sphinx/source/namelists.rst).
 
 .. _rec_vars:
 
@@ -195,9 +195,9 @@ lines are added per variable:
 	* std_name = ps
 	* alt_name = aps,PS,psurf
 
-The ESMValTool reformat scripts will look for variable “varname” in the input
-files. If not found, the alternative variable names “alternative name 1”,
-“alternative name 2”, etc. are tried before an error message is issued that
+The ESMValTool reformat scripts will look for variable "varname" in the input
+files. If not found, the alternative variable names "alternative name 1",
+"alternative name 2", etc. are tried before an error message is issued that
 the variable could not be found.
 
 
@@ -229,8 +229,8 @@ variable_defs/varname.ncl
 -------------------------
 
 The file *variable_defs/<varname>.ncl* is a NCL script containing the
-declaration of the variable “varname” including its specific attributes. In
-case of derived variables, a function “calculate” calculating the derived
+declaration of the variable "varname" including its specific attributes. In
+case of derived variables, a function "calculate" calculating the derived
 variable must be defined in the script *<varname>.ncl* (see :numref:`tab_var_def` for a list
 of currently available variable definition scripts).
 
@@ -243,15 +243,15 @@ of currently available variable definition scripts).
 	.. centered::
 	   *;  Requires: rsut:T2*s,rsutcs:T2*s*
 
-       In this example, the two standard variables “rsut” and “rsutcs” are needed to calculate the shortwave cloud forcing.
+       In this example, the two standard variables "rsut" and "rsutcs" are needed to calculate the shortwave cloud forcing.
 
-    #. Variable attributes are specified as attributes of the variable “variable_info” (see examples below). In order to activate the variable attributes, “variable_info” must be set to “True”. Some examples for frequently used attributes are:
+    #. Variable attributes are specified as attributes of the variable "variable_info" (see examples below). In order to activate the variable attributes, "variable_info" must be set to "True". Some examples for frequently used attributes are:
 
         * variable_info\@derived = False (True)
-        * variable_info\@long_name = “...”
-        * variable_info\@units = “...”
-        * variable_info\@standard_name = “...”
-        * variable_info\@short_name =” ...”
+        * variable_info\@long_name = "..."
+        * variable_info\@units = "..."
+        * variable_info\@standard_name = "..."
+        * variable_info\@short_name = "..."
 
 
 **Example (precipitation, standard variable)**
@@ -370,17 +370,20 @@ the ESMValTool distribution (*util/pep8-checker/pep8.py*) and PyFlakes.
 
 To use it on a python file, cd into util/pep8-checker/, and run,
 
-        |  $ cd util/pep8-checker
-        |  $ python pep8.py <path-to-python-file>
+.. code:: bash
+
+   cd util/pep8-checker
+   python pep8.py <path-to-python-file>
 
 Python: Pyflakes
 
 Besides the PEP8-checker also the use of the 'pyflake'-tool is recommended (see the pyflakes homepage https://pypi.python.org/pypi/pyflakes for details). For a local install of pyflakes, try virtualenv, e.g., if the virtualenv already is installed, run
 
-	|  $ source sandbox-pybot/bin/activate 
-	|  $ pip install --upgrade pyflakes 
-	|  $ pyflakes <python-file>
+.. code:: bash
 
+	source sandbox-pybot/bin/activate 
+	pip install --upgrade pyflakes 
+	pyflakes <python-file>
 
 **Code conventions for NCL**
 
@@ -388,8 +391,10 @@ NCL code in ESMValTool should follow the PEP-8 style guides. An NCL adapted vers
 
 To use the NCL version of the PEP8-checker provided with the ESMValTool distribution, run
 
-        |  $ cd util/ncl-checker
-        |  $ python pep8.py <path-to-NCL-file> 
+.. code:: bash
+
+   cd util/ncl-checker
+   python pep8.py <path-to-NCL-file> 
  
 The NCL-version is adaption of the Pyhton checker and works satisfactorily as
 long as one keeps in mind the false positives it finds due to language
@@ -407,11 +412,11 @@ Documentation of software
 =========================
 
 
-In order to ensure that all code can be maintained, all diagnostic packages must be well documented. It is the responsibility of the software developers to embed their documentation into the code and to provide a summary of their diagnostics (see :numref:`source_doc`) on the ESMValTool development team wiki (see :numref:`wiki`). Documentation systems exist to organize embedded documentation into well structured, linked documents.
+In order to ensure that all code can be maintained, all diagnostic packages must be well documented. It is the responsibility of the software developers to embed their documentation into the namelist and source code. For details see Sections :numref:`source_doc` and :numref:`documentation`. Documentation systems exist to organize embedded documentation into well structured, linked documents.
 
 	* **R:** documentation should follow CRAN guidance.
-	* **Python:** the Sphinx package allows embedded documentation to be assembled into indexed web pages (see :numref:`source_doc`)
-	* **NCL and namelists:** a Sphinx extension has been developed to extract code documentation for NCL and namelists (see :numref:`source_doc`)
+	* **Python:** the Sphinx package allows embedded documentation to be assembled into indexed web pages (see Section :numref:`source_doc`)
+	* **NCL and namelists:** a Sphinx extension has been developed to extract code documentation for NCL and namelists (see Section :numref:`source_doc`)
 
 
 .. _ack_log:
@@ -420,11 +425,11 @@ The acknowledgements log file
 =============================
 
 
-The acknowledgements log file automatically created by each diagnostic (see also :numref:`diag_avail`) is written by the function *write_references* (*interface_scripts/messaging.ncl*, see below), which uses the tags defined in the master reference/acknowledgements file (*doc/MASTER_authors-refs-acknow.txt*) as input. This master file lists all authors and contributors (tags starting with A\_), the diagnostic references (tags with D\_), references for observational data (tags E\_) and projects (tags P\_).
+The acknowledgements log file automatically created by each diagnostic (see also Section :numref:`diag_avail`) is written by the function *write_references* (*interface_scripts/messaging.ncl*, see below), which uses the tags defined in the master reference/acknowledgements file (*doc/MASTER_authors-refs-acknow.txt*) as input. This master file lists all authors and contributors (tags starting with A\_), the diagnostic references (tags with D\_), references for observational data (tags E\_) and projects (tags P\_).
 
 **The function write_references**
 
-The function write_references (defined in *interface_scripts/messaging.ncl*) should be called at the end of each diagnostic script in order to write the acknowledgements log file. The function has the arguments “author(s)”, “contributors”, “diagnostics”, “observations”, “projects” which are arrays of strings. All strings (“tags”) used must be defined in the master reference file *doc/MASTER_authors-refs-acknow.txt*. The tags are then replaced by the function *write_references* with their definition when writing the acknowledgements log file. All tags in the master reference file are sorted by category of which there are four in total:
+The function write_references (defined in *interface_scripts/messaging.ncl*) should be called at the end of each diagnostic script in order to write the acknowledgements log file. The function has the arguments "author(s)", "contributors", "diagnostics", "observations", "projects" which are arrays of strings. All strings ("tags") used must be defined in the master reference file *doc/MASTER_authors-refs-acknow.txt*. The tags are then replaced by the function *write_references* with their definition when writing the acknowledgements log file. All tags in the master reference file are sorted by category of which there are four in total:
 
 .. code-block:: none
 
@@ -483,6 +488,7 @@ http://docutils.sourceforge.net/rst.html), which is the markup language used
 by Sphinx; running make in *doc/sphinx* builds the ESMValTool documentation from
 them, as noted above.
 
+.. note:: See Section :numref:`std_sphinx` for more details on how to document a new diagnostic.
 
 .. _auto_test:
 
@@ -510,10 +516,12 @@ the ESMValTool code. Two external python packages are required which can be
 installed using the python package manager (pip;
 https://pypi.python.org/pypi/pip) as follows in a linux environment:
 
-    |  ``# install nosetests (https://nose.readthedocs.org/en/latest/)``
-    |  ``pip install nose``
-    |  ``# install easytest``
-    |  ``pip install easytest``
+.. code:: bash
+
+   # install nosetests (https://nose.readthedocs.org/en/latest/)``
+   pip install nose
+   # install easytest
+   pip install easytest
 
 
 **General functionality of testing framework**
@@ -531,8 +539,10 @@ Unittests are implemented for each diagnostic independently. Details on
 running unittests using **nose** is as simple as going to the ESMValTool root
 directory and then execute the following shell command:
 
-    |  ``# run nosetests``
-    |  ``nosetests``
+.. code:: bash
+
+   # run nosetests
+   nosetests
 
 This will search recursively for test files and execute these tests. A
 statistic on success and failures is provided at the end of execution. More
@@ -541,11 +551,13 @@ details on using nose can be found in the package’s documentation
 
 To run integration tests for each diagnostic, a small script needs to be
 written once. An example for a file named esmvaltooltest.py is provided in
-:numref:`test_imp`. To run all tests for diagnostics implemented in this
+Section :numref:`test_imp`. To run all tests for diagnostics implemented in this
 file the following command needs to be executed:
 
-    |  ``# run integration tests``
-    |  ``python esmvaltooltest.py``
+.. code:: bash
+
+   # run integration tests
+   python esmvaltooltest.py
 
 A summary of success and failures is provided as output.
 
@@ -596,3 +608,41 @@ File: esmvaltooltest.py
    PT.run_nml()  # run the testing namelist
    PT.run_tests(execute=False, graphics=None,
                 checksum_files='all',files='all')  # perform tests
+
+Checklist
+=========
+
+The following table can be used as a list of items to be done/checked when writing a new diagnostic.
+
+  :numref:`tab_checklist` Example checklist for implementing new diagnostics and new observational datasets.
+
+.. tabularcolumns:: |p{4.5cm}|p{4.5cm}|p{4.5cm}|
+
+.. _tab_checklist:
+
++---------------------------+-------------------------------------------------------+-------------------------------------+
+| diagnostic                | model data                                            | observational data                  |
++===========================+=======================================================+=====================================+
+| header in diagnostic code | preprocessing (reformatting routines - if applicable) | preprocessing (reformatting script) |
++---------------------------+-------------------------------------------------------+-------------------------------------+
+| header in namelist        | list of tools (if applicable)                         | list of tools (if applicable)       |
++---------------------------+-------------------------------------------------------+-------------------------------------+
+| documentation of          | References                                            | header in reformatting script       |
+| diagnostic (.rst file +   |                                                       | (if applicable)                     |
+| example images)           |                                                       |                                     |
++---------------------------+-------------------------------------------------------+-------------------------------------+
+| test data                 | test data                                             | references                          |
++---------------------------+-------------------------------------------------------+-------------------------------------+
+| *FEATURE BRANCH* updated  |                                                       | test data                           |
+| with latest               |                                                       |                                     |
+| *DEVELOPMENT BRANCH*      |                                                       |                                     |
++---------------------------+-------------------------------------------------------+-------------------------------------+
+| list of tools, libraries, |                                                       |                                     |
+| etc.                      |                                                       |                                     |
++---------------------------+-------------------------------------------------------+-------------------------------------+
+| references                |                                                       |                                     |
++---------------------------+-------------------------------------------------------+-------------------------------------+
+| contact person for        |                                                       |                                     |
+| scientific support        |                                                       |                                     |
++---------------------------+-------------------------------------------------------+-------------------------------------+
+

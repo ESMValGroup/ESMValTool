@@ -7,19 +7,23 @@ Preface
 #######
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :numbered:
 
    preface
+
+.. _known_issues:
 
 Known Issues
 ############
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :numbered:
 
    known_issues
+
+.. _users_guide:
 
 User's Guide
 ############
@@ -35,6 +39,8 @@ User's Guide
    config_files
    running
 
+.. _developers_guide:
+
 Developer's Guide
 #################
 
@@ -45,25 +51,32 @@ Developer's Guide
    writing
    documentation
    core_team
+   data_processing
    references
+
+.. _annex_a:
 
 Annex A - tables
 ################
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :numbered:
 
    annex_a
+
+.. _annex_b:
 
 Annex B - environment
 #####################
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :numbered:
 
    annex_b
+
+.. _annex_c:
 
 Annex C - namelists
 ###################
@@ -99,8 +112,8 @@ Annex C - namelists
    namelists/namelist_tropical_variability
    namelists/namelist_wam
 
-   diag_scripts_lib/index
-   plot_scripts_lib/index
+   diag_scripts/index
+   plot_scripts/index
    technical_routines
 
 Indices and tables
