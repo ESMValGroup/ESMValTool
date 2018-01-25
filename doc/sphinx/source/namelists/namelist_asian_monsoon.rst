@@ -186,47 +186,47 @@ References
 Example plots
 -------------
 
-.. figure:: ../../source/namelists/figures/south_asian_monsoon/fig1.png
+.. figure:: /namelists/figures/south_asian_monsoon/fig1.png
    :width: 60%
    :align: center
 
-.. figure:: ../../source/namelists/figures/south_asian_monsoon/fig2.png
+.. figure:: /namelists/figures/south_asian_monsoon/fig2.png
    :width: 60%
    :align: center
 
-.. figure:: ../../source/namelists/figures/south_asian_monsoon/fig3.png
+.. figure:: /namelists/figures/south_asian_monsoon/fig3.png
    :width: 60%
    :align: center
 
-.. figure:: ../../source/namelists/figures/south_asian_monsoon/fig4.png
+.. figure:: /namelists/figures/south_asian_monsoon/fig4.png
    :width: 40%
    :align: center
 
-.. figure:: ../../source/namelists/figures/south_asian_monsoon/fig5.png
+.. figure:: /namelists/figures/south_asian_monsoon/fig5.png
    :width: 60%
    :align: center
 
-.. figure:: ../../source/namelists/figures/south_asian_monsoon/fig6.png
+.. figure:: /namelists/figures/south_asian_monsoon/fig6.png
    :width: 60%
    :align: center
 
 .. centered:: |pic_samonsoon_1| |pic_samonsoon_2|
 
-.. |pic_samonsoon_1| image:: ../../source/namelists/figures/south_asian_monsoon/fig7.png
+.. |pic_samonsoon_1| image:: /namelists/figures/south_asian_monsoon/fig7.png
    :width: 45%
 
-.. |pic_samonsoon_2| image:: ../../source/namelists/figures/south_asian_monsoon/fig8.png
+.. |pic_samonsoon_2| image:: /namelists/figures/south_asian_monsoon/fig8.png
    :width: 45%
 
-.. figure:: ../../source/namelists/figures/south_asian_monsoon/fig9.png
+.. figure:: /namelists/figures/south_asian_monsoon/fig9.png
    :width: 70%
    :align: center
 
-.. figure:: ../../source/namelists/figures/south_asian_monsoon/fig10.png
+.. figure:: /namelists/figures/south_asian_monsoon/fig10.png
    :width: 60%
    :align: center
 
-.. figure:: ../../source/namelists/figures/south_asian_monsoon/fig11.png
+.. figure:: /namelists/figures/south_asian_monsoon/fig11.png
    :width: 60%
    :align: center
 

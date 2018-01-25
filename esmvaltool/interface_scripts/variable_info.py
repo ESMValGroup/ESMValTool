@@ -2,12 +2,11 @@
 Classes to read variable information from CMIP6 tables and make it easily
 available for the other components of ESMValTool
 """
-import os
-import json
-import glob
-import sys
 import errno
+import glob
+import json
 import logging
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -302,6 +301,7 @@ class CMIP5Info(object):
                           self._cmor_folder)
 
         self.tables = {}
+        self.coords = {}
 
         for table_file in glob.glob(os.path.join(self._cmor_folder, '*')):
             if '_grids' in table_file:
@@ -316,7 +316,7 @@ class CMIP5Info(object):
         return cmor_tables_path
 
     def _load_table(self, table_file):
-        coords = {}
+
         table_name = ''
         frequency = ''
 
@@ -334,15 +334,15 @@ class CMIP5Info(object):
                         coord = CoordinateInfo(dim)
                         coord.generic_level = True
                         coord.axis = 'Z'
-                        coords[dim] = coord
+                        self.coords[dim] = coord
                 elif key == 'axis_entry':
-                    coords[value] = self._read_coordinate(value)
+                    self.coords[value] = self._read_coordinate(value)
                     continue
                 elif key == 'variable_entry':
                     variable = self._read_variable(value)
                     variable.frequency = frequency
                     for dim in variable.dimensions:
-                        variable.coordinates[dim] = coords[dim]
+                        variable.coordinates[dim] = self.coords[dim]
                     self.tables[table_name][value] = variable
                     continue
                 if not self._read_line():

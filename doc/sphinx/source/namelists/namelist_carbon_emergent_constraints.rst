@@ -95,20 +95,20 @@ Example plots
 -------------
 
 
-.. figure:: ../../source/namelists/figures/carbon_constraints/fig1.png
+.. figure:: /namelists/figures/carbon_constraints/fig1.png
    :width: 10 cm 
    :alt: xxxxx
    
    Time series of tropical (30°S - 30°N) mean near surface temperature (tas) change between year 30 and year 110 for the CMIP5 models simulated with prescribed CO2 (1%/yr CO2 increase) coupled simulation (1pctCO2).
    
    
-.. figure:: ../../source/namelists/figures/carbon_constraints/fig2.png
+.. figure:: /namelists/figures/carbon_constraints/fig2.png
    :width: 10 cm 
    :alt: xxxxx
    
    Correlations between the interannual variability of global co2flux (nbp+fgco2) and tropical temperature for the individual CMIP5 models using esmHistorical simulations, and for observations.
 
-.. figure:: ../../source/namelists/figures/carbon_constraints/fig3.png
+.. figure:: /namelists/figures/carbon_constraints/fig3.png
    :scale: 50 %
    :alt: xxxxx
 
@@ -116,7 +116,7 @@ Example plots
    
    
    
-.. figure:: ../../source/namelists/figures/carbon_constraints/fig4.png
+.. figure:: /namelists/figures/carbon_constraints/fig4.png
    :scale: 30 %
    :alt: xxxxx
    

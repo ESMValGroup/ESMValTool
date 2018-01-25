@@ -117,15 +117,15 @@ References
 Example plots
 -------------
 
-.. figure:: ../../source/namelists/figures/MJO/fig_mjo_1.png
+.. figure:: /namelists/figures/MJO/fig_mjo_1.png
    :width: 60 %
 
-.. figure:: ../../source/namelists/figures/MJO/fig_mjo_2.png
+.. figure:: /namelists/figures/MJO/fig_mjo_2.png
    :width: 80 %
 
-.. figure:: ../../source/namelists/figures/MJO/fig_mjo_3.png
+.. figure:: /namelists/figures/MJO/fig_mjo_3.png
    :width: 80 %
 
-.. figure:: ../../source/namelists/figures/MJO/fig_mjo_4.png
+.. figure:: /namelists/figures/MJO/fig_mjo_4.png
    :width: 80 %
 

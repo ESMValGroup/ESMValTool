@@ -3,6 +3,7 @@
 name: esmvaltool
 channels:
 - conda-forge
+- khallock # ncl package on conda-forge is broken
 #- defaults # in case of missing packages
 #- Clyde_Fare #for scientific python
 
@@ -14,12 +15,11 @@ dependencies:
 - cartopy
 - cf_units
 - cython
-- esgf-pyclient
 - flask
 - iris
 - ncl
 - netcdf4
-- numba
+- numba=0.35.0
 - numpy
 - pillow # providing PIL package
 - python-cdo
@@ -35,7 +35,6 @@ dependencies:
 #- iris
 #- cartopy=0.15.*
 #- matplotlib=1.5.*
-#
 #- ncl
 #- hdf4=4.2.12
 #- hdf5=1.8.17
@@ -55,7 +54,6 @@ dependencies:
 - sphinx
 
 # testing
-- easytest
 - mock
 - nose
 - pytest
@@ -64,10 +62,14 @@ dependencies:
 
 # Note that there can be only one pip section
 - pip:
-  # TODO: replace geoval by conda package and move to ESMVALTOOL DEPENDENCIES
+  # TODO: replace esgf-pyclient and geoval by conda packages
+  # TODO: move esgf-pyclient and geoval to ESMVALTOOL DEPENDENCIES
+  - easytest
+  - esgf-pyclient
   - geoval
   # TODO: replace dummydata by conda/PyPI package and move to testing
-  - "--editable=git+https://github.com/esmvalgroup/dummydata.git#egg=dummydata-dev"
+  # dummydata fetched from github as a zip file, contains latest version
+  - https://github.com/ESMValGroup/dummydata/archive/dev.zip
   # code style (pip versions are more up to date)
   - isort
   - prospector[with_pyroma]
@@ -75,3 +77,4 @@ dependencies:
   - pydocstyle
   - pylint
   - yapf
+  - yamale

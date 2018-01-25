@@ -44,6 +44,7 @@
 
 
 load "$ESMValTool_interface_data/ncl.interface"
+load "./interface_scripts/interface.ncl"
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/data_handling.ncl"
 load "./interface_scripts/messaging.ncl"
@@ -255,9 +256,6 @@ begin
         info_output(" gv " + outfile_plot + "." + file_type, verbosity, 1)
 
     end if
-
-    ;; Remove temporary grading list
-    system("rm -f " + temp_dir)
 
     leave_msg(diag_script, "", 4)
 

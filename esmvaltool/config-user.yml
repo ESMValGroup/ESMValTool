@@ -1,26 +1,28 @@
 ###############################################################################
 # User's configuration file for the ESMValTool
 ###############################################################################
+---
 
-# Diagnostics create plots? [True]/False
-write_plots: True
-# Diagnositcs write NetCDF files? [True]/False
-write_netcdf: True
+# Diagnostics create plots? [true]/false
+write_plots: true
+# Diagnositcs write NetCDF files? [true]/false
+write_netcdf: true
 # Set the console log level debug, [info], warning, error
 log_level: info
 # verbosity is deprecated and will be removed in the future
-#verbosity: 1
-# Exit on warning? True/[False]
-exit_on_warning: False
+# verbosity: 1
+# Exit on warning? true/[false]
+exit_on_warning: false
 # Plot file format? [ps]/pdf/png/eps/epsi
 output_file_type: pdf
-# Destination directories
-run_dir: ~/esmvaltool_output
-preproc_dir: ~/esmvaltool_output/preproc
-work_dir: ~/esmvaltool_output/work
-plot_dir: ~/esmvaltool_output/plots
-# Save intermediary cubes in the preprocessor True/[False]
-save_intermediary_cubes: True
+# Destination directory
+output_dir: ./esmvaltool_output
+# Save intermediary cubes in the preprocessor true/[false]
+save_intermediary_cubes: false
+# Run at most this many tasks in parallel null/[1]/2/3/4/..
+# Set to null to use the number of available CPUs.
+# Make sure your system has enough memory for the specified number of tasks.
+max_parallel_tasks: 1
 
 rootpath:
   # Rootpath to CMIP5 data

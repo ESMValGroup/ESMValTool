@@ -28,6 +28,7 @@
 ;;    function empty_str
 ;;    function write_info
 ;;    function remove_index
+;;    procedure set_default_att
 ;;    procedure tool_stop
 ;;    function filter_attrs
 ;;    procedure write_ignore_warnings
@@ -1543,6 +1544,43 @@ begin
 
 end
 
+
+;;#############################################################################
+undef("set_default_att")
+procedure set_default_att(info:logical,
+                          att:string,
+                          default)
+;;
+;; Arguments
+;;    info: a logical containing all attributes (usually diag_script_info)
+;;    att: the attribute to be checked for
+;;    value: the default value to be assigned if the attribute is not present
+;;
+;; Description
+;;    Check for a given attribute and assign the given default value if not
+;;    present
+;;
+;; References
+;;
+;; Modification history
+;;    20171214-A_righ_ma: written.
+;;
+local funcname, scriptname, verbosity
+begin
+
+    funcname = "set_default_att"
+    scriptname = "interface_scripts/auxiliary.ncl"
+    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    enter_msg(scriptname, funcname, 6)
+
+    if (.not.isatt(info, att)) then
+        info@$att$ = default
+    end if
+
+    leave_msg(scriptname, funcname, 6)
+
+end
+
 ;;#############################################################################
 undef("tool_stop")
 procedure tool_stop()
@@ -1702,7 +1740,7 @@ end
 ;;#############################################################################
 undef("get_ref_model_idx")
 function get_ref_model_idx(models[1]:logical,\
-                           model_ref_name[1]:string)
+                           model_ref_name:string)
 ;;
 ;; Arguments
 ;;    models: list of all models
@@ -1716,10 +1754,11 @@ function get_ref_model_idx(models[1]:logical,\
 ;; References
 ;;
 ;; Modification history
+;;    20171208-A_righ_ma: rewritten for the new backend
 ;;    20151109-A_righ_ma: moved from diag_scripts/aux/SAMonsson.ncl to here.
 ;;    2015????-A_eval_ma: written.
 ;;
-local funcname, scriptname, verbosity, idx_ref, idx_ref_sizes, idx_ref_tmp, idx, idx_ref_size
+local funcname, scriptname, verbosity, nrefs, idx_ref
 begin
 
     funcname = "get_ref_model_idx"
@@ -1727,19 +1766,18 @@ begin
     verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
     enter_msg(scriptname, funcname, 6)
 
-    model_refs = str_split(model_ref_name, ",")
+    nrefs = dimsizes(model_ref_name)
 
-    if (dimsizes(model_refs) .eq. 1) then
-         idx_ref = get_single_ref(models, model_refs)
-    else if (dimsizes(model_refs) .gt. 1) then
-        idx_ref_size = dimsizes(model_refs)
-        idx_ref = new(idx_ref_size, integer)
-        do idx = 0, idx_ref_size - 1
-            idx_ref(idx) = get_single_ref(models, model_refs(idx))
-        end do
-    end if
-    end if
+    idx_ref = new(nrefs, integer)
+    do ii = 0, nrefs - 1
+        idx_ref(ii) = ind(models@name .eq. str_squeeze(model_ref_name(ii)))
+        if (ismissing(idx_ref(ii))) then
+            error_msg("f", scriptname, funcname, "reference model " + \
+                      model_ref_name(ii) + " not found in the models list")
+        end if
+    end do
 
     leave_msg(scriptname, funcname, 6)
     return(idx_ref)
+
 end

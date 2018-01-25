@@ -106,21 +106,21 @@ None.
 Example plots
 -------------
 
-.. figure:: ../../source/namelists/figures/diurnal/fig1.png
+.. figure:: /namelists/figures/diurnal/fig1.png
    :width: 90%
 
-.. figure:: ../../source/namelists/figures/diurnal/fig2.png
+.. figure:: /namelists/figures/diurnal/fig2.png
    :width: 90%
 
-.. figure:: ../../source/namelists/figures/diurnal/fig3.png
+.. figure:: /namelists/figures/diurnal/fig3.png
    :width: 90%
 
 
 .. centered:: |pic_diurnal_1| |pic_diurnal_2|
 
-.. |pic_diurnal_1| image:: ../../source/namelists/figures/diurnal/fig4.png
+.. |pic_diurnal_1| image:: /namelists/figures/diurnal/fig4.png
    :width: 45%
 
-.. |pic_diurnal_2| image:: ../../source/namelists/figures/diurnal/fig5.png
+.. |pic_diurnal_2| image:: /namelists/figures/diurnal/fig5.png
    :width: 45%
 

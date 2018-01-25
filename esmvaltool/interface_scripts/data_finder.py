@@ -1,122 +1,49 @@
-# Data finder module for the ESMValTool
+"""Data finder module for the ESMValTool."""
 # Authors:
 # Valeriu Predoi (URead, UK - valeriu.predoi@ncas.ac.uk)
 # Mattia Righi (DLR, Germany - mattia.righi@dlr.de)
 
 import logging
 import os
-import subprocess
-import yaml
 import re
-from datetime import datetime
-import iris
-import iris.coord_categorisation
-import six
+import subprocess
+
+import yaml
 
 logger = logging.getLogger(__name__)
 
 
+def _read_config_file(cfg_file=None):
+    """Parse the developer's configuration file."""
+    if cfg_file is None:
+        cfg_file = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)),
+            'config-developer.yml',
+        )
+
+    with open(cfg_file, 'r') as file:
+        cfg = yaml.safe_load(file)
+
+    return cfg
+
+
+_CFG = _read_config_file()
+
+
 def cmip5_model2inst(model):
-    """ Return the institute given the model name in CMIP5 """
-
-    instdict = {
-        'HadGEM2-CC': 'MOHC',
-        'HadGEM2-A': 'MOHC',
-        'HadCM3': 'MOHC',
-        'HadGEM2-ES': 'MOHC',
-        'FIO-ESM': 'FIO',
-        'fio-esm': 'FIO',
-        'CCSM4': 'NCAR',
-        'GEOS-5': 'NASA-GMAO',
-        'inmcm4': 'INM',
-        'CanESM2': 'CCCma',
-        'CanCM4': 'CCCma',
-        'CanAM4': 'CCCma',
-        'GISS-E2-R': 'NASA-GISS',
-        'GISS-E2-R-CC': 'NASA-GISS',
-        'GISS-E2-H-CC': 'NASA-GISS',
-        'GISS-E2-H': ' NASA-GISS',
-        'CNRM-CM5': 'CNRM-CERFACS',
-        'CNRM-CM5-2': 'CNRM-CERFACS',
-        'NICAM-09': 'NICAM',
-        'IPSL-CM5A-LR': 'IPSL',
-        'IPSL-CM5A-MR': 'IPSL',
-        'IPSL-CM5B-LR': 'IPSL',
-        'CSIRO-Mk3-6-0': 'CSIRO-QCCCE',
-        'CESM1-CAM5': 'NSF-DOE-NCAR',
-        'CESM1-CAM5-1-FV2': 'NSF-DOE-NCAR',
-        'CESM1-BGC': 'NSF-DOE-NCAR',
-        'CESM1-WACCM': 'NSF-DOE-NCAR',
-        'CESM1-FASTCHEM': 'NSF-DOE-NCAR',
-        'NorESM1-M': 'NCC',
-        'NorESM1-ME': 'NCC',
-        'CFSv2-2011': 'NOAA-NCEP',
-        'ACCESS1-3': 'CSIRO-BOM',
-        'ACCESS1-0': 'CSIRO-BOM',
-        'CMCC-CM': 'CMCC',
-        'CMCC-CESM': 'CMCC',
-        'CMCC-CMS': 'CMCC',
-        'FGOALS-g2': 'LASG-CESS',
-        'FGOALS-s2': 'LASG-IAP',
-        'FGOALS-gl': 'LASG-IAP',
-        'GFDL-HIRAM-C180': 'NOAA-GFDL',
-        'GFDL-ESM2G': 'NOAA-GFDL',
-        'GFDL-CM2p1': 'NOAA-GFDL',
-        'GFDL-CM3': 'NOAA-GFDL',
-        'GFDL-ESM2M': 'NOAA-GFDL',
-        'GFDL-HIRAM-C360': 'NOAA-GFDL',
-        'EC-EARTH': 'ICHEC',
-        'BNU-ESM': 'BNU',
-        'CFSv2-2011': 'COLA-CFS',
-        'HadGEM2-AO': 'NIMR-KMA',
-        'MIROC4h': 'MIROC',
-        'MIROC5': 'MIROC',
-        'MIROC-ESM': 'MIROC',
-        'MIROC-ESM-CHEM': 'MIROC',
-        'bcc-csm1-1': 'BCC',
-        'bcc-csm1-1-m': 'BCC',
-        'HadGEM2-ES': 'INPE',
-        'MPI-ESM-LR': 'MPI-M',
-        'MPI-ESM-MR': 'MPI-M',
-        'MPI-ESM-P': 'MPI-M',
-        'MRI-AGCM3-2H': 'MRI',
-        'MRI-CGCM3': 'MRI',
-        'MRI-ESM1': 'MRI',
-        'MRI-AGCM3-2S': 'MRI',
-    }
-
-    if model in instdict:
-        return instdict[model]
-
-    raise KeyError("CMIP5: cannot map model {} to institute".format(model))
+    """Return the institute given the model name in CMIP5."""
+    logger.debug("Retrieving institute for CMIP5 model %s", model)
+    return _CFG['CMIP5']['institute'][model]
 
 
 def cmip5_mip2realm_freq(mip):
-    """ Returns realm and frequency given the mip in CMIP5 """
-
-    mipdict = {
-        'Amon': ['atmos', 'mon'],
-        'Omon': ['ocean', 'mon'],
-        'Lmon': ['land', 'mon'],
-        'LImon': ['landIce', 'mon'],
-        'OImon': ['seaIce', 'mon'],
-        'aero': ['aerosol', 'mon'],
-        # '3hr': ???
-        'cfDay': ['atmos', 'day'],
-        'cfMon': ['atmos', 'mon'],
-        'day': ['atmos', 'day'],
-        'fx': ['*', 'fx']
-    }
-
-    if mip in mipdict:
-        return mipdict[mip]
-
-    raise KeyError("CMIP5: cannot map mip {} to realm".format(mip))
+    """Return realm and frequency given the mip in CMIP5."""
+    logger.debug("Retrieving realm and frequency for CMIP5 mip %s", mip)
+    return _CFG['CMIP5']['realm_frequency'][mip]
 
 
-def replace_tags(path, model, var):
-    """ Replaces tags in the config-developer's file with actual values """
-
+def replace_tags(path, variable):
+    """Replace tags in the config-developer's file with actual values."""
     path = path.strip('/')
 
     tlist = re.findall(r'\[([^]]*)\]', path)
@@ -124,32 +51,32 @@ def replace_tags(path, model, var):
     for tag in tlist:
 
         if tag == 'var':
-            replacewith = var['name']
+            replacewith = variable['short_name']
         elif tag == 'field':
-            replacewith = var['field']
+            replacewith = variable['field']
         elif tag in ('institute', 'freq', 'realm'):
-            if tag in model:
-                replacewith = str(model[tag])
+            if tag in variable:
+                replacewith = str(variable[tag])
             else:
                 if tag == 'institute':
-                    replacewith = cmip5_model2inst(model['name'])
+                    replacewith = cmip5_model2inst(variable['model'])
                 elif tag == 'freq':
-                    replacewith = cmip5_mip2realm_freq(model['mip'])[1]
+                    replacewith = cmip5_mip2realm_freq(variable['mip'])[1]
                 elif tag == 'realm':
-                    replacewith = cmip5_mip2realm_freq(model['mip'])[0]
+                    replacewith = cmip5_mip2realm_freq(variable['mip'])[0]
         elif tag == 'latestversion':  # handled separately later
             pass
         elif tag == 'tier':
-            replacewith = ''.join(('Tier', str(model['tier'])))
+            replacewith = ''.join(('Tier', str(variable['tier'])))
         elif tag == 'model':
-            replacewith = model['name']
-        else:  # all other cases use the corrsponding model dictionary key
-            if tag in model:
-                replacewith = str(model[tag])
+            replacewith = variable['model']
+        else:  # all other cases use the corresponding model dictionary key
+            if tag in variable:
+                replacewith = str(variable[tag])
             else:
                 raise KeyError(
                     "Model key {} must be specified for project {}, check "
-                    "your namelist entry".format(tag, model['project']))
+                    "your namelist entry".format(tag, variable['project']))
 
         path = path.replace('[' + tag + ']', replacewith)
 
@@ -157,244 +84,164 @@ def replace_tags(path, model, var):
 
 
 def read_config_file(project, cfg_file=None):
-    """ Parses the developer's configuration file and returns the dictionary
-        for the given project
-    """
+    """Get developer-configuration for project."""
+    logger.debug("Reading specifications for project %s from "
+                 "config-developer file", project)
 
-    dict = {}
-    if (cfg_file is None):
-        cfg_file = os.path.join(
-            os.path.dirname(__file__), '../config-developer.yml')
-        dict = yaml.load(file(cfg_file, 'r'))
+    if cfg_file is None:
+        cfg = _CFG
+    else:
+        cfg = read_config_file(project, cfg_file)
 
-    if project in dict:
-        return dict[project]
-
-    raise KeyError('Specifications for {} not found in config-developer file'.
-                   format(project))
+    return cfg[project]
 
 
-def get_input_filelist(project_info, model, var):
-    """ Returns the full path to input files
-    """
+def get_input_dirname_template(variable, rootpath, drs):
+    """Return a template of the full path to input directory."""
+    project = variable['project']
 
-    project = model['project']
-
-    project_config = read_config_file(project)
-
-    # Apply variable-dependent model keys
-    if 'mip' in var:
-        model['mip'] = var['mip']
-    if 'ensemble' in var:
-        model['ensemble'] = var['ensemble']
-    if 'exp' in var:
-        model['exp'] = var['exp']
+    cfg = read_config_file(project)
 
     # Set the rootpath
-    dir1 = _get_option_with_default(project_info['GLOBAL'], 'rootpath', project, 'user config')
-    if not os.path.isdir(dir1):
-        raise OSError('directory not found', dir1)
+    if project in rootpath:
+        dir1 = rootpath[project]
+    elif 'default' in rootpath:
+        dir1 = rootpath['default']
+    else:
+        raise KeyError(
+            'default rootpath must be specified in config-user file')
 
     # Set the drs
-    if project in project_info['GLOBAL']['drs']:
-        drs = project_info['GLOBAL']['drs'][project]
-    else:
-        drs = 'default'
+    _drs = drs.get(project, 'default')
 
-    input_folder = _get_option_with_default(project_config, 'input_dir', drs, 'developer config for %s' % project)
-    dir2 = replace_tags(input_folder, model, var)
-    dirname = os.path.join(dir1, dir2)
+    if _drs in cfg['input_dir']:
+        dir2 = replace_tags(cfg['input_dir'][_drs], variable)
+    else:
+        raise KeyError(
+            'drs {} for {} project not specified in config-developer file'
+            .format(_drs, project))
+
+    dirname_template = os.path.join(dir1, dir2)
+
+    return dirname_template
+
+
+def get_input_filename(variable, rootpath, drs):
+    """Simulate a path to input file.
+
+    This function should match the function get_input_filelist below.
+    """
+    dirname_template = get_input_dirname_template(variable, rootpath, drs)
+    # Simulate a latest version if required
+    if '[latestversion]' in dirname_template:
+        part1, part2 = dirname_template.split('[latestversion]')
+        dirname = os.path.join(part1, 'latestversion', part2)
+    else:
+        dirname = dirname_template
+
+    # Set the filename
+    cfg = read_config_file(variable['project'])
+    filename = replace_tags(cfg['input_file'], variable)
+    if filename.endswith('*'):
+        filename = filename.rstrip(
+            '*') + "{start_year}01-{end_year}12.nc".format(**variable)
+
+    # Full path to files
+    return os.path.join(dirname, filename)
+
+
+def get_input_filelist(variable, rootpath, drs):
+    """Return the full path to input files."""
+    dirname_template = get_input_dirname_template(variable, rootpath, drs)
+
+    def check_isdir(path):
+        """Raise an OSError if path is not a directory."""
+        path = os.path.abspath(path)
+        if not os.path.isdir(path):
+            raise OSError('Directory not found: {}'.format(path))
+
+    check_isdir(os.path.dirname(dirname_template))
 
     # Find latest version if required
-    if '[latestversion]' in dirname:
-        part1 = dirname.split('[latestversion]')[0]
-        part2 = dirname.split('[latestversion]')[1]
+    if '[latestversion]' in dirname_template:
+        part1, part2 = dirname_template.split('[latestversion]')
         list_versions = os.listdir(part1)
         list_versions.sort()
         latest = os.path.basename(list_versions[-1])
         dirname = os.path.join(part1, latest, part2)
+    else:
+        dirname = dirname_template
 
-    if not os.path.isdir(dirname):
-        raise OSError('directory not found', dirname)
+    check_isdir(dirname)
 
-    # Set the filename
-    input_file = _get_option_with_default(project_config, 'input_file', drs, 'developer config for %s' % project)
-    filename = replace_tags(input_file, model, var)
+    # Set the filename glob
+    cfg = read_config_file(variable['project'])
+    filename_glob = replace_tags(cfg['input_file'], variable)
 
-    # Full path to files
-    files = veto_files(model, dirname, filename)
+    # Find files
+    files = find_files(dirname, filename_glob)
+
+    # Select files within the required time interval
+    files = select_files(files, variable['start_year'], variable['end_year'])
 
     return files
 
-def _get_option_with_default(config, key, option, config_name):
-    config_value = config[key]
 
-    if isinstance(config_value, six.string_types):
-        value = config_value
-    elif option in config_value:
-        value = config_value[option]
-    elif 'default' in config_value:
-        value = config_value['default']
-    else:
-        raise KeyError('Option %s not specified and no default provided for %s in %s' % (option, key, config_name))
-    return value
+def get_output_file(variable, preproc_dir):
+    """Return the full path to the output (preprocessed) file"""
+    cfg = read_config_file(variable['project'])
 
-def get_output_file(project_info, model, var):
-    """ Returns the full path to the output (preprocessed) file
-    """
-
-    dict = read_config_file(model['project'])
-
-    outfile = os.path.join(project_info['GLOBAL']['preproc_dir'],
-                           model['project'],
-                           replace_tags(dict['output_file'], model, var))
-    outfile = ''.join((outfile, '.nc'))
+    outfile = os.path.join(preproc_dir,
+                           '{preprocessor}_{diagnostic}'.format(**variable),
+                           replace_tags(cfg['output_file'], variable) + '.nc')
 
     return outfile
 
 
 def find_files(dirname, filename):
-    """
+    """Find files
+
     Function that performs local search for files using `find'
-    The depth is as high as possible so that find is fast
+    The depth is as high as possible so that find is fast.
     """
     flist = []
 
     # work only with existing dirs or allowed permission dirs
-    strfindic = 'find {dirname} -follow -type f -iname *{filename}*'.format(
+    strfindic = 'find {dirname} -follow -type f -iname "*{filename}*"'.format(
         dirname=dirname, filename=filename)
-    proc = subprocess.Popen(strfindic, stdout=subprocess.PIPE, shell=True)
+    logger.debug("Running %s", strfindic)
+    proc = subprocess.Popen(
+        strfindic, stdout=subprocess.PIPE, shell=True, universal_newlines=True)
     out, err = proc.communicate()
     if err:
         logger.warning("'%s' says:\n%s", strfindic, err)
-    for t in out.split('\n')[0:-1]:
-        flist.append(t)
+    out = out.strip()
+    logger.debug("Result:\n%s", out)
+    for line in out.split('\n'):
+        if line:
+            flist.append(line)
     return flist
 
 
-def veto_files(model, dirname, filename):
+def get_start_end_year(filename):
+    """Get the start and end year from a file name.
+
+    This works for filenames matching *_YYYY*-YYYY*.*
     """
-    Function that does direct parsing of available datasource files
-    and establishes if files are the needed ones or not
+    name = os.path.splitext(filename)[0]
+    start, end = name.split('_')[-1].split('-')
+    start_year, end_year = int(start[:4]), int(end[:4])
+    return start_year, end_year
+
+
+def select_files(filenames, start_year, end_year):
+    """Select files containing data between start_year and end_year.
+
+    This works for filenames matching *_YYYY*-YYYY*.*
     """
-
-    arname = find_files(dirname, filename)
-    fs = []
-
-    if len(arname) > 0:
-        yr1 = int(model['start_year'])
-        yr2 = int(model['end_year'])
-        for s in arname:
-            tc = time_check(s, yr1, yr2)
-            if tc is True:
-                fs.append(s)
-
-    return fs
-
-
-def time_handling(year1, year1_model, year2, year2_model):
-    """
-    This function is responsible for finding the correct
-    files for the needed timespan:
-
-    year1 - the start year in files
-    year1_model - the needed start year of data
-    year2 - the last year in files
-    year2_model - the needed last year of data
-    WARNINGS:
-    we reduce our analysis only to years
-
-    """
-    # model interval < data interval / file
-    # model requirements completely within data stretch
-    if year1 <= int(year1_model) and year2 >= int(year2_model):
-        return True
-    # model interval > data interval / file
-    # data stretch completely within model requirements
-    elif year1 >= int(year1_model) and year2 <= int(year2_model):
-        return True
-    # left/right overlaps and complete misses
-    elif year1 <= int(year1_model) and year2 <= int(year2_model):
-        # data is entirely before model
-        if year2 < int(year1_model):
-            return False
-        # edge on
-        elif year2 == int(year1_model):
-            return True
-        # data overlaps to the left
-        elif year2 > int(year1_model):
-            return True
-    elif year1 >= int(year1_model) and year2 >= int(year2_model):
-        # data is entirely after model
-        if year1 > int(year2_model):
-            return False
-        # edge on
-        elif year1 == int(year2_model):
-            return True
-        # data overlaps to the right
-        elif year1 < int(year2_model):
-            return True
-
-
-# ---- function to handle various date formats
-def date_handling(time1, time2):
-    """
-    This function deals with different input date formats e.g.
-    time1 = 198204 or
-    time1 = 19820422 or
-    time1 = 198204220511 etc
-    More formats can be coded in at this stage.
-    Returns year 1 and year 2
-    """
-    # yyyymm
-    if len(list(time1)) == 6 and len(list(time2)) == 6:
-        y1 = datetime.strptime(time1, '%Y%m')
-        year1 = y1.year
-        y2 = datetime.strptime(time2, '%Y%m')
-        year2 = y2.year
-    else:
-        # yyyymmdd
-        if len(list(time1)) == 8 and len(list(time2)) == 8:
-            y1 = datetime.strptime(time1, '%Y%m%d')
-            year1 = y1.year
-            y2 = datetime.strptime(time2, '%Y%m%d')
-            year2 = y2.year
-        # yyyymmddHHMM
-        if len(list(time1)) == 12 and len(list(time2)) == 12:
-            y1 = datetime.strptime(time1, '%Y%m%d%H%M')
-            year1 = y1.year
-            y2 = datetime.strptime(time2, '%Y%m%d%H%M')
-            year2 = y2.year
-    return year1, year2
-
-
-# ---- function that does time checking on a file
-def time_check(fpath, yr1, yr2):
-    """
-    fpath: full path to file
-    yr1, yr2: model['start_year'], model['end_year']
-    """
-    try:
-        ssp = fpath.split('/')
-        av = ssp[-1]
-        time_range = av.split('_')[-1].strip('.nc')
-        time1 = time_range.split('-')[0]
-        time2 = time_range.split('-')[1]
-        year1 = date_handling(time1, time2)[0]
-        year2 = date_handling(time1, time2)[1]
-        if time_handling(year1, yr1, year2, yr2) is True:
-            return True
-        else:
-            return False
-    except Exception:
-        cubes = iris.load(fpath)
-        for cube in cubes:
-            if cube.coords('time'):
-                iris.coord_categorisation.add_year(cube, 'time')
-                extracted = cube.extract(iris.Constraint(year=lambda year: yr1 <= year <= yr2))
-                if extracted is None:
-                    return False
-                else:
-                    return True
-        return False
-
+    selection = []
+    for filename in filenames:
+        start, end = get_start_end_year(filename)
+        if start <= end_year and end >= start_year:
+            selection.append(filename)
+    return selection

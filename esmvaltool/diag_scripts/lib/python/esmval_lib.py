@@ -1,14 +1,7 @@
-"""
-
-"""
-
-import ConfigParser
 import os
-import pdb
 import sys
-import projects
-import numpy as np
 
+import numpy as np
 from netCDF4 import Dataset
 
 
@@ -17,6 +10,7 @@ class ESMValProject(object):
     class to easily retrieve informations for ESMVal project_info
     in alphabetical order (mixed general and diagnostics specific)
     """
+
     def __init__(self, project_info):
         """
         Parameters
@@ -27,6 +21,8 @@ class ESMValProject(object):
         self.project_info = project_info
         self.firstime = True
         self.oldvar = ""
+
+
 #        self.version = os.environ['0_ESMValTool_version']
 
     def _get_path_with_sep(self, p):
@@ -39,37 +35,39 @@ class ESMValProject(object):
     def average_data(self, data, dim_index):
         """Returns the mean values over certain dimensions. """
         # Usually the input array is three dimensional (time, lats, lons)
-        if   (type(dim_index) == int):
+        if type(dim_index) == int:
             means = np.zeros(data.shape[dim_index])
             for mean in xrange(len(means)):
-                if (dim_index == 0):
+                if dim_index == 0:
                     means[mean] = np.mean(data[mean, :, :])
-                if (dim_index == 1):
+                if dim_index == 1:
                     means[mean] = np.mean(data[:, mean, :])
-                if (dim_index == 2):
+                if dim_index == 2:
                     means[mean] = np.mean(data[:, :, mean])
-        elif (dim_index == 'monthly'):
+        elif dim_index == 'monthly':
             means = np.zeros(12)
             for month in xrange(12):
                 means[month] = np.mean(data[month::12, :, :])
-        elif (dim_index == 'annual'):
+        elif dim_index == 'annual':
             new_shape = data.shape
             new_shape = list(new_shape)
             new_shape[0] = 12
-            means = np.zeros((new_shape))
+            means = np.zeros(new_shape)
             for month in xrange(12):
                 for lat in xrange(means.shape[1]):
                     for lon in xrange(means.shape[2]):
-                        means[month, lat, lon] = np.mean(data[month::12, lat, lon])
-        elif (dim_index == 'annual'):
+                        means[month, lat, lon] = np.mean(
+                            data[month::12, lat, lon])
+        elif dim_index == 'annual':
             new_shape = data.shape
             new_shape = list(new_shape)
             new_shape[0] = 12
-            means = np.zeros((new_shape))
+            means = np.zeros(new_shape)
             for month in xrange(12):
                 for lat in xrange(means.shape[1]):
                     for lon in xrange(means.shape[2]):
-                        means[month, lat, lon] = np.mean(data[month::12, lat, lon])
+                        means[month, lat, lon] = np.mean(
+                            data[month::12, lat, lon])
         return means
 
     def check_model_instances(self, first_set, second_set):
@@ -82,7 +80,8 @@ class ESMValProject(object):
             except KeyError:
                 print("PY  ERROR: I am getting inconsistent model sets for " +
                       "precipitation and temperature")
-                print("PY  ERROR: All models must have both variables present.")
+                print(
+                    "PY  ERROR: All models must have both variables present.")
                 print("PY  ERROR: This error is caused by " + model)
                 print("PY  ERROR: Stopping the script and exiting")
                 sys.exit()
@@ -93,7 +92,8 @@ class ESMValProject(object):
             except KeyError:
                 print("PY  ERROR: I am getting inconsistent model sets for " +
                       "precipitation and temperature")
-                print("PY  ERROR: All models must have both variables present.")
+                print(
+                    "PY  ERROR: All models must have both variables present.")
                 print("PY  ERROR: This error is caused by " + model)
                 print("PY  ERROR: Stopping the script and exiting")
                 sys.exit()
@@ -107,9 +107,9 @@ class ESMValProject(object):
         """ Checks the first and last element of array,
         currently only done for lons. FIXME if you need lats as well. """
         array.flags.writeable = True
-        if (array[0] > array[-1]):
+        if array[0] > array[-1]:
             for i in xrange(len(array) - 1):
-                if (array[i + 1] < array[i]):
+                if array[i + 1] < array[i]:
                     array[i + 1] += 360
         return array
 
@@ -124,19 +124,20 @@ class ESMValProject(object):
         season_key = experiment + '_season_' + season
         data_shape = data.shape
 
-        if (season == 'annual'):
+        if season == 'annual':
             # For annual season we merely copy the data
             masked_values = data
         else:
             # For a specific season we mask the undesired values
-            season_months = modelconfig.get(season_key, 'season_months').split()
-            mask = np.ones((data_shape))
+            season_months = modelconfig.get(season_key,
+                                            'season_months').split()
+            mask = np.ones(data_shape)
             for month in season_months:
                 month_loc = int(month) - 1
                 mask[month_loc::12, :, :] = 0
             masked_values = np.ma.masked_array(data, mask)
 
-        if (monthly):
+        if monthly:
             return masked_values
 
         mean_values = np.zeros((data_shape[1], data_shape[2]))
@@ -164,16 +165,18 @@ class ESMValProject(object):
             sys.exit()
         for key in ['lat_min', 'lat_max', 'lon_min', 'lon_max']:
             if not modelconfig.has_option(area_key, key):
-                print("PY  ERROR: Terminating in function 'get_area_coordinates'")
-                print("PY  ERROR: undefined option " + key
-                      + " in section '[" + area_key + "]'")
-                print("PY  ERROR: check your configuration file: "
-                      + config_file)
+                print(
+                    "PY  ERROR: Terminating in function 'get_area_coordinates'"
+                )
+                print("PY  ERROR: undefined option " + key + " in section '[" +
+                      area_key + "]'")
+                print("PY  ERROR: check your configuration file: " +
+                      config_file)
                 sys.exit()
-        lat_min = modelconfig.getint(area_key,  'lat_min')
-        lat_max = modelconfig.getint(area_key,  'lat_max')
-        lon_min = modelconfig.getint(area_key,  'lon_min')
-        lon_max = modelconfig.getint(area_key,  'lon_max')
+        lat_min = modelconfig.getint(area_key, 'lat_min')
+        lat_max = modelconfig.getint(area_key, 'lat_max')
+        lon_min = modelconfig.getint(area_key, 'lon_min')
+        lon_max = modelconfig.getint(area_key, 'lon_max')
         return lat_min, lat_max, lon_min, lon_max
 
     def get_array_indices(self, lats, lons, coords):
@@ -185,15 +188,16 @@ class ESMValProject(object):
         return lat_min, lat_max, lon_min, lon_max
 
     def get_clim_dir(self):
-        return self._get_path_with_sep(self.project_info['GLOBAL']['preproc_dir'])
+        return self._get_path_with_sep(
+            self.project_info['GLOBAL']['preproc_dir'])
 
     def get_clim_model_filenames(self, variable=None, monthly=True):
         """
         get names of models
 
-        # TODO this is currently hardcoded for CMIP5 and should be more flexible
-        perhaps one can even replace this code totally with code in the
-        interface dir
+        # TODO this is currently hardcoded for CMIP5 and should be more
+        flexible perhaps one can even replace this code totally with code
+        in the interface dir
 
         Parameters
         ----------
@@ -203,7 +207,6 @@ class ESMValProject(object):
             returned values are monthly (e.g. monthly=True)
             returns 12 fields of data
         """
-        import projects
         if variable is None:
             raise ValueError('You need to specify a variable!')
 
@@ -215,13 +218,11 @@ class ESMValProject(object):
             exp = currDiag.get_var_attr_exp()
             for idx in range(len(variables)):
                 for model in self.project_info['ALLMODELS']:
-                    curr_project = getattr(vars()['projects'], model.split_entries()[0])()
-                    fullpath = curr_project.get_cf_fullpath(self.project_info,
-                                                           model,
-                                                           field_types[idx],
-                                                           variables[idx],
-                                                           mip[idx],
-                                                           exp[idx])
+                    curr_project = getattr(vars()['projects'],
+                                           model.split_entries()[0])()
+                    fullpath = curr_project.get_cf_fullpath(
+                        self.project_info, model, field_types[idx],
+                        variables[idx], mip[idx], exp[idx])
                     if variable == variables[idx] and os.path.isfile(fullpath):
                         if monthly:
                             if 'M' in field_types[idx]:
@@ -237,11 +238,11 @@ class ESMValProject(object):
 
         obs = ''
         # The input variable is the actual variable but the obs id may differ
-        if   (variable == 'pr' or variable == 'pr-mmday'):
+        if variable == 'pr' or variable == 'pr-mmday':
             obs_id = 'pr_obs'
-        elif (variable == 'ts'):
+        elif variable == 'ts':
             obs_id = 'ts_obs'
-        elif (variable == 'ua' or variable == 'ua-1000'):
+        elif variable == 'ua' or variable == 'ua-1000':
             obs_id = 'ua_obs'
         else:
             obs_id = 'obs'
@@ -253,10 +254,11 @@ class ESMValProject(object):
                     or variable + '_obs' == self.get_model_id(model)):
                 obs = model
 
-        if (len(obs) == 0):
-            print("PY  ERROR: I didn't find observations for: '" + variable + "'")
-            print("PY  ERROR: You should use id tags such as 'pr_obs', "
-                  + "'ts_obs' or 'obs' for observations in the namelist file.")
+        if len(obs) == 0:
+            print("PY  ERROR: I didn't find observations for: '" + variable +
+                  "'")
+            print("PY  ERROR: You should use id tags such as 'pr_obs', " +
+                  "'ts_obs' or 'obs' for observations in the namelist file.")
             print("PY  ERROR: Stopping the script and exiting")
             sys.exit()
 
@@ -302,8 +304,13 @@ class ESMValProject(object):
         """
         return self.project_info['GLOBAL']['output_file_type']
 
-    def get_model_data(self, modelconfig, experiment, area,
-                       datakey, datafile, extend=''):
+    def get_model_data(self,
+                       modelconfig,
+                       experiment,
+                       area,
+                       datakey,
+                       datafile,
+                       extend=''):
         """Extracts desired data for a specific area for a model from all
         model data. Also extends lat/lon coordinates (and therefore required
         values) if specified (these area "ghostlayers" for interpolation)."""
@@ -319,14 +326,15 @@ class ESMValProject(object):
         # Longitutes extension works with all kinds of values
         # This is a nasty way to change tuple values but the easiest at hand
         lon_global = False
-        if (extend == 'lats' or extend == 'both'):
+        if extend == 'lats' or extend == 'both':
             ilist = list(indices)
             ilist[0] += -1
             ilist[1] += 1
             indices = tuple(ilist)
-        if (extend == 'lons' or extend == 'both'):
-            # If we have global longtitude values then assign ghost layers later
-            if   (indices[3] - indices[2] + 1 == len(lons)):
+        if extend == 'lons' or extend == 'both':
+            # If we have global longtitude values then assign ghost
+            # layers later
+            if indices[3] - indices[2] + 1 == len(lons):
                 lon_global = True
             else:
                 ilist = list(indices)
@@ -340,7 +348,7 @@ class ESMValProject(object):
         lat_break = len(lats) - indices[0]
         lon_break = len(lons) - indices[2]
 
-        if   (indices[0] > indices[1] and indices[2] > indices[3]):
+        if indices[0] > indices[1] and indices[2] > indices[3]:
             # Both are looped
             lats_req = np.zeros(len(lats) - indices[0] + indices[1] + 1)
             lats_req[:lat_break] = lats[indices[0]:]
@@ -350,7 +358,7 @@ class ESMValProject(object):
             lons_req[:lon_break] = lons[indices[2]:]
             lons_req[lon_break:] = lons[:indices[3] + 1]
 
-        elif (indices[0] > indices[1] and indices[2] <= indices[3]):
+        elif indices[0] > indices[1] and indices[2] <= indices[3]:
             # Only lats are looped
             lats_req = np.zeros(len(lats) - indices[0] + indices[1] + 1)
             lats_req[:lat_break] = lats[indices[0]:]
@@ -358,7 +366,7 @@ class ESMValProject(object):
 
             lons_req = lons[indices[2]:indices[3] + 1]
 
-        elif (indices[0] <= indices[1] and indices[2] > indices[3]):
+        elif indices[0] <= indices[1] and indices[2] > indices[3]:
             # Only lons are looped
             lats_req = lats[indices[0]:indices[1] + 1]
 
@@ -374,49 +382,40 @@ class ESMValProject(object):
         # Read in the required data for a specific model.
         # We have to define some special cases when there's looping over
         # latitudes or longtitudes.
-        data = np.zeros((datafile.variables[datakey].shape[0],
-                         lats_req.shape[0], lons_req.shape[0]))
+        var = datafile.variables[datakey]
+        data = np.zeros((var.shape[0], lats_req.shape[0], lons_req.shape[0]))
 
-        if (indices[0] > indices[1] and indices[2] > indices[3]):
+        if indices[0] > indices[1] and indices[2] > indices[3]:
             # Extract the four corners from the nc file
             data[:, :lat_break, :lon_break] = \
-                datafile.variables[datakey][:, indices[0]:, indices[2]:]
-
+                var[:, indices[0]:, indices[2]:]
             data[:, :lat_break, lon_break:] = \
-                datafile.variables[datakey][:, indices[0]:, :indices[3] + 1]
-
+                var[:, indices[0]:, :indices[3] + 1]
             data[:, lat_break:, :lon_break] = \
-                datafile.variables[datakey][:, :indices[1] + 1, indices[2]:]
-
+                var[:, :indices[1] + 1, indices[2]:]
             data[:, lat_break:, lon_break:] = \
-                datafile.variables[datakey][:, :indices[1] + 1, :indices[3] + 1]
+                var[:, :indices[1] + 1, :indices[3] + 1]
 
-        elif (indices[0] > indices[1] and indices[2] <= indices[3]):
+        elif indices[0] > indices[1] and indices[2] <= indices[3]:
             # Looping only over lats
             data[:, :lat_break, :] = \
-                datafile.variables[datakey][:, indices[0]:,
-                                            indices[2]:indices[3] + 1]
-
+                var[:, indices[0]:, indices[2]:indices[3] + 1]
             data[:, lat_break:, :] = \
-                datafile.variables[datakey][:, :indices[1] + 1,
-                                            indices[2]:indices[3] + 1]
+                var[:, :indices[1] + 1, indices[2]:indices[3] + 1]
 
-        elif (indices[0] <= indices[1] and indices[2] > indices[3]):
+        elif indices[0] <= indices[1] and indices[2] > indices[3]:
             # Looping only over lons
             data[:, :, :lon_break] = \
-                datafile.variables[datakey][:, indices[0]:indices[1] + 1,
-                                            indices[2]:]
-
+                var[:, indices[0]:indices[1] + 1, indices[2]:]
             data[:, :, lon_break:] = \
-                datafile.variables[datakey][:, indices[0]:indices[1] + 1,
-                                            :indices[3] + 1]
+                var[:, indices[0]:indices[1] + 1, :indices[3] + 1]
         else:
-            data = datafile.variables[datakey][:, indices[0]:indices[1] + 1,
-                                               indices[2]:indices[3] + 1]
+            data = \
+                var[:, indices[0]:indices[1] + 1, indices[2]:indices[3] + 1]
 
         # Now we mask unwanted values if specified
         mask = modelconfig.getboolean('general', 'mask_unwanted_values')
-        if (mask is True):
+        if mask is True:
             # enquire what to do
             llow, lhigh = False, False
             if modelconfig.has_option('general', 'mask_limit_low'):
@@ -426,17 +425,18 @@ class ESMValProject(object):
                 lhigh = True
                 high = modelconfig.getfloat('general', 'mask_limit_high')
             # call the masking process
-            if (llow and lhigh):
+            if llow and lhigh:
                 data = self.mask_unwanted_values(data, low=low, high=high)
-            elif (lhigh):
+            elif lhigh:
                 data = self.mask_unwanted_values(data, high=high)
-            elif (llow):
+            elif llow:
                 data = self.mask_unwanted_values(data, low=low)
 
         # Ghost layers for global longtitude values
-        if (lon_global is True):
+        if lon_global is True:
             newlons = np.zeros(len(lons_req) + 2)
-            newdata = np.zeros((data.shape[0], data.shape[1], data.shape[2] + 2))
+            newdata = np.zeros((data.shape[0], data.shape[1],
+                                data.shape[2] + 2))
             newlons[0] = lons_req[-1] - 360
             newlons[1:-1] = lons_req
             newlons[-1] = lons_req[0] + 360
@@ -448,12 +448,12 @@ class ESMValProject(object):
 
         # Specify what to return based on the experiment
         # Zonal means want latitudes as well
-        if   (experiment == 'zonal_means'):
+        if experiment == 'zonal_means':
             return lats_req, data
 
         # Equatorial and Southern Hemisphere need all
         elif (experiment == 'equatorial'
-                or experiment == 'SouthernHemisphere'):
+              or experiment == 'SouthernHemisphere'):
             return lats_req, lons_req, data
 
         # The scatterplots are fine with just the data
@@ -467,8 +467,8 @@ class ESMValProject(object):
         models = self.project_info['ALLMODELS']
         for model in models:
             # loop over all entries and take the one we're after
-            if (inmodel == model.split_entries()[1]):
-                if ("id" in model.attributes):
+            if inmodel == model.split_entries()[1]:
+                if "id" in model.attributes:
                     model_id = model.attributes["id"]
                 else:
                     pass
@@ -484,7 +484,11 @@ class ESMValProject(object):
 
         style_file = './diag_scripts/lib/python/style.cfg'
         if os.path.isfile(style_file):
-            styleconfig = ConfigParser.ConfigParser()
+            if sys.version_info[0] == 2:
+                from ConfigParser import ConfigParser
+            else:
+                from configparser import ConfigParser
+            styleconfig = ConfigParser()
             styleconfig.read(style_file)
         else:
             print("PY  ERROR: I didn't find the file for plotting styles.")
@@ -506,31 +510,31 @@ class ESMValProject(object):
         color = [np.float_(r), np.float_(g), np.float_(b)]
 
         # Specifying the dashes
-        if (dash == 0):
+        if dash == 0:
             dashes = []
-        elif (dash == 1):
+        elif dash == 1:
             dashes = [1, 2]
-        elif (dash == 2):
+        elif dash == 2:
             dashes = [3, 2]
-        elif (dash == 3):
+        elif dash == 3:
             dashes = [5, 2]
-        elif (dash == 4):
+        elif dash == 4:
             dashes = [1, 2, 3, 2]
-        elif (dash == 5):
+        elif dash == 5:
             dashes = [1, 2, 5, 2]
-        elif (dash == 6):
+        elif dash == 6:
             dashes = [3, 2, 5, 2]
-        elif (dash == 7):
+        elif dash == 7:
             dashes = [1, 2, 3, 2, 3, 2]
-        elif (dash == 8):
+        elif dash == 8:
             dashes = [1, 2, 3, 2, 5, 2]
-        elif (dash == 9):
+        elif dash == 9:
             dashes = [8, 4, 2, 4, 2, 4]
-        elif (dash == 10):
+        elif dash == 10:
             dashes = [8, 4, 8, 4, 8, 4]
-        elif (dash == 11):
+        elif dash == 11:
             dashes = [1, 6, 3, 6, 1, 3]
-        elif (dash == 12):
+        elif dash == 12:
             dashes = [7, 4, 1, 1, 5, 1]
         else:
             dashes = []
@@ -560,43 +564,40 @@ class ESMValProject(object):
         [2]: <model name>_<MIP>_<scenario>_<ensemble>_<start_year>_<end_year>
         """
 
-        if (len(diag_name) == 0):
+        if len(diag_name) == 0:
             diag_name = self.get_configfile_name()
         field_type = self.get_field_type()
         separator = "_"
 
-        if (len(specifier) > 0):
-            base = separator.join([diag_name,
-                                   variable,
-                                   field_type,
-                                   specifier])
+        if len(specifier) > 0:
+            base = separator.join([diag_name, variable, field_type, specifier])
         else:
-            base = separator.join([diag_name,
-                                   variable,
-                                   field_type])
-        if (len(end_specifier) > 0):
-            base = separator.join([base,
-                                   end_specifier])
+            base = separator.join([diag_name, variable, field_type])
+        if len(end_specifier) > 0:
+            base = separator.join([base, end_specifier])
 
-        if (len(model) > 0):
+        if len(model) > 0:
             """ This part is harcoded for CMIP5 runs and IT IS NOT ERROR FREE.
             It's slightly hazardous so use at your own risk i.e. you shouldn't
             use two instances of same model (i.e. two separate time periods -
             this loops over the models and takes the last one that hits) """
             for key in self.project_info['ALLMODELS']:
-                if (key.split_entries()[1] == model):
-                    project, name, MIP, scenario, ensemble, start, end = key.split_entries()[0:7]
+                entries = key.split_entries()
+                if entries[1] == model:
+                    (project, _, MIP, scenario, ensemble, start,
+                     end) = entries[0:7]
             years = "-".join([start, end])
-            base = separator.join([base,
-                                   project,
-                                   model,
-                                   MIP,
-                                   scenario,
-                                   ensemble,
-                                   years])
+            base = separator.join([
+                base,
+                project,
+                model,
+                MIP,
+                scenario,
+                ensemble,
+                years,
+            ])
 
-        base = ".".join([base,
-                         self.get_graphic_format()])
+        base = ".".join([base, self.get_graphic_format()])
         return base
 
     def get_ticks(self, maxticks, array1, array2=''):
@@ -604,13 +605,13 @@ class ESMValProject(object):
         Takes in maxticks and max two arrays. This is because we want it was
         coded for scatterplotting observations and values simultaneously. """
         # getting the int limits
-        if (len(array2) > 0):
+        if len(array2) > 0:
             start = int(np.min([array1[0], array2[0]]))
             end_float = np.max([array1[-1], array2[-1]])
         else:
             start = int(array1[0])
             end_float = array1[-1]
-        if (int(end_float) >= end_float):
+        if int(end_float) >= end_float:
             end = int(end_float)
         else:
             end = int(end_float + 1)
@@ -618,15 +619,16 @@ class ESMValProject(object):
         # Next we define the ticks - always at least 2 (start and end)
         # The first if is here for correct behavior when looping over lons
 
-        if (start <= end):
+        if start <= end:
             length = end - start
         else:
             length = 360 - start + end
 
         for i in xrange(maxticks - 1):
             num_ticks = maxticks - i
-            if ((length) % (num_ticks - 1) == 0):
-                ticks = (np.linspace(start, start + length, num_ticks)).astype(int)
+            if length % (num_ticks - 1) == 0:
+                ticks = (np.linspace(start, start + length,
+                                     num_ticks)).astype(int)
                 break
 
         return ticks
@@ -635,37 +637,38 @@ class ESMValProject(object):
         """Returns tick labels with S/N, W/E definition with EQ if present. """
         labels = ticks.tolist()
         directions = []
-        if (direction == 'lats'):
+        if direction == 'lats':
             directions = ['S', 'EQ', 'N']
             for item in xrange(len(ticks)):
                 tick = ticks[item]
-                if   (-90 <= tick < 0):
+                if -90 <= tick < 0:
                     labels[item] = str(-tick) + directions[0]
-                elif (tick == 0):
+                elif tick == 0:
                     labels[item] = directions[1]
-                elif (0 < tick <= 90):
+                elif 0 < tick <= 90:
                     labels[item] = str(tick) + directions[2]
 
-        elif (direction == 'lons'):
+        elif direction == 'lons':
             directions = ['W', 'EQ', 'E']
             for item in xrange(len(ticks)):
                 tick = ticks[item]
-                if (tick == 0 or tick == 360):
+                if tick == 0 or tick == 360:
                     labels[item] = str(0)
-                elif (tick == 180 or tick == 540):
+                elif tick == 180 or tick == 540:
                     labels[item] = str(180)
-                elif (0 < tick < 180):
+                elif 0 < tick < 180:
                     labels[item] = str(tick) + directions[2]
-                elif (180 < tick < 360):
+                elif 180 < tick < 360:
                     labels[item] = str(360 - tick) + directions[0]
-                elif (360 < tick < 540):
+                elif 360 < tick < 540:
                     labels[item] = str(tick - 360) + directions[2]
-                elif (540 < tick < 720):
+                elif 540 < tick < 720:
                     labels[item] = str(360 - tick) + directions[0]
 
-        elif (direction == 'monthly'):
-            labels = ['J', 'F', 'M', 'A', 'M', 'J',
-                      'J', 'A', 'S', 'O', 'N', 'D']
+        elif direction == 'monthly':
+            labels = [
+                'J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'
+            ]
         else:
             print("PY  ERROR: Unsupported direction in: 'get_ticks_labels'")
             print("PY  ERROR: You're only getting regular labels.")
@@ -673,31 +676,31 @@ class ESMValProject(object):
 
     def get_title_basename(self, datakey):
         """Return the title basename based on datakey."""
-        if   (datakey == 'clt'):
+        if datakey == 'clt':
             title = "Total cloud cover"
-        elif (datakey == 'clivi'):
+        elif datakey == 'clivi':
             title = "Cloud ice path"
-        elif (datakey == 'clwvi'):
+        elif datakey == 'clwvi':
             title = "Cloud liquid water path"
-        elif (datakey == 'hfls'):
+        elif datakey == 'hfls':
             title = "Surface latent heat flux"
-        elif (datakey == 'hfss'):
+        elif datakey == 'hfss':
             title = "Surface sensible heat flux"
-        elif (datakey == 'rlut'):
+        elif datakey == 'rlut':
             title = "TOA outgoing longwave radiation"
-        elif (datakey == 'rlutcs'):
+        elif datakey == 'rlutcs':
             title = "TOA clear-sky outgoing longwave radiation"
-        elif (datakey == 'rsut'):
+        elif datakey == 'rsut':
             title = "TOA outgoing shortwave radiation"
-        elif (datakey == 'rsutcs'):
+        elif datakey == 'rsutcs':
             title = "TOA clear-sky outgoing shortwave radiation"
-        elif (datakey == 'rlds'):
+        elif datakey == 'rlds':
             title = "Surface incoming longwave radiation"
-        elif (datakey == 'rldscs'):
+        elif datakey == 'rldscs':
             title = "Surface clear-sky incoming longwave radiation"
-        elif (datakey == 'rsds'):
+        elif datakey == 'rsds':
             title = "Surface incoming shortwave radiation"
-        elif (datakey == 'rsdscs'):
+        elif datakey == 'rsdscs':
             title = "Surface clear-sky incoming shortwave radiation"
         else:
             print("")
@@ -720,13 +723,13 @@ class ESMValProject(object):
         Useful for throwing out missing values (i.e. sea surface temperature
         over land). Thus gives you a warning when converting missing values to
         nan (happens with masked arrays) - don't worry about it. """
-        if (low is not None):
+        if low is not None:
             out_array = np.ma.masked_less(array, low)
-            if (high is not None):
+            if high is not None:
                 out_array = np.ma.masked_greater(array, high)
-        elif (high is not None):
+        elif high is not None:
             out_array = np.ma.masked_greater(array, high)
-        elif (low is None and high is None):
+        elif low is None and high is None:
             print("PY  ERROR: You should specify at least one of the limits")
             print("PY  ERROR: low/high when using function:")
             print("PY  ERROR: 'mask_unwanted_values'")
@@ -739,10 +742,8 @@ class ESMValProject(object):
         This is usefull if entire processing (including preprocessing)
         shall be done in the diag script itself
         """
-        import projects
 
-
-        res={}
+        res = {}
         for currDiag in self.project_info['DIAGNOSTICS']:
             variables = currDiag.get_variables()
             field_types = currDiag.get_field_types()
@@ -753,25 +754,41 @@ class ESMValProject(object):
 
             for idx in range(len(variables)):
                 for model in self.project_info['ALLMODELS']:
-                        #~ print model.split_entries()[0] # gives 'JSBACH'
-                        #~ print vars()
-                        curr_project = getattr(vars()['projects'], model.split_entries()[0])()
-                        variable_defs_base_vars = currDiag.add_base_vars_fields(requested_vars, model)
+                    # print model.split_entries()[0] # gives 'JSBACH'
+                    # print vars()
+                    curr_project = getattr(vars()['projects'],
+                                           model.split_entries()[0])()
+                    variable_defs_base_vars = currDiag.add_base_vars_fields(
+                        requested_vars, model)
 
-                        base_vars = currDiag.select_base_vars(variable_defs_base_vars, model,
-                                      curr_project, self.project_info)
-                        name = curr_project.get_model_name(model)
-                        res.update({name: {}})
-                        for base_var in base_vars:
+                    base_vars = currDiag.select_base_vars(
+                        variable_defs_base_vars, model, curr_project,
+                        self.project_info)
+                    name = curr_project.get_model_name(model)
+                    res.update({name: {}})
+                    for base_var in base_vars:
 
-                            tmp_dir, tmp_files = curr_project.get_cf_infile(self.project_info, model, base_var.fld, base_var.var, base_var.mip, base_var.exp)  # variable actually not used for e.g. JSBACH
-                            #currProject.get_cf_infile(self.project_info, model, base_var, variable, mip, exp)  # variable actually not used for e.g. JSBACH
+                        tmp_dir, tmp_files = curr_project.get_cf_infile(
+                            self.project_info, model, base_var.fld,
+                            base_var.var, base_var.mip, base_var.exp
+                        )  # variable actually not used for e.g. JSBACH
 
-                            # store results
-                            #return a dictionary by model and variable
-                            res[name][base_var.var] =  {'directory' : tmp_dir,
-                                                        'files' : tmp_files}
-                            del tmp_dir, tmp_files
+                        # variable actually not used for e.g. JSBACH
+                        # currProject.get_cf_infile(
+                        #     self.project_info,
+                        #     model,
+                        #     base_var,
+                        #     variable,
+                        #     mip,
+                        #     exp, )
+
+                        # store results
+                        # return a dictionary by model and variable
+                        res[name][base_var.var] = {
+                            'directory': tmp_dir,
+                            'files': tmp_files
+                        }
+                        del tmp_dir, tmp_files
 
         return res
 
@@ -783,15 +800,8 @@ class ESMValProject(object):
 
     # Requires that "ncl" is in the search path.
 
-    def write_references(self,
-                         ref_script,
-                         ref_auth,
-                         ref_contr,
-                         ref_diag,
-                         ref_obs,
-                         ref_proj,
-                         project_info,
-                         verbosity,
+    def write_references(self, ref_script, ref_auth, ref_contr, ref_diag,
+                         ref_obs, ref_proj, project_info, verbosity,
                          exit_on_warning):
 
         self.project_info['TEMPORARY'] = {}
@@ -801,11 +811,13 @@ class ESMValProject(object):
         self.project_info['TEMPORARY']['ref_proj'] = ref_proj
         self.project_info['TEMPORARY']['ref_diag'] = ref_proj
         self.project_info['TEMPORARY']['ref_script'] = ref_script
-
-        projects.run_executable("interface_scripts/write_references.ncl",
-                                project_info,
-                                verbosity,
-                                exit_on_warning)
+        raise NotImplementedError
+        # TODO: is this functionality still needed?
+        # If so, port to esmvaltool.task.DiagnosticTask
+        #
+        # from esmvaltool.interface_scripts.launchers import run_executable
+        # run_executable("interface_scripts/write_references.ncl",
+        #                project_info, verbosity, exit_on_warning)
 
     # ###################################
     # write info on file read to log file
@@ -822,22 +834,22 @@ class ESMValProject(object):
 
         try:
             var = f.variable
-        except:
+        except AttributeError:
             var = ""
 
         try:
             mod = f.model
-        except:
+        except AttributeError:
             mod = ""
 
         try:
             ver = f.version
-        except:
+        except AttributeError:
             ver = "unknown"
 
         try:
             fix = f.fixfile
-        except:
+        except AttributeError:
             fix = ""
 
         ref = []
@@ -846,15 +858,16 @@ class ESMValProject(object):
             reftmp = f.reference
             for r in reftmp.split("\n"):
                 ref.append(r)
-        except:
+        except AttributeError:
             pass
 
-        if (self.firstime is True):
-            log.write("PREPROCESSING/REFORMATTING (ESMValTool v" + ver + ")\n\n")
+        if self.firstime is True:
+            log.write("PREPROCESSING/REFORMATTING (ESMValTool v" + ver +
+                      ")\n\n")
             self.firstime = False
 
         if len(var) > 0:
-            if (self.oldvar is not var):
+            if self.oldvar is not var:
                 log.write("  Variable: " + var + "\n\n")
                 self.oldvar = var
 
@@ -870,7 +883,7 @@ class ESMValProject(object):
             strg = "infile_" + str(i).zfill(4)
             try:
                 sfile = getattr(f, strg)
-            except:
+            except AttributeError:
                 sfile = ""
                 break
 
@@ -879,32 +892,37 @@ class ESMValProject(object):
                     fs = Dataset(sfile, 'r')
                     try:
                         tid = fs.tracking_id
-                    except:
+                    except AttributeError:
                         tid = ""
                     try:
                         ref.append(fs.reference)
-                    except:
+                    except AttributeError:
                         pass
                     fs.close()
-                except:
+                except IOError:
                     tid = ""
-                    print("***** info: could not open original source file: " + sfile + " *****")
-                    #pass
+                    print("***** info: could not open original source file: " +
+                          sfile + " *****")
 
                 if i is 0:
-                    log.write("      Original source file(s) of all input file(s):\n")
+                    log.write(
+                        "      Original source file(s) of all input file(s):\n"
+                    )
 
                 if len(tid) > 0:
-                    log.write("        -S- (" + str(i+1) + ") " + sfile + " (tracking_id: " + tid + ")\n")
+                    log.write("        -S- (" + str(i + 1) + ") " + sfile +
+                              " (tracking_id: " + tid + ")\n")
                 else:
-                    log.write("        -S- (" + str(i+1) + ") " + sfile + "\n")
+                    log.write("        -S- (" + str(i + 1) + ") " + sfile +
+                              "\n")
 
             i = i + 1
 
         f.close()
 
         if len(fix) > 0:
-            log.write("      Fixes applied to original source file(s): " + fix + "\n")
+            log.write("      Fixes applied to original source file(s): " + fix
+                      + "\n")
 
         i = 1
         for r in ref:
@@ -915,4 +933,3 @@ class ESMValProject(object):
 
         log.write("\n")
         log.close()
-

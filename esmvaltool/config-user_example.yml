@@ -1,17 +1,15 @@
 # User's configuration file for the ESMValTool
+---
 
-write_plots: True
-write_netcdf: True
+write_plots: true
+write_netcdf: true
 log_level: info
-exit_on_warning: False
+exit_on_warning: false
 output_file_type: ps
 
-run_dir:  /group_workspaces/jasmin/ncas_cms/valeriu/ESMValTool/orchestrator/parser_backend_06Sep17/test_output/tmp
-preproc_dir: /group_workspaces/jasmin/ncas_cms/valeriu/ESMValTool/orchestrator/parser_backend_06Sep17/test_output/preproc
-work_dir: /group_workspaces/jasmin/ncas_cms/valeriu/ESMValTool/orchestrator/parser_backend_06Sep17/test_output/work
-plot_dir: /group_workspaces/jasmin/ncas_cms/valeriu/ESMValTool/orchestrator/parser_backend_06Sep17/test_output/plots
+output_dir: /group_workspaces/jasmin/ncas_cms/valeriu/ESMValTool/orchestrator/parser_backend_06Sep17/test_output/
 
-save_intermediary_cubes: True
+save_intermediary_cubes: false
 
 rootpath:
   CMIP5: /group_workspaces/jasmin/ncas_cms/valeriu/ESMValTool/orchestrator/parser_backend_06Sep17/testdata
@@ -20,4 +18,3 @@ rootpath:
 
 drs:
   CMIP5: BADC
-

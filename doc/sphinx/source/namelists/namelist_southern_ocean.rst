@@ -135,28 +135,28 @@ Example plots
 
 .. centered:: |pic_so_1| |pic_so_2|
 
-.. |pic_so_1| image:: ../../source/namelists/figures/southern_ocean/fig1.png
+.. |pic_so_1| image:: /namelists/figures/southern_ocean/fig1.png
    :width: 45%
 
-.. |pic_so_2| image:: ../../source/namelists/figures/southern_ocean/fig2.png
+.. |pic_so_2| image:: /namelists/figures/southern_ocean/fig2.png
    :width: 45%
 
 .. centered:: |pic_so_3| |pic_so_4|
 
-.. |pic_so_3| image:: ../../source/namelists/figures/southern_ocean/fig3.png
+.. |pic_so_3| image:: /namelists/figures/southern_ocean/fig3.png
    :width: 60%
 
-.. |pic_so_4| image:: ../../source/namelists/figures/southern_ocean/fig4.png
+.. |pic_so_4| image:: /namelists/figures/southern_ocean/fig4.png
    :width: 35%
 
 .. centered:: |pic_so_5| |pic_so_6| |pic_so_7|
 
-.. |pic_so_5| image:: ../../source/namelists/figures/southern_ocean/fig5.png
+.. |pic_so_5| image:: /namelists/figures/southern_ocean/fig5.png
    :width: 25%
 
-.. |pic_so_6| image:: ../../source/namelists/figures/southern_ocean/fig6.png
+.. |pic_so_6| image:: /namelists/figures/southern_ocean/fig6.png
    :width: 25%
 
-.. |pic_so_7| image:: ../../source/namelists/figures/southern_ocean/fig7.png
+.. |pic_so_7| image:: /namelists/figures/southern_ocean/fig7.png
    :width: 25%
 

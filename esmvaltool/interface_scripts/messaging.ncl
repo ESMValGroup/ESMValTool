@@ -79,6 +79,11 @@ begin
     if (ismissing(curr_trace_indent)) then
         print("info: " + output_string)
     else  ; Full info output
+        ;; Initialize file that keeps track of indent on first run.
+        if .not. isfilepresent_esmval(curr_trace_indent) then
+            asciiwrite(curr_trace_indent, 0)
+        end if
+
         indent_step = 3
         if (verbosity .eq. 2) then
             padding_space = 13
@@ -535,7 +540,7 @@ begin
     s_close = str_get_dq + " >> " + output_refs
 
     ;; If first time (empty output_refs) write header
-    if (toint(systemfunc("wc -c < " + output_refs)) .eq. 0) then
+    if .not. isfilepresent_esmval(output_refs) then
 ; a_laue_ax+
 ;        system(s_open + hline + s_close)
 ;        system(s_open + "+++++++++++++ " + \
