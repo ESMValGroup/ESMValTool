@@ -25,7 +25,6 @@ PRIMAVERA:
 
 
 CMIP5:
-  cmor_type: 'CMIP5'
   input_dir:
     default: '/'
     BADC: '[institute]/[model]/[exp]/[freq]/[realm]/[mip]/[ensemble]/latest/[var]'

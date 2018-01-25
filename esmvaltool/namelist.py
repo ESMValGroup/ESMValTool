@@ -193,10 +193,11 @@ def _add_cmor_info(variable, keys):
     """Add information from CMOR tables to variable."""
     if variable['project'] in CMOR_TABLES:
         table = variable['project']
-    elif variable['cmor_table'] in CMOR_TABLES:
+    elif 'cmor_table' in variable and variable['cmor_table'] in CMOR_TABLES:
         table = variable['cmor_table']
     else:
         return
+
     variable_info = CMOR_TABLES[table].get_variable(
         variable['mip'], variable['short_name'])
     for key in keys:
