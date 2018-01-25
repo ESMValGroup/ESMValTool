@@ -8,7 +8,7 @@ from __future__ import absolute_import, division, print_function
 
 import re
 from copy import deepcopy
-from  ..preprocessor._reformat import CMOR_TABLES
+from ..preprocessor._reformat import CMOR_TABLES
 
 import iris
 import numpy as np
