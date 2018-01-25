@@ -1,36 +1,79 @@
-name: root
+---
+
+name: esmvaltool
 channels:
-- khallock
 - conda-forge
-- defaults
-- Clyde_Fare
+- khallock # ncl package on conda-forge is broken
+#- defaults # in case of missing packages
+#- Clyde_Fare #for scientific python
+
+# ESMVALTOOL DEPENDENCIES
 
 dependencies:
-# esmvaltool
-- cython
+# Needed by main, preprocessor, workflow, one or more diagnostics, shared diagnostic code.
 - basemap
+- cartopy
+- cf_units
+- cython
+- flask
 - iris
-- esgf-pyclient
-- scientificpython
 - ncl
-# iris
-- matplotlib=1.5.*
-- cartopy=0.15.*
+- netcdf4
+- numba
+- numpy
+- pillow # providing PIL package
+- python-cdo
+- python-stratify
+- pyyaml
+- scipy
+- shapely
+- six
+#- scientificpython
 
-# ncl
-- libnetcdf=4.4.1.1
-- hdf5=1.8.17
-- hdf4=4.2.12
-- xorg-libsm=1.2.2
-- icu=58.1
-- xorg-libxrender
-- xorg-libxext
-- pip:
-  - geoval
+# Old Iris and ncl dependency block. Simply using the top level packages should be enough now.
+# iris
+#- iris
+#- cartopy=0.15.*
+#- matplotlib=1.5.*
+#- ncl
+#- hdf4=4.2.12
+#- hdf5=1.8.17
+#- icu=58.1
+#- libnetcdf=4.4.1.1
+#- xorg-libsm=1.2.2
+#- xorg-libxext
+#- xorg-libxrender
+
+# DEVELOPMENT DEPENDENCIES
+#
+# Dependencies below that are required by 'setup.py test' and 'setup.py lint'
+# should also be automatically be installed by setup.py in a temporary
+# location when required to run the command.
+
+# documentation
+- sphinx
 
 # testing
+- mock
 - nose
 - pytest
 - pytest-cov
 - pytest-html
-- easytest
+
+# Note that there can be only one pip section
+- pip:
+  # TODO: replace esgf-pyclient and geoval by conda packages
+  # TODO: move esgf-pyclient and geoval to ESMVALTOOL DEPENDENCIES
+  - easytest
+  - esgf-pyclient
+  - geoval
+  # TODO: replace dummydata by conda/PyPI package and move to testing
+  # dummydata fetched from github as a zip file, contains latest version
+  - https://github.com/ESMValGroup/dummydata/archive/dev.zip
+  # code style (pip versions are more up to date)
+  - isort
+  - prospector[with_pyroma]
+  - pycodestyle  # also used for testing
+  - pydocstyle
+  - pylint
+  - yapf
