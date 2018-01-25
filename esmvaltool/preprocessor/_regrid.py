@@ -393,13 +393,22 @@ def get_cmor_levels(levels):
     if cmor_type not in CMOR_TABLES:
         raise ValueError('Level definition {} not available'
                          .format(levels))
-    if len(level_definition) == 2:
-        coord = level_definition[1]
-        cmor = CMOR_TABLES[cmor_type].coords[coord]
-    else:
-        table = level_definition[1]
-        var = level_definition[2]
-        cmor = CMOR_TABLES[cmor_type].get_variable(table, var)
 
-    levels = [float(level) for level in cmor.requested]
-    return levels
+    if len(level_definition) != 2:
+        raise ValueError('Bad level definition {}. Correct format: '
+                         '$(CMOR_TABLE)_$(COORDINATE_NAME)')
+
+    coord = level_definition[1]
+    if coord not in CMOR_TABLES[cmor_type].coords:
+        raise ValueError('Coordinate {} not availabale for {}'
+                         .format(coord, cmor_type))
+
+    cmor = CMOR_TABLES[cmor_type].coords[coord]
+
+    if len(cmor.requested) > 0:
+        return [float(level) for level in cmor.requested]
+    elif cmor.value:
+        return [float(cmor.value)]
+    else:
+        raise ValueError('Coordinate {} in {} does not have requested values'
+                         .format(coord, cmor_type))
