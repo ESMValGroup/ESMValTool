@@ -3,3 +3,4 @@ wrk_dir 		--> work_dir 			getenv("ESMValTool_wrk_dir") in all .ncl scripts
 project_info['MODELS']	--> project_info['ALLMODELS']	python interfaces and temporary .interface files
 xml                     --> yml				all scripts
 var_attr_ref(0)		--> var_attr_ref		all diag scripts
+isfilepresent_esmval    --> fileexists                  all NCL scripts
