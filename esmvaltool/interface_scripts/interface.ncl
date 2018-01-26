@@ -10,10 +10,10 @@ end
 ; Copy some variables into legacy names
 begin
     diag_script = diag_script_info@script
-    if (str_lower(diag_script_info@log_level) .eq. "debug") then
-        diag_script_info@verbosity = 100
+    if (str_lower(config_user_info@log_level) .eq. "debug") then
+        config_user_info@verbosity = 100
     else
-        diag_script_info@verbosity = 1
+        config_user_info@verbosity = 1
     end if
 end
 
@@ -133,7 +133,7 @@ function interface_replace_place_holders(variable [1] : string,
 ;         @param array_with_place_holders  - array with place holder strings
 local verbosity, idx_var, array_local_copy
 begin
-    verbosity  = diag_script_info@verbosity
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering interface_replace_place_holders", verbosity, 6)
 
     array_local_copy = str_sub_str(array_with_place_holders(idx), "${VARIABLE}", variable)
@@ -163,7 +163,7 @@ function interface_get_figure_filename(diag_script_base [1] : string,
 ;         @param idx_mod  -  Current model number, set to -1 if not applicable
 local verbosity, aux_sep, figure_name, fig_file_local_copy, use_this_for_var
 begin
-    verbosity  = diag_script_info@verbosity
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering interface_get_figure_filename", verbosity, 4)
     sep = "_"  ; Default separator
     aux_sep = "_"  ; Auxiliary info separator
@@ -209,7 +209,7 @@ function interface_get_fullpath(variable [1] : string,
 ;         @param field  -  Current field type
 local verbosity, idx_var, fullpaths_local_copy
 begin
-    verbosity  = diag_script_info@verbosity
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering interface_get_fullpath", verbosity, 4)
     fullpaths_local_copy = interface_replace_place_holders(variable, field, idx, fullpaths)
     info_output(">>>>>>>> Leaving interface_get_fullpath", verbosity, 4)
@@ -228,7 +228,7 @@ function interface_get_infile(variable [1] : string,
 ;         @param field  -  Current field type
 local verbosity, infiles_local_copy
 begin
-    verbosity  = diag_script_info@verbosity
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering interface_get_infile", verbosity, 4)
     infiles_local_copy = interface_replace_place_holders(variable, field, idx, infiles)
     info_output(">>>>>>>> Leaving interface_get_infile", verbosity, 4)
@@ -243,7 +243,7 @@ function interface_get_inpaths(idx [1] : integer)
 ;         @param idx  -  The index to the current model
 local verbosity
 begin
-    verbosity  = diag_script_info@verbosity
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering interface_get_inpaths", verbosity, 4)
     info_output(">>>>>>>> Leaving interface_get_inpaths", verbosity, 4)
     return infile_paths(idx)
@@ -260,7 +260,7 @@ function interface_get_dictkeys(variable [1] : string,
 ;         @param field  -  Current field type
 local verbosity, idx_var, dictkeys_local_copy
 begin
-    verbosity  = diag_script_info@verbosity
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering interface_get_dictkeys", verbosity, 4)
     dictkeys_local_copy = interface_replace_place_holders(variable, "NO_FIELD", idx, dictkeys@dictkeys)
     info_output(">>>>>>>> Leaving interface_get_dictkeys", verbosity, 4)
@@ -276,7 +276,7 @@ function interface_get_dictkeys_no_var(idx [1] : integer)
 ;         @param field  -  Current field type
 local verbosity, idx_var, dictkeys_local_copy
 begin
-    verbosity  = diag_script_info@verbosity
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering interface_get_dictkeys", verbosity, 4)
     dictkeys_local_copy = interface_replace_place_holders("default", "NO_FIELD", idx, dictkeys@dictkeys)
     info_output(">>>>>>>> Leaving interface_get_dictkeys", verbosity, 4)
@@ -303,7 +303,7 @@ function addfile_wrapper(filename [1]: string, operation [1]:string)
 ;
 local fhandle, logfile, datestamp, use_addfile_wrapper
 begin
-    verbosity  = diag_script_info@verbosity
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering addfile_wrapper", verbosity, 4)
 
     logfile = "addfile_access.log"

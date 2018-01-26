@@ -69,7 +69,7 @@ begin
 
     funcname = "copy_VarCoords_l1"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     dims_from = getvardims(var_from)
@@ -140,7 +140,7 @@ begin
 
     funcname = "check_min_max_models"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     if (no_models .lt. min_no_models) then
@@ -187,7 +187,7 @@ begin
 
     funcname = "tstep"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; extract vectors
@@ -295,7 +295,7 @@ begin
 
     funcname = "ncdf_varname"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; Attributes names to check for, ordered by increasing priority
@@ -342,10 +342,10 @@ begin
 
     funcname = "get_work_dir"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
-    curr_work_dir = diag_script_info@work_dir
+    curr_work_dir = config_user_info@work_dir
 		system("mkdir -p " + curr_work_dir)
 
     ;; Make sure it ends with a slash
@@ -383,7 +383,7 @@ begin
 
     funcname = "get_ncdf_name"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     ;; Collect parts of outfile name
@@ -425,7 +425,7 @@ begin
 
     funcname = "get_ncdf_dir"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     ncdf_dir = work_dir + subfolder + "/"
@@ -482,7 +482,7 @@ begin
 
     funcname = "ncdf_read"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     ;; Open file for reading
@@ -605,7 +605,7 @@ begin
 
     funcname = "ncdf_write"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     ;; Retrieve special attributes
@@ -700,7 +700,7 @@ begin
 
     funcname = "ncdf_att"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     if (typeof(infile).eq."string") then
@@ -757,7 +757,7 @@ begin
 
     funcname = "ncdf_define"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     diag_script = att2var(data, "diag_script")
@@ -882,7 +882,7 @@ begin
 
     funcname = "att2var_default"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     result = att2var(data, meta)
@@ -935,7 +935,7 @@ begin
 
     funcname = "att2var"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     ;; Attribute "var"
@@ -1027,7 +1027,7 @@ begin
 
     funcname = "bname"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     b = a
@@ -1069,7 +1069,7 @@ begin
 
     funcname = "PRIORITY"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     valid_types = (/"integer", "float", "double", "string"/)
@@ -1132,7 +1132,7 @@ begin
 
     funcname = "get_output_dir"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     output_dir = plot_dir + "/" + subfolder + "/"
@@ -1170,7 +1170,7 @@ begin
 
     funcname = "basename"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     suffix = get_file_suffix(name, 0)
@@ -1204,7 +1204,7 @@ begin
 
     funcname = "extract_years"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     ds = dimsizes(data)
@@ -1261,7 +1261,7 @@ begin
 
     funcname = "extend_var_at"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     var_dim = dimsizes(var)
@@ -1365,7 +1365,7 @@ begin
 
     funcname = "copy_CoordNames_n"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     rank = dimsizes(dimsizes(var_from))
@@ -1415,7 +1415,7 @@ begin
 
     funcname = "empty_str"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     str = " "
@@ -1453,7 +1453,7 @@ begin
 
     funcname = "write_info"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 8)
 
     infobox = ""
@@ -1499,7 +1499,7 @@ begin
 
     funcname = "remove_index"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     dsize = dimsizes(array)
@@ -1562,7 +1562,7 @@ begin
 
     funcname = "set_default_att"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     if (.not.isatt(info, att)) then
@@ -1623,7 +1623,7 @@ begin
 
     funcname = "filter_attrs"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     source_attrs = getvaratts(source)
@@ -1663,7 +1663,7 @@ begin
 
     funcname = "write_ignore_warnings"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     if (fileexists(warn_file_str)) then
@@ -1701,7 +1701,7 @@ local idx_single_ref
 begin
     funcname = "get_single_ref"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     idx_single_ref = ind(model_attr_id .eq. model_refs)
@@ -1755,7 +1755,7 @@ begin
 
     funcname = "get_ref_model_idx"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     nrefs = dimsizes(model_ref_name)

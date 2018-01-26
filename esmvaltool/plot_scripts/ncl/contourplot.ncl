@@ -52,10 +52,10 @@ begin
 
     funcname = "contourplot"
     scriptname = "plot_scripts/ncl/contourplot.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     info_output("<<<<<<<< Entering " + funcname, verbosity, 4)
 
     ;; Get data, either directly or via netCDF file

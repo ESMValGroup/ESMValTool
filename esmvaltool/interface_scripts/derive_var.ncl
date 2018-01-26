@@ -19,7 +19,7 @@ end
 begin
 
     funcname = "derive_var"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg("interface_scripts/derive_var.ncl", funcname, 2)
 
     ;; If variable_info@derived = True, a 'calculate' function must be defined

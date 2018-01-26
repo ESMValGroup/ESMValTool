@@ -56,7 +56,7 @@ function taylor_plot(wks_in[1],
 local verbosity
 begin
 
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     info_output("<<<<<<<< Entering taylor_plot", verbosity, 4)
 
     ;; Get data, either directly or via netCDF file

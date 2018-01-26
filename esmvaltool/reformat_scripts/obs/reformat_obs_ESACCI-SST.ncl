@@ -58,7 +58,7 @@ begin
     dayspermonth = (/31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31/)
 
 
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     diag_script = "reformat_obs_ESACCI-SST.ncl"
     enter_msg(diag_script, "", 1)
 

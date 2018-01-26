@@ -68,7 +68,7 @@ load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     diag_script = "reformat_obs_ESACCI-SIC.ncl"
     enter_msg(diag_script, "", 1)
 

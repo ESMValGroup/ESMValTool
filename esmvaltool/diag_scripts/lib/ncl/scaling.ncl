@@ -48,7 +48,7 @@ begin
 
     funcname = "convert_units"
     scriptname = "diag_scripts/lib/ncl/scaling.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; Define output (copy metadata)
@@ -244,7 +244,7 @@ begin
 
     funcname = "scalfac"
     scriptname = "diag_scripts/lib/ncl/scaling.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; consider minus sign for number of digits
@@ -307,7 +307,7 @@ begin
 
     funcname = "scale_units"
     scriptname = "diag_scripts/lib/ncl/scaling.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     if(.not.all(ismissing(u))) then
@@ -421,7 +421,7 @@ begin
 
     funcname = "rescale"
     scriptname = "diag_scripts/lib/ncl/scaling.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     result = u * s

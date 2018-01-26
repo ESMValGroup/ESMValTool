@@ -39,12 +39,12 @@ load "./plot_scripts/ncl/taylor_plot.ncl"
 
 begin
 
-    verbosity  = diag_script_info@verbosity
+    verbosity  = config_user_info@verbosity
     enter_msg(diag_script, "", 4)
     diag_script_base = basename(diag_script)
 
     ;; Check file type
-    file_type = diag_script_info@output_file_type
+    file_type = config_user_info@output_file_type
     if (ismissing(file_type)) then
         file_type = "PS"
     end if
@@ -114,9 +114,9 @@ begin
     copy_VarAtts(diag_script_info, data_all)
 
     ;; Plot
-    if (diag_script_info@write_plots .eq. True) then
+    if (config_user_info@write_plots .eq. True) then
         ;; Create outfile directory
-        plot_dir = diag_script_info@plot_dir + "/"
+        plot_dir = config_user_info@plot_dir + "/"
         system("mkdir -p " + plot_dir)
         if(dimsizes(data_all&diagnostics).gt.2) then
             diags = data_all&diagnostics(0) + "_to_" + \

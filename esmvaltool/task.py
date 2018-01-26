@@ -253,9 +253,21 @@ class DiagnosticTask(AbstractTask):
         """Write settings to NCL file"""
         filename = os.path.join(self.settings['run_dir'], 'settings.ncl')
 
-        settings = {'diag_script_info': {}}
+        config_user_keys = {
+            'run_dir',
+            'plot_dir',
+            'work_dir',
+            'max_data_filesize',
+            'output_file_type',
+            'log_level',
+            'write_plots',
+            'write_netcdf',
+        }
+        settings = {'diag_script_info': {}, 'config_user_info': {}}
         for key, value in self.settings.items():
-            if not isinstance(value, dict):
+            if key in config_user_keys:
+                settings['config_user_info'][key] = value
+            elif not isinstance(value, dict):
                 settings['diag_script_info'][key] = value
             else:
                 settings[key] = value
@@ -325,7 +337,6 @@ class DiagnosticTask(AbstractTask):
             ]
 
         self.settings['input_files'] = input_files
-        self.settings['output_dir'] = self.output_dir
 
         cmd = list(self.cmd)
         cwd = None
@@ -346,6 +357,7 @@ class DiagnosticTask(AbstractTask):
         logger.debug("in environment\n%s", pprint.pformat(env))
         logger.debug("in current working directory: %s", cwd)
         logger.info("Writing output to %s", self.output_dir)
+        logger.info("Writing plots to %s", self.settings['plot_dir'])
         logger.info("Writing log to %s", self.log)
 
         rerun_msg = '' if cwd is None else 'cd {}; '.format(cwd)

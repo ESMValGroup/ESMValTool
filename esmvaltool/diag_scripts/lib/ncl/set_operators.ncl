@@ -43,7 +43,7 @@ begin
 
     funcname = "UNIQ"
     scriptname = "diag_scripts/lib/ncl/set_operators.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     u = new(dimsizes(a), "integer", 0)
@@ -85,7 +85,7 @@ begin
 
     funcname = "union"
     scriptname = "diag_scripts/lib/ncl/set_operators.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     merged_set = array_append_record(set1, set2, 0)
@@ -124,7 +124,7 @@ begin
 
     funcname = "set_inclusive_OR"
     scriptname = "diag_scripts/lib/ncl/set_operators.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     dummy_year  = -999.
@@ -168,7 +168,7 @@ begin
 
     funcname = "inlist"
     scriptname = "diag_scripts/lib/ncl/set_operators.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     item_indicies = ind(item .eq. alloweditems)
@@ -209,7 +209,7 @@ begin
 
     funcname = "intersection"
     scriptname = "diag_scripts/lib/ncl/set_operators.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     do idx = 0, dimsizes(array1) - 1
@@ -264,7 +264,7 @@ begin
 
     funcname = "is_array_subset"
     scriptname = "diag_scripts/lib/ncl/set_operators.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     subset_size = dimsizes(subset_array)
@@ -312,7 +312,7 @@ begin
 
     funcname = "relative_complement"
     scriptname = "diag_scripts/lib/ncl/set_operators.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     array2_size = dimsizes(array2)
@@ -370,7 +370,7 @@ begin
 
     funcname = "set_symmetric_difference"
     scriptname = "diag_scripts/lib/ncl/set_operators.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     rel_compl1 = relative_complement(array1, array2)

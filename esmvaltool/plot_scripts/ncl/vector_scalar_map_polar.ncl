@@ -67,7 +67,7 @@ begin
 
     funcname = "vector_scalar_map_polar"
     scriptname = "plot_scripts/ncl/vector_scalar_map_polar.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Get data, either directly or via netCDF file

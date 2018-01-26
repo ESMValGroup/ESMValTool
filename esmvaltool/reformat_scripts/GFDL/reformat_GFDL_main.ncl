@@ -93,7 +93,7 @@ load "./reformat_scripts/GFDL/reformat_GFDL_func.ncl"
 
 begin
 
-    verbosity  = diag_script_info@verbosity
+    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, "", 2)
 
     info_output("INPATH = " + INPATH, verbosity, 1)

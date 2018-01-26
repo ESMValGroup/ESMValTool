@@ -22,7 +22,7 @@ function calculate(index [1] : integer,
 ;;    data_new - logical
 local tmp, dum, dimension 
 begin
-    verbosity  = diag_script_info@verbosity
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering O2_onelev.ncl", verbosity, 2)
 
   data_new = True
@@ -78,7 +78,7 @@ begin
       fout->area = fin->area
     end if 
 
-    verbosity  = diag_script_info@verbosity
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Leaving O2.ncl", verbosity, 2)
   return(data_new)
 end

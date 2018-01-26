@@ -49,7 +49,7 @@ begin
 
     funcname = "calculate"
     scriptname = "variable_defs/tro3_profile.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Fetch data

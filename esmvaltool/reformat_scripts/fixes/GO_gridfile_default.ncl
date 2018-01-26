@@ -41,7 +41,7 @@ local dNames,fn_out,lat_name,lon_name,lat,lon,lat_index,lon_index,fout,\
 begin
     info_output(" In fix_default from GO_gridfile_default.ncl ", verbosity, 3)
     
-    verbosity  = diag_script_info@verbosity
+    verbosity  = config_user_info@verbosity
     script_name = getenv("ESMValTool_project")+"_"+getenv("ESMValTool_model")+".ncl"
  
     if (switch .eq. "ocean-latlon" ) then

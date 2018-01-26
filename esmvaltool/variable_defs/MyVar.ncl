@@ -23,7 +23,7 @@ function calculate(index [1] : integer,
 ;;    data_new - logical
 local tmp, dum, dimension, verbosity
 begin
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     info_output("<<<<<<<< Entering MyVar.ncl", verbosity, 4)
     tmp = read_data(index, "ta", "*3*")
     dimension = 1  ; Level

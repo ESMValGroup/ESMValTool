@@ -15,7 +15,7 @@ function fixing_func(var:numeric,name:string)
 
 local ret, tmp, ti, tt
 begin
-    verbosity  = diag_script_info@verbosity
+    verbosity  = config_user_info@verbosity
 
     ret = 1
 

@@ -12,7 +12,7 @@ load "./interface_scripts/write_header.ncl"
 
 begin
 
-    verbosity  = diag_script_info@verbosity
+    verbosity  = config_user_info@verbosity
 ;    info_output("<<<<<<<< Entering write_references.ncl", \
 ;                verbosity, 2)
 

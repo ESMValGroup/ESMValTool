@@ -68,10 +68,10 @@ begin
 
     funcname = "add_data_var"
     scriptname = "interface_scripts/data_handling.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 2)
 
-    maxDataSize = diag_script_info@max_data_filesize
+    maxDataSize = config_user_info@max_data_filesize
     field_type = derived_field_type
 
     output_data = True
@@ -222,7 +222,7 @@ begin
 
     funcname = "get_varName_from_file"
     scriptname = "interface_scripts/data_handling.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 2)
 
     variable = new(1, string)
@@ -305,7 +305,7 @@ begin
 
     funcname = "extract_data_extended"
     scriptname = "interface_scripts/data_handling.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; 'cn' is the basic building block for the keys used in
@@ -555,7 +555,7 @@ begin
 
     funcname = "extract_data"
     scriptname = "interface_scripts/data_handling.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     data_new = extract_data_extended(index, "default", data_pointer, dim_id, \
@@ -610,7 +610,7 @@ begin
 
     funcname = "extract_data_region"
     scriptname = "interface_scripts/data_handling.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; 'cn' is the basic building block for the keys used in
@@ -886,7 +886,7 @@ begin
 
     funcname = "modify_data"
     scriptname = "interface_scripts/data_handling.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 2)
 
     ;; 'cn' is the basic building block for the keys used in the 'data_pointer'
@@ -1021,10 +1021,10 @@ begin
 
     funcname = "read_data"
     scriptname = "interface_scripts/data_handling.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
-    maxDataSize = diag_script_info@max_data_filesize
+    maxDataSize = config_user_info@max_data_filesize
 
     temp = stringtochar(field_number)
     temp1 = stringtochar(derived_field_type)

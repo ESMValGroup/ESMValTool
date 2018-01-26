@@ -21,7 +21,7 @@ function calculate(index [1] : integer,
 ;;    data_new - logical
 local tmp, dum, i, verbosity
 begin
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     info_output("<<<<<<<< Entering va-700.ncl", verbosity, 2)
     data_new = True
     tmp = read_data(index, "va", "*3*")

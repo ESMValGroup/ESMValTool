@@ -21,7 +21,7 @@ function calculate(index [1] : integer,
 ;;    data_new - logical
 local tmp, dum, i, verbosity
 begin
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     info_output("<<<<<<<< Entering theta-850.ncl", verbosity, 4)
     tmp = read_data(index, "ta", "*3*")
     dum = extract_data(index, tmp, 1, 85000., 85000.)

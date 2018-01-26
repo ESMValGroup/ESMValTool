@@ -26,7 +26,7 @@ function calculate(index [1] : integer,
 ;;    pp. 611-633
 local result_ua, data_ua_200, data_ua_850, verbosity
 begin
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     info_output("<<<<<<<< Entering ua-200-850.ncl", verbosity, 4)
 ;    result_ua = read_data(index, "ua", "T3M")
     result_ua = read_data(index, "ua", "*3*")

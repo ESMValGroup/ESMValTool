@@ -28,7 +28,7 @@ function calculate(index [1] : integer,
 ;;    Converts precipitation rate from units "kg m-2 s-1" to "mm day-1"
 local result, T, verbosity
 begin
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     info_output("<<<<<<<< Entering calculate (pr-mmday)", verbosity, 4)
     result = read_data(index, "pr", "T2*s")
     T = extract_data_extended(index, "pr", result, -1, 0, 0)

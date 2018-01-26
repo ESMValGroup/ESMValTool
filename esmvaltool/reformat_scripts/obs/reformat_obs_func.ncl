@@ -49,7 +49,7 @@ begin
 
     funcname = "yyyyfrac_to_ut"
     scriptname = "reformat_scripts/obs/reformat_obs_func.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Seconds per year
@@ -126,7 +126,7 @@ begin
 
     funcname = "create_timec"
     scriptname = "reformat_scripts/obs/reformat_obs_func.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     out = new(12 * (y2 - y1 + 1), double)
@@ -171,7 +171,7 @@ begin
 
     funcname = "write_nc"
     scriptname = "reformat_scripts/obs/reformat_obs_func.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Open file
@@ -254,7 +254,7 @@ begin
 
     funcname = "write_nc_profile"
     scriptname = "reformat_scripts/obs/reformat_obs_func.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Open file
@@ -361,7 +361,7 @@ begin
 
     funcname = "process_EBAS_data"
     scriptname = "reformat_scripts/obs/reformat_obs_func.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; EBAS flags for valid measurements

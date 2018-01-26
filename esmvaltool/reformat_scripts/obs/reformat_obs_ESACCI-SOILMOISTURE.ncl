@@ -67,7 +67,7 @@ begin
     dos_ind = ind(VARS.eq."dos")
     dosStderr_ind = ind(VARS.eq."dosStderr")
 
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     diag_script = "reformat_obs_ESACCI-SOILMOISTURE.ncl"
     enter_msg(diag_script, "", 1)
 

@@ -67,7 +67,7 @@ begin
     ;;# Fetch general parameters, set in namelist_MyDiag.yml,   #
     ;;# passed via environment variables by python code         #
     ;;###########################################################
-    verbosity  = diag_script_info@verbosity
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering " + diag_script, verbosity, 4)
 
     ;; 'diag_script' and 'variables' are fetched from the

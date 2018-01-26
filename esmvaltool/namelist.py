@@ -560,17 +560,10 @@ class Namelist(object):
             settings['namelist'] = self._namelist_file
             settings['version'] = __version__
             settings['script'] = script_name
-            # Add output dir to settings
-            output_dir = os.path.join(
-                self._cfg['output_dir'],
-                diagnostic_name,
-                script_name,
-            )
-            settings['output_dir'] = output_dir
+            # Add output dirs to settings
             for dir_name in ('run_dir', 'plot_dir', 'work_dir'):
-                path = os.path.basename(os.path.normpath(self._cfg[dir_name]))
-                path = os.path.join(output_dir, path)
-                settings[dir_name] = path
+                settings[dir_name] = os.path.join(self._cfg[dir_name],
+                                                  diagnostic_name, script_name)
             # Copy other settings
             settings['exit_on_ncl_warning'] = self._cfg['exit_on_warning']
             for key in ('max_data_filesize', 'output_file_type', 'log_level',
@@ -579,7 +572,7 @@ class Namelist(object):
 
             scripts[script_name] = {
                 'script': raw_script,
-                'output_dir': output_dir,
+                'output_dir': settings['work_dir'],
                 'settings': settings,
                 'ancestors': ancestors,
             }

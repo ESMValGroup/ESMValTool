@@ -52,7 +52,7 @@ begin
 
     funcname = "unique_labels_min"
     scriptname = "diag_scripts/lib/ncl/style.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     result = models@$prio(0)$  ; Start with highest priority
@@ -114,7 +114,7 @@ begin
 
     funcname = "unique_labels_all"
     scriptname = "diag_scripts/lib/ncl/style.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     result = models@$prio(0)$  ; Start with highest priority
@@ -193,7 +193,7 @@ begin
 
     funcname = "project_style"
     scriptname = "diag_scripts/lib/ncl/style.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; Check for the available dictonary keys to be used for the annotations
@@ -371,7 +371,7 @@ function project_style_GO(flag:string)
 ;
 local result, modelstyles, flag
 begin
-    verbosity  = diag_script_info@verbosity
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering style_GO.ncl", verbosity, 8)
 
     ;; define (/model, color, dash, thickness, avgstd/) for each model
@@ -438,7 +438,7 @@ begin
 
     funcname = "place_debuginfo"
     scriptname = "diag_scripts/lib/ncl/style.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 8)
 
     res@gsnDraw               = False
@@ -499,7 +499,7 @@ begin
 
     funcname = "place_description"
     scriptname = "diag_scripts/lib/ncl/style.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     wks_dummy = gsn_open_wks("png", "dummy.png")
@@ -564,7 +564,7 @@ begin
 
     funcname = "gsnColorRange"
     scriptname = "diag_scripts/lib/ncl/style.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     color_start = 2  ; All of the color maps begin with 2.
@@ -634,7 +634,7 @@ begin
 
     funcname = "format_units"
     scriptname = "diag_scripts/lib/ncl/style.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; Create a local copy
@@ -692,7 +692,7 @@ begin
 
     funcname = "set_log_ticks"
     scriptname = "diag_scripts/lib/ncl/style.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; Find order of magnitude of min
@@ -782,7 +782,7 @@ begin
 
     funcname = "sort_alphabetically"
     scriptname = "diag_scripts/lib/ncl/style.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; Create a local copy of input names and set to upper case

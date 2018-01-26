@@ -110,7 +110,7 @@ load "./plot_scripts/ncl/contour_maps.ncl"
 
 begin
 
-    verbosity  = diag_script_info@verbosity
+    verbosity  = config_user_info@verbosity
     enter_msg(diag_script, "", 4)
     info_output("++++++++++++++++++++++++++++++++++++++++++", verbosity, 1)
     info_output(diag_script + " (var: " + variables(0) + ")", verbosity, 1)
@@ -219,12 +219,12 @@ begin
 
     ;; Create output plot directory
     if (diag_script_info@draw_plots) then
-    	plot_dir = diag_script_info@plot_dir
+    	plot_dir = config_user_info@plot_dir
       system("mkdir -p " + plot_dir)
 		end if
 
     ;; Plot file type
-    file_type = diag_script_info@output_file_type
+    file_type = config_user_info@output_file_type
     if (ismissing(file_type)) then
         file_type = "ps"
     end if
@@ -361,7 +361,7 @@ begin
         info_output("Processing " + modelnames(imod), verbosity, 2)
 
         ;; Set path for saving processed data ;; FIX-ME add preproc_id
-        fullpath = diag_script_info@work_dir + "/"
+        fullpath = config_user_info@work_dir + "/"
         system("mkdir -p " + fullpath)
         fname = basename(systemfunc("basename " + \
                          interface_get_fullpath(var0, field_type0, imod)))
@@ -505,7 +505,7 @@ begin
         end if
 
         ;; Optional output to NetCDF
-        if (diag_script_info@write_netcdf.eq."True") then
+        if (config_user_info@write_netcdf.eq."True") then
             var@ncdf = procpath
             ncdf_outfile = ncdf_write(var, procpath)
         end if
@@ -612,7 +612,7 @@ begin
         end if
 
         ;; Define grading filename
-        ncdf_dir = diag_script_info@work_dir + "/" + diag_script_info@metric + "_" + var0_new + ".nc"
+        ncdf_dir = config_user_info@work_dir + "/" + diag_script_info@metric + "_" + var0_new + ".nc"
 
         ;; Start calculation
 ;;DELETE        if (fileexists(ncdf_dir)) then
@@ -782,7 +782,7 @@ begin
         ncdf_outfile = ncdf_write(grading, grading@ncdf_dir)
 
         ;; Write results of temporary grading list
-        temp_dir = diag_script_info@output_dir + "/"
+        temp_dir = config_user_info@work_dir + "/"
         if (diag_script_info@metric.eq."taylor") then
             temp_dir = temp_dir + "taylor.nc"
         else
@@ -822,7 +822,7 @@ begin
         end if
 
         ;; Plot output directory
-        output_dir = diag_script_info@plot_dir + "/"
+        output_dir = config_user_info@plot_dir + "/"
 
         ;; Annotation and file names
         region_name = ""  ; priority 3

@@ -76,7 +76,7 @@ begin
 
     required_verbosity = min((/required_verbosity, 4/))
 
-    curr_trace_indent = diag_script_info@run_dir + "/curr_trace_indent.txt"
+    curr_trace_indent = config_user_info@run_dir + "/curr_trace_indent.txt"
     if (ismissing(curr_trace_indent)) then
         print("info: " + output_string)
     else  ; Full info output
@@ -170,7 +170,7 @@ procedure enter_msg(script[1]:string,
 local verbosity
 begin
 
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     if (func.eq."") then
         info_output("<<<<<<<< Entering " + script, verbosity, req_verbosity)
     else
@@ -204,7 +204,7 @@ procedure leave_msg(script[1]:string,
 local verbosity
 begin
 
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     if (func.eq."") then
         info_output(">>>>>>>> Leaving " + script, verbosity, req_verbosity)
     else
@@ -306,7 +306,7 @@ begin
 
     funcname = "exit_if_missing_atts"
     scriptname = "interface_scripts/messaging.ncl"
-    verbosity  = diag_script_info@verbosity
+    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     if (.not.all(isatt(in, reqatts))) then
@@ -370,7 +370,7 @@ begin
 
     funcname = "write_filelist"
     scriptname = "interface_scripts/messaging.ncl"
-    verbosity  = diag_script_info@verbosity
+    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     if (filelist(0).eq."") then  ; derived variable or no information
@@ -381,7 +381,7 @@ begin
     hline = hline + hline + hline
 
     ;; Output refs file
-    output_refs = diag_script_info@run_dir + "/references-acknowledgements.txt"
+    output_refs = config_user_info@run_dir + "/references-acknowledgements.txt"
 
     s_open  = "echo " + str_get_dq
     s_close = str_get_dq + " >> " + output_refs
@@ -515,7 +515,7 @@ begin
 
     funcname = "write_references"
     scriptname = "interface_scripts/messaging.ncl"
-    verbosity  = diag_script_info@verbosity
+    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     hline      = "-------------------------"
@@ -535,7 +535,7 @@ begin
     master_refs = MASTER_REFS
 
     ;; Output refs file
-    output_refs = diag_script_info@run_dir + "/references-acknowledgements.txt"
+    output_refs = config_user_info@run_dir + "/references-acknowledgements.txt"
 
     s_open  = "echo " + str_get_dq
     s_close = str_get_dq + " >> " + output_refs

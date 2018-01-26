@@ -22,7 +22,7 @@ scriptname = "reformat_scripts/default/reformat_ECEARTH_main.ncl"
 ;;### GLOBAL SETTINGS #########################################################
 begin
 
-    verbosity  = diag_script_info@verbosity
+    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, "", 2)
 
     ;; Selected variable (standard name)

@@ -50,7 +50,7 @@ load "interface_scripts/messaging.ncl"
 ;;        hence the need for the additional begin/end block below
 begin
     
-    verbosity  = diag_script_info@verbosity
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering reformat_GO_main.ncl", verbosity, 2)
     project = getenv("ESMValTool_project")
     model= getenv("ESMValTool_model")
@@ -81,7 +81,7 @@ begin
     ;;===========================================================
     ;; Get environment variables
     ;;===========================================================
- verbosity  = diag_script_info@verbosity
+ verbosity  = config_user_info@verbosity
     outfile_path       = getenv("ESMValTool_outfile_fullpath")
     field              = getenv("ESMValTool_field")
     infile_path        = getenv("ESMValTool_infile_path")

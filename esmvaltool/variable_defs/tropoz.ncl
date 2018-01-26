@@ -53,7 +53,7 @@ begin
 
     funcname = "calculate"
     scriptname = "variable_defs/tropoz.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Top pressure of the column [Pa]

@@ -59,7 +59,7 @@ begin
 
     funcname = "fix_FillValue"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     if (var@_FillValue.eq.-1.e34) then
@@ -98,7 +98,7 @@ begin
 
     funcname = "check_inpath"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Simulation path
@@ -143,7 +143,7 @@ begin
 
     funcname = "find_messy_version"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     found = False
@@ -219,7 +219,7 @@ begin
 
     funcname = "get_aerosol_modes"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Possible modes names
@@ -267,7 +267,7 @@ begin
 
     funcname = "get_aerosol_spec"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Possible aerosol species
@@ -305,7 +305,7 @@ begin
 
     funcname = "find_name"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     fname = "./reformat_scripts/EMAC/names_EMAC.dat"
@@ -360,7 +360,7 @@ begin
 
     funcname = "put_vfatmp"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     dn = systemfunc("dirname " + fn)
@@ -402,7 +402,7 @@ begin
 
     funcname = "get_vfatmp"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     if (.not.fileexists(VFATMP)) then
@@ -489,7 +489,7 @@ begin
 
     funcname = "find_and_read_var"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Create a local copy
@@ -730,7 +730,7 @@ begin
 
     funcname = "time_mean"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     rank = dimsizes(getvardims(var))
@@ -853,7 +853,7 @@ end
 ;;#############################################################################
 undef("extract_var")
 if (fileexists(RECIPEFILE)) then
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     loadscript(RECIPEFILE)
 end if
 function extract_var(name:string,
@@ -892,7 +892,7 @@ begin
 
     funcname = "extract_var"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Read variable
@@ -1118,7 +1118,7 @@ begin
 
     funcname = "format_coord"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = diag_script_info@verbosity
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     rank = dimsizes(dimsizes(var))
