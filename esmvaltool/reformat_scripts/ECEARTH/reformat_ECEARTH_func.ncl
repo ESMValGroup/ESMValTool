@@ -255,7 +255,7 @@ begin
 
     ;; Add detailed horizontal grid sizes (for grid on which variable is
     ;; known) and areacello (for T grid) to the output file
-    if (.not. isfilepresent_esmval(HGRIDFILE)) then
+    if (.not. fileexists(HGRIDFILE)) then
         error_msg("f", scriptname, funcname, \
             nl + nl + \
             "cannot find the specified horizontal grid file " + \
@@ -367,7 +367,7 @@ begin
     ;; For 3D variables, add detailed vertical grid size (for grid on
     ;; which variable is known)
     if (isStrSubset(FIELD, "T3")) then
-        if (.not. isfilepresent_esmval(ZGRIDFILE)) then
+        if (.not. fileexists(ZGRIDFILE)) then
             error_msg("f", scriptname, funcname, \
                 nl + nl + \
                 "cannot find the specified vertical grid file " + \
@@ -551,7 +551,7 @@ begin
     dq = str_get_dq()
 
     ;; check the land mask file exists
-    if (.not. isfilepresent_esmval(LSMFILE)) then
+    if (.not. fileexists(LSMFILE)) then
         error_msg("f", scriptname, funcname, \
             nl + nl + \
             "cannot find the specified land mask file " + \

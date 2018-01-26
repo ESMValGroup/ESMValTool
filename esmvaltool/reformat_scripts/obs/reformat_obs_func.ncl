@@ -258,7 +258,7 @@ begin
     enter_msg(scriptname, funcname, 4)
 
     ;; Open file
-    if (isfilepresent_esmval(outfile)) then
+    if (fileexists(outfile)) then
         system("rm -f " + outfile)
     end if
     w = addfile(outfile, "c")

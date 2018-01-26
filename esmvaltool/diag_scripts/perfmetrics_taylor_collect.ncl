@@ -62,7 +62,7 @@ begin
     input_dir = diag_script_info@input_files(0)
     temp_dir = input_dir + "/taylor.nc"
 
-    if (isfilepresent_esmval(temp_dir)) then
+    if (fileexists(temp_dir)) then
 
         ;; Read grading list
         temp_file = addfile(temp_dir, "r")

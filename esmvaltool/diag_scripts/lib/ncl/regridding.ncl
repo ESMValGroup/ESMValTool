@@ -470,7 +470,7 @@ begin
     ;; "bilinear" ; "patch"  ; "conserve"
     Opt@InterpMethod      = "conserve"
 
-    if (.not. isfilepresent_esmval(regridding_dir)) then
+    if (.not. fileexists(regridding_dir)) then
         system("mkdir -p " + regridding_dir)
     end if
     Opt@WgtFileName = regridding_dir + "/" + "/weight_file.nc"
@@ -680,7 +680,7 @@ begin
     ;; "bilinear" ; "patch"  ; "conserve"
     Opt@InterpMethod      = "conserve"
 
-    if (.not. isfilepresent_esmval(regridding_dir)) then
+    if (.not. fileexists(regridding_dir)) then
         system("mkdir -p " + regridding_dir)
     end if
 
@@ -701,10 +701,10 @@ begin
     Opt@DstRegional = False  ; Activate if only part of the sphere is given
 
     ;; reuse regrid files if present
-    if (isfilepresent_esmval(Opt@SrcFileName)) then
+    if (fileexists(Opt@SrcFileName)) then
         Opt@SkipSrcGen = True
     end if
-    if (isfilepresent_esmval(Opt@DstFileName)) then
+    if (fileexists(Opt@DstFileName)) then
         Opt@SkipDstGen = True
     end if
 

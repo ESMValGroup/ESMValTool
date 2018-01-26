@@ -81,7 +81,7 @@ begin
         print("info: " + output_string)
     else  ; Full info output
         ;; Initialize file that keeps track of indent on first run.
-        if .not. isfilepresent_esmval(curr_trace_indent) then
+        if (.not. fileexists(curr_trace_indent)) then
             asciiwrite(curr_trace_indent, 0)
         end if
 
@@ -541,7 +541,7 @@ begin
     s_close = str_get_dq + " >> " + output_refs
 
     ;; If first time (empty output_refs) write header
-    if .not. isfilepresent_esmval(output_refs) then
+    if (.not. fileexists(output_refs)) then
 ; a_laue_ax+
 ;        system(s_open + hline + s_close)
 ;        system(s_open + "+++++++++++++ " + \

@@ -362,9 +362,7 @@ begin
 
         ;; Set path for saving processed data ;; FIX-ME add preproc_id
         fullpath = diag_script_info@work_dir + "/"
-        if (.not.isfilepresent_esmval(fullpath)) then
-            system("mkdir -p " + fullpath)
-        end if
+        system("mkdir -p " + fullpath)
         fname = basename(systemfunc("basename " + \
                          interface_get_fullpath(var0, field_type0, imod)))
         fname = fname + "_" + basename(diag_script)
@@ -377,7 +375,7 @@ begin
         procpath = fullpath + fname + ".nc"
 
 ;;DELETE        ;; Do not process data if already processed
-;;DELETE        if (isfilepresent_esmval(procpath)) then
+;;DELETE        if (fileexists(procpath)) then
 ;;DELETE            info_output("No recalculation!", verbosity, 1)
 ;;DELETE            info_output("Reading in file = " + procpath, verbosity, 1)
 ;;DELETE            if (irank.eq.5) then
@@ -617,7 +615,7 @@ begin
         ncdf_dir = diag_script_info@work_dir + "/" + diag_script_info@metric + "_" + var0_new + ".nc"
 
         ;; Start calculation
-;;DELETE        if (isfilepresent_esmval(ncdf_dir)) then
+;;DELETE        if (fileexists(ncdf_dir)) then
 ;;DELETE
 ;;DELETE            info_output("No recalculation!", verbosity, 1)
 ;;DELETE            info_output("Reading in file = " + ncdf_dir, verbosity, 1)
@@ -791,7 +789,7 @@ begin
             temp_dir = temp_dir + "grading.nc"
         end if
 
-        if (isfilepresent_esmval(temp_dir)) then
+        if (fileexists(temp_dir)) then
             temp_file = addfile(temp_dir, "r")
             temp_list = temp_file->temp_list
             temp_list_string = tostring(temp_list)

@@ -102,7 +102,7 @@ begin
     enter_msg(scriptname, funcname, 4)
 
     ;; Simulation path
-    if (.not.isfilepresent_esmval(INPATH)) then
+    if (.not.fileexists(INPATH)) then
         error_msg("f", "reformat_EMAC_func.ncl", funcname, "model data " + \
                   "path (INPATH) not found")
     end if
@@ -405,7 +405,7 @@ begin
     verbosity = diag_script_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
-    if (.not.isfilepresent_esmval(VFATMP)) then
+    if (.not.fileexists(VFATMP)) then
         leave_msg(scriptname, funcname, 4)
         return("err")
     end if
@@ -852,7 +852,7 @@ end
 
 ;;#############################################################################
 undef("extract_var")
-if (isfilepresent_esmval(RECIPEFILE)) then
+if (fileexists(RECIPEFILE)) then
     verbosity = diag_script_info@verbosity
     loadscript(RECIPEFILE)
 end if
@@ -899,7 +899,7 @@ begin
     if (name.ne."#RECIP") then  ; EMAC variable
         xx = find_and_read_var(name, date, True)
     else
-        if (isfilepresent_esmval(RECIPEFILE)) then
+        if (fileexists(RECIPEFILE)) then
             xx = EMAC_recipe(date)  ; complex variable
         else
             error_msg("f", "reformat_EMAC_func.ncl", funcname, \

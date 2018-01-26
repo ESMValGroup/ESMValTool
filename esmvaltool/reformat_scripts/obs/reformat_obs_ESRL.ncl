@@ -98,7 +98,7 @@ begin
         infile = INDIR + VAR + "_" + str_lower(st_code(stID)) + \
             "_surface-insitu_1_ccgg_month.txt"
 
-        if (isfilepresent_esmval(infile)) then
+        if (fileexists(infile)) then
 
             head = readAsciiHead(infile, "# data_field")
             data = readAsciiTable(infile, 1, "string", dimsizes(head))

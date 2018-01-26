@@ -46,7 +46,7 @@ begin
                                                  derived_field_type, \
                                                  model_index)
                 ;; Check if file is present
-                if (.not. isfilepresent_esmval(varfile) .or. \
+                if (.not. fileexists(varfile) .or. \
                     (force_processing.eq."True")) then
                     calcData = True
                 else

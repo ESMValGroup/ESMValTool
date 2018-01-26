@@ -187,7 +187,7 @@ begin
     res = get_settings(res, shortname)
 
     ;; Create output dir
-    if (.not. isfilepresent_esmval(res@processed_data_folder)) then
+    if (.not. fileexists(res@processed_data_folder)) then
         system("mkdir -p " + res@processed_data_folder)
     end if
 

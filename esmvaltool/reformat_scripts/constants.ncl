@@ -443,7 +443,7 @@ begin
 
     ;; Read attributes from cmor table
     fn = "./reformat_scripts/cmor/CMOR_" + name + ".dat"
-    if (.not.isfilepresent_esmval(fn)) then
+    if (.not.fileexists(fn)) then
         error_msg("fatal", "constants.ncl", funcname, \
                   "CMOR table for variable " + name + " not found")
     end if
@@ -759,7 +759,7 @@ begin
     enter_msg(scriptname, funcname, 4)
 
     ;; Open file
-    if (isfilepresent_esmval(OUTFILE)) then
+    if (fileexists(OUTFILE)) then
         system("rm -f " + OUTFILE)
     end if
     w = addfile(OUTFILE, "c")

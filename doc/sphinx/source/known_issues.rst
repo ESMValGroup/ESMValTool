@@ -6,14 +6,6 @@
 
    <h1> Known issues </h1>
 
-**NCL 6.2.1+**
-
-* The function "isfilepresent" has been updated in NCL 6.2.1 in a way that is backwards-incompatible. A new function "fileexists" has been introduced with NCL v6.2.1:
-
-  https://www.ncl.ucar.edu/prev_releases.shtml#BackwardsIncompatibleChanges6.2.1 
-
-  This issue can be addressed by using the ESMVal-function "isfilepresent_esmval" instead of "isfilepresent" and "fileexists".
-
 **NCL 6.3.0**
 
 * WAMonsoon: There is a problem with the routine mreg_part_corr (local opt should be removed and undef("mreg_part_corr") should be positioned just before.

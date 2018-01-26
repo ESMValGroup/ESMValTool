@@ -6,6 +6,7 @@ import unittest
 import iris
 import iris.coord_categorisation
 import iris.coords
+import iris.util
 import numpy
 from cf_units import Unit
 
@@ -150,6 +151,10 @@ class TestCMORCheck(unittest.TestCase):
         self.cube.remove_coord('latitude')
         self._check_fails_in_metadata()
 
+    def test_rank_with_aux_coords(self):
+        iris.util.demote_dim_coord_to_aux_coord(self.cube, 'latitude')
+        self._check_cube()
+
     def _check_fails_in_metadata(self, automatic_fixes=False, frequency=None):
         checker = CMORCheck(
             self.cube,
@@ -177,6 +182,21 @@ class TestCMORCheck(unittest.TestCase):
     def test_non_decreasing(self):
         self.var_info.coordinates['lat'].stored_direction = 'decreasing'
         self._check_fails_in_metadata()
+
+    def test_non_decreasing_fix(self):
+        self.cube.data[0, 0, 0, 0, 0] = 70
+        self.var_info.coordinates['lat'].stored_direction = 'decreasing'
+        self._check_cube(automatic_fixes=True)
+        self._check_cube()
+        index = [0, 0, 0, 0, 0]
+        index[self.cube.coord_dims('latitude')[0]] = -1
+        self.assertEqual(self.cube.data.item(tuple(index)), 70)
+        self.assertEqual(self.cube.data[0, 0, 0, 0, 0], 50)
+        cube_points = self.cube.coord('latitude').points
+        reference = numpy.linspace(90, -90, 20, endpoint=True)
+        for x in range(20):
+            self.assertTrue(iris.util.approx_equal(cube_points[x],
+                                                   reference[x]))
 
     def test_not_correct_lons(self):
         self.cube = self.cube.intersection(longitude=(-180., 180.))
@@ -342,7 +362,7 @@ class TestCMORCheck(unittest.TestCase):
             valid_min = 0
 
         if var_info.valid_max:
-            valid_max = float(var_info.valid_min)
+            valid_max = float(var_info.valid_max)
         else:
             valid_max = valid_min + 100
 

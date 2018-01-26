@@ -391,7 +391,7 @@ begin
     if(ismissing(plot_dir)) then
         plot_dir = "./plots/"
     end if
-    if (.not. isfilepresent_esmval(plot_dir)) then
+    if (.not. fileexists(plot_dir)) then
         system("mkdir -p " + plot_dir)
     end if
     info_output(">>>>>>>> Leaving get_plot_dir (aux_plotting.ncl)",\
