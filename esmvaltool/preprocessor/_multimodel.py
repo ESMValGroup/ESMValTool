@@ -33,7 +33,7 @@ def _get_overlap(cubes):
     bounds = [range(int(b[0]), int(b[-1]) + 1) for b in all_times]
     time_pts = reduce(np.intersect1d, (i for i in bounds))
     if len(time_pts) > 1:
-        return _sdat(time_pts[0]), _sdat(time_pts[-1])
+        return _sdat(float(time_pts[0])), _sdat(float(time_pts[-1]))
 
 
 def _slice_cube(cube, min_t, max_t):
