@@ -10,6 +10,10 @@ import yaml
 
 logger = logging.getLogger(__name__)
 
+MODEL_KEYS = {
+    'mip',
+}
+
 
 def which(executable):
     """Find executable in PATH."""
@@ -175,12 +179,27 @@ class InterfaceTask(AbstractTask):
             filename = os.path.join(self.output_dir,
                                     variable_name + '_info.ncl')
             filenames.append(filename)
+
             # 'variables' is a list of dicts, but NCL does not support nested
             # dicts, so convert to dict of lists.
             keys = sorted({k for v in variables for k in v})
-            variables = {k: [v.get(k) for v in variables] for k in keys}
-            variable_info = {'variable_info': variables}
-            write_ncl_settings(variable_info, filename)
+            input_file_info = {k: [v.get(k) for v in variables] for k in keys}
+            info = {
+                'input_file_info': input_file_info,
+                'model_info': {},
+                'variable_info': {}
+            }
+
+            # Split input_file_info into model and variable properties
+            # model keys and keys with non-identical values will be stored
+            # in model_info, the rest in variable_info
+            for key, values in input_file_info.items():
+                if key in MODEL_KEYS or any(values[0] != v for v in values):
+                    info['model_info'][key] = values
+                else:
+                    info['variable_info'][key] = values[0]
+
+            write_ncl_settings(info, filename)
 
         return filenames
 

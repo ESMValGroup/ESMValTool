@@ -187,8 +187,8 @@ begin
     ;; Annotation
     data1@res_tiMainString      = "Test diag"  ; Main title
     data1@res_gsnLeftString     = annots(imod)
-    data1@res_gsnRightString    = variable_info@long_name(0) + " in " \
-                                                          + variable_info@units(0)
+    data1@res_gsnRightString    = variable_info@long_name + " in " \
+                                                          + variable_info@units
     ;; Specified in ./nml/cfg_MyDiag/cfg_MyDiag.ncl
     data1@res_mpProjection      = diag_script_info@projection
     ;; Set explicit contour levels
@@ -211,10 +211,10 @@ begin
     end if
     data1@var = var0  ; Overwrite existing entry
     if(isatt(variable_info, "long_name")) then
-        data1@var_long_name = variable_info@long_name(0)
+        data1@var_long_name = variable_info@long_name
     end if
     if(isatt(variable_info, "units")) then
-        data1@var_units     = variable_info@units(0)
+        data1@var_units     = variable_info@units
     end if
 
     ;;###########################################

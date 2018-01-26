@@ -18,8 +18,8 @@ from .preprocessor import (DEFAULT_ORDER, MULTI_MODEL_FUNCTIONS,
 from .preprocessor._download import synda_search
 from .preprocessor._io import concatenate_callback
 from .preprocessor._reformat import CMOR_TABLES
-from .task import (DiagnosticTask, InterfaceTask, get_independent_tasks,
-                   run_tasks)
+from .task import (MODEL_KEYS, DiagnosticTask, InterfaceTask,
+                   get_independent_tasks, run_tasks)
 from .version import __version__
 
 logger = logging.getLogger(__name__)
@@ -487,6 +487,10 @@ class Namelist(object):
 
         if raw_additional_models:
             models += raw_additional_models
+
+        for model in models:
+            for key in model:
+                MODEL_KEYS.add(key)
 
         check_duplicate_models(models)
         return models

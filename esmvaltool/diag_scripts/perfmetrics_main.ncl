@@ -203,7 +203,7 @@ begin
     modelnames = project_style(diag_script_info, "annots")
 
     ;; Check for reference model definition
-  	var_attr_ref = (/variable_info@reference_model(0), variable_info@alternative_model(0)/)
+  	var_attr_ref = (/variable_info@reference_model, variable_info@alternative_model/)
     if (var_attr_ref(0).eq."None") then
         error_msg("f", diag_script, "", "no reference model is specified")
     end if
@@ -775,7 +775,7 @@ begin
         grading@num_climofiles = dimsizes(models@name)  ; for tagging
         do imod = 0, dimsizes(models@name) - 1
             num_climo = "climofile_" + imod
-            grading@$num_climo$ = variable_info@filename(imod)
+            grading@$num_climo$ = input_file_info@filename(imod)
         end do
 
         ;; Write NetCDF output
