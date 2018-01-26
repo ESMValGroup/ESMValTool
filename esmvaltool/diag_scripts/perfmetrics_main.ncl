@@ -364,7 +364,7 @@ begin
         ;; Set path for saving processed data ;; FIX-ME add preproc_id
         fullpath = getenv("ESMValTool_work_dir") + "/" + \
             basename(diag_script) + "/"
-        if (.not.isfilepresent_esmval(fullpath)) then
+        if (.not.fileexists(fullpath)) then
             system("mkdir -p " + fullpath)
         end if
         fname = basename(systemfunc("basename " + \
@@ -379,7 +379,7 @@ begin
         procpath = fullpath + fname + ".nc"
 
 ;;DELETE        ;; Do not process data if already processed
-;;DELETE        if (isfilepresent_esmval(procpath)) then
+;;DELETE        if (fileexists(procpath)) then
 ;;DELETE            info_output("No recalculation!", verbosity, 1)
 ;;DELETE            info_output("Reading in file = " + procpath, verbosity, 1)
 ;;DELETE            if (irank.eq.5) then
@@ -624,7 +624,7 @@ begin
             name + "_" + diag_script_info@metric + "_" + var0_new + ".nc"
 
         ;; Start calculation
-;;DELETE        if (isfilepresent_esmval(ncdf_dir)) then
+;;DELETE        if (fileexists(ncdf_dir)) then
 ;;DELETE
 ;;DELETE            info_output("No recalculation!", verbosity, 1)
 ;;DELETE            info_output("Reading in file = " + ncdf_dir, verbosity, 1)
@@ -804,7 +804,7 @@ begin
             temp_dir = temp_dir + "_grading.nc"
         end if
 
-        if (isfilepresent_esmval(temp_dir)) then
+        if (fileexists(temp_dir)) then
             temp_file = addfile(temp_dir, "r")
             temp_list = temp_file->temp_list
             temp_list_string = tostring(temp_list)

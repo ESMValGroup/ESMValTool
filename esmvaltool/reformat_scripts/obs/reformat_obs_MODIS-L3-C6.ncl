@@ -241,7 +241,7 @@ begin
     diag_script = "reformat_obs_modis.ncl"
 
     ;; Create output dir
-    if (.not. isfilepresent_esmval(res@processed_data_folder)) then
+    if (.not. fileexists(res@processed_data_folder)) then
         system("mkdir -p " + res@processed_data_folder)
     end if
 

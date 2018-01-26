@@ -98,7 +98,7 @@ begin
     info_output("INPATH = " + INPATH, verbosity, 1)
 
     ;; Remove existing temp file
-    if (isfilepresent_esmval(VFATMP)) then
+    if (fileexists(VFATMP)) then
         system("rm -f " + VFATMP)
     end if
 
@@ -224,7 +224,7 @@ begin
     info_output("OUTFILE = " + OUTFILE, verbosity, 1)
 
     ;; Remove existing temp file
-    if (isfilepresent_esmval(VFATMP)) then
+    if (fileexists(VFATMP)) then
         system("rm -f " + VFATMP)
     end if
 

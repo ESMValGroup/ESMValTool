@@ -435,7 +435,7 @@ begin
     enter_msg(scriptname, funcname, 10)
 
     ncdf_dir = work_dir + subfolder + "/"
-    if (.not. isfilepresent_esmval(ncdf_dir)) then
+    if (.not. fileexists(ncdf_dir)) then
         system("mkdir -p " + ncdf_dir)
     end if
 
@@ -492,7 +492,7 @@ begin
     enter_msg(scriptname, funcname, 10)
 
     ;; Open file for reading
-    if (isfilepresent_esmval(infile)) then
+    if (fileexists(infile)) then
         ncdf = addfile(infile, "r")
     else
         error_msg("f", scriptname, funcname, infile + " does not exist")
@@ -636,7 +636,7 @@ begin
     end if
 
     ;; Open outfile (see NCL documentation for "addfile")
-    if (isfilepresent_esmval(outfile)) then  ; Outfile already exists
+    if (fileexists(outfile)) then  ; Outfile already exists
         if (existing .eq. "rename") then
             sysdate = systemfunc("date +%Y%m%d%H%M%S")
             system("mv " + outfile + " " + outfile + "." + sysdate)
@@ -1144,7 +1144,7 @@ begin
     enter_msg(scriptname, funcname, 10)
 
     output_dir = plot_dir + "/" + subfolder + "/"
-    if (.not. isfilepresent_esmval(output_dir)) then
+    if (.not. fileexists(output_dir)) then
         system("mkdir -p " + output_dir)
     end if
 
@@ -1674,7 +1674,7 @@ begin
     verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
     enter_msg(scriptname, funcname, 6)
 
-    if (isfilepresent_esmval(warn_file_str)) then
+    if (fileexists(warn_file_str)) then
         system("rm -f " + warn_file_str)
     end if
     do idx_warn = 0, dimsizes(warnings) - 1

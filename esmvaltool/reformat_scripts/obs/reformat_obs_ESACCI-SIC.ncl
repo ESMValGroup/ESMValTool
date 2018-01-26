@@ -75,7 +75,7 @@ begin
     do iobs = 0, dimsizes(OBSNAME) - 1  ; loop over observation sets
 
         ;; Create output dir
-        if (.not.isfilepresent_esmval(OUTDIR(iobs))) then
+        if (.not.fileexists(OUTDIR(iobs))) then
             system("mkdir -p " + OUTDIR(iobs))
         end if
 
