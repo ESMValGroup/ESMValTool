@@ -41,12 +41,13 @@
 ;;    aux_info: additional information for stations data
 ;;    location: additional information for stations data (location)
 ;;    altitude: additional information for stations data (altitude)
+;;    abs_levs: (min, max, spacing) contour levels for absolute plot
+;;    diff_levs: (min, max, spacing) contour levels for difference plot
 ;;
 ;; Required variable_info attributes (variable specific)
+;;    FIX-ME: remove the following?
 ;;    map_ref_Levels: contour levels for the latlon plot
 ;;    map_diff_Levels: contour levels for the latlon difference plot
-;;    zonal_ref_Levels: contour levels for the zonal plot
-;;    zonal_diff_Levels: contour levels for the zonal difference plot
 ;;
 ;; Optional variable_info attributes (variable specific)
 ;;    zonal_ref_cmap: color table for the zonal plot
@@ -880,11 +881,11 @@ begin
             do imod = 0, dim_MOD - 1
                 outfile = output_dir + \
                     modelnames(imod) + "_" + var0 + "_" + ptype + "_" + \
-                    time_avg + "_" + level + region_name
+                    time_avg + region_name
                 var = var_all(imod, :, :, 0)
                 var@res_tiMainString = modelnames(imod)
                 var@res_cnLevelSelectionMode = "ExplicitLevels"
-                var@res_cnLevels = variable_info@zonal_ref_Levels
+                var@res_cnLevels = diag_script_info@abs_levs
                 if (isatt(variable_info, "zonal_ymin")) then
                     var@res_trYMinF = variable_info@zonal_ymin
                 else
@@ -914,8 +915,7 @@ begin
                 var = var_diff(imod, :, :)
                 outfile = output_dir + \
                     modelnames(imod) + "-" + modelnames(ref_ind) + "_" + \
-                    var0 + "_" + ptype + "_" + time_avg + "_" + \
-                    level + region_name
+                    var0 + "_" + ptype + "_" + time_avg + region_name
                 var@res_tiMainString = modelnames(imod) + " - " + \
                     modelnames(ref_ind)
                 if (isatt(diag_script_info, "conf_level")) then
@@ -924,7 +924,7 @@ begin
                     + "% c.l."
                 end if
                 var@res_cnLevelSelectionMode = "ExplicitLevels"
-                var@res_cnLevels = variable_info@zonal_diff_Levels
+                var@res_cnLevels = diag_script_info@diff_levs
                 var@res_cnMissingValFillColor = "gray70"
                 var@res_gsnSpreadColorEnd = -2
                 wks = gsn_open_wks(file_type, outfile)
