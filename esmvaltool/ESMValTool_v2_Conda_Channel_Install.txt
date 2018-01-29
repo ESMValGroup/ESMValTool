@@ -6,6 +6,9 @@ with linking to existing conda modules (HIGHLY RECOMMENDED): conda env update --
 source activate esmvaltool
 python setup.py install
 
+remember to add anaconda to python path:
+export PATH=$PATH_TO_ANACONDA/anaconda2/bin:$PATH
+
 git setup
 ==========
 git clone https://github.com/ESMValGroup/ESMValTool.git
