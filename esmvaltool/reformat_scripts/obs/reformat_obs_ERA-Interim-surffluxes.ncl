@@ -82,7 +82,7 @@ load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     diag_script = "reformat_obs_ERA-Interim-surffluxes.ncl"
     enter_msg(diag_script, "", 1)
 

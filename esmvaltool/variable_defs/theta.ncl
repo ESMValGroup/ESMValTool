@@ -25,7 +25,7 @@ function calculate(index [1] : integer,
 ;;    data_new - logical
 local tmp, theta, i, dum, verbosity, pp
 begin
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     info_output("<<<<<<<< Entering theta.ncl", verbosity, 2)
     data_new = True
     tmp = read_data(index, "ta", "*3*")

@@ -16,7 +16,7 @@
 ;;
 ;;#############################################################################
 
-load "$ESMValTool_interface_data/ncl.interface"
+
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/constants.ncl"
 load "./interface_scripts/data_handling.ncl"
@@ -58,7 +58,7 @@ begin
 
     funcname = "roi"
     scriptname = "diag_scripts/lib/ncl/latlon.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     info_output("  roi: latmin=" + latlon_roi(0) + \
@@ -197,7 +197,7 @@ begin
 
     funcname = "extract_area"
     scriptname = "diag_scripts/lib/ncl/latlon.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; 'cn' is the basic building block for the keys used in
@@ -240,7 +240,7 @@ begin
 
     funcname = "gridcell_area"
     scriptname = "diag_scripts/lib/ncl/latlon.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
 ;    enter_msg(scriptname, funcname, 10)
 
     ;; Convert to radiants
@@ -282,7 +282,7 @@ begin
 
     funcname = "map_area"
     scriptname = "diag_scripts/lib/ncl/latlon.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; Type conversion
@@ -391,7 +391,7 @@ begin
 
     funcname = "area_operations"
     scriptname = "diag_scripts/lib/ncl/latlon.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; Check rank
@@ -604,7 +604,7 @@ begin
 
     funcname = "select_region"
     scriptname = "diag_scripts/lib/ncl/latlon.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     if (region.eq."Global") then
@@ -732,7 +732,7 @@ begin
 
     funcname = "make_latlon2D"
     scriptname = "diag_scripts/lib/ncl/latlon.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     if (all(iscoord(field, (/"lat", "lon"/)))) then

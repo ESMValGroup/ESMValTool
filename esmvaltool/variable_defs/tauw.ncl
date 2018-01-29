@@ -26,7 +26,7 @@ local tmp_u, tmp_v, dum_u, dum_v, dum_w, in_file, out_file, fin, fout, \
     field_type, vars, verbosity, scriptname
 begin
     scriptname = "variable_defs/tauw.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, "", 4)
 
     field_type = getenv("ESMValTool_derived_field_type")

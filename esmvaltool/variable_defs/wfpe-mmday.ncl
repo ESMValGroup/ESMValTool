@@ -27,7 +27,7 @@ function calculate(index[1] : integer,
 local result, scriptname, T, verbosity
 begin
     scriptname = "variable_defs/wfpe-mmday.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, "", 4)
 
     result = read_data(index, "wfpe", "T2*s")

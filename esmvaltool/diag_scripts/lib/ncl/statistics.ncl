@@ -64,7 +64,7 @@ begin
 
     funcname = "dim_stddev_wgt_Wrap"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ; Copy to local
@@ -163,7 +163,7 @@ begin
 
     funcname = "time_operations"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; Check arguments
@@ -779,7 +779,7 @@ begin
 
     funcname = "calc_season_index"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     DEBUG = False
@@ -877,7 +877,7 @@ begin
 
     funcname = "extract_season"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 8)
 
     season_monthly_indices = calc_season_index(season)
@@ -963,7 +963,7 @@ begin
 
     funcname = "month_to_season_extended"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 8)
 
     indata_size = dimsizes(indata)
@@ -1066,7 +1066,7 @@ begin
 
     funcname = "coswgt_areaave"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     lat = field&lat
@@ -1112,7 +1112,7 @@ begin
 
     funcname = "coswgt_arearmse"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     field1_grid_size = guestimate_average_grid_area(field1)
@@ -1168,7 +1168,7 @@ begin
 
     funcname = "coswgt_pattern_cor"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     field1_grid_size = guestimate_average_grid_area(field1)
@@ -1241,7 +1241,7 @@ begin
 
     funcname = "interannual_variability"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; Check for time dimension
@@ -1388,7 +1388,7 @@ begin
 
     funcname = "calculate_metric"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; Check for dimensions consistency
@@ -1550,7 +1550,7 @@ begin
 
     funcname = "normalize_metric"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     val_var = ndtooned(var)
@@ -1628,7 +1628,7 @@ begin
 
     funcname = "distrib_stats"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; Check input
@@ -1734,7 +1734,7 @@ begin
 
     funcname = "lognormal_dist"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     if (dimsizes(dimsizes(nn)).ne.1 .or. dimsizes(dimsizes(dg)).ne.1) then

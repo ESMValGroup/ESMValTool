@@ -48,7 +48,7 @@ function legend_lines(wks_in[1], \
 ;;
 local data, defaults, var, diag_script, colors, annots, dashes, thicks  
 begin
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering legend_lines (legends.ncl)", verbosity, 10)
 
     ;; Get data, either directly or via netCDF file
@@ -210,7 +210,7 @@ function legend_markers(wks_in[1], \
 ;;
 local data, defaults, var, diag_script, colors, annots, dashes, thicks  
 begin
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering legend_lines (legends.ncl)", verbosity, 10)
 
     ;; Get data, either directly or via netCDF file

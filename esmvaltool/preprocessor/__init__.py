@@ -212,12 +212,14 @@ class PreprocessingTask(AbstractTask):
 
     def __init__(self,
                  settings,
-                 order=DEFAULT_ORDER,
+                 output_dir,
                  ancestors=None,
                  input_files=None,
+                 order=DEFAULT_ORDER,
                  debug=None):
         """Initialize"""
-        super(PreprocessingTask, self).__init__(settings, ancestors)
+        super(PreprocessingTask, self).__init__(
+            settings=settings, output_dir=output_dir, ancestors=ancestors)
         self.order = list(order)
         self.debug = debug
         self._input_files = input_files

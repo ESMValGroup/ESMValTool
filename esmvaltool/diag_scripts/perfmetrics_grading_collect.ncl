@@ -42,9 +42,9 @@
 ;;
 ;;#############################################################################
 
+; Load diag_script_info
+load "interface_scripts/interface.ncl"
 
-load "$ESMValTool_interface_data/ncl.interface"
-load "./interface_scripts/interface.ncl"
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/data_handling.ncl"
 load "./interface_scripts/messaging.ncl"
@@ -55,12 +55,12 @@ load "./plot_scripts/ncl/portrait_plot.ncl"
 
 begin
 
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     enter_msg(diag_script, "", 4)
     diag_script_base = basename(diag_script)
 
     ;; Check file type
-    file_type = getenv("ESMValTool_output_file_type")
+    file_type = config_user_info@output_file_type
     if(ismissing(file_type)) then
         file_type = "ps"
     end if
@@ -75,11 +75,8 @@ begin
                      (/"P_embrace", "P_esmval"/))
 
     ;; Read grading list and add files together
-    yml_name = getenv("ESMValTool_yml_name")
-    suffix = get_file_suffix(yml_name, 0)
-    name = str_sub_str(yml_name, suffix, "")
-    temp_dir = get_output_dir(getenv("ESMValTool_work_dir"), "temp") + \
-        name + "_grading.nc"
+    input_dir = diag_script_info@input_files(0)
+    temp_dir = input_dir + "/grading.nc"
 
     if (fileexists(temp_dir)) then
 
@@ -187,7 +184,7 @@ begin
 
     else
 
-        error_msg("f", diag_script, "", "cannot find grading list")
+        error_msg("f", diag_script, "", "cannot find grading list:" + temp_dir)
 
     end if
 
@@ -225,14 +222,10 @@ begin
     end if
 
     ;; Plot
-    if (getenv("ESMValTool_write_plots").eq.True) then
-        yml_name = getenv("ESMValTool_yml_name")
-        suffix = get_file_suffix(yml_name, 0)
-        name = str_sub_str(yml_name, suffix, "")
-
+    if (config_user_info@write_plots.eq.True) then
         ;; Create outfile directory
-        plot_dir = getenv("ESMValTool_plot_dir")
-        output_dir = get_output_dir(plot_dir, "perfmetrics_grading")
+        plot_dir = config_user_info@plot_dir + "/"
+        system("mkdir -p " + plot_dir)
         if(dimsizes(data_all&diagnostics).gt.2) then
             diags = data_all&diagnostics(0) + "_to_" + \
                 data_all&diagnostics(dimsizes(data_all&diagnostics) - 1)
@@ -241,7 +234,7 @@ begin
         end if
 
         ;; Define outfile name
-        outfile_plot = output_dir + name + "_" + diags
+        outfile_plot = plot_dir + diags
         if (isatt(data_all, "metric")) then
             outfile_plot = outfile_plot + "_" + data_all@metric
         end if

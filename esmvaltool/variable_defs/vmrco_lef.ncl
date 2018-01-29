@@ -38,7 +38,7 @@ begin
 
     funcname = "calculate"
     scriptname = "variable_defs/vmrco_lef.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Parameters
