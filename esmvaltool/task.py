@@ -167,9 +167,16 @@ class InterfaceTask(AbstractTask):
 
     def write_metadata(self, metadata):
         """Write metadata file to output_dir"""
+        meta = {}
+        for variable_name, file_list in metadata.items():
+            meta[variable_name] = {}
+            for file_metadata in file_list:
+                file_metadata = dict(file_metadata)
+                filename = file_metadata.pop('filename')
+                meta[variable_name][filename] = file_metadata
         filename = os.path.join(self.output_dir, 'metadata.yml')
         with open(filename, 'w') as file:
-            yaml.safe_dump(metadata, file)
+            yaml.safe_dump(meta, file)
         return filename
 
     def write_ncl_metadata(self, metadata):
