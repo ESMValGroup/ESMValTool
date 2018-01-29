@@ -45,7 +45,7 @@ begin
 
     funcname = "calculate"
     scriptname = "variable_defs/tas-degC.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     result = read_data(index, "tas", "T2*s")

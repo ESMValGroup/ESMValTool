@@ -54,7 +54,7 @@ begin
 
     funcname = "portrait_plot"
     scriptname = "plot_scripts/ncl/portrait_plot.ncl"
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Get data, either directly or via netCDF file

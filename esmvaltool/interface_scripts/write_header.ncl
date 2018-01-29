@@ -24,14 +24,14 @@ local namelist, version
 begin
     funcname = "write_header"
     scriptname = "interface_scripts/messaging.ncl"
-;    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+;    verbosity  = config_user_info@verbosity
 ;    enter_msg(scriptname, funcname, 4)
 
     ;; Namelist in use
-    namelist = getenv("ESMValTool_yml_name")
+    namelist = diag_script_info@namelist
 
     ;; ESMValTool version
-    version = getenv("0_ESMValTool_version")
+    version = diag_script_info@version
 
     dq = "\" + str_get_dq()
 

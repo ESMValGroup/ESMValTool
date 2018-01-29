@@ -67,7 +67,7 @@ load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     diag_script = "reformat_obs_ESACCI-GCP.ncl"
     enter_msg(diag_script, "", 1)
 
@@ -85,7 +85,7 @@ begin
 
     infile = INDIR + OBSNAME + "_2012_v1.3.txt"
 
-    if (isfilepresent_esmval(infile)) then
+    if (fileexists(infile)) then
 
         head = readAsciiHead(infile, "#Year")
         data = readAsciiTable(infile, 7, "float", dimsizes(head))

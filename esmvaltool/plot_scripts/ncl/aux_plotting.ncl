@@ -21,7 +21,7 @@
 ;;
 ;;#############################################################################
 
-load "$ESMValTool_interface_data/ncl.interface"
+
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/messaging.ncl"
 
@@ -60,7 +60,7 @@ begin
 
     funcname = "create_legend_lines"
 
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering create_legend_lines (xy_line.ncl)", \
                 verbosity, 10)
 
@@ -201,10 +201,10 @@ function output_type()
 ;;
 local file_type
 begin
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering output_type (aux_plotting.ncl)",\
                 verbosity, 10)
-    file_type = getenv("ESMValTool_output_file_type")
+    file_type = config_user_info@output_file_type
     if(ismissing(file_type)) then
         file_type = "ps"
     end if
@@ -240,7 +240,7 @@ procedure copy_VarAtt_sel(var1, var2, sel: string)
 ;;
 local atts, i1, i2, n
 begin
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering copy_VarAtt_sel (aux_plotting.ncl)", \
                 verbosity, 5)
 
@@ -303,7 +303,7 @@ begin
 
     funcname = "panelling"
 
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering panelling (aux_plotting.ncl)", verbosity, 5)
 
     ;; check if valid wks has been provided
@@ -384,14 +384,14 @@ function get_plot_dir()
 ;;
 local plot_dir
 begin
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering get_plot_dir (aux_plotting.ncl)",\
                 verbosity, 10)
-    plot_dir = getenv("ESMValTool_plot_dir")
+    plot_dir = config_user_info@plot_dir + "/"
     if(ismissing(plot_dir)) then
         plot_dir = "./plots/"
     end if
-    if (.not. isfilepresent_esmval(plot_dir)) then
+    if (.not. fileexists(plot_dir)) then
         system("mkdir -p " + plot_dir)
     end if
     info_output(">>>>>>>> Leaving get_plot_dir (aux_plotting.ncl)",\
@@ -401,51 +401,39 @@ end
 
 ;;#############################################################################
 undef("get_outfile_name")
-function get_outfile_name(diag_script[1] : string,
-                          add_specs[1] : string)
+function get_outfile_name(add_specs[1] : string)
 ;;
 ;; Arguments
-;;    diag_script: name of diagnostic script(s)
 ;;    add_specs: string containing specific elements to be added to the file
 ;;               name if not of type string, only variable name is used.
 ;;
 ;; Return value
 ;;    Complete outfile name incl. path, additional specifications and file type
-;;    output_dir + diag_script_base + add_specs + file_type
+;;    plot_dir + add_specs + file_type
 ;;
 ;; Description
-;;    Fetches file_type, plot_dir, diag_script_base, output_dir via other
-;;    scripts
+;;    Fetches file_type, plot_dir
 ;;    Fetches string with additional elements specified within diag script
-;;
-;; Caveats
-;;    diag_script may need to be extended by other contributing scripts
 ;;
 ;; Modification history
 ;;    20131204-A_senf_da: generalized naming.
 ;;    20131104-A_gott_kl: written.
 ;;
-local outfile, file_type, plot_dir, diag_script_base, diag_script, add_specs, \
+local outfile, file_type, plot_dir, diag_script_base, add_specs, \
     output_dir
 begin
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering get_outfile_name (aux_plotting.ncl)",\
                 verbosity, 10)
     ;; Collect parts of outfile name
     file_type = output_type()  ; Function in ~/plot_scripts/aux_plotting.ncl
     plot_dir = get_plot_dir()  ; Function in ~/plot_scripts/aux_plotting.ncl
-    diag_script_base = basename(diag_script)  ; Function in auxiliary.ncl
-
-    ;; Function in auxiliary.ncl
-    output_dir = get_output_dir(plot_dir, diag_script_base)
 
     ;; Assemble final name
     if (typeof(add_specs).ne."string") then
-        outfile = output_dir + diag_script_base + "_" + var + "." + file_type
+        outfile = plot_dir + var + "." + file_type
     else
-        outfile = output_dir + diag_script_base + "_"\
-                             + add_specs + "."\
-                             + file_type
+        outfile = plot_dir + add_specs + "." + file_type
     end if
     info_output(">>>>>>>> Leaving get_outfile_name (aux_plotting.ncl)",\
                 verbosity, 10)
@@ -479,7 +467,7 @@ function get_wks(wks_in,
 ;;
 local wks_in, diag_script, add_specs, file_type
 begin
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering get_wks (aux_plotting.ncl)",\
                 verbosity, 10)
     ;; check if a valid wks has been provided, otherwise invoke default
@@ -489,7 +477,7 @@ begin
         copy_VarMeta(wks_in,file_type) 
 
         ;; Function in ~/plot_scripts/ncl/aux_plotting.ncl
-        outfile = get_outfile_name(diag_script, add_specs)
+        outfile = get_outfile_name(add_specs)
         wks = gsn_open_wks(file_type, outfile)
         wks@fullname = outfile
     else
@@ -529,7 +517,7 @@ procedure add_markers(wks[1] : graphic,
 ;;
 local res, str, atts, iatt, color
 begin
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering add_markers (aux_plotting.ncl)", verbosity, 10)
 
     ;; set default plot ressources 
@@ -597,7 +585,7 @@ procedure add_num_markers(wks[1] : graphic,
 ;;
 local xpos, ypos, res, str, atts, iatt, color
 begin
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering add_markers (aux_plotting.ncl)", verbosity, 10)
 
     ;; set default plot ressources 
@@ -678,7 +666,7 @@ procedure add_errorbar(wks[1] : graphic,
 ;;
 local xpos, ypos, res, str, atts, iatt, color
 begin
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering add_markers (aux_plotting.ncl)", verbosity, 10)
 
     ;; set default plot ressources 
@@ -813,7 +801,7 @@ begin
 
     funcname = "horizontal_whiskers"
 
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering horizontal_whiskers (aux_plotting.ncl)",\
                 verbosity, 10)
 
@@ -914,7 +902,7 @@ procedure add_prediction_error(wks[1] : graphic,
 ;;
 local xpos, ypos, res, str, atts, iatt, color
 begin
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering add_markers (aux_plotting.ncl)", verbosity, 10)
 
     ;; set default plot ressources 

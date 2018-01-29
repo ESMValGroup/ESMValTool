@@ -151,6 +151,10 @@ class TestCMORCheck(unittest.TestCase):
         self.cube.remove_coord('latitude')
         self._check_fails_in_metadata()
 
+    def test_rank_with_aux_coords(self):
+        iris.util.demote_dim_coord_to_aux_coord(self.cube, 'latitude')
+        self._check_cube()
+
     def _check_fails_in_metadata(self, automatic_fixes=False, frequency=None):
         checker = CMORCheck(
             self.cube,

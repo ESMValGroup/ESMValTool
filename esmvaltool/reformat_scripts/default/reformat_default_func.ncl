@@ -31,10 +31,10 @@
 
 load "./reformat_scripts/constants.ncl"
 load "./interface_scripts/messaging.ncl"
-load "$ESMValTool_interface_data/ncl.interface"
+load "interface_scripts/interface.ncl"
 
 begin
-    if (isfilepresent_esmval(FIXFILE)) then
+    if (fileexists(FIXFILE)) then
         loadscript(FIXFILE)
     end if
 end
@@ -60,11 +60,11 @@ begin
 
     funcname = "check_inpath"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Simulation path
-    if (.not. isfilepresent_esmval(INPATH)) then
+    if (.not. fileexists(INPATH)) then
         error_msg("f", scriptname, funcname, \
                   "simulation path INPATH = " + INPATH + ", not found")
     end if
@@ -107,7 +107,7 @@ begin
 
     funcname = "find_alt_names"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Create local copy
@@ -175,7 +175,7 @@ begin
 
     funcname = "check_var"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Return value initialized to missing
@@ -227,10 +227,10 @@ begin
 
     funcname = "apply_fixes"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
-    if (isfilepresent_esmval(FIXFILE)) then
+    if (fileexists(FIXFILE)) then
         ret = fixing_func(var, name)
         if (ret.eq.0) then
             info_output("  A data-fixing function (" + FIXFILE + ") " + \
@@ -279,7 +279,7 @@ begin
 
     funcname = "read_var"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Lists of files
@@ -446,7 +446,7 @@ begin
 
     funcname = "check_rank"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     dims = dimsizes(var)
@@ -566,7 +566,7 @@ begin
 
     funcname = "find_grid_type"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
     files = systemfunc("ls " + INFILE)
 
@@ -634,7 +634,7 @@ begin
 
     funcname = "check_fill"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     if (.not. isatt(var, "_FillValue")) then
@@ -687,7 +687,7 @@ begin
 
     funcname = "reformat_time"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Check positioning
@@ -734,7 +734,7 @@ begin
 
     funcname = "reformat_plev"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     allowed_units = (/"m", "M",\
@@ -818,7 +818,7 @@ begin
 
     funcname = "reformat_lev"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Assign standard name
@@ -891,7 +891,7 @@ begin
 
     funcname = "reformat_basin"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Assign standard name
@@ -934,7 +934,7 @@ begin
 
     funcname = "reformat_lat"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Assign standard name
@@ -1010,7 +1010,7 @@ begin
 
     funcname = "reformat_lon"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Copy to local var
@@ -1110,7 +1110,7 @@ begin
 
     funcname = "reformat_coord"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Create a local copy
@@ -1216,7 +1216,7 @@ begin
 
     funcname = "add_irregulargrid_info"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Variable dimensions (must be consistent with areacello dimensions)
@@ -1311,7 +1311,7 @@ begin
     delete(vars)
 
     ;; Read, reformat and check the irregular grid area
-    if (.not. isfilepresent_esmval(AREAFILE)) then
+    if (.not. fileexists(AREAFILE)) then
         print("")
         print("Cannot find the specified area file")
         print("      " + AREAFILE)
@@ -1518,7 +1518,7 @@ begin
 
     funcname = "add_lmask_info"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Variable dimensions (must be consistent with sftlf dimensions)
@@ -1527,7 +1527,7 @@ begin
     vrank = dimsizes(vsize)
 
     lexist = False
-    if (isfilepresent_esmval(LMASKFILE)) then
+    if (fileexists(LMASKFILE)) then
         ff = addfile(LMASKFILE, "r")
         if (isfilevar(ff, "sftlf")) then
             lexist = True
@@ -1616,7 +1616,7 @@ begin
 
     funcname = "add_omask_info"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Variable dimensions (must be consistent with sftof dimensions)
@@ -1625,7 +1625,7 @@ begin
     vrank = dimsizes(vsize)
 
     lexist = False
-    if (isfilepresent_esmval(OMASKFILE)) then
+    if (fileexists(OMASKFILE)) then
         ff = addfile(OMASKFILE, "r")
         if (isfilevar(ff, "sftof")) then
             lexist = True
@@ -1715,7 +1715,7 @@ begin
 
     funcname = "add_porosity_info"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Variable dimensions (must be consistent with mrsofc dimensions)
@@ -1724,7 +1724,7 @@ begin
     vrank = dimsizes(vsize)
 
     lexist = False
-    if (isfilepresent_esmval(POROFILE)) then
+    if (fileexists(POROFILE)) then
         ff = addfile(POROFILE, "r")
         if (isfilevar(ff, "mrsofc")) then
             lexist = True
@@ -1813,7 +1813,7 @@ begin
 
     funcname = "add_depth_info"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Any of the input files is ok, since depth/depth_bnds are constants
@@ -1876,7 +1876,7 @@ begin
 
     funcname = "add_regionbasin_info"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Open input file

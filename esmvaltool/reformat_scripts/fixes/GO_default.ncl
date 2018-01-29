@@ -27,7 +27,7 @@ local dNames,fn_out,lat_name,lon_name,lat,lon,lat_index,lon_index,fout,\
       areafile,g,fx,area,script_name,i,j,lat2D,lon2D
 begin
     
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     info_output(" In fix_default from GO_default.ncl ", verbosity, 3)
     script_name = getenv("ESMValTool_project")+"_"+getenv("ESMValTool_model")+".ncl"
  

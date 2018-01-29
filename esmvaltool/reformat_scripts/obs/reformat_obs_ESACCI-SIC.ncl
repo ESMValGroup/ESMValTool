@@ -68,14 +68,14 @@ load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     diag_script = "reformat_obs_ESACCI-SIC.ncl"
     enter_msg(diag_script, "", 1)
 
     do iobs = 0, dimsizes(OBSNAME) - 1  ; loop over observation sets
 
         ;; Create output dir
-        if (.not.isfilepresent_esmval(OUTDIR(iobs))) then
+        if (.not.fileexists(OUTDIR(iobs))) then
             system("mkdir -p " + OUTDIR(iobs))
         end if
 

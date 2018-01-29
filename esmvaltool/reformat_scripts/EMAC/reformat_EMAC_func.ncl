@@ -20,7 +20,7 @@
 ;;
 ;;#############################################################################
 
-load "$ESMValTool_interface_data/ncl.interface"
+load "interface_scripts/interface.ncl"
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/messaging.ncl"
 
@@ -59,7 +59,7 @@ begin
 
     funcname = "fix_FillValue"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     if (var@_FillValue.eq.-1.e34) then
@@ -98,11 +98,11 @@ begin
 
     funcname = "check_inpath"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Simulation path
-    if (.not.isfilepresent_esmval(INPATH)) then
+    if (.not.fileexists(INPATH)) then
         error_msg("f", "reformat_EMAC_func.ncl", funcname, "model data " + \
                   "path (INPATH) not found")
     end if
@@ -143,7 +143,7 @@ begin
 
     funcname = "find_messy_version"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     found = False
@@ -219,7 +219,7 @@ begin
 
     funcname = "get_aerosol_modes"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Possible modes names
@@ -267,7 +267,7 @@ begin
 
     funcname = "get_aerosol_spec"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Possible aerosol species
@@ -305,7 +305,7 @@ begin
 
     funcname = "find_name"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     fname = "./reformat_scripts/EMAC/names_EMAC.dat"
@@ -360,7 +360,7 @@ begin
 
     funcname = "put_vfatmp"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     dn = systemfunc("dirname " + fn)
@@ -402,10 +402,10 @@ begin
 
     funcname = "get_vfatmp"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
-    if (.not.isfilepresent_esmval(VFATMP)) then
+    if (.not.fileexists(VFATMP)) then
         leave_msg(scriptname, funcname, 4)
         return("err")
     end if
@@ -489,7 +489,7 @@ begin
 
     funcname = "find_and_read_var"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Create a local copy
@@ -730,7 +730,7 @@ begin
 
     funcname = "time_mean"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     rank = dimsizes(getvardims(var))
@@ -852,8 +852,8 @@ end
 
 ;;#############################################################################
 undef("extract_var")
-if (isfilepresent_esmval(RECIPEFILE)) then
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+if (fileexists(RECIPEFILE)) then
+    verbosity = config_user_info@verbosity
     loadscript(RECIPEFILE)
 end if
 function extract_var(name:string,
@@ -892,14 +892,14 @@ begin
 
     funcname = "extract_var"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Read variable
     if (name.ne."#RECIP") then  ; EMAC variable
         xx = find_and_read_var(name, date, True)
     else
-        if (isfilepresent_esmval(RECIPEFILE)) then
+        if (fileexists(RECIPEFILE)) then
             xx = EMAC_recipe(date)  ; complex variable
         else
             error_msg("f", "reformat_EMAC_func.ncl", funcname, \
@@ -1118,7 +1118,7 @@ begin
 
     funcname = "format_coord"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     rank = dimsizes(dimsizes(var))

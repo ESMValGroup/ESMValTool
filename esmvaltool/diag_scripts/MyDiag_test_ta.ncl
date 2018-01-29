@@ -50,9 +50,8 @@
 ;load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
 ;load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
 
-; A temporary file written by the invoking Python script
-; Passes on a number of variables from Python to NCL
-load "$ESMValTool_interface_data/ncl.interface"
+; Load diag_script_info
+load "interface_scripts/interface.ncl"
 
 ; Auxiliary NCL routines
 load "./interface_scripts/interface.ncl"
@@ -70,7 +69,7 @@ begin
     ;;# Fetch general parameters, set in namelist_MyDiag.yml,   #
     ;;# passed via environment variables by python code         #
     ;;###########################################################
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering " + diag_script, verbosity, 4)
 
     ;; 'diag_script' and 'variables' are fetched from the
@@ -99,12 +98,6 @@ begin
     do idx_mod = 0, dim_MOD - 1
         data = read_data(idx_mod, var0, field_type0)
     end do
-end
-
-; Load variable_info
-begin
-    vardeffile = "$ESMValTool_interface_data/" + var0 + "_info.tmp"
-    loadscript(vardeffile)
 end
 
 begin

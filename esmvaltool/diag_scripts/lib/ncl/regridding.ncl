@@ -19,7 +19,7 @@
 ;;
 ;;#############################################################################
 
-load "$ESMValTool_interface_data/ncl.interface"
+
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/constants.ncl"
 load "./interface_scripts/data_handling.ncl"
@@ -72,7 +72,7 @@ begin
 
     funcname = "find_destination_grid"
     scriptname = "diag_scripts/lib/ncl/regridding.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; Check
@@ -273,7 +273,7 @@ begin
 
     funcname = "guestimate_average_grid_area"
     scriptname = "diag_scripts/lib/ncl/regridding.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     dimsize_lat = dimsizes(data&lat)
@@ -319,7 +319,7 @@ begin
 
     funcname = "get_lower_limits"
     scriptname = "diag_scripts/lib/ncl/regridding.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 8)
 
     d_size = dimsizes(coordinate)
@@ -355,7 +355,7 @@ begin
 
     funcname = "get_upper_limits"
     scriptname = "diag_scripts/lib/ncl/regridding.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 8)
 
     d_size = dimsizes(coordinate)
@@ -397,7 +397,7 @@ begin
 
     funcname = "is_regional"
     scriptname = "diag_scripts/lib/ncl/regridding.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 8)
 
     lat = grid&lat
@@ -447,7 +447,7 @@ begin
 
     funcname = "esmf_conserve_wrapper"
     scriptname = "diag_scripts/lib/ncl/regridding.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     Opt                    = True
@@ -470,7 +470,7 @@ begin
     ;; "bilinear" ; "patch"  ; "conserve"
     Opt@InterpMethod      = "conserve"
 
-    if (.not. isfilepresent_esmval(regridding_dir)) then
+    if (.not. fileexists(regridding_dir)) then
         system("mkdir -p " + regridding_dir)
     end if
     Opt@WgtFileName = regridding_dir + "/" + "/weight_file.nc"
@@ -521,7 +521,7 @@ begin
 
     funcname = "rect2rect_interp"
     scriptname = "diag_scripts/lib/ncl/regridding.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     interpolated = esmf_conserve_wrapper(source, target)
@@ -554,7 +554,7 @@ begin
 
     funcname = "plev_lat_interp"
     scriptname = "diag_scripts/lib/ncl/regridding.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     interpolated = linint2(source&lat, source&plev, source, \
@@ -590,7 +590,7 @@ begin
 
     funcname = "get_model_minus_ref"
     scriptname = "diag_scripts/lib/ncl/regridding.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     is_plev = any(isdim(model, "plev"))
@@ -664,7 +664,7 @@ begin
 
     funcname = "esmf_conserve_wrapper_time"
     scriptname = "diag_scripts/lib/ncl/regridding.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     Opt                    = True
@@ -680,7 +680,7 @@ begin
     ;; "bilinear" ; "patch"  ; "conserve"
     Opt@InterpMethod      = "conserve"
 
-    if (.not. isfilepresent_esmval(regridding_dir)) then
+    if (.not. fileexists(regridding_dir)) then
         system("mkdir -p " + regridding_dir)
     end if
 
@@ -701,10 +701,10 @@ begin
     Opt@DstRegional = False  ; Activate if only part of the sphere is given
 
     ;; reuse regrid files if present
-    if (isfilepresent_esmval(Opt@SrcFileName)) then
+    if (fileexists(Opt@SrcFileName)) then
         Opt@SkipSrcGen = True
     end if
-    if (isfilepresent_esmval(Opt@DstFileName)) then
+    if (fileexists(Opt@DstFileName)) then
         Opt@SkipDstGen = True
     end if
 
@@ -779,11 +779,11 @@ begin
 
     funcname = "regrid_3D_to_rectilinear_grid"
     scriptname = "diag_scripts/lib/ncl/regridding.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; Workdir
-    workpath = getenv("ESMValTool_work_dir")
+    workpath = config_user_info@work_dir
 
     ;; Define interpolation method
     INTERP_METHOD = (/"conserve"/)

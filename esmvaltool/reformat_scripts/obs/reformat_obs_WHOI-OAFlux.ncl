@@ -170,7 +170,7 @@ load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity =  stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity =  config_user_info@verbosity
     diag_script = "reformat_obs_OAFlux.ncl"
     enter_msg(diag_script, "", 1)
 
@@ -187,7 +187,7 @@ begin
     res = get_settings(res, shortname)
 
     ;; Create output dir
-    if (.not. isfilepresent_esmval(res@processed_data_folder)) then
+    if (.not. fileexists(res@processed_data_folder)) then
         system("mkdir -p " + res@processed_data_folder)
     end if
 

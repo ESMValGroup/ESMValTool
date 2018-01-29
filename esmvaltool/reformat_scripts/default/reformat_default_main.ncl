@@ -19,7 +19,7 @@
 ;;
 ;;#############################################################################
 
-load "$ESMValTool_interface_data/ncl.interface"
+load "interface_scripts/interface.ncl"
 load "./interface_scripts/messaging.ncl"
 
 scriptname = "reformat_scripts/default/reformat_default_main.ncl"
@@ -82,7 +82,7 @@ load "./reformat_scripts/default/reformat_default_func.ncl"
 
 begin
 
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, "", 2)
 
     info_output("INFILE = " + INFILE, verbosity, 1)
@@ -124,7 +124,7 @@ begin
     delete(tmp)
 
     ;; Write output
-    version  = getenv("0_ESMValTool_version")
+    version  = diag_script_info@version
     write_output(VARPROC, VAR, filelist, fixfile, version)
     delete(fixfile)
     delete(filelist)

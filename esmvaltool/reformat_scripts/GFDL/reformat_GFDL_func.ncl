@@ -14,7 +14,7 @@
 ;;
 ;;#############################################################################
 
-load "$ESMValTool_interface_data/ncl.interface"
+load "interface_scripts/interface.ncl"
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/messaging.ncl"
 
@@ -43,11 +43,11 @@ begin
 
     funcname = "check_inpath"
     scriptname = "reformat_scripts/GFDL/reformat_GFDL_func.ncl"
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Simulation path
-    if (.not.isfilepresent_esmval(INPATH)) then
+    if (.not.fileexists(INPATH)) then
         error_msg("f", "reformat_GFDL_func.ncl", funcname, "model data " + \
                   "path (INPATH) not found")
     end if
@@ -92,7 +92,7 @@ begin
 
     funcname = "find_name"
     scriptname = "reformat_scripts/GFDL/reformat_GFDL_func.ncl"
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     fname = "./reformat_scripts/GFDL/names_GFDL.dat"
@@ -148,7 +148,7 @@ begin
 
     funcname = "find_and_read_var"
     scriptname = "reformat_scripts/GFDL/reformat_GFDL_func.ncl"
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Define files list
@@ -228,7 +228,7 @@ begin
 
     funcname = "time_mean"
     scriptname = "reformat_scripts/GFDL/reformat_GFDL_func.ncl"
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     rank = dimsizes(getvardims(var))
@@ -350,7 +350,7 @@ end
 
 ;;#############################################################################
 undef("extract_var")
-if (isfilepresent_esmval(RECIPEFILE)) then
+if (fileexists(RECIPEFILE)) then
     loadscript(RECIPEFILE)
 end if
 function extract_var(name:string,
@@ -384,14 +384,14 @@ begin
 
     funcname = "extract_var"
     scriptname = "reformat_scripts/GFDL/reformat_GFDL_func.ncl"
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Read variable
     if (name.ne."#RECIP") then  ; GFDL variable
         xx = find_and_read_var(name, True)
     else
-        if (isfilepresent_esmval(RECIPEFILE)) then
+        if (fileexists(RECIPEFILE)) then
             xx = GFDL_recipe(name)  ; complex variable
         else
             error_msg("f", "reformat_GFDL_func.ncl", funcname, \
@@ -461,7 +461,7 @@ begin
 
     funcname = "format_coord"
     scriptname = "reformat_scripts/GFDL/reformat_GFDL_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     rank = dimsizes(dimsizes(var))

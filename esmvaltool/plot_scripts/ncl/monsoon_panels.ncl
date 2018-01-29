@@ -27,7 +27,7 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/shea_util.ncl"
 
-load "$ESMValTool_interface_data/ncl.interface"
+
 
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/data_handling.ncl"
@@ -66,7 +66,7 @@ function get_title_suffix(plot_settings [1] : logical)
 ;;
 local verbosity, main_title_suffix
 begin
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering get_title_suffix", verbosity, 8)
     if (isatt(plot_settings, "main_title_suffix")) then
         main_title_suffix = plot_settings@main_title_suffix
@@ -148,7 +148,7 @@ local am_infobox_id,      cn_levels_string,   debugbox,\
     plot2,              statistics,         storage_record,\
     txres,              upper
 begin
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering plot_two_by_one", verbosity, 8)
     res = panel_three_by_one(res, 0)  ; Update resource for first plot
     res@cnLevelSelectionMode = "ExplicitLevels"
@@ -296,7 +296,7 @@ res,             statistics,         storage_record,\
 title_name,      txres
 
 begin
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering plot_three_by_one_diff", verbosity, 8)
     res = panel_three_by_one(res, 0)  ; Update resource for first plot
     res@cnLevelSelectionMode = "ExplicitLevels"
@@ -490,7 +490,7 @@ local aux_title_info,      cn_levels_string,   curr,\
     storage_record,      textres,            var0,\
     wks,                 diff_model_ref,     txres
 begin
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering two_by_one", verbosity, 6)
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
@@ -629,7 +629,7 @@ local aux_title_info,      cn_levels_string,   curr,\
     storage_record,      textres,            var0,\
     wks,                 diff_model_ref,     txres
 begin
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering three_by_one_diff", verbosity, 6)
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
@@ -786,7 +786,7 @@ local am_infobox_id,      cn_levels_string,   debugbox,\
     statistics,         storage_record,     txres,\
     ua,                 va
 begin
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering plot_three_by_one_vector", verbosity, 8)
     res = panel_three_by_one(res, 0)  ; Update resource for first plot
     res@cnLevelSelectionMode = "ExplicitLevels"
@@ -1005,7 +1005,7 @@ local aux_title_info,      cn_levels_string,   curr,\
     storage_record,      textres,            var0,\
     wks,                 wks_debug,          txres
 begin
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering three_by_one_vector", verbosity, 8)
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
@@ -1170,7 +1170,7 @@ local am_infobox_id,    blank_plot,            cn_levels_string,\
     ref,              res,                   statistics,\
     storage_record,   txres
 begin
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering plot_multipanel", verbosity, 8)
     ;; Update position, labelbar and title
     curr_figure_pos = figure_panel_placement(curr_idx)
@@ -1637,7 +1637,7 @@ local am_infobox_id,       blank_plot,          cn_levels_string,\
     txres,               ua,                  ua_ref,\
     va,                  va_ref
 begin
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering plot_multipanel_vector", verbosity, 8)
     ;; Update position, labelbar and title
     curr_figure_pos = figure_panel_placement(curr_idx)
@@ -2120,7 +2120,7 @@ local am_infobox_id,             am_labelbar_id,         amres,\
     txres,                     var0,                   wks,\
     xaxis,                     var1,                   field_type1
 begin
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering seasonal_plot", verbosity, 8)
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
@@ -2312,7 +2312,7 @@ local annots,           annots_mmm,        avgstd,\
     values_stddev,    var0,              var1,\
     wks,              wks_debug,         idx_th
 begin
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering xy_plot_wrapper", verbosity, 8)
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
@@ -2496,7 +2496,7 @@ local    annots,           avgstd,            diag_script_base,\
     values,           values_stddev,     var0,\
     var1,             wks,               wks_debug
 begin
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering ts_line_wrapper", verbosity, 8)
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
@@ -2632,7 +2632,7 @@ local    annots,           avgstd,            diag_script_base,\
     var1,             wks,               wks_debug,\
     res2,             coord
 begin
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering xy_line_overlap", verbosity, 8)
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)

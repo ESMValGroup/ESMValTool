@@ -54,7 +54,7 @@ load "interface_scripts/messaging.ncl"
 ;;        hence the need for the additional begin/end block below
 begin
     
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering reformat_GO_main.ncl", verbosity, 2)
     project = getenv("ESMValTool_project")
     model= getenv("ESMValTool_model")
@@ -65,8 +65,8 @@ begin
     fix_file_default = "./reformat_scripts/fixes/"  + project + "_default.ncl"
     info_output("fix_file " + fix_file, verbosity, 3)
     info_output("fix_file_default " + fix_file_default, verbosity, 3)
-    data_to_fix = isfilepresent_esmval(fix_file)
-    default_fix = isfilepresent_esmval(fix_file_default) 
+    data_to_fix = fileexists(fix_file)
+    default_fix = fileexists(fix_file_default) 
     if data_to_fix then
         info_output(" loading "+fix_file, verbosity, 2)
         loadscript(fix_file)
@@ -85,7 +85,7 @@ begin
     ;;===========================================================
     ;; Get environment variables
     ;;===========================================================
- verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+ verbosity  = config_user_info@verbosity
     outfile_path       = getenv("ESMValTool_outfile_fullpath")
     field              = getenv("ESMValTool_field")
     infile_path        = getenv("ESMValTool_infile_path")
@@ -109,7 +109,7 @@ begin
     info_output("variable " + variable, verbosity, 3)
     info_output("experiment " + experiment, verbosity, 3)
     fn_out = outfile_path
-    if (isfilepresent_esmval(fn_out)) then
+    if (fileexists(fn_out)) then
         system("/bin/rm " + fn_out)
     end if
 

@@ -68,7 +68,7 @@ load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     diag_script = "reformat_obs_ESRL.ncl"
     enter_msg(diag_script, "", 1)
 
@@ -98,7 +98,7 @@ begin
         infile = INDIR + VAR + "_" + str_lower(st_code(stID)) + \
             "_surface-insitu_1_ccgg_month.txt"
 
-        if (isfilepresent_esmval(infile)) then
+        if (fileexists(infile)) then
 
             head = readAsciiHead(infile, "# data_field")
             data = readAsciiTable(infile, 1, "string", dimsizes(head))

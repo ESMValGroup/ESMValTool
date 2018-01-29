@@ -20,7 +20,7 @@
 ;;
 ;;#############################################################################
 
-load "$ESMValTool_interface_data/ncl.interface"
+load "interface_scripts/interface.ncl"
 
 scriptname = "reformat_scripts/constants.ncl"
 
@@ -70,7 +70,7 @@ local funcname, verbosity, date, ntime, tt, pos, y1, y2, opt, exp_ntime
 begin
 
     funcname = "check_time_range"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     if(.not.isdefined("YEAR1")) then
@@ -211,7 +211,7 @@ local funcname, verbosity, tmp, cal
 begin
 
     funcname = "time_attrib"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     if (isatt(coord, "calendar")) then
@@ -262,7 +262,7 @@ local funcname, verbosity, out_coord
 begin
 
     funcname = "plev_attrib"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     out_coord = todouble(coord)  ; this also removes attributes
@@ -311,7 +311,7 @@ local funcname, verbosity, out_coord
 begin
 
     funcname = "lev_attrib"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     out_coord = todouble(coord)  ; this also removes attributes
@@ -354,7 +354,7 @@ local funcname, verbosity, out_coord
 begin
 
     funcname = "lat_attrib"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     out_coord = todouble(coord)  ; this also removes attributes
@@ -396,7 +396,7 @@ local funcname, verbosity, out_coord
 begin
 
     funcname = "lon_attrib"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     out_coord = todouble(coord)  ; this also removes attributes
@@ -438,12 +438,12 @@ local funcname, verbosity, fn, data, idxu, idxd, attn, attv
 begin
 
     funcname = "read_cmor"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Read attributes from cmor table
     fn = "./reformat_scripts/cmor/CMOR_" + name + ".dat"
-    if (.not.isfilepresent_esmval(fn)) then
+    if (.not.fileexists(fn)) then
         error_msg("fatal", "constants.ncl", funcname, \
                   "CMOR table for variable " + name + " not found")
     end if
@@ -488,7 +488,7 @@ local funcname, verbosity, atts, data, col1, col2, std, alt, id, tmp1, tmp2, \
     ncols, alt_units, factors
 begin
 
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     funcname = "check_units"
     info_output("In check_units for " + name +" units are " + var@units,\
                 verbosity, 4)
@@ -596,7 +596,7 @@ local funcname, verbosity, tmp, p1, p2, natt, in_units, out_units, tmp, att
 begin
 
     funcname = "var_attrib"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Set fill value first
@@ -665,7 +665,7 @@ local funcname, verbosity, field, user
 begin
 
     funcname = "define_globatt"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Define field name
@@ -755,11 +755,11 @@ local funcname, verbosity, w, gAtt, dim_names, ndims, dim_sizes, dim_types, \
 begin
 
     funcname = "write_output"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Open file
-    if (isfilepresent_esmval(OUTFILE)) then
+    if (fileexists(OUTFILE)) then
         system("rm -f " + OUTFILE)
     end if
     w = addfile(OUTFILE, "c")
@@ -859,7 +859,7 @@ local funcname, verbosity, minsize, maxsize, nbins, bin
 begin
 
     funcname = "set_size_array"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Size range (0.5 nm - 10 um)
