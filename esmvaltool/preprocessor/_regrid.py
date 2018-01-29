@@ -381,7 +381,7 @@ def vinterp(src_cube, levels, scheme):
                 new_data = ma.array(new_data, mask=mask)
 
             # Construct the resulting cube with the interpolated data.
-            result = _create_cube(src_cube, new_data, np.float(levels))
+            result = _create_cube(src_cube, new_data, levels.astype(float))
 
     return result
 
