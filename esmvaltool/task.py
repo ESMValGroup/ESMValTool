@@ -6,9 +6,13 @@ import subprocess
 import time
 from multiprocessing import Pool, cpu_count
 
-from .interface_scripts.data_interface import write_settings
+import yaml
 
 logger = logging.getLogger(__name__)
+
+MODEL_KEYS = {
+    'mip',
+}
 
 
 def which(executable):
@@ -20,13 +24,59 @@ def which(executable):
     return None
 
 
+def write_ncl_settings(settings, filename, mode='wt'):
+    """Write settings to NCL file."""
+    logger.debug("Writing NCL configuration file %s", filename)
+
+    def _format(value):
+        """Format string or list as NCL"""
+        if value is None or isinstance(value, str):
+            txt = '"{}"'.format(value)
+        elif isinstance(value, (list, tuple)):
+            # TODO: convert None to fill value?
+            # If an array contains a str, make all items str
+            if any(isinstance(v, str) or v is None for v in value):
+                value = [(str(v)) for v in value]
+            txt = '(/{}/)'.format(', '.join(_format(v) for v in value))
+        else:
+            txt = str(value)
+        return txt
+
+    def _format_dict(name, dictionary):
+        """Format dict as NCL"""
+        lines = ['{} = True'.format(name)]
+        for key, value in sorted(dictionary.items()):
+            lines.append('{}@{} = {}'.format(name, key, _format(value)))
+        txt = '\n'.join(lines)
+        return txt
+
+    def _header(name):
+        """Delete any existing NCL variable known as `name`."""
+        return ('if (isvar("{name}")) then\n'
+                '    delete({name})\n'
+                'end if\n'.format(name=name))
+
+    lines = []
+    for key, value in sorted(settings.items()):
+        txt = _header(name=key)
+        if isinstance(value, dict):
+            txt += _format_dict(name=key, dictionary=value)
+        else:
+            txt += '{} = {}'.format(key, _format(value))
+        lines.append(txt)
+    with open(filename, mode) as file:
+        file.write('\n\n'.join(lines))
+        file.write('\n')
+
+
 class AbstractTask(object):
     """Base class for defining task classes"""
 
-    def __init__(self, settings, ancestors=None):
+    def __init__(self, settings, output_dir, ancestors=None):
         """Initialize task."""
         self.settings = settings
         self.ancestors = [] if ancestors is None else ancestors
+        self.output_dir = output_dir
         self.output_files = None
 
     def flatten(self):
@@ -66,6 +116,94 @@ class AbstractTask(object):
         return txt
 
 
+class InterfaceTask(AbstractTask):
+    """Task for writing the preprocessor - diagnostic task interface"""
+
+    # TODO: check if it is possible to a PreprocessorTask to implement this
+
+    def __init__(self, settings, output_dir, ancestors=None):
+        """Initialize"""
+        super(InterfaceTask, self).__init__(
+            settings=settings, output_dir=output_dir, ancestors=ancestors)
+
+    def _run(self, input_files):
+        metadata = self.settings['metadata']
+        self._metadata_sanity_check(input_files, metadata)
+        output_files = []
+        output_files.append(self.write_metadata(metadata))
+        output_files.extend(self.write_ncl_metadata(metadata))
+        return output_files
+
+    def _metadata_sanity_check(self, input_files, metadata):
+        """Check that metadata matches input_files"""
+        # This should never fail for normal users
+        files = {
+            v['filename']
+            for variables in metadata.values() for v in variables
+        }
+        input_files = set(input_files)
+        msg = []
+
+        missing = input_files - files
+        if missing:
+            msg.append("No metadata provided for input files {}"
+                       .format(missing))
+
+        too_many = files - input_files
+        if too_many:
+            msg.append("Metadata provided for non-existent input files {}"
+                       .format(too_many))
+
+        wrong_place = {
+            f
+            for f in input_files if not f.startswith(self.output_dir)
+        }
+        if wrong_place:
+            msg.append("Input files {} are not located in output_dir {}"
+                       .format(wrong_place, self.output_dir))
+
+        if msg:
+            raise ValueError('\n'.join(msg))
+
+    def write_metadata(self, metadata):
+        """Write metadata file to output_dir"""
+        filename = os.path.join(self.output_dir, 'metadata.yml')
+        with open(filename, 'w') as file:
+            yaml.safe_dump(metadata, file)
+        return filename
+
+    def write_ncl_metadata(self, metadata):
+        """Write NCL metadata files to output_dir"""
+        filenames = []
+        for variable_name, variables in metadata.items():
+            filename = os.path.join(self.output_dir,
+                                    variable_name + '_info.ncl')
+            filenames.append(filename)
+
+            # 'variables' is a list of dicts, but NCL does not support nested
+            # dicts, so convert to dict of lists.
+            keys = sorted({k for v in variables for k in v})
+            input_file_info = {k: [v.get(k) for v in variables] for k in keys}
+            info = {
+                'input_file_info': input_file_info,
+                'model_info': {},
+                'variable_info': {}
+            }
+
+            # Split input_file_info into model and variable properties
+            # model keys and keys with non-identical values will be stored
+            # in model_info, the rest in variable_info
+            for key, values in input_file_info.items():
+                if key in MODEL_KEYS or any(values[0] != v for v in values):
+                    info['model_info'][key] = values
+                else:
+                    info['variable_info'][key] = values[0]
+
+            write_ncl_settings(info, filename)
+
+        return filenames
+
+
 class DiagnosticError(Exception):
     """Error in diagnostic"""
 
@@ -73,9 +211,10 @@ class DiagnosticError(Exception):
 class DiagnosticTask(AbstractTask):
     """Task for running a diagnostic"""
 
-    def __init__(self, script, settings, ancestors=None):
+    def __init__(self, script, settings, output_dir, ancestors=None):
         """Initialize"""
-        super(DiagnosticTask, self).__init__(settings, ancestors)
+        super(DiagnosticTask, self).__init__(
+            settings=settings, output_dir=output_dir, ancestors=ancestors)
         self.script = script
         self.cmd = self._initialize_cmd(script)
         self.log = os.path.join(settings['run_dir'], 'log.txt')
@@ -97,7 +236,7 @@ class DiagnosticTask(AbstractTask):
             extension = os.path.splitext(script)[1].lower()[1:]
             executables = {
                 'py': [which('python')],
-                'ncl': [which('ncl'), '-n'],
+                'ncl': [which('ncl'), '-n', '-p'],
                 'r': [which('Rscript'), '--slave', '--quiet'],
             }
             if extension not in executables:
@@ -111,17 +250,49 @@ class DiagnosticTask(AbstractTask):
 
         return cmd
 
-    def _write_settings(self):
-        """Write settings to file
+    def write_settings(self):
+        """Write settings to file"""
+        run_dir = self.settings['run_dir']
+        if not os.path.exists(run_dir):
+            os.makedirs(run_dir)
 
-        In yaml format or a custom format interface file if that is preferred.
-        """
-        ext = 'yml'
+        filename = os.path.join(run_dir, 'settings.yml')
+
+        with open(filename, 'w') as file:
+            yaml.safe_dump(self.settings, file)
+
+        # If running an NCL script:
         if self.script.lower().endswith('.ncl'):
-            ext = 'ncl'
-        filename = os.path.join(self.settings['run_dir'],
-                                'settings.{}'.format(ext))
-        write_settings(self.settings, filename)
+            # Also write an NCL file and return the name of that instead.
+            return self._write_ncl_settings()
+
+        return filename
+
+    def _write_ncl_settings(self):
+        """Write settings to NCL file"""
+        filename = os.path.join(self.settings['run_dir'], 'settings.ncl')
+
+        config_user_keys = {
+            'run_dir',
+            'plot_dir',
+            'work_dir',
+            'max_data_filesize',
+            'output_file_type',
+            'log_level',
+            'write_plots',
+            'write_netcdf',
+        }
+        settings = {'diag_script_info': {}, 'config_user_info': {}}
+        for key, value in self.settings.items():
+            if key in config_user_keys:
+                settings['config_user_info'][key] = value
+            elif not isinstance(value, dict):
+                settings['diag_script_info'][key] = value
+            else:
+                settings[key] = value
+
+        write_ncl_settings(settings, filename)
+
         return filename
 
     def _control_ncl_execution(self, process, lines):
@@ -172,34 +343,54 @@ class DiagnosticTask(AbstractTask):
             output_files = []
             return output_files
 
+        is_ncl_script = self.script.lower().endswith('.ncl')
+        if is_ncl_script:
+            input_files = [
+                f for f in input_files
+                if f.endswith('.ncl') or os.path.isdir(f)
+            ]
+        else:
+            input_files = [
+                f for f in input_files
+                if f.endswith('.yml') or os.path.isdir(f)
+            ]
+
         self.settings['input_files'] = input_files
-        settings_file = self._write_settings()
 
         cmd = list(self.cmd)
         cwd = None
-        if 'env' in self.settings:
-            env = {str(k): str(v) for k, v in self.settings['env'].items()}
-        else:
-            env = None
+        env = self.settings.pop('env', None)
+        if env:
+            env = {str(k): str(v) for k, v in env.items()}
 
-        is_ncl_script = self.script.lower().endswith('.ncl')
+        settings_file = self.write_settings()
+
         if is_ncl_script:
             cwd = os.path.dirname(__file__)
+            env = dict(os.environ)
+            env['settings'] = settings_file
         else:
             cmd.append(settings_file)
 
         logger.info("Running command %s", cmd)
         logger.debug("in environment\n%s", pprint.pformat(env))
         logger.debug("in current working directory: %s", cwd)
+        logger.info("Writing output to %s", self.output_dir)
+        logger.info("Writing plots to %s", self.settings['plot_dir'])
         logger.info("Writing log to %s", self.log)
+
+        rerun_msg = '' if cwd is None else 'cd {}; '.format(cwd)
+        rerun_msg += ' '.join(
+            '{}="{}"'.format(k, env[k]) for k in env if k not in os.environ)
+        rerun_msg += ' ' + ' '.join(cmd)
+        logger.info("To re-run this diagnostic script, run:\n%s", rerun_msg)
 
         process = subprocess.Popen(
             cmd,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             cwd=cwd,
-            env=env,
-            universal_newlines=True)
+            env=env)
 
         returncode = None
         last_line = ['']
@@ -208,6 +399,7 @@ class DiagnosticTask(AbstractTask):
             while returncode is None:
                 returncode = process.poll()
                 txt = process.stdout.read()
+                txt = txt.decode(encoding='utf-8', errors='ignore')
                 log.write(txt)
 
                 # Check if an error occurred in an NCL script
@@ -225,7 +417,7 @@ class DiagnosticTask(AbstractTask):
                 time.sleep(0.001)
 
         if returncode == 0:
-            return [self.settings['output_dir']]
+            return [self.output_dir]
 
         raise DiagnosticError(
             "Diagnostic script {} failed with return code {}. See the log "

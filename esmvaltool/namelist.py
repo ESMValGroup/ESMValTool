@@ -7,20 +7,20 @@ import inspect
 import logging
 import os
 
-import yaml
 import yamale
+import yaml
 
 from .interface_scripts.data_finder import (
     get_input_filelist, get_input_filename, get_output_file,
     get_start_end_year)
-from .interface_scripts.data_interface import (get_legacy_ncl_env,
-                                               write_legacy_ncl_interface)
 from .preprocessor import (DEFAULT_ORDER, MULTI_MODEL_FUNCTIONS,
                            PREPROCESSOR_FUNCTIONS, PreprocessingTask)
 from .preprocessor._download import synda_search
 from .preprocessor._io import concatenate_callback
 from .preprocessor._reformat import CMOR_TABLES
-from .task import DiagnosticTask, get_independent_tasks, run_tasks
+from .task import (MODEL_KEYS, DiagnosticTask, InterfaceTask,
+                   get_independent_tasks, run_tasks)
+from .version import __version__
 
 logger = logging.getLogger(__name__)
 
@@ -351,8 +351,9 @@ def _get_preprocessor_settings(variables, preprocessors, config_user):
     variable = variables[0]
     preproc_name = variable.get('preprocessor')
     if preproc_name not in preprocessors:
-        raise NamelistError("Unknown preprocessor {} in variable {}".format(
-            preproc_name, variable['short_name']))
+        raise NamelistError(
+            "Unknown preprocessor {} in variable {} of diagnostic {}".format(
+                preproc_name, variable['short_name'], variable['diagnostic']))
     profile_settings = preprocessors[variable['preprocessor']]
     _update_multi_model_mean(variables, profile_settings, config_user)
 
@@ -360,6 +361,7 @@ def _get_preprocessor_settings(variables, preprocessors, config_user):
         settings = _get_default_settings(variable, config_user)
         _apply_preprocessor_settings(settings, profile_settings)
         # if the target grid is a model name, replace it with a file name
+        # TODO: call _update_target_grid only once per variable?
         _update_target_grid(
             variable=variable,
             all_variables=variables,
@@ -405,13 +407,38 @@ def _get_preprocessor_task(variables, preprocessors, config_user):
         v['filename']: _get_input_files(v, config_user)
         for v in variables
     }
-
+    output_dir = os.path.dirname(variables[0]['filename'])
     task = PreprocessingTask(
         settings=all_settings,
+        output_dir=output_dir,
         input_files=input_files,
         debug=config_user['save_intermediary_cubes'])
 
     return task
+
+
+def _get_interface_tasks(variable_collection, preprocessor_tasks):
+    """Create interface tasks between preprocessor and diagnostic script"""
+    metadata = {}
+    for variable_name, variables in variable_collection.items():
+        output_dir = os.path.dirname(variables[0]['filename'])
+        if output_dir not in metadata:
+            metadata[output_dir] = {}
+        metadata[output_dir][variable_name] = variables
+
+    tasks = []
+    for output_dir in metadata:
+        settings = {
+            'metadata': metadata[output_dir],
+        }
+        ancestors = [
+            t for t in preprocessor_tasks if t.output_dir == output_dir
+        ]
+        task = InterfaceTask(
+            settings=settings, output_dir=output_dir, ancestors=ancestors)
+        tasks.append(task)
+
+    return tasks
 
 
 class Namelist(object):
@@ -424,7 +451,7 @@ class Namelist(object):
                  namelist_file=None):
         """Parse a namelist file into an object."""
         self._cfg = config_user
-        self._namelist_file = namelist_file  # TODO: remove this dependency
+        self._namelist_file = os.path.basename(namelist_file)
         self._preprocessors = raw_namelist['preprocessors']
         self.models = raw_namelist['models']
         self.diagnostics = self._initialize_diagnostics(
@@ -460,6 +487,10 @@ class Namelist(object):
 
         if raw_additional_models:
             models += raw_additional_models
+
+        for model in models:
+            for key in model:
+                MODEL_KEYS.add(key)
 
         check_duplicate_models(models)
         return models
@@ -530,27 +561,22 @@ class Namelist(object):
                     id_glob = diagnostic_name + TASKSEP + id_glob
                 ancestors.append(id_glob)
             settings = copy.deepcopy(raw_settings)
-            # Add output dir to settings
-            output_dir = os.path.join(
-                self._cfg['output_dir'],
-                diagnostic_name,
-                script_name,
-            )
-            settings['output_dir'] = output_dir
-            settings['run_dir'] = os.path.join(
-                self._cfg['output_dir'],
-                'tmp',
-                diagnostic_name,
-                script_name,
-            )
+            settings['namelist'] = self._namelist_file
+            settings['version'] = __version__
+            settings['script'] = script_name
+            # Add output dirs to settings
+            for dir_name in ('run_dir', 'plot_dir', 'work_dir'):
+                settings[dir_name] = os.path.join(self._cfg[dir_name],
+                                                  diagnostic_name, script_name)
+            # Copy other settings
             settings['exit_on_ncl_warning'] = self._cfg['exit_on_warning']
-            for key in ('work_dir', 'plot_dir', 'preproc_dir',
-                        'max_data_filesize', 'output_file_type', 'write_plots',
-                        'write_netcdf', 'log_level'):
+            for key in ('max_data_filesize', 'output_file_type', 'log_level',
+                        'write_plots', 'write_netcdf'):
                 settings[key] = self._cfg[key]
 
             scripts[script_name] = {
                 'script': raw_script,
+                'output_dir': settings['work_dir'],
                 'settings': settings,
                 'ancestors': ancestors,
             }
@@ -599,7 +625,12 @@ class Namelist(object):
                     preprocessors=self._preprocessors,
                     config_user=self._cfg)
                 preproc_tasks.append(task)
-            tasks.extend(preproc_tasks)
+
+            # Create interface tasks
+            if_tasks = _get_interface_tasks(
+                variable_collection=diagnostic['variable_collection'],
+                preprocessor_tasks=preproc_tasks)
+            tasks.extend(if_tasks)
 
             # Create diagnostic tasks
             for script_name, script_cfg in diagnostic['scripts'].items():
@@ -608,25 +639,14 @@ class Namelist(object):
                 # Ancestors will be resolved after creating all tasks,
                 # unless there aren't any, in which case we set them to the
                 # preprocessor tasks.
-                ancestors = later if script_cfg['ancestors'] else preproc_tasks
+                ancestors = later if script_cfg['ancestors'] else if_tasks
                 task = DiagnosticTask(
                     script=script_cfg['script'],
+                    output_dir=script_cfg['output_dir'],
                     settings=script_cfg['settings'],
                     ancestors=ancestors,
                 )
                 diagnostic_tasks[task_id] = task
-                # TODO: remove code below once new interface implemented
-                os.makedirs(task.settings['run_dir'])
-                write_legacy_ncl_interface(
-                    variables=diagnostic['variable_collection'],
-                    settings=task.settings,
-                    output_dir=task.settings['run_dir'],
-                    namelist_file=self._namelist_file,
-                    script=task.script)
-                task.settings['env'] = get_legacy_ncl_env(
-                    settings=task.settings,
-                    output_dir=task.settings['run_dir'],
-                    namelist_basename=os.path.basename(self._namelist_file))
 
         # Resolve diagnostic ancestors marked as 'later'
         self._resolve_diagnostic_ancestors(diagnostic_tasks, later)

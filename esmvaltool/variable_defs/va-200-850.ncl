@@ -26,7 +26,7 @@ function calculate(index [1] : integer,
 ;;    pp. 611-633
 local result_va, data_va_200, data_va_850
 begin
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     info_output("<<<<<<<< Entering va-200-850.ncl", verbosity, 4)
     result_va = read_data(index, "va", "T3M")
 

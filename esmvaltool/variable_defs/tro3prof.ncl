@@ -49,7 +49,7 @@ begin
 
     funcname = "calculate"
     scriptname = "variable_defs/tro3_profile.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Fetch data

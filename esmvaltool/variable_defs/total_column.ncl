@@ -1,4 +1,4 @@
-load "$ESMValTool_interface_data/ncl.interface"
+
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/data_handling.ncl"
 load "./interface_scripts/messagging.ncl"
@@ -10,7 +10,7 @@ load "./diag_scripts/uniform_coordinates.ncl"
 
 begin
  print("1") 
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering " + diag_script, verbosity, 4)
     info_output("++++++++++++++++++++++++++++++++++++++++++", verbosity, 1)
     info_output("plot SET8 - " + diag_script + ".ncl (var: " + variables(0) + ")", verbosity, 1)
@@ -41,11 +41,11 @@ end
 begin
 
 
-    plot_dir = getenv("ESMValTool_plot_dir")
+    plot_dir = config_user_info@plot_dir
     diag_script_base = basename(diag_script)
     output_dir = get_output_dir(plot_dir, diag_script_base)
 
-    file_type = getenv("ESMValTool_output_file_type")
+    file_type = config_user_info@output_file_type
     if(ismissing(file_type)) then
         file_type = "ps"
     end if

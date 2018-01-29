@@ -5,7 +5,7 @@
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
-load "$ESMValTool_interface_data/ncl.interface"
+
 load "./interface_scripts/data_handling.ncl"
 load "./interface_scripts/messaging.ncl"
 
@@ -19,7 +19,7 @@ end
 begin
 
     funcname = "derive_var"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg("interface_scripts/derive_var.ncl", funcname, 2)
 
     ;; If variable_info@derived = True, a 'calculate' function must be defined

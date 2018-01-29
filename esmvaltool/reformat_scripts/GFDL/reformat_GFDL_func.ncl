@@ -14,7 +14,7 @@
 ;;
 ;;#############################################################################
 
-load "$ESMValTool_interface_data/ncl.interface"
+load "interface_scripts/interface.ncl"
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/messaging.ncl"
 
@@ -43,7 +43,7 @@ begin
 
     funcname = "check_inpath"
     scriptname = "reformat_scripts/GFDL/reformat_GFDL_func.ncl"
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Simulation path
@@ -92,7 +92,7 @@ begin
 
     funcname = "find_name"
     scriptname = "reformat_scripts/GFDL/reformat_GFDL_func.ncl"
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     fname = "./reformat_scripts/GFDL/names_GFDL.dat"
@@ -148,7 +148,7 @@ begin
 
     funcname = "find_and_read_var"
     scriptname = "reformat_scripts/GFDL/reformat_GFDL_func.ncl"
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Define files list
@@ -228,7 +228,7 @@ begin
 
     funcname = "time_mean"
     scriptname = "reformat_scripts/GFDL/reformat_GFDL_func.ncl"
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     rank = dimsizes(getvardims(var))
@@ -384,7 +384,7 @@ begin
 
     funcname = "extract_var"
     scriptname = "reformat_scripts/GFDL/reformat_GFDL_func.ncl"
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Read variable
@@ -461,7 +461,7 @@ begin
 
     funcname = "format_coord"
     scriptname = "reformat_scripts/GFDL/reformat_GFDL_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     rank = dimsizes(dimsizes(var))

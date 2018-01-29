@@ -16,7 +16,7 @@
 ;;
 ;;#############################################################################
 
-load "$ESMValTool_interface_data/ncl.interface"
+load "interface_scripts/interface.ncl"
 load "./interface_scripts/messaging.ncl"
 
 ;;#############################################################################
@@ -49,7 +49,7 @@ begin
 
     funcname = "find_name"
     scriptname = "reformat_scripts/ECEARTH/reformat_ECEARTH_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; read text file with names
@@ -114,7 +114,7 @@ begin
 
     funcname = "add_ijcoordvars"
     scriptname = "reformat_scripts/ECEARTH/reformat_ECEARTH_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; get dimension indices
@@ -177,7 +177,7 @@ begin
 
     funcname = "add_ECEARTHgrid_info"
     scriptname = "reformat_scripts/ECEARTH/reformat_ECEARTH_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     nl = str_get_nl()
@@ -491,7 +491,7 @@ begin
 
     funcname = "convert_units"
     scriptname = "reformat_scripts/ECEARTH/reformat_ECEARTH_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; get CMOR units
@@ -544,7 +544,7 @@ begin
 
     funcname = "mask_land"
     scriptname = "reformat_scripts/ECEARTH/reformat_ECEARTH_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     nl = str_get_nl()
@@ -640,7 +640,7 @@ begin
 
     funcname = "sub_staggergrid"
     scriptname = "reformat_scripts/ECEARTH/reformat_ECEARTH_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; check INFILE format
@@ -685,7 +685,7 @@ begin
 
     funcname = "rename_lev"
     scriptname = "reformat_scripts/ECEARTH/reformat_ECEARTH_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; set name for level and file name with names
@@ -763,7 +763,7 @@ begin
 
     funcname = "reformat_time_ecearth"
     scriptname = "reformat_scripts/ECEARTH/reformat_ECEARTH_func.ncl"
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; get time name in EC-Earth

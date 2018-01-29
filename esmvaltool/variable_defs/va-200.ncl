@@ -23,7 +23,7 @@ function calculate(index [1] : integer,
 ;;    data_new - logical
 local tmp, dum, i, verbosity
 begin
-    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity = config_user_info@verbosity
     info_output("<<<<<<<< Entering va-200.ncl", verbosity, 4)
     data_new = True
     tmp = read_data(index, "va", "*3*")

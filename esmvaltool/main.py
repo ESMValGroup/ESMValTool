@@ -131,7 +131,7 @@ def read_config_file(config_file, namelist_name):
     cfg['preproc_dir'] = os.path.join(cfg['output_dir'], 'preproc')
     cfg['work_dir'] = os.path.join(cfg['output_dir'], 'work')
     cfg['plot_dir'] = os.path.join(cfg['output_dir'], 'plots')
-    cfg['run_dir'] = os.path.join(cfg['output_dir'], 'tmp')
+    cfg['run_dir'] = os.path.join(cfg['output_dir'], 'run')
 
     return cfg
 

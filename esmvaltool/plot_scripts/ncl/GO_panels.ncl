@@ -28,7 +28,7 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/shea_util.ncl"
 
-load "$ESMValTool_interface_data/ncl.interface"
+
 
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/messaging.ncl"
@@ -49,7 +49,7 @@ undef("get_title_suffix")
 function get_title_suffix(plot_settings[1]: logical)
 local verbosity, main_title_suffix
 begin
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering get_title_suffix", verbosity, 8)
     if (isatt(plot_settings, "main_title_suffix")) then
         main_title_suffix = plot_settings@main_title_suffix
@@ -340,7 +340,7 @@ local aux_title_info,      cn_levels_string,   curr,\
     storage_record,      textres,            var0,\
     wks,                 diff_model_ref,     txres
 begin
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering two_by_one", verbosity, 6)
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
@@ -449,7 +449,7 @@ local aux_title_info,      cn_levels_string,   curr,\
     storage_record,      textres,            var0,\
     wks,                 diff_model_ref,     txres
 begin
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering three_by_one_diff", verbosity, 6)
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)

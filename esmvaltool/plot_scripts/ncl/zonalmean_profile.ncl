@@ -46,7 +46,7 @@ function zonalmean_profile(wks_in[1],
 local wks, wks_in, data, source, res, atts, base, varname
 begin
 
-    verbosity  = stringtointeger(getenv("ESMValTool_verbosity"))
+    verbosity  = config_user_info@verbosity
     info_output("<<<<<<<< Entering zonalmean_profile", verbosity, 4)
 
     ;; Get data, either directly or via netCDF file
