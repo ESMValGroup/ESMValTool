@@ -8,5 +8,4 @@ source activate esmvaltool
 git setup
 ==========
 git clone https://github.com/ESMValGroup/ESMValTool.git
-git checkout -t origin/REFACTORING_backend
-git pull origin REFACTORING_backend
+git checkout version2_knmi_sprint
