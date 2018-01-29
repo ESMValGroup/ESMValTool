@@ -107,6 +107,7 @@ def read_config_file(config_file, namelist_name):
         'save_intermediary_cubes': False,
         'max_parallel_tasks': 1,
         'run_diagnostic': True,
+        'drs': {},
     }
 
     for key in defaults:
