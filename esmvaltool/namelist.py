@@ -6,6 +6,7 @@ import fnmatch
 import inspect
 import logging
 import os
+import subprocess
 
 import yamale
 import yaml
@@ -19,7 +20,7 @@ from .preprocessor._download import synda_search
 from .preprocessor._io import concatenate_callback
 from .preprocessor._reformat import CMOR_TABLES
 from .task import (MODEL_KEYS, DiagnosticTask, InterfaceTask,
-                   get_independent_tasks, run_tasks)
+                   get_independent_tasks, run_tasks, which)
 from .version import __version__
 
 logger = logging.getLogger(__name__)
@@ -36,6 +37,36 @@ def read_namelist_file(filename, config_user, initialize_tasks=True):
     raw_namelist = check_namelist(filename)
     return Namelist(
         raw_namelist, config_user, initialize_tasks, namelist_file=filename)
+
+
+def check_ncl_version():
+    """Check the NCL version"""
+    ncl = which('ncl')
+    if not ncl:
+        raise NamelistError("Namelist contains NCL scripts, but cannot find "
+                            "an NCL installation.")
+    try:
+        cmd = [ncl, '-V']
+        version = subprocess.check_output(cmd, universal_newlines=True)
+    except subprocess.CalledProcessError:
+        logger.error("Failed to execute '%s'", ' '.join(' '.join(cmd)))
+        raise NamelistError("Namelist contains NCL scripts, but your NCL "
+                            "installation appears to be broken.")
+
+    version = version.strip()
+    logger.info("Found NCL version %s", version)
+
+    if version == "6.3.0":
+        logger.error("NCL version " + version + " not supported due to a bug "
+                     + "(see Known Issues in the ESMValTool user guide)")
+
+    if int(version.split(".")[0]) < 6:
+        logger.error("NCL version " + version +
+                     " not supported, need version 6.2.0 or higher")
+
+    if int(version.split(".")[0]) == 6 and int(version.split(".")[1]) < 2:
+        logger.error("NCL version " + version +
+                     " not supported, need version 6.2.0 or higher")
 
 
 def check_namelist_with_schema(filename):
@@ -464,6 +495,7 @@ class Namelist(object):
 
         diagnostics = {}
 
+        ncl_version_checked = False
         for name, raw_diagnostic in raw_diagnostics.items():
             diagnostic = {}
             diagnostic['name'] = name
@@ -476,6 +508,13 @@ class Namelist(object):
             diagnostic['scripts'] = self._initialize_scripts(
                 name, raw_diagnostic.get('scripts'))
             diagnostics[name] = diagnostic
+            is_ncl_script = any(
+                diagnostic['scripts'][s].get('script', '').lower().endswith(
+                    '.ncl') for s in diagnostic['scripts'])
+            if not ncl_version_checked and is_ncl_script:
+                logger.info("NCL script detected, checking NCL version")
+                check_ncl_version()
+                ncl_version_checked = True
 
         return diagnostics
 
