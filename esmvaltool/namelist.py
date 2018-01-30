@@ -191,8 +191,8 @@ def _get_value(key, variables):
 
 def _add_cmor_info(variable, keys):
     """Add information from CMOR tables to variable."""
-    if variable['project'] in CMOR_TABLES:
-        variable_info = CMOR_TABLES[variable['project']].get_variable(
+    if variable['cmor_table'] in CMOR_TABLES:
+        variable_info = CMOR_TABLES[variable['cmor_table']].get_variable(
             variable['mip'], variable['short_name'])
         for key in keys:
             if key not in variable and hasattr(variable_info, key):
