@@ -210,14 +210,23 @@ def check_data_availability(input_files, start_year, end_year):
                 ", ".join(str(year) for year in missing_years), input_files))
 
 
-def _get_value(key, variables):
-    """Get a value for key by looking at the other variables."""
-    values = {variable[key] for variable in variables if key in variable}
+def _get_value(key, models):
+    """Get a value for key by looking at the other models."""
+    values = {model[key] for model in models if key in model}
 
     if len(values) > 1:
         raise NamelistError("Ambigous values {} for property {}".format(
             values, key))
     return values.pop()
+
+
+def _update_from_others(variable, keys, models):
+    """Get values for keys by copying from the other models."""
+    for key in keys:
+        if key not in variable:
+            value = _get_value(key, models)
+            if value is not None:
+                variable[key] = value
 
 
 def _add_cmor_info(variable, keys):
@@ -354,7 +363,7 @@ def _apply_preprocessor_settings(settings, profile_settings):
             settings[step].update(args)
 
 
-def _update_multi_model_mean(variables, settings, config_user):
+def _update_multi_model_mean(variables, settings):
     """Configure multi model mean."""
     if settings.get('multi_model_mean', False):
         if settings['multi_model_mean'] is True:
@@ -386,7 +395,7 @@ def _get_preprocessor_settings(variables, preprocessors, config_user):
             "Unknown preprocessor {} in variable {} of diagnostic {}".format(
                 preproc_name, variable['short_name'], variable['diagnostic']))
     profile_settings = preprocessors[variable['preprocessor']]
-    _update_multi_model_mean(variables, profile_settings, config_user)
+    _update_multi_model_mean(variables, profile_settings)
 
     for variable in variables:
         settings = _get_default_settings(variable, config_user)
@@ -541,18 +550,17 @@ class Namelist(object):
         for model in models:
             variable = copy.deepcopy(raw_variable)
             variable.update(model)
+            _update_from_others(variable, ['mip'], models)
             if ('cmor_table' not in variable
                     and variable.get('project') in CMOR_TABLES):
                 variable['cmor_table'] = variable['project']
-            _add_cmor_info(variable, cmor_keys)
+            if 'cmor_table' in variable:
+                _add_cmor_info(variable, cmor_keys)
             variables.append(variable)
 
+        keys = ['cmor_table'] + cmor_keys
         for variable in variables:
-            for key in ['mip', 'cmor_table'] + cmor_keys:
-                if key not in variable:
-                    value = _get_value(key, variables)
-                    if value is not None:
-                        variable[key] = value
+            _update_from_others(variable, keys, variables)
 
         check_variables(variables)
 
