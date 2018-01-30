@@ -360,6 +360,10 @@ def vinterp(src_cube, levels, scheme):
             src_levels_broadcast = np.broadcast_to(src_levels_reshaped,
                                                    broadcast_shape)
 
+            # force mask onto data as nan's
+            if np.ma.is_masked(src_cube.data) is True:
+                src_cube.data[src_cube.data.mask] = np.nan
+
             # Now perform the actual vertical interpolation.
             new_data = stratify.interpolate(
                 levels,
@@ -367,7 +371,7 @@ def vinterp(src_cube, levels, scheme):
                 src_cube.data,
                 axis=z_axis,
                 interpolation=scheme,
-                extrapolation='linear')
+                extrapolation='nan')
 
             # Determine if we need to fill any extrapolated NaN values.
             mask = np.isnan(new_data)
@@ -383,12 +387,10 @@ def vinterp(src_cube, levels, scheme):
                 mask = src_cube.data.mask[slicer]
                 mask = np.broadcast_to(mask, new_data.shape)
                 new_data = ma.array(new_data, mask=mask)
+                # force out numerical errors from interpolate
+                # the interpolator does not works with masks!
                 new_data = np.ma.masked_where(new_data > 1.e+18,
                                               new_data)
-
-            # mask values that result from extrapolation overflow
-            src_cube.data = np.ma.masked_where(src_cube.data > 1.e+18,
-                                               src_cube.data)
 
             # Construct the resulting cube with the interpolated data.
             result = _create_cube(src_cube, new_data, levels.astype(float))
