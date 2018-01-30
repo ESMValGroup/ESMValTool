@@ -136,6 +136,10 @@ def regrid(src_cube, target_grid, scheme):
     See Also
     --------
     vinterp : Perform vertical regridding.
+2018-01-17 11:14:53,040 [29443] INFO    Global means: [277.23127347606976, 276.95765765508821, 276.20688976518323, 276.90258767964451]
+2018-01-17 11:14:53,041 [29443] INFO    Global medians: [278.17147827148438, 278.1485595703125, 277.62811279296875, 278.33419799804688]
+
+
 
     """
     if target_grid is None and scheme is None:
@@ -363,7 +367,7 @@ def vinterp(src_cube, levels, scheme):
                 src_cube.data,
                 axis=z_axis,
                 interpolation=scheme,
-                extrapolation='nan')
+                extrapolation='linear')
 
             # Determine if we need to fill any extrapolated NaN values.
             mask = np.isnan(new_data)
@@ -379,6 +383,12 @@ def vinterp(src_cube, levels, scheme):
                 mask = src_cube.data.mask[slicer]
                 mask = np.broadcast_to(mask, new_data.shape)
                 new_data = ma.array(new_data, mask=mask)
+                new_data = np.ma.masked_where(new_data > 1.e+18,
+                                              new_data)
+
+            # mask values that result from extrapolation overflow
+            src_cube.data = np.ma.masked_where(src_cube.data > 1.e+18,
+                                               src_cube.data)
 
             # Construct the resulting cube with the interpolated data.
             result = _create_cube(src_cube, new_data, levels.astype(float))
