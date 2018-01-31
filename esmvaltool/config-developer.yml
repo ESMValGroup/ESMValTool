@@ -115,33 +115,39 @@ OBS:
     default: '[tier]/[model]'
   input_file: '[project]_[model]_[type]_[version]_[field]_[var]_*'
   output_file: '[project]_[model]_[type]_[version]_[field]_[var]_[start_year]-[end_year]'
+  cmor_type: 'CMIP5'
 
 obs4mips:
   input_dir:
     default: '[tier]/[model]'
   input_file: '[var]_[model]_[level]_[version]_*'
   output_file: '[project]_[model]_[level]_[version]_[field]_[var]_[start_year]-[end_year]'
+  cmor_type: 'CMIP5'
 
 ana4mips:
   input_dir:
     default: '[tier]/[model]'
   input_file: '[var]_[mip]_[type]_[model]_*'
   output_file: '[project]_[mip]_[type]_[model]_[field]_[var]_[start_year]-[end_year]'
+  cmor_type: 'CMIP5'
 
 CCMVal1:
   input_dir:
     default: '[exp]/[model]'
   input_file: '[project]_[exp]_[name]_[ensemble]_[field]_[var]'
   output_file: '[project]_[exp]_[name]_[ensemble]_[field]_[var]_[start_year]-[end_year]'
+  cmor_type: 'CMIP5'
 
 CCMVal2:
   input_dir:
     default: '[exp]/[model]'
   input_file: '[project]_[exp]_[name]_[ensemble]_[field]_[var]'
   output_file: '[project]_[exp]_[name]_[ensemble]_[field]_[var]_[start_year]-[end_year]'
+  cmor_type: 'CMIP5'
 
 EMAC:
   input_dir:
     default: '[model]'
   input_file: ''
   output_file: '[model]_[ensemble]_[field]_[var]_[start_year]-[end_year]'
+  cmor_type: 'CMIP5'
