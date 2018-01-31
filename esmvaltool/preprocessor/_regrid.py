@@ -373,15 +373,12 @@ def vinterp(src_cube, levels, scheme):
                 interpolation=scheme,
                 extrapolation='nan')
 
-            # Determine if we need to fill any extrapolated NaN values.
+            # Calculate the mask based on the any NaN values in the interpolated data.
             mask = np.isnan(new_data)
 
             if np.any(mask):
-                # Replace the NaN values with the fill-value.
-                new_data[mask] = _MDI
-
-            # Ensure that any spatial mask is re-applied.
-            new_data = ma.array(new_data, mask=mask)
+                # Ensure that the data is masked appropriately.
+                new_data = ma.array(new_data, mask=mask, fill_value=_MDI)
 
             # Construct the resulting cube with the interpolated data.
             result = _create_cube(src_cube, new_data, levels.astype(float))
