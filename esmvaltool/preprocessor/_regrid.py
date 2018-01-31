@@ -381,16 +381,7 @@ def vinterp(src_cube, levels, scheme):
                 new_data[mask] = _MDI
 
             # Ensure that any spatial mask is re-applied.
-            if ma.isMaskedArray(src_cube.data):
-                slicer = tuple([0] * (z_axis + 1))
-                # Assume that the spatial mask is invariant.
-                mask = src_cube.data.mask[slicer]
-                mask = np.broadcast_to(mask, new_data.shape)
-                new_data = ma.array(new_data, mask=mask)
-                # force out numerical errors from interpolate
-                # the interpolator does not works with masks!
-                new_data = np.ma.masked_where(new_data > 1.e+18,
-                                              new_data)
+            new_data = ma.array(new_data, mask=mask)
 
             # Construct the resulting cube with the interpolated data.
             result = _create_cube(src_cube, new_data, levels.astype(float))
