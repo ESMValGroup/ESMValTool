@@ -308,7 +308,14 @@ def mask_fillvalues(cubes, threshold_fraction, min_value=-1.e10,
         if not np.all(mask):  # remove masks that mask everything
             if combined_mask is None:
                 combined_mask = np.zeros_like(mask)
-            combined_mask |= mask
+            if len(mask.shape) == 3: # dig deeper in plevs
+                copy_mask = mask.copy()
+                combined_mask |= mask
+                for i in range(mask.shape[0]):
+                    if np.all(combined_mask[i]) == True:
+                        combined_mask[i] = copy_mask[i]
+            else:
+                combined_mask |= mask
 
     if np.any(combined_mask):
         # Apply masks
