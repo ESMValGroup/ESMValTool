@@ -86,8 +86,7 @@ begin
     ;; Loop over input files
     do ff = 0, dimsizes(raw_files) - 1
 
-        info_output(ff + " - " + systemfunc("basename " + raw_files(ff)), \
-                    verbosity, 1)
+        info_output(ff + " - " + systemfunc("basename " + raw_files(ff)))
 
         ;: Read header information
         head = readAsciiHead(raw_files(ff), "Month")

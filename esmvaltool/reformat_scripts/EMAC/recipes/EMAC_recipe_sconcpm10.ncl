@@ -31,8 +31,7 @@ begin
             spec = aero(is) + modes(im)
             spmass = find_and_read_var(spec, date, False)
             if (typeof(spmass).ne."string") then
-                info_output("Adding species " + spec + " (" + date + ")", \
-                            verbosity, 2)
+                log_debug("Adding species " + spec + " (" + date + ")")
                 mw = tofloat(spmass@molarmass)
                 if (isdefined("tmass")) then
                     tmass = tmass + spmass * mw  ; [mol/mol] --> [g/mol]
@@ -48,8 +47,7 @@ begin
         spec = "dryrad" + modes(im)
         dd = find_and_read_var(spec, date, False)
         if (typeof(dd).ne."string") then
-            info_output("Calculating mode " + modes(im) + " (" + date + ")", \
-                        verbosity, 2)
+            log_debug("Calculating mode " + modes(im) + " (" + date + ")")
             lnsig = log(modes@sigma(im))
             dd = log(2. * dd) + 3. * lnsig^2  ; log(Dv)
             frac = 0.5 + 0.5 * erf((log(dthr) - dd) / (sqrt(2.) * lnsig))

@@ -139,7 +139,7 @@ begin
         "_000001-000012.nc"
     write_nc(fout, VAR, mlotst_sw, gAtt)
 
-    info_output("Done, output in " + fout, verbosity, 1)
+    info_output("Done, output in " + fout)
     delete([/fout, indata, mlotst, mlotst_sw, time, lat, lon/])
 
     leave_msg(diag_script, "", 1)

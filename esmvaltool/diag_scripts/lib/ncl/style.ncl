@@ -266,8 +266,8 @@ begin
             ;; Search for "default"
             row  = ind("default".eq.modelsinfile)
             if (.not.ismissing(row)) then
-                info_output("Model " + models@name(ii) + " not found in " + \
-                            stylefile + ", using default", verbosity, 6)
+                log_debug("Model " + models@name(ii) + " not found in " + \
+                          stylefile + ", using default")
                 column(ii) = str_squeeze(str_get_field(sty(row), col, "|"))
                 continue
             end if
@@ -283,8 +283,8 @@ begin
                           stylefile + " contains too few wildcard (*) " + \
                           "entries (" + wildcard_cnt + "), please add more")
             end if
-            info_output("Model " + models@name(ii) + " not found in " + \
-                        stylefile + ", using wildcard", verbosity, 6)
+            log_debug("Model " + models@name(ii) + " not found in " + \
+                      stylefile + ", using wildcard")
             row = rows(wildcard_cnt)
             wildcard_cnt = wildcard_cnt + 1
             column(ii) = str_squeeze(str_get_field(sty(row), col, "|"))
@@ -372,7 +372,7 @@ function project_style_GO(flag:string)
 local result, modelstyles, flag
 begin
     verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering style_GO.ncl", verbosity, 8)
+    log_debug("<<<<<<<< Entering style_GO.ncl")
 
     ;; define (/model, color, dash, thickness, avgstd/) for each model
     modelstyles = (/ (/"PlankTOM5",     "(/0.6,     0.,      0.0078/)",          "0",  "1",  "0"/), \
@@ -404,7 +404,7 @@ begin
     end if
     end if
 
-    info_output(">>>>>>>> Leaving style_GO.ncl", verbosity, 8)
+    log_debug(">>>>>>>> Leaving style_GO.ncl")
     return(result)
 end
 

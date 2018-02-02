@@ -106,7 +106,7 @@ begin
         MINLON = 160.  ; same for all
         MAXLON = 240.  ; same for all
 
-        info_output(CAMPAIGN(cpID), verbosity, 1)
+        info_output(CAMPAIGN(cpID))
 
         ;; Copy metadata
         output = OUTPUT

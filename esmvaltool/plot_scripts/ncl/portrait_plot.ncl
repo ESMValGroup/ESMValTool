@@ -89,8 +89,8 @@ begin
         if (grade_dim(2).le.2) then
             nref = grade_dim(2)
         else
-            info_output("Maximum 2 references supported", verbosity, 1)
-            info_output("Only the first 2 will be plotted", verbosity, 1)
+            info_output("Maximum 2 references supported")
+            info_output("Only the first 2 will be plotted")
             nref = 2
             var = data(:, :, 0:1)
             delete(data)

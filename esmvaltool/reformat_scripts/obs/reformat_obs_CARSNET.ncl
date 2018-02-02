@@ -104,7 +104,7 @@ begin
     ;; Loop over stations
     do ii = 0, dimsizes(st_name) - 1
 
-        info_output("Processing station " + st_name(ii), verbosity, 1)
+        info_output("Processing station " + st_name(ii))
 
         ;; Define output array
         output = new(dimsizes(timec), float)

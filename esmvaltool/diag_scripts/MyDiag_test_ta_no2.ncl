@@ -70,13 +70,13 @@ begin
     ;;# passed via environment variables by python code         #
     ;;###########################################################
     verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering " + diag_script, verbosity, 4)
+    log_debug("<<<<<<<< Entering " + diag_script)
 
     ;; 'diag_script' and 'variables' are fetched from the
     ;; above 'ncl.interface' file
-    info_output("++++++++++++++++++++++++++++++++++++++++++", verbosity, 1)
-    info_output(diag_script + " (var: " + variables(0) + ")", verbosity, 1)
-    info_output("++++++++++++++++++++++++++++++++++++++++++", verbosity, 1)
+    info_output("++++++++++++++++++++++++++++++++++++++++++")
+    info_output(diag_script + " (var: " + variables(0) + ")")
+    info_output("++++++++++++++++++++++++++++++++++++++++++")
 
     ;; 'models', 'variables' and 'field_types' are fetched from the
     ;; above 'ncl.interface' file
@@ -110,7 +110,7 @@ begin
     end if
     ;;if(isatt(variable_info, "MyDiag_title")) then
     ;;    MyParam = variable_info@MyDiag_title
-    ;;    info_output(" MyParam = " + MyParam, verbosity, 5)
+    ;;    log_debug(" MyParam = " + MyParam, verbosity, 5)
     ;;else
     ;;    error_msg("f", diag_script, "", "missing variable attribute " + \
     ;;              "'MyDiag_title'")
@@ -121,16 +121,10 @@ begin
     ;;###########################################
     ;; get data from first model
     imod = 0  ; NCL array indicies start from zero
-    info_output("processing " + models@name(imod) + "_"\
-                              + models@ensemble(imod), verbosity, 5)
+    log_debug("processing " + models@name(imod) + "_" + models@ensemble(imod))
 
     ;; See ./interface_scripts/data_handling.ncl
     A0 = extract_data(imod, data, -1, 0, 0)
-    info_output(" ++++++++++++++ Variable summary of original data (A0): ", \
-                verbosity, 5)
-    if (verbosity .ge. 4) then
-        printVarSummary(A0)
-    end if
 
     ;; Check dimensions
     dims = getvardims(A0)
@@ -149,11 +143,6 @@ begin
 
     ;; Average over time (function in ./diag_scripts/lib/ncl/statistics.ncl)
     data1 = time_operations(A0, -1, -1, "average", "annualclim", True)
-    info_output(" ++++++++++++++ Variable summary of time averaged data " + \
-                "(data1): ", verbosity, 5)
-    if (verbosity .ge. 0) then
-        printVarSummary(data1)
-    end if
 
     ;;###########################################
     ;;# Open file for plot                      #
@@ -278,7 +267,7 @@ begin
 ;    pres@gsnPanelLabelBar = False  ; no general label bar desired here
     ; number of vertical and horizontal plots per page: nmap, 1
 ;    outfile = panelling(wks, maps, nmap, 1, pres)
-;    info_output(" Wrote " + outfile, verbosity, 1)
+;    info_output(" Wrote " + outfile)
 
-    info_output(">>>>>>>> Leaving " + diag_script, verbosity, 4)
+    log_debug(">>>>>>>> Leaving " + diag_script)
 end

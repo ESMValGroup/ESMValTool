@@ -88,7 +88,7 @@ begin
     ;; Loop over variables
     do vID = 0, dimsizes(VARS) - 1
 
-        info_output("Processing " + VARS(vID), verbosity, 1)
+        info_output("Processing " + VARS(vID))
 
         ;; Loop over time
         do tt = 0, dimsizes(timec) - 1
@@ -146,8 +146,7 @@ begin
 
             else
 
-                info_output(" --> File missing, skipping this date", \
-                            verbosity, 1)
+                info_output(" --> File missing, skipping this date")
 
             end if
 

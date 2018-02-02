@@ -199,7 +199,7 @@ begin
     start_year = max(toint(models@start_year))
     end_year = min(toint(models@end_year))
     info_output("overlapping time period: " + tostring(start_year) + \
-                " - " + tostring(end_year), verbosity, 1)
+                " - " + tostring(end_year))
 
     ;; create data structure for mmm models
     do i = 0, dimsizes(idx) - 1
@@ -303,20 +303,17 @@ begin
             ;; interpolate to  plev_grd
             if(isatt(diag_script_info, "interpolation")) then
                 interpol_flag = diag_script_info@interpolation
-                info_output("Interpolation set by diag_script_info",\
-                            verbosity, 5)
+                log_debug("Interpolation set by diag_script_info")
             else  ; default
                 valid_plev = plev_grd(ind(.not.ismissing(plev_grd)))
                 nvalid = dimsizes(valid_plev)
                 if(max(var_olap&plev).gt.valid_plev(1) .and.\
                    min(var_olap&plev).lt.valid_plev(nvalid - 2)) then
                     interpol_flag = -1
-                    info_output("Linear interpolation with extrapolation",\
-                                verbosity, 5)
+                    log_debug("Linear interpolation with extrapolation")
                 else
                     interpol_flag = 1
-                    info_output("Linear interpolation, no extrapolation",\
-                                verbosity, 5)
+                    log_debug("Linear interpolation, no extrapolation")
                 end if
             end if
             var_plev = int2p_n_Wrap(var_olap&plev, var_olap,\

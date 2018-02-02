@@ -71,7 +71,7 @@ begin
     ;; Loop over campaigns
     do cpID = 0, dimsizes(CAMPAIGN) - 1
 
-        info_output("Campaign: " + CAMPAIGN(cpID), verbosity, 1)
+        info_output("Campaign: " + CAMPAIGN(cpID))
 
         ;; Find lat and lon ranges
         infile = INDIR + "200411" + CAMPAIGN(cpID) + "_AVE_Flight_Track.txt"

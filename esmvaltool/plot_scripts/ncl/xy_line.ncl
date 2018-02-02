@@ -139,8 +139,8 @@ begin
     valid_legends = (/"inline", "separate"/)
     if(inlist(legend, valid_legends)) then
         if(.not. iscoord(data, "models")) then
-            info_output("warning: No 'models' coordinate found.", verbosity, 2)
-            info_output("warning:  -> No legend in profile_plev", verbosity, 2)
+            log_debug("warning: No 'models' coordinate found.")
+            log_debug("warning:  -> No legend in profile_plev")
         end if
     else
         legend = "none"
@@ -480,17 +480,17 @@ begin
         plot@outfile = wks@fullname
     else
         plot@outfile = wks@name
-        info_output("warning: wks@fullname missing, consider to use " +\
-                    "get_wks to open wks", verbosity, 5)
+        log_debug("warning: wks@fullname missing, consider to use " +\
+                    "get_wks to open wks")
     end if
 
     ;; confirmation of operation
     if(isatt(res, "gsnDraw")) then
         if(res@gsnDraw .eq. True) then
-            info_output(" Wrote " + plot@outfile, verbosity, 1)
+            info_output(" Wrote " + plot@outfile)
         end if
     else
-        info_output(" Wrote " + plot@outfile, verbosity, 1)
+        info_output(" Wrote " + plot@outfile)
     end if
 
     leave_msg(scriptname, funcname, 5)
@@ -783,15 +783,15 @@ begin
                         array_append_record(y1, y2(::-1), 0), y1(0), 0)
                     q = ind(.not.ismissing(xx))
                     if (dimsizes(q).ne.dimsizes(xx)) then
-                        info_output("Some missing values in model " + \
-                                    "percentiles", verbosity, 2)
+                        log_debug("Some missing values in model " + \
+                                    "percentiles")
                     end if
                     if (.not.all(ismissing(q))) then
                         g_obj(ii) = \
                             gsn_add_polygon(wks, plot, xx(q), yy(q), resP)
                     else
                         info_output("All values in model percentiles are " + \
-                                    "missing (skipping)", verbosity, 1)
+                                    "missing (skipping)")
                     end if
                     delete([/x1, x2, y1, y2, xx, yy, q/])
                 end do
@@ -816,15 +816,15 @@ begin
                     array_append_record(y1, y2(::-1), 0), y1(0), 0)
                     q = ind(.not.ismissing(xx))
                     if (dimsizes(q).ne.dimsizes(xx)) then
-                        info_output("Some missing values in obs " + \
-                                    "percentiles", verbosity, 2)
+                        log_debug("Some missing values in obs " + \
+                                    "percentiles")
                     end if
                     if (.not.all(ismissing(q))) then
                         g_obj(ii) = \
                         gsn_add_polygon(wks, plot, xx(q), yy(q), resP)
                     else
                         info_output("All values in obs percentiles are " + \
-                                    "missing (skipping)", verbosity, 1)
+                                    "missing (skipping)")
                     end if
                     delete([/x1, x2, y1, y2, xx, yy, q/])
                 end do
@@ -848,14 +848,13 @@ begin
             yy = model&plev
             q = ind(.not.ismissing(xx))
             if (dimsizes(q).ne.dimsizes(xx)) then
-                info_output("Some missing values in model median", \
-                            verbosity, 2)
+                log_debug("Some missing values in model median")
             end if
             if (.not.all(ismissing(q))) then
                 g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
             else
                 info_output("All values in model median are missing " + \
-                            "(skipping)", verbosity, 1)
+                            "(skipping)")
             end if
             delete([/xx, yy, q/])
         end do
@@ -876,7 +875,7 @@ begin
             yy = obser&plev
             q = ind(.not.ismissing(xx))
             if (dimsizes(q).ne.dimsizes(xx)) then
-                info_output("Some missing values in obs. median", verbosity, 2)
+                log_debug("Some missing values in obs. median")
             end if
             if (.not.all(ismissing(q))) then
                 if (l_summary) then
@@ -887,7 +886,7 @@ begin
                 end if
             else
                 info_output("All values in obs median are missing " + \
-                            "(skipping)", verbosity, 1)
+                            "(skipping)")
             end if
             delete([/xx, yy, q/])
         end do
@@ -909,13 +908,13 @@ begin
             yy = model&plev
             q = ind(.not.ismissing(xx))
             if (dimsizes(q).ne.dimsizes(xx)) then
-                info_output("Some missing values in model mean", verbosity, 2)
+                log_debug("Some missing values in model mean")
             end if
             if (.not.all(ismissing(q))) then
                 g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
             else
                 info_output("All values in model mean are missing " + \
-                            "(skipping)", verbosity, 1)
+                            "(skipping)")
             end if
             delete([/xx, yy, q/])
         end do
@@ -930,14 +929,13 @@ begin
             yy = model&plev
             q = ind(.not.ismissing(xx))
             if (dimsizes(q).ne.dimsizes(xx)) then
-                info_output("Some missing values in model std. dev.", \
-                            verbosity, 2)
+                log_debug("Some missing values in model std. dev.")
             end if
             if (.not.all(ismissing(q))) then
                 g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
             else
                 info_output("All values in model std. dev. are missing " + \
-                            "(skipping)", verbosity, 1)
+                            "(skipping)")
             end if
             delete([/xx, yy, q/])
         end do
@@ -959,7 +957,7 @@ begin
             yy = obser&plev
             q = ind(.not.ismissing(xx))
             if (dimsizes(q).ne.dimsizes(xx)) then
-                info_output("Some missing values in obs. mean", verbosity, 2)
+                log_debug("Some missing values in obs. mean")
             end if
             if (.not.all(ismissing(q))) then
                 if (l_stddev) then
@@ -971,7 +969,7 @@ begin
                 end if
             else
                 info_output("All values in obs. mean are missing " + \
-                            "(skipping)", verbosity, 1)
+                            "(skipping)")
             end if
             delete([/xx, yy, q/])
         end do
@@ -1286,15 +1284,15 @@ begin
                         array_append_record(y1, y2(::-1), 0), y1(0), 0)
                     q = ind(.not.ismissing(yy))
                     if (dimsizes(q).ne.dimsizes(yy)) then
-                        info_output("Some missing values in model " + \
-                                    "percentiles", verbosity, 2)
+                        log_debug("Some missing values in model " + \
+                                    "percentiles")
                     end if
                     if (.not.all(ismissing(q))) then
                         g_obj(ii) = \
                             gsn_add_polygon(wks, plot, xx(q), yy(q), resP)
                     else
                         info_output("All values in model percentiles are " + \
-                                    "missing (skipping)", verbosity, 1)
+                                    "missing (skipping)")
                     end if
                     delete([/x1, x2, y1, y2, xx, yy, q/])
                 end do
@@ -1319,15 +1317,15 @@ begin
                         array_append_record(y1, y2(::-1), 0), y1(0), 0)
                     q = ind(.not.ismissing(yy))
                     if (dimsizes(q).ne.dimsizes(yy)) then
-                        info_output("Some missing values in obs " + \
-                                    "percentiles", verbosity, 2)
+                        log_debug("Some missing values in obs " + \
+                                    "percentiles")
                     end if
                     if (.not.all(ismissing(q))) then
                         g_obj(ii) = \
                             gsn_add_polygon(wks, plot, xx(q), yy(q), resP)
                     else
                         info_output("All values in obs percentiles are " + \
-                                    "missing (skipping)", verbosity, 1)
+                                    "missing (skipping)")
                     end if
                     delete([/x1, x2, y1, y2, xx, yy, q/])
                     str = "obser_" + shade_name(shID)
@@ -1352,14 +1350,13 @@ begin
             yy = model(ii, i_median, :)
             q = ind(.not.ismissing(yy))
             if (dimsizes(q).ne.dimsizes(yy)) then
-                info_output("Some missing values in model median", \
-                            verbosity, 2)
+                log_debug("Some missing values in model median")
             end if
             if (.not.all(ismissing(q))) then
                 g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
             else
                 info_output("All values in model median are missing " + \
-                            "(skipping)", verbosity, 1)
+                            "(skipping)")
             end if
             delete([/xx, yy, q/])
         end do
@@ -1374,13 +1371,13 @@ begin
             yy = obser(ii, i_median, :)
             q = ind(.not.ismissing(yy))
             if (dimsizes(q).ne.dimsizes(yy)) then
-                info_output("Some missing values in obs. median", verbosity, 2)
+                log_debug("Some missing values in obs. median")
             end if
             if (.not.all(ismissing(q))) then
                 g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
             else
                 info_output("All values in obs median are missing " + \
-                            "(skipping)", verbosity, 1)
+                            "(skipping)")
             end if
             delete([/xx, yy, q/])
         end do
@@ -1402,13 +1399,13 @@ begin
             yy = model(ii, i_mean, :)
             q = ind(.not.ismissing(yy))
             if (dimsizes(q).ne.dimsizes(yy)) then
-                info_output("Some missing values in model mean", verbosity, 2)
+                log_debug("Some missing values in model mean")
             end if
             if (.not.all(ismissing(q))) then
                 g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
             else
                 info_output("All values in model mean are missing " + \
-                            "(skipping)", verbosity, 1)
+                            "(skipping)")
             end if
             delete([/xx, yy, q/])
         end do
@@ -1423,14 +1420,13 @@ begin
             yy = model(ii, i_mean, :) + model(ii, i_stddev, :)
             q = ind(.not.ismissing(yy))
             if (dimsizes(q).ne.dimsizes(yy)) then
-                info_output("Some missing values in model std. dev.", \
-                            verbosity, 2)
+                log_debug("Some missing values in model std. dev.")
             end if
             if (.not.all(ismissing(q))) then
                 g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
             else
                  info_output("All values in model std. dev. are missing " + \
-                            "(skipping)", verbosity, 1)
+                            "(skipping)")
             end if
             delete([/xx, yy, q/])
         end do
@@ -1451,7 +1447,7 @@ begin
             yy = obser(ii, i_mean, :)
             q = ind(.not.ismissing(yy))
             if (dimsizes(q).ne.dimsizes(yy)) then
-                info_output("Some missing values in obs. mean", verbosity, 2)
+                log_debug("Some missing values in obs. mean")
             end if
             if (.not.all(ismissing(q))) then
                 if (l_stddev) then
@@ -1463,7 +1459,7 @@ begin
                 end if
             else
                 info_output("All values in obs. mean are missing " + \
-                            "(skipping)", verbosity, 1)
+                            "(skipping)")
             end if
             delete([/xx, yy, q/])
         end do
@@ -1801,7 +1797,7 @@ begin
     else
         outfile = wks@name
     end if
-    info_output(" Wrote " + outfile, verbosity, 1)
+    info_output(" Wrote " + outfile)
     leave_msg(scriptname, funcname, 5)
 
 end

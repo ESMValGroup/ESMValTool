@@ -85,14 +85,14 @@ begin
     verbosity  = config_user_info@verbosity
     enter_msg(scriptname, "", 2)
 
-    info_output("INFILE = " + INFILE, verbosity, 1)
+    info_output("INFILE = " + INFILE)
 
     ;; Check input path
     check_inpath()
 
     ;; Find grid type
     GRID = find_grid_type()
-    info_output("GRID TYPE = " + GRID, verbosity, 2)
+    log_debug("GRID TYPE = " + GRID)
 
     ;; Read variable and extract given time range
     filelist = new(1000, string)  ; list of files processed by read_var
@@ -160,7 +160,7 @@ begin
     end if
 
     delete(VARPROC)
-    info_output("OUTFILE = " + OUTFILE, verbosity, 1)
+    info_output("OUTFILE = " + OUTFILE)
 
     leave_msg(scriptname, "", 2)
 

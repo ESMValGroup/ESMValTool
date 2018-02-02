@@ -81,13 +81,13 @@ begin
     ;; Loop over variables
     do vID = 0, dimsizes(VARS) - 1
 
-        info_output("", verbosity, 1)
-        info_output("Processing " + VARS(vID), verbosity, 1)
+        info_output("")
+        info_output("Processing " + VARS(vID))
 
         ;; Create timeseries
         do yy = YEAR1, YEAR2
 
-            info_output("  " + yy, verbosity, 1)
+            info_output("  " + yy)
             do mm = 1, 12
 
                 fname = INDIR + FNAME(vID) + yy + sprinti("%0.2i", mm) + ".nc"
@@ -149,8 +149,7 @@ begin
         output&lon = clon
         delete(clon)
 
-        info_output("  Range: " + min(output) + "; " + \
-                    max(output), verbosity, 1)
+        info_output("  Range: " + min(output) + "; " + max(output))
 
         ;; Set global attributes
         gAtt = True

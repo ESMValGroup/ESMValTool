@@ -49,7 +49,7 @@ function legend_lines(wks_in[1], \
 local data, defaults, var, diag_script, colors, annots, dashes, thicks  
 begin
     verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering legend_lines (legends.ncl)", verbosity, 10)
+    log_debug("<<<<<<<< Entering legend_lines (legends.ncl)")
 
     ;; Get data, either directly or via netCDF file
     if(typeof(source) .eq. "string") then
@@ -167,13 +167,13 @@ begin
 ;        plot@outfile = wks_legend@fullname
 ;    else
 ;        plot@outfile = wks_legend@name
-;        info_output("warning: wks@fullname missing, consider to use " +\
+;        log_debug("warning: wks@fullname missing, consider to use " +\
 ;                    "get_wks to open wks", verbosity, 5)
 ;    end if
-;    info_output(" Wrote " + plot@outfile, verbosity, 1)
-    info_output(" Wrote " + wks_legend@fullname, verbosity, 1)
+;    info_output(" Wrote " + plot@outfile)
+    info_output(" Wrote " + wks_legend@fullname)
 
-    info_output(">>>>>>>> Leaving legend_lines (legends.ncl)", verbosity, 10)
+    log_debug(">>>>>>>> Leaving legend_lines (legends.ncl)")
 
     return(wks_legend)
 
@@ -211,7 +211,7 @@ function legend_markers(wks_in[1], \
 local data, defaults, var, diag_script, colors, annots, dashes, thicks  
 begin
     verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering legend_lines (legends.ncl)", verbosity, 10)
+    log_debug("<<<<<<<< Entering legend_lines (legends.ncl)")
 
     ;; Get data, either directly or via netCDF file
     if(typeof(source) .eq. "string") then
@@ -313,9 +313,9 @@ begin
     ;; Advance frame
     frame(wks_legend)
 
-    ;info_output(" Wrote " + wks_legend@fullname, verbosity, 1)
+    ;info_output(" Wrote " + wks_legend@fullname)
 
-    info_output(">>>>>>>> Leaving legend_lines (legends.ncl)", verbosity, 10)
+    log_debug(">>>>>>>> Leaving legend_lines (legends.ncl)")
 
     return(wks_legend)
 

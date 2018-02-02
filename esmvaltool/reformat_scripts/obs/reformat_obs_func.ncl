@@ -398,7 +398,7 @@ begin
     ;; Loop over variables
     do vID = 0, dimsizes(in_vars) - 1
 
-        info_output("  Processing variable " + in_compon(vID), verbosity, 1)
+        info_output("  Processing variable " + in_compon(vID))
 
         ;; Initialize
         temp_arr = 0.
@@ -421,15 +421,15 @@ begin
 
         ;; Check for duplicates
         if (dimsizes(UNIQ(sy)).ne.dimsizes(sy)) then
-            info_output("Duplicated data in input files", verbosity, 1)
+            info_output("Duplicated data in input files")
             do fID = 0, dimsizes(in_files) - 1
-                info_output("  " + in_files(fID), verbosity, 1)
+                info_output("  " + in_files(fID))
             end do
             info_output("Remove duplicated files considering the " + \
-                        "following criteria", verbosity, 1)
-            info_output("  most recent revision date", verbosity, 1)
-            info_output("  most complete time coverage", verbosity, 1)
-            info_output("  same instrument in different years", verbosity, 1)
+                        "following criteria")
+            info_output("  most recent revision date")
+            info_output("  most complete time coverage")
+            info_output("  same instrument in different years")
             error_msg("f", scriptname, funcname, \
                       "rerun this station after removing duplicates")
         end if
@@ -438,7 +438,7 @@ begin
         ;; Loop over input files
         do fID = 0, dimsizes(in_files) - 1
 
-            info_output("   Reading file " + in_bnames(fID), verbosity, 2)
+            log_debug("   Reading file " + in_bnames(fID))
 
             ;; Read header
             head = readAsciiHead(in_files(fID), "starttime")

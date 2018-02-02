@@ -189,9 +189,8 @@ begin
         do ii = 0, dimsizes(altnames) - 1
             if (isfilevar(fo, altnames(ii)) .and. \
                 ismissing(ret_name)) then
-                info_output("  Variable " + name\
-                            + " found with alternative name "\
-                            + altnames(ii), verbosity, 1)
+                info_output("  Variable " + name + \
+                            " found with alternative name " + altnames(ii))
                 ret_name = altnames(ii)
             end if
         end do
@@ -234,8 +233,7 @@ begin
         ret = fixing_func(var, name)
         if (ret.eq.0) then
             info_output("  A data-fixing function (" + FIXFILE + ") " + \
-                        "has been applied to this model/variable!", \
-                        verbosity, 1)
+                        "has been applied to this model/variable!")
             fixfile = FIXFILE
         end if
     end if
@@ -639,7 +637,7 @@ begin
 
     if (.not. isatt(var, "_FillValue")) then
         info_output("  No _FillValue found for this variable, " + \
-                    "assigning default", verbosity, 1)
+                    "assigning default")
         var@_FillValue = FILL
     end if
 
@@ -652,7 +650,7 @@ begin
             var@_FillValue .ne. altfill(ii)) then
             var = where(var.eq.altfill(ii), var@_FillValue, var)
             info_output("  Found probable missing values (" + altfill(ii) + \
-                        ") not defined as _FillValue, fixing", verbosity, 1)
+                        ") not defined as _FillValue, fixing")
         end if
     end do
 
@@ -1387,7 +1385,7 @@ begin
             ldims = getvardims(area)
         end if
 
-        info_output("  Adding areacello to OUTFILE", verbosity, 1)
+        info_output("  Adding areacello to OUTFILE")
         filevardef(w, "areacello", typeof(area), ldims)
         filevarattdef(w, "areacello", area)
         delete(ldims)
@@ -1427,7 +1425,7 @@ begin
             end if
             latv!2 = "vertices"
 
-            info_output("  Adding lat_vertices to OUTFILE", verbosity, 1)
+            info_output("  Adding lat_vertices to OUTFILE")
             filedimdef(w, (/"vertices"/), (/4/), (/False/))
             filevardef(w, "lat_vertices", typeof(latv), getvardims(latv))
             filevarattdef(w, "lat_vertices", latv)
@@ -1469,7 +1467,7 @@ begin
             end if
             lonv!2 = "vertices"
 
-            info_output("  Adding lon_vertices to OUTFILE", verbosity, 1)
+            info_output("  Adding lon_vertices to OUTFILE")
             filevardef(w, "lon_vertices", typeof(lonv), getvardims(lonv))
             filevarattdef(w, "lon_vertices", lonv)
 
@@ -1582,11 +1580,10 @@ begin
             filevarattdef(w, "sftlf", maskl)
             setfileoption(w, "DefineMode", False)
             w->sftlf = (/maskl/)
-            info_output("  Adding sftlf to OUTFILE", verbosity, 1)
+            info_output("  Adding sftlf to OUTFILE")
         else
-            info_output("Dimensionality of sftlf not consistent with " + \
-                        "dimensionality of " + VAR + ", skipping", \
-                        verbosity, 2)
+            log_debug("Dimensionality of sftlf not consistent with " + \
+                        "dimensionality of " + VAR + ", skipping")
         end if
     end if
 
@@ -1680,11 +1677,10 @@ begin
             filevarattdef(w, "sftof", masko)
             setfileoption(w, "DefineMode", False)
             w->sftof = (/masko/)
-            info_output("  Adding sftof to OUTFILE", verbosity, 1)
+            info_output("  Adding sftof to OUTFILE")
         else
-            info_output("Dimensionality of sftof not consistent with " + \
-                        "dimensionality of " + VAR + ", skipping", \
-                        verbosity, 2)
+            log_debug("Dimensionality of sftof not consistent with " + \
+                      "dimensionality of " + VAR + ", skipping")
         end if
 
     end if
@@ -1779,11 +1775,10 @@ begin
             filevarattdef(w, "mrsofc", maskl)
             setfileoption(w, "DefineMode", False)
             w->mrsofc = (/maskl/)
-            info_output("  Adding mrsofc to OUTFILE", verbosity, 1)
+            info_output("  Adding mrsofc to OUTFILE")
         else
             info_output("Dimensionality of mrsofc not consistent with " + \
-                        "dimensionality of " + VAR + ", skipping", \
-                        verbosity, 2)
+                        "dimensionality of " + VAR + ", skipping")
         end if
     end if
 
@@ -1843,7 +1838,7 @@ begin
             depth = ff->$vname$
             w = addfile(OUTFILE, "w")
             w->$depths(ii)$ = depth
-            info_output("  Adding " + depths(ii) + " to OUTFILE", verbosity, 1)
+            info_output("  Adding " + depths(ii) + " to OUTFILE")
             delete(depth)
         else
             error_msg("f", scriptname, funcname, \

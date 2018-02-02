@@ -112,9 +112,9 @@ begin
 
     verbosity  = config_user_info@verbosity
     enter_msg(diag_script, "", 4)
-    info_output("++++++++++++++++++++++++++++++++++++++++++", verbosity, 1)
-    info_output(diag_script + " (var: " + variables(0) + ")", verbosity, 1)
-    info_output("++++++++++++++++++++++++++++++++++++++++++", verbosity, 1)
+    info_output("++++++++++++++++++++++++++++++++++++++++++")
+    info_output(diag_script + " (var: " + variables(0) + ")")
+    info_output("++++++++++++++++++++++++++++++++++++++++++")
 
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
@@ -358,7 +358,7 @@ begin
     ;; Loop over models
     do imod = 0, dim_MOD - 1
 
-        info_output("Processing " + modelnames(imod), verbosity, 2)
+        log_debug("Processing " + modelnames(imod))
 
         ;; Set path for saving processed data ;; FIX-ME add preproc_id
         fullpath = config_user_info@work_dir + "/"
@@ -376,7 +376,7 @@ begin
 
 ;;DELETE        ;; Do not process data if already processed
 ;;DELETE        if (fileexists(procpath)) then
-;;DELETE            info_output("No recalculation!", verbosity, 1)
+;;DELETE            info_output("No recalculation!")
 ;;DELETE            info_output("Reading in file = " + procpath, verbosity, 1)
 ;;DELETE            if (irank.eq.5) then
 ;;DELETE                var_all(imod, :, :, :, :) = ncdf_read(procpath, var0)
@@ -617,8 +617,8 @@ begin
         ;; Start calculation
 ;;DELETE        if (fileexists(ncdf_dir)) then
 ;;DELETE
-;;DELETE            info_output("No recalculation!", verbosity, 1)
-;;DELETE            info_output("Reading in file = " + ncdf_dir, verbosity, 1)
+;;DELETE            info_output("No recalculation!")
+;;DELETE            info_output("Reading in file = " + ncdf_dir)
 ;;DELETE
 ;;DELETE        else
 
@@ -872,7 +872,7 @@ begin
             plot = cycle_plot(wks, var_all, var0)
             draw(plot)
             frame(wks)
-            info_output(" gv " + outfile + "." + file_type, verbosity, 1)
+            info_output(" gv " + outfile + "." + file_type)
         end if
 
         ;; CASE: zonal ########################################################
@@ -901,8 +901,7 @@ begin
                 plot = zonalmean_profile(wks, var, var0)
                 draw(plot)
                 frame(wks)
-                info_output(" gv " + outfile + "." + file_type, \
-                            verbosity, 1)
+                info_output(" gv " + outfile + "." + file_type)
                 delete(var@res_cnLevels)
                 delete(wks)
                 delete(plot)
@@ -950,7 +949,7 @@ begin
                 overlay(plot, plot2)
                 draw(plot)
                 frame(wks)
-                info_output(" gv " + outfile + "." + file_type, verbosity, 1)
+                info_output(" gv " + outfile + "." + file_type)
                 delete(var@res_cnLevels)
                 delete(wks)
                 delete(plot)
@@ -990,8 +989,7 @@ begin
                 plot = contour_map_ce(wks, var, var0)
                 draw(plot)
                 frame(wks)
-                info_output(" gv " + outfile + "." + file_type, \
-                            verbosity, 1)
+                info_output(" gv " + outfile + "." + file_type)
                 delete(var@res_cnLevels)
                 delete(wks)
                 delete(plot)
@@ -1052,7 +1050,7 @@ begin
                 overlay(plot, plot2)
                 draw(plot)
                 frame(wks)
-                info_output(" gv " + outfile + "." + file_type, verbosity, 1)
+                info_output(" gv " + outfile + "." + file_type)
                 delete(var@res_cnLevels)
                 delete(wks)
                 delete(plot)

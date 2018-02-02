@@ -57,7 +57,7 @@ local verbosity
 begin
 
     verbosity = config_user_info@verbosity
-    info_output("<<<<<<<< Entering taylor_plot", verbosity, 4)
+    log_debug("<<<<<<<< Entering taylor_plot")
 
     ;; Get data, either directly or via netCDF file
     if(typeof(source) .eq. "string") then
@@ -442,7 +442,7 @@ begin
     frame(wks)
     taylor@outfile = wks@name
 
-    info_output(">>>>>>>> Leaving taylor_plot", verbosity, 4)
+    log_debug(">>>>>>>> Leaving taylor_plot")
     return(taylor)
 
 end

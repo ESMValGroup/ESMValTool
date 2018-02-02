@@ -575,7 +575,7 @@ begin
         sf = INPATH + files(0)
         f = addfile(sf, "r")
         put_vfatmp(var, date, sf)
-        info_output("Reading " + var + " from " + sf, verbosity, 1)
+        info_output("Reading " + var + " from " + sf)
         xx = f->$var$
         leave_msg(scriptname, funcname, 4)
 ; a_laue_ax+
@@ -594,7 +594,7 @@ begin
             lvar = lvar + "_ave"
         end if
         put_vfatmp(lvar, date, sf)
-        info_output("Reading " + lvar + " from " + sf, verbosity, 1)
+        info_output("Reading " + lvar + " from " + sf)
         xx = f->$lvar$
         leave_msg(scriptname, funcname, 4)
 ; a_laue_ax+
@@ -627,7 +627,7 @@ begin
             lvar = lvar + "_ave"
         end if
         put_vfatmp(lvar, date, sf)
-        info_output("Reading " + lvar + " from " + sf, verbosity, 1)
+        info_output("Reading " + lvar + " from " + sf)
         xx = f->$lvar$
         leave_msg(scriptname, funcname, 4)
 ; a_laue_ax+
@@ -668,7 +668,7 @@ begin
             lvar = lvar + "_ave"
         end if
         put_vfatmp(lvar, date, sf)
-        info_output("Reading " + lvar + " from " + sf, verbosity, 1)
+        info_output("Reading " + lvar + " from " + sf)
         xx = f->$lvar$
         leave_msg(scriptname, funcname, 4)
 ; a_laue_ax+
@@ -679,10 +679,9 @@ begin
     end if
 
     ;; More than 1 file found: pick the first one
-    info_output("Variable " + var + " found in more than 1 file: ", \
-                verbosity, 2)
+    info_output("Variable " + var + " found in more than 1 file: ")
     do ii = 0, dimsizes(files) - 1
-        info_output("     " + files(ii), verbosity, 2)
+        log_debug("     " + files(ii))
     end do
     sf = INPATH + files(0)
     f = addfile(sf, "r")
@@ -691,7 +690,7 @@ begin
         lvar = lvar + "_ave"
     end if
     put_vfatmp(lvar, date, sf)
-    info_output("Reading " + lvar + " from " + sf, verbosity, 1)
+    info_output("Reading " + lvar + " from " + sf)
     xx = f->$lvar$
     leave_msg(scriptname, funcname, 4)
 ; a_laue_ax+
@@ -932,7 +931,7 @@ begin
            inlist(levels@standard_name, recog_press)) then
             l_press = False
             info_output("reformat_EMAC_func: data are already on pressure " + \
-                        "levels", verbosity, 2)
+                        "levels")
             xx!1 = "lev_p"
             if (levels@units.eq."Pa" .or. levels@units.eq."PA") then
                 ;; Force units conversion to trigger standardization

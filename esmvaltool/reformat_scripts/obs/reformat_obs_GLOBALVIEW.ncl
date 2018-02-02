@@ -166,7 +166,7 @@ begin
 
     ;; Process files #######################################################
     do ff = 0, dimsizes(ext_files) - 1
-        info_output("Reading " + ext_files(ff), verbosity, 1)
+        info_output("Reading " + ext_files(ff))
         varname = varnames(ff)
         out_file = out_files(ff)
         station = stations(ff)
@@ -232,7 +232,7 @@ begin
                     suti(0, 2) + " to " + suti(n_data - 1, 0) + "/" + \
                     suti(n_data - 1, 1) + "/" + suti(n_data - 1, 2) + \
                     ". Using " + tostring(YEAR1) + " to " + tostring(YEAR2) + \
-                    " (12 months per year).", verbosity, 1)
+                    " (12 months per year).")
 
         ;; Create variable with time coordinate
         ivar = ind(VAR.eq.varname)
@@ -296,7 +296,7 @@ begin
         out_file = str_sub_str(out_file, ".nc", "_" + \
                                YEAR1 + "01-" + YEAR2 + "12.nc")
         write_nc(out_file, VAR, output, gAtt)
-        info_output("  Wrote " + out_file, verbosity, 1)
+        info_output("  Wrote " + out_file)
         delete(gAtt)
         delete(output)
         delete(data)

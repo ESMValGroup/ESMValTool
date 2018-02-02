@@ -88,9 +88,8 @@ begin
         ;; Set field
         FIELD = FLDARR(vID)
 
-        info_output("", verbosity, 1)
-        info_output("Processing " + VARS(vID) + " (" + FIELD + ") ", \
-                    verbosity, 1)
+        info_output("")
+        info_output("Processing " + VARS(vID) + " (" + FIELD + ") ")
 
         fname = INDIR + NAME(vID) + SUFFIX(vID) + ".mon.mean.nc"
         f = addfile(fname, "r")
@@ -146,7 +145,7 @@ begin
         end if
 
         info_output("  Range: " + min(output) + "; " + max(output) + \
-                    " [" + output@units + "]", verbosity, 1)
+                    " [" + output@units + "]")
 
         ;; Set variable attributes
         tmp = var_attrib(output, VARS(vID))
@@ -225,8 +224,7 @@ begin
         output&lon = clon
         delete(clon)
 
-        info_output("  Range: " + min(output) + "; " + max(output), \
-                    verbosity, 1)
+        info_output("  Range: " + min(output) + "; " + max(output))
 
         ;; Set global attributes
         gAtt = True

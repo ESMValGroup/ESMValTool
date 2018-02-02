@@ -103,8 +103,7 @@ begin
 
     else
 
-        info_output("No coordinates to process in copy_VarCoords_l1", \
-                    verbosity, 2)
+        log_debug("No coordinates to process in copy_VarCoords_l1")
 
     end if
 
@@ -633,8 +632,8 @@ begin
             sysdate = systemfunc("date +%Y%m%d%H%M%S")
             system("mv " + outfile + " " + outfile + "." + sysdate)
             ncdf = addfile(outfile, "c")
-            info_output(" Keeping existing " + outfile + " with suffix ." + \
-                        sysdate, verbosity, 2)
+            log_debug(" Keeping existing " + outfile + " with suffix ." + \
+                      sysdate)
         else if (existing .eq. "append") then
             ncdf = addfile(outfile, "w")
         else
@@ -664,7 +663,7 @@ begin
     end do
     ncdf->$varname$ = (/data/)
 
-    info_output("Wrote variable " + varname + " to " + outfile, verbosity, 1)
+    info_output("Wrote variable " + varname + " to " + outfile)
 
     leave_msg(scriptname, funcname, 10)
     return(outfile)
@@ -888,8 +887,7 @@ begin
     result = att2var(data, meta)
     if(dimsizes(result).eq.1) then
         if(result.eq.default_fillvalue("string")) then
-            info_output("Using default: " + meta + " = " + tostring(default), \
-                        verbosity, 4)
+            log_debug("Using default: " + meta + " = " + tostring(default))
             result = default
             copy_VarMeta(default, result)
         end if

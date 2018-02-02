@@ -84,9 +84,9 @@ begin
 
             do ivar = 0, dimsizes(VAR) - 1
 
-                info_output("", verbosity, 1)
-                info_output("Processing " + OBSNAME(iobs) + " " + VAR(ivar) + " (" + \
-                            FIELD + "), " + HEMISPHERE(ihem), verbosity, 1)
+                info_output("")
+                info_output("Processing " + OBSNAME(iobs) + " " + VAR(ivar) + \
+                            " (" + FIELD + "), " + HEMISPHERE(ihem))
 
                 time = create_timec(YEAR1(iobs), YEAR2(iobs))
                 date = cd_calendar(time, 1)
@@ -95,7 +95,7 @@ begin
                 ;; Read files
                 do yy = YEAR1(iobs), YEAR2(iobs)
 
-                    info_output("Calculating year " + yy, verbosity, 1)
+                    info_output("Calculating year " + yy)
 
                     ldate = yy + sprinti("%0.2i", mm)
                     fyear = tostring(yy)
@@ -208,7 +208,7 @@ begin
                 fout->lat = lat
                 fout->lon = lon
                 fout->areacello = areacello
-                info_output("Generated file " + outfile, verbosity, 1)
+                info_output("Generated file " + outfile)
 
             end do ; ivar-loop
 

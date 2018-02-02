@@ -60,7 +60,7 @@ begin
     funcname = "contour_map"
 
     verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering contour_map", verbosity, 4)
+    log_debug("<<<<<<<< Entering contour_map")
 
     ;; Get data, either directly or via netCDF file
     if(typeof(source) .eq. "string") then
@@ -120,12 +120,12 @@ begin
 
     if(isatt(res, "gsnDraw")) then
         if(res@gsnDraw .eq. True) then
-            info_output(" Wrote " + wks@name, verbosity, 1)
+            info_output(" Wrote " + wks@name)
         end if
     else
-        info_output(" Wrote " + wks@name, verbosity, 1)
+        info_output(" Wrote " + wks@name)
     end if
-    info_output(">>>>>>>> Leaving contour_map", verbosity, 4)
+    log_debug(">>>>>>>> Leaving contour_map")
     return(map)
 
 end
@@ -173,7 +173,7 @@ begin
     funcname = "contour_map_polar"
 
     verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering contour_map_polar", verbosity, 4)
+    log_debug("<<<<<<<< Entering contour_map_polar")
 
     ;; Get data, either directly or via netCDF file
     if(typeof(source) .eq. "string") then
@@ -266,7 +266,7 @@ begin
         areaplot = gsn_csm_contour_map_polar(wks_in, data, res)
     end if
 
-    info_output(">>>>>>>> Leaving contour_map_polar", verbosity, 4)
+    log_debug(">>>>>>>> Leaving contour_map_polar")
     return(areaplot)
 end 
 
@@ -310,7 +310,7 @@ local verbosity, data, var, wks, res
 begin
 
     verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering contour_map_ce", verbosity, 4)
+    log_debug("<<<<<<<< Entering contour_map_ce")
 
     ;; Get data, either directly or via netCDF
     if (typeof(source).eq."string") then
@@ -375,7 +375,7 @@ begin
         plot = gsn_csm_contour_map_ce(wks_in, data, res)
     end if
 
-    info_output(">>>>>>>> Leaving contour_map_ce", verbosity, 4)
+    log_debug(">>>>>>>> Leaving contour_map_ce")
     return(plot)
 end
 
@@ -407,7 +407,7 @@ begin
     funcname = "add_markers_to_map"
 
     verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering markers_on_map", verbosity, 4)
+    log_debug("<<<<<<<< Entering markers_on_map")
 
     ;; Check data consistency
     if (dimsizes(lat).ne.dimsizes(lon) .or. \

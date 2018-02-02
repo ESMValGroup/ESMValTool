@@ -69,7 +69,7 @@ begin
     ;; Loop over years
     do yr = YEAR1, YEAR2
         fname = INDIR + "UWisc_LWPMEAN_" + yr + "_v2.nc"
-        info_output("*** "+ fname + " ***", verbosity, 1)
+        info_output("*** "+ fname + " ***")
 
         f = addfile(fname, "r")
         lwp = (/f->LWP/)

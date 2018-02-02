@@ -72,9 +72,8 @@ begin
 
     do vID = 0, dimsizes(VARS) - 1
 
-        info_output("", verbosity, 1)
-        info_output("Processing " + VARS(vID) + " (" + FIELD + ") ", \
-                    verbosity, 1)
+        info_output("")
+        info_output("Processing " + VARS(vID) + " (" + FIELD + ") ")
 
         time = create_timec(YEAR1, YEAR2)
         date = cd_calendar(time, 1)
@@ -85,7 +84,7 @@ begin
             do mm = 1, 12
 
                 smonth = sprinti("%0.2i", mm)
-                info_output("Processing " + syear + "-" + smonth, verbosity, 1)
+                info_output("Processing " + syear + "-" + smonth)
 
                 ;; Read file
                 fname = INDIR + syear + "/" + smonth + "/" + syear + smonth + \
@@ -176,8 +175,7 @@ begin
         OUTPUT&lon = clon
         delete(clon)
 
-        info_output("  Range: " + min(OUTPUT) + "; " + \
-                    max(OUTPUT), verbosity, 1)
+        info_output("  Range: " + min(OUTPUT) + "; " + max(OUTPUT))
 
         ;; Set global attributes
         gAtt = True

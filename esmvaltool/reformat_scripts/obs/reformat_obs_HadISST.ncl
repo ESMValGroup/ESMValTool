@@ -67,8 +67,8 @@ begin
     fname_sst = INDIR + "HadISST_sst.nc"
     fname_ice = INDIR + "HadISST_ice.nc"
 
-    info_output("*** " + fname_sst + " ***", verbosity, 1)
-    info_output("*** " + fname_ice + " ***", verbosity, 1)
+    info_output("*** " + fname_sst + " ***")
+    info_output("*** " + fname_ice + " ***")
 
     fice = addfile(fname_ice, "r")
     fsst = addfile(fname_sst, "r")

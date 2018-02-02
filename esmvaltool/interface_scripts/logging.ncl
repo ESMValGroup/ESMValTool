@@ -52,98 +52,67 @@ end
 
 ;;#############################################################################
 undef("info_output")
-procedure info_output(output_string[*]:string,
-                      verbosity[1]:integer,
-                      required_verbosity[1]:integer)
+procedure info_output(output_string[*]:string)
 ;;
 ;; Arguments
 ;;    output_string: the text to be output as message on screen
-;;    verbosity: the current verbosity set as global attribute in the main nml
-;;    required_verbosity: the minimum verbosity for the message to be printed
 ;;
 ;; Description
-;;    Writes a log message on the stdout depending on the selected verbosity.
+;;    Writes an info message to the log file. If the input is an array, each
+;;    element will be written on different lines.
 ;;
 ;; Caveats
 ;;
 ;; References
 ;;
 ;; Modification history
-;;    20130119-A_eval_ma: written.
+;;    20180202-A_righ_ma: written to replace previous info_output.
 ;;
-local indent, indent_lev, indent_tmp, indent_str, indent_step, cwd
+local nn, ii
 begin
 
-    required_verbosity = min((/required_verbosity, 4/))
-
-    curr_trace_indent = config_user_info@run_dir + "/curr_trace_indent.txt"
-    if (ismissing(curr_trace_indent)) then
-        print("info: " + output_string)
-    else  ; Full info output
-        ;; Initialize file that keeps track of indent on first run.
-        if (.not. fileexists(curr_trace_indent)) then
-            asciiwrite(curr_trace_indent, 0)
-        end if
-
-        indent_step = 3
-        if (verbosity .eq. 2) then
-            padding_space = 13
-        else
-            padding_space = 1
-        end if
-
-        if (verbosity .ge. required_verbosity) then
-            ;; Increase indentation if we're entering an NCL routine
-            if (dimsizes(output_string) .eq. 1) then
-                if (isStrSubset(output_string, "<<<<<<<< Entering")) then
-                    indent = asciiread(curr_trace_indent,\
-                                       1, "integer")
-                    indent = indent + indent_step
-                    asciiwrite(curr_trace_indent,\
-                               indent)
-                end if
-            end if
-
-            ;; Add a prefix of ">>", "<<" or "  " to output_string
-            indent = asciiread(curr_trace_indent,\
-                                     1, "integer")
-            if (indent .lt. 1) then
-                indent = 1
-            end if
-            indent_lev = new(indent + padding_space, "string")
-            indent_tmp = where(ismissing(indent_lev), " ", "-")
-            if (dimsizes(output_string) .eq. 1) then
-                if (isStrSubset(output_string, "<")) then
-                    delete(indent_lev)
-                    delete(indent_tmp)
-                    indent_lev = new(indent, "string")
-                    indent_tmp = where(ismissing(indent_lev), "<", "-")
-                end if
-            end if
-            if (dimsizes(output_string) .eq. 1) then
-                if (isStrSubset(output_string, ">")) then
-                    delete(indent_lev)
-                    indent_lev = new(indent, "string")
-                    delete(indent_tmp)
-                    indent_tmp = where(ismissing(indent_lev), ">", "-")
-                end if
-            end if
-
-            indent_str = str_concat(indent_tmp)
-            print("info: " + indent_str + output_string)
-
-            ;; Decrease indentation if we're leaving an NCL routine
-            if (dimsizes(output_string) .eq. 1) then
-                if (isStrSubset(output_string, ">>>>>>>> Leaving")) then
-                    indent = asciiread(curr_trace_indent, \
-                                       1, "integer")
-                    indent = indent - indent_step
-                    asciiwrite(curr_trace_indent, \
-                               indent)
-                end if
-            end if
-        end if
+    nn = dimsizes(output_string)
+    if (nn.eq.1) then
+        print("INFO    " + output_string)
+    else
+        do ii = 0, nn - 1
+            print("INFO    " + output_string(ii))
+        end do
     end if
+
+end
+
+;;#############################################################################
+undef("log_debug")
+procedure log_debug(output_string[*]:string)
+;;
+;; Arguments
+;;    output_string: the text to be output as message on screen
+;;
+;; Description
+;;    Writes a debug message to the log file (only if log_level = debug in
+;;    config-user.yml). If the input is an array, each element will be
+;;    written on different lines.
+;;
+;; Caveats
+;;
+;; References
+;;
+;; Modification history
+;;    20180202-A_righ_ma: written to replace previous info_output.
+;;
+local nn, ii
+begin
+
+    nn = dimsizes(output_string)
+    if (nn.eq.1) then
+        print("INFO    " + output_string)
+    else
+        do ii = 0, nn - 1
+            print("INFO    " + output_string(ii))
+        end do
+    end if
+
 end
 
 ;;#############################################################################
@@ -172,10 +141,9 @@ begin
 
     verbosity = config_user_info@verbosity
     if (func.eq."") then
-        info_output("<<<<<<<< Entering " + script, verbosity, req_verbosity)
+        log_debug("<<<<<<<< Entering " + script)
     else
-        info_output("<<<<<<<< Entering " + func + " (" + script + ")", \
-                    verbosity, req_verbosity)
+        log_debug("<<<<<<<< Entering " + func + " (" + script + ")")
     end if
 
 end
@@ -206,10 +174,9 @@ begin
 
     verbosity = config_user_info@verbosity
     if (func.eq."") then
-        info_output(">>>>>>>> Leaving " + script, verbosity, req_verbosity)
+        log_debug(">>>>>>>> Leaving " + script)
     else
-        info_output(">>>>>>>> Leaving " + func + " (" + script + ")", \
-                    verbosity, req_verbosity)
+        log_debug(">>>>>>>> Leaving " + func + " (" + script + ")")
     end if
 
 end
@@ -267,7 +234,7 @@ begin
 
     ;; Write error/warning message
     do ii = 0, nn - 1
-        info_output(msg_level + ": in " + msg_origin + msg(ii), 1, 1)
+        info_output(msg_level + ": in " + msg_origin + msg(ii))
     end do
 
     ;; Exit if fatal

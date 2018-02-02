@@ -458,10 +458,10 @@ begin
     Opt@DstGridType        = source@GridType
     Opt@SrcGridType        = destination@GridType
 
-    info_output("esmf_conserve_wrapper: SrcGridType is " + \
-                source@GridType, verbosity, 6)
-    info_output("esmf_conserve_wrapper: DstGridType is " + \
-                destination@GridType, verbosity, 6)
+    log_debug("esmf_conserve_wrapper: SrcGridType is " + \
+              source@GridType)
+    log_debug("esmf_conserve_wrapper: DstGridType is " + \
+              destination@GridType)
 
     Opt@ForceOverwrite    = True
     Opt@PrintTimings      = False
@@ -598,8 +598,8 @@ begin
     ref_grid_size = guestimate_average_grid_area(ref)
     dimmodel = dimsizes(model)
     dimref = dimsizes(ref)
-    info_output("get_model_minus_ref: dims are, model:" + dimmodel + \
-                ", ref" + dimref, verbosity, 6)
+    log_debug("get_model_minus_ref: dims are, model:" + dimmodel + \
+              ", ref" + dimref)
 
     if (model_grid_size .gt. ref_grid_size) then
         if (is_plev) then
@@ -622,8 +622,8 @@ begin
     end if
     dimmodel = dimsizes(local_model)
     dimref = dimsizes(local_ref)
-    info_output("get_model_minus_ref: dims are, model:" + dimmodel + \
-                ", ref" + dimref, verbosity, 6)
+    log_debug("get_model_minus_ref: dims are, model:" + dimmodel + \
+              ", ref" + dimref)
     difference = local_model - local_ref
 
     leave_msg(scriptname, funcname, 6)

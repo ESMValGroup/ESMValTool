@@ -61,14 +61,14 @@ begin
     verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
-    info_output("  roi: latmin=" + latlon_roi(0) + \
+    log_debug("  roi: latmin=" + latlon_roi(0) + \
                 " ; latmax=" + latlon_roi(1) + \
                 " ; lonmin=" + latlon_roi(2) + \
-                " ; lonmax=" + latlon_roi(3), verbosity, 5)
-    info_output("  dat: latmin=" + latlon_dat(0) + \
+                " ; lonmax=" + latlon_roi(3))
+    log_debug("  dat: latmin=" + latlon_dat(0) + \
                 " ; latmax=" + latlon_dat(1) + \
                 " ; lonmin=" + latlon_dat(2) + \
-                " ; lonmax=" + latlon_dat(3), verbosity, 5)
+                " ; lonmax=" + latlon_dat(3))
 
     ;; avoid errors for areas that contain the Greenwich meridian
     ;; -> switch everything to -180 < lon < 180 for that case
@@ -134,10 +134,10 @@ begin
         if (2. * a3.gt.a1) then
             result = "center"
         end if
-        ;; info_output("warning: check for degree of overlap " + \
-        ;;             "not implemented yet", verbosity, 10)
-        ;; info_output("warning: -> returning 'center' just for case " + \
-        ;;             "'contained'", verbosity, 10)
+        ;; log_debug("warning: check for degree of overlap " + \
+        ;;             "not implemented yet")
+        ;; log_debug("warning: -> returning 'center' just for case " + \
+        ;;             "'contained'")
     end if
     ;; add other true, but less strong statements to the output vector
     if (result.eq."contained") then
@@ -736,7 +736,7 @@ begin
     enter_msg(scriptname, funcname, 10)
 
     if (all(iscoord(field, (/"lat", "lon"/)))) then
-        info_output(var + " is on a lat-lon grid", verbosity, 4)
+        log_debug(var + " is on a lat-lon grid")
 
         ;; Check rank
         rank = dimsizes(dimsizes(field))
@@ -777,7 +777,7 @@ begin
         delete(area_temp)
     else
         ;; irregular grid
-        info_output(var + " is not on a lat-lon grid", verbosity, 4)
+        log_debug(var + " is not on a lat-lon grid")
         out_field = field
 
         ;; Get lat-lon from another file

@@ -28,7 +28,7 @@ local dNames,fn_out,lat_name,lon_name,lat,lon,lat_index,lon_index,fout,\
 begin
     
     verbosity  = config_user_info@verbosity
-    info_output(" In fix_default from GO_default.ncl ", verbosity, 3)
+    log_debug(" In fix_default from GO_default.ncl ")
     script_name = getenv("ESMValTool_project")+"_"+getenv("ESMValTool_model")+".ncl"
  
     if (switch .eq. "ocean-latlon" ) then
@@ -36,7 +36,7 @@ begin
 
       variable   = getenv("ESMValTool_variable")
 
-      info_output("variable: " + variabl, verbosity, 3)
+      log_debug("variable: " + variabl)
         if(inlist(variable, rewrite_variables)) then  
             ;; Fetch necessary variables
 	    fin = dataX(0)
@@ -48,7 +48,7 @@ begin
             lat_index = ind(dNames .eq. "lat")  ; var(time,lat,lon)
             lon_index = ind(dNames .eq. "lon")
 
-            info_output("lat_index= " + lat_index, verbosity, 3)
+            log_debug("lat_index= " + lat_index)
            
            delete(fout)
 
@@ -60,11 +60,11 @@ begin
             lat_name = asciiread("$ESMValTool_interface_data/lat_name.txt", 1, "string")
             lon_name = asciiread("$ESMValTool_interface_data/lon_name.txt", 1, "string")        
             if (isfilevar(fin,lat_name)) then  ;get original coordinates (not always in file!)
-               info_output("lat_name from file " + lat_name, verbosity, 3)
+               log_debug("lat_name from file " + lat_name)
               i = fin->$lon_name$  
               j = fin->$lat_name$
             else     ;fall back option
-              info_output("lat_name from variable " + var&lat, verbosity, 3)
+              log_debug("lat_name from variable " + var&lat)
               i = var&lon
               j = var&lat
             end if 
@@ -81,9 +81,9 @@ begin
 
             ;; get grid cell areas
             areafile = getenv("ESMValTool_areafile_path")  ;;defined in main nml (e.g. for project CMIP5_gridfile)
-            info_output("areafile: " + areafile, verbosity, 3)
+            log_debug("areafile: " + areafile)
             
-            info_output("reading areafile = "+areafile,verbosity,2)
+            log_debug("reading areafile = "+areafile)
             
             g = addfile(areafile,"r")
             delete(areafile)
@@ -127,9 +127,9 @@ begin
             if (variable .eq. "sic") then
               if (max(var).gt.95. .and. max(var).lt.105.) then 
                 var = var/100.  ;sic is expected to be within [0,1]
-                info_output("Auto scaling "+var+"/100 in "+script_name,verbosity,3)
+                log_debug("Auto scaling "+var+"/100 in "+script_name)
               else if (max(var).gt.0.95 .and. max(var).lt.1.05)
-                info_output("No scaling for "+var+" in "+script_name,verbosity,3) 
+                log_debug("No scaling for "+var+" in "+script_name) 
               else 
                 print("Warning: check scaling of sic in "+script_name) 
               end if   
@@ -137,13 +137,13 @@ begin
             end if
             if (area@units .eq. "m2") then
               area = area / 1000000.  ;convert from sqm to sqkm
-              info_output("Auto scaling areacello/1e6 in "+script_name,verbosity,3)
+              log_debug("Auto scaling areacello/1e6 in "+script_name)
             else if (area@units .eq. "m-2") then
               area = area / 1000000.  ;convert from sqm to sqkm for GFDL model family
-              info_output("Auto scaling areacello/1e6 in "+script_name,verbosity,3)
+              log_debug("Auto scaling areacello/1e6 in "+script_name)
             else if (area@units .eq. "m 2") then
               area = area / 1000000.  ;convert from sqm to sqkm for GFDL model family
-              info_output("Auto scaling areacello/1e6 in "+script_name,verbosity,3)
+              log_debug("Auto scaling areacello/1e6 in "+script_name)
             end if
             end if  
             end if
@@ -160,13 +160,13 @@ begin
               fout->$variable$ = var(time|:,i|:,j|:)          
             end if
             fout->area = area(i|:,j|:) 
-            info_output("Written area to " + fn_out, verbosity, 3)
+            log_debug("Written area to " + fn_out)
            
         else
-            info_output("No operation for ocean_latlon in "+script_name, verbosity, 4)
+            log_debug("No operation for ocean_latlon in "+script_name)
         end if
     else
-        info_output(" switch '" + switch + "' in fix_data-routine invalid",verbosity,1)
+        info_output(" switch '" + switch + "' in fix_data-routine invalid")
 ;        status_exit(1)
     end if
     return(dataX)

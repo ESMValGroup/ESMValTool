@@ -81,7 +81,7 @@ begin
     datec = ut_calendar(timec, 1)
 
     ;; Read station info
-    info_output("Reading station information", verbosity, 1)
+    info_output("Reading station information")
 
     infile = INDIR + OBSNAME + "_2012_v1.3.txt"
 
@@ -91,7 +91,7 @@ begin
         data = readAsciiTable(infile, 7, "float", dimsizes(head))
         delete(head)
 
-        info_output("Processing " + infile, verbosity, 1)
+        info_output("Processing " + infile)
         ;; Read time and extract full years only
         year = data(:, 0)
         date = toint(year)

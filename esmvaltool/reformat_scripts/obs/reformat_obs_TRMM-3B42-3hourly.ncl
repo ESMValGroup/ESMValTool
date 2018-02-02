@@ -101,7 +101,7 @@ begin
             fname = fname + ".HDF.Z"
         end if
 
-        info_output("*** "+ fname + " ***", verbosity, 1)
+        info_output("*** "+ fname + " ***")
 
         tmpfile = "./temp.hdf"
         system("gzip -dc <" + fname + " >" + tmpfile)

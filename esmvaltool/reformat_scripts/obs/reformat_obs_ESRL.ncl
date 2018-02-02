@@ -82,7 +82,7 @@ begin
     datec = ut_calendar(timec, 1)
 
     ;; Read station info
-    info_output("Reading station information", verbosity, 1)
+    info_output("Reading station information")
     stat = readAsciiTable(FILE_STAT, 1, "string", 0)
     st_code = str_squeeze(str_get_field(stat(:, 0), 1, ","))
     st_name = str_squeeze(str_get_field(stat(:, 0), 2, ","))
@@ -107,13 +107,12 @@ begin
             ;; Read site name
             tmp = str_get_field(data(:, 0), 1, " ")
             if (.not.all(tmp(0).eq.tmp)) then
-                info_output("Inconsistent site name in " + files(ii), \
-                            verbosity, 1)
+                info_output("Inconsistent site name in " + files(ii))
             else
                 site = tmp(0)
             end if
             delete(tmp)
-            info_output("Processing site " + site, verbosity, 1)
+            info_output("Processing site " + site)
 
             ;; Read time and extract full years only
             year = str_squeeze(str_get_field(data(:, 0), 2, " "))

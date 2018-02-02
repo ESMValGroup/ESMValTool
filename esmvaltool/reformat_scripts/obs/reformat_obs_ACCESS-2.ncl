@@ -115,7 +115,7 @@ begin
             CAMPAIGN = str_sub_str(str_get_field( \
                 bname(infile(ff)), 1, "_"), ".ames", "")
 
-            info_output("Processing " + CAMPAIGN, verbosity, 1)
+            info_output("Processing " + CAMPAIGN)
 
             ;; Set time period
             date = toint(str_get_field(data(:, 0), 1, " "))

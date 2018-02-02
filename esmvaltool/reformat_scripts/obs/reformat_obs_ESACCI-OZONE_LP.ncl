@@ -70,9 +70,8 @@ begin
 
     do vID = 0, dimsizes(VARS) - 1
 
-        info_output("", verbosity, 1)
-        info_output("Processing " + VARS(vID) + " (" + FIELD + ") ", \
-                    verbosity, 1)
+        info_output("")
+        info_output("Processing " + VARS(vID) + " (" + FIELD + ") ")
 
         time = create_timec(YEAR1, YEAR2)
         date = cd_calendar(time, 1)
@@ -82,7 +81,7 @@ begin
             do mm = 1, 12
 
                 ldate = yy + sprinti("%0.2i", mm)
-                info_output("Processing " + ldate, verbosity, 1)
+                info_output("Processing " + ldate)
 
                 ;; Read file
                 str = "find " + INDIR + " -type f -name 'ESACCI-OZONE-*LP*" \
@@ -159,8 +158,7 @@ begin
         OUTPUT&lat = clat
         delete(clat)
 
-        info_output("  Range: " + min(OUTPUT) + "; " + \
-                    max(OUTPUT), verbosity, 1)
+        info_output("  Range: " + min(OUTPUT) + "; " + max(OUTPUT))
 
         ;; Set global attributes
         gAtt = True

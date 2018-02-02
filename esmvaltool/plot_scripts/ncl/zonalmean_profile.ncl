@@ -47,7 +47,7 @@ local wks, wks_in, data, source, res, atts, base, varname
 begin
 
     verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering zonalmean_profile", verbosity, 4)
+    log_debug("<<<<<<<< Entering zonalmean_profile")
 
     ;; Get data, either directly or via netCDF file
     if(typeof(source) .eq. "string") then
@@ -117,6 +117,6 @@ begin
 ;     maximize_output(wks_out, psres)  ; calls draw and frame for you
 ; end if
 
-    info_output(">>>>>>>> Leaving zonalmean_profile", verbosity, 4)
+    log_debug(">>>>>>>> Leaving zonalmean_profile")
     return(plot)
 end

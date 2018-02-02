@@ -120,7 +120,7 @@ begin
     end if
 
     ;; Output data to file
-    info_output("adding file " + out_file, verbosity, 2)
+    log_debug("adding file " + out_file)
     fout = addfile(out_file, "c")
     filedimdef(fout, "time", -1, True)
     fout->$variable$ = new_data
@@ -192,7 +192,7 @@ begin
     delete(fout)
     delete(fAtt)
     delete(file_atts)
-    info_output("added file " + out_file, verbosity, 2)
+    log_debug("added file " + out_file)
 
     leave_msg(scriptname, funcname, 2)
 
@@ -919,7 +919,7 @@ begin
     if (file_parts(0).ne.".") then
         tempfile = "/" + tempfile
     end if
-    info_output("tempfile = " + str_sub_str(tempfile, pwd, "."), verbosity, 2)
+    log_debug("tempfile = " + str_sub_str(tempfile, pwd, "."))
 
     ;; Get variable name
     variable = get_varName_from_file(modelfile)
@@ -1046,7 +1046,7 @@ begin
 
     ls_in_file = systemfunc("ls " + in_file)
 
-    info_output("Reading in file = " + ls_in_file, verbosity, 1)
+    info_output("Reading in file = " + ls_in_file)
     fid = addfile(ls_in_file, "r")
 
 ; a_laue_ax+

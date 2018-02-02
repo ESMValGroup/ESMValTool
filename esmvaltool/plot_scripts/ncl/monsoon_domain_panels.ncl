@@ -299,7 +299,7 @@ local aux_filename_info,         blank_plot,          cn,\
     type_specifier,            var0,                verbosity,               wks
 begin
     verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering precip_domain", verbosity, 6)
+    log_debug("<<<<<<<< Entering precip_domain")
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
@@ -453,6 +453,6 @@ begin
                                no_figures_on_this_page)
             frame(wks_debug)
         end if
-    info_output(">>>>>>>> Leaving precip_domain", verbosity, 6)
+    log_debug(">>>>>>>> Leaving precip_domain")
     end do  ; curr_page = 0, total_no_of_pages - 1
 end

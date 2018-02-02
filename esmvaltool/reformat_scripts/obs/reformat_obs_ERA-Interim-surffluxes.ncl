@@ -108,15 +108,14 @@ begin
     ;; Loop over variables
     do vID = 0, dimsizes(VARS) - 1
 
-        info_output("", verbosity, 1)
-        info_output("Processing " + VARS(vID) + " (" + FIELD + ") ", \
-                    verbosity, 1)
+        info_output("")
+        info_output("Processing " + VARS(vID) + " (" + FIELD + ") ")
 
         fill_start = 0
 
         ;; Create timeseries
         do yy = YEAR1, YEAR2
-            info_output("  " + yy, verbosity, 1)
+            info_output("  " + yy)
 
             ;; Read file
             fname = INDIR + "ERA-Interim_surfflux_" + yy + ".nc"
@@ -207,14 +206,14 @@ begin
         delete(tmp)
 
         ;; Format time coordinate
-        info_output("  Formatting time coordinate", verbosity, 1)
+        info_output("  Formatting time coordinate")
         ctime = time_attrib(output&time)
         delete(output&time)
         output&time = ctime
         delete(ctime)
 
         ;; Format latitude coordinate
-        info_output("  Formatting latitude coordinate", verbosity, 1)
+        info_output("  Formatting latitude coordinate")
         output!1 = "lat"
         if (isMonotonic(output&lat) .eq. 0) then
             error_msg("f", get_script_name(), "", \
@@ -229,7 +228,7 @@ begin
         delete(clat)
 
         ;; Format longitude coordinate
-        info_output("  Formatting longitude coordinate", verbosity, 1)
+        info_output("  Formatting longitude coordinate")
         output!2 = "lon"
         if (isMonotonic(output&lon) .eq. 0) then
             error_msg("f", get_script_name(), "", \
@@ -244,7 +243,7 @@ begin
         delete(clon)
 
         info_output("  Range: " + min(output) + "; " + \
-                    max(output), verbosity, 1)
+                    max(output))
 
         ;; Set global attributes
         gAtt@history  = "Created on " + systemfunc("date")
@@ -292,13 +291,12 @@ begin
 
     ;; Prepare wfpe (precipitation + evaporation)
     varname = "wfpe"
-    info_output("", verbosity, 1)
-    info_output("Calculating " + varname, verbosity, 1)
+    info_output("")
+    info_output("Calculating " + varname)
 
     if (.not. isvar("pr") .or. .not. isvar("evspsbl")) then
         info_output(get_script_name() + ": Precipitation and/or " + \
-                    "evaporation not available, not creating " + varname, \
-                    verbosity, 1)
+                    "evaporation not available, not creating " + varname)
     else
         wfpe = pr + evspsbl
         copy_VarMeta(pr, wfpe)
@@ -331,15 +329,15 @@ begin
 
     ;; Prepare total heat flux (SSR+STR+SLHF+SSHF)
     varname = "hfds"
-    info_output("", verbosity, 1)
-    info_output("Calculating " + varname, verbosity, 1)
+    info_output("")
+    info_output("Calculating " + varname)
 
     if (.not. isvar("rsns") .or. .not. isvar("rlns") .or. \
         .not. isvar("hfss") .or. .not. isvar("hfls")) then
         info_output(get_script_name() + ": Not all variables required for" + \
                     " the calculation of the total heat flux " + \
                     "(SSR+STR+SLHF+SSHF) are available, not creating " \
-                    + varname, verbosity, 1)
+                    + varname)
     else
         hfds = hfls + hfss + rsns + rlns
         copy_VarMeta(hfls, hfds)

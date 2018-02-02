@@ -100,7 +100,7 @@ begin
     nstats = dimsizes(st_code)
     delete(data)
 
-    info_output(nstats + " stations found", verbosity, 1)
+    info_output(nstats + " stations found")
 
     head = readAsciiHead(INFILE, 1)
 
@@ -113,7 +113,7 @@ begin
     ; Loop over variables
     do vID = 0, NVARS - 1
 
-        info_output("Processing " + VARS(vID), verbosity, 1)
+        info_output("Processing " + VARS(vID))
 
         ; Find column number for the variable
         col = ind(colnames .eq. COMPONENT(vID)) + 1
@@ -121,13 +121,13 @@ begin
         ; Flag is the next column
         flag = col + 1
 
-        info_output("  FIELD  = " + colnames(col - 1), verbosity, 1)
-        info_output("  FLAG   = " + colnames(flag - 1), verbosity, 1)
+        info_output("  FIELD  = " + colnames(col - 1))
+        info_output("  FLAG   = " + colnames(flag - 1))
 
         ; Loop over stations
         do stID = 0, nstats - 1
 
-            info_output("  Station " + st_code(stID), verbosity, 1)
+            info_output("  Station " + st_code(stID))
 
             ; Define output array
             output = new(dimsizes(timec), float)
@@ -206,7 +206,7 @@ begin
                            flags .eq. "N", values@_FillValue, values)
 
             if (all(ismissing(values))) then
-                info_output("No valid data for this station", verbosity, 1)
+                info_output("No valid data for this station")
                 delete(date1)
                 delete(date2)
                 delete(values)

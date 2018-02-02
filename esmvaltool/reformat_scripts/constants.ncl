@@ -490,8 +490,7 @@ begin
 
     verbosity = config_user_info@verbosity
     funcname = "check_units"
-    info_output("In check_units for " + name +" units are " + var@units,\
-                verbosity, 4)
+    log_debug("In check_units for " + name +" units are " + var@units)
     enter_msg(scriptname, funcname, 4)
 
     ;; CMOR units
@@ -508,7 +507,7 @@ begin
     ;; If units not defined assign CMOR units
     if (.not.isatt(var, "units")) then
         info_output("No units attribute found for this variable, " + \
-                    "assigning CMOR units", verbosity, 1)
+                    "assigning CMOR units")
         var@units = cmor_units
     end if
 
@@ -547,7 +546,7 @@ begin
             id = ind(var@units.eq.alt_units)
             ;; Rename units
             var@units = cmor_units
-            info_output("Renaming units to " + cmor_units, verbosity, 4)
+            log_debug("Renaming units to " + cmor_units)
             ;; Convert units
             if (factors(id).ne.1) then
                 var = var * factors(id)
@@ -555,8 +554,8 @@ begin
                             + alt_units(id)\
                             + "] to ["\
                             + cmor_units + "]"
-                info_output(convert_msg, verbosity, 4)
-                info_output("Conversion factor = " + factors(id), verbosity, 4)
+                log_debug(convert_msg)
+                log_debug("Conversion factor = " + factors(id))
             end if
         else
             error_msg("fatal", "constants.ncl", funcname, \

@@ -56,7 +56,7 @@ begin
     enter_msg(scriptname, funcname, 10)
 
     verbosity = config_user_info@verbosity
-    info_output("<<<<<<<< Entering " + funcname, verbosity, 4)
+    log_debug("<<<<<<<< Entering " + funcname)
 
     ;; Get data, either directly or via netCDF file
     if(typeof(source) .eq. "string") then
@@ -114,10 +114,10 @@ begin
 
     if(isatt(res, "gsnDraw")) then
         if(res@gsnDraw .eq. True) then
-            info_output(" Wrote " + plot@outfile, verbosity, 1)
+            info_output(" Wrote " + plot@outfile)
         end if
     else
-        info_output(" Wrote " + plot@outfile, verbosity, 1)
+        info_output(" Wrote " + plot@outfile)
     end if
     leave_msg(scriptname, funcname, 10)
     return(plot)

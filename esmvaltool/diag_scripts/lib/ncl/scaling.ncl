@@ -262,9 +262,9 @@ begin
     else
         result = 1.
     end if
-    info_output(" digits=" + digits + " ; " + min(u) + " < data < " + \
-                max(u) + " ; " + result * min(u) + " < data*" + result + \
-                " < " + result * max(u), verbosity, 6)
+    log_debug(" digits=" + digits + " ; " + min(u) + " < data < " + \
+              max(u) + " ; " + result * min(u) + " < data*" + result + \
+              " < " + result * max(u))
 
     leave_msg(scriptname, funcname, 6)
     return(result)
@@ -384,7 +384,7 @@ begin
 
     end if
 
-    info_output(" scalfac=" + s + "  ;  units: " + s@units, verbosity, 1)
+    info_output(" scalfac=" + s + "  ;  units: " + s@units)
 
     leave_msg(scriptname, funcname, 6)
     return(s)

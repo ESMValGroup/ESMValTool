@@ -233,7 +233,7 @@ begin
     ;; Loop over regions
     do rr = 0, NREGIONS - 1
 
-        info_output("Processing region " + REGIONS(rr), verbosity, 1)
+        info_output("Processing region " + REGIONS(rr))
 
         output = OUTPUT
 

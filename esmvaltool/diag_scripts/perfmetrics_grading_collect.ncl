@@ -246,7 +246,7 @@ begin
         ;; Call plotting function
         plot = portrait_plot(wks, data_all, "grade")
 
-        info_output(" gv " + outfile_plot + "." + file_type, verbosity, 1)
+        info_output(" gv " + outfile_plot + "." + file_type)
 
     end if
 

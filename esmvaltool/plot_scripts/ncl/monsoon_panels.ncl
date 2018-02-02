@@ -67,14 +67,14 @@ function get_title_suffix(plot_settings [1] : logical)
 local verbosity, main_title_suffix
 begin
     verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering get_title_suffix", verbosity, 8)
+    log_debug("<<<<<<<< Entering get_title_suffix")
     if (isatt(plot_settings, "main_title_suffix")) then
         main_title_suffix = plot_settings@main_title_suffix
     else
         main_title_suffix = ""
     end if
     return main_title_suffix
-    info_output(">>>>>>>> Leaving get_title_suffix", verbosity, 8)
+    log_debug(">>>>>>>> Leaving get_title_suffix")
 end
 
 undef("remove_attrs")
@@ -149,7 +149,7 @@ local am_infobox_id,      cn_levels_string,   debugbox,\
     txres,              upper
 begin
     verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering plot_two_by_one", verbosity, 8)
+    log_debug("<<<<<<<< Entering plot_two_by_one")
     res = panel_three_by_one(res, 0)  ; Update resource for first plot
     res@cnLevelSelectionMode = "ExplicitLevels"
     if (isatt(res, "cnLevels")) then
@@ -249,7 +249,7 @@ begin
                           debuginfo@description,\
                           debuginfo@description_ycoord)
     end if
-    info_output(">>>>>>>> Leaving plot_two_by_one", verbosity, 8)
+    log_debug(">>>>>>>> Leaving plot_two_by_one")
 end
 
 undef("plot_three_by_one_diff")
@@ -297,7 +297,7 @@ title_name,      txres
 
 begin
     verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering plot_three_by_one_diff", verbosity, 8)
+    log_debug("<<<<<<<< Entering plot_three_by_one_diff")
     res = panel_three_by_one(res, 0)  ; Update resource for first plot
     res@cnLevelSelectionMode = "ExplicitLevels"
     if (isatt(res, "cnLevels")) then
@@ -443,7 +443,7 @@ begin
                           debuginfo@description,\
                           debuginfo@description_ycoord)
     end if
-    info_output(">>>>>>>> Leaving plot_three_by_one_diff", verbosity, 8)
+    log_debug(">>>>>>>> Leaving plot_three_by_one_diff")
 end
 
 undef("two_by_one")
@@ -491,7 +491,7 @@ local aux_title_info,      cn_levels_string,   curr,\
     wks,                 diff_model_ref,     txres
 begin
     verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering two_by_one", verbosity, 6)
+    log_debug("<<<<<<<< Entering two_by_one")
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
@@ -584,7 +584,7 @@ begin
         end if
 
     end do  ; idx_mod = 0, dim_MOD - 1
-    info_output(">>>>>>>> Leaving two_by_one", verbosity, 6)
+    log_debug(">>>>>>>> Leaving two_by_one")
 end
 
 undef("three_by_one_diff")
@@ -630,7 +630,7 @@ local aux_title_info,      cn_levels_string,   curr,\
     wks,                 diff_model_ref,     txres
 begin
     verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering three_by_one_diff", verbosity, 6)
+    log_debug("<<<<<<<< Entering three_by_one_diff")
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
@@ -731,7 +731,7 @@ begin
         end if
 
     end do  ; idx_mod = 0, dim_MOD - 1
-    info_output(">>>>>>>> Leaving three_by_one_diff", verbosity, 6)
+    log_debug(">>>>>>>> Leaving three_by_one_diff")
 end
 
 undef("plot_three_by_one_vector")
@@ -787,7 +787,7 @@ local am_infobox_id,      cn_levels_string,   debugbox,\
     ua,                 va
 begin
     verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering plot_three_by_one_vector", verbosity, 8)
+    log_debug("<<<<<<<< Entering plot_three_by_one_vector")
     res = panel_three_by_one(res, 0)  ; Update resource for first plot
     res@cnLevelSelectionMode = "ExplicitLevels"
     if (isatt(res, "cnLevels")) then
@@ -960,7 +960,7 @@ begin
                           debuginfo@description,\
                           debuginfo@description_ycoord)
     end if
-    info_output(">>>>>>>> Leaving plot_three_by_one_vector", verbosity, 8)
+    log_debug(">>>>>>>> Leaving plot_three_by_one_vector")
 end
 
 undef("three_by_one_vector")
@@ -1006,7 +1006,7 @@ local aux_title_info,      cn_levels_string,   curr,\
     wks,                 wks_debug,          txres
 begin
     verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering three_by_one_vector", verbosity, 8)
+    log_debug("<<<<<<<< Entering three_by_one_vector")
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
@@ -1105,7 +1105,7 @@ begin
             delete(wks_debug)
         end if
     end do  ; idx_mod = start_idx, dim_MOD - 1
-    info_output(">>>>>>>> Leaving three_by_one_vector", verbosity, 8)
+    log_debug(">>>>>>>> Leaving three_by_one_vector")
 end
 
 undef("plot_multipanel")
@@ -1171,7 +1171,7 @@ local am_infobox_id,    blank_plot,            cn_levels_string,\
     storage_record,   txres
 begin
     verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering plot_multipanel", verbosity, 8)
+    log_debug("<<<<<<<< Entering plot_multipanel")
     ;; Update position, labelbar and title
     curr_figure_pos = figure_panel_placement(curr_idx)
     res = panel_n_by_cols(res, curr_figure_pos, rows, cols, figures_per_page(curr_page))
@@ -1350,7 +1350,7 @@ begin
                           debuginfo@description,\
                           debuginfo@description_ycoord)
     end if
-    info_output(">>>>>>>> Leaving plot_multipanel", verbosity, 8)
+    log_debug(">>>>>>>> Leaving plot_multipanel")
 end
 
 undef("multipanel")
@@ -1638,7 +1638,7 @@ local am_infobox_id,       blank_plot,          cn_levels_string,\
     va,                  va_ref
 begin
     verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering plot_multipanel_vector", verbosity, 8)
+    log_debug("<<<<<<<< Entering plot_multipanel_vector")
     ;; Update position, labelbar and title
     curr_figure_pos = figure_panel_placement(curr_idx)
     res = panel_n_by_cols(res, curr_figure_pos, rows, cols, figures_per_page(curr_page))
@@ -1865,7 +1865,7 @@ begin
                           debuginfo@description,\
                           debuginfo@description_ycoord)
     end if
-    info_output(">>>>>>>> Leaving plot_multipanel_vector", verbosity, 8)
+    log_debug(">>>>>>>> Leaving plot_multipanel_vector")
 end
 
 undef("multipanel_vector")
@@ -2121,7 +2121,7 @@ local am_infobox_id,             am_labelbar_id,         amres,\
     xaxis,                     var1,                   field_type1
 begin
     verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering seasonal_plot", verbosity, 8)
+    log_debug("<<<<<<<< Entering seasonal_plot")
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
@@ -2272,7 +2272,7 @@ begin
                           debuginfo@description_ycoord)
     end if
     frame(wks)
-    info_output(">>>>>>>> Leaving seasonal_plot", verbosity, 8)
+    log_debug(">>>>>>>> Leaving seasonal_plot")
 end
 
 undef("xy_plot_wrapper")
@@ -2313,7 +2313,7 @@ local annots,           annots_mmm,        avgstd,\
     wks,              wks_debug,         idx_th
 begin
     verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering xy_plot_wrapper", verbosity, 8)
+    log_debug("<<<<<<<< Entering xy_plot_wrapper")
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
@@ -2458,7 +2458,7 @@ begin
     if (debuginfo) then
         xy_line(wks_debug, values, values&month, values_stddev, res, debuginfo)
     end if
-    info_output(">>>>>>>> Leaving xy_plot_wrapper", verbosity, 8)
+    log_debug(">>>>>>>> Leaving xy_plot_wrapper")
 end
 
 undef("ts_line_wrapper")
@@ -2497,7 +2497,7 @@ local    annots,           avgstd,            diag_script_base,\
     var1,             wks,               wks_debug
 begin
     verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering ts_line_wrapper", verbosity, 8)
+    log_debug("<<<<<<<< Entering ts_line_wrapper")
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
@@ -2613,7 +2613,7 @@ begin
     if (debuginfo) then
         xy_line(wks_debug, values, di@years, values_stddev, res, debuginfo)
     end if
-    info_output(">>>>>>>> Leaving ts_line_wrapper", verbosity, 8)
+    log_debug(">>>>>>>> Leaving ts_line_wrapper")
 end
 
 
@@ -2633,7 +2633,7 @@ local    annots,           avgstd,            diag_script_base,\
     res2,             coord
 begin
     verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering xy_line_overlap", verbosity, 8)
+    log_debug("<<<<<<<< Entering xy_line_overlap")
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
@@ -2979,5 +2979,5 @@ begin
 
     draw(plot(0))
     frame(wks)
-    info_output(">>>>>>>> Leaving xy_line_overlap", verbosity, 8)
+    log_debug(">>>>>>>> Leaving xy_line_overlap")
 end
