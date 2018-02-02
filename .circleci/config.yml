@@ -20,7 +20,7 @@ jobs:
             if ! test -d "/opt/conda/envs/esmvaltool"; then
               conda create -y -n esmvaltool python=3
             fi
-            conda env update --quiet --name esmvaltool
+            conda env update --name esmvaltool
       - save_cache:
           key: deps3-{{ .Branch }}-{{ checksum "environment.yml" }}
           paths:
@@ -61,7 +61,7 @@ jobs:
             if ! test -d "/opt/conda/envs/esmvaltool"; then
               conda create -y -n esmvaltool python=2
             fi
-            conda env update --quiet --name esmvaltool
+            conda env update --name esmvaltool
       - save_cache:
           key: deps2-{{ .Branch }}-{{ checksum "environment.yml" }}
           paths:
@@ -138,7 +138,7 @@ workflows:
   nightly:
     triggers:
       - schedule:
-          cron: "01 16 * * *"
+          cron: "0 0 * * *"
           filters:
             branches:
               only:
