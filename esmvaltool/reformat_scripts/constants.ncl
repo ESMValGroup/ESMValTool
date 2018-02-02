@@ -498,7 +498,7 @@ begin
 
     ;; If units not defined assign CMOR units
     if (.not.isatt(var, "units")) then
-        info_output("No units attribute found for this variable, " + \
+        log_info("No units attribute found for this variable, " + \
                     "assigning CMOR units")
         var@units = cmor_units
     end if

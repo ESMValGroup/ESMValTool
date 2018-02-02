@@ -186,7 +186,7 @@ begin
         do ii = 0, dimsizes(altnames) - 1
             if (isfilevar(fo, altnames(ii)) .and. \
                 ismissing(ret_name)) then
-                info_output("  Variable " + name + \
+                log_info("  Variable " + name + \
                             " found with alternative name " + altnames(ii))
                 ret_name = altnames(ii)
             end if
@@ -228,7 +228,7 @@ begin
     if (fileexists(FIXFILE)) then
         ret = fixing_func(var, name)
         if (ret.eq.0) then
-            info_output("  A data-fixing function (" + FIXFILE + ") " + \
+            log_info("  A data-fixing function (" + FIXFILE + ") " + \
                         "has been applied to this model/variable!")
             fixfile = FIXFILE
         end if
@@ -628,7 +628,7 @@ begin
     enter_msg(scriptname, funcname, 4)
 
     if (.not. isatt(var, "_FillValue")) then
-        info_output("  No _FillValue found for this variable, " + \
+        log_info("  No _FillValue found for this variable, " + \
                     "assigning default")
         var@_FillValue = FILL
     end if
@@ -641,7 +641,7 @@ begin
         if (any(var.eq.altfill(ii)) .and. \
             var@_FillValue .ne. altfill(ii)) then
             var = where(var.eq.altfill(ii), var@_FillValue, var)
-            info_output("  Found probable missing values (" + altfill(ii) + \
+            log_info("  Found probable missing values (" + altfill(ii) + \
                         ") not defined as _FillValue, fixing")
         end if
     end do
@@ -1369,7 +1369,7 @@ begin
             ldims = getvardims(area)
         end if
 
-        info_output("  Adding areacello to OUTFILE")
+        log_info("  Adding areacello to OUTFILE")
         filevardef(w, "areacello", typeof(area), ldims)
         filevarattdef(w, "areacello", area)
         delete(ldims)
@@ -1409,7 +1409,7 @@ begin
             end if
             latv!2 = "vertices"
 
-            info_output("  Adding lat_vertices to OUTFILE")
+            log_info("  Adding lat_vertices to OUTFILE")
             filedimdef(w, (/"vertices"/), (/4/), (/False/))
             filevardef(w, "lat_vertices", typeof(latv), getvardims(latv))
             filevarattdef(w, "lat_vertices", latv)
@@ -1451,7 +1451,7 @@ begin
             end if
             lonv!2 = "vertices"
 
-            info_output("  Adding lon_vertices to OUTFILE")
+            log_info("  Adding lon_vertices to OUTFILE")
             filevardef(w, "lon_vertices", typeof(lonv), getvardims(lonv))
             filevarattdef(w, "lon_vertices", lonv)
 
@@ -1563,7 +1563,7 @@ begin
             filevarattdef(w, "sftlf", maskl)
             setfileoption(w, "DefineMode", False)
             w->sftlf = (/maskl/)
-            info_output("  Adding sftlf to OUTFILE")
+            log_info("  Adding sftlf to OUTFILE")
         else
             log_debug("Dimensionality of sftlf not consistent with " + \
                         "dimensionality of " + VAR + ", skipping")
@@ -1659,7 +1659,7 @@ begin
             filevarattdef(w, "sftof", masko)
             setfileoption(w, "DefineMode", False)
             w->sftof = (/masko/)
-            info_output("  Adding sftof to OUTFILE")
+            log_info("  Adding sftof to OUTFILE")
         else
             log_debug("Dimensionality of sftof not consistent with " + \
                       "dimensionality of " + VAR + ", skipping")
@@ -1756,9 +1756,9 @@ begin
             filevarattdef(w, "mrsofc", maskl)
             setfileoption(w, "DefineMode", False)
             w->mrsofc = (/maskl/)
-            info_output("  Adding mrsofc to OUTFILE")
+            log_info("  Adding mrsofc to OUTFILE")
         else
-            info_output("Dimensionality of mrsofc not consistent with " + \
+            log_info("Dimensionality of mrsofc not consistent with " + \
                         "dimensionality of " + VAR + ", skipping")
         end if
     end if
@@ -1818,7 +1818,7 @@ begin
             depth = ff->$vname$
             w = addfile(OUTFILE, "w")
             w->$depths(ii)$ = depth
-            info_output("  Adding " + depths(ii) + " to OUTFILE")
+            log_info("  Adding " + depths(ii) + " to OUTFILE")
             delete(depth)
         else
             error_msg("f", scriptname, funcname, \

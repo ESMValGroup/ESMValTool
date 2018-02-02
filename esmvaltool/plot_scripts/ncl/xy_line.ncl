@@ -486,10 +486,10 @@ begin
     ;; confirmation of operation
     if(isatt(res, "gsnDraw")) then
         if(res@gsnDraw .eq. True) then
-            info_output(" Wrote " + plot@outfile)
+            log_info(" Wrote " + plot@outfile)
         end if
     else
-        info_output(" Wrote " + plot@outfile)
+        log_info(" Wrote " + plot@outfile)
     end if
 
     leave_msg(scriptname, funcname, 5)
@@ -788,7 +788,7 @@ begin
                         g_obj(ii) = \
                             gsn_add_polygon(wks, plot, xx(q), yy(q), resP)
                     else
-                        info_output("All values in model percentiles are " + \
+                        log_info("All values in model percentiles are " + \
                                     "missing (skipping)")
                     end if
                     delete([/x1, x2, y1, y2, xx, yy, q/])
@@ -821,7 +821,7 @@ begin
                         g_obj(ii) = \
                         gsn_add_polygon(wks, plot, xx(q), yy(q), resP)
                     else
-                        info_output("All values in obs percentiles are " + \
+                        log_info("All values in obs percentiles are " + \
                                     "missing (skipping)")
                     end if
                     delete([/x1, x2, y1, y2, xx, yy, q/])
@@ -851,7 +851,7 @@ begin
             if (.not.all(ismissing(q))) then
                 g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
             else
-                info_output("All values in model median are missing " + \
+                log_info("All values in model median are missing " + \
                             "(skipping)")
             end if
             delete([/xx, yy, q/])
@@ -883,7 +883,7 @@ begin
                     g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
                 end if
             else
-                info_output("All values in obs median are missing " + \
+                log_info("All values in obs median are missing " + \
                             "(skipping)")
             end if
             delete([/xx, yy, q/])
@@ -911,7 +911,7 @@ begin
             if (.not.all(ismissing(q))) then
                 g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
             else
-                info_output("All values in model mean are missing " + \
+                log_info("All values in model mean are missing " + \
                             "(skipping)")
             end if
             delete([/xx, yy, q/])
@@ -932,7 +932,7 @@ begin
             if (.not.all(ismissing(q))) then
                 g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
             else
-                info_output("All values in model std. dev. are missing " + \
+                log_info("All values in model std. dev. are missing " + \
                             "(skipping)")
             end if
             delete([/xx, yy, q/])
@@ -966,7 +966,7 @@ begin
                         gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
                 end if
             else
-                info_output("All values in obs. mean are missing " + \
+                log_info("All values in obs. mean are missing " + \
                             "(skipping)")
             end if
             delete([/xx, yy, q/])
@@ -1288,7 +1288,7 @@ begin
                         g_obj(ii) = \
                             gsn_add_polygon(wks, plot, xx(q), yy(q), resP)
                     else
-                        info_output("All values in model percentiles are " + \
+                        log_info("All values in model percentiles are " + \
                                     "missing (skipping)")
                     end if
                     delete([/x1, x2, y1, y2, xx, yy, q/])
@@ -1321,7 +1321,7 @@ begin
                         g_obj(ii) = \
                             gsn_add_polygon(wks, plot, xx(q), yy(q), resP)
                     else
-                        info_output("All values in obs percentiles are " + \
+                        log_info("All values in obs percentiles are " + \
                                     "missing (skipping)")
                     end if
                     delete([/x1, x2, y1, y2, xx, yy, q/])
@@ -1352,7 +1352,7 @@ begin
             if (.not.all(ismissing(q))) then
                 g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
             else
-                info_output("All values in model median are missing " + \
+                log_info("All values in model median are missing " + \
                             "(skipping)")
             end if
             delete([/xx, yy, q/])
@@ -1373,7 +1373,7 @@ begin
             if (.not.all(ismissing(q))) then
                 g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
             else
-                info_output("All values in obs median are missing " + \
+                log_info("All values in obs median are missing " + \
                             "(skipping)")
             end if
             delete([/xx, yy, q/])
@@ -1401,7 +1401,7 @@ begin
             if (.not.all(ismissing(q))) then
                 g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
             else
-                info_output("All values in model mean are missing " + \
+                log_info("All values in model mean are missing " + \
                             "(skipping)")
             end if
             delete([/xx, yy, q/])
@@ -1422,7 +1422,7 @@ begin
             if (.not.all(ismissing(q))) then
                 g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
             else
-                 info_output("All values in model std. dev. are missing " + \
+                 log_info("All values in model std. dev. are missing " + \
                             "(skipping)")
             end if
             delete([/xx, yy, q/])
@@ -1455,7 +1455,7 @@ begin
                         gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
                 end if
             else
-                info_output("All values in obs. mean are missing " + \
+                log_info("All values in obs. mean are missing " + \
                             "(skipping)")
             end if
             delete([/xx, yy, q/])
@@ -1793,7 +1793,7 @@ begin
     else
         outfile = wks@name
     end if
-    info_output(" Wrote " + outfile)
+    log_info(" Wrote " + outfile)
     leave_msg(scriptname, funcname, 5)
 
 end

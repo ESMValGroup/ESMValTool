@@ -98,27 +98,27 @@ begin
     end if
 
     ;; Reading station list
-    info_output("Extracting stations list")
+    log_info("Extracting stations list")
     tmp = systemfunc("find " + INDIR + " -name '*.nas' " + \
                      "-exec basename {} \; | awk -F '.' '{print $1}'")
     stations = tmp(UNIQ(tmp))
     delete(tmp)
     sqsort(stations)
-    info_output(dimsizes(stations) + " stations found")
+    log_info(dimsizes(stations) + " stations found")
 
     do st = 0, dimsizes(stations) - 1
 
         ST_CODE = stations(st)
         
         cnt = st + 1
-        info_output("")
-        info_output("Processing station " + ST_CODE + " (" + cnt + " of " + \
+        log_info("")
+        log_info("Processing station " + ST_CODE + " (" + cnt + " of " + \
                     dimsizes(stations) + ")")
 
         ;; List of input files for this station
         FILES = systemfunc("ls " + INDIR + ST_CODE + "*.nas")
         if (all(ismissing(FILES))) then
-            info_output("  --> No data for this station")
+            log_info("  --> No data for this station")
             delete(FILES)
             continue
         end if
@@ -220,8 +220,8 @@ begin
         end do
         delete(out)
 
-        info_output("")
-        info_output("Completed!")
+        log_info("")
+        log_info("Completed!")
 
     end do
 

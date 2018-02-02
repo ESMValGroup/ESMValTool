@@ -232,7 +232,7 @@ begin
     ;; Loop over regions
     do rr = 0, NREGIONS - 1
 
-        info_output("Processing region " + REGIONS(rr))
+        log_info("Processing region " + REGIONS(rr))
 
         output = OUTPUT
 

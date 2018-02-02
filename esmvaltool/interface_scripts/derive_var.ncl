@@ -64,7 +64,7 @@ begin
 
             ;; Rewrite data if necessary
             if (calcData) then
-                info_output("Processing data for variable = " + derived_var + \
+                log_info("Processing data for variable = " + derived_var + \
                             " and field = " + derived_field_type)
                 data = calculate(model_index, derived_var, derived_field_type)
                 delete(data)

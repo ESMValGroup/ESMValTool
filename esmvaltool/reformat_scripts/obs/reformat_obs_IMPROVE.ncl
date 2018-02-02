@@ -156,7 +156,7 @@ begin
 
     nstats = dimsizes(st_name)
 
-    info_output(nstats + " stations found")
+    log_info(nstats + " stations found")
 
     ;; Find first and last line with data info in the input
     ld1 = toint(systemfunc("head -n 12000 " + INFILE + " | nl -ba | grep " + \
@@ -184,7 +184,7 @@ begin
     ;; Loop over variables
     do vID = 0, NVARS - 1
 
-        info_output("Processing " + VARS(vID))
+        log_info("Processing " + VARS(vID))
 
         ;; Find column indeces for the variable value
         c1 = str_index_of_substr(head, COMPONENT(vID) + ":Value", 0)
@@ -194,8 +194,8 @@ begin
         f1 = str_index_of_substr(head, COMPONENT(vID) + ":StatusFlag", 0)
         f2 = f1 + 20
 
-        info_output("  FIELD  = " + str_get_cols(head, c1, c2))
-        info_output("  FLAG   = " + str_get_cols(head, f1, f2))
+        log_info("  FIELD  = " + str_get_cols(head, c1, c2))
+        log_info("  FLAG   = " + str_get_cols(head, f1, f2))
 
         ;; Loop over stations
         do stID = 0, nstats - 1

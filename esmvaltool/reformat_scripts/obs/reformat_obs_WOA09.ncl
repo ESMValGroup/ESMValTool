@@ -72,8 +72,8 @@ begin
 
     ;; Loop over variables
     do vID = 0, dimsizes(VARS) - 1
-        info_output("")
-        info_output("Processing " + VARS(vID))
+        log_info("")
+        log_info("Processing " + VARS(vID))
         FIELD = "T3M"
 
         ;; open file

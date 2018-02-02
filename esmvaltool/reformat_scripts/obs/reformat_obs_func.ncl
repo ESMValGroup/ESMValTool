@@ -393,7 +393,7 @@ begin
     ;; Loop over variables
     do vID = 0, dimsizes(in_vars) - 1
 
-        info_output("  Processing variable " + in_compon(vID))
+        log_info("  Processing variable " + in_compon(vID))
 
         ;; Initialize
         temp_arr = 0.
@@ -416,15 +416,15 @@ begin
 
         ;; Check for duplicates
         if (dimsizes(UNIQ(sy)).ne.dimsizes(sy)) then
-            info_output("Duplicated data in input files")
+            log_info("Duplicated data in input files")
             do fID = 0, dimsizes(in_files) - 1
-                info_output("  " + in_files(fID))
+                log_info("  " + in_files(fID))
             end do
-            info_output("Remove duplicated files considering the " + \
+            log_info("Remove duplicated files considering the " + \
                         "following criteria")
-            info_output("  most recent revision date")
-            info_output("  most complete time coverage")
-            info_output("  same instrument in different years")
+            log_info("  most recent revision date")
+            log_info("  most complete time coverage")
+            log_info("  same instrument in different years")
             error_msg("f", scriptname, funcname, \
                       "rerun this station after removing duplicates")
         end if

@@ -73,9 +73,9 @@ begin
 
     ;; 'diag_script' and 'variables' are fetched from the
     ;; above 'ncl.interface' file
-    info_output("++++++++++++++++++++++++++++++++++++++++++")
-    info_output(diag_script + " (var: " + variables(0) + ")")
-    info_output("++++++++++++++++++++++++++++++++++++++++++")
+    log_info("++++++++++++++++++++++++++++++++++++++++++")
+    log_info(diag_script + " (var: " + variables(0) + ")")
+    log_info("++++++++++++++++++++++++++++++++++++++++++")
 
     ;; 'models', 'variables' and 'field_types' are fetched from the
     ;; above 'ncl.interface' file
@@ -266,7 +266,7 @@ begin
 ;    pres@gsnPanelLabelBar = False  ; no general label bar desired here
     ; number of vertical and horizontal plots per page: nmap, 1
 ;    outfile = panelling(wks, maps, nmap, 1, pres)
-;    info_output(" Wrote " + outfile)
+;    log_info(" Wrote " + outfile)
 
     log_debug(">>>>>>>> Leaving " + diag_script)
 end

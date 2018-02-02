@@ -113,15 +113,15 @@ begin
         ;; Set field
         FIELD = FLDARR(vID)
 
-        info_output("")
-        info_output("Processing " + VARS(vID) + " (" + FIELD + ") ")
+        log_info("")
+        log_info("Processing " + VARS(vID) + " (" + FIELD + ") ")
 
         fill_start = 0
 
         ;; Create timeseries
         do yy = YEAR1, YEAR2
 
-            info_output("  " + yy)
+            log_info("  " + yy)
 
             ; land sea mask is invariant
 
@@ -382,7 +382,7 @@ begin
         output&lon = clon
         delete(clon)
 
-        info_output("  Range: " + min(output) + "; " + max(output))
+        log_info("  Range: " + min(output) + "; " + max(output))
 
         ;; Set global attributes
         gAtt = True

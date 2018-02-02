@@ -94,7 +94,7 @@ begin
     ;; Loop over variables
     do vID = 0, dimsizes(VARS) - 1
 
-        info_output("Processing " + VARS(vID))
+        log_info("Processing " + VARS(vID))
 
         xx = f->$NAME(vID)$
 

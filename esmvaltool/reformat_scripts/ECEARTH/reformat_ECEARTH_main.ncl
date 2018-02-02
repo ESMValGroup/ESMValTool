@@ -89,7 +89,7 @@ begin
     ;; add staggered grid type to input filename
     sub_staggergrid(ECEARTH_VAR)
 
-    info_output("  INFILE = " + INFILE)
+    log_info("  INFILE = " + INFILE)
 
     ;; Check input path
     check_inpath()
@@ -149,7 +149,7 @@ begin
     ;; clean up
     delete(VARPROC)
 
-    info_output("  OUTFILE = " + OUTFILE)
+    log_info("  OUTFILE = " + OUTFILE)
 
     leave_msg(scriptname, "", 2)
 

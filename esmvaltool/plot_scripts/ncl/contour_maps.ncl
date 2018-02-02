@@ -118,10 +118,10 @@ begin
 
     if(isatt(res, "gsnDraw")) then
         if(res@gsnDraw .eq. True) then
-            info_output(" Wrote " + wks@name)
+            log_info(" Wrote " + wks@name)
         end if
     else
-        info_output(" Wrote " + wks@name)
+        log_info(" Wrote " + wks@name)
     end if
     log_debug(">>>>>>>> Leaving contour_map")
     return(map)

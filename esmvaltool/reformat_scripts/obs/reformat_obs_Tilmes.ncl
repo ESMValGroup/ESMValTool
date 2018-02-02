@@ -182,7 +182,7 @@ begin
             ;; collect data
             if(nrfiles.gt.1) then
                 do k = 1, nrfiles - 1
-                    info_output("Reading " + rfiles(k))
+                    log_info("Reading " + rfiles(k))
                     f = addfile(rfiles(k), "r")
                     uu = f->$spec$(months|:, level|:)
                     data_full(:, :, k) = uu
@@ -256,7 +256,7 @@ begin
 
             ;; Write variable
             write_nc(out_file, VAR(j), output, gAtt)
-            info_output("  Wrote " + out_file)
+            log_info("  Wrote " + out_file)
             delete(gAtt)
             delete(output)
             delete(data)

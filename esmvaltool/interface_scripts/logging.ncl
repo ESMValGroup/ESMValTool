@@ -6,14 +6,15 @@
 ;;
 ;; Contents:
 ;;    procedure no_operation
-;;    procedure info_output
-;;    procedure inquire_and_save_fileinfo
+;;    procedure log_info
+;;    procedure log_debug
 ;;    procedure enter_msg
 ;;    procedure leave_msg
 ;;    procedure error_msg
 ;;    procedure exit_if_missing_atts
-;;    procedure write_references
 ;;    procedure write_filelist
+;;    procedure write_references
+;;    procedure inquire_and_save_fileinfo
 ;;
 ;;#############################################################################
 MASTER_REFS = "../doc/MASTER_authors-refs-acknow.txt"
@@ -50,8 +51,8 @@ begin
 end
 
 ;;#############################################################################
-undef("info_output")
-procedure info_output(output_string[*]:string)
+undef("log_info")
+procedure log_info(output_string[*]:string)
 ;;
 ;; Arguments
 ;;    output_string: the text to be output as message on screen
@@ -65,7 +66,7 @@ procedure info_output(output_string[*]:string)
 ;; References
 ;;
 ;; Modification history
-;;    20180202-A_righ_ma: written to replace previous info_output.
+;;    20180202-A_righ_ma: written to replace info_output.
 ;;
 local nn, ii
 begin
@@ -100,7 +101,7 @@ procedure log_debug(output_string[*]:string)
 ;; References
 ;;
 ;; Modification history
-;;    20180202-A_righ_ma: written to replace previous info_output.
+;;    20180202-A_righ_ma: written to replace info_output.
 ;;
 local nn, ii
 begin
@@ -230,7 +231,7 @@ begin
 
     ;; Write error/warning message
     do ii = 0, nn - 1
-        info_output(msg_level + ": in " + msg_origin + msg(ii))
+        log_info(msg_level + ": in " + msg_origin + msg(ii))
     end do
 
     ;; Exit if fatal

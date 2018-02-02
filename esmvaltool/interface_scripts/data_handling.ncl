@@ -1039,7 +1039,7 @@ begin
 
     ls_in_file = systemfunc("ls " + in_file)
 
-    info_output("Reading in file = " + ls_in_file)
+    log_info("Reading in file = " + ls_in_file)
     fid = addfile(ls_in_file, "r")
 
 ; a_laue_ax+

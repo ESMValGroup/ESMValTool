@@ -98,7 +98,7 @@ begin
     ;; Loop over variables
     do vID = 0, dimsizes(VARS) - 1
 
-        info_output("Processing " + VARS(vID))
+        log_info("Processing " + VARS(vID))
 
         ;; Loop over time
         tt = 0
@@ -121,7 +121,7 @@ begin
                     ;; Read variable
                     data  = new((/nlon, nlat/), float)
 
-                    info_output("Reading " + files)
+                    log_info("Reading " + files)
                     head = readAsciiHead(files, nhead)
                     stuff = readAsciiTable(files, 1, "string", 3)
                     stuff = str_get_cols(stuff, 1, 75)
@@ -171,7 +171,7 @@ begin
 
                 else
 
-                    info_output(" --> File missing, skipping this date")
+                    log_info(" --> File missing, skipping this date")
 
                 end if
             end do  ; months

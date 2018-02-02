@@ -111,7 +111,7 @@ begin
                 end if
                 INFILE = rawVARS(ivar) + "-ECV_V1_" + year + \
                     "_" + month + ".dat"
-                info_output("Processing " + INDIR + INFILE)
+                log_info("Processing " + INDIR + INFILE)
 
                 ;; collect file names -> global attribute in outfile
                 original_files(itime) = INFILE
@@ -193,14 +193,14 @@ begin
             "_" + VARS(ivar) + "_" + YEAR1 + "01-" + YEAR2 + "12.nc"
         write_nc(fout, VARS(ivar), output, gAtt)
         delete(output)
-        info_output("Wrote " + fout)
+        log_info("Wrote " + fout)
 
         ;; Write stddev
 ;;         fout = OUTDIR + "OBS_" + OBSNAME + "_sat_1_" + FIELD + \
 ;;             "_" + VARS(ivar) + "_stdddev.nc"
 ;;         write_nc(fout, VARS(ivar) + "_stddev", output_stddev, gAtt)
 ;;         delete(output_stddev)
-;;         info_output("Wrote " + fout)
+;;         log_info("Wrote " + fout)
 
         delete(gAtt)
     end do  ; ivar

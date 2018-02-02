@@ -131,7 +131,7 @@ begin
     else
         outfile = wks_in@name
     end if
-    info_output(" Wrote " + outfile)
+    log_info(" Wrote " + outfile)
 
     leave_msg(scriptname, funcname, 4)
     return(areaplot)

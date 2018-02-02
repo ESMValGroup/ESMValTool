@@ -381,7 +381,7 @@ begin
 
     end if
 
-    info_output(" scalfac=" + s + "  ;  units: " + s@units)
+    log_info(" scalfac=" + s + "  ;  units: " + s@units)
 
     leave_msg(scriptname, funcname, 6)
     return(s)

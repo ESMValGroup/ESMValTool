@@ -195,7 +195,7 @@ begin
     ;; determine overlapping time period
     start_year = max(toint(models@start_year))
     end_year = min(toint(models@end_year))
-    info_output("overlapping time period: " + tostring(start_year) + \
+    log_info("overlapping time period: " + tostring(start_year) + \
                 " - " + tostring(end_year))
 
     ;; create data structure for mmm models

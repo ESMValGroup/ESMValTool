@@ -95,7 +95,7 @@ begin
 
     enter_msg(scriptname, "", 2)
 
-    info_output("INPATH = " + INPATH)
+    log_info("INPATH = " + INPATH)
 
     ;; Check input path
     check_inpath()

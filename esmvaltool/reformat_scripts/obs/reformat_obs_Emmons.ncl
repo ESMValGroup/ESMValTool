@@ -91,14 +91,14 @@ begin
     ;; Loop over variables
     do vID = 0, dimsizes(VARIABLES) - 1
 
-        info_output("Processing " + VARIABLES(vID) + " (" + NAMES(vID) + ")")
+        log_info("Processing " + VARIABLES(vID) + " (" + NAMES(vID) + ")")
 
         ;; Loop over files
         flist = systemfunc("find " + INDIR + "*_" + VARIABLES(vID) + "_*.stat")
 
         do ff = 0, dimsizes(flist) - 1
 
-            info_output("  " + flist(ff))
+            log_info("  " + flist(ff))
 
             fname = systemfunc("basename " + flist(ff))
 
@@ -192,8 +192,8 @@ begin
                     output(:, 1:) = output(:, 1:) / 1.e12
                 end if
             else
-                info_output("   --> Unrecognized input units " + units)
-                info_output("   --> Skipping")
+                log_info("   --> Unrecognized input units " + units)
+                log_info("   --> Skipping")
                 delete(output)
                 delete(alt)
                 delete(data)

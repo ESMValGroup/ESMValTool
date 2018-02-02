@@ -88,7 +88,7 @@ begin
     do cpID = 0, dimsizes(CAMPAIGN) - 1
 
         infile = INDIR + "clarke" + "_" + CODE(cpID) + ".asc"
-        info_output(infile)
+        log_info(infile)
 
         ;; Read data
         data = readAsciiTable(infile, 1, "string", 0)

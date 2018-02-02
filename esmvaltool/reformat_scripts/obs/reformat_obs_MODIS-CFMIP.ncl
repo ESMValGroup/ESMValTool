@@ -80,7 +80,7 @@ begin
        do mo = 1, 12
           month = sprinti("%0.2i", mo)
           fname = INDIR + "MCD08_M3_NC." + yr + "." + month + ".C051.V02.nc"
-          info_output("*** "+ fname + " ***")
+          log_info("*** "+ fname + " ***")
 
           f = addfile(fname, "r")
 

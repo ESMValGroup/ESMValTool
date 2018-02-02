@@ -112,10 +112,10 @@ begin
 
     if(isatt(res, "gsnDraw")) then
         if(res@gsnDraw .eq. True) then
-            info_output(" Wrote " + plot@outfile)
+            log_info(" Wrote " + plot@outfile)
         end if
     else
-        info_output(" Wrote " + plot@outfile)
+        log_info(" Wrote " + plot@outfile)
     end if
     leave_msg(scriptname, funcname, 10)
     return(plot)

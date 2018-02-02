@@ -91,7 +91,7 @@ begin
         f2->tem * f2->tem@scale_factor + 273.15, anomaly@_FillValue))
     climatology@_FillValue = anomaly@_FillValue
     climatology@missing_value = anomaly@_FillValue
-    info_output("  Climatology range: " + min(climatology) + \
+    log_info("  Climatology range: " + min(climatology) + \
                 " K to " + max(climatology) + " K")
 
     output = anomaly
@@ -105,8 +105,8 @@ begin
             output(m1:m2, :, :) + climatology, anomaly@_FillValue)
     end do
 
-    info_output("")
-    info_output("Processing " + VARS(0))
+    log_info("")
+    log_info("Processing " + VARS(0))
  
     ;; Set variable attributes
     tmp = var_attrib(output, VARS(0))
@@ -155,7 +155,7 @@ begin
     output&lon = clon
     delete(clon)
 
-    info_output("  Range: " + min(output) + "; " + max(output))
+    log_info("  Range: " + min(output) + "; " + max(output))
 
     ;; Set global attributes
     gAtt = True

@@ -68,8 +68,8 @@ begin
 
     do vID = 0, dimsizes(VARS) - 1
 
-        info_output("")
-        info_output("Processing " + VARS(vID) + " (" + FIELD + ") ")
+        log_info("")
+        log_info("Processing " + VARS(vID) + " (" + FIELD + ") ")
 
         time = create_timec(YEAR1, YEAR2)
         date = cd_calendar(time, 1)
@@ -133,7 +133,7 @@ begin
         OUTPUT&lat = clat
         delete(clat)
 
-        info_output("  Range: " + min(OUTPUT) + "; " + max(OUTPUT))
+        log_info("  Range: " + min(OUTPUT) + "; " + max(OUTPUT))
 
         ;; Set global attributes
         gAtt = True

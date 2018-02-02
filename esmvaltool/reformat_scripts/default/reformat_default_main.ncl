@@ -84,7 +84,7 @@ begin
 
     enter_msg(scriptname, "", 2)
 
-    info_output("INFILE = " + INFILE)
+    log_info("INFILE = " + INFILE)
 
     ;; Check input path
     check_inpath()
@@ -159,7 +159,7 @@ begin
     end if
 
     delete(VARPROC)
-    info_output("OUTFILE = " + OUTFILE)
+    log_info("OUTFILE = " + OUTFILE)
 
     leave_msg(scriptname, "", 2)
 

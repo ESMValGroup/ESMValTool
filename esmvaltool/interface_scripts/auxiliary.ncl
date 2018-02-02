@@ -651,7 +651,7 @@ begin
     end do
     ncdf->$varname$ = (/data/)
 
-    info_output("Wrote variable " + varname + " to " + outfile)
+    log_info("Wrote variable " + varname + " to " + outfile)
 
     leave_msg(scriptname, funcname, 10)
     return(outfile)

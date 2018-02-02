@@ -132,7 +132,7 @@ begin
         ;; Plot
         plot  = taylor_plot(wks, data_all, "var")
 
-        info_output(" gv " + outfile_plot + "." + file_type)
+        log_info(" gv " + outfile_plot + "." + file_type)
     end if
 
     ;; Remove temporary Taylor list

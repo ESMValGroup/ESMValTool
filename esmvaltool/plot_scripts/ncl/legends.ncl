@@ -169,8 +169,8 @@ begin
 ;        log_debug("warning: wks@fullname missing, consider to use " +\
 ;                    "get_wks to open wks")
 ;    end if
-;    info_output(" Wrote " + plot@outfile)
-    info_output(" Wrote " + wks_legend@fullname)
+;    log_info(" Wrote " + plot@outfile)
+    log_info(" Wrote " + wks_legend@fullname)
 
     log_debug(">>>>>>>> Leaving legend_lines (legends.ncl)")
 
@@ -311,7 +311,7 @@ begin
     ;; Advance frame
     frame(wks_legend)
 
-    ;info_output(" Wrote " + wks_legend@fullname)
+    ;log_info(" Wrote " + wks_legend@fullname)
 
     log_debug(">>>>>>>> Leaving legend_lines (legends.ncl)")
 

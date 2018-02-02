@@ -165,7 +165,7 @@ begin
             log_debug("No operation for ocean_latlon in "+script_name)
         end if
     else
-        info_output(" switch '" + switch + "' in fix_data-routine invalid")
+        log_info(" switch '" + switch + "' in fix_data-routine invalid")
 ;        status_exit(1)
     end if
     return(dataX)

@@ -97,7 +97,7 @@ begin
         ;; Loop over variables
         do vID = 0, dimsizes(VARIABLES) - 1
 
-            info_output("Processing " + VARIABLES(vID))
+            log_info("Processing " + VARIABLES(vID))
 
             infile = INDIR + "prfl" + "_" + CODE(cpID) + "_" + \
                 VARIABLES(vID) + ".txt"

@@ -122,7 +122,7 @@ begin
     output&lon = clon
     delete(clon)
 
-    info_output("  Range: " + min(output) + "; " + max(output))
+    log_info("  Range: " + min(output) + "; " + max(output))
 
     ;; Set global attributes
     gAtt = True

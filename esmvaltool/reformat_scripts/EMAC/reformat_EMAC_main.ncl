@@ -94,7 +94,7 @@ begin
 
     enter_msg(scriptname, "", 2)
 
-    info_output("INPATH = " + INPATH)
+    log_info("INPATH = " + INPATH)
 
     ;; Remove existing temp file
     if (fileexists(VFATMP)) then
@@ -219,7 +219,7 @@ begin
     delete(DATE)
     delete(VARPROC)
 
-    info_output("OUTFILE = " + OUTFILE)
+    log_info("OUTFILE = " + OUTFILE)
 
     ;; Remove existing temp file
     if (fileexists(VFATMP)) then
