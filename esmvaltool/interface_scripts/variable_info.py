@@ -20,15 +20,8 @@ def _read_cmor_tables():
     for table in _CFG.keys():
         project = _CFG[table]
 
-        if 'cmor_table' in project:
-            table_path = project['cmor_table']
-        else:
-            table_path = None
-
-        if 'cmor_type' in project:
-            cmor_type = project['cmor_type']
-        else:
-            cmor_type = table
+        table_path = project.get('cmor_table')
+        cmor_type = project.get('cmor_type', 'CMIP5')
 
         if cmor_type == 'CMIP5':
             tables[table] = CMIP5Info(table_path)
