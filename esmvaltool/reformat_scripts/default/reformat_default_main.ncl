@@ -82,7 +82,6 @@ load "./reformat_scripts/default/reformat_default_func.ncl"
 
 begin
 
-    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, "", 2)
 
     info_output("INFILE = " + INFILE)

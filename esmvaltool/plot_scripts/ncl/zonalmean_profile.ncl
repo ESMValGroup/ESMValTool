@@ -46,7 +46,6 @@ function zonalmean_profile(wks_in[1],
 local wks, wks_in, data, source, res, atts, base, varname
 begin
 
-    verbosity  = config_user_info@verbosity
     log_debug("<<<<<<<< Entering zonalmean_profile")
 
     ;; Get data, either directly or via netCDF file

@@ -51,14 +51,13 @@ function roi(latlon_dat[4]:float,
 ;; Modification history
 ;;    20140129-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, latlon_cases, coord_checks, datmin, \
+local funcname, scriptname, latlon_cases, coord_checks, datmin, \
     datmax, roimin, roimax, latlon_dat, latlon_roi, latmin, latmax, lonmin, \
     lonmax, result, result_all, a1, a3
 begin
 
     funcname = "roi"
     scriptname = "diag_scripts/lib/ncl/latlon.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     log_debug("  roi: latmin=" + latlon_roi(0) + \
@@ -192,12 +191,11 @@ function extract_area(index[1]:integer,
 ;; Modification history:
 ;;    2013????-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, cn, cnt, modelfile, fm, val
+local funcname, scriptname, cn, cnt, modelfile, fm, val
 begin
 
     funcname = "extract_area"
     scriptname = "diag_scripts/lib/ncl/latlon.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; 'cn' is the basic building block for the keys used in
@@ -235,12 +233,11 @@ function gridcell_area(deltax[1]: numeric,
 ;; Modification history:
 ;;    20121211-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, deg2rad
+local funcname, scriptname, deg2rad
 begin
 
     funcname = "gridcell_area"
     scriptname = "diag_scripts/lib/ncl/latlon.ncl"
-    verbosity = config_user_info@verbosity
 ;    enter_msg(scriptname, funcname, 10)
 
     ;; Convert to radiants
@@ -277,12 +274,11 @@ function map_area(lat[*]:numeric,
 ;;    20140819-A_righ_ma: modified to support non-global input.
 ;;    20121211-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, loclat, loclon, nlat, lati, xresol
+local funcname, scriptname, loclat, loclon, nlat, lati, xresol
 begin
 
     funcname = "map_area"
     scriptname = "diag_scripts/lib/ncl/latlon.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; Type conversion
@@ -383,7 +379,7 @@ function area_operations(field:numeric,
 ;; Modification history
 ;;    20140116-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, rank, dimnames, wgt, conwgt, f_latmin, \
+local funcname, scriptname, rank, dimnames, wgt, conwgt, f_latmin, \
     f_latmax, f_lonmin, f_lonmax, delta, idx_latmin, idx_latmax, latidx, \
     idx_lonmin, idx_lonmax, lonidx, subfield, subwgt, dnames, didx_r, didx_l, \
     norm
@@ -391,7 +387,6 @@ begin
 
     funcname = "area_operations"
     scriptname = "diag_scripts/lib/ncl/latlon.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; Check rank
@@ -599,12 +594,11 @@ function select_region(region:string)
 ;;    20140410-A_fran_fr: extended to midlat, equatorial and polar regions.
 ;;    20140129-A_fran_fr: written.
 ;;
-local funcname, scriptname, verbosity, region
+local funcname, scriptname, region
 begin
 
     funcname = "select_region"
     scriptname = "diag_scripts/lib/ncl/latlon.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     if (region.eq."Global") then
@@ -726,13 +720,11 @@ function make_latlon2D(var[1]:string,
 ;; Modification history:
 ;;    20141023-A_vanu_be: written based on code in SeaIce_polcon_diff
 ;;
-local area_lat, area_lon, area_temp, funcname, out_field, rank, scriptname, \
-    verbosity
+local funcname, scriptname, area_lat, area_lon, area_temp, out_field, rank
 begin
 
     funcname = "make_latlon2D"
     scriptname = "diag_scripts/lib/ncl/latlon.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     if (all(iscoord(field, (/"lat", "lon"/)))) then

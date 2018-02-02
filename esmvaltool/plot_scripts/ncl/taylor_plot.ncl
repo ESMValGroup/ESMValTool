@@ -53,10 +53,8 @@ function taylor_plot(wks_in[1],
 ;; Modification history:
 ;;    20150505-A_righ_ma: written based on the original NCL code.
 ;;
-local verbosity
 begin
 
-    verbosity = config_user_info@verbosity
     log_debug("<<<<<<<< Entering taylor_plot")
 
     ;; Get data, either directly or via netCDF file

@@ -12,10 +12,6 @@ load "./interface_scripts/write_header.ncl"
 
 begin
 
-    verbosity  = config_user_info@verbosity
-;    info_output("<<<<<<<< Entering write_references.ncl", \
-;                verbosity, 2)
-
     hline      = "-------------------------"
     hline_dble = "========================="
     hline = hline + hline + hline
@@ -35,5 +31,7 @@ begin
 
     ;; write diagnostic header section
     write_diag_header(s_open, hline_dble, s_close, in_refs, out_refs, \
-                      ref_auth, ref_contr, ref_diag, ref_obs, ref_proj, ref_script)
+                      ref_auth, ref_contr, ref_diag, ref_obs, ref_proj, \
+                      ref_script)
+
 end

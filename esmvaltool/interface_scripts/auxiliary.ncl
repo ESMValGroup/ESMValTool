@@ -63,13 +63,11 @@ procedure copy_VarCoords_l1(var_from,
 ;;    20140703-A_gott_kl: Written for use with mymm in
 ;;                        time_operations (statistics.ncl).
 ;;
-local funcname, scriptname, verbosity, dims_from, dims, rank_from, rank, \
-    dimdiff, idimdiff
+local funcname, scriptname, dims_from, dims, rank_from, rank, dimdiff, idimdiff
 begin
 
     funcname = "copy_VarCoords_l1"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     dims_from = getvardims(var_from)
@@ -134,12 +132,11 @@ procedure check_min_max_models(no_models[1]:integer,
 ;;
 ;; Modification history
 ;;
-local funcname, scriptname, verbosity
+local funcname, scriptname
 begin
 
     funcname = "check_min_max_models"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     if (no_models .lt. min_no_models) then
@@ -180,13 +177,11 @@ function tstep(utc:numeric)
 ;; Modification history
 ;;    20140211-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, t, dt, nt, y, m, d, h, n, s, option, \
-    units
+local funcname, scriptname, t, dt, nt, y, m, d, h, n, s, option, units
 begin
 
     funcname = "tstep"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; extract vectors
@@ -289,12 +284,11 @@ function ncdf_varname(data)
 ;; Modification history
 ;;    20131108-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, data, result, target_atts, att
+local funcname, scriptname, data, result, target_atts, att
 begin
 
     funcname = "ncdf_varname"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; Attributes names to check for, ordered by increasing priority
@@ -336,12 +330,11 @@ function get_work_dir()
 ;;    20140414-A_righ_ma: bug fixed and unnecessary if case removed.
 ;;    20131108-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, curr_work_dir
+local funcname, scriptname, curr_work_dir
 begin
 
     funcname = "get_work_dir"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     curr_work_dir = config_user_info@work_dir
@@ -376,13 +369,11 @@ function get_ncdf_name(var[1]:string)
 ;; Modification history
 ;;    20131108-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, work_dir, \
-    diag_script, output_dir, ncdf_dir
+local funcname, scriptname, work_dir, diag_script, output_dir, ncdf_dir
 begin
 
     funcname = "get_ncdf_name"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     ;; Collect parts of outfile name
@@ -419,12 +410,11 @@ function get_ncdf_dir(work_dir[1]:string,
 ;; Modification history
 ;;    20131108-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, work_dir, subfolder, ncdf_dir
+local funcname, scriptname, work_dir, subfolder, ncdf_dir
 begin
 
     funcname = "get_ncdf_dir"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     ncdf_dir = work_dir + subfolder + "/"
@@ -475,13 +465,12 @@ function ncdf_read(infile, varname)
 ;; Modification history
 ;;    20131111-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, data, infile, ncdf, varname, i, ivar, \
-    nvar, vdims, var, atts, temp, defaults
+local funcname, scriptname, data, infile, ncdf, varname, i, ivar, nvar, \
+    vdims, var, atts, temp, defaults
 begin
 
     funcname = "ncdf_read"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     ;; Open file for reading
@@ -599,12 +588,11 @@ function ncdf_write(data,
 ;; Modification history
 ;;    20131107-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, data, outfile, outfile_in, ncdf, varname
+local funcname, scriptname, data, outfile, outfile_in, ncdf, varname
 begin
 
     funcname = "ncdf_write"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     ;; Retrieve special attributes
@@ -694,12 +682,11 @@ function ncdf_att(infile[1],
 ;; Modification history
 ;;    20140131-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, f, file_atts, i, result
+local funcname, scriptname, f, file_atts, i, result
 begin
 
     funcname = "ncdf_att"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     if (typeof(infile).eq."string") then
@@ -750,13 +737,12 @@ function ncdf_define(ncdf, data)
 ;; Modification history
 ;;    20131112-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, data, diag_script, var, fAtt, \
-    dimNames, dimSzs, dimUnlim
+local funcname, scriptname, data, diag_script, var, fAtt, dimNames, dimSzs, \
+    dimUnlim
 begin
 
     funcname = "ncdf_define"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     diag_script = att2var(data, "diag_script")
@@ -876,12 +862,11 @@ function att2var_default(data,
 ;; Modification history
 ;;    20140403-A_GoKl: written.
 ;;
-local funcname, scriptname, verbosity, data, meta, result, default, option
+local funcname, scriptname, data, meta, result, default, option
 begin
 
     funcname = "att2var_default"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     result = att2var(data, meta)
@@ -927,13 +912,11 @@ function att2var(data,
 ;; Modification history
 ;;    20131107-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, data, meta, result, temp, atts, att, \
-    iatt
+local funcname, scriptname, data, meta, result, temp, atts, att, iatt
 begin
 
     funcname = "att2var"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     ;; Attribute "var"
@@ -1020,12 +1003,11 @@ function bname(a:string)
 ;; Modification history
 ;;    20131106-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, a, i, b, rm_prefix, rm_suffix
+local funcname, scriptname, a, i, b, rm_prefix, rm_suffix
 begin
 
     funcname = "bname"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     b = a
@@ -1062,12 +1044,11 @@ function PRIORITY(a)
 ;; Modification history
 ;;    20130419-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, a, valid_types, u, idx, i, n, nu
+local funcname, scriptname, a, valid_types, u, idx, i, n, nu
 begin
 
     funcname = "PRIORITY"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     valid_types = (/"integer", "float", "double", "string"/)
@@ -1125,12 +1106,11 @@ function get_output_dir(plot_dir[1]:string,
 ;; Modification history
 ;;    20130419-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, output_dir
+local funcname, scriptname, output_dir
 begin
 
     funcname = "get_output_dir"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     output_dir = plot_dir + "/" + subfolder + "/"
@@ -1163,12 +1143,11 @@ function basename(name[1]:string)
 ;; Modification history
 ;;    20130419-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, suffix
+local funcname, scriptname, suffix
 begin
 
     funcname = "basename"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     suffix = get_file_suffix(name, 0)
@@ -1197,12 +1176,11 @@ function extract_years(data,
 ;;
 ;; Modification history
 ;;
-local funcname, scriptname, verbosity, data_new, tim, t_utc, t_utc_yr, idx_t
+local funcname, scriptname, data_new, tim, t_utc, t_utc_yr, idx_t
 begin
 
     funcname = "extract_years"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     ds = dimsizes(data)
@@ -1253,13 +1231,12 @@ function extend_var_at(var,
 ;; Modification history
 ;;    20130419-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, var, coord, index, var_new, var_dim, \
+local funcname, scriptname, var, coord, index, var_new, var_dim, \
     var_dim_plus, rank
 begin
 
     funcname = "extend_var_at"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     var_dim = dimsizes(var)
@@ -1358,12 +1335,11 @@ function copy_CoordNames_n(var_from,
 ;; Modification history
 ;;    20130419-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, var_from, var_to, n, rank
+local funcname, scriptname, var_from, var_to, n, rank
 begin
 
     funcname = "copy_CoordNames_n"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     rank = dimsizes(dimsizes(var_from))
@@ -1408,12 +1384,11 @@ function empty_str(nn[1]:integer)
 ;; Modification history
 ;;     20140228-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, ii
+local funcname, scriptname, ii
 begin
 
     funcname = "empty_str"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     str = " "
@@ -1446,12 +1421,11 @@ function write_info(display[1]:logical)
 ;;
 ;; Modification history
 ;;
-local funcname, scriptname, verbosity, infobox, info_id
+local funcname, scriptname, infobox, info_id
 begin
 
     funcname = "write_info"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 8)
 
     infobox = ""
@@ -1492,12 +1466,11 @@ function remove_index(array,
 ;; Modification history
 ;;    20160704-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, dsize, rank, iarr
+local funcname, scriptname, dsize, rank, iarr
 begin
 
     funcname = "remove_index"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     dsize = dimsizes(array)
@@ -1555,12 +1528,11 @@ procedure set_default_att(info:logical,
 ;; Modification history
 ;;    20171214-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity
+local funcname, scriptname
 begin
 
     funcname = "set_default_att"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     if (.not.isatt(info, att)) then
@@ -1616,12 +1588,11 @@ function filter_attrs(source[1]:logical,\
 ;; Modification history
 ;;    20150630-A_eval_ma: written.
 ;;
-local source_attrs, att_idx, prefix_removed
+local funcname, scriptname, source_attrs, att_idx, prefix_removed
 begin
 
     funcname = "filter_attrs"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     source_attrs = getvaratts(source)
@@ -1656,12 +1627,11 @@ procedure write_ignore_warnings(warnings[*]:string,
 ;; Modification history
 ;;    20150630-A_eval_ma: written.
 ;;
-local funcname, scriptname, verbosity, idx_warn
+local funcname, scriptname, idx_warn
 begin
 
     funcname = "write_ignore_warnings"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     if (fileexists(warn_file_str)) then
@@ -1695,11 +1665,10 @@ function get_single_ref(models[1]:logical,\
 ;;    20151109-A_righ_ma: moved from diag_scripts/aux/SAMonsson.ncl to here.
 ;;    2015????-A_eval_ma: written.
 ;;
-local idx_single_ref
+local funcname, scriptname, idx_single_ref
 begin
     funcname = "get_single_ref"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     idx_single_ref = ind(model_attr_id .eq. model_refs)
@@ -1748,12 +1717,11 @@ function get_ref_model_idx(models[1]:logical,\
 ;;    20151109-A_righ_ma: moved from diag_scripts/aux/SAMonsson.ncl to here.
 ;;    2015????-A_eval_ma: written.
 ;;
-local funcname, scriptname, verbosity, nrefs, idx_ref
+local funcname, scriptname, nrefs, idx_ref
 begin
 
     funcname = "get_ref_model_idx"
     scriptname = "interface_scripts/auxiliary.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     nrefs = dimsizes(model_ref_name)

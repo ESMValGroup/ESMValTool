@@ -18,7 +18,6 @@
 ;;#############################################################################
 MASTER_REFS = "../doc/MASTER_authors-refs-acknow.txt"
 
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
 ;; Warning: no other interface_scripts shall be loaded here, to avoid nested
 ;;          loops (since they will try to load logging.ncl themselves).
 
@@ -140,10 +139,8 @@ procedure enter_msg(script[1]:string,
 ;; Modification history
 ;;    20150319-A_righ_ma: written.
 ;;
-local verbosity
 begin
 
-    verbosity = config_user_info@verbosity
     if (func.eq."") then
         log_debug("<<<<<<<< Entering " + script)
     else
@@ -173,10 +170,8 @@ procedure leave_msg(script[1]:string,
 ;; Modification history
 ;;    20150319-A_righ_ma: written.
 ;;
-local verbosity
 begin
 
-    verbosity = config_user_info@verbosity
     if (func.eq."") then
         log_debug(">>>>>>>> Leaving " + script)
     else
@@ -199,7 +194,7 @@ procedure error_msg(type[1]:string,
 ;;    msg: actual error message.
 ;;
 ;; Description
-;;    Writes a log message on the stdout depending on the selected verbosity.
+;;    Writes an error/warning message to the log file.
 ;;
 ;; Caveats
 ;;
@@ -217,10 +212,7 @@ begin
     ;; Determine which message level we're at (fatal/warning)
     if (type .eq. "f" .or. type .eq. "fatal") then
         msg_level = "fatal"
-; A-laue_ax+
-;    else if (type .eq. "w" .or. type .eq. "warning") then
-    else if (type .eq. "w" .or. type .eq. "warning" .or. type .eq. "error") then
-; A-laue_ax-
+    else if (any(type.eq.(/"w", "warning", "error"/))) then
         msg_level = "warning"
     else
         print("fatal: in error_msg (logging.ncl), " + \
@@ -272,12 +264,11 @@ procedure exit_if_missing_atts(in[1], \
 ;; Modification history
 ;;    20141002-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity
+local funcname, scriptname
 begin
 
     funcname = "exit_if_missing_atts"
     scriptname = "interface_scripts/logging.ncl"
-    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     if (.not.all(isatt(in, reqatts))) then
@@ -336,12 +327,11 @@ procedure write_filelist(script:string,
 ;; Modification history
 ;;    20150630-A_laue_ax: written.
 ;;
-local funcname, scriptname, verbosity, output_refs, hline
+local funcname, scriptname, output_refs, hline
 begin
 
     funcname = "write_filelist"
     scriptname = "interface_scripts/logging.ncl"
-    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     if (filelist(0).eq."") then  ; derived variable or no information
@@ -477,16 +467,11 @@ procedure write_references(script[1]:string,
 ;;                        (write_header)
 ;;    20121128-A_righ_ma: written.
 ;;
-; a_laue_ax+
-;local funcname, scriptname, verbosity, namelist, master_refs, output_refs, \
-local funcname, scriptname, verbosity, master_refs, output_refs, \
-; a_laue_ax-
-    hline, pos, str ;, stand_alone_entries
+local funcname, scriptname, master_refs, output_refs, hline, pos, str
 begin
 
     funcname = "write_references"
     scriptname = "interface_scripts/logging.ncl"
-    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     hline      = "-------------------------"

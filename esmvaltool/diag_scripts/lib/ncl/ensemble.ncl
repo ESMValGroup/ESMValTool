@@ -40,12 +40,11 @@ function get_start_year(model_index[1]:numeric)
 ;; Modification history
 ;;    20140128-A_senf_da: written.
 ;;
-local funcname, scriptname, verbosity, model_index
+local funcname, scriptname, model_index
 begin
 
     funcname = "get_start_year"
     scriptname = "diag_scripts/lib/ncl/ensemble.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     if (.not.isatt(diag_script_info, "range_option")) then
@@ -89,12 +88,11 @@ function get_end_year(model_index:numeric)
 ;; Modification history
 ;;    20140128-A_senf_da: written.
 ;;
-local funcname, scriptname, verbosity, model_index
+local funcname, scriptname, model_index
 begin
 
     funcname = "get_end_year"
     scriptname = "diag_scripts/lib/ncl/ensemble.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     if (.not.isatt(diag_script_info, "range_option")) then
@@ -165,15 +163,14 @@ function multi_model_stats(idx[*]:integer,
 ;; Modification history:
 ;;    20140515-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, dest_grd, monotonicity, field_type, \
-    rank_grd, start_year, end_year, idx_mod, var_tmp, var_olap, var_grd, \
-    data_mmm, plev_grd, ireturn, tmp, model, Fill, stats, nstats, tmp, iMod, \
+local funcname, scriptname, dest_grd, monotonicity, field_type, rank_grd, \
+    start_year, end_year, idx_mod, var_tmp, var_olap, var_grd, data_mmm, \
+    plev_grd, ireturn, tmp, model, Fill, stats, nstats, tmp, iMod, \
     interpol_flag, nvalid, var_plev, result
 begin
 
     funcname = "multi_model_stats"
     scriptname = "diag_scripts/lib/ncl/ensemble.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; determine destination grid (regridding.ncl)

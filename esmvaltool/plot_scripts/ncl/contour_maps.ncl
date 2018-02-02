@@ -53,13 +53,11 @@ function contour_map(wks_in[1],
 ;; Modification history
 ;;    20131104-A_gott_kl: written.
 ;;
-local funcname, verbosity, data, defaults, diag_script, var, wks, res, \
-    res_new
+local funcname, data, defaults, diag_script, var, wks, res, res_new
 begin
 
     funcname = "contour_map"
 
-    verbosity  = config_user_info@verbosity
     log_debug("<<<<<<<< Entering contour_map")
 
     ;; Get data, either directly or via netCDF file
@@ -166,13 +164,11 @@ function contour_map_polar(wks_in[1],
 ;;    20140623-A_senf_da: now takes res as attributes of source.
 ;;    20131218-A_senf_da: written.
 ;;
-local funcname, verbosity, data, defaults, var, diag_script, wks, res, \
-      res_in, res1
+local funcname, data, defaults, var, diag_script, wks, res, res_in, res1
 begin
 
     funcname = "contour_map_polar"
 
-    verbosity  = config_user_info@verbosity
     log_debug("<<<<<<<< Entering contour_map_polar")
 
     ;; Get data, either directly or via netCDF file
@@ -306,10 +302,9 @@ function contour_map_ce(wks_in[1],
 ;;                        (via attribute data@projection)
 ;;    20140228-A_righ_ma: written.
 ;;
-local verbosity, data, var, wks, res
+local data, var, wks, res
 begin
 
-    verbosity  = config_user_info@verbosity
     log_debug("<<<<<<<< Entering contour_map_ce")
 
     ;; Get data, either directly or via netCDF
@@ -400,13 +395,12 @@ procedure add_markers_to_map(wks_in[1], plot[1]: graphic, lat[*]: numeric, \
 ;; Modification history:
 ;;    20140214-A_righ_ma: written.
 ;;
-local funcname, verbosity, class_name, views, cn_levels, lb_colors, cmap, \
-    colors, loc_res, ndata, mfill, mbord, ii, idx, str
+local funcname, class_name, views, cn_levels, lb_colors, cmap, colors, \
+    loc_res, ndata, mfill, mbord, ii, idx, str
 begin
 
     funcname = "add_markers_to_map"
 
-    verbosity  = config_user_info@verbosity
     log_debug("<<<<<<<< Entering markers_on_map")
 
     ;; Check data consistency

@@ -39,7 +39,6 @@ load "./plot_scripts/ncl/taylor_plot.ncl"
 
 begin
 
-    verbosity  = config_user_info@verbosity
     enter_msg(diag_script, "", 4)
     diag_script_base = basename(diag_script)
 

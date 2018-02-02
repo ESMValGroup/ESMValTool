@@ -38,12 +38,11 @@ function UNIQ(a)
 ;; Modification history
 ;;    20130419-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, a, i, u, doubles, idx
+local funcname, scriptname, a, i, u, doubles, idx
 begin
 
     funcname = "UNIQ"
     scriptname = "diag_scripts/lib/ncl/set_operators.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     u = new(dimsizes(a), "integer", 0)
@@ -80,12 +79,11 @@ function union(set1[*],
 ;;
 ;; Modification history
 ;;
-local funcname, scriptname, verbosity, merged_set, union_set, unique_entries
+local funcname, scriptname, merged_set, union_set, unique_entries
 begin
 
     funcname = "union"
     scriptname = "diag_scripts/lib/ncl/set_operators.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     merged_set = array_append_record(set1, set2, 0)
@@ -118,13 +116,12 @@ function set_inclusive_OR(set1[*]:float,
 ;;
 ;; Modification history
 ;;
-local funcname, scriptname, verbosity, set_tmp, dummy_year, dummy_year_idx, \
+local funcname, scriptname, set_tmp, dummy_year, dummy_year_idx, \
     keep_set_idx, keep_set
 begin
 
     funcname = "set_inclusive_OR"
     scriptname = "diag_scripts/lib/ncl/set_operators.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     dummy_year  = -999.
@@ -163,12 +160,11 @@ function inlist(item[1]:string,
 ;;
 ;; Modification history
 ;;
-local funcname, scriptname, verbosity, item_indicies
+local funcname, scriptname, item_indicies
 begin
 
     funcname = "inlist"
     scriptname = "diag_scripts/lib/ncl/set_operators.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     item_indicies = ind(item .eq. alloweditems)
@@ -204,12 +200,11 @@ function intersection(array1[*],
 ;;
 ;; Modification history
 ;;
-local funcname, scriptname, verbosity, idx, intersection_array, tmp_array
+local funcname, scriptname, idx, intersection_array, tmp_array
 begin
 
     funcname = "intersection"
     scriptname = "diag_scripts/lib/ncl/set_operators.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     do idx = 0, dimsizes(array1) - 1
@@ -258,13 +253,11 @@ function is_array_subset(subset_array[*],
 ;;
 ;; Modification history
 ;;
-local funcname, scriptname, verbosity, subset_size, idx, full_idx, \
-    is_subset_true
+local funcname, scriptname, subset_size, idx, full_idx, is_subset_true
 begin
 
     funcname = "is_array_subset"
     scriptname = "diag_scripts/lib/ncl/set_operators.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     subset_size = dimsizes(subset_array)
@@ -306,13 +299,11 @@ function relative_complement(array1[*],
 ;;
 ;; Modification history
 ;;
-local funcname, scriptname, verbosity, array2_size, i, rel_complement, idx, \
-    remove_idx, return_array
+local funcname, scriptname, array2_size, i, rel_complement, idx, remove_idx
 begin
 
     funcname = "relative_complement"
     scriptname = "diag_scripts/lib/ncl/set_operators.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     array2_size = dimsizes(array2)
@@ -365,12 +356,11 @@ function set_symmetric_difference(array1[*],
 ;;
 ;; Modification history
 ;;
-local funcname, scriptname, verbosity, rel_compl1, rel_compl2
+local funcname, scriptname, rel_compl1, rel_compl2
 begin
 
     funcname = "set_symmetric_difference"
     scriptname = "diag_scripts/lib/ncl/set_operators.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     rel_compl1 = relative_complement(array1, array2)

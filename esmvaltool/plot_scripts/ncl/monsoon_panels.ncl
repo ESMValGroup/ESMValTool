@@ -64,9 +64,8 @@ function get_title_suffix(plot_settings [1] : logical)
 ;; Modification history
 ;;    20150702-A_eval_ma: written.
 ;;
-local verbosity, main_title_suffix
+local main_title_suffix
 begin
-    verbosity  = config_user_info@verbosity
     log_debug("<<<<<<<< Entering get_title_suffix")
     if (isatt(plot_settings, "main_title_suffix")) then
         main_title_suffix = plot_settings@main_title_suffix
@@ -148,7 +147,6 @@ local am_infobox_id,      cn_levels_string,   debugbox,\
     plot2,              statistics,         storage_record,\
     txres,              upper
 begin
-    verbosity  = config_user_info@verbosity
     log_debug("<<<<<<<< Entering plot_two_by_one")
     res = panel_three_by_one(res, 0)  ; Update resource for first plot
     res@cnLevelSelectionMode = "ExplicitLevels"
@@ -296,7 +294,6 @@ res,             statistics,         storage_record,\
 title_name,      txres
 
 begin
-    verbosity  = config_user_info@verbosity
     log_debug("<<<<<<<< Entering plot_three_by_one_diff")
     res = panel_three_by_one(res, 0)  ; Update resource for first plot
     res@cnLevelSelectionMode = "ExplicitLevels"
@@ -490,7 +487,6 @@ local aux_title_info,      cn_levels_string,   curr,\
     storage_record,      textres,            var0,\
     wks,                 diff_model_ref,     txres
 begin
-    verbosity  = config_user_info@verbosity
     log_debug("<<<<<<<< Entering two_by_one")
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
@@ -629,7 +625,6 @@ local aux_title_info,      cn_levels_string,   curr,\
     storage_record,      textres,            var0,\
     wks,                 diff_model_ref,     txres
 begin
-    verbosity  = config_user_info@verbosity
     log_debug("<<<<<<<< Entering three_by_one_diff")
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
@@ -786,7 +781,6 @@ local am_infobox_id,      cn_levels_string,   debugbox,\
     statistics,         storage_record,     txres,\
     ua,                 va
 begin
-    verbosity  = config_user_info@verbosity
     log_debug("<<<<<<<< Entering plot_three_by_one_vector")
     res = panel_three_by_one(res, 0)  ; Update resource for first plot
     res@cnLevelSelectionMode = "ExplicitLevels"
@@ -1005,7 +999,6 @@ local aux_title_info,      cn_levels_string,   curr,\
     storage_record,      textres,            var0,\
     wks,                 wks_debug,          txres
 begin
-    verbosity  = config_user_info@verbosity
     log_debug("<<<<<<<< Entering three_by_one_vector")
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
@@ -1170,7 +1163,6 @@ local am_infobox_id,    blank_plot,            cn_levels_string,\
     ref,              res,                   statistics,\
     storage_record,   txres
 begin
-    verbosity  = config_user_info@verbosity
     log_debug("<<<<<<<< Entering plot_multipanel")
     ;; Update position, labelbar and title
     curr_figure_pos = figure_panel_placement(curr_idx)
@@ -1637,7 +1629,6 @@ local am_infobox_id,       blank_plot,          cn_levels_string,\
     txres,               ua,                  ua_ref,\
     va,                  va_ref
 begin
-    verbosity  = config_user_info@verbosity
     log_debug("<<<<<<<< Entering plot_multipanel_vector")
     ;; Update position, labelbar and title
     curr_figure_pos = figure_panel_placement(curr_idx)
@@ -2120,7 +2111,6 @@ local am_infobox_id,             am_labelbar_id,         amres,\
     txres,                     var0,                   wks,\
     xaxis,                     var1,                   field_type1
 begin
-    verbosity  = config_user_info@verbosity
     log_debug("<<<<<<<< Entering seasonal_plot")
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
@@ -2312,7 +2302,6 @@ local annots,           annots_mmm,        avgstd,\
     values_stddev,    var0,              var1,\
     wks,              wks_debug,         idx_th
 begin
-    verbosity  = config_user_info@verbosity
     log_debug("<<<<<<<< Entering xy_plot_wrapper")
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
@@ -2496,7 +2485,6 @@ local    annots,           avgstd,            diag_script_base,\
     values,           values_stddev,     var0,\
     var1,             wks,               wks_debug
 begin
-    verbosity  = config_user_info@verbosity
     log_debug("<<<<<<<< Entering ts_line_wrapper")
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
@@ -2632,7 +2620,6 @@ local    annots,           avgstd,            diag_script_base,\
     var1,             wks,               wks_debug,\
     res2,             coord
 begin
-    verbosity  = config_user_info@verbosity
     log_debug("<<<<<<<< Entering xy_line_overlap")
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)

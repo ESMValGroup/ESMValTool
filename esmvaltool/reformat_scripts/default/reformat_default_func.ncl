@@ -55,12 +55,11 @@ procedure check_inpath()
 ;; Modification history
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity
+local funcname, scriptname
 begin
 
     funcname = "check_inpath"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Simulation path
@@ -101,13 +100,12 @@ function find_alt_names(name:string)
 ;; Modification history
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, locname, data, col1, col2, std, alt, \
+local funcname, scriptname, locname, data, col1, col2, std, alt, \
     id, tmp, ncols
 begin
 
     funcname = "find_alt_names"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Create local copy
@@ -170,12 +168,11 @@ function check_var(fo:file, name:string)
 ;;    20150415-A_righ_ma: modified to return a missing if not found.
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, altnames, ii
+local funcname, scriptname, altnames, ii
 begin
 
     funcname = "check_var"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Return value initialized to missing
@@ -219,14 +216,13 @@ procedure apply_fixes(var:numeric, name:string, fixfile:string)
 ;; Modification history
 ;;    20131021-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, ret
+local funcname, scriptname, ret
 begin
 
     fixfile = ""  ; filename of "FIXFILE"
 
     funcname = "apply_fixes"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     if (fileexists(FIXFILE)) then
@@ -270,14 +266,13 @@ function read_var(name:string, filelist:string, fixfile:string)
 ;;    20150415-A_righ_ma: adapted to changes in check_var
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, files, ff, f, altname, tmp, rank, \
+local funcname, scriptname, files, ff, f, altname, tmp, rank, \
     tmp2, tname, opt, date, tcoord, lim_date1, lim_date2, curr_date1, \
     curr_date2, set_date1, set_date2, s1, s2, xx
 begin
 
     funcname = "read_var"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Lists of files
@@ -439,12 +434,11 @@ function check_rank(var:numeric)
 ;; Modification history
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, dims, rank, pos, lerr
+local funcname, scriptname, dims, rank, pos, lerr
 begin
 
     funcname = "check_rank"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     dims = dimsizes(var)
@@ -559,12 +553,11 @@ function find_grid_type()
 ;; Modification history
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, ff, altname, lat, lon
+local funcname, scriptname, ff, altname, lat, lon
 begin
 
     funcname = "find_grid_type"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
     files = systemfunc("ls " + INFILE)
 
@@ -627,12 +620,11 @@ procedure check_fill(var:numeric)
 ;; Modification history
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, altfill, ii
+local funcname, scriptname, altfill, ii
 begin
 
     funcname = "check_fill"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     if (.not. isatt(var, "_FillValue")) then
@@ -680,12 +672,11 @@ procedure reformat_time(var:numeric,
 ;;    20150415-A_righ_ma: adapted to new reformat_coord procedure.
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, ctime
+local funcname, scriptname, ctime
 begin
 
     funcname = "reformat_time"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Check positioning
@@ -726,13 +717,12 @@ procedure reformat_plev(var:numeric,
 ;;    20150415-A_righ_ma: adapted to new reformat_coord procedure.
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, allowed_units, alt_units_hpa, \
+local funcname, scriptname, allowed_units, alt_units_hpa, \
     alt_units_bar, rank, cplev
 begin
 
     funcname = "reformat_plev"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     allowed_units = (/"m", "M",\
@@ -811,12 +801,11 @@ procedure reformat_lev(var:numeric,
 ;; Modification history
 ;;    20150415-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, rank, clev
+local funcname, scriptname, rank, clev
 begin
 
     funcname = "reformat_lev"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Assign standard name
@@ -884,12 +873,11 @@ procedure reformat_basin(var:numeric,
 ;; Modification history
 ;;    20150415-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, dsizes
+local funcname, scriptname, dsizes
 begin
 
     funcname = "reformat_basin"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Assign standard name
@@ -927,12 +915,11 @@ procedure reformat_lat(var:numeric,
 ;;    20150415-A_righ_ma: adapted to new reformat_coord procedure.
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, rank, clat
+local funcname, scriptname, rank, clat
 begin
 
     funcname = "reformat_lat"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Assign standard name
@@ -1003,12 +990,11 @@ function reformat_lon(var:numeric,
 ;;    20150415-A_righ_ma: adapted to new reformat_coord procedure.
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, cvar, rank, tmp, ip, clon
+local funcname, scriptname, cvar, rank, tmp, ip, clon
 begin
 
     funcname = "reformat_lon"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Copy to local var
@@ -1103,12 +1089,11 @@ function reformat_coord(var:numeric)
 ;; Modification history
 ;;    20150415-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, locvar, dnames, ndnames, dd, tmp
+local funcname, scriptname, locvar, dnames, ndnames, dd, tmp
 begin
 
     funcname = "reformat_coord"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Create a local copy
@@ -1208,13 +1193,12 @@ procedure add_irregulargrid_info(var:numeric)
 ;;    20161202-A_laue_ax: preserve attribute "bounds" if present
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, vdims, vsize, vrank, files, ff, vars, \
+local funcname, scriptname, vdims, vsize, vrank, files, ff, vars, \
     w, clat, altdname, ii, lat, ldims, lsize, clon, lon, area, tmp, latv, lonv
 begin
 
     funcname = "add_irregulargrid_info"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Variable dimensions (must be consistent with areacello dimensions)
@@ -1510,13 +1494,12 @@ procedure add_lmask_info(var:numeric)
 ;; Modification history
 ;;    20151029-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, lexist, ff, vname, altdname, maskl, \
+local funcname, scriptname, lexist, ff, vname, altdname, maskl, \
     tmp, w, mdims, msize
 begin
 
     funcname = "add_lmask_info"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Variable dimensions (must be consistent with sftlf dimensions)
@@ -1607,13 +1590,12 @@ procedure add_omask_info(var:numeric)
 ;; Modification history
 ;;    20151029-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, lexist, ff, vname, altdname, maskl, \
+local funcname, scriptname, lexist, ff, vname, altdname, maskl, \
     tmp, w, mdims, msize
 begin
 
     funcname = "add_omask_info"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Variable dimensions (must be consistent with sftof dimensions)
@@ -1705,13 +1687,12 @@ procedure add_porosity_info(var:numeric)
 ;; Modification history
 ;;    20160823-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, vdims, vsize, vrank, lexist, ff, \
+local funcname, scriptname, vdims, vsize, vrank, lexist, ff, \
     vname, altdname, ii, maskl, tmp, lwrite, mdims, msize, mrank, w
 begin
 
     funcname = "add_porosity_info"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Variable dimensions (must be consistent with mrsofc dimensions)
@@ -1802,13 +1783,12 @@ procedure add_depth_info(var:numeric)
 ;; Modification history
 ;;    20160824-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, files, ff, depths, ii, lexist, vname, \
+local funcname, scriptname, files, ff, depths, ii, lexist, vname, \
     altdname, w
 begin
 
     funcname = "add_depth_info"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Any of the input files is ok, since depth/depth_bnds are constants
@@ -1866,12 +1846,11 @@ procedure add_regionbasin_info()
 ;; Modification history
 ;;    20150415-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, files, ff, w, region, dims, size
+local funcname, scriptname, files, ff, w, region, dims, size
 begin
 
     funcname = "add_regionbasin_info"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Open input file

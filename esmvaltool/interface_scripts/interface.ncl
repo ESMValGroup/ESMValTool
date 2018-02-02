@@ -10,11 +10,6 @@ end
 ; Copy some variables into legacy names
 begin
     diag_script = diag_script_info@script
-    if (str_lower(config_user_info@log_level) .eq. "debug") then
-        config_user_info@verbosity = 100
-    else
-        config_user_info@verbosity = 1
-    end if
 end
 
 ; Load variable_info
@@ -131,9 +126,9 @@ function interface_replace_place_holders(variable [1] : string,
 ;         @param idx  -  The index to the current model
 ;         @param field  -  Current field type
 ;         @param array_with_place_holders  - array with place holder strings
-local verbosity, idx_var, array_local_copy
+local idx_var, array_local_copy
 begin
-    verbosity  = config_user_info@verbosity
+
     log_debug("<<<<<<<< Entering interface_replace_place_holders")
 
     array_local_copy = str_sub_str(array_with_place_holders(idx), "${VARIABLE}", variable)
@@ -161,9 +156,9 @@ function interface_get_figure_filename(diag_script_base [1] : string,
 ;         @param field_type  -  Current field type
 ;         @param aux_info  -  User supplied info to put in figure filename
 ;         @param idx_mod  -  Current model number, set to -1 if not applicable
-local verbosity, aux_sep, figure_name, fig_file_local_copy, use_this_for_var
+local aux_sep, figure_name, fig_file_local_copy, use_this_for_var
 begin
-    verbosity  = config_user_info@verbosity
+
     log_debug("<<<<<<<< Entering interface_get_figure_filename")
     sep = "_"  ; Default separator
     aux_sep = "_"  ; Auxiliary info separator
@@ -207,9 +202,9 @@ function interface_get_fullpath(variable [1] : string,
 ;         @param variable  -  Current variable
 ;         @param idx  -  The index to the current model
 ;         @param field  -  Current field type
-local verbosity, idx_var, fullpaths_local_copy
+local idx_var, fullpaths_local_copy
 begin
-    verbosity  = config_user_info@verbosity
+
     log_debug("<<<<<<<< Entering interface_get_fullpath")
     fullpaths_local_copy = interface_replace_place_holders(variable, field, idx, fullpaths)
     log_debug(">>>>>>>> Leaving interface_get_fullpath")
@@ -226,9 +221,9 @@ function interface_get_infile(variable [1] : string,
 ;         @param variable  -  Current variable
 ;         @param idx  -  The index to the current model
 ;         @param field  -  Current field type
-local verbosity, infiles_local_copy
+local infiles_local_copy
 begin
-    verbosity  = config_user_info@verbosity
+
     log_debug("<<<<<<<< Entering interface_get_infile")
     infiles_local_copy = interface_replace_place_holders(variable, field, idx, infiles)
     log_debug(">>>>>>>> Leaving interface_get_infile")
@@ -241,9 +236,8 @@ function interface_get_inpaths(idx [1] : integer)
 ; Arguments:
 ;         @brief Returns the current (idx) path to the input filename
 ;         @param idx  -  The index to the current model
-local verbosity
+
 begin
-    verbosity  = config_user_info@verbosity
     log_debug("<<<<<<<< Entering interface_get_inpaths")
     log_debug(">>>>>>>> Leaving interface_get_inpaths")
     return infile_paths(idx)
@@ -258,9 +252,9 @@ function interface_get_dictkeys(variable [1] : string,
 ;         @param variable  -  Current variable
 ;         @param idx  -  The index to the current model
 ;         @param field  -  Current field type
-local verbosity, idx_var, dictkeys_local_copy
+local idx_var, dictkeys_local_copy
 begin
-    verbosity  = config_user_info@verbosity
+
     log_debug("<<<<<<<< Entering interface_get_dictkeys")
     dictkeys_local_copy = interface_replace_place_holders(variable, "NO_FIELD", idx, dictkeys@dictkeys)
     log_debug(">>>>>>>> Leaving interface_get_dictkeys")
@@ -274,9 +268,9 @@ function interface_get_dictkeys_no_var(idx [1] : integer)
 ;         @brief Reconstructs the current (idx) dictionary keys
 ;         @param idx  -  The index to the current model
 ;         @param field  -  Current field type
-local verbosity, idx_var, dictkeys_local_copy
+local idx_var, dictkeys_local_copy
 begin
-    verbosity  = config_user_info@verbosity
+
     log_debug("<<<<<<<< Entering interface_get_dictkeys")
     dictkeys_local_copy = interface_replace_place_holders("default", "NO_FIELD", idx, dictkeys@dictkeys)
     log_debug(">>>>>>>> Leaving interface_get_dictkeys")
@@ -303,7 +297,7 @@ function addfile_wrapper(filename [1]: string, operation [1]:string)
 ;
 local fhandle, logfile, datestamp, use_addfile_wrapper
 begin
-    verbosity  = config_user_info@verbosity
+
     log_debug("<<<<<<<< Entering addfile_wrapper")
 
     logfile = "addfile_access.log"

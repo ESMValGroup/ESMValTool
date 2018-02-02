@@ -60,7 +60,6 @@ load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity = 1
     diag_script = "reformat_obs_ESACCI-OZONE.ncl"
 
     ;; Create output dir

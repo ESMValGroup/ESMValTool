@@ -60,16 +60,16 @@ load "./reformat_scripts/constants.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
+
+    diag_script = "reformat_obs_ESACCI-SOILMOISTURE.ncl"
+    enter_msg(diag_script, "", 1)
+
     dayspermonth = (/31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31/)
 
     sm_ind = ind(VARS.eq."sm")
     smStderr_ind = ind(VARS.eq."smStderr")
     dos_ind = ind(VARS.eq."dos")
     dosStderr_ind = ind(VARS.eq."dosStderr")
-
-    verbosity = config_user_info@verbosity
-    diag_script = "reformat_obs_ESACCI-SOILMOISTURE.ncl"
-    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent(OUTDIR)) then

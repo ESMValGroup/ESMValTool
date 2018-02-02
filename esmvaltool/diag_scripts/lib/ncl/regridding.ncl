@@ -65,14 +65,12 @@ function find_destination_grid(indexes[*]:integer,
 ;;    20140311-A_righ_ma: added plev coordinate.
 ;;    20140212-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, data, tmp, dnames, ref_nplev, \
-    ref_nlat, ref_nlon, ref_plev, ref_lat, ref_lon, flag_lat, flag_lon, \
-    flags, flags0
+local funcname, scriptname, data, tmp, dnames, ref_nplev, ref_nlat, ref_nlon, \
+    ref_plev, ref_lat, ref_lon, flag_lat, flag_lon, flags, flags0
 begin
 
     funcname = "find_destination_grid"
     scriptname = "diag_scripts/lib/ncl/regridding.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; Check
@@ -267,13 +265,11 @@ function guestimate_average_grid_area(data[*][*]:numeric)
 ;;
 ;; Modification history
 ;;
-local funcname, scriptname, verbosity, dimsize_lat, dimsize_lon, average_lat, \
-    average_lon
+local funcname, scriptname, dimsize_lat, dimsize_lon, average_lat, average_lon
 begin
 
     funcname = "guestimate_average_grid_area"
     scriptname = "diag_scripts/lib/ncl/regridding.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     dimsize_lat = dimsizes(data&lat)
@@ -314,12 +310,11 @@ function get_lower_limits(coordinate[*]:numeric)
 ;;
 ;; Modification history
 ;;
-local funcname, scriptname, verbosity, d_size, delta_sizes, lower_limits
+local funcname, scriptname, d_size, delta_sizes, lower_limits
 begin
 
     funcname = "get_lower_limits"
     scriptname = "diag_scripts/lib/ncl/regridding.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 8)
 
     d_size = dimsizes(coordinate)
@@ -350,12 +345,11 @@ function get_upper_limits(coordinate[*]:numeric)
 ;;
 ;; Modification history
 ;;
-local funcname, scriptname, verbosity, d_size, delta_sizes, upper_limits
+local funcname, scriptname, d_size, delta_sizes, upper_limits
 begin
 
     funcname = "get_upper_limits"
     scriptname = "diag_scripts/lib/ncl/regridding.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 8)
 
     d_size = dimsizes(coordinate)
@@ -391,13 +385,11 @@ function is_regional(grid : numeric)
 ;;
 ;; Modification history
 ;;
-local funcname, scriptname, verbosity, lat, lon, lat_size, lon_size, \
-    regional_area
+local funcname, scriptname, lat, lon, lat_size, lon_size, regional_area
 begin
 
     funcname = "is_regional"
     scriptname = "diag_scripts/lib/ncl/regridding.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 8)
 
     lat = grid&lat
@@ -436,7 +428,7 @@ function esmf_conserve_wrapper(source[*][*]:numeric,
 ;;
 ;; Modification history
 ;;
-local funcname, scriptname, verbosity, \
+local funcname, scriptname, \
     data_regrid,     d_destination,   d_source, \
     dstGridCorner,   dst_lower_lat,   dst_lower_lon, \
     dst_upper_lat,   dst_upper_lon,   Opt, \
@@ -447,7 +439,6 @@ begin
 
     funcname = "esmf_conserve_wrapper"
     scriptname = "diag_scripts/lib/ncl/regridding.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     Opt                    = True
@@ -515,13 +506,12 @@ function rect2rect_interp(source[*][*]:numeric,
 ;;
 ;; Modification history
 ;;
-local funcname, scriptname, verbosity, interpolated
+local funcname, scriptname, interpolated
 
 begin
 
     funcname = "rect2rect_interp"
     scriptname = "diag_scripts/lib/ncl/regridding.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     interpolated = esmf_conserve_wrapper(source, target)
@@ -549,12 +539,11 @@ function plev_lat_interp(source[*][*]:numeric,
 ;;
 ;; Modification history
 ;;
-local funcname, scriptname, verbosity, interpolated, grid_type
+local funcname, scriptname, interpolated, grid_type
 begin
 
     funcname = "plev_lat_interp"
     scriptname = "diag_scripts/lib/ncl/regridding.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     interpolated = linint2(source&lat, source&plev, source, \
@@ -584,13 +573,12 @@ function get_model_minus_ref(model[*][*]:numeric,
 ;;
 ;; Modification history
 ;;
-local funcname, scriptname, verbosity, model_grid_size, ref_grid_size, \
-    local_model, local_ref, difference
+local funcname, scriptname, model_grid_size, ref_grid_size, local_model, \
+    local_ref, difference
 begin
 
     funcname = "get_model_minus_ref"
     scriptname = "diag_scripts/lib/ncl/regridding.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     is_plev = any(isdim(model, "plev"))
@@ -652,19 +640,16 @@ function esmf_conserve_wrapper_time(source[*][*][*]:numeric,
 ;;
 ;; Modification history
 ;;
-local funcname, scriptname, verbosity, \
+local funcname, scriptname, \
     data_regrid,    d_destination,  dstGridCorner,\
     dst_lower_lat,  dst_lower_lon,  dst_upper_lat,\
     dst_upper_lon,  funcname,       Opt,\
     scriptname,     srcGridCorner,  src_lower_lat,\
-    src_lower_lon,  src_upper_lat,  src_upper_lon,\
-    verbosity
-
+    src_lower_lon,  src_upper_lat,  src_upper_lon
 begin
 
     funcname = "esmf_conserve_wrapper_time"
     scriptname = "diag_scripts/lib/ncl/regridding.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     Opt                    = True
@@ -773,13 +758,12 @@ function regrid_3D_to_rectilinear_grid(data_in:numeric,
 ;;                        ESMValTool structure.
 ;;    201505??_A_anav_al: written.
 ;;
-local funcname, scriptname, verbosity, INTERP_METHOD, srcGridName, \
-    dstGridName, dimx, ntime, nlat, nlon, temp, Opt, sfile, var
+local funcname, scriptname, INTERP_METHOD, srcGridName, dstGridName, dimx, \
+    ntime, nlat, nlon, temp, Opt, sfile, var
 begin
 
     funcname = "regrid_3D_to_rectilinear_grid"
     scriptname = "diag_scripts/lib/ncl/regridding.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; Workdir

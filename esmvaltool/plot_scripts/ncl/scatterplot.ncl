@@ -54,14 +54,12 @@ function scatterplot(wks_in[1],
 ;; Modification history
 ;;    20140228-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, scattermode, loc_res, resL, linec, \
-    lineh, linel, resT, nstats, st, text, step, xpos, ypos, ii, tmp, ratio, \
-    fac2p, str
+local funcname, scriptname, scattermode, loc_res, resL, linec, lineh, linel, \
+    resT, nstats, st, text, step, xpos, ypos, ii, tmp, ratio, fac2p, str
 begin
 
     funcname = "scatterplot"
     scriptname = "plot_scripts/ncl/scatterplot.ncl"
-    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Get data, either directly or via netCDF
@@ -296,14 +294,13 @@ function scatterplot3D(wks_in[1],
 ;; Modification history
 ;;    20151103-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, data, xpts, ypts, zpts, defaults, var, \
-    wks, res, res_new, colors, ncolors, resM, markers, resT, labels, imod, \
-    idx, xp, yp, xb, yb, resB, lbid, resA, annoid
+local funcname, scriptname, data, xpts, ypts, zpts, defaults, var, wks, res, \
+    res_new, colors, ncolors, resM, markers, resT, labels, imod, idx, xp, yp, \
+    xb, yb, resB, lbid, resA, annoid
 begin
 
     funcname = "scatterplot3D"
     scriptname = "plot_scripts/ncl/scatterplot.ncl"
-    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Get data, either directly or via netCDF
@@ -473,13 +470,12 @@ function scatterplot_markers(wks_in[1],
 ;; Modification history
 ;;    20151105_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, data, xpts, ypts, defaults, var, wks, \
-    annots, colors, markers, res, res_new, lg_outfile, styles, lgres
+local funcname, scriptname, data, xpts, ypts, defaults, var, wks, annots, \
+    colors, markers, res, res_new, lg_outfile, styles, lgres
 begin
 
     funcname = "scatterplot_markers"
     scriptname = "plot_scripts/ncl/scatterplot.ncl"
-    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Get data, either directly or via netCDF

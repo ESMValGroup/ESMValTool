@@ -47,15 +47,13 @@ function contourplot(wks_in[1],
 ;;    20131217-A_vanu_be: written, largely copied from countour_map.ncl
 ;;
 local data, defaults, diag_script, funcname, res, res_new, scriptname, \
-    source, varname, verbosity, wks, wks_in
+    source, varname, wks, wks_in
 begin
 
     funcname = "contourplot"
     scriptname = "plot_scripts/ncl/contourplot.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
-    verbosity = config_user_info@verbosity
     log_debug("<<<<<<<< Entering " + funcname)
 
     ;; Get data, either directly or via netCDF file

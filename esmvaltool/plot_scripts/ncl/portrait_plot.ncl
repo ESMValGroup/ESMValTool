@@ -48,13 +48,12 @@ function portrait_plot(wks_in[1],
 ;;    20140204-A_fran_fr: extended.
 ;;    20140114-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, wks, wks_in, data, source, res, atts, \
+local funcname, scriptname, wks, wks_in, data, source, res, atts, \
     base, varname
 begin
 
     funcname = "portrait_plot"
     scriptname = "plot_scripts/ncl/portrait_plot.ncl"
-    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Get data, either directly or via netCDF file

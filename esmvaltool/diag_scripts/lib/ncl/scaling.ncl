@@ -43,12 +43,11 @@ function convert_units(var:numeric,
 ;; Modification history:
 ;;    20150216-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity
+local funcname, scriptname
 begin
 
     funcname = "convert_units"
     scriptname = "diag_scripts/lib/ncl/scaling.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; Define output (copy metadata)
@@ -239,12 +238,11 @@ function scalfac(u:numeric,
 ;; Modification history:
 ;;    20140220-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, result, u, digits, d, log10_max_abs_u
+local funcname, scriptname, result, u, digits, d, log10_max_abs_u
 begin
 
     funcname = "scalfac"
     scriptname = "diag_scripts/lib/ncl/scaling.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; consider minus sign for number of digits
@@ -302,12 +300,11 @@ function scale_units(u:numeric,
 ;; Modification history
 ;;    20140220-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, u, digits, s
+local funcname, scriptname, u, digits, s
 begin
 
     funcname = "scale_units"
     scriptname = "diag_scripts/lib/ncl/scaling.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     if(.not.all(ismissing(u))) then
@@ -416,12 +413,11 @@ function rescale(u:numeric,
 ;; Modification history
 ;;    20140221-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, u, s, result
+local funcname, scriptname, u, s, result
 begin
 
     funcname = "rescale"
     scriptname = "diag_scripts/lib/ncl/scaling.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     result = u * s

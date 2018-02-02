@@ -38,12 +38,11 @@ procedure check_inpath()
 ;; Modification history
 ;;    20130502-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, subdir, ii, pp, len_inpath, last_char
+local funcname, scriptname, subdir, ii, pp, len_inpath, last_char
 begin
 
     funcname = "check_inpath"
     scriptname = "reformat_scripts/GFDL/reformat_GFDL_func.ncl"
-    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Simulation path
@@ -87,12 +86,11 @@ function find_name(var:string)
 ;; Modification history
 ;;    20130502-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, fname, data, std, emac, type, vert, id
+local funcname, scriptname, fname, data, std, emac, type, vert, id
 begin
 
     funcname = "find_name"
     scriptname = "reformat_scripts/GFDL/reformat_GFDL_func.ncl"
-    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     fname = "./reformat_scripts/GFDL/names_GFDL.dat"
@@ -143,12 +141,11 @@ function find_and_read_var(var:string,
 ;; Modification history
 ;;    20150708-A_righ_ma: written.
 ;;
-local funcname,  scriptname, verbosity, flist, f
+local funcname,  scriptname, flist, f
 begin
 
     funcname = "find_and_read_var"
     scriptname = "reformat_scripts/GFDL/reformat_GFDL_func.ncl"
-    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Define files list
@@ -222,13 +219,12 @@ function time_mean(var:numeric,
 ;; Modification history
 ;;    20130502-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, rank, date, opt, days, ndays, dd, \
+local funcname, scriptname, rank, date, opt, days, ndays, dd, \
     idx, dum
 begin
 
     funcname = "time_mean"
     scriptname = "reformat_scripts/GFDL/reformat_GFDL_func.ncl"
-    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     rank = dimsizes(getvardims(var))
@@ -379,12 +375,11 @@ function extract_var(name:string,
 ;; Modification history
 ;;    20150708-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, xx, xz, rank, date, idx1, idx2
+local funcname, scriptname, xx, xz, rank, date, idx1, idx2
 begin
 
     funcname = "extract_var"
     scriptname = "reformat_scripts/GFDL/reformat_GFDL_func.ncl"
-    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Read variable
@@ -456,12 +451,11 @@ procedure format_coord(var:numeric)
 ;; Modification history
 ;;    20130502-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, rank, ctime, cplev, clat, clon, tmp
+local funcname, scriptname, rank, ctime, cplev, clat, clon, tmp
 begin
 
     funcname = "format_coord"
     scriptname = "reformat_scripts/GFDL/reformat_GFDL_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     rank = dimsizes(dimsizes(var))

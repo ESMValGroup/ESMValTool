@@ -66,17 +66,16 @@ function profile_plev(wks_in[1],
 ;; Modification history
 ;;    20140214-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, diag_script, data, var, font, \
-    font_size_fac, i_ref, FuncCode, i_N, i_mean, i_stddev, i_min, i_max, i_5, \
-    i_25, i_median, i_75, i_95, target, i_quantity, data2plot, i_plev, ymin, \
-    ymax, xmin, xmax, colors, dashes, thicks, annots, avgstd, res, \
-    res_whiskers, plot, lgLabels, defaults, zoom, left, right, ixmin, ixmax, \
-    res_markers, xmk, ymk, border, info, short_name, long_name, temp
+local funcname, scriptname, diag_script, data, var, font, font_size_fac, \
+    i_ref, FuncCode, i_N, i_mean, i_stddev, i_min, i_max, i_5, i_25, \
+    i_median, i_75, i_95, target, i_quantity, data2plot, i_plev, ymin, ymax, \
+    xmin, xmax, colors, dashes, thicks, annots, avgstd, res, res_whiskers, \
+    plot, lgLabels, defaults, zoom, left, right, ixmin, ixmax, res_markers, \
+    xmk, ymk, border, info, short_name, long_name, temp
 begin
 
     funcname = "profile_plev"
     scriptname = "plot_scripts/ncl/xy_line.ncl"
-    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Set hardcoded parameters
@@ -538,12 +537,11 @@ function aerosol_profile(wks_in[1],
 ;;                        size distributions.
 ;;    20140705-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, tmp, colors, annots, res, res_new
+local funcname, scriptname, tmp, colors, annots, res, res_new
 begin
 
     funcname = "aerosol_profile"
     scriptname = "plot_scripts/ncl/xy_line.ncl"
-    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Get model data, either directly or via netCDF file
@@ -1058,12 +1056,11 @@ function aerosol_sizedist(wks_in[1],
 ;; Modification history
 ;;    20161013-A_righ_ma: written based on aerosol_profile.
 ;;
-local funcname, scriptname, verbosity, tmp, colors, annots, res, res_new
+local funcname, scriptname, tmp, colors, annots, res, res_new
 begin
 
     funcname = "aerosol_sizedist"
     scriptname = "plot_scripts/ncl/xy_line.ncl"
-    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Get model data, either directly or via netCDF file
@@ -1545,16 +1542,15 @@ procedure xy_line(wks[1],
 ;;    20150511_A_senf_da: modified legend
 ;;    20140109-A_senf_da: written.
 ;;
-local funcname, scriptname, verbosity, res, res_in, res_stddev, source, \
-    source_x, source_stddev, wks, wks_in, colors, colors_mm, dashes, \
-    dashes_mm, thicks, thicks_mm, annots, annots_mm, avgstd, avgstd_mm, temp, \
-    plot, shading_plot, mm, lgres, nitems, lbid, amres, annoid, labels, \
-    lg_outfile, psres, vpx, vph, vpy, vpw, bpres, tmborder
+local funcname, scriptname, res, res_in, res_stddev, source, source_x, \
+    source_stddev, wks, wks_in, colors, colors_mm, dashes, dashes_mm, thicks, \
+    thicks_mm, annots, annots_mm, avgstd, avgstd_mm, temp, plot, \
+    shading_plot, mm, lgres, nitems, lbid, amres, annoid, labels, lg_outfile, \
+    psres, vpx, vph, vpy, vpw, bpres, tmborder
 begin
 
     funcname = "xy_line"
     scriptname = "plot_scripts/ncl/xy_line.ncl"
-    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Select colors and other plotting attributes
@@ -1836,12 +1832,11 @@ function timeseries_station(wks_in[1],
 ;; Modification history:
 ;;    * 20140325 written by Mattia Righi
 ;;
-local funcname, scriptname, verbosity
+local funcname, scriptname
 begin
 
     funcname = "timeseries_station"
     scriptname = "plot_scripts/ncl/xy_line.ncl"
-    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Get data, either directly or via netCDF file
@@ -1997,13 +1992,12 @@ function cycle_plot(wks_in[1],
 ;; Modification history
 ;;    20131206-A_fran_fr: written.
 ;;
-local funcname, scriptname, verbosity, wks_out, wks_in, data, source, res, \
-    atts, base, varname
+local funcname, scriptname, wks_out, wks_in, data, source, res, atts, base, \
+    varname
 begin
 
     funcname = "cycle_plot"
     scriptname = "plot_scripts/ncl/xy_line.ncl"
-    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Get data, either directly or via netCDF file
@@ -2211,13 +2205,12 @@ function errorbar_plot(wks_in[1],
 ;; Modification history
 ;;    20151105-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, data, defaults, var, wks, res, \
-    ren_new, resL, error_bar
+local funcname, scriptname, data, defaults, var, wks, res, ren_new, resL, \
+    error_bar
 begin
 
     funcname = "errorbar_plot"
     scriptname = "plot_scripts/ncl/xy_line.ncl"
-    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Get data, either directly or via netCDF file

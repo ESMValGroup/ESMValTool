@@ -67,7 +67,6 @@ begin
     ;;# Fetch general parameters, set in namelist_MyDiag.yml,   #
     ;;# passed via environment variables by python code         #
     ;;###########################################################
-    verbosity  = config_user_info@verbosity
     log_debug("<<<<<<<< Entering " + diag_script)
 
     ;; 'diag_script' and 'variables' are fetched from the
@@ -108,7 +107,7 @@ begin
     end if
     ;;if(isatt(variable_info, "MyDiag_title")) then
     ;;    MyParam = variable_info@MyDiag_title
-    ;;    log_debug(" MyParam = " + MyParam, verbosity, 5)
+    ;;    log_debug(" MyParam = " + MyParam)
     ;;else
     ;;    error_msg("f", diag_script, "", "missing variable attribute " + \
     ;;              "'MyDiag_title'")
@@ -120,15 +119,10 @@ begin
     ;; get data from first model
     imod = 0  ; NCL array indicies start from zero
     log_debug("processing " + models@name(imod) + "_"\
-                              + models@ensemble(imod), verbosity, 5)
+                              + models@ensemble(imod))
 
     ;; See ./interface_scripts/data_handling.ncl
     A0 = extract_data(imod, data, -1, 0, 0)
-    log_debug(" ++++++++++++++ Variable summary of original data (A0): ", \
-                verbosity, 5)
-    if (verbosity .ge. 4) then
-        printVarSummary(A0)
-    end if
 
     ;; Check dimensions
     dims = getvardims(A0)
@@ -149,11 +143,6 @@ begin
     data10 = time_operations(A0, -1, -1, "average", "annualclim", True)
     ;; Make data 2D
     data1 = data10
-    log_debug(" ++++++++++++++ Variable summary of time averaged data " + \
-                "(data1): ", verbosity, 5)
-    if (verbosity .ge. 0) then
-        printVarSummary(data1)
-    end if
 
     ;;###########################################
     ;;# Open file for plot                      #

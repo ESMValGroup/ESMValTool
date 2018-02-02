@@ -66,7 +66,6 @@ load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity = config_user_info@verbosity
     diag_script = "reformat_obs_CRU.ncl"
     enter_msg(diag_script, "", 1)
 
@@ -81,7 +80,7 @@ begin
         ;; Set field
         FIELD = FLDARR(vID)
 
-        info_output("", verbosity, 1)
+        info_output("")
         info_output("Processing " + VARS(vID) + " (" + FIELD + ") ")
 
         ;; Read file

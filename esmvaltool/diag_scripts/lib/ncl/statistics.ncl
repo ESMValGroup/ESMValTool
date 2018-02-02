@@ -59,12 +59,12 @@ function dim_stddev_wgt_Wrap(field[*]:numeric,
 ;;                        added "no weigth" (nowgt) option
 ;;    20141215-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, wavg, wgt, v1, v2, d2, arg
+local funcname, scriptname, wavg, wgt, v1, v2, d2, arg
 begin
 
     funcname = "dim_stddev_wgt_Wrap"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = config_user_info@verbosity
+
     enter_msg(scriptname, funcname, 6)
 
     ; Copy to local
@@ -155,15 +155,15 @@ function time_operations(field:numeric,
 ;;    20140312-A_righ_ma: extended with standard deviation.
 ;;    20140109-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, monthstr, date, year, month, idx1, \
-    idx2, loc_y1, loc_y2, rank, subfield, weights, idx, idx_win, idx_spr, \
-    idx_sum, idx_aut, mm, idx_1st, idx_arr, p1, p2, d2, arg, v1, v2, ym_in, \
-    years, nyear, ym, dims, timec, FillValue, index
+local funcname, scriptname, monthstr, date, year, month, idx1, idx2, loc_y1, \
+    loc_y2, rank, subfield, weights, idx, idx_win, idx_spr, idx_sum, idx_aut, \
+    mm, idx_1st, idx_arr, p1, p2, d2, arg, v1, v2, ym_in, years, nyear, ym, \
+    dims, timec, FillValue, index
 begin
 
     funcname = "time_operations"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = config_user_info@verbosity
+
     enter_msg(scriptname, funcname, 6)
 
     ;; Check arguments
@@ -772,14 +772,13 @@ function calc_season_index(season[1]:string)
 ;;
 ;; Modification history
 ;;
-local funcname, scriptname, verbosity, current_search_set, DEBUG, i, indices, \
-    months, start_index, strIndex, stringmonths, string_search_set, \
-    subStringLength
+local funcname, scriptname, current_search_set, DEBUG, i, indices, months, \
+    start_index, strIndex, stringmonths, string_search_set, subStringLength
 begin
 
     funcname = "calc_season_index"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = config_user_info@verbosity
+
     enter_msg(scriptname, funcname, 10)
 
     DEBUG = False
@@ -870,14 +869,14 @@ function extract_season(data:numeric,
 ;;
 ;; Modification history
 ;;
-local funcname, scriptname, verbosity, idx, subset_selection, months, \
-    newtime, seasonal_selection_ind, season_monthly_indices, sizes, \
-    start_of_year, tmp, local_indata, ndims
+local funcname, scriptname, idx, subset_selection, months, newtime, \
+    seasonal_selection_ind, season_monthly_indices, sizes, start_of_year, \
+    tmp, local_indata, ndims
 begin
 
     funcname = "extract_season"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = config_user_info@verbosity
+
     enter_msg(scriptname, funcname, 8)
 
     season_monthly_indices = calc_season_index(season)
@@ -957,13 +956,13 @@ function month_to_season_extended(indata:float,
 ;;
 ;; Modification history
 ;;
-local funcname, scriptname, verbosity, season_indices, dim_season_indices, \
+local funcname, scriptname, season_indices, dim_season_indices, \
     runaveragedata, start_index, averagedata, dim
 begin
 
     funcname = "month_to_season_extended"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = config_user_info@verbosity
+
     enter_msg(scriptname, funcname, 8)
 
     indata_size = dimsizes(indata)
@@ -1060,13 +1059,12 @@ function coswgt_areaave(field:numeric)
 ;; Modification history
 ;;    20131209-A_eval_ma: written.
 ;;
-local funcname, scriptname, verbosity, lat, wgt_lat, lon, lon_size, \
-    wgt_lon, ave
+local funcname, scriptname, lat, wgt_lat, lon, lon_size, wgt_lon, ave
 begin
 
     funcname = "coswgt_areaave"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = config_user_info@verbosity
+
     enter_msg(scriptname, funcname, 10)
 
     lat = field&lat
@@ -1106,13 +1104,13 @@ function coswgt_arearmse(field1:numeric,
 ;; Modification history:
 ;;    20131209-A_eval_ma: written.
 ;;
-local funcname, scriptname, verbosity, lat, wgt_lat, lon, lon_size, wgt_lon, \
-    rmse, local_field1, local_field2
+local funcname, scriptname, lat, wgt_lat, lon, lon_size, wgt_lon, rmse, \
+    local_field1, local_field2
 begin
 
     funcname = "coswgt_arearmse"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = config_user_info@verbosity
+
     enter_msg(scriptname, funcname, 10)
 
     field1_grid_size = guestimate_average_grid_area(field1)
@@ -1162,13 +1160,13 @@ function coswgt_pattern_cor(field1:numeric,
 ;; Modification history:
 ;;    20140115-A_eval_ma: written.
 ;;
-local funcname, scriptname, verbosity, lat, wgt_lat, lon, lon_size, wgt_lon, \
+local funcname, scriptname, lat, wgt_lat, lon, lon_size, wgt_lon, \
     pattern_correlation, local_field1, local_field2
 begin
 
     funcname = "coswgt_pattern_cor"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = config_user_info@verbosity
+
     enter_msg(scriptname, funcname, 10)
 
     field1_grid_size = guestimate_average_grid_area(field1)
@@ -1234,14 +1232,14 @@ function interannual_variability(field: numeric,
 ;; Modification history
 ;;    20140314-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, monthstr, rank, field_avg, field_djf, \
-    field_mam, field_jja, field_son, field_avg_djf, field_avg_mam, \
-    field_avg_jja, field_avg_son
+local funcname, scriptname, monthstr, rank, field_avg, field_djf, field_mam, \
+    field_jja, field_son, field_avg_djf, field_avg_mam, field_avg_jja, \
+    field_avg_son
 begin
 
     funcname = "interannual_variability"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = config_user_info@verbosity
+
     enter_msg(scriptname, funcname, 6)
 
     ;; Check for time dimension
@@ -1381,14 +1379,14 @@ function calculate_metric(var:numeric,
 ;;                     depending on dimensionality.
 ;;    20140120-A_fran_fr: written.
 ;;
-local funcname, scriptname, verbosity, dims_var, dims_ref, ii, dim_names, \
-    mdays, sdays, weights, var1d, ref1d, wgt1d, avg_var, avg_ref, p1, p2, p3, \
-    var3d, wgt3d, tmean_m, tmean_o, tmp_m, tmp_o
+local funcname, scriptname, dims_var, dims_ref, ii, dim_names, mdays, sdays, \
+    weights, var1d, ref1d, wgt1d, avg_var, avg_ref, p1, p2, p3, var3d, wgt3d, \
+    tmean_m, tmean_o, tmp_m, tmp_o
 begin
 
     funcname = "calculate_metric"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = config_user_info@verbosity
+
     enter_msg(scriptname, funcname, 6)
 
     ;; Check for dimensions consistency
@@ -1545,12 +1543,12 @@ function normalize_metric(var:numeric,
 ;;    20140609-A_righ_ma: absolute value added to "mean" normalization.
 ;;    20140120-A_fran_fr: written.
 ;;
-local funcname, scriptname, verbosity, val_var, norm, stdv, p1
+local funcname, scriptname, val_var, norm, stdv, p1
 begin
 
     funcname = "normalize_metric"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = config_user_info@verbosity
+
     enter_msg(scriptname, funcname, 6)
 
     val_var = ndtooned(var)
@@ -1623,12 +1621,12 @@ function distrib_stats(var[*]:numeric,
 ;; Modification history
 ;;    20140526-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, lvar, nsize, idx
+local funcname, scriptname, lvar, nsize, idx
 begin
 
     funcname = "distrib_stats"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = config_user_info@verbosity
+
     enter_msg(scriptname, funcname, 6)
 
     ;; Check input
@@ -1729,12 +1727,11 @@ function lognormal_dist(nn:numeric,
 ;; Modification history
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, pi, sqrt2pi, dd, ee
+local funcname, scriptname, pi, sqrt2pi, dd, ee
 begin
 
     funcname = "lognormal_dist"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     if (dimsizes(dimsizes(nn)).ne.1 .or. dimsizes(dimsizes(dg)).ne.1) then

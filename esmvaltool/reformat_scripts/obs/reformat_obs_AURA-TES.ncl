@@ -72,7 +72,6 @@ load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity = config_user_info@verbosity
     diag_script = "reformat_obs_AURA-TES.ncl"
     enter_msg(diag_script, "", 1)
 

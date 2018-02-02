@@ -47,12 +47,11 @@ function unique_labels_min(prio: string)
 ;; Modification history
 ;;    20130422-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, prio, result, unique, iprio, index
+local funcname, scriptname, prio, result, unique, iprio, index
 begin
 
     funcname = "unique_labels_min"
     scriptname = "diag_scripts/lib/ncl/style.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     result = models@$prio(0)$  ; Start with highest priority
@@ -109,12 +108,11 @@ function unique_labels_all(prio:string)
 ;; Modification history
 ;;    20130422-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, prio, result, unique, iprio, index
+local funcname, scriptname, prio, result, unique, iprio, index
 begin
 
     funcname = "unique_labels_all"
     scriptname = "diag_scripts/lib/ncl/style.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 10)
 
     result = models@$prio(0)$  ; Start with highest priority
@@ -187,13 +185,11 @@ function project_style(info, flag)
 ;;                        project_style_<styleset> functions porteed here.
 ;;    20130419-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, result, info, flag, styleset, \
-    stylefile, tmp, sty
+local funcname, scriptname, result, info, flag, styleset, stylefile, tmp, sty
 begin
 
     funcname = "project_style"
     scriptname = "diag_scripts/lib/ncl/style.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; Check for the available dictonary keys to be used for the annotations
@@ -371,7 +367,6 @@ function project_style_GO(flag:string)
 ;
 local result, modelstyles, flag
 begin
-    verbosity  = config_user_info@verbosity
     log_debug("<<<<<<<< Entering style_GO.ncl")
 
     ;; define (/model, color, dash, thickness, avgstd/) for each model
@@ -433,12 +428,11 @@ function place_debuginfo(wks[1]:graphic,
 ;; Modification history
 ;;
 local i, txvpWidth, txvpHeight, tx, x, y, parent_width, parent_height, \
-    annoid, mvxf, mvyf, verbosity, debugstring
+    annoid, mvxf, mvyf, debugstring
 begin
 
     funcname = "place_debuginfo"
     scriptname = "diag_scripts/lib/ncl/style.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 8)
 
     res@gsnDraw               = False
@@ -493,13 +487,12 @@ procedure place_description(wks[1]:graphic,
 ;;
 ;; Modification history
 ;;
-local tx, txvpWidth, txvpHeight, parent_x, parent_y, amres,\
-    wks_dummy, annoid, txres, y_ndc_coord
+local tx, txvpWidth, txvpHeight, parent_x, parent_y, amres, wks_dummy, \
+    annoid, txres, y_ndc_coord
 begin
 
     funcname = "place_description"
     scriptname = "diag_scripts/lib/ncl/style.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     wks_dummy = gsn_open_wks("png", "dummy.png")
@@ -558,13 +551,12 @@ function gsnColorRange(lower:numeric,
 ;; Modification history
 ;;    20130422-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, nboxes_left, nboxes_right, \
-    ncolors_left, ncolors_right, output, color_start
+local funcname, scriptname, nboxes_left, nboxes_right, ncolors_left, \
+    ncolors_right, output, color_start
 begin
 
     funcname = "gsnColorRange"
     scriptname = "diag_scripts/lib/ncl/style.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     color_start = 2  ; All of the color maps begin with 2.
@@ -629,12 +621,11 @@ function format_units(str[1]: string)
 ;; Modification history
 ;;    20140320-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, loc_str
+local funcname, scriptname, loc_str
 begin
 
     funcname = "format_units"
     scriptname = "diag_scripts/lib/ncl/style.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; Create a local copy
@@ -687,12 +678,11 @@ function set_log_ticks(fmin[1]:numeric,
 ;; Modification history
 ;;    20141003-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, omin, omax, rmin, rmax, om, tmp, arr
+local funcname, scriptname, omin, omax, rmin, rmax, om, tmp, arr
 begin
 
     funcname = "set_log_ticks"
     scriptname = "diag_scripts/lib/ncl/style.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; Find order of magnitude of min
@@ -782,7 +772,6 @@ begin
 
     funcname = "sort_alphabetically"
     scriptname = "diag_scripts/lib/ncl/style.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; Create a local copy of input names and set to upper case

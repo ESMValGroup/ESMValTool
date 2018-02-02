@@ -59,7 +59,6 @@ load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity = 1
     diag_script = "reformat_obs_BDBP.ncl"
 
     ;; Create output dir

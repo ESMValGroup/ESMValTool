@@ -43,13 +43,12 @@ function yyyyfrac_to_ut(frac: numeric,
 ;;    20140624-A_gott_kl: written.
 ;;
 
-local verbosity, funcname, years, YEAR, units, offset, sorted, spy, ileap, \
+local funcname, years, YEAR, units, offset, sorted, spy, ileap, \
     iyears, iy, f, f_sec, time, ut
 begin
 
     funcname = "yyyyfrac_to_ut"
     scriptname = "reformat_scripts/obs/reformat_obs_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Seconds per year
@@ -121,12 +120,11 @@ function create_timec(y1:integer,
 ;; Modification history
 ;;    20140124-A_righ_ma: written.
 ;;
-local verbosity, funcname, yy, mm
+local funcname, yy, mm
 begin
 
     funcname = "create_timec"
     scriptname = "reformat_scripts/obs/reformat_obs_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     out = new(12 * (y2 - y1 + 1), double)
@@ -165,13 +163,12 @@ procedure write_nc(outfile:string,
 ;; Modification history
 ;;    20140123-A_righ_ma: written.
 ;;
-local verbosity, funcname, w, gAtt, dim_names, ndims, dim_sizes, dim_types, \
+local funcname, w, gAtt, dim_names, ndims, dim_sizes, dim_types, \
     dim_unlim, ii
 begin
 
     funcname = "write_nc"
     scriptname = "reformat_scripts/obs/reformat_obs_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Open file
@@ -249,12 +246,11 @@ procedure write_nc_profile(outfile: string,
 ;; Modification history
 ;;    20140422-A_righ_ma: written.
 ;;
-local verbosity, funcname, w, coords, cc, jj, locname, locvar, cname
+local funcname, w, coords, cc, jj, locname, locvar, cname
 begin
 
     funcname = "write_nc_profile"
     scriptname = "reformat_scripts/obs/reformat_obs_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Open file
@@ -361,7 +357,6 @@ begin
 
     funcname = "process_EBAS_data"
     scriptname = "reformat_scripts/obs/reformat_obs_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; EBAS flags for valid measurements

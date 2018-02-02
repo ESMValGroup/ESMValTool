@@ -110,7 +110,6 @@ load "./plot_scripts/ncl/contour_maps.ncl"
 
 begin
 
-    verbosity  = config_user_info@verbosity
     enter_msg(diag_script, "", 4)
     info_output("++++++++++++++++++++++++++++++++++++++++++")
     info_output(diag_script + " (var: " + variables(0) + ")")
@@ -377,7 +376,7 @@ begin
 ;;DELETE        ;; Do not process data if already processed
 ;;DELETE        if (fileexists(procpath)) then
 ;;DELETE            info_output("No recalculation!")
-;;DELETE            info_output("Reading in file = " + procpath, verbosity, 1)
+;;DELETE            info_output("Reading in file = " + procpath)
 ;;DELETE            if (irank.eq.5) then
 ;;DELETE                var_all(imod, :, :, :, :) = ncdf_read(procpath, var0)
 ;;DELETE            end if

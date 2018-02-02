@@ -54,12 +54,11 @@ function fix_FillValue(var:numeric)
 ;; Modification history
 ;;    20140217-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, result, upper, lower, tol
+local funcname, scriptname, result, upper, lower, tol
 begin
 
     funcname = "fix_FillValue"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     if (var@_FillValue.eq.-1.e34) then
@@ -93,12 +92,11 @@ procedure check_inpath()
 ;; Modification history
 ;;    20130502-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, subdir, ii, pp, len_inpath, last_char
+local funcname, scriptname, subdir, ii, pp, len_inpath, last_char
 begin
 
     funcname = "check_inpath"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Simulation path
@@ -138,12 +136,11 @@ procedure find_messy_version()
 ;;    20130505_A_gott_kl: modified do deal with leading letters.
 ;;    20130502-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, found, ii, fn, f, tmp, jj, temp1
+local funcname, scriptname, found, ii, fn, f, tmp, jj, temp1
 begin
 
     funcname = "find_messy_version"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     found = False
@@ -214,12 +211,11 @@ function get_aerosol_modes()
 ;; Modification history
 ;;    20140915-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity
+local funcname, scriptname
 begin
 
     funcname = "get_aerosol_modes"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Possible modes names
@@ -262,12 +258,11 @@ function get_aerosol_spec()
 ;; Modification history
 ;;    20140929-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity
+local funcname, scriptname
 begin
 
     funcname = "get_aerosol_spec"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Possible aerosol species
@@ -300,12 +295,11 @@ function find_name(var:string)
 ;; Modification history
 ;;    20130502-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, fname, data, std, emac, type, vert, id
+local funcname, scriptname, fname, data, std, emac, type, vert, id
 begin
 
     funcname = "find_name"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     fname = "./reformat_scripts/EMAC/names_EMAC.dat"
@@ -355,12 +349,11 @@ procedure put_vfatmp(var:string,
 ;; Modification history
 ;;    20150324-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, dn, bn, str
+local funcname, scriptname, dn, bn, str
 begin
 
     funcname = "put_vfatmp"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     dn = systemfunc("dirname " + fn)
@@ -397,12 +390,11 @@ function get_vfatmp(var:string,
 ;; Modification history
 ;;    20150324-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, xx, vv, fn, id, dn, bn
+local funcname, scriptname, xx, vv, fn, id, dn, bn
 begin
 
     funcname = "get_vfatmp"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     if (.not.fileexists(VFATMP)) then
@@ -483,13 +475,12 @@ function find_and_read_var(var:string,
 ;;    20150322-A_righ_ma: a few modifications for processing REF-C1.
 ;;    20130502-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, pfn, flist, lvar, not_ave, date, ii, \
+local funcname, scriptname, pfn, flist, lvar, not_ave, date, ii, \
     f, vlist, files, p, l_files, ii, tmp, dtime
 begin
 
     funcname = "find_and_read_var"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Create a local copy
@@ -499,7 +490,7 @@ begin
     pfn = get_vfatmp(lvar, date)
     if (pfn.ne."err") then
         f = addfile(pfn, "r")
-        info_output("Reading " + lvar + " from " + pfn, verbosity, 2)
+        log_debug("Reading " + lvar + " from " + pfn)
         xx = f->$lvar$
         leave_msg(scriptname, funcname, 4)
 ; a_laue_ax+
@@ -723,13 +714,12 @@ function time_mean(var:numeric,
 ;; Modification history
 ;;    20130502-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, rank, date, opt, days, ndays, dd, idx, \
+local funcname, scriptname, rank, date, opt, days, ndays, dd, idx, \
     dum
 begin
 
     funcname = "time_mean"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     rank = dimsizes(getvardims(var))
@@ -852,7 +842,6 @@ end
 ;;#############################################################################
 undef("extract_var")
 if (fileexists(RECIPEFILE)) then
-    verbosity = config_user_info@verbosity
     loadscript(RECIPEFILE)
 end if
 function extract_var(name:string,
@@ -882,7 +871,7 @@ function extract_var(name:string,
 ;;    20130506-A_gott_kl: changes for data already on pressure levels.
 ;;    20130502-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, xx, recog_vert_coords, recog_press, \
+local funcname, scriptname, xx, recog_vert_coords, recog_press, \
     recog_units, l_inst, l_day, l_month, l_4dim, l_zonal, l_vert, l_press, \
     vert_coord, levels, l_press, l_colum, l_surf, ndims, hyam, hybm, aps, \
     vol, pp, tt, area, xt, maxplev, slev, reordxt, caps, ret, xp, xz, xc, \
@@ -891,7 +880,6 @@ begin
 
     funcname = "extract_var"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Read variable
@@ -1112,12 +1100,11 @@ procedure format_coord(var:numeric)
 ;; Modification history
 ;;    20130502-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, rank, ctime, cplev, clat, clon, tmp
+local funcname, scriptname, rank, ctime, cplev, clat, clon, tmp
 begin
 
     funcname = "format_coord"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     rank = dimsizes(dimsizes(var))

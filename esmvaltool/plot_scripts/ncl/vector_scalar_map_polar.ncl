@@ -61,13 +61,11 @@ function vector_scalar_map_polar(wks_in[1],
 ;;    20141016-A_vanu_be: adapted from contour_map_polar.ncl.
 ;;
 local areaplot, datac, datau, datav, funcname, scriptname, sourcec, sourceu, \
-    sourcev, res, loc_res, varnamec, varnameu, varnamev, verbosity, \
-    wks_in
+    sourcev, res, loc_res, varnamec, varnameu, varnamev, wks_in
 begin
 
     funcname = "vector_scalar_map_polar"
     scriptname = "plot_scripts/ncl/vector_scalar_map_polar.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     ;; Get data, either directly or via netCDF file

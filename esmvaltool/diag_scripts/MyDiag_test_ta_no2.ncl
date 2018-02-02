@@ -69,7 +69,6 @@ begin
     ;;# Fetch general parameters, set in namelist_MyDiag.yml,   #
     ;;# passed via environment variables by python code         #
     ;;###########################################################
-    verbosity  = config_user_info@verbosity
     log_debug("<<<<<<<< Entering " + diag_script)
 
     ;; 'diag_script' and 'variables' are fetched from the
@@ -110,7 +109,7 @@ begin
     end if
     ;;if(isatt(variable_info, "MyDiag_title")) then
     ;;    MyParam = variable_info@MyDiag_title
-    ;;    log_debug(" MyParam = " + MyParam, verbosity, 5)
+    ;;    log_debug(" MyParam = " + MyParam)
     ;;else
     ;;    error_msg("f", diag_script, "", "missing variable attribute " + \
     ;;              "'MyDiag_title'")

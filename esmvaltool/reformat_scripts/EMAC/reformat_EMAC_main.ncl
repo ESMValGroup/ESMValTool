@@ -92,7 +92,6 @@ load "./reformat_scripts/EMAC/reformat_EMAC_func.ncl"
 
 begin
 
-    verbosity  = config_user_info@verbosity
     enter_msg(scriptname, "", 2)
 
     info_output("INPATH = " + INPATH)

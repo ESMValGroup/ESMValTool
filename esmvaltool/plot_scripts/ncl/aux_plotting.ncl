@@ -55,12 +55,11 @@ procedure create_legend_lines(labels:string, \
 ;;    20140305-A_righ_ma: modified to plot always as epsi format.
 ;;    20140219-A_fran_fr: written.
 ;;
-local funcname, verbosity, region, temp, outfile, n_suff, wks_legend
+local funcname, region, temp, outfile, n_suff, wks_legend
 begin
 
     funcname = "create_legend_lines"
 
-    verbosity  = config_user_info@verbosity
     log_debug("<<<<<<<< Entering create_legend_lines (xy_line.ncl)")
 
     ;; Flag if RGB or RGBA is used for colors
@@ -199,7 +198,6 @@ function output_type()
 ;;
 local file_type
 begin
-    verbosity  = config_user_info@verbosity
     log_debug("<<<<<<<< Entering output_type (aux_plotting.ncl)")
     file_type = config_user_info@output_file_type
     if(ismissing(file_type)) then
@@ -236,7 +234,6 @@ procedure copy_VarAtt_sel(var1, var2, sel: string)
 ;;
 local atts, i1, i2, n
 begin
-    verbosity  = config_user_info@verbosity
     log_debug("<<<<<<<< Entering copy_VarAtt_sel (aux_plotting.ncl)")
 
     ;; check if var1 has attributes at all 
@@ -297,7 +294,6 @@ begin
 
     funcname = "panelling"
 
-    verbosity  = config_user_info@verbosity
     log_debug("<<<<<<<< Entering panelling (aux_plotting.ncl)")
 
     ;; check if valid wks has been provided
@@ -377,7 +373,6 @@ function get_plot_dir()
 ;;
 local plot_dir
 begin
-    verbosity  = config_user_info@verbosity
     log_debug("<<<<<<<< Entering get_plot_dir (aux_plotting.ncl)")
     plot_dir = config_user_info@plot_dir + "/"
     if(ismissing(plot_dir)) then
@@ -413,7 +408,6 @@ function get_outfile_name(add_specs[1] : string)
 local outfile, file_type, plot_dir, diag_script_base, add_specs, \
     output_dir
 begin
-    verbosity  = config_user_info@verbosity
     log_debug("<<<<<<<< Entering get_outfile_name (aux_plotting.ncl)")
     ;; Collect parts of outfile name
     file_type = output_type()  ; Function in ~/plot_scripts/aux_plotting.ncl
@@ -456,7 +450,6 @@ function get_wks(wks_in,
 ;;
 local wks_in, diag_script, add_specs, file_type
 begin
-    verbosity  = config_user_info@verbosity
     log_debug("<<<<<<<< Entering get_wks (aux_plotting.ncl)")
     ;; check if a valid wks has been provided, otherwise invoke default
     if(typeof(wks_in).ne."graphic") then  ; Use defaults
@@ -504,7 +497,6 @@ procedure add_markers(wks[1] : graphic,
 ;;
 local res, str, atts, iatt, color
 begin
-    verbosity  = config_user_info@verbosity
     log_debug("<<<<<<<< Entering add_markers (aux_plotting.ncl)")
 
     ;; set default plot ressources 
@@ -572,7 +564,6 @@ procedure add_num_markers(wks[1] : graphic,
 ;;
 local xpos, ypos, res, str, atts, iatt, color
 begin
-    verbosity  = config_user_info@verbosity
     log_debug("<<<<<<<< Entering add_markers (aux_plotting.ncl)")
 
     ;; set default plot ressources 
@@ -653,7 +644,6 @@ procedure add_errorbar(wks[1] : graphic,
 ;;
 local xpos, ypos, res, str, atts, iatt, color
 begin
-    verbosity  = config_user_info@verbosity
     log_debug("<<<<<<<< Entering add_markers (aux_plotting.ncl)")
 
     ;; set default plot ressources 
@@ -788,7 +778,6 @@ begin
 
     funcname = "horizontal_whiskers"
 
-    verbosity  = config_user_info@verbosity
     log_debug("<<<<<<<< Entering horizontal_whiskers (aux_plotting.ncl)")
 
     ;; check sizes of input vectors
@@ -886,7 +875,6 @@ procedure add_prediction_error(wks[1] : graphic,
 ;;
 local xpos, ypos, res, str, atts, iatt, color
 begin
-    verbosity  = config_user_info@verbosity
     log_debug("<<<<<<<< Entering add_markers (aux_plotting.ncl)")
 
     ;; set default plot ressources 

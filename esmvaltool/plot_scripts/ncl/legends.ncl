@@ -48,7 +48,6 @@ function legend_lines(wks_in[1], \
 ;;
 local data, defaults, var, diag_script, colors, annots, dashes, thicks  
 begin
-    verbosity  = config_user_info@verbosity
     log_debug("<<<<<<<< Entering legend_lines (legends.ncl)")
 
     ;; Get data, either directly or via netCDF file
@@ -168,7 +167,7 @@ begin
 ;    else
 ;        plot@outfile = wks_legend@name
 ;        log_debug("warning: wks@fullname missing, consider to use " +\
-;                    "get_wks to open wks", verbosity, 5)
+;                    "get_wks to open wks")
 ;    end if
 ;    info_output(" Wrote " + plot@outfile)
     info_output(" Wrote " + wks_legend@fullname)
@@ -210,7 +209,6 @@ function legend_markers(wks_in[1], \
 ;;
 local data, defaults, var, diag_script, colors, annots, dashes, thicks  
 begin
-    verbosity  = config_user_info@verbosity
     log_debug("<<<<<<<< Entering legend_lines (legends.ncl)")
 
     ;; Get data, either directly or via netCDF file

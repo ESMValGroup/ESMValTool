@@ -296,9 +296,8 @@ local aux_filename_info,         blank_plot,          cn,\
     plot,                      plot_array,          plot_ref,                plottype_lbres,\
     ref,                       res,                 rows,\
     storage_record,            total_no_of_pages,   txres,\
-    type_specifier,            var0,                verbosity,               wks
+    type_specifier,            var0,                wks
 begin
-    verbosity  = config_user_info@verbosity
     log_debug("<<<<<<<< Entering precip_domain")
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)

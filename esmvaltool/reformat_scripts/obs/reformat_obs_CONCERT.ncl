@@ -60,7 +60,6 @@ load "./diag_scripts/lib/ncl/statistics.ncl"
 
 begin
 
-    verbosity = config_user_info@verbosity
     diag_script = "reformat_obs_CONCERT.ncl"
     enter_msg(diag_script, "", 1)
 

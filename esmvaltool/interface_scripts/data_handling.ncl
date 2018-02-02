@@ -61,14 +61,13 @@ procedure add_data_var(index[1]:integer,
 ;;
 ;; Modification history
 ;;
-local funcname, scriptname, verbosity, maxDataSize, field_type, ds, rank, \
-    varType, datasize, i, out_file, cn, cnt, dimNames, fout, attNames, fAtt, \
+local funcname, scriptname, maxDataSize, field_type, ds, rank, varType, \
+    datasize, i, out_file, cn, cnt, dimNames, fout, attNames, fAtt, \
     comment, file_atts
 begin
 
     funcname = "add_data_var"
     scriptname = "interface_scripts/data_handling.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 2)
 
     maxDataSize = config_user_info@max_data_filesize
@@ -216,13 +215,12 @@ function get_varName_from_file(filename[1]:string)
 ;;
 ;; Modification history
 ;;
-local funcname, scriptname, verbosity, variable, delimiter, nfields, \
-    shortfile, fil, varNames, i
+local funcname, scriptname, variable, delimiter, nfields, shortfile, fil, \
+    varNames, i
 begin
 
     funcname = "get_varName_from_file"
     scriptname = "interface_scripts/data_handling.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 2)
 
     variable = new(1, string)
@@ -298,14 +296,13 @@ function extract_data_extended(index[1]:integer,
 ;;
 ;; Modification history
 ;;
-local funcname, scriptname, verbosity, cn, cnt, dimNames, rank, inMemo, \
-    dim_id_num, lw_idx, up_idx, dim_val, attNames, dim_val_idx, dim_val_time, \
+local funcname, scriptname, cn, cnt, dimNames, rank, inMemo, dim_id_num, \
+    lw_idx, up_idx, dim_val, attNames, dim_val_idx, dim_val_time, \
     modelfile, variable, temp_data, i, j
 begin
 
     funcname = "extract_data_extended"
     scriptname = "interface_scripts/data_handling.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; 'cn' is the basic building block for the keys used in
@@ -550,12 +547,11 @@ function extract_data(index[1]:integer,
 ;;
 ;; Modification history
 ;;
-local funcname, scriptname, verbosity, data_new
+local funcname, scriptname, data_new
 begin
 
     funcname = "extract_data"
     scriptname = "interface_scripts/data_handling.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     data_new = extract_data_extended(index, "default", data_pointer, dim_id, \
@@ -602,15 +598,14 @@ function extract_data_region(index[1]:integer,
 ;; Modification history
 ;;    20161021-A_righ_ma: written
 ;;
-local funcname, scriptname, verbosity, cn, cnt, dimNames, rank, pos1, pos2, \
-    inMemo, data_lat, data_lon, f_latmin, f_latmax, f_lonmin, f_lonmax, \
-    delta, idx_latmin, idx_latmax, latidx, idx_lonmin, idx_lonmax, lonidx, \
+local funcname, scriptname, cn, cnt, dimNames, rank, pos1, pos2, inMemo, \
+    data_lat, data_lon, f_latmin, f_latmax, f_lonmin, f_lonmax, delta, \
+    idx_latmin, idx_latmax, latidx, idx_lonmin, idx_lonmax, lonidx, \
     modelfile, variable, fm, temp_data, attNames
 begin
 
     funcname = "extract_data_region"
     scriptname = "interface_scripts/data_handling.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 6)
 
     ;; 'cn' is the basic building block for the keys used in
@@ -880,13 +875,12 @@ procedure modify_data(index[1]:integer,
 ;;
 ;; Modification history
 ;;
-local funcname, scriptname, verbosity, cnt, inMemo, modelfile, fout, vNames, \
+local funcname, scriptname, cnt, inMemo, modelfile, fout, vNames, \
     file_atts, fin, variable, delimiter, file_parts, idxLast, tempfile
 begin
 
     funcname = "modify_data"
     scriptname = "interface_scripts/data_handling.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 2)
 
     ;; 'cn' is the basic building block for the keys used in the 'data_pointer'
@@ -1014,14 +1008,13 @@ function read_data(index[1]:integer,
 ;;   20151117-A-laue_ax: changed "in_file" in call to "inquire_and_save_fileinfo"
 ;;                       to "ls_in_file"
 ;;
-local funcname, scriptname, verbosity, attNames, cn, cnt, data, data_new, \
+local funcname, scriptname, attNames, cn, cnt, data, data_new, \
     datasize, dimNames, dimt, fid, field_number, in_file, j, k, maxDataSize, \
-    rank, temp, temp1, var0, varCoords, varType, verbosity, curr_var_idx
+    rank, temp, temp1, var0, varCoords, varType, curr_var_idx
 begin
 
     funcname = "read_data"
     scriptname = "interface_scripts/data_handling.ncl"
-    verbosity = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
     maxDataSize = config_user_info@max_data_filesize
