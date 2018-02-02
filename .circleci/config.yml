@@ -1,7 +1,48 @@
+---
 version: 2
 jobs:
-  test:
-    working_directory: /test
+  test3:
+    # Run Python 3 tests
+    working_directory: /test3
+    docker:
+      - image: continuumio/miniconda
+    steps:
+      - checkout
+      - run:
+          # Add some system packages (mostly since geoval needs them)
+          command: |
+            apt-get update -y && apt-get install -y build-essential
+      - restore_cache:
+          key: deps3-{{ .Branch }}-{{ checksum "environment.yml" }}
+      - run:
+          # Update/Create Conda Environment
+          command: |
+            if ! test -d "/opt/conda/envs/esmvaltool3"; then conda create -y -n esmvaltool3 python=3; fi
+            conda env update --quiet --file environment.yml --name esmvaltool3
+      - save_cache:
+          key: deps3-{{ .Branch }}-{{ checksum "environment.yml" }}
+          paths:
+            - "/opt/conda/envs/esmvaltool3"
+      - run:
+          # Activate Conda environment and run tests
+          command: |
+            source activate esmvaltool3
+            ./setup.py test
+      - store_test_results:
+          path: test-reports/
+      - store_artifacts:
+          path: test-reports/
+      - run:
+          # Upload Python 3 test coverage to codacy, even when the actual
+          # running of the tests fails.
+          when: always
+          command: |
+            pip install codacy-coverage
+            python-codacy-coverage -r test-reports/python3/coverage.xml
+
+  test2:
+    # Run Python 2 tests
+    working_directory: /test2
     docker:
       - image: continuumio/miniconda
     steps:
@@ -16,76 +57,88 @@ jobs:
           # Update/Create Conda Environment
           command: |
             if ! test -d "/opt/conda/envs/esmvaltool2"; then conda create -y -n esmvaltool2 python=2; fi
-            if ! test -d "/opt/conda/envs/esmvaltool3"; then conda create -y -n esmvaltool3 python=3; fi 
             conda env update --quiet --file environment.yml --name esmvaltool2
-            conda env update --quiet --file environment.yml --name esmvaltool3
       - save_cache:
           key: deps2-{{ .Branch }}-{{ checksum "environment.yml" }}
           paths:
             - "/opt/conda/envs/esmvaltool2"
-            - "/opt/conda/envs/esmvaltool3"
       - run:
           # Activate Conda environment and run tests
           command: |
-            source activate esmvaltool3
-            ./setup.py test
+            set +x
             source activate esmvaltool2
             ./setup.py test
-      - store_test_results:
-          path: test-reports/
-      - store_artifacts:
-          path: test-reports/
-      - run:
-          # Upload Python 3 test coverage to codacy, even when the actual
-          # running of the tests fails.
-          when: always
-          command: |
-            pip install codacy-coverage
-            python-codacy-coverage -r test-reports/python3/coverage.xml
 
-  deploy:
-    working_directory: /deploy
+  deploy3:
+    # Test Python 3 deployment
+    working_directory: /deploy3
     docker:
       - image: continuumio/miniconda
     steps:
       - checkout
       - run:
-          # Add some system packages (mostly since geoval needs them)
           command: |
+            set +x
+            # Install
             apt-get update -y && apt-get install -y build-essential
-      - run:
-          # Create Conda Environment
-          command: |
-            conda env update --quiet --file environment.yml --name esmvaltool2
-            conda env update --quiet --file environment.yml --name esmvaltool3
-      - run:
-          # Activate Conda environment and run tests
-          command: |
-            # Test Python 3 environment
-            source activate esmvaltool3
-            ./setup.py install
+            conda create -y -n esmvaltool python=3
+            conda env update --name esmvaltool > logs/conda_update.txt
+            source activate esmvaltool
+            ./setup.py install > logs/install.txt
+            # Log versions
+            dpkg -l > logs/versions_dpkg.txt
+            conda env export > logs/versions_conda.txt
+            pip freeze > logs/versions_pip.txt
+            # Test installation
             esmvaltool -h
             ncl -V
-            # Test Python 2 environment
-            source activate esmvaltool2
-            ./setup.py install
+      - store_artifacts:
+          path: logs
+
+  deploy2:
+    # Test Python 2 deployment
+    working_directory: /deploy2
+    docker:
+      - image: continuumio/miniconda
+    steps:
+      - checkout
+      - run:
+          command: |
+            set +x
+            # Install
+            apt-get update -y && apt-get install -y build-essential
+            conda create -y -n esmvaltool python=2
+            conda env update --name esmvaltool > logs/conda_update.txt
+            source activate esmvaltool
+            ./setup.py install > logs/install.txt
+            # Log versions
+            dpkg -l > logs/versions_dpkg.txt
+            conda env export > logs/versions_conda.txt
+            pip freeze > logs/versions_pip.txt
+            # Test installation
             esmvaltool -h
             ncl -V
+      - store_artifacts:
+          path: logs
+
 
 workflows:
   version: 2
   commit:
     jobs:
-      - test
+      - test3
+      - test2
   nightly:
     triggers:
       - schedule:
-          cron: "30 14 * * *"
+          cron: "10 15 * * *"
           filters:
             branches:
               only:
                 - REFACTORING_backend
                 - REFACTORING_nightly_build
     jobs:
-      - test
-      - deploy
+      - test3
+      - test2
+      - deploy3
+      - deploy2
