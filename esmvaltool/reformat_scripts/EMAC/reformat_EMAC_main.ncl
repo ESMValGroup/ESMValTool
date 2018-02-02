@@ -30,7 +30,7 @@
 ;;#############################################################################
 
 load "interface_scripts/interface.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 
 scriptname = "reformat_scripts/EMAC/reformat_EMAC_main.ncl"
 

@@ -19,7 +19,7 @@
 ;; Contact: K. Gottschaldt (klaus-dirk.gottschaldt@dlr.de)
 
 load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 
 undef("fix_default")
 function fix_default(dataX, switch)

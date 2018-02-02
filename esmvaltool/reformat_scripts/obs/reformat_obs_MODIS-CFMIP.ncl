@@ -60,7 +60,7 @@ begin
 
 end
 
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin

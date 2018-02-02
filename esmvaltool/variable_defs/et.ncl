@@ -1,7 +1,7 @@
 ;
 ; Requires: hfls:T2*s
 ;
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 load "interface_scripts/data_handling.ncl"
 
 variable_info = True

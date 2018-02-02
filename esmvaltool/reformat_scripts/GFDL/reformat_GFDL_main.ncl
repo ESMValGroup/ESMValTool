@@ -27,7 +27,7 @@
 ;;
 ;;#############################################################################
 
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 load "interface_scripts/interface.ncl"
 
 scriptname = "reformat_scripts/EMAC/reformat_GFDL_main.ncl"

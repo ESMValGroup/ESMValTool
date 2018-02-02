@@ -13,7 +13,7 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
 
 load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 
 load "./plot_scripts/ncl/aux_plotting.ncl"
 

@@ -23,7 +23,7 @@
 
 
 load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 
 ;##############################################################################
 undef("create_legend_lines")

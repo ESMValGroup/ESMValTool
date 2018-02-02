@@ -20,7 +20,7 @@
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/constants.ncl"
 load "./interface_scripts/data_handling.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"  ; write_nc
 
 ;;#############################################################################

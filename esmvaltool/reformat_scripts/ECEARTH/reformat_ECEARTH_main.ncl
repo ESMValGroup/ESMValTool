@@ -15,7 +15,7 @@
 ;;#############################################################################
 
 ;; Load Temporary file with current namelist configuration
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 
 scriptname = "reformat_scripts/default/reformat_ECEARTH_main.ncl"
 

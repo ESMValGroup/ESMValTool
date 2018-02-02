@@ -38,7 +38,7 @@
 
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
 
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 load "./diag_scripts/lib/ncl/set_operators.ncl"
 
 ;;#############################################################################
@@ -1585,7 +1585,7 @@ procedure tool_stop()
 ;;
 ;; Caveats
 ;;    This should not be used for the standard exit-on-error. See the function
-;;    error_msg in messaging.ncl instead.
+;;    error_msg in logging.ncl instead.
 ;;
 ;; References
 ;;

@@ -27,7 +27,7 @@
 ;*********************************************************************
 
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
-load "interface_scripts/messaging.ncl"
+load "interface_scripts/logging.ncl"
 load "interface_scripts/auxiliary.ncl"
 
 ;*********************************************************************
@@ -42,7 +42,7 @@ load "reformat_scripts/GO/reformat_GO_func.ncl"
 ;;load "reformat_scripts/default/reformat_default_func.ncl"
 ;;;load "reformat_scripts/original/att_function.ncl"
 ;;load "reformat/ORIGINAL/global_attribute.ncl"
-load "interface_scripts/messaging.ncl"
+load "interface_scripts/logging.ncl"
 
 
 

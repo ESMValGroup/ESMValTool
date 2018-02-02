@@ -20,7 +20,7 @@ MASTER_REFS = "../doc/MASTER_authors-refs-acknow.txt"
 
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
 ;; Warning: no other interface_scripts shall be loaded here, to avoid nested
-;;          loops (since they will try to load messaging.ncl themselves).
+;;          loops (since they will try to load logging.ncl themselves).
 
 ; a_laue_ax+
     gOldVar = ""
@@ -252,7 +252,7 @@ begin
 ; A-laue_ax-
         msg_level = "warning"
     else
-        print("fatal: in error_msg (messaging.ncl), " + \
+        print("fatal: in error_msg (logging.ncl), " + \
               "invalid value for variable type (=" + type + ")")
         status_exit(1)
     end if
@@ -305,7 +305,7 @@ local funcname, scriptname, verbosity
 begin
 
     funcname = "exit_if_missing_atts"
-    scriptname = "interface_scripts/messaging.ncl"
+    scriptname = "interface_scripts/logging.ncl"
     verbosity  = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
@@ -369,7 +369,7 @@ local funcname, scriptname, verbosity, output_refs, hline
 begin
 
     funcname = "write_filelist"
-    scriptname = "interface_scripts/messaging.ncl"
+    scriptname = "interface_scripts/logging.ncl"
     verbosity  = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 
@@ -514,7 +514,7 @@ local funcname, scriptname, verbosity, master_refs, output_refs, \
 begin
 
     funcname = "write_references"
-    scriptname = "interface_scripts/messaging.ncl"
+    scriptname = "interface_scripts/logging.ncl"
     verbosity  = config_user_info@verbosity
     enter_msg(scriptname, funcname, 4)
 

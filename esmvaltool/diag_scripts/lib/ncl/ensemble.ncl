@@ -13,7 +13,7 @@
 
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/data_handling.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 
 load "./diag_scripts/lib/ncl/regridding.ncl"
 load "./diag_scripts/lib/ncl/statistics.ncl"

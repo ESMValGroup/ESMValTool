@@ -17,7 +17,7 @@
 ;;#############################################################################
 
 load "interface_scripts/interface.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 
 ;;#############################################################################
 undef("find_name")

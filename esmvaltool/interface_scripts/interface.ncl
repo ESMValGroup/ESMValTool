@@ -47,7 +47,7 @@ begin
     end if
 end
 
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 
 undef("interface_get_idx_var")
 function interface_get_idx_var(variable)

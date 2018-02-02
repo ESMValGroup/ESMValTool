@@ -2,7 +2,7 @@
 ;  Requires: tauu:TO2Ms,tauv:TO2Ms
 ;
 load "./interface_scripts/data_handling.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 
 variable_info = True
 variable_info@derived = True

@@ -30,7 +30,7 @@
 ;;#############################################################################
 
 load "./reformat_scripts/constants.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 load "interface_scripts/interface.ncl"
 
 begin

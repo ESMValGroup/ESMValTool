@@ -20,7 +20,7 @@
 ;;#############################################################################
 
 load "interface_scripts/interface.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 
 scriptname = "reformat_scripts/default/reformat_default_main.ncl"
 

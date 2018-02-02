@@ -23,7 +23,7 @@ procedure write_header(s_open:string,
 local namelist, version
 begin
     funcname = "write_header"
-    scriptname = "interface_scripts/messaging.ncl"
+    scriptname = "interface_scripts/logging.ncl"
 ;    verbosity  = config_user_info@verbosity
 ;    enter_msg(scriptname, funcname, 4)
 

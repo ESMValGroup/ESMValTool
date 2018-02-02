@@ -13,7 +13,7 @@
 ;#######################################################################
 
 load "./interface_scripts/constants.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 
 undef("legend_lines")  ; *************************************************
 function legend_lines(wks_in[1], \

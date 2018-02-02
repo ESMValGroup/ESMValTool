@@ -20,7 +20,7 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/shea_util.ncl"
 
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/data_handling.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 
 load "./diag_scripts/aux/SAMonsoon/SAMonsoon.ncl"
 exact_panel_position_file = "./diag_scripts/aux/SAMonsoon/exact_panel_positions_precip_world.ncl"

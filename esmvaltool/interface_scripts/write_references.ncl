@@ -2,7 +2,7 @@
 ; This code reads references information from the master file and
 ; writes it to the reference/acknowledgement output file.
 ; This is a stand-alone version of the function "write_references"
-; (interface_scripts/messaging.ncl) called by Python to write the
+; (interface_scripts/logging.ncl) called by Python to write the
 ; reference/acknowledgement output file.
 ;#######################################################################
 

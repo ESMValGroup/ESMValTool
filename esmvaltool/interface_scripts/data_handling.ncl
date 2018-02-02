@@ -15,7 +15,7 @@
 ;;
 ;;#############################################################################
 
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 
 ; a_laue_ax+
 ; global variables to save the names of all files read by "read_data"
