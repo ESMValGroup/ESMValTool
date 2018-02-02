@@ -1,7 +1,7 @@
 version: 2
 jobs:
-  build:
-    working_directory: /esmvaltool
+  test:
+    working_directory: /test
     docker:
       - image: continuumio/miniconda
     steps:
@@ -42,3 +42,50 @@ jobs:
           command: |
             pip install codacy-coverage
             python-codacy-coverage -r test-reports/python3/coverage.xml
+
+  deploy:
+    working_directory: /deploy
+    docker:
+      - image: continuumio/miniconda
+    steps:
+      - checkout
+      - run:
+          # Add some system packages (mostly since geoval needs them)
+          command: |
+            apt-get update -y && apt-get install -y build-essential
+      - run:
+          # Create Conda Environment
+          command: |
+            conda env update --quiet --file environment.yml --name esmvaltool2
+            conda env update --quiet --file environment.yml --name esmvaltool3
+      - run:
+          # Activate Conda environment and run tests
+          command: |
+            # Test Python 3 environment
+            source activate esmvaltool3
+            ./setup.py install
+            esmvaltool -h
+            ncl -V
+            # Test Python 2 environment
+            source activate esmvaltool2
+            ./setup.py install
+            esmvaltool -h
+            ncl -V
+
+workflows:
+  version: 2
+  commit:
+    jobs:
+      - test
+  nightly:
+    triggers:
+      - schedule:
+          cron: "15 10 * * *"
+          filters:
+            branches:
+              only:
+                - REFACTORING_backend
+                - REFACTORING_nightly_build
+    jobs:
+      - test
+      - deploy
