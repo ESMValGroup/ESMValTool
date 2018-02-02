@@ -17,16 +17,18 @@ jobs:
       - run:
           # Update/Create Conda Environment
           command: |
-            if ! test -d "/opt/conda/envs/esmvaltool3"; then conda create -y -n esmvaltool3 python=3; fi
-            conda env update --quiet --file environment.yml --name esmvaltool3
+            if ! test -d "/opt/conda/envs/esmvaltool"; then
+              conda create -y -n esmvaltool python=3
+            fi
+            conda env update --quiet --name esmvaltool
       - save_cache:
           key: deps3-{{ .Branch }}-{{ checksum "environment.yml" }}
           paths:
-            - "/opt/conda/envs/esmvaltool3"
+            - "/opt/conda/envs/esmvaltool"
       - run:
           # Activate Conda environment and run tests
           command: |
-            source activate esmvaltool3
+            source activate esmvaltool
             ./setup.py test
       - store_test_results:
           path: test-reports/
@@ -56,21 +58,22 @@ jobs:
       - run:
           # Update/Create Conda Environment
           command: |
-            if ! test -d "/opt/conda/envs/esmvaltool2"; then conda create -y -n esmvaltool2 python=2; fi
-            conda env update --quiet --file environment.yml --name esmvaltool2
+            if ! test -d "/opt/conda/envs/esmvaltool"; then
+              conda create -y -n esmvaltool python=2
+            fi
+            conda env update --quiet --name esmvaltool
       - save_cache:
           key: deps2-{{ .Branch }}-{{ checksum "environment.yml" }}
           paths:
-            - "/opt/conda/envs/esmvaltool2"
+            - "/opt/conda/envs/esmvaltool"
       - run:
           # Activate Conda environment and run tests
           command: |
-            set +x
-            source activate esmvaltool2
+            source activate esmvaltool
             ./setup.py test
 
   deploy3:
-    # Test Python 3 deployment
+    # Test Python 3 installation
     working_directory: /deploy3
     docker:
       - image: continuumio/miniconda
@@ -98,7 +101,7 @@ jobs:
           path: logs
 
   deploy2:
-    # Test Python 2 deployment
+    # Test Python 2 installation
     working_directory: /deploy2
     docker:
       - image: continuumio/miniconda
