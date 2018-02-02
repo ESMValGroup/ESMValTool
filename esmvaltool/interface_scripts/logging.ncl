@@ -71,13 +71,15 @@ procedure info_output(output_string[*]:string)
 local nn, ii
 begin
 
-    nn = dimsizes(output_string)
-    if (nn.eq.1) then
-        print("INFO    " + output_string)
-    else
-        do ii = 0, nn - 1
-            print("INFO    " + output_string(ii))
-        end do
+    if (any(config_user_info@log_level.eq.(/"info", "debug"/))) then
+        nn = dimsizes(output_string)
+        if (nn.eq.1) then
+            print("INFO    " + output_string)
+        else
+            do ii = 0, nn - 1
+                print("INFO    " + output_string(ii))
+            end do
+        end if
     end if
 
 end
@@ -104,13 +106,15 @@ procedure log_debug(output_string[*]:string)
 local nn, ii
 begin
 
-    nn = dimsizes(output_string)
-    if (nn.eq.1) then
-        print("INFO    " + output_string)
-    else
-        do ii = 0, nn - 1
-            print("INFO    " + output_string(ii))
-        end do
+    if (config_user_info@log_level.eq."debug") then
+        nn = dimsizes(output_string)
+        if (nn.eq.1) then
+            print("DEBUG   " + output_string)
+        else
+            do ii = 0, nn - 1
+                print("DEBUG   " + output_string(ii))
+            end do
+        end if
     end if
 
 end
