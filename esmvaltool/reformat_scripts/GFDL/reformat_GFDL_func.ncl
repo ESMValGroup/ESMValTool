@@ -43,7 +43,7 @@ begin
 
     funcname = "check_inpath"
     scriptname = "reformat_scripts/GFDL/reformat_GFDL_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Simulation path
     if (.not.fileexists(INPATH)) then
@@ -61,7 +61,7 @@ begin
         INPATH = INPATH + "/"
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -91,7 +91,7 @@ begin
 
     funcname = "find_name"
     scriptname = "reformat_scripts/GFDL/reformat_GFDL_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     fname = "./reformat_scripts/GFDL/names_GFDL.dat"
 
@@ -114,7 +114,7 @@ begin
         out@vert = vert(id)
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(out)
 
 end
@@ -146,7 +146,7 @@ begin
 
     funcname = "find_and_read_var"
     scriptname = "reformat_scripts/GFDL/reformat_GFDL_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Define files list
     ;; Naming convention: <REALM>.<YYYYMM>-<YYYYMM>.<VAR>.nc
@@ -192,7 +192,7 @@ begin
     ;; Read and return data
     f = addfiles(flist, "r")
     xx = f[:]->$var$
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(xx)
 
 end
@@ -225,7 +225,7 @@ begin
 
     funcname = "time_mean"
     scriptname = "reformat_scripts/GFDL/reformat_GFDL_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     rank = dimsizes(getvardims(var))
     date = cd_calendar(var&time, 0)
@@ -265,10 +265,10 @@ begin
             ;; Set time coordinate
             out&time = cd_inv_calendar(toint(date(0, 0)), toint(date(0, 1)), \
                                        15, 0, 0, 0, var&time@units, opt)
-            leave_msg(scriptname, funcname, 4)
+            leave_msg(scriptname, funcname)
             return(out)
         else
-            leave_msg(scriptname, funcname, 4)
+            leave_msg(scriptname, funcname)
             return(var)
         end if
     end if
@@ -325,17 +325,17 @@ begin
                                        toint(date(0:ndays - 1, 1)), \
                                        toint(days), dum, dum, dum, \
                                        var&time@units, opt)
-            leave_msg(scriptname, funcname, 4)
+            leave_msg(scriptname, funcname)
             return(out)
         else
-            leave_msg(scriptname, funcname, 4)
+            leave_msg(scriptname, funcname)
             return(var)
         end if
     end if
 
     ;; Instantaneous output case (nothing to do)
     if (mean.eq."I") then
-        leave_msg(scriptname, funcname, 4)
+        leave_msg(scriptname, funcname)
         return(var)
     end if
 
@@ -380,7 +380,7 @@ begin
 
     funcname = "extract_var"
     scriptname = "reformat_scripts/GFDL/reformat_GFDL_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Read variable
     if (name.ne."#RECIP") then  ; GFDL variable
@@ -429,7 +429,7 @@ begin
     end if
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(xt)
 
 end
@@ -456,7 +456,7 @@ begin
 
     funcname = "format_coord"
     scriptname = "reformat_scripts/GFDL/reformat_GFDL_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     rank = dimsizes(dimsizes(var))
 
@@ -561,6 +561,6 @@ begin
         var&lon = clon
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end

@@ -60,7 +60,7 @@ begin
 
     funcname = "check_inpath"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Simulation path
     if (.not. fileexists(INPATH)) then
@@ -75,7 +75,7 @@ begin
     if (str_get_cols(INPATH, -1, -1).ne."/") then
         INPATH = INPATH + "/"
     end if
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -106,7 +106,7 @@ begin
 
     funcname = "find_alt_names"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Create local copy
     locname = name
@@ -135,10 +135,10 @@ begin
         do ii = 0, ncols - 1
             out(ii) = str_squeeze(str_get_field(tmp, ii + 1, ", "))
         end do
-        leave_msg(scriptname, funcname, 4)
+        leave_msg(scriptname, funcname)
         return(out)
     else
-        leave_msg(scriptname, funcname, 4)
+        leave_msg(scriptname, funcname)
         return(locname)
     end if
     return(return_val)
@@ -173,7 +173,7 @@ begin
 
     funcname = "check_var"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Return value initialized to missing
     ret_name = new(1, string)
@@ -193,7 +193,7 @@ begin
         end do
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(ret_name)
 
 end
@@ -223,7 +223,7 @@ begin
 
     funcname = "apply_fixes"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     if (fileexists(FIXFILE)) then
         ret = fixing_func(var, name)
@@ -233,7 +233,7 @@ begin
             fixfile = FIXFILE
         end if
     end if
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -273,7 +273,7 @@ begin
 
     funcname = "read_var"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Lists of files
     files = systemfunc("ls " + INFILE)
@@ -404,7 +404,7 @@ begin
     end do
 
     if (isdefined("outvar")) then
-        leave_msg(scriptname, funcname, 4)
+        leave_msg(scriptname, funcname)
         return(outvar)
     else
         error_msg("f", scriptname, funcname, \
@@ -439,7 +439,7 @@ begin
 
     funcname = "check_rank"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     dims = dimsizes(var)
     rank = dimsizes(dims)
@@ -528,7 +528,7 @@ begin
                   "not consistent with given type (" + FIELD + ")")
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(out)
 
 
@@ -558,7 +558,7 @@ begin
 
     funcname = "find_grid_type"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
     files = systemfunc("ls " + INFILE)
 
     ff = addfile(files(0), "r")
@@ -567,7 +567,7 @@ begin
     altname = check_var(ff, "lat")
     if (ismissing(altname)) then
         out = "rectilinear"
-        leave_msg(scriptname, funcname, 4)
+        leave_msg(scriptname, funcname)
         return(out)
     end if
     lat = ff->$altname$
@@ -577,7 +577,7 @@ begin
     altname = check_var(ff, "lon")
     if (ismissing(altname)) then
         out = "rectilinear"
-        leave_msg(scriptname, funcname, 4)
+        leave_msg(scriptname, funcname)
         return(out)
     end if
     lon = ff->$altname$
@@ -586,14 +586,14 @@ begin
     ;; If lat and lon are 2D arrays, assume irregular grid
     if (dimsizes(dimsizes(lat)).ge.2.and.dimsizes(dimsizes(lon)).ge.2) then
         out = "irregular"
-        leave_msg(scriptname, funcname, 4)
+        leave_msg(scriptname, funcname)
         return(out)
     end if
 
     ;; If lat and lon are 1D arrays, assume rectilinear grid
     if (dimsizes(dimsizes(lat)).ge.1.and.dimsizes(dimsizes(lon)).ge.1) then
         out = "rectilinear"
-        leave_msg(scriptname, funcname, 4)
+        leave_msg(scriptname, funcname)
         return(out)
     end if
 
@@ -625,7 +625,7 @@ begin
 
     funcname = "check_fill"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     if (.not. isatt(var, "_FillValue")) then
         log_info("  No _FillValue found for this variable, " + \
@@ -648,7 +648,7 @@ begin
 
     ;; Set standard ESMVal-tool missing value (1.e20)
     var@_FillValue = FILL
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -677,7 +677,7 @@ begin
 
     funcname = "reformat_time"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Check positioning
     if (pos.ne.0) then
@@ -692,7 +692,7 @@ begin
     ctime = time_attrib(var&time)
     delete(var&time)
     var&time = ctime
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -723,7 +723,7 @@ begin
 
     funcname = "reformat_plev"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     allowed_units = (/"m", "M",\
                       "Pa", "pa", "PA", "Pascals", "pascals", "PASCALS"/)
@@ -778,7 +778,7 @@ begin
     delete(var&plev)
     var&plev = cplev
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -806,7 +806,7 @@ begin
 
     funcname = "reformat_lev"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Assign standard name
     var!pos = "lev"
@@ -850,7 +850,7 @@ begin
     delete(var&lev)
     var&lev = clev
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -878,7 +878,7 @@ begin
 
     funcname = "reformat_basin"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Assign standard name
     var!pos = "basin"
@@ -891,7 +891,7 @@ begin
         var&basin@standard_name = "region"
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -920,7 +920,7 @@ begin
 
     funcname = "reformat_lat"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Assign standard name
     var!pos = "lat"
@@ -963,7 +963,7 @@ begin
     delete(var&lat)
     var&lat = clat
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -995,7 +995,7 @@ begin
 
     funcname = "reformat_lon"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Copy to local var
     cvar = var
@@ -1064,7 +1064,7 @@ begin
     cvar&lon = clon
     out = cvar
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(out)
 
 end
@@ -1094,7 +1094,7 @@ begin
 
     funcname = "reformat_coord"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Create a local copy
     locvar = var
@@ -1170,7 +1170,7 @@ begin
 
     end do
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(locvar)
 
 end
@@ -1199,7 +1199,7 @@ begin
 
     funcname = "add_irregulargrid_info"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Variable dimensions (must be consistent with areacello dimensions)
     vdims = getvardims(var)
@@ -1474,7 +1474,7 @@ begin
     end if
     delete(w)
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -1500,7 +1500,7 @@ begin
 
     funcname = "add_lmask_info"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Variable dimensions (must be consistent with sftlf dimensions)
     vdims = getvardims(var)
@@ -1570,7 +1570,7 @@ begin
         end if
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -1596,7 +1596,7 @@ begin
 
     funcname = "add_omask_info"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Variable dimensions (must be consistent with sftof dimensions)
     vdims = getvardims(var)
@@ -1667,7 +1667,7 @@ begin
 
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -1693,7 +1693,7 @@ begin
 
     funcname = "add_porosity_info"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Variable dimensions (must be consistent with mrsofc dimensions)
     vdims = getvardims(var)
@@ -1763,7 +1763,7 @@ begin
         end if
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -1789,7 +1789,7 @@ begin
 
     funcname = "add_depth_info"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Any of the input files is ok, since depth/depth_bnds are constants
     files = systemfunc("ls " + INFILE)
@@ -1826,7 +1826,7 @@ begin
         end if
     end do
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -1851,7 +1851,7 @@ begin
 
     funcname = "add_regionbasin_info"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Open input file
     files = systemfunc("ls " + INFILE)
@@ -1883,6 +1883,6 @@ begin
     setfileoption(w, "DefineMode", False)
     w->region = (/region/)
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end

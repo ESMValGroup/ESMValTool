@@ -59,7 +59,7 @@ begin
 
     funcname = "contour_map"
     scriptname = "plot_scripts/ncl/contour_maps.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF file
     if(typeof(source) .eq. "string") then
@@ -125,7 +125,7 @@ begin
         log_info(" Wrote " + wks@name)
     end if
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(map)
 
 end
@@ -171,7 +171,7 @@ begin
 
     funcname = "contour_map_polar"
     scriptname = "plot_scripts/ncl/contour_maps.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF file
     if(typeof(source) .eq. "string") then
@@ -264,7 +264,7 @@ begin
         areaplot = gsn_csm_contour_map_polar(wks_in, data, res)
     end if
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(areaplot)
 
 end 
@@ -310,7 +310,7 @@ begin
 
     funcname = "contour_map_ce"
     scriptname = "plot_scripts/ncl/contour_maps.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF
     if (typeof(source).eq."string") then
@@ -375,7 +375,7 @@ begin
         plot = gsn_csm_contour_map_ce(wks_in, data, res)
     end if
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(plot)
 
 end
@@ -407,7 +407,7 @@ begin
 
     funcname = "add_markers_to_map"
     scriptname = "plot_scripts/ncl/contour_maps.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; Check data consistency
     if (dimsizes(lat).ne.dimsizes(lon) .or. \

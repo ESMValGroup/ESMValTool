@@ -48,7 +48,7 @@ begin
 
     funcname = "convert_units"
     scriptname = "diag_scripts/lib/ncl/scaling.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; Define output (copy metadata)
     out = var
@@ -65,19 +65,19 @@ begin
         if (units_to.eq."g/kg") then
             out = out * 1000.
             out@units = units_to
-            leave_msg(scriptname, funcname, 6)
+            leave_msg(scriptname, funcname)
             return(out)
         end if
         if (units_to.eq."ppmv") then
             out = out * 1.e-6
             out@units = units_to
-            leave_msg(scriptname, funcname, 6)
+            leave_msg(scriptname, funcname)
             return(out)
         end if
         if (units_to.eq."ppm9") then
             out = out * 1.e-9
             out@units = units_to
-            leave_msg(scriptname, funcname, 6)
+            leave_msg(scriptname, funcname)
             return(out)
         end if
     end if
@@ -85,7 +85,7 @@ begin
     if (units_from.eq."1e-6") then
         if (any(units_to.eq.(/"ppm", "ppmv", "umol/mol"/))) then
             out@units = units_to
-            leave_msg(scriptname, funcname, 6)
+            leave_msg(scriptname, funcname)
             return(out)
         end if
     end if
@@ -94,18 +94,18 @@ begin
         if (any(units_to.eq.(/"ppm", "ppmv", "umol/mol"/))) then
             out = out * 1.e-3
             out@units = units_to
-            leave_msg(scriptname, funcname, 6)
+            leave_msg(scriptname, funcname)
             return(out)
         end if
         if (any(units_to.eq.(/"ppb", "ppbv", "ppmb", "nmol/mol"/))) then
             out@units = units_to
-            leave_msg(scriptname, funcname, 6)
+            leave_msg(scriptname, funcname)
             return(out)
         end if
         if (any(units_to.eq.(/"ppt", "pptv", "pmol/mol"/))) then
             out = out * 1.e3
             out@units = units_to
-            leave_msg(scriptname, funcname, 6)
+            leave_msg(scriptname, funcname)
             return(out)
         end if
     end if
@@ -114,19 +114,19 @@ begin
         if (any(units_to.eq.(/"ppm", "ppmv", "umol/mol"/))) then
             out = out * 1.e6
             out@units = units_to
-            leave_msg(scriptname, funcname, 6)
+            leave_msg(scriptname, funcname)
             return(out)
         end if
         if (any(units_to.eq.(/"ppb", "ppbv", "nmol/mol"/))) then
             out = out * 1.e9
             out@units = units_to
-            leave_msg(scriptname, funcname, 6)
+            leave_msg(scriptname, funcname)
             return(out)
         end if
         if (any(units_to.eq.(/"ppt", "pptv", "pmol/mol"/))) then
             out = out * 1.e12
             out@units = units_to
-            leave_msg(scriptname, funcname, 6)
+            leave_msg(scriptname, funcname)
             return(out)
         end if
     end if
@@ -135,7 +135,7 @@ begin
         if (any(units_to.eq.(/"ng kg-1", "ng/kg"/))) then
             out = out * 1.e12
             out@units = units_to
-            leave_msg(scriptname, funcname, 6)
+            leave_msg(scriptname, funcname)
             return(out)
         end if
     end if
@@ -144,13 +144,13 @@ begin
         if (any(units_to.eq.(/"PgC y-1", "GtC y-1"/))) then
             out = out * 3600. * 24. * 365 / 1.e12
             out@units = units_to
-            leave_msg(scriptname, funcname, 6)
+            leave_msg(scriptname, funcname)
             return(out)
         end if
         if (any(units_to.eq.(/"mm d-1", "mm/day"/))) then
             out = out * 24 * 3600
             out@units = units_to
-            leave_msg(scriptname, funcname, 6)
+            leave_msg(scriptname, funcname)
             return(out)
         end if
     end if
@@ -159,7 +159,7 @@ begin
         if (any(units_to.eq.(/"PgC", "GtC"/))) then
             out = out * 1000 / 1.e15
             out@units = units_to
-            leave_msg(scriptname, funcname, 6)
+            leave_msg(scriptname, funcname)
             return(out)
         end if
     end if
@@ -168,13 +168,13 @@ begin
         if (any(units_to.eq.(/"PgC/y"/))) then
             out = out * 60 * 60 * 24 * 365 * 1000 * 12. * 1.e-3 / 1.e15
             out@units = units_to
-            leave_msg(scriptname, funcname, 6)
+            leave_msg(scriptname, funcname)
             return(out)
         end if
         if (any(units_to.eq.(/"kg m-2 s-1"/))) then
             out = out * 12. * 1.e-3
             out@units = units_to
-            leave_msg(scriptname, funcname, 6)
+            leave_msg(scriptname, funcname)
             return(out)
         end if
     end if
@@ -183,7 +183,7 @@ begin
         if (units_to.eq."cm-3") then
             out = out * 1.e-6
             out@units = units_to
-            leave_msg(scriptname, funcname, 6)
+            leave_msg(scriptname, funcname)
             return(out)
         end if
     end if
@@ -192,7 +192,7 @@ begin
         if (units_to.eq."cm-3-STP") then
             out = out * 1.e-6
             out@units = units_to
-            leave_msg(scriptname, funcname, 6)
+            leave_msg(scriptname, funcname)
             return(out)
         end if
     end if
@@ -201,7 +201,7 @@ begin
         if (any(units_to.eq.(/"ug m-3", "ug/m3"/))) then
             out = out * 1.e9
             out@units = str_sub_str(units_to, "u", "~F33~m~F21~")
-            leave_msg(scriptname, funcname, 6)
+            leave_msg(scriptname, funcname)
             return(out)
         end if
     end if
@@ -243,7 +243,7 @@ begin
 
     funcname = "scalfac"
     scriptname = "diag_scripts/lib/ncl/scaling.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; consider minus sign for number of digits
     if(abs(min(u)) .gt. 0.1 * max(u)) then
@@ -264,7 +264,7 @@ begin
               max(u) + " ; " + result * min(u) + " < data*" + result + \
               " < " + result * max(u))
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(result)
 
 end
@@ -305,7 +305,7 @@ begin
 
     funcname = "scale_units"
     scriptname = "diag_scripts/lib/ncl/scaling.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     if(.not.all(ismissing(u))) then
         s = scalfac(u, digits)  ; function in scaling.ncl
@@ -383,7 +383,7 @@ begin
 
     log_info(" scalfac=" + s + "  ;  units: " + s@units)
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(s)
 
 end
@@ -418,7 +418,7 @@ begin
 
     funcname = "rescale"
     scriptname = "diag_scripts/lib/ncl/scaling.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     result = u * s
     copy_VarMeta(u, result)
@@ -429,7 +429,7 @@ begin
         result@FuncCode = s@FuncCode
     end if
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(result)
 
 end

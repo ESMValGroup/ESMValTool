@@ -92,7 +92,7 @@ load "./reformat_scripts/EMAC/reformat_EMAC_func.ncl"
 
 begin
 
-    enter_msg(scriptname, "", 2)
+    enter_msg(scriptname, "")
 
     log_info("INPATH = " + INPATH)
 
@@ -226,5 +226,5 @@ begin
         system("rm -f " + VFATMP)
     end if
 
-    leave_msg(scriptname, "", 2)
+    leave_msg(scriptname, "")
 end

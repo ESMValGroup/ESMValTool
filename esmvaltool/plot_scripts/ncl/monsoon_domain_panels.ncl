@@ -97,7 +97,7 @@ begin
 
     funcname = "plot_precip_domain"
     scriptname = "plot_script/ncl/monsoon_domain_panels.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     if (isatt(res, "cnLevels")) then
         delete(res@cnLevels)
@@ -255,7 +255,7 @@ begin
                           debuginfo@description_ycoord)
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -311,7 +311,7 @@ begin
 
     funcname = "precip_domain"
     scriptname = "plot_script/ncl/monsoon_domain_panels.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
@@ -469,6 +469,6 @@ begin
 
     end do  ; curr_page = 0, total_no_of_pages - 1
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end

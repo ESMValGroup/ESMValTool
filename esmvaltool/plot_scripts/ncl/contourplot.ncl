@@ -52,7 +52,7 @@ begin
 
     funcname = "contourplot"
     scriptname = "plot_scripts/ncl/contourplot.ncl"
-    enter_msg(scriptname, funcname, 10)
+    enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF file
     if(typeof(source) .eq. "string") then
@@ -116,7 +116,7 @@ begin
         log_info(" Wrote " + plot@outfile)
     end if
 
-    leave_msg(scriptname, funcname, 10)
+    leave_msg(scriptname, funcname)
     return(plot)
 
 end

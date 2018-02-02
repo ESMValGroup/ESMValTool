@@ -83,7 +83,6 @@ load "./reformat_scripts/obs/reformat_obs_func.ncl"
 begin
 
     diag_script = "reformat_obs_ERA-Interim-surffluxes.ncl"
-    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent(OUTDIR)) then
@@ -376,6 +375,5 @@ begin
     ;; clean
     delete(gAtt)
 
-    leave_msg(diag_script, "", 1)
 
 end

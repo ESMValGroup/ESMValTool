@@ -58,7 +58,7 @@ begin
 
     funcname = "taylor_plot"
     scriptname = "plot_scripts/ncl/taylor_plot.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF file
     if(typeof(source) .eq. "string") then
@@ -443,7 +443,7 @@ begin
     frame(wks)
     taylor@outfile = wks@name
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(taylor)
 
 end

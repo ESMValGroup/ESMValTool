@@ -48,7 +48,7 @@ begin
 
     funcname = "zonalmean_profile"
     scriptname = "plot_scripts/ncl/zonalmean_profile.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF file
     if(typeof(source) .eq. "string") then
@@ -118,6 +118,6 @@ begin
 ;     maximize_output(wks_out, psres)  ; calls draw and frame for you
 ; end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(plot)
 end

@@ -19,7 +19,7 @@ end
 begin
 
     funcname = "derive_var"
-    enter_msg("interface_scripts/derive_var.ncl", funcname, 2)
+    enter_msg("interface_scripts/derive_var.ncl", funcname)
 
     ;; If variable_info@derived = True, a 'calculate' function must be defined
     ;; the variable_defs/var.ncl script
@@ -72,6 +72,6 @@ begin
         end do
     end if
 
-    leave_msg("interface_scripts/derive_var.ncl", funcname, 2)
+    leave_msg("interface_scripts/derive_var.ncl", funcname)
 
 end

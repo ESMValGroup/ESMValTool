@@ -69,7 +69,6 @@ load "./reformat_scripts/obs/reformat_obs_func.ncl"
 begin
 
     diag_script = "reformat_obs_ESRL.ncl"
-    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent(OUTDIR)) then
@@ -194,6 +193,5 @@ begin
 
     end do
 
-    leave_msg(diag_script, "", 1)
 
 end

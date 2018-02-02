@@ -69,7 +69,6 @@ load "./reformat_scripts/obs/reformat_obs_func.ncl"
 begin
 
     diag_script = "reformat_obs_ESACCI-SIC.ncl"
-    enter_msg(diag_script, "", 1)
 
     do iobs = 0, dimsizes(OBSNAME) - 1  ; loop over observation sets
 
@@ -221,6 +220,5 @@ begin
 
     end do  ; iobs
 
-    leave_msg(diag_script, "", 1)
 
 end

@@ -68,7 +68,7 @@ begin
 
     funcname = "add_data_var"
     scriptname = "interface_scripts/data_handling.ncl"
-    enter_msg(scriptname, funcname, 2)
+    enter_msg(scriptname, funcname)
 
     maxDataSize = config_user_info@max_data_filesize
     field_type = derived_field_type
@@ -193,7 +193,7 @@ begin
     delete(file_atts)
     log_debug("added file " + out_file)
 
-    leave_msg(scriptname, funcname, 2)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -221,7 +221,7 @@ begin
 
     funcname = "get_varName_from_file"
     scriptname = "interface_scripts/data_handling.ncl"
-    enter_msg(scriptname, funcname, 2)
+    enter_msg(scriptname, funcname)
 
     variable = new(1, string)
     delimiter = "/"
@@ -242,7 +242,7 @@ begin
                   "dignostic code: " + filename)
     end if
 
-    leave_msg(scriptname, funcname, 2)
+    leave_msg(scriptname, funcname)
     return(variable)
 end
 
@@ -303,7 +303,7 @@ begin
 
     funcname = "extract_data_extended"
     scriptname = "interface_scripts/data_handling.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; 'cn' is the basic building block for the keys used in
     ;; the 'data_pointer' dictionary
@@ -518,7 +518,7 @@ begin
         end do
     end if
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(data_new)
 
 end
@@ -552,12 +552,12 @@ begin
 
     funcname = "extract_data"
     scriptname = "interface_scripts/data_handling.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     data_new = extract_data_extended(index, "default", data_pointer, dim_id, \
                                      lw_limit, up_limit)
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(data_new)
 
 end
@@ -606,7 +606,7 @@ begin
 
     funcname = "extract_data_region"
     scriptname = "interface_scripts/data_handling.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; 'cn' is the basic building block for the keys used in
     ;; the 'data_pointer' dictionary
@@ -830,7 +830,7 @@ begin
                   "invalid rank or position")
     end if
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(data_new)
 
 end
@@ -881,7 +881,7 @@ begin
 
     funcname = "modify_data"
     scriptname = "interface_scripts/data_handling.ncl"
-    enter_msg(scriptname, funcname, 2)
+    enter_msg(scriptname, funcname)
 
     ;; 'cn' is the basic building block for the keys used in the 'data_pointer'
     ;; dictionary
@@ -956,7 +956,7 @@ begin
 
     system("mv " + tempfile + " " + modelfile)
 
-    leave_msg(scriptname, funcname, 2)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -1015,7 +1015,7 @@ begin
 
     funcname = "read_data"
     scriptname = "interface_scripts/data_handling.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     maxDataSize = config_user_info@max_data_filesize
 
@@ -1177,7 +1177,7 @@ begin
     delete(dimNames)
     delete(fid)
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(data_new)
 
 end

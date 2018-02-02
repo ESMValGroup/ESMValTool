@@ -66,7 +66,7 @@ begin
 
     funcname = "vector_scalar_map_polar"
     scriptname = "plot_scripts/ncl/vector_scalar_map_polar.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF file
     if(typeof(sourceu) .eq. "string") then
@@ -133,7 +133,7 @@ begin
     end if
     log_info(" Wrote " + outfile)
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(areaplot)
 
 end

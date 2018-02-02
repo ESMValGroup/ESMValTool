@@ -171,7 +171,6 @@ load "./reformat_scripts/obs/reformat_obs_func.ncl"
 begin
 
     diag_script = "reformat_obs_OAFlux.ncl"
-    enter_msg(diag_script, "", 1)
 
     ;; Variable
     ;;   hl - Surface latent heat flux (hfls)
@@ -354,6 +353,5 @@ begin
 
     end do
 
-    leave_msg(diag_script, "", 1)
 
 end

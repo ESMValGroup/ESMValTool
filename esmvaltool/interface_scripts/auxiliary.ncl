@@ -68,7 +68,7 @@ begin
 
     funcname = "copy_VarCoords_l1"
     scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     dims_from = getvardims(var_from)
     rank_from = dimsizes(dims_from)
@@ -105,7 +105,7 @@ begin
 
     end if
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -137,7 +137,7 @@ begin
 
     funcname = "check_min_max_models"
     scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     if (no_models .lt. min_no_models) then
         error_msg("f", scriptname, funcname,\
@@ -152,7 +152,7 @@ begin
     end if
     end if
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -182,7 +182,7 @@ begin
 
     funcname = "tstep"
     scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; extract vectors
     y = toint(utc(:, 0))
@@ -257,7 +257,7 @@ begin
                   "consistent with " + result)
     end if
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(result)
 
 end
@@ -289,7 +289,7 @@ begin
 
     funcname = "ncdf_varname"
     scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; Attributes names to check for, ordered by increasing priority
     target_atts = (/"long_name", "var_long_name", \
@@ -305,7 +305,7 @@ begin
         end if
     end do
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(result)
 
 end
@@ -335,7 +335,7 @@ begin
 
     funcname = "get_work_dir"
     scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname, 10)
+    enter_msg(scriptname, funcname)
 
     curr_work_dir = config_user_info@work_dir
 		system("mkdir -p " + curr_work_dir)
@@ -345,7 +345,7 @@ begin
         curr_work_dir = curr_work_dir + "/"
     end if
 
-    leave_msg(scriptname, funcname, 10)
+    leave_msg(scriptname, funcname)
     return(curr_work_dir)
 
 end
@@ -374,7 +374,7 @@ begin
 
     funcname = "get_ncdf_name"
     scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname, 10)
+    enter_msg(scriptname, funcname)
 
     ;; Collect parts of outfile name
     work_dir = get_work_dir()
@@ -382,7 +382,7 @@ begin
     ;; Assemble final name
     outfile = work_dir + var + ".nc"
 
-    leave_msg(scriptname, funcname, 10)
+    leave_msg(scriptname, funcname)
     return(outfile)
 
 end
@@ -415,14 +415,14 @@ begin
 
     funcname = "get_ncdf_dir"
     scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname, 10)
+    enter_msg(scriptname, funcname)
 
     ncdf_dir = work_dir + subfolder + "/"
     if (.not. fileexists(ncdf_dir)) then
         system("mkdir -p " + ncdf_dir)
     end if
 
-    leave_msg(scriptname, funcname, 10)
+    leave_msg(scriptname, funcname)
     return(ncdf_dir)
 
 end
@@ -471,7 +471,7 @@ begin
 
     funcname = "ncdf_read"
     scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname, 10)
+    enter_msg(scriptname, funcname)
 
     ;; Open file for reading
     if (fileexists(infile)) then
@@ -542,7 +542,7 @@ begin
         delete(new_coord)
     end do
 
-    leave_msg(scriptname, funcname, 10)
+    leave_msg(scriptname, funcname)
     return(data)
 
 end
@@ -593,7 +593,7 @@ begin
 
     funcname = "ncdf_write"
     scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname, 10)
+    enter_msg(scriptname, funcname)
 
     ;; Retrieve special attributes
     varname = att2var(data, "var")
@@ -653,7 +653,7 @@ begin
 
     log_info("Wrote variable " + varname + " to " + outfile)
 
-    leave_msg(scriptname, funcname, 10)
+    leave_msg(scriptname, funcname)
     return(outfile)
 
 end
@@ -687,7 +687,7 @@ begin
 
     funcname = "ncdf_att"
     scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname, 10)
+    enter_msg(scriptname, funcname)
 
     if (typeof(infile).eq."string") then
         f = addfile(infile, "r")
@@ -710,7 +710,7 @@ begin
         result = "missing"
     end if
 
-    leave_msg(scriptname, funcname, 10)
+    leave_msg(scriptname, funcname)
     return(result)
 
 end
@@ -743,7 +743,7 @@ begin
 
     funcname = "ncdf_define"
     scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname, 10)
+    enter_msg(scriptname, funcname)
 
     diag_script = att2var(data, "diag_script")
     var = att2var(data, "var")
@@ -826,7 +826,7 @@ begin
     ;; Explicitly exit file definition mode. **NOT REQUIRED**
     setfileoption(ncdf, "DefineMode", False)
 
-    leave_msg(scriptname, funcname, 10)
+    leave_msg(scriptname, funcname)
     return(ncdf)
 
 end
@@ -867,7 +867,7 @@ begin
 
     funcname = "att2var_default"
     scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname, 10)
+    enter_msg(scriptname, funcname)
 
     result = att2var(data, meta)
     if(dimsizes(result).eq.1) then
@@ -878,7 +878,7 @@ begin
         end if
     end if
 
-    leave_msg(scriptname, funcname, 10)
+    leave_msg(scriptname, funcname)
     return(result)
 
 end
@@ -917,7 +917,7 @@ begin
 
     funcname = "att2var"
     scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname, 10)
+    enter_msg(scriptname, funcname)
 
     ;; Attribute "var"
     if (meta .eq. "var")
@@ -978,7 +978,7 @@ begin
     end if
     end if
 
-    leave_msg(scriptname, funcname, 10)
+    leave_msg(scriptname, funcname)
     return(result)
 
 end
@@ -1008,7 +1008,7 @@ begin
 
     funcname = "bname"
     scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname, 10)
+    enter_msg(scriptname, funcname)
 
     b = a
     do i = 0, dimsizes(a) - 1
@@ -1018,7 +1018,7 @@ begin
         delete(rm_suffix)
     end do
 
-    leave_msg(scriptname, funcname, 10)
+    leave_msg(scriptname, funcname)
     return(b)
 
 end
@@ -1049,13 +1049,13 @@ begin
 
     funcname = "PRIORITY"
     scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname, 10)
+    enter_msg(scriptname, funcname)
 
     valid_types = (/"integer", "float", "double", "string"/)
     if (.not. any(typeof(a) .eq. valid_types)) then
         error_msg("w", scriptname, funcname, "input is not the " + \
                   "correct type")
-        leave_msg(scriptname, funcname, 10)
+        leave_msg(scriptname, funcname)
         return(new(1, float))    ; Return missing
     else
         if (typeof(a) .eq. "string") then  ; String
@@ -1079,7 +1079,7 @@ begin
         u = u(idx)  ; Sort u accordingly
     end if
 
-    leave_msg(scriptname, funcname, 10)
+    leave_msg(scriptname, funcname)
     return(u)
 
 end
@@ -1111,14 +1111,14 @@ begin
 
     funcname = "get_output_dir"
     scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname, 10)
+    enter_msg(scriptname, funcname)
 
     output_dir = plot_dir + "/" + subfolder + "/"
     if (.not. fileexists(output_dir)) then
         system("mkdir -p " + output_dir)
     end if
 
-    leave_msg(scriptname, funcname, 10)
+    leave_msg(scriptname, funcname)
     return(output_dir)
 
 end
@@ -1148,12 +1148,12 @@ begin
 
     funcname = "basename"
     scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname, 10)
+    enter_msg(scriptname, funcname)
 
     suffix = get_file_suffix(name, 0)
     bsn = str_sub_str(name, suffix, "")
 
-    leave_msg(scriptname, funcname, 10)
+    leave_msg(scriptname, funcname)
     return(bsn)
 
 end
@@ -1181,7 +1181,7 @@ begin
 
     funcname = "extract_years"
     scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname, 10)
+    enter_msg(scriptname, funcname)
 
     ds = dimsizes(data)
     rank = dimsizes(ds)
@@ -1202,7 +1202,7 @@ begin
         data_new = data(idx_t, :, :, :)
     end if
 
-    leave_msg(scriptname, funcname, 10)
+    leave_msg(scriptname, funcname)
     return(data_new)
 
 end
@@ -1237,7 +1237,7 @@ begin
 
     funcname = "extend_var_at"
     scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname, 10)
+    enter_msg(scriptname, funcname)
 
     var_dim = dimsizes(var)
     var_dim_plus = var_dim
@@ -1305,7 +1305,7 @@ begin
     end if
     end if
 
-    leave_msg(scriptname, funcname, 10)
+    leave_msg(scriptname, funcname)
     return(var_new)
 
 end
@@ -1340,7 +1340,7 @@ begin
 
     funcname = "copy_CoordNames_n"
     scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname, 10)
+    enter_msg(scriptname, funcname)
 
     rank = dimsizes(dimsizes(var_from))
 
@@ -1359,7 +1359,7 @@ begin
         end do
     end if
 
-    leave_msg(scriptname, funcname, 10)
+    leave_msg(scriptname, funcname)
     return(var_to)
 
 end
@@ -1389,14 +1389,14 @@ begin
 
     funcname = "empty_str"
     scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname, 10)
+    enter_msg(scriptname, funcname)
 
     str = " "
     do ii = 1, nn - 1
         str = str + " "
     end do
 
-    leave_msg(scriptname, funcname, 10)
+    leave_msg(scriptname, funcname)
     return(str)
 
 end
@@ -1426,7 +1426,7 @@ begin
 
     funcname = "write_info"
     scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname, 8)
+    enter_msg(scriptname, funcname)
 
     infobox = ""
     infobox = infobox + "~F22~DEBUG INFO:~F21~ ~C~"
@@ -1441,7 +1441,7 @@ begin
         infobox = infobox + info_tag + ": " + display@$info_tag$ + "~C~"
     end do
 
-    leave_msg(scriptname, funcname, 8)
+    leave_msg(scriptname, funcname)
     return(infobox)
 
 end
@@ -1471,7 +1471,7 @@ begin
 
     funcname = "remove_index"
     scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     dsize = dimsizes(array)
     rank = dimsizes(dsize)
@@ -1502,7 +1502,7 @@ begin
                   "rank greater than 5 not supported")
     end if
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(out)
 
 end
@@ -1533,13 +1533,13 @@ begin
 
     funcname = "set_default_att"
     scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     if (.not.isatt(info, att)) then
         info@$att$ = default
     end if
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -1593,7 +1593,7 @@ begin
 
     funcname = "filter_attrs"
     scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     source_attrs = getvaratts(source)
     do att_idx = 0, dimsizes(source_attrs) - 1
@@ -1604,7 +1604,7 @@ begin
         end if
     end do
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(target)
 
 end
@@ -1632,7 +1632,7 @@ begin
 
     funcname = "write_ignore_warnings"
     scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     if (fileexists(warn_file_str)) then
         system("rm -f " + warn_file_str)
@@ -1641,7 +1641,7 @@ begin
         system("echo " + warnings(idx_warn) + " >> " + warn_file_str)
     end do
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -1669,7 +1669,7 @@ local funcname, scriptname, idx_single_ref
 begin
     funcname = "get_single_ref"
     scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     idx_single_ref = ind(model_attr_id .eq. model_refs)
     if (all(ismissing(idx_single_ref))) then
@@ -1692,7 +1692,7 @@ begin
         delete(idx_single_ref_tmp)
     end if
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return idx_single_ref
 end
 
@@ -1722,7 +1722,7 @@ begin
 
     funcname = "get_ref_model_idx"
     scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     nrefs = dimsizes(model_ref_name)
 
@@ -1735,7 +1735,7 @@ begin
         end if
     end do
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(idx_ref)
 
 end

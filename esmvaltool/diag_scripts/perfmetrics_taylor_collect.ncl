@@ -39,7 +39,7 @@ load "./plot_scripts/ncl/taylor_plot.ncl"
 
 begin
 
-    enter_msg(diag_script, "", 4)
+    enter_msg(diag_script, "")
     diag_script_base = basename(diag_script)
 
     ;; Check file type
@@ -138,6 +138,6 @@ begin
     ;; Remove temporary Taylor list
     system("rm -f " + temp_dir)
 
-    leave_msg(diag_script, "", 4)
+    leave_msg(diag_script, "")
 
 end

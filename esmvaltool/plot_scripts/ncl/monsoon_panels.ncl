@@ -71,7 +71,7 @@ begin
 
     funcname = "get_title_suffix"
     scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     if (isatt(plot_settings, "main_title_suffix")) then
         main_title_suffix = plot_settings@main_title_suffix
@@ -79,7 +79,7 @@ begin
         main_title_suffix = ""
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(main_title_suffix)
 
 end
@@ -110,7 +110,7 @@ begin
 
     funcname = "remove_attrs"
     scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     do idx = 0, dimsizes(attributes) - 1
         if (isatt(p_settings, attributes(idx))) then
@@ -118,7 +118,7 @@ begin
         end if
     end do
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -168,7 +168,7 @@ begin
 
     funcname = "plot_two_by_one"
     scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     res = panel_three_by_one(res, 0)  ; Update resource for first plot
     res@cnLevelSelectionMode = "ExplicitLevels"
@@ -270,7 +270,7 @@ begin
                           debuginfo@description_ycoord)
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -322,7 +322,7 @@ begin
     
     funcname = "plot_three_by_one_diff"
     scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     res = panel_three_by_one(res, 0)  ; Update resource for first plot
     res@cnLevelSelectionMode = "ExplicitLevels"
@@ -470,7 +470,7 @@ begin
                           debuginfo@description_ycoord)
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -522,7 +522,7 @@ begin
 
     funcname = "two_by_one"
     scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
@@ -617,7 +617,7 @@ begin
 
     end do  ; idx_mod = 0, dim_MOD - 1
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -667,7 +667,7 @@ begin
 
     funcname = "three_by_one_diff"
     scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
@@ -770,7 +770,7 @@ begin
 
     end do  ; idx_mod = 0, dim_MOD - 1
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -830,7 +830,7 @@ begin
 
     funcname = "plot_three_by_one_vector"
     scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     res = panel_three_by_one(res, 0)  ; Update resource for first plot
     res@cnLevelSelectionMode = "ExplicitLevels"
@@ -1005,7 +1005,7 @@ begin
                           debuginfo@description_ycoord)
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -1055,7 +1055,7 @@ begin
 
     funcname = "three_by_one_vector"
     scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
@@ -1156,7 +1156,7 @@ begin
         end if
     end do  ; idx_mod = start_idx, dim_MOD - 1
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -1226,7 +1226,7 @@ begin
 
     funcname = "plot_multipanel"
     scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Update position, labelbar and title
     curr_figure_pos = figure_panel_placement(curr_idx)
@@ -1407,7 +1407,7 @@ begin
                           debuginfo@description_ycoord)
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -1463,7 +1463,7 @@ begin
 
     funcname = "multipanel"
     scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ; No of models may differ from dimsizes(dim_MOD) if variables
     ; from different models are combined (e.g., 'ts' from HadISST
@@ -1635,7 +1635,7 @@ begin
         end if
     end do  ; curr_fig = 1, figures_per_page(curr_page) - 1
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -1708,7 +1708,7 @@ begin
 
     funcname = "plot_multipanel_vector"
     scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Update position, labelbar and title
     curr_figure_pos = figure_panel_placement(curr_idx)
@@ -1937,7 +1937,7 @@ begin
                           debuginfo@description_ycoord)
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -1995,7 +1995,7 @@ begin
 
     funcname = "multipanel_vector"
     scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
 
     dim_MOD = dimsizes(models@name)
@@ -2162,7 +2162,7 @@ begin
         end if
     end do
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -2207,7 +2207,7 @@ begin
 
     funcname = "seasonal_plot"
     scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
@@ -2360,7 +2360,7 @@ begin
     end if
     frame(wks)
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -2405,7 +2405,7 @@ begin
 
     funcname = "xy_plot_wrapper"
     scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
@@ -2552,7 +2552,7 @@ begin
         xy_line(wks_debug, values, values&month, values_stddev, res, debuginfo)
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -2595,7 +2595,7 @@ begin
 
     funcname = "ts_line_wrapper"
     scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
@@ -2713,7 +2713,7 @@ begin
         xy_line(wks_debug, values, di@years, values_stddev, res, debuginfo)
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -2736,7 +2736,7 @@ begin
 
     funcname = "xy_line_overlap"
     scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
@@ -3084,6 +3084,6 @@ begin
     draw(plot(0))
     frame(wks)
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end

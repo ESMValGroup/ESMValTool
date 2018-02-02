@@ -55,7 +55,6 @@ load "./reformat_scripts/obs/reformat_obs_func.ncl"
 begin
 
     diag_script = "reformat_obs_Dong08.ncl"
-    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.fileexists(OUTDIR)) then
@@ -141,6 +140,5 @@ begin
     log_info("Done, output in " + fout)
     delete([/fout, indata, mlotst, mlotst_sw, time, lat, lon/])
 
-    leave_msg(diag_script, "", 1)
 
 end

@@ -76,7 +76,7 @@ begin
 
     funcname = "profile_plev"
     scriptname = "plot_scripts/ncl/xy_line.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Set hardcoded parameters
     border = 0.04  ; factor to extent y- & x-range (except @ top)
@@ -492,7 +492,7 @@ begin
         log_info(" Wrote " + plot@outfile)
     end if
 
-    leave_msg(scriptname, funcname, 5)
+    leave_msg(scriptname, funcname)
     return(plot)
 
 end
@@ -542,7 +542,7 @@ begin
 
     funcname = "aerosol_profile"
     scriptname = "plot_scripts/ncl/xy_line.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Get model data, either directly or via netCDF file
     if(typeof(source_m) .eq. "string") then
@@ -1014,7 +1014,7 @@ begin
     end do
 
     frame(wks)
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(plot)
 
 end
@@ -1061,7 +1061,7 @@ begin
 
     funcname = "aerosol_sizedist"
     scriptname = "plot_scripts/ncl/xy_line.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Get model data, either directly or via netCDF file
     if(typeof(source_m) .eq. "string") then
@@ -1505,7 +1505,7 @@ begin
     end do
 
     frame(wks)
-    leave_msg(scriptname, funcname, 5)
+    leave_msg(scriptname, funcname)
     return(plot)
 
 end
@@ -1551,7 +1551,7 @@ begin
 
     funcname = "xy_line"
     scriptname = "plot_scripts/ncl/xy_line.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Select colors and other plotting attributes
     ;; (see ./diag_scripts/lib/ncl/style.ncl)
@@ -1794,7 +1794,7 @@ begin
         outfile = wks@name
     end if
     log_info(" Wrote " + outfile)
-    leave_msg(scriptname, funcname, 5)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -1837,7 +1837,7 @@ begin
 
     funcname = "timeseries_station"
     scriptname = "plot_scripts/ncl/xy_line.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF file
     if(typeof(source) .eq. "string") then
@@ -1957,7 +1957,7 @@ begin
         end if
     end if
 
-    leave_msg(scriptname, funcname, 5)
+    leave_msg(scriptname, funcname)
     return(plot)
 
 end
@@ -1998,7 +1998,7 @@ begin
 
     funcname = "cycle_plot"
     scriptname = "plot_scripts/ncl/xy_line.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF file
     if(typeof(source) .eq. "string") then
@@ -2172,7 +2172,7 @@ begin
 
     end if
 
-    leave_msg(scriptname, funcname, 5)
+    leave_msg(scriptname, funcname)
     return(plot)
 
 end
@@ -2211,7 +2211,7 @@ begin
 
     funcname = "errorbar_plot"
     scriptname = "plot_scripts/ncl/xy_line.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF file
     if(typeof(source) .eq. "string") then
@@ -2282,7 +2282,7 @@ begin
         plot@$str$ = error_bar(imod)
     end do
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(plot)
 
 end

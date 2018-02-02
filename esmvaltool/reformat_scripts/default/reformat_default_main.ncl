@@ -82,7 +82,7 @@ load "./reformat_scripts/default/reformat_default_func.ncl"
 
 begin
 
-    enter_msg(scriptname, "", 2)
+    enter_msg(scriptname, "")
 
     log_info("INFILE = " + INFILE)
 
@@ -161,6 +161,6 @@ begin
     delete(VARPROC)
     log_info("OUTFILE = " + OUTFILE)
 
-    leave_msg(scriptname, "", 2)
+    leave_msg(scriptname, "")
 
 end

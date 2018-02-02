@@ -60,7 +60,7 @@ begin
 
     funcname = "scatterplot"
     scriptname = "plot_scripts/ncl/scatterplot.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF
     if (typeof(source).eq."string") then
@@ -255,7 +255,7 @@ begin
 
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(plot)
 
 end
@@ -301,7 +301,7 @@ begin
 
     funcname = "scatterplot3D"
     scriptname = "plot_scripts/ncl/scatterplot.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF
     if (typeof(source).eq."string") then
@@ -434,7 +434,7 @@ begin
     resA@amParallelPosF     =  0.65
     annoid = gsn_add_annotation(plot, lbid, resA)
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(plot)
 
 end
@@ -476,7 +476,7 @@ begin
 
     funcname = "scatterplot_markers"
     scriptname = "plot_scripts/ncl/scatterplot.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF
     if (typeof(source).eq."string") then
@@ -563,7 +563,7 @@ begin
 
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(plot)
 
 end

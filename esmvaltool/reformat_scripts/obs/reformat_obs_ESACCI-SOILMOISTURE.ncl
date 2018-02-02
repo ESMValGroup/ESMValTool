@@ -62,7 +62,6 @@ load "./reformat_scripts/obs/reformat_obs_func.ncl"
 begin
 
     diag_script = "reformat_obs_ESACCI-SOILMOISTURE.ncl"
-    enter_msg(diag_script, "", 1)
 
     dayspermonth = (/31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31/)
 
@@ -380,6 +379,5 @@ begin
 
     end do
 
-    leave_msg(diag_script, "", 1)
 
 end

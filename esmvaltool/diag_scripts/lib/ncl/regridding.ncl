@@ -71,7 +71,7 @@ begin
 
     funcname = "find_destination_grid"
     scriptname = "diag_scripts/lib/ncl/regridding.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; Check
     if (opt.ne."coarsest" .and. opt.ne."finest") then
@@ -244,7 +244,7 @@ begin
         grid@gridlon_mID = modelID_lon
     end if
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(grid)
 
 end
@@ -270,7 +270,7 @@ begin
 
     funcname = "guestimate_average_grid_area"
     scriptname = "diag_scripts/lib/ncl/regridding.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     dimsize_lat = dimsizes(data&lat)
     average_lat = abs(avg(data&lat(1:dimsize_lat - 1) - \
@@ -289,7 +289,7 @@ begin
         average_cell = average_lat * average_plev
     end if
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(average_cell)
 
 end
@@ -315,7 +315,7 @@ begin
 
     funcname = "get_lower_limits"
     scriptname = "diag_scripts/lib/ncl/regridding.ncl"
-    enter_msg(scriptname, funcname, 8)
+    enter_msg(scriptname, funcname)
 
     d_size = dimsizes(coordinate)
     delta_sizes = abs((coordinate(1:d_size - 1) - \
@@ -324,7 +324,7 @@ begin
     lower_limits(1:d_size - 1) = coordinate(1:d_size - 1) - delta_sizes
     lower_limits(0) = coordinate(0) - delta_sizes(0)
 
-    leave_msg(scriptname, funcname, 8)
+    leave_msg(scriptname, funcname)
     return(lower_limits)
 
 end
@@ -350,7 +350,7 @@ begin
 
     funcname = "get_upper_limits"
     scriptname = "diag_scripts/lib/ncl/regridding.ncl"
-    enter_msg(scriptname, funcname, 8)
+    enter_msg(scriptname, funcname)
 
     d_size = dimsizes(coordinate)
     delta_sizes = abs((coordinate(1:d_size - 1) - \
@@ -359,7 +359,7 @@ begin
     upper_limits(0:d_size - 2) = coordinate(0:d_size - 2) + delta_sizes
     upper_limits(d_size - 1) = coordinate(d_size - 1) + delta_sizes(d_size - 2)
 
-    leave_msg(scriptname, funcname, 8)
+    leave_msg(scriptname, funcname)
     return(upper_limits)
 
 end
@@ -390,7 +390,7 @@ begin
 
     funcname = "is_regional"
     scriptname = "diag_scripts/lib/ncl/regridding.ncl"
-    enter_msg(scriptname, funcname, 8)
+    enter_msg(scriptname, funcname)
 
     lat = grid&lat
     lon = grid&lon
@@ -406,7 +406,7 @@ begin
         regional_area = True
     end if
 
-    leave_msg(scriptname, funcname, 8)
+    leave_msg(scriptname, funcname)
     return(regional_area)
 
 end
@@ -439,7 +439,7 @@ begin
 
     funcname = "esmf_conserve_wrapper"
     scriptname = "diag_scripts/lib/ncl/regridding.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     Opt                    = True
     Opt@SrcGridLat         = source&lat
@@ -482,7 +482,7 @@ begin
 
     data_regrid = ESMF_regrid(source, Opt)
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(data_regrid)
 
 end
@@ -512,11 +512,11 @@ begin
 
     funcname = "rect2rect_interp"
     scriptname = "diag_scripts/lib/ncl/regridding.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     interpolated = esmf_conserve_wrapper(source, target)
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(interpolated)
 
 end
@@ -544,12 +544,12 @@ begin
 
     funcname = "plev_lat_interp"
     scriptname = "diag_scripts/lib/ncl/regridding.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     interpolated = linint2(source&lat, source&plev, source, \
                            False, target&lat, target&plev, 0)
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(interpolated)
 
 end
@@ -579,7 +579,7 @@ begin
 
     funcname = "get_model_minus_ref"
     scriptname = "diag_scripts/lib/ncl/regridding.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     is_plev = any(isdim(model, "plev"))
     model_grid_size = guestimate_average_grid_area(model)
@@ -614,7 +614,7 @@ begin
               ", ref" + dimref)
     difference = local_model - local_ref
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(difference)
 
 end
@@ -650,7 +650,7 @@ begin
 
     funcname = "esmf_conserve_wrapper_time"
     scriptname = "diag_scripts/lib/ncl/regridding.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     Opt                    = True
     Opt@SrcGridLat         = source&lat
@@ -714,7 +714,7 @@ begin
     end do
     copy_VarCoords_2(source, source_regrid)
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(source_regrid)
 
 end
@@ -764,7 +764,7 @@ begin
 
     funcname = "regrid_3D_to_rectilinear_grid"
     scriptname = "diag_scripts/lib/ncl/regridding.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; Workdir
     workpath = config_user_info@work_dir
@@ -874,7 +874,7 @@ begin
            wgtFile + " " + \
            "PET0.RegridWeightGen.Log")
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(data_out)
 
 end

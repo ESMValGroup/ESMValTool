@@ -45,7 +45,7 @@ begin
 
     funcname = "get_start_year"
     scriptname = "diag_scripts/lib/ncl/ensemble.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     if (.not.isatt(diag_script_info, "range_option")) then
         error_msg("f", "ensemble.ncl", funcname, "diag_script_info must " + \
@@ -61,7 +61,7 @@ begin
     end if
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(start_year)
 
 end
@@ -93,7 +93,7 @@ begin
 
     funcname = "get_end_year"
     scriptname = "diag_scripts/lib/ncl/ensemble.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     if (.not.isatt(diag_script_info, "range_option")) then
         error_msg("f", "ensemble.ncl", funcname, "diag_script_info must " + \
@@ -109,7 +109,7 @@ begin
     end if
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(end_year)
 
 end
@@ -171,7 +171,7 @@ begin
 
     funcname = "multi_model_stats"
     scriptname = "diag_scripts/lib/ncl/ensemble.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; determine destination grid (regridding.ncl)
     field_type = str_get_cols(field, 0, 1)
@@ -379,7 +379,7 @@ begin
 ;;     print("wrote "+outfile)
 ;; DEBUG---
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(result)
 
 end

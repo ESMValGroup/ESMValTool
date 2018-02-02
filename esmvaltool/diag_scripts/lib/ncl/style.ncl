@@ -52,7 +52,7 @@ begin
 
     funcname = "unique_labels_min"
     scriptname = "diag_scripts/lib/ncl/style.ncl"
-    enter_msg(scriptname, funcname, 10)
+    enter_msg(scriptname, funcname)
 
     result = models@$prio(0)$  ; Start with highest priority
     unique = result(UNIQ(result))
@@ -79,7 +79,7 @@ begin
         end if  ; iprio
     end do  ; while
 
-    leave_msg(scriptname, funcname, 10)
+    leave_msg(scriptname, funcname)
     return(result)
 
 end
@@ -113,7 +113,7 @@ begin
 
     funcname = "unique_labels_all"
     scriptname = "diag_scripts/lib/ncl/style.ncl"
-    enter_msg(scriptname, funcname, 10)
+    enter_msg(scriptname, funcname)
 
     result = models@$prio(0)$  ; Start with highest priority
     unique = result(UNIQ(result))
@@ -139,7 +139,7 @@ begin
         end if  ; iprio
     end do  ; while
 
-    leave_msg(scriptname, funcname, 10)
+    leave_msg(scriptname, funcname)
     return(result)
 
 end
@@ -190,7 +190,7 @@ begin
 
     funcname = "project_style"
     scriptname = "diag_scripts/lib/ncl/style.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; Check for the available dictonary keys to be used for the annotations
     ;; (see get_dict_key in projects.py)
@@ -202,7 +202,7 @@ begin
     ;; Style information for this flag available as diag_script_info@$flag$
     if (isatt(info, flag)) then
         result = info@$flag$
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(result)
     end if
 
@@ -227,7 +227,7 @@ begin
     ;; Model annotations, return unique model names based on dict keys
     if (flag.eq."annots") then
         result = unique_labels_min(l_dkeys)
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(result)
     end if
 
@@ -325,21 +325,21 @@ begin
             end if
             end if
         end do
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(result)
     end if
 
     ;; Line dash patterns, marker indexes, avgstd flag: convert to integer
     if (any(flag.eq.(/"dashes", "markers", "avgstd"/))) then
         result = toint(column)
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(result)
     end if
 
     ;; Line thicknesses: convert to float
     if (flag.eq."thicks") then
         result = tofloat(column)
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(result)
     end if
 
@@ -370,7 +370,7 @@ begin
 
     funcname = "project_style_GO"
     scriptname = "diag_scripts/lib/ncl/style.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; define (/model, color, dash, thickness, avgstd/) for each model
     modelstyles = (/ (/"PlankTOM5",     "(/0.6,     0.,      0.0078/)",          "0",  "1",  "0"/), \
@@ -402,7 +402,7 @@ begin
     end if
     end if
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(result)
 end
 
@@ -436,7 +436,7 @@ begin
 
     funcname = "place_debuginfo"
     scriptname = "diag_scripts/lib/ncl/style.ncl"
-    enter_msg(scriptname, funcname, 8)
+    enter_msg(scriptname, funcname)
 
     res@gsnDraw               = False
     res@gsnFrame              = False
@@ -464,7 +464,7 @@ begin
     amres@amParallelPosF   = mvyf / 2
     amres@amOrthogonalPosF = -mvxf
     annoid = gsn_add_annotation(plot, tx, amres)
-    leave_msg(scriptname, funcname, 8)
+    leave_msg(scriptname, funcname)
     return(annoid)
 end
 
@@ -496,7 +496,7 @@ begin
 
     funcname = "place_description"
     scriptname = "diag_scripts/lib/ncl/style.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     wks_dummy = gsn_open_wks("png", "dummy.png")
     txres = True
@@ -515,7 +515,7 @@ begin
         y_ndc_coord = 0.8
     end if
     gsn_text_ndc(wks, description, txvpWidth / 2, y_ndc_coord, txres)
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -560,7 +560,7 @@ begin
 
     funcname = "gsnColorRange"
     scriptname = "diag_scripts/lib/ncl/style.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     color_start = 2  ; All of the color maps begin with 2.
 
@@ -597,7 +597,7 @@ begin
     end if
     end if
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(output)
 
 end
@@ -629,7 +629,7 @@ begin
 
     funcname = "format_units"
     scriptname = "diag_scripts/lib/ncl/style.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; Create a local copy
     loc_str = str
@@ -649,7 +649,7 @@ begin
         loc_str = str_sub_str(loc_str, "u", "~F33~m~F21~")
     end if
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(loc_str)
 
 end
@@ -686,7 +686,7 @@ begin
 
     funcname = "set_log_ticks"
     scriptname = "diag_scripts/lib/ncl/style.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; Find order of magnitude of min
     omin = toint(log10(fmin))
@@ -702,7 +702,7 @@ begin
 
     if (opt.eq."major") then
         out = 10 ^ ispan(omin + 1, omax, 1)
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(out)
     end if
 
@@ -721,7 +721,7 @@ begin
             end if
         end do
         out = arr(ind(arr.ge.rmin .and. arr.le.rmax))
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(out)
     end if
 
@@ -775,7 +775,7 @@ begin
 
     funcname = "sort_alphabetically"
     scriptname = "diag_scripts/lib/ncl/style.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; Create a local copy of input names and set to upper case
     loc_names = str_upper(orig_names)
@@ -818,7 +818,7 @@ begin
         perm_idx(ii) = ind(reord_names(ii).eq.loc_names)
     end do
 
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
     return(perm_idx)
 
 

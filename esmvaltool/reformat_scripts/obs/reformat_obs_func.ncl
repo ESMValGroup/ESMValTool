@@ -49,7 +49,7 @@ begin
 
     funcname = "yyyyfrac_to_ut"
     scriptname = "reformat_scripts/obs/reformat_obs_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Seconds per year
     years = toint(frac)
@@ -98,7 +98,7 @@ begin
     ;; Convert to UT
     ut = cd_calendar(time, flag)
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(ut)
 end
 
@@ -125,7 +125,7 @@ begin
 
     funcname = "create_timec"
     scriptname = "reformat_scripts/obs/reformat_obs_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     out = new(12 * (y2 - y1 + 1), double)
     do yy = y1, y2
@@ -135,7 +135,7 @@ begin
         end do
     end do
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(out)
 end
 
@@ -169,7 +169,7 @@ begin
 
     funcname = "write_nc"
     scriptname = "reformat_scripts/obs/reformat_obs_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Open file
     if (isfilepresent(outfile)) then
@@ -217,7 +217,7 @@ begin
     end do
     w->$name$ = (/var/)
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -251,7 +251,7 @@ begin
 
     funcname = "write_nc_profile"
     scriptname = "reformat_scripts/obs/reformat_obs_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Open file
     if (fileexists(outfile)) then
@@ -305,7 +305,7 @@ begin
 
     end do
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -357,7 +357,7 @@ begin
 
     funcname = "process_EBAS_data"
     scriptname = "reformat_scripts/obs/reformat_obs_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; EBAS flags for valid measurements
     ;; (see http://www.nilu.no/projects/ccc/flags/index.html)
@@ -641,7 +641,7 @@ begin
 
     end do  ; variables
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(data_arr)
 
 end

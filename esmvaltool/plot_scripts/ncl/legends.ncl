@@ -51,7 +51,7 @@ begin
 
     funcname = "legend_lines"
     scriptname = "plot_scripts/ncl/legends.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF file
     if(typeof(source) .eq. "string") then
@@ -175,7 +175,7 @@ begin
 ;    log_info(" Wrote " + plot@outfile)
     log_info(" Wrote " + wks_legend@fullname)
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(wks_legend)
 
 end
@@ -214,7 +214,7 @@ begin
 
     funcname = "legend_markers"
     scriptname = "plot_scripts/ncl/legends.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF file
     if(typeof(source) .eq. "string") then
@@ -318,7 +318,7 @@ begin
 
     ;log_info(" Wrote " + wks_legend@fullname)
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(wks_legend)
 
 end

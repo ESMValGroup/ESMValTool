@@ -49,7 +49,7 @@ begin
 
     funcname = "find_name"
     scriptname = "reformat_scripts/ECEARTH/reformat_ECEARTH_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; read text file with names
     fname = "./reformat_scripts/" + PROJECT + "/names_" + PROJECT + \
@@ -84,7 +84,7 @@ begin
     out = col_out(id)
     out@staggergrid = grid(id)
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
     return(out)
 
@@ -113,7 +113,7 @@ begin
 
     funcname = "add_ijcoordvars"
     scriptname = "reformat_scripts/ECEARTH/reformat_ECEARTH_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; get dimension indices
     dim_sizes = dimsizes(var)
@@ -144,7 +144,7 @@ begin
     var&i = i
     var&j = j
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -174,7 +174,7 @@ begin
 
     funcname = "add_ECEARTHgrid_info"
     scriptname = "reformat_scripts/ECEARTH/reformat_ECEARTH_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     nl = str_get_nl()
 
@@ -460,7 +460,7 @@ begin
     end if
     delete(w)
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -487,7 +487,7 @@ begin
 
     funcname = "convert_units"
     scriptname = "reformat_scripts/ECEARTH/reformat_ECEARTH_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; get CMOR units
     atts = read_cmor(name)
@@ -511,7 +511,7 @@ begin
         var = -1 * var
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -539,7 +539,7 @@ begin
 
     funcname = "mask_land"
     scriptname = "reformat_scripts/ECEARTH/reformat_ECEARTH_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     nl = str_get_nl()
     dq = str_get_dq()
@@ -608,7 +608,7 @@ begin
     ;; Copy back
     var = ocean_only
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -634,7 +634,7 @@ begin
 
     funcname = "sub_staggergrid"
     scriptname = "reformat_scripts/ECEARTH/reformat_ECEARTH_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; check INFILE format
     if (.not. isStrSubset(INFILE, "_grid_*")) then
@@ -648,7 +648,7 @@ begin
     ;; Replace string
     INFILE = str_sub_str(INFILE, "_grid_*", "_grid_" + name@staggergrid)
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -677,7 +677,7 @@ begin
 
     funcname = "rename_lev"
     scriptname = "reformat_scripts/ECEARTH/reformat_ECEARTH_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; set name for level and file name with names
     levname = "lev"
@@ -726,7 +726,7 @@ begin
         var&$std(id)$@standard_name = "depth"
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -754,7 +754,7 @@ begin
 
     funcname = "reformat_time_ecearth"
     scriptname = "reformat_scripts/ECEARTH/reformat_ECEARTH_func.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; get time name in EC-Earth
     std_name = "time"
@@ -784,6 +784,6 @@ begin
         delete(var&$std_name$@_FillValue)
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end

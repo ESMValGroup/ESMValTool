@@ -61,7 +61,6 @@ load "./reformat_scripts/obs/reformat_obs_func.ncl"
 begin
 
     diag_script = "reformat_obs_CR-AVE.ncl"
-    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent(OUTDIR)) then
@@ -140,6 +139,5 @@ begin
     delete(OUTPUT)
     delete(data)
 
-    leave_msg(diag_script, "", 1)
 
 end

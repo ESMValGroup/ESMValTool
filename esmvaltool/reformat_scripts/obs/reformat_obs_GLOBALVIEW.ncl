@@ -75,7 +75,6 @@ load "./diag_scripts/lib/ncl/statistics.ncl"
 begin
 
     diag_script = "reformat_obs_GLOBALVIEW.ncl"
-    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent(OUTDIR)) then
@@ -308,6 +307,5 @@ begin
 
     end do  ; loop over input files
 
-    leave_msg(diag_script, "", 1)
 
 end

@@ -55,7 +55,7 @@ load "./plot_scripts/ncl/portrait_plot.ncl"
 
 begin
 
-    enter_msg(diag_script, "", 4)
+    enter_msg(diag_script, "")
     diag_script_base = basename(diag_script)
 
     ;; Check file type
@@ -249,6 +249,6 @@ begin
 
     end if
 
-    leave_msg(diag_script, "", 4)
+    leave_msg(diag_script, "")
 
 end

@@ -58,7 +58,7 @@ begin
 
     funcname = "roi"
     scriptname = "diag_scripts/lib/ncl/latlon.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     log_debug("  roi: latmin=" + latlon_roi(0) + \
                 " ; latmax=" + latlon_roi(1) + \
@@ -154,7 +154,7 @@ begin
     end if
     end if
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(result_all)
 
 end
@@ -196,7 +196,7 @@ begin
 
     funcname = "extract_area"
     scriptname = "diag_scripts/lib/ncl/latlon.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; 'cn' is the basic building block for the keys used in
     ;; the 'data_pointer' dictionary
@@ -208,7 +208,7 @@ begin
     fm = addfile(modelfile, "r")
     val = fm->$requested_param$   ; Fetch entire variable, including metadata
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(val)
 
 end
@@ -238,7 +238,7 @@ begin
 
     funcname = "gridcell_area"
     scriptname = "diag_scripts/lib/ncl/latlon.ncl"
-;    enter_msg(scriptname, funcname, 10)
+;    enter_msg(scriptname, funcname)
 
     ;; Convert to radiants
     deg2rad = acos(-1.0) / 180.
@@ -247,7 +247,7 @@ begin
     out = abs(EARTHradius ^ 2 * deltay * deltax * deg2rad)
     out@units = EARTHarea@units
 
-;    leave_msg(scriptname, funcname, 10)
+;    leave_msg(scriptname, funcname)
     return(out)
 
 end
@@ -279,7 +279,7 @@ begin
 
     funcname = "map_area"
     scriptname = "diag_scripts/lib/ncl/latlon.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; Type conversion
     loclat = tofloat(lat)
@@ -328,7 +328,7 @@ begin
     area!1   = "lon"
     area&lon = lon
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(area)
 
 end
@@ -387,7 +387,7 @@ begin
 
     funcname = "area_operations"
     scriptname = "diag_scripts/lib/ncl/latlon.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; Check rank
     if (dimsizes(dimsizes(field)) .lt. 2) then
@@ -533,7 +533,7 @@ begin
     delete(conwgt)
 
     if (opt .eq. "extract") then
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(subfield)
     end if
 
@@ -566,7 +566,7 @@ begin
         else
             out = dim_sum_n_Wrap(subfield, didx_r)
         end if
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(out)
     end if
 
@@ -599,96 +599,96 @@ begin
 
     funcname = "select_region"
     scriptname = "diag_scripts/lib/ncl/latlon.ncl"
-    enter_msg(scriptname, funcname, 10)
+    enter_msg(scriptname, funcname)
 
     if (region.eq."Global") then
         region_array = (/-90., 90., 0., 360./)
         region_array@name = "Glob"
-        leave_msg(scriptname, funcname, 10)
+        leave_msg(scriptname, funcname)
         return(region_array)
     end if
 
     if (region.eq."Tropics") then
         region_array = (/-20., 20., 0., 360./)
         region_array@name = "Trop"
-        leave_msg(scriptname, funcname, 10)
+        leave_msg(scriptname, funcname)
         return(region_array)
     end if
 
     if (region.eq."NH extratropics") then
         region_array = (/20., 90., 0., 360./)
         region_array@name = "NHext"
-        leave_msg(scriptname, funcname, 10)
+        leave_msg(scriptname, funcname)
         return(region_array)
     end if
 
     if (region.eq."SH extratropics") then
         region_array = (/-90., -20., 0., 360./)
         region_array@name = "SHext"
-        leave_msg(scriptname, funcname, 10)
+        leave_msg(scriptname, funcname)
         return(region_array)
     end if
 
     if (region.eq."NH equatorial") then
         region_array = (/0., 30., 0., 360./)
         region_array@name = "NHtrop"
-        leave_msg(scriptname, funcname, 10)
+        leave_msg(scriptname, funcname)
         return(region_array)
     end if
 
     if (region.eq."SH equatorial") then
         region_array = (/-30., 0., 0., 360./)
         region_array@name = "SHtrop"
-        leave_msg(scriptname, funcname, 10)
+        leave_msg(scriptname, funcname)
         return(region_array)
     end if
 
     if (region.eq."Northern Hemisphere") then
         region_array = (/20., 90., 0., 360./)
         region_array@name = "NH"
-        leave_msg(scriptname, funcname, 10)
+        leave_msg(scriptname, funcname)
         return(region_array)
     end if
 
     if (region.eq."Southern Hemisphere") then
         region_array = (/-90., -20., 0., 360./)
         region_array@name = "SH"
-        leave_msg(scriptname, funcname, 10)
+        leave_msg(scriptname, funcname)
         return(region_array)
     end if
 
     if (region.eq."NH midlatitudes") then
         region_array = (/35., 60., 0., 360./)
         region_array@name = "NHmidlat"
-        leave_msg(scriptname, funcname, 10)
+        leave_msg(scriptname, funcname)
         return(region_array)
     end if
 
     if (region.eq."SH midlatitudes") then
         region_array = (/-60., -35., 0., 360./)
         region_array@name = "SHmidlat"
-        leave_msg(scriptname, funcname, 10)
+        leave_msg(scriptname, funcname)
         return(region_array)
     end if
 
     if (region.eq."Arctic") then
         region_array = (/60., 90., 0., 360./)
         region_array@name = "NHpolar"
-        leave_msg(scriptname, funcname, 10)
+        leave_msg(scriptname, funcname)
         return(region_array)
     end if
 
     if (region.eq."Antarctic") then
         region_array = (/-90., -60., 0., 360./)
         region_array@name = "SHpolar"
-        leave_msg(scriptname, funcname, 10)
+        leave_msg(scriptname, funcname)
         return(region_array)
     end if
 
     if (region.eq."Equatorial") then
         region_array = (/-10., 10., 0., 360./)
         region_array@name = "EQ"
-        leave_msg(scriptname, funcname, 10)
+        leave_msg(scriptname, funcname)
         return(region_array)
     end if
 
@@ -725,7 +725,7 @@ begin
 
     funcname = "make_latlon2D"
     scriptname = "diag_scripts/lib/ncl/latlon.ncl"
-    enter_msg(scriptname, funcname, 10)
+    enter_msg(scriptname, funcname)
 
     if (all(iscoord(field, (/"lat", "lon"/)))) then
         log_debug(var + " is on a lat-lon grid")
@@ -783,7 +783,7 @@ begin
     delete(area_lat)
     delete(area_lon)
 
-    leave_msg(scriptname, funcname, 10)
+    leave_msg(scriptname, funcname)
     return(out_field)
 
 end

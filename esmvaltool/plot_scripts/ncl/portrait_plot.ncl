@@ -54,7 +54,7 @@ begin
 
     funcname = "portrait_plot"
     scriptname = "plot_scripts/ncl/portrait_plot.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF file
     if(typeof(source) .eq. "string") then
@@ -599,7 +599,7 @@ begin
     draw(plot)
     frame(wks)
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(plot)
 
 end

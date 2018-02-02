@@ -22,7 +22,7 @@ scriptname = "reformat_scripts/default/reformat_ECEARTH_main.ncl"
 ;;### GLOBAL SETTINGS #########################################################
 begin
 
-    enter_msg(scriptname, "", 2)
+    enter_msg(scriptname, "")
 
     ;; Selected variable (standard name)
     VAR  = getenv("ESMValTool_variable")
@@ -151,6 +151,6 @@ begin
 
     log_info("  OUTFILE = " + OUTFILE)
 
-    leave_msg(scriptname, "", 2)
+    leave_msg(scriptname, "")
 
 end

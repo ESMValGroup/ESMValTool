@@ -49,7 +49,6 @@ load "./reformat_scripts/obs/reformat_obs_func.ncl"
 begin
 
     diag_script = "reformat_obs_TRMM_3B42_3hourly.ncl"
-    enter_msg(diag_script, "", 1)
 
     inpath = getenv("ESMValTool_RAWOBSPATH") + "/Tier2/TRMM-3B42/"
     outpath = getenv("ESMValTool_OBSPATH") + "/Tier2/TRMM-3B42/"
@@ -253,6 +252,5 @@ begin
 
     system ("rm " + tmpfile)
 
-    leave_msg(diag_script, "", 1)
 
 end

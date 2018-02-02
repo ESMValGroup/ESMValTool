@@ -60,7 +60,7 @@ begin
 
     funcname = "create_legend_lines"
     scriptname = "plot_scripts/ncl/aux_plotting.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; Flag if RGB or RGBA is used for colors
     if (dimsizes(dimsizes(styles@colors)).ne.1) then
@@ -175,7 +175,7 @@ begin
     draw(blank)
     frame(wks_legend)
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -201,7 +201,7 @@ begin
 
     funcname = "output_type"
     scriptname = "plot_scripts/ncl/aux_plotting.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     file_type = config_user_info@output_file_type
     if(ismissing(file_type)) then
@@ -209,7 +209,7 @@ begin
     end if
     file_type = str_lower(file_type)
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(file_type)
 
 end
@@ -243,7 +243,7 @@ begin
 
     funcname = "copy_VarAtt_sel"
     scriptname = "plot_scripts/ncl/aux_plotting.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; check if var1 has attributes at all 
     atts = getvaratts(var1)
@@ -267,7 +267,7 @@ begin
         end do
     end do
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -304,7 +304,7 @@ begin
 
     funcname = "panelling"
     scriptname = "plot_scripts/ncl/aux_plotting.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; check if valid wks has been provided
     if (typeof(wks).ne."graphic") then
@@ -360,7 +360,7 @@ begin
         gsn_panel(wks, plots, (/nrow, ncol/), pres)
     end if
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(outfile)
 
 end
@@ -387,7 +387,7 @@ begin
 
     funcname = "get_plot_dir"
     scriptname = "plot_scripts/ncl/aux_plotting.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     plot_dir = config_user_info@plot_dir + "/"
     if(ismissing(plot_dir)) then
@@ -397,7 +397,7 @@ begin
         system("mkdir -p " + plot_dir)
     end if
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(plot_dir)
 
 end
@@ -428,7 +428,7 @@ begin
 
     funcname = "get_outfile_name"
     scriptname = "plot_scripts/ncl/aux_plotting.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; Collect parts of outfile name
     file_type = output_type()  ; Function in ~/plot_scripts/aux_plotting.ncl
@@ -441,7 +441,7 @@ begin
         outfile = plot_dir + add_specs + "." + file_type
     end if
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(outfile)
 end
 
@@ -475,7 +475,7 @@ begin
 
     funcname = "get_wks"
     scriptname = "plot_scripts/ncl/aux_plotting.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; Check if a valid wks has been provided, otherwise invoke default
     if(typeof(wks_in).ne."graphic") then  ; Use defaults
@@ -492,7 +492,7 @@ begin
         copy_VarMeta(wks_in, wks)
     end if
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(wks)
 
 end
@@ -528,7 +528,7 @@ begin
 
     funcname = "add_markers"
     scriptname = "plot_scripts/ncl/aux_plotting.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; set default plot ressources 
     res               = True
@@ -562,7 +562,7 @@ begin
     str = unique_string("polymarker")
     plot@$str$ = gsn_add_polymarker(wks, plot, xpos_in, ypos_in, res)
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -599,7 +599,7 @@ begin
 
     funcname = "add_num_markers"
     scriptname = "plot_scripts/ncl/aux_plotting.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; set default plot ressources 
     res               = True
@@ -647,7 +647,7 @@ begin
     plot@$str$ = gsn_add_text(wks,plot,sprinti("%-0.2hi",atext),\
                                                  xpos,ypos,res)
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -683,7 +683,7 @@ begin
 
     funcname = "add_errorbar"
     scriptname = "plot_scripts/ncl/aux_plotting.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; set default plot ressources 
     res                  = True
@@ -772,7 +772,7 @@ begin
         end if
     end do
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -819,7 +819,7 @@ begin
 
     funcname = "horizontal_whiskers"
     scriptname = "plot_scripts/ncl/aux_plotting.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; check sizes of input vectors
     n = dimsizes(ypos_in)
@@ -883,7 +883,7 @@ begin
         plot@$str$ = gsn_add_polyline(wks, plot, x, y, res)
     end if
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -920,7 +920,7 @@ begin
 
     funcname = "add_prediction_error"
     scriptname = "plot_scripts/ncl/aux_plotting.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; set default plot ressources 
     res               = True
@@ -946,7 +946,7 @@ begin
     str = unique_string("polygon")
     plot@$str$ = gsn_add_polygon(wks,plot,xpos_in,ypos_in,res)
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
 
 end
 

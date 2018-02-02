@@ -19,16 +19,12 @@
 ;;#############################################################################
 MASTER_REFS = "../doc/MASTER_authors-refs-acknow.txt"
 
-;; Warning: no other interface_scripts shall be loaded here, to avoid nested
+gOldVar = ""
+gOldDiag = ""
+load "./interface_scripts/write_header.ncl"
+
+;; WARNING: no other interface_scripts shall be loaded here, to avoid nested
 ;;          loops (since they will try to load logging.ncl themselves).
-
-; a_laue_ax+
-    gOldVar = ""
-    gOldDiag = ""
-
-    ;; definitions of functions write_header and write_diag_header
-    load "./interface_scripts/write_header.ncl"
-; a_laue_ax-
 
 ;;#############################################################################
 undef("no_operation")
@@ -58,7 +54,7 @@ procedure log_info(output_string[*]:string)
 ;;    output_string: the text to be output as message on screen
 ;;
 ;; Description
-;;    Writes an info message to the log file. If the input is an array, each
+;;    Write an info message to the log file. If the input is an array, each
 ;;    element will be written on different lines.
 ;;
 ;; Caveats
@@ -92,7 +88,7 @@ procedure log_debug(output_string[*]:string)
 ;;    output_string: the text to be output as message on screen
 ;;
 ;; Description
-;;    Writes a debug message to the log file (only if log_level = debug in
+;;    Write a debug message to the log file (only if log_level = debug in
 ;;    config-user.yml). If the input is an array, each element will be
 ;;    written on different lines.
 ;;
@@ -122,22 +118,21 @@ end
 ;;#############################################################################
 undef("enter_msg")
 procedure enter_msg(script[1]:string,
-                    func[1]:string,
-                    req_verbosity[1]:integer)
+                    func[1]:string)
 ;;
 ;; Arguments
 ;;    script: name of the ncl script file from where this function is called.
 ;;    func: name of the function or procedure calling this function.
-;;    required_verbosity: the minimum verbosity for the message to be printed.
 ;;
 ;; Description
-;;    Prints an enter message on the stdout.
+;;    Print an enter message to the log file (debug mode only).
 ;;
 ;; Caveats
 ;;
 ;; References
 ;;
 ;; Modification history
+;;    20180202_A_righ_ma: removed required verbosity.
 ;;    20150319-A_righ_ma: written.
 ;;
 begin
@@ -153,22 +148,21 @@ end
 ;;#############################################################################
 undef("leave_msg")
 procedure leave_msg(script[1]:string,
-                    func[1]:string,
-                    req_verbosity[1]:integer)
+                    func[1]:string)
 ;;
 ;; Arguments
 ;;    script: name of the ncl script file from where this function is called.
 ;;    func: name of the function or procedure calling this function.
-;;    required_verbosity: the minimum verbosity for the message to be printed.
 ;;
 ;; Description
-;;    Prints a leave message on the stdout.
+;;    Print an enter message to the log file (debug mode only).
 ;;
 ;; Caveats
 ;;
 ;; References
 ;;
 ;; Modification history
+;;    20180202_A_righ_ma: removed required verbosity.
 ;;    20150319-A_righ_ma: written.
 ;;
 begin
@@ -195,7 +189,7 @@ procedure error_msg(type[1]:string,
 ;;    msg: actual error message.
 ;;
 ;; Description
-;;    Writes an error/warning message to the log file.
+;;    Write an error/warning message to the log file.
 ;;
 ;; Caveats
 ;;
@@ -252,7 +246,7 @@ procedure exit_if_missing_atts(in[1], \
 ;;    reqatts: an array of strings with the required attributes of the variable
 ;;
 ;; Description
-;;    Checks that the given variable contains the given list of attributes.
+;;    Check that the given variable contains the given list of attributes.
 ;;    This function shall be used at the beginning of each diag_script to
 ;;    check that diag_script_info contains the required attributes.
 ;;    It can also be used for checking attributes in observations files, when
@@ -270,7 +264,7 @@ begin
 
     funcname = "exit_if_missing_atts"
     scriptname = "interface_scripts/logging.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     if (.not.all(isatt(in, reqatts))) then
         error_msg("f", diag_script, "", "missing required " + \
@@ -278,7 +272,7 @@ begin
                   reqatts(ind(.not.isatt(in, reqatts))))
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -316,7 +310,7 @@ procedure write_filelist(script:string,
 ;;    version: version of the ESMValTool
 ;;
 ;; Description
-;;    Saving the following details to the log file
+;;    Save the following details to the log file
 ;;        - ESMValTtool version
 ;;        - list of input files processed
 ;;        - name of the "FIXFILE" applied (if any)
@@ -333,7 +327,7 @@ begin
 
     funcname = "write_filelist"
     scriptname = "interface_scripts/logging.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     if (filelist(0).eq."") then  ; derived variable or no information
         return
@@ -431,7 +425,7 @@ begin
 ;    system(s_open + hline + s_close)
     system("echo " + " >> " + output_refs)
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 end
 
 ; a_laue_ax-
@@ -454,7 +448,7 @@ procedure write_references(script[1]:string,
 ;;    proj: list of projects to be acknowledged (PNNN)
 ;;
 ;; Description
-;;    Writes references and acknowledgments in the log file
+;;    Write references and acknowledgments in the log file
 ;;
 ;; Caveats
 ;;
@@ -473,7 +467,7 @@ begin
 
     funcname = "write_references"
     scriptname = "interface_scripts/logging.ncl"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     hline      = "-------------------------"
     hline_dble = "========================="
@@ -604,7 +598,7 @@ begin
 ;
 ;    system(s_open + hline + s_close)
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 

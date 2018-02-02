@@ -43,7 +43,7 @@ begin
 
     funcname = "UNIQ"
     scriptname = "diag_scripts/lib/ncl/set_operators.ncl"
-    enter_msg(scriptname, funcname, 10)
+    enter_msg(scriptname, funcname)
 
     u = new(dimsizes(a), "integer", 0)
     do i = 0, dimsizes(a) - 1
@@ -53,7 +53,7 @@ begin
     end do
     idx = ind(u .eq. 1)
 
-    leave_msg(scriptname, funcname, 10)
+    leave_msg(scriptname, funcname)
     return(idx)
 
 end
@@ -84,13 +84,13 @@ begin
 
     funcname = "union"
     scriptname = "diag_scripts/lib/ncl/set_operators.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     merged_set = array_append_record(set1, set2, 0)
     unique_entries = UNIQ(merged_set)
     union_set = merged_set(unique_entries)
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(union_set)
 
 end
@@ -122,7 +122,7 @@ begin
 
     funcname = "set_inclusive_OR"
     scriptname = "diag_scripts/lib/ncl/set_operators.ncl"
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     dummy_year  = -999.
 
@@ -133,7 +133,7 @@ begin
     keep_set = set_tmp(keep_set_idx)
     qsort(keep_set)
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(keep_set)
 
 end
@@ -165,11 +165,11 @@ begin
 
     funcname = "inlist"
     scriptname = "diag_scripts/lib/ncl/set_operators.ncl"
-    enter_msg(scriptname, funcname, 10)
+    enter_msg(scriptname, funcname)
 
     item_indicies = ind(item .eq. alloweditems)
 
-    leave_msg(scriptname, funcname, 10)
+    leave_msg(scriptname, funcname)
     if(all(ismissing(item_indicies))) then
         return(False)
     else
@@ -205,7 +205,7 @@ begin
 
     funcname = "intersection"
     scriptname = "diag_scripts/lib/ncl/set_operators.ncl"
-    enter_msg(scriptname, funcname, 10)
+    enter_msg(scriptname, funcname)
 
     do idx = 0, dimsizes(array1) - 1
         curr_check = ind(array1(idx) .eq. array2)
@@ -226,7 +226,7 @@ begin
         intersection_array = False
     end if
 
-    leave_msg(scriptname, funcname, 10)
+    leave_msg(scriptname, funcname)
     return(intersection_array)
 
 end
@@ -258,7 +258,7 @@ begin
 
     funcname = "is_array_subset"
     scriptname = "diag_scripts/lib/ncl/set_operators.ncl"
-    enter_msg(scriptname, funcname, 10)
+    enter_msg(scriptname, funcname)
 
     subset_size = dimsizes(subset_array)
     is_subset_true = True
@@ -269,7 +269,7 @@ begin
         end if
     end do
 
-    leave_msg(scriptname, funcname, 10)
+    leave_msg(scriptname, funcname)
     return(is_subset_true)
 
 end
@@ -304,7 +304,7 @@ begin
 
     funcname = "relative_complement"
     scriptname = "diag_scripts/lib/ncl/set_operators.ncl"
-    enter_msg(scriptname, funcname, 10)
+    enter_msg(scriptname, funcname)
 
     array2_size = dimsizes(array2)
     rel_complement = False
@@ -328,7 +328,7 @@ begin
         return_array = rel_complement
     end if
 
-    leave_msg(scriptname, funcname, 10)
+    leave_msg(scriptname, funcname)
     return(return_array)
 
 end
@@ -361,12 +361,12 @@ begin
 
     funcname = "set_symmetric_difference"
     scriptname = "diag_scripts/lib/ncl/set_operators.ncl"
-    enter_msg(scriptname, funcname, 10)
+    enter_msg(scriptname, funcname)
 
     rel_compl1 = relative_complement(array1, array2)
     rel_compl2 = relative_complement(array2, array1)
 
-    leave_msg(scriptname, funcname, 10)
+    leave_msg(scriptname, funcname)
     return(union(rel_compl1, rel_compl2))
 
 end

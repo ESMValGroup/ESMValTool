@@ -110,7 +110,7 @@ load "./plot_scripts/ncl/contour_maps.ncl"
 
 begin
 
-    enter_msg(diag_script, "", 4)
+    enter_msg(diag_script, "")
     log_info("++++++++++++++++++++++++++++++++++++++++++")
     log_info(diag_script + " (var: " + variables(0) + ")")
     log_info("++++++++++++++++++++++++++++++++++++++++++")
@@ -1060,6 +1060,6 @@ begin
         end if
     end if
 
-    leave_msg(diag_script, "", 4)
+    leave_msg(diag_script, "")
 
 end

@@ -70,7 +70,7 @@ local funcname, date, ntime, tt, pos, y1, y2, opt, exp_ntime
 begin
 
     funcname = "check_time_range"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     if(.not.isdefined("YEAR1")) then
         YEAR1 = time@YEAR1
@@ -181,7 +181,7 @@ begin
                           toint(date(:, 4)), toint(date(:, 5)), \
                           TUNITS, opt)
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(out)
 
 end
@@ -210,7 +210,7 @@ local funcname, tmp, cal
 begin
 
     funcname = "time_attrib"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     if (isatt(coord, "calendar")) then
         cal = coord@calendar
@@ -231,7 +231,7 @@ begin
         delete(out_coord@_FillValue)
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(out_coord)
 
 end
@@ -260,7 +260,7 @@ local funcname, out_coord
 begin
 
     funcname = "plev_attrib"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     out_coord = todouble(coord)  ; this also removes attributes
     copy_VarCoords(coord, out_coord)
@@ -279,7 +279,7 @@ begin
         delete(out_coord@_FillValue)
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(out_coord)
 
 end
@@ -308,7 +308,7 @@ local funcname, out_coord
 begin
 
     funcname = "lev_attrib"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     out_coord = todouble(coord)  ; this also removes attributes
     copy_VarCoords(coord, out_coord)
@@ -321,7 +321,7 @@ begin
         delete(out_coord@_FillValue)
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(out_coord)
 
 end
@@ -350,7 +350,7 @@ local funcname, out_coord
 begin
 
     funcname = "lat_attrib"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     out_coord = todouble(coord)  ; this also removes attributes
     copy_VarCoords(coord, out_coord)
@@ -362,7 +362,7 @@ begin
         delete(out_coord@_FillValue)
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(out_coord)
 
 end
@@ -391,7 +391,7 @@ local funcname, out_coord
 begin
 
     funcname = "lon_attrib"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     out_coord = todouble(coord)  ; this also removes attributes
     copy_VarCoords(coord, out_coord)
@@ -403,7 +403,7 @@ begin
         delete(out_coord@_FillValue)
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(out_coord)
 
 end
@@ -432,7 +432,7 @@ local funcname, fn, data, idxu, idxd, attn, attv
 begin
 
     funcname = "read_cmor"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Read attributes from cmor table
     fn = "./reformat_scripts/cmor/CMOR_" + name + ".dat"
@@ -454,7 +454,7 @@ begin
         out@$attn(ii)$ = attv(ii)
     end do
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(out)
 
 end
@@ -483,7 +483,7 @@ begin
 
     funcname = "check_units"
     log_debug("In check_units for " + name +" units are " + var@units)
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; CMOR units
     atts = read_cmor(name)
@@ -557,7 +557,7 @@ begin
 
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -587,7 +587,7 @@ local funcname, tmp, p1, p2, natt, in_units, out_units, tmp, att
 begin
 
     funcname = "var_attrib"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Set fill value first
     if(isatt(var, "_FillValue")) then
@@ -627,7 +627,7 @@ begin
     end if
 ; A_laue_ax-
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(out)
 
 end
@@ -655,7 +655,7 @@ local funcname, field, user
 begin
 
     funcname = "define_globatt"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Define field name
     if (isStrSubset(FIELD, "M")) then
@@ -703,7 +703,7 @@ begin
     global@host = systemfunc("echo $HOST")
     global@history = "Creation date " + systemfunc("date")
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(global)
 
 end
@@ -744,7 +744,7 @@ local funcname, w, gAtt, dim_names, ndims, dim_sizes, dim_types, \
 begin
 
     funcname = "write_output"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Open file
     if (fileexists(OUTFILE)) then
@@ -819,7 +819,7 @@ begin
     end do
     w->$name$ = (/var/)
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -847,7 +847,7 @@ local funcname, minsize, maxsize, nbins, bin
 begin
 
     funcname = "set_size_array"
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Size range (0.5 nm - 10 um)
     minsize = 0.5e-9
@@ -862,7 +862,7 @@ begin
         out(ii) = out(ii - 1) * bin
     end do
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(out)
 
 end
