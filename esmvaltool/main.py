@@ -137,8 +137,8 @@ def read_config_file(config_file, namelist_name):
     return cfg
 
 
-def main():
-    """Define the `esmvaltool` program"""
+def get_args():
+    """Define the `esmvaltool` command line"""
     # parse command line args
     parser = argparse.ArgumentParser(
         description=__doc__,
@@ -160,7 +160,11 @@ def main():
         help='Download input data using synda. This requires a working '
         'synda installation.')
     args = parser.parse_args()
+    return args
 
+
+def main(args):
+    """Define the `esmvaltool` program"""
     namelist_file = os.path.abspath(
         os.path.expandvars(os.path.expanduser(args.namelist_file)))
     config_file = os.path.abspath(
@@ -256,8 +260,9 @@ def process_namelist(namelist_file, config_user):
 
 def run():
     """Run the `esmvaltool` program, logging any exceptions."""
+    args = get_args()
     try:
-        main()
+        main(args)
     except:  # noqa
         logger.exception(
             "Program terminated abnormally, see stack trace "
