@@ -78,14 +78,15 @@ jobs:
       - checkout
       - run:
           command: |
-            set +x
+            set -x
             mkdir logs
             # Install
-            apt-get update -y && apt-get install -y build-essential > logs/apt.txt
-            conda create -y -n esmvaltool python=3 > logs/conda_create.txt
-            conda env update --name esmvaltool > logs/conda_update.txt
+            apt-get update -y > logs/apt.txt 2>&1
+            apt-get install -y build-essential >> logs/apt.txt 2>&1
+            conda create -y -n esmvaltool python=3 > logs/conda.txt 2>&1
+            conda env update --name esmvaltool >> logs/conda.txt 2>&1
             source activate esmvaltool
-            ./setup.py install > logs/install.txt
+            ./setup.py install > logs/install.txt 2>&1
             # Log versions
             dpkg -l > logs/versions_dpkg.txt
             conda env export > logs/versions_conda.txt
@@ -105,14 +106,15 @@ jobs:
       - checkout
       - run:
           command: |
-            set +x
+            set -x
             mkdir logs
             # Install
-            apt-get update -y && apt-get install -y build-essential > logs/apt.txt
-            conda create -y -n esmvaltool python=2 > logs/conda_create.txt
-            conda env update --name esmvaltool > logs/conda_update.txt
+            apt-get update -y > logs/apt.txt 2>&1
+            apt-get install -y build-essential >> logs/apt.txt 2>&1
+            conda create -y -n esmvaltool python=2 > logs/conda.txt 2>&1
+            conda env update --name esmvaltool >> logs/conda.txt 2>&1
             source activate esmvaltool
-            ./setup.py install > logs/install.txt
+            ./setup.py install > logs/install.txt 2>&1
             # Log versions
             dpkg -l > logs/versions_dpkg.txt
             conda env export > logs/versions_conda.txt
@@ -133,7 +135,7 @@ workflows:
   nightly:
     triggers:
       - schedule:
-          cron: "14 15 * * *"
+          cron: "29 15 * * *"
           filters:
             branches:
               only:
