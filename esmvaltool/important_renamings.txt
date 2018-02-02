@@ -10,7 +10,8 @@ models@name                         --> variable_info@model                     
 verbosity                           --> config_user_info@log_level                        all .ncl scripts [note there are 4 log levels: "debug", "info", "warning", "error" instead of numerical value]
 isfilepresent_esmval                --> fileexists                                        all .ncl scripts
 messaging.ncl                       --> logging.ncl                                       all .ncl scripts
-
+info_output(arg1, arg2, arg3)       --> log_info(arg1) [if arg3=1]                        all .ncl scripts
+info_output(arg1, arg2, arg3)       --> debug_info(arg1) [if arg3>1]                      all .ncl scripts
 
 varname_info.tmp                    --> varname_info.ncl in preprocessor output_dir
 ncl.interface                       --> settings.ncl in diagnostic script run_dir + interface_scripts/interface.ncl
