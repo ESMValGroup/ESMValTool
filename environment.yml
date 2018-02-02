@@ -3,9 +3,6 @@
 name: esmvaltool
 channels:
 - conda-forge
-- khallock # ncl package on conda-forge is broken
-#- defaults # in case of missing packages
-#- Clyde_Fare #for scientific python
 
 # ESMVALTOOL DEPENDENCIES
 
@@ -28,21 +25,6 @@ dependencies:
 - scipy
 - shapely
 - six
-#- scientificpython
-
-# Old Iris and ncl dependency block. Simply using the top level packages should be enough now.
-# iris
-#- iris
-#- cartopy=0.15.*
-#- matplotlib=1.5.*
-#- ncl
-#- hdf4=4.2.12
-#- hdf5=1.8.17
-#- icu=58.1
-#- libnetcdf=4.4.1.1
-#- xorg-libsm=1.2.2
-#- xorg-libxext
-#- xorg-libxrender
 
 # DEVELOPMENT DEPENDENCIES
 #
@@ -62,8 +44,6 @@ dependencies:
 
 # Note that there can be only one pip section
 - pip:
-  # TODO: replace esgf-pyclient and geoval by conda packages
-  # TODO: move esgf-pyclient and geoval to ESMVALTOOL DEPENDENCIES
   - easytest
   - esgf-pyclient
   - geoval
