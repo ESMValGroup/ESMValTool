@@ -299,21 +299,27 @@ def mask_fillvalues(cubes, threshold_fraction, min_value=-1.e10,
         cube.data = np.ma.fix_invalid(cube.data, copy=False)
 
     # Get the fillvalue masks from all models
-    masks = (_get_fillvalues_mask(cube, threshold_fraction, min_value,
-                                  time_window) for cube in cubes)
+    masks = [_get_fillvalues_mask(cube, threshold_fraction, min_value,
+                                  time_window) for cube in cubes]
 
     # Combine all fillvalue masks
     combined_mask = None
-    for mask in masks:
+    for mask, copy_mask in zip(masks, masks):
         if not np.all(mask):  # remove masks that mask everything
             if combined_mask is None:
                 combined_mask = np.zeros_like(mask)
             if len(mask.shape) == 3: # dig deeper in plevs
-                copy_mask = mask.copy()
                 combined_mask |= mask
                 for i in range(mask.shape[0]):
                     if np.all(combined_mask[i]) == True:
-                        combined_mask[i] = copy_mask[i]
+                        if np.all(copy_mask[i]) != True:
+                            # we have valid values 
+                            # that we need to really keep
+                            combined_mask[i] = copy_mask[i]
+                        else:
+                            # they're all junk
+                            # reset the mask here only
+                            combined_mask[i] = False
             else:
                 combined_mask |= mask
 
