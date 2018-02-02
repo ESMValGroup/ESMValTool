@@ -32,6 +32,7 @@ begin
     loadscript(exact_panel_position_file)
 end
 
+;;#############################################################################
 undef("plot_precip_domain")
 procedure plot_precip_domain(cols[*]:integer,
                              rows[*]:float,
@@ -93,6 +94,11 @@ local am_infobox_id,      blank_plot,         cn_levels_string,\
     plot_ref,           plottype_lbres,     ref,\
     statistics,         storage_record,     txres
 begin
+
+    funcname = "plot_precip_domain"
+    scriptname = "plot_script/ncl/monsoon_domain_panels.ncl"
+    enter_msg(scriptname, funcname, 4)
+
     if (isatt(res, "cnLevels")) then
         delete(res@cnLevels)
     end if
@@ -248,8 +254,12 @@ begin
                           debuginfo@description,\
                           debuginfo@description_ycoord)
     end if
+
+    leave_msg(scriptname, funcname, 4)
+
 end
 
+;;#############################################################################
 undef("precip_domain")
 procedure precip_domain(storage_vault [1] : logical,
                      di [1] : logical,
@@ -298,7 +308,11 @@ local aux_filename_info,         blank_plot,          cn,\
     storage_record,            total_no_of_pages,   txres,\
     type_specifier,            var0,                wks
 begin
-    log_debug("<<<<<<<< Entering precip_domain")
+
+    funcname = "precip_domain"
+    scriptname = "plot_script/ncl/monsoon_domain_panels.ncl"
+    enter_msg(scriptname, funcname, 4)
+
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
@@ -452,6 +466,9 @@ begin
                                no_figures_on_this_page)
             frame(wks_debug)
         end if
-    log_debug(">>>>>>>> Leaving precip_domain")
+
     end do  ; curr_page = 0, total_no_of_pages - 1
+
+    leave_msg(scriptname, funcname, 4)
+
 end

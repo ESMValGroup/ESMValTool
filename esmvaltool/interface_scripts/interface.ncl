@@ -129,7 +129,6 @@ function interface_replace_place_holders(variable [1] : string,
 local idx_var, array_local_copy
 begin
 
-    log_debug("<<<<<<<< Entering interface_replace_place_holders")
 
     array_local_copy = str_sub_str(array_with_place_holders(idx), "${VARIABLE}", variable)
     array_local_copy = str_sub_str(array_local_copy, "${FIELD}", field)
@@ -137,7 +136,6 @@ begin
     array_local_copy = interface_get_var_mip(idx, variable, array_local_copy)
     array_local_copy = interface_get_var_exp(idx, variable, array_local_copy)
 
-    log_debug(">>>>>>>> Leaving interface_replace_place_holders")
     return array_local_copy
 end
 
@@ -159,7 +157,6 @@ function interface_get_figure_filename(diag_script_base [1] : string,
 local aux_sep, figure_name, fig_file_local_copy, use_this_for_var
 begin
 
-    log_debug("<<<<<<<< Entering interface_get_figure_filename")
     sep = "_"  ; Default separator
     aux_sep = "_"  ; Auxiliary info separator
     if (aux_info .eq. "") then
@@ -205,9 +202,7 @@ function interface_get_fullpath(variable [1] : string,
 local idx_var, fullpaths_local_copy
 begin
 
-    log_debug("<<<<<<<< Entering interface_get_fullpath")
     fullpaths_local_copy = interface_replace_place_holders(variable, field, idx, fullpaths)
-    log_debug(">>>>>>>> Leaving interface_get_fullpath")
     return fullpaths_local_copy
 end
 
@@ -224,9 +219,7 @@ function interface_get_infile(variable [1] : string,
 local infiles_local_copy
 begin
 
-    log_debug("<<<<<<<< Entering interface_get_infile")
     infiles_local_copy = interface_replace_place_holders(variable, field, idx, infiles)
-    log_debug(">>>>>>>> Leaving interface_get_infile")
     return infiles_local_copy
 end
 
@@ -238,8 +231,7 @@ function interface_get_inpaths(idx [1] : integer)
 ;         @param idx  -  The index to the current model
 
 begin
-    log_debug("<<<<<<<< Entering interface_get_inpaths")
-    log_debug(">>>>>>>> Leaving interface_get_inpaths")
+
     return infile_paths(idx)
 end
 
@@ -255,9 +247,7 @@ function interface_get_dictkeys(variable [1] : string,
 local idx_var, dictkeys_local_copy
 begin
 
-    log_debug("<<<<<<<< Entering interface_get_dictkeys")
     dictkeys_local_copy = interface_replace_place_holders(variable, "NO_FIELD", idx, dictkeys@dictkeys)
-    log_debug(">>>>>>>> Leaving interface_get_dictkeys")
     return dictkeys_local_copy
 end
 
@@ -271,9 +261,7 @@ function interface_get_dictkeys_no_var(idx [1] : integer)
 local idx_var, dictkeys_local_copy
 begin
 
-    log_debug("<<<<<<<< Entering interface_get_dictkeys")
     dictkeys_local_copy = interface_replace_place_holders("default", "NO_FIELD", idx, dictkeys@dictkeys)
-    log_debug(">>>>>>>> Leaving interface_get_dictkeys")
     return dictkeys_local_copy
 end
 
@@ -298,7 +286,6 @@ function addfile_wrapper(filename [1]: string, operation [1]:string)
 local fhandle, logfile, datestamp, use_addfile_wrapper
 begin
 
-    log_debug("<<<<<<<< Entering addfile_wrapper")
 
     logfile = "addfile_access.log"
     datestamp = systemfunc("date -u")
@@ -316,6 +303,5 @@ begin
     system("echo " + datestamp + "  --  " + logfile_prefix + filename + " >> " + logfile)
     fhandle = addfile(filename, operation)
 
-    log_debug(">>>>>>>> Leaving addfile_wrapper")
     return fhandle
 end

@@ -55,12 +55,12 @@ procedure create_legend_lines(labels:string, \
 ;;    20140305-A_righ_ma: modified to plot always as epsi format.
 ;;    20140219-A_fran_fr: written.
 ;;
-local funcname, region, temp, outfile, n_suff, wks_legend
+local funcname, scriptname, region, temp, outfile, n_suff, wks_legend
 begin
 
     funcname = "create_legend_lines"
-
-    log_debug("<<<<<<<< Entering create_legend_lines (xy_line.ncl)")
+    scriptname = "plot_scripts/ncl/aux_plotting.ncl"
+    enter_msg(scriptname, funcname, 6)
 
     ;; Flag if RGB or RGBA is used for colors
     if (dimsizes(dimsizes(styles@colors)).ne.1) then
@@ -175,7 +175,7 @@ begin
     draw(blank)
     frame(wks_legend)
 
-    log_debug(">>>>>>>> Leaving create_legend_lines (xy_line.ncl)")
+    leave_msg(scriptname, funcname, 6)
 
 end
 
@@ -196,16 +196,22 @@ function output_type()
 ;; Modification history
 ;;    20131028-A_gott_kl: written.
 ;;
-local file_type
+local funcname, scriptname, file_type
 begin
-    log_debug("<<<<<<<< Entering output_type (aux_plotting.ncl)")
+
+    funcname = "output_type"
+    scriptname = "plot_scripts/ncl/aux_plotting.ncl"
+    enter_msg(scriptname, funcname, 6)
+
     file_type = config_user_info@output_file_type
     if(ismissing(file_type)) then
         file_type = "ps"
     end if
     file_type = str_lower(file_type)
-    log_debug(">>>>>>>> Leaving output_type (aux_plotting.ncl)")
+
+    leave_msg(scriptname, funcname, 6)
     return(file_type)
+
 end
 
 ;;#############################################################################
@@ -232,9 +238,12 @@ procedure copy_VarAtt_sel(var1, var2, sel: string)
 ;; Modification history:
 ;;    20141227-A_gott_kl written.
 ;;
-local atts, i1, i2, n
+local funcname, scriptname, atts, i1, i2, n
 begin
-    log_debug("<<<<<<<< Entering copy_VarAtt_sel (aux_plotting.ncl)")
+
+    funcname = "copy_VarAtt_sel"
+    scriptname = "plot_scripts/ncl/aux_plotting.ncl"
+    enter_msg(scriptname, funcname, 6)
 
     ;; check if var1 has attributes at all 
     atts = getvaratts(var1)
@@ -258,7 +267,8 @@ begin
         end do
     end do
 
-    log_debug("<<<<<<<< Leaving copy_VarAtt_sel (aux_plotting.ncl)")
+    leave_msg(scriptname, funcname, 6)
+
 end
 
 ;;#############################################################################
@@ -289,12 +299,12 @@ function panelling(wks,
 ;; Modification history
 ;;    20131112-A_gott_kl: written.
 ;;
-local plots, info, wks, outfile
+local funcname, scriptname, plots, info, wks, outfile
 begin
 
     funcname = "panelling"
-
-    log_debug("<<<<<<<< Entering panelling (aux_plotting.ncl)")
+    scriptname = "plot_scripts/ncl/aux_plotting.ncl"
+    enter_msg(scriptname, funcname, 6)
 
     ;; check if valid wks has been provided
     if (typeof(wks).ne."graphic") then
@@ -350,8 +360,9 @@ begin
         gsn_panel(wks, plots, (/nrow, ncol/), pres)
     end if
 
-    log_debug(">>>>>>>> Leaving panelling (aux_plotting.ncl)")
+    leave_msg(scriptname, funcname, 6)
     return(outfile)
+
 end
 
 ;;#############################################################################
@@ -371,9 +382,13 @@ function get_plot_dir()
 ;; Modification history
 ;;    20131104-A_gott_kl: written.
 ;;
-local plot_dir
+local funcname, scriptname, plot_dir
 begin
-    log_debug("<<<<<<<< Entering get_plot_dir (aux_plotting.ncl)")
+
+    funcname = "get_plot_dir"
+    scriptname = "plot_scripts/ncl/aux_plotting.ncl"
+    enter_msg(scriptname, funcname, 6)
+
     plot_dir = config_user_info@plot_dir + "/"
     if(ismissing(plot_dir)) then
         plot_dir = "./plots/"
@@ -381,8 +396,10 @@ begin
     if (.not. fileexists(plot_dir)) then
         system("mkdir -p " + plot_dir)
     end if
-    log_debug(">>>>>>>> Leaving get_plot_dir (aux_plotting.ncl)")
+
+    leave_msg(scriptname, funcname, 6)
     return(plot_dir)
+
 end
 
 ;;#############################################################################
@@ -405,10 +422,14 @@ function get_outfile_name(add_specs[1] : string)
 ;;    20131204-A_senf_da: generalized naming.
 ;;    20131104-A_gott_kl: written.
 ;;
-local outfile, file_type, plot_dir, diag_script_base, add_specs, \
-    output_dir
+local funcname, scriptname, outfile, file_type, plot_dir, diag_script_base, \
+    add_specs, output_dir
 begin
-    log_debug("<<<<<<<< Entering get_outfile_name (aux_plotting.ncl)")
+
+    funcname = "get_outfile_name"
+    scriptname = "plot_scripts/ncl/aux_plotting.ncl"
+    enter_msg(scriptname, funcname, 6)
+
     ;; Collect parts of outfile name
     file_type = output_type()  ; Function in ~/plot_scripts/aux_plotting.ncl
     plot_dir = get_plot_dir()  ; Function in ~/plot_scripts/aux_plotting.ncl
@@ -419,7 +440,8 @@ begin
     else
         outfile = plot_dir + add_specs + "." + file_type
     end if
-    log_debug(">>>>>>>> Leaving get_outfile_name (aux_plotting.ncl)")
+
+    leave_msg(scriptname, funcname, 6)
     return(outfile)
 end
 
@@ -448,10 +470,14 @@ function get_wks(wks_in,
 ;; Modification history
 ;;    20131113-A_gott_kl: written.
 ;;
-local wks_in, diag_script, add_specs, file_type
+local funcname, scriptname, wks_in, diag_script, add_specs, file_type
 begin
-    log_debug("<<<<<<<< Entering get_wks (aux_plotting.ncl)")
-    ;; check if a valid wks has been provided, otherwise invoke default
+
+    funcname = "get_wks"
+    scriptname = "plot_scripts/ncl/aux_plotting.ncl"
+    enter_msg(scriptname, funcname, 6)
+
+    ;; Check if a valid wks has been provided, otherwise invoke default
     if(typeof(wks_in).ne."graphic") then  ; Use defaults
         ;; Function in ~/plot_scripts/ncl/aux_plotting.ncl
         file_type = output_type()
@@ -465,8 +491,10 @@ begin
         wks = wks_in
         copy_VarMeta(wks_in, wks)
     end if
-    log_debug(">>>>>>>> Leaving get_wks (aux_plotting.ncl)")
+
+    leave_msg(scriptname, funcname, 6)
     return(wks)
+
 end
 
 ;;#############################################################################
@@ -495,9 +523,12 @@ procedure add_markers(wks[1] : graphic,
 ;; Modification history:
 ;;    20140224-A_gott_kl: written for use with profile_plev.ncl in Emmons.ncl
 ;;
-local res, str, atts, iatt, color
+local funcname, scriptname, res, str, atts, iatt, color
 begin
-    log_debug("<<<<<<<< Entering add_markers (aux_plotting.ncl)")
+
+    funcname = "add_markers"
+    scriptname = "plot_scripts/ncl/aux_plotting.ncl"
+    enter_msg(scriptname, funcname, 6)
 
     ;; set default plot ressources 
     res               = True
@@ -531,7 +562,8 @@ begin
     str = unique_string("polymarker")
     plot@$str$ = gsn_add_polymarker(wks, plot, xpos_in, ypos_in, res)
 
-    log_debug("<<<<<<<< Leaving add_markers (aux_plotting.ncl)")
+    leave_msg(scriptname, funcname, 6)
+
 end
 
 ;;#############################################################################
@@ -562,9 +594,12 @@ procedure add_num_markers(wks[1] : graphic,
 ;; Modification history:
 ;;    20150914-A_wenz_sa: written. 
 ;;
-local xpos, ypos, res, str, atts, iatt, color
+local funcname, scriptname, xpos, ypos, res, str, atts, iatt, color
 begin
-    log_debug("<<<<<<<< Entering add_markers (aux_plotting.ncl)")
+
+    funcname = "add_num_markers"
+    scriptname = "plot_scripts/ncl/aux_plotting.ncl"
+    enter_msg(scriptname, funcname, 6)
 
     ;; set default plot ressources 
     res               = True
@@ -612,7 +647,8 @@ begin
     plot@$str$ = gsn_add_text(wks,plot,sprinti("%-0.2hi",atext),\
                                                  xpos,ypos,res)
 
-    log_debug("<<<<<<<< Leaving add_markers (aux_plotting.ncl)")
+    leave_msg(scriptname, funcname, 6)
+
 end
 
 ;;#############################################################################
@@ -642,9 +678,12 @@ procedure add_errorbar(wks[1] : graphic,
 ;; Modification history:
 ;;    20150914-A_wenz_sa: written. 
 ;;
-local xpos, ypos, res, str, atts, iatt, color
+local funcname, scriptname, xpos, ypos, res, str, atts, iatt, color
 begin
-    log_debug("<<<<<<<< Entering add_markers (aux_plotting.ncl)")
+
+    funcname = "add_errorbar"
+    scriptname = "plot_scripts/ncl/aux_plotting.ncl"
+    enter_msg(scriptname, funcname, 6)
 
     ;; set default plot ressources 
     res                  = True
@@ -733,7 +772,8 @@ begin
         end if
     end do
 
-    log_debug("<<<<<<<< Leaving add_markers (aux_plotting.ncl)")
+    leave_msg(scriptname, funcname, 6)
+
 end
 
 
@@ -773,12 +813,13 @@ procedure horizontal_whiskers(wks[1] : graphic,
 ;; Modification history
 ;;    20140224-A_gott_kl: written.
 ;;
-local n, i, j, xmin, xmax, ypos, imiss, ivalid, result, x, y, res, str
+local funcname, scriptname, n, i, j, xmin, xmax, ypos, imiss, ivalid, result, \
+    x, y, res, str
 begin
 
     funcname = "horizontal_whiskers"
-
-    log_debug("<<<<<<<< Entering horizontal_whiskers (aux_plotting.ncl)")
+    scriptname = "plot_scripts/ncl/aux_plotting.ncl"
+    enter_msg(scriptname, funcname, 6)
 
     ;; check sizes of input vectors
     n = dimsizes(ypos_in)
@@ -842,7 +883,8 @@ begin
         plot@$str$ = gsn_add_polyline(wks, plot, x, y, res)
     end if
 
-    log_debug(">>>>>>>> Leaving horizontal_whiskers (aux_plotting.ncl)")
+    leave_msg(scriptname, funcname, 6)
+
 end
 
 ;;#############################################################################
@@ -873,9 +915,12 @@ procedure add_prediction_error(wks[1] : graphic,
 ;; Modification history:
 ;;    20150914-A_wenz_sa: written. 
 ;;
-local xpos, ypos, res, str, atts, iatt, color
+local funcname, scriptname, xpos, ypos, res, str, atts, iatt, color
 begin
-    log_debug("<<<<<<<< Entering add_markers (aux_plotting.ncl)")
+
+    funcname = "add_prediction_error"
+    scriptname = "plot_scripts/ncl/aux_plotting.ncl"
+    enter_msg(scriptname, funcname, 6)
 
     ;; set default plot ressources 
     res               = True
@@ -901,6 +946,7 @@ begin
     str = unique_string("polygon")
     plot@$str$ = gsn_add_polygon(wks,plot,xpos_in,ypos_in,res)
 
-    log_debug("<<<<<<<< Leaving add_markers (aux_plotting.ncl)")
+    leave_msg(scriptname, funcname, 6)
+
 end
 

@@ -67,7 +67,7 @@ begin
     ;;# Fetch general parameters, set in namelist_MyDiag.yml,   #
     ;;# passed via environment variables by python code         #
     ;;###########################################################
-    log_debug("<<<<<<<< Entering " + diag_script)
+    enter_msg(diag_script, "", 4)
 
     ;; 'diag_script' and 'variables' are fetched from the
     ;; above 'ncl.interface' file
@@ -269,5 +269,5 @@ begin
 ;    outfile = panelling(wks, maps, nmap, 1, pres)
 ;    log_info(" Wrote " + outfile)
 
-    log_debug(">>>>>>>> Leaving " + diag_script)
+    leave_msg(diag_script, "", 4)
 end

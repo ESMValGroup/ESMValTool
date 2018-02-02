@@ -49,14 +49,14 @@ undef("get_title_suffix")
 function get_title_suffix(plot_settings[1]: logical)
 local main_title_suffix
 begin
-    log_debug("<<<<<<<< Entering get_title_suffix")
+
     if (isatt(plot_settings, "main_title_suffix")) then
         main_title_suffix = plot_settings@main_title_suffix
     else
         main_title_suffix = ""
     end if
     return main_title_suffix
-    log_debug(">>>>>>>> Leaving get_title_suffix")
+
 end
 
 undef("remove_attrs")
@@ -339,7 +339,7 @@ local aux_title_info,      cn_levels_string,   curr,\
     storage_record,      textres,            var0,\
     wks,                 diff_model_ref,     txres
 begin
-    log_debug("<<<<<<<< Entering two_by_one")
+
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
@@ -423,7 +423,7 @@ begin
         end if
 
     end do  ; idx_mod = 0, dim_MOD - 1
-    log_debug(">>>>>>>> Leaving two_by_one")
+
 end
 undef("three_by_one_diff")
 procedure three_by_one_diff(storage_vault[1]: logical,
@@ -447,7 +447,7 @@ local aux_title_info,      cn_levels_string,   curr,\
     storage_record,      textres,            var0,\
     wks,                 diff_model_ref,     txres
 begin
-    log_debug("<<<<<<<< Entering three_by_one_diff")
+
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
@@ -539,7 +539,7 @@ begin
         end if
 
     end do  ; idx_mod = 0, dim_MOD - 1
-    log_debug(">>>>>>>> Leaving three_by_one_diff")
+
 end
 
 undef("plot_three_by_one_vector")

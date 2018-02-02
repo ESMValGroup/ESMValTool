@@ -48,7 +48,10 @@ function legend_lines(wks_in[1], \
 ;;
 local data, defaults, var, diag_script, colors, annots, dashes, thicks  
 begin
-    log_debug("<<<<<<<< Entering legend_lines (legends.ncl)")
+
+    funcname = "legend_lines"
+    scriptname = "plot_scripts/ncl/legends.ncl"
+    enter_msg(scriptname, funcname, 4)
 
     ;; Get data, either directly or via netCDF file
     if(typeof(source) .eq. "string") then
@@ -172,8 +175,7 @@ begin
 ;    log_info(" Wrote " + plot@outfile)
     log_info(" Wrote " + wks_legend@fullname)
 
-    log_debug(">>>>>>>> Leaving legend_lines (legends.ncl)")
-
+    leave_msg(scriptname, funcname, 4)
     return(wks_legend)
 
 end
@@ -209,7 +211,10 @@ function legend_markers(wks_in[1], \
 ;;
 local data, defaults, var, diag_script, colors, annots, dashes, thicks  
 begin
-    log_debug("<<<<<<<< Entering legend_lines (legends.ncl)")
+
+    funcname = "legend_markers"
+    scriptname = "plot_scripts/ncl/legends.ncl"
+    enter_msg(scriptname, funcname, 4)
 
     ;; Get data, either directly or via netCDF file
     if(typeof(source) .eq. "string") then
@@ -313,8 +318,7 @@ begin
 
     ;log_info(" Wrote " + wks_legend@fullname)
 
-    log_debug(">>>>>>>> Leaving legend_lines (legends.ncl)")
-
+    leave_msg(scriptname, funcname, 4)
     return(wks_legend)
 
 end

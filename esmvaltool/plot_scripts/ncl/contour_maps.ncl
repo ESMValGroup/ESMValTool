@@ -4,11 +4,12 @@
 ;; Please consider using or extending existing routines before adding new ones.
 ;; Check the header of each routine for documentation.
 ;;
-;;    contour_map: wrapper for gsn_csm_contour_map
-;;    contour_map_polar: wrapper for gsn_csm_contour_map_polar
-;;    contour_map_ce: wrapper for gsn_csm_contour_map
-;;    add_markers_to_map: overlays markers to an existing map plot, using the
-;;                        same color coding of the associated labelbar
+;; Contents:
+;;
+;;    function contour_map
+;;    function contour_map_polar
+;;    function contour_map_ce
+;;    procedure add_markers_to_map
 ;;
 ;;#############################################################################
 
@@ -57,8 +58,8 @@ local funcname, data, defaults, diag_script, var, wks, res, res_new
 begin
 
     funcname = "contour_map"
-
-    log_debug("<<<<<<<< Entering contour_map")
+    scriptname = "plot_scripts/ncl/contour_maps.ncl"
+    enter_msg(scriptname, funcname, 6)
 
     ;; Get data, either directly or via netCDF file
     if(typeof(source) .eq. "string") then
@@ -112,7 +113,7 @@ begin
         map@outfile = wks@fullname
     else
         map@outfile = wks@name
-        error_msg("w", "contour_maps.ncl", funcname, "wks@fullname " + \
+        error_msg("w", scriptname, funcname, "wks@fullname " + \
                   "missing, consider to use get_wks to open wks")
     end if
 
@@ -123,7 +124,8 @@ begin
     else
         log_info(" Wrote " + wks@name)
     end if
-    log_debug(">>>>>>>> Leaving contour_map")
+
+    leave_msg(scriptname, funcname, 6)
     return(map)
 
 end
@@ -168,8 +170,8 @@ local funcname, data, defaults, var, diag_script, wks, res, res_in, res1
 begin
 
     funcname = "contour_map_polar"
-
-    log_debug("<<<<<<<< Entering contour_map_polar")
+    scriptname = "plot_scripts/ncl/contour_maps.ncl"
+    enter_msg(scriptname, funcname, 6)
 
     ;; Get data, either directly or via netCDF file
     if(typeof(source) .eq. "string") then
@@ -191,7 +193,7 @@ begin
     if (isatt(data, "diag_script")) then
         diag_script = att2var(data, "diag_script")
     else
-        error_msg("f", "contour_maps.ncl", funcname, "name of diag_script " + \
+        error_msg("f", scriptname, funcname, "name of diag_script " + \
                   "has to be passed as attribute of source")
     end if
 
@@ -224,10 +226,10 @@ begin
         res@gsnPolarNH        = True
         res@mpMinLatF         = diag_script_info@min_lat  ; Default is 0
     else if (diag_script_info@region .eq. "global")
-        error_msg("f", "contour_maps.ncl", funcname, "for global data use " + \
+        error_msg("f", scriptname, funcname, "for global data use " + \
                   "function contour_map in ./plot_scripts/contour_maps.ncl")
     else
-        error_msg("f", "contour_maps.ncl", funcname, "no (valid) region " + \
+        error_msg("f", scriptname, funcname, "no (valid) region " + \
                   "selection: " + diag_script_info@region)
     end if
     end if
@@ -262,8 +264,9 @@ begin
         areaplot = gsn_csm_contour_map_polar(wks_in, data, res)
     end if
 
-    log_debug(">>>>>>>> Leaving contour_map_polar")
+    leave_msg(scriptname, funcname, 6)
     return(areaplot)
+
 end 
 
 ;;#############################################################################
@@ -305,7 +308,9 @@ function contour_map_ce(wks_in[1],
 local data, var, wks, res
 begin
 
-    log_debug("<<<<<<<< Entering contour_map_ce")
+    funcname = "contour_map_ce"
+    scriptname = "plot_scripts/ncl/contour_maps.ncl"
+    enter_msg(scriptname, funcname, 6)
 
     ;; Get data, either directly or via netCDF
     if (typeof(source).eq."string") then
@@ -370,8 +375,9 @@ begin
         plot = gsn_csm_contour_map_ce(wks_in, data, res)
     end if
 
-    log_debug(">>>>>>>> Leaving contour_map_ce")
+    leave_msg(scriptname, funcname, 6)
     return(plot)
+
 end
 
 ;;#############################################################################
@@ -400,14 +406,14 @@ local funcname, class_name, views, cn_levels, lb_colors, cmap, colors, \
 begin
 
     funcname = "add_markers_to_map"
-
-    log_debug("<<<<<<<< Entering markers_on_map")
+    scriptname = "plot_scripts/ncl/contour_maps.ncl"
+    enter_msg(scriptname, funcname, 6)
 
     ;; Check data consistency
     if (dimsizes(lat).ne.dimsizes(lon) .or. \
         dimsizes(data).ne.dimsizes(lon) .or. \
         dimsizes(data).ne.dimsizes(lat)) then
-        error_msg("f", "contour_maps.ncl", funcname, "size of input not " + \
+        error_msg("f", scriptname, funcname, "size of input not " + \
                   "consistent")
     end if
 
@@ -421,7 +427,7 @@ begin
             end getvalues
         end if
     else
-        error_msg("f", "contour_maps.ncl", funcname, "input plot must be " + \
+        error_msg("f", scriptname, funcname, "input plot must be " + \
                   "a contour plot")
     end if
 

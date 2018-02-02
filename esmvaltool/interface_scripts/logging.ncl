@@ -143,9 +143,9 @@ procedure enter_msg(script[1]:string,
 begin
 
     if (func.eq."") then
-        log_debug("<<<<<<<< Entering " + script)
+        log_debug("<<< Entering " + script)
     else
-        log_debug("<<<<<<<< Entering " + func + " (" + script + ")")
+        log_debug("<<< Entering " + func + " (" + script + ")")
     end if
 
 end
@@ -174,9 +174,9 @@ procedure leave_msg(script[1]:string,
 begin
 
     if (func.eq."") then
-        log_debug(">>>>>>>> Leaving " + script)
+        log_debug(">>> Leaving " + script)
     else
-        log_debug(">>>>>>>> Leaving " + func + " (" + script + ")")
+        log_debug(">>> Leaving " + func + " (" + script + ")")
     end if
 
 end

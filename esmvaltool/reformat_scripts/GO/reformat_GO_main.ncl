@@ -54,7 +54,6 @@ load "interface_scripts/logging.ncl"
 ;;        hence the need for the additional begin/end block below
 begin
     
-    log_debug("<<<<<<<< Entering reformat_GO_main.ncl")
     project = getenv("ESMValTool_project")
     model= getenv("ESMValTool_model")
     log_debug("In reformatGO_main.ncl")
@@ -584,6 +583,6 @@ begin
         print("fatal: No data was within the specified date range. Please check your setting!")
         status_exit(1)
     end if
-    log_debug(">>>>>>>> Leaving reformat_GO_main.ncl")
+
 
 end

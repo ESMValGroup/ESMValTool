@@ -53,9 +53,12 @@ function taylor_plot(wks_in[1],
 ;; Modification history:
 ;;    20150505-A_righ_ma: written based on the original NCL code.
 ;;
+local funcname, scriptname
 begin
 
-    log_debug("<<<<<<<< Entering taylor_plot")
+    funcname = "taylor_plot"
+    scriptname = "plot_scripts/ncl/taylor_plot.ncl"
+    enter_msg(scriptname, funcname, 4)
 
     ;; Get data, either directly or via netCDF file
     if(typeof(source) .eq. "string") then
@@ -440,7 +443,7 @@ begin
     frame(wks)
     taylor@outfile = wks@name
 
-    log_debug(">>>>>>>> Leaving taylor_plot")
+    leave_msg(scriptname, funcname, 4)
     return(taylor)
 
 end

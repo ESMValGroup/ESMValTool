@@ -54,8 +54,6 @@ begin
     scriptname = "plot_scripts/ncl/contourplot.ncl"
     enter_msg(scriptname, funcname, 10)
 
-    log_debug("<<<<<<<< Entering " + funcname)
-
     ;; Get data, either directly or via netCDF file
     if(typeof(source) .eq. "string") then
         data = ncdf_read(source, varname)
@@ -117,6 +115,7 @@ begin
     else
         log_info(" Wrote " + plot@outfile)
     end if
+
     leave_msg(scriptname, funcname, 10)
     return(plot)
 

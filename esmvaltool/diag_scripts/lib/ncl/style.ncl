@@ -367,7 +367,10 @@ function project_style_GO(flag:string)
 ;
 local result, modelstyles, flag
 begin
-    log_debug("<<<<<<<< Entering style_GO.ncl")
+
+    funcname = "project_style_GO"
+    scriptname = "diag_scripts/lib/ncl/style.ncl"
+    enter_msg(scriptname, funcname, 6)
 
     ;; define (/model, color, dash, thickness, avgstd/) for each model
     modelstyles = (/ (/"PlankTOM5",     "(/0.6,     0.,      0.0078/)",          "0",  "1",  "0"/), \
@@ -399,7 +402,7 @@ begin
     end if
     end if
 
-    log_debug(">>>>>>>> Leaving style_GO.ncl")
+    leave_msg(scriptname, funcname, 6)
     return(result)
 end
 

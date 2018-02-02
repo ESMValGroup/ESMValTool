@@ -20,6 +20,7 @@
 ;;    procedure seasonal_plot
 ;;    procedure xy_plot_wrapper
 ;;    procedure ts_line_wrapper
+;;    procedure xy_line_overlap
 ;;
 ;;#############################################################################
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
@@ -44,6 +45,7 @@ load "./diag_scripts/lib/ncl/style.ncl"
 
 load "./plot_scripts/ncl/xy_line.ncl"
 
+;;#############################################################################
 undef("get_title_suffix")
 function get_title_suffix(plot_settings [1] : logical)
 ;;
@@ -66,16 +68,23 @@ function get_title_suffix(plot_settings [1] : logical)
 ;;
 local main_title_suffix
 begin
-    log_debug("<<<<<<<< Entering get_title_suffix")
+
+    funcname = "get_title_suffix"
+    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    enter_msg(scriptname, funcname, 4)
+
     if (isatt(plot_settings, "main_title_suffix")) then
         main_title_suffix = plot_settings@main_title_suffix
     else
         main_title_suffix = ""
     end if
-    return main_title_suffix
-    log_debug(">>>>>>>> Leaving get_title_suffix")
+
+    leave_msg(scriptname, funcname, 4)
+    return(main_title_suffix)
+
 end
 
+;;#############################################################################
 undef("remove_attrs")
 procedure remove_attrs(p_settings [1]:logical,
                       attributes [*]:string)
@@ -98,13 +107,22 @@ procedure remove_attrs(p_settings [1]:logical,
 ;;
 local idx, settings
 begin
+
+    funcname = "remove_attrs"
+    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    enter_msg(scriptname, funcname, 4)
+
     do idx = 0, dimsizes(attributes) - 1
         if (isatt(p_settings, attributes(idx))) then
             delete(p_settings@$attributes(idx)$)
         end if
     end do
+
+    leave_msg(scriptname, funcname, 4)
+
 end
 
+;;#############################################################################
 undef("plot_two_by_one")
 procedure plot_two_by_one(wks [1]:graphic,
                           res [1]:logical,\
@@ -147,7 +165,11 @@ local am_infobox_id,      cn_levels_string,   debugbox,\
     plot2,              statistics,         storage_record,\
     txres,              upper
 begin
-    log_debug("<<<<<<<< Entering plot_two_by_one")
+
+    funcname = "plot_two_by_one"
+    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    enter_msg(scriptname, funcname, 4)
+
     res = panel_three_by_one(res, 0)  ; Update resource for first plot
     res@cnLevelSelectionMode = "ExplicitLevels"
     if (isatt(res, "cnLevels")) then
@@ -247,9 +269,12 @@ begin
                           debuginfo@description,\
                           debuginfo@description_ycoord)
     end if
-    log_debug(">>>>>>>> Leaving plot_two_by_one")
+
+    leave_msg(scriptname, funcname, 4)
+
 end
 
+;;#############################################################################
 undef("plot_three_by_one_diff")
 procedure plot_three_by_one_diff(wks [1]:graphic,
                                  res [1]:logical,\
@@ -294,7 +319,11 @@ res,             statistics,         storage_record,\
 title_name,      txres
 
 begin
-    log_debug("<<<<<<<< Entering plot_three_by_one_diff")
+    
+    funcname = "plot_three_by_one_diff"
+    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    enter_msg(scriptname, funcname, 4)
+
     res = panel_three_by_one(res, 0)  ; Update resource for first plot
     res@cnLevelSelectionMode = "ExplicitLevels"
     if (isatt(res, "cnLevels")) then
@@ -440,9 +469,12 @@ begin
                           debuginfo@description,\
                           debuginfo@description_ycoord)
     end if
-    log_debug(">>>>>>>> Leaving plot_three_by_one_diff")
+
+    leave_msg(scriptname, funcname, 4)
+
 end
 
+;;#############################################################################
 undef("two_by_one")
 procedure two_by_one(storage_vault [1] : logical,
                      di [1] : logical,
@@ -487,7 +519,11 @@ local aux_title_info,      cn_levels_string,   curr,\
     storage_record,      textres,            var0,\
     wks,                 diff_model_ref,     txres
 begin
-    log_debug("<<<<<<<< Entering two_by_one")
+
+    funcname = "two_by_one"
+    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    enter_msg(scriptname, funcname, 4)
+
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
@@ -580,9 +616,12 @@ begin
         end if
 
     end do  ; idx_mod = 0, dim_MOD - 1
-    log_debug(">>>>>>>> Leaving two_by_one")
+
+    leave_msg(scriptname, funcname, 4)
+
 end
 
+;;#############################################################################
 undef("three_by_one_diff")
 procedure three_by_one_diff(storage_vault [1] : logical,
                             di [1] : logical,
@@ -625,7 +664,11 @@ local aux_title_info,      cn_levels_string,   curr,\
     storage_record,      textres,            var0,\
     wks,                 diff_model_ref,     txres
 begin
-    log_debug("<<<<<<<< Entering three_by_one_diff")
+
+    funcname = "three_by_one_diff"
+    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    enter_msg(scriptname, funcname, 4)
+
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
@@ -726,9 +769,12 @@ begin
         end if
 
     end do  ; idx_mod = 0, dim_MOD - 1
-    log_debug(">>>>>>>> Leaving three_by_one_diff")
+
+    leave_msg(scriptname, funcname, 4)
+
 end
 
+;;#############################################################################
 undef("plot_three_by_one_vector")
 procedure plot_three_by_one_vector(wks [1]:graphic,
                                    res [1]:logical,
@@ -781,7 +827,11 @@ local am_infobox_id,      cn_levels_string,   debugbox,\
     statistics,         storage_record,     txres,\
     ua,                 va
 begin
-    log_debug("<<<<<<<< Entering plot_three_by_one_vector")
+
+    funcname = "plot_three_by_one_vector"
+    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    enter_msg(scriptname, funcname, 4)
+
     res = panel_three_by_one(res, 0)  ; Update resource for first plot
     res@cnLevelSelectionMode = "ExplicitLevels"
     if (isatt(res, "cnLevels")) then
@@ -954,9 +1004,12 @@ begin
                           debuginfo@description,\
                           debuginfo@description_ycoord)
     end if
-    log_debug(">>>>>>>> Leaving plot_three_by_one_vector")
+
+    leave_msg(scriptname, funcname, 4)
+
 end
 
+;;#############################################################################
 undef("three_by_one_vector")
 procedure three_by_one_vector(storage_vault [1] : logical,
                             di [1] : logical,
@@ -999,7 +1052,11 @@ local aux_title_info,      cn_levels_string,   curr,\
     storage_record,      textres,            var0,\
     wks,                 wks_debug,          txres
 begin
-    log_debug("<<<<<<<< Entering three_by_one_vector")
+
+    funcname = "three_by_one_vector"
+    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    enter_msg(scriptname, funcname, 4)
+
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
@@ -1098,9 +1155,12 @@ begin
             delete(wks_debug)
         end if
     end do  ; idx_mod = start_idx, dim_MOD - 1
-    log_debug(">>>>>>>> Leaving three_by_one_vector")
+
+    leave_msg(scriptname, funcname, 4)
+
 end
 
+;;#############################################################################
 undef("plot_multipanel")
 procedure plot_multipanel(cols[*]:integer,
                           rows[*]:float,
@@ -1163,7 +1223,11 @@ local am_infobox_id,    blank_plot,            cn_levels_string,\
     ref,              res,                   statistics,\
     storage_record,   txres
 begin
-    log_debug("<<<<<<<< Entering plot_multipanel")
+
+    funcname = "plot_multipanel"
+    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    enter_msg(scriptname, funcname, 4)
+
     ;; Update position, labelbar and title
     curr_figure_pos = figure_panel_placement(curr_idx)
     res = panel_n_by_cols(res, curr_figure_pos, rows, cols, figures_per_page(curr_page))
@@ -1342,9 +1406,12 @@ begin
                           debuginfo@description,\
                           debuginfo@description_ycoord)
     end if
-    log_debug(">>>>>>>> Leaving plot_multipanel")
+
+    leave_msg(scriptname, funcname, 4)
+
 end
 
+;;#############################################################################
 undef("multipanel")
 procedure multipanel(storage_vault [1] : logical,
                      di [1] : logical,
@@ -1393,6 +1460,11 @@ local aux_title_info,      blank_plot,              cn_levels_string,\
     total_no_of_pages,   txres,                   type_specifier,\
     var0,                wks
 begin
+
+    funcname = "multipanel"
+    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    enter_msg(scriptname, funcname, 4)
+
     ; No of models may differ from dimsizes(dim_MOD) if variables
     ; from different models are combined (e.g., 'ts' from HadISST
     ; and 'pr' from TRMM)
@@ -1562,8 +1634,12 @@ begin
             frame(wks_debug)
         end if
     end do  ; curr_fig = 1, figures_per_page(curr_page) - 1
+
+    leave_msg(scriptname, funcname, 4)
+
 end
 
+;;#############################################################################
 undef("plot_multipanel_vector")
 procedure plot_multipanel_vector(cols[*]:integer,
                                  rows[*]:float,
@@ -1629,7 +1705,11 @@ local am_infobox_id,       blank_plot,          cn_levels_string,\
     txres,               ua,                  ua_ref,\
     va,                  va_ref
 begin
-    log_debug("<<<<<<<< Entering plot_multipanel_vector")
+
+    funcname = "plot_multipanel_vector"
+    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    enter_msg(scriptname, funcname, 4)
+
     ;; Update position, labelbar and title
     curr_figure_pos = figure_panel_placement(curr_idx)
     res = panel_n_by_cols(res, curr_figure_pos, rows, cols, figures_per_page(curr_page))
@@ -1856,9 +1936,12 @@ begin
                           debuginfo@description,\
                           debuginfo@description_ycoord)
     end if
-    log_debug(">>>>>>>> Leaving plot_multipanel_vector")
+
+    leave_msg(scriptname, funcname, 4)
+
 end
 
+;;#############################################################################
 undef("multipanel_vector")
 procedure multipanel_vector(storage_vault [1] : logical,
                             di [1] : logical,
@@ -1909,6 +1992,12 @@ local aux_title_info,          blank_plot,        cn_levels_string,\
     var0,                    var1,                va_ref,\
     wks,                     plot_ref_v
 begin
+
+    funcname = "multipanel_vector"
+    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    enter_msg(scriptname, funcname, 4)
+
+
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
@@ -2072,8 +2161,12 @@ begin
             frame(wks_debug)
         end if
     end do
+
+    leave_msg(scriptname, funcname, 4)
+
 end
 
+;;#############################################################################
 undef("seasonal_plot")
 procedure seasonal_plot(storage_vault [1] : logical,
                         di [1] : logical,
@@ -2111,7 +2204,11 @@ local am_infobox_id,             am_labelbar_id,         amres,\
     txres,                     var0,                   wks,\
     xaxis,                     var1,                   field_type1
 begin
-    log_debug("<<<<<<<< Entering seasonal_plot")
+
+    funcname = "seasonal_plot"
+    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    enter_msg(scriptname, funcname, 4)
+
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
@@ -2262,9 +2359,12 @@ begin
                           debuginfo@description_ycoord)
     end if
     frame(wks)
-    log_debug(">>>>>>>> Leaving seasonal_plot")
+
+    leave_msg(scriptname, funcname, 4)
+
 end
 
+;;#############################################################################
 undef("xy_plot_wrapper")
 procedure xy_plot_wrapper(storage_vault [1] : logical,
                                      di [1] : logical,
@@ -2302,7 +2402,11 @@ local annots,           annots_mmm,        avgstd,\
     values_stddev,    var0,              var1,\
     wks,              wks_debug,         idx_th
 begin
-    log_debug("<<<<<<<< Entering xy_plot_wrapper")
+
+    funcname = "xy_plot_wrapper"
+    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    enter_msg(scriptname, funcname, 4)
+
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
@@ -2447,9 +2551,12 @@ begin
     if (debuginfo) then
         xy_line(wks_debug, values, values&month, values_stddev, res, debuginfo)
     end if
-    log_debug(">>>>>>>> Leaving xy_plot_wrapper")
+
+    leave_msg(scriptname, funcname, 4)
+
 end
 
+;;#############################################################################
 undef("ts_line_wrapper")
 procedure ts_line_wrapper(storage_vault [1] : logical,
                                      di [1] : logical,
@@ -2485,7 +2592,11 @@ local    annots,           avgstd,            diag_script_base,\
     values,           values_stddev,     var0,\
     var1,             wks,               wks_debug
 begin
-    log_debug("<<<<<<<< Entering ts_line_wrapper")
+
+    funcname = "ts_line_wrapper"
+    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    enter_msg(scriptname, funcname, 4)
+
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
@@ -2601,10 +2712,12 @@ begin
     if (debuginfo) then
         xy_line(wks_debug, values, di@years, values_stddev, res, debuginfo)
     end if
-    log_debug(">>>>>>>> Leaving ts_line_wrapper")
+
+    leave_msg(scriptname, funcname, 4)
+
 end
 
-
+;;#############################################################################
 undef("xy_line_overlap")
 procedure xy_line_overlap(storage_vault [1] : logical,
                                      di [1] : logical,
@@ -2620,7 +2733,11 @@ local    annots,           avgstd,            diag_script_base,\
     var1,             wks,               wks_debug,\
     res2,             coord
 begin
-    log_debug("<<<<<<<< Entering xy_line_overlap")
+
+    funcname = "xy_line_overlap"
+    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    enter_msg(scriptname, funcname, 4)
+
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
@@ -2966,5 +3083,7 @@ begin
 
     draw(plot(0))
     frame(wks)
-    log_debug(">>>>>>>> Leaving xy_line_overlap")
+
+    leave_msg(scriptname, funcname, 4)
+
 end
