@@ -56,17 +56,10 @@ def check_ncl_version():
     version = version.strip()
     logger.info("Found NCL version %s", version)
 
-    if version == "6.3.0":
-        logger.error("NCL version " + version + " not supported due to a bug "
-                     + "(see Known Issues in the ESMValTool user guide)")
-
-    if int(version.split(".")[0]) < 6:
-        logger.error("NCL version " + version +
-                     " not supported, need version 6.2.0 or higher")
-
-    if int(version.split(".")[0]) == 6 and int(version.split(".")[1]) < 2:
-        logger.error("NCL version " + version +
-                     " not supported, need version 6.2.0 or higher")
+    major, minor = (int(i) for i in version.split('.')[:2])
+    if major < 6 or (major == 6 and minor < 4):
+        raise NamelistError("NCL version 6.4 or higher is required to run "
+                            "a namelist containing NCL scripts.")
 
 
 def check_namelist_with_schema(filename):
