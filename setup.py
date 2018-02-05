@@ -162,7 +162,6 @@ with open('README.md') as readme:
             'cf_units',
             'cython',
             'esgf-pyclient',
-            'geoval',
             'matplotlib',
             'netCDF4',
             'numba',
