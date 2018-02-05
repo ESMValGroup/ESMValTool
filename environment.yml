@@ -7,54 +7,15 @@ channels:
 # ESMVALTOOL DEPENDENCIES
 
 dependencies:
-# Needed by main, preprocessor, workflow, one or more diagnostics, shared diagnostic code.
+# Python packages that cannot be installed from PyPI:
 - basemap
-- cartopy
-- cf_units
-- cython
-- flask
 - iris
-- ncl
-- netcdf4
-- numba=0.35.0
-- numpy
-- pillow # providing PIL package
-- python-cdo
 - python-stratify
-- pyyaml
-- scipy
-- shapely
-- six
+# Multi language support:
+- ncl
+# TODO: add R, julia
 
-# DEVELOPMENT DEPENDENCIES
-#
-# Dependencies below that are required by 'setup.py test' and 'setup.py lint'
-# should also be automatically be installed by setup.py in a temporary
-# location when required to run the command.
-
-# documentation
-- sphinx
-
-# testing
-- mock
-- nose
-- pytest
-- pytest-cov
-- pytest-html
-
-# Note that there can be only one pip section
 - pip:
-  - easytest
-  - esgf-pyclient
-  - geoval
-  # TODO: replace dummydata by conda/PyPI package and move to testing
+  # TODO: include dummydata in esmvaltool repository and move to setup.py
   # dummydata fetched from github as a zip file, contains latest version
   - https://github.com/ESMValGroup/dummydata/archive/dev.zip
-  # code style (pip versions are more up to date)
-  - isort
-  - prospector[with_pyroma]
-  - pycodestyle  # also used for testing
-  - pydocstyle
-  - pylint
-  - yapf
-  - yamale

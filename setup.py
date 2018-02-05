@@ -16,7 +16,7 @@ from setuptools import Command, setup
 
 PACKAGES = [
     'esmvaltool',
-    'doc', # install doc/MASTER_authors-refs-acknow.txt
+    'doc',  # install doc/MASTER_authors-refs-acknow.txt
 ]
 
 
@@ -147,6 +147,7 @@ with open('README.md') as readme:
             'License :: OSI Approved :: Apache Software License',
             'Programming Language :: Python',
             'Programming Language :: Python :: 2.7',
+            'Programming Language :: Python :: 3.6',
         ],
         packages=PACKAGES,
         # Include all version controlled files
@@ -156,19 +157,24 @@ with open('README.md') as readme:
             'setuptools_scm',
         ],
         install_requires=[
+            'cartopy',
             'cdo',
             'cf_units',
-            'coverage',
+            'cython',
             'esgf-pyclient',
-            'numpy',
-            'netCDF4',
+            'geoval',
             'matplotlib',
+            'netCDF4',
+            'numba',
+            'numpy',
+            'pillow',
             'pyyaml',
             'shapely',
-            'pillow',
+            'six',
+            'yamale',
         ],
         tests_require=[
-            # TODO: add dummydata package once up to date PyPI version
+            # TODO: add dummydata package, see environment.yml
             'easytest',
             'mock',
             'nose',
@@ -176,8 +182,22 @@ with open('README.md') as readme:
             'pytest',
             'pytest-cov',
             'pytest-html',
-            'pytest-metadata>=1.5.1',
+            'pytest-metadata',
         ],
+        extras_require={
+            # Use pip install -e .[dev] to install in development mode
+            # with extra packages useful for development.
+            'dev': [
+                'isort',
+                'prospector[with_pyroma]',
+                'pycodestyle',
+                'pydocstyle',
+                'pylint',
+                'sphinx',
+                'yamllint',
+                'yapf',
+            ]
+        },
         entry_points={
             'console_scripts': [
                 'esmvaltool = esmvaltool.main:run',
