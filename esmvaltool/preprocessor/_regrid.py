@@ -387,6 +387,24 @@ def vinterp(src_cube, levels, scheme):
 
 
 def get_cmor_levels(levels):
+    """
+    Get level definition from a CMOR coordinate
+
+    Parameters
+    ----------
+    levels: str
+        String in the format {CMOR_TABLE}_{COORDINATE_NAME}
+
+    Returns
+    -------
+    list[int]
+
+    Raises
+    ------
+    ValueError:
+        If the CMOR table is not defined, the coordinata does not specify any
+        levels or the string is badly formatted
+    """
     level_definition = levels.split('_')
     cmor_type = level_definition[0]
 

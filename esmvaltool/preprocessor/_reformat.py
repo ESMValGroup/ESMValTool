@@ -1,12 +1,7 @@
 """Simple interface to reformat and CMORize functions."""
 from ..interface_scripts.cmor_check import CMORCheck
 from ..interface_scripts.fixes.fix import Fix
-from ..interface_scripts.variable_info import CMIP5Info, CMIP6Info
-
-CMOR_TABLES = {
-    'CMIP5': CMIP5Info(),
-    'CMIP6': CMIP6Info(),
-}
+from ..interface_scripts.variable_info import CMOR_TABLES
 
 
 def _get_cmor_checker(table,

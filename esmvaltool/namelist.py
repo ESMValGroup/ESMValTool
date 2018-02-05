@@ -6,6 +6,7 @@ import fnmatch
 import inspect
 import logging
 import os
+import subprocess
 
 import yamale
 import yaml
@@ -19,7 +20,7 @@ from .preprocessor._download import synda_search
 from .preprocessor._io import concatenate_callback
 from .preprocessor._reformat import CMOR_TABLES
 from .task import (MODEL_KEYS, DiagnosticTask, InterfaceTask,
-                   get_independent_tasks, run_tasks)
+                   get_independent_tasks, run_tasks, which)
 from .version import __version__
 
 logger = logging.getLogger(__name__)
@@ -36,6 +37,29 @@ def read_namelist_file(filename, config_user, initialize_tasks=True):
     raw_namelist = check_namelist(filename)
     return Namelist(
         raw_namelist, config_user, initialize_tasks, namelist_file=filename)
+
+
+def check_ncl_version():
+    """Check the NCL version"""
+    ncl = which('ncl')
+    if not ncl:
+        raise NamelistError("Namelist contains NCL scripts, but cannot find "
+                            "an NCL installation.")
+    try:
+        cmd = [ncl, '-V']
+        version = subprocess.check_output(cmd, universal_newlines=True)
+    except subprocess.CalledProcessError:
+        logger.error("Failed to execute '%s'", ' '.join(' '.join(cmd)))
+        raise NamelistError("Namelist contains NCL scripts, but your NCL "
+                            "installation appears to be broken.")
+
+    version = version.strip()
+    logger.info("Found NCL version %s", version)
+
+    major, minor = (int(i) for i in version.split('.')[:2])
+    if major < 6 or (major == 6 and minor < 4):
+        raise NamelistError("NCL version 6.4 or higher is required to run "
+                            "a namelist containing NCL scripts.")
 
 
 def check_namelist_with_schema(filename):
@@ -179,9 +203,9 @@ def check_data_availability(input_files, start_year, end_year):
                 ", ".join(str(year) for year in missing_years), input_files))
 
 
-def _get_value(key, variables):
-    """Get a value for key by looking at the other variables."""
-    values = {variable[key] for variable in variables if key in variable}
+def _get_value(key, models):
+    """Get a value for key by looking at the other models."""
+    values = {model[key] for model in models if key in model}
 
     if len(values) > 1:
         raise NamelistError("Ambigous values {} for property {}".format(
@@ -189,10 +213,19 @@ def _get_value(key, variables):
     return values.pop()
 
 
+def _update_from_others(variable, keys, models):
+    """Get values for keys by copying from the other models."""
+    for key in keys:
+        if key not in variable:
+            value = _get_value(key, models)
+            if value is not None:
+                variable[key] = value
+
+
 def _add_cmor_info(variable, keys):
     """Add information from CMOR tables to variable."""
-    if variable['project'] in CMOR_TABLES:
-        variable_info = CMOR_TABLES[variable['project']].get_variable(
+    if variable['cmor_table'] in CMOR_TABLES:
+        variable_info = CMOR_TABLES[variable['cmor_table']].get_variable(
             variable['mip'], variable['short_name'])
         for key in keys:
             if key not in variable and hasattr(variable_info, key):
@@ -323,7 +356,7 @@ def _apply_preprocessor_settings(settings, profile_settings):
             settings[step].update(args)
 
 
-def _update_multi_model_mean(variables, settings, config_user):
+def _update_multi_model_mean(variables, settings):
     """Configure multi model mean."""
     if settings.get('multi_model_mean', False):
         if settings['multi_model_mean'] is True:
@@ -355,7 +388,7 @@ def _get_preprocessor_settings(variables, preprocessors, config_user):
             "Unknown preprocessor {} in variable {} of diagnostic {}".format(
                 preproc_name, variable['short_name'], variable['diagnostic']))
     profile_settings = preprocessors[variable['preprocessor']]
-    _update_multi_model_mean(variables, profile_settings, config_user)
+    _update_multi_model_mean(variables, profile_settings)
 
     for variable in variables:
         settings = _get_default_settings(variable, config_user)
@@ -464,6 +497,7 @@ class Namelist(object):
 
         diagnostics = {}
 
+        ncl_version_checked = False
         for name, raw_diagnostic in raw_diagnostics.items():
             diagnostic = {}
             diagnostic['name'] = name
@@ -476,6 +510,13 @@ class Namelist(object):
             diagnostic['scripts'] = self._initialize_scripts(
                 name, raw_diagnostic.get('scripts'))
             diagnostics[name] = diagnostic
+            is_ncl_script = any(
+                diagnostic['scripts'][s].get('script', '').lower().endswith(
+                    '.ncl') for s in diagnostic['scripts'])
+            if not ncl_version_checked and is_ncl_script:
+                logger.info("NCL script detected, checking NCL version")
+                check_ncl_version()
+                ncl_version_checked = True
 
         return diagnostics
 
@@ -502,18 +543,17 @@ class Namelist(object):
         for model in models:
             variable = copy.deepcopy(raw_variable)
             variable.update(model)
+            _update_from_others(variable, ['mip'], models)
             if ('cmor_table' not in variable
                     and variable.get('project') in CMOR_TABLES):
                 variable['cmor_table'] = variable['project']
-            _add_cmor_info(variable, cmor_keys)
+            if 'cmor_table' in variable:
+                _add_cmor_info(variable, cmor_keys)
             variables.append(variable)
 
+        keys = ['cmor_table'] + cmor_keys
         for variable in variables:
-            for key in ['mip', 'cmor_table'] + cmor_keys:
-                if key not in variable:
-                    value = _get_value(key, variables)
-                    if value is not None:
-                        variable[key] = value
+            _update_from_others(variable, keys, variables)
 
         check_variables(variables)
 

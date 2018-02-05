@@ -1,5 +1,7 @@
 """
-Classes to read variable information from CMIP6 tables and make it easily
+CMOR information reader for ESMValTool
+
+Read variable information from CMOR 2 and CMOR 3 tables and make it easily
 available for the other components of ESMValTool
 """
 import errno
@@ -7,11 +9,39 @@ import glob
 import json
 import logging
 import os
+from ..interface_scripts.data_finder import _CFG
 
 logger = logging.getLogger(__name__)
 
 
+def _read_cmor_tables():
+    tables = {}
+
+    for table in _CFG.keys():
+        project = _CFG[table]
+
+        table_path = project.get('cmor_table')
+        cmor_type = project.get('cmor_type', 'CMIP5')
+
+        if cmor_type == 'CMIP5':
+            tables[table] = CMIP5Info(table_path)
+        elif cmor_type == 'CMIP6':
+            tables[table] = CMIP6Info(table_path)
+    return tables
+
+
 class CMIP6Info(object):
+    """
+    Class to read CMIP6-like data request
+
+    This uses CMOR 3 json format
+
+    Parameters
+    ----------
+    cmor_tables_path: basestring
+        Path to the folder containing the Tables folder with the json files
+
+    """
 
     _CMIP_5to6_varname = {
         'sic': 'siconc',
@@ -19,15 +49,6 @@ class CMIP6Info(object):
     }
 
     def __init__(self, cmor_tables_path=None):
-        """
-        Class to read CMIP6-like data request
-
-        Parameters
-        ----------
-        cmor_tables_path: basestring
-            Path to the folder containing the Tables folder with the json files
-        """
-
         cmor_tables_path = self._get_cmor_path(cmor_tables_path)
 
         self._cmor_folder = os.path.join(cmor_tables_path, 'Tables')
@@ -112,8 +133,9 @@ class CMIP6Info(object):
         Returns
         -------
         VariableInfo
-            Returns the VariableInfo object for the requested variable if
+            Return the VariableInfo object for the requested variable if
             found, returns None if not
+
         """
         try:
             return self.tables[table][short_name]
@@ -133,16 +155,18 @@ class CMIP6Info(object):
 
 
 class JsonInfo(object):
+    """
+    Base class for the info classes.
+
+    Provides common utility methods to read json variables
+    """
+
     def __init__(self):
-        """
-        Base class fo the info classes to provide common utility methods to
-        read json variables
-        """
         self._json_data = None
 
     def _read_json_variable(self, parameter):
         """
-        Reads a json parameter in json_data
+        Read a json parameter in json_data
 
         Parameters
         ----------
@@ -153,6 +177,7 @@ class JsonInfo(object):
         -------
         str
             Option's value or empty string if parameter is not present
+
         """
         if parameter not in self._json_data:
             return ''
@@ -160,7 +185,7 @@ class JsonInfo(object):
 
     def _read_json_list_variable(self, parameter):
         """
-        Reads a json list parameter in json_data
+        Read a json list parameter in json_data
 
         Parameters
         ----------
@@ -171,6 +196,7 @@ class JsonInfo(object):
         -------
         str
             Option's value or empty list if parameter is not present
+
         """
         if parameter not in self._json_data:
             return []
@@ -186,6 +212,7 @@ class VariableInfo(JsonInfo):
         ----------
         short_name: str
             variable's short name
+
         """
         super(VariableInfo, self).__init__()
         self.short_name = short_name
@@ -207,7 +234,7 @@ class VariableInfo(JsonInfo):
 
     def read_json(self, json_data):
         """
-        Reads variable information from json.
+        Read variable information from json.
 
         Non-present options will be set to empty
 
@@ -216,6 +243,7 @@ class VariableInfo(JsonInfo):
         json_data: dict
             dictionary created by the json reader containing
             variable information
+
         """
         self._json_data = json_data
 
@@ -238,6 +266,7 @@ class CoordinateInfo(JsonInfo):
         ----------
         name: str
             coordinate's name
+
         """
         super(CoordinateInfo, self).__init__()
         self.name = name
@@ -257,7 +286,7 @@ class CoordinateInfo(JsonInfo):
 
     def read_json(self, json_data):
         """
-        Reads coordinate information from json.
+        Read coordinate information from json.
 
         Non-present options will be set to empty
 
@@ -266,6 +295,7 @@ class CoordinateInfo(JsonInfo):
         json_data: dict
             dictionary created by the json reader containing
             coordinate information
+
         """
         self._json_data = json_data
 
@@ -283,16 +313,17 @@ class CoordinateInfo(JsonInfo):
 
 
 class CMIP5Info(object):
+    """
+    Class to read CMIP5-like data request
+
+    Parameters
+    ----------
+    cmor_tables_path: basestring
+       Path to the folder containing the Tables folder with the json files
+
+    """
+
     def __init__(self, cmor_tables_path=None):
-        """
-        Class to read CMIP5-like data request
-
-        Parameters
-        ----------
-        cmor_tables_path: basestring
-            Path to the folder containing the Tables folder with the json files
-        """
-
         cmor_tables_path = self._get_cmor_path(cmor_tables_path)
 
         self._cmor_folder = os.path.join(cmor_tables_path, 'Tables')
@@ -302,6 +333,7 @@ class CMIP5Info(object):
 
         self.tables = {}
         self.coords = {}
+        self._last_line_read = None
 
         for table_file in glob.glob(os.path.join(self._cmor_folder, '*')):
             if '_grids' in table_file:
@@ -405,10 +437,14 @@ class CMIP5Info(object):
         Returns
         -------
         VariableInfo
-            Returns the VariableInfo object for the requested variable if
+            Return the VariableInfo object for the requested variable if
             found, returns None if not
+
         """
         try:
             return self.tables[table][short_name]
         except KeyError:
             return None
+
+
+CMOR_TABLES = _read_cmor_tables()

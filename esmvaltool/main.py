@@ -55,7 +55,6 @@ if __name__ == '__main__':  # noqa
                     os.path.dirname(
                         os.path.dirname(os.path.abspath(__file__))))  # noqa
 
-from esmvaltool.interface_scripts.auxiliary import ncl_version_check
 from esmvaltool.namelist import read_namelist_file
 from esmvaltool.version import __version__
 
@@ -107,6 +106,7 @@ def read_config_file(config_file, namelist_name):
         'save_intermediary_cubes': False,
         'max_parallel_tasks': 1,
         'run_diagnostic': True,
+        'drs': {},
     }
 
     for key in defaults:
@@ -190,9 +190,6 @@ def main():
     logger.info(__doc__)
 
     logger.info("Using config file %s", config_file)
-
-    # check NCL version
-    ncl_version_check()
 
     cfg['synda_download'] = args.synda_download
 
