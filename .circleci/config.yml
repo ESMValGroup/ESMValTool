@@ -162,6 +162,36 @@ jobs:
       - store_artifacts:
           path: logs
 
+  doc:
+    # Test building documentation
+    working_directory: /doc
+    docker:
+      - image: continuumio/miniconda
+    steps:
+      - checkout
+      - run:
+          command: |
+            set -x
+            mkdir logs
+            # Install
+            apt-get update > logs/apt.txt 2>&1
+            apt-get install -y build-essential >> logs/apt.txt 2>&1
+            # TODO: change to Python 3 once issue #218 is fixed.
+            conda create -y -n esmvaltool python=2 > logs/conda.txt 2>&1
+            conda env update --name esmvaltool >> logs/conda.txt 2>&1
+            set +x
+            source activate esmvaltool
+            set -x
+            pip install -e .[dev] > logs/install.txt 2>&1
+            # Log versions
+            dpkg -l > logs/versions_dpkg.txt
+            conda env export > logs/versions_conda.txt
+            pip freeze > logs/versions_pip.txt
+            # Test building documentation
+            python setup.py build_sphinx
+      - store_artifacts:
+          path: logs
+
 workflows:
   version: 2
   commit:
@@ -171,7 +201,7 @@ workflows:
   nightly:
     triggers:
       - schedule:
-          cron: "56 13 * * *"
+          cron: "03 14 * * *"
           filters:
             branches:
               only:
@@ -183,3 +213,4 @@ workflows:
       - python3_install
       - python2_install
       - python3_development
+      - doc
