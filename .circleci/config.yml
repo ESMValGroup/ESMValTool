@@ -1,9 +1,9 @@
 ---
 version: 2
 jobs:
-  test3:
+  python3_test:
     # Run Python 3 tests
-    working_directory: /test3
+    working_directory: /python3_test
     docker:
       - image: continuumio/miniconda
     steps:
@@ -29,7 +29,7 @@ jobs:
           # Activate Conda environment and run tests
           command: |
             source activate esmvaltool
-            ./setup.py test
+            python setup.py test
       - store_test_results:
           path: test-reports/
       - store_artifacts:
@@ -42,9 +42,9 @@ jobs:
             pip install codacy-coverage
             python-codacy-coverage -r test-reports/python3/coverage.xml
 
-  test2:
+  python2_test:
     # Run Python 2 tests
-    working_directory: /test2
+    working_directory: /python2_test
     docker:
       - image: continuumio/miniconda
     steps:
@@ -70,11 +70,11 @@ jobs:
           # Activate Conda environment and run tests
           command: |
             source activate esmvaltool
-            ./setup.py test
+            python setup.py test
 
-  deploy3:
+  python3_install:
     # Test Python 3 installation
-    working_directory: /deploy3
+    working_directory: /python3_install
     docker:
       - image: continuumio/miniconda
     steps:
@@ -84,12 +84,14 @@ jobs:
             set -x
             mkdir logs
             # Install
-            apt-get update -y > logs/apt.txt 2>&1
+            apt-get update > logs/apt.txt 2>&1
             apt-get install -y build-essential >> logs/apt.txt 2>&1
             conda create -y -n esmvaltool python=3 > logs/conda.txt 2>&1
             conda env update --name esmvaltool >> logs/conda.txt 2>&1
+            set +x
             source activate esmvaltool
-            ./setup.py install > logs/install.txt 2>&1
+            set -x
+            pip install . > logs/install.txt 2>&1
             # Log versions
             dpkg -l > logs/versions_dpkg.txt
             conda env export > logs/versions_conda.txt
@@ -100,9 +102,9 @@ jobs:
       - store_artifacts:
           path: logs
 
-  deploy2:
+  python2_install:
     # Test Python 2 installation
-    working_directory: /deploy2
+    working_directory: /python2_install
     docker:
       - image: continuumio/miniconda
     steps:
@@ -112,12 +114,14 @@ jobs:
             set -x
             mkdir logs
             # Install
-            apt-get update -y > logs/apt.txt 2>&1
+            apt-get update > logs/apt.txt 2>&1
             apt-get install -y build-essential >> logs/apt.txt 2>&1
             conda create -y -n esmvaltool python=2 > logs/conda.txt 2>&1
             conda env update --name esmvaltool >> logs/conda.txt 2>&1
+            set +x
             source activate esmvaltool
-            ./setup.py install > logs/install.txt 2>&1
+            set -x
+            pip install . > logs/install.txt 2>&1
             # Log versions
             dpkg -l > logs/versions_dpkg.txt
             conda env export > logs/versions_conda.txt
@@ -128,24 +132,54 @@ jobs:
       - store_artifacts:
           path: logs
 
+  python3_development:
+    # Test Python 3 development installation
+    working_directory: /python3_development
+    docker:
+      - image: continuumio/miniconda
+    steps:
+      - checkout
+      - run:
+          command: |
+            set -x
+            mkdir logs
+            # Install
+            apt-get update > logs/apt.txt 2>&1
+            apt-get install -y build-essential >> logs/apt.txt 2>&1
+            conda create -y -n esmvaltool python=3 > logs/conda.txt 2>&1
+            conda env update --name esmvaltool >> logs/conda.txt 2>&1
+            set +x
+            source activate esmvaltool
+            set -x
+            pip install -e .[dev] > logs/install.txt 2>&1
+            # Log versions
+            dpkg -l > logs/versions_dpkg.txt
+            conda env export > logs/versions_conda.txt
+            pip freeze > logs/versions_pip.txt
+            # Test installation
+            esmvaltool -h
+            ncl -V
+      - store_artifacts:
+          path: logs
 
 workflows:
   version: 2
   commit:
     jobs:
-      - test3
-      - test2
+      - python3_test
+      - python2_test
   nightly:
     triggers:
       - schedule:
-          cron: "0 0 * * *"
+          cron: "56 13 * * *"
           filters:
             branches:
               only:
                 - REFACTORING_backend
                 - REFACTORING_nightly_build
     jobs:
-      - test3
-      - test2
-      - deploy3
-      - deploy2
+      - python3_test
+      - python2_test
+      - python3_install
+      - python2_install
+      - python3_development
