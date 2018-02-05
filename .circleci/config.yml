@@ -82,25 +82,25 @@ jobs:
       - run:
           command: |
             set -x
-            mkdir logs
+            mkdir /logs
             # Install
-            apt-get update > logs/apt.txt 2>&1
-            apt-get install -y build-essential >> logs/apt.txt 2>&1
-            conda create -y -n esmvaltool python=3 > logs/conda.txt 2>&1
-            conda env update --name esmvaltool >> logs/conda.txt 2>&1
+            apt-get update > /logs/apt.txt 2>&1
+            apt-get install -y build-essential >> /logs/apt.txt 2>&1
+            conda create -y -n esmvaltool python=3 > /logs/conda.txt 2>&1
+            conda env update --name esmvaltool >> /logs/conda.txt 2>&1
             set +x
             source activate esmvaltool
             set -x
-            pip install . > logs/install.txt 2>&1
+            pip install . > /logs/install.txt 2>&1
             # Log versions
-            dpkg -l > logs/versions_dpkg.txt
-            conda env export > logs/versions_conda.txt
-            pip freeze > logs/versions_pip.txt
+            dpkg -l > /logs/versions_dpkg.txt
+            conda env export > /logs/versions_conda.txt
+            pip freeze > /logs/versions_pip.txt
             # Test installation
             esmvaltool -h
             ncl -V
       - store_artifacts:
-          path: logs
+          path: /logs
 
   python2_install:
     # Test Python 2 installation
@@ -112,25 +112,25 @@ jobs:
       - run:
           command: |
             set -x
-            mkdir logs
+            mkdir /logs
             # Install
-            apt-get update > logs/apt.txt 2>&1
-            apt-get install -y build-essential >> logs/apt.txt 2>&1
-            conda create -y -n esmvaltool python=2 > logs/conda.txt 2>&1
-            conda env update --name esmvaltool >> logs/conda.txt 2>&1
+            apt-get update > /logs/apt.txt 2>&1
+            apt-get install -y build-essential >> /logs/apt.txt 2>&1
+            conda create -y -n esmvaltool python=2 > /logs/conda.txt 2>&1
+            conda env update --name esmvaltool >> /logs/conda.txt 2>&1
             set +x
             source activate esmvaltool
             set -x
-            pip install . > logs/install.txt 2>&1
+            pip install . > /logs/install.txt 2>&1
             # Log versions
-            dpkg -l > logs/versions_dpkg.txt
-            conda env export > logs/versions_conda.txt
-            pip freeze > logs/versions_pip.txt
+            dpkg -l > /logs/versions_dpkg.txt
+            conda env export > /logs/versions_conda.txt
+            pip freeze > /logs/versions_pip.txt
             # Test installation
             esmvaltool -h
             ncl -V
       - store_artifacts:
-          path: logs
+          path: /logs
 
   python3_development:
     # Test Python 3 development installation
@@ -142,25 +142,25 @@ jobs:
       - run:
           command: |
             set -x
-            mkdir logs
+            mkdir /logs
             # Install
-            apt-get update > logs/apt.txt 2>&1
-            apt-get install -y build-essential >> logs/apt.txt 2>&1
-            conda create -y -n esmvaltool python=3 > logs/conda.txt 2>&1
-            conda env update --name esmvaltool >> logs/conda.txt 2>&1
+            apt-get update > /logs/apt.txt 2>&1
+            apt-get install -y build-essential >> /logs/apt.txt 2>&1
+            conda create -y -n esmvaltool python=3 > /logs/conda.txt 2>&1
+            conda env update --name esmvaltool >> /logs/conda.txt 2>&1
             set +x
             source activate esmvaltool
             set -x
-            pip install -e .[dev] > logs/install.txt 2>&1
+            pip install -e .[dev] > /logs/install.txt 2>&1
             # Log versions
-            dpkg -l > logs/versions_dpkg.txt
-            conda env export > logs/versions_conda.txt
-            pip freeze > logs/versions_pip.txt
+            dpkg -l > /logs/versions_dpkg.txt
+            conda env export > /logs/versions_conda.txt
+            pip freeze > /logs/versions_pip.txt
             # Test installation
             esmvaltool -h
             ncl -V
       - store_artifacts:
-          path: logs
+          path: /logs
 
   doc:
     # Test building documentation
@@ -172,25 +172,48 @@ jobs:
       - run:
           command: |
             set -x
-            mkdir logs
+            mkdir /logs
             # Install
-            apt-get update > logs/apt.txt 2>&1
-            apt-get install -y build-essential >> logs/apt.txt 2>&1
+            apt-get update > /logs/apt.txt 2>&1
+            apt-get install -y build-essential >> /logs/apt.txt 2>&1
             # TODO: change to Python 3 once issue #218 is fixed.
-            conda create -y -n esmvaltool python=2 > logs/conda.txt 2>&1
-            conda env update --name esmvaltool >> logs/conda.txt 2>&1
+            conda create -y -n esmvaltool python=2 > /logs/conda.txt 2>&1
+            conda env update --name esmvaltool >> /logs/conda.txt 2>&1
             set +x
             source activate esmvaltool
             set -x
-            pip install -e .[dev] > logs/install.txt 2>&1
+            pip install -e .[dev] > /logs/install.txt 2>&1
             # Log versions
-            dpkg -l > logs/versions_dpkg.txt
-            conda env export > logs/versions_conda.txt
-            pip freeze > logs/versions_pip.txt
+            dpkg -l > /logs/versions_dpkg.txt
+            conda env export > /logs/versions_conda.txt
+            pip freeze > /logs/versions_pip.txt
             # Test building documentation
             python setup.py build_sphinx
       - store_artifacts:
-          path: logs
+          path: /logs
+
+  ncl:
+    # Test ncl conda package
+    working_directory: /ncl
+    docker:
+      - image: continuumio/miniconda
+    steps:
+      - checkout
+      - run:
+          command: |
+            set -x
+            mkdir /logs
+            # Install
+            apt-get update > /logs/apt.txt 2>&1
+            apt-get install -y build-essential >> /logs/apt.txt 2>&1
+            conda install -y ncl
+            # Log versions
+            dpkg -l > /logs/versions_dpkg.txt
+            conda env export > /logs/versions_conda.txt
+            # Test if NCL installed successfully
+            ncl -V
+      - store_artifacts:
+          path: /logs
 
 workflows:
   version: 2
@@ -201,7 +224,7 @@ workflows:
   nightly:
     triggers:
       - schedule:
-          cron: "46 16 * * *"
+          cron: "0 4 * * *"
           filters:
             branches:
               only:
@@ -214,3 +237,4 @@ workflows:
       - python2_install
       - python3_development
       - doc
+      - ncl
