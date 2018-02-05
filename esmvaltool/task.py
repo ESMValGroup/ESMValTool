@@ -167,9 +167,16 @@ class InterfaceTask(AbstractTask):
 
     def write_metadata(self, metadata):
         """Write metadata file to output_dir"""
+        meta = {}
+        for variable_name, file_list in metadata.items():
+            meta[variable_name] = {}
+            for file_metadata in file_list:
+                file_metadata = dict(file_metadata)
+                filename = file_metadata.pop('filename')
+                meta[variable_name][filename] = file_metadata
         filename = os.path.join(self.output_dir, 'metadata.yml')
         with open(filename, 'w') as file:
-            yaml.safe_dump(metadata, file)
+            yaml.safe_dump(meta, file)
         return filename
 
     def write_ncl_metadata(self, metadata):
@@ -380,8 +387,9 @@ class DiagnosticTask(AbstractTask):
         logger.info("Writing log to %s", self.log)
 
         rerun_msg = '' if cwd is None else 'cd {}; '.format(cwd)
-        rerun_msg += ' '.join(
-            '{}="{}"'.format(k, env[k]) for k in env if k not in os.environ)
+        if env:
+            rerun_msg += ' '.join('{}="{}"'.format(k, env[k]) for k in env
+                                  if k not in os.environ)
         rerun_msg += ' ' + ' '.join(cmd)
         logger.info("To re-run this diagnostic script, run:\n%s", rerun_msg)
 

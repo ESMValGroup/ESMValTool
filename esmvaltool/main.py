@@ -55,7 +55,6 @@ if __name__ == '__main__':  # noqa
                     os.path.dirname(
                         os.path.dirname(os.path.abspath(__file__))))  # noqa
 
-from esmvaltool.interface_scripts.auxiliary import ncl_version_check
 from esmvaltool.namelist import read_namelist_file
 from esmvaltool.version import __version__
 
@@ -191,9 +190,6 @@ def main():
     logger.info(__doc__)
 
     logger.info("Using config file %s", config_file)
-
-    # check NCL version
-    ncl_version_check()
 
     cfg['synda_download'] = args.synda_download
 
