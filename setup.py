@@ -14,14 +14,67 @@ import sys
 
 from setuptools import Command, setup
 
+from esmvaltool.version import __version__
+
 PACKAGES = [
     'esmvaltool',
-    'doc', # install doc/MASTER_authors-refs-acknow.txt
+    'doc',  # install doc/MASTER_authors-refs-acknow.txt
 ]
+
+REQUIREMENTS = {
+    # Installation script (this file) dependencies
+    'setup': [
+        'setuptools_scm',
+    ],
+    # Installation dependencies
+    # Use with pip install . to install from source
+    'install': [
+        'cartopy',
+        'cdo',
+        'cf_units',
+        'cython',
+        'esgf-pyclient',
+        'matplotlib',
+        'netCDF4',
+        'numba',
+        'numpy',
+        'pillow',
+        'pyyaml',
+        'shapely',
+        'six',
+        'yamale',
+    ],
+    # Test dependencies
+    # Execute 'python setup.py test' to run tests
+    'test': [
+        'easytest',
+        # TODO: add dummydata package, see environment.yml
+        'mock',
+        'nose',
+        'pycodestyle',
+        'pytest',
+        'pytest-cov',
+        'pytest-html',
+        'pytest-metadata',
+    ],
+    # Development dependencies
+    # Use pip install -e .[develop] to install in development mode
+    'develop': [
+        'isort',
+        'prospector[with_pyroma]',
+        'pycodestyle',
+        'pydocstyle',
+        'pylint',
+        'sphinx',
+        'yamllint',
+        'yapf',
+    ],
+}
 
 
 def discover_python_files(paths, ignore):
     """Discover Python files"""
+
     def _ignore(path):
         """Return True if `path` should be ignored, False otherwise."""
         return any(re.match(pattern, path) for pattern in ignore)
@@ -136,7 +189,7 @@ class RunLinter(CustomCommand):
 with open('README.md') as readme:
     setup(
         name='ESMValTool',
-        version='2.0.0',
+        version=__version__,
         description='Earth System Models eValuation Tool',
         long_description=readme.read(),
         url='https://www.esmvaltool.org',
@@ -147,37 +200,18 @@ with open('README.md') as readme:
             'License :: OSI Approved :: Apache Software License',
             'Programming Language :: Python',
             'Programming Language :: Python :: 2.7',
+            'Programming Language :: Python :: 3.6',
         ],
         packages=PACKAGES,
         # Include all version controlled files
         include_package_data=True,
         use_scm_version=True,
-        setup_requires=[
-            'setuptools_scm',
-        ],
-        install_requires=[
-            'cdo',
-            'cf_units',
-            'coverage',
-            'esgf-pyclient',
-            'numpy',
-            'netCDF4',
-            'matplotlib',
-            'pyyaml',
-            'shapely',
-            'pillow',
-        ],
-        tests_require=[
-            # TODO: add dummydata package once up to date PyPI version
-            'easytest',
-            'mock',
-            'nose',
-            'pycodestyle',
-            'pytest',
-            'pytest-cov',
-            'pytest-html',
-            'pytest-metadata>=1.5.1',
-        ],
+        setup_requires=REQUIREMENTS['setup'],
+        install_requires=REQUIREMENTS['install'],
+        tests_require=REQUIREMENTS['test'],
+        extras_require={
+            'develop': REQUIREMENTS['develop'] + REQUIREMENTS['test']
+        },
         entry_points={
             'console_scripts': [
                 'esmvaltool = esmvaltool.main:run',
