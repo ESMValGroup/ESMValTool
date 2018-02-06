@@ -11,15 +11,15 @@ dependencies:
   - esgf-pyclient
   - ncl
   # iris
-  - matplotlib=1.5.*
-  - cartopy=0.15.*
+  - matplotlib
+  - cartopy
 
   # ncl
-  - libnetcdf=4.4.1.1
-  - hdf5=1.8.18
-  - hdf4=4.2.12
-  - xorg-libsm=1.2.2
-  - icu=58.1
+  - libnetcdf
+  - hdf5
+  - hdf4
+  - xorg-libsm
+  - icu
   - xorg-libxrender
   - xorg-libxext
   - pip:
