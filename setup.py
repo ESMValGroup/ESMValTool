@@ -74,6 +74,7 @@ REQUIREMENTS = {
 
 def discover_python_files(paths, ignore):
     """Discover Python files"""
+
     def _ignore(path):
         """Return True if `path` should be ignored, False otherwise."""
         return any(re.match(pattern, path) for pattern in ignore)
@@ -208,7 +209,9 @@ with open('README.md') as readme:
         setup_requires=REQUIREMENTS['setup'],
         install_requires=REQUIREMENTS['install'],
         tests_require=REQUIREMENTS['test'],
-        extras_require={'develop': REQUIREMENTS['develop']},
+        extras_require={
+            'develop': REQUIREMENTS['develop'] + REQUIREMENTS['test']
+        },
         entry_points={
             'console_scripts': [
                 'esmvaltool = esmvaltool.main:run',
