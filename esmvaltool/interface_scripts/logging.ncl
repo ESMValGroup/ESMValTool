@@ -155,7 +155,7 @@ procedure leave_msg(script[1]:string,
 ;;    func: name of the function or procedure calling this function.
 ;;
 ;; Description
-;;    Print an enter message to the log file (debug mode only).
+;;    Print a leave message to the log file (debug mode only).
 ;;
 ;; Caveats
 ;;
