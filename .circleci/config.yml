@@ -93,9 +93,9 @@ jobs:
             set -x
             pip install . > /logs/install.txt 2>&1
             # Log versions
-            dpkg -l > /logs/versions_dpkg.txt
-            conda env export > /logs/versions_conda.txt
-            pip freeze > /logs/versions_pip.txt
+            dpkg -l > /logs/versions.txt
+            conda env export > /logs/environment.yml
+            pip freeze > /logs/requirements.txt
             # Test installation
             esmvaltool -h
             ncl -V
@@ -123,18 +123,18 @@ jobs:
             set -x
             pip install . > /logs/install.txt 2>&1
             # Log versions
-            dpkg -l > /logs/versions_dpkg.txt
-            conda env export > /logs/versions_conda.txt
-            pip freeze > /logs/versions_pip.txt
+            dpkg -l > /logs/versions.txt
+            conda env export > /logs/environment.yml
+            pip freeze > /logs/requirements.txt
             # Test installation
             esmvaltool -h
             ncl -V
       - store_artifacts:
           path: /logs
 
-  python3_development:
-    # Test Python 3 development installation
-    working_directory: /python3_development
+  development:
+    # Test development installation
+    working_directory: /development
     docker:
       - image: continuumio/miniconda
     steps:
@@ -153,11 +153,12 @@ jobs:
             set -x
             pip install -e .[dev] > /logs/install.txt 2>&1
             # Log versions
-            dpkg -l > /logs/versions_dpkg.txt
-            conda env export > /logs/versions_conda.txt
-            pip freeze > /logs/versions_pip.txt
+            dpkg -l > /logs/versions.txt
+            conda env export > /logs/environment.yml
+            pip freeze > /logs/requirements.txt
             # Test installation
             esmvaltool -h
+            python setup.py test
             ncl -V
       - store_artifacts:
           path: /logs
@@ -184,9 +185,9 @@ jobs:
             set -x
             pip install -e .[dev] > /logs/install.txt 2>&1
             # Log versions
-            dpkg -l > /logs/versions_dpkg.txt
-            conda env export > /logs/versions_conda.txt
-            pip freeze > /logs/versions_pip.txt
+            dpkg -l > /logs/versions.txt
+            conda env export > /logs/environment.yml
+            pip freeze > /logs/requirements.txt
             # Test building documentation
             python setup.py build_sphinx
       - store_artifacts:
@@ -208,8 +209,8 @@ jobs:
             apt-get install -y build-essential >> /logs/apt.txt 2>&1
             conda install -y --channel conda-forge ncl
             # Log versions
-            dpkg -l > /logs/versions_dpkg.txt
-            conda env export > /logs/versions_conda.txt
+            dpkg -l > /logs/versions.txt
+            conda env export --name root > /logs/environment.yml
             # Test if NCL installed successfully
             ncl -V
       - store_artifacts:
@@ -224,7 +225,7 @@ workflows:
   nightly:
     triggers:
       - schedule:
-          cron: "40 9 * * *"
+          cron: "45 9 * * *"
           filters:
             branches:
               only:
@@ -235,6 +236,6 @@ workflows:
       - python2_test
       - python3_install
       - python2_install
-      - python3_development
+      - development
       - doc
       - ncl
