@@ -538,6 +538,8 @@ class Namelist(object):
 
     def _initialize_variables(self, raw_variable, models):
         """Define variables for all models."""
+        # TODO: rename `variables` to `attributes` and store in dict
+        # using filenames as keys
         variables = []
         cmor_keys = ['standard_name', 'long_name', 'units']
         for model in models:
