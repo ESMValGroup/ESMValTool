@@ -233,12 +233,11 @@ workflows:
   nightly:
     triggers:
       - schedule:
-          cron: "26 13 * * *"
+          cron: "0 0 * * *"
           filters:
             branches:
               only:
                 - REFACTORING_backend
-                - REFACTORING_nightly_build
     jobs:
       - python3_test
       - python2_test
