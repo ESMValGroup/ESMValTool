@@ -13,6 +13,7 @@ dependencies:
 - python-stratify
 # Multi language support:
 - ncl
+- libgdal=2.2.3  # Temporarily pin libgdal to get NCL working
 # TODO: add R, julia
 
 - pip:
