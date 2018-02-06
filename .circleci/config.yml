@@ -18,7 +18,7 @@ jobs:
           # Update/Create Conda Environment
           command: |
             if ! test -d "/opt/conda/envs/esmvaltool"; then
-              conda create -y -n esmvaltool python=3
+              conda create -y --name esmvaltool python=3
             fi
             conda env update --name esmvaltool
       - save_cache:
@@ -59,7 +59,7 @@ jobs:
           # Update/Create Conda Environment
           command: |
             if ! test -d "/opt/conda/envs/esmvaltool"; then
-              conda create -y -n esmvaltool python=2
+              conda create -y --name esmvaltool python=2
             fi
             conda env update --name esmvaltool
       - save_cache:
@@ -86,7 +86,7 @@ jobs:
             # Install
             apt-get update > /logs/apt.txt 2>&1
             apt-get install -y build-essential >> /logs/apt.txt 2>&1
-            conda create -y -n esmvaltool python=3 > /logs/conda.txt 2>&1
+            conda create -y --name esmvaltool python=3 > /logs/conda.txt 2>&1
             conda env update --name esmvaltool >> /logs/conda.txt 2>&1
             set +x
             source activate esmvaltool
@@ -116,7 +116,7 @@ jobs:
             # Install
             apt-get update > /logs/apt.txt 2>&1
             apt-get install -y build-essential >> /logs/apt.txt 2>&1
-            conda create -y -n esmvaltool python=2 > /logs/conda.txt 2>&1
+            conda create -y --name esmvaltool python=2 > /logs/conda.txt 2>&1
             conda env update --name esmvaltool >> /logs/conda.txt 2>&1
             set +x
             source activate esmvaltool
@@ -146,7 +146,7 @@ jobs:
             # Install
             apt-get update > /logs/apt.txt 2>&1
             apt-get install -y build-essential >> /logs/apt.txt 2>&1
-            conda create -y -n esmvaltool python=3 > /logs/conda.txt 2>&1
+            conda create -y --name esmvaltool python=3 > /logs/conda.txt 2>&1
             conda env update --name esmvaltool >> /logs/conda.txt 2>&1
             set +x
             source activate esmvaltool
@@ -178,7 +178,7 @@ jobs:
             apt-get update > /logs/apt.txt 2>&1
             apt-get install -y build-essential >> /logs/apt.txt 2>&1
             # TODO: change to Python 3 once issue #218 is fixed.
-            conda create -y -n esmvaltool python=2 > /logs/conda.txt 2>&1
+            conda create -y --name esmvaltool python=2 > /logs/conda.txt 2>&1
             conda env update --name esmvaltool >> /logs/conda.txt 2>&1
             set +x
             source activate esmvaltool
@@ -207,10 +207,14 @@ jobs:
             # Install
             apt-get update > /logs/apt.txt 2>&1
             apt-get install -y build-essential >> /logs/apt.txt 2>&1
-            conda install -y --channel conda-forge ncl
+            conda create -y --name ncl > /logs/conda.txt 2>&1
+            set +x
+            source activate ncl
+            set -x
+            conda install -y --channel conda-forge ncl >> /logs/conda.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
-            conda env export --name root > /logs/environment.yml
+            conda env export > /logs/environment.yml
             # Test if NCL installed successfully
             ncl -V
       - store_artifacts:
@@ -225,7 +229,7 @@ workflows:
   nightly:
     triggers:
       - schedule:
-          cron: "45 9 * * *"
+          cron: "57 9 * * *"
           filters:
             branches:
               only:
