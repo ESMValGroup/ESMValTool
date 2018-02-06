@@ -14,10 +14,62 @@ import sys
 
 from setuptools import Command, setup
 
+from esmvaltool.version import __version__
+
 PACKAGES = [
     'esmvaltool',
     'doc',  # install doc/MASTER_authors-refs-acknow.txt
 ]
+
+REQUIREMENTS = {
+    # Installation script (this file) dependencies
+    'setup': [
+        'setuptools_scm',
+    ],
+    # Installation dependencies
+    # Use with pip install . to install from source
+    'install': [
+        'cartopy',
+        'cdo',
+        'cf_units',
+        'cython',
+        'esgf-pyclient',
+        'matplotlib',
+        'netCDF4',
+        'numba',
+        'numpy',
+        'pillow',
+        'pyyaml',
+        'shapely',
+        'six',
+        'yamale',
+    ],
+    # Test dependencies
+    # Execute 'python setup.py test' to run tests
+    'test': [
+        'easytest',
+        # TODO: add dummydata package, see environment.yml
+        'mock',
+        'nose',
+        'pycodestyle',
+        'pytest',
+        'pytest-cov',
+        'pytest-html',
+        'pytest-metadata',
+    ],
+    # Development dependencies
+    # Use pip install -e .[develop] to install in development mode
+    'develop': [
+        'isort',
+        'prospector[with_pyroma]',
+        'pycodestyle',
+        'pydocstyle',
+        'pylint',
+        'sphinx',
+        'yamllint',
+        'yapf',
+    ],
+}
 
 
 def discover_python_files(paths, ignore):
@@ -136,7 +188,7 @@ class RunLinter(CustomCommand):
 with open('README.md') as readme:
     setup(
         name='ESMValTool',
-        version='2.0.0',
+        version=__version__,
         description='Earth System Models eValuation Tool',
         long_description=readme.read(),
         url='https://www.esmvaltool.org',
@@ -153,50 +205,10 @@ with open('README.md') as readme:
         # Include all version controlled files
         include_package_data=True,
         use_scm_version=True,
-        setup_requires=[
-            'setuptools_scm',
-        ],
-        install_requires=[
-            'cartopy',
-            'cdo',
-            'cf_units',
-            'cython',
-            'esgf-pyclient',
-            'matplotlib',
-            'netCDF4',
-            'numba',
-            'numpy',
-            'pillow',
-            'pyyaml',
-            'shapely',
-            'six',
-            'yamale',
-        ],
-        tests_require=[
-            # TODO: add dummydata package, see environment.yml
-            'easytest',
-            'mock',
-            'nose',
-            'pycodestyle',
-            'pytest',
-            'pytest-cov',
-            'pytest-html',
-            'pytest-metadata',
-        ],
-        extras_require={
-            # Use pip install -e .[dev] to install in development mode
-            # with extra packages useful for development.
-            'dev': [
-                'isort',
-                'prospector[with_pyroma]',
-                'pycodestyle',
-                'pydocstyle',
-                'pylint',
-                'sphinx',
-                'yamllint',
-                'yapf',
-            ]
-        },
+        setup_requires=REQUIREMENTS['setup'],
+        install_requires=REQUIREMENTS['install'],
+        tests_require=REQUIREMENTS['test'],
+        extras_require={'develop': REQUIREMENTS['develop']},
         entry_points={
             'console_scripts': [
                 'esmvaltool = esmvaltool.main:run',
