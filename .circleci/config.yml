@@ -136,9 +136,9 @@ jobs:
       - store_artifacts:
           path: /logs
 
-  development:
+  develop:
     # Test development installation
-    working_directory: /development
+    working_directory: /develop
     docker:
       - image: continuumio/miniconda
     steps:
@@ -155,7 +155,7 @@ jobs:
             set +x
             source activate esmvaltool
             set -x
-            pip install -e .[dev] > /logs/install.txt 2>&1
+            pip install -e .[develop] > /logs/install.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export > /logs/environment.yml
@@ -187,7 +187,7 @@ jobs:
             set +x
             source activate esmvaltool
             set -x
-            pip install -e .[dev] > /logs/install.txt 2>&1
+            pip install -e .[develop] > /logs/install.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export > /logs/environment.yml
@@ -233,7 +233,7 @@ workflows:
   nightly:
     triggers:
       - schedule:
-          cron: "18 11 * * *"
+          cron: "39 11 * * *"
           filters:
             branches:
               only:
@@ -244,6 +244,6 @@ workflows:
       - python2_test
       - python3_install
       - python2_install
-      - development
+      - develop
       - doc
       - ncl
