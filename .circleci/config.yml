@@ -71,6 +71,10 @@ jobs:
           command: |
             source activate esmvaltool
             python setup.py test
+      - store_test_results:
+          path: test-reports/
+      - store_artifacts:
+          path: test-reports/
 
   python3_install:
     # Test Python 3 installation
