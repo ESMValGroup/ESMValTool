@@ -15,15 +15,14 @@
 ;;#############################################################################
 
 ;; Load Temporary file with current namelist configuration
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 
 scriptname = "reformat_scripts/default/reformat_ECEARTH_main.ncl"
 
 ;;### GLOBAL SETTINGS #########################################################
 begin
 
-    verbosity  = config_user_info@verbosity
-    enter_msg(scriptname, "", 2)
+    enter_msg(scriptname, "")
 
     ;; Selected variable (standard name)
     VAR  = getenv("ESMValTool_variable")
@@ -90,14 +89,14 @@ begin
     ;; add staggered grid type to input filename
     sub_staggergrid(ECEARTH_VAR)
 
-    info_output("  INFILE = " + INFILE, verbosity, 1)
+    log_info("  INFILE = " + INFILE)
 
     ;; Check input path
     check_inpath()
 
     ;; set grid type
     GRID = "irregular"
-    info_output("GRID TYPE set to " + GRID, verbosity, 2)
+    log_debug("GRID TYPE set to " + GRID)
 
     ;; Read variable and extract given time range
     filelist = new(10000, string)
@@ -150,8 +149,8 @@ begin
     ;; clean up
     delete(VARPROC)
 
-    info_output("  OUTFILE = " + OUTFILE, verbosity, 1)
+    log_info("  OUTFILE = " + OUTFILE)
 
-    leave_msg(scriptname, "", 2)
+    leave_msg(scriptname, "")
 
 end

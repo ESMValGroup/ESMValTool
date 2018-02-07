@@ -9,7 +9,7 @@
 ;;#############################################################################
 
 load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 
 load "./plot_scripts/ncl/aux_plotting.ncl"
 
@@ -47,16 +47,12 @@ function contourplot(wks_in[1],
 ;;    20131217-A_vanu_be: written, largely copied from countour_map.ncl
 ;;
 local data, defaults, diag_script, funcname, res, res_new, scriptname, \
-    source, varname, verbosity, wks, wks_in
+    source, varname, wks, wks_in
 begin
 
     funcname = "contourplot"
     scriptname = "plot_scripts/ncl/contourplot.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 10)
-
-    verbosity = config_user_info@verbosity
-    info_output("<<<<<<<< Entering " + funcname, verbosity, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF file
     if(typeof(source) .eq. "string") then
@@ -114,12 +110,13 @@ begin
 
     if(isatt(res, "gsnDraw")) then
         if(res@gsnDraw .eq. True) then
-            info_output(" Wrote " + plot@outfile, verbosity, 1)
+            log_info(" Wrote " + plot@outfile)
         end if
     else
-        info_output(" Wrote " + plot@outfile, verbosity, 1)
+        log_info(" Wrote " + plot@outfile)
     end if
-    leave_msg(scriptname, funcname, 10)
+
+    leave_msg(scriptname, funcname)
     return(plot)
 
 end

@@ -116,16 +116,14 @@ begin
 
 end
 
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 load "./interface_scripts/auxiliary.ncl"
 load "./reformat_scripts/constants.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity = config_user_info@verbosity
     diag_script = "reformat_obs_Tilmes.ncl"
-    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent(OUTDIR)) then
@@ -183,7 +181,7 @@ begin
             ;; collect data
             if(nrfiles.gt.1) then
                 do k = 1, nrfiles - 1
-                    info_output("Reading " + rfiles(k), verbosity, 1)
+                    log_info("Reading " + rfiles(k))
                     f = addfile(rfiles(k), "r")
                     uu = f->$spec$(months|:, level|:)
                     data_full(:, :, k) = uu
@@ -257,7 +255,7 @@ begin
 
             ;; Write variable
             write_nc(out_file, VAR(j), output, gAtt)
-            info_output("  Wrote " + out_file, verbosity, 1)
+            log_info("  Wrote " + out_file)
             delete(gAtt)
             delete(output)
             delete(data)
@@ -276,6 +274,5 @@ begin
         delete(rfiles)
     end do  ; i (regions)
 
-    leave_msg(diag_script, "", 1)
 
 end

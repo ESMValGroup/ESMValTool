@@ -23,7 +23,7 @@
 
 
 load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 
 ;##############################################################################
 undef("create_legend_lines")
@@ -55,14 +55,12 @@ procedure create_legend_lines(labels:string, \
 ;;    20140305-A_righ_ma: modified to plot always as epsi format.
 ;;    20140219-A_fran_fr: written.
 ;;
-local funcname, verbosity, region, temp, outfile, n_suff, wks_legend
+local funcname, scriptname, region, temp, outfile, n_suff, wks_legend
 begin
 
     funcname = "create_legend_lines"
-
-    verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering create_legend_lines (xy_line.ncl)", \
-                verbosity, 10)
+    scriptname = "plot_scripts/ncl/aux_plotting.ncl"
+    enter_msg(scriptname, funcname)
 
     ;; Flag if RGB or RGBA is used for colors
     if (dimsizes(dimsizes(styles@colors)).ne.1) then
@@ -177,8 +175,7 @@ begin
     draw(blank)
     frame(wks_legend)
 
-    info_output(">>>>>>>> Leaving create_legend_lines (xy_line.ncl)", \
-                verbosity, 10)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -199,19 +196,22 @@ function output_type()
 ;; Modification history
 ;;    20131028-A_gott_kl: written.
 ;;
-local file_type
+local funcname, scriptname, file_type
 begin
-    verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering output_type (aux_plotting.ncl)",\
-                verbosity, 10)
+
+    funcname = "output_type"
+    scriptname = "plot_scripts/ncl/aux_plotting.ncl"
+    enter_msg(scriptname, funcname)
+
     file_type = config_user_info@output_file_type
     if(ismissing(file_type)) then
         file_type = "ps"
     end if
     file_type = str_lower(file_type)
-    info_output(">>>>>>>> Leaving output_type (aux_plotting.ncl)",\
-                verbosity, 10)
+
+    leave_msg(scriptname, funcname)
     return(file_type)
+
 end
 
 ;;#############################################################################
@@ -238,17 +238,18 @@ procedure copy_VarAtt_sel(var1, var2, sel: string)
 ;; Modification history:
 ;;    20141227-A_gott_kl written.
 ;;
-local atts, i1, i2, n
+local funcname, scriptname, atts, i1, i2, n
 begin
-    verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering copy_VarAtt_sel (aux_plotting.ncl)", \
-                verbosity, 5)
+
+    funcname = "copy_VarAtt_sel"
+    scriptname = "plot_scripts/ncl/aux_plotting.ncl"
+    enter_msg(scriptname, funcname)
 
     ;; check if var1 has attributes at all 
     atts = getvaratts(var1)
     if(all(atts.eq."missing")) then
-         info_output("warning: no attributes to copy "+\
-                     "(function copy_VarAtt_sel)", verbosity, 2)
+         log_debug("warning: no attributes to copy "+\
+                     "(function copy_VarAtt_sel)")
          return(var2)  ; return var2 unchanged
     end if
 
@@ -266,8 +267,8 @@ begin
         end do
     end do
 
-    info_output("<<<<<<<< Leaving copy_VarAtt_sel (aux_plotting.ncl)", \
-                verbosity, 5)
+    leave_msg(scriptname, funcname)
+
 end
 
 ;;#############################################################################
@@ -298,13 +299,12 @@ function panelling(wks,
 ;; Modification history
 ;;    20131112-A_gott_kl: written.
 ;;
-local plots, info, wks, outfile
+local funcname, scriptname, plots, info, wks, outfile
 begin
 
     funcname = "panelling"
-
-    verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering panelling (aux_plotting.ncl)", verbosity, 5)
+    scriptname = "plot_scripts/ncl/aux_plotting.ncl"
+    enter_msg(scriptname, funcname)
 
     ;; check if valid wks has been provided
     if (typeof(wks).ne."graphic") then
@@ -360,9 +360,9 @@ begin
         gsn_panel(wks, plots, (/nrow, ncol/), pres)
     end if
 
-    info_output(">>>>>>>> Leaving panelling (aux_plotting.ncl)",\
-                verbosity, 5)
+    leave_msg(scriptname, funcname)
     return(outfile)
+
 end
 
 ;;#############################################################################
@@ -382,11 +382,13 @@ function get_plot_dir()
 ;; Modification history
 ;;    20131104-A_gott_kl: written.
 ;;
-local plot_dir
+local funcname, scriptname, plot_dir
 begin
-    verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering get_plot_dir (aux_plotting.ncl)",\
-                verbosity, 10)
+
+    funcname = "get_plot_dir"
+    scriptname = "plot_scripts/ncl/aux_plotting.ncl"
+    enter_msg(scriptname, funcname)
+
     plot_dir = config_user_info@plot_dir + "/"
     if(ismissing(plot_dir)) then
         plot_dir = "./plots/"
@@ -394,9 +396,10 @@ begin
     if (.not. fileexists(plot_dir)) then
         system("mkdir -p " + plot_dir)
     end if
-    info_output(">>>>>>>> Leaving get_plot_dir (aux_plotting.ncl)",\
-                verbosity, 10)
+
+    leave_msg(scriptname, funcname)
     return(plot_dir)
+
 end
 
 ;;#############################################################################
@@ -419,12 +422,14 @@ function get_outfile_name(add_specs[1] : string)
 ;;    20131204-A_senf_da: generalized naming.
 ;;    20131104-A_gott_kl: written.
 ;;
-local outfile, file_type, plot_dir, diag_script_base, add_specs, \
-    output_dir
+local funcname, scriptname, outfile, file_type, plot_dir, diag_script_base, \
+    add_specs, output_dir
 begin
-    verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering get_outfile_name (aux_plotting.ncl)",\
-                verbosity, 10)
+
+    funcname = "get_outfile_name"
+    scriptname = "plot_scripts/ncl/aux_plotting.ncl"
+    enter_msg(scriptname, funcname)
+
     ;; Collect parts of outfile name
     file_type = output_type()  ; Function in ~/plot_scripts/aux_plotting.ncl
     plot_dir = get_plot_dir()  ; Function in ~/plot_scripts/aux_plotting.ncl
@@ -435,8 +440,8 @@ begin
     else
         outfile = plot_dir + add_specs + "." + file_type
     end if
-    info_output(">>>>>>>> Leaving get_outfile_name (aux_plotting.ncl)",\
-                verbosity, 10)
+
+    leave_msg(scriptname, funcname)
     return(outfile)
 end
 
@@ -465,12 +470,14 @@ function get_wks(wks_in,
 ;; Modification history
 ;;    20131113-A_gott_kl: written.
 ;;
-local wks_in, diag_script, add_specs, file_type
+local funcname, scriptname, wks_in, diag_script, add_specs, file_type
 begin
-    verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering get_wks (aux_plotting.ncl)",\
-                verbosity, 10)
-    ;; check if a valid wks has been provided, otherwise invoke default
+
+    funcname = "get_wks"
+    scriptname = "plot_scripts/ncl/aux_plotting.ncl"
+    enter_msg(scriptname, funcname)
+
+    ;; Check if a valid wks has been provided, otherwise invoke default
     if(typeof(wks_in).ne."graphic") then  ; Use defaults
         ;; Function in ~/plot_scripts/ncl/aux_plotting.ncl
         file_type = output_type()
@@ -484,9 +491,10 @@ begin
         wks = wks_in
         copy_VarMeta(wks_in, wks)
     end if
-    info_output(">>>>>>>> Leaving get_wks (aux_plotting.ncl)",\
-                verbosity, 10)
+
+    leave_msg(scriptname, funcname)
     return(wks)
+
 end
 
 ;;#############################################################################
@@ -515,10 +523,12 @@ procedure add_markers(wks[1] : graphic,
 ;; Modification history:
 ;;    20140224-A_gott_kl: written for use with profile_plev.ncl in Emmons.ncl
 ;;
-local res, str, atts, iatt, color
+local funcname, scriptname, res, str, atts, iatt, color
 begin
-    verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering add_markers (aux_plotting.ncl)", verbosity, 10)
+
+    funcname = "add_markers"
+    scriptname = "plot_scripts/ncl/aux_plotting.ncl"
+    enter_msg(scriptname, funcname)
 
     ;; set default plot ressources 
     res               = True
@@ -552,7 +562,8 @@ begin
     str = unique_string("polymarker")
     plot@$str$ = gsn_add_polymarker(wks, plot, xpos_in, ypos_in, res)
 
-    info_output("<<<<<<<< Leaving add_markers (aux_plotting.ncl)", verbosity, 10)
+    leave_msg(scriptname, funcname)
+
 end
 
 ;;#############################################################################
@@ -583,10 +594,12 @@ procedure add_num_markers(wks[1] : graphic,
 ;; Modification history:
 ;;    20150914-A_wenz_sa: written. 
 ;;
-local xpos, ypos, res, str, atts, iatt, color
+local funcname, scriptname, xpos, ypos, res, str, atts, iatt, color
 begin
-    verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering add_markers (aux_plotting.ncl)", verbosity, 10)
+
+    funcname = "add_num_markers"
+    scriptname = "plot_scripts/ncl/aux_plotting.ncl"
+    enter_msg(scriptname, funcname)
 
     ;; set default plot ressources 
     res               = True
@@ -634,7 +647,8 @@ begin
     plot@$str$ = gsn_add_text(wks,plot,sprinti("%-0.2hi",atext),\
                                                  xpos,ypos,res)
 
-    info_output("<<<<<<<< Leaving add_markers (aux_plotting.ncl)", verbosity, 10)
+    leave_msg(scriptname, funcname)
+
 end
 
 ;;#############################################################################
@@ -664,10 +678,12 @@ procedure add_errorbar(wks[1] : graphic,
 ;; Modification history:
 ;;    20150914-A_wenz_sa: written. 
 ;;
-local xpos, ypos, res, str, atts, iatt, color
+local funcname, scriptname, xpos, ypos, res, str, atts, iatt, color
 begin
-    verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering add_markers (aux_plotting.ncl)", verbosity, 10)
+
+    funcname = "add_errorbar"
+    scriptname = "plot_scripts/ncl/aux_plotting.ncl"
+    enter_msg(scriptname, funcname)
 
     ;; set default plot ressources 
     res                  = True
@@ -756,7 +772,8 @@ begin
         end if
     end do
 
-    info_output("<<<<<<<< Leaving add_markers (aux_plotting.ncl)", verbosity, 10)
+    leave_msg(scriptname, funcname)
+
 end
 
 
@@ -796,14 +813,13 @@ procedure horizontal_whiskers(wks[1] : graphic,
 ;; Modification history
 ;;    20140224-A_gott_kl: written.
 ;;
-local n, i, j, xmin, xmax, ypos, imiss, ivalid, result, x, y, res, str
+local funcname, scriptname, n, i, j, xmin, xmax, ypos, imiss, ivalid, result, \
+    x, y, res, str
 begin
 
     funcname = "horizontal_whiskers"
-
-    verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering horizontal_whiskers (aux_plotting.ncl)",\
-                verbosity, 10)
+    scriptname = "plot_scripts/ncl/aux_plotting.ncl"
+    enter_msg(scriptname, funcname)
 
     ;; check sizes of input vectors
     n = dimsizes(ypos_in)
@@ -835,8 +851,7 @@ begin
     ivalid = ind(.not. ismissing(imiss))
 
     if(all(ismissing(ivalid))) then
-        info_output(" No valid data to plot whiskers: Skipping",\
-                    verbosity, 5)
+        log_debug(" No valid data to plot whiskers: Skipping")
     else
         ;; create vectors suited for gsn_add_polyline
         x = new(3 * dimsizes(ivalid) - 1, typeof(xmin))
@@ -868,8 +883,8 @@ begin
         plot@$str$ = gsn_add_polyline(wks, plot, x, y, res)
     end if
 
-    info_output(">>>>>>>> Leaving horizontal_whiskers (aux_plotting.ncl)",\
-                verbosity, 10)
+    leave_msg(scriptname, funcname)
+
 end
 
 ;;#############################################################################
@@ -900,10 +915,12 @@ procedure add_prediction_error(wks[1] : graphic,
 ;; Modification history:
 ;;    20150914-A_wenz_sa: written. 
 ;;
-local xpos, ypos, res, str, atts, iatt, color
+local funcname, scriptname, xpos, ypos, res, str, atts, iatt, color
 begin
-    verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering add_markers (aux_plotting.ncl)", verbosity, 10)
+
+    funcname = "add_prediction_error"
+    scriptname = "plot_scripts/ncl/aux_plotting.ncl"
+    enter_msg(scriptname, funcname)
 
     ;; set default plot ressources 
     res               = True
@@ -929,6 +946,7 @@ begin
     str = unique_string("polygon")
     plot@$str$ = gsn_add_polygon(wks,plot,xpos_in,ypos_in,res)
 
-    info_output("<<<<<<<< Leaving add_markers (aux_plotting.ncl)", verbosity, 10)
+    leave_msg(scriptname, funcname)
+
 end
 

@@ -66,7 +66,7 @@ begin
 
 end
 
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 load "./interface_scripts/auxiliary.ncl"
 load "./reformat_scripts/constants.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
@@ -74,9 +74,7 @@ load "./diag_scripts/lib/ncl/statistics.ncl"
 
 begin
 
-    verbosity = config_user_info@verbosity
     diag_script = "reformat_obs_GLOBALVIEW.ncl"
-    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent(OUTDIR)) then
@@ -166,7 +164,7 @@ begin
 
     ;; Process files #######################################################
     do ff = 0, dimsizes(ext_files) - 1
-        info_output("Reading " + ext_files(ff), verbosity, 1)
+        log_info("Reading " + ext_files(ff))
         varname = varnames(ff)
         out_file = out_files(ff)
         station = stations(ff)
@@ -228,11 +226,11 @@ begin
         end do
         delete([/i, n/])
         suti = tostring(uti)
-        info_output(" Raw data cover " + suti(0, 0) + "/" + suti(0, 1) + "/" +\
+        log_info(" Raw data cover " + suti(0, 0) + "/" + suti(0, 1) + "/" +\
                     suti(0, 2) + " to " + suti(n_data - 1, 0) + "/" + \
                     suti(n_data - 1, 1) + "/" + suti(n_data - 1, 2) + \
                     ". Using " + tostring(YEAR1) + " to " + tostring(YEAR2) + \
-                    " (12 months per year).", verbosity, 1)
+                    " (12 months per year).")
 
         ;; Create variable with time coordinate
         ivar = ind(VAR.eq.varname)
@@ -296,7 +294,7 @@ begin
         out_file = str_sub_str(out_file, ".nc", "_" + \
                                YEAR1 + "01-" + YEAR2 + "12.nc")
         write_nc(out_file, VAR, output, gAtt)
-        info_output("  Wrote " + out_file, verbosity, 1)
+        log_info("  Wrote " + out_file)
         delete(gAtt)
         delete(output)
         delete(data)
@@ -309,6 +307,5 @@ begin
 
     end do  ; loop over input files
 
-    leave_msg(diag_script, "", 1)
 
 end

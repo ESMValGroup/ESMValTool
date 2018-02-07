@@ -34,8 +34,8 @@ begin
             do im = 0, dimsizes(modes) - 1
                 yy = find_and_read_var(aero(is) + modes(im), date, False)
                 if (typeof(yy).ne."string") then
-                    info_output("Adding species " +  aero(is) + modes(im) + \
-                                " (" + date + ")", verbosity, 2)
+                    log_debug("Adding species " +  aero(is) + modes(im) + \
+                              " (" + date + ")")
                     if (isdefined("xx")) then
                         xx = xx + fac * yy
                     else
@@ -54,9 +54,9 @@ begin
             else
                 selspec = "SS"
                 fac     = 0.3061
-                info_output("Na not found. Using " + \
-                            tostring_with_format(fac, "%6.4f") + \
-                            " * SS instead." , verbosity, 2)
+                log_debug("Na not found. Using " + \
+                          tostring_with_format(fac, "%6.4f") + \
+                          " * SS instead.")
             end if
         end if
     end do

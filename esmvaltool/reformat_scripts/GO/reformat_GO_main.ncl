@@ -31,7 +31,7 @@
 ;*********************************************************************
 
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
-load "interface_scripts/messaging.ncl"
+load "interface_scripts/logging.ncl"
 load "interface_scripts/auxiliary.ncl"
 
 ;*********************************************************************
@@ -46,7 +46,7 @@ load "reformat_scripts/GO/reformat_GO_func.ncl"
 ;;load "reformat_scripts/default/reformat_default_func.ncl"
 ;;;load "reformat_scripts/original/att_function.ncl"
 ;;load "reformat/ORIGINAL/global_attribute.ncl"
-load "interface_scripts/messaging.ncl"
+load "interface_scripts/logging.ncl"
 
 
 
@@ -54,24 +54,22 @@ load "interface_scripts/messaging.ncl"
 ;;        hence the need for the additional begin/end block below
 begin
     
-    verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering reformat_GO_main.ncl", verbosity, 2)
     project = getenv("ESMValTool_project")
     model= getenv("ESMValTool_model")
-    info_output("In reformatGO_main.ncl", verbosity, 3)
+    log_debug("In reformatGO_main.ncl")
     ;; If ProjectName_ModelName.ncl exists, then call it.
     ;; Otherwise use ProjectName_default.ncl, if it exists.
     fix_file = "./reformat_scripts/fixes/"  + project + "_" + model + ".ncl"
     fix_file_default = "./reformat_scripts/fixes/"  + project + "_default.ncl"
-    info_output("fix_file " + fix_file, verbosity, 3)
-    info_output("fix_file_default " + fix_file_default, verbosity, 3)
+    log_debug("fix_file " + fix_file)
+    log_debug("fix_file_default " + fix_file_default)
     data_to_fix = fileexists(fix_file)
     default_fix = fileexists(fix_file_default) 
     if data_to_fix then
-        info_output(" loading "+fix_file, verbosity, 2)
+        log_debug(" loading "+fix_file)
         loadscript(fix_file)
     else if (default_fix .and. .not. data_to_fix) then
-        info_output(" loading "+fix_file_default, verbosity, 2)
+        log_debug(" loading "+fix_file_default)
         loadscript(fix_file_default)
     end if
     end if
@@ -85,7 +83,6 @@ begin
     ;;===========================================================
     ;; Get environment variables
     ;;===========================================================
- verbosity  = config_user_info@verbosity
     outfile_path       = getenv("ESMValTool_outfile_fullpath")
     field              = getenv("ESMValTool_field")
     infile_path        = getenv("ESMValTool_infile_path")
@@ -104,10 +101,10 @@ begin
     ;; Find GO name 
     GO_var = find_name(variable)
 
-    info_output("outfile_path " + outfile_path, verbosity, 3)
-    info_output("start_date " + start_date, verbosity, 3)
-    info_output("variable " + variable, verbosity, 3)
-    info_output("experiment " + experiment, verbosity, 3)
+    log_debug("outfile_path " + outfile_path)
+    log_debug("start_date " + start_date)
+    log_debug("variable " + variable)
+    log_debug("experiment " + experiment)
     fn_out = outfile_path
     if (fileexists(fn_out)) then
         system("/bin/rm " + fn_out)
@@ -127,10 +124,10 @@ begin
     ;;===========================================================
     ;; Get input-file(s): i.e. all .nc files in input directory with variable
     ;; and then experiment in hteir name
-    info_output("infile_path " + infile_path, verbosity, 3)
-    info_output("variable " + variable, verbosity, 3)
-    info_output("GO variable " + GO_var, verbosity, 4)
-    info_output(infile_path +  GO_var + "*.nc", verbosity, 3)
+    log_debug("infile_path " + infile_path)
+    log_debug("variable " + variable)
+    log_debug("GO variable " + GO_var)
+    log_debug(infile_path +  GO_var + "*.nc")
     fils = systemfunc("ls " + infile_path  + GO_var + "*" + model + "*" + experiment + "*.nc" )  ; File paths
 
     if(all(ismissing(fils))) then
@@ -151,10 +148,10 @@ begin
     ;;===========================================================
     dim_fils = dimsizes(fils)
     do i = 0, dim_fils - 1
-        info_output("file names: " + fils(i), verbosity, 3)
+        log_debug("file names: " + fils(i))
         fin = addfile(fils(i), "r")
         vNames = getfilevarnames(fin)
-        info_output("vNames: " + vNames, verbosity, 3)
+        log_debug("vNames: " + vNames)
 
         if (sum(where(vNames .eq. GO_var, 1, 0)) .eq. 0) then
             print ("fatal: var = " + GO_var + " is not in the file")
@@ -194,7 +191,7 @@ begin
         end if
         ;; Set time start/end indices for reading blocks
         time_len = vards(ind(dNames0 .eq. time_name))
-        info_output("Reading times: " + time_len, verbosity, 3)
+        log_debug("Reading times: " + time_len)
         if (datasize .gt. max_data_blocksize) then
             nblocks = floattoint(ceil(datasize / max_data_blocksize))
             time_block = time_len / nblocks
@@ -280,8 +277,8 @@ begin
 	 end if 
         end if
          end if
-        info_output("nblocks " + nblocks, verbosity, 3)
-        info_output("var " + GO_var, verbosity, 3)
+        log_debug("nblocks " + nblocks)
+        log_debug("var " + GO_var)
    
      
         ;; Read in blocks
@@ -317,7 +314,7 @@ begin
       ;; If project_name_model.ncl exists, then call fix_data.
             if data_to_fix then
                 if isdefined("fix_data") then
-                    info_output("Calling fix_data", verbosity, 3)
+                    log_debug("Calling fix_data")
                     temp = fix_data(varData0, "default")
                     delete(varData0)
                     varData0 = temp
@@ -425,7 +422,7 @@ begin
                 delete(varData1)
                 delete(dNames)
                 size_info = "Lat size is " + dimsizes(dimsizes(varData&lat))
-                info_output(size_info, verbosity, 3)
+                log_debug(size_info)
 
                 ;; Computes the zonal average of a variable [4D -> 3D data (*2*z)]
                 if ((rank .eq. 4) .and. (isStrSubset(field, "2")) \
@@ -441,7 +438,7 @@ begin
     ;; Check units
               check_units(varData, variable)
               units = varData@units
-              info_output("Units here are " + units , verbosity, 3)
+              log_debug("Units here are " + units )
                 ;;=========================================================
                 ;; Write to output file, fout
                 ;;=========================================================
@@ -477,20 +474,20 @@ begin
                    
   
                     curr_fillv = "fill value now is " + varData@_FillValue
-                    info_output(curr_fillv, verbosity, 3)
+                    log_debug(curr_fillv)
                     fout->$variable$ = varData
  
 
                     first_write = False
 
                 else
-                    info_output("size of varData " + dimsizes(varData), verbosity, 3)
+                    log_debug("size of varData " + dimsizes(varData))
               
                     end_point = file_pointer + dimsizes(ind_t) - 1
 
                     fout->time(file_pointer:end_point) = (/varData&time/)
                     lhs_size = "lhs size " + dimsizes( fout->$variable$(file_pointer:end_point, :, :))
-                    info_output(lhs_size, verbosity, 3)
+                    log_debug(lhs_size)
                     if (rankN .eq. 4) then
                         fout->$variable$(file_pointer:end_point, :, :, :) = (/varData/)
                     end if
@@ -532,14 +529,14 @@ begin
     ;;
     ;; 1st priority: use model specific fix script 
     ;;   (Note: Must include possible default operations!)
-    info_output("data_to_fix: " + data_to_fix , verbosity, 3)
-    info_output("fix_data: " +  isdefined("fix_data"), verbosity, 3)
-    info_output("default_fix: " + default_fix, verbosity, 3)
-    info_output("fix_default: " +  isdefined("fix_default"), verbosity, 3)
+    log_debug("data_to_fix: " + data_to_fix )
+    log_debug("fix_data: " +  isdefined("fix_data"))
+    log_debug("default_fix: " + default_fix)
+    log_debug("fix_default: " +  isdefined("fix_default"))
 
     if data_to_fix then
     if isdefined("fix_data") then
-        info_output("Calling fix_data", verbosity, 3)
+        log_debug("Calling fix_data")
         file_handles = new(2, "file")
         file_handles(0) = keep_fin
         file_handles(1) = fout
@@ -586,6 +583,6 @@ begin
         print("fatal: No data was within the specified date range. Please check your setting!")
         status_exit(1)
     end if
-    info_output(">>>>>>>> Leaving reformat_GO_main.ncl", verbosity, 2)
+
 
 end

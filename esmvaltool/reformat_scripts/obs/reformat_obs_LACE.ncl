@@ -74,16 +74,14 @@ begin
 
 end
 
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 load "./reformat_scripts/constants.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 load "./diag_scripts/lib/ncl/statistics.ncl"
 
 begin
 
-    verbosity = config_user_info@verbosity
     diag_script = "reformat_obs_LACE.ncl"
-    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent(OUTDIR)) then
@@ -233,7 +231,7 @@ begin
     ;; Loop over regions
     do rr = 0, NREGIONS - 1
 
-        info_output("Processing region " + REGIONS(rr), verbosity, 1)
+        log_info("Processing region " + REGIONS(rr))
 
         output = OUTPUT
 
@@ -314,6 +312,5 @@ begin
         delete(output)
     end do
 
-    leave_msg(diag_script, "", 1)
 
 end

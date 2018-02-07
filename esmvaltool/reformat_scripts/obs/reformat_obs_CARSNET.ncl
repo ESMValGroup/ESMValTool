@@ -54,15 +54,13 @@ begin
 
 end
 
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 load "./reformat_scripts/constants.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity = config_user_info@verbosity
     diag_script = "reformat_obs_CARSNET.ncl"
-    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent(OUTDIR)) then
@@ -104,7 +102,7 @@ begin
     ;; Loop over stations
     do ii = 0, dimsizes(st_name) - 1
 
-        info_output("Processing station " + st_name(ii), verbosity, 1)
+        log_info("Processing station " + st_name(ii))
 
         ;; Define output array
         output = new(dimsizes(timec), float)
@@ -181,6 +179,5 @@ begin
 
     end do
 
-    leave_msg(diag_script, "", 1)
 
 end

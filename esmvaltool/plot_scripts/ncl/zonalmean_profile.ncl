@@ -9,7 +9,7 @@
 ;;#############################################################################
 
 load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 
 load "./diag_scripts/lib/ncl/set_operators.ncl"
 load "./diag_scripts/lib/ncl/style.ncl"
@@ -43,11 +43,12 @@ function zonalmean_profile(wks_in[1],
 ;; Modification history
 ;;    20131210-A_fran_fr: written.
 ;;
-local wks, wks_in, data, source, res, atts, base, varname
+local funcname, scriptname, wks, wks_in, data, source, res, atts, base, varname
 begin
 
-    verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering zonalmean_profile", verbosity, 4)
+    funcname = "zonalmean_profile"
+    scriptname = "plot_scripts/ncl/zonalmean_profile.ncl"
+    enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF file
     if(typeof(source) .eq. "string") then
@@ -117,6 +118,6 @@ begin
 ;     maximize_output(wks_out, psres)  ; calls draw and frame for you
 ; end if
 
-    info_output(">>>>>>>> Leaving zonalmean_profile", verbosity, 4)
+    leave_msg(scriptname, funcname)
     return(plot)
 end

@@ -41,15 +41,13 @@
 ;;
 ;; ############################################################################
 
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 load "./reformat_scripts/constants.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity =  config_user_info@verbosity
     diag_script = "reformat_obs_TRMM_3B42_daily.ncl"
-    enter_msg(diag_script, "", 1)
 
     inpath = getenv("ESMValTool_RAWOBSPATH") + "/Tier2/TRMM-3B42/"
     outpath = getenv("ESMValTool_OBSPATH") + "/Tier2/TRMM-3B42/"
@@ -99,7 +97,7 @@ begin
             fname = fname + ".HDF.Z"
         end if
 
-        info_output("*** "+ fname + " ***", verbosity, 1)
+        log_info("*** "+ fname + " ***")
 
         tmpfile = "./temp.hdf"
         system("gzip -dc <" + fname + " >" + tmpfile)
@@ -257,6 +255,5 @@ begin
 
     system ("rm " + tmpfile)
 
-    leave_msg(diag_script, "", 1)
 
 end

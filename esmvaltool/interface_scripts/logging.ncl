@@ -6,29 +6,25 @@
 ;;
 ;; Contents:
 ;;    procedure no_operation
-;;    procedure info_output
-;;    procedure inquire_and_save_fileinfo
+;;    procedure log_info
+;;    procedure log_debug
 ;;    procedure enter_msg
 ;;    procedure leave_msg
 ;;    procedure error_msg
 ;;    procedure exit_if_missing_atts
-;;    procedure write_references
 ;;    procedure write_filelist
+;;    procedure write_references
+;;    procedure inquire_and_save_fileinfo
 ;;
 ;;#############################################################################
 MASTER_REFS = "../doc/MASTER_authors-refs-acknow.txt"
 
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
-;; Warning: no other interface_scripts shall be loaded here, to avoid nested
-;;          loops (since they will try to load messaging.ncl themselves).
+gOldVar = ""
+gOldDiag = ""
+load "./interface_scripts/write_header.ncl"
 
-; a_laue_ax+
-    gOldVar = ""
-    gOldDiag = ""
-
-    ;; definitions of functions write_header and write_diag_header
-    load "./interface_scripts/write_header.ncl"
-; a_laue_ax-
+;; WARNING: no other interface_scripts shall be loaded here, to avoid nested
+;;          loops (since they will try to load logging.ncl themselves).
 
 ;;#############################################################################
 undef("no_operation")
@@ -51,131 +47,100 @@ begin
 end
 
 ;;#############################################################################
-undef("info_output")
-procedure info_output(output_string[*]:string,
-                      verbosity[1]:integer,
-                      required_verbosity[1]:integer)
+undef("log_info")
+procedure log_info(output_string[*]:string)
 ;;
 ;; Arguments
 ;;    output_string: the text to be output as message on screen
-;;    verbosity: the current verbosity set as global attribute in the main nml
-;;    required_verbosity: the minimum verbosity for the message to be printed
 ;;
 ;; Description
-;;    Writes a log message on the stdout depending on the selected verbosity.
+;;    Write an info message to the log file. If the input is an array, each
+;;    element will be written on different lines.
 ;;
 ;; Caveats
 ;;
 ;; References
 ;;
 ;; Modification history
-;;    20130119-A_eval_ma: written.
+;;    20180202-A_righ_ma: written to replace info_output.
 ;;
-local indent, indent_lev, indent_tmp, indent_str, indent_step, cwd
+local nn, ii
 begin
 
-    required_verbosity = min((/required_verbosity, 4/))
-
-    curr_trace_indent = config_user_info@run_dir + "/curr_trace_indent.txt"
-    if (ismissing(curr_trace_indent)) then
-        print("info: " + output_string)
-    else  ; Full info output
-        ;; Initialize file that keeps track of indent on first run.
-        if (.not. fileexists(curr_trace_indent)) then
-            asciiwrite(curr_trace_indent, 0)
-        end if
-
-        indent_step = 3
-        if (verbosity .eq. 2) then
-            padding_space = 13
+    if (any(config_user_info@log_level.eq.(/"info", "debug"/))) then
+        nn = dimsizes(output_string)
+        if (nn.eq.1) then
+            print("INFO    " + output_string)
         else
-            padding_space = 1
-        end if
-
-        if (verbosity .ge. required_verbosity) then
-            ;; Increase indentation if we're entering an NCL routine
-            if (dimsizes(output_string) .eq. 1) then
-                if (isStrSubset(output_string, "<<<<<<<< Entering")) then
-                    indent = asciiread(curr_trace_indent,\
-                                       1, "integer")
-                    indent = indent + indent_step
-                    asciiwrite(curr_trace_indent,\
-                               indent)
-                end if
-            end if
-
-            ;; Add a prefix of ">>", "<<" or "  " to output_string
-            indent = asciiread(curr_trace_indent,\
-                                     1, "integer")
-            if (indent .lt. 1) then
-                indent = 1
-            end if
-            indent_lev = new(indent + padding_space, "string")
-            indent_tmp = where(ismissing(indent_lev), " ", "-")
-            if (dimsizes(output_string) .eq. 1) then
-                if (isStrSubset(output_string, "<")) then
-                    delete(indent_lev)
-                    delete(indent_tmp)
-                    indent_lev = new(indent, "string")
-                    indent_tmp = where(ismissing(indent_lev), "<", "-")
-                end if
-            end if
-            if (dimsizes(output_string) .eq. 1) then
-                if (isStrSubset(output_string, ">")) then
-                    delete(indent_lev)
-                    indent_lev = new(indent, "string")
-                    delete(indent_tmp)
-                    indent_tmp = where(ismissing(indent_lev), ">", "-")
-                end if
-            end if
-
-            indent_str = str_concat(indent_tmp)
-            print("info: " + indent_str + output_string)
-
-            ;; Decrease indentation if we're leaving an NCL routine
-            if (dimsizes(output_string) .eq. 1) then
-                if (isStrSubset(output_string, ">>>>>>>> Leaving")) then
-                    indent = asciiread(curr_trace_indent, \
-                                       1, "integer")
-                    indent = indent - indent_step
-                    asciiwrite(curr_trace_indent, \
-                               indent)
-                end if
-            end if
+            do ii = 0, nn - 1
+                print("INFO    " + output_string(ii))
+            end do
         end if
     end if
+
+end
+
+;;#############################################################################
+undef("log_debug")
+procedure log_debug(output_string[*]:string)
+;;
+;; Arguments
+;;    output_string: the text to be output as message on screen
+;;
+;; Description
+;;    Write a debug message to the log file (only if log_level = debug in
+;;    config-user.yml). If the input is an array, each element will be
+;;    written on different lines.
+;;
+;; Caveats
+;;
+;; References
+;;
+;; Modification history
+;;    20180202-A_righ_ma: written to replace info_output.
+;;
+local nn, ii
+begin
+
+    if (config_user_info@log_level.eq."debug") then
+        nn = dimsizes(output_string)
+        if (nn.eq.1) then
+            print("DEBUG   " + output_string)
+        else
+            do ii = 0, nn - 1
+                print("DEBUG   " + output_string(ii))
+            end do
+        end if
+    end if
+
 end
 
 ;;#############################################################################
 undef("enter_msg")
 procedure enter_msg(script[1]:string,
-                    func[1]:string,
-                    req_verbosity[1]:integer)
+                    func[1]:string)
 ;;
 ;; Arguments
 ;;    script: name of the ncl script file from where this function is called.
 ;;    func: name of the function or procedure calling this function.
-;;    required_verbosity: the minimum verbosity for the message to be printed.
 ;;
 ;; Description
-;;    Prints an enter message on the stdout.
+;;    Print an enter message to the log file (debug mode only).
 ;;
 ;; Caveats
 ;;
 ;; References
 ;;
 ;; Modification history
+;;    20180202_A_righ_ma: removed required verbosity.
 ;;    20150319-A_righ_ma: written.
 ;;
-local verbosity
 begin
 
-    verbosity = config_user_info@verbosity
     if (func.eq."") then
-        info_output("<<<<<<<< Entering " + script, verbosity, req_verbosity)
+        log_debug("<<< Entering " + script)
     else
-        info_output("<<<<<<<< Entering " + func + " (" + script + ")", \
-                    verbosity, req_verbosity)
+        log_debug("<<< Entering " + func + " (" + script + ")")
     end if
 
 end
@@ -183,33 +148,29 @@ end
 ;;#############################################################################
 undef("leave_msg")
 procedure leave_msg(script[1]:string,
-                    func[1]:string,
-                    req_verbosity[1]:integer)
+                    func[1]:string)
 ;;
 ;; Arguments
 ;;    script: name of the ncl script file from where this function is called.
 ;;    func: name of the function or procedure calling this function.
-;;    required_verbosity: the minimum verbosity for the message to be printed.
 ;;
 ;; Description
-;;    Prints a leave message on the stdout.
+;;    Print a leave message to the log file (debug mode only).
 ;;
 ;; Caveats
 ;;
 ;; References
 ;;
 ;; Modification history
+;;    20180202_A_righ_ma: removed required verbosity.
 ;;    20150319-A_righ_ma: written.
 ;;
-local verbosity
 begin
 
-    verbosity = config_user_info@verbosity
     if (func.eq."") then
-        info_output(">>>>>>>> Leaving " + script, verbosity, req_verbosity)
+        log_debug(">>> Leaving " + script)
     else
-        info_output(">>>>>>>> Leaving " + func + " (" + script + ")", \
-                    verbosity, req_verbosity)
+        log_debug(">>> Leaving " + func + " (" + script + ")")
     end if
 
 end
@@ -228,7 +189,7 @@ procedure error_msg(type[1]:string,
 ;;    msg: actual error message.
 ;;
 ;; Description
-;;    Writes a log message on the stdout depending on the selected verbosity.
+;;    Write an error/warning message to the log file.
 ;;
 ;; Caveats
 ;;
@@ -246,13 +207,10 @@ begin
     ;; Determine which message level we're at (fatal/warning)
     if (type .eq. "f" .or. type .eq. "fatal") then
         msg_level = "fatal"
-; A-laue_ax+
-;    else if (type .eq. "w" .or. type .eq. "warning") then
-    else if (type .eq. "w" .or. type .eq. "warning" .or. type .eq. "error") then
-; A-laue_ax-
+    else if (any(type.eq.(/"w", "warning", "error"/))) then
         msg_level = "warning"
     else
-        print("fatal: in error_msg (messaging.ncl), " + \
+        print("fatal: in error_msg (logging.ncl), " + \
               "invalid value for variable type (=" + type + ")")
         status_exit(1)
     end if
@@ -267,7 +225,7 @@ begin
 
     ;; Write error/warning message
     do ii = 0, nn - 1
-        info_output(msg_level + ": in " + msg_origin + msg(ii), 1, 1)
+        log_info(msg_level + ": in " + msg_origin + msg(ii))
     end do
 
     ;; Exit if fatal
@@ -288,7 +246,7 @@ procedure exit_if_missing_atts(in[1], \
 ;;    reqatts: an array of strings with the required attributes of the variable
 ;;
 ;; Description
-;;    Checks that the given variable contains the given list of attributes.
+;;    Check that the given variable contains the given list of attributes.
 ;;    This function shall be used at the beginning of each diag_script to
 ;;    check that diag_script_info contains the required attributes.
 ;;    It can also be used for checking attributes in observations files, when
@@ -301,13 +259,12 @@ procedure exit_if_missing_atts(in[1], \
 ;; Modification history
 ;;    20141002-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity
+local funcname, scriptname
 begin
 
     funcname = "exit_if_missing_atts"
-    scriptname = "interface_scripts/messaging.ncl"
-    verbosity  = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    scriptname = "interface_scripts/logging.ncl"
+    enter_msg(scriptname, funcname)
 
     if (.not.all(isatt(in, reqatts))) then
         error_msg("f", diag_script, "", "missing required " + \
@@ -315,7 +272,7 @@ begin
                   reqatts(ind(.not.isatt(in, reqatts))))
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -353,7 +310,7 @@ procedure write_filelist(script:string,
 ;;    version: version of the ESMValTool
 ;;
 ;; Description
-;;    Saving the following details to the log file
+;;    Save the following details to the log file
 ;;        - ESMValTtool version
 ;;        - list of input files processed
 ;;        - name of the "FIXFILE" applied (if any)
@@ -365,13 +322,12 @@ procedure write_filelist(script:string,
 ;; Modification history
 ;;    20150630-A_laue_ax: written.
 ;;
-local funcname, scriptname, verbosity, output_refs, hline
+local funcname, scriptname, output_refs, hline
 begin
 
     funcname = "write_filelist"
-    scriptname = "interface_scripts/messaging.ncl"
-    verbosity  = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    scriptname = "interface_scripts/logging.ncl"
+    enter_msg(scriptname, funcname)
 
     if (filelist(0).eq."") then  ; derived variable or no information
         return
@@ -469,7 +425,7 @@ begin
 ;    system(s_open + hline + s_close)
     system("echo " + " >> " + output_refs)
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 end
 
 ; a_laue_ax-
@@ -492,7 +448,7 @@ procedure write_references(script[1]:string,
 ;;    proj: list of projects to be acknowledged (PNNN)
 ;;
 ;; Description
-;;    Writes references and acknowledgments in the log file
+;;    Write references and acknowledgments in the log file
 ;;
 ;; Caveats
 ;;
@@ -506,17 +462,12 @@ procedure write_references(script[1]:string,
 ;;                        (write_header)
 ;;    20121128-A_righ_ma: written.
 ;;
-; a_laue_ax+
-;local funcname, scriptname, verbosity, namelist, master_refs, output_refs, \
-local funcname, scriptname, verbosity, master_refs, output_refs, \
-; a_laue_ax-
-    hline, pos, str ;, stand_alone_entries
+local funcname, scriptname, master_refs, output_refs, hline, pos, str
 begin
 
     funcname = "write_references"
-    scriptname = "interface_scripts/messaging.ncl"
-    verbosity  = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    scriptname = "interface_scripts/logging.ncl"
+    enter_msg(scriptname, funcname)
 
     hline      = "-------------------------"
     hline_dble = "========================="
@@ -647,7 +598,7 @@ begin
 ;
 ;    system(s_open + hline + s_close)
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 

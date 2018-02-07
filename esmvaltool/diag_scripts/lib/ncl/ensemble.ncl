@@ -13,7 +13,7 @@
 
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/data_handling.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 
 load "./diag_scripts/lib/ncl/regridding.ncl"
 load "./diag_scripts/lib/ncl/statistics.ncl"
@@ -40,13 +40,12 @@ function get_start_year(model_index[1]:numeric)
 ;; Modification history
 ;;    20140128-A_senf_da: written.
 ;;
-local funcname, scriptname, verbosity, model_index
+local funcname, scriptname, model_index
 begin
 
     funcname = "get_start_year"
     scriptname = "diag_scripts/lib/ncl/ensemble.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     if (.not.isatt(diag_script_info, "range_option")) then
         error_msg("f", "ensemble.ncl", funcname, "diag_script_info must " + \
@@ -62,7 +61,7 @@ begin
     end if
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(start_year)
 
 end
@@ -89,13 +88,12 @@ function get_end_year(model_index:numeric)
 ;; Modification history
 ;;    20140128-A_senf_da: written.
 ;;
-local funcname, scriptname, verbosity, model_index
+local funcname, scriptname, model_index
 begin
 
     funcname = "get_end_year"
     scriptname = "diag_scripts/lib/ncl/ensemble.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     if (.not.isatt(diag_script_info, "range_option")) then
         error_msg("f", "ensemble.ncl", funcname, "diag_script_info must " + \
@@ -111,7 +109,7 @@ begin
     end if
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(end_year)
 
 end
@@ -165,16 +163,15 @@ function multi_model_stats(idx[*]:integer,
 ;; Modification history:
 ;;    20140515-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, dest_grd, monotonicity, field_type, \
-    rank_grd, start_year, end_year, idx_mod, var_tmp, var_olap, var_grd, \
-    data_mmm, plev_grd, ireturn, tmp, model, Fill, stats, nstats, tmp, iMod, \
+local funcname, scriptname, dest_grd, monotonicity, field_type, rank_grd, \
+    start_year, end_year, idx_mod, var_tmp, var_olap, var_grd, data_mmm, \
+    plev_grd, ireturn, tmp, model, Fill, stats, nstats, tmp, iMod, \
     interpol_flag, nvalid, var_plev, result
 begin
 
     funcname = "multi_model_stats"
     scriptname = "diag_scripts/lib/ncl/ensemble.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; determine destination grid (regridding.ncl)
     field_type = str_get_cols(field, 0, 1)
@@ -198,8 +195,8 @@ begin
     ;; determine overlapping time period
     start_year = max(toint(models@start_year))
     end_year = min(toint(models@end_year))
-    info_output("overlapping time period: " + tostring(start_year) + \
-                " - " + tostring(end_year), verbosity, 1)
+    log_info("overlapping time period: " + tostring(start_year) + \
+                " - " + tostring(end_year))
 
     ;; create data structure for mmm models
     do i = 0, dimsizes(idx) - 1
@@ -303,20 +300,17 @@ begin
             ;; interpolate to  plev_grd
             if(isatt(diag_script_info, "interpolation")) then
                 interpol_flag = diag_script_info@interpolation
-                info_output("Interpolation set by diag_script_info",\
-                            verbosity, 5)
+                log_debug("Interpolation set by diag_script_info")
             else  ; default
                 valid_plev = plev_grd(ind(.not.ismissing(plev_grd)))
                 nvalid = dimsizes(valid_plev)
                 if(max(var_olap&plev).gt.valid_plev(1) .and.\
                    min(var_olap&plev).lt.valid_plev(nvalid - 2)) then
                     interpol_flag = -1
-                    info_output("Linear interpolation with extrapolation",\
-                                verbosity, 5)
+                    log_debug("Linear interpolation with extrapolation")
                 else
                     interpol_flag = 1
-                    info_output("Linear interpolation, no extrapolation",\
-                                verbosity, 5)
+                    log_debug("Linear interpolation, no extrapolation")
                 end if
             end if
             var_plev = int2p_n_Wrap(var_olap&plev, var_olap,\
@@ -385,7 +379,7 @@ begin
 ;;     print("wrote "+outfile)
 ;; DEBUG---
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(result)
 
 end

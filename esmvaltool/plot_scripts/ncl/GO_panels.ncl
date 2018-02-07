@@ -31,7 +31,7 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/shea_util.ncl"
 
 
 load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 
 
 begin
@@ -47,17 +47,16 @@ load "./plot_scripts/ncl/xy_line.ncl"
 
 undef("get_title_suffix")
 function get_title_suffix(plot_settings[1]: logical)
-local verbosity, main_title_suffix
+local main_title_suffix
 begin
-    verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering get_title_suffix", verbosity, 8)
+
     if (isatt(plot_settings, "main_title_suffix")) then
         main_title_suffix = plot_settings@main_title_suffix
     else
         main_title_suffix = ""
     end if
     return main_title_suffix
-    info_output(">>>>>>>> Leaving get_title_suffix", verbosity, 8)
+
 end
 
 undef("remove_attrs")
@@ -340,8 +339,7 @@ local aux_title_info,      cn_levels_string,   curr,\
     storage_record,      textres,            var0,\
     wks,                 diff_model_ref,     txres
 begin
-    verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering two_by_one", verbosity, 6)
+
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
@@ -425,7 +423,7 @@ begin
         end if
 
     end do  ; idx_mod = 0, dim_MOD - 1
-    info_output(">>>>>>>> Leaving two_by_one", verbosity, 6)
+
 end
 undef("three_by_one_diff")
 procedure three_by_one_diff(storage_vault[1]: logical,
@@ -449,8 +447,7 @@ local aux_title_info,      cn_levels_string,   curr,\
     storage_record,      textres,            var0,\
     wks,                 diff_model_ref,     txres
 begin
-    verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering three_by_one_diff", verbosity, 6)
+
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
@@ -542,7 +539,7 @@ begin
         end if
 
     end do  ; idx_mod = 0, dim_MOD - 1
-    info_output(">>>>>>>> Leaving three_by_one_diff", verbosity, 6)
+
 end
 
 undef("plot_three_by_one_vector")

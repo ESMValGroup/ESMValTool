@@ -30,7 +30,7 @@
 ;;#############################################################################
 
 load "./reformat_scripts/constants.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 load "interface_scripts/interface.ncl"
 
 begin
@@ -55,13 +55,12 @@ procedure check_inpath()
 ;; Modification history
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity
+local funcname, scriptname
 begin
 
     funcname = "check_inpath"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Simulation path
     if (.not. fileexists(INPATH)) then
@@ -76,7 +75,7 @@ begin
     if (str_get_cols(INPATH, -1, -1).ne."/") then
         INPATH = INPATH + "/"
     end if
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -101,14 +100,13 @@ function find_alt_names(name:string)
 ;; Modification history
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, locname, data, col1, col2, std, alt, \
+local funcname, scriptname, locname, data, col1, col2, std, alt, \
     id, tmp, ncols
 begin
 
     funcname = "find_alt_names"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Create local copy
     locname = name
@@ -137,10 +135,10 @@ begin
         do ii = 0, ncols - 1
             out(ii) = str_squeeze(str_get_field(tmp, ii + 1, ", "))
         end do
-        leave_msg(scriptname, funcname, 4)
+        leave_msg(scriptname, funcname)
         return(out)
     else
-        leave_msg(scriptname, funcname, 4)
+        leave_msg(scriptname, funcname)
         return(locname)
     end if
     return(return_val)
@@ -170,13 +168,12 @@ function check_var(fo:file, name:string)
 ;;    20150415-A_righ_ma: modified to return a missing if not found.
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, altnames, ii
+local funcname, scriptname, altnames, ii
 begin
 
     funcname = "check_var"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Return value initialized to missing
     ret_name = new(1, string)
@@ -189,15 +186,14 @@ begin
         do ii = 0, dimsizes(altnames) - 1
             if (isfilevar(fo, altnames(ii)) .and. \
                 ismissing(ret_name)) then
-                info_output("  Variable " + name\
-                            + " found with alternative name "\
-                            + altnames(ii), verbosity, 1)
+                log_info("  Variable " + name + \
+                            " found with alternative name " + altnames(ii))
                 ret_name = altnames(ii)
             end if
         end do
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(ret_name)
 
 end
@@ -220,26 +216,24 @@ procedure apply_fixes(var:numeric, name:string, fixfile:string)
 ;; Modification history
 ;;    20131021-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, ret
+local funcname, scriptname, ret
 begin
 
     fixfile = ""  ; filename of "FIXFILE"
 
     funcname = "apply_fixes"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     if (fileexists(FIXFILE)) then
         ret = fixing_func(var, name)
         if (ret.eq.0) then
-            info_output("  A data-fixing function (" + FIXFILE + ") " + \
-                        "has been applied to this model/variable!", \
-                        verbosity, 1)
+            log_info("  A data-fixing function (" + FIXFILE + ") " + \
+                        "has been applied to this model/variable!")
             fixfile = FIXFILE
         end if
     end if
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -272,15 +266,14 @@ function read_var(name:string, filelist:string, fixfile:string)
 ;;    20150415-A_righ_ma: adapted to changes in check_var
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, files, ff, f, altname, tmp, rank, \
+local funcname, scriptname, files, ff, f, altname, tmp, rank, \
     tmp2, tname, opt, date, tcoord, lim_date1, lim_date2, curr_date1, \
     curr_date2, set_date1, set_date2, s1, s2, xx
 begin
 
     funcname = "read_var"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Lists of files
     files = systemfunc("ls " + INFILE)
@@ -411,7 +404,7 @@ begin
     end do
 
     if (isdefined("outvar")) then
-        leave_msg(scriptname, funcname, 4)
+        leave_msg(scriptname, funcname)
         return(outvar)
     else
         error_msg("f", scriptname, funcname, \
@@ -441,13 +434,12 @@ function check_rank(var:numeric)
 ;; Modification history
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, dims, rank, pos, lerr
+local funcname, scriptname, dims, rank, pos, lerr
 begin
 
     funcname = "check_rank"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     dims = dimsizes(var)
     rank = dimsizes(dims)
@@ -536,7 +528,7 @@ begin
                   "not consistent with given type (" + FIELD + ")")
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(out)
 
 
@@ -561,13 +553,12 @@ function find_grid_type()
 ;; Modification history
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, ff, altname, lat, lon
+local funcname, scriptname, ff, altname, lat, lon
 begin
 
     funcname = "find_grid_type"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
     files = systemfunc("ls " + INFILE)
 
     ff = addfile(files(0), "r")
@@ -576,7 +567,7 @@ begin
     altname = check_var(ff, "lat")
     if (ismissing(altname)) then
         out = "rectilinear"
-        leave_msg(scriptname, funcname, 4)
+        leave_msg(scriptname, funcname)
         return(out)
     end if
     lat = ff->$altname$
@@ -586,7 +577,7 @@ begin
     altname = check_var(ff, "lon")
     if (ismissing(altname)) then
         out = "rectilinear"
-        leave_msg(scriptname, funcname, 4)
+        leave_msg(scriptname, funcname)
         return(out)
     end if
     lon = ff->$altname$
@@ -595,14 +586,14 @@ begin
     ;; If lat and lon are 2D arrays, assume irregular grid
     if (dimsizes(dimsizes(lat)).ge.2.and.dimsizes(dimsizes(lon)).ge.2) then
         out = "irregular"
-        leave_msg(scriptname, funcname, 4)
+        leave_msg(scriptname, funcname)
         return(out)
     end if
 
     ;; If lat and lon are 1D arrays, assume rectilinear grid
     if (dimsizes(dimsizes(lat)).ge.1.and.dimsizes(dimsizes(lon)).ge.1) then
         out = "rectilinear"
-        leave_msg(scriptname, funcname, 4)
+        leave_msg(scriptname, funcname)
         return(out)
     end if
 
@@ -629,17 +620,16 @@ procedure check_fill(var:numeric)
 ;; Modification history
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, altfill, ii
+local funcname, scriptname, altfill, ii
 begin
 
     funcname = "check_fill"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     if (.not. isatt(var, "_FillValue")) then
-        info_output("  No _FillValue found for this variable, " + \
-                    "assigning default", verbosity, 1)
+        log_info("  No _FillValue found for this variable, " + \
+                    "assigning default")
         var@_FillValue = FILL
     end if
 
@@ -651,14 +641,14 @@ begin
         if (any(var.eq.altfill(ii)) .and. \
             var@_FillValue .ne. altfill(ii)) then
             var = where(var.eq.altfill(ii), var@_FillValue, var)
-            info_output("  Found probable missing values (" + altfill(ii) + \
-                        ") not defined as _FillValue, fixing", verbosity, 1)
+            log_info("  Found probable missing values (" + altfill(ii) + \
+                        ") not defined as _FillValue, fixing")
         end if
     end do
 
     ;; Set standard ESMVal-tool missing value (1.e20)
     var@_FillValue = FILL
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -682,13 +672,12 @@ procedure reformat_time(var:numeric,
 ;;    20150415-A_righ_ma: adapted to new reformat_coord procedure.
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, ctime
+local funcname, scriptname, ctime
 begin
 
     funcname = "reformat_time"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Check positioning
     if (pos.ne.0) then
@@ -703,7 +692,7 @@ begin
     ctime = time_attrib(var&time)
     delete(var&time)
     var&time = ctime
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -728,14 +717,13 @@ procedure reformat_plev(var:numeric,
 ;;    20150415-A_righ_ma: adapted to new reformat_coord procedure.
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, allowed_units, alt_units_hpa, \
+local funcname, scriptname, allowed_units, alt_units_hpa, \
     alt_units_bar, rank, cplev
 begin
 
     funcname = "reformat_plev"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     allowed_units = (/"m", "M",\
                       "Pa", "pa", "PA", "Pascals", "pascals", "PASCALS"/)
@@ -790,7 +778,7 @@ begin
     delete(var&plev)
     var&plev = cplev
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -813,13 +801,12 @@ procedure reformat_lev(var:numeric,
 ;; Modification history
 ;;    20150415-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, rank, clev
+local funcname, scriptname, rank, clev
 begin
 
     funcname = "reformat_lev"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Assign standard name
     var!pos = "lev"
@@ -863,7 +850,7 @@ begin
     delete(var&lev)
     var&lev = clev
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -886,13 +873,12 @@ procedure reformat_basin(var:numeric,
 ;; Modification history
 ;;    20150415-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, dsizes
+local funcname, scriptname, dsizes
 begin
 
     funcname = "reformat_basin"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Assign standard name
     var!pos = "basin"
@@ -905,7 +891,7 @@ begin
         var&basin@standard_name = "region"
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -929,13 +915,12 @@ procedure reformat_lat(var:numeric,
 ;;    20150415-A_righ_ma: adapted to new reformat_coord procedure.
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, rank, clat
+local funcname, scriptname, rank, clat
 begin
 
     funcname = "reformat_lat"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Assign standard name
     var!pos = "lat"
@@ -978,7 +963,7 @@ begin
     delete(var&lat)
     var&lat = clat
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -1005,13 +990,12 @@ function reformat_lon(var:numeric,
 ;;    20150415-A_righ_ma: adapted to new reformat_coord procedure.
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, cvar, rank, tmp, ip, clon
+local funcname, scriptname, cvar, rank, tmp, ip, clon
 begin
 
     funcname = "reformat_lon"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Copy to local var
     cvar = var
@@ -1080,7 +1064,7 @@ begin
     cvar&lon = clon
     out = cvar
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(out)
 
 end
@@ -1105,13 +1089,12 @@ function reformat_coord(var:numeric)
 ;; Modification history
 ;;    20150415-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, locvar, dnames, ndnames, dd, tmp
+local funcname, scriptname, locvar, dnames, ndnames, dd, tmp
 begin
 
     funcname = "reformat_coord"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Create a local copy
     locvar = var
@@ -1187,7 +1170,7 @@ begin
 
     end do
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(locvar)
 
 end
@@ -1210,14 +1193,13 @@ procedure add_irregulargrid_info(var:numeric)
 ;;    20161202-A_laue_ax: preserve attribute "bounds" if present
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, vdims, vsize, vrank, files, ff, vars, \
+local funcname, scriptname, vdims, vsize, vrank, files, ff, vars, \
     w, clat, altdname, ii, lat, ldims, lsize, clon, lon, area, tmp, latv, lonv
 begin
 
     funcname = "add_irregulargrid_info"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Variable dimensions (must be consistent with areacello dimensions)
     vdims = getvardims(var)
@@ -1387,7 +1369,7 @@ begin
             ldims = getvardims(area)
         end if
 
-        info_output("  Adding areacello to OUTFILE", verbosity, 1)
+        log_info("  Adding areacello to OUTFILE")
         filevardef(w, "areacello", typeof(area), ldims)
         filevarattdef(w, "areacello", area)
         delete(ldims)
@@ -1427,7 +1409,7 @@ begin
             end if
             latv!2 = "vertices"
 
-            info_output("  Adding lat_vertices to OUTFILE", verbosity, 1)
+            log_info("  Adding lat_vertices to OUTFILE")
             filedimdef(w, (/"vertices"/), (/4/), (/False/))
             filevardef(w, "lat_vertices", typeof(latv), getvardims(latv))
             filevarattdef(w, "lat_vertices", latv)
@@ -1469,7 +1451,7 @@ begin
             end if
             lonv!2 = "vertices"
 
-            info_output("  Adding lon_vertices to OUTFILE", verbosity, 1)
+            log_info("  Adding lon_vertices to OUTFILE")
             filevardef(w, "lon_vertices", typeof(lonv), getvardims(lonv))
             filevarattdef(w, "lon_vertices", lonv)
 
@@ -1492,7 +1474,7 @@ begin
     end if
     delete(w)
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -1512,14 +1494,13 @@ procedure add_lmask_info(var:numeric)
 ;; Modification history
 ;;    20151029-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, lexist, ff, vname, altdname, maskl, \
+local funcname, scriptname, lexist, ff, vname, altdname, maskl, \
     tmp, w, mdims, msize
 begin
 
     funcname = "add_lmask_info"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Variable dimensions (must be consistent with sftlf dimensions)
     vdims = getvardims(var)
@@ -1582,15 +1563,14 @@ begin
             filevarattdef(w, "sftlf", maskl)
             setfileoption(w, "DefineMode", False)
             w->sftlf = (/maskl/)
-            info_output("  Adding sftlf to OUTFILE", verbosity, 1)
+            log_info("  Adding sftlf to OUTFILE")
         else
-            info_output("Dimensionality of sftlf not consistent with " + \
-                        "dimensionality of " + VAR + ", skipping", \
-                        verbosity, 2)
+            log_debug("Dimensionality of sftlf not consistent with " + \
+                        "dimensionality of " + VAR + ", skipping")
         end if
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -1610,14 +1590,13 @@ procedure add_omask_info(var:numeric)
 ;; Modification history
 ;;    20151029-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, lexist, ff, vname, altdname, maskl, \
+local funcname, scriptname, lexist, ff, vname, altdname, maskl, \
     tmp, w, mdims, msize
 begin
 
     funcname = "add_omask_info"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Variable dimensions (must be consistent with sftof dimensions)
     vdims = getvardims(var)
@@ -1680,16 +1659,15 @@ begin
             filevarattdef(w, "sftof", masko)
             setfileoption(w, "DefineMode", False)
             w->sftof = (/masko/)
-            info_output("  Adding sftof to OUTFILE", verbosity, 1)
+            log_info("  Adding sftof to OUTFILE")
         else
-            info_output("Dimensionality of sftof not consistent with " + \
-                        "dimensionality of " + VAR + ", skipping", \
-                        verbosity, 2)
+            log_debug("Dimensionality of sftof not consistent with " + \
+                      "dimensionality of " + VAR + ", skipping")
         end if
 
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -1709,14 +1687,13 @@ procedure add_porosity_info(var:numeric)
 ;; Modification history
 ;;    20160823-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, vdims, vsize, vrank, lexist, ff, \
+local funcname, scriptname, vdims, vsize, vrank, lexist, ff, \
     vname, altdname, ii, maskl, tmp, lwrite, mdims, msize, mrank, w
 begin
 
     funcname = "add_porosity_info"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Variable dimensions (must be consistent with mrsofc dimensions)
     vdims = getvardims(var)
@@ -1779,15 +1756,14 @@ begin
             filevarattdef(w, "mrsofc", maskl)
             setfileoption(w, "DefineMode", False)
             w->mrsofc = (/maskl/)
-            info_output("  Adding mrsofc to OUTFILE", verbosity, 1)
+            log_info("  Adding mrsofc to OUTFILE")
         else
-            info_output("Dimensionality of mrsofc not consistent with " + \
-                        "dimensionality of " + VAR + ", skipping", \
-                        verbosity, 2)
+            log_info("Dimensionality of mrsofc not consistent with " + \
+                        "dimensionality of " + VAR + ", skipping")
         end if
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -1807,14 +1783,13 @@ procedure add_depth_info(var:numeric)
 ;; Modification history
 ;;    20160824-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, files, ff, depths, ii, lexist, vname, \
+local funcname, scriptname, files, ff, depths, ii, lexist, vname, \
     altdname, w
 begin
 
     funcname = "add_depth_info"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Any of the input files is ok, since depth/depth_bnds are constants
     files = systemfunc("ls " + INFILE)
@@ -1843,7 +1818,7 @@ begin
             depth = ff->$vname$
             w = addfile(OUTFILE, "w")
             w->$depths(ii)$ = depth
-            info_output("  Adding " + depths(ii) + " to OUTFILE", verbosity, 1)
+            log_info("  Adding " + depths(ii) + " to OUTFILE")
             delete(depth)
         else
             error_msg("f", scriptname, funcname, \
@@ -1851,7 +1826,7 @@ begin
         end if
     end do
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -1871,13 +1846,12 @@ procedure add_regionbasin_info()
 ;; Modification history
 ;;    20150415-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, files, ff, w, region, dims, size
+local funcname, scriptname, files, ff, w, region, dims, size
 begin
 
     funcname = "add_regionbasin_info"
     scriptname = "reformat_scripts/default/reformat_default_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Open input file
     files = systemfunc("ls " + INFILE)
@@ -1909,6 +1883,6 @@ begin
     setfileoption(w, "DefineMode", False)
     w->region = (/region/)
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end

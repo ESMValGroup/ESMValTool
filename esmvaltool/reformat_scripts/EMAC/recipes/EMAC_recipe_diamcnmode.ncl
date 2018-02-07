@@ -24,7 +24,7 @@ begin
     do im = 0, dimsizes(modes) - 1
         dd = find_and_read_var(modes(im), date, False)
         if (typeof(dd).ne."string") then
-            info_output("Adding mode " + modes(im), verbosity, 2)
+            log_debug("Adding mode " + modes(im))
             nmodes = nmodes + 1
             dims = dimsizes(dd)
         end if

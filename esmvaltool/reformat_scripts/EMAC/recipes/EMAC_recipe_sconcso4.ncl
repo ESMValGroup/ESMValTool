@@ -29,8 +29,8 @@ begin
         do im = 0, dimsizes(modes) - 1
             yy = find_and_read_var(aero(is) + modes(im), date, False)
             if (typeof(yy).ne."string") then
-                info_output("Adding species " +  aero(is) + modes(im) + \
-                            " (" + date + ")", verbosity, 2)
+                log_debug("Adding species " +  aero(is) + modes(im) + \
+                          " (" + date + ")")
                 if (isdefined("xx")) then
                     xx = xx + yy
                 else
