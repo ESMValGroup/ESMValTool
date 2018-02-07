@@ -33,14 +33,13 @@ load "interface_scripts/interface.ncl"
 load "./interface_scripts/interface.ncl"
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/data_handling.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 
 load "./plot_scripts/ncl/taylor_plot.ncl"
 
 begin
 
-    verbosity  = config_user_info@verbosity
-    enter_msg(diag_script, "", 4)
+    enter_msg(diag_script, "")
     diag_script_base = basename(diag_script)
 
     ;; Check file type
@@ -133,12 +132,12 @@ begin
         ;; Plot
         plot  = taylor_plot(wks, data_all, "var")
 
-        info_output(" gv " + outfile_plot + "." + file_type, verbosity, 1)
+        log_info(" gv " + outfile_plot + "." + file_type)
     end if
 
     ;; Remove temporary Taylor list
     system("rm -f " + temp_dir)
 
-    leave_msg(diag_script, "", 4)
+    leave_msg(diag_script, "")
 
 end

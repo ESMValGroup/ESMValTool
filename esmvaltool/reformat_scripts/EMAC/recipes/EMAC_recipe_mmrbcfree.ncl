@@ -27,8 +27,7 @@ begin
             spec = aero(is) + modes(im)
             yy = find_and_read_var(spec, date, False)
             if (typeof(yy).ne."string") then
-                info_output("Adding species " + spec + " (" + date + ")", \
-                            verbosity, 2)
+                log_debug("Adding species " + spec + " (" + date + ")")
                 mw = tofloat(yy@molarmass)
                 if (isdefined("xx")) then
                     xx = xx + yy * mw  ; [mol/mol] --> [g/mol]

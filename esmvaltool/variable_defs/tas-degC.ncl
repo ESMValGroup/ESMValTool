@@ -2,7 +2,7 @@
 ; Requires: tas:T2*s
 ;
 load "interface_scripts/data_handling.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 
 variable_info = True
 variable_info@derived = True

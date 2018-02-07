@@ -1,7 +1,50 @@
+---
 version: 2
 jobs:
-  build:
-    working_directory: /esmvaltool
+  python3_test:
+    # Run Python 3 tests
+    working_directory: /python3_test
+    docker:
+      - image: continuumio/miniconda
+    steps:
+      - checkout
+      - run:
+          # Add some system packages (mostly since geoval needs them)
+          command: |
+            apt-get update -y && apt-get install -y build-essential
+      - restore_cache:
+          key: deps3-{{ .Branch }}-{{ checksum "environment.yml" }}
+      - run:
+          # Update/Create Conda Environment
+          command: |
+            if ! test -d "/opt/conda/envs/esmvaltool"; then
+              conda create -y --name esmvaltool python=3
+            fi
+            conda env update --name esmvaltool
+      - save_cache:
+          key: deps3-{{ .Branch }}-{{ checksum "environment.yml" }}
+          paths:
+            - "/opt/conda/envs/esmvaltool"
+      - run:
+          # Activate Conda environment and run tests
+          command: |
+            source activate esmvaltool
+            python setup.py test
+      - store_test_results:
+          path: test-reports/
+      - store_artifacts:
+          path: test-reports/
+      - run:
+          # Upload Python 3 test coverage to codacy, even when the actual
+          # running of the tests fails.
+          when: always
+          command: |
+            pip install codacy-coverage
+            python-codacy-coverage -r test-reports/python3/coverage.xml
+
+  python2_test:
+    # Run Python 2 tests
+    working_directory: /python2_test
     docker:
       - image: continuumio/miniconda
     steps:
@@ -15,30 +58,191 @@ jobs:
       - run:
           # Update/Create Conda Environment
           command: |
-            if ! test -d "/opt/conda/envs/esmvaltool2"; then conda create -y -n esmvaltool2 python=2; fi
-            if ! test -d "/opt/conda/envs/esmvaltool3"; then conda create -y -n esmvaltool3 python=3; fi 
-            conda env update --quiet --file environment.yml --name esmvaltool2
-            conda env update --quiet --file environment.yml --name esmvaltool3
+            if ! test -d "/opt/conda/envs/esmvaltool"; then
+              conda create -y --name esmvaltool python=2
+            fi
+            conda env update --name esmvaltool
       - save_cache:
           key: deps2-{{ .Branch }}-{{ checksum "environment.yml" }}
           paths:
-            - "/opt/conda/envs/esmvaltool2"
-            - "/opt/conda/envs/esmvaltool3"
+            - "/opt/conda/envs/esmvaltool"
       - run:
           # Activate Conda environment and run tests
           command: |
-            source activate esmvaltool3
-            ./setup.py test
-            source activate esmvaltool2
-            ./setup.py test
+            source activate esmvaltool
+            python setup.py test
       - store_test_results:
           path: test-reports/
       - store_artifacts:
           path: test-reports/
+
+  python3_install:
+    # Test Python 3 installation
+    working_directory: /python3_install
+    docker:
+      - image: continuumio/miniconda
+    steps:
+      - checkout
       - run:
-          # Upload Python 3 test coverage to codacy, even when the actual
-          # running of the tests fails.
-          when: always
           command: |
-            pip install codacy-coverage
-            python-codacy-coverage -r test-reports/python3/coverage.xml
+            set -x
+            mkdir /logs
+            # Install
+            apt-get update > /logs/apt.txt 2>&1
+            apt-get install -y build-essential >> /logs/apt.txt 2>&1
+            conda create -y --name esmvaltool python=3 > /logs/conda.txt 2>&1
+            conda env update --name esmvaltool >> /logs/conda.txt 2>&1
+            set +x
+            source activate esmvaltool
+            set -x
+            pip install . > /logs/install.txt 2>&1
+            # Log versions
+            dpkg -l > /logs/versions.txt
+            conda env export > /logs/environment.yml
+            pip freeze > /logs/requirements.txt
+            # Test installation
+            esmvaltool -h
+            ncl -V
+      - store_artifacts:
+          path: /logs
+
+  python2_install:
+    # Test Python 2 installation
+    working_directory: /python2_install
+    docker:
+      - image: continuumio/miniconda
+    steps:
+      - checkout
+      - run:
+          command: |
+            set -x
+            mkdir /logs
+            # Install
+            apt-get update > /logs/apt.txt 2>&1
+            apt-get install -y build-essential >> /logs/apt.txt 2>&1
+            conda create -y --name esmvaltool python=2 > /logs/conda.txt 2>&1
+            conda env update --name esmvaltool >> /logs/conda.txt 2>&1
+            set +x
+            source activate esmvaltool
+            set -x
+            pip install . > /logs/install.txt 2>&1
+            # Log versions
+            dpkg -l > /logs/versions.txt
+            conda env export > /logs/environment.yml
+            pip freeze > /logs/requirements.txt
+            # Test installation
+            esmvaltool -h
+            ncl -V
+      - store_artifacts:
+          path: /logs
+
+  develop:
+    # Test development installation
+    working_directory: /develop
+    docker:
+      - image: continuumio/miniconda
+    steps:
+      - checkout
+      - run:
+          command: |
+            set -x
+            mkdir /logs
+            # Install
+            apt-get update > /logs/apt.txt 2>&1
+            apt-get install -y build-essential >> /logs/apt.txt 2>&1
+            conda create -y --name esmvaltool python=3 > /logs/conda.txt 2>&1
+            conda env update --name esmvaltool >> /logs/conda.txt 2>&1
+            set +x
+            source activate esmvaltool
+            set -x
+            pip install -e .[develop] > /logs/install.txt 2>&1
+            # Log versions
+            dpkg -l > /logs/versions.txt
+            conda env export > /logs/environment.yml
+            pip freeze > /logs/requirements.txt
+            # Test installation
+            esmvaltool -h
+            python setup.py test
+            ncl -V
+      - store_artifacts:
+          path: /logs
+
+  doc:
+    # Test building documentation
+    working_directory: /doc
+    docker:
+      - image: continuumio/miniconda
+    steps:
+      - checkout
+      - run:
+          command: |
+            set -x
+            mkdir /logs
+            # Install
+            apt-get update > /logs/apt.txt 2>&1
+            apt-get install -y build-essential >> /logs/apt.txt 2>&1
+            # TODO: change to Python 3 once issue #218 is fixed.
+            conda create -y --name esmvaltool python=2 > /logs/conda.txt 2>&1
+            conda env update --name esmvaltool >> /logs/conda.txt 2>&1
+            set +x
+            source activate esmvaltool
+            set -x
+            pip install -e .[develop] > /logs/install.txt 2>&1
+            # Log versions
+            dpkg -l > /logs/versions.txt
+            conda env export > /logs/environment.yml
+            pip freeze > /logs/requirements.txt
+            # Test building documentation
+            python setup.py build_sphinx
+      - store_artifacts:
+          path: /logs
+
+  ncl:
+    # Test ncl conda package
+    working_directory: /ncl
+    docker:
+      - image: continuumio/miniconda
+    steps:
+      - checkout
+      - run:
+          command: |
+            set -x
+            mkdir /logs
+            # Install
+            apt-get update > /logs/apt.txt 2>&1
+            apt-get install -y build-essential >> /logs/apt.txt 2>&1
+            conda create -y --name ncl > /logs/conda.txt 2>&1
+            set +x
+            source activate ncl
+            set -x
+            conda install -y --channel conda-forge ncl >> /logs/conda.txt 2>&1
+            # Log versions
+            dpkg -l > /logs/versions.txt
+            conda env export > /logs/environment.yml
+            # Test if NCL installed successfully
+            ncl -V
+      - store_artifacts:
+          path: /logs
+
+workflows:
+  version: 2
+  commit:
+    jobs:
+      - python3_test
+      - python2_test
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - REFACTORING_backend
+    jobs:
+      - python3_test
+      - python2_test
+      - python3_install
+      - python2_install
+      - develop
+      - doc
+      - ncl

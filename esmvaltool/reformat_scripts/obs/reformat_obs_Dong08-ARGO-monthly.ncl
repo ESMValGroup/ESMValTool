@@ -49,14 +49,12 @@ begin
 
 end
 
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity = config_user_info@verbosity
     diag_script = "reformat_obs_Dong08.ncl"
-    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.fileexists(OUTDIR)) then
@@ -139,9 +137,8 @@ begin
         "_000001-000012.nc"
     write_nc(fout, VAR, mlotst_sw, gAtt)
 
-    info_output("Done, output in " + fout, verbosity, 1)
+    log_info("Done, output in " + fout)
     delete([/fout, indata, mlotst, mlotst_sw, time, lat, lon/])
 
-    leave_msg(diag_script, "", 1)
 
 end

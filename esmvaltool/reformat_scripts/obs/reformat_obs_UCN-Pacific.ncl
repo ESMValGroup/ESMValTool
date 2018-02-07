@@ -56,15 +56,13 @@ begin
 
 end
 
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 load "./reformat_scripts/constants.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity = config_user_info@verbosity
     diag_script = "reformat_obs_UCN-Pacific.ncl"
-    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent(OUTDIR)) then
@@ -89,7 +87,7 @@ begin
     do cpID = 0, dimsizes(CAMPAIGN) - 1
 
         infile = INDIR + "clarke" + "_" + CODE(cpID) + ".asc"
-        info_output(infile, verbosity, 1)
+        log_info(infile)
 
         ;; Read data
         data = readAsciiTable(infile, 1, "string", 0)
@@ -154,6 +152,5 @@ begin
 
     end do
 
-    leave_msg(diag_script, "", 1)
 
 end

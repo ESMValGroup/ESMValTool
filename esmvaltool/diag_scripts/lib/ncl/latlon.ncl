@@ -20,7 +20,7 @@
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/constants.ncl"
 load "./interface_scripts/data_handling.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"  ; write_nc
 
 ;;#############################################################################
@@ -51,24 +51,23 @@ function roi(latlon_dat[4]:float,
 ;; Modification history
 ;;    20140129-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, latlon_cases, coord_checks, datmin, \
+local funcname, scriptname, latlon_cases, coord_checks, datmin, \
     datmax, roimin, roimax, latlon_dat, latlon_roi, latmin, latmax, lonmin, \
     lonmax, result, result_all, a1, a3
 begin
 
     funcname = "roi"
     scriptname = "diag_scripts/lib/ncl/latlon.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
-    info_output("  roi: latmin=" + latlon_roi(0) + \
+    log_debug("  roi: latmin=" + latlon_roi(0) + \
                 " ; latmax=" + latlon_roi(1) + \
                 " ; lonmin=" + latlon_roi(2) + \
-                " ; lonmax=" + latlon_roi(3), verbosity, 5)
-    info_output("  dat: latmin=" + latlon_dat(0) + \
+                " ; lonmax=" + latlon_roi(3))
+    log_debug("  dat: latmin=" + latlon_dat(0) + \
                 " ; latmax=" + latlon_dat(1) + \
                 " ; lonmin=" + latlon_dat(2) + \
-                " ; lonmax=" + latlon_dat(3), verbosity, 5)
+                " ; lonmax=" + latlon_dat(3))
 
     ;; avoid errors for areas that contain the Greenwich meridian
     ;; -> switch everything to -180 < lon < 180 for that case
@@ -134,10 +133,10 @@ begin
         if (2. * a3.gt.a1) then
             result = "center"
         end if
-        ;; info_output("warning: check for degree of overlap " + \
-        ;;             "not implemented yet", verbosity, 10)
-        ;; info_output("warning: -> returning 'center' just for case " + \
-        ;;             "'contained'", verbosity, 10)
+        ;; log_debug("warning: check for degree of overlap " + \
+        ;;             "not implemented yet")
+        ;; log_debug("warning: -> returning 'center' just for case " + \
+        ;;             "'contained'")
     end if
     ;; add other true, but less strong statements to the output vector
     if (result.eq."contained") then
@@ -155,7 +154,7 @@ begin
     end if
     end if
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(result_all)
 
 end
@@ -192,13 +191,12 @@ function extract_area(index[1]:integer,
 ;; Modification history:
 ;;    2013????-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, cn, cnt, modelfile, fm, val
+local funcname, scriptname, cn, cnt, modelfile, fm, val
 begin
 
     funcname = "extract_area"
     scriptname = "diag_scripts/lib/ncl/latlon.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; 'cn' is the basic building block for the keys used in
     ;; the 'data_pointer' dictionary
@@ -210,7 +208,7 @@ begin
     fm = addfile(modelfile, "r")
     val = fm->$requested_param$   ; Fetch entire variable, including metadata
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(val)
 
 end
@@ -235,13 +233,12 @@ function gridcell_area(deltax[1]: numeric,
 ;; Modification history:
 ;;    20121211-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, deg2rad
+local funcname, scriptname, deg2rad
 begin
 
     funcname = "gridcell_area"
     scriptname = "diag_scripts/lib/ncl/latlon.ncl"
-    verbosity = config_user_info@verbosity
-;    enter_msg(scriptname, funcname, 10)
+;    enter_msg(scriptname, funcname)
 
     ;; Convert to radiants
     deg2rad = acos(-1.0) / 180.
@@ -250,7 +247,7 @@ begin
     out = abs(EARTHradius ^ 2 * deltay * deltax * deg2rad)
     out@units = EARTHarea@units
 
-;    leave_msg(scriptname, funcname, 10)
+;    leave_msg(scriptname, funcname)
     return(out)
 
 end
@@ -277,13 +274,12 @@ function map_area(lat[*]:numeric,
 ;;    20140819-A_righ_ma: modified to support non-global input.
 ;;    20121211-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, loclat, loclon, nlat, lati, xresol
+local funcname, scriptname, loclat, loclon, nlat, lati, xresol
 begin
 
     funcname = "map_area"
     scriptname = "diag_scripts/lib/ncl/latlon.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; Type conversion
     loclat = tofloat(lat)
@@ -332,7 +328,7 @@ begin
     area!1   = "lon"
     area&lon = lon
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(area)
 
 end
@@ -383,7 +379,7 @@ function area_operations(field:numeric,
 ;; Modification history
 ;;    20140116-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, rank, dimnames, wgt, conwgt, f_latmin, \
+local funcname, scriptname, rank, dimnames, wgt, conwgt, f_latmin, \
     f_latmax, f_lonmin, f_lonmax, delta, idx_latmin, idx_latmax, latidx, \
     idx_lonmin, idx_lonmax, lonidx, subfield, subwgt, dnames, didx_r, didx_l, \
     norm
@@ -391,8 +387,7 @@ begin
 
     funcname = "area_operations"
     scriptname = "diag_scripts/lib/ncl/latlon.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; Check rank
     if (dimsizes(dimsizes(field)) .lt. 2) then
@@ -538,7 +533,7 @@ begin
     delete(conwgt)
 
     if (opt .eq. "extract") then
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(subfield)
     end if
 
@@ -571,7 +566,7 @@ begin
         else
             out = dim_sum_n_Wrap(subfield, didx_r)
         end if
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(out)
     end if
 
@@ -599,102 +594,101 @@ function select_region(region:string)
 ;;    20140410-A_fran_fr: extended to midlat, equatorial and polar regions.
 ;;    20140129-A_fran_fr: written.
 ;;
-local funcname, scriptname, verbosity, region
+local funcname, scriptname, region
 begin
 
     funcname = "select_region"
     scriptname = "diag_scripts/lib/ncl/latlon.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 10)
+    enter_msg(scriptname, funcname)
 
     if (region.eq."Global") then
         region_array = (/-90., 90., 0., 360./)
         region_array@name = "Glob"
-        leave_msg(scriptname, funcname, 10)
+        leave_msg(scriptname, funcname)
         return(region_array)
     end if
 
     if (region.eq."Tropics") then
         region_array = (/-20., 20., 0., 360./)
         region_array@name = "Trop"
-        leave_msg(scriptname, funcname, 10)
+        leave_msg(scriptname, funcname)
         return(region_array)
     end if
 
     if (region.eq."NH extratropics") then
         region_array = (/20., 90., 0., 360./)
         region_array@name = "NHext"
-        leave_msg(scriptname, funcname, 10)
+        leave_msg(scriptname, funcname)
         return(region_array)
     end if
 
     if (region.eq."SH extratropics") then
         region_array = (/-90., -20., 0., 360./)
         region_array@name = "SHext"
-        leave_msg(scriptname, funcname, 10)
+        leave_msg(scriptname, funcname)
         return(region_array)
     end if
 
     if (region.eq."NH equatorial") then
         region_array = (/0., 30., 0., 360./)
         region_array@name = "NHtrop"
-        leave_msg(scriptname, funcname, 10)
+        leave_msg(scriptname, funcname)
         return(region_array)
     end if
 
     if (region.eq."SH equatorial") then
         region_array = (/-30., 0., 0., 360./)
         region_array@name = "SHtrop"
-        leave_msg(scriptname, funcname, 10)
+        leave_msg(scriptname, funcname)
         return(region_array)
     end if
 
     if (region.eq."Northern Hemisphere") then
         region_array = (/20., 90., 0., 360./)
         region_array@name = "NH"
-        leave_msg(scriptname, funcname, 10)
+        leave_msg(scriptname, funcname)
         return(region_array)
     end if
 
     if (region.eq."Southern Hemisphere") then
         region_array = (/-90., -20., 0., 360./)
         region_array@name = "SH"
-        leave_msg(scriptname, funcname, 10)
+        leave_msg(scriptname, funcname)
         return(region_array)
     end if
 
     if (region.eq."NH midlatitudes") then
         region_array = (/35., 60., 0., 360./)
         region_array@name = "NHmidlat"
-        leave_msg(scriptname, funcname, 10)
+        leave_msg(scriptname, funcname)
         return(region_array)
     end if
 
     if (region.eq."SH midlatitudes") then
         region_array = (/-60., -35., 0., 360./)
         region_array@name = "SHmidlat"
-        leave_msg(scriptname, funcname, 10)
+        leave_msg(scriptname, funcname)
         return(region_array)
     end if
 
     if (region.eq."Arctic") then
         region_array = (/60., 90., 0., 360./)
         region_array@name = "NHpolar"
-        leave_msg(scriptname, funcname, 10)
+        leave_msg(scriptname, funcname)
         return(region_array)
     end if
 
     if (region.eq."Antarctic") then
         region_array = (/-90., -60., 0., 360./)
         region_array@name = "SHpolar"
-        leave_msg(scriptname, funcname, 10)
+        leave_msg(scriptname, funcname)
         return(region_array)
     end if
 
     if (region.eq."Equatorial") then
         region_array = (/-10., 10., 0., 360./)
         region_array@name = "EQ"
-        leave_msg(scriptname, funcname, 10)
+        leave_msg(scriptname, funcname)
         return(region_array)
     end if
 
@@ -726,17 +720,15 @@ function make_latlon2D(var[1]:string,
 ;; Modification history:
 ;;    20141023-A_vanu_be: written based on code in SeaIce_polcon_diff
 ;;
-local area_lat, area_lon, area_temp, funcname, out_field, rank, scriptname, \
-    verbosity
+local funcname, scriptname, area_lat, area_lon, area_temp, out_field, rank
 begin
 
     funcname = "make_latlon2D"
     scriptname = "diag_scripts/lib/ncl/latlon.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 10)
+    enter_msg(scriptname, funcname)
 
     if (all(iscoord(field, (/"lat", "lon"/)))) then
-        info_output(var + " is on a lat-lon grid", verbosity, 4)
+        log_debug(var + " is on a lat-lon grid")
 
         ;; Check rank
         rank = dimsizes(dimsizes(field))
@@ -777,7 +769,7 @@ begin
         delete(area_temp)
     else
         ;; irregular grid
-        info_output(var + " is not on a lat-lon grid", verbosity, 4)
+        log_debug(var + " is not on a lat-lon grid")
         out_field = field
 
         ;; Get lat-lon from another file
@@ -791,7 +783,7 @@ begin
     delete(area_lat)
     delete(area_lon)
 
-    leave_msg(scriptname, funcname, 10)
+    leave_msg(scriptname, funcname)
     return(out_field)
 
 end

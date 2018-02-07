@@ -64,15 +64,13 @@ begin
 
 end
 
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 load "./reformat_scripts/constants.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity = config_user_info@verbosity
     diag_script = "reformat_obs_NCEP-daily.ncl"
-    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent(OUTDIR)) then
@@ -85,9 +83,8 @@ begin
         ;; Set field
         FIELD = FLDARR(vID)
 
-        info_output("", verbosity, 1)
-        info_output("Processing " + VARS(vID) + " (" + FIELD + ") ", \
-                    verbosity, 1)
+        log_info("")
+        log_info("Processing " + VARS(vID) + " (" + FIELD + ") ")
 
         do yr = YEAR1, YEAR2
 
@@ -135,8 +132,8 @@ begin
                           "Possibly wrong units for " + VARS(vID))
             end if
 
-            info_output("  Range: " + min(output) + "; " + max(output) + \
-                        " [" + output@units + "]", verbosity, 1)
+            log_info("  Range: " + min(output) + "; " + max(output) + \
+                        " [" + output@units + "]")
 
             ;; Set variable attributes
             tmp = var_attrib(output, VARS(vID))
@@ -231,8 +228,7 @@ begin
             output&lon = clon
             delete(clon)
 
-            info_output("  Range: " + min(output) + "; " + max(output), \
-                        verbosity, 1)
+            log_info("  Range: " + min(output) + "; " + max(output))
 
             ;; Set global attributes
             gAtt = True
@@ -271,6 +267,5 @@ begin
         end do  ; yr-loop
     end do ; varriable-loop
 
-    leave_msg(diag_script, "", 1)
 
 end

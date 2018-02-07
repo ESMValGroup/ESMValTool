@@ -12,7 +12,7 @@
 ;;
 ;;#############################################################################
 
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 load "./interface_scripts/auxiliary.ncl"
 
 ;;#############################################################################
@@ -43,14 +43,13 @@ function yyyyfrac_to_ut(frac: numeric,
 ;;    20140624-A_gott_kl: written.
 ;;
 
-local verbosity, funcname, years, YEAR, units, offset, sorted, spy, ileap, \
+local funcname, years, YEAR, units, offset, sorted, spy, ileap, \
     iyears, iy, f, f_sec, time, ut
 begin
 
     funcname = "yyyyfrac_to_ut"
     scriptname = "reformat_scripts/obs/reformat_obs_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Seconds per year
     years = toint(frac)
@@ -99,7 +98,7 @@ begin
     ;; Convert to UT
     ut = cd_calendar(time, flag)
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(ut)
 end
 
@@ -121,13 +120,12 @@ function create_timec(y1:integer,
 ;; Modification history
 ;;    20140124-A_righ_ma: written.
 ;;
-local verbosity, funcname, yy, mm
+local funcname, yy, mm
 begin
 
     funcname = "create_timec"
     scriptname = "reformat_scripts/obs/reformat_obs_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     out = new(12 * (y2 - y1 + 1), double)
     do yy = y1, y2
@@ -137,7 +135,7 @@ begin
         end do
     end do
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(out)
 end
 
@@ -165,14 +163,13 @@ procedure write_nc(outfile:string,
 ;; Modification history
 ;;    20140123-A_righ_ma: written.
 ;;
-local verbosity, funcname, w, gAtt, dim_names, ndims, dim_sizes, dim_types, \
+local funcname, w, gAtt, dim_names, ndims, dim_sizes, dim_types, \
     dim_unlim, ii
 begin
 
     funcname = "write_nc"
     scriptname = "reformat_scripts/obs/reformat_obs_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Open file
     if (isfilepresent(outfile)) then
@@ -220,7 +217,7 @@ begin
     end do
     w->$name$ = (/var/)
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -249,13 +246,12 @@ procedure write_nc_profile(outfile: string,
 ;; Modification history
 ;;    20140422-A_righ_ma: written.
 ;;
-local verbosity, funcname, w, coords, cc, jj, locname, locvar, cname
+local funcname, w, coords, cc, jj, locname, locvar, cname
 begin
 
     funcname = "write_nc_profile"
     scriptname = "reformat_scripts/obs/reformat_obs_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Open file
     if (fileexists(outfile)) then
@@ -309,7 +305,7 @@ begin
 
     end do
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -361,8 +357,7 @@ begin
 
     funcname = "process_EBAS_data"
     scriptname = "reformat_scripts/obs/reformat_obs_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; EBAS flags for valid measurements
     ;; (see http://www.nilu.no/projects/ccc/flags/index.html)
@@ -398,7 +393,7 @@ begin
     ;; Loop over variables
     do vID = 0, dimsizes(in_vars) - 1
 
-        info_output("  Processing variable " + in_compon(vID), verbosity, 1)
+        log_info("  Processing variable " + in_compon(vID))
 
         ;; Initialize
         temp_arr = 0.
@@ -421,15 +416,15 @@ begin
 
         ;; Check for duplicates
         if (dimsizes(UNIQ(sy)).ne.dimsizes(sy)) then
-            info_output("Duplicated data in input files", verbosity, 1)
+            log_info("Duplicated data in input files")
             do fID = 0, dimsizes(in_files) - 1
-                info_output("  " + in_files(fID), verbosity, 1)
+                log_info("  " + in_files(fID))
             end do
-            info_output("Remove duplicated files considering the " + \
-                        "following criteria", verbosity, 1)
-            info_output("  most recent revision date", verbosity, 1)
-            info_output("  most complete time coverage", verbosity, 1)
-            info_output("  same instrument in different years", verbosity, 1)
+            log_info("Remove duplicated files considering the " + \
+                        "following criteria")
+            log_info("  most recent revision date")
+            log_info("  most complete time coverage")
+            log_info("  same instrument in different years")
             error_msg("f", scriptname, funcname, \
                       "rerun this station after removing duplicates")
         end if
@@ -438,7 +433,7 @@ begin
         ;; Loop over input files
         do fID = 0, dimsizes(in_files) - 1
 
-            info_output("   Reading file " + in_bnames(fID), verbosity, 2)
+            log_debug("   Reading file " + in_bnames(fID))
 
             ;; Read header
             head = readAsciiHead(in_files(fID), "starttime")
@@ -646,7 +641,7 @@ begin
 
     end do  ; variables
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(data_arr)
 
 end

@@ -61,15 +61,13 @@ begin
 
 end
 
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 load "./reformat_scripts/constants.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity = config_user_info@verbosity
     diag_script = "reformat_obs_GTO-ECV.ncl"
-    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent(OUTDIR)) then
@@ -112,7 +110,7 @@ begin
                 end if
                 INFILE = rawVARS(ivar) + "-ECV_V1_" + year + \
                     "_" + month + ".dat"
-                info_output("Processing " + INDIR + INFILE, verbosity, 1)
+                log_info("Processing " + INDIR + INFILE)
 
                 ;; collect file names -> global attribute in outfile
                 original_files(itime) = INFILE
@@ -194,18 +192,17 @@ begin
             "_" + VARS(ivar) + "_" + YEAR1 + "01-" + YEAR2 + "12.nc"
         write_nc(fout, VARS(ivar), output, gAtt)
         delete(output)
-        info_output("Wrote " + fout, verbosity, 1)
+        log_info("Wrote " + fout)
 
         ;; Write stddev
 ;;         fout = OUTDIR + "OBS_" + OBSNAME + "_sat_1_" + FIELD + \
 ;;             "_" + VARS(ivar) + "_stdddev.nc"
 ;;         write_nc(fout, VARS(ivar) + "_stddev", output_stddev, gAtt)
 ;;         delete(output_stddev)
-;;         info_output("Wrote " + fout, verbosity, 1)
+;;         log_info("Wrote " + fout)
 
         delete(gAtt)
     end do  ; ivar
 
-    leave_msg(diag_script, "", 1)
 
 end

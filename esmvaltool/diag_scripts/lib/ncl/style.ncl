@@ -19,7 +19,7 @@
 
 
 load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 
 load "./diag_scripts/lib/ncl/set_operators.ncl"
 
@@ -47,13 +47,12 @@ function unique_labels_min(prio: string)
 ;; Modification history
 ;;    20130422-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, prio, result, unique, iprio, index
+local funcname, scriptname, prio, result, unique, iprio, index
 begin
 
     funcname = "unique_labels_min"
     scriptname = "diag_scripts/lib/ncl/style.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 10)
+    enter_msg(scriptname, funcname)
 
     result = models@$prio(0)$  ; Start with highest priority
     unique = result(UNIQ(result))
@@ -80,7 +79,7 @@ begin
         end if  ; iprio
     end do  ; while
 
-    leave_msg(scriptname, funcname, 10)
+    leave_msg(scriptname, funcname)
     return(result)
 
 end
@@ -109,13 +108,12 @@ function unique_labels_all(prio:string)
 ;; Modification history
 ;;    20130422-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, prio, result, unique, iprio, index
+local funcname, scriptname, prio, result, unique, iprio, index
 begin
 
     funcname = "unique_labels_all"
     scriptname = "diag_scripts/lib/ncl/style.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 10)
+    enter_msg(scriptname, funcname)
 
     result = models@$prio(0)$  ; Start with highest priority
     unique = result(UNIQ(result))
@@ -141,7 +139,7 @@ begin
         end if  ; iprio
     end do  ; while
 
-    leave_msg(scriptname, funcname, 10)
+    leave_msg(scriptname, funcname)
     return(result)
 
 end
@@ -187,14 +185,12 @@ function project_style(info, flag)
 ;;                        project_style_<styleset> functions porteed here.
 ;;    20130419-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, result, info, flag, styleset, \
-    stylefile, tmp, sty
+local funcname, scriptname, result, info, flag, styleset, stylefile, tmp, sty
 begin
 
     funcname = "project_style"
     scriptname = "diag_scripts/lib/ncl/style.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; Check for the available dictonary keys to be used for the annotations
     ;; (see get_dict_key in projects.py)
@@ -206,7 +202,7 @@ begin
     ;; Style information for this flag available as diag_script_info@$flag$
     if (isatt(info, flag)) then
         result = info@$flag$
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(result)
     end if
 
@@ -231,7 +227,7 @@ begin
     ;; Model annotations, return unique model names based on dict keys
     if (flag.eq."annots") then
         result = unique_labels_min(l_dkeys)
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(result)
     end if
 
@@ -266,8 +262,8 @@ begin
             ;; Search for "default"
             row  = ind("default".eq.modelsinfile)
             if (.not.ismissing(row)) then
-                info_output("Model " + models@name(ii) + " not found in " + \
-                            stylefile + ", using default", verbosity, 6)
+                log_debug("Model " + models@name(ii) + " not found in " + \
+                          stylefile + ", using default")
                 column(ii) = str_squeeze(str_get_field(sty(row), col, "|"))
                 continue
             end if
@@ -283,8 +279,8 @@ begin
                           stylefile + " contains too few wildcard (*) " + \
                           "entries (" + wildcard_cnt + "), please add more")
             end if
-            info_output("Model " + models@name(ii) + " not found in " + \
-                        stylefile + ", using wildcard", verbosity, 6)
+            log_debug("Model " + models@name(ii) + " not found in " + \
+                      stylefile + ", using wildcard")
             row = rows(wildcard_cnt)
             wildcard_cnt = wildcard_cnt + 1
             column(ii) = str_squeeze(str_get_field(sty(row), col, "|"))
@@ -329,21 +325,21 @@ begin
             end if
             end if
         end do
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(result)
     end if
 
     ;; Line dash patterns, marker indexes, avgstd flag: convert to integer
     if (any(flag.eq.(/"dashes", "markers", "avgstd"/))) then
         result = toint(column)
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(result)
     end if
 
     ;; Line thicknesses: convert to float
     if (flag.eq."thicks") then
         result = tofloat(column)
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(result)
     end if
 
@@ -371,8 +367,10 @@ function project_style_GO(flag:string)
 ;
 local result, modelstyles, flag
 begin
-    verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering style_GO.ncl", verbosity, 8)
+
+    funcname = "project_style_GO"
+    scriptname = "diag_scripts/lib/ncl/style.ncl"
+    enter_msg(scriptname, funcname)
 
     ;; define (/model, color, dash, thickness, avgstd/) for each model
     modelstyles = (/ (/"PlankTOM5",     "(/0.6,     0.,      0.0078/)",          "0",  "1",  "0"/), \
@@ -404,7 +402,7 @@ begin
     end if
     end if
 
-    info_output(">>>>>>>> Leaving style_GO.ncl", verbosity, 8)
+    leave_msg(scriptname, funcname)
     return(result)
 end
 
@@ -433,13 +431,12 @@ function place_debuginfo(wks[1]:graphic,
 ;; Modification history
 ;;
 local i, txvpWidth, txvpHeight, tx, x, y, parent_width, parent_height, \
-    annoid, mvxf, mvyf, verbosity, debugstring
+    annoid, mvxf, mvyf, debugstring
 begin
 
     funcname = "place_debuginfo"
     scriptname = "diag_scripts/lib/ncl/style.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 8)
+    enter_msg(scriptname, funcname)
 
     res@gsnDraw               = False
     res@gsnFrame              = False
@@ -467,7 +464,7 @@ begin
     amres@amParallelPosF   = mvyf / 2
     amres@amOrthogonalPosF = -mvxf
     annoid = gsn_add_annotation(plot, tx, amres)
-    leave_msg(scriptname, funcname, 8)
+    leave_msg(scriptname, funcname)
     return(annoid)
 end
 
@@ -493,14 +490,13 @@ procedure place_description(wks[1]:graphic,
 ;;
 ;; Modification history
 ;;
-local tx, txvpWidth, txvpHeight, parent_x, parent_y, amres,\
-    wks_dummy, annoid, txres, y_ndc_coord
+local tx, txvpWidth, txvpHeight, parent_x, parent_y, amres, wks_dummy, \
+    annoid, txres, y_ndc_coord
 begin
 
     funcname = "place_description"
     scriptname = "diag_scripts/lib/ncl/style.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     wks_dummy = gsn_open_wks("png", "dummy.png")
     txres = True
@@ -519,7 +515,7 @@ begin
         y_ndc_coord = 0.8
     end if
     gsn_text_ndc(wks, description, txvpWidth / 2, y_ndc_coord, txres)
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -558,14 +554,13 @@ function gsnColorRange(lower:numeric,
 ;; Modification history
 ;;    20130422-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, nboxes_left, nboxes_right, \
-    ncolors_left, ncolors_right, output, color_start
+local funcname, scriptname, nboxes_left, nboxes_right, ncolors_left, \
+    ncolors_right, output, color_start
 begin
 
     funcname = "gsnColorRange"
     scriptname = "diag_scripts/lib/ncl/style.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     color_start = 2  ; All of the color maps begin with 2.
 
@@ -602,7 +597,7 @@ begin
     end if
     end if
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(output)
 
 end
@@ -629,13 +624,12 @@ function format_units(str[1]: string)
 ;; Modification history
 ;;    20140320-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, loc_str
+local funcname, scriptname, loc_str
 begin
 
     funcname = "format_units"
     scriptname = "diag_scripts/lib/ncl/style.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; Create a local copy
     loc_str = str
@@ -655,7 +649,7 @@ begin
         loc_str = str_sub_str(loc_str, "u", "~F33~m~F21~")
     end if
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(loc_str)
 
 end
@@ -687,13 +681,12 @@ function set_log_ticks(fmin[1]:numeric,
 ;; Modification history
 ;;    20141003-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, omin, omax, rmin, rmax, om, tmp, arr
+local funcname, scriptname, omin, omax, rmin, rmax, om, tmp, arr
 begin
 
     funcname = "set_log_ticks"
     scriptname = "diag_scripts/lib/ncl/style.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; Find order of magnitude of min
     omin = toint(log10(fmin))
@@ -709,7 +702,7 @@ begin
 
     if (opt.eq."major") then
         out = 10 ^ ispan(omin + 1, omax, 1)
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(out)
     end if
 
@@ -728,7 +721,7 @@ begin
             end if
         end do
         out = arr(ind(arr.ge.rmin .and. arr.le.rmax))
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(out)
     end if
 
@@ -782,8 +775,7 @@ begin
 
     funcname = "sort_alphabetically"
     scriptname = "diag_scripts/lib/ncl/style.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; Create a local copy of input names and set to upper case
     loc_names = str_upper(orig_names)
@@ -826,7 +818,7 @@ begin
         perm_idx(ii) = ind(reord_names(ii).eq.loc_names)
     end do
 
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
     return(perm_idx)
 
 

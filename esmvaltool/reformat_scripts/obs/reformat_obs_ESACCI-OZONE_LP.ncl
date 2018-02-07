@@ -54,13 +54,12 @@ begin
 end
 
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 load "./reformat_scripts/constants.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity = 1
     diag_script = "reformat_obs_ESACCI-OZONE.ncl"
 
     ;; Create output dir
@@ -70,9 +69,8 @@ begin
 
     do vID = 0, dimsizes(VARS) - 1
 
-        info_output("", verbosity, 1)
-        info_output("Processing " + VARS(vID) + " (" + FIELD + ") ", \
-                    verbosity, 1)
+        log_info("")
+        log_info("Processing " + VARS(vID) + " (" + FIELD + ") ")
 
         time = create_timec(YEAR1, YEAR2)
         date = cd_calendar(time, 1)
@@ -82,7 +80,7 @@ begin
             do mm = 1, 12
 
                 ldate = yy + sprinti("%0.2i", mm)
-                info_output("Processing " + ldate, verbosity, 1)
+                log_info("Processing " + ldate)
 
                 ;; Read file
                 str = "find " + INDIR + " -type f -name 'ESACCI-OZONE-*LP*" \
@@ -159,8 +157,7 @@ begin
         OUTPUT&lat = clat
         delete(clat)
 
-        info_output("  Range: " + min(OUTPUT) + "; " + \
-                    max(OUTPUT), verbosity, 1)
+        log_info("  Range: " + min(OUTPUT) + "; " + max(OUTPUT))
 
         ;; Set global attributes
         gAtt = True

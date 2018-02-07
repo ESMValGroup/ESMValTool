@@ -22,7 +22,7 @@
 ;;#############################################################################
 
 load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 
 load "./diag_scripts/lib/ncl/latlon.ncl"
 load "./diag_scripts/lib/ncl/regridding.ncl"
@@ -59,13 +59,13 @@ function dim_stddev_wgt_Wrap(field[*]:numeric,
 ;;                        added "no weigth" (nowgt) option
 ;;    20141215-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, wavg, wgt, v1, v2, d2, arg
+local funcname, scriptname, wavg, wgt, v1, v2, d2, arg
 begin
 
     funcname = "dim_stddev_wgt_Wrap"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 6)
+
+    enter_msg(scriptname, funcname)
 
     ; Copy to local
     wgt = ww
@@ -95,7 +95,7 @@ begin
     arg = dim_sum_wgt_Wrap(d2, ww, opt)
     out = sqrt(v1 / (v1 ^ 2 - v2) * arg)
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(out)
 
 end
@@ -155,16 +155,16 @@ function time_operations(field:numeric,
 ;;    20140312-A_righ_ma: extended with standard deviation.
 ;;    20140109-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, monthstr, date, year, month, idx1, \
-    idx2, loc_y1, loc_y2, rank, subfield, weights, idx, idx_win, idx_spr, \
-    idx_sum, idx_aut, mm, idx_1st, idx_arr, p1, p2, d2, arg, v1, v2, ym_in, \
-    years, nyear, ym, dims, timec, FillValue, index
+local funcname, scriptname, monthstr, date, year, month, idx1, idx2, loc_y1, \
+    loc_y2, rank, subfield, weights, idx, idx_win, idx_spr, idx_sum, idx_aut, \
+    mm, idx_1st, idx_arr, p1, p2, d2, arg, v1, v2, ym_in, years, nyear, ym, \
+    dims, timec, FillValue, index
 begin
 
     funcname = "time_operations"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 6)
+
+    enter_msg(scriptname, funcname)
 
     ;; Check arguments
     if (all(oper.ne.(/"extract", "average", "stddev"/))) then
@@ -252,7 +252,7 @@ begin
 
     ;; Extract only
     if (l_ext .and. opt.eq."") then
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(subfield)
     end if
 
@@ -267,7 +267,7 @@ begin
             error_msg("f", scriptname, funcname, "feature not yet " + \
                       "implemented")
         end if
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(out)
     end if
 
@@ -340,7 +340,7 @@ begin
         out!0 = "year"
         delete(out&year)
         out&year = ispan(loc_y1, loc_y2, 1)
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(out)
     end if
 
@@ -425,7 +425,7 @@ begin
         delete(out&time)
         out!0 = "season"
         out&season = (/"DJF", "MAM", "JJA", "SON"/)
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(out)
     end if
 
@@ -492,7 +492,7 @@ begin
         delete(out&month)
         out&month = (/"J", "F", "M", "A", "M", "J", \
                       "J", "A", "S", "O", "N", "D"/)
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(out)
     end if
 
@@ -636,7 +636,7 @@ begin
         end if
         end if
 
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(out)
     end if
 
@@ -743,7 +743,7 @@ begin
                           "feature not yet implemented")
             end if
         end if
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(out)
     end if
 
@@ -772,15 +772,14 @@ function calc_season_index(season[1]:string)
 ;;
 ;; Modification history
 ;;
-local funcname, scriptname, verbosity, current_search_set, DEBUG, i, indices, \
-    months, start_index, strIndex, stringmonths, string_search_set, \
-    subStringLength
+local funcname, scriptname, current_search_set, DEBUG, i, indices, months, \
+    start_index, strIndex, stringmonths, string_search_set, subStringLength
 begin
 
     funcname = "calc_season_index"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 10)
+
+    enter_msg(scriptname, funcname)
 
     DEBUG = False
 
@@ -843,7 +842,7 @@ begin
         end if
     end do
 
-    leave_msg(scriptname, funcname, 10)
+    leave_msg(scriptname, funcname)
     return(indices)
 
 end
@@ -870,15 +869,15 @@ function extract_season(data:numeric,
 ;;
 ;; Modification history
 ;;
-local funcname, scriptname, verbosity, idx, subset_selection, months, \
-    newtime, seasonal_selection_ind, season_monthly_indices, sizes, \
-    start_of_year, tmp, local_indata, ndims
+local funcname, scriptname, idx, subset_selection, months, newtime, \
+    seasonal_selection_ind, season_monthly_indices, sizes, start_of_year, \
+    tmp, local_indata, ndims
 begin
 
     funcname = "extract_season"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 8)
+
+    enter_msg(scriptname, funcname)
 
     season_monthly_indices = calc_season_index(season)
     months = tointeger(cd_convert(data&time, "months since 1850-01-01 00:00"))
@@ -930,7 +929,7 @@ begin
     end if
     end if
 
-    leave_msg(scriptname, funcname, 8)
+    leave_msg(scriptname, funcname)
     return(subset_selection)
 
 end
@@ -957,14 +956,14 @@ function month_to_season_extended(indata:float,
 ;;
 ;; Modification history
 ;;
-local funcname, scriptname, verbosity, season_indices, dim_season_indices, \
+local funcname, scriptname, season_indices, dim_season_indices, \
     runaveragedata, start_index, averagedata, dim
 begin
 
     funcname = "month_to_season_extended"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 8)
+
+    enter_msg(scriptname, funcname)
 
     indata_size = dimsizes(indata)
     if (dimsizes(indata&time) % 12 .ne. 0) then
@@ -1035,7 +1034,7 @@ begin
 
     copy_VarAtts(indata, averagedata)
 
-    leave_msg(scriptname, funcname, 8)
+    leave_msg(scriptname, funcname)
     return(averagedata)
 
 end
@@ -1060,14 +1059,13 @@ function coswgt_areaave(field:numeric)
 ;; Modification history
 ;;    20131209-A_eval_ma: written.
 ;;
-local funcname, scriptname, verbosity, lat, wgt_lat, lon, lon_size, \
-    wgt_lon, ave
+local funcname, scriptname, lat, wgt_lat, lon, lon_size, wgt_lon, ave
 begin
 
     funcname = "coswgt_areaave"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 10)
+
+    enter_msg(scriptname, funcname)
 
     lat = field&lat
     wgt_lat = tofloat(NormCosWgtGlobe(lat))
@@ -1079,7 +1077,7 @@ begin
 
     ave = wgt_areaave_Wrap(field, wgt_lat, wgt_lon, 0)
 
-    leave_msg(scriptname, funcname, 10)
+    leave_msg(scriptname, funcname)
     return(ave)
 
 end
@@ -1106,14 +1104,14 @@ function coswgt_arearmse(field1:numeric,
 ;; Modification history:
 ;;    20131209-A_eval_ma: written.
 ;;
-local funcname, scriptname, verbosity, lat, wgt_lat, lon, lon_size, wgt_lon, \
-    rmse, local_field1, local_field2
+local funcname, scriptname, lat, wgt_lat, lon, lon_size, wgt_lon, rmse, \
+    local_field1, local_field2
 begin
 
     funcname = "coswgt_arearmse"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 10)
+
+    enter_msg(scriptname, funcname)
 
     field1_grid_size = guestimate_average_grid_area(field1)
     field2_grid_size = guestimate_average_grid_area(field2)
@@ -1136,7 +1134,7 @@ begin
 
     rmse = wgt_arearmse(local_field1, local_field2, wgt_lat, wgt_lon, 0)
 
-    leave_msg(scriptname, funcname, 10)
+    leave_msg(scriptname, funcname)
     return(rmse)
 
 end
@@ -1162,14 +1160,14 @@ function coswgt_pattern_cor(field1:numeric,
 ;; Modification history:
 ;;    20140115-A_eval_ma: written.
 ;;
-local funcname, scriptname, verbosity, lat, wgt_lat, lon, lon_size, wgt_lon, \
+local funcname, scriptname, lat, wgt_lat, lon, lon_size, wgt_lon, \
     pattern_correlation, local_field1, local_field2
 begin
 
     funcname = "coswgt_pattern_cor"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 10)
+
+    enter_msg(scriptname, funcname)
 
     field1_grid_size = guestimate_average_grid_area(field1)
     field2_grid_size = guestimate_average_grid_area(field2)
@@ -1192,7 +1190,7 @@ begin
 
     pattern_correlation = pattern_cor(local_field1, local_field2, wgt_lat, 0)
 
-    leave_msg(scriptname, funcname, 10)
+    leave_msg(scriptname, funcname)
     return(pattern_correlation)
 
 end
@@ -1234,15 +1232,15 @@ function interannual_variability(field: numeric,
 ;; Modification history
 ;;    20140314-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, monthstr, rank, field_avg, field_djf, \
-    field_mam, field_jja, field_son, field_avg_djf, field_avg_mam, \
-    field_avg_jja, field_avg_son
+local funcname, scriptname, monthstr, rank, field_avg, field_djf, field_mam, \
+    field_jja, field_son, field_avg_djf, field_avg_mam, field_avg_jja, \
+    field_avg_son
 begin
 
     funcname = "interannual_variability"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 6)
+
+    enter_msg(scriptname, funcname)
 
     ;; Check for time dimension
     if (field!0.ne."time") then
@@ -1267,7 +1265,7 @@ begin
     if (opt.eq."annualclim") then
         field_avg = time_operations(field, y1, y2, "average", "yearly", True)
         out = dim_stddev_n_Wrap(field_avg, 0)
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(out)
     end if
 
@@ -1314,14 +1312,14 @@ begin
             out(2, :, :, :) = dim_stddev_n_Wrap(field_avg_jja, 0)
             out(3, :, :, :) = dim_stddev_n_Wrap(field_avg_son, 0)
         end if
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(out)
     end if
 
     ;; Monthly climatology
     if (opt.eq."monthlyclim") then
         out = time_operations(field, y1, y2, "stddev", opt, True)
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(out)
     end if
 
@@ -1336,14 +1334,14 @@ begin
         else
             out = dim_stddev_n_Wrap(field_avg, 0)
         end if
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(out)
     end if
 
     ;; Specific-month
     if (any(opt.eq.tostring(ispan(1, 12, 1)))) then
         out = time_operations(field, y1, y2, "stddev", opt, True)
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(out)
     end if
 
@@ -1381,15 +1379,15 @@ function calculate_metric(var:numeric,
 ;;                     depending on dimensionality.
 ;;    20140120-A_fran_fr: written.
 ;;
-local funcname, scriptname, verbosity, dims_var, dims_ref, ii, dim_names, \
-    mdays, sdays, weights, var1d, ref1d, wgt1d, avg_var, avg_ref, p1, p2, p3, \
-    var3d, wgt3d, tmean_m, tmean_o, tmp_m, tmp_o
+local funcname, scriptname, dims_var, dims_ref, ii, dim_names, mdays, sdays, \
+    weights, var1d, ref1d, wgt1d, avg_var, avg_ref, p1, p2, p3, var3d, wgt3d, \
+    tmean_m, tmean_o, tmp_m, tmp_o
 begin
 
     funcname = "calculate_metric"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 6)
+
+    enter_msg(scriptname, funcname)
 
     ;; Check for dimensions consistency
     dims_var = dimsizes(var)
@@ -1480,14 +1478,14 @@ begin
     ;; RMSD
     if (metric.eq."RMSD") then
         out = sqrt(dim_avg_wgt_Wrap((var1d - ref1d) ^ 2, wgt1d, 1))
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(out)
     end if
 
     ;; BIAS
     if (metric.eq."BIAS") then
         out = dim_avg_wgt_Wrap((var1d - ref1d), wgt1d, 1)
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(out)
     end if
 
@@ -1495,7 +1493,7 @@ begin
     if (isStrSubset(metric, "stddev_ratio")) then
         out = sqrt(dim_sum_wgt_Wrap((var1d - avg_var) ^ 2, wgt1d, 1)) / \
             sqrt(dim_sum_wgt_Wrap((ref1d - avg_ref) ^ 2, wgt1d, 1))
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(out)
     end if
 
@@ -1505,7 +1503,7 @@ begin
         p2 = sqrt(dim_sum_wgt_Wrap((var1d - avg_var) ^ 2, wgt1d, 1))
         p3 = sqrt(dim_sum_wgt_Wrap((ref1d - avg_ref) ^ 2, wgt1d, 1))
         out = p1 / (p2 * p3)
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(out)
     end if
 
@@ -1545,13 +1543,13 @@ function normalize_metric(var:numeric,
 ;;    20140609-A_righ_ma: absolute value added to "mean" normalization.
 ;;    20140120-A_fran_fr: written.
 ;;
-local funcname, scriptname, verbosity, val_var, norm, stdv, p1
+local funcname, scriptname, val_var, norm, stdv, p1
 begin
 
     funcname = "normalize_metric"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 6)
+
+    enter_msg(scriptname, funcname)
 
     val_var = ndtooned(var)
 
@@ -1588,7 +1586,7 @@ begin
     end if
 
     copy_VarMeta(var, norm)
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(norm)
 
 end
@@ -1623,13 +1621,13 @@ function distrib_stats(var[*]:numeric,
 ;; Modification history
 ;;    20140526-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, lvar, nsize, idx
+local funcname, scriptname, lvar, nsize, idx
 begin
 
     funcname = "distrib_stats"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 6)
+
+    enter_msg(scriptname, funcname)
 
     ;; Check input
     if (all(ismissing(var))) then
@@ -1643,42 +1641,42 @@ begin
     ;; Number of elements
     if (opt.eq."N") then
         out = dimsizes(lvar)
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(out)
     end if
 
     ;; Minimum
     if (opt.eq."min") then
         out = min(lvar)
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(out)
     end if
 
     ;; Maximum
     if (opt.eq."max") then
         out = max(lvar)
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(out)
     end if
 
     ;; Mean
     if (opt.eq."mean") then
         out = dim_avg(lvar)
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(out)
     end if
 
     ;; Standard deviation
     if (opt.eq."stddev") then
         out = dim_stddev(lvar)
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(out)
     end if
 
     ;; Median
     if (opt.eq."median") then
         out = dim_median(lvar)
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(out)
     end if
 
@@ -1690,7 +1688,7 @@ begin
         idx = where(idx.lt.0, 0, idx)
         idx = where(idx.gt.dimsizes(lvar) - 1, dimsizes(lvar) - 1, idx)
         out = lvar(idx)
-        leave_msg(scriptname, funcname, 6)
+        leave_msg(scriptname, funcname)
         return(out)
     end if
 
@@ -1729,13 +1727,12 @@ function lognormal_dist(nn:numeric,
 ;; Modification history
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, pi, sqrt2pi, dd, ee
+local funcname, scriptname, pi, sqrt2pi, dd, ee
 begin
 
     funcname = "lognormal_dist"
     scriptname = "diag_scripts/lib/ncl/statistics.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     if (dimsizes(dimsizes(nn)).ne.1 .or. dimsizes(dimsizes(dg)).ne.1) then
         error_msg("f", scriptname, funcname, "input arguments " + \
@@ -1773,7 +1770,7 @@ begin
     fout!rank = "diam"
     fout&diam = darr
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(fout)
 
 end

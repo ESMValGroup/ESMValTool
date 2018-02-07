@@ -8,7 +8,7 @@
 ;;#############################################################################
 
 load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 
 load "./diag_scripts/lib/ncl/set_operators.ncl"
 load "./plot_scripts/ncl/aux_plotting.ncl"
@@ -48,14 +48,13 @@ function portrait_plot(wks_in[1],
 ;;    20140204-A_fran_fr: extended.
 ;;    20140114-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, wks, wks_in, data, source, res, atts, \
+local funcname, scriptname, wks, wks_in, data, source, res, atts, \
     base, varname
 begin
 
     funcname = "portrait_plot"
     scriptname = "plot_scripts/ncl/portrait_plot.ncl"
-    verbosity  = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF file
     if(typeof(source) .eq. "string") then
@@ -89,8 +88,8 @@ begin
         if (grade_dim(2).le.2) then
             nref = grade_dim(2)
         else
-            info_output("Maximum 2 references supported", verbosity, 1)
-            info_output("Only the first 2 will be plotted", verbosity, 1)
+            log_info("Maximum 2 references supported")
+            log_info("Only the first 2 will be plotted")
             nref = 2
             var = data(:, :, 0:1)
             delete(data)
@@ -600,7 +599,7 @@ begin
     draw(plot)
     frame(wks)
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(plot)
 
 end

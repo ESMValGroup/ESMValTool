@@ -202,10 +202,10 @@ def _p_level_widths(array):
     elements less.
 
     >>> _p_level_widths(np.array([1020, 1000, 700, 500, 5]))
-    array([ 170.,  250.,  595.])
+    array([170., 250., 595.])
 
     >>> _p_level_widths(np.array([990, np.NaN, 700, 500, 5]))
-    array([   0.,  390.,  595.])
+    array([  0., 390., 595.])
     """
     surface_pressure = array[0]
     top_limit = array[-1]

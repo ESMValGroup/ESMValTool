@@ -53,9 +53,7 @@ load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity =  config_user_info@verbosity
     diag_script = "reformat_obs_ESACCI-HadISST.ncl"
-    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent(OUTDIR)) then
@@ -67,8 +65,8 @@ begin
     fname_sst = INDIR + "HadISST_sst.nc"
     fname_ice = INDIR + "HadISST_ice.nc"
 
-    info_output("*** " + fname_sst + " ***", verbosity, 1)
-    info_output("*** " + fname_ice + " ***", verbosity, 1)
+    log_info("*** " + fname_sst + " ***")
+    log_info("*** " + fname_ice + " ***")
 
     fice = addfile(fname_ice, "r")
     fsst = addfile(fname_sst, "r")
@@ -176,6 +174,5 @@ begin
 
     delete(ice)
 
-    leave_msg(diag_script, "", 1)
 
 end

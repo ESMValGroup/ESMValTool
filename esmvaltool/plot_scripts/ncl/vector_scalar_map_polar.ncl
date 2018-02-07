@@ -13,7 +13,7 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
 
 load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 
 load "./plot_scripts/ncl/aux_plotting.ncl"
 
@@ -61,14 +61,12 @@ function vector_scalar_map_polar(wks_in[1],
 ;;    20141016-A_vanu_be: adapted from contour_map_polar.ncl.
 ;;
 local areaplot, datac, datau, datav, funcname, scriptname, sourcec, sourceu, \
-    sourcev, res, loc_res, varnamec, varnameu, varnamev, verbosity, \
-    wks_in
+    sourcev, res, loc_res, varnamec, varnameu, varnamev, wks_in
 begin
 
     funcname = "vector_scalar_map_polar"
     scriptname = "plot_scripts/ncl/vector_scalar_map_polar.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF file
     if(typeof(sourceu) .eq. "string") then
@@ -133,9 +131,9 @@ begin
     else
         outfile = wks_in@name
     end if
-    info_output(" Wrote " + outfile, verbosity, 1)
+    log_info(" Wrote " + outfile)
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(areaplot)
 
 end

@@ -16,7 +16,7 @@
 
 load "interface_scripts/interface.ncl"
 load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 
 load "./reformat_scripts/constants.ncl"
 
@@ -38,13 +38,12 @@ procedure check_inpath()
 ;; Modification history
 ;;    20130502-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, subdir, ii, pp, len_inpath, last_char
+local funcname, scriptname, subdir, ii, pp, len_inpath, last_char
 begin
 
     funcname = "check_inpath"
     scriptname = "reformat_scripts/GFDL/reformat_GFDL_func.ncl"
-    verbosity  = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Simulation path
     if (.not.fileexists(INPATH)) then
@@ -62,7 +61,7 @@ begin
         INPATH = INPATH + "/"
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -87,13 +86,12 @@ function find_name(var:string)
 ;; Modification history
 ;;    20130502-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, fname, data, std, emac, type, vert, id
+local funcname, scriptname, fname, data, std, emac, type, vert, id
 begin
 
     funcname = "find_name"
     scriptname = "reformat_scripts/GFDL/reformat_GFDL_func.ncl"
-    verbosity  = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     fname = "./reformat_scripts/GFDL/names_GFDL.dat"
 
@@ -116,7 +114,7 @@ begin
         out@vert = vert(id)
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(out)
 
 end
@@ -143,13 +141,12 @@ function find_and_read_var(var:string,
 ;; Modification history
 ;;    20150708-A_righ_ma: written.
 ;;
-local funcname,  scriptname, verbosity, flist, f
+local funcname,  scriptname, flist, f
 begin
 
     funcname = "find_and_read_var"
     scriptname = "reformat_scripts/GFDL/reformat_GFDL_func.ncl"
-    verbosity  = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Define files list
     ;; Naming convention: <REALM>.<YYYYMM>-<YYYYMM>.<VAR>.nc
@@ -195,7 +192,7 @@ begin
     ;; Read and return data
     f = addfiles(flist, "r")
     xx = f[:]->$var$
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(xx)
 
 end
@@ -222,14 +219,13 @@ function time_mean(var:numeric,
 ;; Modification history
 ;;    20130502-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, rank, date, opt, days, ndays, dd, \
+local funcname, scriptname, rank, date, opt, days, ndays, dd, \
     idx, dum
 begin
 
     funcname = "time_mean"
     scriptname = "reformat_scripts/GFDL/reformat_GFDL_func.ncl"
-    verbosity  = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     rank = dimsizes(getvardims(var))
     date = cd_calendar(var&time, 0)
@@ -269,10 +265,10 @@ begin
             ;; Set time coordinate
             out&time = cd_inv_calendar(toint(date(0, 0)), toint(date(0, 1)), \
                                        15, 0, 0, 0, var&time@units, opt)
-            leave_msg(scriptname, funcname, 4)
+            leave_msg(scriptname, funcname)
             return(out)
         else
-            leave_msg(scriptname, funcname, 4)
+            leave_msg(scriptname, funcname)
             return(var)
         end if
     end if
@@ -329,17 +325,17 @@ begin
                                        toint(date(0:ndays - 1, 1)), \
                                        toint(days), dum, dum, dum, \
                                        var&time@units, opt)
-            leave_msg(scriptname, funcname, 4)
+            leave_msg(scriptname, funcname)
             return(out)
         else
-            leave_msg(scriptname, funcname, 4)
+            leave_msg(scriptname, funcname)
             return(var)
         end if
     end if
 
     ;; Instantaneous output case (nothing to do)
     if (mean.eq."I") then
-        leave_msg(scriptname, funcname, 4)
+        leave_msg(scriptname, funcname)
         return(var)
     end if
 
@@ -379,13 +375,12 @@ function extract_var(name:string,
 ;; Modification history
 ;;    20150708-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, xx, xz, rank, date, idx1, idx2
+local funcname, scriptname, xx, xz, rank, date, idx1, idx2
 begin
 
     funcname = "extract_var"
     scriptname = "reformat_scripts/GFDL/reformat_GFDL_func.ncl"
-    verbosity  = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Read variable
     if (name.ne."#RECIP") then  ; GFDL variable
@@ -434,7 +429,7 @@ begin
     end if
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(xt)
 
 end
@@ -456,13 +451,12 @@ procedure format_coord(var:numeric)
 ;; Modification history
 ;;    20130502-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, rank, ctime, cplev, clat, clon, tmp
+local funcname, scriptname, rank, ctime, cplev, clat, clon, tmp
 begin
 
     funcname = "format_coord"
     scriptname = "reformat_scripts/GFDL/reformat_GFDL_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     rank = dimsizes(dimsizes(var))
 
@@ -567,6 +561,6 @@ begin
         var&lon = clon
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end

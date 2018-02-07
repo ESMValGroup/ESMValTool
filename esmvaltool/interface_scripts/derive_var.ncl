@@ -7,7 +7,7 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
 
 load "./interface_scripts/data_handling.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 
 ;;#############################################################################
 
@@ -19,8 +19,7 @@ end
 begin
 
     funcname = "derive_var"
-    verbosity = config_user_info@verbosity
-    enter_msg("interface_scripts/derive_var.ncl", funcname, 2)
+    enter_msg("interface_scripts/derive_var.ncl", funcname)
 
     ;; If variable_info@derived = True, a 'calculate' function must be defined
     ;; the variable_defs/var.ncl script
@@ -65,14 +64,14 @@ begin
 
             ;; Rewrite data if necessary
             if (calcData) then
-                info_output("Processing data for variable = " + derived_var + \
-                            " and field = " + derived_field_type, verbosity, 1)
+                log_info("Processing data for variable = " + derived_var + \
+                            " and field = " + derived_field_type)
                 data = calculate(model_index, derived_var, derived_field_type)
                 delete(data)
             end if
         end do
     end if
 
-    leave_msg("interface_scripts/derive_var.ncl", funcname, 2)
+    leave_msg("interface_scripts/derive_var.ncl", funcname)
 
 end

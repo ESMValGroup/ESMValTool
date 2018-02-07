@@ -96,7 +96,7 @@ load "interface_scripts/interface.ncl"
 
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/data_handling.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 
 load "./diag_scripts/lib/ncl/style.ncl"
 load "./diag_scripts/lib/ncl/latlon.ncl"
@@ -111,11 +111,10 @@ load "./plot_scripts/ncl/contour_maps.ncl"
 
 begin
 
-    verbosity  = config_user_info@verbosity
-    enter_msg(diag_script, "", 4)
-    info_output("++++++++++++++++++++++++++++++++++++++++++", verbosity, 1)
-    info_output(diag_script + " (var: " + variables(0) + ")", verbosity, 1)
-    info_output("++++++++++++++++++++++++++++++++++++++++++", verbosity, 1)
+    enter_msg(diag_script, "")
+    log_info("++++++++++++++++++++++++++++++++++++++++++")
+    log_info(diag_script + " (var: " + variables(0) + ")")
+    log_info("++++++++++++++++++++++++++++++++++++++++++")
 
     dim_MOD = dimsizes(models@name)
     dim_VAR = dimsizes(variables)
@@ -359,7 +358,7 @@ begin
     ;; Loop over models
     do imod = 0, dim_MOD - 1
 
-        info_output("Processing " + modelnames(imod), verbosity, 2)
+        log_debug("Processing " + modelnames(imod))
 
         ;; Set path for saving processed data ;; FIX-ME add preproc_id
         fullpath = config_user_info@work_dir + "/"
@@ -377,8 +376,8 @@ begin
 
 ;;DELETE        ;; Do not process data if already processed
 ;;DELETE        if (fileexists(procpath)) then
-;;DELETE            info_output("No recalculation!", verbosity, 1)
-;;DELETE            info_output("Reading in file = " + procpath, verbosity, 1)
+;;DELETE            log_info("No recalculation!")
+;;DELETE            log_info("Reading in file = " + procpath)
 ;;DELETE            if (irank.eq.5) then
 ;;DELETE                var_all(imod, :, :, :, :) = ncdf_read(procpath, var0)
 ;;DELETE            end if
@@ -618,8 +617,8 @@ begin
         ;; Start calculation
 ;;DELETE        if (fileexists(ncdf_dir)) then
 ;;DELETE
-;;DELETE            info_output("No recalculation!", verbosity, 1)
-;;DELETE            info_output("Reading in file = " + ncdf_dir, verbosity, 1)
+;;DELETE            log_info("No recalculation!")
+;;DELETE            log_info("Reading in file = " + ncdf_dir)
 ;;DELETE
 ;;DELETE        else
 
@@ -873,7 +872,7 @@ begin
             plot = cycle_plot(wks, var_all, var0)
             draw(plot)
             frame(wks)
-            info_output(" gv " + outfile + "." + file_type, verbosity, 1)
+            log_info(" gv " + outfile + "." + file_type)
         end if
 
         ;; CASE: zonal ########################################################
@@ -902,8 +901,7 @@ begin
                 plot = zonalmean_profile(wks, var, var0)
                 draw(plot)
                 frame(wks)
-                info_output(" gv " + outfile + "." + file_type, \
-                            verbosity, 1)
+                log_info(" gv " + outfile + "." + file_type)
                 delete(var@res_cnLevels)
                 delete(wks)
                 delete(plot)
@@ -950,7 +948,7 @@ begin
                 overlay(plot, plot2)
                 draw(plot)
                 frame(wks)
-                info_output(" gv " + outfile + "." + file_type, verbosity, 1)
+                log_info(" gv " + outfile + "." + file_type)
                 delete(var@res_cnLevels)
                 delete(wks)
                 delete(plot)
@@ -990,8 +988,7 @@ begin
                 plot = contour_map_ce(wks, var, var0)
                 draw(plot)
                 frame(wks)
-                info_output(" gv " + outfile + "." + file_type, \
-                            verbosity, 1)
+                log_info(" gv " + outfile + "." + file_type)
                 delete(var@res_cnLevels)
                 delete(wks)
                 delete(plot)
@@ -1052,7 +1049,7 @@ begin
                 overlay(plot, plot2)
                 draw(plot)
                 frame(wks)
-                info_output(" gv " + outfile + "." + file_type, verbosity, 1)
+                log_info(" gv " + outfile + "." + file_type)
                 delete(var@res_cnLevels)
                 delete(wks)
                 delete(plot)
@@ -1063,6 +1060,6 @@ begin
         end if
     end if
 
-    leave_msg(diag_script, "", 4)
+    leave_msg(diag_script, "")
 
 end

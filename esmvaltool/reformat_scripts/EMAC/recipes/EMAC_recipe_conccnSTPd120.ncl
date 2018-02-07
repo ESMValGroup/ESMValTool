@@ -30,9 +30,9 @@ begin
         nn = find_and_read_var(modes(im), date, False)  ; number concentration
         dd = find_and_read_var(diams(im), date, False)  ; dry radius
         if (typeof(nn).ne."string" .and. typeof(dd).ne."string") then
-            info_output("Adding mode " + modes(im) + \
-                        ", " + diams(im) + ", " + sigma(im) + \
-                        " (" + date + ")", verbosity, 2)
+            log_debug("Adding mode " + modes(im) + \
+                      ", " + diams(im) + ", " + sigma(im) + \
+                      " (" + date + ")")
             dd = 2.*dd  ; radius to diameter
             yy = nn
             yy = yy/2. * erfc(log(dthr/dd) / (sqrt(2.)*log(sigma(im))))

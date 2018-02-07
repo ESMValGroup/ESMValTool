@@ -15,7 +15,7 @@
 ;;
 ;;#############################################################################
 
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 
 ; a_laue_ax+
 ; global variables to save the names of all files read by "read_data"
@@ -61,15 +61,14 @@ procedure add_data_var(index[1]:integer,
 ;;
 ;; Modification history
 ;;
-local funcname, scriptname, verbosity, maxDataSize, field_type, ds, rank, \
-    varType, datasize, i, out_file, cn, cnt, dimNames, fout, attNames, fAtt, \
+local funcname, scriptname, maxDataSize, field_type, ds, rank, varType, \
+    datasize, i, out_file, cn, cnt, dimNames, fout, attNames, fAtt, \
     comment, file_atts
 begin
 
     funcname = "add_data_var"
     scriptname = "interface_scripts/data_handling.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 2)
+    enter_msg(scriptname, funcname)
 
     maxDataSize = config_user_info@max_data_filesize
     field_type = derived_field_type
@@ -120,7 +119,7 @@ begin
     end if
 
     ;; Output data to file
-    info_output("adding file " + out_file, verbosity, 2)
+    log_debug("adding file " + out_file)
     fout = addfile(out_file, "c")
     filedimdef(fout, "time", -1, True)
     fout->$variable$ = new_data
@@ -192,9 +191,9 @@ begin
     delete(fout)
     delete(fAtt)
     delete(file_atts)
-    info_output("added file " + out_file, verbosity, 2)
+    log_debug("added file " + out_file)
 
-    leave_msg(scriptname, funcname, 2)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -216,14 +215,13 @@ function get_varName_from_file(filename[1]:string)
 ;;
 ;; Modification history
 ;;
-local funcname, scriptname, verbosity, variable, delimiter, nfields, \
-    shortfile, fil, varNames, i
+local funcname, scriptname, variable, delimiter, nfields, shortfile, fil, \
+    varNames, i
 begin
 
     funcname = "get_varName_from_file"
     scriptname = "interface_scripts/data_handling.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 2)
+    enter_msg(scriptname, funcname)
 
     variable = new(1, string)
     delimiter = "/"
@@ -244,7 +242,7 @@ begin
                   "dignostic code: " + filename)
     end if
 
-    leave_msg(scriptname, funcname, 2)
+    leave_msg(scriptname, funcname)
     return(variable)
 end
 
@@ -298,15 +296,14 @@ function extract_data_extended(index[1]:integer,
 ;;
 ;; Modification history
 ;;
-local funcname, scriptname, verbosity, cn, cnt, dimNames, rank, inMemo, \
-    dim_id_num, lw_idx, up_idx, dim_val, attNames, dim_val_idx, dim_val_time, \
+local funcname, scriptname, cn, cnt, dimNames, rank, inMemo, dim_id_num, \
+    lw_idx, up_idx, dim_val, attNames, dim_val_idx, dim_val_time, \
     modelfile, variable, temp_data, i, j
 begin
 
     funcname = "extract_data_extended"
     scriptname = "interface_scripts/data_handling.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; 'cn' is the basic building block for the keys used in
     ;; the 'data_pointer' dictionary
@@ -521,7 +518,7 @@ begin
         end do
     end if
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(data_new)
 
 end
@@ -550,18 +547,17 @@ function extract_data(index[1]:integer,
 ;;
 ;; Modification history
 ;;
-local funcname, scriptname, verbosity, data_new
+local funcname, scriptname, data_new
 begin
 
     funcname = "extract_data"
     scriptname = "interface_scripts/data_handling.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     data_new = extract_data_extended(index, "default", data_pointer, dim_id, \
                                      lw_limit, up_limit)
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(data_new)
 
 end
@@ -602,16 +598,15 @@ function extract_data_region(index[1]:integer,
 ;; Modification history
 ;;    20161021-A_righ_ma: written
 ;;
-local funcname, scriptname, verbosity, cn, cnt, dimNames, rank, pos1, pos2, \
-    inMemo, data_lat, data_lon, f_latmin, f_latmax, f_lonmin, f_lonmax, \
-    delta, idx_latmin, idx_latmax, latidx, idx_lonmin, idx_lonmax, lonidx, \
+local funcname, scriptname, cn, cnt, dimNames, rank, pos1, pos2, inMemo, \
+    data_lat, data_lon, f_latmin, f_latmax, f_lonmin, f_lonmax, delta, \
+    idx_latmin, idx_latmax, latidx, idx_lonmin, idx_lonmax, lonidx, \
     modelfile, variable, fm, temp_data, attNames
 begin
 
     funcname = "extract_data_region"
     scriptname = "interface_scripts/data_handling.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 6)
+    enter_msg(scriptname, funcname)
 
     ;; 'cn' is the basic building block for the keys used in
     ;; the 'data_pointer' dictionary
@@ -835,7 +830,7 @@ begin
                   "invalid rank or position")
     end if
 
-    leave_msg(scriptname, funcname, 6)
+    leave_msg(scriptname, funcname)
     return(data_new)
 
 end
@@ -880,14 +875,13 @@ procedure modify_data(index[1]:integer,
 ;;
 ;; Modification history
 ;;
-local funcname, scriptname, verbosity, cnt, inMemo, modelfile, fout, vNames, \
+local funcname, scriptname, cnt, inMemo, modelfile, fout, vNames, \
     file_atts, fin, variable, delimiter, file_parts, idxLast, tempfile
 begin
 
     funcname = "modify_data"
     scriptname = "interface_scripts/data_handling.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 2)
+    enter_msg(scriptname, funcname)
 
     ;; 'cn' is the basic building block for the keys used in the 'data_pointer'
     ;; dictionary
@@ -919,7 +913,7 @@ begin
     if (file_parts(0).ne.".") then
         tempfile = "/" + tempfile
     end if
-    info_output("tempfile = " + str_sub_str(tempfile, pwd, "."), verbosity, 2)
+    log_debug("tempfile = " + str_sub_str(tempfile, pwd, "."))
 
     ;; Get variable name
     variable = get_varName_from_file(modelfile)
@@ -962,7 +956,7 @@ begin
 
     system("mv " + tempfile + " " + modelfile)
 
-    leave_msg(scriptname, funcname, 2)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -1014,15 +1008,14 @@ function read_data(index[1]:integer,
 ;;   20151117-A-laue_ax: changed "in_file" in call to "inquire_and_save_fileinfo"
 ;;                       to "ls_in_file"
 ;;
-local funcname, scriptname, verbosity, attNames, cn, cnt, data, data_new, \
+local funcname, scriptname, attNames, cn, cnt, data, data_new, \
     datasize, dimNames, dimt, fid, field_number, in_file, j, k, maxDataSize, \
-    rank, temp, temp1, var0, varCoords, varType, verbosity, curr_var_idx
+    rank, temp, temp1, var0, varCoords, varType, curr_var_idx
 begin
 
     funcname = "read_data"
     scriptname = "interface_scripts/data_handling.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     maxDataSize = config_user_info@max_data_filesize
 
@@ -1046,7 +1039,7 @@ begin
 
     ls_in_file = systemfunc("ls " + in_file)
 
-    info_output("Reading in file = " + ls_in_file, verbosity, 1)
+    log_info("Reading in file = " + ls_in_file)
     fid = addfile(ls_in_file, "r")
 
 ; a_laue_ax+
@@ -1184,7 +1177,7 @@ begin
     delete(dimNames)
     delete(fid)
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(data_new)
 
 end
