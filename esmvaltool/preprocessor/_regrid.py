@@ -1,22 +1,25 @@
 """
-A package for performing horizontal regridding, and vertical level extraction
+_regrid.py
+
+A package for performing horizontal regridding,
+and vertical level extraction
 or vertical level interpolation.
 
 """
 
 from __future__ import absolute_import, division, print_function
 
+import os
 import re
 from copy import deepcopy
+import six
 from ..preprocessor._reformat import CMOR_TABLES
 
 import iris
 import numpy as np
-import six
 import stratify
 from iris.analysis import AreaWeighted, Linear, Nearest, UnstructuredNearest
 from numpy import ma
-import os
 
 # Regular expression to parse a "MxN" cell-specification.
 _CELL_SPEC = re.compile(r'''\A
@@ -53,6 +56,8 @@ vertical_schemes = ['linear', 'nearest']
 
 def _stock_cube(spec):
     """
+    Create a stock cube
+
     Create a global cube with M degree-east by N degree-north regular grid
     cells.
 
@@ -136,10 +141,6 @@ def regrid(src_cube, target_grid, scheme):
     See Also
     --------
     vinterp : Perform vertical regridding.
-2018-01-17 11:14:53,040 [29443] INFO    Global means: [277.23127347606976, 276.95765765508821, 276.20688976518323, 276.90258767964451]
-2018-01-17 11:14:53,041 [29443] INFO    Global medians: [278.17147827148438, 278.1485595703125, 277.62811279296875, 278.33419799804688]
-
-
 
     """
     if target_grid is None and scheme is None:
@@ -373,7 +374,8 @@ def vinterp(src_cube, levels, scheme):
                 interpolation=scheme,
                 extrapolation='nan')
 
-            # Calculate the mask based on the any NaN values in the interpolated data.
+            # Calculate the mask based on the any
+            # NaN values in the interpolated data.
             mask = np.isnan(new_data)
 
             if np.any(mask):
