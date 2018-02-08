@@ -45,7 +45,7 @@ def _compute_stats(cubes, statname):
             for dataset in datas:
                 if np.ma.is_masked(dataset) is True:
                     # keep only the valid plevs
-                    if np.all(dataset.mask[:, j]) != True:
+                    if not np.bool(np.all(dataset.mask[:, j])):
                         stat_j.append(np.ma.array(dataset[:, j],
                                                   mask=dataset.mask[:, j]))
                 else:
@@ -138,7 +138,7 @@ def _put_in_cube(cubes, stats_name, ncfiles, fname):
 
 
 def _sdat(srl_no, unit_type):
-    """Convert to a datatime point"""
+    """Convert to a datetime point"""
     if unit_type == 'day since 1950-01-01 00:00:00.0000000':
         new_date = dd(1950, 1, 1, 0) + td(srl_no)
     elif unit_type == 'day since 1850-01-01 00:00:00.0000000':
@@ -148,10 +148,31 @@ def _sdat(srl_no, unit_type):
 
 
 def _get_overlap(cubes):
-    """Get discrete time overlaps."""
+    """
+    Get discrete time overlaps.
+
+    This method gets the bounds of coord time
+    from the cube and assembles a continuous time
+    axis with smallest unit 1; then it finds the
+    overlaps by doing a 1-dim intersect; if bounds
+    are unavailable, it guesses them by taking the
+    floor of first date and ceil of last date.
+    """
     utype = str(cubes[0].coord('time').units)
-    all_times = [cube.coord('time').points for cube in cubes]
-    bounds = [range(int(b[0]), int(b[-1]) + 1) for b in all_times]
+    all_times = []
+    for cube in cubes:
+        bnds = cube.coord('time').bounds
+        if bnds is not None:
+            all_times.append(bnds)
+        else:
+            logger.debug('Cube does not have recorded time bounds')
+            logger.debug('Will guess bounds')
+            bnd1 = float(cube.coord('time').points[0])
+            bnd2 = float(cube.coord('time').points[-1])
+            bnd1 = int(bnd1 / 365.) * 365.
+            bnd2 = (int(bnd2 / 365.) + 1) * 365.
+            all_times.append(np.array([[bnd1, bnd2]]))
+    bounds = [range(int(b[0][0]), int(b[-1][-1]) + 1) for b in all_times]
     time_pts = reduce(np.intersect1d, (i for i in bounds))
     if len(time_pts) > 1:
         return _sdat(time_pts[0], utype), _sdat(time_pts[-1], utype)
