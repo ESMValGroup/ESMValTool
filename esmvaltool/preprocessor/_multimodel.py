@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 def _compute_stats(cubes, statname):
-    """compute any multimodel stats
+    """Compute any multimodel stats
 
     this function takes care of situations
     in which certain plevs are completely
@@ -112,7 +112,7 @@ def _compute_stats(cubes, statname):
 
 
 def _put_in_cube(cubes, stats_name, ncfiles, fname):
-    """quick cube building and saving"""
+    """Quick cube building and saving"""
     # grab coordinates from any cube
     times = cubes[0].coord('time')
     lats = cubes[0].coord('latitude')
@@ -138,7 +138,7 @@ def _put_in_cube(cubes, stats_name, ncfiles, fname):
 
 
 def _sdat(srl_no, unit_type):
-    """convert to a datatime point"""
+    """Convert to a datatime point"""
     if unit_type == 'day since 1950-01-01 00:00:00.0000000':
         new_date = dd(1950, 1, 1, 0) + td(srl_no)
     elif unit_type == 'day since 1850-01-01 00:00:00.0000000':
