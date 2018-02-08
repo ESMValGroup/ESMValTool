@@ -24,7 +24,7 @@ def mask_landocean(cube, land_mask=None, ocean_mask=None):
 
 
 def fx_mask(mycube, fx):
-    """rewighting function"""
+    """Reweighting function"""
     masked_cube = mycube.copy()
     masked_cube.data = mycube.data * fx.data / 100.
     return masked_cube
