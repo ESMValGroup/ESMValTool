@@ -1,6 +1,4 @@
 """Namelist parser"""
-from __future__ import print_function
-
 import copy
 import fnmatch
 import inspect
@@ -15,7 +13,9 @@ from .interface_scripts.data_finder import (
     get_input_filelist, get_input_filename, get_output_file,
     get_start_end_year)
 from .preprocessor import (DEFAULT_ORDER, MULTI_MODEL_FUNCTIONS,
-                           PREPROCESSOR_FUNCTIONS, PreprocessingTask)
+                           PREPROCESSOR_FUNCTIONS, PreprocessingTask,
+                           _split_settings)
+from .preprocessor._derive import get_required
 from .preprocessor._download import synda_search
 from .preprocessor._io import concatenate_callback
 from .preprocessor._reformat import CMOR_TABLES
@@ -181,8 +181,8 @@ def check_variables(variables):
         if missing:
             raise NamelistError(
                 "Missing keys {} from variable {} in diagnostic {}".format(
-                    missing,
-                    variable.get('short_name'), variable.get('diagnostic')))
+                    missing, variable.get('short_name'),
+                    variable.get('diagnostic')))
 
 
 def check_data_availability(input_files, start_year, end_year):
@@ -207,10 +207,12 @@ def _get_value(key, models):
     """Get a value for key by looking at the other models."""
     values = {model[key] for model in models if key in model}
 
+    if len(values) == 1:
+        return values.pop()
+
     if len(values) > 1:
         raise NamelistError("Ambigous values {} for property {}".format(
             values, key))
-    return values.pop()
 
 
 def _update_from_others(variable, keys, models):
@@ -376,23 +378,15 @@ def _update_multi_model_mean(variables, settings):
         settings['multi_model_mean']['exclude'] = {'_filename': exclude_files}
 
 
-def _get_preprocessor_settings(variables, preprocessors, config_user):
-    """Get preprocessor settings for for a set of models."""
+def _get_preprocessor_settings(variables, preprocessor, config_user):
+    """Get preprocessor settings for a set of models."""
     all_settings = {}
 
-    # First set up the preprocessor profile
-    variable = variables[0]
-    preproc_name = variable.get('preprocessor')
-    if preproc_name not in preprocessors:
-        raise NamelistError(
-            "Unknown preprocessor {} in variable {} of diagnostic {}".format(
-                preproc_name, variable['short_name'], variable['diagnostic']))
-    profile_settings = preprocessors[variable['preprocessor']]
-    _update_multi_model_mean(variables, profile_settings)
+    _update_multi_model_mean(variables, preprocessor)
 
     for variable in variables:
         settings = _get_default_settings(variable, config_user)
-        _apply_preprocessor_settings(settings, profile_settings)
+        _apply_preprocessor_settings(settings, preprocessor)
         # if the target grid is a model name, replace it with a file name
         # TODO: call _update_target_grid only once per variable?
         _update_target_grid(
@@ -400,9 +394,6 @@ def _get_preprocessor_settings(variables, preprocessors, config_user):
             all_variables=variables,
             settings=settings,
             config_user=config_user)
-        if 'derive' in settings:
-            # create two pairs of settings?
-            pass
         check_preprocessor_settings(settings)
         all_settings[variable['filename']] = settings
 
@@ -412,9 +403,8 @@ def _get_preprocessor_settings(variables, preprocessors, config_user):
 
 def _check_multi_model_settings(all_settings):
     """Check that multi model settings are identical for all models."""
-    multi_model_steps = (
-        step for step in MULTI_MODEL_FUNCTIONS
-        if any(step in settings for settings in all_settings.values()))
+    multi_model_steps = (step for step in MULTI_MODEL_FUNCTIONS if any(
+        step in settings for settings in all_settings.values()))
     for step in multi_model_steps:
         result = None
         for filename, settings in all_settings.items():
@@ -427,26 +417,73 @@ def _check_multi_model_settings(all_settings):
                         result, settings[step], filename))
 
 
-def _get_preprocessor_task(variables, preprocessors, config_user):
+def _get_single_preprocessor_task(variables,
+                                  preprocessor,
+                                  config_user,
+                                  ancestors=None):
     """Create preprocessor tasks for a set of models."""
     # Configure preprocessor
     all_settings = _get_preprocessor_settings(
         variables=variables,
-        preprocessors=preprocessors,
+        preprocessor=preprocessor,
         config_user=config_user)
 
-    # Input data, used by tasks without ancestors
-    input_files = {
-        v['filename']: _get_input_files(v, config_user)
-        for v in variables
-    }
+    if ancestors is None:
+        # Input data, used by tasks without ancestors
+        input_files = {
+            v['filename']: _get_input_files(v, config_user)
+            for v in variables
+        }
+    else:
+        input_files = None
+
     output_dir = os.path.dirname(variables[0]['filename'])
     task = PreprocessingTask(
         settings=all_settings,
         output_dir=output_dir,
+        ancestors=ancestors,
         input_files=input_files,
         debug=config_user['save_intermediary_cubes'])
 
+    return task
+
+
+def _get_preprocessor_task(variables, preprocessors, config_user):
+    """Create preprocessor task(s) for a set of models."""
+    # First set up the preprocessor profile
+    variable = variables[0]
+    preproc_name = variable.get('preprocessor')
+    if preproc_name not in preprocessors:
+        raise NamelistError(
+            "Unknown preprocessor {} in variable {} of diagnostic {}".format(
+                preproc_name, variable['short_name'], variable['diagnostic']))
+    preprocessor = preprocessors[variable['preprocessor']]
+
+    # Create preprocessor task(s)
+    tasks = []
+    if preprocessor.get('derive', False) is not False:
+        # Add tasks that derive a variable if required
+        derive_settings = copy.deepcopy(preprocessor['derive'])
+        derive_preprocessor, preprocessor = _split_settings(
+            preprocessor, 'derive')
+        preprocessor['derive'] = derive_settings
+
+        for short_name, field in get_required(variable['short_name'],
+                                              variable['field']):
+            initial_variables = list(variables)
+            for variable in initial_variables:
+                variable['short_name'] = short_name
+                variable['field'] = field
+                variable['filename'] = get_output_file(
+                    variable, config_user['preproc_dir'])
+
+            task = _get_single_preprocessor_task(
+                initial_variables, derive_preprocessor, config_user)
+            tasks.append(task)
+
+    # Create final preprocessor task
+    task = _get_single_preprocessor_task(
+        variables, preprocessor, config_user, ancestors=tasks)
     return task
 
 
@@ -510,9 +547,9 @@ class Namelist(object):
             diagnostic['scripts'] = self._initialize_scripts(
                 name, raw_diagnostic.get('scripts'))
             diagnostics[name] = diagnostic
-            is_ncl_script = any(
-                diagnostic['scripts'][s].get('script', '').lower().endswith(
-                    '.ncl') for s in diagnostic['scripts'])
+            is_ncl_script = any(diagnostic['scripts'][s].get('script', '')
+                                .lower().endswith('.ncl')
+                                for s in diagnostic['scripts'])
             if not ncl_version_checked and is_ncl_script:
                 logger.info("NCL script detected, checking NCL version")
                 check_ncl_version()

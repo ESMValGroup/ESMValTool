@@ -1,0 +1,30 @@
+---
+
+models:
+  - {model: CESM1-WACCM,    project: CMIP5, mip: Amon, exp: historical, ensemble: r2i1p1, start_year: 1997, end_year: 2010}
+  - {model: CNRM-CM5,       project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 1997, end_year: 2010}
+  - {model: GFDL-CM3,       project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 1997, end_year: 2010}
+  - {model: GISS-E2-H,      project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p2, start_year: 1997, end_year: 2010}
+  - {model: GISS-E2-R,      project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p2, start_year: 1997, end_year: 2010}
+  - {model: MIROC-ESM-CHEM, project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 1997, end_year: 2010}
+  - {model: ESACCI-OZONE,   project: OBS,   tier: 2,   type: sat,       version: L3,      start_year: 1997, end_year: 2010}
+  - {model: NIWA,           project: OBS,   tier: 3,   type: reanaly,   version: 1,       start_year: 1997, end_year: 2010}
+
+preprocessors:
+
+  preprocessor:
+    derive: true
+
+diagnostics:
+
+  derive_diagnostic:
+    description: Test variable derivation
+    variables:
+      toz:
+        preprocessor: preprocessor
+        standard_name: equivalent_thickness_at_stp_of_atmosphere_ozone_content
+        long_name: Total Ozone Column
+        units: DU
+        field: T2Ms
+    additional_models: []
+    scripts: Null
