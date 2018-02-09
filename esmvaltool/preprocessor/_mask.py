@@ -318,7 +318,7 @@ def mask_fillvalues(cubes, threshold_fraction, min_value=-1.e10,
                 combined_copy = combined_mask.copy()
                 combined_mask |= mask
                 for i in range(mask.shape[0]):
-                    if np.bool(np.all(combined_mask[i])):
+                    if np.all(combined_mask[i]):
                         combined_mask[i] = combined_copy[i]
             else:
                 combined_mask |= mask
