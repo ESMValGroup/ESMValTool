@@ -1,7 +1,25 @@
-; TODO: add a description of the functions in this file
-;------------------------------------------------------
-; A temporary file written by the invoking Python script
-; Passes on a number of variables from Python to NCL
+;;#############################################################################
+;; INTERFACE ROUTINES TO HANDLE THE COMMUNICATION BETWEEN PYTHON AND NCL
+;;#############################################################################
+;; Please consider using of extending existing routines before adding new ones.
+;; Check the header of each routine for documentation.
+;;
+;; Contents:
+;;    function interface_get_idx_var
+;;    function interface_get_var_mip
+;;    function interface_get_var_exp
+;;    function interface_replace_place_holders
+;;    function interface_get_figure_filename
+;;    function interface_get_fullpath
+;;    function interface_get_infile
+;;    function interface_get_inpaths
+;;    function interface_get_dictkeys
+;;    function interface_get_dictkeys_no_var
+;;    function noop
+;;    funciton addfile_wrapper
+;;
+;;#############################################################################
+
 begin
     print("info: Loading settings from " + getenv("settings"))
     loadscript("$settings")
