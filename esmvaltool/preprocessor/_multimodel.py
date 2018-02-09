@@ -22,92 +22,102 @@ from ._io import save_cubes
 logger = logging.getLogger(__name__)
 
 
-def _compute_stats(cubes, statname):
-    """Compute any multimodel stats
+def _plev_fix(dataset, pl_idx):
+    """Extract valid plev data
 
     this function takes care of situations
     in which certain plevs are completely
     masked due to unavailable interpolation
-    boundaries; moreover it computes stats
-    only on existing numerical values; if say,
-    for a certain plev, only two models have data,
-    stats are computed only on those models
-    the minimum number of models per plev that the
-    stats is computed is hardcoded to 2, for
-    correct statistical purposes.
-
+    boundaries.
     """
+    if np.ma.is_masked(dataset) is True:
+        # keep only the valid plevs
+        if not np.all(dataset.mask[:, pl_idx]):
+            statj = np.ma.array(dataset[:, pl_idx],
+                                mask=dataset.mask[:, pl_idx])
+            return statj
+    else:
+        mask = np.zeros_like(dataset[:, pl_idx])
+        statj = np.ma.array(dataset[:, pl_idx], mask=mask)
+        return statj
+
+
+def _compute_means(cubes):
+    """Compute multimodel means"""
     datas = [c.data for c in cubes]
-    if len(datas[0].shape) == 4:   # dig deeper in plevs
+
+    # plevs
+    if len(datas[0].shape) == 4:
         statistic = np.ma.zeros(datas[0].shape)
         for j in range(datas[0].shape[1]):
             stat_j = []
             for dataset in datas:
-                if np.ma.is_masked(dataset) is True:
-                    # keep only the valid plevs
-                    if not np.bool(np.all(dataset.mask[:, j])):
-                        stat_j.append(np.ma.array(dataset[:, j],
-                                                  mask=dataset.mask[:, j]))
-                else:
-                    mask = np.zeros_like(dataset[:, j])
-                    stat_j.append(
-                        np.ma.array(dataset[:, j],
-                                    mask=mask))
-            if statname == 'means':
-                # check for the number of valid datasets (models)
-                if len(stat_j) >= 2:
-                    logger.debug('Plev index: %i, \
-                                  nr models for mean \
-                                  stats: %i', j, len(stat_j))
-                    statistic[:, j] = np.ma.mean(stat_j, axis=0)
-                else:
-                    logger.debug('Plev index: %i, \
-                                 nr models for mean \
-                                 stats < 2 !!', j)
-                    mask = np.ones_like(statistic[:, j])
-                    statistic[:, j] = np.ma.array(statistic[:, j],
-                                                  mask=mask)
-            elif statname == 'medians':
+                if _plev_fix(dataset, j) is not None:
+                    stat_j.append(_plev_fix(dataset, j))
+
+            # check for nr models
+            if len(stat_j) >= 2:
+                statistic[:, j] = np.ma.mean(stat_j, axis=0)
+            else:
+                mask = np.ones_like(statistic[:, j])
+                statistic[:, j] = np.ma.array(statistic[:, j],
+                                              mask=mask)
+    # no plevs
+    else:
+        statistic = np.ma.mean(datas, axis=0)
+
+    return statistic
+
+
+def _compute_medians(cubes):
+    """Compute multimodel medians"""
+    datas = [c.data for c in cubes]
+
+    # plevs
+    if len(datas[0].shape) == 4:
+        statistic = np.ma.zeros(datas[0].shape)
+        for j in range(datas[0].shape[1]):
+            stat_j = []
+            for dataset in datas:
+                if _plev_fix(dataset, j) is not None:
+                    stat_j.append(_plev_fix(dataset, j))
                 # need to force nan's
                 # otherwise np.ma.median is not good
                 stat_l = []
                 for c_dat in stat_j:
                     c_dat[c_dat.mask] = np.nan
                     stat_l.append(c_dat)
-                # check if we have at least 3 models
+
+                # check for nr models
                 if len(stat_l) >= 2:
-                    logger.debug('Plev index: %i, \
-                                  nr models for median \
-                                  stats: %i', j, len(stat_l))
                     statistic[:, j] = np.ma.median(stat_l, axis=0)
                 else:
-                    logger.debug('Plev index: %i, \
-                                 nr models for median \
-                                 stats < 2 !!', j)
                     mask = np.ones_like(statistic[:, j])
                     statistic[:, j] = np.ma.array(statistic[:, j],
                                                   mask=mask)
                     statistic[:, j].mask[:] = np.nan
+
+                # mask NaNs
                 statmask = np.isnan(statistic[:, j])
                 if np.any(statmask):
                     statistic[:, j] = np.ma.array(statistic[:, j],
                                                   mask=statmask,
                                                   fill_value=1e+20)
+
+    # no plevs
     else:
-        if statname == 'means':
-            statistic = np.ma.mean(datas, axis=0)
-        elif statname == 'medians':
-            ncubes = []
-            for cub in cubes:
-                if np.ma.is_masked(cub.data) is True:
-                    cub.data[cub.data.mask] = np.nan
-                    ncubes.append(cub)
-            statistic = np.ma.median([s.data for s in ncubes], axis=0)
-            statmask = np.isnan(statistic)
-            if np.any(statmask):
-                statistic = np.ma.array(statistic,
-                                        mask=statmask,
-                                        fill_value=1e+20)
+        ncubes = []
+        for cub in cubes:
+            if np.ma.is_masked(cub.data) is True:
+                cub.data[cub.data.mask] = np.nan
+                ncubes.append(cub)
+        statistic = np.ma.median([s.data for s in ncubes], axis=0)
+        statmask = np.isnan(statistic)
+        if np.any(statmask):
+            statistic = np.ma.array(statistic,
+                                    mask=statmask,
+                                    fill_value=1e+20)
+
     return statistic
 
 
@@ -123,7 +133,10 @@ def _put_in_cube(cubes, stats_name, ncfiles, fname):
         plev = cubes[0].coord('air_pressure')
         cspec = [(times, 0), (plev, 1), (lats, 2), (lons, 3)]
     # compute stats and put in cube
-    dspec = _compute_stats(cubes, stats_name)
+    if stats_name == 'means':
+        dspec = _compute_means(cubes)
+    elif stats_name == 'medians':
+        dspec = _compute_medians(cubes)
     fixed_dspec = np.ma.fix_invalid(dspec, copy=False, fill_value=1e+20)
     stats_cube = iris.cube.Cube(fixed_dspec,
                                 dim_coords_and_dims=cspec,
@@ -227,54 +240,54 @@ def multi_model_mean(cubes, span, filename, exclude):
                 # record data
                 tmeans.append(cube)
 
-        elif span == 'full':
-            logger.debug("Using full time spans "
-                         "to compute statistics.")
-            tmeans = []
-            # lay down time points
-            tpts = [c.coord('time').points for c in selection]
-            t_x = list(set().union(*tpts))
-            t_x.sort()
-
-            # loop through cubes and apply masks
-            for cube in selection:
-                # construct new shape
-                fine_shape = tuple([len(t_x)] + list(cube.data.shape[1:]))
-                # find indices of present time points
-                oidx = [t_x.index(s) for s in cube.coord('time').points]
-                # reshape data to include all possible times
-                ndat = np.ma.resize(cube.data, fine_shape)
-
-                # build the time mask
-                c_ones = np.ones(fine_shape, bool)
-                for t_i in oidx:
-                    c_ones[t_i] = False
-                ndat.mask |= c_ones
-
-                # build the new coords
-                # preserve units
-                time_c = iris.coords.DimCoord(
-                    t_x, standard_name='time',
-                    units=cube.coord('time').units)
-                lat_c = cube.coord('latitude')
-                lon_c = cube.coord('longitude')
-
-                # time-lat-lon
-                if len(fine_shape) == 3:
-                    cspec = [(time_c, 0), (lat_c, 1), (lon_c, 2)]
-                # time-plev-lat-lon
-                elif len(fine_shape) == 4:
-                    pl_c = cube.coord('air_pressure')
-                    cspec = [(time_c, 0), (pl_c, 1), (lat_c, 2), (lon_c, 3)]
-
-                # build cube
-                ncube = iris.cube.Cube(ndat, dim_coords_and_dims=cspec)
-                coord_names = [coord.name() for coord in cube.coords()]
-                if 'air_pressure' in coord_names:
-                    if len(fine_shape) == 3:
-                        ncube.add_aux_coord(cube.coord('air_pressure'))
-                ncube.attributes = cube.attributes
-                tmeans.append(ncube)
+#        elif span == 'full':
+#            logger.debug("Using full time spans "
+#                         "to compute statistics.")
+#            tmeans = []
+#            # lay down time points
+#            tpts = [c.coord('time').points for c in selection]
+#            t_x = list(set().union(*tpts))
+#            t_x.sort()
+#
+#            # loop through cubes and apply masks
+#            for cube in selection:
+#                # construct new shape
+#                fine_shape = tuple([len(t_x)] + list(cube.data.shape[1:]))
+#                # find indices of present time points
+#                oidx = [t_x.index(s) for s in cube.coord('time').points]
+#                # reshape data to include all possible times
+#                ndat = np.ma.resize(cube.data, fine_shape)
+#
+#                # build the time mask
+#                c_ones = np.ones(fine_shape, bool)
+#                for t_i in oidx:
+#                    c_ones[t_i] = False
+#                ndat.mask |= c_ones
+#
+#                # build the new coords
+#                # preserve units
+#                time_c = iris.coords.DimCoord(
+#                    t_x, standard_name='time',
+#                    units=cube.coord('time').units)
+#                lat_c = cube.coord('latitude')
+#                lon_c = cube.coord('longitude')
+#
+#                # time-lat-lon
+#                if len(fine_shape) == 3:
+#                    cspec = [(time_c, 0), (lat_c, 1), (lon_c, 2)]
+#                # time-plev-lat-lon
+#                elif len(fine_shape) == 4:
+#                    pl_c = cube.coord('air_pressure')
+#                    cspec = [(time_c, 0), (pl_c, 1), (lat_c, 2), (lon_c, 3)]
+#
+#                # build cube
+#                ncube = iris.cube.Cube(ndat, dim_coords_and_dims=cspec)
+#                coord_names = [coord.name() for coord in cube.coords()]
+#                if 'air_pressure' in coord_names:
+#                    if len(fine_shape) == 3:
+#                        ncube.add_aux_coord(cube.coord('air_pressure'))
+#                ncube.attributes = cube.attributes
+#                tmeans.append(ncube)
 
         else:
             logger.debug("No type of time overlap specified "
