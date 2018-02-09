@@ -167,24 +167,22 @@ def _get_overlap(cubes):
     This method gets the bounds of coord time
     from the cube and assembles a continuous time
     axis with smallest unit 1; then it finds the
-    overlaps by doing a 1-dim intersect; if bounds
-    are unavailable, it guesses them by taking the
-    floor of first date and ceil of last date.
+    overlaps by doing a 1-dim intersect;
+    takes the floor of first date and
+    ceil of last date.
     """
     utype = str(cubes[0].coord('time').units)
     all_times = []
     for cube in cubes:
-        bnds = cube.coord('time').bounds
-        if bnds is not None:
-            all_times.append(bnds)
-        else:
-            logger.debug('Cube does not have recorded time bounds')
-            logger.debug('Will guess bounds')
-            bnd1 = float(cube.coord('time').points[0])
-            bnd2 = float(cube.coord('time').points[-1])
-            bnd1 = int(bnd1 / 365.) * 365.
-            bnd2 = (int(bnd2 / 365.) + 1) * 365.
-            all_times.append(np.array([[bnd1, bnd2]]))
+        # monthly data
+        # 1 month = 30 days ~= 0.082
+        # assume time gating is already done to
+        # order years
+        bnd1 = float(cube.coord('time').points[0])
+        bnd2 = float(cube.coord('time').points[-1])
+        bnd1 = int(bnd1 / 365.) * 365.
+        bnd2 = (int(bnd2 / 365.) + 1) * 365.
+        all_times.append(np.array([[bnd1, bnd2]]))
     bounds = [range(int(b[0][0]), int(b[-1][-1]) + 1) for b in all_times]
     time_pts = reduce(np.intersect1d, (i for i in bounds))
     if len(time_pts) > 1:
