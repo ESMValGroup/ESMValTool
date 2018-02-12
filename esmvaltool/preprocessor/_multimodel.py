@@ -35,38 +35,37 @@ def _plev_fix(dataset, pl_idx):
         if not np.all(dataset.mask[:, pl_idx]):
             statj = np.ma.array(dataset[:, pl_idx],
                                 mask=dataset.mask[:, pl_idx])
-            return statj
         else:
-            logger.debug('All values in plev are masked, ignoring it')
+            logger.debug('All vals in plev are masked, ignoring.')
+            statj = None
     else:
-        mask = np.zeros_like(dataset[:, pl_idx])
+        mask = np.zeros_like(dataset[:, pl_idx], bool)
         statj = np.ma.array(dataset[:, pl_idx], mask=mask)
-        return statj
+    return statj
 
 
 def _compute_means(cubes):
     """Compute multimodel means"""
-    datas = [c.data for c in cubes]
-
     # plevs
-    if len(datas[0].shape) == 4:
-        statistic = np.ma.zeros(datas[0].shape)
-        for j in range(datas[0].shape[1]):
+    if len(cubes[0].data.shape) == 4:
+        statistic = np.ma.zeros(cubes[0].shape)
+        for j in range(statistic.shape[1]):
             stat_j = []
-            for dataset in datas:
-                if _plev_fix(dataset, j) is not None:
-                    stat_j.append(_plev_fix(dataset, j))
+            for cube in cubes:
+                if _plev_fix(cube.data, j) is not None:
+                    stat_j.append(_plev_fix(cube.data, j))
 
             # check for nr models
             if len(stat_j) >= 2:
                 stat_j = np.ma.array(stat_j)
                 statistic[:, j] = np.ma.mean(stat_j, axis=0)
             else:
-                mask = np.ones_like(statistic[:, j])
+                mask = np.ones(statistic[:, j].shape, bool)
                 statistic[:, j] = np.ma.array(statistic[:, j],
                                               mask=mask)
     # no plevs
     else:
+        datas = [c.data for c in cubes]
         statistic = np.ma.mean(datas, axis=0)
 
     return statistic
@@ -74,16 +73,14 @@ def _compute_means(cubes):
 
 def _compute_medians(cubes):
     """Compute multimodel medians"""
-    datas = [c.data for c in cubes]
-
     # plevs
-    if len(datas[0].shape) == 4:
-        statistic = np.ma.zeros(datas[0].shape)
-        for j in range(datas[0].shape[1]):
+    if len(cubes[0].data.shape) == 4:
+        statistic = np.ma.zeros(cubes[0].shape)
+        for j in range(statistic.shape[1]):
             stat_j = []
-            for dataset in datas:
-                if _plev_fix(dataset, j) is not None:
-                    stat_j.append(_plev_fix(dataset, j))
+            for cube in cubes:
+                if _plev_fix(cube.data, j) is not None:
+                    stat_j.append(_plev_fix(cube.data, j))
 
             # check for nr models
             if len(stat_j) >= 2:
@@ -92,11 +89,13 @@ def _compute_medians(cubes):
                                                axis=0,
                                                overwrite_input=True)
             else:
-                mask = np.ones_like(statistic[:, j])
+                mask = np.ones(statistic[:, j].shape, bool)
                 statistic[:, j] = np.ma.array(statistic[:, j],
                                               mask=mask)
     # no plevs
     else:
+        datas = [c.data for c in cubes]
+        datas = np.ma.array(datas)
         statistic = np.ma.median(datas, axis=0)
 
     return statistic
