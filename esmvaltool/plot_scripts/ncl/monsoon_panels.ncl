@@ -524,7 +524,7 @@ begin
     scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
     enter_msg(scriptname, funcname)
 
-    dim_MOD = dimsizes(models@name)
+    dim_MOD = dimsizes(model_info@model)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     field_type0 = field_types(0)
@@ -669,7 +669,7 @@ begin
     scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
     enter_msg(scriptname, funcname)
 
-    dim_MOD = dimsizes(models@name)
+    dim_MOD = dimsizes(model_info@model)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     field_type0 = field_types(0)
@@ -1057,7 +1057,7 @@ begin
     scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
     enter_msg(scriptname, funcname)
 
-    dim_MOD = dimsizes(models@name)
+    dim_MOD = dimsizes(model_info@model)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     var1 = variables(1)
@@ -1519,7 +1519,7 @@ begin
 
     ;; Which model goes where on each page?
     figure_panel_placement = new((/sum(figures_per_page)/), integer)
-    place_models_on_pages(models,\
+    place_models_on_pages(model_info,\
                           plot_settings@idx_ref,\
                           figures_per_page,\
                           model_panel_placement,\
@@ -1998,7 +1998,7 @@ begin
     enter_msg(scriptname, funcname)
 
 
-    dim_MOD = dimsizes(models@name)
+    dim_MOD = dimsizes(model_info@model)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     field_type0 = field_types(0)
@@ -2046,7 +2046,7 @@ begin
 
     ;; Which model goes where on each page?
     figure_panel_placement = new((/sum(figures_per_page)/), integer)
-    place_models_on_pages(models,\
+    place_models_on_pages(model_info,\
                           plot_settings@idx_ref,\
                           figures_per_page,\
                           model_panel_placement,\
@@ -2209,7 +2209,7 @@ begin
     scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
     enter_msg(scriptname, funcname)
 
-    dim_MOD = dimsizes(models@name)
+    dim_MOD = dimsizes(model_info@model)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     field_type0 = field_types(0)
@@ -2287,7 +2287,7 @@ begin
     ;; Plot loop
     ;;----------
     do idx_mod = 0, dim_MOD - 1
-        labels(idx_mod) = models@name(idx_mod)
+        labels(idx_mod) = model_info@model(idx_mod)
         res@gsnXYBarChartColors = di@colors_seasonal(idx_mod)
 
         ;; Shift plot to the right and draw/redraw
@@ -2407,7 +2407,7 @@ begin
     scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
     enter_msg(scriptname, funcname)
 
-    dim_MOD = dimsizes(models@name)
+    dim_MOD = dimsizes(model_info@model)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     field_type0 = field_types(0)
@@ -2475,7 +2475,7 @@ begin
             ;; Define all original attributes again, but empty
             models@$models(i)$ = ""
         end do
-        models@name = "model_mean"
+        model_info@model = "model_mean"
 
         ;; See ./diag_scripts/lib/ncl/style.ncl
         colors_mmm = project_style(diag_script_info, "colors")
@@ -2597,7 +2597,7 @@ begin
     scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
     enter_msg(scriptname, funcname)
 
-    dim_MOD = dimsizes(models@name)
+    dim_MOD = dimsizes(model_info@model)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     field_type0 = field_types(0)
@@ -2641,8 +2641,8 @@ begin
     end if
 
     ;; Determine time range
-    start_year = min(stringtoint(models@start_year))
-    end_year = max(stringtoint(models@end_year))
+    start_year = min(stringtoint(model_info@start_year))
+    end_year = max(stringtoint(model_info@end_year))
 
     ;; Select attributes
     annots = project_style(diag_script_info, "annots")
@@ -2738,7 +2738,7 @@ begin
     scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
     enter_msg(scriptname, funcname)
 
-    dim_MOD = dimsizes(models@name)
+    dim_MOD = dimsizes(model_info@name)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     field_type0 = field_types(0)
@@ -2780,8 +2780,8 @@ begin
     plot = new((/dim_MOD/), graphic)
 
     ;; Determine time range
-    start_year = min(stringtoint(models@start_year))
-    end_year = max(stringtoint(models@end_year))
+    start_year = min(stringtoint(model_info@start_year))
+    end_year = max(stringtoint(model_info@end_year))
 
     ;; Select attributes
     annots = project_style(diag_script_info, "annots")
@@ -2815,9 +2815,9 @@ begin
         models = getvaratts(temp)  ; use "models" to pass on attribute names
         do i = 0, dimsizes(models) - 1
             ;; Define all original attributes again, but empty
-            models@$models(i)$ = ""
+            model_info@$models(i)$ = ""
         end do
-        models@name = "model_mean"
+        model_info@model = "model_mean"
 
         ;; See ./diag_scripts/lib/ncl/style.ncl
         colors_mmm = project_style(diag_script_info, "colors")

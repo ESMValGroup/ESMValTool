@@ -1669,11 +1669,11 @@ begin
         diag_script_info@EMs_in_lg = True  ; Set default
     end if
     if (.not.diag_script_info@EMs_in_lg) then
-        idcs_modelnames = UNIQ(models@name)
+        idcs_modelnames = UNIQ(model_info@model)
         colors := colors(idcs_modelnames)
         dashes := dashes(idcs_modelnames)
         thicks := thicks(idcs_modelnames)
-        annots := models@name(idcs_modelnames)
+        annots := model_info@model(idcs_modelnames)
     end if
     if (diag_script_info@multi_model_mean .eq. "y") then
         lgres@lgLineColors      = array_append_record(colors, colors_mmm, 0)

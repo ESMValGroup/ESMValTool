@@ -2,9 +2,10 @@ Old name                                --> New name                            
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 wrk_dir                                 --> work_dir                                          getenv("ESMValTool_wrk_dir") in all .ncl scripts
 xml                                     --> yml                                               all scripts
-ESMValTool_something, something         --> diag_script_info@something or config_user_info@something       getenv("ESMValTool_something") or loose configuration variables in all .ncl scripts
-var_attr_ref(0)                         --> variable_info@reference_model                     all diag scripts
-var_attr_ref(1)                         --> variable_info@alternative_model                   all diag scripts
+getenv(ESMValTool_something)            --> diag_script_info@something or                     all .ncl scripts
+                                            config_user_info@something                        
+var_attr_ref(0)                         --> variable_info@reference_model                     all .ncl scripts
+var_attr_ref(1)                         --> variable_info@alternative_model                   all .ncl scripts
 models                                  --> model_info / input_file_info                      all .ncl scripts [some legacy definitions still available in interface_scripts/interface.ncl]
 models@name                             --> model_info@model  / input_file_info@model         all .ncl scripts
 verbosity                               --> config_user_info@log_level                        all .ncl scripts [note there are 4 log levels: "debug", "info", "warning", "error" instead of numerical value]
@@ -16,9 +17,11 @@ verbosity = config_user_info@verbosity  --> [remove]                            
 enter_msg(arg1, arg2, arg3)             --> enter_msg(arg1, arg2)                             all .ncl scripts
 leave_msg(arg1, arg2, arg3)             --> leave_msg(arg1, arg2)                             all .ncl scripts
 noop()                                  --> useless function, just use appropriate if/else    all .ncl scripts
+fullpaths                               --> input_file_info@filename                          all .ncl scripts
+varname_info.tmp                        --> varname_info.ncl in preprocessor output_dir       all .ncl scripts
+ncl.interface                           --> settings.ncl in diagnostic script run_dir and     all .ncl scripts
+                                            interface_scripts/interface.ncl
 
 
-varname_info.tmp                        --> varname_info.ncl in preprocessor output_dir
-ncl.interface                           --> settings.ncl in diagnostic script run_dir + interface_scripts/interface.ncl
 out_dir, run_dir, plot_dir and work_dir are now unique for each script, so no need to create subdirectories to prevent file collisions anymore
-interface_get_* function in ncl.interface are no longer available, their functionalities are fully covered int eh model_info and input_file_info logicals
+interface_get_* function in ncl.interface are no longer available, their functionalities are fully covered by the "model_info" and "input_file_info" logicals

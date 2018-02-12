@@ -32,15 +32,6 @@ begin
     diag_script = diag_script_info@script
     if isvar("variable_info") then
         variables = (/variable_info@short_name/)
-        derived_var = (/variable_info@short_name/)
         field_types = (/variable_info@field/)
-        derived_field_type = (/variable_info@field/)
-        var_attr_mip = input_file_info@mip
-        var_attr_exp = input_file_info@exp
-        models = input_file_info
-        models@name = input_file_info@model
-        dictkeys = True
-        dictkeys@dictkeys = input_file_info@filename
-        fullpaths = input_file_info@filename
     end if
 end

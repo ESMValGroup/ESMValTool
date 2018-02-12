@@ -28,19 +28,19 @@ undef("unique_labels_min")
 function unique_labels_min(prio: string)
 ;;
 ;; Arguments
-;;    prio: string vector with attribute names (models@*), ordered by
+;;    prio: string vector with attribute names (model_info@*), ordered by
 ;;          priority for annotation (starting with highest).
 ;;
 ;; Return value
-;;    A vector (string) with one element for each models@name -> each label
+;;    A vector (string) with one element for each model_info@model -> each label
 ;;    contains the least possible attribute strings.
 ;;
 ;; Description
-;;    Builds the vector by looping over models@name.
+;;    Builds the vector by looping over model_info@model.
 ;;    Adds "_attribute" to non-unique labels, until prio is exhausted.
 ;;
 ;; Caveats
-;;     Uses models@*, which is available here anyway.
+;;     Uses model_info@*, which is available here anyway.
 ;;
 ;; References
 ;;
@@ -54,7 +54,7 @@ begin
     scriptname = "diag_scripts/lib/ncl/style.ncl"
     enter_msg(scriptname, funcname)
 
-    result = models@$prio(0)$  ; Start with highest priority
+    result = model_info@$prio(0)$  ; Start with highest priority
     unique = result(UNIQ(result))
     iprio = 1  ; counter for while loop (must not exceed dimsizes(prio))
     do while (dimsizes(unique) .ne. dimsizes(result))
@@ -69,7 +69,7 @@ begin
                 index = ind(result .eq. unique(i))
                 if (dimsizes(index) .gt. 1) then  ; More than one occurence
                     result(index) = result(index) + "_" + \
-                        models@$prio(iprio)$(index)
+                        model_info@$prio(iprio)$(index)
                 end if
                 delete(index)
             end do  ; Different labels
@@ -89,19 +89,19 @@ undef("unique_labels_all")
 function unique_labels_all(prio:string)
 ;;
 ;; Arguments
-;;    prio: string vector with attribute names (models@*), ordered by
+;;    prio: string vector with attribute names (model_info@*), ordered by
 ;;          priority for annotation (starting with highest)
 ;;
 ;; Description
-;;    Builds the vector by looping over models@name.
+;;    Builds the vector by looping over model_info@model.
 ;;    Adds "_attribute" until prio is exhausted or until labels are unique.
 ;;
 ;; Return value
-;;    A vector (string) with one element for each models@name -> all labels
+;;    A vector (string) with one element for each model_info@model -> all labels
 ;;    contain the same (least possible) number of attribute strings.
 ;;
 ;; Caveats
-;;    Uses models@*, which is available here anyway.
+;;    Uses model_info@*, which is available here anyway.
 ;;
 ;; References
 ;;
@@ -115,7 +115,7 @@ begin
     scriptname = "diag_scripts/lib/ncl/style.ncl"
     enter_msg(scriptname, funcname)
 
-    result = models@$prio(0)$  ; Start with highest priority
+    result = model_info@$prio(0)$  ; Start with highest priority
     unique = result(UNIQ(result))
     iprio = 1  ; counter for while loop (must not exceed dimsizes(prio))
     do while (dimsizes(unique) .ne. dimsizes(result))
@@ -129,7 +129,7 @@ begin
             do i = 0, dimsizes(unique) - 1  ; loop over different(sic!) labels
                 index = ind(result .eq. unique(i))
                 if (dimsizes(index) .gt. 1) then  ; More than one occurence
-                    result = result + "_" + models@$prio(iprio)$
+                    result = result + "_" + model_info@$prio(iprio)$
                 end if
                 delete(index)
             end do  ; Different labels
@@ -162,7 +162,7 @@ function project_style(info, flag)
 ;;                      observations and reanalyses).
 ;;
 ;; Return value
-;;    An array of the same size of models@name, with the stlye information for
+;;    An array of the same size of model_info@model, with the stlye information for
 ;;    the given flag. The type depends on the flag.
 ;;
 ;; Description
@@ -194,8 +194,8 @@ begin
 
     ;; Check for the available dictonary keys to be used for the annotations
     ;; (see get_dict_key in projects.py)
-    dkeys = (/"name", "ensemble", "case_name", "experiment", "mip", "realm"/)
-    tmp = isatt(models, dkeys)
+    dkeys = (/"model", "ensemble", "case_name", "exp", "mip", "realm"/)
+    tmp = isatt(model_info, dkeys)
     l_dkeys = dkeys(ind(tmp))
     delete(tmp)
 
@@ -243,16 +243,16 @@ begin
     if (ismissing(col)) then
         error_msg("f", "style.ncl", funcname, "flag " + flag + " not allowed")
     end if
-    nmodels = dimsizes(models@name)
+    nmodels = dimsizes(model_info@model)
     column = new(nmodels, string)
     wildcard_cnt = 0
     do ii = 0, nmodels - 1
-        row = ind(models@name(ii).eq.modelsinfile)
+        row = ind(model_info@model(ii).eq.modelsinfile)
 
         ;; Multiple entries, raise error
         if (dimsizes(row).gt.1) then
             error_msg("f", "style.ncl", funcname, "Multiple entries for " + \
-                      "model" + models@name(ii) + " in style file " + \
+                      "model" + model_info@model(ii) + " in style file " + \
                       stylefile)
         end if
 
@@ -262,7 +262,7 @@ begin
             ;; Search for "default"
             row  = ind("default".eq.modelsinfile)
             if (.not.ismissing(row)) then
-                log_debug("Model " + models@name(ii) + " not found in " + \
+                log_debug("Model " + model_info@model(ii) + " not found in " + \
                           stylefile + ", using default")
                 column(ii) = str_squeeze(str_get_field(sty(row), col, "|"))
                 continue
@@ -272,14 +272,14 @@ begin
             rows = ind("*".eq.modelsinfile)
             if (all(ismissing(rows))) then
                 error_msg("f", "style.ncl", funcname, "Model " + \
-                          models@name(ii) + " not found in " + stylefile)
+                          model_info@model(ii) + " not found in " + stylefile)
             end if
             if (wildcard_cnt.ge.dimsizes(rows)) then
                 error_msg("f", "style.ncl", funcname, "the style file " + \
                           stylefile + " contains too few wildcard (*) " + \
                           "entries (" + wildcard_cnt + "), please add more")
             end if
-            log_debug("Model " + models@name(ii) + " not found in " + \
+            log_debug("Model " + model_info@model(ii) + " not found in " + \
                       stylefile + ", using wildcard")
             row = rows(wildcard_cnt)
             wildcard_cnt = wildcard_cnt + 1
@@ -319,7 +319,7 @@ begin
             else
                 error_msg("f", "style.ncl", funcname, \
                           "Invalid definition of color for model " + \
-                          models@name(ii) + ", check style file " + \
+                          model_info@model(ii) + ", check style file " + \
                           stylefile)
             end if
             end if
@@ -351,8 +351,8 @@ function project_style_GO(flag:string)
 ;;
 ;; Arguments:
 ;;    flag = string determining the type of array requested
-;; Return value: array of dimsizes(models@name)
-;;  * Definition of plot attributes; Returns arrays of dimsizes(models@name)
+;; Return value: array of dimsizes(model_info@model)
+;;  * Definition of plot attributes; Returns arrays of dimsizes(model_info@model)
 ;;  * flag = "colors": returns an array of colors (either RGB triples or named colors)
 ;;  * flag = "dashes": returns an array of dash styles (integer numbers)
 ;;  * flag = "thicks": returns an array of line thicknesses (numeric)
@@ -384,15 +384,15 @@ begin
 
     ;; assign plot attributes (see function select_style in style_auxiliary.ncl)
     if (flag .eq. "colors") then
-        result = select_style(modelstyles, 1, models@name)
+        result = select_style(modelstyles, 1, model_info@model)
     else if (flag .eq. "dashes") then
-        result = select_style(modelstyles, 2, models@name)
+        result = select_style(modelstyles, 2, model_info@model)
     else if (flag .eq. "thicks") then
-        result = toint(select_style(modelstyles, 3, models@name))
+        result = toint(select_style(modelstyles, 3, model_info@model))
     else if (flag .eq. "annots") then
-        result = unique_labels_min((/"name", "ensemble", "experiment"/))
+        result = unique_labels_min((/"model", "ensemble", "exp"/))
     else if (flag .eq. "avgstd") then
-        result = toint(select_style(modelstyles, 4, models@name))
+        result = toint(select_style(modelstyles, 4, model_info@model))
     else
         print("fatal: (project_style_CMIP5) flag " + flag + " not allowed.")
         status_exit(1)

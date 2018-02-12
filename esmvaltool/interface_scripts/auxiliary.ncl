@@ -1655,7 +1655,7 @@ function get_single_ref(models[1]:logical,\
 ;;    model_refs: reference model name
 ;;
 ;; Description
-;;    Fetches the reference model index in models@name
+;;    Fetches the reference model index in model_info@model
 ;;
 ;; Caveats
 ;;
@@ -1674,7 +1674,7 @@ begin
     idx_single_ref = ind(model_attr_id .eq. model_refs)
     if (all(ismissing(idx_single_ref))) then
         delete(idx_single_ref)
-        idx_single_ref = ind(models@name .eq. str_squeeze(model_refs))
+        idx_single_ref = ind(model_info@model .eq. str_squeeze(model_refs))
     end if
 
     ;; Check if ref_model is in the current namelist
@@ -1683,7 +1683,7 @@ begin
                   "ref_model is not included in model list (namelist)")
     end if
 
-    ;; In case we're comparing the same model (i.e., same models@name)
+    ;; In case we're comparing the same model (i.e., same model_info@model)
     idx_single_ref_sizes = dimsizes(idx_single_ref)
     if (idx_single_ref_sizes.gt.1) then
         idx_single_ref_tmp = idx_single_ref(0)
@@ -1706,7 +1706,7 @@ function get_ref_model_idx(models[1]:logical,\
 ;;    model_ref_name: reference model name, possibly two, separated by comma
 ;;
 ;; Description
-;;    Fetches the reference model index in models@name
+;;    Fetches the reference model index in model_info@model
 ;;
 ;; Caveats
 ;;
@@ -1728,7 +1728,7 @@ begin
 
     idx_ref = new(nrefs, integer)
     do ii = 0, nrefs - 1
-        idx_ref(ii) = ind(models@name .eq. str_squeeze(model_ref_name(ii)))
+        idx_ref(ii) = ind(model_info@model.eq.str_squeeze(model_ref_name(ii)))
         if (ismissing(idx_ref(ii))) then
             error_msg("f", scriptname, funcname, "reference model " + \
                       model_ref_name(ii) + " not found in the models list")

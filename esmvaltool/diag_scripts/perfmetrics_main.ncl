@@ -115,7 +115,7 @@ begin
     log_info(diag_script + " (var: " + variables(0) + ")")
     log_info("++++++++++++++++++++++++++++++++++++++++++")
 
-    dim_MOD = dimsizes(models@name)
+    dim_MOD = dimsizes(model_info@model)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     field_type0 = field_types(0)
@@ -202,14 +202,14 @@ begin
     modelnames = project_style(diag_script_info, "annots")
 
     ;; Check for reference model definition
-  	var_attr_ref = (/variable_info@reference_model, variable_info@alternative_model/)
-    if (var_attr_ref(0).eq."None") then
+    ref_models = \
+        (/variable_info@reference_model, variable_info@alternative_model/)
+    if (ref_models(0).eq."None") then
         error_msg("f", diag_script, "", "no reference model is specified")
     end if
 
     ;; Set index of the reference (and alternative) model
-    ;; FIX-ME: use variable_info@reference_model instead of var_attr_ref
-    ref_inds = get_ref_model_idx(models, var_attr_ref)
+    ref_inds = get_ref_model_idx(model_info, ref_models)
     ref_ind = ref_inds(0)
     if (dimsizes(ref_inds).gt.1) then
         alt_ind = ref_inds(1)
@@ -348,7 +348,7 @@ begin
     var_all@var = var0
     var_all@diag_script = (/diag_script/)
     copy_VarAtts(diag_script_info, var_all)
-    var_all@ref_model = str_get_field(var_attr_ref(0), 1, ",")
+    var_all@ref_model = str_get_field(ref_models(0), 1, ",")
 
     ;; ### MAIN LOOP OVER MODELS AND DATA PROCESSING ##########################
 
@@ -751,8 +751,8 @@ begin
         grading@diag_script = (/diag_script/)
         grading@var = "grade"  ; FIX-ME ?
         grading@region = location
-        grading@num_climofiles = dimsizes(models@name)  ; for tagging
-        do imod = 0, dimsizes(models@name) - 1
+        grading@num_climofiles = dimsizes(model_info@model)  ; for tagging
+        do imod = 0, dimsizes(model_info@model) - 1
             num_climo = "climofile_" + imod
             grading@$num_climo$ = input_file_info@filename(imod)
         end do

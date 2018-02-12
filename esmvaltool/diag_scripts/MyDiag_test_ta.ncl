@@ -79,7 +79,7 @@ begin
 
     ;; 'models', 'variables' and 'field_types' are fetched from the
     ;; above 'ncl.interface' file
-    dim_MOD = dimsizes(models@name)
+    dim_MOD = dimsizes(model_info@model)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     field_type0 = field_types(0)
@@ -120,7 +120,7 @@ begin
     ;;###########################################
     ;; get data from first model
     imod = 0  ; NCL array indicies start from zero
-    log_debug("processing " + models@name(imod) + "_" + models@ensemble(imod))
+    log_debug("processing " + model_info@model(imod))
 
     ;; See ./interface_scripts/data_handling.ncl
     A0 = extract_data(imod, data, -1, 0, 0)

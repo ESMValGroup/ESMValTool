@@ -313,7 +313,7 @@ begin
     scriptname = "plot_script/ncl/monsoon_domain_panels.ncl"
     enter_msg(scriptname, funcname)
 
-    dim_MOD = dimsizes(models@name)
+    dim_MOD = dimsizes(model_info@model)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     field_type0 = field_types(0)
@@ -357,7 +357,7 @@ begin
 
     ;; Which model goes where on each page?
     figure_panel_placement = new((/sum(figures_per_page)/), integer)
-    place_models_on_pages(models,\
+    place_models_on_pages(model_info,\
                           plot_settings@idx_ref,\
                           figures_per_page,\
                           model_panel_placement,\

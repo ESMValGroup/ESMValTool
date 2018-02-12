@@ -634,7 +634,7 @@ begin
     pltSubTitle = "Anomalous: OLR, U850, V850"
 
     do nSeason = 1, 2
-        aux_title_info = models@name(idx_mod) + "_"\
+        aux_title_info = model_info@model(idx_mod) + "_"\
                          + di@season_life_cycle(nSeason - 1)
         output_filename = interface_get_figure_filename(diag_script_base,\
                                                         var0,\
@@ -650,14 +650,14 @@ begin
         txid = gsn_create_text(wks, pltSubTitle, txres)
 
         if(nSeason .eq. 1) then
-            resP@txString = models@name(idx_mod) + ": "\
-                            + models@start_year(idx_mod) + "-"\
-                            + models@end_year(idx_mod)\
+            resP@txString = model_info@model(idx_mod) + ": "\
+                            + model_info@start_year(idx_mod) + "-"\
+                            + model_info@end_year(idx_mod)\
                             + ": May to Oct"
         else
-            resP@txString = models@name(idx_mod) + ": "\
-                            + models@start_year(idx_mod) + "-"\
-                            + models@end_year(idx_mod)\
+            resP@txString = model_info@model(idx_mod) + ": "\
+                            + model_info@start_year(idx_mod) + "-"\
+                            + model_info@end_year(idx_mod)\
                             + ": Nov to Apr"
         end if
         do n = 0, nPhase - 1
