@@ -253,13 +253,13 @@ begin
 
             ;; select return fields
             tmp = new(dimsizes(var_grd&models), integer)
-            if(inlist("model_mean", statistics)) then
+            if(any("model_mean" .eq. statistics)) then
                 tmp(0) = 1
             end if
-            if(inlist("stddev", statistics)) then
+            if(any("stddev" .eq. statistics)) then
                 tmp(1) = 1
             end if
-            if(inlist("model_grd", statistics)) then
+            if(any("model_grd" .eq.  statistics)) then
                 tmp(nstats:) = 1
             end if
             ireturn = ind(tmp.eq.1)  ; selected indices of models coordinate

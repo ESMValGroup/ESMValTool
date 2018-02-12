@@ -36,7 +36,7 @@ begin
       variable   = getenv("ESMValTool_variable")
 
       log_debug("variable: " + variabl)
-        if(inlist(variable, rewrite_variables)) then  
+        if(any(variable .eq. rewrite_variables)) then  
             ;; Fetch necessary variables
 	    fin = dataX(0)
 	    fout = dataX(1)

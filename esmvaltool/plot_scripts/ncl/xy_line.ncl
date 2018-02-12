@@ -95,7 +95,7 @@ begin
 
     ;; Retrieve some metadata from data
     defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
-    if(inlist(varname, defaults)) then  ; Use default
+    if(any(varname .eq. defaults)) then  ; Use default
         var = att2var(data, "var")      ; interface_scripts/auxiliary.ncl
     else                                ; Use explicitely given name
         var = varname
@@ -136,7 +136,7 @@ begin
     ;; determine handling of legend
     legend = att2var(data, "legend")  ; mode for legend: inline/separate/none
     valid_legends = (/"inline", "separate"/)
-    if(inlist(legend, valid_legends)) then
+    if(any(legend .eq. valid_legends)) then
         if(.not. iscoord(data, "models")) then
             log_debug("warning: No 'models' coordinate found.")
             log_debug("warning:  -> No legend in profile_plev")
@@ -562,7 +562,7 @@ begin
 
     ;; Retrieve basic metadata from data
     defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
-    if (inlist(varname, defaults)) then
+    if (any(varname .eq. defaults)) then
         var = att2var(model, "var")
     else
         var = varname
@@ -1081,7 +1081,7 @@ begin
 
     ;; Retrieve basic metadata from data
     defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
-    if (inlist(varname, defaults)) then
+    if (any(varname .eq. defaults)) then
         var = att2var(model, "var")
     else
         var = varname
@@ -1849,7 +1849,7 @@ begin
 
     ;; Retrieve basic metadata from data
     defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
-    if(inlist(varname, defaults)) then
+    if(any(varname .eq. defaults)) then
         var = att2var(data, "var")
     else
         var = varname
@@ -2010,7 +2010,7 @@ begin
 
     ;; Retrieve basic metadata from data
     defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
-    if(inlist(varname, defaults)) then
+    if(any(varname .eq. defaults)) then
         var = att2var(data, "var")
         diag_script = att2var(data, "diag_script")
     else
@@ -2223,7 +2223,7 @@ begin
 
     ;; Retrieve basic metadata from data
     defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
-    if(inlist(varname, defaults)) then
+    if(any(varname .eq. defaults)) then
         var = att2var(data, "var")
         diag_script = att2var(data, "diag_script")
     else

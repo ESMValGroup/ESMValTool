@@ -5,12 +5,12 @@
 ;; Check the header of each routine for documentation.
 ;;
 ;; Contents:
-;;    procedure no_operation
 ;;    procedure log_info
 ;;    procedure log_debug
 ;;    procedure enter_msg
 ;;    procedure leave_msg
 ;;    procedure error_msg
+;;    procedure tool_stop
 ;;    procedure exit_if_missing_atts
 ;;    procedure write_filelist
 ;;    procedure write_references
@@ -25,26 +25,6 @@ load "./interface_scripts/write_header.ncl"
 
 ;; WARNING: no other interface_scripts shall be loaded here, to avoid nested
 ;;          loops (since they will try to load logging.ncl themselves).
-
-;;#############################################################################
-undef("no_operation")
-procedure no_operation()
-;;
-;; Arguments
-;;
-;; Description
-;;    Define an NCL no-op operator.
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;     20130119-A_eval_ma: written.
-;;
-begin
-
-end
 
 ;;#############################################################################
 undef("log_info")
@@ -231,9 +211,34 @@ begin
     ;; Exit if fatal
     if (msg_level .eq. "fatal") then
         status_exit(1)
-    else
-        no_operation()
     end if
+
+end
+
+;;#############################################################################
+undef("tool_stop")
+procedure tool_stop()
+;;
+;; Arguments
+;;
+;; Description
+;;    Forces the tool execution to stop at any point of an ncl script.
+;;    For dubugging purposes only.
+;;
+;; Caveats
+;;    This should not be used for the standard exit-on-error. See the function
+;;    error_msg in logging.ncl instead.
+;;
+;; References
+;;
+;; Modification history
+;;    20150521-A_righ_ma: written.
+;;
+begin
+
+    print("fatal: tool stop forced by the user")
+    status_exit(1)
+
 end
 
 ;;#############################################################################

@@ -545,7 +545,7 @@ begin
     ;; Output dir
     ;; 'plot_dir' if fetched from ncl.interface
     diag_script_base = basename(plot_settings@diag_script)
-    output_dir = get_output_dir(plot_dir, diag_script_base)
+    output_dir = config_user_info@plot_dir
 
     ;; --------------------------------
     ;; Static resources for these plots
@@ -690,7 +690,7 @@ begin
     ;; Output dir
     ;; 'plot_dir' if fetched from ncl.interface
     diag_script_base = basename(plot_settings@diag_script)
-    output_dir = get_output_dir(plot_dir, diag_script_base)
+    output_dir = config_user_info@plot_dir
 
     ;; --------------------------------
     ;; Static resources for these plots
@@ -1072,7 +1072,7 @@ begin
     ;; Output dir
     ;; 'plot_dir' if fetched from ncl.interface
     diag_script_base = basename(plot_settings@diag_script)
-    output_dir = get_output_dir(plot_dir, diag_script_base)
+    output_dir = config_user_info@plot_dir
 
     ;; --------------------------------
     ;; Static resources for these plots
@@ -1492,7 +1492,7 @@ begin
     ;; Output dir
     ;; 'plot_dir' if fetched from ncl.interface
     diag_script_base = basename(plot_settings@diag_script)
-    output_dir = get_output_dir(plot_dir, diag_script_base)
+    output_dir = config_user_info@plot_dir
 
     ;; --------------------------------
     ;; Static resources for these plots
@@ -1528,7 +1528,7 @@ begin
     ;; Output dir
     ;; 'plot_dir' is fetched from ncl.interface
     diag_script_base = basename(diag_script)
-    output_dir = get_output_dir(plot_dir, diag_script_base)
+    output_dir = config_user_info@plot_dir
 
     if (plot_settings@type .eq. "diff") then
         type_specifier = "_diff"
@@ -2018,7 +2018,7 @@ begin
     ;; Output dir
     ;; 'plot_dir' if fetched from ncl.interface
     diag_script_base = basename(plot_settings@diag_script)
-    output_dir = get_output_dir(plot_dir, diag_script_base)
+    output_dir = config_user_info@plot_dir
 
     ;; --------------------------------
     ;; Static resources for these plots
@@ -2055,7 +2055,7 @@ begin
     ;; Output dir
     ;; 'plot_dir' is fetched from ncl.interface
     diag_script_base = basename(diag_script)
-    output_dir = get_output_dir(plot_dir, diag_script_base)
+    output_dir = config_user_info@plot_dir
 
     if (plot_settings@type .eq. "diff") then
         type_specifier = "_diff"
@@ -2268,7 +2268,7 @@ begin
     ;; Output dir
     ;; 'plot_dir' if fetched from ncl.interface
     diag_script_base = basename(diag_script)
-    output_dir = get_output_dir(plot_dir, diag_script_base)
+    output_dir = config_user_info@plot_dir
 
     ;;-----------------------------------------------
     ;; Define output workstation for seasonal anomaly
@@ -2425,7 +2425,7 @@ begin
 
     ;; 'plot_dir' if fetched from ncl.interface
     diag_script_base = basename(diag_script)
-    output_dir = get_output_dir(plot_dir, diag_script_base)
+    output_dir = config_user_info@plot_dir
     ;;-----------------------------------------------
     ;; Define output workstation for xy plot
     ;;-----------------------------------------------
@@ -2615,7 +2615,7 @@ begin
 
     ;; 'plot_dir' if fetched from ncl.interface
     diag_script_base = basename(diag_script)
-    output_dir = get_output_dir(plot_dir, diag_script_base)
+    output_dir = config_user_info@plot_dir
     ;;-----------------------------------------------
     ;; Define output workstation for xy plot
     ;;-----------------------------------------------
@@ -2752,7 +2752,7 @@ begin
 
     ;; 'plot_dir' if fetched from ncl.interface
     diag_script_base = basename(diag_script)
-    output_dir = get_output_dir(plot_dir, diag_script_base)
+    output_dir = config_user_info@plot_dir
     ;;-----------------------------------------------
     ;; Define output workstation for xy plot
     ;;-----------------------------------------------
@@ -2851,9 +2851,7 @@ begin
         res@trYMinF = ymin - 0.03 * (ymax - ymin)
     else
 ; A_laue_ax-
-        if (isatt(res, "trYMaxF")) then
-            no_operation()  ; use preset values (in diagnostic script)
-        else  ; default value
+        if (.not.isatt(res, "trYMaxF")) then
             ymax = di@minmax(1)
             ymin = di@minmax(0)
             res@trYMaxF = ymax + 0.03 * (ymax - ymin)

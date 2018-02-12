@@ -90,11 +90,11 @@
 ;;
 ;;#############################################################################
 
-; Load diag_script_info anv variable_info
+; Load diag_script_info and variable_info
 load "interface_scripts/interface.ncl"
 
 load "./interface_scripts/auxiliary.ncl"
-;;load "./interface_scripts/data_handling.ncl" ## FIX-ME
+load "./interface_scripts/data_handling.ncl"
 load "./interface_scripts/logging.ncl"
 
 load "./diag_scripts/lib/ncl/style.ncl"
@@ -219,8 +219,8 @@ begin
     ;; Create output plot directory
     if (diag_script_info@draw_plots) then
     	plot_dir = config_user_info@plot_dir
-      system("mkdir -p " + plot_dir)
-		end if
+        system("mkdir -p " + plot_dir)
+    end if
 
     ;; Plot file type
     file_type = config_user_info@output_file_type
@@ -591,7 +591,8 @@ begin
         end if
 
         ;; Define grading filename
-        ncdf_dir = config_user_info@work_dir + "/" + diag_script_info@metric + "_" + var0_new + ".nc"
+        ncdf_dir = config_user_info@work_dir + "/" + \
+            diag_script_info@metric + "_" + var0_new + ".nc"
 
         ;; Start calculation
 ;;DELETE        if (fileexists(ncdf_dir)) then

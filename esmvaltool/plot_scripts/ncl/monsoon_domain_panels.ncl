@@ -326,7 +326,7 @@ begin
     ;; Output dir
     ;; 'plot_dir' is fetched from ncl.interface
     diag_script_base = basename(diag_script)
-    output_dir = get_output_dir(plot_dir, diag_script_base)
+    output_dir = config_user_info@plot_dir
 
     res@tiMainFontHeightF = 0.011
 
