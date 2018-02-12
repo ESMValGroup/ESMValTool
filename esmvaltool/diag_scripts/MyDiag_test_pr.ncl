@@ -81,9 +81,6 @@ begin
                      "",          \  ; obs_references
                      (/"P_dlrveu", "P_esmval"/))   ; proj_references
 
-    do idx_mod = 0, dim_MOD - 1
-        data = read_data(idx_mod, var0, field_type0)
-    end do
 end
 
 begin
@@ -110,7 +107,7 @@ begin
     log_debug("processing " + model_info@model(imod))
 
     ;; See ./interface_scripts/data_handling.ncl
-    A0 = extract_data(imod, data, -1, 0, 0)
+    A0 = read_data(imod, var0, field_type0)
 
     ;; Check dimensions
     dims = getvardims(A0)
