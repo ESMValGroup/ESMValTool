@@ -90,12 +90,7 @@
 ;;
 ;;#############################################################################
 
-; Load diag_script_info and variable_info
 load "interface_scripts/interface.ncl"
-
-load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/data_handling.ncl"
-load "./interface_scripts/logging.ncl"
 
 load "./diag_scripts/lib/ncl/style.ncl"
 load "./diag_scripts/lib/ncl/latlon.ncl"

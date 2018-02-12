@@ -27,13 +27,7 @@
 ;;
 ;;#############################################################################
 
-
-
 load "interface_scripts/interface.ncl"
-load "./interface_scripts/interface.ncl"
-load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/data_handling.ncl"
-load "./interface_scripts/logging.ncl"
 
 load "./plot_scripts/ncl/taylor_plot.ncl"
 

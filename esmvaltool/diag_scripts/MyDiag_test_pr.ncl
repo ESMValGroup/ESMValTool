@@ -44,22 +44,11 @@
 ;#                                                                            #
 ;##############################################################################
 
-;#####################################
-;# load external NCL code, if needed #
-;#####################################
-;load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
-;load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
-
-; Load diag_script_info
 load "interface_scripts/interface.ncl"
-
-; Auxiliary NCL routines
-load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/data_handling.ncl"
-load "./interface_scripts/logging.ncl"
 
 load "./diag_scripts/lib/ncl/style.ncl"
 load "./diag_scripts/lib/ncl/statistics.ncl"
+
 load "./plot_scripts/ncl/contour_maps.ncl"
 
 begin

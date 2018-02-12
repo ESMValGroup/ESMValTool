@@ -9,7 +9,6 @@
 ;; No functions/procedures shall be further added to this script.
 ;;#############################################################################
 
-
 ;; Load config_user_info and diag_script_info from settings.ncl
 begin
     print("INFO    Loading settings from " + getenv("settings"))
@@ -35,3 +34,9 @@ begin
         field_types = (/variable_info@field/)
     end if
 end
+
+;; Load other interface scripts
+load "./interface_scripts/logging.ncl"
+load "./interface_scripts/auxiliary.ncl"
+load "./interface_scripts/data_handling.ncl"
+

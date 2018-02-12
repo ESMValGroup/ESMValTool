@@ -8,12 +8,10 @@
 ;;    function read_data
 ;;
 ;;#############################################################################
-load "./interface_scripts/logging.ncl"
 
 ; Global variables to save the names of all files read by "read_data"
 gFilesRead0 = new(10000, string)
 gNFiles0 = 0
-
 
 ;;#############################################################################
 undef("read_data")

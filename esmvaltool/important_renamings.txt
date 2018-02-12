@@ -25,7 +25,7 @@ ncl.interface                           --> settings.ncl in diagnostic script ru
 get_output_dir(arg1, arg2)              --> config_user_info@plot_dir                         all .ncl scripts
 get_work_dir                            --> config_user_info@work_dir                         all .ncl scripts
 inlist(arg1, arg2)                      --> any(arg1.eq.arg2)                                 all .ncl scripts [this function just used to replace the standard NCL function "any"]
-
+load interface_scripts/*.ncl            --> load interface_scripts/interface.ncl              all. diagnostic .ncl scripts [other interface scripts are loaded automatically by interface.ncl]
 
 out_dir, run_dir, plot_dir and work_dir are now unique for each script, so no need to create subdirectories to prevent file collisions anymore
 interface_get_* and get_figure_filename functions in ncl.interface are no longer available: their functionalities can be reproduced using the "model_info" and "input_file_info" logicals
