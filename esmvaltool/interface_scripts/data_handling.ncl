@@ -5,12 +5,6 @@
 ;; Check the header of each routine for documentation.
 ;;
 ;; Contents:
-;;    procedure add_data_var
-;;    function get_varName_from_file
-;;    function extract_data_extended
-;;    function extract_data
-;;    function extract_data_region
-;;    procedure modify_data
 ;;    function read_data
 ;;
 ;;#############################################################################
