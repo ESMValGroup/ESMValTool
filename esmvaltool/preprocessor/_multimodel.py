@@ -37,7 +37,7 @@ def _plev_fix(dataset, pl_idx):
                                 mask=dataset.mask[:, pl_idx])
             return statj
         else:
-            return None
+            logger.debug('All values in plev are masked, ignoring it')
     else:
         mask = np.zeros_like(dataset[:, pl_idx])
         statj = np.ma.array(dataset[:, pl_idx], mask=mask)
@@ -177,10 +177,9 @@ def _slice_cube(cube, min_t, max_t):
     return cube_slice
 
 
-def _full_time(cubes):
-    """Construct a contiguous collection over time"""
-    tmeans = []
-    # lay down time points
+def _monthly_t(cubes):
+    """Rearrange time points for monthly data"""
+    # get original cubes tpoints
     tpts = [c.coord('time').points for c in cubes]
     # convert to months for MONTHLY data
     t_x = list(set().union(*tpts))
@@ -189,13 +188,24 @@ def _full_time(cubes):
     # remake the time axis for roughly the 15th of the month
     t_x0 = list(set([t * 365. / 12. + 15. for t in t_x]))
     t_x0.sort()
+
+    return t_x, t_x0
+
+
+def _full_time(cubes):
+    """Construct a contiguous collection over time"""
+    tmeans = []
+    # get rearranged time points
+    t_x = _monthly_t(cubes)[0]
+    t_x0 = _monthly_t(cubes)[1]
     # loop through cubes and apply masks
     for cube in cubes:
         # construct new shape
         fine_shape = tuple([len(t_x)] + list(cube.data.shape[1:]))
         # find indices of present time points
-        ct = cube.coord('time').points
-        oidx = [t_x.index(int((s / 365.) * 12.)) for s in ct]
+        oidx = [
+            t_x.index(int((s / 365.) * 12.))
+            for s in cube.coord('time').points]
         # reshape data to include all possible times
         ndat = np.ma.resize(cube.data, fine_shape)
         # build the time mask
@@ -203,30 +213,29 @@ def _full_time(cubes):
         for t_i in oidx:
             c_ones[t_i] = False
         ndat.mask |= c_ones
-        # build the new coords
-        time_c = iris.coords.DimCoord(
-                     t_x0, standard_name='time',
-                     units=cube.coord('time').units)
-        lat_c = cube.coord('latitude')
-        lon_c = cube.coord('longitude')
+        # build the new cube
         new_cube = _build_new_cube(ndat,
                                    cube,
                                    fine_shape,
-                                   time_c,
-                                   lat_c,
-                                   lon_c)
+                                   t_x0)
         tmeans.append(new_cube)
 
     return tmeans
 
 
-def _build_new_cube(ndat, cube, fineshape, ts, lats, lons):
+def _build_new_cube(ndat, cube, fineshape, t_0):
     """Build a stock cube for full time analysis"""
+    # build the new coords from original cube
+    t_s = iris.coords.DimCoord(
+        t_0, standard_name='time',
+        units=cube.coord('time').units)
+    lats = cube.coord('latitude')
+    lons = cube.coord('longitude')
     if len(fineshape) == 3:
-        cspec = [(ts, 0), (lats, 1), (lons, 2)]
+        cspec = [(t_s, 0), (lats, 1), (lons, 2)]
     elif len(fineshape) == 4:
         plc = cube.coord('air_pressure')
-        cspec = [(ts, 0), (plc, 1), (lats, 2), (lons, 3)]
+        cspec = [(t_s, 0), (plc, 1), (lats, 2), (lons, 3)]
     # build cube
     ncube = iris.cube.Cube(ndat, dim_coords_and_dims=cspec)
     coord_names = [coord.name() for coord in cube.coords()]
