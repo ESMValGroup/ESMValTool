@@ -3773,6 +3773,51 @@ class ESGF_CMIP5(ESGF, CMIP5):
         except:
             return 'cf_areafile_not_available'
 
+
+
+class ESGF_CMIP6(ESGF_CMIP5):
+    """
+    """
+
+    def __init__(self):
+        # Call CMIP5.__init__, which in turn calls Project.__init__
+        CMIP5.__init__(self)
+
+        # Full set of ESGF data path components required for each
+        # model, plus version, start year and end year, and id of
+        # ESGF path template (for local ESGF node cache)
+        self.model_specifiers = ['project',
+                                 'name',
+                                 'product',
+                                 'institute',
+                                 'model',
+                                 'experiment',
+                                 'time_freq',
+                                 'realm',
+                                 'mip',
+                                 'ensemble',
+                                 'version',
+                                 'grid',
+                                 'start_year',
+                                 'end_year',
+                                 'ptid']  # ptid short for path template id
+
+        # All ESGF facets relevant to this project.
+        # Note: the 'project' facet is specified explicitly further on
+        self.ESGF_facet_names = ['institute',
+                                 'model',
+                                 'experiment',
+                                 'time_freq',
+                                 'realm',
+                                 'mip',
+                                 'grid',
+                                 'ensemble']
+
+        self.variable = None
+        # Define the 'basename'-variable explicitly
+        # All project classes do this, but not sure if really necessary
+        self.basename = self.__class__.__name__
+
 class ESGF_CMIP5_fx(ESGF_CMIP5):
     """
        THIS CLASS HAS UNDERGONE PRELIMIARY TESTING,
