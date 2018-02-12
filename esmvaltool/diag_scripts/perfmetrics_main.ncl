@@ -797,7 +797,7 @@ begin
         end if
 
         ;; Plot output directory
-        output_dir = config_user_info@plot_dir + "/"
+        output_dir = config_user_info@plot_dir
 
         ;; Annotation and file names
         region_name = ""  ; priority 3
