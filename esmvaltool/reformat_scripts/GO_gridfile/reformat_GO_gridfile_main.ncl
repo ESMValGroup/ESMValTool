@@ -26,7 +26,6 @@
 ; 2013-06-01 op_kg  introduced fix_file_default & default_fix
 ;*********************************************************************
 
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
 load "interface_scripts/logging.ncl"
 load "interface_scripts/auxiliary.ncl"
 
