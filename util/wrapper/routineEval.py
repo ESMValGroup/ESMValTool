@@ -4,6 +4,7 @@ import sys
 import tempfile
 import shutil
 import subprocess
+import argparse
 
 from jinja2 import Template
 
@@ -14,21 +15,6 @@ from generateNML import get_namelist
 
 evtRoot = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../..')
 
-
-yfile="""
---- !CMIP6Dataset
-project: PROJECT
-name: NAME
-product: PRODUCT
-institute: INSTITUTE
-model: MODEL
-experiment: EXPERIMENT
-mip: Amon
-ensemble: ENSEMBLE
-start_year: START_YEAR
-end_year: END_YEAR
-variable: tas
-"""
 
 runscript = """#!/bin/bash
 #SBATCH -J {{ jobid }}
@@ -73,19 +59,57 @@ class CMIP6Dataset(yaml.YAMLObject):
             self.mip , self.ensemble , self.start_year , self.end_year ,
             self.variable )
 
+def examplefile():
+    e = """--- !CMIP6Dataset
+project: PROJECT
+name: NAME
+product: PRODUCT
+institute: INSTITUTE
+model: MODEL
+experiment: EXPERIMENT
+mip: Amon
+ensemble: ENSEMBLE
+start_year: START_YEAR
+end_year: END_YEAR
+variable: tas """
+    return e
 
-h = yaml.load_all(yfile)
-lfd = 0
-user = os.getenv('USER')
-for d in h:
-    lfd += 1
-    tmpbase = tempfile.mkdtemp(dir='/scratch/b/{0}/rEval'.format(user)) # Needs to be mounted on compute nodes
-    tmpdir = os.path.join(tmpbase, 'ESMValTool')
-    shutil.copytree(evtRoot, tmpdir, symlinks=False, ignore=shutil.ignore_patterns('.git', '.git*'))
-    with open(os.path.join(tmpdir,'namelist.xml'), 'w') as f:
-        f.write(get_namelist(**d.get_dict()))
-    s_runscript = os.path.join(tmpdir,'runscript')
-    with open(s_runscript, 'w') as f:
-        f.write(t_runscript.render(jobid="rEval{0}".format(str(lfd).zfill(3))) )
-    print(tmpdir)
-    subprocess.Popen('sbatch runscript', cwd=tmpdir, shell=True)
+def process(yfile=examplefile(), verbose=True):
+    """According to input file yfile build the temprorary director(y/ies) and submit the jobs
+    """
+    h = yaml.load_all(yfile)
+    lfd = 0
+    user = os.getenv('USER')
+    for d in h:
+        lfd += 1
+        tmpbase = tempfile.mkdtemp(dir='/scratch/b/{0}/rEval'.format(user)) # Needs to be mounted on compute nodes
+        tmpdir = os.path.join(tmpbase, 'ESMValTool')
+        shutil.copytree(evtRoot, tmpdir, symlinks=False, ignore=shutil.ignore_patterns('.git', '.git*'))
+        #shutil.copytree(evtRoot, tmpdir, symlinks=False, ignore=shutil.ignore_patterns('.git', '.git*', '*'))
+        with open(os.path.join(tmpdir,'namelist.xml'), 'w') as f:
+            f.write(get_namelist(**d.get_dict()))
+        s_runscript = os.path.join(tmpdir,'runscript')
+        with open(s_runscript, 'w') as f:
+            f.write(t_runscript.render(jobid="rEval{0}".format(str(lfd).zfill(3))) )
+        if verbose:
+            print(tmpdir)
+        subprocess.Popen('sbatch runscript', cwd=tmpdir, shell=True)
+
+def main():
+    """Executes the ESMValTool for routine evaluation on CMIP6-Data described in the input file. The ESMValTool must be configured beforehand."""
+    parser = argparse.ArgumentParser(description=main.__doc__ )
+    parser.add_argument('-f', '--infile', dest='infile', help='Path to file in yaml-format describing the dataset.',
+            type=argparse.FileType('r'))
+    parser.add_argument('-e', '--example', dest='example', action='store_true', help='Output example input file.')
+
+    args = parser.parse_args()
+
+    if args.example:
+        print(examplefile())
+        return
+
+    process(yfile=args.infile)
+
+if __name__ == "__main__":
+    main()
+
