@@ -121,10 +121,8 @@ def _compute_medians(datas):
     return statistic
 
 
-def _call_to_compute(cubelist, stats_name):
+def _call_to_compute(tdatas, stats_name):
     """Make the actual call to compute stats"""
-    for i in range(cubelist[0].data.shape[0]):
-        tdatas = [cube.data[i] for cube in cubelist]
     if stats_name == 'means':
         dspec_i = _compute_means(tdatas)
     elif stats_name == 'medians':
@@ -307,7 +305,8 @@ def multi_model_mean(cubes, span, filename, exclude):
         return cubes
 
     # check if we have any time overlap
-    if _get_overlap(selection) is None:
+    ovlp = _get_overlap(selection)
+    if ovlp is None:
         logger.info("Time overlap between cubes is none or a single point.")
         logger.info("check models: will not compute statistics.")
         return cubes
@@ -322,17 +321,17 @@ def multi_model_mean(cubes, span, filename, exclude):
         if span == 'overlap':
             logger.debug("Using common time overlap between "
                          "models to compute statistics.")
-            tx1, tx2 = _get_overlap(selection)
 
             # assemble data
-            slices = [_apply_overlap(cube, tx1, tx2)
+            slices = [_apply_overlap(cube, ovlp[0], ovlp[1])
                       for cube in selection]
             mean_dats = np.ma.zeros(slices[0].data.shape)
             med_dats = np.ma.zeros(slices[0].data.shape)
 
             for i in range(slices[0].data.shape[0]):
-                mean_dats[i] = _call_to_compute(slices, 'means')
-                med_dats[i] = _call_to_compute(slices, 'medians')
+                time_data = [cube.data[i] for cube in slices]
+                mean_dats[i] = _call_to_compute(time_data, 'means')
+                med_dats[i] = _call_to_compute(time_data, 'medians')
             c_mean = _put_in_cube(slices[0],
                                   mean_dats,
                                   file_names,
@@ -352,8 +351,9 @@ def multi_model_mean(cubes, span, filename, exclude):
             med_dats = np.ma.zeros(selection[0].data.shape)
 
             for i in range(selection[0].data.shape[0]):
-                mean_dats[i] = _call_to_compute(selection, 'means')
-                med_dats[i] = _call_to_compute(selection, 'medians')
+                time_data = [cube.data[i] for cube in selection]
+                mean_dats[i] = _call_to_compute(time_data, 'means')
+                med_dats[i] = _call_to_compute(time_data, 'medians')
             c_mean = _put_in_cube(selection[0],
                                   mean_dats,
                                   file_names,
@@ -375,8 +375,9 @@ def multi_model_mean(cubes, span, filename, exclude):
             med_dats = np.ma.zeros(slices[0].data.shape)
 
             for i in range(slices[0].data.shape[0]):
-                mean_dats[i] = _call_to_compute(slices, 'means')
-                med_dats[i] = _call_to_compute(slices, 'medians')
+                time_data = [cube.data[i] for cube in slices]
+                mean_dats[i] = _call_to_compute(time_data, 'means')
+                med_dats[i] = _call_to_compute(time_data, 'medians')
             c_mean = _put_in_cube(slices[0],
                                   mean_dats,
                                   file_names,
