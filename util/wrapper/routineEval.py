@@ -3,6 +3,9 @@ import os
 import sys
 import tempfile
 import shutil
+import subprocess
+
+from jinja2 import Template
 
 sys.path.insert(0, os.path.join(
     os.path.dirname(os.path.abspath(__file__)), '../nml-utils/generateNML'))
@@ -26,6 +29,25 @@ start_year: START_YEAR
 end_year: END_YEAR
 variable: tas
 """
+
+runscript = """#!/bin/bash
+#SBATCH -J {{ jobid }}
+#SBATCH -p prepost
+#SBATCH -N 1
+#SBATCH -n 1
+#SBATCH --mem-per-cpu 1280
+#SBATCH -t 100
+#SBATCH -A bd0854
+#SBATCH -o {{ jobid }}.o
+#SBATCH -e {{ jobid }}.e
+
+module load bb/evt
+
+python main.py namelist.xml
+
+"""
+
+t_runscript = Template(runscript)
 
 class CMIP6Dataset(yaml.YAMLObject):
     yaml_tag = u'!CMIP6Dataset'
@@ -53,9 +75,17 @@ class CMIP6Dataset(yaml.YAMLObject):
 
 
 h = yaml.load_all(yfile)
+lfd = 0
+user = os.getenv('USER')
 for d in h:
-    tmpbase = tempfile.mkdtemp()
+    lfd += 1
+    tmpbase = tempfile.mkdtemp(dir='/scratch/b/{0}/rEval'.format(user)) # Needs to be mounted on compute nodes
     tmpdir = os.path.join(tmpbase, 'ESMValTool')
     shutil.copytree(evtRoot, tmpdir, symlinks=False, ignore=shutil.ignore_patterns('.git', '.git*'))
     with open(os.path.join(tmpdir,'namelist.xml'), 'w') as f:
         f.write(get_namelist(**d.get_dict()))
+    s_runscript = os.path.join(tmpdir,'runscript')
+    with open(s_runscript, 'w') as f:
+        f.write(t_runscript.render(jobid="rEval{0}".format(str(lfd).zfill(3))) )
+    print(tmpdir)
+    subprocess.Popen('sbatch runscript', cwd=tmpdir, shell=True)
