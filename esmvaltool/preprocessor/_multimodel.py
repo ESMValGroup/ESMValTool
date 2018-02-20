@@ -6,6 +6,16 @@ computations; the only requisite is the ingested
 cubes have (TIME-LAT-LON) or (TIME-PLEV-LAT-LON)
 dimensions; and obviously consistent units.
 
+It operates on different (time) spans:
+- full: computes stats on full model time;
+- overlap: computes common time overlap between models;
+- constant: assumes all models have same start, end times;
+
+NOTE: overlap is memory-intensive! Overlap slices each cube
+on t1,t2 that are the time intersection between models; the
+iris slicer takes a LOT of memory;
+ideally get all models with same start, end times to use
+span: constant
 """
 
 import logging
@@ -32,99 +42,118 @@ def _plev_fix(dataset, pl_idx):
     """
     if np.ma.is_masked(dataset) is True:
         # keep only the valid plevs
-        if not np.all(dataset.mask[:, pl_idx]):
-            statj = np.ma.array(dataset[:, pl_idx],
-                                mask=dataset.mask[:, pl_idx])
+        if not np.all(dataset.mask[pl_idx]):
+            statj = np.ma.array(dataset[pl_idx],
+                                mask=dataset.mask[pl_idx])
         else:
             logger.debug('All vals in plev are masked, ignoring.')
             statj = None
     else:
-        mask = np.zeros_like(dataset[:, pl_idx], bool)
-        statj = np.ma.array(dataset[:, pl_idx], mask=mask)
+        mask = np.zeros_like(dataset[pl_idx], bool)
+        statj = np.ma.array(dataset[pl_idx], mask=mask)
     return statj
 
 
-def _compute_means(cubes):
+def _compute_means(datas):
     """Compute multimodel means"""
     # plevs
-    if len(cubes[0].data.shape) == 4:
-        statistic = np.ma.zeros(cubes[0].shape)
-        for j in range(statistic.shape[1]):
-            stat_j = []
-            for cube in cubes:
-                if _plev_fix(cube.data, j) is not None:
-                    stat_j.append(_plev_fix(cube.data, j))
+    if len(datas[0].shape) == 3:
+        statistic = datas[0]
+        for j in range(statistic.shape[0]):
+            len_stat_j = sum(1 for _ in
+                             (_plev_fix(cdata, j)
+                              for cdata in datas
+                              if _plev_fix(cdata, j) is not None))
+            stat_all = np.ma.zeros((len_stat_j,
+                                    statistic.shape[1],
+                                    statistic.shape[2]))
+            for i, e_l in enumerate((
+                    _plev_fix(cdata, j)
+                    for cdata in datas
+                    if _plev_fix(cdata, j) is not None)):
+                stat_all[i] = e_l
 
             # check for nr models
-            if len(stat_j) >= 2:
-                stat_j = np.ma.array(stat_j)
-                statistic[:, j] = np.ma.mean(stat_j, axis=0)
+            if len_stat_j >= 2:
+                statistic[j] = np.ma.mean(stat_all, axis=0)
             else:
-                mask = np.ones(statistic[:, j].shape, bool)
-                statistic[:, j] = np.ma.array(statistic[:, j],
-                                              mask=mask)
+                mask = np.ones(statistic[j].shape, bool)
+                statistic[j] = np.ma.array(statistic[j],
+                                           mask=mask)
     # no plevs
     else:
-        datas = [c.data for c in cubes]
         statistic = np.ma.mean(datas, axis=0)
 
     return statistic
 
 
-def _compute_medians(cubes):
+def _compute_medians(datas):
     """Compute multimodel medians"""
     # plevs
-    if len(cubes[0].data.shape) == 4:
-        statistic = np.ma.zeros(cubes[0].shape)
-        for j in range(statistic.shape[1]):
-            stat_j = []
-            for cube in cubes:
-                if _plev_fix(cube.data, j) is not None:
-                    stat_j.append(_plev_fix(cube.data, j))
+    if len(datas[0].shape) == 3:
+        statistic = datas[0]
+        for j in range(statistic.shape[0]):
+            len_stat_j = sum(1 for _ in
+                             (_plev_fix(cdata, j)
+                              for cdata in datas
+                              if _plev_fix(cdata, j) is not None))
+            stat_all = np.ma.zeros((len_stat_j,
+                                    statistic.shape[1],
+                                    statistic.shape[2]))
+            for i, e_l in enumerate((
+                    _plev_fix(cdata, j)
+                    for cdata in datas
+                    if _plev_fix(cdata, j) is not None)):
+                stat_all[i] = e_l
 
             # check for nr models
-            if len(stat_j) >= 2:
-                stat_j = np.ma.array(stat_j)
-                statistic[:, j] = np.ma.median(stat_j,
-                                               axis=0,
-                                               overwrite_input=True)
+            if len_stat_j >= 2:
+                statistic[j] = np.ma.median(stat_all, axis=0)
             else:
-                mask = np.ones(statistic[:, j].shape, bool)
-                statistic[:, j] = np.ma.array(statistic[:, j],
-                                              mask=mask)
+                mask = np.ones(statistic[j].shape, bool)
+                statistic[j] = np.ma.array(statistic[j],
+                                           mask=mask)
     # no plevs
     else:
-        datas = [c.data for c in cubes]
         datas = np.ma.array(datas)
         statistic = np.ma.median(datas, axis=0)
 
     return statistic
 
 
-def _put_in_cube(cubes, stats_name, ncfiles, fname):
+def _call_to_compute(cubelist, stats_name):
+    """Make the actual call to compute stats"""
+    for i in range(cubelist[0].data.shape[0]):
+        tdatas = [cube.data[i] for cube in cubelist]
+    if stats_name == 'means':
+        dspec_i = _compute_means(tdatas)
+    elif stats_name == 'medians':
+        dspec_i = _compute_medians(tdatas)
+
+    return dspec_i
+
+
+def _put_in_cube(cube0, dspec, ncfiles, sname, fname):
     """Quick cube building and saving"""
     # grab coordinates from any cube
-    times = cubes[0].coord('time')
-    lats = cubes[0].coord('latitude')
-    lons = cubes[0].coord('longitude')
-    if len(cubes[0].shape) == 3:
+    times = cube0.coord('time')
+    lats = cube0.coord('latitude')
+    lons = cube0.coord('longitude')
+    if len(cube0.shape) == 3:
         cspec = [(times, 0), (lats, 1), (lons, 2)]
-    elif len(cubes[0].shape) == 4:
-        plev = cubes[0].coord('air_pressure')
+    elif len(cube0.shape) == 4:
+        plev = cube0.coord('air_pressure')
         cspec = [(times, 0), (plev, 1), (lats, 2), (lons, 3)]
-    # compute stats and put in cube
-    if stats_name == 'means':
-        dspec = _compute_means(cubes)
-    elif stats_name == 'medians':
-        dspec = _compute_medians(cubes)
+    # correct dspec if necessary
     fixed_dspec = np.ma.fix_invalid(dspec, copy=False, fill_value=1e+20)
+    # put in cube
     stats_cube = iris.cube.Cube(fixed_dspec,
                                 dim_coords_and_dims=cspec,
-                                long_name=stats_name)
-    coord_names = [coord.name() for coord in cubes[0].coords()]
+                                long_name=sname)
+    coord_names = [coord.name() for coord in cube0.coords()]
     if 'air_pressure' in coord_names:
-        if len(cubes[0].shape) == 3:
-            stats_cube.add_aux_coord(cubes[0].coord('air_pressure'))
+        if len(cube0.shape) == 3:
+            stats_cube.add_aux_coord(cube0.coord('air_pressure'))
     stats_cube.attributes['_filename'] = fname
     stats_cube.attributes['NCfiles'] = str(ncfiles)
     return stats_cube
@@ -235,6 +264,7 @@ def _build_new_cube(ndat, cube, fineshape, t_0):
     elif len(fineshape) == 4:
         plc = cube.coord('air_pressure')
         cspec = [(t_s, 0), (plc, 1), (lats, 2), (lons, 3)]
+
     # build cube
     ncube = iris.cube.Cube(ndat, dim_coords_and_dims=cspec)
     coord_names = [coord.name() for coord in cube.coords()]
@@ -244,6 +274,22 @@ def _build_new_cube(ndat, cube, fineshape, t_0):
     ncube.attributes = cube.attributes
 
     return ncube
+
+
+def _apply_overlap(cube, tx1, tx2):
+    """
+    Slice cubes
+
+    This operation is memory-intensive;
+    do it ONLY IF you need to do it;
+    otherwise use span == constant.
+    """
+    logger.debug("Bounds: %s and %s", str(tx1), str(tx2))
+    # slice cube on time
+    with iris.FUTURE.context(cell_datetime_objects=True):
+        cube = _slice_cube(cube, tx1, tx2)
+
+    return cube
 
 
 def multi_model_mean(cubes, span, filename, exclude):
@@ -269,36 +315,82 @@ def multi_model_mean(cubes, span, filename, exclude):
         # add file name info
         file_names = [
             os.path.basename(cube.attributes.get('_filename'))
-            for cube in cubes
+            for cube in selection
         ]
 
-        # look at overlap type
+        # cases
         if span == 'overlap':
-            tmeans = []
+            logger.debug("Using common time overlap between "
+                         "models to compute statistics.")
             tx1, tx2 = _get_overlap(selection)
-            for cube in selection:
-                logger.debug("Using common time overlap between "
-                             "models to compute statistics.")
-                logger.debug("Bounds: %s and %s", str(tx1), str(tx2))
-                # slice cube on time
-                with iris.FUTURE.context(cell_datetime_objects=True):
-                    cube = _slice_cube(cube, tx1, tx2)
 
-                # record data
-                tmeans.append(cube)
+            # assemble data
+            slices = [_apply_overlap(cube, tx1, tx2)
+                      for cube in selection]
+            mean_dats = np.ma.zeros(slices[0].data.shape)
+            med_dats = np.ma.zeros(slices[0].data.shape)
+
+            for i in range(slices[0].data.shape[0]):
+                mean_dats[i] = _call_to_compute(slices, 'means')
+                med_dats[i] = _call_to_compute(slices, 'medians')
+            c_mean = _put_in_cube(slices[0],
+                                  mean_dats,
+                                  file_names,
+                                  'means',
+                                  filename)
+            c_med = _put_in_cube(slices[0],
+                                 med_dats,
+                                 file_names,
+                                 'medians',
+                                 filename)
+            save_cubes([c_mean, c_med])
+
+        elif span == 'constant':
+            logger.debug("Cubes have common time "
+                         "boundaries; no time chopping to do.")
+            mean_dats = np.ma.zeros(selection[0].data.shape)
+            med_dats = np.ma.zeros(selection[0].data.shape)
+
+            for i in range(selection[0].data.shape[0]):
+                mean_dats[i] = _call_to_compute(selection, 'means')
+                med_dats[i] = _call_to_compute(selection, 'medians')
+            c_mean = _put_in_cube(selection[0],
+                                  mean_dats,
+                                  file_names,
+                                  'means',
+                                  filename)
+            c_med = _put_in_cube(selection[0],
+                                 med_dats,
+                                 file_names,
+                                 'medians',
+                                 filename)
+            save_cubes([c_mean, c_med])
 
         elif span == 'full':
             logger.debug("Using full time spans "
                          "to compute statistics.")
-            tmeans = _full_time(selection)
+            # assemble data
+            slices = _full_time(selection)
+            mean_dats = np.ma.zeros(slices[0].data.shape)
+            med_dats = np.ma.zeros(slices[0].data.shape)
 
+            for i in range(slices[0].data.shape[0]):
+                mean_dats[i] = _call_to_compute(slices, 'means')
+                med_dats[i] = _call_to_compute(slices, 'medians')
+            c_mean = _put_in_cube(slices[0],
+                                  mean_dats,
+                                  file_names,
+                                  'means',
+                                  filename)
+            c_med = _put_in_cube(slices[0],
+                                 med_dats,
+                                 file_names,
+                                 'medians',
+                                 filename)
+            save_cubes([c_mean, c_med])
         else:
             logger.debug("No type of time overlap specified "
                          "- will not compute cubes statistics")
             return cubes
-
-    c_mean = _put_in_cube(tmeans, 'means', file_names, filename)
-    c_med = _put_in_cube(tmeans, 'medians', file_names, filename)
-    save_cubes([c_mean, c_med])
 
     return cubes
