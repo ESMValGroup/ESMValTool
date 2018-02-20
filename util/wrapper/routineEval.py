@@ -1,11 +1,15 @@
 import yaml
 import os
 import sys
+import tempfile
+import shutil
 
 sys.path.insert(0, os.path.join(
     os.path.dirname(os.path.abspath(__file__)), '../nml-utils/generateNML'))
 
 from generateNML import get_namelist
+
+evtRoot = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../..')
 
 
 yfile="""
@@ -50,6 +54,8 @@ class CMIP6Dataset(yaml.YAMLObject):
 
 h = yaml.load_all(yfile)
 for d in h:
-    print(d)
-    print(d.get_dict())
-    print(get_namelist(**d.get_dict()))
+    tmpbase = tempfile.mkdtemp()
+    tmpdir = os.path.join(tmpbase, 'ESMValTool')
+    shutil.copytree(evtRoot, tmpdir, symlinks=False, ignore=shutil.ignore_patterns('.git', '.git*'))
+    with open(os.path.join(tmpdir,'namelist.xml'), 'w') as f:
+        f.write(get_namelist(**d.get_dict()))
