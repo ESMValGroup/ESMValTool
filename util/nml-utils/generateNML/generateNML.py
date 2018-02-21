@@ -104,6 +104,7 @@ def get_namelist(**kwargs):
     d['tas'] = {'ft':'T2Ms'}
     d['ta'] =  {'ft':'T3M'}
     d['uas'] =  {'ft':'T2Ms'}
+    d['prw'] =  {'ft':'T2M'}
 
     tt_nml = Template(t_nml)
     if 'variable' in kwargs.keys():

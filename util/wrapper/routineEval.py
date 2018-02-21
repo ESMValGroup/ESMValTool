@@ -20,7 +20,7 @@ runscript = """#!/bin/bash
 #SBATCH -J {{ jobid }}
 #SBATCH -p prepost
 #SBATCH -N 1
-#SBATCH -n 1
+#SBATCH -n 8
 #SBATCH --mem-per-cpu 1280
 #SBATCH -t 100
 #SBATCH -A bd0854
@@ -61,18 +61,18 @@ class CMIP6Dataset(yaml.YAMLObject):
 
 def examplefile():
     e = """--- !CMIP6Dataset
-project: PROJECT
-name: NAME
-product: PRODUCT
-institute: INSTITUTE
-model: MODEL
-experiment: EXPERIMENT
+project: ESGF_CMIP6
+name: HadGEM3-GC31-LL
+product: ScenarioMIP
+institute: MOHC
+model: HadGEM3-GC31-LL
+experiment: ssp245
 mip: Amon
-ensemble: ENSEMBLE
-grid: GRID
-start_year: START_YEAR
-end_year: END_YEAR
-variable: tas """
+ensemble: r1i1p1f1
+grid: gn
+start_year: 1990
+end_year: 1992
+variable: prw """
     return e
 
 def process(yfile=examplefile(), verbose=True):
