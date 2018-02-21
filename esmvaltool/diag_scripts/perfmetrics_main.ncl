@@ -938,18 +938,18 @@ begin
             do imod = 0, dim_MOD - 1
                 outfile = output_dir + \
                     modelnames(imod) + "_" + var0 + "_" + ptype + "_" + \
-                    time_avg + "_" + level + region_name
+                    time_avg + "_" + region_name
                 var = var_all(imod, :, :, 0)
                 var@projection = diag_script_info@projection
                 var@res_cnLinesOn = False
                 var@res_cnLevelSelectionMode = "ExplicitLevels"
                 var@res_tiMainString = modelnames(imod)
-                var@res_cnLevels = variable_info@map_ref_Levels
+                var@res_cnLevels = diag_script_info@abs_levs
                 var@res_gsnLeftString = var@long_name + " [" + \
                     format_units(var@units) + "]"
 
                 ;; Append global field average
-                if (variable_info@show_global_avg) then
+                if (diag_script_info@show_global_avg) then
                     gavg = area_operations(var, -90., 90., 0., 360., \
                                            "average", True)
                     var@res_gsnRightString = \
@@ -976,8 +976,7 @@ begin
                 var = var_diff(imod, :, :)
                 outfile = output_dir + \
                     modelnames(imod) + "-" + modelnames(ref_ind) + "_" + \
-                    var0 + "_" + ptype + "_" + time_avg + "_" + level + \
-                    region_name
+                    var0 + "_" + ptype + "_" + time_avg + "_" + region_name
                 var@res_tiMainString = modelnames(imod) + " - " + \
                     modelnames(ref_ind)
                 if (isatt(diag_script_info, "conf_level")) then
@@ -986,13 +985,13 @@ begin
                     + "% c.l."
                 end if
                 var@res_cnLevelSelectionMode = "ExplicitLevels"
-                var@res_cnLevels = variable_info@map_diff_Levels
+                var@res_cnLevels = diag_script_info@diff_levs
                 var@res_cnMissingValFillColor = "gray70"
                 var@res_gsnSpreadColorEnd = -2
                 var@projection = diag_script_info@projection
 
                 ;; Append global field averag
-                if (variable_info@show_global_avg) then
+                if (diag_script_info@show_global_avg) then
                     gavg = area_operations(var, -90., 90., 0., 360., \
                                            "average", True)
                     var@res_gsnRightString = \
