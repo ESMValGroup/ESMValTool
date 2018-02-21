@@ -1,6 +1,6 @@
 """
 Call like:
-python util/nml-utils/generateNML/generateNML.py --project PROJECT --name NAME --product PRODUCT --institute INSTITUTE --model MODEL --experiment EXPERIMENT --mip MIP --ensemble ENSEMBLE --start_year START_YEAR --end_year END_YEAR --variable VARIABLE
+python util/nml-utils/generateNML/generateNML.py --project PROJECT --name NAME --product PRODUCT --institute INSTITUTE --model MODEL --experiment EXPERIMENT --mip MIP --ensemble ENSEMBLE --grid GRID --start_year START_YEAR --end_year END_YEAR --variable VARIABLE
 
 """
 from jinja2 import Template
@@ -103,6 +103,7 @@ def get_namelist(**kwargs):
     d = dict()
     d['tas'] = {'ft':'T2Ms'}
     d['ta'] =  {'ft':'T3M'}
+    d['uas'] =  {'ft':'T2Ms'}
 
     tt_nml = Template(t_nml)
     if 'variable' in kwargs.keys():
@@ -121,6 +122,7 @@ def main():
     parser.add_argument('--experiment', dest='experiment')
     parser.add_argument('--mip', dest='mip')
     parser.add_argument('--ensemble', dest='ensemble')
+    parser.add_argument('--grid', dest='grid')
     parser.add_argument('--start_year', dest='start_year')
     parser.add_argument('--end_year', dest='end_year')
     parser.add_argument('--variable', dest='variable')

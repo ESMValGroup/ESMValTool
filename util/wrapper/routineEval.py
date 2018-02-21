@@ -69,6 +69,7 @@ model: MODEL
 experiment: EXPERIMENT
 mip: Amon
 ensemble: ENSEMBLE
+grid: GRID
 start_year: START_YEAR
 end_year: END_YEAR
 variable: tas """
