@@ -11,11 +11,10 @@ It operates on different (time) spans:
 - overlap: computes common time overlap between models;
 - constant: assumes all models have same start, end times;
 
-NOTE: overlap is memory-intensive! Overlap slices each cube
-on t1,t2 that are the time intersection between models; the
-iris slicer takes a LOT of memory;
-ideally get all models with same start, end times to use
-span: constant
+NOTE: both 'constant' and 'overlap' should do the same
+thing when all models have same start, end time; however
+'constant' does not check time consistencies and assumes
+same start, end times as God-given; be aware 
 """
 
 import logging
@@ -203,6 +202,23 @@ def _slice_cube(cube, min_t, max_t):
     return cube_slice
 
 
+def _slice_cube2(cube, t_1, t_2):
+    """
+    Efficient slicer
+
+    Slice cube on time more memory-efficiently than
+    _slice_cube(); using this function adds virtually
+    no extra memory to the process
+    """
+    utype = str(cube.coord('time').units)
+    time_pts = [j for j in cube.coord('time').points]
+    idxs = sorted([time_pts.index(ii)
+                   for ii in time_pts
+                   if t_1 <= _sdat(ii, utype) <= t_2])
+    cube_t_slice = cube.data[idxs[0]:idxs[-1] + 1]
+    return cube_t_slice
+
+
 def _monthly_t(cubes):
     """Rearrange time points for monthly data"""
     # get original cubes tpoints
@@ -323,21 +339,28 @@ def multi_model_mean(cubes, span, filename, exclude):
                          "models to compute statistics.")
 
             # assemble data
-            slices = [_apply_overlap(cube, ovlp[0], ovlp[1])
-                      for cube in selection]
-            mean_dats = np.ma.zeros(slices[0].data.shape)
-            med_dats = np.ma.zeros(slices[0].data.shape)
+            mean_dats = np.ma.zeros(_slice_cube2(selection[0],
+                                                 ovlp[0],
+                                                 ovlp[1]).shape)
+            med_dats = np.ma.zeros(_slice_cube2(selection[0],
+                                                ovlp[0],
+                                                ovlp[1]).shape)
 
-            for i in range(slices[0].data.shape[0]):
-                time_data = [cube.data[i] for cube in slices]
+            for i in range(mean_dats.shape[0]):
+                time_data = [_slice_cube2(cube, ovlp[0], ovlp[1])[i]
+                             for cube in selection]
                 mean_dats[i] = _call_to_compute(time_data, 'means')
                 med_dats[i] = _call_to_compute(time_data, 'medians')
-            c_mean = _put_in_cube(slices[0],
+            c_mean = _put_in_cube(_apply_overlap(selection[0],
+                                                 ovlp[0],
+                                                 ovlp[1]),
                                   mean_dats,
                                   file_names,
                                   'means',
                                   filename)
-            c_med = _put_in_cube(slices[0],
+            c_med = _put_in_cube(_apply_overlap(selection[0],
+                                                ovlp[0],
+                                                ovlp[1]),
                                  med_dats,
                                  file_names,
                                  'medians',
