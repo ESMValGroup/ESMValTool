@@ -14,7 +14,7 @@ It operates on different (time) spans:
 NOTE: both 'constant' and 'overlap' should do the same
 thing when all models have same start, end time; however
 'constant' does not check time consistencies and assumes
-same start, end times as God-given; be aware 
+same start, end times as God-given; be aware
 """
 
 import logging
