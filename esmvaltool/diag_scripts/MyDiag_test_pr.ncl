@@ -44,22 +44,11 @@
 ;#                                                                            #
 ;##############################################################################
 
-;#####################################
-;# load external NCL code, if needed #
-;#####################################
-;load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
-;load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
-
-; Load diag_script_info
 load "interface_scripts/interface.ncl"
-
-; Auxiliary NCL routines
-load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/data_handling.ncl"
-load "./interface_scripts/logging.ncl"
 
 load "./diag_scripts/lib/ncl/style.ncl"
 load "./diag_scripts/lib/ncl/statistics.ncl"
+
 load "./plot_scripts/ncl/contour_maps.ncl"
 
 begin
@@ -77,7 +66,7 @@ begin
 
     ;; 'models', 'variables' and 'field_types' are fetched from the
     ;; above 'ncl.interface' file
-    dim_MOD = dimsizes(models@name)
+    dim_MOD = dimsizes(model_info@model)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     field_type0 = field_types(0)
@@ -92,9 +81,6 @@ begin
                      "",          \  ; obs_references
                      (/"P_dlrveu", "P_esmval"/))   ; proj_references
 
-    do idx_mod = 0, dim_MOD - 1
-        data = read_data(idx_mod, var0, field_type0)
-    end do
 end
 
 begin
@@ -118,11 +104,10 @@ begin
     ;;###########################################
     ;; get data from first model
     imod = 0  ; NCL array indicies start from zero
-    log_debug("processing " + models@name(imod) + "_"\
-                              + models@ensemble(imod))
+    log_debug("processing " + model_info@model(imod))
 
     ;; See ./interface_scripts/data_handling.ncl
-    A0 = extract_data(imod, data, -1, 0, 0)
+    A0 = read_data(imod, var0, field_type0)
 
     ;; Check dimensions
     dims = getvardims(A0)

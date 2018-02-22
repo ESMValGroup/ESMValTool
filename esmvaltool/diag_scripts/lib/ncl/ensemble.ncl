@@ -52,9 +52,9 @@ begin
                   "contain the range_option attribute")
     end if
     if (diag_script_info@range_option.eq.0) then
-        start_year = toint(models@start_year(model_index))
+        start_year = toint(model_info@start_year(model_index))
     else if (diag_script_info@range_option.eq.1) then
-        start_year = max(toint(models@start_year))
+        start_year = max(toint(model_info@start_year))
     else
         error_msg("f", "ensemble.ncl", funcname, "range_option not " + \
                   "properly set, must be either 0 or 1")
@@ -100,9 +100,9 @@ begin
                   "contain the range_option attribute")
     end if
     if (diag_script_info@range_option.eq.0) then
-        end_year = toint(models@end_year(model_index))
+        end_year = toint(model_info@end_year(model_index))
     else if (diag_script_info@range_option.eq.1) then
-        end_year = min(toint(models@end_year))
+        end_year = min(toint(model_info@end_year))
     else
         error_msg("f", "ensemble.ncl", funcname, "range_option not " + \
                   "properly set, must be either 0 or 1")
@@ -141,7 +141,7 @@ function multi_model_stats(idx[*]:integer,
 ;; Return value
 ;;    A field with target grid spatial dimensions (lat, lon) or
 ;;    (plev, lat, lon), time coordinate, models coordinate.
-;;    The "models" coordinate contains the strings from models@name and
+;;    The "models" coordinate contains the strings from model_info@model and
 ;;    statistics.
 ;;    Covers the overlapping time period of all models only.
 ;;
@@ -193,8 +193,8 @@ begin
     end if
 
     ;; determine overlapping time period
-    start_year = max(toint(models@start_year))
-    end_year = min(toint(models@end_year))
+    start_year = max(toint(model_info@start_year))
+    end_year = min(toint(model_info@end_year))
     log_info("overlapping time period: " + tostring(start_year) + \
                 " - " + tostring(end_year))
 
@@ -206,7 +206,7 @@ begin
 
     ;; loop over mmm models
     do i = 0, dimsizes(idx) - 1
-        model = models@name(idx(i))
+        model = model_info@model(idx(i))
 
         ;; extract full data
         var_tmp = extract_data(i, data_mmm, -1, 0, 0)
@@ -249,17 +249,17 @@ begin
             stats = (/"model_mean", "stddev"/)
             nstats = dimsizes(stats)
             var_grd&models = array_append_record(stats, \
-                                                 models@name(idx), 0)
+                                                 model_info@model(idx), 0)
 
             ;; select return fields
             tmp = new(dimsizes(var_grd&models), integer)
-            if(inlist("model_mean", statistics)) then
+            if(any("model_mean" .eq. statistics)) then
                 tmp(0) = 1
             end if
-            if(inlist("stddev", statistics)) then
+            if(any("stddev" .eq. statistics)) then
                 tmp(1) = 1
             end if
-            if(inlist("model_grd", statistics)) then
+            if(any("model_grd" .eq.  statistics)) then
                 tmp(nstats:) = 1
             end if
             ireturn = ind(tmp.eq.1)  ; selected indices of models coordinate

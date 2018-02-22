@@ -389,7 +389,7 @@ begin
     scriptname = "plot_scripts/ncl/aux_plotting.ncl"
     enter_msg(scriptname, funcname)
 
-    plot_dir = config_user_info@plot_dir + "/"
+    plot_dir = config_user_info@plot_dir
     if(ismissing(plot_dir)) then
         plot_dir = "./plots/"
     end if

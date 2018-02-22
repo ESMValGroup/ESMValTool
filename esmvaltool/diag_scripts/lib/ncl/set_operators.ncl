@@ -8,7 +8,6 @@
 ;;    function UNIQ
 ;;    function union
 ;;    function set_inclusive_OR
-;;    function inlist
 ;;    function intersection
 ;;    function is_array_subset
 ;;    function relative_complement
@@ -135,46 +134,6 @@ begin
 
     leave_msg(scriptname, funcname)
     return(keep_set)
-
-end
-
-;;#############################################################################
-undef("inlist")
-function inlist(item[1]:string,
-                alloweditems[*]:string)
-;;
-;; Arguments
-;;    item:  string to check for in list.
-;;    alloweditems: list with strings to compare with.
-;;
-;; Return value
-;;    A logical: True if "item" is present in "alloweditems", false otherwise.
-;;
-;; Description
-;;    Checks for an intem in a list and returns True (False) if it is present
-;;    (missing)
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;
-local funcname, scriptname, item_indicies
-begin
-
-    funcname = "inlist"
-    scriptname = "diag_scripts/lib/ncl/set_operators.ncl"
-    enter_msg(scriptname, funcname)
-
-    item_indicies = ind(item .eq. alloweditems)
-
-    leave_msg(scriptname, funcname)
-    if(all(ismissing(item_indicies))) then
-        return(False)
-    else
-        return(True)
-    end if
 
 end
 

@@ -16,8 +16,6 @@
 ;;
 ;;#############################################################################
 
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/shea_util.ncl"
-
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/logging.ncl"
 
@@ -95,7 +93,7 @@ begin
 
     ;; Retrieve some metadata from data
     defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
-    if(inlist(varname, defaults)) then  ; Use default
+    if(any(varname .eq. defaults)) then  ; Use default
         var = att2var(data, "var")      ; interface_scripts/auxiliary.ncl
     else                                ; Use explicitely given name
         var = varname
@@ -136,7 +134,7 @@ begin
     ;; determine handling of legend
     legend = att2var(data, "legend")  ; mode for legend: inline/separate/none
     valid_legends = (/"inline", "separate"/)
-    if(inlist(legend, valid_legends)) then
+    if(any(legend .eq. valid_legends)) then
         if(.not. iscoord(data, "models")) then
             log_debug("warning: No 'models' coordinate found.")
             log_debug("warning:  -> No legend in profile_plev")
@@ -562,7 +560,7 @@ begin
 
     ;; Retrieve basic metadata from data
     defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
-    if (inlist(varname, defaults)) then
+    if (any(varname .eq. defaults)) then
         var = att2var(model, "var")
     else
         var = varname
@@ -1081,7 +1079,7 @@ begin
 
     ;; Retrieve basic metadata from data
     defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
-    if (inlist(varname, defaults)) then
+    if (any(varname .eq. defaults)) then
         var = att2var(model, "var")
     else
         var = varname
@@ -1669,11 +1667,11 @@ begin
         diag_script_info@EMs_in_lg = True  ; Set default
     end if
     if (.not.diag_script_info@EMs_in_lg) then
-        idcs_modelnames = UNIQ(models@name)
+        idcs_modelnames = UNIQ(model_info@model)
         colors := colors(idcs_modelnames)
         dashes := dashes(idcs_modelnames)
         thicks := thicks(idcs_modelnames)
-        annots := models@name(idcs_modelnames)
+        annots := model_info@model(idcs_modelnames)
     end if
     if (diag_script_info@multi_model_mean .eq. "y") then
         lgres@lgLineColors      = array_append_record(colors, colors_mmm, 0)
@@ -1849,7 +1847,7 @@ begin
 
     ;; Retrieve basic metadata from data
     defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
-    if(inlist(varname, defaults)) then
+    if(any(varname .eq. defaults)) then
         var = att2var(data, "var")
     else
         var = varname
@@ -2010,7 +2008,7 @@ begin
 
     ;; Retrieve basic metadata from data
     defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
-    if(inlist(varname, defaults)) then
+    if(any(varname .eq. defaults)) then
         var = att2var(data, "var")
         diag_script = att2var(data, "diag_script")
     else
@@ -2223,7 +2221,7 @@ begin
 
     ;; Retrieve basic metadata from data
     defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
-    if(inlist(varname, defaults)) then
+    if(any(varname .eq. defaults)) then
         var = att2var(data, "var")
         diag_script = att2var(data, "diag_script")
     else

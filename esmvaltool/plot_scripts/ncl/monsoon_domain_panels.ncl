@@ -10,14 +10,6 @@
 ;;
 ;;#############################################################################
 
-
-
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/shea_util.ncl"
-
-
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/data_handling.ncl"
 load "./interface_scripts/logging.ncl"
@@ -313,7 +305,7 @@ begin
     scriptname = "plot_script/ncl/monsoon_domain_panels.ncl"
     enter_msg(scriptname, funcname)
 
-    dim_MOD = dimsizes(models@name)
+    dim_MOD = dimsizes(model_info@model)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     field_type0 = field_types(0)
@@ -326,7 +318,7 @@ begin
     ;; Output dir
     ;; 'plot_dir' is fetched from ncl.interface
     diag_script_base = basename(diag_script)
-    output_dir = get_output_dir(plot_dir, diag_script_base)
+    output_dir = config_user_info@plot_dir
 
     res@tiMainFontHeightF = 0.011
 
@@ -357,7 +349,7 @@ begin
 
     ;; Which model goes where on each page?
     figure_panel_placement = new((/sum(figures_per_page)/), integer)
-    place_models_on_pages(models,\
+    place_models_on_pages(model_info,\
                           plot_settings@idx_ref,\
                           figures_per_page,\
                           model_panel_placement,\

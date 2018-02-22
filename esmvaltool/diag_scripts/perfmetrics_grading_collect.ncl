@@ -42,12 +42,7 @@
 ;;
 ;;#############################################################################
 
-; Load diag_script_info
 load "interface_scripts/interface.ncl"
-
-load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/data_handling.ncl"
-load "./interface_scripts/logging.ncl"
 
 load "./diag_scripts/lib/ncl/style.ncl"
 
@@ -223,7 +218,7 @@ begin
     ;; Plot
     if (config_user_info@write_plots.eq.True) then
         ;; Create outfile directory
-        plot_dir = config_user_info@plot_dir + "/"
+        plot_dir = config_user_info@plot_dir
         system("mkdir -p " + plot_dir)
         if(dimsizes(data_all&diagnostics).gt.2) then
             diags = data_all&diagnostics(0) + "_to_" + \

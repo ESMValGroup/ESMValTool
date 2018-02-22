@@ -73,7 +73,7 @@ begin
 
     ;; Retrieve basic metadata from data
     defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
-    if (inlist(varname, defaults)) then
+    if (any(varname .eq.  defaults)) then
         grade = att2var(data, "var")
         diag_script = att2var(data, "diag_script")
     else

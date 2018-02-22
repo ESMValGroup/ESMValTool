@@ -914,9 +914,9 @@ begin
     if (l_vert) then
         vert_coord = recog_vert_coords(ind(iscoord(xx, recog_vert_coords)))
         levels = xx&$vert_coord$
-        if(inlist(levels@units, recog_units) .or. \
-           inlist(levels@long_name, recog_press) .or. \
-           inlist(levels@standard_name, recog_press)) then
+        if(any(levels@units .eq. recog_units) .or. \
+           any(levels@long_name .eq. recog_press) .or. \
+           any(levels@standard_name .eq. recog_press)) then
             l_press = False
             log_info("reformat_EMAC_func: data are already on pressure " + \
                         "levels")
