@@ -30,6 +30,7 @@ class ESGFConfig(object):
                         'CMCC',
                         'DKRZ',
                         'DKRZ_CMIP5',
+                        'DKRZ_CMIP6',
                         'NOAA-ESRL',
                         'NOAA-GFDL',
                         'IPSL',
@@ -72,7 +73,7 @@ class ESGFConfig(object):
             # If node name invalid, raise error
             msg = "Node '%s' (converted to upper case " % node_name +\
                   "as '%s') is not valid. " % node_name_U +\
-                  "Valid node names are %s. " % self.valid_nodes_names +\
+                  "Valid node names are %s. " % self.valid_node_names +\
                   "Valid null values for node name are %s" % self.valid_nulls
             raise ESGFConfigException(msg)
         else:
@@ -189,6 +190,7 @@ class ESGFNodeConfig(object):
                           # 'time_frequency',
                           'realm',
                           'mip',
+                          'grid',
                           # 'cmor_table',
                           'ensemble',
                           'version',
