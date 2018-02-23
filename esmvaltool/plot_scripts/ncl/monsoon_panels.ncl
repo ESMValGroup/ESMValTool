@@ -20,18 +20,13 @@
 ;;    procedure seasonal_plot
 ;;    procedure xy_plot_wrapper
 ;;    procedure ts_line_wrapper
+;;    procedure xy_line_overlap
 ;;
 ;;#############################################################################
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/shea_util.ncl"
-
-
 
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/data_handling.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 
 begin
     loadscript(exact_panel_position_file)
@@ -44,6 +39,7 @@ load "./diag_scripts/lib/ncl/style.ncl"
 
 load "./plot_scripts/ncl/xy_line.ncl"
 
+;;#############################################################################
 undef("get_title_suffix")
 function get_title_suffix(plot_settings [1] : logical)
 ;;
@@ -64,19 +60,25 @@ function get_title_suffix(plot_settings [1] : logical)
 ;; Modification history
 ;;    20150702-A_eval_ma: written.
 ;;
-local verbosity, main_title_suffix
+local main_title_suffix
 begin
-    verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering get_title_suffix", verbosity, 8)
+
+    funcname = "get_title_suffix"
+    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    enter_msg(scriptname, funcname)
+
     if (isatt(plot_settings, "main_title_suffix")) then
         main_title_suffix = plot_settings@main_title_suffix
     else
         main_title_suffix = ""
     end if
-    return main_title_suffix
-    info_output(">>>>>>>> Leaving get_title_suffix", verbosity, 8)
+
+    leave_msg(scriptname, funcname)
+    return(main_title_suffix)
+
 end
 
+;;#############################################################################
 undef("remove_attrs")
 procedure remove_attrs(p_settings [1]:logical,
                       attributes [*]:string)
@@ -99,13 +101,22 @@ procedure remove_attrs(p_settings [1]:logical,
 ;;
 local idx, settings
 begin
+
+    funcname = "remove_attrs"
+    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    enter_msg(scriptname, funcname)
+
     do idx = 0, dimsizes(attributes) - 1
         if (isatt(p_settings, attributes(idx))) then
             delete(p_settings@$attributes(idx)$)
         end if
     end do
+
+    leave_msg(scriptname, funcname)
+
 end
 
+;;#############################################################################
 undef("plot_two_by_one")
 procedure plot_two_by_one(wks [1]:graphic,
                           res [1]:logical,\
@@ -148,8 +159,11 @@ local am_infobox_id,      cn_levels_string,   debugbox,\
     plot2,              statistics,         storage_record,\
     txres,              upper
 begin
-    verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering plot_two_by_one", verbosity, 8)
+
+    funcname = "plot_two_by_one"
+    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    enter_msg(scriptname, funcname)
+
     res = panel_three_by_one(res, 0)  ; Update resource for first plot
     res@cnLevelSelectionMode = "ExplicitLevels"
     if (isatt(res, "cnLevels")) then
@@ -249,9 +263,12 @@ begin
                           debuginfo@description,\
                           debuginfo@description_ycoord)
     end if
-    info_output(">>>>>>>> Leaving plot_two_by_one", verbosity, 8)
+
+    leave_msg(scriptname, funcname)
+
 end
 
+;;#############################################################################
 undef("plot_three_by_one_diff")
 procedure plot_three_by_one_diff(wks [1]:graphic,
                                  res [1]:logical,\
@@ -296,8 +313,11 @@ res,             statistics,         storage_record,\
 title_name,      txres
 
 begin
-    verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering plot_three_by_one_diff", verbosity, 8)
+    
+    funcname = "plot_three_by_one_diff"
+    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    enter_msg(scriptname, funcname)
+
     res = panel_three_by_one(res, 0)  ; Update resource for first plot
     res@cnLevelSelectionMode = "ExplicitLevels"
     if (isatt(res, "cnLevels")) then
@@ -443,9 +463,12 @@ begin
                           debuginfo@description,\
                           debuginfo@description_ycoord)
     end if
-    info_output(">>>>>>>> Leaving plot_three_by_one_diff", verbosity, 8)
+
+    leave_msg(scriptname, funcname)
+
 end
 
+;;#############################################################################
 undef("two_by_one")
 procedure two_by_one(storage_vault [1] : logical,
                      di [1] : logical,
@@ -490,9 +513,12 @@ local aux_title_info,      cn_levels_string,   curr,\
     storage_record,      textres,            var0,\
     wks,                 diff_model_ref,     txres
 begin
-    verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering two_by_one", verbosity, 6)
-    dim_MOD = dimsizes(models@name)
+
+    funcname = "two_by_one"
+    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    enter_msg(scriptname, funcname)
+
+    dim_MOD = dimsizes(model_info@model)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     field_type0 = field_types(0)
@@ -513,7 +539,7 @@ begin
     ;; Output dir
     ;; 'plot_dir' if fetched from ncl.interface
     diag_script_base = basename(plot_settings@diag_script)
-    output_dir = get_output_dir(plot_dir, diag_script_base)
+    output_dir = config_user_info@plot_dir
 
     ;; --------------------------------
     ;; Static resources for these plots
@@ -584,9 +610,12 @@ begin
         end if
 
     end do  ; idx_mod = 0, dim_MOD - 1
-    info_output(">>>>>>>> Leaving two_by_one", verbosity, 6)
+
+    leave_msg(scriptname, funcname)
+
 end
 
+;;#############################################################################
 undef("three_by_one_diff")
 procedure three_by_one_diff(storage_vault [1] : logical,
                             di [1] : logical,
@@ -629,9 +658,12 @@ local aux_title_info,      cn_levels_string,   curr,\
     storage_record,      textres,            var0,\
     wks,                 diff_model_ref,     txres
 begin
-    verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering three_by_one_diff", verbosity, 6)
-    dim_MOD = dimsizes(models@name)
+
+    funcname = "three_by_one_diff"
+    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    enter_msg(scriptname, funcname)
+
+    dim_MOD = dimsizes(model_info@model)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     field_type0 = field_types(0)
@@ -652,7 +684,7 @@ begin
     ;; Output dir
     ;; 'plot_dir' if fetched from ncl.interface
     diag_script_base = basename(plot_settings@diag_script)
-    output_dir = get_output_dir(plot_dir, diag_script_base)
+    output_dir = config_user_info@plot_dir
 
     ;; --------------------------------
     ;; Static resources for these plots
@@ -731,9 +763,12 @@ begin
         end if
 
     end do  ; idx_mod = 0, dim_MOD - 1
-    info_output(">>>>>>>> Leaving three_by_one_diff", verbosity, 6)
+
+    leave_msg(scriptname, funcname)
+
 end
 
+;;#############################################################################
 undef("plot_three_by_one_vector")
 procedure plot_three_by_one_vector(wks [1]:graphic,
                                    res [1]:logical,
@@ -786,8 +821,11 @@ local am_infobox_id,      cn_levels_string,   debugbox,\
     statistics,         storage_record,     txres,\
     ua,                 va
 begin
-    verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering plot_three_by_one_vector", verbosity, 8)
+
+    funcname = "plot_three_by_one_vector"
+    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    enter_msg(scriptname, funcname)
+
     res = panel_three_by_one(res, 0)  ; Update resource for first plot
     res@cnLevelSelectionMode = "ExplicitLevels"
     if (isatt(res, "cnLevels")) then
@@ -960,9 +998,12 @@ begin
                           debuginfo@description,\
                           debuginfo@description_ycoord)
     end if
-    info_output(">>>>>>>> Leaving plot_three_by_one_vector", verbosity, 8)
+
+    leave_msg(scriptname, funcname)
+
 end
 
+;;#############################################################################
 undef("three_by_one_vector")
 procedure three_by_one_vector(storage_vault [1] : logical,
                             di [1] : logical,
@@ -1005,9 +1046,12 @@ local aux_title_info,      cn_levels_string,   curr,\
     storage_record,      textres,            var0,\
     wks,                 wks_debug,          txres
 begin
-    verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering three_by_one_vector", verbosity, 8)
-    dim_MOD = dimsizes(models@name)
+
+    funcname = "three_by_one_vector"
+    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    enter_msg(scriptname, funcname)
+
+    dim_MOD = dimsizes(model_info@model)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     var1 = variables(1)
@@ -1022,7 +1066,7 @@ begin
     ;; Output dir
     ;; 'plot_dir' if fetched from ncl.interface
     diag_script_base = basename(plot_settings@diag_script)
-    output_dir = get_output_dir(plot_dir, diag_script_base)
+    output_dir = config_user_info@plot_dir
 
     ;; --------------------------------
     ;; Static resources for these plots
@@ -1105,9 +1149,12 @@ begin
             delete(wks_debug)
         end if
     end do  ; idx_mod = start_idx, dim_MOD - 1
-    info_output(">>>>>>>> Leaving three_by_one_vector", verbosity, 8)
+
+    leave_msg(scriptname, funcname)
+
 end
 
+;;#############################################################################
 undef("plot_multipanel")
 procedure plot_multipanel(cols[*]:integer,
                           rows[*]:float,
@@ -1170,8 +1217,11 @@ local am_infobox_id,    blank_plot,            cn_levels_string,\
     ref,              res,                   statistics,\
     storage_record,   txres
 begin
-    verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering plot_multipanel", verbosity, 8)
+
+    funcname = "plot_multipanel"
+    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    enter_msg(scriptname, funcname)
+
     ;; Update position, labelbar and title
     curr_figure_pos = figure_panel_placement(curr_idx)
     res = panel_n_by_cols(res, curr_figure_pos, rows, cols, figures_per_page(curr_page))
@@ -1350,9 +1400,12 @@ begin
                           debuginfo@description,\
                           debuginfo@description_ycoord)
     end if
-    info_output(">>>>>>>> Leaving plot_multipanel", verbosity, 8)
+
+    leave_msg(scriptname, funcname)
+
 end
 
+;;#############################################################################
 undef("multipanel")
 procedure multipanel(storage_vault [1] : logical,
                      di [1] : logical,
@@ -1401,6 +1454,11 @@ local aux_title_info,      blank_plot,              cn_levels_string,\
     total_no_of_pages,   txres,                   type_specifier,\
     var0,                wks
 begin
+
+    funcname = "multipanel"
+    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    enter_msg(scriptname, funcname)
+
     ; No of models may differ from dimsizes(dim_MOD) if variables
     ; from different models are combined (e.g., 'ts' from HadISST
     ; and 'pr' from TRMM)
@@ -1428,7 +1486,7 @@ begin
     ;; Output dir
     ;; 'plot_dir' if fetched from ncl.interface
     diag_script_base = basename(plot_settings@diag_script)
-    output_dir = get_output_dir(plot_dir, diag_script_base)
+    output_dir = config_user_info@plot_dir
 
     ;; --------------------------------
     ;; Static resources for these plots
@@ -1455,7 +1513,7 @@ begin
 
     ;; Which model goes where on each page?
     figure_panel_placement = new((/sum(figures_per_page)/), integer)
-    place_models_on_pages(models,\
+    place_models_on_pages(model_info,\
                           plot_settings@idx_ref,\
                           figures_per_page,\
                           model_panel_placement,\
@@ -1464,7 +1522,7 @@ begin
     ;; Output dir
     ;; 'plot_dir' is fetched from ncl.interface
     diag_script_base = basename(diag_script)
-    output_dir = get_output_dir(plot_dir, diag_script_base)
+    output_dir = config_user_info@plot_dir
 
     if (plot_settings@type .eq. "diff") then
         type_specifier = "_diff"
@@ -1570,8 +1628,12 @@ begin
             frame(wks_debug)
         end if
     end do  ; curr_fig = 1, figures_per_page(curr_page) - 1
+
+    leave_msg(scriptname, funcname)
+
 end
 
+;;#############################################################################
 undef("plot_multipanel_vector")
 procedure plot_multipanel_vector(cols[*]:integer,
                                  rows[*]:float,
@@ -1637,8 +1699,11 @@ local am_infobox_id,       blank_plot,          cn_levels_string,\
     txres,               ua,                  ua_ref,\
     va,                  va_ref
 begin
-    verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering plot_multipanel_vector", verbosity, 8)
+
+    funcname = "plot_multipanel_vector"
+    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    enter_msg(scriptname, funcname)
+
     ;; Update position, labelbar and title
     curr_figure_pos = figure_panel_placement(curr_idx)
     res = panel_n_by_cols(res, curr_figure_pos, rows, cols, figures_per_page(curr_page))
@@ -1865,9 +1930,12 @@ begin
                           debuginfo@description,\
                           debuginfo@description_ycoord)
     end if
-    info_output(">>>>>>>> Leaving plot_multipanel_vector", verbosity, 8)
+
+    leave_msg(scriptname, funcname)
+
 end
 
+;;#############################################################################
 undef("multipanel_vector")
 procedure multipanel_vector(storage_vault [1] : logical,
                             di [1] : logical,
@@ -1918,7 +1986,13 @@ local aux_title_info,          blank_plot,        cn_levels_string,\
     var0,                    var1,                va_ref,\
     wks,                     plot_ref_v
 begin
-    dim_MOD = dimsizes(models@name)
+
+    funcname = "multipanel_vector"
+    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    enter_msg(scriptname, funcname)
+
+
+    dim_MOD = dimsizes(model_info@model)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     field_type0 = field_types(0)
@@ -1938,7 +2012,7 @@ begin
     ;; Output dir
     ;; 'plot_dir' if fetched from ncl.interface
     diag_script_base = basename(plot_settings@diag_script)
-    output_dir = get_output_dir(plot_dir, diag_script_base)
+    output_dir = config_user_info@plot_dir
 
     ;; --------------------------------
     ;; Static resources for these plots
@@ -1966,7 +2040,7 @@ begin
 
     ;; Which model goes where on each page?
     figure_panel_placement = new((/sum(figures_per_page)/), integer)
-    place_models_on_pages(models,\
+    place_models_on_pages(model_info,\
                           plot_settings@idx_ref,\
                           figures_per_page,\
                           model_panel_placement,\
@@ -1975,7 +2049,7 @@ begin
     ;; Output dir
     ;; 'plot_dir' is fetched from ncl.interface
     diag_script_base = basename(diag_script)
-    output_dir = get_output_dir(plot_dir, diag_script_base)
+    output_dir = config_user_info@plot_dir
 
     if (plot_settings@type .eq. "diff") then
         type_specifier = "_diff"
@@ -2081,8 +2155,12 @@ begin
             frame(wks_debug)
         end if
     end do
+
+    leave_msg(scriptname, funcname)
+
 end
 
+;;#############################################################################
 undef("seasonal_plot")
 procedure seasonal_plot(storage_vault [1] : logical,
                         di [1] : logical,
@@ -2120,9 +2198,12 @@ local am_infobox_id,             am_labelbar_id,         amres,\
     txres,                     var0,                   wks,\
     xaxis,                     var1,                   field_type1
 begin
-    verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering seasonal_plot", verbosity, 8)
-    dim_MOD = dimsizes(models@name)
+
+    funcname = "seasonal_plot"
+    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    enter_msg(scriptname, funcname)
+
+    dim_MOD = dimsizes(model_info@model)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     field_type0 = field_types(0)
@@ -2181,7 +2262,7 @@ begin
     ;; Output dir
     ;; 'plot_dir' if fetched from ncl.interface
     diag_script_base = basename(diag_script)
-    output_dir = get_output_dir(plot_dir, diag_script_base)
+    output_dir = config_user_info@plot_dir
 
     ;;-----------------------------------------------
     ;; Define output workstation for seasonal anomaly
@@ -2200,7 +2281,7 @@ begin
     ;; Plot loop
     ;;----------
     do idx_mod = 0, dim_MOD - 1
-        labels(idx_mod) = models@name(idx_mod)
+        labels(idx_mod) = model_info@model(idx_mod)
         res@gsnXYBarChartColors = di@colors_seasonal(idx_mod)
 
         ;; Shift plot to the right and draw/redraw
@@ -2272,9 +2353,12 @@ begin
                           debuginfo@description_ycoord)
     end if
     frame(wks)
-    info_output(">>>>>>>> Leaving seasonal_plot", verbosity, 8)
+
+    leave_msg(scriptname, funcname)
+
 end
 
+;;#############################################################################
 undef("xy_plot_wrapper")
 procedure xy_plot_wrapper(storage_vault [1] : logical,
                                      di [1] : logical,
@@ -2312,9 +2396,12 @@ local annots,           annots_mmm,        avgstd,\
     values_stddev,    var0,              var1,\
     wks,              wks_debug,         idx_th
 begin
-    verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering xy_plot_wrapper", verbosity, 8)
-    dim_MOD = dimsizes(models@name)
+
+    funcname = "xy_plot_wrapper"
+    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    enter_msg(scriptname, funcname)
+
+    dim_MOD = dimsizes(model_info@model)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     field_type0 = field_types(0)
@@ -2332,7 +2419,7 @@ begin
 
     ;; 'plot_dir' if fetched from ncl.interface
     diag_script_base = basename(diag_script)
-    output_dir = get_output_dir(plot_dir, diag_script_base)
+    output_dir = config_user_info@plot_dir
     ;;-----------------------------------------------
     ;; Define output workstation for xy plot
     ;;-----------------------------------------------
@@ -2382,7 +2469,7 @@ begin
             ;; Define all original attributes again, but empty
             models@$models(i)$ = ""
         end do
-        models@name = "model_mean"
+        model_info@model = "model_mean"
 
         ;; See ./diag_scripts/lib/ncl/style.ncl
         colors_mmm = project_style(diag_script_info, "colors")
@@ -2458,9 +2545,12 @@ begin
     if (debuginfo) then
         xy_line(wks_debug, values, values&month, values_stddev, res, debuginfo)
     end if
-    info_output(">>>>>>>> Leaving xy_plot_wrapper", verbosity, 8)
+
+    leave_msg(scriptname, funcname)
+
 end
 
+;;#############################################################################
 undef("ts_line_wrapper")
 procedure ts_line_wrapper(storage_vault [1] : logical,
                                      di [1] : logical,
@@ -2496,9 +2586,12 @@ local    annots,           avgstd,            diag_script_base,\
     values,           values_stddev,     var0,\
     var1,             wks,               wks_debug
 begin
-    verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering ts_line_wrapper", verbosity, 8)
-    dim_MOD = dimsizes(models@name)
+
+    funcname = "ts_line_wrapper"
+    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    enter_msg(scriptname, funcname)
+
+    dim_MOD = dimsizes(model_info@model)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     field_type0 = field_types(0)
@@ -2516,7 +2609,7 @@ begin
 
     ;; 'plot_dir' if fetched from ncl.interface
     diag_script_base = basename(diag_script)
-    output_dir = get_output_dir(plot_dir, diag_script_base)
+    output_dir = config_user_info@plot_dir
     ;;-----------------------------------------------
     ;; Define output workstation for xy plot
     ;;-----------------------------------------------
@@ -2542,8 +2635,8 @@ begin
     end if
 
     ;; Determine time range
-    start_year = min(stringtoint(models@start_year))
-    end_year = max(stringtoint(models@end_year))
+    start_year = min(stringtoint(model_info@start_year))
+    end_year = max(stringtoint(model_info@end_year))
 
     ;; Select attributes
     annots = project_style(diag_script_info, "annots")
@@ -2613,10 +2706,12 @@ begin
     if (debuginfo) then
         xy_line(wks_debug, values, di@years, values_stddev, res, debuginfo)
     end if
-    info_output(">>>>>>>> Leaving ts_line_wrapper", verbosity, 8)
+
+    leave_msg(scriptname, funcname)
+
 end
 
-
+;;#############################################################################
 undef("xy_line_overlap")
 procedure xy_line_overlap(storage_vault [1] : logical,
                                      di [1] : logical,
@@ -2632,9 +2727,12 @@ local    annots,           avgstd,            diag_script_base,\
     var1,             wks,               wks_debug,\
     res2,             coord
 begin
-    verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering xy_line_overlap", verbosity, 8)
-    dim_MOD = dimsizes(models@name)
+
+    funcname = "xy_line_overlap"
+    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    enter_msg(scriptname, funcname)
+
+    dim_MOD = dimsizes(model_info@name)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     field_type0 = field_types(0)
@@ -2648,7 +2746,7 @@ begin
 
     ;; 'plot_dir' if fetched from ncl.interface
     diag_script_base = basename(diag_script)
-    output_dir = get_output_dir(plot_dir, diag_script_base)
+    output_dir = config_user_info@plot_dir
     ;;-----------------------------------------------
     ;; Define output workstation for xy plot
     ;;-----------------------------------------------
@@ -2676,8 +2774,8 @@ begin
     plot = new((/dim_MOD/), graphic)
 
     ;; Determine time range
-    start_year = min(stringtoint(models@start_year))
-    end_year = max(stringtoint(models@end_year))
+    start_year = min(stringtoint(model_info@start_year))
+    end_year = max(stringtoint(model_info@end_year))
 
     ;; Select attributes
     annots = project_style(diag_script_info, "annots")
@@ -2711,9 +2809,9 @@ begin
         models = getvaratts(temp)  ; use "models" to pass on attribute names
         do i = 0, dimsizes(models) - 1
             ;; Define all original attributes again, but empty
-            models@$models(i)$ = ""
+            model_info@$models(i)$ = ""
         end do
-        models@name = "model_mean"
+        model_info@model = "model_mean"
 
         ;; See ./diag_scripts/lib/ncl/style.ncl
         colors_mmm = project_style(diag_script_info, "colors")
@@ -2747,9 +2845,7 @@ begin
         res@trYMinF = ymin - 0.03 * (ymax - ymin)
     else
 ; A_laue_ax-
-        if (isatt(res, "trYMaxF")) then
-            no_operation()  ; use preset values (in diagnostic script)
-        else  ; default value
+        if (.not.isatt(res, "trYMaxF")) then
             ymax = di@minmax(1)
             ymin = di@minmax(0)
             res@trYMaxF = ymax + 0.03 * (ymax - ymin)
@@ -2979,5 +3075,7 @@ begin
 
     draw(plot(0))
     frame(wks)
-    info_output(">>>>>>>> Leaving xy_line_overlap", verbosity, 8)
+
+    leave_msg(scriptname, funcname)
+
 end

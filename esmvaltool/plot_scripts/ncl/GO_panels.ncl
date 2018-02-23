@@ -23,15 +23,8 @@
 ;;
 ;;#############################################################################
 
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/shea_util.ncl"
-
-
-
 load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 
 
 begin
@@ -47,17 +40,16 @@ load "./plot_scripts/ncl/xy_line.ncl"
 
 undef("get_title_suffix")
 function get_title_suffix(plot_settings[1]: logical)
-local verbosity, main_title_suffix
+local main_title_suffix
 begin
-    verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering get_title_suffix", verbosity, 8)
+
     if (isatt(plot_settings, "main_title_suffix")) then
         main_title_suffix = plot_settings@main_title_suffix
     else
         main_title_suffix = ""
     end if
     return main_title_suffix
-    info_output(">>>>>>>> Leaving get_title_suffix", verbosity, 8)
+
 end
 
 undef("remove_attrs")
@@ -103,7 +95,7 @@ begin
     ;; -------------------------------------
     ;; Plot model entry (first plot)
     ;; -------------------------------------
-    main_title_prefix = ""  ; models@name(idx_mod)
+    main_title_prefix = ""  ; model_info@model(idx_mod)
     main_title_suffix = ""
     res = panel_two_by_one(res, 0)  ; Update resource for second plot
 
@@ -340,9 +332,8 @@ local aux_title_info,      cn_levels_string,   curr,\
     storage_record,      textres,            var0,\
     wks,                 diff_model_ref,     txres
 begin
-    verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering two_by_one", verbosity, 6)
-    dim_MOD = dimsizes(models@name)
+
+    dim_MOD = dimsizes(model_info@model)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     field_type0 = field_types(0)
@@ -363,7 +354,7 @@ begin
     ;; Output dir
     ;; 'plot_dir' if fetched from ncl.interface
     diag_script_base = basename(plot_settings@diag_script)
-    output_dir = get_output_dir(plot_dir, diag_script_base)
+    output_dir = config_user_info@plot_dir
 
     ;; --------------------------------
     ;; Static resources for these plots
@@ -425,7 +416,7 @@ begin
         end if
 
     end do  ; idx_mod = 0, dim_MOD - 1
-    info_output(">>>>>>>> Leaving two_by_one", verbosity, 6)
+
 end
 undef("three_by_one_diff")
 procedure three_by_one_diff(storage_vault[1]: logical,
@@ -449,9 +440,8 @@ local aux_title_info,      cn_levels_string,   curr,\
     storage_record,      textres,            var0,\
     wks,                 diff_model_ref,     txres
 begin
-    verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering three_by_one_diff", verbosity, 6)
-    dim_MOD = dimsizes(models@name)
+
+    dim_MOD = dimsizes(model_info@model)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     field_type0 = field_types(0)
@@ -472,7 +462,7 @@ begin
     ;; Output dir
     ;; 'plot_dir' if fetched from ncl.interface
     diag_script_base = basename(plot_settings@diag_script)
-    output_dir = get_output_dir(plot_dir, diag_script_base)
+    output_dir = config_user_info@plot_dir
 
     ;; --------------------------------
     ;; Static resources for these plots
@@ -542,7 +532,7 @@ begin
         end if
 
     end do  ; idx_mod = 0, dim_MOD - 1
-    info_output(">>>>>>>> Leaving three_by_one_diff", verbosity, 6)
+
 end
 
 undef("plot_three_by_one_vector")
@@ -749,7 +739,7 @@ local aux_title_info,      cn_levels_string,   curr,\
     storage_record,      textres,            var0,\
     wks,                 wks_debug,          txres
 begin
-    dim_MOD = dimsizes(models@name)
+    dim_MOD = dimsizes(model_info@model)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     var1 = variables(1)
@@ -764,7 +754,7 @@ begin
     ;; Output dir
     ;; 'plot_dir' if fetched from ncl.interface
     diag_script_base = basename(plot_settings@diag_script)
-    output_dir = get_output_dir(plot_dir, diag_script_base)
+    output_dir = config_user_info@plot_dir
 
     ;; --------------------------------
     ;; Static resources for these plots
@@ -1086,7 +1076,7 @@ begin
     ;; Output dir
     ;; 'plot_dir' if fetched from ncl.interface
     diag_script_base = basename(plot_settings@diag_script)
-    output_dir = get_output_dir(plot_dir, diag_script_base)
+    output_dir = config_user_info@plot_dir
 
     ;; --------------------------------
     ;; Static resources for these plots
@@ -1113,7 +1103,7 @@ begin
 
     ;; Which model goes where on each page?
     figure_panel_placement = new((/sum(figures_per_page)/), integer)
-    place_models_on_pages(models,\
+    place_models_on_pages(model_info,\
                           plot_settings@idx_ref,\
                           figures_per_page,\
                           model_panel_placement,\
@@ -1122,7 +1112,7 @@ begin
     ;; Output dir
     ;; 'plot_dir' is fetched from ncl.interface
     diag_script_base = basename(diag_script)
-    output_dir = get_output_dir(plot_dir, diag_script_base)
+    output_dir = config_user_info@plot_dir
 
     if (plot_settings@type .eq. "diff") then
         type_specifier = "_diff"
@@ -1487,7 +1477,7 @@ local aux_title_info,          blank_plot,        cn_levels_string,\
     var0,                    var1,                va_ref,\
     wks,                     plot_ref_v
 begin
-    dim_MOD = dimsizes(models@name)
+    dim_MOD = dimsizes(model_info@model)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     field_type0 = field_types(0)
@@ -1507,7 +1497,7 @@ begin
     ;; Output dir
     ;; 'plot_dir' if fetched from ncl.interface
     diag_script_base = basename(plot_settings@diag_script)
-    output_dir = get_output_dir(plot_dir, diag_script_base)
+    output_dir = config_user_info@plot_dir
 
     ;; --------------------------------
     ;; Static resources for these plots
@@ -1535,7 +1525,7 @@ begin
 
     ;; Which model goes where on each page?
     figure_panel_placement = new((/sum(figures_per_page)/), integer)
-    place_models_on_pages(models,\
+    place_models_on_pages(model_info,\
                           plot_settings@idx_ref,\
                           figures_per_page,\
                           model_panel_placement,\
@@ -1544,7 +1534,7 @@ begin
     ;; Output dir
     ;; 'plot_dir' is fetched from ncl.interface
     diag_script_base = basename(diag_script)
-    output_dir = get_output_dir(plot_dir, diag_script_base)
+    output_dir = config_user_info@plot_dir
 
     if (plot_settings@type .eq. "diff") then
         type_specifier = "_diff"
@@ -1664,7 +1654,7 @@ local am_infobox_id,             am_labelbar_id,         amres,\
     txres,                     var0,                   wks,\
     xaxis,                     var1,                   field_type1
 begin
-    dim_MOD = dimsizes(models@name)
+    dim_MOD = dimsizes(model_info@model)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     field_type0 = field_types(0)
@@ -1723,7 +1713,7 @@ begin
     ;; Output dir
     ;; 'plot_dir' if fetched from ncl.interface
     diag_script_base = basename(diag_script)
-    output_dir = get_output_dir(plot_dir, diag_script_base)
+    output_dir = config_user_info@plot_dir
 
     ;;-----------------------------------------------
     ;; Define output workstation for seasonal anomaly
@@ -1742,7 +1732,7 @@ begin
     ;; Plot loop
     ;;----------
     do idx_mod = 0, dim_MOD - 1
-        labels(idx_mod) = models@name(idx_mod)
+        labels(idx_mod) = model_info@model(idx_mod)
         res@gsnXYBarChartColors = di@colors_seasonal(idx_mod)
 
         ;; Shift plot to the right and draw/redraw
@@ -1832,7 +1822,7 @@ local annots,           annots_mmm,        avgstd,\
     values_stddev,    var0,              var1,\
     wks,              wks_debug
 begin
-    dim_MOD = dimsizes(models@name)
+    dim_MOD = dimsizes(model_info@model)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     field_type0 = field_types(0)
@@ -1850,7 +1840,7 @@ begin
 
     ;; 'plot_dir' if fetched from ncl.interface
     diag_script_base = basename(diag_script)
-    output_dir = get_output_dir(plot_dir, diag_script_base)
+    output_dir = config_user_info@plot_dir
     ;;-----------------------------------------------
     ;; Define output workstation for xy plot
     ;;-----------------------------------------------
@@ -1897,9 +1887,9 @@ begin
         models = getvaratts(temp)
         do i = 0, dimsizes(models) - 1
             ;; Define all original attributes again, but empty
-            models@$models(i)$ = ""
+            model_info@$models(i)$ = ""
         end do
-        models@name = "model_mean"
+        model_info@model = "model_mean"
 
         ;; See ./diag_scripts/lib/ncl/style.ncl
         colors_mmm = project_style(diag_script_info, "colors")
@@ -1982,7 +1972,7 @@ local    annots,           avgstd,            diag_script_base,\
     values,           values_stddev,     var0,\
     var1,             wks,               wks_debug
 begin
-    dim_MOD = dimsizes(models@name)
+    dim_MOD = dimsizes(model_info@model)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     field_type0 = field_types(0)
@@ -2001,7 +1991,7 @@ print(storage_vault)
 
     ;; 'plot_dir' if fetched from ncl.interface
     diag_script_base = basename(diag_script)
-    output_dir = get_output_dir(plot_dir, diag_script_base)
+    output_dir = config_user_info@plot_dir
     ;;-----------------------------------------------
     ;; Define output workstation for xy plot
     ;;-----------------------------------------------
@@ -2027,8 +2017,8 @@ print(storage_vault)
     end if
 
     ;; Determine time range
-    start_year = min(stringtoint(models@start_year))
-    end_year = max(stringtoint(models@end_year))
+    start_year = min(stringtoint(model_info@start_year))
+    end_year = max(stringtoint(model_info@end_year))
 
     ;; Select attributes
     annots = project_style(diag_script_info, "annots")

@@ -58,15 +58,13 @@ begin
 
 end
 
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 load "./reformat_scripts/constants.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity = config_user_info@verbosity
     diag_script = "reformat_obs_NIWA.ncl"
-    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent(OUTDIR)) then
@@ -78,14 +76,14 @@ begin
     ;; Loop over variables
     do vID = 0, dimsizes(VARS) - 1
 
-        info_output("Processing " + VARS(vID), verbosity, 1)
+        log_info("Processing " + VARS(vID))
 
         fill_start = 0
 
         ;; Create timeseries
         do yy = YEAR1, YEAR2
 
-            info_output("  " + yy, verbosity, 1)
+            log_info("  " + yy)
 
             ;; Read file
             fname = "NIWAAssimOzoneV2.7_" + yy + "_Patched.nc"
@@ -171,8 +169,7 @@ begin
         output&lon = clon
         delete(clon)
 
-        info_output("  Range: " + min(output) + "; " + max(output), \
-                    verbosity, 1)
+        log_info("  Range: " + min(output) + "; " + max(output))
 
         ;; Set global attributes
         gAtt = True
@@ -205,12 +202,11 @@ begin
 
         ;; Write variable
         write_nc(fout, VARS(vID), output, gAtt)
-        info_output("Wrote " + fout, verbosity, 1)
+        log_info("Wrote " + fout)
         delete(gAtt)
         delete(output)
 
     end do
 
-    leave_msg(diag_script, "", 1)
 
 end

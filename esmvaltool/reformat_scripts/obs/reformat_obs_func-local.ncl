@@ -40,7 +40,7 @@ function var_attrib(var:numeric, attrs[1]:logical)
 ;; Modification history
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, verbosity, tmp, p1, p2, natt, in_units, out_units, tmp, att
+local funcname, tmp, p1, p2, natt, in_units, out_units, tmp, att
 begin
     funcname = "var_attrib"
 
@@ -92,7 +92,7 @@ function check_time_range(time:numeric)
 ;;    20150119-A_gott_kl: defaults for YEAR1, YEAR2, FIELD.
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, verbosity, date, ntime, tt, pos, y1, y2, opt, exp_ntime
+local funcname, date, ntime, tt, pos, y1, y2, opt, exp_ntime
 begin
 
     funcname = "check_time_range"
@@ -236,7 +236,7 @@ function time_attrib(coord:numeric)
 ;; Modification history
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, verbosity, tmp, cal
+local funcname, tmp, cal
 begin
 
     funcname = "time_attrib"
@@ -283,7 +283,7 @@ function lat_attrib(coord)
 ;; Modification history
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, verbosity, out_coord
+local funcname, out_coord
 begin
 
     funcname = "lat_attrib"
@@ -322,7 +322,7 @@ function lon_attrib(coord)
 ;; Modification history
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, verbosity, out_coord
+local funcname, out_coord
 begin
 
     funcname = "lon_attrib"

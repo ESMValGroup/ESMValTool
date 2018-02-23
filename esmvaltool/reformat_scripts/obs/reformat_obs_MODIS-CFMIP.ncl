@@ -60,14 +60,12 @@ begin
 
 end
 
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity = config_user_info@verbosity
     diag_script = "reformat_obs_MODIS-CFMIP.ncl"
-    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent(OUTDIR)) then
@@ -81,7 +79,7 @@ begin
        do mo = 1, 12
           month = sprinti("%0.2i", mo)
           fname = INDIR + "MCD08_M3_NC." + yr + "." + month + ".C051.V02.nc"
-          info_output("*** "+ fname + " ***", verbosity, 1)
+          log_info("*** "+ fname + " ***")
 
           f = addfile(fname, "r")
 
@@ -170,7 +168,6 @@ begin
     delete(time)
     delete(iwp)
 
-    leave_msg(diag_script, "", 1)
 
 end
 

@@ -11,7 +11,7 @@ function depth_conform( depth : numeric)
 ;;    depth   - the same pressure level data but in units hPa
 ;; Description:
 ;;    Converts the input pressure level data from Pa (or hPa) to hPa
-local no_operation, depth_return
+local depth_return
 begin
     if (depth@units .eq. "Km" .or. depth@units .eq. "km" ) then
         depth_return = depth_return * 1000.

@@ -66,14 +66,12 @@ begin
 end
 
 load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity = config_user_info@verbosity
     diag_script = "reformat_obs_NSIDC.ncl"
-    enter_msg(diag_script, "", 1)
 
     setnames = (/"NSIDC-NT", "NSIDC-BT"/)
     setabbr  = (/"nt", "bt"/)
@@ -183,6 +181,5 @@ begin
 
     end do  ; ifile
 
-    leave_msg(diag_script, "", 1)
 
 end

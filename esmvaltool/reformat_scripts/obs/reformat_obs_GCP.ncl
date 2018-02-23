@@ -61,15 +61,13 @@ begin
 
 end
 
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 load "./reformat_scripts/constants.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity = config_user_info@verbosity
     diag_script = "reformat_obs_ESACCI-GCP.ncl"
-    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent(OUTDIR)) then
@@ -81,7 +79,7 @@ begin
     datec = ut_calendar(timec, 1)
 
     ;; Read station info
-    info_output("Reading station information", verbosity, 1)
+    log_info("Reading station information")
 
     infile = INDIR + OBSNAME + "_2012_v1.3.txt"
 
@@ -91,7 +89,7 @@ begin
         data = readAsciiTable(infile, 7, "float", dimsizes(head))
         delete(head)
 
-        info_output("Processing " + infile, verbosity, 1)
+        log_info("Processing " + infile)
         ;; Read time and extract full years only
         year = data(:, 0)
         date = toint(year)
@@ -159,6 +157,5 @@ begin
         
     end if
 
-    leave_msg(diag_script, "", 1)
     
 end

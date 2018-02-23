@@ -50,17 +50,15 @@ begin
 
 end
 
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 load "./reformat_scripts/constants.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
-    dayspermonth = (/31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31/)
 
-
-    verbosity = config_user_info@verbosity
     diag_script = "reformat_obs_ESACCI-SST.ncl"
-    enter_msg(diag_script, "", 1)
+
+    dayspermonth = (/31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31/)
 
     ;; Create output dir
     if (.not.isfilepresent(OUTDIR)) then
@@ -331,6 +329,5 @@ begin
 
     end do
 
-    leave_msg(diag_script, "", 1)
 
 end

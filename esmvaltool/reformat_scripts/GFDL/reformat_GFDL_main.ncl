@@ -27,7 +27,7 @@
 ;;
 ;;#############################################################################
 
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 load "interface_scripts/interface.ncl"
 
 scriptname = "reformat_scripts/EMAC/reformat_GFDL_main.ncl"
@@ -93,28 +93,26 @@ load "./reformat_scripts/GFDL/reformat_GFDL_func.ncl"
 
 begin
 
-    verbosity  = config_user_info@verbosity
-    enter_msg(scriptname, "", 2)
+    enter_msg(scriptname, "")
 
-    info_output("INPATH = " + INPATH, verbosity, 1)
+    log_info("INPATH = " + INPATH)
 
     ;; Check input path
     check_inpath()
 
     ;; Summary
-    info_output("VARIABLE      " + VAR + " (" + FIELD + ")", verbosity, 3)
-    info_output("EXPERIMENT    " + EXPER, verbosity, 3)
-    info_output("REALM         " + REALM, verbosity, 3)
-    info_output("TIME PERIOD   " + "01/" + YEAR1 + "-12/" + YEAR2, \
-                verbosity, 3)
+    log_debug("VARIABLE      " + VAR + " (" + FIELD + ")")
+    log_debug("EXPERIMENT    " + EXPER)
+    log_debug("REALM         " + REALM)
+    log_debug("TIME PERIOD   " + "01/" + YEAR1 + "-12/" + YEAR2)
     YEAR1 = YEAR1 - SHIFT_YEAR
     YEAR2 = YEAR2 - SHIFT_YEAR
-    info_output("ACTUAL PERIOD " + "01/" + sprinti("%0.4i", YEAR1) + \
-                "-12/" + sprinti("%0.4i", YEAR2), verbosity, 3)
+    log_debug("ACTUAL PERIOD " + "01/" + sprinti("%0.4i", YEAR1) + \
+                "-12/" + sprinti("%0.4i", YEAR2))
 
-    info_output("TIME SHIFT    " + "-" + SHIFT_YEAR, verbosity, 3)
-    info_output("INPUT PATH    " + INPATH, verbosity, 3)
-    info_output("OUTPUT FILE   " + OUTFILE, verbosity, 3)
+    log_debug("TIME SHIFT    " + "-" + SHIFT_YEAR)
+    log_debug("INPUT PATH    " + INPATH)
+    log_debug("OUTPUT FILE   " + OUTFILE)
 
     ;; Find GFDL name and corresponding stream/file
     GFDL = find_name(VAR)
@@ -129,13 +127,13 @@ begin
     end if
     VERT = GFDL@vert
     if (GFDL.eq."#RECIP") then
-        info_output("GFDL NAME     see recipes/GFDL_recipe_" + \
-                    VAR + ".ncl", verbosity, 3)
+        log_debug("GFDL NAME     see recipes/GFDL_recipe_" + \
+                    VAR + ".ncl")
     else
-        info_output("GFDL NAME     " + GFDL, verbosity, 3)
+        log_debug("GFDL NAME     " + GFDL)
     end if
     if (VERT.ne."") then
-        info_output("VERTICAL      " + VERT, verbosity, 3)
+        log_debug("VERTICAL      " + VERT)
     end if
 
     ;; Extract variable
@@ -172,8 +170,8 @@ begin
     delete(VERT)
     delete(VARPROC)
 
-    info_output("OUTFILE = " + OUTFILE, verbosity, 1)
+    log_debug("OUTFILE = " + OUTFILE)
 
-    leave_msg(scriptname, "", 2)
+    leave_msg(scriptname, "")
 
 end

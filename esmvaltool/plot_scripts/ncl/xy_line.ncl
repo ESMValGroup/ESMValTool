@@ -16,10 +16,8 @@
 ;;
 ;;#############################################################################
 
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/shea_util.ncl"
-
 load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 
 load "./diag_scripts/lib/ncl/set_operators.ncl"
 
@@ -66,18 +64,17 @@ function profile_plev(wks_in[1],
 ;; Modification history
 ;;    20140214-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, diag_script, data, var, font, \
-    font_size_fac, i_ref, FuncCode, i_N, i_mean, i_stddev, i_min, i_max, i_5, \
-    i_25, i_median, i_75, i_95, target, i_quantity, data2plot, i_plev, ymin, \
-    ymax, xmin, xmax, colors, dashes, thicks, annots, avgstd, res, \
-    res_whiskers, plot, lgLabels, defaults, zoom, left, right, ixmin, ixmax, \
-    res_markers, xmk, ymk, border, info, short_name, long_name, temp
+local funcname, scriptname, diag_script, data, var, font, font_size_fac, \
+    i_ref, FuncCode, i_N, i_mean, i_stddev, i_min, i_max, i_5, i_25, \
+    i_median, i_75, i_95, target, i_quantity, data2plot, i_plev, ymin, ymax, \
+    xmin, xmax, colors, dashes, thicks, annots, avgstd, res, res_whiskers, \
+    plot, lgLabels, defaults, zoom, left, right, ixmin, ixmax, res_markers, \
+    xmk, ymk, border, info, short_name, long_name, temp
 begin
 
     funcname = "profile_plev"
     scriptname = "plot_scripts/ncl/xy_line.ncl"
-    verbosity  = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Set hardcoded parameters
     border = 0.04  ; factor to extent y- & x-range (except @ top)
@@ -96,7 +93,7 @@ begin
 
     ;; Retrieve some metadata from data
     defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
-    if(inlist(varname, defaults)) then  ; Use default
+    if(any(varname .eq. defaults)) then  ; Use default
         var = att2var(data, "var")      ; interface_scripts/auxiliary.ncl
     else                                ; Use explicitely given name
         var = varname
@@ -137,10 +134,10 @@ begin
     ;; determine handling of legend
     legend = att2var(data, "legend")  ; mode for legend: inline/separate/none
     valid_legends = (/"inline", "separate"/)
-    if(inlist(legend, valid_legends)) then
+    if(any(legend .eq. valid_legends)) then
         if(.not. iscoord(data, "models")) then
-            info_output("warning: No 'models' coordinate found.", verbosity, 2)
-            info_output("warning:  -> No legend in profile_plev", verbosity, 2)
+            log_debug("warning: No 'models' coordinate found.")
+            log_debug("warning:  -> No legend in profile_plev")
         end if
     else
         legend = "none"
@@ -480,20 +477,20 @@ begin
         plot@outfile = wks@fullname
     else
         plot@outfile = wks@name
-        info_output("warning: wks@fullname missing, consider to use " +\
-                    "get_wks to open wks", verbosity, 5)
+        log_debug("warning: wks@fullname missing, consider to use " +\
+                    "get_wks to open wks")
     end if
 
     ;; confirmation of operation
     if(isatt(res, "gsnDraw")) then
         if(res@gsnDraw .eq. True) then
-            info_output(" Wrote " + plot@outfile, verbosity, 1)
+            log_info(" Wrote " + plot@outfile)
         end if
     else
-        info_output(" Wrote " + plot@outfile, verbosity, 1)
+        log_info(" Wrote " + plot@outfile)
     end if
 
-    leave_msg(scriptname, funcname, 5)
+    leave_msg(scriptname, funcname)
     return(plot)
 
 end
@@ -538,13 +535,12 @@ function aerosol_profile(wks_in[1],
 ;;                        size distributions.
 ;;    20140705-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, tmp, colors, annots, res, res_new
+local funcname, scriptname, tmp, colors, annots, res, res_new
 begin
 
     funcname = "aerosol_profile"
     scriptname = "plot_scripts/ncl/xy_line.ncl"
-    verbosity  = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Get model data, either directly or via netCDF file
     if(typeof(source_m) .eq. "string") then
@@ -564,7 +560,7 @@ begin
 
     ;; Retrieve basic metadata from data
     defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
-    if (inlist(varname, defaults)) then
+    if (any(varname .eq. defaults)) then
         var = att2var(model, "var")
     else
         var = varname
@@ -783,15 +779,15 @@ begin
                         array_append_record(y1, y2(::-1), 0), y1(0), 0)
                     q = ind(.not.ismissing(xx))
                     if (dimsizes(q).ne.dimsizes(xx)) then
-                        info_output("Some missing values in model " + \
-                                    "percentiles", verbosity, 2)
+                        log_debug("Some missing values in model " + \
+                                    "percentiles")
                     end if
                     if (.not.all(ismissing(q))) then
                         g_obj(ii) = \
                             gsn_add_polygon(wks, plot, xx(q), yy(q), resP)
                     else
-                        info_output("All values in model percentiles are " + \
-                                    "missing (skipping)", verbosity, 1)
+                        log_info("All values in model percentiles are " + \
+                                    "missing (skipping)")
                     end if
                     delete([/x1, x2, y1, y2, xx, yy, q/])
                 end do
@@ -816,15 +812,15 @@ begin
                     array_append_record(y1, y2(::-1), 0), y1(0), 0)
                     q = ind(.not.ismissing(xx))
                     if (dimsizes(q).ne.dimsizes(xx)) then
-                        info_output("Some missing values in obs " + \
-                                    "percentiles", verbosity, 2)
+                        log_debug("Some missing values in obs " + \
+                                    "percentiles")
                     end if
                     if (.not.all(ismissing(q))) then
                         g_obj(ii) = \
                         gsn_add_polygon(wks, plot, xx(q), yy(q), resP)
                     else
-                        info_output("All values in obs percentiles are " + \
-                                    "missing (skipping)", verbosity, 1)
+                        log_info("All values in obs percentiles are " + \
+                                    "missing (skipping)")
                     end if
                     delete([/x1, x2, y1, y2, xx, yy, q/])
                 end do
@@ -848,14 +844,13 @@ begin
             yy = model&plev
             q = ind(.not.ismissing(xx))
             if (dimsizes(q).ne.dimsizes(xx)) then
-                info_output("Some missing values in model median", \
-                            verbosity, 2)
+                log_debug("Some missing values in model median")
             end if
             if (.not.all(ismissing(q))) then
                 g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
             else
-                info_output("All values in model median are missing " + \
-                            "(skipping)", verbosity, 1)
+                log_info("All values in model median are missing " + \
+                            "(skipping)")
             end if
             delete([/xx, yy, q/])
         end do
@@ -876,7 +871,7 @@ begin
             yy = obser&plev
             q = ind(.not.ismissing(xx))
             if (dimsizes(q).ne.dimsizes(xx)) then
-                info_output("Some missing values in obs. median", verbosity, 2)
+                log_debug("Some missing values in obs. median")
             end if
             if (.not.all(ismissing(q))) then
                 if (l_summary) then
@@ -886,8 +881,8 @@ begin
                     g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
                 end if
             else
-                info_output("All values in obs median are missing " + \
-                            "(skipping)", verbosity, 1)
+                log_info("All values in obs median are missing " + \
+                            "(skipping)")
             end if
             delete([/xx, yy, q/])
         end do
@@ -909,13 +904,13 @@ begin
             yy = model&plev
             q = ind(.not.ismissing(xx))
             if (dimsizes(q).ne.dimsizes(xx)) then
-                info_output("Some missing values in model mean", verbosity, 2)
+                log_debug("Some missing values in model mean")
             end if
             if (.not.all(ismissing(q))) then
                 g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
             else
-                info_output("All values in model mean are missing " + \
-                            "(skipping)", verbosity, 1)
+                log_info("All values in model mean are missing " + \
+                            "(skipping)")
             end if
             delete([/xx, yy, q/])
         end do
@@ -930,14 +925,13 @@ begin
             yy = model&plev
             q = ind(.not.ismissing(xx))
             if (dimsizes(q).ne.dimsizes(xx)) then
-                info_output("Some missing values in model std. dev.", \
-                            verbosity, 2)
+                log_debug("Some missing values in model std. dev.")
             end if
             if (.not.all(ismissing(q))) then
                 g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
             else
-                info_output("All values in model std. dev. are missing " + \
-                            "(skipping)", verbosity, 1)
+                log_info("All values in model std. dev. are missing " + \
+                            "(skipping)")
             end if
             delete([/xx, yy, q/])
         end do
@@ -959,7 +953,7 @@ begin
             yy = obser&plev
             q = ind(.not.ismissing(xx))
             if (dimsizes(q).ne.dimsizes(xx)) then
-                info_output("Some missing values in obs. mean", verbosity, 2)
+                log_debug("Some missing values in obs. mean")
             end if
             if (.not.all(ismissing(q))) then
                 if (l_stddev) then
@@ -970,8 +964,8 @@ begin
                         gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
                 end if
             else
-                info_output("All values in obs. mean are missing " + \
-                            "(skipping)", verbosity, 1)
+                log_info("All values in obs. mean are missing " + \
+                            "(skipping)")
             end if
             delete([/xx, yy, q/])
         end do
@@ -1018,7 +1012,7 @@ begin
     end do
 
     frame(wks)
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(plot)
 
 end
@@ -1060,13 +1054,12 @@ function aerosol_sizedist(wks_in[1],
 ;; Modification history
 ;;    20161013-A_righ_ma: written based on aerosol_profile.
 ;;
-local funcname, scriptname, verbosity, tmp, colors, annots, res, res_new
+local funcname, scriptname, tmp, colors, annots, res, res_new
 begin
 
     funcname = "aerosol_sizedist"
     scriptname = "plot_scripts/ncl/xy_line.ncl"
-    verbosity  = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Get model data, either directly or via netCDF file
     if(typeof(source_m) .eq. "string") then
@@ -1086,7 +1079,7 @@ begin
 
     ;; Retrieve basic metadata from data
     defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
-    if (inlist(varname, defaults)) then
+    if (any(varname .eq. defaults)) then
         var = att2var(model, "var")
     else
         var = varname
@@ -1286,15 +1279,15 @@ begin
                         array_append_record(y1, y2(::-1), 0), y1(0), 0)
                     q = ind(.not.ismissing(yy))
                     if (dimsizes(q).ne.dimsizes(yy)) then
-                        info_output("Some missing values in model " + \
-                                    "percentiles", verbosity, 2)
+                        log_debug("Some missing values in model " + \
+                                    "percentiles")
                     end if
                     if (.not.all(ismissing(q))) then
                         g_obj(ii) = \
                             gsn_add_polygon(wks, plot, xx(q), yy(q), resP)
                     else
-                        info_output("All values in model percentiles are " + \
-                                    "missing (skipping)", verbosity, 1)
+                        log_info("All values in model percentiles are " + \
+                                    "missing (skipping)")
                     end if
                     delete([/x1, x2, y1, y2, xx, yy, q/])
                 end do
@@ -1319,15 +1312,15 @@ begin
                         array_append_record(y1, y2(::-1), 0), y1(0), 0)
                     q = ind(.not.ismissing(yy))
                     if (dimsizes(q).ne.dimsizes(yy)) then
-                        info_output("Some missing values in obs " + \
-                                    "percentiles", verbosity, 2)
+                        log_debug("Some missing values in obs " + \
+                                    "percentiles")
                     end if
                     if (.not.all(ismissing(q))) then
                         g_obj(ii) = \
                             gsn_add_polygon(wks, plot, xx(q), yy(q), resP)
                     else
-                        info_output("All values in obs percentiles are " + \
-                                    "missing (skipping)", verbosity, 1)
+                        log_info("All values in obs percentiles are " + \
+                                    "missing (skipping)")
                     end if
                     delete([/x1, x2, y1, y2, xx, yy, q/])
                     str = "obser_" + shade_name(shID)
@@ -1352,14 +1345,13 @@ begin
             yy = model(ii, i_median, :)
             q = ind(.not.ismissing(yy))
             if (dimsizes(q).ne.dimsizes(yy)) then
-                info_output("Some missing values in model median", \
-                            verbosity, 2)
+                log_debug("Some missing values in model median")
             end if
             if (.not.all(ismissing(q))) then
                 g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
             else
-                info_output("All values in model median are missing " + \
-                            "(skipping)", verbosity, 1)
+                log_info("All values in model median are missing " + \
+                            "(skipping)")
             end if
             delete([/xx, yy, q/])
         end do
@@ -1374,13 +1366,13 @@ begin
             yy = obser(ii, i_median, :)
             q = ind(.not.ismissing(yy))
             if (dimsizes(q).ne.dimsizes(yy)) then
-                info_output("Some missing values in obs. median", verbosity, 2)
+                log_debug("Some missing values in obs. median")
             end if
             if (.not.all(ismissing(q))) then
                 g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
             else
-                info_output("All values in obs median are missing " + \
-                            "(skipping)", verbosity, 1)
+                log_info("All values in obs median are missing " + \
+                            "(skipping)")
             end if
             delete([/xx, yy, q/])
         end do
@@ -1402,13 +1394,13 @@ begin
             yy = model(ii, i_mean, :)
             q = ind(.not.ismissing(yy))
             if (dimsizes(q).ne.dimsizes(yy)) then
-                info_output("Some missing values in model mean", verbosity, 2)
+                log_debug("Some missing values in model mean")
             end if
             if (.not.all(ismissing(q))) then
                 g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
             else
-                info_output("All values in model mean are missing " + \
-                            "(skipping)", verbosity, 1)
+                log_info("All values in model mean are missing " + \
+                            "(skipping)")
             end if
             delete([/xx, yy, q/])
         end do
@@ -1423,14 +1415,13 @@ begin
             yy = model(ii, i_mean, :) + model(ii, i_stddev, :)
             q = ind(.not.ismissing(yy))
             if (dimsizes(q).ne.dimsizes(yy)) then
-                info_output("Some missing values in model std. dev.", \
-                            verbosity, 2)
+                log_debug("Some missing values in model std. dev.")
             end if
             if (.not.all(ismissing(q))) then
                 g_obj(ii) = gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
             else
-                 info_output("All values in model std. dev. are missing " + \
-                            "(skipping)", verbosity, 1)
+                 log_info("All values in model std. dev. are missing " + \
+                            "(skipping)")
             end if
             delete([/xx, yy, q/])
         end do
@@ -1451,7 +1442,7 @@ begin
             yy = obser(ii, i_mean, :)
             q = ind(.not.ismissing(yy))
             if (dimsizes(q).ne.dimsizes(yy)) then
-                info_output("Some missing values in obs. mean", verbosity, 2)
+                log_debug("Some missing values in obs. mean")
             end if
             if (.not.all(ismissing(q))) then
                 if (l_stddev) then
@@ -1462,8 +1453,8 @@ begin
                         gsn_add_polyline(wks, plot, xx(q), yy(q), resL)
                 end if
             else
-                info_output("All values in obs. mean are missing " + \
-                            "(skipping)", verbosity, 1)
+                log_info("All values in obs. mean are missing " + \
+                            "(skipping)")
             end if
             delete([/xx, yy, q/])
         end do
@@ -1512,7 +1503,7 @@ begin
     end do
 
     frame(wks)
-    leave_msg(scriptname, funcname, 5)
+    leave_msg(scriptname, funcname)
     return(plot)
 
 end
@@ -1549,17 +1540,16 @@ procedure xy_line(wks[1],
 ;;    20150511_A_senf_da: modified legend
 ;;    20140109-A_senf_da: written.
 ;;
-local funcname, scriptname, verbosity, res, res_in, res_stddev, source, \
-    source_x, source_stddev, wks, wks_in, colors, colors_mm, dashes, \
-    dashes_mm, thicks, thicks_mm, annots, annots_mm, avgstd, avgstd_mm, temp, \
-    plot, shading_plot, mm, lgres, nitems, lbid, amres, annoid, labels, \
-    lg_outfile, psres, vpx, vph, vpy, vpw, bpres, tmborder
+local funcname, scriptname, res, res_in, res_stddev, source, source_x, \
+    source_stddev, wks, wks_in, colors, colors_mm, dashes, dashes_mm, thicks, \
+    thicks_mm, annots, annots_mm, avgstd, avgstd_mm, temp, plot, \
+    shading_plot, mm, lgres, nitems, lbid, amres, annoid, labels, lg_outfile, \
+    psres, vpx, vph, vpy, vpw, bpres, tmborder
 begin
 
     funcname = "xy_line"
     scriptname = "plot_scripts/ncl/xy_line.ncl"
-    verbosity  = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Select colors and other plotting attributes
     ;; (see ./diag_scripts/lib/ncl/style.ncl)
@@ -1677,11 +1667,11 @@ begin
         diag_script_info@EMs_in_lg = True  ; Set default
     end if
     if (.not.diag_script_info@EMs_in_lg) then
-        idcs_modelnames = UNIQ(models@name)
+        idcs_modelnames = UNIQ(model_info@model)
         colors := colors(idcs_modelnames)
         dashes := dashes(idcs_modelnames)
         thicks := thicks(idcs_modelnames)
-        annots := models@name(idcs_modelnames)
+        annots := model_info@model(idcs_modelnames)
     end if
     if (diag_script_info@multi_model_mean .eq. "y") then
         lgres@lgLineColors      = array_append_record(colors, colors_mmm, 0)
@@ -1801,8 +1791,8 @@ begin
     else
         outfile = wks@name
     end if
-    info_output(" Wrote " + outfile, verbosity, 1)
-    leave_msg(scriptname, funcname, 5)
+    log_info(" Wrote " + outfile)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -1840,13 +1830,12 @@ function timeseries_station(wks_in[1],
 ;; Modification history:
 ;;    * 20140325 written by Mattia Righi
 ;;
-local funcname, scriptname, verbosity
+local funcname, scriptname
 begin
 
     funcname = "timeseries_station"
     scriptname = "plot_scripts/ncl/xy_line.ncl"
-    verbosity  = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF file
     if(typeof(source) .eq. "string") then
@@ -1858,7 +1847,7 @@ begin
 
     ;; Retrieve basic metadata from data
     defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
-    if(inlist(varname, defaults)) then
+    if(any(varname .eq. defaults)) then
         var = att2var(data, "var")
     else
         var = varname
@@ -1966,7 +1955,7 @@ begin
         end if
     end if
 
-    leave_msg(scriptname, funcname, 5)
+    leave_msg(scriptname, funcname)
     return(plot)
 
 end
@@ -2001,14 +1990,13 @@ function cycle_plot(wks_in[1],
 ;; Modification history
 ;;    20131206-A_fran_fr: written.
 ;;
-local funcname, scriptname, verbosity, wks_out, wks_in, data, source, res, \
-    atts, base, varname
+local funcname, scriptname, wks_out, wks_in, data, source, res, atts, base, \
+    varname
 begin
 
     funcname = "cycle_plot"
     scriptname = "plot_scripts/ncl/xy_line.ncl"
-    verbosity  = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF file
     if(typeof(source) .eq. "string") then
@@ -2020,7 +2008,7 @@ begin
 
     ;; Retrieve basic metadata from data
     defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
-    if(inlist(varname, defaults)) then
+    if(any(varname .eq. defaults)) then
         var = att2var(data, "var")
         diag_script = att2var(data, "diag_script")
     else
@@ -2182,7 +2170,7 @@ begin
 
     end if
 
-    leave_msg(scriptname, funcname, 5)
+    leave_msg(scriptname, funcname)
     return(plot)
 
 end
@@ -2215,14 +2203,13 @@ function errorbar_plot(wks_in[1],
 ;; Modification history
 ;;    20151105-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, data, defaults, var, wks, res, \
-    ren_new, resL, error_bar
+local funcname, scriptname, data, defaults, var, wks, res, ren_new, resL, \
+    error_bar
 begin
 
     funcname = "errorbar_plot"
     scriptname = "plot_scripts/ncl/xy_line.ncl"
-    verbosity  = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF file
     if(typeof(source) .eq. "string") then
@@ -2234,7 +2221,7 @@ begin
 
     ;; Retrieve basic metadata from data
     defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
-    if(inlist(varname, defaults)) then
+    if(any(varname .eq. defaults)) then
         var = att2var(data, "var")
         diag_script = att2var(data, "diag_script")
     else
@@ -2293,7 +2280,7 @@ begin
         plot@$str$ = error_bar(imod)
     end do
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(plot)
 
 end

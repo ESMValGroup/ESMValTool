@@ -11,7 +11,7 @@
 ;;#############################################################################
 
 load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 
 load "./diag_scripts/lib/ncl/set_operators.ncl"
 
@@ -53,11 +53,12 @@ function taylor_plot(wks_in[1],
 ;; Modification history:
 ;;    20150505-A_righ_ma: written based on the original NCL code.
 ;;
-local verbosity
+local funcname, scriptname
 begin
 
-    verbosity = config_user_info@verbosity
-    info_output("<<<<<<<< Entering taylor_plot", verbosity, 4)
+    funcname = "taylor_plot"
+    scriptname = "plot_scripts/ncl/taylor_plot.ncl"
+    enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF file
     if(typeof(source) .eq. "string") then
@@ -72,7 +73,7 @@ begin
 
     ;; Retrieve basic metadata from data
     defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
-    if (inlist(varname, defaults)) then
+    if (any(varname .eq.  defaults)) then
         grade = att2var(data, "var")
         diag_script = att2var(data, "diag_script")
     else
@@ -442,7 +443,7 @@ begin
     frame(wks)
     taylor@outfile = wks@name
 
-    info_output(">>>>>>>> Leaving taylor_plot", verbosity, 4)
+    leave_msg(scriptname, funcname)
     return(taylor)
 
 end

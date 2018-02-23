@@ -53,15 +53,13 @@ begin
 
 end
 
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 load "./reformat_scripts/constants.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity = config_user_info@verbosity
     diag_script = "reformat_obs_Texas.ncl"
-    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent(OUTDIR)) then
@@ -71,7 +69,7 @@ begin
     ;; Loop over campaigns
     do cpID = 0, dimsizes(CAMPAIGN) - 1
 
-        info_output("Campaign: " + CAMPAIGN(cpID), verbosity, 1)
+        log_info("Campaign: " + CAMPAIGN(cpID))
 
         ;; Find lat and lon ranges
         infile = INDIR + "200411" + CAMPAIGN(cpID) + "_AVE_Flight_Track.txt"
@@ -171,6 +169,5 @@ begin
 
     end do
 
-    leave_msg(diag_script, "", 1)
 
 end

@@ -52,14 +52,12 @@ begin
 
 end
 
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity = config_user_info@verbosity
     diag_script = "reformat_obs_UWisc.ncl"
-    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent(OUTDIR)) then
@@ -69,7 +67,7 @@ begin
     ;; Loop over years
     do yr = YEAR1, YEAR2
         fname = INDIR + "UWisc_LWPMEAN_" + yr + "_v2.nc"
-        info_output("*** "+ fname + " ***", verbosity, 1)
+        log_info("*** "+ fname + " ***")
 
         f = addfile(fname, "r")
         lwp = (/f->LWP/)
@@ -187,7 +185,6 @@ begin
 
     delete(time)
 
-    leave_msg(diag_script, "", 1)
 
 end
 

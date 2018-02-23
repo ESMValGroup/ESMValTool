@@ -10,17 +10,9 @@
 ;;
 ;;#############################################################################
 
-
-
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/shea_util.ncl"
-
-
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/data_handling.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 
 load "./diag_scripts/aux/SAMonsoon/SAMonsoon.ncl"
 exact_panel_position_file = "./diag_scripts/aux/SAMonsoon/exact_panel_positions_precip_world.ncl"
@@ -32,6 +24,7 @@ begin
     loadscript(exact_panel_position_file)
 end
 
+;;#############################################################################
 undef("plot_precip_domain")
 procedure plot_precip_domain(cols[*]:integer,
                              rows[*]:float,
@@ -93,6 +86,11 @@ local am_infobox_id,      blank_plot,         cn_levels_string,\
     plot_ref,           plottype_lbres,     ref,\
     statistics,         storage_record,     txres
 begin
+
+    funcname = "plot_precip_domain"
+    scriptname = "plot_script/ncl/monsoon_domain_panels.ncl"
+    enter_msg(scriptname, funcname)
+
     if (isatt(res, "cnLevels")) then
         delete(res@cnLevels)
     end if
@@ -248,8 +246,12 @@ begin
                           debuginfo@description,\
                           debuginfo@description_ycoord)
     end if
+
+    leave_msg(scriptname, funcname)
+
 end
 
+;;#############################################################################
 undef("precip_domain")
 procedure precip_domain(storage_vault [1] : logical,
                      di [1] : logical,
@@ -296,11 +298,14 @@ local aux_filename_info,         blank_plot,          cn,\
     plot,                      plot_array,          plot_ref,                plottype_lbres,\
     ref,                       res,                 rows,\
     storage_record,            total_no_of_pages,   txres,\
-    type_specifier,            var0,                verbosity,               wks
+    type_specifier,            var0,                wks
 begin
-    verbosity  = config_user_info@verbosity
-    info_output("<<<<<<<< Entering precip_domain", verbosity, 6)
-    dim_MOD = dimsizes(models@name)
+
+    funcname = "precip_domain"
+    scriptname = "plot_script/ncl/monsoon_domain_panels.ncl"
+    enter_msg(scriptname, funcname)
+
+    dim_MOD = dimsizes(model_info@model)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     field_type0 = field_types(0)
@@ -313,7 +318,7 @@ begin
     ;; Output dir
     ;; 'plot_dir' is fetched from ncl.interface
     diag_script_base = basename(diag_script)
-    output_dir = get_output_dir(plot_dir, diag_script_base)
+    output_dir = config_user_info@plot_dir
 
     res@tiMainFontHeightF = 0.011
 
@@ -344,7 +349,7 @@ begin
 
     ;; Which model goes where on each page?
     figure_panel_placement = new((/sum(figures_per_page)/), integer)
-    place_models_on_pages(models,\
+    place_models_on_pages(model_info,\
                           plot_settings@idx_ref,\
                           figures_per_page,\
                           model_panel_placement,\
@@ -453,6 +458,9 @@ begin
                                no_figures_on_this_page)
             frame(wks_debug)
         end if
-    info_output(">>>>>>>> Leaving precip_domain", verbosity, 6)
+
     end do  ; curr_page = 0, total_no_of_pages - 1
+
+    leave_msg(scriptname, funcname)
+
 end

@@ -22,7 +22,7 @@
 
 load "interface_scripts/interface.ncl"
 load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 
 load "./reformat_scripts/constants.ncl"
 
@@ -54,13 +54,12 @@ function fix_FillValue(var:numeric)
 ;; Modification history
 ;;    20140217-A_gott_kl: written.
 ;;
-local funcname, scriptname, verbosity, result, upper, lower, tol
+local funcname, scriptname, result, upper, lower, tol
 begin
 
     funcname = "fix_FillValue"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     if (var@_FillValue.eq.-1.e34) then
         ;; specify threshold
@@ -72,7 +71,7 @@ begin
         result = where(var.lt.upper, var@_FillValue, var)
         copy_VarMeta(var, result)
     end if
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(result)
 
 end
@@ -93,13 +92,12 @@ procedure check_inpath()
 ;; Modification history
 ;;    20130502-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, subdir, ii, pp, len_inpath, last_char
+local funcname, scriptname, subdir, ii, pp, len_inpath, last_char
 begin
 
     funcname = "check_inpath"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Simulation path
     if (.not.fileexists(INPATH)) then
@@ -117,7 +115,7 @@ begin
         INPATH = INPATH + "/"
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -138,13 +136,12 @@ procedure find_messy_version()
 ;;    20130505_A_gott_kl: modified do deal with leading letters.
 ;;    20130502-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, found, ii, fn, f, tmp, jj, temp1
+local funcname, scriptname, found, ii, fn, f, tmp, jj, temp1
 begin
 
     funcname = "find_messy_version"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     found = False
     fn = systemfunc("find " + INPATH + " -type f -name '" + EXPER + \
@@ -189,7 +186,7 @@ begin
                   "cannot determine MESSy version of experiment " + EXPER)
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -214,13 +211,12 @@ function get_aerosol_modes()
 ;; Modification history
 ;;    20140915-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity
+local funcname, scriptname
 begin
 
     funcname = "get_aerosol_modes"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Possible modes names
     modes = (/"_i", "_km", "_ks", "_ki", "_is", "_sooti", \
@@ -237,7 +233,7 @@ begin
                   "and corresponding sigmas must be consistent")
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(modes)
 
 end
@@ -262,19 +258,18 @@ function get_aerosol_spec()
 ;; Modification history
 ;;    20140929-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity
+local funcname, scriptname
 begin
 
     funcname = "get_aerosol_spec"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Possible aerosol species
     aero = (/"SO4", "NH4", "NO3", "Na", "Cl", "POM", "POM2", "POMphil", \
             "POMphob", "BC", "BC2", "DU", "H2O", "SS"/)
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(aero)
 
 end
@@ -300,13 +295,12 @@ function find_name(var:string)
 ;; Modification history
 ;;    20130502-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, fname, data, std, emac, type, vert, id
+local funcname, scriptname, fname, data, std, emac, type, vert, id
 begin
 
     funcname = "find_name"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     fname = "./reformat_scripts/EMAC/names_EMAC.dat"
 
@@ -329,7 +323,7 @@ begin
         out@vert = vert(id)
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(out)
 
 end
@@ -355,13 +349,12 @@ procedure put_vfatmp(var:string,
 ;; Modification history
 ;;    20150324-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, dn, bn, str
+local funcname, scriptname, dn, bn, str
 begin
 
     funcname = "put_vfatmp"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     dn = systemfunc("dirname " + fn)
     bn = systemfunc("basename " + fn)
@@ -371,7 +364,7 @@ begin
 
     system("echo " + str_get_dq + str + str_get_dq + " >> " + VFATMP)
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -397,16 +390,15 @@ function get_vfatmp(var:string,
 ;; Modification history
 ;;    20150324-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, xx, vv, fn, id, dn, bn
+local funcname, scriptname, xx, vv, fn, id, dn, bn
 begin
 
     funcname = "get_vfatmp"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     if (.not.fileexists(VFATMP)) then
-        leave_msg(scriptname, funcname, 4)
+        leave_msg(scriptname, funcname)
         return("err")
     end if
 
@@ -421,7 +413,7 @@ begin
         bn = systemfunc("basename " + fn(id))
         bn = str_sub_str(bn, "YYYYMM", date)
         str = dn + "/" + bn
-        leave_msg(scriptname, funcname, 4)
+        leave_msg(scriptname, funcname)
         return(str)
     else
         id = ind(var + "_ave".eq.vv)
@@ -431,13 +423,13 @@ begin
             bn = str_sub_str(bn, "YYYYMM", date)
             str = dn + "/" + bn
             var = var + "_ave"  ; propagate updated name to find_and_read_var
-            leave_msg(scriptname, funcname, 4)
+            leave_msg(scriptname, funcname)
             return(str)
         end if
     end if
 
     ;; Variable not read before
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return("err")
 
 end
@@ -483,14 +475,13 @@ function find_and_read_var(var:string,
 ;;    20150322-A_righ_ma: a few modifications for processing REF-C1.
 ;;    20130502-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, pfn, flist, lvar, not_ave, date, ii, \
+local funcname, scriptname, pfn, flist, lvar, not_ave, date, ii, \
     f, vlist, files, p, l_files, ii, tmp, dtime
 begin
 
     funcname = "find_and_read_var"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Create a local copy
     lvar = var
@@ -499,9 +490,9 @@ begin
     pfn = get_vfatmp(lvar, date)
     if (pfn.ne."err") then
         f = addfile(pfn, "r")
-        info_output("Reading " + lvar + " from " + pfn, verbosity, 2)
+        log_debug("Reading " + lvar + " from " + pfn)
         xx = f->$lvar$
-        leave_msg(scriptname, funcname, 4)
+        leave_msg(scriptname, funcname)
 ; a_laue_ax+
         gFileList(gNFiles) = pfn
         gNFiles = gNFiles + 1
@@ -559,7 +550,7 @@ begin
             error_msg("f", "reformat_EMAC_func.ncl", funcname, "variable " + \
                       var + " (" + var + "_ave) not found")
         else
-            leave_msg(scriptname, funcname, 4)
+            leave_msg(scriptname, funcname)
             return("err")
         end if
     end if
@@ -575,9 +566,9 @@ begin
         sf = INPATH + files(0)
         f = addfile(sf, "r")
         put_vfatmp(var, date, sf)
-        info_output("Reading " + var + " from " + sf, verbosity, 1)
+        log_info("Reading " + var + " from " + sf)
         xx = f->$var$
-        leave_msg(scriptname, funcname, 4)
+        leave_msg(scriptname, funcname)
 ; a_laue_ax+
         gFileList(gNFiles) = sf
         gNFiles = gNFiles + 1
@@ -594,9 +585,9 @@ begin
             lvar = lvar + "_ave"
         end if
         put_vfatmp(lvar, date, sf)
-        info_output("Reading " + lvar + " from " + sf, verbosity, 1)
+        log_info("Reading " + lvar + " from " + sf)
         xx = f->$lvar$
-        leave_msg(scriptname, funcname, 4)
+        leave_msg(scriptname, funcname)
 ; a_laue_ax+
         gFileList(gNFiles) = sf
         gNFiles = gNFiles + 1
@@ -627,9 +618,9 @@ begin
             lvar = lvar + "_ave"
         end if
         put_vfatmp(lvar, date, sf)
-        info_output("Reading " + lvar + " from " + sf, verbosity, 1)
+        log_info("Reading " + lvar + " from " + sf)
         xx = f->$lvar$
-        leave_msg(scriptname, funcname, 4)
+        leave_msg(scriptname, funcname)
 ; a_laue_ax+
         gFileList(gNFiles) = sf
         gNFiles = gNFiles + 1
@@ -668,9 +659,9 @@ begin
             lvar = lvar + "_ave"
         end if
         put_vfatmp(lvar, date, sf)
-        info_output("Reading " + lvar + " from " + sf, verbosity, 1)
+        log_info("Reading " + lvar + " from " + sf)
         xx = f->$lvar$
-        leave_msg(scriptname, funcname, 4)
+        leave_msg(scriptname, funcname)
 ; a_laue_ax+
         gFileList(gNFiles) = sf
         gNFiles = gNFiles + 1
@@ -679,10 +670,9 @@ begin
     end if
 
     ;; More than 1 file found: pick the first one
-    info_output("Variable " + var + " found in more than 1 file: ", \
-                verbosity, 2)
+    log_info("Variable " + var + " found in more than 1 file: ")
     do ii = 0, dimsizes(files) - 1
-        info_output("     " + files(ii), verbosity, 2)
+        log_debug("     " + files(ii))
     end do
     sf = INPATH + files(0)
     f = addfile(sf, "r")
@@ -691,9 +681,9 @@ begin
         lvar = lvar + "_ave"
     end if
     put_vfatmp(lvar, date, sf)
-    info_output("Reading " + lvar + " from " + sf, verbosity, 1)
+    log_info("Reading " + lvar + " from " + sf)
     xx = f->$lvar$
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 ; a_laue_ax+
     gFileList(gNFiles) = sf
     gNFiles = gNFiles + 1
@@ -724,14 +714,13 @@ function time_mean(var:numeric,
 ;; Modification history
 ;;    20130502-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, rank, date, opt, days, ndays, dd, idx, \
+local funcname, scriptname, rank, date, opt, days, ndays, dd, idx, \
     dum
 begin
 
     funcname = "time_mean"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     rank = dimsizes(getvardims(var))
     date = cd_calendar(var&time, 0)
@@ -771,10 +760,10 @@ begin
             ;; Set time coordinate
             out&time = cd_inv_calendar(toint(date(0, 0)), toint(date(0, 1)), \
                                        15, 0, 0, 0, var&time@units, opt)
-            leave_msg(scriptname, funcname, 4)
+            leave_msg(scriptname, funcname)
             return(out)
         else
-            leave_msg(scriptname, funcname, 4)
+            leave_msg(scriptname, funcname)
             return(var)
         end if
     end if
@@ -831,17 +820,17 @@ begin
                                        toint(date(0:ndays - 1, 1)), \
                                        toint(days), dum, dum, dum, \
                                        var&time@units, opt)
-            leave_msg(scriptname, funcname, 4)
+            leave_msg(scriptname, funcname)
             return(out)
         else
-            leave_msg(scriptname, funcname, 4)
+            leave_msg(scriptname, funcname)
             return(var)
         end if
     end if
 
     ;; Instantaneous output case (nothing to do)
     if (mean.eq."I") then
-        leave_msg(scriptname, funcname, 4)
+        leave_msg(scriptname, funcname)
         return(var)
     end if
 
@@ -853,7 +842,6 @@ end
 ;;#############################################################################
 undef("extract_var")
 if (fileexists(RECIPEFILE)) then
-    verbosity = config_user_info@verbosity
     loadscript(RECIPEFILE)
 end if
 function extract_var(name:string,
@@ -883,7 +871,7 @@ function extract_var(name:string,
 ;;    20130506-A_gott_kl: changes for data already on pressure levels.
 ;;    20130502-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, xx, recog_vert_coords, recog_press, \
+local funcname, scriptname, xx, recog_vert_coords, recog_press, \
     recog_units, l_inst, l_day, l_month, l_4dim, l_zonal, l_vert, l_press, \
     vert_coord, levels, l_press, l_colum, l_surf, ndims, hyam, hybm, aps, \
     vol, pp, tt, area, xt, maxplev, slev, reordxt, caps, ret, xp, xz, xc, \
@@ -892,8 +880,7 @@ begin
 
     funcname = "extract_var"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Read variable
     if (name.ne."#RECIP") then  ; EMAC variable
@@ -927,12 +914,12 @@ begin
     if (l_vert) then
         vert_coord = recog_vert_coords(ind(iscoord(xx, recog_vert_coords)))
         levels = xx&$vert_coord$
-        if(inlist(levels@units, recog_units) .or. \
-           inlist(levels@long_name, recog_press) .or. \
-           inlist(levels@standard_name, recog_press)) then
+        if(any(levels@units .eq. recog_units) .or. \
+           any(levels@long_name .eq. recog_press) .or. \
+           any(levels@standard_name .eq. recog_press)) then
             l_press = False
-            info_output("reformat_EMAC_func: data are already on pressure " + \
-                        "levels", verbosity, 2)
+            log_info("reformat_EMAC_func: data are already on pressure " + \
+                        "levels")
             xx!1 = "lev_p"
             if (levels@units.eq."Pa" .or. levels@units.eq."PA") then
                 ;; Force units conversion to trigger standardization
@@ -1091,7 +1078,7 @@ begin
     end if
     delete(xc)
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(xs)
 
 end
@@ -1113,13 +1100,12 @@ procedure format_coord(var:numeric)
 ;; Modification history
 ;;    20130502-A_righ_ma: written.
 ;;
-local funcname, scriptname, verbosity, rank, ctime, cplev, clat, clon, tmp
+local funcname, scriptname, rank, ctime, cplev, clat, clon, tmp
 begin
 
     funcname = "format_coord"
     scriptname = "reformat_scripts/EMAC/reformat_EMAC_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     rank = dimsizes(dimsizes(var))
 
@@ -1201,6 +1187,6 @@ begin
         var&lon = clon
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end

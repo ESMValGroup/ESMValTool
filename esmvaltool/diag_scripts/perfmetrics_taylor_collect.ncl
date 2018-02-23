@@ -27,20 +27,13 @@
 ;;
 ;;#############################################################################
 
-
-
 load "interface_scripts/interface.ncl"
-load "./interface_scripts/interface.ncl"
-load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/data_handling.ncl"
-load "./interface_scripts/messaging.ncl"
 
 load "./plot_scripts/ncl/taylor_plot.ncl"
 
 begin
 
-    verbosity  = config_user_info@verbosity
-    enter_msg(diag_script, "", 4)
+    enter_msg(diag_script, "")
     diag_script_base = basename(diag_script)
 
     ;; Check file type
@@ -116,7 +109,7 @@ begin
     ;; Plot
     if (config_user_info@write_plots .eq. True) then
         ;; Create outfile directory
-        plot_dir = config_user_info@plot_dir + "/"
+        plot_dir = config_user_info@plot_dir
         system("mkdir -p " + plot_dir)
         if(dimsizes(data_all&diagnostics).gt.2) then
             diags = data_all&diagnostics(0) + "_to_" + \
@@ -133,12 +126,12 @@ begin
         ;; Plot
         plot  = taylor_plot(wks, data_all, "var")
 
-        info_output(" gv " + outfile_plot + "." + file_type, verbosity, 1)
+        log_info(" gv " + outfile_plot + "." + file_type)
     end if
 
     ;; Remove temporary Taylor list
     system("rm -f " + temp_dir)
 
-    leave_msg(diag_script, "", 4)
+    leave_msg(diag_script, "")
 
 end

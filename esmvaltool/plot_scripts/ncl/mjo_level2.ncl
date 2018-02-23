@@ -1,14 +1,10 @@
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/shea_util.ncl"
 
 ;; Temporary file updated by Python on the fly
 
 
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/data_handling.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 
 load "./diag_scripts/lib/ncl/set_operators.ncl"
 load "./diag_scripts/lib/ncl/statistics.ncl"
@@ -514,7 +510,7 @@ begin
     var0 = variables(0)
     field_type0 = field_types(0)
 
-    netcdf_dir = plot_dir + "/netcdf/"
+    netcdf_dir = plot_dir + "netcdf/"
     aux_title_info = "MJO_PC_INDEX"
     input_netcdf = interface_get_figure_filename("mjo_life_cycle_plot",\
                                                   var0,\
@@ -629,12 +625,12 @@ begin
     ;; Output dir
     ;; 'plot_dir' is fetched from ncl.interface
     diag_script_base = basename(diag_script)
-    output_dir = get_output_dir(plot_dir, diag_script_base)
+    output_dir = config_user_info@plot_dir
 
     pltSubTitle = "Anomalous: OLR, U850, V850"
 
     do nSeason = 1, 2
-        aux_title_info = models@name(idx_mod) + "_"\
+        aux_title_info = model_info@model(idx_mod) + "_"\
                          + di@season_life_cycle(nSeason - 1)
         output_filename = interface_get_figure_filename(diag_script_base,\
                                                         var0,\
@@ -650,14 +646,14 @@ begin
         txid = gsn_create_text(wks, pltSubTitle, txres)
 
         if(nSeason .eq. 1) then
-            resP@txString = models@name(idx_mod) + ": "\
-                            + models@start_year(idx_mod) + "-"\
-                            + models@end_year(idx_mod)\
+            resP@txString = model_info@model(idx_mod) + ": "\
+                            + model_info@start_year(idx_mod) + "-"\
+                            + model_info@end_year(idx_mod)\
                             + ": May to Oct"
         else
-            resP@txString = models@name(idx_mod) + ": "\
-                            + models@start_year(idx_mod) + "-"\
-                            + models@end_year(idx_mod)\
+            resP@txString = model_info@model(idx_mod) + ": "\
+                            + model_info@start_year(idx_mod) + "-"\
+                            + model_info@end_year(idx_mod)\
                             + ": Nov to Apr"
         end if
         do n = 0, nPhase - 1

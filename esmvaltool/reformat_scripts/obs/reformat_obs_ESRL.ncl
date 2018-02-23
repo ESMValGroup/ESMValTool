@@ -62,15 +62,13 @@ begin
 
 end
 
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 load "./reformat_scripts/constants.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity = config_user_info@verbosity
     diag_script = "reformat_obs_ESRL.ncl"
-    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent(OUTDIR)) then
@@ -82,7 +80,7 @@ begin
     datec = ut_calendar(timec, 1)
 
     ;; Read station info
-    info_output("Reading station information", verbosity, 1)
+    log_info("Reading station information")
     stat = readAsciiTable(FILE_STAT, 1, "string", 0)
     st_code = str_squeeze(str_get_field(stat(:, 0), 1, ","))
     st_name = str_squeeze(str_get_field(stat(:, 0), 2, ","))
@@ -107,13 +105,12 @@ begin
             ;; Read site name
             tmp = str_get_field(data(:, 0), 1, " ")
             if (.not.all(tmp(0).eq.tmp)) then
-                info_output("Inconsistent site name in " + files(ii), \
-                            verbosity, 1)
+                log_info("Inconsistent site name in " + files(ii))
             else
                 site = tmp(0)
             end if
             delete(tmp)
-            info_output("Processing site " + site, verbosity, 1)
+            log_info("Processing site " + site)
 
             ;; Read time and extract full years only
             year = str_squeeze(str_get_field(data(:, 0), 2, " "))
@@ -196,6 +193,5 @@ begin
 
     end do
 
-    leave_msg(diag_script, "", 1)
 
 end
