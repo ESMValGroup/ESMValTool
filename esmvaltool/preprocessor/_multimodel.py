@@ -50,118 +50,96 @@ def _plev_fix(dataset, pl_idx):
     else:
         mask = np.zeros_like(dataset[pl_idx], bool)
         statj = np.ma.array(dataset[pl_idx], mask=mask)
+
     return statj
 
 
-def _compute_means(datas):
-    """Compute multimodel means"""
-    # plevs
-    if len(datas[0].shape) == 3:
-        statistic = datas[0]
-        for j in range(statistic.shape[0]):
-            len_stat_j = sum(1 for _ in
-                             (_plev_fix(cdata, j)
-                              for cdata in datas
-                              if _plev_fix(cdata, j) is not None))
-            stat_all = np.ma.zeros((len_stat_j,
-                                    statistic.shape[1],
-                                    statistic.shape[2]))
-            for i, e_l in enumerate((
-                    _plev_fix(cdata, j)
-                    for cdata in datas
-                    if _plev_fix(cdata, j) is not None)):
-                stat_all[i] = e_l
+def _compute_statistic(datas, name):
+    """Compute multimodel statistic"""
+    datas = np.ma.array(datas)
+    statistic = datas[0]
 
-            # check for nr models
-            if len_stat_j >= 2:
-                statistic[j] = np.ma.mean(stat_all, axis=0)
-            else:
-                mask = np.ones(statistic[j].shape, bool)
-                statistic[j] = np.ma.array(statistic[j],
-                                           mask=mask)
-    # no plevs
+    if name == 'median':
+        statistic_function = np.ma.median
+    elif name == 'mean':
+        statistic_function = np.ma.mean
     else:
-        statistic = np.ma.mean(datas, axis=0)
+        raise NotImplementedError
+
+    # no plevs
+    if len(datas[0].shape) < 3:
+        statistic = statistic_function(datas, axis=0)
+        return statistic
+
+    # plevs
+    for j in range(statistic.shape[0]):
+        len_stat_j = sum(1 for _ in
+                         (_plev_fix(cdata, j)
+                          for cdata in datas
+                          if _plev_fix(cdata, j) is not None))
+        stat_all = np.ma.zeros((len_stat_j,
+                                statistic.shape[1],
+                                statistic.shape[2]))
+        for i, e_l in enumerate((
+                _plev_fix(cdata, j)
+                for cdata in datas
+                if _plev_fix(cdata, j) is not None)):
+            stat_all[i] = e_l
+
+        # check for nr models
+        if len_stat_j >= 2:
+            statistic[j] = statistic_function(stat_all, axis=0)
+        else:
+            mask = np.ones(statistic[j].shape, bool)
+            statistic[j] = np.ma.array(statistic[j],
+                                       mask=mask)
 
     return statistic
 
 
-def _compute_medians(datas):
-    """Compute multimodel medians"""
-    # plevs
-    if len(datas[0].shape) == 3:
-        statistic = datas[0]
-        for j in range(statistic.shape[0]):
-            len_stat_j = sum(1 for _ in
-                             (_plev_fix(cdata, j)
-                              for cdata in datas
-                              if _plev_fix(cdata, j) is not None))
-            stat_all = np.ma.zeros((len_stat_j,
-                                    statistic.shape[1],
-                                    statistic.shape[2]))
-            for i, e_l in enumerate((
-                    _plev_fix(cdata, j)
-                    for cdata in datas
-                    if _plev_fix(cdata, j) is not None)):
-                stat_all[i] = e_l
-
-            # check for nr models
-            if len_stat_j >= 2:
-                statistic[j] = np.ma.median(stat_all, axis=0)
-            else:
-                mask = np.ones(statistic[j].shape, bool)
-                statistic[j] = np.ma.array(statistic[j],
-                                           mask=mask)
-    # no plevs
-    else:
-        datas = np.ma.array(datas)
-        statistic = np.ma.median(datas, axis=0)
-
-    return statistic
-
-
-def _call_to_compute(tdatas, stats_name):
-    """Make the actual call to compute stats"""
-    if stats_name == 'means':
-        dspec_i = _compute_means(tdatas)
-    elif stats_name == 'medians':
-        dspec_i = _compute_medians(tdatas)
-
-    return dspec_i
-
-
-def _put_in_cube(cube0, dspec, ncfiles, sname, fname):
+def _put_in_cube(template_cube,
+                 cube_data,
+                 ncfiles,
+                 stat_name,
+                 file_name):
     """Quick cube building and saving"""
     # grab coordinates from any cube
-    times = cube0.coord('time')
-    lats = cube0.coord('latitude')
-    lons = cube0.coord('longitude')
-    if len(cube0.shape) == 3:
+    times = template_cube.coord('time')
+    lats = template_cube.coord('latitude')
+    lons = template_cube.coord('longitude')
+
+    # no plevs
+    if len(template_cube.shape) == 3:
         cspec = [(times, 0), (lats, 1), (lons, 2)]
-    elif len(cube0.shape) == 4:
-        plev = cube0.coord('air_pressure')
+    # plevs
+    elif len(template_cube.shape) == 4:
+        plev = template_cube.coord('air_pressure')
         cspec = [(times, 0), (plev, 1), (lats, 2), (lons, 3)]
+
     # correct dspec if necessary
-    fixed_dspec = np.ma.fix_invalid(dspec, copy=False, fill_value=1e+20)
+    fixed_dspec = np.ma.fix_invalid(cube_data,
+                                    copy=False,
+                                    fill_value=1e+20)
     # put in cube
     stats_cube = iris.cube.Cube(fixed_dspec,
                                 dim_coords_and_dims=cspec,
-                                long_name=sname)
-    coord_names = [coord.name() for coord in cube0.coords()]
+                                long_name=stat_name)
+    coord_names = [coord.name() for coord in template_cube.coords()]
     if 'air_pressure' in coord_names:
-        if len(cube0.shape) == 3:
-            stats_cube.add_aux_coord(cube0.coord('air_pressure'))
-    stats_cube.attributes['_filename'] = fname
+        if len(template_cube.shape) == 3:
+            stats_cube.add_aux_coord(template_cube.
+                                     coord('air_pressure'))
+    stats_cube.attributes['_filename'] = file_name
     stats_cube.attributes['NCfiles'] = str(ncfiles)
     return stats_cube
 
 
-def _sdat(srl_no, unit_type):
+def _to_datetime(delta_t, unit_type):
     """Convert to a datetime point"""
     if unit_type == 'day since 1950-01-01 00:00:00.0000000':
-        new_date = dd(1950, 1, 1, 0) + td(srl_no)
+        new_date = dd(1950, 1, 1, 0) + td(delta_t)
     elif unit_type == 'day since 1850-01-01 00:00:00.0000000':
-        new_date = dd(1850, 1, 1, 0) + td(srl_no)
+        new_date = dd(1850, 1, 1, 0) + td(delta_t)
     # add more supported units here
     return new_date
 
@@ -181,15 +159,30 @@ def _get_overlap(cubes):
     all_times = []
     for cube in cubes:
         # monthly data ONLY
+        # converts all to 365-days calendars
+        time_units = cube.coord('time').units
         bnd1 = float(cube.coord('time').points[0])
         bnd2 = float(cube.coord('time').points[-1])
-        bnd1 = int(bnd1 / 365.) * 365.
-        bnd2 = (int(bnd2 / 365.) + 1) * 365.
-        all_times.append(np.array([[bnd1, bnd2]]))
-    bounds = [range(int(b[0][0]), int(b[-1][-1]) + 1) for b in all_times]
-    time_pts = reduce(np.intersect1d, (i for i in bounds))
+        if time_units.calendar is not None:
+            if time_units.calendar == '360_day':
+                bnd1 = int(bnd1 / 360.) * 365.
+                bnd2 = (int(bnd2 / 360.) + 1) * 365.
+            else:
+                bnd1 = int(bnd1 / 365.) * 365.
+                bnd2 = (int(bnd2 / 365.) + 1) * 365.
+        else:
+            logger.debug("No calendar type: assuming 365-day")
+            bnd1 = int(bnd1 / 365.) * 365.
+            bnd2 = (int(bnd2 / 365.) + 1) * 365.
+        all_times.append([bnd1, bnd2])
+    bounds = [range(int(b[0]), int(b[-1]) + 1) for b in all_times]
+    time_pts = reduce(np.intersect1d, bounds)
     if len(time_pts) > 1:
-        return _sdat(time_pts[0], utype), _sdat(time_pts[-1], utype)
+        time_bounds_list = [time_pts[0],
+                            time_pts[-1],
+                            _to_datetime(time_pts[0], utype),
+                            _to_datetime(time_pts[-1], utype)]
+        return time_bounds_list
 
 
 def _slice_cube(cube, min_t, max_t):
@@ -210,11 +203,16 @@ def _slice_cube2(cube, t_1, t_2):
     _slice_cube(); using this function adds virtually
     no extra memory to the process
     """
-    utype = str(cube.coord('time').units)
+    time_units = cube.coord('time').units
     time_pts = [j for j in cube.coord('time').points]
+    if time_units.calendar == '360_day':
+        # apply  calendar unifying prefactor
+        a_p = 365. / 360.
+    else:
+        a_p = 1.0
     idxs = sorted([time_pts.index(ii)
                    for ii in time_pts
-                   if t_1 <= _sdat(ii, utype) <= t_2])
+                   if t_1 <= ii * a_p <= t_2])
     cube_t_slice = cube.data[idxs[0]:idxs[-1] + 1]
     return cube_t_slice
 
@@ -222,7 +220,20 @@ def _slice_cube2(cube, t_1, t_2):
 def _monthly_t(cubes):
     """Rearrange time points for monthly data"""
     # get original cubes tpoints
-    tpts = [c.coord('time').points for c in cubes]
+    tpts = []
+    # make all 365-day calendards
+    for cube in cubes:
+        time_units = cube.coord('time').units
+        if time_units.calendar is not None:
+            if time_units.calendar == '360_day':
+                a_p = 365. / 360.
+            else:
+                a_p = 1.
+        else:
+            logger.debug("No calendar type: assuming 365-day")
+            a_p = 1.
+        tpts.append([int(c * a_p) for c in cube.coord('time').points])
+
     # convert to months for MONTHLY data
     t_x = list(set().union(*tpts))
     t_x = list(set([int((a / 365.) * 12.) for a in t_x]))
@@ -242,12 +253,22 @@ def _full_time(cubes):
     t_x0 = _monthly_t(cubes)[1]
     # loop through cubes and apply masks
     for cube in cubes:
+        # recast time points
+        if cube.coord('time').units.calendar is not None:
+            if cube.coord('time').units.calendar == '360_day':
+                a_p = 365. / 360.
+            else:
+                a_p = 1.
+        else:
+            logger.debug("No calendar type: assuming 365-day")
+            a_p = 1.
+        cube_redone = [int(c * a_p) for c in cube.coord('time').points]
         # construct new shape
         fine_shape = tuple([len(t_x)] + list(cube.data.shape[1:]))
         # find indices of present time points
         oidx = [
             t_x.index(int((s / 365.) * 12.))
-            for s in cube.coord('time').points]
+            for s in cube_redone]
         # reshape data to include all possible times
         ndat = np.ma.resize(cube.data, fine_shape)
         # build the time mask
@@ -349,18 +370,20 @@ def multi_model_mean(cubes, span, filename, exclude):
             for i in range(mean_dats.shape[0]):
                 time_data = [_slice_cube2(cube, ovlp[0], ovlp[1])[i]
                              for cube in selection]
-                mean_dats[i] = _call_to_compute(time_data, 'means')
-                med_dats[i] = _call_to_compute(time_data, 'medians')
+                mean_dats[i] = _compute_statistic(time_data,
+                                                  'mean')
+                med_dats[i] = _compute_statistic(time_data,
+                                                 'median')
             c_mean = _put_in_cube(_apply_overlap(selection[0],
-                                                 ovlp[0],
-                                                 ovlp[1]),
+                                                 ovlp[2],
+                                                 ovlp[3]),
                                   mean_dats,
                                   file_names,
                                   'means',
                                   filename)
             c_med = _put_in_cube(_apply_overlap(selection[0],
-                                                ovlp[0],
-                                                ovlp[1]),
+                                                ovlp[2],
+                                                ovlp[3]),
                                  med_dats,
                                  file_names,
                                  'medians',
@@ -375,8 +398,10 @@ def multi_model_mean(cubes, span, filename, exclude):
 
             for i in range(selection[0].data.shape[0]):
                 time_data = [cube.data[i] for cube in selection]
-                mean_dats[i] = _call_to_compute(time_data, 'means')
-                med_dats[i] = _call_to_compute(time_data, 'medians')
+                mean_dats[i] = _compute_statistic(time_data,
+                                                  'mean')
+                med_dats[i] = _compute_statistic(time_data,
+                                                 'median')
             c_mean = _put_in_cube(selection[0],
                                   mean_dats,
                                   file_names,
@@ -399,8 +424,10 @@ def multi_model_mean(cubes, span, filename, exclude):
 
             for i in range(slices[0].data.shape[0]):
                 time_data = [cube.data[i] for cube in slices]
-                mean_dats[i] = _call_to_compute(time_data, 'means')
-                med_dats[i] = _call_to_compute(time_data, 'medians')
+                mean_dats[i] = _compute_statistic(time_data,
+                                                  'mean')
+                med_dats[i] = _compute_statistic(time_data,
+                                                 'mean')
             c_mean = _put_in_cube(slices[0],
                                   mean_dats,
                                   file_names,
