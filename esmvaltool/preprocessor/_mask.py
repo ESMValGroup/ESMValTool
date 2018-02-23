@@ -305,8 +305,8 @@ def mask_fillvalues(cubes, threshold_fraction, min_value=-1.e10,
         cube.data = np.ma.fix_invalid(cube.data, copy=False)
 
     # Get the fillvalue masks from all models
-    masks = [_get_fillvalues_mask(cube, threshold_fraction, min_value,
-                                  time_window) for cube in cubes]
+    masks = (_get_fillvalues_mask(cube, threshold_fraction, min_value,
+                                  time_window) for cube in cubes)
 
     # Combine all fillvalue masks
     combined_mask = None
