@@ -1,22 +1,25 @@
 """
-A package for performing horizontal regridding, and vertical level extraction
+_regrid.py
+
+A package for performing horizontal regridding,
+and vertical level extraction
 or vertical level interpolation.
 
 """
 
 from __future__ import absolute_import, division, print_function
 
+import os
 import re
 from copy import deepcopy
+import six
 from ..preprocessor._reformat import CMOR_TABLES
 
 import iris
 import numpy as np
-import six
 import stratify
 from iris.analysis import AreaWeighted, Linear, Nearest, UnstructuredNearest
 from numpy import ma
-import os
 
 # Regular expression to parse a "MxN" cell-specification.
 _CELL_SPEC = re.compile(r'''\A
@@ -53,6 +56,8 @@ vertical_schemes = ['linear', 'nearest']
 
 def _stock_cube(spec):
     """
+    Create a stock cube
+
     Create a global cube with M degree-east by N degree-north regular grid
     cells.
 
@@ -356,6 +361,10 @@ def vinterp(src_cube, levels, scheme):
             src_levels_broadcast = np.broadcast_to(src_levels_reshaped,
                                                    broadcast_shape)
 
+            # force mask onto data as nan's
+            if np.ma.is_masked(src_cube.data) is True:
+                src_cube.data[src_cube.data.mask] = np.nan
+
             # Now perform the actual vertical interpolation.
             new_data = stratify.interpolate(
                 levels,
@@ -365,23 +374,16 @@ def vinterp(src_cube, levels, scheme):
                 interpolation=scheme,
                 extrapolation='nan')
 
-            # Determine if we need to fill any extrapolated NaN values.
+            # Calculate the mask based on the any
+            # NaN values in the interpolated data.
             mask = np.isnan(new_data)
 
             if np.any(mask):
-                # Replace the NaN values with the fill-value.
-                new_data[mask] = _MDI
-
-            # Ensure that any spatial mask is re-applied.
-            if ma.isMaskedArray(src_cube.data):
-                slicer = tuple([0] * (z_axis + 1))
-                # Assume that the spatial mask is invariant.
-                mask = src_cube.data.mask[slicer]
-                mask = np.broadcast_to(mask, new_data.shape)
-                new_data = ma.array(new_data, mask=mask)
+                # Ensure that the data is masked appropriately.
+                new_data = ma.array(new_data, mask=mask, fill_value=_MDI)
 
             # Construct the resulting cube with the interpolated data.
-            result = _create_cube(src_cube, new_data, levels)
+            result = _create_cube(src_cube, new_data, levels.astype(float))
 
     return result
 
