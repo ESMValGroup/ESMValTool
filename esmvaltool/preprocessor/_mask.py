@@ -311,17 +311,19 @@ def mask_fillvalues(cubes, threshold_fraction, min_value=-1.e10,
     # Combine all fillvalue masks
     combined_mask = None
     for mask in masks:
-        if not np.all(mask):  # remove masks that mask everything
-            if combined_mask is None:
-                combined_mask = np.zeros_like(mask)
-            if len(mask.shape) == 3:   # dig deeper in plevs
-                combined_copy = combined_mask.copy()
-                combined_mask |= mask
-                for i in range(mask.shape[0]):
-                    if np.all(combined_mask[i]):
-                        combined_mask[i] = combined_copy[i]
-            else:
-                combined_mask |= mask
+        if combined_mask is None:
+            combined_mask = np.zeros_like(mask)
+        # Apply mask only if it doesn't mask everything
+        n_dims = len(mask.shape)
+        if n_dims in (1, 2) and ~np.all(mask):
+            combined_mask |= mask
+        elif n_dims == 3:
+            # Select only valid pressure levels
+            valid = ~np.all(mask, axis=(1, 2))
+            combined_mask[valid] |= mask[valid]
+        else:
+            raise NotImplementedError("Unable to handle {} dimensional data"
+                                      .format(n_dims))
 
     if np.any(combined_mask):
         # Apply masks
