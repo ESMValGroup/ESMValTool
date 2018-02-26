@@ -99,12 +99,17 @@ def _compute_statistic(datas, name):
 
 def _put_in_cube(template_cube,
                  cube_data,
-                 ncfiles,
                  stat_name,
-                 file_name):
+                 file_name,
+                 t_axis):
     """Quick cube building and saving"""
     # grab coordinates from any cube
     times = template_cube.coord('time')
+    # or get the FULL time axis
+    if t_axis is not None:
+        times = iris.coords.DimCoord(
+            t_axis, standard_name='time',
+            units=template_cube.coord('time').units)
     lats = template_cube.coord('latitude')
     lons = template_cube.coord('longitude')
 
@@ -130,7 +135,6 @@ def _put_in_cube(template_cube,
             stats_cube.add_aux_coord(template_cube.
                                      coord('air_pressure'))
     stats_cube.attributes['_filename'] = file_name
-    stats_cube.attributes['NCfiles'] = str(ncfiles)
     return stats_cube
 
 
@@ -247,10 +251,9 @@ def _monthly_t(cubes):
 
 def _full_time(cubes):
     """Construct a contiguous collection over time"""
-    tmeans = []
+    datas = []
     # get rearranged time points
-    t_x = _monthly_t(cubes)[0]
-    t_x0 = _monthly_t(cubes)[1]
+    t_x, t_x0 = _monthly_t(cubes)
     # loop through cubes and apply masks
     for cube in cubes:
         # recast time points
@@ -273,42 +276,14 @@ def _full_time(cubes):
         ndat = np.ma.resize(cube.data, fine_shape)
         # build the time mask
         c_ones = np.ones(fine_shape, bool)
-        for t_i in oidx:
-            c_ones[t_i] = False
+        c_ones[oidx] = False
         ndat.mask |= c_ones
-        # build the new cube
-        new_cube = _build_new_cube(ndat,
-                                   cube,
-                                   fine_shape,
-                                   t_x0)
-        tmeans.append(new_cube)
 
-    return tmeans
+        # stitch new datas
+        datas.append(ndat)
 
-
-def _build_new_cube(ndat, cube, fineshape, t_0):
-    """Build a stock cube for full time analysis"""
-    # build the new coords from original cube
-    t_s = iris.coords.DimCoord(
-        t_0, standard_name='time',
-        units=cube.coord('time').units)
-    lats = cube.coord('latitude')
-    lons = cube.coord('longitude')
-    if len(fineshape) == 3:
-        cspec = [(t_s, 0), (lats, 1), (lons, 2)]
-    elif len(fineshape) == 4:
-        plc = cube.coord('air_pressure')
-        cspec = [(t_s, 0), (plc, 1), (lats, 2), (lons, 3)]
-
-    # build cube
-    ncube = iris.cube.Cube(ndat, dim_coords_and_dims=cspec)
-    coord_names = [coord.name() for coord in cube.coords()]
-    if 'air_pressure' in coord_names:
-        if len(fineshape) == 3:
-            ncube.add_aux_coord(cube.coord('air_pressure'))
-    ncube.attributes = cube.attributes
-
-    return ncube
+    # return datas
+    return datas, t_x0
 
 
 def _apply_overlap(cube, tx1, tx2):
@@ -347,101 +322,67 @@ def multi_model_mean(cubes, span, filename, exclude):
         logger.info("Time overlap between cubes is none or a single point.")
         logger.info("check models: will not compute statistics.")
         return cubes
-    else:
-        # add file name info
-        file_names = [
-            os.path.basename(cube.attributes.get('_filename'))
-            for cube in selection
-        ]
 
-        # cases
-        if span == 'overlap':
-            logger.debug("Using common time overlap between "
-                         "models to compute statistics.")
+    # cases
+    if span == 'overlap':
+        logger.debug("Using common time overlap between "
+                     "models to compute statistics.")
 
-            # assemble data
-            mean_dats = np.ma.zeros(_slice_cube2(selection[0],
-                                                 ovlp[0],
-                                                 ovlp[1]).shape)
-            med_dats = np.ma.zeros(_slice_cube2(selection[0],
-                                                ovlp[0],
-                                                ovlp[1]).shape)
+        # assemble data
+        mean_dats = np.ma.zeros(_slice_cube2(selection[0],
+                                             ovlp[0],
+                                             ovlp[1]).shape)
+        med_dats = np.ma.zeros(_slice_cube2(selection[0],
+                                            ovlp[0],
+                                            ovlp[1]).shape)
 
-            for i in range(mean_dats.shape[0]):
-                time_data = [_slice_cube2(cube, ovlp[0], ovlp[1])[i]
-                             for cube in selection]
-                mean_dats[i] = _compute_statistic(time_data,
-                                                  'mean')
-                med_dats[i] = _compute_statistic(time_data,
-                                                 'median')
-            c_mean = _put_in_cube(_apply_overlap(selection[0],
-                                                 ovlp[2],
-                                                 ovlp[3]),
-                                  mean_dats,
-                                  file_names,
-                                  'means',
-                                  filename)
-            c_med = _put_in_cube(_apply_overlap(selection[0],
-                                                ovlp[2],
-                                                ovlp[3]),
-                                 med_dats,
-                                 file_names,
-                                 'medians',
-                                 filename)
-            save_cubes([c_mean, c_med])
+        for i in range(mean_dats.shape[0]):
+            time_data = [_slice_cube2(cube, ovlp[0], ovlp[1])[i]
+                         for cube in selection]
+            mean_dats[i] = _compute_statistic(time_data,
+                                              'mean')
+            med_dats[i] = _compute_statistic(time_data,
+                                             'median')
+        c_mean = _put_in_cube(_apply_overlap(selection[0],
+                                             ovlp[2],
+                                             ovlp[3]),
+                              mean_dats,
+                              'means',
+                              filename,
+                              t_axis=None)
+        c_med = _put_in_cube(_apply_overlap(selection[0],
+                                            ovlp[2],
+                                            ovlp[3]),
+                             med_dats,
+                             'medians',
+                             filename,
+                             t_axis=None)
 
-        elif span == 'constant':
-            logger.debug("Cubes have common time "
-                         "boundaries; no time chopping to do.")
-            mean_dats = np.ma.zeros(selection[0].data.shape)
-            med_dats = np.ma.zeros(selection[0].data.shape)
+    elif span == 'full':
+        logger.debug("Using full time spans "
+                     "to compute statistics.")
+        # assemble data
+        slices, time_axis = _full_time(selection)
+        mean_dats = np.ma.zeros(slices[0].shape)
+        med_dats = np.ma.zeros(slices[0].shape)
 
-            for i in range(selection[0].data.shape[0]):
-                time_data = [cube.data[i] for cube in selection]
-                mean_dats[i] = _compute_statistic(time_data,
-                                                  'mean')
-                med_dats[i] = _compute_statistic(time_data,
-                                                 'median')
-            c_mean = _put_in_cube(selection[0],
-                                  mean_dats,
-                                  file_names,
-                                  'means',
-                                  filename)
-            c_med = _put_in_cube(selection[0],
-                                 med_dats,
-                                 file_names,
-                                 'medians',
-                                 filename)
-            save_cubes([c_mean, c_med])
-
-        elif span == 'full':
-            logger.debug("Using full time spans "
-                         "to compute statistics.")
-            # assemble data
-            slices = _full_time(selection)
-            mean_dats = np.ma.zeros(slices[0].data.shape)
-            med_dats = np.ma.zeros(slices[0].data.shape)
-
-            for i in range(slices[0].data.shape[0]):
-                time_data = [cube.data[i] for cube in slices]
-                mean_dats[i] = _compute_statistic(time_data,
-                                                  'mean')
-                med_dats[i] = _compute_statistic(time_data,
-                                                 'mean')
-            c_mean = _put_in_cube(slices[0],
-                                  mean_dats,
-                                  file_names,
-                                  'means',
-                                  filename)
-            c_med = _put_in_cube(slices[0],
-                                 med_dats,
-                                 file_names,
-                                 'medians',
-                                 filename)
-            save_cubes([c_mean, c_med])
-        else:
-            logger.debug("No type of time overlap specified "
-                         "- will not compute cubes statistics")
-            return cubes
+        for i in range(slices[0].shape[0]):
+            time_data = [data[i] for data in slices]
+            mean_dats[i] = _compute_statistic(time_data,
+                                              'mean')
+            med_dats[i] = _compute_statistic(time_data,
+                                             'median')
+        c_mean = _put_in_cube(selection[0],
+                              mean_dats,
+                              'means',
+                              filename,
+                              t_axis=time_axis)
+        c_med = _put_in_cube(selection[0],
+                             med_dats,
+                             'medians',
+                             filename,
+                             t_axis=time_axis)
+    # save up
+    save_cubes([c_mean, c_med])
 
     return cubes
