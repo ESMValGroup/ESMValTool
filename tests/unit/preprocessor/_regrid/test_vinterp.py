@@ -153,7 +153,7 @@ class Test(tests.Test):
         new_data = np.empty(self.shape)
         levels = np.array([0.5, 1.5])
         scheme = 'linear'
-        mask = [[[1], [0]], [[1], [0]], [[1], [0]]]
+        mask = [[[False], [True]], [[True], [False]], [[False], [False]]]
         masked = ma.empty(self.shape)
         masked.mask = mask
         cube = _make_cube(masked, dtype=self.dtype)
@@ -177,9 +177,11 @@ class Test(tests.Test):
                                  interpolation=scheme,
                                  extrapolation='nan'))
         args, kwargs = self.mock_create_cube.call_args
+        # in-place for new vinterp with nan's
+        new_data[np.isnan(new_data)] = _MDI
         # Check the _create_cube args ...
         self.assertEqual(len(args), 3)
-        self.assertArrayEqual(args[0], cube)
+        self.assertArrayEqual(args[0].data, cube.data)
         self.assertArrayEqual(args[1], new_data)
         self.assertTrue(ma.isMaskedArray(args[1]))
         self.assertArrayEqual(args[1].mask, mask)
