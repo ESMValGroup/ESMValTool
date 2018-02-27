@@ -313,12 +313,13 @@ def mask_fillvalues(cubes, threshold_fraction, min_value=-1.e10,
     for mask in masks:
         if combined_mask is None:
             combined_mask = np.zeros_like(mask)
-        # Apply mask only if it doesn't mask everything
+        # Select only valid (not all masked) pressure levels
         n_dims = len(mask.shape)
-        if n_dims in (1, 2) and ~np.all(mask):
-            combined_mask |= mask
+        if n_dims == 2:
+            valid = ~np.all(mask)
+            if valid:
+                combined_mask |= mask
         elif n_dims == 3:
-            # Select only valid pressure levels
             valid = ~np.all(mask, axis=(1, 2))
             combined_mask[valid] |= mask[valid]
         else:
