@@ -9,9 +9,11 @@ class Fix(object):
 
     def fix_file(self, filepath, preproc_dir):
         """
-        Apply fixes to the files prior to creating the cube. Should be use
-        only to fix errors that prevent loading or can not be fixed in the
-        cube (i.e. those related with missing_value and _FillValue)
+        Apply fixes to the files prior to creating the cube.
+
+        Should be used only to fix errors that prevent loading or can
+        not be fixed in the cube (i.e. those related with missing_value
+        and _FillValue)
 
         Parameters
         ----------
@@ -29,8 +31,9 @@ class Fix(object):
 
     def fix_metadata(self, cube):
         """
-        Apply fixes to the metadata of the cube. Changes applied here must not
-        require data loading.
+        Apply fixes to the metadata of the cube.
+
+        Changes applied here must not require data loading.
 
         These fixes should be applied before checking the metadata.
 

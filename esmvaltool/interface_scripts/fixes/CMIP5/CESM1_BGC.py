@@ -1,6 +1,7 @@
+import shutil
 from cf_units import Unit
 from netCDF4 import Dataset
-import shutil
+
 
 from esmvaltool.interface_scripts.fixes.fix import Fix
 
