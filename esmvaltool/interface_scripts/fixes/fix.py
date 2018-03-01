@@ -120,7 +120,8 @@ class Fix(object):
             pass
         return fixes
 
-    def get_fixed_filepath(self, filepath, preproc_dir):
+    @staticmethod
+    def get_fixed_filepath(filepath, preproc_dir):
         """
         Get the filepath for the fixed file
 
