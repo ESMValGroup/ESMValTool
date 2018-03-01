@@ -1,4 +1,5 @@
 import importlib
+import os
 
 
 class Fix(object):
@@ -6,7 +7,7 @@ class Fix(object):
     Base class for model fixes.
     """
 
-    def fix_file(self, filepath):
+    def fix_file(self, filepath, preproc_dir):
         """
         Apply fixes to the files prior to creating the cube. Should be use
         only to fix errors that prevent loading or can not be fixed in the
@@ -115,3 +116,23 @@ class Fix(object):
         except ImportError:
             pass
         return fixes
+
+    def get_fixed_filepath(self, filepath, preproc_dir):
+        """
+        Get the filepath for the fixed file
+
+        Parameters
+        ----------
+        filepath: str
+            Original path
+        preproc_dir: str
+            Path to preprocessor directory
+
+        Returns
+        -------
+        str
+            Path to the fixed file
+        """
+        new_filename = os.path.basename(filepath).replace('.nc', '_fixed.nc')
+        temp = os.path.join(preproc_dir, new_filename)
+        return temp

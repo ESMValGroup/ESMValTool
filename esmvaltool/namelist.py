@@ -288,8 +288,10 @@ def _get_default_settings(variable, config_user):
         'project': variable['project'],
         'model': variable['model'],
         'short_name': variable['short_name'],
+        'preproc_dir': config_user['preproc_dir'],
     }
     settings['fix_file'] = dict(fix)
+    del fix['preproc_dir']
     # Only supply mip if the CMOR check fixes are implemented.
     if variable.get('cmor_table'):
         fix['cmor_table'] = variable['cmor_table']

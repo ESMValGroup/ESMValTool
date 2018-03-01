@@ -46,17 +46,18 @@ class TestNbp(unittest.TestCase):
         self.fix = nbp()
 
     def test_fix_data(self):
-        temp_handler, temp_path = tempfile.mkstemp('.nc')
-        os.close(temp_handler)
+        temp_path = tempfile.mktemp('.nc')
         dataset = netCDF4.Dataset(temp_path, "w")
         var = dataset.createVariable('nbp', float, fill_value=1.0e20)
         var.missing_value = 1.0e20
         dataset.close()
 
-        new_file = self.fix.fix_file(temp_path)
+        new_file = self.fix.fix_file(temp_path, os.path.dirname(temp_path))
+
+        self.assertNotEqual(os.path.realpath(temp_path),
+                            os.path.realpath(new_file))
 
         dataset = netCDF4.Dataset(new_file)
         var = dataset.variables['nbp']
-        self.assertEqual(new_file, temp_path)
         self.assertEqual(var.missing_value, 1.0e33)
         self.assertEqual(var._FillValue, 1.0e33)
