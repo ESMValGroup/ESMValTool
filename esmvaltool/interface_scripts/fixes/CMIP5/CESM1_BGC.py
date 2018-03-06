@@ -1,27 +1,38 @@
+"""Fixes for CESM1-BGC model"""
+import shutil
 from cf_units import Unit
 from netCDF4 import Dataset
+
 
 from esmvaltool.interface_scripts.fixes.fix import Fix
 
 
 class nbp(Fix):
-    def fix_file(self, filepath):
-        original_dataset = Dataset(filepath, mode='a')
+    """Fixes for nbp variable"""
+
+    def fix_file(self, filepath, preproc_dir):
+        temp = Fix.get_fixed_filepath(filepath, preproc_dir)
+        shutil.copy(filepath, temp)
+        original_dataset = Dataset(temp, mode='a')
         original_var = original_dataset.variables['nbp']
         attr = {k: original_var.getncattr(k) for k in original_var.ncattrs()}
         attr['missing_value'] = 1e+33
         attr['_FillValue'] = 1e+33
         original_var.setncatts(attr)
         original_dataset.close()
-        return filepath
+        return temp
 
 
 class co2(Fix):
+    """Fixes for co2 variable"""
+
     def fix_data(self, cube):
         return cube * 28.966 / 44.0
 
 
 class allvars(Fix):
+    """Fixes common to all vars"""
+
     def fix_metadata(self, cube):
         time = cube.coord('time')
         time.units = Unit('days since 1850-01-01 00:00:00',
