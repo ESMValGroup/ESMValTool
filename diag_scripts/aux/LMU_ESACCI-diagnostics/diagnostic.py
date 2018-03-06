@@ -77,6 +77,7 @@ class Diagnostic(object):
 
         self._basetags = []
         self._infiles = []
+        self.modelnames = []
 
     def _get_output_rootname(self):
         """
@@ -95,6 +96,7 @@ class Diagnostic(object):
         """
         gather information for diagnostic
         """
+        self.modelnames.append(model.split_entries()[1])
 
         def getVarFromFile(filename):
             """
@@ -136,7 +138,13 @@ class Diagnostic(object):
         self._basetags = self._basetags + \
             [x.strip() for x in project_info.get('GLOBAL')['tags']]
 
-        self._basetags = self._basetags + [self.var]
+        if isinstance(self.var, str) or isinstance(self.var, unicode):
+            self._basetags = self._basetags + ['V_' + self.var]
+        elif isinstance(self.var, list):
+            self._basetags = ( self._basetags + 
+                ['V_' + item for item in self.var if isinstance(item, str) or isinstance(item, unicode)] )
+        else:
+            raise ValueError('variable is of type {0}. str/unicode/`list of str` expected'.format(type(var)))
 
         if var == 'sm':
             self._vartype = 'soil moisture'
@@ -838,8 +846,8 @@ class BasicDiagnostics(Diagnostic):
 
         ESMValMD("both",
                  f_name,
-                 self._basetags + ['DM_global', 'ST_diff', 'ST_mean', 'PT_geo',
-                                   self.modname, self.refname],
+                 self._basetags + ['DM_global', 'ST_diff', 'ST_mean', 'PT_geo', 'M_' + self.refname] 
+                                + ['M_{0}'.format(str(item)) for item in self.modelnames],
                  str('Global mean difference' + monthtit +
                      ' of the time series between ' + self.modname +
                      ' and ' + self.refname + ' ' + self._vartype + '.'),
@@ -981,8 +989,9 @@ class BasicDiagnostics(Diagnostic):
 
             ESMValMD("both",
                      oname,
-                     self._basetags + ['DM_global', 'ST_diff', 'ST_mean',
-                                       'PT_geo', self.modname, self.refname],
+                     self._basetags + ['DM_global', 'ST_diff', 'ST_mean', 'PT_geo']
+                                    + ['M_{0}'.format(str(item)) for item in self.modelnames]
+                                    + ['M_' + self.refname],
                      str('Global mean time series' + monthtit + ' for ' +
                          self.modname + ' and ' + self.refname + ' ' +
                          self._vartype + ' (upper row). Additionally, ' +
@@ -1071,8 +1080,8 @@ class BasicDiagnostics(Diagnostic):
 
         ESMValMD("xml",
                  oname,
-                 self._basetags + ['DM_global', 'ST_mean', 'ST_stddev',
-                                   'ST_range', name],
+                 self._basetags + ['DM_global', 'ST_mean', 'ST_stddev', 'ST_range' + 'M_' + self.refname]
+                                + ['M_{0}'.format(str(item)) for item in self.modelnames],
                  str('Statistics for ' + name + " " + self._vartype +
                      '. All statistics are based on time dependent ' +
                      'counts and not normalized.'),
@@ -1098,8 +1107,8 @@ class BasicDiagnostics(Diagnostic):
 
         ESMValMD("xml",
                  oname,
-                 self._basetags + ['DM_global', 'ST_mean', 'ST_stddev',
-                                   'ST_range', name],
+                 self._basetags + ['DM_global', 'ST_mean', 'ST_stddev', 'ST_range' + 'M_' + self.refname]
+                                + ['M_{0}'.format(str(item)) for item in self.modelnames],
                  str('Statistics for climatology of ' + name + " " +
                      self._vartype + '. All statistics are based on ' +
                      'time dependent counts and not normalized.'),
@@ -1275,8 +1284,9 @@ class BasicDiagnostics(Diagnostic):
 
         ESMValMD("both",
                  f_name,
-                 self._basetags + ['DM_global', 'PT_times', 'ST_mean',
-                                   self.refname, self.modname],
+                 self._basetags + ['DM_global', 'PT_times', 'ST_mean']
+                                + ['M_{0}'.format(str(item)) for item in self.modelnames]
+                                + ['M_' + self.refname],
                  str('Time series of spatial mean ' +
                      ('climatology ' if 'ST_clim' in self._basetags else '') +
                      'for ' + self.modname +
@@ -1402,8 +1412,8 @@ class BasicDiagnostics(Diagnostic):
 
             ESMValMD("both",
                      f_name,
-                     self._basetags + ['DM_reg', 'PT_times', 'ST_mean',
-                                       self.refname, self.modname],
+                     self._basetags + ['DM_reg', 'PT_times', 'ST_mean', 'M_' + self.refname]
+                                    + ['M_{0}'.format(str(item)) for item in self.modelnames],
                      str('Regionalized ' + ('climatology ' if 'ST_clim'
                                             in self._basetags else '') +
                          'time series of spatial mean for ' +
@@ -1473,7 +1483,8 @@ class BasicDiagnostics(Diagnostic):
 
         ESMValMD("both",
                  f_name,
-                 self._basetags + ['DM_global', 'ST_mean', name],
+                 self._basetags + ['DM_global', 'ST_mean'] + ['M_{0}'.format(str(item)) for item in self.modelnames]
+                                + ['M_' + self.refname],
                  str('Temporal mean of the ' + name + ' ' +
                      self._vartype + ' data set.'),
                  '#ID' + 'gmt' + self.var,
@@ -1507,8 +1518,9 @@ class BasicDiagnostics(Diagnostic):
 
         ESMValMD("both",
                  f_name,
-                 self._basetags + ['DM_global', 'ST_mean', 'ST_diff',
-                                   'PT_zonal', self.modname, self.refname],
+                 self._basetags + ['DM_global', 'ST_mean', 'ST_diff', 'PT_zonal']
+                                + ['M_{0}'.format(str(item)) for item in self.modelnames]
+                                + ['M_' + self.refname],
                  str('Climatological/latitudinal Hovmoeller plots and ' +
                      'difference of the ' + self.modname + ' and ' +
                      self.refname + ' ' + self._vartype + ' data sets.'),
@@ -1535,8 +1547,9 @@ class BasicDiagnostics(Diagnostic):
 
         ESMValMD("both",
                  f_name,
-                 self._basetags + ['DM_global', 'ST_mean', 'ST_diff',
-                                   'PT_zonal', self.modname, self.refname],
+                 self._basetags + ['DM_global', 'ST_mean', 'ST_diff', 'PT_zonal']
+                                + ['M_{0}'.format(str(item)) for item in self.modelnames]
+                                + ['M_' + self.refname],
                  str('Climatological/longitudinal Hovmoeller plots and ' +
                      'difference of the ' + self.modname + ' and ' +
                      self.refname + ' ' + self._vartype + ' data sets.'),
@@ -1707,8 +1720,9 @@ class BasicDiagnostics(Diagnostic):
 
         ESMValMD("both",
                  oname,
-                 self._basetags + ['DM_global', 'PT_geo', 'ST_corr',
-                                   self.refname, self.modname],
+                 self._basetags + ['DM_global', 'PT_geo', 'ST_corr']
+                                + ['M_{0}'.format(str(item)) for item in self.modelnames]
+                                + ['M_' + self.refname],
                  str('Pixelwise correlation of temporal trend between ' +
                      self.modname + ' and ' + self.refname + ' ' +
                      self._vartype + (' anomalies' if 'anomalytrend' in
@@ -1805,8 +1819,9 @@ class BasicDiagnostics(Diagnostic):
 
             ESMValMD("both",
                      oname,
-                     self._basetags + ['DM_global', 'PT_geo', 'ST_trend',
-                                       name],
+                     self._basetags + ['DM_global', 'PT_geo', 'ST_trend']
+                                    + ['M_{0}'.format(str(item)) for item in self.modelnames]
+                                    + ['M_' + self.refname],
                      str("Spatially distributed temporal trend of " + name +
                          " and the p-values of these trends (right panel) " +
                          "for the years " + str(self._start_time.year) +
@@ -1899,8 +1914,9 @@ class BasicDiagnostics(Diagnostic):
 
             ESMValMD("both",
                      oname,
-                     self._basetags + ['DM_global', 'PT_geo', 'ST_trend',
-                                       name],
+                     self._basetags + ['DM_global', 'PT_geo', 'ST_trend']
+                                    + ['M_{0}'.format(str(item)) for item in self.modelnames]
+                                    + ['M_' + self.refname],
                      str("Spatially distributed temporal trend of " + name +
                          " for the years " + str(self._start_time.year) +
                          " to " + str(self._stop_time.year) +
@@ -1932,8 +1948,9 @@ class BasicDiagnostics(Diagnostic):
 
         ESMValMD("xml",
                  oname,
-                 self._basetags + ['DM_reg', 'ST_mean', 'ST_stddev',
-                                   'ST_range', name],
+                 self._basetags + ['DM_reg', 'ST_mean', 'ST_stddev', 'ST_range']
+                                + ['M_{0}'.format(str(item)) for item in self.modelnames]
+                                + ['M_' + self.refname],
                  str('Regional statistics for ' + name + ' ' + self._vartype +
                      ' (' + diag.replace('_', ' ') + ')' +
                      '. All statistics are based on time dependent ' +
@@ -2131,9 +2148,10 @@ class BasicDiagnostics(Diagnostic):
 
                     ESMValMD("both",
                              f_name,
-                             self._basetags + ['DM_reg', 'PT_times',
-                                               'ST_mean'] +
-                             labels,
+                             self._basetags + ['DM_reg', 'PT_times', 'ST_mean']
+                           + ['M_{0}'.format(str(item)) for item in self.modelnames]
+                           + ['M_' + self.refname]
+                           + labels,
                              str('Time series of spatial mean for different ' +
                                  'regions. The multiple models are: ' +
                                  ", ".join(labels) + '.'),

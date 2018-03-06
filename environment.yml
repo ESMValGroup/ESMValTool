@@ -1,36 +1,33 @@
 name: root
 channels:
-- khallock
-- conda-forge
-- defaults
-- Clyde_Fare
+  - conda-forge
+  - defaults
 
 dependencies:
-# esmvaltool
-- cython
-- basemap
-- iris
-- esgf-pyclient
-- scientificpython
-- ncl
-# iris
-- matplotlib=1.5.*
-- cartopy=0.15.*
+  # esmvaltool
+  - cython
+  - basemap
+  - iris
+  - esgf-pyclient
+  - ncl
+  # iris
+  - matplotlib
+  - cartopy
 
-# ncl
-- libnetcdf=4.4.1.1
-- hdf5=1.8.17
-- hdf4=4.2.12
-- xorg-libsm=1.2.2
-- icu=58.1
-- xorg-libxrender
-- xorg-libxext
-- pip:
-  - geoval
+  # ncl
+  - libnetcdf
+  - hdf5
+  - hdf4
+  - xorg-libsm
+  - icu
+  - xorg-libxrender
+  - xorg-libxext
+  - pip:
+      - geoval
 
-# testing
-- nose
-- pytest
-- pytest-cov
-- pytest-html
-- easytest
+  # testing
+  - nose
+  - pytest
+  - pytest-cov
+  - pytest-html
+  - easytest
