@@ -356,16 +356,20 @@ def _apply_preprocessor_settings(settings, profile_settings):
             settings[step].update(args)
 
 
-def _update_multi_model_mean(variables, settings):
-    """Configure multi model mean."""
-    if settings.get('multi_model_mean', False):
-        if settings['multi_model_mean'] is True:
-            settings['multi_model_mean'] = {}
+def _update_multi_model_stats(variables, settings):
+    """Configure multi model stats."""
+    if settings.get('multi_model_stats', False):
+        if settings['multi_model_stats'] is True:
+            settings['multi_model_stats'] = {}
+        settings['multi_model_stats']['filename'] = {}
         variable = variables[0]
-        filename = os.path.join(
-            os.path.dirname(variable['filename']), 'multi_model_statistics.nc')
-        settings['multi_model_mean']['filename'] = filename
-        exclude_models = set(settings['multi_model_mean'].get('exclude', {}))
+        filename_mean = os.path.join(
+            os.path.dirname(variable['filename']), 'RENAME-ME_multi_model_mean.nc')
+        filename_median = os.path.join(
+            os.path.dirname(variable['filename']), 'RENAME-ME_multi_model_median.nc')
+        settings['multi_model_stats']['filename']['file_mean'] = filename_mean
+        settings['multi_model_stats']['filename']['file_median'] = filename_median
+        exclude_models = set(settings['multi_model_stats'].get('exclude', {}))
         for key in 'reference_model', 'alternative_model':
             if key in variable:
                 exclude_models.add(variable[key])
@@ -373,7 +377,7 @@ def _update_multi_model_mean(variables, settings):
             v['filename']
             for v in variables if v['model'] in exclude_models
         }
-        settings['multi_model_mean']['exclude'] = {'_filename': exclude_files}
+        settings['multi_model_stats']['exclude'] = {'_filename': exclude_files}
 
 
 def _get_preprocessor_settings(variables, preprocessors, config_user):
@@ -388,7 +392,7 @@ def _get_preprocessor_settings(variables, preprocessors, config_user):
             "Unknown preprocessor {} in variable {} of diagnostic {}".format(
                 preproc_name, variable['short_name'], variable['diagnostic']))
     profile_settings = preprocessors[variable['preprocessor']]
-    _update_multi_model_mean(variables, profile_settings)
+    _update_multi_model_stats(variables, profile_settings)
 
     for variable in variables:
         settings = _get_default_settings(variable, config_user)
