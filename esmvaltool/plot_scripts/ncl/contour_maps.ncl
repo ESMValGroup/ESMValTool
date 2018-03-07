@@ -72,7 +72,7 @@ begin
 
     ;; Retrieve basic metadata from data
     defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
-    if(inlist(varname, defaults)) then  ; Use default
+    if(any(varname .eq.  defaults)) then  ; Use default
         ;; Function in ~/interface_scripts/auxiliary.ncl
         var = att2var(data, "var")
     else                               ; Use explicitly given name
@@ -184,7 +184,7 @@ begin
 
     ;; Retrieve basic metadata from data
     defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
-    if(inlist(varname, defaults)) then  ; Use default
+    if(any(varname .eq. defaults)) then  ; Use default
         ;; Function in ./interface_scripts/auxiliary.ncl
         var = att2var(data, "var")
     else  ; Use explicitely given name

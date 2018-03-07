@@ -46,4 +46,9 @@ class TestFix(unittest.TestCase):
 
     def test_fix_file(self):
         filepath = 'sample_filepath'
-        self.assertEqual(Fix().fix_file(filepath), filepath)
+        self.assertEqual(Fix().fix_file(filepath, 'preproc'), filepath)
+
+    def test_fixed_filenam(self):
+        filepath = 'original/file.nc'
+        self.assertEqual(Fix().get_fixed_filepath(filepath, 'preproc'),
+                         'preproc/file_fixed.nc')

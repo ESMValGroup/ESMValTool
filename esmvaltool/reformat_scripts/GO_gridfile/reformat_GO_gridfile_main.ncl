@@ -26,7 +26,6 @@
 ; 2013-06-01 op_kg  introduced fix_file_default & default_fix
 ;*********************************************************************
 
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
 load "interface_scripts/logging.ncl"
 load "interface_scripts/auxiliary.ncl"
 
@@ -174,11 +173,11 @@ begin
 
         datasize = datasize / 1000000  ; In Mbyte
        
-	if (inlist("time", dNames0)) then  
+	if (any("time" .eq. dNames0)) then  
 	       time_name = "time"
-	else if (inlist("time_counter", dNames0)) then  
+	else if (any("time_counter" .eq. dNames0)) then  
 	       time_name = "time_counter"
-	else if (inlist("TIME", dNames0)) then  
+	else if (any("TIME" .eq. dNames0)) then  
 	       time_name = "TIME"
         else
               print("fatal:Couldn't identify time dimension name in reformatGO_main.ncl")
@@ -211,17 +210,17 @@ begin
         delete(vards)
     
 	;; Query spatial coordinate names
-	if (inlist("j", dNames0)) then  
+	if (any("j" .eq. dNames0)) then  
 	    lat_name = "j"
-	else if (inlist("y", dNames0)) then  
+	else if (any("y" .eq. dNames0)) then  
 	    lat_name = "y"
-	else if (inlist("lat", dNames0)) then  
+	else if (any("lat" .eq. dNames0)) then  
 	    lat_name = "lat"
-        else if (inlist("rlat", dNames0)) then
+        else if (any("rlat" .eq. dNames0)) then
             lat_name = "rlat"
-        else if (inlist("LATITUDE", dNames0)) then
+        else if (any("LATITUDE" .eq. dNames0)) then
              lat_name = "LATITUDE"
-        else if (inlist("nav_lat", dNames0)) then
+        else if (any("nav_lat" .eq. dNames0)) then
             lat_name = "nav_lat"
         else
             print("fatal:Couldn't identify lat-coordinate name in attribute.ncl")
@@ -234,15 +233,15 @@ begin
         end if
         lev_name = "missing"
         if ( rank .ge. 3 ) then 
-	 if (inlist("depth", dNames0)) then  
+	 if (any("depth" .eq. dNames0)) then  
 	    lev_name = "depth"
-	 else if (inlist("DEPTH", dNames0)) then  
+	 else if (any("DEPTH" .eq. dNames0)) then  
 	    lev_name = "DEPTH"
-	 else if (inlist("deptht", dNames0)) then  
+	 else if (any("deptht" .eq. dNames0)) then  
 	    lev_name = "deptht"
-	 else if (inlist("lev", dNames0)) then  
+	 else if (any("lev" .eq. dNames0)) then  
 	    lev_name = "lev"
-	 else if (inlist("lon", dNames0)) then  
+	 else if (any("lon" .eq. dNames0)) then  
 	    lev_name = "plev" 
          else
             print("Warning:Couldn't identify depth-coordinate name in attribute.ncl")
@@ -253,17 +252,17 @@ begin
          end if
 	 end if
         end if
-         if (inlist("i", dNames0)) then  
+         if (any("i" .eq. dNames0)) then  
 	    lon_name = "i"
-  	 else if (inlist("x", dNames0)) then  
+  	 else if (any("x" .eq. dNames0)) then  
 	    lon_name = "x"
-	 else if (inlist("lon", dNames0)) then  
+	 else if (any("lon" .eq. dNames0)) then  
 	    lon_name = "lon"
-         else if (inlist("LONGITUDE", dNames0)) then  
+         else if (any("LONGITUDE" .eq. dNames0)) then  
 	    lon_name = "LONGITUDE"
-         else if (inlist("rlon", dNames0)) then
+         else if (any("rlon" .eq. dNames0)) then
             lon_name = "rlon"
-         else if (inlist("nav_lon", dNames0)) then
+         else if (any("nav_lon" .eq. dNames0)) then
             lon_name = "nav_lon"
          else
             print("fatal:Couldn't identify lon-coordinate name in attribute.ncl")

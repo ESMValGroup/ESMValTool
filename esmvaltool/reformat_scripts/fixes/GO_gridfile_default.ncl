@@ -49,7 +49,7 @@ begin
       variable   = getenv("ESMValTool_variable")
       log_debug("variable: " + variable)
 ;      if (dimsizes(variable&lat).ge.2.and.dimsizes(variable&lon).ge.2) then
-        if(inlist(variable, rewrite_variables)) then  
+        if(any(variable .eq. rewrite_variables)) then  
 
             lat_name = asciiread("$ESMValTool_interface_data/lat_name.txt", 1, "string")
             lon_name = asciiread("$ESMValTool_interface_data/lon_name.txt", 1, "string")

@@ -8,8 +8,6 @@
 ;;    procedure copy_VarCoords_l1
 ;;    procedure check_min_max_models
 ;;    function tstep
-;;    function ncdf_varname
-;;    function get_work_dir
 ;;    function get_ncdf_name
 ;;    function get_ncdf_dir
 ;;    function ncdf_read
@@ -19,8 +17,6 @@
 ;;    function att2var_default
 ;;    function att2var
 ;;    function bname
-;;    function PRIORITY
-;;    function get_output_dir
 ;;    function basename
 ;;    function extract_years
 ;;    function extend_var_at
@@ -29,19 +25,12 @@
 ;;    function write_info
 ;;    function remove_index
 ;;    procedure set_default_att
-;;    procedure tool_stop
 ;;    function filter_attrs
 ;;    procedure write_ignore_warnings
 ;;    function get_ref_model_idx
 ;;
 ;;#############################################################################
 
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
-
-load "./interface_scripts/logging.ncl"
-load "./diag_scripts/lib/ncl/set_operators.ncl"
-
-;;#############################################################################
 undef("copy_VarCoords_l1")
 procedure copy_VarCoords_l1(var_from,
                             var_to)
@@ -60,8 +49,8 @@ procedure copy_VarCoords_l1(var_from,
 ;; References
 ;;
 ;; Modification history
-;;    20140703-A_gott_kl: Written for use with mymm in
-;;                        time_operations (statistics.ncl).
+;;    20140703-A_gott_kl: Written for use with mymm in time_operations
+;;                        (diag_scripts/lib/ncl/statistics.ncl).
 ;;
 local funcname, scriptname, dims_from, dims, rank_from, rank, dimdiff, idimdiff
 begin
@@ -143,13 +132,12 @@ begin
         error_msg("f", scriptname, funcname,\
                   "Too few models (=" + no_models + ") for " + diag_script \
                   + ". Mininum is " + min_no_models)
-    else if (no_models .gt. max_no_models) then
+    end if
+    
+    if (no_models .gt. max_no_models) then
         error_msg("f", scriptname, funcname,\
                   "Too many models (=" + no_models + ") for " + diag_script \
                   + ". Maximum is " + max_no_models)
-    else
-        no_operation()
-    end if
     end if
 
     leave_msg(scriptname, funcname)
@@ -263,94 +251,6 @@ begin
 end
 
 ;;#############################################################################
-undef("ncdf_varname")
-function ncdf_varname(data)
-;;
-;; Arguments
-;;    data: data with metadata (attributes).
-;;
-;; Return value
-;;    A string with the variable name.
-;;
-;; Description
-;;    Checks "data" for attribute "var" or "varname" or "name" or "long_name"
-;;    (order = priority) and returns the name as a string variable.
-;;    Returns the string "var" by default.
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;    20131108-A_gott_kl: written.
-;;
-local funcname, scriptname, data, result, target_atts, att
-begin
-
-    funcname = "ncdf_varname"
-    scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname)
-
-    ;; Attributes names to check for, ordered by increasing priority
-    target_atts = (/"long_name", "var_long_name", \
-                    "var_name", "name", "varname", "var"/)
-    result = "var"   ; Default
-    do i = 0, dimsizes(target_atts) - 1
-        if (isatt(data, target_atts(i))) then
-            att = data@$target_atts(i)$
-            if (typeof(att) .eq. "string" .and. dimsizes(att) .eq. 1) then
-                result = att
-            end if
-            delete(att)
-        end if
-    end do
-
-    leave_msg(scriptname, funcname)
-    return(result)
-
-end
-
-;;#############################################################################
-undef("get_work_dir")
-function get_work_dir()
-;;
-;; Arguments
-;;
-;; Return value
-;;    A string with the full path of work_dir.
-;;
-;; Description
-;;    Fetches $ESMValTool_work_dir and checks that it ends with a slash.
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;    20140414-A_righ_ma: bug fixed and unnecessary if case removed.
-;;    20131108-A_gott_kl: written.
-;;
-local funcname, scriptname, curr_work_dir
-begin
-
-    funcname = "get_work_dir"
-    scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname)
-
-    curr_work_dir = config_user_info@work_dir
-		system("mkdir -p " + curr_work_dir)
-
-    ;; Make sure it ends with a slash
-    if (str_get_cols(curr_work_dir, -1, -1).ne."/") then
-        curr_work_dir = curr_work_dir + "/"
-    end if
-
-    leave_msg(scriptname, funcname)
-    return(curr_work_dir)
-
-end
-
-;;#############################################################################
 undef("get_ncdf_name")
 function get_ncdf_name(var[1]:string)
 ;;
@@ -377,7 +277,10 @@ begin
     enter_msg(scriptname, funcname)
 
     ;; Collect parts of outfile name
-    work_dir = get_work_dir()
+    work_dir = config_user_info@work_dir + "/"
+
+    ;; Create work dir
+    system("mkdir -p " + work_dir)
 
     ;; Assemble final name
     outfile = work_dir + var + ".nc"
@@ -495,7 +398,7 @@ begin
 
     ;; Cases for reading
     defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
-    if (inlist(varname, defaults)) then  ; allow synonyms
+    if (any(varname .eq. defaults)) then  ; allow synonyms
         varname = "dummy"  ; unify
     end if
     if (varname .eq. "dummy" .and. dimsizes(var) .eq. 1) then
@@ -503,10 +406,10 @@ begin
     else if (varname .eq. "dummy" .and. dimsizes(var) .ne. 1) then
         error_msg("f", scriptname, funcname, "please select variable " + \
                   "from " + infile)
-    else if (varname .ne. "dummy" .and. inlist(varname, vNames)) then
+    else if (varname .ne. "dummy" .and. any(varname .eq. vNames)) then
         i = ind(vNames .eq. varname)
         data = ncdf->$vNames(i)$
-    else if (varname .ne. "dummy" .and. .not.inlist(varname, vNames)) then
+    else if (varname .ne. "dummy" .and. .not. any(varname .eq. vNames)) then
         error_msg("f", scriptname, funcname, "variable " + varname + \
                   " not in " + infile)
     else
@@ -1024,106 +927,6 @@ begin
 end
 
 ;;#############################################################################
-undef("PRIORITY")
-function PRIORITY(a)
-;;
-;; Arguments
-;;    a: array to analyse, could be numeric or string.
-;;
-;; Return value
-;;    array of unique elements, ordered by commonness in "a", starting with the
-;;    most common element, equally common elements are ordered alphabetically.
-;;
-;; Description
-;;    Useful for assigning priorities to array elements.
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;    20130419-A_gott_kl: written.
-;;
-local funcname, scriptname, a, valid_types, u, idx, i, n, nu
-begin
-
-    funcname = "PRIORITY"
-    scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname)
-
-    valid_types = (/"integer", "float", "double", "string"/)
-    if (.not. any(typeof(a) .eq. valid_types)) then
-        error_msg("w", scriptname, funcname, "input is not the " + \
-                  "correct type")
-        leave_msg(scriptname, funcname)
-        return(new(1, float))    ; Return missing
-    else
-        if (typeof(a) .eq. "string") then  ; String
-            sqsort(a)
-        else  ; Numeric
-            qsort(a)
-        end if
-        idx = UNIQ(a)
-        ;; Unique elements in alphabetical/numerical order
-        u = a(idx)
-        ;; Shall collect number of occurences of each element
-        nu = new(dimsizes(u), integer)
-        delete(idx)
-        do i = 0, dimsizes(u) - 1
-            n = dimsizes(ind(a .eq. u(i)))
-            nu(i) = n
-        end do
-        ;; -1 = return permutation resulting from sorting nu in
-        ;; Decreasing order, do not sort nu
-        idx = dim_pqsort(nu, -1)
-        u = u(idx)  ; Sort u accordingly
-    end if
-
-    leave_msg(scriptname, funcname)
-    return(u)
-
-end
-
-;;#############################################################################
-undef("get_output_dir")
-function get_output_dir(plot_dir[1]:string,
-                        subfolder[1]:string)
-;;
-;; Arguments
-;;    plot_dir: root path for all plots.
-;;    subfolder: subfolder for diag_script plots.
-;;
-;; Return value
-;;    A string with the full path of the output directory for plots.
-;;
-;; Description
-;;    Creates and return the path of the output directory for plots.
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;    20130419-A_gott_kl: written.
-;;
-local funcname, scriptname, output_dir
-begin
-
-    funcname = "get_output_dir"
-    scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname)
-
-    output_dir = plot_dir + "/" + subfolder + "/"
-    if (.not. fileexists(output_dir)) then
-        system("mkdir -p " + output_dir)
-    end if
-
-    leave_msg(scriptname, funcname)
-    return(output_dir)
-
-end
-
-;;#############################################################################
 undef("basename")
 function basename(name[1]:string)
 ;;
@@ -1544,32 +1347,6 @@ begin
 end
 
 ;;#############################################################################
-undef("tool_stop")
-procedure tool_stop()
-;;
-;; Arguments
-;;
-;; Description
-;;    Forces the tool execution to stop at any point of an ncl script.
-;;    For dubugging purposes only.
-;;
-;; Caveats
-;;    This should not be used for the standard exit-on-error. See the function
-;;    error_msg in logging.ncl instead.
-;;
-;; References
-;;
-;; Modification history
-;;    20150521-A_righ_ma: written.
-;;
-begin
-
-    print("fatal: tool stop forced by the user")
-    status_exit(1)
-
-end
-
-;;#############################################################################
 undef("filter_attrs")
 function filter_attrs(source[1]:logical,\
                       target[1]:logical,\
@@ -1646,57 +1423,6 @@ begin
 end
 
 ;;#############################################################################
-undef("get_single_ref")
-function get_single_ref(models[1]:logical,\
-                        model_refs[1]:string)
-;;
-;; Arguments
-;;    models: list of all models
-;;    model_refs: reference model name
-;;
-;; Description
-;;    Fetches the reference model index in models@name
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;    20151109-A_righ_ma: moved from diag_scripts/aux/SAMonsson.ncl to here.
-;;    2015????-A_eval_ma: written.
-;;
-local funcname, scriptname, idx_single_ref
-begin
-    funcname = "get_single_ref"
-    scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname)
-
-    idx_single_ref = ind(model_attr_id .eq. model_refs)
-    if (all(ismissing(idx_single_ref))) then
-        delete(idx_single_ref)
-        idx_single_ref = ind(models@name .eq. str_squeeze(model_refs))
-    end if
-
-    ;; Check if ref_model is in the current namelist
-    if (all(ismissing(idx_single_ref))) then
-        error_msg("f", scriptname, funcname, "missing reference model - " + \
-                  "ref_model is not included in model list (namelist)")
-    end if
-
-    ;; In case we're comparing the same model (i.e., same models@name)
-    idx_single_ref_sizes = dimsizes(idx_single_ref)
-    if (idx_single_ref_sizes.gt.1) then
-        idx_single_ref_tmp = idx_single_ref(0)
-        delete(idx_single_ref)
-        idx_single_ref = idx_single_ref_tmp
-        delete(idx_single_ref_tmp)
-    end if
-
-    leave_msg(scriptname, funcname)
-    return idx_single_ref
-end
-
-;;#############################################################################
 undef("get_ref_model_idx")
 function get_ref_model_idx(models[1]:logical,\
                            model_ref_name:string)
@@ -1706,7 +1432,7 @@ function get_ref_model_idx(models[1]:logical,\
 ;;    model_ref_name: reference model name, possibly two, separated by comma
 ;;
 ;; Description
-;;    Fetches the reference model index in models@name
+;;    Fetches the reference model index in model_info@model
 ;;
 ;; Caveats
 ;;
@@ -1714,8 +1440,6 @@ function get_ref_model_idx(models[1]:logical,\
 ;;
 ;; Modification history
 ;;    20171208-A_righ_ma: rewritten for the new backend
-;;    20151109-A_righ_ma: moved from diag_scripts/aux/SAMonsson.ncl to here.
-;;    2015????-A_eval_ma: written.
 ;;
 local funcname, scriptname, nrefs, idx_ref
 begin
@@ -1728,7 +1452,7 @@ begin
 
     idx_ref = new(nrefs, integer)
     do ii = 0, nrefs - 1
-        idx_ref(ii) = ind(models@name .eq. str_squeeze(model_ref_name(ii)))
+        idx_ref(ii) = ind(model_info@model.eq.str_squeeze(model_ref_name(ii)))
         if (ismissing(idx_ref(ii))) then
             error_msg("f", scriptname, funcname, "reference model " + \
                       model_ref_name(ii) + " not found in the models list")

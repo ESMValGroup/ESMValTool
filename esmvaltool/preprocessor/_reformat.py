@@ -27,12 +27,11 @@ def _get_cmor_checker(table,
     return _checker
 
 
-def fix_file(filename, short_name, project, model):
+def fix_file(filename, short_name, project, model, preproc_dir):
     """Fix errors that prevent loading or can not be fixed in the cube."""
     for fix in Fix.get_fixes(
             project=project, model=model, variable=short_name):
-        fix.fix_file(filename)
-    # TODO: create a copy if file needs to be changed and return name to copy
+        filename = fix.fix_file(filename, preproc_dir)
     return filename
 
 

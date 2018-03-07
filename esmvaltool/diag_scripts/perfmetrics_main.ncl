@@ -91,12 +91,7 @@
 ;;
 ;;#############################################################################
 
-; Load diag_script_info anv variable_info
 load "interface_scripts/interface.ncl"
-
-load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/data_handling.ncl"
-load "./interface_scripts/logging.ncl"
 
 load "./diag_scripts/lib/ncl/style.ncl"
 load "./diag_scripts/lib/ncl/latlon.ncl"
@@ -116,7 +111,7 @@ begin
     log_info(diag_script + " (var: " + variables(0) + ")")
     log_info("++++++++++++++++++++++++++++++++++++++++++")
 
-    dim_MOD = dimsizes(models@name)
+    dim_MOD = dimsizes(model_info@model)
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     field_type0 = field_types(0)
@@ -203,14 +198,14 @@ begin
     modelnames = project_style(diag_script_info, "annots")
 
     ;; Check for reference model definition
-  	var_attr_ref = (/variable_info@reference_model, variable_info@alternative_model/)
-    if (var_attr_ref(0).eq."None") then
+    ref_models = \
+        (/variable_info@reference_model, variable_info@alternative_model/)
+    if (ref_models(0).eq."None") then
         error_msg("f", diag_script, "", "no reference model is specified")
     end if
 
     ;; Set index of the reference (and alternative) model
-    ;; FIX-ME: use variable_info@reference_model instead of var_attr_ref
-    ref_inds = get_ref_model_idx(models, var_attr_ref)
+    ref_inds = get_ref_model_idx(model_info, ref_models)
     ref_ind = ref_inds(0)
     if (dimsizes(ref_inds).gt.1) then
         alt_ind = ref_inds(1)
@@ -220,8 +215,8 @@ begin
     ;; Create output plot directory
     if (diag_script_info@draw_plots) then
     	plot_dir = config_user_info@plot_dir
-      system("mkdir -p " + plot_dir)
-		end if
+        system("mkdir -p " + plot_dir)
+    end if
 
     ;; Plot file type
     file_type = config_user_info@output_file_type
@@ -234,16 +229,14 @@ begin
     ;; Read common grid from the first model
     ;; (all models are expected to be regridded to a common grid)
     data = read_data(0, var0, field_type0)
-    tmp = extract_data_extended(0, var0, data, -1, 0, 0)
-    rank = dimsizes(dimsizes(tmp))
+    rank = dimsizes(dimsizes(data))
     if (rank.eq.4) then
-        grid = tmp(0, :, :, :)  ; plev, lat, lon
+        grid = data(0, :, :, :)  ; plev, lat, lon
     end if
     if (rank.eq.3) then
-        grid = tmp(0, :, :)  ; lat, lon
+        grid = data(0, :, :)  ; lat, lon
     end if
     delete(data)
-    delete(tmp)
     delete(rank)
 
     ;; Case cycle: (model, time, stats)
@@ -351,7 +344,7 @@ begin
     var_all@var = var0
     var_all@diag_script = (/diag_script/)
     copy_VarAtts(diag_script_info, var_all)
-    var_all@ref_model = str_get_field(var_attr_ref(0), 1, ",")
+    var_all@ref_model = str_get_field(ref_models(0), 1, ",")
 
     ;; ### MAIN LOOP OVER MODELS AND DATA PROCESSING ##########################
 
@@ -363,8 +356,7 @@ begin
         ;; Set path for saving processed data ;; FIX-ME add preproc_id
         fullpath = config_user_info@work_dir + "/"
         system("mkdir -p " + fullpath)
-        fname = basename(systemfunc("basename " + \
-                         interface_get_fullpath(var0, field_type0, imod)))
+        fname = basename(systemfunc("basename " + model_info@filename(imod)))
         fname = fname + "_" + basename(diag_script)
         fname = fname + "_" + diag_script_info@plot_type
         fname = fname + "_" + diag_script_info@time_avg
@@ -374,29 +366,12 @@ begin
         fname = fname + "_" + str_sub_str(diag_script_info@region, " ", "")
         procpath = fullpath + fname + ".nc"
 
-;;DELETE        ;; Do not process data if already processed
-;;DELETE        if (fileexists(procpath)) then
-;;DELETE            log_info("No recalculation!")
-;;DELETE            log_info("Reading in file = " + procpath)
-;;DELETE            if (irank.eq.5) then
-;;DELETE                var_all(imod, :, :, :, :) = ncdf_read(procpath, var0)
-;;DELETE            end if
-;;DELETE            if (irank.eq.4) then
-;;DELETE                var_all(imod, :, :, :) = ncdf_read(procpath, var0)
-;;DELETE            end if
-;;DELETE            if (irank.eq.3) then
-;;DELETE                var_all(imod, :, :) = ncdf_read(procpath, var0)
-;;DELETE            end if
-;;DELETE            continue
-;;DELETE        end if
-
         ;; Determine start/end year
         start_year = get_start_year(imod)
         end_year = get_end_year(imod)
 
         ;; Read data
-        data = read_data(imod, var0, field_type0)
-        var = extract_data_extended(imod, var0, data, -1, 0, 0)
+        var = read_data(imod, var0, field_type0)
         dnames = getVarDimNames(var)
 
         ;; CASE: cycle ########################################################
@@ -612,7 +587,8 @@ begin
         end if
 
         ;; Define grading filename
-        ncdf_dir = config_user_info@work_dir + "/" + diag_script_info@metric + "_" + var0_new + ".nc"
+        ncdf_dir = config_user_info@work_dir + "/" + \
+            diag_script_info@metric + "_" + var0_new + ".nc"
 
         ;; Start calculation
 ;;DELETE        if (fileexists(ncdf_dir)) then
@@ -772,8 +748,8 @@ begin
         grading@diag_script = (/diag_script/)
         grading@var = "grade"  ; FIX-ME ?
         grading@region = location
-        grading@num_climofiles = dimsizes(models@name)  ; for tagging
-        do imod = 0, dimsizes(models@name) - 1
+        grading@num_climofiles = dimsizes(model_info@model)  ; for tagging
+        do imod = 0, dimsizes(model_info@model) - 1
             num_climo = "climofile_" + imod
             grading@$num_climo$ = input_file_info@filename(imod)
         end do
@@ -822,7 +798,7 @@ begin
         end if
 
         ;; Plot output directory
-        output_dir = config_user_info@plot_dir + "/"
+        output_dir = config_user_info@plot_dir
 
         ;; Annotation and file names
         region_name = ""  ; priority 3
