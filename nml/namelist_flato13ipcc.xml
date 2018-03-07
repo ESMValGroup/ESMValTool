@@ -1385,7 +1385,7 @@ This namelist is part of the ESMValTool
         <variable>             ta                           </variable>
         <field_type>           T3M                          </field_type>
         <diag_script_cfg_dir>  ./nml/cfg_perfmetrics/CMIP5/ </diag_script_cfg_dir>
-        <tags> R_atmos, T_phys </tags>
+        <tags> R_atmos, T_phys, P_cmip6dicad </tags>
 
         <model>  CMIP5_ETHZ  ACCESS1-0           Amon  historical   r1i1p1  1980 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
 

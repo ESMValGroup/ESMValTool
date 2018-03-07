@@ -37,7 +37,7 @@ This namelist is part of the ESMValTool
     <verbosity  type="integer">                  1  </verbosity>
     <exit_on_warning  type="boolean">        False  </exit_on_warning>
     <output_file_type>                         png  </output_file_type>
-    <tags>                D_stroeve07grl, P_esmval  </tags>
+    <tags>                D_stroeve07grl, P_esmval, P_crescendo  </tags>
 </GLOBAL>
 
 <MODELS>
