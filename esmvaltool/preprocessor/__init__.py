@@ -9,7 +9,7 @@ from ._derive import derive
 from ._download import download
 from ._io import load_cubes, save_cubes
 from ._mask import mask_fillvalues, mask_landocean
-from ._multimodel import multi_model_mean
+from ._multimodel import multi_model_stats
 from ._reformat import fix_data, fix_file, fix_metadata, cmor_check_data
 from ._regrid import vinterp as extract_levels
 from ._regrid import regrid
@@ -51,7 +51,7 @@ PREPROCESSOR_FUNCTIONS = {
     # 'annual_cycle': annual_cycle,
     # 'diurnal_cycle': diurnal_cycle,
     'seasonal_mean': seasonal_mean,
-    'multi_model_mean': multi_model_mean,
+    'multi_model_stats': multi_model_stats,
     'mask_fillvalues': mask_fillvalues,
     'cmor_check_data': cmor_check_data,
     # Save to file
@@ -74,14 +74,14 @@ DEFAULT_ORDER = (
     'extract_region',
     'average_region',
     'seasonal_mean',
-    'multi_model_mean',
+    'multi_model_stats',
     'cmor_check_data',
     'save',
 )
 assert set(DEFAULT_ORDER) == set(PREPROCESSOR_FUNCTIONS)
 
 MULTI_MODEL_FUNCTIONS = {
-    'multi_model_mean',
+    'multi_model_stats',
     'mask_fillvalues',
 }
 assert MULTI_MODEL_FUNCTIONS.issubset(set(PREPROCESSOR_FUNCTIONS))
@@ -92,7 +92,7 @@ _LIST_INPUT_FUNCTIONS = {
     'load',
     'derive',
     'mask_fillvalues',
-    'multi_model_mean',
+    'multi_model_stats',
     'save',
 }
 assert _LIST_INPUT_FUNCTIONS.issubset(set(PREPROCESSOR_FUNCTIONS))
@@ -102,7 +102,7 @@ _LIST_OUTPUT_FUNCTIONS = {
     'download',
     'load',
     'mask_fillvalues',
-    'multi_model_mean',
+    'multi_model_stats',
     'save',
 }
 assert _LIST_OUTPUT_FUNCTIONS.issubset(set(PREPROCESSOR_FUNCTIONS))
