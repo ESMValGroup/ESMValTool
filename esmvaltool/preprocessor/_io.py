@@ -27,7 +27,7 @@ def concatenate_callback(raw_cube, field, _):
             del raw_cube.attributes[attr]
     for coord in raw_cube.coords():
         # Iris chooses to change longitude and latitude units to degrees
-        #  regardless of value in file, so reinstating file value
+        # regardless of value in file, so reinstating file value
         if coord.standard_name in ['longitude', 'latitude']:
             units = _get_attr_from_field_coord(field, coord.var_name, 'units')
             if units is not None:
@@ -42,6 +42,8 @@ def load_cubes(files, filename, constraints=None, callback=None):
     cubes = cubes.concatenate()
     for cube in cubes:
         cube.attributes['_filename'] = filename
+    if len(cubes) == 0:
+        raise Exception('Can not load cubes from {0}'.format(files))
     return cubes
 
 
