@@ -143,14 +143,30 @@ def get_input_filename(variable, rootpath, drs):
         dirname = dirname_template
 
     # Set the filename
-    cfg = read_config_file(variable['project'])
-    filename = replace_tags(cfg['input_file'], variable)
+    filename = _get_filename(variable, drs)
     if filename.endswith('*'):
         filename = filename.rstrip(
             '*') + "{start_year}01-{end_year}12.nc".format(**variable)
 
     # Full path to files
     return os.path.join(dirname, filename)
+
+
+def _get_filename(variable, drs):
+    project = variable['project']
+    cfg = read_config_file(project)
+
+    input_file = cfg['input_file']
+    _drs = drs.get(project, 'default')
+    if not isinstance(input_file, six.string_types):
+        if _drs in input_file:
+            input_file = input_file[_drs]
+        else:
+            raise KeyError(
+                'drs {} for {} project not specified for input_file '
+                'in config-developer file'.format(_drs, project))
+    filename = replace_tags(input_file, variable)
+    return filename
 
 
 def get_input_filelist(variable, rootpath, drs):
@@ -178,8 +194,7 @@ def get_input_filelist(variable, rootpath, drs):
     check_isdir(dirname)
 
     # Set the filename glob
-    cfg = read_config_file(variable['project'])
-    filename_glob = replace_tags(cfg['input_file'], variable)
+    filename_glob = _get_filename(variable, drs)
 
     # Find files
     files = find_files(dirname, filename_glob)
@@ -229,18 +244,25 @@ def find_files(dirname, filename):
 def get_start_end_year(filename):
     """Get the start and end year from a file name.
 
-    This works for filenames matching *_YYYY*-YYYY*.*
+    This works for filenames matching *_YYYY*-YYYY*.* or *_YYYY*.*
     """
     name = os.path.splitext(filename)[0]
-    start, end = name.split('_')[-1].split('-')
-    start_year, end_year = int(start[:4]), int(end[:4])
+    dates = name.split('_')[-1].split('-')
+    if len(dates) == 1:
+        start_year = int(dates[0][:4])
+        end_year = start_year
+    elif len(dates) == 2:
+        start_year, end_year = int(dates[0][:4]), int(dates[1][:4])
+    else:
+        raise ValueError('Name {0} dates do not match a recognized '
+                         'pattern'.format(name))
     return start_year, end_year
 
 
 def select_files(filenames, start_year, end_year):
     """Select files containing data between start_year and end_year.
 
-    This works for filenames matching *_YYYY*-YYYY*.*
+    This works for filenames matching *_YYYY*-YYYY*.* or *_YYYY*.*
     """
     selection = []
     for filename in filenames:
