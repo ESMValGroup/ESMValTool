@@ -150,6 +150,11 @@ def _put_in_cube(template_cube,
             stats_cube.add_aux_coord(template_cube.
                                      coord('air_pressure'))
     stats_cube.attributes['_filename'] = file_name
+    # complete metadata
+    stats_cube.var_name = template_cube.var_name
+    stats_cube.long_name = template_cube.long_name
+    stats_cube.standard_name = template_cube.standard_name
+    stats_cube.units = template_cube.units
     return stats_cube
 
 
@@ -292,7 +297,7 @@ def _apply_overlap(cube, tx1, tx2):
     return cube
 
 
-def multi_model_mean(cubes, span, filename, exclude):
+def multi_model_stats(cubes, span, filename, exclude):
     """Compute multi-model mean and median."""
     logger.debug('Multi model statistics: excluding files: %s', str(exclude))
 
@@ -342,14 +347,14 @@ def multi_model_mean(cubes, span, filename, exclude):
                                              stop_dtime),
                               mean_dats,
                               'means',
-                              filename,
+                              filename['file_mean'],
                               t_axis=None)
         c_med = _put_in_cube(_apply_overlap(selection[0],
                                             start_dtime,
                                             stop_dtime),
                              med_dats,
                              'medians',
-                             filename,
+                             filename['file_median'],
                              t_axis=None)
 
     elif span == 'full':
@@ -369,14 +374,15 @@ def multi_model_mean(cubes, span, filename, exclude):
         c_mean = _put_in_cube(selection[0],
                               mean_dats,
                               'means',
-                              filename,
+                              filename['file_mean'],
                               t_axis=time_axis)
         c_med = _put_in_cube(selection[0],
                              med_dats,
                              'medians',
-                             filename,
+                             filename['file_median'],
                              t_axis=time_axis)
     # save up
-    save_cubes([c_mean, c_med])
+    save_cubes([c_mean])
+    save_cubes([c_med])
 
     return cubes
