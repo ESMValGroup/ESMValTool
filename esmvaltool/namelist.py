@@ -367,10 +367,10 @@ def _update_multi_model_stats(variables, settings):
         variable = variables[0]
         filename_mean = os.path.join(
             os.path.dirname(variable['filename']),
-            'RENAME-ME_multi_model_mean.nc')
+            'BACKEND_MultiModelMean.nc')
         filename_median = os.path.join(
             os.path.dirname(variable['filename']),
-            'RENAME-ME_multi_model_median.nc')
+            'BACKEND_MultiModelMedian.nc')
         settings['multi_model_stats']['filename']['file_mean'] = \
             filename_mean
         settings['multi_model_stats']['filename']['file_median'] = \
