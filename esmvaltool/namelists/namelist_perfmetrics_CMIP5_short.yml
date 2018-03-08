@@ -38,7 +38,7 @@ preprocessors:
       scheme: linear
     mask_fillvalues:
       threshold_fraction: 0.95
-    multi_model_mean:
+    multi_model_stats:
       span: overlap
 
   ppALL:
@@ -53,7 +53,7 @@ preprocessors:
       scheme: linear
     mask_fillvalues:
       threshold_fraction: 0.95
-    multi_model_mean:
+    multi_model_stats:
       span: overlap      
 
       
