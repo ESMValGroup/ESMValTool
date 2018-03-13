@@ -39,9 +39,9 @@ Check and apply renamings
 
 ESMValTool v2.0 includes a completely revised interface handling the communication between the python workflow and the NCL scripts. This required renaming several variable and function names in most of the NCL scripts, which are listed in the following table and shall be applied to the diagnostic code before starting with testing.
 
-+--------------------------------------------+--------------------------- -------+------------------+
-| Name in v1.0                               | Name in v2.0                      | Affected code    |
-+============================================+===================================+==================+
++----------------------------------------+---------------------------------------+------------------+
+| Name in v1.0                           | Name in v2.0                          | Affected code    |
++========================================+=======================================+==================+
 | getenv("ESMValTool_wrk_dir")           | config_user_info@work_dir             | all .ncl scripts |
 | getenv(ESMValTool_att)                 | diag_script_info@att or               | all .ncl scripts |
 |                                        | config_user_info@att                  |                  |
