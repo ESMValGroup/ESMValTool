@@ -7,8 +7,9 @@ This guide summarizes the main steps to be taken in order to port an ESMValTool 
 
 REFACTORING_backend contains both v1.0 and v2.0, the latter within the esmvaltool/ directory. It is therefore possible, and recommended, to run both versions of the ESMValTool within the same branch: this will facilitate testing and comparison of the two version as long as the porting process proceeds.
 
-Converting xml to yml
-=====================
+
+Convert xml to yml
+==================
 
 In ESMValTool v2.0, the main namelist (hereafter *"the namelist"*) is written in yaml format (`Yet Another Markup Language format <http://www.yaml.org/>`_). It may be useful to activate syntax highlighting for the editor in use. This improves the readability of the namelist file and facilitates the editing, especially concerning the indentations which are essential in the yml format (like in python). Instructions can be easily found online, for example for `emacs <https://www.emacswiki.org/emacs/YamlMode>`_ and `vim <http://www.vim.org/scripts/script.php?script_id=739>`_.
 
@@ -21,10 +22,11 @@ The namelist file in yml shall first be moved to the esmvaltool/ directory where
 
 This will help to keep track of which namelists have been already ported to the new version.
 
-The yaml namelist can now be edited and tested, starting with a few models and one diagnostics and proceed gradually. A corresponding version of the v1.0 namelist (xml) shall also be developed in parallel in order to compare the output of the two versions and to make sure that the porting has been successful (see "Testing" below).
+The yaml namelist can now be edited and tested, starting with a few models and one diagnostics and proceed gradually. The namelist file ``namelists/namelist_perfmetrics_CMIP5.yml`` can be used as an example, as it covers most of the common cases. A corresponding version of the v1.0 namelist (xml) shall also be developed in parallel in order to compare the output of the two versions and to make sure that the porting has been successful (see "Testing" below).
 
-Creating a copy of the diag script in v2.0
-==========================================
+
+Create a copy of the diag script in v2.0
+========================================
 
 As for the namelist, a copy of the diagnostic script(s) to be ported shall be created in the esmvaltool/ directory, again to allow for direct comparison of the two versions within the same branch::
 
@@ -32,6 +34,7 @@ As for the namelist, a copy of the diagnostic script(s) to be ported shall be cr
 
 
 Note that this is not necessary for plot scripts and for the libraries in ncl/lib/, which have already been copied. Changes may however still be necessary, especially in the plot scripts which have not yet been tested with all diagnostics.
+
 
 Check and apply renamings
 =========================
@@ -99,3 +102,16 @@ The following changes shall also be considered:
 - the interface functions ``interface_get_*`` and ``get_figure_filename`` are no longer available: their functionality can be easily reproduced using the ``model_info`` and ``input_file_info`` logicals and their attributes;
 - there are now only 4 log levels (``debu``,``info``, ``warning``, and ``error``) instead of (infinite) numerical values.
 
+As for the namelist, the diagnostic script ``diag_scripts/perfmetrics_main.ncl`` can be followed as working example.
+
+
+Move preprocessing from the diagnostic script to the backend
+============================================================
+
+Many operations were previously performed by the diagnostic scripts, are now included in the backend, including level extraction, regridding, masking, and multi-model statistics. If the diagnostics to be ported contains code performing any of these operations, this code has to be removed from the diagnostic script and the corresponding backend functionality shall be used instead.
+
+The backend operations are fully controlled by the ``preprocessors`` section in the namelist. Here a number of preprocessor sets can be defined, with different options for each of the operations. The sets defined in this section are referred to in the ``diagnostics`` section to process a given variable.
+
+It is recommended to proceed step by step, porting and testing each operation separately before proceeding with the next one. A useful setting in the configuration file ``config-private.yml`` called ``write_intermediary_cube`` allows writing out the variable field after each preprocessing step, thus facilitating the comparison with the old version (e.g., after CMORization, level selection, after regridding, etc.). The CMORization step of the new backend correspond exactly to the operation performed by the old backend (and stored in the ``climo``-files): this shall be the very first step to be checked, by simply comparing the intermediary file produced by the new backend after CMORization with the output of the old backend in the ``climo`` directorsy.
+
+The new backend also performs variable derivation, replacing the ``calculate`` function in the ``variable_defs`` scripts. If the namelist being portedmakes use of derived variables, the corresponding calculation must be ported from the ``variable_defs`` file to ``esmvaltool/preprocessor/_derive.py``.
