@@ -3,6 +3,7 @@ import logging
 import os
 
 import iris
+import iris.exceptions
 
 iris.FUTURE.netcdf_promote = True
 iris.FUTURE.netcdf_no_unlimited = True
@@ -40,10 +41,10 @@ def load_cubes(files, filename, constraints=None, callback=None):
     cubes = iris.load_raw(files, constraints=constraints, callback=callback)
     iris.util.unify_time_units(cubes)
     cubes = cubes.concatenate()
+    if not cubes:
+        raise Exception('Can not load cubes from {0}'.format(files))
     for cube in cubes:
         cube.attributes['_filename'] = filename
-    if len(cubes) == 0:
-        raise Exception('Can not load cubes from {0}'.format(files))
     return cubes
 
 
