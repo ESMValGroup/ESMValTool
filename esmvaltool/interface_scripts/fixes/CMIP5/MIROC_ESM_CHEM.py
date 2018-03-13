@@ -1,8 +1,25 @@
+"""Fixes for MIROC ESM CHEM"""
 from esmvaltool.interface_scripts.fixes.fix import Fix
 
 
 class tro3(Fix):
+    """Fixes for tro3"""
+
     def fix_data(self, cube):
+        """
+        Fix data
+
+        Fixes discrepancy between declared units and real units
+
+        Parameters
+        ----------
+        cube: iris.cube.Cube
+
+        Returns
+        -------
+        iris.cube.Cube
+
+        """
         return cube * 1000
 
 
