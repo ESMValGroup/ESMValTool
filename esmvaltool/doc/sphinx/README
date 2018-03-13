@@ -1,0 +1,36 @@
+This README is part of the ESMValTool distribution.  It's been added as part of 
+the incorporation of the Sphinx documentation generator. 
+
+This distribution includes the ESMValTool documentation in the form of 
+standalone HTML files in the build/html directory; pointing your browser at
+
+% build/html/index.html
+
+in the current directory (i.e. the directory which contains this README file) 
+will load the documentation.
+
+The installation of Sphinx is a prerequisite for the (re-)generation of the 
+ESMValTool documentation.  Sphinx may be obtained from 
+http://sphinx-doc.org/install.html; an overview of its workings is available 
+at http://sphinx-doc.org/tutorial.html.
+
+The script process_ncl_docs.py in the scripts directory creates input files for 
+Sphinx from a subset of ESMValTool NCL scripts, and assembles them in a 
+subdirectory of the source directory.  To create the ESMValTool documentation,
+first run this script by doing
+
+% python scripts/process_ncl_docs.py
+
+in the current directory.  Then, run 
+
+% make <target>
+
+in the same directory to ask Sphinx to generate the documentation.  Here, 
+<target> is the output format required for the documentation - for example, 
+html for standalone HTML files (as distributed here), man for manual pages and 
+text for plain text.  The output is placed in the build/<target> subdirectory.  
+Running 
+
+% make
+
+by itself will generate a complete list of output formats.  
