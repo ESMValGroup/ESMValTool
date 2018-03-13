@@ -100,7 +100,7 @@ The following changes shall also be considered:
 
 - ``run_dir`` (previous ``interface_data``), ``plot_dir``, ``work_dir`` are now unique to each diagnostic script, so there is no need to define specific paths within the diagnostic script to prevent file collision anymore;
 - the interface functions ``interface_get_*`` and ``get_figure_filename`` are no longer available: their functionality can be easily reproduced using the ``model_info`` and ``input_file_info`` logicals and their attributes;
-- there are now only 4 log levels (``debu``,``info``, ``warning``, and ``error``) instead of (infinite) numerical values.
+- there are now only 4 log levels (``debug``,``info``, ``warning``, and ``error``) instead of (infinite) numerical values.
 
 As for the namelist, the diagnostic script ``diag_scripts/perfmetrics_main.ncl`` can be followed as working example.
 
@@ -115,3 +115,49 @@ The backend operations are fully controlled by the ``preprocessors`` section in 
 It is recommended to proceed step by step, porting and testing each operation separately before proceeding with the next one. A useful setting in the configuration file ``config-private.yml`` called ``write_intermediary_cube`` allows writing out the variable field after each preprocessing step, thus facilitating the comparison with the old version (e.g., after CMORization, level selection, after regridding, etc.). The CMORization step of the new backend correspond exactly to the operation performed by the old backend (and stored in the ``climo``-files): this shall be the very first step to be checked, by simply comparing the intermediary file produced by the new backend after CMORization with the output of the old backend in the ``climo`` directorsy.
 
 The new backend also performs variable derivation, replacing the ``calculate`` function in the ``variable_defs`` scripts. If the namelist being portedmakes use of derived variables, the corresponding calculation must be ported from the ``variable_defs`` file to ``esmvaltool/preprocessor/_derive.py``.
+
+
+Move diagnostic- and variable-specific settings to the namelist
+===============================================================
+
+In the new version, all settings are centralized in the namelist, completely replacing the diagnostic-specific settings in ``./nml/cfg_files/`` (passed as ``diag_script_info`` to the diagnostic scripts) and the variable-specific settings in ``variable_defs/<variable>_info.ncl`` (passed as``variable_info``). The is also no distinction anymore between diagnostic- and variable-specific settings: they are collectively defined in the ``scripts`` dictionary of each diagnostic in the namelist and passed as ``diag_script_info`` attributes by the new ESMValTool interface. Note that the ``variable_info`` logical still exists, but it is used to pass variable information as given in the corresponding dictionary of the namelist.
+
+
+Test the namelist/diagnostic in the new version
+===============================================
+
+Once the porting of the diagnostic script is complete it can be tested. Most of the diagnostic script allows writing the output as in a NetCDF file before calling the plotting routine. This output can be used to check whether the results of v1.0 are correctly reproduced.
+
+There are two methods for comparing NetCDF files: ``cdo`` and ``ncdiff``. The first method is applied with the command::
+
+      cdo diffv old_output.nc new_output.nc
+
+This will produce a print a log on the stdout reporting how many records of the file differ and the absolute/relative difference.
+
+The second method produces a NetCDF file (e.g., ``diff.nc``) with the difference between to given files::
+
+    ncdiff old_output.nc new_output.nc diff.nc
+
+This file can be opened with ``ncview`` to visually inspect the differences.
+
+In general, binary identical results cannot be expected, due to the use of different languages and algorithms in the two versions, especially for complex operations such as regridding. However, difference within machine precision shall be aimed at. 
+
+It is also recommended to compare the graphical output (this may be necessary if the ported diagnostic does not produce a NetCDF output). For this comparison, the PostScript format shall be chosen (it can be set in the user configuration file). Two PostScript files can be compared with ``diff``:
+
+   diff old_graphic.ps new_graphic.ps
+
+but it is very unlikely to produce no differences, therefore visual inspection of the output may also be required.
+
+
+Cleaning the code
+=================
+
+Before submitting a pull request, the code shall be cleaned to adhere to the coding standard, which are somehow stricter in v2.0. For python code, this check is performed automatically on GitHub by CircleCI and Codacy. For NCL code, this is still done manually and considers the following guidelines:
+
+- code syntax shall be checked using ``/util/ncl-checker/pep8.py <diag>.ncl`` and all reported warnings shall be fixed;
+- two-space instead of four-space indentation is now adopted for NCL;
+- load statements for NCL standard libraries shall be removed: these are automatically loaded since NCL v6.4.0 (see `NCL documentation <http://www.ncl.ucar.edu/current_release.shtml#PreloadedScripts6.4.0>`_);
+- the description of diagnostic- and variable-specific settings shall be moved from the header of the diagnostic script to the main namelist, since the settings are now defined there (see above);
+- NCL ``print`` and ``printVarSummary`` statements shall be avoided and replaced by the ``info_output`` and ``debug_output`` functions;
+- for error and warning statments, the ``error_msg`` function shall be used, which automatically include an exit statement.
+
