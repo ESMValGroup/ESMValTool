@@ -291,13 +291,13 @@ def _get_default_settings(variable, config_user):
         'preproc_dir': config_user['preproc_dir'],
     }
     settings['fix_file'] = dict(fix)
-    del fix['preproc_dir']
     # Only supply mip if the CMOR check fixes are implemented.
     if variable.get('cmor_table'):
         fix['cmor_table'] = variable['cmor_table']
         fix['mip'] = variable['mip']
-    settings['fix_metadata'] = dict(fix)
     settings['fix_data'] = dict(fix)
+    del fix['preproc_dir']
+    settings['fix_metadata'] = dict(fix)
 
     # Configure time extraction
     settings['extract_time'] = {
