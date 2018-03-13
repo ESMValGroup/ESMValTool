@@ -33,43 +33,65 @@ As for the namelist, a copy of the diagnostic script(s) to be ported shall be cr
 
 Note that this is not necessary for plot scripts and for the libraries in ncl/lib/, which have already been copied. Changes may however still be necessary, especially in the plot scripts which have not yet been tested with all diagnostics.
 
-
 Check and apply renamings
 =========================
 
 ESMValTool v2.0 includes a completely revised interface handling the communication between the python workflow and the NCL scripts. This required renaming several variable and function names in most of the NCL scripts, which are listed in the following table and shall be applied to the diagnostic code before starting with testing.
 
-+----------------------------------------+---------------------------------------+------------------+
-| Name in v1.0                           | Name in v2.0                          | Affected code    |
-+========================================+=======================================+==================+
-| getenv("ESMValTool_wrk_dir")           | config_user_info@work_dir             | all .ncl scripts |
-| getenv(ESMValTool_att)                 | diag_script_info@att or               | all .ncl scripts |
-|                                        | config_user_info@att                  |                  |
-| xml                                    | yml                                   | all scripts      |
-| var_attr_ref(0)                        | variable_info@reference_model         | all .ncl scripts |
-| var_attr_ref(1)                        | variable_info@alternative_model       | all .ncl scripts |
-| models                                 | model_info / input_file_info          | all .ncl scripts |
-| models@name                            | model_info@model or                   | all .ncl scripts |
-|                                        | input_file_info@model                 | all .ncl scripts |
-| verbosity                              | config_user_info@log_level            |                  |
-| isfilepresent_esmval                   | fileexists                            | all .ncl scripts |
-| messaging.ncl                          | logging.ncl                           | all .ncl scripts |
-| info_output(arg1, arg2, arg3)          | log_info(arg1) if arg3=1              | all .ncl scripts |
-| info_output(arg1, arg2, arg3)          | debug_info(arg1) if arg3>1            | all .ncl scripts |
-| verbosity = config_user_info@verbosity | remove this statement                 | all .ncl scripts |
-| enter_msg(arg1, arg2, arg3)            | enter_msg(arg1, arg2)                 | all .ncl scripts |
-| leave_msg(arg1, arg2, arg3)            | leave_msg(arg1, arg2)                 | all .ncl scripts |
-| noop()                                 | appropriate if-else statement         | all .ncl scripts |
-| nooperation()                          | appropriate if-else stsatement        | all .ncl scripts |
-| fullpaths                              | input_file_info@filename              | all .ncl scripts |
-| get_output_dir(arg1, arg2)             | config_user_info@plot_dir             | all .ncl scripts |
-| get_work_dir                           | config_user_info@work_dir             | all .ncl scripts |
-| inlist(arg1, arg2)                     | any(arg1.eq.arg2)                     | all .ncl scripts |
-| load interface_scripts/<script>.ncl    | load interface_scripts/interface.ncl  | all .ncl scripts |
-| <varname>_info.tmp                     | <varname>_info.ncl in preproc dir     | all .ncl scripts |
-| ncl.interface                          | settings.ncl in run_dir and           | all .ncl scripts |
-|                                        | interface_scripts/interface.ncl       |                  |
-+----------------------------------------+---------------------------------------+------------------+ 
++--------------------------------------------+-------------------------------------------+------------------+
+| Name in v1.0                               | Name in v2.0                              | Affected code    |
++============================================+===========================================+==================+
+| ``getenv("ESMValTool_wrk_dir")``           | ``config_user_info@work_dir``             | all .ncl scripts |
++--------------------------------------------+-------------------------------------------+------------------+
+| ``getenv(ESMValTool_att)``                 | ``diag_script_info@att`` or               | all .ncl scripts |
+|                                            | ``config_user_info@att``                  |                  |
++--------------------------------------------+-------------------------------------------+------------------+
+| ``xml``                                    | ``yml``                                   | all scripts      |
++--------------------------------------------+-------------------------------------------+------------------+
+| ``var_attr_ref(0)``                        | ``variable_info@reference_model``         | all .ncl scripts |
++--------------------------------------------+-------------------------------------------+------------------+
+| ``var_attr_ref(1)``                        | ``variable_info@alternative_model``       | all .ncl scripts |
++--------------------------------------------+-------------------------------------------+------------------+
+| ``models``                                 | ``model_info`` or ``input_file_info``     | all .ncl scripts |
++--------------------------------------------+-------------------------------------------+------------------+
+| ``models@name``                            | ``model_info@model`` or                   | all .ncl scripts |
+|                                            | ``input_file_info@model``                 |                  |
++--------------------------------------------+-------------------------------------------+------------------+
+| ``verbosity``                              | ``config_user_info@log_level``            | all .ncl scripts |
++--------------------------------------------+-------------------------------------------+------------------+
+| ``isfilepresent_esmval``                   | ``fileexists``                            | all .ncl scripts |
++--------------------------------------------+-------------------------------------------+------------------+
+| ``messaging.ncl``                          | ``logging.ncl``                           | all .ncl scripts |
++--------------------------------------------+-------------------------------------------+------------------+
+| ``info_output(arg1, arg2, arg3)``          | ``log_info(arg1)`` if ``arg3=1``          | all .ncl scripts |
++--------------------------------------------+-------------------------------------------+------------------+
+| ``info_output(arg1, arg2, arg3)``          | ``debug_info(arg1)`` if ``arg3>1``        | all .ncl scripts |
++--------------------------------------------+-------------------------------------------+------------------+
+| ``verbosity = config_user_info@verbosity`` | remove this statement                     | all .ncl scripts |
++--------------------------------------------+-------------------------------------------+------------------+
+| ``enter_msg(arg1, arg2, arg3)``            | ``enter_msg(arg1, arg2)``                 | all .ncl scripts |
++--------------------------------------------+-------------------------------------------+------------------+
+| ``leave_msg(arg1, arg2, arg3)``            | ``leave_msg(arg1, arg2)``                 | all .ncl scripts |
++--------------------------------------------+-------------------------------------------+------------------+
+| ``noop()``                                 | appropriate ``if-else`` statement         | all .ncl scripts |
++--------------------------------------------+-------------------------------------------+------------------+
+| ``nooperation()``                          | appropriate ``if-else`` stsatement        | all .ncl scripts |
++--------------------------------------------+-------------------------------------------+------------------+
+| ``fullpaths``                              | ``input_file_info@filename``              | all .ncl scripts |
++--------------------------------------------+-------------------------------------------+------------------+
+| ``get_output_dir(arg1, arg2)``             | ``config_user_info@plot_dir``             | all .ncl scripts |
++--------------------------------------------+-------------------------------------------+------------------+
+| ``get_work_dir``                           | ``config_user_info@work_dir``             | all .ncl scripts |
++--------------------------------------------+-------------------------------------------+------------------+
+| ``inlist(arg1, arg2)``                     | ``any(arg1.eq.arg2)``                     | all .ncl scripts |
++--------------------------------------------+-------------------------------------------+------------------+
+| ``load interface_scripts/*.ncl``           | ``load interface_scripts/interface.ncl``  | all .ncl scripts |
++--------------------------------------------+-------------------------------------------+------------------+
+| ``<varname>_info.tmp``                     | ``<varname>_info.ncl`` in ``preproc`` dir | all .ncl scripts |
++--------------------------------------------+-------------------------------------------+------------------+
+| ``ncl.interface``                          | ``settings.ncl`` in ``run_dir`` and       | all .ncl scripts |
+|                                            | ``interface_scripts/interface.ncl``       |                  |
++--------------------------------------------+-------------------------------------------+------------------+ 
 
 The following changes shall also be considered: 
 
