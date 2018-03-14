@@ -1,8 +1,4 @@
-"""
-
-Unit tests for the variable_info module.
-
-"""
+"""Integration tests for the variable_info module"""
 
 import os
 import unittest
@@ -11,11 +7,19 @@ from esmvaltool.interface_scripts.variable_info import CMIP5Info, CMIP6Info
 
 
 class TestCMIP6Info(unittest.TestCase):
+    """Test for the CMIP6 info class"""
+
     @classmethod
     def setUpClass(cls):
+        """
+        Set up tests
+
+        We read CMIP6Info once to keep tests times manageable
+        """
         cls.variables_info = CMIP6Info()
 
-    def test_constructor_optional_parameter(self):
+    def test_custom_tables_location(self):
+        """Test constructor with custom tables location"""
         cwd = os.path.dirname(os.path.realpath(__file__))
         cmor_tables_path = os.path.join(cwd, '..', '..', '..', 'esmvaltool',
                                         'interface_scripts',
@@ -24,23 +28,34 @@ class TestCMIP6Info(unittest.TestCase):
         CMIP6Info(cmor_tables_path)
 
     def test_get_variable_tas(self):
+        """Get tas variable"""
         var = self.variables_info.get_variable('Amon', 'tas')
         self.assertEqual(var.short_name, 'tas')
 
-    def test_get_variable_with_changed_name(self):
+    def test_get_variable_from_alias(self):
+        """Get a variable from a known alias"""
         var = self.variables_info.get_variable('SImon', 'sic')
         self.assertEqual(var.short_name, 'siconc')
 
     def test_get_bad_variable(self):
+        """Get none if a variable is not in the given table"""
         self.assertIsNone(self.variables_info.get_variable('Omon', 'tas'))
 
 
 class TestCMIP5Info(unittest.TestCase):
+    """Test for the CMIP5 info class"""
+
     @classmethod
     def setUpClass(cls):
+        """
+        Set up tests
+
+        We read CMIP5Info once to keep testing times manageable
+        """
         cls.variables_info = CMIP5Info()
 
-    def test_constructor_optional_parameter(self):
+    def test_custom_tables_location(self):
+        """Test constructor with custom tables location"""
         cwd = os.path.dirname(os.path.realpath(__file__))
         cmor_tables_path = os.path.join(cwd, '..', '..', '..', 'esmvaltool',
                                         'interface_scripts',
@@ -49,8 +64,10 @@ class TestCMIP5Info(unittest.TestCase):
         CMIP5Info(cmor_tables_path)
 
     def test_get_variable_tas(self):
+        """Get tas variable"""
         var = self.variables_info.get_variable('Amon', 'tas')
         self.assertEqual(var.short_name, 'tas')
 
     def test_get_bad_variable(self):
+        """Get none if a variable is not in the given table"""
         self.assertIsNone(self.variables_info.get_variable('Omon', 'tas'))

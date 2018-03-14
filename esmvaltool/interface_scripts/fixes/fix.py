@@ -1,3 +1,4 @@
+"""Contains the base class for model fixes"""
 import importlib
 import os
 
