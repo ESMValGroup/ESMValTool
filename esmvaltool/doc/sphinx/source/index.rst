@@ -1,9 +1,12 @@
 .. toctree::
    :maxdepth: 3
 
-   user_guide
-   developer_guide
+   preface
+   known_issues
+   user_guide/index
+   developer_guide/index
 
+   codedoc/main
 
 
 Indices and tables

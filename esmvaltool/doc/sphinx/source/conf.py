@@ -21,6 +21,8 @@ import os
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 esmvaltool_path = os.path.abspath('../../../..')
 sys.path.insert(0, esmvaltool_path)
+esmvaltool_path = os.path.abspath('../../..')
+sys.path.insert(0, esmvaltool_path)
 import esmvaltool.version
 
 #add process_nl_docs in sphinx documentation source folder

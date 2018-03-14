@@ -66,7 +66,6 @@ def process_params(params, inp, oup):
     Extract the parameter names and types from the params string, pull their
     descriptions out from the input file and reformat the lot in the output.
     """
-
     # Get the names and types.
     param_details = make_param_details(params)
 
