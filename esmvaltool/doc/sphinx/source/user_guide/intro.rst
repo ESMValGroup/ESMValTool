@@ -14,6 +14,25 @@ Objectives and approach
 The main idea of the ESMValTool is to provide a broad suite of diagnostics which can be performed easily when new model simulations are run. The suite of diagnostics needs to be broad enough to reflect the diversity and complexity of Earth System Models, but must also be robust enough to be run routinely or semi-operationally.
 In order the address these challenging objectives the ESMValTool is conceived as a framework which allows community contributions to be bound into a coherent framework.
 
+License
+=======
+
+The ESMValTool is released under the Apache License, version 2.0 and citation
+of the ESMValTool paper ("Software Documentation Paper") is kindly requested
+upon use alongside with the software doi (doi:10.17874/ac8548f0315)
+and version number:
+
+* Eyring et al., ESMValTool (v1.0) - a community diagnostic and performance metrics tool for routine evaluation of Earth System Models in CMIP, Geosci. Model Dev., 9, 1747-1802, 2016.*
+
+Besides the above citation, users are kindly asked to register any journal
+articles (or other scientific documents) that use the software at the
+ESMValTool webpage (http://www.esmvaltool.org/). Citing the Software
+Documentation Paper and registering your paper(s) will serve to document the
+scientific impact of the Software, which is of vital importance for securing
+future funding. You should consider this an obligation if you have taken
+advantage of the ESMValTool, which represents the end product of considerable
+effort by the development team.
+
 Architecture
 ============
 
