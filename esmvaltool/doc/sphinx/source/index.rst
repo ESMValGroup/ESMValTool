@@ -1,10 +1,10 @@
-Welcome to ESMValTool's documentation!
-======================================
-
 .. toctree::
    :maxdepth: 3
 
-   porting
+   user_guide
+   developer_guide
+
+
 
 Indices and tables
 ==================
