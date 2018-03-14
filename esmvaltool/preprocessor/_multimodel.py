@@ -9,12 +9,7 @@ dimensions; and obviously consistent units.
 It operates on different (time) spans:
 - full: computes stats on full model time;
 - overlap: computes common time overlap between models;
-- constant: assumes all models have same start, end times;
 
-NOTE: both 'constant' and 'overlap' should do the same
-thing when all models have same start, end time; however
-'constant' does not check time consistencies and assumes
-same start, end times as God-given; be aware
 """
 
 import logging
@@ -161,9 +156,9 @@ def _put_in_cube(template_cube,
 def _to_datetime(delta_t, unit_type):
     """Convert to a datetime point"""
     if unit_type == 'day since 1950-01-01 00:00:00.0000000':
-        new_date = datetime(1950, 1, 1, 0) + timedelta(delta_t)
+        new_date = datetime(1950, 1, 1, 0) + timedelta(np.int(delta_t))
     elif unit_type == 'day since 1850-01-01 00:00:00.0000000':
-        new_date = datetime(1850, 1, 1, 0) + timedelta(delta_t)
+        new_date = datetime(1850, 1, 1, 0) + timedelta(np.int(delta_t))
     # add more supported units here
     return new_date
 
