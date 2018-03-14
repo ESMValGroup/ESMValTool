@@ -1,3 +1,5 @@
+.. title:: Known issues
+
 .. raw:: latex
 
    \section*{Known issues}

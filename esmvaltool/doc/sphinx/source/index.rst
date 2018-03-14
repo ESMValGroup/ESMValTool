@@ -1,3 +1,6 @@
+Welcome to ESMValTool's documentation!
+======================================
+
 .. toctree::
    :maxdepth: 3
 

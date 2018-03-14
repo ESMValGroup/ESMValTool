@@ -77,7 +77,7 @@ copyright = u'2015, Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson 
 # built documents.
 #
 # The short X.Y version.
-version = esmvaltool.version.__version__
+version = '.'.join(esmvaltool.version.__version__.split('.')[0:1])
 # The full version, including alpha/beta/rc tags.
 release = esmvaltool.version.__version__
 
@@ -139,11 +139,11 @@ html_theme = 'default'
 #html_title = None
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
-#html_short_title = None
+html_short_title = "ESMValTool {0}".format(release)
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-#html_logo = None
+html_logo = 'figures/ESMValTool-logo.png'
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32

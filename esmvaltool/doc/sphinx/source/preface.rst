@@ -1,3 +1,5 @@
+.. title:: Preface
+
 .. raw:: latex
 
    \section*{Preface}
