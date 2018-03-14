@@ -40,6 +40,7 @@ preprocessors:
       threshold_fraction: 0.95
     multi_model_stats:
       span: overlap
+      statistics: [mean, median]
 
   ppALL:
     extract_levels:
@@ -54,7 +55,8 @@ preprocessors:
     mask_fillvalues:
       threshold_fraction: 0.95
     multi_model_stats:
-      span: overlap      
+      span: overlap
+      statistics: [mean, median]
 
       
 diagnostics:
