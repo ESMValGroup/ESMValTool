@@ -1,17 +1,52 @@
+"""Fixes for MIROC5 model"""
 from esmvaltool.interface_scripts.fixes.fix import Fix
 
 
 class sftof(Fix):
+    """Fixes for sftof"""
+
     def fix_data(self, cube):
+        """
+        Fix data
+
+        Fixes discrepancy between declared units and real units
+
+        Parameters
+        ----------
+        cube: iris.cube.Cube
+
+        Returns
+        -------
+        iris.cube.Cube
+
+        """
         return cube * 100
 
 
 class snw(Fix):
+    """Fixes for snw"""
+
     def fix_metadata(self, cube):
+        """
+        Fix data
+
+        Fixes discrepancy between declared units and real units
+
+        Parameters
+        ----------
+        cube: iris.cube.Cube
+
+        Returns
+        -------
+        iris.cube.Cube
+
+        """
         return cube * 100
 
 
 class snc(snw):
+    """Fixes for snc"""
+
     pass
 
     # dayspermonth = (/31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31/)

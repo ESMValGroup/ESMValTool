@@ -1,10 +1,19 @@
+"""Fixes for BDBP"""
+
 import cf_units
 
 from esmvaltool.interface_scripts.fixes.fix import Fix
 
 
 class tro3prof(Fix):
+    """Class to fix tro3prof"""
+
     def fix_metadata(self, cube):
+        """
+        Fix metadata for tro3prof
+
+        Fix air_pressure coordinate
+        """
         old = cube.coord('air_pressure')
         dims = cube.coord_dims(old)
         cube.remove_coord(old)
