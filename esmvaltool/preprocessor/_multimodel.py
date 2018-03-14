@@ -292,10 +292,50 @@ def _apply_overlap(cube, tx1, tx2):
     return cube
 
 
-def multi_model_stats(cubes, span, filename, exclude):
+def _assemble_overlap_data(selection, ovlp, stat_type, fname):
+    """Get statistical data in iris cubes for OVERLAP"""
+    start, stop = ovlp
+    utype = str(selection[0].coord('time').units)
+    start_dtime, stop_dtime = [_to_datetime(t, utype) for t in (start, stop)]
+    stats_dats = np.ma.zeros(_slice_cube2(selection[0], start, stop).shape)
+
+    for i in range(stats_dats.shape[0]):
+        time_data = [_slice_cube2(cube, start, stop)[i]
+                     for cube in selection]
+        stats_dats[i] = _compute_statistic(time_data,
+                                           stat_type)
+    stats_cube = _put_in_cube(_apply_overlap(selection[0],
+                                             start_dtime,
+                                             stop_dtime),
+                              stats_dats,
+                              stat_type,
+                              fname,
+                              t_axis=None)
+    return stats_cube
+
+
+def _assemble_full_data(selection, stat_type, fname):
+    """Get statistical data in iris cubes for FULL"""
+    slices, time_axis = _full_time(selection)
+    stats_dats = np.ma.zeros(slices[0].shape)
+
+    for i in range(slices[0].shape[0]):
+        time_data = [data[i] for data in slices]
+        stats_dats[i] = _compute_statistic(time_data,
+                                           stat_type)
+    stats_cube = _put_in_cube(selection[0],
+                              stats_dats,
+                              stat_type,
+                              fname,
+                              time_axis)
+    return stats_cube
+
+
+def multi_model_stats(cubes, span, filename, exclude, statistics):
     """Compute multi-model mean and median."""
     logger.debug('Multi model statistics: excluding files: %s', str(exclude))
 
+    logger.debug('Multimodel statistics: computing: %s', str(statistics))
     iris.util.unify_time_units(cubes)
     selection = [
         cube for cube in cubes
@@ -313,71 +353,28 @@ def multi_model_stats(cubes, span, filename, exclude):
         logger.info("check models: will not compute statistics.")
         return cubes
 
-    start, stop = ovlp
-    utype = str(selection[0].coord('time').units)
-    start_dtime, stop_dtime = [_to_datetime(t, utype) for t in (start, stop)]
-
     # cases
     if span == 'overlap':
         logger.debug("Using common time overlap between "
                      "models to compute statistics.")
 
         # assemble data
-        mean_dats = np.ma.zeros(_slice_cube2(selection[0],
-                                             start,
-                                             stop).shape)
-        med_dats = np.ma.zeros(_slice_cube2(selection[0],
-                                            start,
-                                            stop).shape)
-
-        for i in range(mean_dats.shape[0]):
-            time_data = [_slice_cube2(cube, start, stop)[i]
-                         for cube in selection]
-            mean_dats[i] = _compute_statistic(time_data,
-                                              'mean')
-            med_dats[i] = _compute_statistic(time_data,
-                                             'median')
-        c_mean = _put_in_cube(_apply_overlap(selection[0],
-                                             start_dtime,
-                                             stop_dtime),
-                              mean_dats,
-                              'means',
-                              filename['file_mean'],
-                              t_axis=None)
-        c_med = _put_in_cube(_apply_overlap(selection[0],
-                                            start_dtime,
-                                            stop_dtime),
-                             med_dats,
-                             'medians',
-                             filename['file_median'],
-                             t_axis=None)
+        for stat_name in statistics:
+            sfname = 'file_' + stat_name
+            cube_of_stats = _assemble_overlap_data(selection,
+                                                   ovlp, stat_name,
+                                                   filename[sfname])
+            save_cubes([cube_of_stats])
 
     elif span == 'full':
         logger.debug("Using full time spans "
                      "to compute statistics.")
         # assemble data
-        slices, time_axis = _full_time(selection)
-        mean_dats = np.ma.zeros(slices[0].shape)
-        med_dats = np.ma.zeros(slices[0].shape)
-
-        for i in range(slices[0].shape[0]):
-            time_data = [data[i] for data in slices]
-            mean_dats[i] = _compute_statistic(time_data,
-                                              'mean')
-            med_dats[i] = _compute_statistic(time_data,
-                                             'median')
-        c_mean = _put_in_cube(selection[0],
-                              mean_dats,
-                              'means',
-                              filename['file_mean'],
-                              t_axis=time_axis)
-        c_med = _put_in_cube(selection[0],
-                             med_dats,
-                             'medians',
-                             filename['file_median'],
-                             t_axis=time_axis)
-    # save up
-    save_cubes([c_mean])
-    save_cubes([c_med])
+        for stat_name in statistics:
+            sfname = 'file_' + stat_name
+            cube_of_stats = _assemble_full_data(selection,
+                                                stat_name,
+                                                filename[sfname])
+            save_cubes([cube_of_stats])
 
     return cubes
