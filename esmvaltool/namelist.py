@@ -358,6 +358,16 @@ def _apply_preprocessor_settings(settings, profile_settings):
             settings[step].update(args)
 
 
+def _get_multimodel_filename(varibl, stats_type):
+    """Get multimodel filename depending on settings"""
+    fname = "_".join(['BACKEND_MultiModel' + stats_type,
+                      varibl['field'],
+                      varibl['short_name'],
+                      str(varibl['start_year'])]) + '-' \
+            + str(varibl['end_year']) + '.nc'
+    return fname
+
+
 def _update_multi_model_stats(variables, settings):
     """Configure multi model stats."""
     if settings.get('multi_model_stats', False):
@@ -381,16 +391,14 @@ def _update_multi_model_stats(variables, settings):
         # typical data file name (CMIP5)
         # ta_Amon_MPI-ESM-LR_historical_r1i1p1_200001-200512.nc
         # build multimodel stats file name as like
-        # [short_name]_[preprocessor]_BACKEND-MultiModel_[stats].nc
-        root_filename_mm = "_".join([variable['short_name'],
-                                     variable['preprocessor'],
-                                     'BACKEND-MultiModel'])
+        # Mattia suggestion:
+        # BACKEND_MultiModel[stats]_[field]_[var]_[start_year]-[end_year].nc
         filename_mean = os.path.join(
             os.path.dirname(variable['filename']),
-            root_filename_mm + '_mean.nc')
+            _get_multimodel_filename(variable, 'Mean'))
         filename_median = os.path.join(
             os.path.dirname(variable['filename']),
-            root_filename_mm + '_median.nc')
+            _get_multimodel_filename(variable, 'Median'))
         settings['multi_model_stats']['filename']['file_mean'] = \
             filename_mean
         settings['multi_model_stats']['filename']['file_median'] = \
