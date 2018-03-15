@@ -365,12 +365,32 @@ def _update_multi_model_stats(variables, settings):
             settings['multi_model_stats'] = {}
         settings['multi_model_stats']['filename'] = {}
         variable = variables[0]
+        #####################################
+        # Notes on multimodel stats file name
+        # delete them after decistion
+        #####################################
+        # BIG VARIABLE DICTY-DICT example
+        # {'preprocessor': 'pp850', 'reference_model': 'ERA-Interim',
+        # 'alternative_model': 'NCEP', 'mip': 'Amon', 'field': 'T3M',
+        # 'short_name': 'ta', 'diagnostic': 'ta850glob', 'model':
+        # 'bcc-csm1-1', 'project': 'CMIP5', 'exp': 'historical',
+        # 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002,
+        # 'cmor_table': 'CMIP5', 'standard_name': 'air_temperature',
+        # 'long_name': 'Air Temperature', 'units': 'K', 'filename':
+        # 'blahblah.nc'}
+        # typical data file name (CMIP5)
+        # ta_Amon_MPI-ESM-LR_historical_r1i1p1_200001-200512.nc
+        # build multimodel stats file name as like
+        # [short_name]_[preprocessor]_BACKEND-MultiModel_[stats].nc
+        root_filename_mm = "_".join([variable['short_name'],
+                                     variable['preprocessor'],
+                                     'BACKEND-MultiModel'])
         filename_mean = os.path.join(
             os.path.dirname(variable['filename']),
-            'BACKEND_MultiModelMean.nc')
+            root_filename_mm + '_mean.nc')
         filename_median = os.path.join(
             os.path.dirname(variable['filename']),
-            'BACKEND_MultiModelMedian.nc')
+            root_filename_mm + '_median.nc')
         settings['multi_model_stats']['filename']['file_mean'] = \
             filename_mean
         settings['multi_model_stats']['filename']['file_median'] = \
