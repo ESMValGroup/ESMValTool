@@ -1,3 +1,4 @@
+"""Fixes for MIROC ESM model"""
 import cf_units
 from iris.coords import DimCoord
 from iris.exceptions import CoordinateNotFoundError
@@ -6,25 +7,90 @@ from esmvaltool.interface_scripts.fixes.fix import Fix
 
 
 class tro3(Fix):
+    """Fixes for tro3"""
+
     def fix_data(self, cube):
+        """
+        Fix data
+
+        Fixes discrepancy between declared units and real units
+
+        Parameters
+        ----------
+        cube: iris.cube.Cube
+
+        Returns
+        -------
+        iris.cube.Cube
+
+        """
         return cube * 1000
 
 
 class co2(Fix):
+    """Fixes for co2"""
+
     def fix_metadata(self, cube):
+        """
+        Fix metadata
+
+        Fixes error in cube units
+
+        Parameters
+        ----------
+        cube: iris.cube.Cube
+
+        Returns
+        -------
+        iris.cube.Cube
+
+        """
         cube.units = cf_units.Unit('1.0e-6')
         return cube
 
 
 class gpp(Fix):
+    """Fixes for gpp"""
+
     def fix_metadata(self, cube):
+        """
+        Fix metadata
+
+        Fixes error in cube units
+
+        Parameters
+        ----------
+        cube: iris.cube.Cube
+
+        Returns
+        -------
+        iris.cube.Cube
+
+        """
         # Fixing the metadata, automatic unit conversion should do the trick
         cube.units = cf_units.Unit('g m-2 day-1')
         return cube
 
 
 class allvars(Fix):
+    """Common fixes to all vars"""
+
     def fix_metadata(self, cube):
+        """
+        Fix metadata
+
+        Fixes errors in time units and correct air_pressure coordinate,
+        sometimes called AR5PL35
+
+        Parameters
+        ----------
+        cube: iris.cube.Cube
+
+        Returns
+        -------
+        iris.cube.Cube
+
+        """
         try:
             time = cube.coord('time')
             if time.units.calendar:
@@ -51,7 +117,6 @@ class allvars(Fix):
             plev.standard_name = 'air_pressure'
             plev.long_name = 'Pressure '
             cube.add_dim_coord(plev, dims)
-            print(cube)
         except CoordinateNotFoundError:
             pass
 
