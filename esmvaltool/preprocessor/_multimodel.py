@@ -155,6 +155,8 @@ def _put_in_cube(template_cube,
 
 def _to_datetime(delta_t, unit_type):
     """Convert to a datetime point"""
+    leap_correction = delta_t / (365. * 4.)
+    delta_t = delta_t + leap_correction
     if unit_type == 'day since 1950-01-01 00:00:00.0000000':
         new_date = datetime(1950, 1, 1, 0) + timedelta(np.int(delta_t))
     elif unit_type == 'day since 1850-01-01 00:00:00.0000000':
@@ -331,6 +333,17 @@ def _assemble_full_data(selection, stat_type, fname):
     return stats_cube
 
 
+def _update_fname(curr_filename, ovlp_interval, unit_type):
+    """Update netCDF file names based on time properties"""
+    # BACKEND_MultiModel[stats]_[field]_[var]_[start_year]-[end_year].nc
+    froot = "_".join(curr_filename.split('_')[0:-1])
+    start, stop = ovlp_interval
+    yr_1 = str(_to_datetime(start, unit_type).year)
+    yr_2 = str(_to_datetime(stop - 1, unit_type).year)  # -1 for correct leap
+    new_file = "{}_{}-{}.nc".format(froot, yr_1, yr_2)
+    return new_file
+
+
 def multi_model_stats(cubes, span, filename, exclude, statistics):
     """Compute multi-model mean and median."""
     logger.debug('Multi model statistics: excluding files: %s', str(exclude))
@@ -352,6 +365,7 @@ def multi_model_stats(cubes, span, filename, exclude, statistics):
         logger.info("Time overlap between cubes is none or a single point.")
         logger.info("check models: will not compute statistics.")
         return cubes
+    u_type = str(selection[0].coord('time').units)
 
     # cases
     if span == 'overlap':
@@ -361,9 +375,10 @@ def multi_model_stats(cubes, span, filename, exclude, statistics):
         # assemble data
         for stat_name in statistics:
             sfname = 'file_' + stat_name
+            updated_fname = _update_fname(filename[sfname], ovlp, u_type)
             cube_of_stats = _assemble_overlap_data(selection,
                                                    ovlp, stat_name,
-                                                   filename[sfname])
+                                                   updated_fname)
             save_cubes([cube_of_stats])
 
     elif span == 'full':
@@ -372,9 +387,12 @@ def multi_model_stats(cubes, span, filename, exclude, statistics):
         # assemble data
         for stat_name in statistics:
             sfname = 'file_' + stat_name
+            fovlp = [min(_monthly_t(selection)[1]),
+                     max(_monthly_t(selection)[1])]
+            updated_fname = _update_fname(filename[sfname], fovlp, u_type)
             cube_of_stats = _assemble_full_data(selection,
                                                 stat_name,
-                                                filename[sfname])
+                                                updated_fname)
             save_cubes([cube_of_stats])
 
     return cubes
