@@ -17,6 +17,7 @@ from ._time_area import area_average as average_region
 from ._time_area import area_slice as extract_region
 from ._time_area import time_slice as extract_time
 from ._time_area import seasonal_mean
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -139,6 +140,19 @@ def _as_ordered_dict(settings, order):
 
     return ordered_settings
 
+def _group_for_derive(in_filenames, out_filenames):
+    """Awful hacky way of correctly grouping input files for 'derive'"""
+    grouped_files = {}
+
+    for out_filename in out_filenames:
+        project, model = os.path.basename(out_filename).split('_')[:2]
+        start = project + '_' + model
+        for in_filename in in_filenames:
+            if out_filename not in grouped_files:
+                grouped_files[out_filename] = []
+            if os.path.basename(in_filename).startswith(start):
+                grouped_files[out_filename].append(in_filename)
+    return grouped_files
 
 def preprocess_multi_model(all_items, all_settings, order, debug=False):
     """Run preprocessor on multiple models for a single variable."""
@@ -153,13 +167,18 @@ def preprocess_multi_model(all_items, all_settings, order, debug=False):
     for step in multi_model_steps:
         multi_model_settings = _get_multi_model_settings(all_settings, step)
         # Run single model steps
+        logger.info("Running single model steps up to %s",
+                     'final step' if step is final_step else step)
         for name in all_settings:
+            if isinstance(all_items, list) and 'derive' in all_settings[name]:
+                all_items = _group_for_derive(all_items, all_settings)
             settings, all_settings[name] = _split_settings(
                 all_settings[name], step)
             settings = _as_ordered_dict(settings, order)
             all_items[name] = preprocess(
                 items=all_items[name], settings=settings, debug=debug)
         if step is not final_step:
+            logger.info("Running multi model step %s", step)
             # Run multi model step (all_items should be cubes by now)
             multi_model_items = [
                 cube for name in all_items for cube in all_items[name]
@@ -235,11 +254,18 @@ class PreprocessingTask(AbstractTask):
 
     def __str__(self):
         """Get human readable description."""
+        settings = dict(self.settings)
+        self.settings = {os.path.basename(k): v
+                         for k, v in self.settings.items()}
+    
         txt = "{}:\norder: {}\n{}".format(
             self.__class__.__name__,
             self.order,
             super(PreprocessingTask, self).str(),
         )
+        
+        self.settings = settings
+
         if self._input_files is not None:
             txt += '\ninput_files: {}'.format(self._input_files)
         return txt

@@ -210,6 +210,13 @@ class InterfaceTask(AbstractTask):
 
         return filenames
 
+    def __str__(self):
+        """Get human readable description."""
+        txt = "{}:\n{}".format(
+            self.__class__.__name__,
+            super(InterfaceTask, self).str(),
+        )
+        return txt
 
 class DiagnosticError(Exception):
     """Error in diagnostic"""

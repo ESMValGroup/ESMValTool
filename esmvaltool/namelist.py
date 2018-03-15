@@ -158,31 +158,15 @@ def check_duplicate_models(models):
         checked_models_.append(model)
 
 
-def check_variables(variables):
+def check_variable(variable, required_keys):
     """Check variables as derived from namelist"""
-    generic = {
-        'short_name', 'standard_name', 'field', 'model', 'project',
-        'start_year', 'end_year', 'preprocessor', 'diagnostic'
-    }
-    project_specific = {
-        # project: keys
-        'CMIP5': {'ensemble', 'mip', 'exp'},
-        'CCMVal1': {'ensemble', 'exp'},
-        'CCMVal2': {'ensemble', 'exp'},
-        'GFDL': {'ensemble', 'realm', 'shift'},
-        'OBS': {'type', 'version', 'tier'},
-    }
-    for variable in variables:
-        required = set(generic)
-        project = variable.get('project')
-        if project in project_specific:
-            required.update(project_specific[project])
-        missing = required - set(variable)
-        if missing:
-            raise NamelistError(
-                "Missing keys {} from variable {} in diagnostic {}".format(
-                    missing, variable.get('short_name'),
-                    variable.get('diagnostic')))
+    required = set(required_keys)
+    missing = required - set(variable)
+    if missing:
+        raise NamelistError(
+            "Missing keys {} from variable {} in diagnostic {}".format(
+                missing, variable.get('short_name'),
+                variable.get('diagnostic')))
 
 
 def check_data_availability(input_files, start_year, end_year):
@@ -224,16 +208,29 @@ def _update_from_others(variable, keys, models):
                 variable[key] = value
 
 
-def _add_cmor_info(variable, keys):
+def _add_cmor_info(variable, override=False):
     """Add information from CMOR tables to variable."""
-    if variable['cmor_table'] in CMOR_TABLES:
-        variable_info = CMOR_TABLES[variable['cmor_table']].get_variable(
-            variable['mip'], variable['short_name'])
-        for key in keys:
-            if key not in variable and hasattr(variable_info, key):
-                value = getattr(variable_info, key)
-                if value is not None:
-                    variable[key] = value
+    logger.debug("If not present: adding keys from CMOR table to %s", variable)
+
+    if 'cmor_table' not in variable or 'mip' not in variable:
+        logger.debug("Skipping because cmor_table or mip not specified")
+        return
+
+    if variable['cmor_table'] not in CMOR_TABLES:
+        logger.warning("Unknown CMOR table %s", variable['cmor_table'])
+   
+    # Copy the following keys from CMOR table
+    cmor_keys = ['standard_name', 'long_name', 'units']
+    table_entry = CMOR_TABLES[variable['cmor_table']].get_variable(
+        variable['mip'], variable['short_name'])
+    for key in cmor_keys:
+        if key not in variable or override and hasattr(table_entry, key):
+            value = getattr(table_entry, key)
+            if value is not None:
+                variable[key] = value
+
+    # Check that keys were added successfully
+    check_variable(variable, required_keys=cmor_keys)
 
 
 def _update_target_grid(variable, all_variables, settings, config_user):
@@ -389,6 +386,13 @@ def _get_preprocessor_settings(variables, preprocessor, config_user):
     for variable in variables:
         settings = _get_default_settings(variable, config_user)
         _apply_preprocessor_settings(settings, preprocessor)
+        if 'derive' in settings:
+            del settings['load']['constraints']
+            del settings['load']['callback']
+            del settings['fix_file']
+            del settings['fix_metadata']
+            del settings['fix_data']
+            del settings['cmor_check_data']
         # if the target grid is a model name, replace it with a file name
         # TODO: call _update_target_grid only once per variable?
         _update_target_grid(
@@ -449,6 +453,19 @@ def _get_single_preprocessor_task(variables,
 
     return task
 
+def _get_derive_input(variable, config_user):
+    
+    # If input files are already available, return current variable, field
+    input_files = get_input_filelist(
+        variable=variable,
+        rootpath=config_user['rootpath'],
+        drs=config_user['drs'])
+    if input_files:
+        return [(variable['short_name'], variable['field']), ]
+    
+    # Else try to derive
+    return get_required(variable['short_name'], variable['field'])
+
 
 def _get_preprocessor_task(variables, preprocessors, config_user):
     """Create preprocessor task(s) for a set of models."""
@@ -462,7 +479,7 @@ def _get_preprocessor_task(variables, preprocessors, config_user):
     preprocessor = preprocessors[variable['preprocessor']]
 
     # Create preprocessor task(s)
-    tasks = []
+    derive_tasks = []
     if preprocessor.get('derive', False) is not False:
         # Add tasks that derive a variable if required
         derive_settings = copy.deepcopy(preprocessor['derive'])
@@ -472,20 +489,24 @@ def _get_preprocessor_task(variables, preprocessors, config_user):
 
         for short_name, field in get_required(variable['short_name'],
                                               variable['field']):
-            initial_variables = list(variables)
+            initial_variables = copy.deepcopy(variables)
             for variable in initial_variables:
                 variable['short_name'] = short_name
                 variable['field'] = field
                 variable['filename'] = get_output_file(
                     variable, config_user['preproc_dir'])
-
+                _add_cmor_info(variable, override=True)
+                
             task = _get_single_preprocessor_task(
                 initial_variables, derive_preprocessor, config_user)
-            tasks.append(task)
+            derive_tasks.append(task)
 
     # Create final preprocessor task
+    for variable in variables:
+        _add_cmor_info(variable)
+        
     task = _get_single_preprocessor_task(
-        variables, preprocessor, config_user, ancestors=tasks)
+        variables, preprocessor, config_user, ancestors=derive_tasks)
     return task
 
 
@@ -578,27 +599,25 @@ class Namelist(object):
     def _initialize_variables(self, raw_variable, models):
         """Define variables for all models."""
         # TODO: rename `variables` to `attributes` and store in dict
-        # using filenames as keys
+        # using filenames as keys?
         variables = []
-        cmor_keys = ['standard_name', 'long_name', 'units']
+
         for model in models:
             variable = copy.deepcopy(raw_variable)
             variable.update(model)
-            _update_from_others(variable, ['mip'], models)
             if ('cmor_table' not in variable
                     and variable.get('project') in CMOR_TABLES):
                 variable['cmor_table'] = variable['project']
-            if 'cmor_table' in variable:
-                _add_cmor_info(variable, cmor_keys)
             variables.append(variable)
 
-        keys = ['cmor_table'] + cmor_keys
-        for variable in variables:
-            _update_from_others(variable, keys, variables)
+        required_keys = {
+        'short_name', 'field', 'model', 'project',
+        'start_year', 'end_year', 'preprocessor', 'diagnostic'
+        }
 
-        check_variables(variables)
-
         for variable in variables:
+            _update_from_others(variable, ['cmor_table', 'mip'], models)
+            check_variable(variable, required_keys)
             variable['filename'] = get_output_file(variable,
                                                    self._cfg['preproc_dir'])
 

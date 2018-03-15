@@ -44,13 +44,21 @@ def get_required(short_name, field=None):
 
 def derive(cubes, short_name):
     """Derive variable `short_name`"""
+    # Do nothing if variable is already available
+    if short_name == cubes[0].var_name:
+        return cubes
+    
+    # Derive
     functions = {
         'lwp': calc_lwp,
         'toz': calc_toz,
     }
-
     if short_name in functions:
-        return functions[short_name](cubes)
+        cubes = iris.cube.CubeList(cubes)
+        cube = functions[short_name](cubes)
+        cube.var_name = short_name
+        cube.attributes['_filename'] = cubes[0].attributes['_filename']
+        return cube
 
     raise NotImplementedError("Don't know how to derive {}".format(short_name))
 
