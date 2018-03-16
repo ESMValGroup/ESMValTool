@@ -1,4 +1,5 @@
 import os
+import shutil
 import tempfile
 import unittest
 
@@ -44,16 +45,23 @@ class TestCo2(unittest.TestCase):
 class TestNbp(unittest.TestCase):
     def setUp(self):
         self.fix = nbp()
+        self.temp_folder = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self.temp_folder)
 
     def test_fix_data(self):
-        temp_handler, temp_path = tempfile.mkstemp('.nc')
+        temp_handler, temp_path = tempfile.mkstemp('.nc', dir=self.temp_folder)
         os.close(temp_handler)
+        temp_handler, var_path = tempfile.mkstemp('.nc', dir=self.temp_folder)
+        os.close(temp_handler)
+
         dataset = netCDF4.Dataset(temp_path, "w")
         var = dataset.createVariable('nbp', float, fill_value=1.0e20)
         var.missing_value = 1.0e20
         dataset.close()
 
-        new_file = self.fix.fix_file(temp_path, os.path.dirname(temp_path))
+        new_file = self.fix.fix_file(temp_path, var_path)
 
         self.assertNotEqual(os.path.realpath(temp_path),
                             os.path.realpath(new_file))

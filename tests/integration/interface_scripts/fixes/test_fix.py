@@ -63,4 +63,3 @@ class TestFix(unittest.TestCase):
         self.assertTrue(fixed_filepath.startswith(filepath))
         self.assertTrue(fixed_filepath.endswith('.nc'))
         self.assertEqual(len(fixed_filepath), len(filepath) + 11)
-
