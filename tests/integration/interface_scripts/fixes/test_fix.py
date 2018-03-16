@@ -1,4 +1,7 @@
 import unittest
+import tempfile
+import os
+import shutil
 
 from iris.cube import Cube
 
@@ -6,6 +9,12 @@ from esmvaltool.interface_scripts.fixes.fix import Fix
 
 
 class TestFix(unittest.TestCase):
+    def setUp(self):
+        self.temp_folder = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self.temp_folder)
+
     def test_get_fix(self):
         from esmvaltool.interface_scripts.fixes.CMIP5.CanESM2 import fgco2
         self.assertListEqual(
@@ -49,6 +58,9 @@ class TestFix(unittest.TestCase):
         self.assertEqual(Fix().fix_file(filepath, 'preproc'), filepath)
 
     def test_fixed_filenam(self):
-        filepath = 'original/file.nc'
-        self.assertEqual(Fix().get_fixed_filepath(filepath, 'preproc'),
-                         'preproc/file_fixed.nc')
+        filepath = os.path.join(self.temp_folder, 'file.nc')
+        fixed_filepath = Fix().get_fixed_filepath(filepath)
+        self.assertTrue(fixed_filepath.startswith(filepath))
+        self.assertTrue(fixed_filepath.endswith('.nc'))
+        self.assertEqual(len(fixed_filepath), len(filepath) + 11)
+

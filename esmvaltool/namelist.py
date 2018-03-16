@@ -288,7 +288,7 @@ def _get_default_settings(variable, config_user):
         'project': variable['project'],
         'model': variable['model'],
         'short_name': variable['short_name'],
-        'preproc_dir': config_user['preproc_dir'],
+        'var_path': variable['var_path'],
     }
     settings['fix_file'] = dict(fix)
     # Only supply mip if the CMOR check fixes are implemented.

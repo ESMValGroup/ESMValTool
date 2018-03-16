@@ -1,6 +1,7 @@
 """Simple interface to reformat and CMORize functions."""
 import os
 import shutil
+import tempfile
 
 from ..interface_scripts.cmor_check import CMORCheck
 from ..interface_scripts.fixes.fix import Fix
@@ -30,14 +31,11 @@ def _get_cmor_checker(table,
     return _checker
 
 
-def fix_file(filename, short_name, project, model, preproc_dir):
+def fix_file(filename, short_name, project, model, var_path):
     """Fix errors that prevent loading or can not be fixed in the cube."""
-    final_dir = os.path.join(preproc_dir, project, model, short_name)
-    if not os.path.isdir(final_dir):
-        os.makedirs(final_dir)
     for fix in Fix.get_fixes(
             project=project, model=model, variable=short_name):
-        filename = fix.fix_file(filename, final_dir)
+        filename = fix.fix_file(filename, var_path)
     return filename
 
 

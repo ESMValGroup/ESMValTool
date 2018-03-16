@@ -10,8 +10,8 @@ from esmvaltool.interface_scripts.fixes.fix import Fix
 class nbp(Fix):
     """Fixes for nbp variable"""
 
-    def fix_file(self, filepath, preproc_dir):
-        temp = Fix.get_fixed_filepath(filepath, preproc_dir)
+    def fix_file(self, filepath, var_path):
+        temp = Fix.get_fixed_filepath(var_path)
         shutil.copy(filepath, temp)
         original_dataset = Dataset(temp, mode='a')
         original_var = original_dataset.variables['nbp']
