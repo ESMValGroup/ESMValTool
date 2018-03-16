@@ -86,9 +86,11 @@ def _compute_statistic(datas, name):
 
     # plevs
     for j in range(statistic.shape[0]):
-        plev_check = [_plev_fix(cdata, j)
-                      for cdata in datas
-                      if _plev_fix(cdata, j) is not None]
+        plev_check = []
+        for cdata in datas:
+            fixed_data = _plev_fix(cdata, j)
+            if fixed_data is not None:
+                plev_check.append(fixed_data)
         len_stat_j = sum(1 for _ in plev_check)
         stat_all = np.ma.zeros((len_stat_j,
                                 statistic.shape[1],
