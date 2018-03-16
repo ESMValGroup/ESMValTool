@@ -218,6 +218,7 @@ class InterfaceTask(AbstractTask):
         )
         return txt
 
+
 class DiagnosticError(Exception):
     """Error in diagnostic"""
 

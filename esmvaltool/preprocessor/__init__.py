@@ -1,5 +1,6 @@
 """Preprocessor module."""
 import logging
+import os
 from collections import OrderedDict
 
 from iris.cube import Cube
@@ -17,7 +18,6 @@ from ._time_area import area_average as average_region
 from ._time_area import area_slice as extract_region
 from ._time_area import time_slice as extract_time
 from ._time_area import seasonal_mean
-import os
 
 logger = logging.getLogger(__name__)
 
@@ -140,45 +140,66 @@ def _as_ordered_dict(settings, order):
 
     return ordered_settings
 
-def _group_for_derive(in_filenames, out_filenames):
-    """Awful hacky way of correctly grouping input files for 'derive'"""
+
+def _group_input(in_files, out_files):
+    """Group a list of input files by output file."""
     grouped_files = {}
 
-    for out_filename in out_filenames:
-        project, model = os.path.basename(out_filename).split('_')[:2]
-        start = project + '_' + model
-        for in_filename in in_filenames:
-            if out_filename not in grouped_files:
-                grouped_files[out_filename] = []
-            if os.path.basename(in_filename).startswith(start):
-                grouped_files[out_filename].append(in_filename)
+    def get_matching(in_file):
+        """Find the output file which matches input file best."""
+        in_chunks = os.path.basename(in_file).split('_')
+        score = 0
+        fname = None
+        for out_file in out_files:
+            out_chunks = os.path.basename(out_file).split('_')
+            tmp = sum(c in out_chunks for c in in_chunks)
+            if tmp > score:
+                score = tmp
+                fname = out_file
+        if not fname:
+            logger.warning(
+                "Unable to find matching output file for input file %s",
+                in_file)
+        return fname
+
+    # Group input files by output file
+    for in_file in in_files:
+        out_file = get_matching(in_file)
+        if out_file:
+            if out_file not in grouped_files:
+                grouped_files[out_file] = []
+            grouped_files[out_file].append(in_file)
+
     return grouped_files
 
-def preprocess_multi_model(all_items, all_settings, order, debug=False):
+
+def preprocess_multi_model(input_files, all_settings, order, debug=False):
     """Run preprocessor on multiple models for a single variable."""
-    # Assumes that the multi model configuration is the same for all models
+    # Group input files by output file
+    all_items = _group_input(input_files, all_settings)
+    logger.debug("Processing %s", all_items)
+
+    # Define multi model steps
+    # This assumes that the multi model settings are the same for all models
     multi_model_steps = [
-        step for step in DEFAULT_ORDER
-        if (step in MULTI_MODEL_FUNCTIONS
-            and any(step in settings for settings in all_settings.values()))
+        step
+        for step in DEFAULT_ORDER if (step in MULTI_MODEL_FUNCTIONS and any(
+            step in settings for settings in all_settings.values()))
     ]
     final_step = object()
     multi_model_steps.append(final_step)
+
+    # Process
     for step in multi_model_steps:
         multi_model_settings = _get_multi_model_settings(all_settings, step)
         # Run single model steps
-        logger.info("Running single model steps up to %s",
-                     'final step' if step is final_step else step)
         for name in all_settings:
-            if isinstance(all_items, list) and 'derive' in all_settings[name]:
-                all_items = _group_for_derive(all_items, all_settings)
             settings, all_settings[name] = _split_settings(
                 all_settings[name], step)
             settings = _as_ordered_dict(settings, order)
             all_items[name] = preprocess(
                 items=all_items[name], settings=settings, debug=debug)
         if step is not final_step:
-            logger.info("Running multi model step %s", step)
             # Run multi model step (all_items should be cubes by now)
             multi_model_items = [
                 cube for name in all_items for cube in all_items[name]
@@ -255,15 +276,17 @@ class PreprocessingTask(AbstractTask):
     def __str__(self):
         """Get human readable description."""
         settings = dict(self.settings)
-        self.settings = {os.path.basename(k): v
-                         for k, v in self.settings.items()}
-    
+        self.settings = {
+            os.path.basename(k): v
+            for k, v in self.settings.items()
+        }
+
         txt = "{}:\norder: {}\n{}".format(
             self.__class__.__name__,
             self.order,
             super(PreprocessingTask, self).str(),
         )
-        
+
         self.settings = settings
 
         if self._input_files is not None:

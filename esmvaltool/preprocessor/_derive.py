@@ -27,8 +27,8 @@ def get_required(short_name, field=None):
     frequency = field[2] if field else 'M'
     required = {
         'lwp': [
-            ('clwvi', 'T2Ms'),
-            ('clivi', 'T2Ms'),
+            ('clwvi', 'T2' + frequency + 's'),
+            ('clivi', 'T2' + frequency + 's'),
         ],
         'toz': [
             ('tro3', 'T3' + frequency),
@@ -47,7 +47,7 @@ def derive(cubes, short_name):
     # Do nothing if variable is already available
     if short_name == cubes[0].var_name:
         return cubes
-    
+
     # Derive
     functions = {
         'lwp': calc_lwp,

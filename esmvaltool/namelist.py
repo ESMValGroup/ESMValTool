@@ -218,7 +218,7 @@ def _add_cmor_info(variable, override=False):
 
     if variable['cmor_table'] not in CMOR_TABLES:
         logger.warning("Unknown CMOR table %s", variable['cmor_table'])
-   
+
     # Copy the following keys from CMOR table
     cmor_keys = ['standard_name', 'long_name', 'units']
     table_entry = CMOR_TABLES[variable['cmor_table']].get_variable(
@@ -434,14 +434,13 @@ def _get_single_preprocessor_task(variables,
         preprocessor=preprocessor,
         config_user=config_user)
 
-    if ancestors is None:
-        # Input data, used by tasks without ancestors
-        input_files = {
-            v['filename']: _get_input_files(v, config_user)
-            for v in variables
-        }
-    else:
-        input_files = None
+    # Input files, used by tasks without ancestors
+    input_files = None
+    if not ancestors:
+        input_files = [
+            filename for variable in variables
+            for filename in _get_input_files(variable, config_user)
+        ]
 
     output_dir = os.path.dirname(variables[0]['filename'])
     task = PreprocessingTask(
@@ -453,16 +452,19 @@ def _get_single_preprocessor_task(variables,
 
     return task
 
+
 def _get_derive_input(variable, config_user):
-    
+
     # If input files are already available, return current variable, field
     input_files = get_input_filelist(
         variable=variable,
         rootpath=config_user['rootpath'],
         drs=config_user['drs'])
     if input_files:
-        return [(variable['short_name'], variable['field']), ]
-    
+        return [
+            (variable['short_name'], variable['field']),
+        ]
+
     # Else try to derive
     return get_required(variable['short_name'], variable['field'])
 
@@ -496,7 +498,7 @@ def _get_preprocessor_task(variables, preprocessors, config_user):
                 variable['filename'] = get_output_file(
                     variable, config_user['preproc_dir'])
                 _add_cmor_info(variable, override=True)
-                
+
             task = _get_single_preprocessor_task(
                 initial_variables, derive_preprocessor, config_user)
             derive_tasks.append(task)
@@ -504,7 +506,7 @@ def _get_preprocessor_task(variables, preprocessors, config_user):
     # Create final preprocessor task
     for variable in variables:
         _add_cmor_info(variable)
-        
+
     task = _get_single_preprocessor_task(
         variables, preprocessor, config_user, ancestors=derive_tasks)
     return task
@@ -611,8 +613,8 @@ class Namelist(object):
             variables.append(variable)
 
         required_keys = {
-        'short_name', 'field', 'model', 'project',
-        'start_year', 'end_year', 'preprocessor', 'diagnostic'
+            'short_name', 'field', 'model', 'project', 'start_year',
+            'end_year', 'preprocessor', 'diagnostic'
         }
 
         for variable in variables:
