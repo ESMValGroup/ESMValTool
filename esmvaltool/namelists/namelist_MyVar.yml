@@ -13,7 +13,7 @@ preprocessors:
       scheme: nearest
     regrid: false
     mask_landocean: false
-    multi_model_stats: false
+    multi_model_statistics: false
 
   preprocessor_2:
     extract_levels: false
@@ -21,7 +21,7 @@ preprocessors:
       target_grid: ERA-Interim
       scheme: linear
     mask_landocean: false
-    multi_model_stats: false
+    multi_model_statistics: false
 
 diagnostics:
   ta_diagnostics:

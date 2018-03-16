@@ -201,6 +201,22 @@ def get_output_file(variable, preproc_dir):
     return outfile
 
 
+def get_statistic_output_file(variable, statistic, preproc_dir):
+    """Get multi model statistic filename depending on settings"""
+    values = dict(variable)
+    values['stat'] = statistic.title()
+
+    template = os.path.join(
+        preproc_dir,
+        '{preprocessor}_{diagnostic}',
+        'MultiModel{stat}_{field}_{short_name}_{start_year}-{end_year}.nc',
+    )
+
+    outfile = template.format(**values)
+
+    return outfile
+
+
 def find_files(dirname, filename):
     """Find files
 

@@ -15,7 +15,6 @@ It operates on different (time) spans:
 import logging
 from functools import reduce
 
-import os
 from datetime import datetime
 from datetime import timedelta
 import iris
@@ -55,8 +54,7 @@ def _plev_fix(dataset, pl_idx):
     if np.ma.is_masked(dataset):
         # keep only the valid plevs
         if not np.all(dataset.mask[pl_idx]):
-            statj = np.ma.array(dataset[pl_idx],
-                                mask=dataset.mask[pl_idx])
+            statj = np.ma.array(dataset[pl_idx], mask=dataset.mask[pl_idx])
         else:
             logger.debug('All vals in plev are masked, ignoring.')
             statj = None
@@ -92,8 +90,7 @@ def _compute_statistic(datas, name):
             if fixed_data is not None:
                 plev_check.append(fixed_data)
         len_stat_j = sum(1 for _ in plev_check)
-        stat_all = np.ma.zeros((len_stat_j,
-                                statistic.shape[1],
+        stat_all = np.ma.zeros((len_stat_j, statistic.shape[1],
                                 statistic.shape[2]))
         for i, e_l in enumerate(plev_check):
             stat_all[i] = e_l
@@ -103,24 +100,20 @@ def _compute_statistic(datas, name):
             statistic[j] = statistic_function(stat_all, axis=0)
         else:
             mask = np.ones(statistic[j].shape, bool)
-            statistic[j] = np.ma.array(statistic[j],
-                                       mask=mask)
+            statistic[j] = np.ma.array(statistic[j], mask=mask)
 
     return statistic
 
 
-def _put_in_cube(template_cube,
-                 cube_data,
-                 stat_name,
-                 file_name,
-                 t_axis):
+def _put_in_cube(template_cube, cube_data, stat_name, file_name, t_axis):
     """Quick cube building and saving"""
     # grab coordinates from any cube
     times = template_cube.coord('time')
     # or get the FULL time axis
     if t_axis is not None:
         times = iris.coords.DimCoord(
-            t_axis, standard_name='time',
+            t_axis,
+            standard_name='time',
             units=template_cube.coord('time').units)
     lats = template_cube.coord('latitude')
     lons = template_cube.coord('longitude')
@@ -134,18 +127,14 @@ def _put_in_cube(template_cube,
         cspec = [(times, 0), (plev, 1), (lats, 2), (lons, 3)]
 
     # correct dspec if necessary
-    fixed_dspec = np.ma.fix_invalid(cube_data,
-                                    copy=False,
-                                    fill_value=1e+20)
+    fixed_dspec = np.ma.fix_invalid(cube_data, copy=False, fill_value=1e+20)
     # put in cube
-    stats_cube = iris.cube.Cube(fixed_dspec,
-                                dim_coords_and_dims=cspec,
-                                long_name=stat_name)
+    stats_cube = iris.cube.Cube(
+        fixed_dspec, dim_coords_and_dims=cspec, long_name=stat_name)
     coord_names = [coord.name() for coord in template_cube.coords()]
     if 'air_pressure' in coord_names:
         if len(template_cube.shape) == 3:
-            stats_cube.add_aux_coord(template_cube.
-                                     coord('air_pressure'))
+            stats_cube.add_aux_coord(template_cube.coord('air_pressure'))
     stats_cube.attributes['_filename'] = file_name
     # complete metadata
     stats_cube.var_name = template_cube.var_name
@@ -225,9 +214,10 @@ def _slice_cube2(cube, t_1, t_2):
     """
     time_pts = [t for t in cube.coord('time').points]
     converted_t = _time_pts_by_calendar(cube)
-    idxs = sorted([time_pts.index(ii)
-                   for ii, jj in zip(time_pts, converted_t)
-                   if t_1 <= jj <= t_2])
+    idxs = sorted([
+        time_pts.index(ii) for ii, jj in zip(time_pts, converted_t)
+        if t_1 <= jj <= t_2
+    ])
     cube_t_slice = cube.data[idxs[0]:idxs[-1] + 1]
     return cube_t_slice
 
@@ -263,9 +253,7 @@ def _full_time(cubes):
         # construct new shape
         fine_shape = tuple([len(t_x)] + list(cube.data.shape[1:]))
         # find indices of present time points
-        oidx = [
-            t_x.index(int((s / 365.) * 12.))
-            for s in time_redone]
+        oidx = [t_x.index(int((s / 365.) * 12.)) for s in time_redone]
         # reshape data to include all possible times
         ndat = np.ma.resize(cube.data, fine_shape)
         # build the time mask
@@ -304,17 +292,14 @@ def _assemble_overlap_data(selection, ovlp, stat_type, fname):
     stats_dats = np.ma.zeros(_slice_cube2(selection[0], start, stop).shape)
 
     for i in range(stats_dats.shape[0]):
-        time_data = [_slice_cube2(cube, start, stop)[i]
-                     for cube in selection]
-        stats_dats[i] = _compute_statistic(time_data,
-                                           stat_type)
-    stats_cube = _put_in_cube(_apply_overlap(selection[0],
-                                             start_dtime,
-                                             stop_dtime),
-                              stats_dats,
-                              stat_type,
-                              fname,
-                              t_axis=None)
+        time_data = [_slice_cube2(cube, start, stop)[i] for cube in selection]
+        stats_dats[i] = _compute_statistic(time_data, stat_type)
+    stats_cube = _put_in_cube(
+        _apply_overlap(selection[0], start_dtime, stop_dtime),
+        stats_dats,
+        stat_type,
+        fname,
+        t_axis=None)
     return stats_cube
 
 
@@ -325,12 +310,8 @@ def _assemble_full_data(selection, stat_type, fname):
 
     for i in range(slices[0].shape[0]):
         time_data = [data[i] for data in slices]
-        stats_dats[i] = _compute_statistic(time_data,
-                                           stat_type)
-    stats_cube = _put_in_cube(selection[0],
-                              stats_dats,
-                              stat_type,
-                              fname,
+        stats_dats[i] = _compute_statistic(time_data, stat_type)
+    stats_cube = _put_in_cube(selection[0], stats_dats, stat_type, fname,
                               time_axis)
     return stats_cube
 
@@ -346,11 +327,11 @@ def _update_fname(curr_filename, ovlp_interval, unit_type):
     return new_file
 
 
-def multi_model_stats(cubes, span, filename, exclude, statistics):
+def multi_model_statistics(cubes, span, filenames, exclude, statistics):
     """Compute multi-model mean and median."""
-    logger.debug('Multi model statistics: excluding files: %s', str(exclude))
+    logger.debug('Multi model statistics: excluding files: %s', exclude)
 
-    logger.debug('Multimodel statistics: computing: %s', str(statistics))
+    logger.debug('Multimodel statistics: computing: %s', statistics)
     iris.util.unify_time_units(cubes)
     selection = [
         cube for cube in cubes
@@ -376,24 +357,21 @@ def multi_model_stats(cubes, span, filename, exclude, statistics):
 
         # assemble data
         for stat_name in statistics:
-            sfname = 'file_' + stat_name
-            updated_fname = _update_fname(filename[sfname], ovlp, u_type)
-            cube_of_stats = _assemble_overlap_data(selection,
-                                                   ovlp, stat_name,
+            updated_fname = _update_fname(filenames[stat_name], ovlp, u_type)
+            cube_of_stats = _assemble_overlap_data(selection, ovlp, stat_name,
                                                    updated_fname)
             save_cubes([cube_of_stats])
 
     elif span == 'full':
-        logger.debug("Using full time spans "
-                     "to compute statistics.")
+        logger.debug("Using full time spans " "to compute statistics.")
         # assemble data
         for stat_name in statistics:
-            sfname = 'file_' + stat_name
-            fovlp = [min(_monthly_t(selection)[1]),
-                     max(_monthly_t(selection)[1])]
-            updated_fname = _update_fname(filename[sfname], fovlp, u_type)
-            cube_of_stats = _assemble_full_data(selection,
-                                                stat_name,
+            fovlp = [
+                min(_monthly_t(selection)[1]),
+                max(_monthly_t(selection)[1])
+            ]
+            updated_fname = _update_fname(filenames[stat_name], fovlp, u_type)
+            cube_of_stats = _assemble_full_data(selection, stat_name,
                                                 updated_fname)
             save_cubes([cube_of_stats])
 
