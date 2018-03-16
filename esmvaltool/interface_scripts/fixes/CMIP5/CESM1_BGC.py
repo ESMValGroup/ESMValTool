@@ -12,24 +12,27 @@ class nbp(Fix):
 
     def fix_file(self, filepath, var_path):
         """
-        Fix file
+        Apply fixes to the files prior to creating the cube.
 
-        Fixes missing_value and _FillValue of nbp
+        Should be used only to fix errors that prevent loading or can
+        not be fixed in the cube (i.e. those related with missing_value
+        and _FillValue)
 
         Parameters
         ----------
-        filepath: str
-            path to the file to fix
-        var_path: str
-            path to the preprocessor folder
+        filepath: basestring
+            file to fix
+        var_path: basestring
+            path to the final file produced by the preprocessor
 
         Returns
         -------
-        str
-            path to fixed file
+        basestring
+            Path to the corrected file. It can be different from the original
+            filepath
 
         """
-        temp = Fix.get_fixed_filepath(filepath, preproc_dir)
+        temp = Fix.get_fixed_filepath(var_path)
         shutil.copy(filepath, temp)
         original_dataset = Dataset(temp, mode='a')
         original_var = original_dataset.variables['nbp']

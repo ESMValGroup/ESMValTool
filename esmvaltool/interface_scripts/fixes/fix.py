@@ -9,7 +9,7 @@ class Fix(object):
     Base class for model fixes.
     """
 
-    def fix_file(self, filepath, fixed_path):
+    def fix_file(self, filepath, var_path):
         """
         Apply fixes to the files prior to creating the cube.
 
@@ -21,6 +21,8 @@ class Fix(object):
         ----------
         filepath: basestring
             file to fix
+        var_path: basestring
+            path to the final file produced by the preprocessor
 
         Returns
         -------
