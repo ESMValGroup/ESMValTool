@@ -89,18 +89,13 @@ def _compute_statistic(datas, name):
             fixed_data = _plev_fix(cdata, j)
             if fixed_data is not None:
                 plev_check.append(fixed_data)
-        len_stat_j = sum(1 for _ in plev_check)
-        stat_all = np.ma.zeros((len_stat_j, statistic.shape[1],
-                                statistic.shape[2]))
-        for i, e_l in enumerate(plev_check):
-            stat_all[i] = e_l
 
         # check for nr models
-        if len_stat_j >= 2:
-            statistic[j] = statistic_function(stat_all, axis=0)
+        if len(plev_check) > 1:
+            plev_check = np.ma.array(plev_check)
+            statistic[j] = statistic_function(plev_check, axis=0)
         else:
-            mask = np.ones(statistic[j].shape, bool)
-            statistic[j] = np.ma.array(statistic[j], mask=mask)
+            statistic.mask[j] = True
 
     return statistic
 
@@ -332,7 +327,6 @@ def multi_model_statistics(cubes, span, filenames, exclude, statistics):
     logger.debug('Multi model statistics: excluding files: %s', exclude)
 
     logger.debug('Multimodel statistics: computing: %s', statistics)
-    iris.util.unify_time_units(cubes)
     selection = [
         cube for cube in cubes
         if not all(cube.attributes.get(k) in exclude[k] for k in exclude)
@@ -341,6 +335,9 @@ def multi_model_statistics(cubes, span, filenames, exclude, statistics):
     if len(selection) < 2:
         logger.info("Single model in list: will not compute statistics.")
         return cubes
+
+    # unify units
+    iris.util.unify_time_units(selection)
 
     # check if we have any time overlap
     ovlp = _get_overlap(selection)
