@@ -16,6 +16,7 @@ import six
 from ..preprocessor._reformat import CMOR_TABLES
 
 import iris
+import iris.exceptions
 import numpy as np
 import stratify
 from iris.analysis import AreaWeighted, Linear, Nearest, UnstructuredNearest
@@ -322,7 +323,16 @@ def vinterp(src_cube, levels, scheme):
         raise ValueError(emsg.format(scheme))
 
     if isinstance(levels, six.string_types):
-        levels = get_cmor_levels(levels)
+        levels_definition = levels.split('_')
+        if levels_definition == 3:
+            reference_id = levels_definition[0]
+            reference_var = levels_definition[1]
+            reference_coord = levels_definition[2]
+            # path = get_file_referemce(reference_id, reference_var)
+            raise NotImplementedError
+            levels = get_reference_levels(path, reference_coord)
+        else:
+            levels = get_cmor_levels(levels)
 
     # Ensure we have a non-scalar array of levels.
     levels = np.array(levels, ndmin=1)
@@ -432,3 +442,32 @@ def get_cmor_levels(levels):
     else:
         raise ValueError('Coordinate {} in {} does not have requested values'
                          .format(coord, cmor_type))
+
+
+def get_reference_levels(path, coordinate):
+    """
+    Get level definition from a CMOR coordinate
+
+    Parameters
+    ----------
+    coordinate: str
+        Coordinate name
+    path: str
+        Path to the reference file
+
+    Returns
+    -------
+    list[float]
+
+    Raises
+    ------
+    ValueError:
+        If the Model is not defined, the coordinata does not specify any
+        levels or the string is badly formatted
+    """
+    try:
+        coord = iris.load_cube(path).coord(coordinate)
+    except iris.exceptions.CoordinateNotFoundError:
+        raise ValueError('Coordinate {} not available in {}'.format(coordinate,
+                                                                    path))
+    return coord.points.tolist()
