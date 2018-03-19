@@ -242,10 +242,10 @@ def create_doc_files_from_ncl():
                                                       '..'))
 
     # List the directories containing input files, then loop over them.
-    ncl_folders = {'diag_scripts': 'lib/ncl', 'plot_scripts': 'ncl'}
+    ncl_folders = {'diag_scripts': 'esmvaltool/diag_scripts/lib/ncl',
+                   'plot_scripts': 'esmvaltool/plot_scripts/ncl'}
     for ncl_folder in ncl_folders:
-        in_dir = os.path.join(esmval_root_folder, ncl_folder,
-                              ncl_folders[ncl_folder])
+        in_dir = os.path.join(esmval_root_folder, ncl_folders[ncl_folder])
         # Form the output directory name from the input directory name
         # (NB we assume the latter are all named ../../../foo/bar, where foo
         # is the useful part of the name.
