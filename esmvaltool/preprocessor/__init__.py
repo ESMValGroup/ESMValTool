@@ -9,7 +9,7 @@ from ._derive import derive
 from ._download import download
 from ._io import load_cubes, save_cubes
 from ._mask import mask_fillvalues, mask_landocean
-from ._multimodel import multi_model_mean
+from ._multimodel import multi_model_statistics
 from ._reformat import fix_data, fix_file, fix_metadata, cmor_check_data
 from ._regrid import vinterp as extract_levels
 from ._regrid import regrid
@@ -51,7 +51,7 @@ PREPROCESSOR_FUNCTIONS = {
     # 'annual_cycle': annual_cycle,
     # 'diurnal_cycle': diurnal_cycle,
     'seasonal_mean': seasonal_mean,
-    'multi_model_mean': multi_model_mean,
+    'multi_model_statistics': multi_model_statistics,
     'mask_fillvalues': mask_fillvalues,
     'cmor_check_data': cmor_check_data,
     # Save to file
@@ -74,14 +74,14 @@ DEFAULT_ORDER = (
     'extract_region',
     'average_region',
     'seasonal_mean',
-    'multi_model_mean',
+    'multi_model_statistics',
     'cmor_check_data',
     'save',
 )
 assert set(DEFAULT_ORDER) == set(PREPROCESSOR_FUNCTIONS)
 
 MULTI_MODEL_FUNCTIONS = {
-    'multi_model_mean',
+    'multi_model_statistics',
     'mask_fillvalues',
 }
 assert MULTI_MODEL_FUNCTIONS.issubset(set(PREPROCESSOR_FUNCTIONS))
@@ -92,7 +92,7 @@ _LIST_INPUT_FUNCTIONS = {
     'load',
     'derive',
     'mask_fillvalues',
-    'multi_model_mean',
+    'multi_model_statistics',
     'save',
 }
 assert _LIST_INPUT_FUNCTIONS.issubset(set(PREPROCESSOR_FUNCTIONS))
@@ -102,7 +102,7 @@ _LIST_OUTPUT_FUNCTIONS = {
     'download',
     'load',
     'mask_fillvalues',
-    'multi_model_mean',
+    'multi_model_statistics',
     'save',
 }
 assert _LIST_OUTPUT_FUNCTIONS.issubset(set(PREPROCESSOR_FUNCTIONS))
@@ -144,9 +144,9 @@ def preprocess_multi_model(all_items, all_settings, order, debug=False):
     """Run preprocessor on multiple models for a single variable."""
     # Assumes that the multi model configuration is the same for all models
     multi_model_steps = [
-        step for step in DEFAULT_ORDER
-        if (step in MULTI_MODEL_FUNCTIONS
-            and any(step in settings for settings in all_settings.values()))
+        step
+        for step in DEFAULT_ORDER if (step in MULTI_MODEL_FUNCTIONS and any(
+            step in settings for settings in all_settings.values()))
     ]
     final_step = object()
     multi_model_steps.append(final_step)

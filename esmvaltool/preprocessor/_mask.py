@@ -1,7 +1,10 @@
-########################################################################
-# MASKING
-# V.Predoi, University of Reading, May 2017
-########################################################################
+"""
+_mask.py
+
+module that performs missing values masking
+and geographical area eslection
+"""
+
 from __future__ import print_function
 
 import logging
@@ -21,6 +24,7 @@ def mask_landocean(cube, land_mask=None, ocean_mask=None):
 
 
 def fx_mask(mycube, fx):
+    """Reweighting function"""
     masked_cube = mycube.copy()
     masked_cube.data = mycube.data * fx.data / 100.
     return masked_cube
@@ -28,8 +32,8 @@ def fx_mask(mycube, fx):
 
 def masked_cube_simple(mycube, slicevar, v1, v2, threshold):
     """
-
     Mask function 1 -- simple cube cropping
+
     masking for a specific variable slicevar (string)
     arguments: cube, variable, min value, max value, threshold
 
@@ -61,10 +65,10 @@ def masked_cube_simple(mycube, slicevar, v1, v2, threshold):
 
 def masked_cube_lonlat(mycube, lon1, lon2, lat1, lat2, threshold):
     """
-
     Mask function 2 -- simple cube cropping on (min,max) lon,lat
-    Buikds a box and keeps only the values inside the box
-    arguments: cube, min value, max value, where value=(lon, lat), threshold
+
+    Builds a box and keeps only the values inside the box
+    args: cube, min value, max value, where value=(lon, lat), threshold
 
     """
     import numpy.ma as ma
@@ -83,11 +87,7 @@ def masked_cube_lonlat(mycube, lon1, lon2, lat1, lat2, threshold):
 
 
 def cube_shape(mycube):
-    """
-
-    Function that converts a cube into a shapely MultiPoint geometry
-
-    """
+    """Function that converts a cube into a shapely MultiPoint geometry"""
     import shapely.geometry as sg
     lon = mycube.coord('longitude')
     lat = mycube.coord('latitude')
@@ -97,13 +97,13 @@ def cube_shape(mycube):
 
 def maskgeometry(shapefilename, att, argv):
     """
+    Mask for a specific geometry
+
     This function takes in a shapefile shapefilename
     and creates a specific geometry based on a set of conditions
     on contour attributes att is argv e.g.
     contour.attributes['name'] == 'land_mass'
-
     """
-
     import cartopy.io.shapereader as shpreader
     reader = shpreader.Reader(shapefilename)
     contours = reader.records()
@@ -117,12 +117,13 @@ def maskgeometry(shapefilename, att, argv):
 
 def mask_2d(mycube, geom):
     """
+    Mask any 2D geometry
+
     This function masks off any given 2D geometry geom
     and keeps only the values that fall in geom, nulling
     everything else in mycube
     WARNING: as of now this function works with cubes that have time as coord
     it is adusted to save time and loop over only lon-lat points
-
     """
     from shapely.geometry import Point
     ccube = mycube.collapsed('time', iris.analysis.MEAN)
@@ -144,10 +145,10 @@ def mask_2d(mycube, geom):
 
 def polygon_shape(xlist, ylist):
     """
+    Make a polygon
 
     Function that takes a list of x-coordinates and a list of y-coordinates
     and returns a polygon and its (x,y) points on the polygon's border
-
     """
     from shapely.geometry import Polygon
     poly = Polygon(xlist, ylist)
@@ -169,7 +170,6 @@ In this case, we have a time sequence of measurements (time unit dt), and we
 want to calculate how many times N the measurements exceed a certain threshold
 R over a sliding window dT (multiple of dt). The threshold could be 0 for any
 unwanted value for instance.
-
 """
 
 
@@ -178,6 +178,8 @@ unwanted value for instance.
 # do the calculation over an arbitrary (given) data axis.
 def count_spells(data, threshold, axis, spell_length):
     """
+    Count data occurences
+
     Function to calculate the number of points in a sequence where the value
     has exceeded a threshold value for at least a certain number of timepoints.
 
@@ -222,6 +224,8 @@ def count_spells(data, threshold, axis, spell_length):
 
 def window_counts(mycube, value_threshold, window_size, pctile):
     """
+    Find data counts in a time window
+
     Function that returns a flat array containing
     the number of data points within a time window `window_size'
     per grid point that satify a condition
@@ -232,7 +236,6 @@ def window_counts(mycube, value_threshold, window_size, pctile):
     window_counts[2] = std(array)
     window_counts[3] = percentile(array, pctile)
     """
-
     # Make an aggregator from the user function.
     spell_count = Aggregator(
         'spell_count', count_spells, units_func=lambda units: 1)
@@ -254,7 +257,7 @@ def window_counts(mycube, value_threshold, window_size, pctile):
 
 
 def mask_cube_counts(mycube, value_threshold, counts_threshold, window_size):
-
+    """Build the counts mask"""
     # Make an aggregator from the user function.
     spell_count = Aggregator(
         'spell_count', count_spells, units_func=lambda units: 1)
@@ -280,6 +283,8 @@ def mask_cube_counts(mycube, value_threshold, counts_threshold, window_size):
 
 def mask_threshold(mycube, threshold):
     """
+    Mask with threshold
+
     Takes a MINIMUM value `threshold'
     and removes by masking off anything that's below it in the cube data
     """
@@ -292,6 +297,7 @@ def mask_threshold(mycube, threshold):
 
 def mask_fillvalues(cubes, threshold_fraction, min_value=-1.e10,
                     time_window=1):
+    """Get the final fillvalues mask"""
     # function idea copied from preprocess.py
 
     # Ensure all cubes have masked arrays
@@ -305,10 +311,20 @@ def mask_fillvalues(cubes, threshold_fraction, min_value=-1.e10,
     # Combine all fillvalue masks
     combined_mask = None
     for mask in masks:
-        if not np.all(mask):  # remove masks that mask everything
-            if combined_mask is None:
-                combined_mask = np.zeros_like(mask)
-            combined_mask |= mask
+        if combined_mask is None:
+            combined_mask = np.zeros_like(mask)
+        # Select only valid (not all masked) pressure levels
+        n_dims = len(mask.shape)
+        if n_dims == 2:
+            valid = ~np.all(mask)
+            if valid:
+                combined_mask |= mask
+        elif n_dims == 3:
+            valid = ~np.all(mask, axis=(1, 2))
+            combined_mask[valid] |= mask[valid]
+        else:
+            raise NotImplementedError("Unable to handle {} dimensional data"
+                                      .format(n_dims))
 
     if np.any(combined_mask):
         # Apply masks
