@@ -10,7 +10,8 @@ from ._download import download
 from ._io import load_cubes, save_cubes
 from ._mask import mask_fillvalues, mask_landocean
 from ._multimodel import multi_model_statistics
-from ._reformat import fix_data, fix_file, fix_metadata, cmor_check_data
+from ._reformat import fix_data, fix_file, fix_metadata, cmor_check_data, \
+    cleanup
 from ._regrid import vinterp as extract_levels
 from ._regrid import regrid
 from ._time_area import area_average as average_region
@@ -77,9 +78,11 @@ DEFAULT_ORDER = (
     'seasonal_mean',
     'multi_model_statistics',
     'cmor_check_data',
-    'cleanup,'
+    'cleanup',
     'save',
 )
+print(set(DEFAULT_ORDER))
+print(set(PREPROCESSOR_FUNCTIONS))
 assert set(DEFAULT_ORDER) == set(PREPROCESSOR_FUNCTIONS)
 
 MULTI_MODEL_FUNCTIONS = {
