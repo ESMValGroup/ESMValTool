@@ -54,7 +54,7 @@ def fix_metadata(cube, short_name, project, model, cmor_table=None, mip=None):
     return cube
 
 
-def fix_data(cube, short_name, project, model, preproc_dir,
+def fix_data(cube, short_name, project, model,
              cmor_table=None, mip=None):
     """Apply fixes to the data of the cube."""
     for fix in Fix.get_fixes(
@@ -68,9 +68,6 @@ def fix_data(cube, short_name, project, model, preproc_dir,
             fail_on_error=False,
             automatic_fixes=True)
         checker(cube).check_data()
-    final_dir = os.path.join(preproc_dir, project, model, short_name)
-    if os.path.exists(final_dir):
-        shutil.rmtree(final_dir)
     return cube
 
 
