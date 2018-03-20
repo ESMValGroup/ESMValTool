@@ -166,3 +166,10 @@ diagnostics:
         disp_values: false
         cm_interval: [2, 241]
         sort: true  # Sort model in alphabetic order (excluding MMM)
+
+  taylor_collect:
+    description: Wrapper to collect and plot previously calculated taylor metrics
+    scripts:
+      taylor_collect:
+        script: perfmetrics_taylor_collect.ncl
+        ancestors: ['*/taylor']
