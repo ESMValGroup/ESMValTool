@@ -10,9 +10,11 @@ from esmvaltool.interface_scripts.fixes.fix import Fix
 
 class TestFix(unittest.TestCase):
     def setUp(self):
+        """Set up temp folder"""
         self.temp_folder = tempfile.mkdtemp()
 
     def tearDown(self):
+        """Remove temp folder"""
         shutil.rmtree(self.temp_folder)
 
     def test_get_fix(self):
