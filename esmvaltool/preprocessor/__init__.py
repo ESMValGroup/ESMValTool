@@ -78,6 +78,7 @@ DEFAULT_ORDER = (
     'seasonal_mean',
     'multi_model_mean',
     'cmor_check_data',
+    'cleanup,'
     'save',
 )
 assert set(DEFAULT_ORDER) == set(PREPROCESSOR_FUNCTIONS)
