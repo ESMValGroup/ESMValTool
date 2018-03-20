@@ -198,16 +198,8 @@ diagnostics:
                    261, 264, 267, 270, 273, 276, 279,
                    282, 285, 288, 291, 294, 297, 300]     # Contour levels for absolute plot
         diff_levs: [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5] # Contour levels for difference plot
-      grading: 
+      grading:
         <<: *grading_settings
-        plot_type: cycle_latlon        # Plot type ('cycle' [time], 'zonal' [plev, lat], 'latlon' [lat, lon], 'cycle_latlon' [time, lat, lon])
-        time_avg: monthlyclim          # Time average ('opt' argument of time_operations.ncl)
-        draw_plots: false              # Do not draw plots
-        calc_grading: true             # Calculate grading
-        metric: RMSD                   # Metric ('RMSD', 'BIAS', taylor')
-        normalization: centered_median # Normalization ('mean', 'median', 'centered_median')
-        MultiModelMean: true           # Multi-model mean
-        MultiModelMedian: true         # Multi-model median
 
   grading_collect:
     description: Wrapper to collect and plot previously calculated gradings
