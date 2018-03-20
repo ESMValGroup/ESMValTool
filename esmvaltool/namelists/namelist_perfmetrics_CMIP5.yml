@@ -94,8 +94,9 @@ preprocessors:
       scheme: linear
     mask_fillvalues:
       threshold_fraction: 0.95
-    multi_model_mean:
+    multi_model_statistics:
       span: overlap
+      statistics: [mean, median]
     
   ppALL:
     extract_levels:
