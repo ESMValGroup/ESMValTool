@@ -291,6 +291,7 @@ def _get_default_settings(variable, config_user):
         'output_dir': variable['filename'] + '_fixed',
     }
     settings['fix_file'] = dict(fix)
+    del fix['output_dir']
     # Only supply mip if the CMOR check fixes are implemented.
     if variable.get('cmor_table'):
         fix['cmor_table'] = variable['cmor_table']
