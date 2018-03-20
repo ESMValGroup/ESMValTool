@@ -66,7 +66,7 @@ def replace_tags(path, variable):
                 elif tag == 'realm':
                     replacewith = cmip5_mip2realm_freq(variable['mip'])[0]
         elif tag == 'latestversion':  # handled separately later
-            pass
+            continue
         elif tag == 'tier':
             replacewith = ''.join(('Tier', str(variable['tier'])))
         elif tag == 'model':
@@ -163,11 +163,10 @@ def get_input_filelist(variable, rootpath, drs):
         if not os.path.isdir(path):
             raise OSError('Directory not found: {}'.format(path))
 
-    check_isdir(os.path.dirname(dirname_template))
-
     # Find latest version if required
     if '[latestversion]' in dirname_template:
         part1, part2 = dirname_template.split('[latestversion]')
+        part2 = part2.lstrip(os.sep)
         list_versions = os.listdir(part1)
         list_versions.sort()
         latest = os.path.basename(list_versions[-1])
