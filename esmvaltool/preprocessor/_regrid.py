@@ -364,7 +364,7 @@ def vinterp(src_cube, levels, scheme):
                                                    broadcast_shape)
 
             # force mask onto data as nan's
-            if np.ma.is_masked(src_cube.data) is True:
+            if np.ma.is_masked(src_cube.data):
                 src_cube.data[src_cube.data.mask] = np.nan
 
             # Now perform the actual vertical interpolation.

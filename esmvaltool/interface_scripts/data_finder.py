@@ -66,7 +66,7 @@ def replace_tags(path, variable):
                 elif tag == 'realm':
                     replacewith = cmip5_mip2realm_freq(variable['mip'])[0]
         elif tag == 'latestversion':  # handled separately later
-            pass
+            continue
         elif tag == 'tier':
             replacewith = ''.join(('Tier', str(variable['tier'])))
         elif tag == 'model':
@@ -179,11 +179,10 @@ def get_input_filelist(variable, rootpath, drs):
         if not os.path.isdir(path):
             raise OSError('Directory not found: {}'.format(path))
 
-    check_isdir(os.path.dirname(dirname_template))
-
     # Find latest version if required
     if '[latestversion]' in dirname_template:
         part1, part2 = dirname_template.split('[latestversion]')
+        part2 = part2.lstrip(os.sep)
         list_versions = os.listdir(part1)
         list_versions.sort()
         latest = os.path.basename(list_versions[-1])
@@ -212,6 +211,22 @@ def get_output_file(variable, preproc_dir):
     outfile = os.path.join(preproc_dir,
                            '{preprocessor}_{diagnostic}'.format(**variable),
                            replace_tags(cfg['output_file'], variable) + '.nc')
+
+    return outfile
+
+
+def get_statistic_output_file(variable, statistic, preproc_dir):
+    """Get multi model statistic filename depending on settings"""
+    values = dict(variable)
+    values['stat'] = statistic.title()
+
+    template = os.path.join(
+        preproc_dir,
+        '{preprocessor}_{diagnostic}',
+        'MultiModel{stat}_{field}_{short_name}_{start_year}-{end_year}.nc',
+    )
+
+    outfile = template.format(**values)
 
     return outfile
 
