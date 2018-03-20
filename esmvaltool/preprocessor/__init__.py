@@ -81,8 +81,6 @@ DEFAULT_ORDER = (
     'cleanup',
     'save',
 )
-print(set(DEFAULT_ORDER))
-print(set(PREPROCESSOR_FUNCTIONS))
 assert set(DEFAULT_ORDER) == set(PREPROCESSOR_FUNCTIONS)
 
 MULTI_MODEL_FUNCTIONS = {

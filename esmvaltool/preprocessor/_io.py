@@ -3,7 +3,6 @@ import logging
 import os
 
 import iris
-import iris.exceptions
 
 iris.FUTURE.netcdf_promote = True
 iris.FUTURE.netcdf_no_unlimited = True
