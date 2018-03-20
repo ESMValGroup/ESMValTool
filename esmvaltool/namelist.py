@@ -288,7 +288,7 @@ def _get_default_settings(variable, config_user):
         'project': variable['project'],
         'model': variable['model'],
         'short_name': variable['short_name'],
-        'var_path': variable['var_path'],
+        'output_dir': variable['filename'] + '_fixed',
     }
     settings['fix_file'] = dict(fix)
     # Only supply mip if the CMOR check fixes are implemented.
@@ -296,7 +296,6 @@ def _get_default_settings(variable, config_user):
         fix['cmor_table'] = variable['cmor_table']
         fix['mip'] = variable['mip']
     settings['fix_data'] = dict(fix)
-    del fix['preproc_dir']
     settings['fix_metadata'] = dict(fix)
 
     # Configure time extraction
@@ -315,6 +314,12 @@ def _get_default_settings(variable, config_user):
             'cmor_table': variable['cmor_table'],
             'mip': variable['mip'],
             'short_name': variable['short_name'],
+        }
+
+    # Clean up fixed files
+    if not config_user['save_intermediary_cubes']:
+        settings['cleanup'] = {
+            'output_dir': variable['filename'] + '_fixed',
         }
 
     # Configure saving cubes to file

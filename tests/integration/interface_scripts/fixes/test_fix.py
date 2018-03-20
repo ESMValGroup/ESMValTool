@@ -59,7 +59,8 @@ class TestFix(unittest.TestCase):
 
     def test_fixed_filenam(self):
         filepath = os.path.join(self.temp_folder, 'file.nc')
-        fixed_filepath = Fix().get_fixed_filepath(filepath)
-        self.assertTrue(fixed_filepath.startswith(filepath))
-        self.assertTrue(fixed_filepath.endswith('.nc'))
-        self.assertEqual(len(fixed_filepath), len(filepath) + 11)
+        output_dir = os.path.join(self.temp_folder, 'fixed')
+        os.makedirs(output_dir)
+        fixed_filepath = Fix().get_fixed_filepath(output_dir, filepath)
+        self.assertTrue(fixed_filepath,
+                        os.path.join(output_dir, 'file.nc'))

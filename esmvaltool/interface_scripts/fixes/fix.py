@@ -1,7 +1,6 @@
 """Contains the base class for model fixes"""
 import importlib
 import os
-import tempfile
 
 
 class Fix(object):
@@ -9,7 +8,7 @@ class Fix(object):
     Base class for model fixes.
     """
 
-    def fix_file(self, filepath, var_path):
+    def fix_file(self, filepath, output_dir):
         """
         Apply fixes to the files prior to creating the cube.
 
@@ -21,14 +20,15 @@ class Fix(object):
         ----------
         filepath: basestring
             file to fix
-        var_path: basestring
-            path to the final file produced by the preprocessor
+        output_dir: basestring
+            path to the folder to store the fixe files, if required
 
         Returns
         -------
         basestring
             Path to the corrected file. It can be different from the original
-            filepath
+            filepath if a fix has been applied, but if not it should be the
+            original filepath
 
         """
         return filepath
@@ -125,7 +125,7 @@ class Fix(object):
         return fixes
 
     @staticmethod
-    def get_fixed_filepath(var_path):
+    def get_fixed_filepath(output_dir, filepath):
         """
         Get the filepath for the fixed file
 
@@ -139,8 +139,6 @@ class Fix(object):
         str
             Path to the fixed file
         """
-        fd, new_filename = tempfile.mkstemp(suffix='.nc',
-                                            prefix=os.path.basename(var_path),
-                                            dir=os.path.dirname(var_path))
-        os.close(fd)
-        return new_filename
+        if not os.path.isdir(output_dir):
+            os.makedirs(output_dir)
+        return os.path.join(output_dir, os.path.basename(filepath))

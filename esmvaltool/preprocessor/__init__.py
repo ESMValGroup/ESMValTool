@@ -10,7 +10,8 @@ from ._download import download
 from ._io import load_cubes, save_cubes
 from ._mask import mask_fillvalues, mask_landocean
 from ._multimodel import multi_model_mean
-from ._reformat import fix_data, fix_file, fix_metadata, cmor_check_data
+from ._reformat import fix_data, fix_file, fix_metadata, cmor_check_data,\
+    cleanup
 from ._regrid import vinterp as extract_levels
 from ._regrid import regrid
 from ._time_area import area_average as average_region
@@ -54,6 +55,7 @@ PREPROCESSOR_FUNCTIONS = {
     'multi_model_mean': multi_model_mean,
     'mask_fillvalues': mask_fillvalues,
     'cmor_check_data': cmor_check_data,
+    'cleanup': cleanup,
     # Save to file
     'save': save_cubes,
 }

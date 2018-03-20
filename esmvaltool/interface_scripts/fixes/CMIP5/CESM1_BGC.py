@@ -10,7 +10,7 @@ from esmvaltool.interface_scripts.fixes.fix import Fix
 class nbp(Fix):
     """Fixes for nbp variable"""
 
-    def fix_file(self, filepath, var_path):
+    def fix_file(self, filepath, output_dir):
         """
         Apply fixes to the files prior to creating the cube.
 
@@ -22,17 +22,18 @@ class nbp(Fix):
         ----------
         filepath: basestring
             file to fix
-        var_path: basestring
-            path to the final file produced by the preprocessor
+        output_dir: basestring
+            path to the folder to store the fixe files, if required
 
         Returns
         -------
         basestring
             Path to the corrected file. It can be different from the original
-            filepath
+            filepath if a fix has been applied, but if not it should be the
+            original filepath
 
         """
-        temp = Fix.get_fixed_filepath(var_path)
+        temp = Fix.get_fixed_filepath(output_dir, filepath)
         shutil.copy(filepath, temp)
         original_dataset = Dataset(temp, mode='a')
         original_var = original_dataset.variables['nbp']
