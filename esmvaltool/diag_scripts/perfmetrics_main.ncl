@@ -10,7 +10,7 @@
 ;;    reference model. It also calculates grading and taylor metrics.
 ;;    Input data have to be regridded to a common grid in the preprocessor.
 ;;
-;; Required diag_script_info attributes (diagnostics specific)
+;; Required diag_script_info attributes
 ;;    plot_type: cycle (time), zonal (plev, lat), latlon (lat, lon) or
 ;;               cycle_latlon (time, lat, lon)
 ;;    time_avg: type of time average (see time_operations in
@@ -21,7 +21,7 @@
 ;;    plot_stddev (for cycle): plot standard deviation
 ;;    legend_outside (for cycle): save legend in a separate file
 ;;
-;; Optional diag_script_info attributes (diagnostic specific)
+;; Optional diag_script_info attributes
 ;;    t_test (for zonal and latlon): calculate t-test in difference plots
 ;;                                   (default: False)
 ;;    conf_level (for zonal and latlon): confidence level for the t-test
@@ -44,12 +44,7 @@
 ;;    abs_levs: (min, max, spacing) contour levels for absolute plot
 ;;    diff_levs: (min, max, spacing) contour levels for difference plot
 ;;
-;; Required variable_info attributes (variable specific)
-;;    FIX-ME: remove the following?
-;;    map_ref_Levels: contour levels for the latlon plot
-;;    map_diff_Levels: contour levels for the latlon difference plot
-;;
-;; Optional variable_info attributes (variable specific)
+;; Optional variable_info attributes (variable specific) FIX-ME: to be removed
 ;;    zonal_ref_cmap: color table for the zonal plot
 ;;    zonal_ymin: minimum pressure for the zonal plots
 ;;    global_avg: attach global field average as right string on the plot
