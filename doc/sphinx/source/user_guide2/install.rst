@@ -5,6 +5,8 @@ Installing ESMValTool
 *********************
 
 ESMValTool 2.0 requires a Unix(-like) operating system and Python 2.7+ or 3.6+.
+Python 2.7+ will be discontinued in the near future, so we encourge you to use
+Python 3.6+ if possible
 
 The ESMValTool supports three different installation methods:
 
