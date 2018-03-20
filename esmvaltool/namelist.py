@@ -13,7 +13,7 @@ import yaml
 
 from .interface_scripts.data_finder import (
     get_input_filelist, get_input_filename, get_output_file,
-    get_start_end_year)
+    get_statistic_output_file, get_start_end_year)
 from .preprocessor import (DEFAULT_ORDER, MULTI_MODEL_FUNCTIONS,
                            PREPROCESSOR_FUNCTIONS, PreprocessingTask)
 from .preprocessor._download import synda_search
@@ -181,8 +181,8 @@ def check_variables(variables):
         if missing:
             raise NamelistError(
                 "Missing keys {} from variable {} in diagnostic {}".format(
-                    missing,
-                    variable.get('short_name'), variable.get('diagnostic')))
+                    missing, variable.get('short_name'),
+                    variable.get('diagnostic')))
 
 
 def check_data_availability(input_files, start_year, end_year):
@@ -288,8 +288,10 @@ def _get_default_settings(variable, config_user):
         'project': variable['project'],
         'model': variable['model'],
         'short_name': variable['short_name'],
+        'preproc_dir': config_user['preproc_dir'],
     }
     settings['fix_file'] = dict(fix)
+    del fix['preproc_dir']
     # Only supply mip if the CMOR check fixes are implemented.
     if variable.get('cmor_table'):
         fix['cmor_table'] = variable['cmor_table']
@@ -356,16 +358,23 @@ def _apply_preprocessor_settings(settings, profile_settings):
             settings[step].update(args)
 
 
-def _update_multi_model_mean(variables, settings):
-    """Configure multi model mean."""
-    if settings.get('multi_model_mean', False):
-        if settings['multi_model_mean'] is True:
-            settings['multi_model_mean'] = {}
+def _update_multi_model_statistics(variables, settings, preproc_dir):
+    """Configure multi model statistics."""
+    if settings.get('multi_model_statistics', False):
+        if settings['multi_model_statistics'] is True:
+            settings['multi_model_statistics'] = {}
+        stat_settings = settings['multi_model_statistics']
+
         variable = variables[0]
-        filename = os.path.join(
-            os.path.dirname(variable['filename']), 'multi_model_statistics.nc')
-        settings['multi_model_mean']['filename'] = filename
-        exclude_models = set(settings['multi_model_mean'].get('exclude', {}))
+
+        # Define output files
+        stat_settings['filenames'] = {}
+        for statistic in stat_settings['statistics']:
+            stat_settings['filenames'][statistic] = get_statistic_output_file(
+                variable, statistic, preproc_dir)
+
+        # Define models to exclude
+        exclude_models = set(stat_settings.get('exclude', {}))
         for key in 'reference_model', 'alternative_model':
             if key in variable:
                 exclude_models.add(variable[key])
@@ -373,7 +382,7 @@ def _update_multi_model_mean(variables, settings):
             v['filename']
             for v in variables if v['model'] in exclude_models
         }
-        settings['multi_model_mean']['exclude'] = {'_filename': exclude_files}
+        stat_settings['exclude'] = {'_filename': exclude_files}
 
 
 def _get_preprocessor_settings(variables, preprocessors, config_user):
@@ -388,7 +397,8 @@ def _get_preprocessor_settings(variables, preprocessors, config_user):
             "Unknown preprocessor {} in variable {} of diagnostic {}".format(
                 preproc_name, variable['short_name'], variable['diagnostic']))
     profile_settings = preprocessors[variable['preprocessor']]
-    _update_multi_model_mean(variables, profile_settings)
+    _update_multi_model_statistics(variables, profile_settings,
+                                   config_user['preproc_dir'])
 
     for variable in variables:
         settings = _get_default_settings(variable, config_user)
@@ -412,9 +422,8 @@ def _get_preprocessor_settings(variables, preprocessors, config_user):
 
 def _check_multi_model_settings(all_settings):
     """Check that multi model settings are identical for all models."""
-    multi_model_steps = (
-        step for step in MULTI_MODEL_FUNCTIONS
-        if any(step in settings for settings in all_settings.values()))
+    multi_model_steps = (step for step in MULTI_MODEL_FUNCTIONS if any(
+        step in settings for settings in all_settings.values()))
     for step in multi_model_steps:
         result = None
         for filename, settings in all_settings.items():
@@ -510,9 +519,9 @@ class Namelist(object):
             diagnostic['scripts'] = self._initialize_scripts(
                 name, raw_diagnostic.get('scripts'))
             diagnostics[name] = diagnostic
-            is_ncl_script = any(
-                diagnostic['scripts'][s].get('script', '').lower().endswith(
-                    '.ncl') for s in diagnostic['scripts'])
+            is_ncl_script = any(diagnostic['scripts'][s].get('script', '')
+                                .lower().endswith('.ncl')
+                                for s in diagnostic['scripts'])
             if not ncl_version_checked and is_ncl_script:
                 logger.info("NCL script detected, checking NCL version")
                 check_ncl_version()

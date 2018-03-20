@@ -1,13 +1,10 @@
-"""
-Unit tests for the :func:`esmvaltool.preprocessor.regrid.vinterp`
-function.
-
-"""
+"""Unit tests for :func:`esmvaltool.preprocessor.regrid.vinterp`."""
 
 from __future__ import absolute_import, division, print_function
 
 import unittest
 
+import iris
 import mock
 import numpy as np
 from numpy import ma
@@ -110,7 +107,7 @@ class Test(tests.Test):
         args, kwargs = self.mock_create_cube.call_args
         # Check the _create_cube args ...
         self.assertEqual(len(args), 3)
-        self.assertArrayEqual(args[0], self.cube)
+        self.assertEqual(args[0], self.cube)
         self.assertArrayEqual(args[1], new_data)
         self.assertArrayEqual(args[2], levels)
         # Check the _create_cube kwargs ...
@@ -150,10 +147,12 @@ class Test(tests.Test):
         self.assertEqual(kwargs, dict())
 
     def test_interpolation__masked(self):
-        new_data = np.empty(self.shape)
         levels = np.array([0.5, 1.5])
+        new_data = np.empty([len(levels)] + list(self.shape[1:]), dtype=float)
+        new_data[:, 0, :] = np.nan
+        new_data_mask = np.isnan(new_data)
         scheme = 'linear'
-        mask = [[[1], [0]], [[1], [0]], [[1], [0]]]
+        mask = [[[False], [True]], [[True], [False]], [[False], [False]]]
         masked = ma.empty(self.shape)
         masked.mask = mask
         cube = _make_cube(masked, dtype=self.dtype)
@@ -177,12 +176,18 @@ class Test(tests.Test):
                                  interpolation=scheme,
                                  extrapolation='nan'))
         args, kwargs = self.mock_create_cube.call_args
+        # in-place for new vinterp with nan's
+        new_data[np.isnan(new_data)] = _MDI
         # Check the _create_cube args ...
         self.assertEqual(len(args), 3)
-        self.assertArrayEqual(args[0], cube)
+        self.assertEqual(args[0].metadata, cube.metadata)
+        coord_comparison = iris.analysis.coord_comparison(args[0], cube)
+        self.assertFalse(coord_comparison['not_equal']
+                         or coord_comparison['non_equal_data_dimension'])
+        self.assertArrayEqual(args[0].data, cube.data)
         self.assertArrayEqual(args[1], new_data)
         self.assertTrue(ma.isMaskedArray(args[1]))
-        self.assertArrayEqual(args[1].mask, mask)
+        self.assertArrayEqual(args[1].mask, new_data_mask)
         self.assertArrayEqual(args[2], levels)
         # Check the _create_cube kwargs ...
         self.assertEqual(kwargs, dict())

@@ -26,13 +26,21 @@ begin
     end if
 end
 
-;; Copy some info into legacy names
+
 begin
+
+    ;; Add trailing slash to paths
+    config_user_info@plot_dir = config_user_info@plot_dir + "/"
+    config_user_info@run_dir = config_user_info@run_dir + "/"
+    config_user_info@work_dir = config_user_info@work_dir + "/"
+
+    ;; Copy some info into legacy names
     diag_script = diag_script_info@script
     if isvar("variable_info") then
         variables = (/variable_info@short_name/)
         field_types = (/variable_info@field/)
     end if
+
 end
 
 ;; Load other interface scripts

@@ -13,7 +13,7 @@ class TestCh4(unittest.TestCase):
 
     def test_fix_data(self):
         cube = self.fix.fix_data(self.cube)
-        self.assertEqual(cube.data[0], 29 / 16 * 1.e9)
+        self.assertEqual(cube.data[0], 29. / 16. * 1.e9)
         self.assertEqual(cube.units, Unit('J'))
 
 
@@ -24,5 +24,5 @@ class TestCo2(unittest.TestCase):
 
     def test_fix_data(self):
         cube = self.fix.fix_data(self.cube)
-        self.assertEqual(cube.data[0], 29 / 44 * 1.e6)
+        self.assertEqual(cube.data[0], 29. / 44. * 1.e6)
         self.assertEqual(cube.units, Unit('J'))

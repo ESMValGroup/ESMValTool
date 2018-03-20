@@ -30,7 +30,6 @@
 ; 2009-06-11   CAF  added date range to output filename
 ;*********************************************************************
 
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
 load "interface_scripts/logging.ncl"
 load "interface_scripts/auxiliary.ncl"
 

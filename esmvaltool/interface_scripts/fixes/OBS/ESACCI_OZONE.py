@@ -1,10 +1,27 @@
+"""Fixes for ESA CCI ozone"""
 import cf_units
 
 from esmvaltool.interface_scripts.fixes.fix import Fix
 
 
 class tro3prof(Fix):
+    """Fixes for tro3prof"""
+
     def fix_metadata(self, cube):
+        """
+        Fix metadata
+
+        Fixes air_pressure coordinate
+
+        Parameters
+        ----------
+        cube: iris.cube.Cube
+
+        Returns
+        -------
+        iris.cube.Cube
+
+        """
         old = cube.coord('air_pressure')
         dims = cube.coord_dims(old)
         cube.remove_coord(old)

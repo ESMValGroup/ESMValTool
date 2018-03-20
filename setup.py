@@ -55,7 +55,7 @@ REQUIREMENTS = {
         'pytest',
         'pytest-cov',
         'pytest-html',
-        'pytest-metadata',
+        'pytest-metadata>=1.5.1',
     ],
     # Development dependencies
     # Use pip install -e .[develop] to install in development mode

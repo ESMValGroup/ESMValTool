@@ -17,7 +17,7 @@ preprocessors:
       scheme: linear
     mask_fillvalues:
       threshold_fraction: 0.90
-    multi_model_mean: false
+    multi_model_statistics: false
 
   preprocessor_2:
     extract_levels:
@@ -27,13 +27,13 @@ preprocessors:
       target_grid: 1x1
       scheme: nearest
     mask_fillvalues: false
-    multi_model_mean: false
+    multi_model_statistics: false
 
   preprocessor_3:
     extract_levels: false
     regrid: false
     mask_fillvalues: false
-    multi_model_mean: false
+    multi_model_statistics: false
 
 diagnostics:
 

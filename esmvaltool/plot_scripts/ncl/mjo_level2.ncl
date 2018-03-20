@@ -1,7 +1,3 @@
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/shea_util.ncl"
 
 ;; Temporary file updated by Python on the fly
 
@@ -514,7 +510,7 @@ begin
     var0 = variables(0)
     field_type0 = field_types(0)
 
-    netcdf_dir = plot_dir + "/netcdf/"
+    netcdf_dir = plot_dir + "netcdf/"
     aux_title_info = "MJO_PC_INDEX"
     input_netcdf = interface_get_figure_filename("mjo_life_cycle_plot",\
                                                   var0,\

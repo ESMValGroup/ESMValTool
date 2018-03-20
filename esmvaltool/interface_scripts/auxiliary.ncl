@@ -279,6 +279,9 @@ begin
     ;; Collect parts of outfile name
     work_dir = config_user_info@work_dir + "/"
 
+    ;; Create work dir
+    system("mkdir -p " + work_dir)
+
     ;; Assemble final name
     outfile = work_dir + var + ".nc"
 
