@@ -51,55 +51,33 @@ begin
                        "E_ceresebaf", "E_srb"/), \
                      (/"P_embrace", "P_esmval"/))
 
-    ;; Read grading list and add files together
-    input_dir = diag_script_info@input_files(0)
-    temp_dir = input_dir + "/taylor.nc"
+    ;; List of grading files
+    input_files = diag_script_info@input_files + "/taylor.nc"
+    input_files := tostring(input_files)
 
-    if (fileexists(temp_dir)) then
+    ;; Loop over files in the list, read and append data
+    do ii = 0, dimsizes(input_files) - 1
 
-        ;; Read grading list
-        temp_file = addfile(temp_dir, "r")
-        temp_list = temp_file->temp_list
-        file_list = tostring(temp_list)
-        delete(temp_list)
+        f = addfile(input_files(ii), "r")
+        curr_file = tostring(f->temp_list)
+        if (.not.fileexists(curr_file)) then
+            error_msg("f", diag_script, "", \
+                      "cannot find grading list element:" + temp_dir)
+        end if
+        data_temp = ncdf_read(curr_file, "grade")
 
-        ;; Remove duplicates
-        do ii = 0, dimsizes(file_list) - 1
-            curr = file_list(ii)
-            idx = ind(curr.eq.file_list)
-            if (dimsizes(idx).gt.1) then
-                file_list(idx) = file_list@_FillValue
-                file_list(ii) = curr
-            end if
-            delete(curr)
-            delete(idx)
-        end do
-        tmp = file_list(ind(.not.ismissing(file_list)))
-        delete(file_list)
-        file_list = tmp
-        delete(tmp)
+        ;; Collect all models data
+        if (.not.isdefined("data_all")) then
+            data_all = data_temp
+        else
+            tmp = array_append_record(data_all, data_temp, 0)
+            delete(data_all)
+            data_all = tmp
+            delete(tmp)
+        end if
+        delete(data_temp)
 
-        ;; Loop over files in the list, append data
-        do ii = 0, dimsizes(file_list) - 1
-
-            data_temp = ncdf_read(file_list(ii), "var")
-            if (.not.isdefined("data_all")) then
-                data_all = data_temp
-            else
-                tmp = array_append_record(data_all, data_temp, 0)
-                delete(data_all)
-                data_all = tmp
-                delete(tmp)
-            end if
-            delete(data_temp)
-
-        end do
-
-    else
-
-        error_msg("f", diag_script, "", "cannot find input dir:" + temp_dir)
-
-    end if
+    end do
 
     ;; Attach resources
     data_all@res_varLabels    = data_all&models
@@ -124,13 +102,10 @@ begin
         wks@legendfile = outfile_plot + "_legend"
 
         ;; Plot
-        plot  = taylor_plot(wks, data_all, "var")
+        plot  = taylor_plot(wks, data_all, "grade")
 
         log_info(" gv " + outfile_plot + "." + file_type)
     end if
-
-    ;; Remove temporary Taylor list
-    system("rm -f " + temp_dir)
 
     leave_msg(diag_script, "")
 
