@@ -44,13 +44,16 @@ class TestCo2(unittest.TestCase):
 
 class TestNbp(unittest.TestCase):
     def setUp(self):
+        """Prepare temp folder for test"""
         self.fix = nbp()
         self.temp_folder = tempfile.mkdtemp()
 
     def tearDown(self):
+        """Prepare temp folder for test"""
         shutil.rmtree(self.temp_folder)
 
     def test_fix_data(self):
+        """Test fix on nbp files to set correct missing and fill values"""
         temp_handler, temp_path = tempfile.mkstemp('.nc', dir=self.temp_folder)
         os.close(temp_handler)
         output_dir = os.path.join(self.temp_folder, 'fixed')
