@@ -163,7 +163,6 @@ def get_input_filelist(variable, rootpath, drs):
         if not os.path.isdir(path):
             raise OSError('Directory not found: {}'.format(path))
 
-
     # Find latest version if required
     if '[latestversion]' in dirname_template:
         part1, part2 = dirname_template.split('[latestversion]')
