@@ -14,11 +14,8 @@ The ESMValTool supports three different installation methods:
 
 * From the source code available at https://github.com/ESMValGroup/ESMValTool
 
-The next sections will detail the procedure to install ESMValTool from each of
-this channels
-
-
-The ESMValTool requires a Unix(-like) operating system
+The next sections will detail the procedure to install ESMValTool for each of
+this methods.
 
 
 Conda installation
@@ -26,7 +23,7 @@ Conda installation
 
 A conda package will be available after the release of ESMValTool 2.0. As
 conda has no support for beta releases, it is unlikely that conda packages for
-any of the pre-release versions will be provided
+any of the pre-release versions will be provided.
 
 
 Docker installation
@@ -40,13 +37,15 @@ Install from source
 ===================
 
 
+
 Obtaining the source code
 -------------------------
 
 The ESMValTool source code is available on a public GitHub repository:
 https://github.com/ESMValGroup/ESMValTool
 
-The easiest way to obtain it is to clone the repository:
+The easiest way to obtain it is to clone the repository using git
+(see https://git-scm.com/ ):
 
 .. code-block:: bash
 
@@ -67,7 +66,6 @@ contents at the desired location.
 
 Prerequisites
 -------------
-The ESMValTool requires a Unix(-like) operating system
 
 It is strongly recommended to use conda to manage ESMValTool dependencies.
 For a minimal conda installation go to https://conda.io/miniconda.html . To
@@ -76,7 +74,7 @@ repository (environment.yml in theroot folder)
 
 ESMValTool's conda environment file can also be used as a requirements list
 for those cases in which a conda installation is not possible or advisable.
-From now on, we will asume that the installation is going to be done through
+From now on, we will assume that the installation is going to be done through
 conda.
 
 Ideally, you should want to create a conda environment for ESMValTool, so it is
@@ -110,7 +108,9 @@ file. This can be very useful when updating an older installation of ESMValTool
 
     conda env update --file environment.yml --name $(ENVIRONMENT_TO_UPDATE)
 
-
+.. attention::
+    From now on, we assume that the conda environment for ESMValTool is
+    activated
 
 Software installation
 ---------------------
@@ -122,16 +122,16 @@ the following command
 
     python ESMValTool/setup.py
 
-.. attention::
-    From now on, we assume that the conda environment for ESMValTool is
-    activated
 
 The next step is to check that the installation works properly.
-To do this, first activate the environment and then run the tool with --version.
+To do this, run the tool with --version.
 
 .. code-block:: bash
 
     esmvaltool --version
+
+If everythong was installed properly, ESMValTool should have printed the
+version number at the console and exited.
 
 For a more complete installation verification, run the automated tests and
 confirm that no errors are reported.
