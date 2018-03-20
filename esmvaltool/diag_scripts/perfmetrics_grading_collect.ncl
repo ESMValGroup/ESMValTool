@@ -7,12 +7,12 @@
 ;;    Collects metrics previously calculated by perfmetrics_grading.ncl and
 ;;    passes them to the portrait_plot function
 ;;
-;; Required diag_script_info attributes (diagnostics specific)
+;; Required diag_script_info attributes
 ;;    label_bounds: min and max of the labelbar
 ;;    label_scale: bin width of the labelbar
 ;;    colormap: color table of the labelbar
 ;;
-;; Optional diag_script_info attributes (diagnostic specific)
+;; Optional diag_script_info attributes
 ;;    label_lo: add lower triange for values outside range
 ;;    label_hi: add upper triange for values outside range
 ;;    cm_interval: min and max color of the color table
@@ -23,10 +23,6 @@
 ;;    disp_values: switch on/off the grading values on the plot
 ;;    disp_rankings: switch on/off the rankings on the plot
 ;;    rank_order: display rankings in increasing (1) or decreasing (-1) order
-;;
-;; Required variable_info attributes (variable specific)
-;;
-;; Optional variable_info attributes (variable specific)
 ;;
 ;; Caveats
 ;;
@@ -68,120 +64,87 @@ begin
                        "E_ceresebaf", "E_srb"/), \
                      (/"P_embrace", "P_esmval"/))
 
-    ;; Read grading list and add files together
-    input_dir = diag_script_info@input_files(0)
-    temp_dir = input_dir + "/grading.nc"
+    ;; List of grading files
+    input_files = diag_script_info@input_files + "/grading.nc"
+    input_files := tostring(input_files)
 
-    if (fileexists(temp_dir)) then
+    ;; Loop over files in the list, read and append data
+    do ii = 0, dimsizes(input_files) - 1
 
-        ;; Read grading list
-        temp_file = addfile(temp_dir, "r")
-        temp_list = temp_file->temp_list
-        file_list = tostring(temp_list)
-        file_list@_FillValue = default_fillvalue(typeof(file_list))
-        delete(temp_list)
+        f = addfile(input_files(ii), "r")
+        curr_file = tostring(f->temp_list)
+        if (.not.fileexists(curr_file)) then
+            error_msg("f", diag_script, "", \
+                      "cannot find grading list element:" + temp_dir)
+        end if
+        data_temp = ncdf_read(curr_file, "grade")
 
-        ;; Remove duplicates
-        do ii = 0, dimsizes(file_list) - 1
-            curr = file_list(ii)
-            idx = ind(curr.eq.file_list)
-            if (dimsizes(idx).gt.1) then
-                file_list(idx) = file_list@_FillValue
-                file_list(ii) = curr
-            end if
-            delete(curr)
-            delete(idx)
-        end do
-        tmp = file_list(ind(.not.ismissing(file_list)))
-        delete(file_list)
-        file_list = tmp
-        delete(tmp)
+        ;; Change to 3 dimensional
+        if (dimsizes(dimsizes(data_temp)).eq.2) then
 
-        ;; Loop over files in the list, append data
-        do ii = 0,  dimsizes(file_list) - 1
-            data_temp = ncdf_read(file_list(ii), "grade")
+            dim_temp = array_append_record(dimsizes(data_temp), 2, 0)
+            temp = new(dim_temp, typeof(data_temp))
+            temp(:, :, 0) = data_temp
+            data_temp := temp
+            delete(temp)
 
-            ;; Change to 3 dimensional
-            if (dimsizes(dimsizes(data_temp)).eq.2) then
+        end if
 
-                dim_temp = array_append_record(dimsizes(data_temp), 2, 0)
-                temp = new(dim_temp, typeof(data_temp))
-                temp(:, :, 0) = data_temp
-                delete(data_temp)
-                data_temp = temp
-                delete(temp)
+        ;; Create array for collecting all models
+        if (.not.isdefined("data_all")) then
+            dim_temp = dimsizes(data_temp)
+            dim_data = (/dimsizes(input_files), dim_temp(1), 2/)
+            data_all = new(dim_data, float)
+            data_all(0, :, :) = data_temp
+            data_all!1 = "models"
+            data_all&models = data_temp&models
+        end if
 
-            end if
+        ;; If model coordinates are identical
+        if (dimsizes(data_temp&models).eq.dimsizes(data_all&models)) \
+           .and. all(data_temp&models.eq.data_all&models) then
+           data_all(ii, :, :) = (/data_temp/)
+           copy_VarCoords(data_temp, data_all(ii:ii, :, :))
 
-            if (.not.isdefined("data_all")) then
-
-                dim_temp = dimsizes(data_temp)
-                dim_data = (/dimsizes(file_list), dim_temp(1), 2/)
-                data_all = new(dim_data, float)
-                data_all(0, :, :) = data_temp
-
-                data_all!1 = "models"
-                data_all&models = data_temp&models
-
-            else
-
-                ;; If model coordinates are identical
-                if (dimsizes(data_temp&models).eq.dimsizes(data_all&models)) \
-                    .and. all(data_temp&models.eq.data_all&models) then
-                    data_all(ii, :, :) = (/data_temp/)
-                    copy_VarCoords(data_temp, data_all(ii:ii, :, :))
+        ;; Add current model if not already part of the model coordinate
+        else
+            do imod2 = 0, dimsizes(data_temp&models) - 1
+                if (.not.any(data_temp&models(imod2).eq.data_all&models)) then
+                   ;; Append record for model(imod)
+                    data_new = extend_var_at(data_all, 1, \
+                                             dimsizes(data_all&models))
+                    data_new(ii, dimsizes(data_all&models), :) = \
+                        (/data_temp(0, imod2, :)/)
+                    data_new&models(dimsizes(data_all&models)) = \
+                        (/data_temp&models(imod2)/)
+                    data_all := data_new
+                    delete(data_new)
                 else
-                    ;; Loop over models in new data entry
-                    do imod_temp = 0, dimsizes(data_temp&models) - 1
-                        ;; If current model is not already part
-                        ;; of the model coordinate
-                        if (.not.any(data_temp&models(imod_temp) .eq. \
-                            data_all&models)) then
-                            ;; Append record for model(imod)
-                            data_new = extend_var_at(data_all, 1, \
-                                                     dimsizes(data_all&models))
-                            data_new(ii, dimsizes(data_all&models), :) = \
-                                (/data_temp(0, imod_temp, :)/)
-                            data_new&models(dimsizes(data_all&models)) = \
-                                (/data_temp&models(imod_temp)/)
-                            delete(data_all)
-                            data_all = data_new
-                            delete(data_new)
-                        else
-                            ;; Loop over models of data
-                            do imod = 0, dimsizes(data_all&models) - 1
-                                ;; if neq data model is similar to current
-                                ;; entry, write data entry
-                                if (data_all&models(imod).eq. \
-                                    data_temp&models(imod_temp)) then
-                                    data_all(ii, imod, :) = \
-                                        (/data_temp(0, imod_temp, :)/)
-                                    copy_VarCoords( \
-                                        data_temp(0:0, imod_temp, :), \
-                                        data_all(ii:ii, imod, :))
-                                end if
-                            end do
+                    ;; Loop over models of data
+                    do imod = 0, dimsizes(data_all&models) - 1
+                        ;; if neq data model is similar to current
+                        ;; entry, write data entry
+                        if (data_all&models(imod).eq. \
+                            data_temp&models(imod2)) then
+                            data_all(ii, imod, :) = \
+                                (/data_temp(0, imod2, :)/)
+                            copy_VarCoords(data_temp(0:0, imod2, :), \
+                                           data_all(ii:ii, imod, :))
                         end if
                     end do
                 end if
-            end if
-            delete(data_temp)
-        end do
-
-        ;; Reduce size if all entries have only one reference
-        if (all(ismissing(data_all(:, :, 1)))) then
-            data_new = data_all(:, :, 0)
-            delete(data_all)
-            data_all = data_new
-            delete(data_new)
+            end do
         end if
+        delete(data_temp)
+    end do
 
-    else
-
-        error_msg("f", diag_script, "", "cannot find grading list:" + temp_dir)
-
+    ;; Reduce size if all entries have only one reference
+    if (all(ismissing(data_all(:, :, 1)))) then
+        data_new = data_all(:, :, 0)
+        delete(data_all)
+        data_all = data_new
+        delete(data_new)
     end if
-
     delete(data_all@var)
     delete(data_all@title)
     delete(data_all@ncdf_dir)
@@ -192,19 +155,14 @@ begin
     ;; Sort models in alphabetical order (exclude MMM)
     if (isatt(diag_script_info, "sort")) then
         if (diag_script_info@sort) then
-            pid = sort_alphabetically(data_all&models, \
-                                      ind(data_all&models.eq."Mean-model".or. \
-                                          data_all&models.eq."Median-model"), \
-                                      "begin")
+            idx = ind(data_all&models.eq."multi-model-median" .or. \
+                      data_all&models.eq."multi-model-mean")
+            pid = sort_alphabetically(data_all&models, idx, "begin")
             if (dimsizes(dimsizes(data_all)).eq.3) then
-                tmp = data_all(:, pid, :)
+                data_all := data_all(:, pid, :)
             else
-                tmp = data_all(:, pid)
+                data_all := data_all(:, pid)
             end if
-            tmp&models = data_all&models(pid)
-            delete(data_all)
-            data_all = tmp
-            delete(tmp)
             delete(pid)
         end if
     end if
