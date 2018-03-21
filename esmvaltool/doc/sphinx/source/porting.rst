@@ -95,11 +95,14 @@ The new ESMValTool version includes a completely revised interface, handling the
 | ``ncl.interface``                          | ``settings.ncl`` in ``run_dir`` and       | all .ncl scripts |
 |                                            | ``interface_scripts/interface.ncl``       |                  |
 +--------------------------------------------+-------------------------------------------+------------------+ 
-| ``load diag_scripts/lib/ncl/*.ncl``        | ``load diag_scripts/shared/*.ncl``        | all .ncl scripts |
+| ``load diag_scripts/lib/ncl/``             | ``load diag_scripts/shared/``             | all .ncl scripts |
 +--------------------------------------------+-------------------------------------------+------------------+
-| ``load plot_scripts/ncl/*.ncl``            | ``load diag_scripts/shared/plot/*.ncl``   | all .ncl scripts |
+| ``load plot_scripts/ncl/``                 | ``load diag_scripts/shared/plot/``        | all .ncl scripts |
 +--------------------------------------------+-------------------------------------------+------------------+
-
+| ``load diag_scripts/lib/ncl/rgb/``         | ``load diag_scripts/shared/plot/rgb/``    | all .ncl scripts |
++--------------------------------------------+-------------------------------------------+------------------+
+| ``load diag_scripts/lib/ncl/styles/``      | ``load diag_scripts/shared/plot/styles``  | all .ncl scripts |
++--------------------------------------------+-------------------------------------------+------------------+
 
 The following changes shall also be considered: 
 
