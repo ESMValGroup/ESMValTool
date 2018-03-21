@@ -214,6 +214,7 @@ begin
     end if
 
     ;; Styleset defined, search for corresponding style file
+    styleset = str_lower(styleset)
     stylefile = "./diag_scripts/shared/plot/styles/" + styleset + ".style"
     if (.not.fileexists(stylefile)) then
         error_msg("f", "style.ncl", funcname, \
