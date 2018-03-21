@@ -202,16 +202,11 @@ def _monthly_t(cubes):
     """Rearrange time points for monthly data"""
     # get original cubes tpoints
     tpts = []
-    # make all 365-day calendards
     for cube in cubes:
         tpts.append(_datetime_to_int_days(cube))
-
-    # convert to months for MONTHLY data
     t_x = list(set().union(*tpts))
-    t_x = list({a / 365 * 12 for a in t_x})
     t_x.sort()
-    t_x = range(t_x[0], t_x[-1] + 12)
-    t_x0 = list({float(13 + t * 365 / 12) for t in t_x})
+    t_x0 = list({float(t) for t in t_x})
     t_x0.sort()
     return t_x, t_x0
 
@@ -224,9 +219,7 @@ def _full_time(cubes):
     # loop through cubes and apply masks
     for cube in cubes:
         # recast time points
-        t_r = _datetime_to_int_days(cube)
-        t_r = list(set([s / 365 * 12 for s in t_r]))
-        time_redone = range(t_r[0], t_r[-1] + 12)
+        time_redone = _datetime_to_int_days(cube)
         # construct new shape
         fine_shape = tuple([len(t_x)] + list(cube.data.shape[1:]))
         # find indices of present time points
