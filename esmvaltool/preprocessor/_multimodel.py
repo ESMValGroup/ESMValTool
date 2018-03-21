@@ -130,12 +130,17 @@ def _datetime_to_int_days(cube):
     # extract date info
     real_dates = []
     for date_obj in time_cells:
+        # real_date resets the actual data point day
+        # to the 1st of the month so that there are no
+        # wrong overlap indeces
+        # NOTE: this workaround is good only
+        # for monthly data
         real_date = datetime(date_obj.year,
                              date_obj.month,
-                             date_obj.day,
-                             date_obj.hour,
-                             date_obj.minute,
-                             date_obj.second)
+                             1,
+                             0,
+                             0,
+                             0)
         real_dates.append(real_date)
     if unit_type == 'day since 1950-01-01 00:00:00.0000000 UTC':
         days = [(date_obj - datetime(1950, 1, 1, 0, 0, 0)).days
