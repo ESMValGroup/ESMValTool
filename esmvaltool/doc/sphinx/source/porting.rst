@@ -95,12 +95,18 @@ The new ESMValTool version includes a completely revised interface, handling the
 | ``ncl.interface``                          | ``settings.ncl`` in ``run_dir`` and       | all .ncl scripts |
 |                                            | ``interface_scripts/interface.ncl``       |                  |
 +--------------------------------------------+-------------------------------------------+------------------+ 
+| ``load diag_scripts/lib/ncl/*.ncl``        | ``load diag_scripts/shared/*.ncl``        | all .ncl scripts |
++--------------------------------------------+-------------------------------------------+------------------+
+| ``load plot_scripts/ncl/*.ncl``            | ``load diag_scripts/shared/plot/*.ncl``   | all .ncl scripts |
++--------------------------------------------+-------------------------------------------+------------------+
 
 The following changes shall also be considered: 
 
 - ``run_dir`` (previous ``interface_data``), ``plot_dir``, ``work_dir`` are now unique to each diagnostic script, so it is no longer necessary to define specific paths in the diagnostic scripts to prevent file collision;
 - the interface functions ``interface_get_*`` and ``get_figure_filename`` are no longer available: their functionalities can be easily reproduced using the ``model_info`` and ``input_file_info`` logicals and their attributes;
-- there are now only 4 log levels (``debug``, ``info``, ``warning``, and ``error``) instead of (infinite) numerical values in ``verbosity``.
+- there are now only 4 log levels (``debug``, ``info``, ``warning``, and ``error``) instead of (infinite) numerical values in ``verbosity``
+- diagnostic scripts are now organized in subdirectories in ``diag_scripts``: all scripts belonging to the same diagnostics shall be collected in a single subdirectory (see ``esmvaltool/diag_scripts/perfmetrics/`` for an example). This applies also to the ``aux_`` scripts, unless they are shared among multiple diagnostics (in this case they shall go in ``shared/``); 
+- upper case characters shall be avoided in script names. 
 
 As for the namelist, the diagnostic script ``./esmvaltool/diag_scripts/perfmetrics_main.ncl`` can be followed as working example.
 
