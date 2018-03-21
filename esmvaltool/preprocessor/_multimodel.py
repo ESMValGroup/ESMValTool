@@ -17,12 +17,23 @@ from functools import reduce
 
 from datetime import datetime
 from datetime import timedelta
+from dateutil import parser
 import iris
 import numpy as np
 
 from ._io import save_cubes
 
 logger = logging.getLogger(__name__)
+
+
+def _parse_time_unit(tunit):
+    """Return a datetime object equivalent to tunit"""
+    # tunit e.g. 'day since 1950-01-01 00:00:00.0000000 UTC'
+    # FIXME this needs more work to account for all
+    # CF_UNIT UDUNIT cases
+    unit_datetime = parser.parse(' '.join([tunit.split()[2],
+                                           tunit.split()[3]]))
+    return unit_datetime
 
 
 def _plev_fix(dataset, pl_idx):
@@ -142,19 +153,8 @@ def _datetime_to_int_days(cube):
                              0,
                              0)
         real_dates.append(real_date)
-    if unit_type == 'day since 1950-01-01 00:00:00.0000000 UTC':
-        days = [(date_obj - datetime(1950, 1, 1, 0, 0, 0)).days
-                for date_obj in real_dates]
-        # no of seconsd will be used in the future
-        # secs = [(date_obj - datetime(1950, 1, 1, 0, 0, 0)).seconds
-        #         for date_obj in time_cells]
-    elif unit_type == 'day since 1850-01-01 00:00:00.0000000 UTC':
-        days = [(date_obj - datetime(1850, 1, 1, 0, 0, 0)).days
-                for date_obj in real_dates]
-    # FIXME
-    # any other types of units?
-    else:
-        raise NotImplementedError
+    days = [(date_obj - _parse_time_unit(unit_type)).days
+            for date_obj in real_dates]
     return days
 
 
@@ -277,16 +277,10 @@ def _update_fname(curr_filename, ovlp_interval, unit_type):
     froot = "_".join(curr_filename.split('_')[0:-1])
     start, stop = ovlp_interval
     unit_type = unit_type.name
-    if unit_type == 'day since 1950-01-01 00:00:00.0000000 UTC':
-        yr_1 = str((datetime(1950, 1, 1, 0, 0, 0)
-                    + timedelta(np.int(start))).year)
-        yr_2 = str((datetime(1950, 1, 1, 0, 0, 0)
-                    + timedelta(np.int(stop))).year)
-    elif unit_type == 'day since 1850-01-01 00:00:00.0000000 UTC':
-        yr_1 = str((datetime(1850, 1, 1, 0, 0, 0)
-                    + timedelta(np.int(start))).year)
-        yr_2 = str((datetime(1850, 1, 1, 0, 0, 0)
-                    + timedelta(np.int(stop))).year)
+    yr_1 = str((_parse_time_unit(unit_type)
+                + timedelta(np.int(start))).year)
+    yr_2 = str((_parse_time_unit(unit_type)
+                + timedelta(np.int(stop))).year)
     new_file = "{}_{}-{}.nc".format(froot, yr_1, yr_2)
     return new_file
 
