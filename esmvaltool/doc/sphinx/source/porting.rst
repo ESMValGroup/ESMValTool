@@ -100,6 +100,7 @@ The new ESMValTool version includes a completely revised interface, handling the
 | ``load plot_scripts/ncl/*.ncl``            | ``load diag_scripts/shared/plot/*.ncl``   | all .ncl scripts |
 +--------------------------------------------+-------------------------------------------+------------------+
 
+
 The following changes shall also be considered: 
 
 - ``run_dir`` (previous ``interface_data``), ``plot_dir``, ``work_dir`` are now unique to each diagnostic script, so it is no longer necessary to define specific paths in the diagnostic scripts to prevent file collision;
