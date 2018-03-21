@@ -83,7 +83,7 @@ diagnostics:
       - {model: NCEP,         project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 2}
     scripts:
       cycle: &cycle_settings
-        script: perfmetrics/perfmetrics_main.ncl
+        script: perfmetrics/main.ncl
         plot_type: cycle       # Plot type ('cycle' [time], 'zonal' [plev, lat], 'latlon' [lat, lon], 'cycle_latlon' [time, lat, lon])
         time_avg: monthlyclim  # Time average ('opt' argument of time_operations.ncl)
         region: Global         # Selected region ('Global', 'Tropics', 'NH extratropics', 'SH extratropics')
@@ -117,7 +117,7 @@ diagnostics:
       - {model: NCEP,         project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 2}
     scripts:
       zonal: &zonal_settings
-        script: perfmetrics/perfmetrics_main.ncl
+        script: perfmetrics/main.ncl
         plot_type: zonal         # Plot type ('cycle' [time], 'zonal' [plev, lat], 'latlon' [lat, lon], 'cycle_latlon' [time, lat, lon])
         time_avg: annualclim     # Time average ('opt' argument of time_operations.ncl)
         region: Global           # Selected region ('Global', 'Tropics', 'NH extratropics', 'SH extratropics')
@@ -141,7 +141,7 @@ diagnostics:
       - {model: NCEP,         project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 2}
     scripts:
       latlon: &latlon_settings
-        script: perfmetrics/perfmetrics_main.ncl
+        script: perfmetrics/main.ncl
         plot_type: latlon        # Plot type ('cycle' [time], 'zonal' [plev, lat], 'latlon' [lat, lon], 'cycle_latlon' [time, lat, lon])
         time_avg: annualclim     # Time average ('opt' argument of time_operations.ncl)
         region: Global           # Selected region ('Global', 'Tropics', 'NH extratropics', 'SH extratropics')
@@ -159,7 +159,7 @@ diagnostics:
     description: Wrapper to collect and plot previously calculated gradings
     scripts:
       grading_collect:
-        script: perfmetrics/perfmetrics_grading_collect.ncl
+        script: perfmetrics/grading_collect.ncl
         ancestors: ['*/grading']
         label_bounds: [-0.5, 0.5]
         label_scale: 0.1
@@ -171,5 +171,5 @@ diagnostics:
     description: Wrapper to collect and plot previously calculated taylor metrics
     scripts:
       taylor_collect:
-        script: perfmetrics/perfmetrics_taylor_collect.ncl
+        script: perfmetrics/taylor_collect.ncl
         ancestors: ['*/taylor']
