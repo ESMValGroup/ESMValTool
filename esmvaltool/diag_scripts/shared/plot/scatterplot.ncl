@@ -15,7 +15,7 @@ load "./interface_scripts/logging.ncl"
 
 load "./diag_scripts/shared/style.ncl"
 
-load "./plot_scripts/ncl/aux_plotting.ncl"
+load "./diag_scripts/shared/plot/aux_plotting.ncl"
 
 ;;#############################################################################
 undef("scatterplot")
@@ -59,7 +59,7 @@ local funcname, scriptname, scattermode, loc_res, resL, linec, lineh, linel, \
 begin
 
     funcname = "scatterplot"
-    scriptname = "plot_scripts/ncl/scatterplot.ncl"
+    scriptname = "diag_scripts/shared/plot/scatterplot.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF
@@ -300,7 +300,7 @@ local funcname, scriptname, data, xpts, ypts, zpts, defaults, var, wks, res, \
 begin
 
     funcname = "scatterplot3D"
-    scriptname = "plot_scripts/ncl/scatterplot.ncl"
+    scriptname = "diag_scripts/shared/plot/scatterplot.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF
@@ -475,7 +475,7 @@ local funcname, scriptname, data, xpts, ypts, defaults, var, wks, annots, \
 begin
 
     funcname = "scatterplot_markers"
-    scriptname = "plot_scripts/ncl/scatterplot.ncl"
+    scriptname = "diag_scripts/shared/plot/scatterplot.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF

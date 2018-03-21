@@ -18,7 +18,7 @@ load "./interface_scripts/logging.ncl"
 
 load "./diag_scripts/shared/set_operators.ncl"
 
-load "./plot_scripts/ncl/aux_plotting.ncl"
+load "./diag_scripts/shared/plot/aux_plotting.ncl"
 
 ;;#############################################################################
 undef("contour_map")
@@ -58,7 +58,7 @@ local funcname, data, defaults, diag_script, var, wks, res, res_new
 begin
 
     funcname = "contour_map"
-    scriptname = "plot_scripts/ncl/contour_maps.ncl"
+    scriptname = "diag_scripts/shared/plot/contour_maps.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF file
@@ -170,7 +170,7 @@ local funcname, data, defaults, var, diag_script, wks, res, res_in, res1
 begin
 
     funcname = "contour_map_polar"
-    scriptname = "plot_scripts/ncl/contour_maps.ncl"
+    scriptname = "diag_scripts/shared/plot/contour_maps.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF file
@@ -198,7 +198,6 @@ begin
     end if
 
     ;; Check if a valid wks has been provided, otherwise invoke default
-    ; Function in ./plot_scripts/aux_plotting.ncl
     wks = get_wks(wks_in, diag_script, var)
 
     ;; Set default resources
@@ -227,7 +226,7 @@ begin
         res@mpMinLatF         = diag_script_info@min_lat  ; Default is 0
     else if (diag_script_info@region .eq. "global")
         error_msg("f", scriptname, funcname, "for global data use " + \
-                  "function contour_map in ./plot_scripts/contour_maps.ncl")
+                  "contour_map in ./diag_scripts/shared/plot/contour_maps.ncl")
     else
         error_msg("f", scriptname, funcname, "no (valid) region " + \
                   "selection: " + diag_script_info@region)
@@ -309,7 +308,7 @@ local data, var, wks, res
 begin
 
     funcname = "contour_map_ce"
-    scriptname = "plot_scripts/ncl/contour_maps.ncl"
+    scriptname = "diag_scripts/shared/plot/contour_maps.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF
@@ -406,7 +405,7 @@ local funcname, class_name, views, cn_levels, lb_colors, cmap, colors, \
 begin
 
     funcname = "add_markers_to_map"
-    scriptname = "plot_scripts/ncl/contour_maps.ncl"
+    scriptname = "diag_scripts/shared/plot/contour_maps.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Check data consistency

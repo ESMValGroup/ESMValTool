@@ -21,7 +21,7 @@ load "./interface_scripts/logging.ncl"
 
 load "./diag_scripts/shared/set_operators.ncl"
 
-load "./plot_scripts/ncl/aux_plotting.ncl"
+load "./diag_scripts/shared/plot/aux_plotting.ncl"
 
 ;;#############################################################################
 undef("profile_plev")
@@ -73,7 +73,7 @@ local funcname, scriptname, diag_script, data, var, font, font_size_fac, \
 begin
 
     funcname = "profile_plev"
-    scriptname = "plot_scripts/ncl/xy_line.ncl"
+    scriptname = "diag_scripts/shared/plot/xy_line.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Set hardcoded parameters
@@ -539,7 +539,7 @@ local funcname, scriptname, tmp, colors, annots, res, res_new
 begin
 
     funcname = "aerosol_profile"
-    scriptname = "plot_scripts/ncl/xy_line.ncl"
+    scriptname = "diag_scripts/shared/plot/xy_line.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Get model data, either directly or via netCDF file
@@ -1058,7 +1058,7 @@ local funcname, scriptname, tmp, colors, annots, res, res_new
 begin
 
     funcname = "aerosol_sizedist"
-    scriptname = "plot_scripts/ncl/xy_line.ncl"
+    scriptname = "diag_scripts/shared/plot/xy_line.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Get model data, either directly or via netCDF file
@@ -1548,7 +1548,7 @@ local funcname, scriptname, res, res_in, res_stddev, source, source_x, \
 begin
 
     funcname = "xy_line"
-    scriptname = "plot_scripts/ncl/xy_line.ncl"
+    scriptname = "diag_scripts/shared/plot/xy_line.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Select colors and other plotting attributes
@@ -1834,7 +1834,7 @@ local funcname, scriptname
 begin
 
     funcname = "timeseries_station"
-    scriptname = "plot_scripts/ncl/xy_line.ncl"
+    scriptname = "diag_scripts/shared/plot/xy_line.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF file
@@ -1995,7 +1995,7 @@ local funcname, scriptname, wks_out, wks_in, data, source, res, atts, base, \
 begin
 
     funcname = "cycle_plot"
-    scriptname = "plot_scripts/ncl/xy_line.ncl"
+    scriptname = "diag_scripts/shared/plot/xy_line.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF file
@@ -2208,7 +2208,7 @@ local funcname, scriptname, data, defaults, var, wks, res, ren_new, resL, \
 begin
 
     funcname = "errorbar_plot"
-    scriptname = "plot_scripts/ncl/xy_line.ncl"
+    scriptname = "diag_scripts/shared/plot/xy_line.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF file

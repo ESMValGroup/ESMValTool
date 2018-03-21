@@ -59,7 +59,7 @@ local funcname, scriptname, region, temp, outfile, n_suff, wks_legend
 begin
 
     funcname = "create_legend_lines"
-    scriptname = "plot_scripts/ncl/aux_plotting.ncl"
+    scriptname = "diag_scripts/shared/plot/aux_plotting.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Flag if RGB or RGBA is used for colors
@@ -200,7 +200,7 @@ local funcname, scriptname, file_type
 begin
 
     funcname = "output_type"
-    scriptname = "plot_scripts/ncl/aux_plotting.ncl"
+    scriptname = "diag_scripts/shared/plot/aux_plotting.ncl"
     enter_msg(scriptname, funcname)
 
     file_type = config_user_info@output_file_type
@@ -242,7 +242,7 @@ local funcname, scriptname, atts, i1, i2, n
 begin
 
     funcname = "copy_VarAtt_sel"
-    scriptname = "plot_scripts/ncl/aux_plotting.ncl"
+    scriptname = "diag_scripts/shared/plot/aux_plotting.ncl"
     enter_msg(scriptname, funcname)
 
     ;; check if var1 has attributes at all 
@@ -303,7 +303,7 @@ local funcname, scriptname, plots, info, wks, outfile
 begin
 
     funcname = "panelling"
-    scriptname = "plot_scripts/ncl/aux_plotting.ncl"
+    scriptname = "diag_scripts/shared/plot/aux_plotting.ncl"
     enter_msg(scriptname, funcname)
 
     ;; check if valid wks has been provided
@@ -386,7 +386,7 @@ local funcname, scriptname, plot_dir
 begin
 
     funcname = "get_plot_dir"
-    scriptname = "plot_scripts/ncl/aux_plotting.ncl"
+    scriptname = "diag_scripts/shared/plot/aux_plotting.ncl"
     enter_msg(scriptname, funcname)
 
     plot_dir = config_user_info@plot_dir
@@ -427,12 +427,12 @@ local funcname, scriptname, outfile, file_type, plot_dir, diag_script_base, \
 begin
 
     funcname = "get_outfile_name"
-    scriptname = "plot_scripts/ncl/aux_plotting.ncl"
+    scriptname = "diag_scripts/shared/plot/aux_plotting.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Collect parts of outfile name
-    file_type = output_type()  ; Function in ~/plot_scripts/aux_plotting.ncl
-    plot_dir = get_plot_dir()  ; Function in ~/plot_scripts/aux_plotting.ncl
+    file_type = output_type()
+    plot_dir = get_plot_dir()
 
     ;; Assemble final name
     if (typeof(add_specs).ne."string") then
@@ -474,16 +474,16 @@ local funcname, scriptname, wks_in, diag_script, add_specs, file_type
 begin
 
     funcname = "get_wks"
-    scriptname = "plot_scripts/ncl/aux_plotting.ncl"
+    scriptname = "diag_scripts/shared/plot/aux_plotting.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Check if a valid wks has been provided, otherwise invoke default
     if(typeof(wks_in).ne."graphic") then  ; Use defaults
-        ;; Function in ~/plot_scripts/ncl/aux_plotting.ncl
+        ;; Function in ~/diag_scripts/shared/plot/aux_plotting.ncl
         file_type = output_type()
         copy_VarMeta(wks_in,file_type) 
 
-        ;; Function in ~/plot_scripts/ncl/aux_plotting.ncl
+        ;; Function in ~/diag_scripts/shared/plot/aux_plotting.ncl
         outfile = get_outfile_name(add_specs)
         wks = gsn_open_wks(file_type, outfile)
         wks@fullname = outfile
@@ -527,7 +527,7 @@ local funcname, scriptname, res, str, atts, iatt, color
 begin
 
     funcname = "add_markers"
-    scriptname = "plot_scripts/ncl/aux_plotting.ncl"
+    scriptname = "diag_scripts/shared/plot/aux_plotting.ncl"
     enter_msg(scriptname, funcname)
 
     ;; set default plot ressources 
@@ -598,7 +598,7 @@ local funcname, scriptname, xpos, ypos, res, str, atts, iatt, color
 begin
 
     funcname = "add_num_markers"
-    scriptname = "plot_scripts/ncl/aux_plotting.ncl"
+    scriptname = "diag_scripts/shared/plot/aux_plotting.ncl"
     enter_msg(scriptname, funcname)
 
     ;; set default plot ressources 
@@ -682,7 +682,7 @@ local funcname, scriptname, xpos, ypos, res, str, atts, iatt, color
 begin
 
     funcname = "add_errorbar"
-    scriptname = "plot_scripts/ncl/aux_plotting.ncl"
+    scriptname = "diag_scripts/shared/plot/aux_plotting.ncl"
     enter_msg(scriptname, funcname)
 
     ;; set default plot ressources 
@@ -818,7 +818,7 @@ local funcname, scriptname, n, i, j, xmin, xmax, ypos, imiss, ivalid, result, \
 begin
 
     funcname = "horizontal_whiskers"
-    scriptname = "plot_scripts/ncl/aux_plotting.ncl"
+    scriptname = "diag_scripts/shared/plot/aux_plotting.ncl"
     enter_msg(scriptname, funcname)
 
     ;; check sizes of input vectors
@@ -919,7 +919,7 @@ local funcname, scriptname, xpos, ypos, res, str, atts, iatt, color
 begin
 
     funcname = "add_prediction_error"
-    scriptname = "plot_scripts/ncl/aux_plotting.ncl"
+    scriptname = "diag_scripts/shared/plot/aux_plotting.ncl"
     enter_msg(scriptname, funcname)
 
     ;; set default plot ressources 

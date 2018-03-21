@@ -49,7 +49,7 @@ load "interface_scripts/interface.ncl"
 load "./diag_scripts/shared/style.ncl"
 load "./diag_scripts/shared/statistics.ncl"
 
-load "./plot_scripts/ncl/contour_maps.ncl"
+load "./diag_scripts/shared/plot/contour_maps.ncl"
 
 
 begin
@@ -133,7 +133,7 @@ begin
     ;;###########################################
     ;; If you really need to do this in the diagnostic sript, please see
     ;; http://www.ncl.ucar.edu/Document/Graphics/Interfaces/gsn_open_wks.shtml
-    ;; and ~/plot_scripts/ncl/contour_maps.ncl (look for "wks") on how to do
+    ;; and ~/diag_scripts/shared/plot/contour_maps.ncl (look for "wks") on how to do
     ;; this. However, wks should be defined in the plotting routine whenever
     ;; possible.
 
@@ -210,7 +210,7 @@ begin
     ;; "dummy_for_var" as arguments in the call.
     ;; You may invoke a wks here, and/or provide the variable name (see example
     ;; in next section). The routine "contour_map" is a function in
-    ;; ~/plot_scripts/ncl/aux_plotting.ncl
+    ;; ~/diag_scripts/shared/plot/aux_plotting.ncl
     ;;
     ;; Option 1: pass data directly
     ;; -> may only work with NCL (i.e. ok here)
@@ -227,7 +227,7 @@ begin
     ;; The default may be overridden by specifying res_gsnDraw=False (and
     ;; possibly res_gsnFrame=False).
     ;; Then file output must be done explicitely here, e.g. with the
-    ;; "panelling" routine (function in ./plot_scripts/ncl/aux_plotting.ncl).
+    ;; "panelling" routine (function in ./diag_scripts/shared/plot/aux_plotting.ncl).
     ;; The separation between plotting and output might be useful, when
     ;; multiple calls to plotting routine(s) (e.g. in a loop) are needed to
     ;; create a (set of) plot(s).

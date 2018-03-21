@@ -95,9 +95,9 @@ load "./diag_scripts/shared/regridding.ncl"
 load "./diag_scripts/shared/ensemble.ncl"
 load "./diag_scripts/shared/scaling.ncl"
 
-load "./plot_scripts/ncl/xy_line.ncl"
-load "./plot_scripts/ncl/zonalmean_profile.ncl"
-load "./plot_scripts/ncl/contour_maps.ncl"
+load "./diag_scripts/shared/plot/xy_line.ncl"
+load "./diag_scripts/shared/plot/zonalmean_profile.ncl"
+load "./diag_scripts/shared/plot/contour_maps.ncl"
 
 begin
 

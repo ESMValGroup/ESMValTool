@@ -50,7 +50,7 @@ local data, defaults, var, diag_script, colors, annots, dashes, thicks
 begin
 
     funcname = "legend_lines"
-    scriptname = "plot_scripts/ncl/legends.ncl"
+    scriptname = "diag_scripts/shared/plot/legends.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF file
@@ -213,7 +213,7 @@ local data, defaults, var, diag_script, colors, annots, dashes, thicks
 begin
 
     funcname = "legend_markers"
-    scriptname = "plot_scripts/ncl/legends.ncl"
+    scriptname = "diag_scripts/shared/plot/legends.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF file

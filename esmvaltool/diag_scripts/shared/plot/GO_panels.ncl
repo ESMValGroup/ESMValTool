@@ -36,7 +36,7 @@ load "./diag_scripts/aux/SAMonsoon/SAMonsoon_panel_positions.ncl"
 load "./diag_scripts/aux/SAMonsoon/exact_panel_positions_generic.ncl"
 load "./diag_scripts/shared/style.ncl"
 
-load "./plot_scripts/ncl/xy_line.ncl"
+load "./diag_scripts/shared/plot/xy_line.ncl"
 
 undef("get_title_suffix")
 function get_title_suffix(plot_settings[1]: logical)

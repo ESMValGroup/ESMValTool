@@ -42,7 +42,7 @@ load "interface_scripts/interface.ncl"
 
 load "./diag_scripts/shared/style.ncl"
 
-load "./plot_scripts/ncl/portrait_plot.ncl"
+load "./diag_scripts/shared/plot/portrait_plot.ncl"
 
 begin
 

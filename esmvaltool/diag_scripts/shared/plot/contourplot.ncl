@@ -11,7 +11,7 @@
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/logging.ncl"
 
-load "./plot_scripts/ncl/aux_plotting.ncl"
+load "./diag_scripts/shared/plot/aux_plotting.ncl"
 
 ;;#############################################################################
 undef("contourplot")
@@ -51,7 +51,7 @@ local data, defaults, diag_script, funcname, res, res_new, scriptname, \
 begin
 
     funcname = "contourplot"
-    scriptname = "plot_scripts/ncl/contourplot.ncl"
+    scriptname = "diag_scripts/shared/plot/contourplot.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF file

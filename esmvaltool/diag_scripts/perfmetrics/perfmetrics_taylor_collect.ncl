@@ -29,7 +29,7 @@
 
 load "interface_scripts/interface.ncl"
 
-load "./plot_scripts/ncl/taylor_plot.ncl"
+load "./diag_scripts/shared/plot/taylor_plot.ncl"
 
 begin
 

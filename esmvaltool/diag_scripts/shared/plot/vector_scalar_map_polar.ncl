@@ -12,7 +12,7 @@
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/logging.ncl"
 
-load "./plot_scripts/ncl/aux_plotting.ncl"
+load "./diag_scripts/shared/plot/aux_plotting.ncl"
 
 ;;#############################################################################
 undef("vector_scalar_map_polar")
@@ -62,7 +62,7 @@ local areaplot, datac, datau, datav, funcname, scriptname, sourcec, sourceu, \
 begin
 
     funcname = "vector_scalar_map_polar"
-    scriptname = "plot_scripts/ncl/vector_scalar_map_polar.ncl"
+    scriptname = "diag_scripts/shared/plot/vector_scalar_map_polar.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF file

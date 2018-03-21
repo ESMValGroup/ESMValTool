@@ -11,7 +11,7 @@ load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/logging.ncl"
 
 load "./diag_scripts/shared/set_operators.ncl"
-load "./plot_scripts/ncl/aux_plotting.ncl"
+load "./diag_scripts/shared/plot/aux_plotting.ncl"
 
 
 ;##############################################################################
@@ -53,7 +53,7 @@ local funcname, scriptname, wks, wks_in, data, source, res, atts, \
 begin
 
     funcname = "portrait_plot"
-    scriptname = "plot_scripts/ncl/portrait_plot.ncl"
+    scriptname = "diag_scripts/shared/plot/portrait_plot.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF file

@@ -37,7 +37,7 @@ load "./diag_scripts/aux/SAMonsoon/SAMonsoon_panel_positions.ncl"
 load "./diag_scripts/aux/SAMonsoon/exact_panel_positions_generic.ncl"
 load "./diag_scripts/shared/style.ncl"
 
-load "./plot_scripts/ncl/xy_line.ncl"
+load "./diag_scripts/shared/plot/xy_line.ncl"
 
 ;;#############################################################################
 undef("get_title_suffix")
@@ -64,7 +64,7 @@ local main_title_suffix
 begin
 
     funcname = "get_title_suffix"
-    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    scriptname = "diag_scripts/shared/plot/monsoon_panels.ncl"
     enter_msg(scriptname, funcname)
 
     if (isatt(plot_settings, "main_title_suffix")) then
@@ -103,7 +103,7 @@ local idx, settings
 begin
 
     funcname = "remove_attrs"
-    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    scriptname = "diag_scripts/shared/plot/monsoon_panels.ncl"
     enter_msg(scriptname, funcname)
 
     do idx = 0, dimsizes(attributes) - 1
@@ -161,7 +161,7 @@ local am_infobox_id,      cn_levels_string,   debugbox,\
 begin
 
     funcname = "plot_two_by_one"
-    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    scriptname = "diag_scripts/shared/plot/monsoon_panels.ncl"
     enter_msg(scriptname, funcname)
 
     res = panel_three_by_one(res, 0)  ; Update resource for first plot
@@ -315,7 +315,7 @@ title_name,      txres
 begin
     
     funcname = "plot_three_by_one_diff"
-    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    scriptname = "diag_scripts/shared/plot/monsoon_panels.ncl"
     enter_msg(scriptname, funcname)
 
     res = panel_three_by_one(res, 0)  ; Update resource for first plot
@@ -515,7 +515,7 @@ local aux_title_info,      cn_levels_string,   curr,\
 begin
 
     funcname = "two_by_one"
-    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    scriptname = "diag_scripts/shared/plot/monsoon_panels.ncl"
     enter_msg(scriptname, funcname)
 
     dim_MOD = dimsizes(model_info@model)
@@ -660,7 +660,7 @@ local aux_title_info,      cn_levels_string,   curr,\
 begin
 
     funcname = "three_by_one_diff"
-    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    scriptname = "diag_scripts/shared/plot/monsoon_panels.ncl"
     enter_msg(scriptname, funcname)
 
     dim_MOD = dimsizes(model_info@model)
@@ -823,7 +823,7 @@ local am_infobox_id,      cn_levels_string,   debugbox,\
 begin
 
     funcname = "plot_three_by_one_vector"
-    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    scriptname = "diag_scripts/shared/plot/monsoon_panels.ncl"
     enter_msg(scriptname, funcname)
 
     res = panel_three_by_one(res, 0)  ; Update resource for first plot
@@ -1048,7 +1048,7 @@ local aux_title_info,      cn_levels_string,   curr,\
 begin
 
     funcname = "three_by_one_vector"
-    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    scriptname = "diag_scripts/shared/plot/monsoon_panels.ncl"
     enter_msg(scriptname, funcname)
 
     dim_MOD = dimsizes(model_info@model)
@@ -1219,7 +1219,7 @@ local am_infobox_id,    blank_plot,            cn_levels_string,\
 begin
 
     funcname = "plot_multipanel"
-    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    scriptname = "diag_scripts/shared/plot/monsoon_panels.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Update position, labelbar and title
@@ -1456,7 +1456,7 @@ local aux_title_info,      blank_plot,              cn_levels_string,\
 begin
 
     funcname = "multipanel"
-    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    scriptname = "diag_scripts/shared/plot/monsoon_panels.ncl"
     enter_msg(scriptname, funcname)
 
     ; No of models may differ from dimsizes(dim_MOD) if variables
@@ -1701,7 +1701,7 @@ local am_infobox_id,       blank_plot,          cn_levels_string,\
 begin
 
     funcname = "plot_multipanel_vector"
-    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    scriptname = "diag_scripts/shared/plot/monsoon_panels.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Update position, labelbar and title
@@ -1988,7 +1988,7 @@ local aux_title_info,          blank_plot,        cn_levels_string,\
 begin
 
     funcname = "multipanel_vector"
-    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    scriptname = "diag_scripts/shared/plot/monsoon_panels.ncl"
     enter_msg(scriptname, funcname)
 
 
@@ -2200,7 +2200,7 @@ local am_infobox_id,             am_labelbar_id,         amres,\
 begin
 
     funcname = "seasonal_plot"
-    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    scriptname = "diag_scripts/shared/plot/monsoon_panels.ncl"
     enter_msg(scriptname, funcname)
 
     dim_MOD = dimsizes(model_info@model)
@@ -2398,7 +2398,7 @@ local annots,           annots_mmm,        avgstd,\
 begin
 
     funcname = "xy_plot_wrapper"
-    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    scriptname = "diag_scripts/shared/plot/monsoon_panels.ncl"
     enter_msg(scriptname, funcname)
 
     dim_MOD = dimsizes(model_info@model)
@@ -2588,7 +2588,7 @@ local    annots,           avgstd,            diag_script_base,\
 begin
 
     funcname = "ts_line_wrapper"
-    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    scriptname = "diag_scripts/shared/plot/monsoon_panels.ncl"
     enter_msg(scriptname, funcname)
 
     dim_MOD = dimsizes(model_info@model)
@@ -2729,7 +2729,7 @@ local    annots,           avgstd,            diag_script_base,\
 begin
 
     funcname = "xy_line_overlap"
-    scriptname = "plot_scripts/ncl/monsoon_panels.ncl"
+    scriptname = "diag_scripts/shared/plot/monsoon_panels.ncl"
     enter_msg(scriptname, funcname)
 
     dim_MOD = dimsizes(model_info@name)

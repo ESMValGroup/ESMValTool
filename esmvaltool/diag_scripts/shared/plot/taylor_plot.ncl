@@ -15,7 +15,7 @@ load "./interface_scripts/logging.ncl"
 
 load "./diag_scripts/shared/set_operators.ncl"
 
-load "./plot_scripts/ncl/aux_plotting.ncl"
+load "./diag_scripts/shared/plot/aux_plotting.ncl"
 
 
 ;##############################################################################
@@ -57,7 +57,7 @@ local funcname, scriptname
 begin
 
     funcname = "taylor_plot"
-    scriptname = "plot_scripts/ncl/taylor_plot.ncl"
+    scriptname = "diag_scripts/shared/plot/taylor_plot.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF file

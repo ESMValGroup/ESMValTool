@@ -14,7 +14,7 @@ load "./interface_scripts/logging.ncl"
 load "./diag_scripts/shared/set_operators.ncl"
 load "./diag_scripts/shared/style.ncl"
 
-load "./plot_scripts/ncl/aux_plotting.ncl"
+load "./diag_scripts/shared/plot/aux_plotting.ncl"
 
 ;;#############################################################################
 undef("zonalmean_profile")
@@ -47,7 +47,7 @@ local funcname, scriptname, wks, wks_in, data, source, res, atts, base, varname
 begin
 
     funcname = "zonalmean_profile"
-    scriptname = "plot_scripts/ncl/zonalmean_profile.ncl"
+    scriptname = "diag_scripts/shared/plot/zonalmean_profile.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Get data, either directly or via netCDF file
