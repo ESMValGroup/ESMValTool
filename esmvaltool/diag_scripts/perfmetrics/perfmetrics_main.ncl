@@ -14,10 +14,10 @@
 ;;    plot_type: cycle (time), zonal (plev, lat), latlon (lat, lon) or
 ;;               cycle_latlon (time, lat, lon)
 ;;    time_avg: type of time average (see time_operations in
-;;              diag_scripts/lib/ncl/statistics.ncl)
+;;              diag_scripts/shared/statistics.ncl)
 ;;    region: selected region (see select_region in
-;;            diag_scripts/lib/ncl/latlon.ncl)
-;;    styleset (for cycle): as in lib/ncl/style.ncl functions
+;;            diag_scripts/shared/latlon.ncl)
+;;    styleset (for cycle): as in shared/style.ncl functions
 ;;    plot_stddev (for cycle): plot standard deviation
 ;;    legend_outside (for cycle): save legend in a separate file
 ;;
@@ -88,12 +88,12 @@
 
 load "interface_scripts/interface.ncl"
 
-load "./diag_scripts/lib/ncl/style.ncl"
-load "./diag_scripts/lib/ncl/latlon.ncl"
-load "./diag_scripts/lib/ncl/statistics.ncl"
-load "./diag_scripts/lib/ncl/regridding.ncl"
-load "./diag_scripts/lib/ncl/ensemble.ncl"
-load "./diag_scripts/lib/ncl/scaling.ncl"
+load "./diag_scripts/shared/style.ncl"
+load "./diag_scripts/shared/latlon.ncl"
+load "./diag_scripts/shared/statistics.ncl"
+load "./diag_scripts/shared/regridding.ncl"
+load "./diag_scripts/shared/ensemble.ncl"
+load "./diag_scripts/shared/scaling.ncl"
 
 load "./plot_scripts/ncl/xy_line.ncl"
 load "./plot_scripts/ncl/zonalmean_profile.ncl"

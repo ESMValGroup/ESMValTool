@@ -46,8 +46,8 @@
 
 load "interface_scripts/interface.ncl"
 
-load "./diag_scripts/lib/ncl/style.ncl"
-load "./diag_scripts/lib/ncl/statistics.ncl"
+load "./diag_scripts/shared/style.ncl"
+load "./diag_scripts/shared/statistics.ncl"
 
 load "./plot_scripts/ncl/contour_maps.ncl"
 
@@ -124,7 +124,7 @@ begin
         error_msg("f", diag_script, "", "no lon dimension")
     end if
 
-    ;; Average over time (function in ./diag_scripts/lib/ncl/statistics.ncl)
+    ;; Average over time (function in ./diag_scripts/shared/statistics.ncl)
     data10 = time_operations(A0, -1, -1, "average", "annualclim", True)
     ;; Make data 2D
     data1 = data10
@@ -142,7 +142,7 @@ begin
     ;;# Style dependent annotation              #
     ;;###########################################
     ;; Retrieve unique strings describing the data
-    ;; Function in ./diag_scripts/lib/ncl/style.ncl
+    ;; Function in ./diag_scripts/shared/style.ncl
     annots = project_style(diag_script_info, "annots")
 
     ;;###########################################

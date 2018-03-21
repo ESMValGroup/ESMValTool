@@ -57,7 +57,7 @@ local funcname, scriptname, latlon_cases, coord_checks, datmin, \
 begin
 
     funcname = "roi"
-    scriptname = "diag_scripts/lib/ncl/latlon.ncl"
+    scriptname = "diag_scripts/shared/latlon.ncl"
     enter_msg(scriptname, funcname)
 
     log_debug("  roi: latmin=" + latlon_roi(0) + \
@@ -195,7 +195,7 @@ local funcname, scriptname, cn, cnt, modelfile, fm, val
 begin
 
     funcname = "extract_area"
-    scriptname = "diag_scripts/lib/ncl/latlon.ncl"
+    scriptname = "diag_scripts/shared/latlon.ncl"
     enter_msg(scriptname, funcname)
 
     ;; 'cn' is the basic building block for the keys used in
@@ -237,7 +237,7 @@ local funcname, scriptname, deg2rad
 begin
 
     funcname = "gridcell_area"
-    scriptname = "diag_scripts/lib/ncl/latlon.ncl"
+    scriptname = "diag_scripts/shared/latlon.ncl"
 ;    enter_msg(scriptname, funcname)
 
     ;; Convert to radiants
@@ -278,7 +278,7 @@ local funcname, scriptname, loclat, loclon, nlat, lati, xresol
 begin
 
     funcname = "map_area"
-    scriptname = "diag_scripts/lib/ncl/latlon.ncl"
+    scriptname = "diag_scripts/shared/latlon.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Type conversion
@@ -386,7 +386,7 @@ local funcname, scriptname, rank, dimnames, wgt, conwgt, f_latmin, \
 begin
 
     funcname = "area_operations"
-    scriptname = "diag_scripts/lib/ncl/latlon.ncl"
+    scriptname = "diag_scripts/shared/latlon.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Check rank
@@ -598,7 +598,7 @@ local funcname, scriptname, region
 begin
 
     funcname = "select_region"
-    scriptname = "diag_scripts/lib/ncl/latlon.ncl"
+    scriptname = "diag_scripts/shared/latlon.ncl"
     enter_msg(scriptname, funcname)
 
     if (region.eq."Global") then
@@ -724,7 +724,7 @@ local funcname, scriptname, area_lat, area_lon, area_temp, out_field, rank
 begin
 
     funcname = "make_latlon2D"
-    scriptname = "diag_scripts/lib/ncl/latlon.ncl"
+    scriptname = "diag_scripts/shared/latlon.ncl"
     enter_msg(scriptname, funcname)
 
     if (all(iscoord(field, (/"lat", "lon"/)))) then

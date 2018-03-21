@@ -70,7 +70,7 @@ local funcname, scriptname, data, tmp, dnames, ref_nplev, ref_nlat, ref_nlon, \
 begin
 
     funcname = "find_destination_grid"
-    scriptname = "diag_scripts/lib/ncl/regridding.ncl"
+    scriptname = "diag_scripts/shared/regridding.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Check
@@ -269,7 +269,7 @@ local funcname, scriptname, dimsize_lat, dimsize_lon, average_lat, average_lon
 begin
 
     funcname = "guestimate_average_grid_area"
-    scriptname = "diag_scripts/lib/ncl/regridding.ncl"
+    scriptname = "diag_scripts/shared/regridding.ncl"
     enter_msg(scriptname, funcname)
 
     dimsize_lat = dimsizes(data&lat)
@@ -314,7 +314,7 @@ local funcname, scriptname, d_size, delta_sizes, lower_limits
 begin
 
     funcname = "get_lower_limits"
-    scriptname = "diag_scripts/lib/ncl/regridding.ncl"
+    scriptname = "diag_scripts/shared/regridding.ncl"
     enter_msg(scriptname, funcname)
 
     d_size = dimsizes(coordinate)
@@ -349,7 +349,7 @@ local funcname, scriptname, d_size, delta_sizes, upper_limits
 begin
 
     funcname = "get_upper_limits"
-    scriptname = "diag_scripts/lib/ncl/regridding.ncl"
+    scriptname = "diag_scripts/shared/regridding.ncl"
     enter_msg(scriptname, funcname)
 
     d_size = dimsizes(coordinate)
@@ -389,7 +389,7 @@ local funcname, scriptname, lat, lon, lat_size, lon_size, regional_area
 begin
 
     funcname = "is_regional"
-    scriptname = "diag_scripts/lib/ncl/regridding.ncl"
+    scriptname = "diag_scripts/shared/regridding.ncl"
     enter_msg(scriptname, funcname)
 
     lat = grid&lat
@@ -438,7 +438,7 @@ local funcname, scriptname, \
 begin
 
     funcname = "esmf_conserve_wrapper"
-    scriptname = "diag_scripts/lib/ncl/regridding.ncl"
+    scriptname = "diag_scripts/shared/regridding.ncl"
     enter_msg(scriptname, funcname)
 
     Opt                    = True
@@ -511,7 +511,7 @@ local funcname, scriptname, interpolated
 begin
 
     funcname = "rect2rect_interp"
-    scriptname = "diag_scripts/lib/ncl/regridding.ncl"
+    scriptname = "diag_scripts/shared/regridding.ncl"
     enter_msg(scriptname, funcname)
 
     interpolated = esmf_conserve_wrapper(source, target)
@@ -543,7 +543,7 @@ local funcname, scriptname, interpolated, grid_type
 begin
 
     funcname = "plev_lat_interp"
-    scriptname = "diag_scripts/lib/ncl/regridding.ncl"
+    scriptname = "diag_scripts/shared/regridding.ncl"
     enter_msg(scriptname, funcname)
 
     interpolated = linint2(source&lat, source&plev, source, \
@@ -578,7 +578,7 @@ local funcname, scriptname, model_grid_size, ref_grid_size, local_model, \
 begin
 
     funcname = "get_model_minus_ref"
-    scriptname = "diag_scripts/lib/ncl/regridding.ncl"
+    scriptname = "diag_scripts/shared/regridding.ncl"
     enter_msg(scriptname, funcname)
 
     is_plev = any(isdim(model, "plev"))
@@ -649,7 +649,7 @@ local funcname, scriptname, \
 begin
 
     funcname = "esmf_conserve_wrapper_time"
-    scriptname = "diag_scripts/lib/ncl/regridding.ncl"
+    scriptname = "diag_scripts/shared/regridding.ncl"
     enter_msg(scriptname, funcname)
 
     Opt                    = True
@@ -763,7 +763,7 @@ local funcname, scriptname, INTERP_METHOD, srcGridName, dstGridName, dimx, \
 begin
 
     funcname = "regrid_3D_to_rectilinear_grid"
-    scriptname = "diag_scripts/lib/ncl/regridding.ncl"
+    scriptname = "diag_scripts/shared/regridding.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Workdir

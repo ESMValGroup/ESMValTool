@@ -41,7 +41,7 @@ local funcname, scriptname, a, i, u, doubles, idx
 begin
 
     funcname = "UNIQ"
-    scriptname = "diag_scripts/lib/ncl/set_operators.ncl"
+    scriptname = "diag_scripts/shared/set_operators.ncl"
     enter_msg(scriptname, funcname)
 
     u = new(dimsizes(a), "integer", 0)
@@ -82,7 +82,7 @@ local funcname, scriptname, merged_set, union_set, unique_entries
 begin
 
     funcname = "union"
-    scriptname = "diag_scripts/lib/ncl/set_operators.ncl"
+    scriptname = "diag_scripts/shared/set_operators.ncl"
     enter_msg(scriptname, funcname)
 
     merged_set = array_append_record(set1, set2, 0)
@@ -120,7 +120,7 @@ local funcname, scriptname, set_tmp, dummy_year, dummy_year_idx, \
 begin
 
     funcname = "set_inclusive_OR"
-    scriptname = "diag_scripts/lib/ncl/set_operators.ncl"
+    scriptname = "diag_scripts/shared/set_operators.ncl"
     enter_msg(scriptname, funcname)
 
     dummy_year  = -999.
@@ -163,7 +163,7 @@ local funcname, scriptname, idx, intersection_array, tmp_array
 begin
 
     funcname = "intersection"
-    scriptname = "diag_scripts/lib/ncl/set_operators.ncl"
+    scriptname = "diag_scripts/shared/set_operators.ncl"
     enter_msg(scriptname, funcname)
 
     do idx = 0, dimsizes(array1) - 1
@@ -216,7 +216,7 @@ local funcname, scriptname, subset_size, idx, full_idx, is_subset_true
 begin
 
     funcname = "is_array_subset"
-    scriptname = "diag_scripts/lib/ncl/set_operators.ncl"
+    scriptname = "diag_scripts/shared/set_operators.ncl"
     enter_msg(scriptname, funcname)
 
     subset_size = dimsizes(subset_array)
@@ -262,7 +262,7 @@ local funcname, scriptname, array2_size, i, rel_complement, idx, remove_idx
 begin
 
     funcname = "relative_complement"
-    scriptname = "diag_scripts/lib/ncl/set_operators.ncl"
+    scriptname = "diag_scripts/shared/set_operators.ncl"
     enter_msg(scriptname, funcname)
 
     array2_size = dimsizes(array2)
@@ -319,7 +319,7 @@ local funcname, scriptname, rel_compl1, rel_compl2
 begin
 
     funcname = "set_symmetric_difference"
-    scriptname = "diag_scripts/lib/ncl/set_operators.ncl"
+    scriptname = "diag_scripts/shared/set_operators.ncl"
     enter_msg(scriptname, funcname)
 
     rel_compl1 = relative_complement(array1, array2)

@@ -21,7 +21,7 @@
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/logging.ncl"
 
-load "./diag_scripts/lib/ncl/set_operators.ncl"
+load "./diag_scripts/shared/set_operators.ncl"
 
 ;;#############################################################################
 undef("unique_labels_min")
@@ -51,7 +51,7 @@ local funcname, scriptname, prio, result, unique, iprio, index
 begin
 
     funcname = "unique_labels_min"
-    scriptname = "diag_scripts/lib/ncl/style.ncl"
+    scriptname = "diag_scripts/shared/style.ncl"
     enter_msg(scriptname, funcname)
 
     result = model_info@$prio(0)$  ; Start with highest priority
@@ -112,7 +112,7 @@ local funcname, scriptname, prio, result, unique, iprio, index
 begin
 
     funcname = "unique_labels_all"
-    scriptname = "diag_scripts/lib/ncl/style.ncl"
+    scriptname = "diag_scripts/shared/style.ncl"
     enter_msg(scriptname, funcname)
 
     result = model_info@$prio(0)$  ; Start with highest priority
@@ -189,7 +189,7 @@ local funcname, scriptname, result, info, flag, styleset, stylefile, tmp, sty
 begin
 
     funcname = "project_style"
-    scriptname = "diag_scripts/lib/ncl/style.ncl"
+    scriptname = "diag_scripts/shared/style.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Check for the available dictonary keys to be used for the annotations
@@ -214,7 +214,7 @@ begin
     end if
 
     ;; Styleset defined, search for corresponding style file
-    stylefile = "./diag_scripts/lib/ncl/styles/" + styleset + ".style"
+    stylefile = "./diag_scripts/shared/styles/" + styleset + ".style"
     if (.not.fileexists(stylefile)) then
         error_msg("f", "style.ncl", funcname, \
                   "style file " + stylefile + " not found")
@@ -369,7 +369,7 @@ local result, modelstyles, flag
 begin
 
     funcname = "project_style_GO"
-    scriptname = "diag_scripts/lib/ncl/style.ncl"
+    scriptname = "diag_scripts/shared/style.ncl"
     enter_msg(scriptname, funcname)
 
     ;; define (/model, color, dash, thickness, avgstd/) for each model
@@ -435,7 +435,7 @@ local i, txvpWidth, txvpHeight, tx, x, y, parent_width, parent_height, \
 begin
 
     funcname = "place_debuginfo"
-    scriptname = "diag_scripts/lib/ncl/style.ncl"
+    scriptname = "diag_scripts/shared/style.ncl"
     enter_msg(scriptname, funcname)
 
     res@gsnDraw               = False
@@ -495,7 +495,7 @@ local tx, txvpWidth, txvpHeight, parent_x, parent_y, amres, wks_dummy, \
 begin
 
     funcname = "place_description"
-    scriptname = "diag_scripts/lib/ncl/style.ncl"
+    scriptname = "diag_scripts/shared/style.ncl"
     enter_msg(scriptname, funcname)
 
     wks_dummy = gsn_open_wks("png", "dummy.png")
@@ -559,7 +559,7 @@ local funcname, scriptname, nboxes_left, nboxes_right, ncolors_left, \
 begin
 
     funcname = "gsnColorRange"
-    scriptname = "diag_scripts/lib/ncl/style.ncl"
+    scriptname = "diag_scripts/shared/style.ncl"
     enter_msg(scriptname, funcname)
 
     color_start = 2  ; All of the color maps begin with 2.
@@ -628,7 +628,7 @@ local funcname, scriptname, loc_str
 begin
 
     funcname = "format_units"
-    scriptname = "diag_scripts/lib/ncl/style.ncl"
+    scriptname = "diag_scripts/shared/style.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Create a local copy
@@ -685,7 +685,7 @@ local funcname, scriptname, omin, omax, rmin, rmax, om, tmp, arr
 begin
 
     funcname = "set_log_ticks"
-    scriptname = "diag_scripts/lib/ncl/style.ncl"
+    scriptname = "diag_scripts/shared/style.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Find order of magnitude of min
@@ -774,7 +774,7 @@ function sort_alphabetically(orig_names[*], idx_exclude, dest_exclude)
 begin
 
     funcname = "sort_alphabetically"
-    scriptname = "diag_scripts/lib/ncl/style.ncl"
+    scriptname = "diag_scripts/shared/style.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Create a local copy of input names and set to upper case

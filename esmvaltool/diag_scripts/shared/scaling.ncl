@@ -47,7 +47,7 @@ local funcname, scriptname
 begin
 
     funcname = "convert_units"
-    scriptname = "diag_scripts/lib/ncl/scaling.ncl"
+    scriptname = "diag_scripts/shared/scaling.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Define output (copy metadata)
@@ -242,7 +242,7 @@ local funcname, scriptname, result, u, digits, d, log10_max_abs_u
 begin
 
     funcname = "scalfac"
-    scriptname = "diag_scripts/lib/ncl/scaling.ncl"
+    scriptname = "diag_scripts/shared/scaling.ncl"
     enter_msg(scriptname, funcname)
 
     ;; consider minus sign for number of digits
@@ -304,7 +304,7 @@ local funcname, scriptname, u, digits, s
 begin
 
     funcname = "scale_units"
-    scriptname = "diag_scripts/lib/ncl/scaling.ncl"
+    scriptname = "diag_scripts/shared/scaling.ncl"
     enter_msg(scriptname, funcname)
 
     if(.not.all(ismissing(u))) then
@@ -417,7 +417,7 @@ local funcname, scriptname, u, s, result
 begin
 
     funcname = "rescale"
-    scriptname = "diag_scripts/lib/ncl/scaling.ncl"
+    scriptname = "diag_scripts/shared/scaling.ncl"
     enter_msg(scriptname, funcname)
 
     result = u * s

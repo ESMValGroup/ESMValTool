@@ -24,8 +24,8 @@
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/logging.ncl"
 
-load "./diag_scripts/lib/ncl/latlon.ncl"
-load "./diag_scripts/lib/ncl/regridding.ncl"
+load "./diag_scripts/shared/latlon.ncl"
+load "./diag_scripts/shared/regridding.ncl"
 
 ;;#############################################################################
 undef("dim_stddev_wgt_Wrap")
@@ -63,7 +63,7 @@ local funcname, scriptname, wavg, wgt, v1, v2, d2, arg
 begin
 
     funcname = "dim_stddev_wgt_Wrap"
-    scriptname = "diag_scripts/lib/ncl/statistics.ncl"
+    scriptname = "diag_scripts/shared/statistics.ncl"
 
     enter_msg(scriptname, funcname)
 
@@ -162,7 +162,7 @@ local funcname, scriptname, monthstr, date, year, month, idx1, idx2, loc_y1, \
 begin
 
     funcname = "time_operations"
-    scriptname = "diag_scripts/lib/ncl/statistics.ncl"
+    scriptname = "diag_scripts/shared/statistics.ncl"
 
     enter_msg(scriptname, funcname)
 
@@ -777,7 +777,7 @@ local funcname, scriptname, current_search_set, DEBUG, i, indices, months, \
 begin
 
     funcname = "calc_season_index"
-    scriptname = "diag_scripts/lib/ncl/statistics.ncl"
+    scriptname = "diag_scripts/shared/statistics.ncl"
 
     enter_msg(scriptname, funcname)
 
@@ -875,7 +875,7 @@ local funcname, scriptname, idx, subset_selection, months, newtime, \
 begin
 
     funcname = "extract_season"
-    scriptname = "diag_scripts/lib/ncl/statistics.ncl"
+    scriptname = "diag_scripts/shared/statistics.ncl"
 
     enter_msg(scriptname, funcname)
 
@@ -961,7 +961,7 @@ local funcname, scriptname, season_indices, dim_season_indices, \
 begin
 
     funcname = "month_to_season_extended"
-    scriptname = "diag_scripts/lib/ncl/statistics.ncl"
+    scriptname = "diag_scripts/shared/statistics.ncl"
 
     enter_msg(scriptname, funcname)
 
@@ -1063,7 +1063,7 @@ local funcname, scriptname, lat, wgt_lat, lon, lon_size, wgt_lon, ave
 begin
 
     funcname = "coswgt_areaave"
-    scriptname = "diag_scripts/lib/ncl/statistics.ncl"
+    scriptname = "diag_scripts/shared/statistics.ncl"
 
     enter_msg(scriptname, funcname)
 
@@ -1109,7 +1109,7 @@ local funcname, scriptname, lat, wgt_lat, lon, lon_size, wgt_lon, rmse, \
 begin
 
     funcname = "coswgt_arearmse"
-    scriptname = "diag_scripts/lib/ncl/statistics.ncl"
+    scriptname = "diag_scripts/shared/statistics.ncl"
 
     enter_msg(scriptname, funcname)
 
@@ -1165,7 +1165,7 @@ local funcname, scriptname, lat, wgt_lat, lon, lon_size, wgt_lon, \
 begin
 
     funcname = "coswgt_pattern_cor"
-    scriptname = "diag_scripts/lib/ncl/statistics.ncl"
+    scriptname = "diag_scripts/shared/statistics.ncl"
 
     enter_msg(scriptname, funcname)
 
@@ -1238,7 +1238,7 @@ local funcname, scriptname, monthstr, rank, field_avg, field_djf, field_mam, \
 begin
 
     funcname = "interannual_variability"
-    scriptname = "diag_scripts/lib/ncl/statistics.ncl"
+    scriptname = "diag_scripts/shared/statistics.ncl"
 
     enter_msg(scriptname, funcname)
 
@@ -1385,7 +1385,7 @@ local funcname, scriptname, dims_var, dims_ref, ii, dim_names, mdays, sdays, \
 begin
 
     funcname = "calculate_metric"
-    scriptname = "diag_scripts/lib/ncl/statistics.ncl"
+    scriptname = "diag_scripts/shared/statistics.ncl"
 
     enter_msg(scriptname, funcname)
 
@@ -1547,7 +1547,7 @@ local funcname, scriptname, val_var, norm, stdv, p1
 begin
 
     funcname = "normalize_metric"
-    scriptname = "diag_scripts/lib/ncl/statistics.ncl"
+    scriptname = "diag_scripts/shared/statistics.ncl"
 
     enter_msg(scriptname, funcname)
 
@@ -1625,7 +1625,7 @@ local funcname, scriptname, lvar, nsize, idx
 begin
 
     funcname = "distrib_stats"
-    scriptname = "diag_scripts/lib/ncl/statistics.ncl"
+    scriptname = "diag_scripts/shared/statistics.ncl"
 
     enter_msg(scriptname, funcname)
 
@@ -1731,7 +1731,7 @@ local funcname, scriptname, pi, sqrt2pi, dd, ee
 begin
 
     funcname = "lognormal_dist"
-    scriptname = "diag_scripts/lib/ncl/statistics.ncl"
+    scriptname = "diag_scripts/shared/statistics.ncl"
     enter_msg(scriptname, funcname)
 
     if (dimsizes(dimsizes(nn)).ne.1 .or. dimsizes(dimsizes(dg)).ne.1) then

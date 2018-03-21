@@ -15,8 +15,8 @@ load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/data_handling.ncl"
 load "./interface_scripts/logging.ncl"
 
-load "./diag_scripts/lib/ncl/regridding.ncl"
-load "./diag_scripts/lib/ncl/statistics.ncl"
+load "./diag_scripts/shared/regridding.ncl"
+load "./diag_scripts/shared/statistics.ncl"
 
 ;;#############################################################################
 undef("get_start_year")
@@ -44,7 +44,7 @@ local funcname, scriptname, model_index
 begin
 
     funcname = "get_start_year"
-    scriptname = "diag_scripts/lib/ncl/ensemble.ncl"
+    scriptname = "diag_scripts/shared/ensemble.ncl"
     enter_msg(scriptname, funcname)
 
     if (.not.isatt(diag_script_info, "range_option")) then
@@ -92,7 +92,7 @@ local funcname, scriptname, model_index
 begin
 
     funcname = "get_end_year"
-    scriptname = "diag_scripts/lib/ncl/ensemble.ncl"
+    scriptname = "diag_scripts/shared/ensemble.ncl"
     enter_msg(scriptname, funcname)
 
     if (.not.isatt(diag_script_info, "range_option")) then
@@ -170,7 +170,7 @@ local funcname, scriptname, dest_grd, monotonicity, field_type, rank_grd, \
 begin
 
     funcname = "multi_model_stats"
-    scriptname = "diag_scripts/lib/ncl/ensemble.ncl"
+    scriptname = "diag_scripts/shared/ensemble.ncl"
     enter_msg(scriptname, funcname)
 
     ;; determine destination grid (regridding.ncl)
