@@ -72,7 +72,14 @@ def _compute_statistic(datas, name):
 
     # no plevs
     if len(datas[0].shape) < 3:
-        statistic = statistic_function(datas, axis=0)
+        # get all NOT fully masked data - u_data
+        # datas is per time point
+        # so we can safely NOT compute stats for single points
+        u_datas = [data for data in datas if not np.all(data.mask)]
+        if len(u_datas) > 1:
+            statistic = statistic_function(datas, axis=0)
+        else:
+            statistic.mask = True
         return statistic
 
     # plevs
