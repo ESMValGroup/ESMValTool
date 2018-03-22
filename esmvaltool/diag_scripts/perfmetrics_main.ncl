@@ -10,7 +10,7 @@
 ;;    reference model. It also calculates grading and taylor metrics.
 ;;    Input data have to be regridded to a common grid in the preprocessor.
 ;;
-;; Required diag_script_info attributes (diagnostics specific)
+;; Required diag_script_info attributes
 ;;    plot_type: cycle (time), zonal (plev, lat), latlon (lat, lon) or
 ;;               cycle_latlon (time, lat, lon)
 ;;    time_avg: type of time average (see time_operations in
@@ -21,7 +21,7 @@
 ;;    plot_stddev (for cycle): plot standard deviation
 ;;    legend_outside (for cycle): save legend in a separate file
 ;;
-;; Optional diag_script_info attributes (diagnostic specific)
+;; Optional diag_script_info attributes
 ;;    t_test (for zonal and latlon): calculate t-test in difference plots
 ;;                                   (default: False)
 ;;    conf_level (for zonal and latlon): confidence level for the t-test
@@ -41,14 +41,10 @@
 ;;    aux_info: additional information for stations data
 ;;    location: additional information for stations data (location)
 ;;    altitude: additional information for stations data (altitude)
+;;    abs_levs: (min, max, spacing) contour levels for absolute plot
+;;    diff_levs: (min, max, spacing) contour levels for difference plot
 ;;
-;; Required variable_info attributes (variable specific)
-;;    map_ref_Levels: contour levels for the latlon plot
-;;    map_diff_Levels: contour levels for the latlon difference plot
-;;    zonal_ref_Levels: contour levels for the zonal plot
-;;    zonal_diff_Levels: contour levels for the zonal difference plot
-;;
-;; Optional variable_info attributes (variable specific)
+;; Optional variable_info attributes (variable specific) FIX-ME: to be removed
 ;;    zonal_ref_cmap: color table for the zonal plot
 ;;    zonal_ymin: minimum pressure for the zonal plots
 ;;    global_avg: attach global field average as right string on the plot
@@ -855,11 +851,11 @@ begin
             do imod = 0, dim_MOD - 1
                 outfile = output_dir + \
                     modelnames(imod) + "_" + var0 + "_" + ptype + "_" + \
-                    time_avg + "_" + level + region_name
+                    time_avg + region_name
                 var = var_all(imod, :, :, 0)
                 var@res_tiMainString = modelnames(imod)
                 var@res_cnLevelSelectionMode = "ExplicitLevels"
-                var@res_cnLevels = variable_info@zonal_ref_Levels
+                var@res_cnLevels = diag_script_info@abs_levs
                 if (isatt(variable_info, "zonal_ymin")) then
                     var@res_trYMinF = variable_info@zonal_ymin
                 else
@@ -888,8 +884,7 @@ begin
                 var = var_diff(imod, :, :)
                 outfile = output_dir + \
                     modelnames(imod) + "-" + modelnames(ref_ind) + "_" + \
-                    var0 + "_" + ptype + "_" + time_avg + "_" + \
-                    level + region_name
+                    var0 + "_" + ptype + "_" + time_avg + region_name
                 var@res_tiMainString = modelnames(imod) + " - " + \
                     modelnames(ref_ind)
                 if (isatt(diag_script_info, "conf_level")) then
@@ -898,7 +893,7 @@ begin
                     + "% c.l."
                 end if
                 var@res_cnLevelSelectionMode = "ExplicitLevels"
-                var@res_cnLevels = variable_info@zonal_diff_Levels
+                var@res_cnLevels = diag_script_info@diff_levs
                 var@res_cnMissingValFillColor = "gray70"
                 var@res_gsnSpreadColorEnd = -2
                 wks = gsn_open_wks(file_type, outfile)
@@ -938,18 +933,18 @@ begin
             do imod = 0, dim_MOD - 1
                 outfile = output_dir + \
                     modelnames(imod) + "_" + var0 + "_" + ptype + "_" + \
-                    time_avg + "_" + level + region_name
+                    time_avg + "_" + region_name
                 var = var_all(imod, :, :, 0)
                 var@projection = diag_script_info@projection
                 var@res_cnLinesOn = False
                 var@res_cnLevelSelectionMode = "ExplicitLevels"
                 var@res_tiMainString = modelnames(imod)
-                var@res_cnLevels = variable_info@map_ref_Levels
+                var@res_cnLevels = diag_script_info@abs_levs
                 var@res_gsnLeftString = var@long_name + " [" + \
                     format_units(var@units) + "]"
 
                 ;; Append global field average
-                if (variable_info@show_global_avg) then
+                if (diag_script_info@show_global_avg) then
                     gavg = area_operations(var, -90., 90., 0., 360., \
                                            "average", True)
                     var@res_gsnRightString = \
@@ -976,8 +971,7 @@ begin
                 var = var_diff(imod, :, :)
                 outfile = output_dir + \
                     modelnames(imod) + "-" + modelnames(ref_ind) + "_" + \
-                    var0 + "_" + ptype + "_" + time_avg + "_" + level + \
-                    region_name
+                    var0 + "_" + ptype + "_" + time_avg + "_" + region_name
                 var@res_tiMainString = modelnames(imod) + " - " + \
                     modelnames(ref_ind)
                 if (isatt(diag_script_info, "conf_level")) then
@@ -986,13 +980,13 @@ begin
                     + "% c.l."
                 end if
                 var@res_cnLevelSelectionMode = "ExplicitLevels"
-                var@res_cnLevels = variable_info@map_diff_Levels
+                var@res_cnLevels = diag_script_info@diff_levs
                 var@res_cnMissingValFillColor = "gray70"
                 var@res_gsnSpreadColorEnd = -2
                 var@projection = diag_script_info@projection
 
                 ;; Append global field averag
-                if (variable_info@show_global_avg) then
+                if (diag_script_info@show_global_avg) then
                     gavg = area_operations(var, -90., 90., 0., 360., \
                                            "average", True)
                     var@res_gsnRightString = \
