@@ -46,9 +46,9 @@
 
 load "interface_scripts/interface.ncl"
 
-load "./diag_scripts/shared/style.ncl"
 load "./diag_scripts/shared/statistics.ncl"
 
+load "./diag_scripts/shared/plot/style.ncl"
 load "./diag_scripts/shared/plot/contour_maps.ncl"
 
 
@@ -141,7 +141,7 @@ begin
     ;;# Style dependent annotation              #
     ;;###########################################
     ;; Retrieve unique strings describing the data
-    ;; Function in ./diag_scripts/shared/style.ncl
+    ;; Function in ./diag_scripts/shared/plot/style.ncl
     annots = project_style(diag_script_info, "annots")
 
     ;;###########################################

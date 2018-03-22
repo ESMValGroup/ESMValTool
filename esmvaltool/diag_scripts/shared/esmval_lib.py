@@ -482,7 +482,7 @@ class ESMValProject(object):
         Check TropicalVariability.py for an example on the use of dashes."""
         # First we check that the style file for python is in place
 
-        style_file = './diag_scripts/lib/python/style.cfg'
+        style_file = './diag_scripts/shared/plot/style.cfg'
         if os.path.isfile(style_file):
             if sys.version_info[0] == 2:
                 from ConfigParser import ConfigParser

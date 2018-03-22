@@ -34,8 +34,8 @@ end
 load "./diag_scripts/aux/SAMonsoon/SAMonsoon.ncl"
 load "./diag_scripts/aux/SAMonsoon/SAMonsoon_panel_positions.ncl"
 load "./diag_scripts/aux/SAMonsoon/exact_panel_positions_generic.ncl"
-load "./diag_scripts/shared/style.ncl"
 
+load "./diag_scripts/shared/plot/style.ncl"
 load "./diag_scripts/shared/plot/xy_line.ncl"
 
 undef("get_title_suffix")
@@ -1868,7 +1868,7 @@ begin
     values&month@units = "Multi-year monthly mean"
 
     ;; Select colors and other plotting attributes
-    ;; See ./diag_scripts/shared/style.ncl
+    ;; See ./diag_scripts/shared/plot/style.ncl
     colors = project_style(diag_script_info, "colors")
     dashes = project_style(diag_script_info, "dashes")
     thicks = project_style(diag_script_info, "thicks")
@@ -1891,7 +1891,7 @@ begin
         end do
         model_info@model = "model_mean"
 
-        ;; See ./diag_scripts/shared/style.ncl
+        ;; See ./diag_scripts/shared/plot/style.ncl
         colors_mmm = project_style(diag_script_info, "colors")
         dashes_mmm = project_style(diag_script_info, "dashes")
         thicks_mmm = project_style(diag_script_info, "thicks")
@@ -1910,7 +1910,7 @@ begin
     else
         ;; Mean, stddev, -1 * stddev, +1 * stddev
         values_stddev = new((/4, 12/), float)
-        ;; See ./diag_scripts/shared/style.ncl for which data shall be
+        ;; See ./diag_scripts/shared/plot/style.ncl for which data shall be
         ;; included in the statistics
         temp = ind(avgstd .eq. 0)
         do imon = 0, 11

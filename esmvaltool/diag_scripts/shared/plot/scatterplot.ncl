@@ -13,8 +13,7 @@
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/logging.ncl"
 
-load "./diag_scripts/shared/style.ncl"
-
+load "./diag_scripts/shared/plot/style.ncl"
 load "./diag_scripts/shared/plot/aux_plotting.ncl"
 
 ;;#############################################################################

@@ -17,7 +17,7 @@
 ;;              diag_scripts/shared/statistics.ncl)
 ;;    region: selected region (see select_region in
 ;;            diag_scripts/shared/latlon.ncl)
-;;    styleset (for cycle): as in shared/style.ncl functions
+;;    styleset (for cycle): as in diag_scripts/shared/plot/style.ncl functions
 ;;    plot_stddev (for cycle): plot standard deviation
 ;;    legend_outside (for cycle): save legend in a separate file
 ;;
@@ -88,13 +88,14 @@
 
 load "interface_scripts/interface.ncl"
 
-load "./diag_scripts/shared/style.ncl"
+
 load "./diag_scripts/shared/latlon.ncl"
 load "./diag_scripts/shared/statistics.ncl"
 load "./diag_scripts/shared/regridding.ncl"
 load "./diag_scripts/shared/ensemble.ncl"
 load "./diag_scripts/shared/scaling.ncl"
 
+load "./diag_scripts/shared/plot/style.ncl"
 load "./diag_scripts/shared/plot/xy_line.ncl"
 load "./diag_scripts/shared/plot/zonalmean_profile.ncl"
 load "./diag_scripts/shared/plot/contour_maps.ncl"

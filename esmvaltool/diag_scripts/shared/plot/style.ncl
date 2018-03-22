@@ -51,7 +51,7 @@ local funcname, scriptname, prio, result, unique, iprio, index
 begin
 
     funcname = "unique_labels_min"
-    scriptname = "diag_scripts/shared/style.ncl"
+    scriptname = "diag_scripts/shared/plot/style.ncl"
     enter_msg(scriptname, funcname)
 
     result = model_info@$prio(0)$  ; Start with highest priority
@@ -59,7 +59,7 @@ begin
     iprio = 1  ; counter for while loop (must not exceed dimsizes(prio))
     do while (dimsizes(unique) .ne. dimsizes(result))
         if (iprio .eq. dimsizes(prio)) then
-            error_msg("w", "style.ncl", funcname, "Add more attributes to " + \
+            error_msg("w", scriptname, funcname, "Add more attributes to " + \
                       "prio to make labels unique! Continuing with " + \
                       "non-unique labels.")
             delete(unique)  ; Reset
@@ -112,7 +112,7 @@ local funcname, scriptname, prio, result, unique, iprio, index
 begin
 
     funcname = "unique_labels_all"
-    scriptname = "diag_scripts/shared/style.ncl"
+    scriptname = "diag_scripts/shared/plot/style.ncl"
     enter_msg(scriptname, funcname)
 
     result = model_info@$prio(0)$  ; Start with highest priority
@@ -120,7 +120,7 @@ begin
     iprio = 1  ; counter for while loop (must not exceed dimsizes(prio))
     do while (dimsizes(unique) .ne. dimsizes(result))
         if (iprio .eq. dimsizes(prio)) then
-            error_msg("w", "style.ncl", funcname, "Add more attributes to " + \
+            error_msg("w", scriptname, funcname, "Add more attributes to " + \
                       "prio to make labels unique! Continuing with " + \
                       "non-unique labels.")
             delete(unique)  ; Reset
@@ -189,7 +189,7 @@ local funcname, scriptname, result, info, flag, styleset, stylefile, tmp, sty
 begin
 
     funcname = "project_style"
-    scriptname = "diag_scripts/shared/style.ncl"
+    scriptname = "diag_scripts/shared/plot/style.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Check for the available dictonary keys to be used for the annotations
@@ -217,7 +217,7 @@ begin
     styleset = str_lower(styleset)
     stylefile = "./diag_scripts/shared/plot/styles/" + styleset + ".style"
     if (.not.fileexists(stylefile)) then
-        error_msg("f", "style.ncl", funcname, \
+        error_msg("f", scriptname, funcname, \
                   "style file " + stylefile + " not found")
     end if
     tmp = readAsciiTable(stylefile, 1, "string", \
@@ -242,7 +242,7 @@ begin
     ;; Read column
     col = ind(flag.eq.flagnames) + 1
     if (ismissing(col)) then
-        error_msg("f", "style.ncl", funcname, "flag " + flag + " not allowed")
+        error_msg("f", scriptname, funcname, "flag " + flag + " not allowed")
     end if
     nmodels = dimsizes(model_info@model)
     column = new(nmodels, string)
@@ -252,7 +252,7 @@ begin
 
         ;; Multiple entries, raise error
         if (dimsizes(row).gt.1) then
-            error_msg("f", "style.ncl", funcname, "Multiple entries for " + \
+            error_msg("f", scriptname, funcname, "Multiple entries for " + \
                       "model" + model_info@model(ii) + " in style file " + \
                       stylefile)
         end if
@@ -272,11 +272,11 @@ begin
             ;; Search for wildcards "*"
             rows = ind("*".eq.modelsinfile)
             if (all(ismissing(rows))) then
-                error_msg("f", "style.ncl", funcname, "Model " + \
+                error_msg("f", scriptname, funcname, "Model " + \
                           model_info@model(ii) + " not found in " + stylefile)
             end if
             if (wildcard_cnt.ge.dimsizes(rows)) then
-                error_msg("f", "style.ncl", funcname, "the style file " + \
+                error_msg("f", scriptname, funcname, "the style file " + \
                           stylefile + " contains too few wildcard (*) " + \
                           "entries (" + wildcard_cnt + "), please add more")
             end if
@@ -318,7 +318,7 @@ begin
                     sprintf("%7.5f", c3) + "," + \
                     sprintf("%7.5f", c4) + "/)"
             else
-                error_msg("f", "style.ncl", funcname, \
+                error_msg("f", scriptname, funcname, \
                           "Invalid definition of color for model " + \
                           model_info@model(ii) + ", check style file " + \
                           stylefile)
@@ -370,7 +370,7 @@ local result, modelstyles, flag
 begin
 
     funcname = "project_style_GO"
-    scriptname = "diag_scripts/shared/style.ncl"
+    scriptname = "diag_scripts/shared/plot/style.ncl"
     enter_msg(scriptname, funcname)
 
     ;; define (/model, color, dash, thickness, avgstd/) for each model
@@ -436,7 +436,7 @@ local i, txvpWidth, txvpHeight, tx, x, y, parent_width, parent_height, \
 begin
 
     funcname = "place_debuginfo"
-    scriptname = "diag_scripts/shared/style.ncl"
+    scriptname = "diag_scripts/shared/plot/style.ncl"
     enter_msg(scriptname, funcname)
 
     res@gsnDraw               = False
@@ -496,7 +496,7 @@ local tx, txvpWidth, txvpHeight, parent_x, parent_y, amres, wks_dummy, \
 begin
 
     funcname = "place_description"
-    scriptname = "diag_scripts/shared/style.ncl"
+    scriptname = "diag_scripts/shared/plot/style.ncl"
     enter_msg(scriptname, funcname)
 
     wks_dummy = gsn_open_wks("png", "dummy.png")
@@ -560,7 +560,7 @@ local funcname, scriptname, nboxes_left, nboxes_right, ncolors_left, \
 begin
 
     funcname = "gsnColorRange"
-    scriptname = "diag_scripts/shared/style.ncl"
+    scriptname = "diag_scripts/shared/plot/style.ncl"
     enter_msg(scriptname, funcname)
 
     color_start = 2  ; All of the color maps begin with 2.
@@ -629,7 +629,7 @@ local funcname, scriptname, loc_str
 begin
 
     funcname = "format_units"
-    scriptname = "diag_scripts/shared/style.ncl"
+    scriptname = "diag_scripts/shared/plot/style.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Create a local copy
@@ -686,7 +686,7 @@ local funcname, scriptname, omin, omax, rmin, rmax, om, tmp, arr
 begin
 
     funcname = "set_log_ticks"
-    scriptname = "diag_scripts/shared/style.ncl"
+    scriptname = "diag_scripts/shared/plot/style.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Find order of magnitude of min
@@ -726,7 +726,7 @@ begin
         return(out)
     end if
 
-    error_msg("f", "style.ncl", funcname, "Unrecognized option " + opt)
+    error_msg("f", scriptname, funcname, "Unrecognized option " + opt)
 
 end
 
@@ -775,7 +775,7 @@ function sort_alphabetically(orig_names[*], idx_exclude, dest_exclude)
 begin
 
     funcname = "sort_alphabetically"
-    scriptname = "diag_scripts/shared/style.ncl"
+    scriptname = "diag_scripts/shared/plot/style.ncl"
     enter_msg(scriptname, funcname)
 
     ;; Create a local copy of input names and set to upper case

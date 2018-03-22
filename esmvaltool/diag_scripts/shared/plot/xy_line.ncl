@@ -281,7 +281,7 @@ begin
     end if
     end if
 
-    ;; Get default style parameters (diag_scripts/shared/style.ncl)
+    ;; Get default style parameters (diag_scripts/shared/plot/style.ncl)
     ;; NOTE: These may or may not contain the reference model
     if (.not.isatt(diag_script_info, "styleset")) then
         diag_script_info@styleset = "DEFAULT"
@@ -1552,7 +1552,7 @@ begin
     enter_msg(scriptname, funcname)
 
     ;; Select colors and other plotting attributes
-    ;; (see ./diag_scripts/shared/style.ncl)
+    ;; (see ./diag_scripts/shared/plot/style.ncl)
     colors = project_style(diag_script_info, "colors")
     dashes = project_style(diag_script_info, "dashes")
     thicks = project_style(diag_script_info, "thicks")
@@ -1576,7 +1576,7 @@ begin
         end do
         models@name = "model_mean"
 
-        ;; See ./diag_scripts/shared/style.ncl
+        ;; See ./diag_scripts/shared/plot/style.ncl
         colors_mmm = project_style(diag_script_info, "colors")
         dashes_mmm = project_style(diag_script_info, "dashes")
         thicks_mmm = project_style(diag_script_info, "thicks")
@@ -2020,7 +2020,7 @@ begin
     end if
 
     ;; Select colors and other plotting attributes from the project style files
-    ;; See ./diag_scripts/shared/style.ncl
+    ;; See ./diag_scripts/shared/plot/style.ncl
     colors = project_style(diag_script_info, "colors")
     dashes = project_style(diag_script_info, "dashes")
     thicks = project_style(diag_script_info, "thicks")
