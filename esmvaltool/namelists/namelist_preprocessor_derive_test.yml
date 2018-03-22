@@ -13,8 +13,7 @@ models:
 preprocessors:
 
   preprocessor:
-    derive:
-      short_name: toz
+    derive: true
 
 diagnostics:
 
@@ -23,9 +22,6 @@ diagnostics:
     variables:
       toz:
         preprocessor: preprocessor
-        standard_name: equivalent_thickness_at_stp_of_atmosphere_ozone_content
-        long_name: Total Ozone Column
-        units: DU
         field: T2Ms
     additional_models: []
     scripts: null

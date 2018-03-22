@@ -250,7 +250,7 @@ def _add_cmor_info(variable, override=False):
             if value is not None:
                 variable[key] = value
 
-    # Check that keys were added successfully
+    # Check that keys are available
     check_variable(variable, required_keys=cmor_keys)
 
 
@@ -494,18 +494,13 @@ def _get_preprocessor_task(variables, preprocessors, config_user):
     logger.info("Creating preprocessor '%s' task for variable '%s'",
                 variable['preprocessor'], variable['short_name'])
 
-    # Add CMOR info
-    for variable in variables:
-        _add_cmor_info(variable)
-
     # Create preprocessor task(s)
     derive_tasks = []
     if preprocessor.get('derive', False) is not False:
         # Create tasks to prepare the input data for the derive step
-        derive_settings = copy.deepcopy(preprocessor['derive'])
         derive_preprocessor, preprocessor = _split_settings(
             preprocessor, 'derive')
-        preprocessor['derive'] = derive_settings
+        preprocessor['derive'] = {'short_name': variable['short_name']}
 
         derive_variables = {}
         for variable in variables:
@@ -513,6 +508,7 @@ def _get_preprocessor_task(variables, preprocessors, config_user):
                 table=variable['cmor_table'],
                 mip=variable['mip'],
                 short_name=variable['short_name'])
+            _add_cmor_info(variable)
             input_files = get_input_filelist(
                 variable=variable,
                 rootpath=config_user['rootpath'],
@@ -537,10 +533,14 @@ def _get_preprocessor_task(variables, preprocessors, config_user):
                     _add_cmor_info(variable, override=True)
                     derive_variables[short_name].append(variable)
 
-        for short_name in derive_variables:
-            task = _get_single_preprocessor_task(
-                derive_variables[short_name], derive_preprocessor, config_user)
+        for variable in derive_variables.values():
+            task = _get_single_preprocessor_task(variable, derive_preprocessor,
+                                                 config_user)
             derive_tasks.append(task)
+
+    # Add CMOR info
+    for variable in variables:
+        _add_cmor_info(variable)
 
     # Create (final) preprocessor task
     task = _get_single_preprocessor_task(
