@@ -498,13 +498,10 @@ def _get_preprocessor_task(variables, preprocessors, config_user):
     for variable in variables:
         _add_cmor_info(variable)
 
-    # Do we need to derive?
-    derive = preprocessor.get('derive', False) is not False
-
     # Create preprocessor task(s)
     derive_tasks = []
-    if derive:
-        # Add tasks that derive a variable if required
+    if preprocessor.get('derive', False) is not False:
+        # Create tasks to prepare the input data for the derive step
         derive_settings = copy.deepcopy(preprocessor['derive'])
         derive_preprocessor, preprocessor = _split_settings(
             preprocessor, 'derive')
@@ -521,11 +518,13 @@ def _get_preprocessor_task(variables, preprocessors, config_user):
                 rootpath=config_user['rootpath'],
                 drs=config_user['drs'])
             if input_files:
+                # No need to derive, just process normally up to derive step
                 short_name = variable['short_name']
                 if short_name not in derive_variables:
                     derive_variables[short_name] = []
                 derive_variables[short_name].append(variable)
             else:
+                # Process input data needed to derive variable
                 for short_name, field in get_required(variable['short_name'],
                                                       variable['field']):
                     if short_name not in derive_variables:
@@ -539,8 +538,6 @@ def _get_preprocessor_task(variables, preprocessors, config_user):
                     derive_variables[short_name].append(variable)
 
         for short_name in derive_variables:
-            logger.debug("Creating tasks for %s using %s", short_name,
-                         derive_variables[short_name])
             task = _get_single_preprocessor_task(
                 derive_variables[short_name], derive_preprocessor, config_user)
             derive_tasks.append(task)
@@ -548,6 +545,7 @@ def _get_preprocessor_task(variables, preprocessors, config_user):
     # Create (final) preprocessor task
     task = _get_single_preprocessor_task(
         variables, preprocessor, config_user, ancestors=derive_tasks)
+
     return task
 
 
