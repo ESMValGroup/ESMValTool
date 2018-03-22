@@ -288,10 +288,12 @@ def _get_default_settings(variable, config_user):
         'project': variable['project'],
         'model': variable['model'],
         'short_name': variable['short_name'],
-        'output_dir': variable['filename'] + '_fixed',
     }
+    # File fixes
     settings['fix_file'] = dict(fix)
-    del fix['output_dir']
+    fix_dir = variable['filename'] + '_fixed'
+    settings['fix_file']['output_dir'] = fix_dir
+    # Cube fixes
     # Only supply mip if the CMOR check fixes are implemented.
     if variable.get('cmor_table'):
         fix['cmor_table'] = variable['cmor_table']
@@ -320,7 +322,7 @@ def _get_default_settings(variable, config_user):
     # Clean up fixed files
     if not config_user['save_intermediary_cubes']:
         settings['cleanup'] = {
-            'output_dir': variable['filename'] + '_fixed',
+            'remove': [fix_dir],
         }
 
     # Configure saving cubes to file

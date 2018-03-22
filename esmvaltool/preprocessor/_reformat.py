@@ -1,7 +1,4 @@
 """Simple interface to reformat and CMORize functions."""
-import os
-import shutil
-
 from ..interface_scripts.cmor_check import CMORCheck
 from ..interface_scripts.fixes.fix import Fix
 from ..interface_scripts.variable_info import CMOR_TABLES
@@ -90,9 +87,3 @@ def cmor_check(cube, cmor_table, mip, short_name):
     cmor_check_metadata(cube, cmor_table, mip, short_name)
     cmor_check_data(cube, cmor_table, mip, short_name)
     return cube
-
-
-def cleanup(output_dir):
-    """Remove fixed files and temp folder"""
-    if os.path.isdir(output_dir):
-        shutil.rmtree(output_dir)

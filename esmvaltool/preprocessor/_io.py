@@ -1,6 +1,7 @@
 """Functions for loading and saving cubes"""
 import logging
 import os
+import shutil
 
 import iris
 
@@ -86,3 +87,17 @@ def save_cubes(cubes, debug=False, step=None):
         _save_cubes(cubes=paths[filename], target=filename)
 
     return list(paths)
+
+
+def cleanup(files, remove=None):
+    """Clean up after running the preprocessor."""
+    if remove is None:
+        remove = []
+
+    for path in remove:
+        if os.path.isdir(path):
+            shutil.rmtree(path)
+        elif os.path.isfile(path):
+            os.remove(path)
+
+    return files
