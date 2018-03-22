@@ -15,7 +15,8 @@ from .interface_scripts.data_finder import (
     get_input_filelist, get_input_filename, get_output_file,
     get_statistic_output_file, get_start_end_year)
 from .preprocessor import (DEFAULT_ORDER, MULTI_MODEL_FUNCTIONS,
-                           PREPROCESSOR_FUNCTIONS, PreprocessingTask)
+                           PREPROCESSOR_FUNCTIONS, PreprocessingTask,
+                           NO_DATA_FUNCTIONS)
 from .preprocessor._download import synda_search
 from .preprocessor._io import concatenate_callback
 from .preprocessor._reformat import CMOR_TABLES
@@ -124,7 +125,10 @@ def check_preprocessor_settings(settings):
                     step, ', '.join(DEFAULT_ORDER)))
         function = PREPROCESSOR_FUNCTIONS[step]
         argspec = inspect.getargspec(function)
-        args = argspec.args[1:]
+        if step in NO_DATA_FUNCTIONS:
+            args = argspec.args
+        else:
+            args = argspec.args[1:]
         # Check for invalid arguments
         invalid_args = set(settings[step]) - set(args)
         if invalid_args:
@@ -141,7 +145,10 @@ def check_preprocessor_settings(settings):
                 "function {}".format(missing_args, step))
         # Final sanity check in case the above fails to catch a mistake
         try:
-            inspect.getcallargs(function, None, **settings[step])
+            if step in NO_DATA_FUNCTIONS:
+                inspect.getcallargs(function, **settings[step])
+            else:
+                inspect.getcallargs(function, None, **settings[step])
         except TypeError:
             logger.error("Wrong preprocessor function arguments in "
                          "function '%s'", step)
