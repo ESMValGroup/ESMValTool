@@ -17,8 +17,8 @@ from functools import reduce
 
 from datetime import datetime
 from datetime import timedelta
-from dateutil import parser
 import iris
+import cf_units
 import numpy as np
 
 from ._io import save_cubes
@@ -29,10 +29,10 @@ logger = logging.getLogger(__name__)
 def _parse_time_unit(tunit):
     """Return a datetime object equivalent to tunit"""
     # tunit e.g. 'day since 1950-01-01 00:00:00.0000000 UTC'
-    # FIXME this needs more work to account for all
-    # CF_UNIT UDUNIT cases
-    unit_datetime = parser.parse(' '.join([tunit.split()[2],
-                                           tunit.split()[3]]))
+    # note that we have everything in STANDARD calendar
+    cfunit = cf_units.Unit(tunit,
+                           calendar=cf_units.CALENDAR_STANDARD)
+    unit_datetime = cfunit.num2date(0)
     return unit_datetime
 
 
