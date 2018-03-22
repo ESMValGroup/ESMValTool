@@ -89,7 +89,7 @@ def save_cubes(cubes, debug=False, step=None):
     return list(paths)
 
 
-def cleanup(remove=None):
+def cleanup(files, remove=None):
     """Clean up after running the preprocessor."""
     if remove is None:
         remove = []
@@ -99,3 +99,5 @@ def cleanup(remove=None):
             shutil.rmtree(path)
         elif os.path.isfile(path):
             os.remove(path)
+
+    return files

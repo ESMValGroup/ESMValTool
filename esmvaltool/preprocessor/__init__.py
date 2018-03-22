@@ -109,12 +109,6 @@ _LIST_OUTPUT_FUNCTIONS = {
 }
 assert _LIST_OUTPUT_FUNCTIONS.issubset(set(PREPROCESSOR_FUNCTIONS))
 
-# Preprocessor functions that do not work on the data.
-NO_DATA_FUNCTIONS = {
-    'cleanup',
-}
-assert NO_DATA_FUNCTIONS.issubset(set(PREPROCESSOR_FUNCTIONS))
-
 
 def _split_settings(settings, step):
     """Split settings, using step as a separator."""
@@ -191,11 +185,6 @@ def preprocess(items, settings, debug=False):
     for step, args in settings.items():
         logger.debug("Running preprocessor step %s", step)
         function = PREPROCESSOR_FUNCTIONS[step]
-
-        if step in NO_DATA_FUNCTIONS:
-            logger.debug("Running %s(%s)", function.__name__, args)
-            function(**args)
-            continue
 
         if step in _LIST_INPUT_FUNCTIONS:
             logger.debug("Running %s(%s, %s)", function.__name__, items, args)
