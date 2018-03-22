@@ -11,6 +11,7 @@ dependencies:
 - basemap
 - iris
 - python-stratify
+- cf_units
 # Multi language support:
 - ncl
 - libgdal=2.2.3  # Temporarily pin libgdal to get NCL working
