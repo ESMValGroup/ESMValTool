@@ -7,7 +7,7 @@ models:
   - {model: GISS-E2-H,      project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p2, start_year: 1997, end_year: 2005}
   - {model: GISS-E2-R,      project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p2, start_year: 1997, end_year: 2005}
 #   - {model: MIROC-ESM-CHEM, project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 1997, end_year: 2005}
-#   - {model: ESACCI-OZONE,   project: OBS,   tier: 2,   type: sat,       version: L3,      start_year: 1997, end_year: 2005}
+  - {model: ESACCI-OZONE,   project: OBS,   tier: 2,   type: sat,       version: L3,      start_year: 1997, end_year: 2005}
 #   - {model: NIWA,           project: OBS,   tier: 3,   type: reanaly,   version: 1,       start_year: 1997, end_year: 2005}
 
 preprocessors:

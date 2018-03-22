@@ -46,7 +46,7 @@ def derive(cubes, short_name):
     """Derive variable `short_name`"""
     # Do nothing if variable is already available
     if short_name == cubes[0].var_name:
-        return cubes
+        return cubes[0]
 
     # Derive
     functions = {
@@ -56,7 +56,6 @@ def derive(cubes, short_name):
     if short_name in functions:
         cubes = iris.cube.CubeList(cubes)
         cube = functions[short_name](cubes)
-        cube.var_name = short_name
         cube.attributes['_filename'] = cubes[0].attributes['_filename']
         return cube
 
@@ -75,7 +74,7 @@ def calc_lwp(cubes):
     ---------
         cubes: cubelist containing clwvi_cube and clivi_cube
 
-    Return
+    Returns
     -------
         Cube containing liquid water path.
 
@@ -119,7 +118,7 @@ def calc_toz(cubes):
         cubes: cubelist containing tro3_cube (mole_fraction_of_ozone_in_air)
                and ps_cube (surface_air_pressure).
 
-    Return
+    Returns
     -------
         Cube containing total column ozone.
 
@@ -135,12 +134,18 @@ def calc_toz(cubes):
     toz = toz.collapsed('air_pressure', iris.analysis.SUM)
     toz.units = (tro3_cube.units * p_layer_widths.units / g_unit * mw_O3_unit /
                  mw_air_unit)
-    toz.rename('atmosphere mass content of ozone')
 
     # Convert from kg m^-2 to Dobson unit (2.69e20 m^-2 )
     toz = toz / mw_O3 * Avogadro_const
     toz.units = toz.units / mw_O3_unit * Avogadro_const_unit
     toz.convert_units(Dobson_unit)
+    toz.units = cf_units.Unit('DU')
+
+    # Set names
+    toz.var_name = 'toz'
+    toz.standard_name = (
+        'equivalent_thickness_at_stp_of_atmosphere_ozone_content')
+    toz.long_name = ' Total Ozone Column'
     return toz
 
 
@@ -155,7 +160,7 @@ def _pressure_level_widths(tro3_cube, ps_cube, top_limit=100):
         ps_cube: Surface air pressure cube.
         top_limit: Pressure in Pa.
 
-    Return
+    Returns
     -------
         Cube of same shape as tro3_cube containing pressure level widths.
 

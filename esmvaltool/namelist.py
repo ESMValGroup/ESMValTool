@@ -208,6 +208,26 @@ def _update_from_others(variable, keys, models):
                 variable[key] = value
 
 
+def _update_cmor_table(table, mip, short_name):
+    """Try to add an ESMValTool custom CMOR table file."""
+    cmor_table = CMOR_TABLES[table]
+    var_info = cmor_table.get_variable(mip, short_name)
+
+    if var_info is None and hasattr(cmor_table, 'add_custom_table_file'):
+        table_file = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)), 'reformat_scripts',
+            'cmor', 'CMOR_' + short_name + '.dat')
+        if os.path.exists(table_file):
+            logger.debug("Loading custom CMOR table from %s", table_file)
+            cmor_table.add_custom_table_file(table_file, mip)
+            var_info = cmor_table.get_variable(mip, short_name)
+
+    if var_info is None:
+        raise NamelistError(
+            "Unable to load CMOR table '{}' for variable '{}' with mip '{}'"
+            .format(table, short_name, mip))
+
+
 def _add_cmor_info(variable, override=False):
     """Add information from CMOR tables to variable."""
     logger.debug("If not present: adding keys from CMOR table to %s", variable)
@@ -223,6 +243,7 @@ def _add_cmor_info(variable, override=False):
     cmor_keys = ['standard_name', 'long_name', 'units']
     table_entry = CMOR_TABLES[variable['cmor_table']].get_variable(
         variable['mip'], variable['short_name'])
+
     for key in cmor_keys:
         if key not in variable or override and hasattr(table_entry, key):
             value = getattr(table_entry, key)
@@ -394,13 +415,11 @@ def _get_preprocessor_settings(variables, preprocessor, config_user):
     for variable in variables:
         settings = _get_default_settings(variable, config_user)
         _apply_preprocessor_settings(settings, preprocessor)
+        # TODO: this should probably be done in _get_default_settings
         if 'derive' in settings:
             del settings['load']['constraints']
-            del settings['load']['callback']
             del settings['fix_file']
-            del settings['fix_metadata']
-            del settings['fix_data']
-            del settings['cmor_check_data']
+
         # if the target grid is a model name, replace it with a file name
         # TODO: call _update_target_grid only once per variable?
         _update_target_grid(
@@ -451,6 +470,7 @@ def _get_single_preprocessor_task(variables,
         ]
 
     output_dir = os.path.dirname(variables[0]['filename'])
+
     task = PreprocessingTask(
         settings=all_settings,
         output_dir=output_dir,
@@ -459,22 +479,6 @@ def _get_single_preprocessor_task(variables,
         debug=config_user['save_intermediary_cubes'])
 
     return task
-
-
-def _get_derive_input(variable, config_user):
-
-    # If input files are already available, return current variable, field
-    input_files = get_input_filelist(
-        variable=variable,
-        rootpath=config_user['rootpath'],
-        drs=config_user['drs'])
-    if input_files:
-        return [
-            (variable['short_name'], variable['field']),
-        ]
-
-    # Else try to derive
-    return get_required(variable['short_name'], variable['field'])
 
 
 def _get_preprocessor_task(variables, preprocessors, config_user):
@@ -487,34 +491,61 @@ def _get_preprocessor_task(variables, preprocessors, config_user):
             "Unknown preprocessor {} in variable {} of diagnostic {}".format(
                 preproc_name, variable['short_name'], variable['diagnostic']))
     preprocessor = preprocessors[variable['preprocessor']]
+    logger.info("Creating preprocessor '%s' task for variable '%s'",
+                variable['preprocessor'], variable['short_name'])
+
+    # Add CMOR info
+    for variable in variables:
+        _add_cmor_info(variable)
+
+    # Do we need to derive?
+    derive = preprocessor.get('derive', False) is not False
 
     # Create preprocessor task(s)
     derive_tasks = []
-    if preprocessor.get('derive', False) is not False:
+    if derive:
         # Add tasks that derive a variable if required
         derive_settings = copy.deepcopy(preprocessor['derive'])
         derive_preprocessor, preprocessor = _split_settings(
             preprocessor, 'derive')
         preprocessor['derive'] = derive_settings
 
-        for short_name, field in get_required(variable['short_name'],
-                                              variable['field']):
-            initial_variables = copy.deepcopy(variables)
-            for variable in initial_variables:
-                variable['short_name'] = short_name
-                variable['field'] = field
-                variable['filename'] = get_output_file(
-                    variable, config_user['preproc_dir'])
-                _add_cmor_info(variable, override=True)
+        derive_variables = {}
+        for variable in variables:
+            _update_cmor_table(
+                table=variable['cmor_table'],
+                mip=variable['mip'],
+                short_name=variable['short_name'])
+            input_files = get_input_filelist(
+                variable=variable,
+                rootpath=config_user['rootpath'],
+                drs=config_user['drs'])
+            if input_files:
+                short_name = variable['short_name']
+                if short_name not in derive_variables:
+                    derive_variables[short_name] = []
+                derive_variables[short_name].append(variable)
+            else:
+                for short_name, field in get_required(variable['short_name'],
+                                                      variable['field']):
+                    if short_name not in derive_variables:
+                        derive_variables[short_name] = []
+                    variable = copy.deepcopy(variable)
+                    variable['short_name'] = short_name
+                    variable['field'] = field
+                    variable['filename'] = get_output_file(
+                        variable, config_user['preproc_dir'])
+                    _add_cmor_info(variable, override=True)
+                    derive_variables[short_name].append(variable)
 
+        for short_name in derive_variables:
+            logger.debug("Creating tasks for %s using %s", short_name,
+                         derive_variables[short_name])
             task = _get_single_preprocessor_task(
-                initial_variables, derive_preprocessor, config_user)
+                derive_variables[short_name], derive_preprocessor, config_user)
             derive_tasks.append(task)
 
-    # Create final preprocessor task
-    for variable in variables:
-        _add_cmor_info(variable)
-
+    # Create (final) preprocessor task
     task = _get_single_preprocessor_task(
         variables, preprocessor, config_user, ancestors=derive_tasks)
     return task
