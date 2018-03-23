@@ -509,11 +509,10 @@ def _get_preprocessor_task(variables, preprocessors, config_user):
                 mip=variable['mip'],
                 short_name=variable['short_name'])
             _add_cmor_info(variable)
-            input_files = get_input_filelist(
-                variable=variable,
-                rootpath=config_user['rootpath'],
-                drs=config_user['drs'])
-            if input_files:
+            if not variable.get('force_derivation') and get_input_filelist(
+                    variable=variable,
+                    rootpath=config_user['rootpath'],
+                    drs=config_user['drs']):
                 # No need to derive, just process normally up to derive step
                 short_name = variable['short_name']
                 if short_name not in derive_variables:

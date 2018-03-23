@@ -23,5 +23,6 @@ diagnostics:
       toz:
         preprocessor: preprocessor
         field: T2Ms
+        force_derivation: false
     additional_models: []
     scripts: null
