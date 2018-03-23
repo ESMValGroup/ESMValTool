@@ -231,9 +231,11 @@ def _full_time(cubes):
         fine_shape = tuple([len(t_x)] + list(cube.data.shape[1:]))
         # find indices of present time points
         oidx = [t_x.index(s) for s in time_redone]
-        # reshape data to include all possible times
-        ndat = np.ma.resize(cube.data, fine_shape)
-        # build the time mask
+        # build a new array to hold data
+        ndat = np.ma.zeros(fine_shape)
+        ndat[oidx] = cube.data
+        ndat.mask[oidx] = cube.data.mask
+        # build the time mask for the new array
         c_ones = np.ones(fine_shape, bool)
         c_ones[oidx] = False
         ndat.mask |= c_ones
