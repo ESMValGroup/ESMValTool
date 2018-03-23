@@ -12,15 +12,16 @@ from __future__ import absolute_import, division, print_function
 import os
 import re
 from copy import deepcopy
-import six
-from ..preprocessor._reformat import CMOR_TABLES
 
 import iris
 import iris.exceptions
 import numpy as np
+import six
 import stratify
 from iris.analysis import AreaWeighted, Linear, Nearest, UnstructuredNearest
 from numpy import ma
+
+from ..preprocessor._reformat import CMOR_TABLES
 
 # Regular expression to parse a "MxN" cell-specification.
 _CELL_SPEC = re.compile(r'''\A
@@ -282,7 +283,7 @@ def vinterp(src_cube, levels, scheme):
     """
     Perform vertical interpolation.
 
-    Paramaters
+    Parameters
     ----------
     src_cube : cube
         The source cube to be vertically interpolated.
@@ -321,18 +322,6 @@ def vinterp(src_cube, levels, scheme):
     if scheme not in vertical_schemes:
         emsg = 'Unknown vertical interpolation scheme, got {!r}.'
         raise ValueError(emsg.format(scheme))
-
-    if isinstance(levels, six.string_types):
-        levels_definition = levels.split('_')
-        if levels_definition == 3:
-            reference_id = levels_definition[0]
-            reference_var = levels_definition[1]
-            reference_coord = levels_definition[2]
-            # path = get_file_referemce(reference_id, reference_var)
-            raise NotImplementedError
-            levels = get_reference_levels(path, reference_coord)
-        else:
-            levels = get_cmor_levels(levels)
 
     # Ensure we have a non-scalar array of levels.
     levels = np.array(levels, ndmin=1)
@@ -398,14 +387,15 @@ def vinterp(src_cube, levels, scheme):
     return result
 
 
-def get_cmor_levels(levels):
-    """
-    Get level definition from a CMOR coordinate
+def get_cmor_levels(cmor_table, coordinate):
+    """Get level definition from a CMOR coordinate.
 
     Parameters
     ----------
-    levels: str
-        String in the format {CMOR_TABLE}_{COORDINATE_NAME}
+    cmor_table: str
+        CMOR table name
+    coordinate: str
+        CMOR coordinate name
 
     Returns
     -------
@@ -414,46 +404,38 @@ def get_cmor_levels(levels):
     Raises
     ------
     ValueError:
-        If the CMOR table is not defined, the coordinata does not specify any
-        levels or the string is badly formatted
+        If the CMOR table is not defined, the coordinate does not specify any
+        levels or the string is badly formatted.
+
     """
-    level_definition = levels.split('_')
-    cmor_type = level_definition[0]
+    if cmor_table not in CMOR_TABLES:
+        raise ValueError("Level definition cmor_table '{}' not available"
+                         .format(cmor_table))
 
-    if cmor_type not in CMOR_TABLES:
-        raise ValueError('Level definition {} not available'
-                         .format(levels))
+    if coordinate not in CMOR_TABLES[cmor_table].coords:
+        raise ValueError('Coordinate {} not available for {}'.format(
+            coordinate, cmor_table))
 
-    if len(level_definition) != 2:
-        raise ValueError('Bad level definition {}. Correct format: '
-                         '$(CMOR_TABLE)_$(COORDINATE_NAME)')
+    cmor = CMOR_TABLES[cmor_table].coords[coordinate]
 
-    coord = level_definition[1]
-    if coord not in CMOR_TABLES[cmor_type].coords:
-        raise ValueError('Coordinate {} not availabale for {}'
-                         .format(coord, cmor_type))
-
-    cmor = CMOR_TABLES[cmor_type].coords[coord]
-
-    if len(cmor.requested) > 0:
+    if cmor.requested:
         return [float(level) for level in cmor.requested]
     elif cmor.value:
         return [float(cmor.value)]
     else:
         raise ValueError('Coordinate {} in {} does not have requested values'
-                         .format(coord, cmor_type))
+                         .format(coordinate, cmor_table))
 
 
-def get_reference_levels(path, coordinate):
-    """
-    Get level definition from a CMOR coordinate
+def get_reference_levels(filename, coordinate='air_pressure'):
+    """Get level definition from a CMOR coordinate.
 
     Parameters
     ----------
+    filename: str
+        Path to the reference file
     coordinate: str
         Coordinate name
-    path: str
-        Path to the reference file
 
     Returns
     -------
@@ -462,12 +444,13 @@ def get_reference_levels(path, coordinate):
     Raises
     ------
     ValueError:
-        If the Model is not defined, the coordinata does not specify any
-        levels or the string is badly formatted
+        If the model is not defined, the coordinate does not specify any
+        levels or the string is badly formatted.
+
     """
     try:
-        coord = iris.load_cube(path).coord(coordinate)
+        coord = iris.load_cube(filename).coord(coordinate)
     except iris.exceptions.CoordinateNotFoundError:
-        raise ValueError('Coordinate {} not available in {}'.format(coordinate,
-                                                                    path))
+        raise ValueError('Coordinate {} not available in {}'.format(
+            coordinate, filename))
     return coord.points.tolist()
