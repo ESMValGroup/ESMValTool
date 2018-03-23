@@ -218,33 +218,22 @@ def _monthly_t(cubes):
     return t_x, t_x0
 
 
-def _full_time(cubes):
+def _full_time(cube, time_pts):
     """Construct a contiguous collection over time"""
-    datas = []
     # get rearranged time points
-    t_x, t_x0 = _monthly_t(cubes)
-    # loop through cubes and apply masks
-    for cube in cubes:
-        # recast time points
-        time_redone = _datetime_to_int_days(cube)
-        # construct new shape
-        fine_shape = tuple([len(t_x)] + list(cube.data.shape[1:]))
-        # find indices of present time points
-        oidx = [t_x.index(s) for s in time_redone]
-        # build a new array to hold data
-        ndat = np.ma.zeros(fine_shape)
-        ndat[oidx] = cube.data
-        ndat.mask[oidx] = cube.data.mask
-        # build the time mask for the new array
-        c_ones = np.ones(fine_shape, bool)
-        c_ones[oidx] = False
-        ndat.mask |= c_ones
-
-        # stitch new datas
-        datas.append(ndat)
-
-    # return datas
-    return datas, t_x0
+    t_x = time_pts[0]
+    # assemble a general cube to hold all time data
+    fine_shape = tuple([len(t_x)] + list(cube.data.shape[1:]))
+    # recast time points
+    time_redone = _datetime_to_int_days(cube)
+    # find indices of present time points
+    oidx = [t_x.index(s) for s in time_redone]
+    # reset data and mask
+    ndat = np.ma.empty(fine_shape)
+    ndat.mask = True
+    ndat[oidx] = cube.data
+    ndat.mask[oidx] = cube.data.mask
+    return ndat
 
 
 def _assemble_overlap_data(selection, ovlp, stat_type, fname):
@@ -270,14 +259,15 @@ def _assemble_overlap_data(selection, ovlp, stat_type, fname):
 
 def _assemble_full_data(selection, stat_type, fname):
     """Get statistical data in iris cubes for FULL"""
-    slices, time_axis = _full_time(selection)
-    stats_dats = np.ma.zeros(slices[0].shape)
+    time_axis = _monthly_t(selection)
 
+    slices = [_full_time(cube, time_axis) for cube in selection]
+    stats_dats = np.ma.zeros(slices[0].shape)
     for i in range(slices[0].shape[0]):
         time_data = [data[i] for data in slices]
         stats_dats[i] = _compute_statistic(time_data, stat_type)
     stats_cube = _put_in_cube(selection[0], stats_dats, stat_type, fname,
-                              time_axis)
+                              time_axis[1])
     return stats_cube
 
 
