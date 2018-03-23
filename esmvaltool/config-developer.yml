@@ -33,7 +33,7 @@ CMIP5:
   input_dir:
     default: '/'
     BADC: '[institute]/[model]/[exp]/[freq]/[realm]/[mip]/[ensemble]/latest/[var]'
-    DKRZ: '[institute]/[model]/[exp]/[realm]/[freq]/[mip]/[ensemble]/[latestversion]/[var]'
+    DKRZ: '[institute]/[model]/[exp]/[freq]/[realm]/[mip]/[ensemble]/[latestversion]/[var]'
     ETHZ: '[exp]/[mip]/[var]/[model]/[ensemble]/'
     SMHI: '[model]/[ensemble]/[exp]/[freq]'
   input_file: '[var]_[mip]_[model]_[exp]_[ensemble]_*'
