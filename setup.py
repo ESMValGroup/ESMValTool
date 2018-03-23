@@ -205,7 +205,6 @@ with open('README.md') as readme:
         packages=PACKAGES,
         # Include all version controlled files
         include_package_data=True,
-        use_scm_version=True,
         setup_requires=REQUIREMENTS['setup'],
         install_requires=REQUIREMENTS['install'],
         tests_require=REQUIREMENTS['test'],
