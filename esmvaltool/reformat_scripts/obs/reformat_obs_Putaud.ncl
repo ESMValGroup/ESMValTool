@@ -77,7 +77,7 @@ end
 load "./interface_scripts/logging.ncl"
 load "./reformat_scripts/constants.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
-load "./diag_scripts/lib/ncl/statistics.ncl"
+load "./diag_scripts/shared/statistics.ncl"
 
 begin
 

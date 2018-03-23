@@ -50,7 +50,7 @@ procedure copy_VarCoords_l1(var_from,
 ;;
 ;; Modification history
 ;;    20140703-A_gott_kl: Written for use with mymm in time_operations
-;;                        (diag_scripts/lib/ncl/statistics.ncl).
+;;                        (diag_scripts/shared/statistics.ncl).
 ;;
 local funcname, scriptname, dims_from, dims, rank_from, rank, dimdiff, idimdiff
 begin

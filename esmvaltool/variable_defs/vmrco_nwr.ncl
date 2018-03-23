@@ -10,7 +10,7 @@ variable_info@plot_units = "nmol/mol"
 ;;#############################################################################
 load "interface_scripts/data_handling.ncl"
 load "interface_scripts/constants.ncl"
-load "diag_scripts/lib/ncl/latlon.ncl"
+load "diag_scripts/shared/latlon.ncl"
 
 undef("calculate")
 function calculate(index[1] : integer,
