@@ -496,7 +496,7 @@ def _get_preprocessor_task(variables, preprocessors, config_user):
 
     # Create preprocessor task(s)
     derive_tasks = []
-    if preprocessor.get('derive', False) is not False:
+    if variable.get('derive'):
         # Create tasks to prepare the input data for the derive step
         derive_preprocessor, preprocessor = _split_settings(
             preprocessor, 'derive')

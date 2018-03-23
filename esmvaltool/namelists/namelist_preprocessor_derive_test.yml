@@ -12,9 +12,8 @@ models:
 
 preprocessors:
 
-  preprocessor:
-    derive: true
-
+  preprocessor: {}
+ 
 diagnostics:
 
   derive_diagnostic:
@@ -23,6 +22,7 @@ diagnostics:
       toz:
         preprocessor: preprocessor
         field: T2Ms
+        derive: true
         force_derivation: false
     additional_models: []
     scripts: null
