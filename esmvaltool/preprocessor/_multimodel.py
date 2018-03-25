@@ -218,24 +218,19 @@ def _monthly_t(cubes):
     return t_x, t_x0
 
 
-def _full_time(cube, time_pts):
+def _full_time_slice(cubes, ndat, indices, ndatarr, t_idx):
     """Construct a contiguous collection over time"""
-    # get rearranged time points
-    t_x = time_pts[0]
-    # assemble a general cube to hold all time data
-    fine_shape = tuple([len(t_x)] + list(cube.data.shape[1:]))
-    # recast time points
-    time_redone = _datetime_to_int_days(cube)
-    # find indices of present time points
-    oidx = [t_x.index(s) for s in time_redone]
-    # reset data and mask
-    ndat = np.ma.empty(fine_shape)
-    ndat.mask = True
-    ndat[oidx] = cube.data
-    ndat.mask[oidx] = cube.data.mask
-    return ndat
+    for cube, ip in zip(cubes, range(len(cubes))):
+        # reset mask
+        ndat.mask = True
+        ndat[indices[ip]] = cube.data
+        ndat.mask[indices[ip]] = cube.data.mask
+        ndatarr[ip] = ndat[t_idx]
 
+    # return time slice
+    return ndatarr
 
+    
 def _assemble_overlap_data(selection, ovlp, stat_type, fname):
     """Get statistical data in iris cubes for OVERLAP"""
     start, stop = ovlp
@@ -259,14 +254,41 @@ def _assemble_overlap_data(selection, ovlp, stat_type, fname):
 
 def _assemble_full_data(selection, stat_type, fname):
     """Get statistical data in iris cubes for FULL"""
+    # new MONTHLY data time axis
     time_axis = _monthly_t(selection)
+    # new big time-slice array shape
+    new_shape = tuple([len(time_axis[0])] \
+                      + list(selection[0].shape[1:]))
+    # get rearranged time points
+    t_x = time_axis[0]
 
-    slices = [_full_time(cube, time_axis) for cube in selection]
-    stats_dats = np.ma.zeros(slices[0].shape)
-    for i in range(slices[0].shape[0]):
-        time_data = [data[i] for data in slices]
+    # assemble an array to hold all time data
+    # for all cubes; shape is (ncubes,(plev), lat, lon)
+    new_arr = np.ma.empty(tuple([len(selection)] \
+                                + list(new_shape[1:])))
+    # data array for stats computation
+    stats_dats = np.ma.zeros(new_shape)
+    indices_list = []
+    # empty data array to hold time slices
+    empty_arr = np.ma.empty(new_shape)
+    empty_arr.mask = True
+    for cube in selection:
+        time_redone = _datetime_to_int_days(cube)
+        oidx = [t_x.index(s) for s in time_redone]
+        indices_list.append(oidx)
+    for i in range(new_shape[0]):
+        # hold time slices only
+        new_datas_array = _full_time_slice(selection,
+                                           empty_arr,
+                                           indices_list,
+                                           new_arr, i)
+        # list to hold time slices
+        time_data = []
+        for j in range(len(selection)):
+            time_data.append(new_datas_array[j])
         stats_dats[i] = _compute_statistic(time_data, stat_type)
-    stats_cube = _put_in_cube(selection[0], stats_dats, stat_type, fname,
+    stats_cube = _put_in_cube(selection[0], stats_dats,
+                              stat_type, fname,
                               time_axis[1])
     return stats_cube
 
