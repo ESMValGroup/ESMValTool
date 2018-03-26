@@ -9,7 +9,7 @@ formatters:
   brief:
     format: '%(levelname)-7s [%(process)d] %(message)s'
   debug:
-    format: '%(asctime)s [%(process)d] %(levelname)-7s %(filename)s:%(lineno)s %(message)s'
+    format: '%(asctime)s [%(process)d] %(levelname)-7s %(name)s:%(lineno)s %(message)s'
 handlers:
   console:
     class: logging.StreamHandler
