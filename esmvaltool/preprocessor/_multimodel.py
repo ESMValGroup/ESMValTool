@@ -220,17 +220,17 @@ def _monthly_t(cubes):
 
 def _full_time_slice(cubes, ndat, indices, ndatarr, t_idx):
     """Construct a contiguous collection over time"""
-    for cube, ip in zip(cubes, range(len(cubes))):
+    for cube, idx_cube in zip(cubes, range(len(cubes))):
         # reset mask
         ndat.mask = True
-        ndat[indices[ip]] = cube.data
-        ndat.mask[indices[ip]] = cube.data.mask
-        ndatarr[ip] = ndat[t_idx]
+        ndat[indices[idx_cube]] = cube.data
+        ndat.mask[indices[idx_cube]] = cube.data.mask
+        ndatarr[idx_cube] = ndat[t_idx]
 
     # return time slice
     return ndatarr
 
-    
+
 def _assemble_overlap_data(selection, ovlp, stat_type, fname):
     """Get statistical data in iris cubes for OVERLAP"""
     start, stop = ovlp
@@ -254,27 +254,31 @@ def _assemble_overlap_data(selection, ovlp, stat_type, fname):
 
 def _assemble_full_data(selection, stat_type, fname):
     """Get statistical data in iris cubes for FULL"""
-    # new MONTHLY data time axis
-    time_axis = _monthly_t(selection)
+    # all times, new MONTHLY data time axis
+    time_axis, new_time_axis = _monthly_t(selection)
+
     # new big time-slice array shape
-    new_shape = tuple([len(time_axis[0])] \
+    new_shape = tuple([len(time_axis)]
                       + list(selection[0].shape[1:]))
-    # get rearranged time points
-    t_x = time_axis[0]
 
     # assemble an array to hold all time data
     # for all cubes; shape is (ncubes,(plev), lat, lon)
-    new_arr = np.ma.empty(tuple([len(selection)] \
+    new_arr = np.ma.empty(tuple([len(selection)]
                                 + list(new_shape[1:])))
+
     # data array for stats computation
     stats_dats = np.ma.zeros(new_shape)
+
+    # assemble indices list to chop new_arr on
     indices_list = []
+
     # empty data array to hold time slices
     empty_arr = np.ma.empty(new_shape)
-    empty_arr.mask = True
+
+    # loop through cubes and populate empty_arr with points
     for cube in selection:
         time_redone = _datetime_to_int_days(cube)
-        oidx = [t_x.index(s) for s in time_redone]
+        oidx = [time_axis.index(s) for s in time_redone]
         indices_list.append(oidx)
     for i in range(new_shape[0]):
         # hold time slices only
@@ -289,7 +293,7 @@ def _assemble_full_data(selection, stat_type, fname):
         stats_dats[i] = _compute_statistic(time_data, stat_type)
     stats_cube = _put_in_cube(selection[0], stats_dats,
                               stat_type, fname,
-                              time_axis[1])
+                              new_time_axis)
     return stats_cube
 
 
