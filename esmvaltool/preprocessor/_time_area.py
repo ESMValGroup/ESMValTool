@@ -200,7 +200,9 @@ def is_monthly(cube):
 
 
 def is_seasonal(cube):
-    """A season is a period of 3 months, i.e. at least 89 days, and up to 92 days."""
+    """A season is a period of 3 months, i.e.
+    at least 89 days, and up to 92 days.
+    """
     def is_season(bound):
         time_span = td(days=(bound[1] - bound[0]))
         return td(days=31 + 30 + 31) >= time_span >= td(days=28 + 31 + 30)
