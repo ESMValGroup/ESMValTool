@@ -30,6 +30,10 @@ def get_required(short_name, field=None):
             ('clwvi', 'T2' + frequency + 's'),
             ('clivi', 'T2' + frequency + 's'),
         ],
+        'lwcre': [
+            ('rlut', 'T2' + frequency + 's'),
+            ('rlutcs', 'T2' + frequency + 's'),
+        ],
         'toz': [
             ('tro3', 'T3' + frequency),
             ('ps', 'T2' + frequency + 's'),
@@ -51,6 +55,7 @@ def derive(cubes, short_name):
     # Derive
     functions = {
         'lwp': calc_lwp,
+        'lwcre': calc_lwcre,
         'toz': calc_toz,
     }
     if short_name in functions:
@@ -105,6 +110,36 @@ def calc_lwp(cubes):
     # TODO: Rename cube lwp_cube.name('liquid_water_path') here?
     # TODO: Fix units? lwp_cube.units = cf_units.Unit('kg') here?
     return lwp_cube
+
+
+def calc_lwcre(cubes):
+    """Compute longwave cloud radiative effect from all-sky and clear-sky flux.
+
+    Arguments
+    ----
+        cubes: cubelist containing rlut (toa_outgoing_longwave_flux) and rlutcs
+               (toa_outgoing_longwave_flux_assuming_clear_sky).
+
+    Returns
+    -------
+        Cube containing longwave cloud radiative effect.
+
+    """
+    rlut_cube = cubes.extract_strict(
+        Constraint(name='toa_outgoing_longwave_flux'))
+    rlutcs_cube = cubes.extract_strict(
+        Constraint(name='toa_outgoing_longwave_flux_assuming_clear_sky'))
+
+    assert rlut_cube.coord_dims('time') and rlutcs_cube.coord_dims('time'), \
+        'No time dimension found.'
+    lwcre = rlutcs_cube - rlut_cube
+    lwcre.units = rlut_cube.units
+
+    # Set names
+    lwcre.var_name = 'lwcre'
+    lwcre.standard_name = ('toa_longwave_cloud_radiative_effect')
+    lwcre.long_name = 'TOA Longwave Cloud Radiative Effect'
+    return lwcre
 
 
 def calc_toz(cubes):
