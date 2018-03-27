@@ -1,10 +1,12 @@
-import iris
-import datetime
 from datetime import timedelta as td
+import iris
+
 
 # slice cube over a restricted time period
 def time_slice(mycube, yr1, mo1, d1, yr2, mo2, d2):
     """
+    Slice cube on time
+
     Function that returns a subset of the original cube (slice)
     given two dates of interest date1 and date2
     date1 and date2 should be given in a yr,mo,d (int)format e.g.
@@ -34,6 +36,8 @@ def time_slice(mycube, yr1, mo1, d1, yr2, mo2, d2):
 # slice cube over a restricted area (box)
 def area_slice(mycube, long1, long2, lat1, lat2):
     """
+    Subset a cube on area
+
     Function that subsets a cube on a box (long1,long2,lat1,lat2)
     This function is a restriction of masked_cube_lonlat();
     Returns a cube
@@ -49,8 +53,7 @@ def area_slice(mycube, long1, long2, lat1, lat2):
 # get the time average
 def time_average(mycube):
     """
-    Function to get the time average over MEAN;
-    Returns a cube
+    Get the time average over MEAN; returns a cube
     """
     var_mean = mycube.collapsed('time', iris.analysis.MEAN)
     return var_mean
@@ -59,10 +62,9 @@ def time_average(mycube):
 # get the probability a value is greater than a threshold
 def proportion_greater(mycube, coord1, threshold):
     """
-    Function that returns the probability
-    that a cetain variable coord1 (string) is greater than
-    a threshold threshold (float or string), across a cube mycube;
-    Returns a cube
+    Return the probability that a cetain variable coord1 (string)
+    is greater than a threshold threshold (float or string),
+    across a cube mycube; returns a cube
     """
     thr = float(threshold)
     result = mycube.collapsed(
@@ -73,12 +75,13 @@ def proportion_greater(mycube, coord1, threshold):
 # get zonal means
 def zonal_means(mycube, coord1, mean_type):
     """
+    Get zonal means
+
     Function that returns zonal means along a coordinate coord1;
     the type of mean is controlled by mean_type variable (string):
         'mean' -> MEAN
         'stdev' -> STD_DEV
         'variance' -> VARIANCE
-
     Returns a cube
     """
     if mean_type == 'mean':
@@ -93,7 +96,8 @@ def zonal_means(mycube, coord1, mean_type):
 # get the area average
 def area_average(mycube, coord1, coord2):
     """
-    Function that determines the area average
+    Determine the area average.
+
     Can be used with coord1 and coord2 (strings,
     usually 'longitude' and 'latitude' but depends on the cube);
     Returns a cube
@@ -111,6 +115,7 @@ def area_average(mycube, coord1, coord2):
 def seasonal_mean(mycube):
     """
     Function to compute seasonal means with MEAN
+
     Chunks time in 3-month periods and computes means over them;
     Returns a cube
     """
@@ -160,13 +165,14 @@ def trajectory_cube(mycube, long1, long2, lat1, lat2, plong1, plong2, plat1,
     return section, lon, lat
 
 
-
 # set of time axis checks
 """
 funcs that perform checks on the time axis
 of data cubes and validates the type of data:
 daily, monthly, seasonal or yearly
 """
+
+
 class NoBoundsError(ValueError):
     pass
 
@@ -194,12 +200,10 @@ def is_monthly(cube):
 
 
 def is_seasonal(cube):
-    """
-    A season is a period of 3 months, i.e. at least 89 days, and up to 92 days.
-    """
+    """A season is a period of 3 months, i.e. at least 89 days, and up to 92 days."""
     def is_season(bound):
         time_span = td(days=(bound[1] - bound[0]))
-        return td(days=31+30+31) >= time_span >= td(days=28+31+30)
+        return td(days=31 + 30 + 31) >= time_span >= td(days=28 + 31 + 30)
 
     if not cube.coord('time').has_bounds():
         raise NoBoundsError()
