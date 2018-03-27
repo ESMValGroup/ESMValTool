@@ -1,3 +1,4 @@
+"""Bunch of utilities"""
 from datetime import timedelta as td
 import iris
 
@@ -52,9 +53,7 @@ def area_slice(mycube, long1, long2, lat1, lat2):
 
 # get the time average
 def time_average(mycube):
-    """
-    Get the time average over MEAN; returns a cube
-    """
+    """Get the time average over MEAN; returns a cube"""
     var_mean = mycube.collapsed('time', iris.analysis.MEAN)
     return var_mean
 
@@ -62,6 +61,8 @@ def time_average(mycube):
 # get the probability a value is greater than a threshold
 def proportion_greater(mycube, coord1, threshold):
     """
+    Proportion greater
+
     Return the probability that a cetain variable coord1 (string)
     is greater than a threshold threshold (float or string),
     across a cube mycube; returns a cube
@@ -127,6 +128,7 @@ def seasonal_mean(mycube):
                                                 iris.analysis.MEAN)
 
     def spans_three_months(time):
+        """Check for three months"""
         return (time.bound[1] - time.bound[0]) == 2160
 
     three_months_bound = iris.Constraint(time=spans_three_months)
@@ -137,6 +139,8 @@ def seasonal_mean(mycube):
 def trajectory_cube(mycube, long1, long2, lat1, lat2, plong1, plong2, plat1,
                     plat2, samplecounts):
     """
+    Build a trajectory
+
     Function that subsets a cube on a box (long1,long2,lat1,lat2)
     then creates a trajectory with waypoints (plong1,plong2,plat1, plat2),
     populates it with samplecounts number of points
@@ -166,20 +170,19 @@ def trajectory_cube(mycube, long1, long2, lat1, lat2, plong1, plong2, plat1,
 
 
 # set of time axis checks
-"""
-funcs that perform checks on the time axis
-of data cubes and validates the type of data:
-daily, monthly, seasonal or yearly
-"""
-
-
+# funcs that perform checks on the time axis
+# of data cubes and validates the type of data:
+# daily, monthly, seasonal or yearly
 class NoBoundsError(ValueError):
+    """OBS files dont have bounds"""
+
     pass
 
 
 def is_daily(cube):
     """Test whether the time coordinate contains only daily bound periods."""
     def is_day(bound):
+        """Count days"""
         time_span = td(days=(bound[1] - bound[0]))
         return td(days=1) == time_span
 
@@ -191,6 +194,7 @@ def is_daily(cube):
 def is_monthly(cube):
     """A month is a period of at least 28 days, up to 31 days."""
     def is_month(bound):
+        """Count months"""
         time_span = td(days=(bound[1] - bound[0]))
         return td(days=31) >= time_span >= td(days=28)
 
@@ -200,10 +204,14 @@ def is_monthly(cube):
 
 
 def is_seasonal(cube):
-    """A season is a period of 3 months, i.e.
+    """
+    Check if data is seasonal
+
+    A season is a period of 3 months, i.e.
     at least 89 days, and up to 92 days.
     """
     def is_season(bound):
+        """Count seasons"""
         time_span = td(days=(bound[1] - bound[0]))
         return td(days=31 + 30 + 31) >= time_span >= td(days=28 + 31 + 30)
 
@@ -215,6 +223,7 @@ def is_seasonal(cube):
 def is_yearly(cube):
     """A year is a period of at least 360 days, up to 366 days."""
     def is_year(bound):
+        """Count years"""
         time_span = td(days=(bound[1] - bound[0]))
         return td(days=365) == time_span or td(days=360) == time_span
 
