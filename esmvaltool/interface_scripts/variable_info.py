@@ -9,6 +9,7 @@ import glob
 import json
 import logging
 import os
+
 from ..interface_scripts.data_finder import _CFG
 
 logger = logging.getLogger(__name__)
@@ -347,10 +348,7 @@ class CMIP5Info(object):
             cmor_tables_path = os.path.join(cwd, 'cmip5-cmor-tables')
         return cmor_tables_path
 
-    def _load_table(self, table_file):
-
-        table_name = ''
-        frequency = ''
+    def _load_table(self, table_file, table_name='', frequency=''):
 
         with open(table_file) as self._current_table:
             self._read_line()
@@ -379,6 +377,13 @@ class CMIP5Info(object):
                     continue
                 if not self._read_line():
                     return
+
+    def add_custom_table_file(self, table_file, table_name):
+        """Add a file with custom definitions to table."""
+        random_variable_key = next(iter(self.tables[table_name]))
+        random_variable = self.tables[table_name][random_variable_key]
+        frequency = random_variable.frequency
+        self._load_table(table_file, table_name, frequency)
 
     def _read_line(self):
         line = self._current_table.readline()

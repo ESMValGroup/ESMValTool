@@ -1,5 +1,6 @@
 """Preprocessor module."""
 import logging
+import os
 from collections import OrderedDict
 
 from iris.cube import Cube
@@ -63,10 +64,10 @@ DEFAULT_ORDER = (
     'download',
     'fix_file',
     'load',
+    'derive',
     'fix_metadata',
     'extract_time',
     'fix_data',
-    'derive',
     'extract_levels',
     'regrid',
     'mask_landocean',
@@ -140,9 +141,46 @@ def _as_ordered_dict(settings, order):
     return ordered_settings
 
 
-def preprocess_multi_model(all_items, all_settings, order, debug=False):
+def _group_input(in_files, out_files):
+    """Group a list of input files by output file."""
+    grouped_files = {}
+
+    def get_matching(in_file):
+        """Find the output file which matches input file best."""
+        in_chunks = os.path.basename(in_file).split('_')
+        score = 0
+        fname = None
+        for out_file in out_files:
+            out_chunks = os.path.basename(out_file).split('_')
+            tmp = sum(c in out_chunks for c in in_chunks)
+            if tmp > score:
+                score = tmp
+                fname = out_file
+        if not fname:
+            logger.warning(
+                "Unable to find matching output file for input file %s",
+                in_file)
+        return fname
+
+    # Group input files by output file
+    for in_file in in_files:
+        out_file = get_matching(in_file)
+        if out_file:
+            if out_file not in grouped_files:
+                grouped_files[out_file] = []
+            grouped_files[out_file].append(in_file)
+
+    return grouped_files
+
+
+def preprocess_multi_model(input_files, all_settings, order, debug=False):
     """Run preprocessor on multiple models for a single variable."""
-    # Assumes that the multi model configuration is the same for all models
+    # Group input files by output file
+    all_items = _group_input(input_files, all_settings)
+    logger.debug("Processing %s", all_items)
+
+    # Define multi model steps
+    # This assumes that the multi model settings are the same for all models
     multi_model_steps = [
         step
         for step in DEFAULT_ORDER if (step in MULTI_MODEL_FUNCTIONS and any(
@@ -150,6 +188,8 @@ def preprocess_multi_model(all_items, all_settings, order, debug=False):
     ]
     final_step = object()
     multi_model_steps.append(final_step)
+
+    # Process
     for step in multi_model_steps:
         multi_model_settings = _get_multi_model_settings(all_settings, step)
         # Run single model steps
@@ -235,11 +275,20 @@ class PreprocessingTask(AbstractTask):
 
     def __str__(self):
         """Get human readable description."""
+        settings = dict(self.settings)
+        self.settings = {
+            os.path.basename(k): v
+            for k, v in self.settings.items()
+        }
+
         txt = "{}:\norder: {}\n{}".format(
             self.__class__.__name__,
             self.order,
             super(PreprocessingTask, self).str(),
         )
+
+        self.settings = settings
+
         if self._input_files is not None:
             txt += '\ninput_files: {}'.format(self._input_files)
         return txt
