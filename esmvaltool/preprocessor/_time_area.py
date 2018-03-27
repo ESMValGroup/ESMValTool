@@ -1,9 +1,6 @@
-########################################################################
-# TIME AND AREA OPERATIONS
-# V.Predoi, University of Reading, May 2017
-########################################################################
 import iris
-
+import datetime
+from datetime import timedelta as td
 
 # slice cube over a restricted time period
 def time_slice(mycube, yr1, mo1, d1, yr2, mo2, d2):
@@ -161,3 +158,60 @@ def trajectory_cube(mycube, long1, long2, lat1, lat2, plong1, plong2, plat1,
     lon = wspd_subset.coord('longitude').points
     lat = wspd_subset.coord('latitude').points
     return section, lon, lat
+
+
+
+# set of time axis checks
+"""
+funcs that perform checks on the time axis
+of data cubes and validates the type of data:
+daily, monthly, seasonal or yearly
+"""
+class NoBoundsError(ValueError):
+    pass
+
+
+def is_daily(cube):
+    """Test whether the time coordinate contains only daily bound periods."""
+    def is_day(bound):
+        time_span = td(days=(bound[1] - bound[0]))
+        return td(days=1) == time_span
+
+    if not cube.coord('time').has_bounds():
+        raise NoBoundsError()
+    return all([is_day(bound) for bound in cube.coord('time').bounds])
+
+
+def is_monthly(cube):
+    """A month is a period of at least 28 days, up to 31 days."""
+    def is_month(bound):
+        time_span = td(days=(bound[1] - bound[0]))
+        return td(days=31) >= time_span >= td(days=28)
+
+    if not cube.coord('time').has_bounds():
+        raise NoBoundsError()
+    return all([is_month(bound) for bound in cube.coord('time').bounds])
+
+
+def is_seasonal(cube):
+    """
+    A season is a period of 3 months, i.e. at least 89 days, and up to 92 days.
+    """
+    def is_season(bound):
+        time_span = td(days=(bound[1] - bound[0]))
+        return td(days=31+30+31) >= time_span >= td(days=28+31+30)
+
+    if not cube.coord('time').has_bounds():
+        raise NoBoundsError()
+    return all([is_season(bound) for bound in cube.coord('time').bounds])
+
+
+def is_yearly(cube):
+    """A year is a period of at least 360 days, up to 366 days."""
+    def is_year(bound):
+        time_span = td(days=(bound[1] - bound[0]))
+        return td(days=365) == time_span or td(days=360) == time_span
+
+    if not cube.coord('time').has_bounds():
+        raise NoBoundsError()
+    return all([is_year(bound) for bound in cube.coord('time').bounds])
