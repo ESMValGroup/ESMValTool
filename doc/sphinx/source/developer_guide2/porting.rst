@@ -42,6 +42,8 @@ Check and apply renamings
 
 The new ESMValTool version includes a completely revised interface, handling the communication between the python workflow and the (NCL) scripts. This required several variables and functions to be renamed or removed. These chagnes are listed in the following table and shall be applied to the diagnostic code before starting with testing.
 
+.. tabularcolumns:: |p{6cm}|p{6cm}|p{3cm}|
+
 +-------------------------------------------------+-----------------------------------------------------+------------------+
 | Name in v1.0                                    | Name in v2.0                                        | Affected code    |
 +=================================================+=====================================================+==================+
