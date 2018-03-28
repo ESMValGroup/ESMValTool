@@ -1,9 +1,10 @@
 .. _porting:
 
+****************************************************
 Porting namelists and diagnostics to ESMValTool v2.0
 ****************************************************
 
-This guide summarizes the main steps to be taken in order to port an ESMValTool namelist and the corresponding diagnostic(s) from v1.0 to v2.0, hereafter also referred as the *"old"* and the *"new version"*, respectively.. The new ESMValTool version is being developed in the public git branch ``REFACTORING_backend``. It is strongly recommended to create a branch from ``REFACTORING_backend`` for each of the namelist to be ported and to name it ``REFACTORING_<namelist>``. 
+This guide summarizes the main steps to be taken in order to port an ESMValTool namelist and the corresponding diagnostic(s) from v1.0 to v2.0, hereafter also referred as the *"old"* and the *"new version"*, respectively.. The new ESMValTool version is being developed in the public git branch ``REFACTORING_backend``. It is strongly recommended to create a branch from ``REFACTORING_backend`` for each of the namelist to be ported and to name it ``REFACTORING_<namelist>``.
 
 ``REFACTORING_backend`` contains both v1.0 and v2.0, the latter in the ``./esmvaltool/`` directory. It is therefore possible, and recommended, to run both versions of the ESMValTool within the same branch: this will facilitate testing and comparison of the two version as long as the porting process proceeds.
 
@@ -40,6 +41,8 @@ Check and apply renamings
 =========================
 
 The new ESMValTool version includes a completely revised interface, handling the communication between the python workflow and the (NCL) scripts. This required several variables and functions to be renamed or removed. These chagnes are listed in the following table and shall be applied to the diagnostic code before starting with testing.
+
+.. tabularcolumns:: |p{6cm}|p{6cm}|p{3cm}|
 
 +-------------------------------------------------+-----------------------------------------------------+------------------+
 | Name in v1.0                                    | Name in v2.0                                        | Affected code    |
@@ -94,7 +97,7 @@ The new ESMValTool version includes a completely revised interface, handling the
 +-------------------------------------------------+-----------------------------------------------------+------------------+
 | ``ncl.interface``                               | ``settings.ncl`` in ``run_dir`` and                 | all .ncl scripts |
 |                                                 | ``interface_scripts/interface.ncl``                 |                  |
-+-------------------------------------------------+-----------------------------------------------------+------------------+ 
++-------------------------------------------------+-----------------------------------------------------+------------------+
 | ``load diag_scripts/lib/ncl/``                  | ``load diag_scripts/shared/``                       | all .ncl scripts |
 +-------------------------------------------------+-----------------------------------------------------+------------------+
 | ``load plot_scripts/ncl/``                      | ``load diag_scripts/shared/plot/``                  | all .ncl scripts |
@@ -106,13 +109,13 @@ The new ESMValTool version includes a completely revised interface, handling the
 | ``load diag_scripts/lib/ncl/misc_function.ncl`` | ``load diag_scripts/shared/plot/misc_function.ncl`` | all .ncl scripts |
 +-------------------------------------------------+-----------------------------------------------------+------------------+
 
-The following changes shall also be considered: 
+The following changes shall also be considered:
 
 - ``run_dir`` (previous ``interface_data``), ``plot_dir``, ``work_dir`` are now unique to each diagnostic script, so it is no longer necessary to define specific paths in the diagnostic scripts to prevent file collision;
 - the interface functions ``interface_get_*`` and ``get_figure_filename`` are no longer available: their functionalities can be easily reproduced using the ``model_info`` and ``input_file_info`` logicals and their attributes;
 - there are now only 4 log levels (``debug``, ``info``, ``warning``, and ``error``) instead of (infinite) numerical values in ``verbosity``
-- diagnostic scripts are now organized in subdirectories in ``esmvaltool/diag_scripts/``: all scripts belonging to the same diagnostics shall be collected in a single subdirectory (see ``esmvaltool/diag_scripts/perfmetrics/`` for an example). This applies also to the ``aux_`` scripts, unless they are shared among multiple diagnostics (in this case they shall go in ``shared/``); 
-- upper case characters shall be avoided in script names. 
+- diagnostic scripts are now organized in subdirectories in ``esmvaltool/diag_scripts/``: all scripts belonging to the same diagnostics shall be collected in a single subdirectory (see ``esmvaltool/diag_scripts/perfmetrics/`` for an example). This applies also to the ``aux_`` scripts, unless they are shared among multiple diagnostics (in this case they shall go in ``shared/``);
+- upper case characters shall be avoided in script names.
 
 As for the namelist, the diagnostic script ``./esmvaltool/diag_scripts/perfmetrics_main.ncl`` can be followed as working example.
 
