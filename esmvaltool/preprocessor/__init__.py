@@ -78,6 +78,8 @@ DEFAULT_ORDER = (
     'cmor_check_data',
     'save',
 )
+
+FIXED_DEFAULT_ORDER = list(DEFAULT_ORDER)
 assert set(DEFAULT_ORDER) == set(PREPROCESSOR_FUNCTIONS)
 
 MULTI_MODEL_FUNCTIONS = {
@@ -180,6 +182,9 @@ def preprocess_multi_model(all_items, all_settings, order, debug=False):
 
 def preprocess(items, settings, debug=False):
     """Run preprocessor"""
+    if debug:
+        step_names = list({setting for setting, arg in settings.items()})
+        step_names = sorted(step_names, key=FIXED_DEFAULT_ORDER.index)
     for step, args in settings.items():
         logger.debug("Running preprocessor step %s", step)
         function = PREPROCESSOR_FUNCTIONS[step]
@@ -202,7 +207,9 @@ def preprocess(items, settings, debug=False):
         if debug:
             logger.debug("Result %s", items)
             cubes = [item for item in items if isinstance(item, Cube)]
-            save_cubes(cubes, debug=debug, step=step)
+            idx = step_names.index(step)
+            enum_step = str(idx).zfill(2) + '_' + step
+            save_cubes(cubes, debug=debug, step=enum_step)
 
     return items
 
