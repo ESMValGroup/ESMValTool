@@ -1,3 +1,4 @@
+"""CMOR fixer for Iris cubes."""
 from ._fixes.fix import Fix
 from .check import _get_cmor_checker
 
