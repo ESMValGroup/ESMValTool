@@ -18,7 +18,7 @@ from .preprocessor import (DEFAULT_ORDER, MULTI_MODEL_FUNCTIONS,
 from .preprocessor._derive import get_required
 from .preprocessor._download import synda_search
 from .preprocessor._io import concatenate_callback
-from .preprocessor._reformat import CMOR_TABLES
+from .cmor.table import CMOR_TABLES
 from .task import (MODEL_KEYS, DiagnosticTask, InterfaceTask,
                    get_independent_tasks, run_tasks, which)
 from .version import __version__
