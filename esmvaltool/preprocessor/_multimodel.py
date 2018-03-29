@@ -29,7 +29,6 @@ logger = logging.getLogger(__name__)
 def _parse_time_unit(tunit):
     """Return a datetime object equivalent to tunit"""
     # tunit e.g. 'day since 1950-01-01 00:00:00.0000000 UTC'
-    # note that we have everything in STANDARD calendar
     cfunit = cf_units.Unit(tunit,
                            calendar=cf_units.CALENDAR_STANDARD)
     unit_datetime = cfunit.num2date(0)
