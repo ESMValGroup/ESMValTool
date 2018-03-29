@@ -215,8 +215,8 @@ def _update_cmor_table(table, mip, short_name):
 
     if var_info is None and hasattr(cmor_table, 'add_custom_table_file'):
         table_file = os.path.join(
-            os.path.dirname(os.path.dirname(__file__)), 'reformat_scripts',
-            'cmor', 'CMOR_' + short_name + '.dat')
+            os.path.dirname(__file__), 'cmor', 'tables', 'custom',
+            'CMOR_' + short_name + '.dat')
         if os.path.exists(table_file):
             logger.debug("Loading custom CMOR table from %s", table_file)
             cmor_table.add_custom_table_file(table_file, mip)
