@@ -396,10 +396,9 @@ def _update_multi_model_statistics(variables, settings, preproc_dir):
         # Define models to exclude
         exclude_models = set(stat_settings.get('exclude', {}))
         for key in 'reference_model', 'alternative_model':
-            if key in exclude_models:
-                if key in variable:
-                    exclude_models.remove(key)
-                    exclude_models.add(variable[key])
+            if key in exclude_models and key in variable:
+                exclude_models.remove(key)
+                exclude_models.add(variable[key])
         exclude_files = {
             v['filename']
             for v in variables if v['model'] in exclude_models
