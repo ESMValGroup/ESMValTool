@@ -3,8 +3,8 @@ load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/data_handling.ncl"
 load "./interface_scripts/messagging.ncl"
 
-load "./diag_scripts/lib/ncl/statistics.ncl"
-load "./diag_scripts/lib/ncl/style.ncl"
+load "./diag_scripts/shared/statistics.ncl"
+load "./diag_scripts/shared/plot/style.ncl"
 load "./diag_scripts/calc_seasonal.ncl"
 load "./diag_scripts/uniform_coordinates.ncl"
 
