@@ -213,9 +213,8 @@ def is_seasonal(cube):
     def is_season(bound):
         """Count seasons"""
         time_span = timedelta(days=(bound[1] - bound[0]))
-        is_seas = timedelta(days=31 + 30 + 31)
-                  >= time_span
-                  >= timedelta(days=28 + 31 + 30)
+        is_seas = timedelta(days=31 + 30 + 31) >= time_span >= \
+                  timedelta(days=28 + 31 + 30)
         return is_seas
 
     if not cube.coord('time').has_bounds():
