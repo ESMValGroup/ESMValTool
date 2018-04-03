@@ -214,7 +214,7 @@ def is_seasonal(cube):
         """Count seasons"""
         time_span = timedelta(days=(bound[1] - bound[0]))
         is_seas = timedelta(days=31 + 30 + 31) >= time_span >= \
-                  timedelta(days=28 + 31 + 30)
+            timedelta(days=28 + 31 + 30)
         return is_seas
 
     if not cube.coord('time').has_bounds():
@@ -226,8 +226,8 @@ def is_yearly(cube):
     """A year is a period of at least 360 days, up to 366 days."""
     def is_year(bound):
         """Count years"""
-        time_span = timedelta(days=(bound[1] - bound[0]))
-        return timedelta(days=365) == time_span or timedelta(days=360) == time_span
+        t_s = timedelta(days=(bound[1] - bound[0]))
+        return timedelta(days=365) == t_s or timedelta(days=360) == t_s
 
     if not cube.coord('time').has_bounds():
         raise NoBoundsError()
