@@ -177,9 +177,8 @@ def _get_overlap(cubes):
     """
     all_times = []
     for cube in cubes:
-        bnd1 = _datetime_to_int_days(cube)[0]
-        bnd2 = _datetime_to_int_days(cube)[-1]
-        all_times.append([bnd1, bnd2])
+        start, stop = _datetime_to_int_days(cube)
+        all_times.append([start, stop])
     bounds = [range(b[0], b[-1] + 1) for b in all_times]
     time_pts = reduce(np.intersect1d, bounds)
     if len(time_pts) > 1:
@@ -191,9 +190,8 @@ def _slice_cube(cube, t_1, t_2):
     """
     Efficient slicer
 
-    Cube indexing has a large memory leak!
-    using this function adds virtually
-    no extra memory to the process
+    Simple cube data slicer on indices
+    of common time-data elements
     """
     time_pts = [t for t in cube.coord('time').points]
     converted_t = _datetime_to_int_days(cube)
@@ -212,9 +210,7 @@ def _monthly_t(cubes):
         tpts.append(_datetime_to_int_days(cube))
     t_x = list(set().union(*tpts))
     t_x.sort()
-    t_x0 = list({float(t) for t in t_x})
-    t_x0.sort()
-    return t_x, t_x0
+    return t_x
 
 
 def _full_time_slice(cubes, ndat, indices, ndatarr, t_idx):
@@ -254,7 +250,9 @@ def _assemble_overlap_data(selection, ovlp, stat_type, fname):
 def _assemble_full_data(selection, stat_type, fname):
     """Get statistical data in iris cubes for FULL"""
     # all times, new MONTHLY data time axis
-    time_axis, new_time_axis = _monthly_t(selection)
+    time_axis = _monthly_t(selection)
+    new_time_axis = list({float(t) for t in time_axis})
+    new_time_axis.sort()
 
     # new big time-slice array shape
     new_shape = tuple([len(time_axis)]
@@ -351,8 +349,8 @@ def multi_model_statistics(cubes, span, filenames, exclude, statistics):
         # assemble data
         for stat_name in statistics:
             fovlp = [
-                min(_monthly_t(selection)[1]),
-                max(_monthly_t(selection)[1])
+                min(_monthly_t(selection)),
+                max(_monthly_t(selection))
             ]
             updated_fname = _update_fname(filenames[stat_name], fovlp, u_type)
             cube_of_stats = _assemble_full_data(selection, stat_name,
