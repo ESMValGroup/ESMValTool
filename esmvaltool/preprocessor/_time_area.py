@@ -1,5 +1,5 @@
 """Bunch of utilities"""
-from datetime import timedelta as td
+from datetime import timedelta
 import iris
 
 
@@ -183,8 +183,8 @@ def is_daily(cube):
     """Test whether the time coordinate contains only daily bound periods."""
     def is_day(bound):
         """Count days"""
-        time_span = td(days=(bound[1] - bound[0]))
-        return td(days=1) == time_span
+        time_span = timedelta(days=(bound[1] - bound[0]))
+        return timedelta(days=1) == time_span
 
     if not cube.coord('time').has_bounds():
         raise NoBoundsError()
@@ -195,8 +195,8 @@ def is_monthly(cube):
     """A month is a period of at least 28 days, up to 31 days."""
     def is_month(bound):
         """Count months"""
-        time_span = td(days=(bound[1] - bound[0]))
-        return td(days=31) >= time_span >= td(days=28)
+        time_span = timedelta(days=(bound[1] - bound[0]))
+        return timedelta(days=31) >= time_span >= timedelta(days=28)
 
     if not cube.coord('time').has_bounds():
         raise NoBoundsError()
@@ -212,8 +212,11 @@ def is_seasonal(cube):
     """
     def is_season(bound):
         """Count seasons"""
-        time_span = td(days=(bound[1] - bound[0]))
-        return td(days=31 + 30 + 31) >= time_span >= td(days=28 + 31 + 30)
+        time_span = timedelta(days=(bound[1] - bound[0]))
+        is_seas = timedelta(days=31 + 30 + 31)
+                  >= time_span
+                  >= timedelta(days=28 + 31 + 30)
+        return is_seas
 
     if not cube.coord('time').has_bounds():
         raise NoBoundsError()
@@ -224,8 +227,8 @@ def is_yearly(cube):
     """A year is a period of at least 360 days, up to 366 days."""
     def is_year(bound):
         """Count years"""
-        time_span = td(days=(bound[1] - bound[0]))
-        return td(days=365) == time_span or td(days=360) == time_span
+        time_span = timedelta(days=(bound[1] - bound[0]))
+        return timedelta(days=365) == time_span or timedelta(days=360) == time_span
 
     if not cube.coord('time').has_bounds():
         raise NoBoundsError()
