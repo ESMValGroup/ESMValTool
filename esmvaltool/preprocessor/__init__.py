@@ -155,7 +155,9 @@ def _group_input(in_files, out_files):
             tmp = sum(c in out_chunks for c in in_chunks)
             if tmp > score:
                 score = tmp
-                fname = out_file
+                fname = [out_file]
+            elif tmp == score:
+                fname.append(out_file)
         if not fname:
             logger.warning(
                 "Unable to find matching output file for input file %s",
@@ -164,8 +166,7 @@ def _group_input(in_files, out_files):
 
     # Group input files by output file
     for in_file in in_files:
-        out_file = get_matching(in_file)
-        if out_file:
+        for out_file in get_matching(in_file):
             if out_file not in grouped_files:
                 grouped_files[out_file] = []
             grouped_files[out_file].append(in_file)
