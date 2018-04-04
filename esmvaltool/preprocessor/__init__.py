@@ -79,8 +79,6 @@ DEFAULT_ORDER = (
     'cmor_check_data',
     'save',
 )
-
-FIXED_DEFAULT_ORDER = list(DEFAULT_ORDER)
 assert set(DEFAULT_ORDER) == set(PREPROCESSOR_FUNCTIONS)
 
 MULTI_MODEL_FUNCTIONS = {
@@ -220,11 +218,20 @@ def preprocess_multi_model(input_files, all_settings, order, debug=False):
     return [filename for name in all_items for filename in all_items[name]]
 
 
+def _enumerate_preproc_files(settings):
+    """Build an ordered dict with preproc step indices"""
+    step_names = list({setting for setting, arg in settings.items()})
+    step_idx_dict = {}
+    for step_name in step_names:
+        idx = DEFAULT_ORDER.index(step_name)
+        enumerated_step_name = str(idx).zfill(2) + '_' + step_name
+        step_idx_dict[step_name] = enumerated_step_name
+    return step_idx_dict
+
 def preprocess(items, settings, debug=False):
     """Run preprocessor"""
     if debug:
-        step_names = list({setting for setting, arg in settings.items()})
-        step_names = sorted(step_names, key=FIXED_DEFAULT_ORDER.index)
+        enumerated_steps = _enumerate_preproc_files(settings)
     for step, args in settings.items():
         logger.debug("Running preprocessor step %s", step)
         function = PREPROCESSOR_FUNCTIONS[step]
@@ -247,9 +254,8 @@ def preprocess(items, settings, debug=False):
         if debug:
             logger.debug("Result %s", items)
             cubes = [item for item in items if isinstance(item, Cube)]
-            idx = step_names.index(step)
-            enum_step = str(idx).zfill(2) + '_' + step
-            save_cubes(cubes, debug=debug, step=enum_step)
+            enumerated_step = enumerated_steps[step]
+            save_cubes(cubes, debug=debug, step=enumerated_step)
 
     return items
 
