@@ -177,7 +177,8 @@ def _get_overlap(cubes):
     """
     all_times = []
     for cube in cubes:
-        start, stop = _datetime_to_int_days(cube)
+        span = _datetime_to_int_days(cube)
+        start, stop = span[0], span[-1]
         all_times.append([start, stop])
     bounds = [range(b[0], b[-1] + 1) for b in all_times]
     time_pts = reduce(np.intersect1d, bounds)
