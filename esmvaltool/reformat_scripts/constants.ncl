@@ -435,7 +435,7 @@ begin
     enter_msg(scriptname, funcname)
 
     ;; Read attributes from cmor table
-    fn = "./reformat_scripts/cmor/CMOR_" + name + ".dat"
+    fn = "./cmor/tables/custom/CMOR_" + name + ".dat"
     if (.not.fileexists(fn)) then
         error_msg("fatal", "constants.ncl", funcname, \
                   "CMOR table for variable " + name + " not found")

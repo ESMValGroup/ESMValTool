@@ -13,7 +13,7 @@ import os
 import re
 from copy import deepcopy
 import six
-from ..preprocessor._reformat import CMOR_TABLES
+from ..cmor.table import CMOR_TABLES
 
 import iris
 import numpy as np
