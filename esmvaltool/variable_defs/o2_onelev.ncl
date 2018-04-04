@@ -8,7 +8,7 @@ variable_info@MyDiag_title = "Oxygen"
 variable_info@units = "mol m-3"
 load "interface_scripts/data_handling.ncl"
 load "reformat_scripts/constants.ncl"
-load "./diag_scripts/lib/ncl/set_operators.ncl"
+load "./diag_scripts/shared/set_operators.ncl"
 undef("calculate")
 function calculate(index [1] : integer,
                    variable [1] : string,

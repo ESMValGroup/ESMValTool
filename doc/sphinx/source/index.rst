@@ -11,17 +11,10 @@ Welcome to ESMValTool's documentation!
 
    preface
    known_issues
-   user_guide
-   developer_guide
+   user_guide2/index
+   developer_guide2/index
 
-   codedoc/main
-   autodoc/modules
-
-   esmvaltool_next/index
-
-   diag_scripts/index
-   plot_scripts/index
-   technical_routines
+   codedoc2/main
 
 Indices and tables
 ==================

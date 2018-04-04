@@ -79,15 +79,19 @@ def configure_logging(cfg_file=None, output=None, console_log_level=None):
     with open(cfg_file) as file_handler:
         cfg = yaml.safe_load(file_handler)
 
+    log_files = []
     for handler in cfg['handlers'].values():
         if 'filename' in handler:
             if not os.path.isabs(handler['filename']):
                 handler['filename'] = os.path.join(output, handler['filename'])
+            log_files.append(handler['filename'])
         if console_log_level is not None and 'stream' in handler:
             if handler['stream'] in ('ext://sys.stdout', 'ext://sys.stderr'):
                 handler['level'] = console_log_level.upper()
 
     logging.config.dictConfig(cfg)
+
+    return log_files
 
 
 def read_config_file(config_file, namelist_name):
@@ -187,13 +191,14 @@ def main(args):
               "prevent data loss".format(cfg['output_dir']))
     os.makedirs(cfg['run_dir'])
 
-    configure_logging(
+    log_files = configure_logging(
         output=cfg['run_dir'], console_log_level=cfg['log_level'])
 
     # log header
     logger.info(__doc__)
 
     logger.info("Using config file %s", config_file)
+    logger.info("Writing program log files to:\n%s", "\n".join(log_files))
 
     cfg['synda_download'] = args.synda_download
 

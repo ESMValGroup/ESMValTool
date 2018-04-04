@@ -67,13 +67,15 @@ begin
 
 end
 
-load "./interface_scripts/logging.ncl"
+load "./interface_scripts/messaging.ncl"
 load "./reformat_scripts/constants.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
+    verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
     diag_script = "reformat_obs_NCEP.ncl"
+    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent(OUTDIR)) then
@@ -86,8 +88,9 @@ begin
         ;; Set field
         FIELD = FLDARR(vID)
 
-        log_info("")
-        log_info("Processing " + VARS(vID) + " (" + FIELD + ") ")
+        info_output("", verbosity, 1)
+        info_output("Processing " + VARS(vID) + " (" + FIELD + ") ", \
+                    verbosity, 1)
 
         fname = INDIR + NAME(vID) + SUFFIX(vID) + ".mon.mean.nc"
         f = addfile(fname, "r")
@@ -142,8 +145,8 @@ begin
                       "Possibly wrong units for " + VARS(vID))
         end if
 
-        log_info("  Range: " + min(output) + "; " + max(output) + \
-                    " [" + output@units + "]")
+        info_output("  Range: " + min(output) + "; " + max(output) + \
+                    " [" + output@units + "]", verbosity, 1)
 
         ;; Set variable attributes
         tmp = var_attrib(output, VARS(vID))
@@ -222,7 +225,8 @@ begin
         output&lon = clon
         delete(clon)
 
-        log_info("  Range: " + min(output) + "; " + max(output))
+        info_output("  Range: " + min(output) + "; " + max(output), \
+                    verbosity, 1)
 
         ;; Set global attributes
         gAtt = True
@@ -254,12 +258,32 @@ begin
         fout = OUTDIR + "OBS_" + OBSNAME + "_reanaly_1_" + FIELD + \
             "_" + VARS(vID) + "_" + YEAR1 + "01-" + YEAR2 + "12.nc"
 
+        ;; Add height coordinate to tas variable (required by the new backend)
+        if (VARS(vID).eq."tas") then
+            output@coordinates = "height"
+        end if
+
         ;; Write variable
         write_nc(fout, VARS(vID), output, gAtt)
         delete(gAtt)
         delete(output)
 
+        ;; Add height coordinate to tas variable (required by the new backend)
+        if (VARS(vID).eq."tas") then
+            height = 2.d
+            height!0 = "ncl_scalar"
+            height@units = "m"
+            height@axis = "Z"
+            height@positive = "up"
+            height@long_name = "height"
+            height@standard_name = "height"
+            w = addfile(fout, "w")
+            w->height = height
+            delete(w)
+        end if
+
     end do
 
+    leave_msg(diag_script, "", 1)
 
 end
