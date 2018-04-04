@@ -18,7 +18,7 @@ from .preprocessor import (DEFAULT_ORDER, MULTI_MODEL_FUNCTIONS,
 from .preprocessor._derive import get_required
 from .preprocessor._download import synda_search
 from .preprocessor._io import concatenate_callback
-from .preprocessor._reformat import CMOR_TABLES
+from .cmor.table import CMOR_TABLES
 from .task import (MODEL_KEYS, DiagnosticTask, InterfaceTask,
                    get_independent_tasks, run_tasks, which)
 from .version import __version__
@@ -215,8 +215,8 @@ def _update_cmor_table(table, mip, short_name):
 
     if var_info is None and hasattr(cmor_table, 'add_custom_table_file'):
         table_file = os.path.join(
-            os.path.dirname(os.path.dirname(__file__)), 'reformat_scripts',
-            'cmor', 'CMOR_' + short_name + '.dat')
+            os.path.dirname(__file__), 'cmor', 'tables', 'custom',
+            'CMOR_' + short_name + '.dat')
         if os.path.exists(table_file):
             logger.debug("Loading custom CMOR table from %s", table_file)
             cmor_table.add_custom_table_file(table_file, mip)
