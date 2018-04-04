@@ -97,6 +97,7 @@ _LIST_INPUT_FUNCTIONS = {
     'mask_fillvalues',
     'multi_model_statistics',
     'save',
+    'cleanup',
 }
 assert _LIST_INPUT_FUNCTIONS.issubset(set(PREPROCESSOR_FUNCTIONS))
 
@@ -107,6 +108,7 @@ _LIST_OUTPUT_FUNCTIONS = {
     'mask_fillvalues',
     'multi_model_statistics',
     'save',
+    'cleanup',
 }
 assert _LIST_OUTPUT_FUNCTIONS.issubset(set(PREPROCESSOR_FUNCTIONS))
 
