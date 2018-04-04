@@ -228,6 +228,7 @@ def _enumerate_preproc_files(settings):
         step_idx_dict[step_name] = enumerated_step_name
     return step_idx_dict
 
+
 def preprocess(items, settings, debug=False):
     """Run preprocessor"""
     if debug:
