@@ -1,12 +1,6 @@
-[submodule "backend/cmip6-cmor-tables"]
-	path = backend/cmip6-cmor-tables
-	url = https://github.com/ESMValGroup/cmip6-cmor-tables.git
-[submodule "backend/cmip5-cmor-tables"]
-	path = backend/cmip5-cmor-tables
+[submodule "esmvaltool/cmor/tables/cmip5"]
+	path = esmvaltool/cmor/tables/cmip5
 	url = https://github.com/PCMDI/cmip5-cmor-tables.git
-[submodule "esmvaltool/interface_scripts/cmip5-cmor-tables"]
-	path = esmvaltool/interface_scripts/cmip5-cmor-tables
-	url = https://github.com/PCMDI/cmip5-cmor-tables.git
-[submodule "esmvaltool/interface_scripts/cmip6-cmor-tables"]
-	path = esmvaltool/interface_scripts/cmip6-cmor-tables
+[submodule "esmvaltool/cmor/tables/cmip6"]
+	path = esmvaltool/cmor/tables/cmip6
 	url = https://github.com/PCMDI/cmip6-cmor-tables.git
