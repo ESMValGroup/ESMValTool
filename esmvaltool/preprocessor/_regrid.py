@@ -12,6 +12,8 @@ from __future__ import absolute_import, division, print_function
 import os
 import re
 from copy import deepcopy
+import six
+from ..cmor.table import CMOR_TABLES
 
 import iris
 import iris.exceptions
@@ -20,8 +22,6 @@ import six
 import stratify
 from iris.analysis import AreaWeighted, Linear, Nearest, UnstructuredNearest
 from numpy import ma
-
-from ..preprocessor._reformat import CMOR_TABLES
 
 # Regular expression to parse a "MxN" cell-specification.
 _CELL_SPEC = re.compile(r'''\A
@@ -361,7 +361,7 @@ def vinterp(src_cube, levels, scheme):
                                                    broadcast_shape)
 
             # force mask onto data as nan's
-            if np.ma.is_masked(src_cube.data) is True:
+            if np.ma.is_masked(src_cube.data):
                 src_cube.data[src_cube.data.mask] = np.nan
 
             # Now perform the actual vertical interpolation.

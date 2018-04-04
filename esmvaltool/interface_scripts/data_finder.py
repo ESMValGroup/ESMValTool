@@ -3,12 +3,12 @@
 # Valeriu Predoi (URead, UK - valeriu.predoi@ncas.ac.uk)
 # Mattia Righi (DLR, Germany - mattia.righi@dlr.de)
 
+import fnmatch
 import logging
 import os
 import re
-import subprocess
-import six
 
+import six
 import yaml
 
 logger = logging.getLogger(__name__)
@@ -66,7 +66,7 @@ def replace_tags(path, variable):
                 elif tag == 'realm':
                     replacewith = cmip5_mip2realm_freq(variable['mip'])[0]
         elif tag == 'latestversion':  # handled separately later
-            pass
+            continue
         elif tag == 'tier':
             replacewith = ''.join(('Tier', str(variable['tier'])))
         elif tag == 'model':
@@ -157,25 +157,16 @@ def get_input_filelist(variable, rootpath, drs):
     """Return the full path to input files."""
     dirname_template = get_input_dirname_template(variable, rootpath, drs)
 
-    def check_isdir(path):
-        """Raise an OSError if path is not a directory."""
-        path = os.path.abspath(path)
-        if not os.path.isdir(path):
-            raise OSError('Directory not found: {}'.format(path))
-
-    check_isdir(os.path.dirname(dirname_template))
-
     # Find latest version if required
     if '[latestversion]' in dirname_template:
         part1, part2 = dirname_template.split('[latestversion]')
+        part2 = part2.lstrip(os.sep)
         list_versions = os.listdir(part1)
         list_versions.sort()
         latest = os.path.basename(list_versions[-1])
         dirname = os.path.join(part1, latest, part2)
     else:
         dirname = dirname_template
-
-    check_isdir(dirname)
 
     # Set the filename glob
     cfg = read_config_file(variable['project'])
@@ -201,29 +192,33 @@ def get_output_file(variable, preproc_dir):
     return outfile
 
 
+def get_statistic_output_file(variable, statistic, preproc_dir):
+    """Get multi model statistic filename depending on settings"""
+    values = dict(variable)
+    values['stat'] = statistic.title()
+
+    template = os.path.join(
+        preproc_dir,
+        '{preprocessor}_{diagnostic}',
+        'MultiModel{stat}_{field}_{short_name}_{start_year}-{end_year}.nc',
+    )
+
+    outfile = template.format(**values)
+
+    return outfile
+
+
 def find_files(dirname, filename):
-    """Find files
+    """Find files matching filename."""
+    logger.debug("Looking for files matching %s in %s", filename, dirname)
 
-    Function that performs local search for files using `find'
-    The depth is as high as possible so that find is fast.
-    """
-    flist = []
+    result = []
+    for path, _, files in os.walk(dirname, followlinks=True):
+        files = fnmatch.filter(files, filename)
+        if files:
+            result.extend(os.path.join(path, f) for f in files)
 
-    # work only with existing dirs or allowed permission dirs
-    strfindic = 'find {dirname} -follow -type f -iname "*{filename}*"'.format(
-        dirname=dirname, filename=filename)
-    logger.debug("Running %s", strfindic)
-    proc = subprocess.Popen(
-        strfindic, stdout=subprocess.PIPE, shell=True, universal_newlines=True)
-    out, err = proc.communicate()
-    if err:
-        logger.warning("'%s' says:\n%s", strfindic, err)
-    out = out.strip()
-    logger.debug("Result:\n%s", out)
-    for line in out.split('\n'):
-        if line:
-            flist.append(line)
-    return flist
+    return result
 
 
 def get_start_end_year(filename):

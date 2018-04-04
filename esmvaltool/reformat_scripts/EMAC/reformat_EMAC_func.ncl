@@ -26,7 +26,7 @@ load "./interface_scripts/logging.ncl"
 
 load "./reformat_scripts/constants.ncl"
 
-load "./diag_scripts/lib/ncl/set_operators.ncl"
+load "./diag_scripts/shared/set_operators.ncl"
 
 ;; MESSy version (initialize)
 VERSION = 0
