@@ -129,8 +129,8 @@ def check_preprocessor_settings(settings):
         invalid_args = set(settings[step]) - set(args)
         if invalid_args:
             raise NamelistError(
-                "Invalid argument(s) {} encountered for preprocessor "
-                "function {}".format(invalid_args, step))
+                "Invalid argument(s): {} encountered for preprocessor "
+                "function {}".format(', '.join(invalid_args), step))
         # Check for missing arguments
         defaults = argspec.defaults
         end = None if defaults is None else -len(defaults)
