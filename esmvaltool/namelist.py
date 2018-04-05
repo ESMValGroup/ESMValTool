@@ -129,8 +129,8 @@ def check_preprocessor_settings(settings):
         invalid_args = set(settings[step]) - set(args)
         if invalid_args:
             raise NamelistError(
-                "Invalid argument(s) {} encountered for preprocessor "
-                "function {}".format(invalid_args, step))
+                "Invalid argument(s): {} encountered for preprocessor "
+                "function {}".format(', '.join(invalid_args), step))
         # Check for missing arguments
         defaults = argspec.defaults
         end = None if defaults is None else -len(defaults)
@@ -308,16 +308,18 @@ def _get_default_settings(variable, config_user):
         'project': variable['project'],
         'model': variable['model'],
         'short_name': variable['short_name'],
-        'preproc_dir': config_user['preproc_dir'],
     }
+    # File fixes
     settings['fix_file'] = dict(fix)
-    del fix['preproc_dir']
+    fix_dir = variable['filename'] + '_fixed'
+    settings['fix_file']['output_dir'] = fix_dir
+    # Cube fixes
     # Only supply mip if the CMOR check fixes are implemented.
     if variable.get('cmor_table'):
         fix['cmor_table'] = variable['cmor_table']
         fix['mip'] = variable['mip']
-    settings['fix_metadata'] = dict(fix)
     settings['fix_data'] = dict(fix)
+    settings['fix_metadata'] = dict(fix)
 
     # Configure time extraction
     settings['extract_time'] = {
@@ -335,6 +337,12 @@ def _get_default_settings(variable, config_user):
             'cmor_table': variable['cmor_table'],
             'mip': variable['mip'],
             'short_name': variable['short_name'],
+        }
+
+    # Clean up fixed files
+    if not config_user['save_intermediary_cubes']:
+        settings['cleanup'] = {
+            'remove': [fix_dir],
         }
 
     # Configure saving cubes to file

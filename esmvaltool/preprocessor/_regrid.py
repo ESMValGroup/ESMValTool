@@ -100,13 +100,15 @@ def _stock_cube(spec):
     # Construct the latitude coordinate, with bounds.
     ydata = np.linspace(_LAT_MIN + mid_dy, _LAT_MAX - mid_dy, _LAT_RANGE / dy)
     lats = iris.coords.DimCoord(
-        ydata, standard_name='latitude', units='degrees_north')
+        ydata, standard_name='latitude', units='degrees_north',
+        var_name='lat')
     lats.guess_bounds()
 
     # Construct the longitude coordinate, with bounds.
     xdata = np.linspace(_LON_MIN + mid_dx, _LON_MAX - mid_dx, _LON_RANGE / dx)
     lons = iris.coords.DimCoord(
-        xdata, standard_name='longitude', units='degrees_east')
+        xdata, standard_name='longitude', units='degrees_east',
+        var_name='lon')
     lons.guess_bounds()
 
     # Construct the resultant stock cube, with dummy data.

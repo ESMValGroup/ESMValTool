@@ -8,7 +8,7 @@ class Fix(object):
     Base class for model fixes.
     """
 
-    def fix_file(self, filepath, preproc_dir):
+    def fix_file(self, filepath, output_dir):
         """
         Apply fixes to the files prior to creating the cube.
 
@@ -20,12 +20,15 @@ class Fix(object):
         ----------
         filepath: basestring
             file to fix
+        output_dir: basestring
+            path to the folder to store the fixe files, if required
 
         Returns
         -------
         basestring
             Path to the corrected file. It can be different from the original
-            filepath
+            filepath if a fix has been applied, but if not it should be the
+            original filepath
 
         """
         return filepath
@@ -122,22 +125,20 @@ class Fix(object):
         return fixes
 
     @staticmethod
-    def get_fixed_filepath(filepath, preproc_dir):
+    def get_fixed_filepath(output_dir, filepath):
         """
         Get the filepath for the fixed file
 
         Parameters
         ----------
-        filepath: str
+        var_path: str
             Original path
-        preproc_dir: str
-            Path to preprocessor directory
 
         Returns
         -------
         str
             Path to the fixed file
         """
-        new_filename = os.path.basename(filepath).replace('.nc', '_fixed.nc')
-        temp = os.path.join(preproc_dir, new_filename)
-        return temp
+        if not os.path.isdir(output_dir):
+            os.makedirs(output_dir)
+        return os.path.join(output_dir, os.path.basename(filepath))
