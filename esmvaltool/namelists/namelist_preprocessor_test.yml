@@ -12,7 +12,7 @@ preprocessors:
     extract_levels:
       levels: 'ERA-Interim'
       # This also works, but allows specifying the pressure coordinate name
-      # levels: {model: 'ERA-Interim', coordinate: air_pressure}   
+      # levels: {model: 'ERA-Interim', coordinate: air_pressure}
       scheme: linear
     regrid:
       target_grid: 'ERA-Interim'
@@ -48,7 +48,7 @@ preprocessors:
 diagnostics:
 
   diagnostic_1: &diag
-    description: Preprocessor test diagnostic 1.
+    description: Preprocessor test diagnostic.
     variables:
       ta:
         preprocessor: preprocessor_1
@@ -64,18 +64,13 @@ diagnostics:
         preprocessor: preprocessor_2
         field: T3M
 
-  diagnostic_3:
-    <<: *diag
+  diagnostic_3_and_4:
+    description: Preprocessor test diagnostic.
     variables:
       ta:
         preprocessor: preprocessor_3
         field: T3M
-
-  diagnostic_4:
-    description: Preprocessor test diagnostic 4.
-    variables:
       pr:
         preprocessor: preprocessor_4
         field: T2Ms
-    additional_models: []
     scripts: null
