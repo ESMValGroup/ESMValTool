@@ -218,21 +218,8 @@ def preprocess_multi_model(input_files, all_settings, order, debug=False):
     return [filename for name in all_items for filename in all_items[name]]
 
 
-def _enumerate_preproc_files(settings):
-    """Build an ordered dict with preproc step indices"""
-    step_names = list({setting for setting, arg in settings.items()})
-    step_idx_dict = {}
-    for step_name in step_names:
-        idx = DEFAULT_ORDER.index(step_name)
-        enumerated_step_name = str(idx).zfill(2) + '_' + step_name
-        step_idx_dict[step_name] = enumerated_step_name
-    return step_idx_dict
-
-
 def preprocess(items, settings, debug=False):
     """Run preprocessor"""
-    if debug:
-        enumerated_steps = _enumerate_preproc_files(settings)
     for step, args in settings.items():
         logger.debug("Running preprocessor step %s", step)
         function = PREPROCESSOR_FUNCTIONS[step]
@@ -255,8 +242,7 @@ def preprocess(items, settings, debug=False):
         if debug:
             logger.debug("Result %s", items)
             cubes = [item for item in items if isinstance(item, Cube)]
-            enumerated_step = enumerated_steps[step]
-            save_cubes(cubes, debug=debug, step=enumerated_step)
+            save_cubes(cubes, debug=debug, step=step)
 
     return items
 
