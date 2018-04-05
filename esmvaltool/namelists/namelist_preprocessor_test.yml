@@ -37,7 +37,7 @@ preprocessors:
       scheme: nearest
     regrid: false
     mask_fillvalues: false
-    multi_model_mean: false
+    multi_model_statistics: false
 
   preprocessor_4:
     extract_levels: false
