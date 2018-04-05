@@ -205,7 +205,7 @@ def _monthly_t(cubes):
 
 def _full_time_slice(cubes, ndat, indices, ndatarr, t_idx):
     """Construct a contiguous collection over time"""
-    for cube, idx_cube in zip(cubes, range(len(cubes))):
+    for idx_cube, cube in enumerate(cubes):
         # reset mask
         ndat.mask = True
         ndat[indices[idx_cube]] = cube.data
@@ -323,9 +323,9 @@ def multi_model_statistics(cubes, span, filenames, exclude, statistics):
     elif span == 'full':
         logger.debug("Using full time spans " "to compute statistics.")
         # assemble data
+        time_points = _monthly_t(selection)
+        interval = [min(time_points), max(time_points)]
         for stat_name in statistics:
-            time_points = _monthly_t(selection)
-            interval = [min(time_points), max(time_points)]
             filename = _update_filename(filenames[stat_name], interval,
                                         time_unit)
             cube_of_stats = _assemble_full_data(selection, stat_name, filename)
