@@ -10,12 +10,12 @@ preprocessors:
 
   preprocessor_1:
     extract_levels:
-      levels: 'ERA-Interim'
+      levels: ERA-Interim
       # This also works, but allows specifying the pressure coordinate name
-      # levels: {model: 'ERA-Interim', coordinate: air_pressure}
+      # levels: {model: ERA-Interim, coordinate: air_pressure}
       scheme: linear
     regrid:
-      target_grid: 'ERA-Interim'
+      target_grid: ERA-Interim
       scheme: linear
     mask_fillvalues:
       threshold_fraction: 0.90
@@ -23,7 +23,7 @@ preprocessors:
 
   preprocessor_2:
     extract_levels:
-      levels: {cmor_table: CMIP6, coordinate: alt40}
+      levels: {cmor_table: CMIP6, coordinate: plev10}
       scheme: nearest
     regrid:
       target_grid: 1x1
