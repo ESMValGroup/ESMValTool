@@ -203,7 +203,12 @@ class CMORCheck(object):
         for attr in attrs:
             attr_value = getattr(self._cmor_var, attr)
             if attr_value:
-                if self._cube.attributes[attr] != attr_value:
+                if attr not in self._cube.attributes:
+                    self.report_error('{}: attribute {} not present',
+                                      self._cube.var_name,
+                                      attr, attr_value,
+                                      self._cube.attributes[attr])
+                elif self._cube.attributes[attr] != attr_value:
                     self.report_error(self._attr_msg, self._cube.var_name,
                                       attr, attr_value,
                                       self._cube.attributes[attr])
