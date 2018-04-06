@@ -15,7 +15,7 @@ from esmvaltool.preprocessor import _regrid
 class TestGetCmorLevels(unittest.TestCase):
 
     def test_cmip6_alt40(self):
-        self.assertListEqual(_regrid.get_cmor_levels('CMIP6_alt40'),
+        self.assertListEqual(_regrid.get_cmor_levels('CMIP6', 'alt40'),
                              [240.0, 720.0, 1200.0, 1680.0, 2160.0, 2640.0,
                               3120.0, 3600.0, 4080.0, 4560.0, 5040.0, 5520.0,
                               6000.0, 6480.0, 6960.0, 7440.0, 7920.0, 8400.0,
@@ -26,34 +26,27 @@ class TestGetCmorLevels(unittest.TestCase):
                               18480.0, 18960.0])
 
     def test_cmip6_p200(self):
-        self.assertListEqual(_regrid.get_cmor_levels('CMIP6_p200'),
+        self.assertListEqual(_regrid.get_cmor_levels('CMIP6', 'p200'),
                              [20000.])
 
     def test_cmip5_alt40(self):
-        self.assertListEqual(_regrid.get_cmor_levels('CMIP5_plevs'),
+        self.assertListEqual(_regrid.get_cmor_levels('CMIP5', 'plevs'),
                              [100000., 92500., 85000., 70000., 60000., 50000.,
                               40000., 30000., 25000., 20000., 15000., 10000.,
                               7000., 5000., 3000., 2000., 1000.])
 
     def test_cmip5_p500(self):
-        self.assertListEqual(_regrid.get_cmor_levels('CMIP5_p500'),
+        self.assertListEqual(_regrid.get_cmor_levels('CMIP5', 'p500'),
                              [50000])
 
     def test_not_values_in_coordinate(self):
         with self.assertRaises(ValueError):
-            _regrid.get_cmor_levels('CMIP6_time')
+            _regrid.get_cmor_levels('CMIP6', 'time')
 
     def test_bad_table(self):
         with self.assertRaises(ValueError):
-            _regrid.get_cmor_levels('CMOCK_p500')
+            _regrid.get_cmor_levels('CMOCK', 'p500')
 
     def test_bad_coordinate(self):
         with self.assertRaises(ValueError):
-            _regrid.get_cmor_levels('CMIP5_uglycoord')
-
-    def test_bad_format(self):
-        with self.assertRaises(ValueError):
-            _regrid.get_cmor_levels('CMIP5plevs')
-
-        with self.assertRaises(ValueError):
-            _regrid.get_cmor_levels('CMIP5_Amon_plevs')
+            _regrid.get_cmor_levels('CMIP5', 'uglycoord')

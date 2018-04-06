@@ -18,7 +18,9 @@ from .preprocessor import (DEFAULT_ORDER, MULTI_MODEL_FUNCTIONS,
 from .preprocessor._derive import get_required
 from .preprocessor._download import synda_search
 from .preprocessor._io import concatenate_callback
+from .preprocessor._regrid import get_cmor_levels, get_reference_levels
 from .cmor.table import CMOR_TABLES
+
 from .task import (MODEL_KEYS, DiagnosticTask, InterfaceTask,
                    get_independent_tasks, run_tasks, which)
 from .version import __version__
@@ -129,8 +131,8 @@ def check_preprocessor_settings(settings):
         invalid_args = set(settings[step]) - set(args)
         if invalid_args:
             raise NamelistError(
-                "Invalid argument(s) {} encountered for preprocessor "
-                "function {}".format(invalid_args, step))
+                "Invalid argument(s): {} encountered for preprocessor "
+                "function {}".format(', '.join(invalid_args), step))
         # Check for missing arguments
         defaults = argspec.defaults
         end = None if defaults is None else -len(defaults)
@@ -254,31 +256,62 @@ def _add_cmor_info(variable, override=False):
     check_variable(variable, required_keys=cmor_keys)
 
 
-def _update_target_grid(variable, all_variables, settings, config_user):
-    """Replace the target grid model name with a filename if needed.
+def _update_target_levels(variable, variables, settings, config_user):
+    """Replace the target levels model name with a filename if needed."""
+    if (not settings.get('extract_levels')
+            or 'levels' not in settings['extract_levels']):
+        return
 
-    This only works if the file is found by get_input_filelist.
-    """
+    levels = settings['extract_levels']['levels']
+
+    # If levels is a model name, replace it by a dict with a 'model' entry
+    if any(levels == v['model'] for v in variables):
+        settings['extract_levels']['levels'] = {'model': levels}
+        levels = settings['extract_levels']['levels']
+
+    if not isinstance(levels, dict):
+        return
+
+    if 'cmor_table' in levels and 'coordinate' in levels:
+        settings['extract_levels']['levels'] = get_cmor_levels(
+            levels['cmor_table'], levels['coordinate'])
+    elif 'model' in levels:
+        if variable['model'] == levels['model']:
+            del settings['extract_levels']
+        else:
+            filename = _model_to_file(levels['model'], variables,
+                                      config_user)
+            coordinate = levels.get('coordinate', 'air_pressure')
+            settings['extract_levels']['levels'] = get_reference_levels(
+                filename, coordinate)
+
+
+def _update_target_grid(variable, variables, settings, config_user):
+    """Replace the target grid model name with a filename if needed."""
     if not settings.get('regrid') or 'target_grid' not in settings['regrid']:
         return
 
-    target_grid = settings['regrid']['target_grid']
+    grid = settings['regrid']['target_grid']
 
-    if variable['model'] == target_grid:
-        # No need to regrid model onto itself.
+    if variable['model'] == grid:
         del settings['regrid']
-        return
+    elif any(grid == v['model'] for v in variables):
+        settings['regrid']['target_grid'] = _model_to_file(
+            grid, variables, config_user)
 
-    # Replace the target grid model name with a filename.
-    for target_variable in all_variables:
-        if target_variable['model'] == target_grid:
+
+def _model_to_file(model, variables, config_user):
+    """Find the first file belonging to model."""
+    for variable in variables:
+        if variable['model'] == model:
             files = get_input_filelist(
-                variable=target_variable,
+                variable=variable,
                 rootpath=config_user['rootpath'],
                 drs=config_user['drs'])
-            target_file = files[0]
-            settings['regrid']['target_grid'] = target_file
-            return
+            return files[0]
+
+    raise NamelistError(
+        "Unable to find matching file for model {}".format(model))
 
 
 def _get_default_settings(variable, config_user):
@@ -308,16 +341,18 @@ def _get_default_settings(variable, config_user):
         'project': variable['project'],
         'model': variable['model'],
         'short_name': variable['short_name'],
-        'preproc_dir': config_user['preproc_dir'],
     }
+    # File fixes
     settings['fix_file'] = dict(fix)
-    del fix['preproc_dir']
+    fix_dir = variable['filename'] + '_fixed'
+    settings['fix_file']['output_dir'] = fix_dir
+    # Cube fixes
     # Only supply mip if the CMOR check fixes are implemented.
     if variable.get('cmor_table'):
         fix['cmor_table'] = variable['cmor_table']
         fix['mip'] = variable['mip']
-    settings['fix_metadata'] = dict(fix)
     settings['fix_data'] = dict(fix)
+    settings['fix_metadata'] = dict(fix)
 
     # Configure time extraction
     settings['extract_time'] = {
@@ -335,6 +370,12 @@ def _get_default_settings(variable, config_user):
             'cmor_table': variable['cmor_table'],
             'mip': variable['mip'],
             'short_name': variable['short_name'],
+        }
+
+    # Clean up fixed files
+    if not config_user['save_intermediary_cubes']:
+        settings['cleanup'] = {
+            'remove': [fix_dir],
         }
 
     # Configure saving cubes to file
@@ -422,9 +463,14 @@ def _get_preprocessor_settings(variables, preprocessor, config_user):
 
         # if the target grid is a model name, replace it with a file name
         # TODO: call _update_target_grid only once per variable?
+        _update_target_levels(
+            variable=variable,
+            variables=variables,
+            settings=settings,
+            config_user=config_user)
         _update_target_grid(
             variable=variable,
-            all_variables=variables,
+            variables=variables,
             settings=settings,
             config_user=config_user)
         check_preprocessor_settings(settings)
