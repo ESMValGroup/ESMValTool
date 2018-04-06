@@ -1,11 +1,15 @@
 """ESMValtool task definition"""
+import contextlib
+import datetime
 import logging
 import os
 import pprint
 import subprocess
+import threading
 import time
 from multiprocessing import Pool, cpu_count
 
+import psutil
 import yaml
 
 logger = logging.getLogger(__name__)
@@ -22,6 +26,68 @@ def which(executable):
             return os.path.join(path, executable)
 
     return None
+
+
+def _get_resource_usage(process, start_time, header=False):
+    """Get resource usage."""
+    if header:
+        # return header instead of resource usage statistics
+        entries = [
+            'Date and time (UTC)',
+            'Real time (s)',
+            'CPU time (s)',
+            'CPU (%)',
+            'Memory (GB)',
+            'Memory (%)',
+            'Disk read (GB)',
+            'Disk write (GB)',
+        ]
+        return '\t'.join(entries) + '\n'
+
+    gigabyte = float(2**30)
+    with process.oneshot():
+        entries = [
+            datetime.datetime.utcnow(),
+            round(time.time() - start_time, 1),
+            round(sum(process.cpu_times()), 1),
+            round(process.cpu_percent()),
+            round(process.memory_info().rss / gigabyte, 1),
+            round(process.memory_percent()),
+            round(process.io_counters().read_bytes / gigabyte, 3),
+            round(process.io_counters().write_bytes / gigabyte, 3),
+        ]
+    fmt = '\t'.join(str(entry) for entry in entries) + '\n'
+    return fmt.format(*entries)
+
+
+@contextlib.contextmanager
+def resource_usage_logger(pid, filename, interval=1):
+    """Log resource usage."""
+    halt = threading.Event()
+
+    def _log():
+        """Write resource usage to file."""
+        process = psutil.Process(pid)
+        start_time = time.time()
+        with open(filename, 'w') as file:
+            file.write(_get_resource_usage(process, start_time, header=True))
+            while not halt.is_set():
+                try:
+                    txt = _get_resource_usage(process, start_time)
+                except (PermissionError, psutil.AccessDenied,
+                        psutil.NoSuchProcess):
+                    break
+                file.write(txt)
+                time.sleep(interval)
+
+    thread = threading.Thread(target=_log)
+    thread.start()
+
+    try:
+        yield
+    finally:
+        halt.set()
+        thread.join()
 
 
 def write_ncl_settings(settings, filename, mode='wt'):
@@ -233,6 +299,8 @@ class DiagnosticTask(AbstractTask):
         self.script = script
         self.cmd = self._initialize_cmd(script)
         self.log = os.path.join(settings['run_dir'], 'log.txt')
+        self.resource_log = os.path.join(settings['run_dir'],
+                                         'resource_usage.txt')
 
     @staticmethod
     def _initialize_cmd(script):
@@ -411,7 +479,8 @@ class DiagnosticTask(AbstractTask):
         returncode = None
         last_line = ['']
 
-        with open(self.log, 'at') as log:
+        with resource_usage_logger(process.pid, self.resource_log),\
+                open(self.log, 'at') as log:
             while returncode is None:
                 returncode = process.poll()
                 txt = process.stdout.read()
@@ -425,8 +494,6 @@ class DiagnosticTask(AbstractTask):
                 if is_ncl_script:
                     self._control_ncl_execution(process, last_line + lines)
                 last_line = lines[-1:]
-
-                # TODO: log resource usage
 
                 # wait, but not long because the stdout buffer may fill up:
                 # https://docs.python.org/3.6/library/subprocess.html#subprocess.Popen.stdout

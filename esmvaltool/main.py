@@ -56,6 +56,7 @@ if __name__ == '__main__':  # noqa
                         os.path.dirname(os.path.abspath(__file__))))  # noqa
 
 from esmvaltool.namelist import read_namelist_file
+from esmvaltool.task import resource_usage_logger
 from esmvaltool.version import __version__
 
 # set up logging
@@ -202,7 +203,9 @@ def main(args):
 
     cfg['synda_download'] = args.synda_download
 
-    process_namelist(namelist_file=namelist_file, config_user=cfg)
+    resource_log = os.path.join(cfg['run_dir'], 'resource_usage.txt')
+    with resource_usage_logger(pid=os.getpid(), filename=resource_log):
+        process_namelist(namelist_file=namelist_file, config_user=cfg)
 
 
 def process_namelist(namelist_file, config_user):
