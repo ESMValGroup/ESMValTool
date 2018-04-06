@@ -11,35 +11,35 @@
 
 ;; Load config_user_info and diag_script_info from settings.ncl
 begin
-    print("INFO    Loading settings from " + getenv("settings"))
-    loadscript("$settings")
+  print("INFO    Loading settings from " + getenv("settings"))
+  loadscript("$settings")
 end
 
 ;; Load input_file_info, model_info and variable_info from <variable>_info.ncl
 begin
-    vardeffiles = \
-        str_match_ic_regex(diag_script_info@input_files, ".*_info\.ncl")
-    if (.not. ismissing(vardeffiles)) then
-        vardeffile = diag_script_info@input_files(0)
-        print("INFO    Loading input data description from " + vardeffile)
-        loadscript(vardeffile)
-    end if
+  vardeffiles = \
+    str_match_ic_regex(diag_script_info@input_files, ".*_info\.ncl")
+  if (.not. ismissing(vardeffiles)) then
+    vardeffile = diag_script_info@input_files(0)
+    print("INFO    Loading input data description from " + vardeffile)
+    loadscript(vardeffile)
+  end if
 end
 
 
 begin
 
-    ;; Add trailing slash to paths
-    config_user_info@plot_dir = config_user_info@plot_dir + "/"
-    config_user_info@run_dir = config_user_info@run_dir + "/"
-    config_user_info@work_dir = config_user_info@work_dir + "/"
+  ;; Add trailing slash to paths
+  config_user_info@plot_dir = config_user_info@plot_dir + "/"
+  config_user_info@run_dir = config_user_info@run_dir + "/"
+  config_user_info@work_dir = config_user_info@work_dir + "/"
 
-    ;; Copy some info into legacy names
-    diag_script = diag_script_info@script
-    if isvar("variable_info") then
-        variables = (/variable_info@short_name/)
-        field_types = (/variable_info@field/)
-    end if
+  ;; Copy some info into legacy names
+  diag_script = diag_script_info@script
+  if isvar("variable_info") then
+    variables = (/variable_info@short_name/)
+    field_types = (/variable_info@field/)
+  end if
 
 end
 
@@ -47,4 +47,3 @@ end
 load "./interface_scripts/logging.ncl"
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/data_handling.ncl"
-
