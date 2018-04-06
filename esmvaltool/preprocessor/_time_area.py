@@ -1,4 +1,10 @@
-"""Bunch of utilities"""
+"""
+Time and area operations on data cubes
+
+Allows for selecting data subsets using certain time bounds;
+selecting geographical regions; constructing seasonal and area
+averages; checks on data time frequencies (daily, monthly etc)
+"""
 from datetime import timedelta
 import iris
 
