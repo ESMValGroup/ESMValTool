@@ -28,7 +28,7 @@ def which(executable):
     return None
 
 
-def _get_resource_usage(process, start_time, header=False):
+def _get_resource_usage(process, start_time, header=False, children=True):
     """Get resource usage."""
     if header:
         # return header instead of resource usage statistics
@@ -44,24 +44,38 @@ def _get_resource_usage(process, start_time, header=False):
         ]
         return '\t'.join(entries) + '\n'
 
+    if children:
+        # include child processes
+        processes = process.children(recursive=True)
+        processes.append(process)
+    else:
+        processes = [process]
+
+    # compute resource usage
     gigabyte = float(2**30)
-    with process.oneshot():
-        entries = [
-            datetime.datetime.utcnow(),
-            round(time.time() - start_time, 1),
-            round(sum(process.cpu_times()), 1),
-            round(process.cpu_percent()),
-            round(process.memory_info().rss / gigabyte, 1),
-            round(process.memory_percent()),
-            round(process.io_counters().read_bytes / gigabyte, 3),
-            round(process.io_counters().write_bytes / gigabyte, 3),
-        ]
+    entries = list(0. for _ in range(6))
+    for proc in processes:
+        entries[0] += proc.cpu_times().user + proc.cpu_times().system
+        entries[1] += proc.cpu_percent()
+        entries[2] += proc.memory_info().rss / gigabyte
+        entries[3] += proc.memory_percent()
+        entries[4] += proc.io_counters().read_bytes / gigabyte
+        entries[5] += proc.io_counters().write_bytes / gigabyte
+    entries.insert(0, time.time() - start_time)
+
+    # round
+    for i, j in enumerate([1, 1, None, 1, None, 3, 3]):
+        entries[i] = round(entries[i], j)
+
+    # preprend datetime
+    entries.insert(0, datetime.datetime.utcnow())
+
     fmt = '\t'.join(str(entry) for entry in entries) + '\n'
     return fmt.format(*entries)
 
 
 @contextlib.contextmanager
-def resource_usage_logger(pid, filename, interval=1):
+def resource_usage_logger(pid, filename, interval=0.1, children=True):
     """Log resource usage."""
     halt = threading.Event()
 
@@ -73,7 +87,8 @@ def resource_usage_logger(pid, filename, interval=1):
             file.write(_get_resource_usage(process, start_time, header=True))
             while not halt.is_set():
                 try:
-                    txt = _get_resource_usage(process, start_time)
+                    txt = _get_resource_usage(
+                        process, start_time, children=children)
                 except (OSError, psutil.AccessDenied, psutil.NoSuchProcess):
                     break
                 file.write(txt)
