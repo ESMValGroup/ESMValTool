@@ -137,8 +137,9 @@ def calc_lwcre(cubes):
 
     # Set names
     lwcre.var_name = 'lwcre'
-    lwcre.standard_name = ('toa_longwave_cloud_radiative_effect')
+    lwcre.standard_name = 'toa_longwave_cloud_radiative_effect'
     lwcre.long_name = 'TOA Longwave Cloud Radiative Effect'
+    lwcre.attributes['positive'] = 'up'
     return lwcre
 
 
