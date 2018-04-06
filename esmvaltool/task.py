@@ -74,8 +74,7 @@ def resource_usage_logger(pid, filename, interval=1):
             while not halt.is_set():
                 try:
                     txt = _get_resource_usage(process, start_time)
-                except (PermissionError, psutil.AccessDenied,
-                        psutil.NoSuchProcess):
+                except (OSError, psutil.AccessDenied, psutil.NoSuchProcess):
                     break
                 file.write(txt)
                 time.sleep(interval)
