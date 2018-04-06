@@ -48,6 +48,7 @@ class CMIP6Info(object):
 
     _CMIP_5to6_varname = {
         'sic': 'siconc',
+        'sit': 'sithick',
         'tro3': 'o3',
     }
 
@@ -87,7 +88,7 @@ class CMIP6Info(object):
                 frequency = None
 
             for var_name, var_data in raw_data['variable_entry'].items():
-                var = VariableInfo(var_name)
+                var = VariableInfo('CMIP6', var_name)
                 if 'frequency' in var_data:
                     var.frequency = var_data['frequency']
                 else:
@@ -207,7 +208,7 @@ class JsonInfo(object):
 
 
 class VariableInfo(JsonInfo):
-    def __init__(self, short_name):
+    def __init__(self, table_type, short_name):
         """
         Class to read and store variable information
 
@@ -218,6 +219,7 @@ class VariableInfo(JsonInfo):
 
         """
         super(VariableInfo, self).__init__()
+        self.table_type = table_type
         self.short_name = short_name
         self.standard_name = ''
         self.long_name = ''
@@ -418,7 +420,7 @@ class CMIP5Info(object):
                 setattr(coord, key, value)
 
     def _read_variable(self, value):
-        var = VariableInfo(value)
+        var = VariableInfo('CMIP5', value)
         while self._read_line():
             key, value = self._last_line_read
             if key in ('variable_entry', 'axis_entry'):

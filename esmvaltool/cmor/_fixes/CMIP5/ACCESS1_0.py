@@ -22,7 +22,7 @@ class rlut(Fix):
         iris.cube.Cube
 
         """
-        cube.attributes['positive'] = 'up'
+        # cube.attributes['positive'] = 'up'
         return cube
 
 

@@ -14,48 +14,49 @@ class TestVariableInfo(unittest.TestCase):
 
     def test_constructor(self):
         """Test basic constructor"""
-        info = VariableInfo('var')
+        info = VariableInfo('table_type', 'var')
+        self.assertEqual('table_type', info.table_type)
         self.assertEqual('var', info.short_name)
 
     def test_read_empty_dictionary(self):
         """Test read empty dict"""
-        info = VariableInfo('var')
+        info = VariableInfo('table_type', 'var')
         info.read_json({})
         self.assertEqual('', info.standard_name)
 
     def test_read_standard_name(self):
         """Test standard_name"""
-        info = VariableInfo('var')
+        info = VariableInfo('table_type', 'var')
         info.read_json({'standard_name': self.value})
         self.assertEqual(info.standard_name, self.value)
 
     def test_read_long_name(self):
         """Test long_name"""
-        info = VariableInfo('var')
+        info = VariableInfo('table_type', 'var')
         info.read_json({'long_name': self.value})
         self.assertEqual(info.long_name, self.value)
 
     def test_read_units(self):
         """Test units"""
-        info = VariableInfo('var')
+        info = VariableInfo('table_type', 'var')
         info.read_json({'units': self.value})
         self.assertEqual(info.units, self.value)
 
     def test_read_valid_min(self):
         """Test valid_min"""
-        info = VariableInfo('var')
+        info = VariableInfo('table_type', 'var')
         info.read_json({'valid_min': self.value})
         self.assertEqual(info.valid_min, self.value)
 
     def test_read_valid_max(self):
         """Test valid_max"""
-        info = VariableInfo('var')
+        info = VariableInfo('table_type', 'var')
         info.read_json({'valid_max': self.value})
         self.assertEqual(info.valid_max, self.value)
 
     def test_read_positive(self):
         """Test positive"""
-        info = VariableInfo('var')
+        info = VariableInfo('table_type', 'var')
         info.read_json({'positive': self.value})
         self.assertEqual(info.positive, self.value)
 

@@ -17,6 +17,7 @@ class VariableInfoMock:
     """Mock for the variables defintion"""
 
     def __init__(self):
+        self.table_type = 'CMIP5'
         self.short_name = 'short_name'
         self.standard_name = 'age_of_sea_ice'  # Iris don't accept fakes ...
         self.long_name = 'Long Name'
@@ -24,7 +25,7 @@ class VariableInfoMock:
         self.valid_min = '0'
         self.valid_max = '100'
         self.frequency = 'day'
-        self.positive = 'up'
+        self.positive = ''
 
         generic_level = CoordinateInfoMock('depth')
         generic_level.generic_level = True
@@ -163,6 +164,17 @@ class TestCMORCheck(unittest.TestCase):
         self.cube = self.get_cube(self.var_info)
         self._check_cube()
 
+    def test_check_with_no_positive_CMIP5(self):
+        self.cube = self.get_cube(self.var_info)
+        self.var_info.positive = 'up'
+        self._check_warnings_on_metadata()
+
+    def test_check_with_no_positive_CMIP6(self):
+        self.cube = self.get_cube(self.var_info)
+        self.var_info.positive = 'up'
+        self.var_info.table_type = 'CMIP6'
+        self._check_fails_in_metadata()
+
     def test_invalid_rank(self):
         """Test check fails in metadata step when rank is not correct"""
         self.cube.remove_coord('latitude')
@@ -181,6 +193,11 @@ class TestCMORCheck(unittest.TestCase):
             frequency=frequency)
         with self.assertRaises(CMORCheckError):
             checker.check_metadata()
+
+    def _check_warnings_on_metadata(self):
+        checker = CMORCheck(self.cube, self.var_info)
+        checker.check_metadata()
+        self.assertTrue(checker.has_warnings())
 
     def test_non_requested(self):
         """
