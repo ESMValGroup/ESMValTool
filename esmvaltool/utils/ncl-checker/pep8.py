@@ -405,10 +405,7 @@ def missing_whitespace(logical_line):
 def indentation(logical_line, previous_logical, indent_char,
                 indent_level, previous_indent_level):
     r"""
-    Use 4 spaces per indentation level.
-
-    For really old code that you don't want to mess up, you can continue to
-    use 8-space tabs.
+    Use 2 spaces per indentation level.
 
     Okay: a = 1
     Okay: if a == 0:\n    a = 1
@@ -420,7 +417,7 @@ def indentation(logical_line, previous_logical, indent_char,
     Okay: a = 1\nb = 2
     E113: a = 1\n    b = 2
     """
-    if indent_char == ' ' and indent_level % 4:
+    if indent_char == ' ' and indent_level % 2:
         yield 0, "E111 indentation is not a multiple of four"
     indent_expect = previous_logical.endswith(':')
     if indent_expect and indent_level <= previous_indent_level:
@@ -527,7 +524,7 @@ def continuation_line_indentation(logical_line, tokens, indent_level, verbose):
                 # visual indent is broken
                 yield (start, 'E128 continuation line '
                        'under-indented for visual indent')
-            elif hang == 4 or (indent_next and rel_indent[row] == 8):
+            elif hang == 2 or (indent_next and rel_indent[row] == 8):
                 # hanging indent is verified
                 pass
             else:
@@ -536,8 +533,8 @@ def continuation_line_indentation(logical_line, tokens, indent_level, verbose):
                     error = 'E122', 'missing indentation or outdented'
                 elif indent[depth]:
                     error = 'E127', 'over-indented for visual indent'
-                elif hang % 4:
-                    error = 'E121', 'indentation is not a multiple of four'
+                elif hang % 2:
+                    error = 'E121', 'indentation is not a multiple of two'
                 else:
                     error = 'E126', 'over-indented for hanging indent'
                 yield start, "%s continuation line %s" % error
