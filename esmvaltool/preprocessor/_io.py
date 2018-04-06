@@ -1,6 +1,7 @@
 """Functions for loading and saving cubes"""
 import logging
 import os
+import shutil
 
 import iris
 
@@ -27,7 +28,7 @@ def concatenate_callback(raw_cube, field, _):
             del raw_cube.attributes[attr]
     for coord in raw_cube.coords():
         # Iris chooses to change longitude and latitude units to degrees
-        #  regardless of value in file, so reinstating file value
+        # regardless of value in file, so reinstating file value
         if coord.standard_name in ['longitude', 'latitude']:
             units = _get_attr_from_field_coord(field, coord.var_name, 'units')
             if units is not None:
@@ -40,6 +41,8 @@ def load_cubes(files, filename, constraints=None, callback=None):
     cubes = iris.load_raw(files, constraints=constraints, callback=callback)
     iris.util.unify_time_units(cubes)
     cubes = cubes.concatenate()
+    if not cubes:
+        raise Exception('Can not load cubes from {0}'.format(files))
     for cube in cubes:
         cube.attributes['_filename'] = filename
     return cubes
@@ -84,3 +87,17 @@ def save_cubes(cubes, debug=False, step=None):
         _save_cubes(cubes=paths[filename], target=filename)
 
     return list(paths)
+
+
+def cleanup(files, remove=None):
+    """Clean up after running the preprocessor."""
+    if remove is None:
+        remove = []
+
+    for path in remove:
+        if os.path.isdir(path):
+            shutil.rmtree(path)
+        elif os.path.isfile(path):
+            os.remove(path)
+
+    return files

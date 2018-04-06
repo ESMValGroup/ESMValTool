@@ -8,7 +8,7 @@ from iris.cube import Cube
 from ..task import AbstractTask
 from ._derive import derive
 from ._download import download
-from ._io import load_cubes, save_cubes
+from ._io import cleanup, load_cubes, save_cubes
 from ._mask import mask_fillvalues, mask_landocean
 from ._multimodel import multi_model_statistics
 from ._reformat import fix_data, fix_file, fix_metadata, cmor_check_data
@@ -57,6 +57,7 @@ PREPROCESSOR_FUNCTIONS = {
     'cmor_check_data': cmor_check_data,
     # Save to file
     'save': save_cubes,
+    'cleanup': cleanup,
 }
 
 DEFAULT_ORDER = (
@@ -78,6 +79,7 @@ DEFAULT_ORDER = (
     'multi_model_statistics',
     'cmor_check_data',
     'save',
+    'cleanup',
 )
 assert set(DEFAULT_ORDER) == set(PREPROCESSOR_FUNCTIONS)
 
@@ -95,6 +97,7 @@ _LIST_INPUT_FUNCTIONS = {
     'mask_fillvalues',
     'multi_model_statistics',
     'save',
+    'cleanup',
 }
 assert _LIST_INPUT_FUNCTIONS.issubset(set(PREPROCESSOR_FUNCTIONS))
 
@@ -105,6 +108,7 @@ _LIST_OUTPUT_FUNCTIONS = {
     'mask_fillvalues',
     'multi_model_statistics',
     'save',
+    'cleanup',
 }
 assert _LIST_OUTPUT_FUNCTIONS.issubset(set(PREPROCESSOR_FUNCTIONS))
 

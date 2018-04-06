@@ -21,7 +21,9 @@ def _read_cmor_tables():
     for table in _CFG.keys():
         project = _CFG[table]
 
-        table_path = project.get('cmor_table')
+        table_path = project.get('cmor_tables', '')
+        table_path = os.path.expandvars(os.path.expanduser(table_path))
+
         cmor_type = project.get('cmor_type', 'CMIP5')
 
         if cmor_type == 'CMIP5':
