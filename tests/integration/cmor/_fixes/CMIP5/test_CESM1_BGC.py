@@ -29,6 +29,15 @@ class TestAll(unittest.TestCase):
         self.assertEqual(time.units.origin, 'days since 1850-01-01 00:00:00')
         self.assertEqual(time.units.calendar, 'standard')
 
+    def test_fix_data(self):
+        self.cube.coord('time').units = Unit('days since 1950-01-01 00:00:00',
+                                             calendar='standard')
+        cube = self.fix.fix_metadata(self.cube)
+
+        time = cube.coord('time')
+        self.assertEqual(time.units.origin, 'days since 1950-01-01 00:00:00')
+        self.assertEqual(time.units.calendar, 'standard')
+
 
 class TestCo2(unittest.TestCase):
     def setUp(self):
