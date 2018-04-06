@@ -55,46 +55,46 @@ procedure copy_VarCoords_l1(var_from,
 local funcname, scriptname, dims_from, dims, rank_from, rank, dimdiff, idimdiff
 begin
 
-    funcname = "copy_VarCoords_l1"
-    scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "copy_VarCoords_l1"
+  scriptname = "interface_scripts/auxiliary.ncl"
+  enter_msg(scriptname, funcname)
 
-    dims_from = getvardims(var_from)
-    rank_from = dimsizes(dims_from)
-    dims = getvardims(var_to)
-    rank = dimsizes(dims)
+  dims_from = getvardims(var_from)
+  rank_from = dimsizes(dims_from)
+  dims = getvardims(var_to)
+  rank = dimsizes(dims)
 
-    if(rank.gt.1) then
+  if(rank.gt.1) then
 
-        ;; Check input
-        if(rank_from.ne.rank) then  ; check rank
-            error_msg("f", scriptname, funcname, \
-                      "var_from and var_to must have same rank")
-        else  ; check dimensions
-            dimdiff = dimsizes(var_from) - dimsizes(var_to)
-            idimdiff = ind(dimdiff.ne.0)
-            if(.not.all(ismissing(idimdiff))) then
-                if(sum(idimdiff).ne.0) then  ; more or other than leftmost dim
-                    error_msg("f", scriptname, funcname, \
-                              "var_from and var_to must have same " + \
-                              "dimension sizes, except the leftmost")
-                end if
-            end if
+    ;; Check input
+    if(rank_from.ne.rank) then  ; check rank
+      error_msg("f", scriptname, funcname, \
+                "var_from and var_to must have same rank")
+    else  ; check dimensions
+      dimdiff = dimsizes(var_from) - dimsizes(var_to)
+      idimdiff = ind(dimdiff.ne.0)
+      if(.not.all(ismissing(idimdiff))) then
+        if(sum(idimdiff).ne.0) then  ; more or other than leftmost dim
+          error_msg("f", scriptname, funcname, \
+                    "var_from and var_to must have same " + \
+                    "dimension sizes, except the leftmost")
         end if
-
-        ;; Loop over dimensions
-        do i = 1, rank - 1
-            var_to!i = dims_from(i)
-            var_to&$dims_from(i)$ = var_from&$dims_from(i)$
-        end do
-
-    else
-
-        log_debug("No coordinates to process in copy_VarCoords_l1")
-
+      end if
     end if
 
-    leave_msg(scriptname, funcname)
+    ;; Loop over dimensions
+    do i = 1, rank - 1
+      var_to!i = dims_from(i)
+      var_to&$dims_from(i)$ = var_from&$dims_from(i)$
+    end do
+
+  else
+
+    log_debug("No coordinates to process in copy_VarCoords_l1")
+
+  end if
+
+  leave_msg(scriptname, funcname)
 
 end
 
@@ -124,23 +124,23 @@ procedure check_min_max_models(no_models[1]:integer,
 local funcname, scriptname
 begin
 
-    funcname = "check_min_max_models"
-    scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "check_min_max_models"
+  scriptname = "interface_scripts/auxiliary.ncl"
+  enter_msg(scriptname, funcname)
 
-    if (no_models .lt. min_no_models) then
-        error_msg("f", scriptname, funcname,\
-                  "Too few models (=" + no_models + ") for " + diag_script \
-                  + ". Mininum is " + min_no_models)
-    end if
-    
-    if (no_models .gt. max_no_models) then
-        error_msg("f", scriptname, funcname,\
-                  "Too many models (=" + no_models + ") for " + diag_script \
-                  + ". Maximum is " + max_no_models)
-    end if
+  if (no_models .lt. min_no_models) then
+    error_msg("f", scriptname, funcname,\
+              "Too few models (=" + no_models + ") for " + diag_script \
+              + ". Mininum is " + min_no_models)
+  end if
 
-    leave_msg(scriptname, funcname)
+  if (no_models .gt. max_no_models) then
+    error_msg("f", scriptname, funcname,\
+              "Too many models (=" + no_models + ") for " + diag_script \
+              + ". Maximum is " + max_no_models)
+  end if
+
+  leave_msg(scriptname, funcname)
 
 end
 
@@ -168,85 +168,85 @@ function tstep(utc:numeric)
 local funcname, scriptname, t, dt, nt, y, m, d, h, n, s, option, units
 begin
 
-    funcname = "tstep"
-    scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "tstep"
+  scriptname = "interface_scripts/auxiliary.ncl"
+  enter_msg(scriptname, funcname)
 
-    ;; extract vectors
-    y = toint(utc(:, 0))
-    m = toint(utc(:, 1))
-    d = toint(utc(:, 2))
-    h = toint(utc(:, 3))
-    n = toint(utc(:, 4))  ; minutes
-    s = toint(utc(:, 5))
+  ;; extract vectors
+  y = toint(utc(:, 0))
+  m = toint(utc(:, 1))
+  d = toint(utc(:, 2))
+  h = toint(utc(:, 3))
+  n = toint(utc(:, 4))  ; minutes
+  s = toint(utc(:, 5))
 
-    ;; convert to seconds after y(0)-01-01 00:00:00
-    units = "seconds after " + tostring(y(0)) + "-01-01 00:00:00"
-    option = 0
-    option@calendar = "standard"
-    t = cd_inv_calendar(y, m, d, h, n, s, units, option)
+  ;; convert to seconds after y(0)-01-01 00:00:00
+  units = "seconds after " + tostring(y(0)) + "-01-01 00:00:00"
+  option = 0
+  option@calendar = "standard"
+  t = cd_inv_calendar(y, m, d, h, n, s, units, option)
 
-    ;; create vector of tstep lengths
-    nt = dimsizes(t)
-    dt = tolong(t(1:nt - 1)) - tolong(t(0:nt - 2))
+  ;; create vector of tstep lengths
+  nt = dimsizes(t)
+  dt = tolong(t(1:nt - 1)) - tolong(t(0:nt - 2))
 
-    ;; check mean dt
-    mdt = avg(dt)
-    if (mdt.eq.1) then
-        result = "s"
-    else if (mdt.eq.60) then
-        result = "m"
-    else if (mdt.eq.3600) then
-        result = "h"
-    else if (mdt.eq.86400) then
-        result = "d"
-    else if (mdt.ge.2419200 .and. mdt.le.2678400) then
-        result = "mon"  ; 28 ... 31 days
-    else if (mdt.ge.7776000 .and. mdt.le.7948800) then
-        result = "sea"  ; 90 ... 92 days
-    else if (mdt.ge.31536000 .and. mdt.le.31622400) then
-        result = "yea"  ; 365 ... 366 days
-    else
-        error_msg("f", scriptname, funcname, "could not determine " + \
-                  "step length for mdt = " + mdt)
-    end if
-    end if
-    end if
-    end if
-    end if
-    end if
-    end if
+  ;; check mean dt
+  mdt = avg(dt)
+  if (mdt.eq.1) then
+    result = "s"
+  else if (mdt.eq.60) then
+    result = "m"
+  else if (mdt.eq.3600) then
+    result = "h"
+  else if (mdt.eq.86400) then
+    result = "d"
+  else if (mdt.ge.2419200 .and. mdt.le.2678400) then
+    result = "mon"  ; 28 ... 31 days
+  else if (mdt.ge.7776000 .and. mdt.le.7948800) then
+    result = "sea"  ; 90 ... 92 days
+  else if (mdt.ge.31536000 .and. mdt.le.31622400) then
+    result = "yea"  ; 365 ... 366 days
+  else
+    error_msg("f", scriptname, funcname, "could not determine " + \
+              "step length for mdt = " + mdt)
+  end if
+  end if
+  end if
+  end if
+  end if
+  end if
+  end if
 
-    ;; check if all dt match the result
-    check_flag = False
-    if (result.eq."s" .or. result.eq."m" .or. \
-        result.eq."h" .or. result.eq."d") then
-        if (max(dt) - min(dt) .ne. 0) then
-            check_flag = True
-        end if
-    else if (result.eq."mon") then
-        if (max(dt) - min(dt) .gt. 259200) then
-            check_flag = True
-        end if  ; 31-28 = 3 days
-    else if (result.eq."sea") then
-        if (max(dt) - min(dt) .gt. 172800) then
-            check_flag = True
-        end if  ; 92-90 = 2 days
-    else if (result.eq."yea") then
-        if (max(dt) - min(dt) .gt. 86400) then
-            check_flag = True
-        end if  ; 366-365 = 1 days
+  ;; check if all dt match the result
+  check_flag = False
+  if (result.eq."s" .or. result.eq."m" .or. \
+      result.eq."h" .or. result.eq."d") then
+    if (max(dt) - min(dt) .ne. 0) then
+      check_flag = True
     end if
-    end if
-    end if
-    end if
-    if (check_flag) then
-        error_msg("f", scriptname, funcname, "range of dt is not " + \
-                  "consistent with " + result)
-    end if
+  else if (result.eq."mon") then
+    if (max(dt) - min(dt) .gt. 259200) then
+      check_flag = True
+    end if  ; 31-28 = 3 days
+  else if (result.eq."sea") then
+    if (max(dt) - min(dt) .gt. 172800) then
+      check_flag = True
+    end if  ; 92-90 = 2 days
+  else if (result.eq."yea") then
+    if (max(dt) - min(dt) .gt. 86400) then
+      check_flag = True
+    end if  ; 366-365 = 1 days
+  end if
+  end if
+  end if
+  end if
+  if (check_flag) then
+    error_msg("f", scriptname, funcname, "range of dt is not " + \
+              "consistent with " + result)
+  end if
 
-    leave_msg(scriptname, funcname)
-    return(result)
+  leave_msg(scriptname, funcname)
+  return(result)
 
 end
 
@@ -272,21 +272,21 @@ function get_ncdf_name(var[1]:string)
 local funcname, scriptname, work_dir, diag_script, output_dir, ncdf_dir
 begin
 
-    funcname = "get_ncdf_name"
-    scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "get_ncdf_name"
+  scriptname = "interface_scripts/auxiliary.ncl"
+  enter_msg(scriptname, funcname)
 
-    ;; Collect parts of outfile name
-    work_dir = config_user_info@work_dir + "/"
+  ;; Collect parts of outfile name
+  work_dir = config_user_info@work_dir + "/"
 
-    ;; Create work dir
-    system("mkdir -p " + work_dir)
+  ;; Create work dir
+  system("mkdir -p " + work_dir)
 
-    ;; Assemble final name
-    outfile = work_dir + var + ".nc"
+  ;; Assemble final name
+  outfile = work_dir + var + ".nc"
 
-    leave_msg(scriptname, funcname)
-    return(outfile)
+  leave_msg(scriptname, funcname)
+  return(outfile)
 
 end
 
@@ -316,17 +316,17 @@ function get_ncdf_dir(work_dir[1]:string,
 local funcname, scriptname, work_dir, subfolder, ncdf_dir
 begin
 
-    funcname = "get_ncdf_dir"
-    scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "get_ncdf_dir"
+  scriptname = "interface_scripts/auxiliary.ncl"
+  enter_msg(scriptname, funcname)
 
-    ncdf_dir = work_dir + subfolder + "/"
-    if (.not. fileexists(ncdf_dir)) then
-        system("mkdir -p " + ncdf_dir)
-    end if
+  ncdf_dir = work_dir + subfolder + "/"
+  if (.not. fileexists(ncdf_dir)) then
+    system("mkdir -p " + ncdf_dir)
+  end if
 
-    leave_msg(scriptname, funcname)
-    return(ncdf_dir)
+  leave_msg(scriptname, funcname)
+  return(ncdf_dir)
 
 end
 
@@ -369,84 +369,84 @@ function ncdf_read(infile, varname)
 ;;    20131111-A_gott_kl: written.
 ;;
 local funcname, scriptname, data, infile, ncdf, varname, i, ivar, nvar, \
-    vdims, var, atts, temp, defaults
+  vdims, var, atts, temp, defaults
 begin
 
-    funcname = "ncdf_read"
-    scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "ncdf_read"
+  scriptname = "interface_scripts/auxiliary.ncl"
+  enter_msg(scriptname, funcname)
 
-    ;; Open file for reading
-    if (fileexists(infile)) then
-        ncdf = addfile(infile, "r")
-    else
-        error_msg("f", scriptname, funcname, infile + " does not exist")
-    end if
+  ;; Open file for reading
+  if (fileexists(infile)) then
+    ncdf = addfile(infile, "r")
+  else
+    error_msg("f", scriptname, funcname, infile + " does not exist")
+  end if
 
-    ;; Determine (number of) variables, exclusive coordinates
-    vNames = getfilevarnames(ncdf)
-    nvar = new(dimsizes(vNames), integer)
-    nvar(:) = 1  ; used for flagging non-coordinate vars
-    do ivar = 0, dimsizes(vNames) - 1
-        vdims = getfilevardims(ncdf, vNames(ivar))
-        if (vdims(0) .eq. vNames(ivar)) then
-            nvar(ivar) = 0  ; coordinate variable
-        end if
-        delete(vdims)
-    end do
-    var = vNames(ind(nvar .eq. 1))  ; non-coordinate vars
+  ;; Determine (number of) variables, exclusive coordinates
+  vNames = getfilevarnames(ncdf)
+  nvar = new(dimsizes(vNames), integer)
+  nvar(:) = 1  ; used for flagging non-coordinate vars
+  do ivar = 0, dimsizes(vNames) - 1
+    vdims = getfilevardims(ncdf, vNames(ivar))
+    if (vdims(0) .eq. vNames(ivar)) then
+      nvar(ivar) = 0  ; coordinate variable
+    end if
+    delete(vdims)
+  end do
+  var = vNames(ind(nvar .eq. 1))  ; non-coordinate vars
 
-    ;; Cases for reading
-    defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
-    if (any(varname .eq. defaults)) then  ; allow synonyms
-        varname = "dummy"  ; unify
-    end if
-    if (varname .eq. "dummy" .and. dimsizes(var) .eq. 1) then
-        data = ncdf->$var$
-    else if (varname .eq. "dummy" .and. dimsizes(var) .ne. 1) then
-        error_msg("f", scriptname, funcname, "please select variable " + \
-                  "from " + infile)
-    else if (varname .ne. "dummy" .and. any(varname .eq. vNames)) then
-        i = ind(vNames .eq. varname)
-        data = ncdf->$vNames(i)$
-    else if (varname .ne. "dummy" .and. .not. any(varname .eq. vNames)) then
-        error_msg("f", scriptname, funcname, "variable " + varname + \
-                  " not in " + infile)
-    else
-        error_msg("f", scriptname, funcname, "case not covered")
-    end if
-    end if
-    end if
-    end if
+  ;; Cases for reading
+  defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
+  if (any(varname .eq. defaults)) then  ; allow synonyms
+    varname = "dummy"  ; unify
+  end if
+  if (varname .eq. "dummy" .and. dimsizes(var) .eq. 1) then
+    data = ncdf->$var$
+  else if (varname .eq. "dummy" .and. dimsizes(var) .ne. 1) then
+    error_msg("f", scriptname, funcname, "please select variable " + \
+              "from " + infile)
+  else if (varname .ne. "dummy" .and. any(varname .eq. vNames)) then
+    i = ind(vNames .eq. varname)
+    data = ncdf->$vNames(i)$
+  else if (varname .ne. "dummy" .and. .not. any(varname .eq. vNames)) then
+    error_msg("f", scriptname, funcname, "variable " + varname + \
+              " not in " + infile)
+  else
+    error_msg("f", scriptname, funcname, "case not covered")
+  end if
+  end if
+  end if
+  end if
 
-    ;; Convert attributes to type logical, if they meet above conditions
-    atts = getvaratts(data)
-    do i = 0, dimsizes(atts) - 1
-        if (typeof(data@$atts(i)$) .eq. "integer" .and. \
-            dimsizes(data@$atts(i)$) .eq. 1) then
-            if (data@$atts(i)$ .eq. 1 .or. data@$atts(i)$ .eq. 0) then
-                temp = new(1, logical)
-                temp = data@$atts(i)$
-                delete(data@$atts(i)$)
-                data@$atts(i)$ = temp
-                delete(temp)
-            end if
-        end if
-    end do
+  ;; Convert attributes to type logical, if they meet above conditions
+  atts = getvaratts(data)
+  do i = 0, dimsizes(atts) - 1
+    if (typeof(data@$atts(i)$) .eq. "integer" .and. \
+        dimsizes(data@$atts(i)$) .eq. 1) then
+      if (data@$atts(i)$ .eq. 1 .or. data@$atts(i)$ .eq. 0) then
+        temp = new(1, logical)
+        temp = data@$atts(i)$
+        delete(data@$atts(i)$)
+        data@$atts(i)$ = temp
+        delete(temp)
+      end if
+    end if
+  end do
 
-    ;; Converts named coordinates back to strings and append them to the data
-    coord_ind = ind(nvar.eq.0)
-    do j = 0, dimsizes(vNames(coord_ind)) - 1
-        new_coord = ncdf->$vNames(coord_ind(j))$
-        if ((isatt(new_coord, "named_coordinate")).and. \
-            (new_coord@named_coordinate.eq.1)) then
-            data&$vNames(coord_ind(j))$ = chartostring(new_coord)
-        end if
-        delete(new_coord)
-    end do
+  ;; Converts named coordinates back to strings and append them to the data
+  coord_ind = ind(nvar.eq.0)
+  do j = 0, dimsizes(vNames(coord_ind)) - 1
+    new_coord = ncdf->$vNames(coord_ind(j))$
+    if ((isatt(new_coord, "named_coordinate")).and. \
+        (new_coord@named_coordinate.eq.1)) then
+      data&$vNames(coord_ind(j))$ = chartostring(new_coord)
+    end if
+    delete(new_coord)
+  end do
 
-    leave_msg(scriptname, funcname)
-    return(data)
+  leave_msg(scriptname, funcname)
+  return(data)
 
 end
 
@@ -484,7 +484,8 @@ function ncdf_write(data,
 ;;    dimsizes = 1 & value 0 or 1 as logicals.
 ;;
 ;; References
-;;    http://www.ncl.ucar.edu/Document/Manuals/Ref_Manual/NclFormatSupport.shtml#NetCDF
+;;    http://www.ncl.ucar.edu/Document/Manuals/Ref_Manual/
+;;      NclFormatSupport.shtml#NetCDF
 ;;    http://www.ncl.ucar.edu/Applications/o-netcdf.shtml
 ;;    http://www.ncl.ucar.edu/Support/talk_archives/2009/0367.html
 ;;
@@ -494,70 +495,69 @@ function ncdf_write(data,
 local funcname, scriptname, data, outfile, outfile_in, ncdf, varname
 begin
 
-    funcname = "ncdf_write"
-    scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "ncdf_write"
+  scriptname = "interface_scripts/auxiliary.ncl"
+  enter_msg(scriptname, funcname)
 
-    ;; Retrieve special attributes
-    varname = att2var(data, "var")
+  ;; Retrieve special attributes
+  varname = att2var(data, "var")
 
-    ;; Determine outfile
-    defaulting = (/"default", "dummy"/)
-    if (typeof(outfile_in) .ne. "string" .or. \
-        .not.ismissing(ind(defaulting .eq. outfile_in))) then
-        outfile = get_ncdf_name(varname)
+  ;; Determine outfile
+  defaulting = (/"default", "dummy"/)
+  if (typeof(outfile_in) .ne. "string" .or. \
+      .not.ismissing(ind(defaulting .eq. outfile_in))) then
+    outfile = get_ncdf_name(varname)
+  else
+    outfile = outfile_in
+  end if
+
+  ;; Determine mode for dealing with existing files
+  if (isatt(outfile, "existing")) then
+    existing = outfile@existing
+  else
+    existing = "overwrite"   ; Default
+  end if
+
+  ;; Open outfile (see NCL documentation for "addfile")
+  if (fileexists(outfile)) then  ; Outfile already exists
+    if (existing .eq. "rename") then
+      sysdate = systemfunc("date +%Y%m%d%H%M%S")
+      system("mv " + outfile + " " + outfile + "." + sysdate)
+      ncdf = addfile(outfile, "c")
+      log_debug(" Keeping existing " + outfile + " with suffix ." + sysdate)
+    else if (existing .eq. "append") then
+      ncdf = addfile(outfile, "w")
     else
-        outfile = outfile_in
+      system("rm -f " + outfile)
+      ncdf = addfile(outfile, "c")
     end if
-
-    ;; Determine mode for dealing with existing files
-    if (isatt(outfile, "existing")) then
-        existing = outfile@existing
-    else
-        existing = "overwrite"   ; Default
     end if
+  else  ; Outfile does not exist yet
+    ncdf = addfile(outfile, "c")
+  end if
 
-    ;; Open outfile (see NCL documentation for "addfile")
-    if (fileexists(outfile)) then  ; Outfile already exists
-        if (existing .eq. "rename") then
-            sysdate = systemfunc("date +%Y%m%d%H%M%S")
-            system("mv " + outfile + " " + outfile + "." + sysdate)
-            ncdf = addfile(outfile, "c")
-            log_debug(" Keeping existing " + outfile + " with suffix ." + \
-                      sysdate)
-        else if (existing .eq. "append") then
-            ncdf = addfile(outfile, "w")
-        else
-            system("rm -f " + outfile)
-            ncdf = addfile(outfile, "c")
-        end if
-        end if
-    else  ; Outfile does not exist yet
-        ncdf = addfile(outfile, "c")
-    end if
-
-    ;; Write to netCDF
-    ;; Option 1: q&d
+  ;; Write to netCDF
+  ;; Option 1: q&d
 ;    ncdf->$varname$ = data
-    ;; Option 2: write with explicit file definition
-    dimNames = getvardims(data)
-    ncdf = ncdf_define(ncdf, data)
-    do i = 0, dimsizes(dimNames) - 1
-        if (typeof(data&$dimNames(i)$).eq."string") then
-            ;; Convert string array to two dimensional character array
-            char_array = stringtochar(data&$dimNames(i)$)
-            ncdf->$dimNames(i)$ = (/char_array/)
-            delete(char_array)
-        else
-            ncdf->$dimNames(i)$ = (/data&$dimNames(i)$/)
-        end if
-    end do
-    ncdf->$varname$ = (/data/)
+  ;; Option 2: write with explicit file definition
+  dimNames = getvardims(data)
+  ncdf = ncdf_define(ncdf, data)
+  do i = 0, dimsizes(dimNames) - 1
+    if (typeof(data&$dimNames(i)$).eq."string") then
+      ;; Convert string array to two dimensional character array
+      char_array = stringtochar(data&$dimNames(i)$)
+      ncdf->$dimNames(i)$ = (/char_array/)
+      delete(char_array)
+    else
+      ncdf->$dimNames(i)$ = (/data&$dimNames(i)$/)
+    end if
+  end do
+  ncdf->$varname$ = (/data/)
 
-    log_info("Wrote variable " + varname + " to " + outfile)
+  log_info("Wrote variable " + varname + " to " + outfile)
 
-    leave_msg(scriptname, funcname)
-    return(outfile)
+  leave_msg(scriptname, funcname)
+  return(outfile)
 
 end
 
@@ -588,33 +588,31 @@ function ncdf_att(infile[1],
 local funcname, scriptname, f, file_atts, i, result
 begin
 
-    funcname = "ncdf_att"
-    scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "ncdf_att"
+  scriptname = "interface_scripts/auxiliary.ncl"
+  enter_msg(scriptname, funcname)
 
-    if (typeof(infile).eq."string") then
-        f = addfile(infile, "r")
-        str_infile = infile
-    else if (typeof(infile).eq."file") then
-        f = infile
-        str_infile = "file associated with file variable argument."
-    else
-        error_msg("f", scriptname, funcname, "wrong type of infile " + \
-                  "argument")
-    end if
-    end if
-    file_atts = getvaratts(f)  ; retrieve global attributes
-    if (any(file_atts.eq.att)) then
-        i = ind(file_atts.eq.att)
-        result = f@$file_atts(i)$
-    else
-        error_msg("w", scriptname, funcname, att + " not found in " + \
-                  str_infile)
-        result = "missing"
-    end if
+  if (typeof(infile).eq."string") then
+    f = addfile(infile, "r")
+    str_infile = infile
+  else if (typeof(infile).eq."file") then
+    f = infile
+    str_infile = "file associated with file variable argument."
+  else
+    error_msg("f", scriptname, funcname, "wrong type of infile argument")
+  end if
+  end if
+  file_atts = getvaratts(f)  ; retrieve global attributes
+  if (any(file_atts.eq.att)) then
+    i = ind(file_atts.eq.att)
+    result = f@$file_atts(i)$
+  else
+    error_msg("w", scriptname, funcname, att + " not found in " + str_infile)
+    result = "missing"
+  end if
 
-    leave_msg(scriptname, funcname)
-    return(result)
+  leave_msg(scriptname, funcname)
+  return(result)
 
 end
 
@@ -641,96 +639,95 @@ function ncdf_define(ncdf, data)
 ;;    20131112-A_gott_kl: written.
 ;;
 local funcname, scriptname, data, diag_script, var, fAtt, dimNames, dimSzs, \
-    dimUnlim
+  dimUnlim
 begin
 
-    funcname = "ncdf_define"
-    scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "ncdf_define"
+  scriptname = "interface_scripts/auxiliary.ncl"
+  enter_msg(scriptname, funcname)
 
-    diag_script = att2var(data, "diag_script")
-    var = att2var(data, "var")
+  diag_script = att2var(data, "diag_script")
+  var = att2var(data, "var")
 
-    ;; Explicitly declare file definition mode. Improve efficiency.
-    setfileoption(ncdf, "DefineMode", True)
+  ;; Explicitly declare file definition mode. Improve efficiency.
+  setfileoption(ncdf, "DefineMode", True)
 
-    ;; Create global attributes of the file
-    fAtt               = True  ; assign file attributes
-    fAtt@creation_date = systemfunc("date")
-    fAtt@created_by    = "ESMValTool, " + diag_script
+  ;; Create global attributes of the file
+  fAtt               = True  ; assign file attributes
+  fAtt@creation_date = systemfunc("date")
+  fAtt@created_by    = "ESMValTool, " + diag_script
 
-    fileattdef(ncdf, fAtt)   ; copy file attributes
+  fileattdef(ncdf, fAtt)   ; copy file attributes
 
-    ;; Predefine the coordinate variables and their dimensionality
-    ;; Note: to get an UNLIMITED record dimension, we set the dimensionality
-    ;; to -1 (or the actual size) and set the dimension name to True.
-    dimNames = getvardims(data)
-    dim_dim = dimsizes(dimNames)
-    dimSzs = new(dimsizes(dimNames), long)
-    dimUnlim = new(dimsizes(dimNames), logical)
-    dimUnlim(:) = False
+  ;; Predefine the coordinate variables and their dimensionality
+  ;; Note: to get an UNLIMITED record dimension, we set the dimensionality
+  ;; to -1 (or the actual size) and set the dimension name to True.
+  dimNames = getvardims(data)
+  dim_dim = dimsizes(dimNames)
+  dimSzs = new(dimsizes(dimNames), long)
+  dimUnlim = new(dimsizes(dimNames), logical)
+  dimUnlim(:) = False
 
-    do i = 0, dim_dim - 1
-        dimSzs(i) = dimsizes(data&$dimNames(i)$)
-    end do
+  do i = 0, dim_dim - 1
+    dimSzs(i) = dimsizes(data&$dimNames(i)$)
+  end do
 
-    do ii = 0, dim_dim - 1
-        if (typeof(data&$dimNames(ii)$).eq."string") then
-            ;; Add necessary infomation to the dim* arrays
-            dim_coord = dimsizes(stringtochar(data&$dimNames(ii)$))
-            ;; If coordinate has length 1
-            if (dimsizes(dim_coord).eq.1) then
-                dimc = dim_coord(0)
-            else
-                dimc = dim_coord(1)
-            end if
-            new_dimSzs = array_append_record(dimSzs, tolong(dimc), 0)
-            new_dimUnlim = array_append_record(dimUnlim, False, 0)
-            new_dimNames = array_append_record(dimNames, \
-                                               dimNames(ii) + "_char", 0)
+  do ii = 0, dim_dim - 1
+    if (typeof(data&$dimNames(ii)$).eq."string") then
+      ;; Add necessary infomation to the dim* arrays
+      dim_coord = dimsizes(stringtochar(data&$dimNames(ii)$))
+      ;; If coordinate has length 1
+      if (dimsizes(dim_coord).eq.1) then
+        dimc = dim_coord(0)
+      else
+        dimc = dim_coord(1)
+      end if
+      new_dimSzs = array_append_record(dimSzs, tolong(dimc), 0)
+      new_dimUnlim = array_append_record(dimUnlim, False, 0)
+      new_dimNames = array_append_record(dimNames, dimNames(ii) + "_char", 0)
 
-            ;; Delete and reattach to previous variable
-            delete([/dimSzs, dimUnlim, dimNames/])
-            dimSzs = new_dimSzs
-            dimUnlim = new_dimUnlim
-            dimNames = new_dimNames
-            delete([/new_dimSzs, new_dimUnlim, new_dimNames/])
-            delete(dim_coord)
-            jj = 1  ; counter initialization for later use
-        end if
-    end do
+       ;; Delete and reattach to previous variable
+      delete([/dimSzs, dimUnlim, dimNames/])
+      dimSzs = new_dimSzs
+      dimUnlim = new_dimUnlim
+      dimNames = new_dimNames
+      delete([/new_dimSzs, new_dimUnlim, new_dimNames/])
+      delete(dim_coord)
+      jj = 1  ; counter initialization for later use
+    end if
+  end do
 
-    filedimdef(ncdf, dimNames, dimSzs, dimUnlim)
-    ;; Predefine the the dimensionality of the variables to be written out
-    do i = 0, dim_dim - 1
-        if (typeof(data&$dimNames(i)$).eq."string") then
-            ;; Attach second dimension (character array) to variable
-            filevardef(ncdf, dimNames(i), "character", \
-                       (/getvardims(data&$dimNames(i)$), \
-                       dimNames(dim_dim + jj - 1)/))
-            data&$dimNames(i)$@named_coordinate = True  ; set flag attribute
-            jj = jj + 1
-        else
-            filevardef(ncdf, dimNames(i), typeof(data&$dimNames(i)$),\
-                       getvardims(data&$dimNames(i)$))
-        end if
-    end do
-    filevardef(ncdf, var, typeof(data), getvardims(data))
+  filedimdef(ncdf, dimNames, dimSzs, dimUnlim)
+  ;; Predefine the the dimensionality of the variables to be written out
+  do i = 0, dim_dim - 1
+    if (typeof(data&$dimNames(i)$).eq."string") then
+      ;; Attach second dimension (character array) to variable
+      filevardef(ncdf, dimNames(i), "character", \
+                 (/getvardims(data&$dimNames(i)$), \
+                 dimNames(dim_dim + jj - 1)/))
+      data&$dimNames(i)$@named_coordinate = True  ; set flag attribute
+      jj = jj + 1
+    else
+      filevardef(ncdf, dimNames(i), typeof(data&$dimNames(i)$), \
+                 getvardims(data&$dimNames(i)$))
+    end if
+  end do
+  filevardef(ncdf, var, typeof(data), getvardims(data))
 
-    ;; Copy attributes associated with each variable to the file
-    do i = 0, dim_dim - 1
-        ;; No attribute assignment to variable if no attributes are available
-        if (.not.(all(ismissing(getvaratts(data&$dimNames(i)$))))) then
-            filevarattdef(ncdf, dimNames(i), data&$dimNames(i)$)
-        end if
-    end do
-    filevarattdef(ncdf, var, data)
+  ;; Copy attributes associated with each variable to the file
+  do i = 0, dim_dim - 1
+    ;; No attribute assignment to variable if no attributes are available
+    if (.not.(all(ismissing(getvaratts(data&$dimNames(i)$))))) then
+        filevarattdef(ncdf, dimNames(i), data&$dimNames(i)$)
+    end if
+  end do
+  filevarattdef(ncdf, var, data)
 
-    ;; Explicitly exit file definition mode. **NOT REQUIRED**
-    setfileoption(ncdf, "DefineMode", False)
+  ;; Explicitly exit file definition mode. **NOT REQUIRED**
+  setfileoption(ncdf, "DefineMode", False)
 
-    leave_msg(scriptname, funcname)
-    return(ncdf)
+  leave_msg(scriptname, funcname)
+  return(ncdf)
 
 end
 
@@ -768,21 +765,21 @@ function att2var_default(data,
 local funcname, scriptname, data, meta, result, default, option
 begin
 
-    funcname = "att2var_default"
-    scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "att2var_default"
+  scriptname = "interface_scripts/auxiliary.ncl"
+  enter_msg(scriptname, funcname)
 
-    result = att2var(data, meta)
-    if(dimsizes(result).eq.1) then
-        if(result.eq.default_fillvalue("string")) then
-            log_debug("Using default: " + meta + " = " + tostring(default))
-            result = default
-            copy_VarMeta(default, result)
-        end if
+  result = att2var(data, meta)
+  if(dimsizes(result).eq.1) then
+    if(result.eq.default_fillvalue("string")) then
+      log_debug("Using default: " + meta + " = " + tostring(default))
+      result = default
+      copy_VarMeta(default, result)
     end if
+  end if
 
-    leave_msg(scriptname, funcname)
-    return(result)
+  leave_msg(scriptname, funcname)
+  return(result)
 
 end
 
@@ -818,71 +815,71 @@ function att2var(data,
 local funcname, scriptname, data, meta, result, temp, atts, att, iatt
 begin
 
-    funcname = "att2var"
-    scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "att2var"
+  scriptname = "interface_scripts/auxiliary.ncl"
+  enter_msg(scriptname, funcname)
 
-    ;; Attribute "var"
-    if (meta .eq. "var")
-        if (isatt(data, meta)) then
-            result = data@$meta$
-            atts = getvaratts(data)
-            do iatt = 0, dimsizes(atts) - 1
-                att = atts(iatt)
-                if (isStrSubset(att, "var_")) then
-                    ;; Remove prefix "var_"
-                    temp = str_get_cols(att, 4, strlen(att))
-                    ;; Assign contents to variable "var"
-                    result@$temp$ = data@$att$
-                end if
-            end do
-        else
-            error_msg("f", scriptname, funcname, get_script_name() + \
-                      " requires variable attribute " + meta)
+  ;; Attribute "var"
+  if (meta .eq. "var")
+    if (isatt(data, meta)) then
+      result = data@$meta$
+      atts = getvaratts(data)
+      do iatt = 0, dimsizes(atts) - 1
+        att = atts(iatt)
+        if (isStrSubset(att, "var_")) then
+          ;; Remove prefix "var_"
+          temp = str_get_cols(att, 4, strlen(att))
+          ;; Assign contents to variable "var"
+          result@$temp$ = data@$att$
         end if
-
-    ;; Attribute "diag_script"
-    else if (meta .eq. "diag_script")
-        if (isatt(data, meta)) then
-            base = bname(data@$meta$)
-            ;; Join names of all contributing scripts
-            result = str_join(base, "__")
-        else
-            error_msg("f", scriptname, funcname, get_script_name() + \
-                      " requires variable attribute " + meta)
-        end if
-
-    ;; Attribute "res_"
-    ;; DEBUG info: different attribute types are not anticipated
-    ;; -> check this if it crashes
-    else if (meta .eq. "res_")
-        result = True
-        atts = getvaratts(data)
-        do iatt = 0, dimsizes(atts) - 1
-            att = atts(iatt)
-            if (isStrSubset(att, "res_")) then
-                ;; Remove prefix "res_"
-                temp = str_get_cols(att, 4, strlen(att))
-                ;; Assign contents to variable "res"
-                result@$temp$ = data@$att$
-            end if
-        end do
-
-    ;; Optional/generic attributes
+      end do
     else
-        if (isatt(data, meta)) then
-            result = data@$meta$
-        else
-            error_msg("w", scriptname, funcname, "attribute " + meta + \
-                      " not found")
-            result = default_fillvalue("string")
-        end if
-    end if
-    end if
+      error_msg("f", scriptname, funcname, get_script_name() + \
+                " requires variable attribute " + meta)
     end if
 
-    leave_msg(scriptname, funcname)
-    return(result)
+  ;; Attribute "diag_script"
+  else if (meta .eq. "diag_script")
+    if (isatt(data, meta)) then
+      base = bname(data@$meta$)
+      ;; Join names of all contributing scripts
+      result = str_join(base, "__")
+    else
+      error_msg("f", scriptname, funcname, get_script_name() + \
+                " requires variable attribute " + meta)
+    end if
+
+  ;; Attribute "res_"
+  ;; DEBUG info: different attribute types are not anticipated
+  ;; -> check this if it crashes
+  else if (meta .eq. "res_")
+    result = True
+    atts = getvaratts(data)
+    do iatt = 0, dimsizes(atts) - 1
+      att = atts(iatt)
+      if (isStrSubset(att, "res_")) then
+        ;; Remove prefix "res_"
+        temp = str_get_cols(att, 4, strlen(att))
+        ;; Assign contents to variable "res"
+        result@$temp$ = data@$att$
+      end if
+    end do
+
+  ;; Optional/generic attributes
+  else
+    if (isatt(data, meta)) then
+      result = data@$meta$
+    else
+      error_msg("w", scriptname, funcname, "attribute " + meta + \
+                " not found")
+      result = default_fillvalue("string")
+    end if
+  end if
+  end if
+  end if
+
+  leave_msg(scriptname, funcname)
+  return(result)
 
 end
 
@@ -909,20 +906,20 @@ function bname(a:string)
 local funcname, scriptname, a, i, b, rm_prefix, rm_suffix
 begin
 
-    funcname = "bname"
-    scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "bname"
+  scriptname = "interface_scripts/auxiliary.ncl"
+  enter_msg(scriptname, funcname)
 
-    b = a
-    do i = 0, dimsizes(a) - 1
-        rm_prefix = systemfunc("basename " + a(i))
-        rm_suffix = str_split(rm_prefix, ".")
-        b(i) = rm_suffix(0)
-        delete(rm_suffix)
-    end do
+  b = a
+  do i = 0, dimsizes(a) - 1
+    rm_prefix = systemfunc("basename " + a(i))
+    rm_suffix = str_split(rm_prefix, ".")
+    b(i) = rm_suffix(0)
+    delete(rm_suffix)
+  end do
 
-    leave_msg(scriptname, funcname)
-    return(b)
+  leave_msg(scriptname, funcname)
+  return(b)
 
 end
 
@@ -949,15 +946,15 @@ function basename(name[1]:string)
 local funcname, scriptname, suffix
 begin
 
-    funcname = "basename"
-    scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "basename"
+  scriptname = "interface_scripts/auxiliary.ncl"
+  enter_msg(scriptname, funcname)
 
-    suffix = get_file_suffix(name, 0)
-    bsn = str_sub_str(name, suffix, "")
+  suffix = get_file_suffix(name, 0)
+  bsn = str_sub_str(name, suffix, "")
 
-    leave_msg(scriptname, funcname)
-    return(bsn)
+  leave_msg(scriptname, funcname)
+  return(bsn)
 
 end
 
@@ -982,31 +979,31 @@ function extract_years(data,
 local funcname, scriptname, data_new, tim, t_utc, t_utc_yr, idx_t
 begin
 
-    funcname = "extract_years"
-    scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "extract_years"
+  scriptname = "interface_scripts/auxiliary.ncl"
+  enter_msg(scriptname, funcname)
 
-    ds = dimsizes(data)
-    rank = dimsizes(ds)
+  ds = dimsizes(data)
+  rank = dimsizes(ds)
 
-    tim = data&time
+  tim = data&time
 
-    t_utc = cd_calendar(tim, 0)
-    t_utc_yr = floattoint(t_utc(:, 0))
-    idx_t = ind((t_utc_yr .ge. startYr) .and. (t_utc_yr .le. endYr))
+  t_utc = cd_calendar(tim, 0)
+  t_utc_yr = floattoint(t_utc(:, 0))
+  idx_t = ind((t_utc_yr .ge. startYr) .and. (t_utc_yr .le. endYr))
 
-    if (rank .eq. 2) then
-        data_new = data(idx_t, :)
-    end if
-    if (rank .eq. 3) then
-        data_new = data(idx_t, :, :)
-    end if
-    if (rank .eq. 4) then
-        data_new = data(idx_t, :, :, :)
-    end if
+  if (rank .eq. 2) then
+    data_new = data(idx_t, :)
+  end if
+  if (rank .eq. 3) then
+    data_new = data(idx_t, :, :)
+  end if
+  if (rank .eq. 4) then
+    data_new = data(idx_t, :, :, :)
+  end if
 
-    leave_msg(scriptname, funcname)
-    return(data_new)
+  leave_msg(scriptname, funcname)
+  return(data_new)
 
 end
 
@@ -1035,81 +1032,81 @@ function extend_var_at(var,
 ;;    20130419-A_gott_kl: written.
 ;;
 local funcname, scriptname, var, coord, index, var_new, var_dim, \
-    var_dim_plus, rank
+  var_dim_plus, rank
 begin
 
-    funcname = "extend_var_at"
-    scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "extend_var_at"
+  scriptname = "interface_scripts/auxiliary.ncl"
+  enter_msg(scriptname, funcname)
 
-    var_dim = dimsizes(var)
-    var_dim_plus = var_dim
-    var_dim_plus(coord) = var_dim(coord) + 1
+  var_dim = dimsizes(var)
+  var_dim_plus = var_dim
+  var_dim_plus(coord) = var_dim(coord) + 1
 
-    ;; Define new variables  with one more entry for diagnostics
-    rank = dimsizes(var_dim)
-    var_temp = new((/var_dim_plus/), typeof(var))
+  ;; Define new variables  with one more entry for diagnostics
+  rank = dimsizes(var_dim)
+  var_temp = new((/var_dim_plus/), typeof(var))
 
-    ;; Name cooridnates
-    var_new = copy_CoordNames_n(var, var_temp, coord)
+  ;; Name cooridnates
+  var_new = copy_CoordNames_n(var, var_temp, coord)
 
-    ;; Copy old entries
-    if (rank.eq.1) then
-        if (index - 1.ge.0) then
-            var_new(:index - 1) = var(:index - 1)
-        end if
-        if (index.lt.var_dim(0)) then
-            var_new(index + 1:) = var(index:)
-        end if
-    else if (rank.eq.2) then
-        if (coord.eq.0) then
-            if (index - 1.ge.0) then
-                var_new(:index - 1, :) = var(:index - 1, :)
-            end if
-            if (index.lt.var_dim(0)) then
-                var_new(index + 1:, :) = var(index:, :)
-            end if
-        else
-            if (index - 1.ge.0) then
-                var_new(:, :index - 1) = var(:, :index - 1)
-            end if
-            if (index.lt.var_dim(1)) then
-                var_new(:, index + 1:) = var(:, index:)
-            end if
-        end if
-    else if (rank.eq.3) then
-        if (coord.eq.0) then
-            if (index - 1.ge.0) then
-                var_new(:index - 1, :, :) = var(:index - 1, :, :)
-            end if
-            if (index.lt.var_dim(0)) then
-                var_new(index + 1:, :, :) = var(index:, :, :)
-            end if
-        else if (coord.eq.1) then
-            if (index - 1.ge.0) then
-                var_new(:, :index - 1, :) = var(:, :index - 1, :)
-            end if
-            if (index.lt.var_dim(1)) then
-                var_new(:, index + 1:, :) = var(:, index:, :)
-            end if
-        else
-            if (index - 1.ge.0) then
-                var_new(:, :, :index - 1) = var(:, :, :index - 1)
-            end if
-            if (index.lt.var_dim(2)) then
-                var_new(:, :, index + 1:) = var(:, :, index:)
-            end if
-        end if
-        end if
+  ;; Copy old entries
+  if (rank.eq.1) then
+    if (index - 1.ge.0) then
+      var_new(:index - 1) = var(:index - 1)
+    end if
+    if (index.lt.var_dim(0)) then
+      var_new(index + 1:) = var(index:)
+    end if
+  else if (rank.eq.2) then
+    if (coord.eq.0) then
+      if (index - 1.ge.0) then
+        var_new(:index - 1, :) = var(:index - 1, :)
+      end if
+      if (index.lt.var_dim(0)) then
+        var_new(index + 1:, :) = var(index:, :)
+      end if
     else
-        error_msg("f", scriptname, funcname, "implemented only for " + \
-                  "variables with dimension less or equal 3!")
+      if (index - 1.ge.0) then
+        var_new(:, :index - 1) = var(:, :index - 1)
+      end if
+      if (index.lt.var_dim(1)) then
+        var_new(:, index + 1:) = var(:, index:)
+      end if
+    end if
+  else if (rank.eq.3) then
+    if (coord.eq.0) then
+      if (index - 1.ge.0) then
+        var_new(:index - 1, :, :) = var(:index - 1, :, :)
+      end if
+      if (index.lt.var_dim(0)) then
+        var_new(index + 1:, :, :) = var(index:, :, :)
+      end if
+    else if (coord.eq.1) then
+      if (index - 1.ge.0) then
+        var_new(:, :index - 1, :) = var(:, :index - 1, :)
+      end if
+      if (index.lt.var_dim(1)) then
+        var_new(:, index + 1:, :) = var(:, index:, :)
+      end if
+    else
+      if (index - 1.ge.0) then
+        var_new(:, :, :index - 1) = var(:, :, :index - 1)
+      end if
+      if (index.lt.var_dim(2)) then
+        var_new(:, :, index + 1:) = var(:, :, index:)
+      end if
     end if
     end if
-    end if
+  else
+    error_msg("f", scriptname, funcname, "implemented only for " + \
+              "variables with dimension less or equal 3!")
+  end if
+  end if
+  end if
 
-    leave_msg(scriptname, funcname)
-    return(var_new)
+  leave_msg(scriptname, funcname)
+  return(var_new)
 
 end
 
@@ -1141,29 +1138,29 @@ function copy_CoordNames_n(var_from,
 local funcname, scriptname, var_from, var_to, n, rank
 begin
 
-    funcname = "copy_CoordNames_n"
-    scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "copy_CoordNames_n"
+  scriptname = "interface_scripts/auxiliary.ncl"
+  enter_msg(scriptname, funcname)
 
-    rank = dimsizes(dimsizes(var_from))
+  rank = dimsizes(dimsizes(var_from))
 
-    if (rank.le.n) then
-        error_msg("f", scriptname, funcname, "index is not in the " + \
-                  "range of the variables")
-    else
-        names = getvardims(var_from)
-        do ii = 0, rank - 1
-            if (.not.ismissing(names(ii))) then
-                var_to!ii = names(ii)
-                if (ii.ne.n) then
-                    var_to&$names(ii)$ = var_from&$names(ii)$
-                end if
-            end if
-        end do
-    end if
+  if (rank.le.n) then
+    error_msg("f", scriptname, funcname, "index is not in the " + \
+              "range of the variables")
+  else
+    names = getvardims(var_from)
+    do ii = 0, rank - 1
+      if (.not.ismissing(names(ii))) then
+        var_to!ii = names(ii)
+        if (ii.ne.n) then
+          var_to&$names(ii)$ = var_from&$names(ii)$
+        end if
+      end if
+    end do
+  end if
 
-    leave_msg(scriptname, funcname)
-    return(var_to)
+  leave_msg(scriptname, funcname)
+  return(var_to)
 
 end
 
@@ -1190,17 +1187,17 @@ function empty_str(nn[1]:integer)
 local funcname, scriptname, ii
 begin
 
-    funcname = "empty_str"
-    scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "empty_str"
+  scriptname = "interface_scripts/auxiliary.ncl"
+  enter_msg(scriptname, funcname)
 
-    str = " "
-    do ii = 1, nn - 1
-        str = str + " "
-    end do
+  str = " "
+  do ii = 1, nn - 1
+    str = str + " "
+  end do
 
-    leave_msg(scriptname, funcname)
-    return(str)
+  leave_msg(scriptname, funcname)
+  return(str)
 
 end
 
@@ -1227,25 +1224,25 @@ function write_info(display[1]:logical)
 local funcname, scriptname, infobox, info_id
 begin
 
-    funcname = "write_info"
-    scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "write_info"
+  scriptname = "interface_scripts/auxiliary.ncl"
+  enter_msg(scriptname, funcname)
 
-    infobox = ""
-    infobox = infobox + "~F22~DEBUG INFO:~F21~ ~C~"
-    display_varatts = getvaratts(display)
-    exceptions = (/"description", "description_ycoord"/)
-    do info_id = 0, dimsizes(display_varatts) - 1
-        info_tag = display_varatts(info_id)
-        if (any(info_tag .eq. exceptions)) then
-            continue
-        end if
-        ;; ~C~ = new line
-        infobox = infobox + info_tag + ": " + display@$info_tag$ + "~C~"
-    end do
+  infobox = ""
+  infobox = infobox + "~F22~DEBUG INFO:~F21~ ~C~"
+  display_varatts = getvaratts(display)
+  exceptions = (/"description", "description_ycoord"/)
+  do info_id = 0, dimsizes(display_varatts) - 1
+    info_tag = display_varatts(info_id)
+    if (any(info_tag .eq. exceptions)) then
+      continue
+    end if
+    ;; ~C~ = new line
+    infobox = infobox + info_tag + ": " + display@$info_tag$ + "~C~"
+  end do
 
-    leave_msg(scriptname, funcname)
-    return(infobox)
+  leave_msg(scriptname, funcname)
+  return(infobox)
 
 end
 
@@ -1272,41 +1269,40 @@ function remove_index(array,
 local funcname, scriptname, dsize, rank, iarr
 begin
 
-    funcname = "remove_index"
-    scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "remove_index"
+  scriptname = "interface_scripts/auxiliary.ncl"
+  enter_msg(scriptname, funcname)
 
-    dsize = dimsizes(array)
-    rank = dimsizes(dsize)
-    dsize := dsize(0)
-    iarr = ispan(0, dsize - 1, 1)
-    iarr@_FillValue = default_fillvalue(typeof(iarr))
+  dsize = dimsizes(array)
+  rank = dimsizes(dsize)
+  dsize := dsize(0)
+  iarr = ispan(0, dsize - 1, 1)
+  iarr@_FillValue = default_fillvalue(typeof(iarr))
 
-    iarr(idx) = iarr@_FillValue
-    iarr := iarr(ind(.not.ismissing(iarr)))
+  iarr(idx) = iarr@_FillValue
+  iarr := iarr(ind(.not.ismissing(iarr)))
 
-    if (rank.eq.1) then
-        out = array(iarr)
-    end if
-    if (rank.eq.2) then
-        out = array(iarr, :)
-    end if
-    if (rank.eq.3) then
-        out = array(iarr, :, :)
-    end if
-    if (rank.eq.4) then
-        out = array(iarr, :, :, :)
-    end if
-    if (rank.eq.5) then
-        out = array(iarr, :, :, :, :)
-    end if
-    if (rank.gt.5) then
-        error_msg("f", funcname, scriptname, \
-                  "rank greater than 5 not supported")
-    end if
+  if (rank.eq.1) then
+    out = array(iarr)
+  end if
+  if (rank.eq.2) then
+    out = array(iarr, :)
+  end if
+  if (rank.eq.3) then
+    out = array(iarr, :, :)
+  end if
+  if (rank.eq.4) then
+    out = array(iarr, :, :, :)
+  end if
+  if (rank.eq.5) then
+    out = array(iarr, :, :, :, :)
+  end if
+  if (rank.gt.5) then
+    error_msg("f", funcname, scriptname, "rank greater than 5 not supported")
+  end if
 
-    leave_msg(scriptname, funcname)
-    return(out)
+  leave_msg(scriptname, funcname)
+  return(out)
 
 end
 
@@ -1334,15 +1330,15 @@ procedure set_default_att(info:logical,
 local funcname, scriptname
 begin
 
-    funcname = "set_default_att"
-    scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "set_default_att"
+  scriptname = "interface_scripts/auxiliary.ncl"
+  enter_msg(scriptname, funcname)
 
-    if (.not.isatt(info, att)) then
-        info@$att$ = default
-    end if
+  if (.not.isatt(info, att)) then
+    info@$att$ = default
+  end if
 
-    leave_msg(scriptname, funcname)
+  leave_msg(scriptname, funcname)
 
 end
 
@@ -1368,21 +1364,21 @@ function filter_attrs(source[1]:logical,\
 local funcname, scriptname, source_attrs, att_idx, prefix_removed
 begin
 
-    funcname = "filter_attrs"
-    scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "filter_attrs"
+  scriptname = "interface_scripts/auxiliary.ncl"
+  enter_msg(scriptname, funcname)
 
-    source_attrs = getvaratts(source)
-    do att_idx = 0, dimsizes(source_attrs) - 1
-        if (.not. ismissing(str_match(source_attrs(att_idx), lb_prefix)))
-            prefix_removed = str_get_cols(source_attrs(att_idx), \
-                                          strlen(lb_prefix), -1)
-            target@$prefix_removed$ = source@$source_attrs(att_idx)$
-        end if
-    end do
+  source_attrs = getvaratts(source)
+  do att_idx = 0, dimsizes(source_attrs) - 1
+    if (.not. ismissing(str_match(source_attrs(att_idx), lb_prefix))) then
+      prefix_removed = str_get_cols(source_attrs(att_idx), \
+                                    strlen(lb_prefix), -1)
+      target@$prefix_removed$ = source@$source_attrs(att_idx)$
+    end if
+  end do
 
-    leave_msg(scriptname, funcname)
-    return(target)
+  leave_msg(scriptname, funcname)
+  return(target)
 
 end
 
@@ -1407,18 +1403,18 @@ procedure write_ignore_warnings(warnings[*]:string,
 local funcname, scriptname, idx_warn
 begin
 
-    funcname = "write_ignore_warnings"
-    scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "write_ignore_warnings"
+  scriptname = "interface_scripts/auxiliary.ncl"
+  enter_msg(scriptname, funcname)
 
-    if (fileexists(warn_file_str)) then
-        system("rm -f " + warn_file_str)
-    end if
-    do idx_warn = 0, dimsizes(warnings) - 1
-        system("echo " + warnings(idx_warn) + " >> " + warn_file_str)
-    end do
+  if (fileexists(warn_file_str)) then
+    system("rm -f " + warn_file_str)
+  end if
+  do idx_warn = 0, dimsizes(warnings) - 1
+    system("echo " + warnings(idx_warn) + " >> " + warn_file_str)
+  end do
 
-    leave_msg(scriptname, funcname)
+  leave_msg(scriptname, funcname)
 
 end
 
@@ -1444,22 +1440,22 @@ function get_ref_model_idx(models[1]:logical,\
 local funcname, scriptname, nrefs, idx_ref
 begin
 
-    funcname = "get_ref_model_idx"
-    scriptname = "interface_scripts/auxiliary.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "get_ref_model_idx"
+  scriptname = "interface_scripts/auxiliary.ncl"
+  enter_msg(scriptname, funcname)
 
-    nrefs = dimsizes(model_ref_name)
+  nrefs = dimsizes(model_ref_name)
 
-    idx_ref = new(nrefs, integer)
-    do ii = 0, nrefs - 1
-        idx_ref(ii) = ind(model_info@model.eq.str_squeeze(model_ref_name(ii)))
-        if (ismissing(idx_ref(ii))) then
-            error_msg("f", scriptname, funcname, "reference model " + \
-                      model_ref_name(ii) + " not found in the models list")
-        end if
-    end do
+  idx_ref = new(nrefs, integer)
+  do ii = 0, nrefs - 1
+    idx_ref(ii) = ind(model_info@model.eq.str_squeeze(model_ref_name(ii)))
+    if (ismissing(idx_ref(ii))) then
+      error_msg("f", scriptname, funcname, "reference model " + \
+                model_ref_name(ii) + " not found in the models list")
+    end if
+  end do
 
-    leave_msg(scriptname, funcname)
-    return(idx_ref)
+  leave_msg(scriptname, funcname)
+  return(idx_ref)
 
 end
