@@ -279,8 +279,7 @@ def _update_target_levels(variable, variables, settings, config_user):
         if variable['model'] == levels['model']:
             del settings['extract_levels']
         else:
-            filename = _model_to_file(levels['model'], variables,
-                                      config_user)
+            filename = _model_to_file(levels['model'], variables, config_user)
             coordinate = levels.get('coordinate', 'air_pressure')
             settings['extract_levels']['levels'] = get_reference_levels(
                 filename, coordinate)
@@ -630,7 +629,10 @@ class Namelist(object):
         self._cfg = config_user
         self._namelist_file = os.path.basename(namelist_file)
         self._preprocessors = raw_namelist['preprocessors']
-        self.models = raw_namelist['models']
+        if raw_namelist.get('models'):
+            self.models = raw_namelist['models']
+        else:
+            self.models = []
         self.diagnostics = self._initialize_diagnostics(
             raw_namelist['diagnostics'])
         self.tasks = self.initialize_tasks() if initialize_tasks else None
