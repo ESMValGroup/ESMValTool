@@ -9,7 +9,7 @@
 ;;
 ;;#############################################################################
 
-; Global variables to save the names of all files read by "read_data"
+;; Global variables to save the names of all files read by "read_data"
 gFilesRead0 = new(10000, string)
 gNFiles0 = 0
 
@@ -43,52 +43,52 @@ function read_data(index[1]:integer,
 local funcname, scriptname, infile, fin
 begin
 
-    funcname = "read_data"
-    scriptname = "interface_scripts/data_handling.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "read_data"
+  scriptname = "interface_scripts/data_handling.ncl"
+  enter_msg(scriptname, funcname)
 
-    ;; Check array boundaries first
-    if (index.lt.0 .or. index.gt.(dimsizes(input_file_info@filename) - 1)) then
-        error_msg("f", scriptname, funcname, "model index out of range")
-    end if
+  ;; Check array boundaries first
+  if (index.lt.0 .or. index.gt.(dimsizes(input_file_info@filename) - 1)) then
+    error_msg("f", scriptname, funcname, "model index out of range")
+  end if
 
-    infile = input_file_info@filename(index)
+  infile = input_file_info@filename(index)
 
-    ;; Check existance and supported format
-    if (.not.isfilepresent(infile)) then
-        error_msg("f", scriptname, funcname, "input file " + infile + \
-                  " not found or not a supported format")
-    end if
+  ;; Check existance and supported format
+  if (.not.isfilepresent(infile)) then
+    error_msg("f", scriptname, funcname, "input file " + infile + \
+              " not found or not a supported format")
+  end if
 
-    ;; Check field type correspondance
-    if (input_file_info@field(index) .ne. field_type) then
-        error_msg("f", scriptname, funcname, "requested field type " + \
-                  field_type + " does not match")
-    end if
+  ;; Check field type correspondance
+  if (input_file_info@field(index) .ne. field_type) then
+    error_msg("f", scriptname, funcname, "requested field type " + \
+              field_type + " does not match")
+  end if
 
-    ;; Open file
-    log_info("Reading in file = " + infile)
-    fin = addfile(infile, "r")
+  ;; Open file
+  log_info("Reading in file = " + infile)
+  fin = addfile(infile, "r")
 
-    ;; Check that variable is in the file
-    if (.not. isfilevar(fin, variable)) then
-        error_msg("f", scriptname, funcname, "variable " + variable + \
-                  "is not in the file")
-    end if
+  ;; Check that variable is in the file
+  if (.not. isfilevar(fin, variable)) then
+    error_msg("f", scriptname, funcname, "variable " + variable + \
+              "is not in the file")
+  end if
 
-    ;; Add to the list of read in files for traceability/provenance log
-    if (gNFiles0.lt.dimsizes(gFilesRead0)) then
-        gFilesRead0(gNFiles0) = infile
-        gNFiles0 = gNFiles0 + 1
-    end if
+  ;; Add to the list of read in files for traceability/provenance log
+  if (gNFiles0.lt.dimsizes(gFilesRead0)) then
+    gFilesRead0(gNFiles0) = infile
+    gNFiles0 = gNFiles0 + 1
+  end if
 
-    ; Read attributes and write info to log-file
-    inquire_and_save_fileinfo(infile, input_file_info@model(index), variable)
+  ;; Read attributes and write info to log-file
+  inquire_and_save_fileinfo(infile, input_file_info@model(index), variable)
 
-    ;; Read data
-    data = fin->$variable$
+  ;; Read data
+  data = fin->$variable$
 
-    leave_msg(scriptname, funcname)
-    return(data)
+  leave_msg(scriptname, funcname)
+  return(data)
 
 end
