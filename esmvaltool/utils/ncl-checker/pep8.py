@@ -418,7 +418,7 @@ def indentation(logical_line, previous_logical, indent_char,
     E113: a = 1\n    b = 2
     """
     if indent_char == ' ' and indent_level % 2:
-        yield 0, "E111 indentation is not a multiple of four"
+        yield 0, "E111 indentation is not a multiple of two"
     indent_expect = previous_logical.endswith(':')
     if indent_expect and indent_level <= previous_indent_level:
         yield 0, "E112 expected an indented block"
