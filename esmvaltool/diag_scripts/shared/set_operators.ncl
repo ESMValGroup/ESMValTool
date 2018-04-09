@@ -40,20 +40,20 @@ function UNIQ(a)
 local funcname, scriptname, a, i, u, doubles, idx
 begin
 
-    funcname = "UNIQ"
-    scriptname = "diag_scripts/shared/set_operators.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "UNIQ"
+  scriptname = "diag_scripts/shared/set_operators.ncl"
+  enter_msg(scriptname, funcname)
 
-    u = new(dimsizes(a), "integer", 0)
-    do i = 0, dimsizes(a) - 1
-        doubles = ind(a .eq. a(i))
-        u(doubles(0)) = 1
-        delete(doubles)
-    end do
-    idx = ind(u .eq. 1)
+  u = new(dimsizes(a), "integer", 0)
+  do i = 0, dimsizes(a) - 1
+    doubles = ind(a .eq. a(i))
+    u(doubles(0)) = 1
+    delete(doubles)
+  end do
+  idx = ind(u .eq. 1)
 
-    leave_msg(scriptname, funcname)
-    return(idx)
+  leave_msg(scriptname, funcname)
+  return(idx)
 
 end
 
@@ -81,16 +81,16 @@ function union(set1[*],
 local funcname, scriptname, merged_set, union_set, unique_entries
 begin
 
-    funcname = "union"
-    scriptname = "diag_scripts/shared/set_operators.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "union"
+  scriptname = "diag_scripts/shared/set_operators.ncl"
+  enter_msg(scriptname, funcname)
 
-    merged_set = array_append_record(set1, set2, 0)
-    unique_entries = UNIQ(merged_set)
-    union_set = merged_set(unique_entries)
+  merged_set = array_append_record(set1, set2, 0)
+  unique_entries = UNIQ(merged_set)
+  union_set = merged_set(unique_entries)
 
-    leave_msg(scriptname, funcname)
-    return(union_set)
+  leave_msg(scriptname, funcname)
+  return(union_set)
 
 end
 
@@ -116,24 +116,24 @@ function set_inclusive_OR(set1[*]:float,
 ;; Modification history
 ;;
 local funcname, scriptname, set_tmp, dummy_year, dummy_year_idx, \
-    keep_set_idx, keep_set
+  keep_set_idx, keep_set
 begin
 
-    funcname = "set_inclusive_OR"
-    scriptname = "diag_scripts/shared/set_operators.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "set_inclusive_OR"
+  scriptname = "diag_scripts/shared/set_operators.ncl"
+  enter_msg(scriptname, funcname)
 
-    dummy_year  = -999.
+  dummy_year  = -999.
 
-    set_tmp = union(set1, set2)
+  set_tmp = union(set1, set2)
 
-    ;; Make sure we remove the dummy year -999. if present
-    keep_set_idx = ind(abs(set_tmp + abs(dummy_year)) .gt. 1)
-    keep_set = set_tmp(keep_set_idx)
-    qsort(keep_set)
+  ;; Make sure the dummy year -999. is removed (if present)
+  keep_set_idx = ind(abs(set_tmp + abs(dummy_year)) .gt. 1)
+  keep_set = set_tmp(keep_set_idx)
+  qsort(keep_set)
 
-    leave_msg(scriptname, funcname)
-    return(keep_set)
+  leave_msg(scriptname, funcname)
+  return(keep_set)
 
 end
 
@@ -162,31 +162,30 @@ function intersection(array1[*],
 local funcname, scriptname, idx, intersection_array, tmp_array
 begin
 
-    funcname = "intersection"
-    scriptname = "diag_scripts/shared/set_operators.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "intersection"
+  scriptname = "diag_scripts/shared/set_operators.ncl"
+  enter_msg(scriptname, funcname)
 
-    do idx = 0, dimsizes(array1) - 1
-        curr_check = ind(array1(idx) .eq. array2)
-        if (.not. ismissing(curr_check)) then
-            if (isdefined("intersection_array")) then
-                tmp_array2 = array_append_record(intersection_array, \
-                                                 array1(idx), 0)
-                delete(intersection_array)
-                intersection_array = tmp_array2
-                delete(tmp_array2)
-            else
-                intersection_array = (/array1(idx)/)
-            end if
-        end if
-    end do
-
-    if (.not. isdefined("intersection_array")) then
-        intersection_array = False
+  do idx = 0, dimsizes(array1) - 1
+    curr_check = ind(array1(idx) .eq. array2)
+    if (.not. ismissing(curr_check)) then
+      if (isdefined("intersection_array")) then
+        tmp_array2 = array_append_record(intersection_array, array1(idx), 0)
+        delete(intersection_array)
+        intersection_array = tmp_array2
+        delete(tmp_array2)
+      else
+        intersection_array = (/array1(idx)/)
+      end if
     end if
+  end do
 
-    leave_msg(scriptname, funcname)
-    return(intersection_array)
+  if (.not. isdefined("intersection_array")) then
+    intersection_array = False
+  end if
+
+  leave_msg(scriptname, funcname)
+  return(intersection_array)
 
 end
 
@@ -215,21 +214,21 @@ function is_array_subset(subset_array[*],
 local funcname, scriptname, subset_size, idx, full_idx, is_subset_true
 begin
 
-    funcname = "is_array_subset"
-    scriptname = "diag_scripts/shared/set_operators.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "is_array_subset"
+  scriptname = "diag_scripts/shared/set_operators.ncl"
+  enter_msg(scriptname, funcname)
 
-    subset_size = dimsizes(subset_array)
-    is_subset_true = True
-    do idx = 0, subset_size - 1
-        full_idx = ind(subset_array(idx) .eq. full_array)
-        if (ismissing(full_idx)) then
-            is_subset_true = False
-        end if
-    end do
+  subset_size = dimsizes(subset_array)
+  is_subset_true = True
+  do idx = 0, subset_size - 1
+    full_idx = ind(subset_array(idx) .eq. full_array)
+    if (ismissing(full_idx)) then
+      is_subset_true = False
+    end if
+  end do
 
-    leave_msg(scriptname, funcname)
-    return(is_subset_true)
+  leave_msg(scriptname, funcname)
+  return(is_subset_true)
 
 end
 
@@ -248,8 +247,8 @@ function relative_complement(array1[*],
 ;;             False  if there isn't a complement
 ;;
 ;; Description
-;;    Substracts all elements in array1 from array2 (array2 - array1)
-;;    See https://en.wikipedia.org/wiki/Complement_(set_theory)#Relative_complement
+;;    Substracts all elements in array1 from array2 (array2 - array1). See
+;;    https://en.wikipedia.org/wiki/Complement_(set_theory)#Relative_complement
 ;;    for further details and expected behaviour
 ;;
 ;; Caveats
@@ -261,34 +260,34 @@ function relative_complement(array1[*],
 local funcname, scriptname, array2_size, i, rel_complement, idx, remove_idx
 begin
 
-    funcname = "relative_complement"
-    scriptname = "diag_scripts/shared/set_operators.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "relative_complement"
+  scriptname = "diag_scripts/shared/set_operators.ncl"
+  enter_msg(scriptname, funcname)
 
-    array2_size = dimsizes(array2)
-    rel_complement = False
-    do idx = 0, array2_size - 1
-        remove_idx = ind(array2(idx) .eq. array1)
-        if (ismissing(remove_idx)) then
-            if (rel_complement .eq. False) then
-                rel_complement@array = (/array2(idx)/)
-                rel_complement = True
-            else
-                tmp = array_append_record(rel_complement@array, array2(idx), 0)
-                delete_VarAtts(rel_complement, "array")
-                rel_complement@array = tmp
-                delete(tmp)
-            end if
-        end if
-    end do
-    if (isatt(rel_complement, "array")) then
-        return_array = rel_complement@array
-    else
-        return_array = rel_complement
+  array2_size = dimsizes(array2)
+  rel_complement = False
+  do idx = 0, array2_size - 1
+    remove_idx = ind(array2(idx) .eq. array1)
+    if (ismissing(remove_idx)) then
+      if (rel_complement .eq. False) then
+        rel_complement@array = (/array2(idx)/)
+        rel_complement = True
+      else
+        tmp = array_append_record(rel_complement@array, array2(idx), 0)
+        delete_VarAtts(rel_complement, "array")
+        rel_complement@array = tmp
+        delete(tmp)
+      end if
     end if
+  end do
+  if (isatt(rel_complement, "array")) then
+    return_array = rel_complement@array
+  else
+    return_array = rel_complement
+  end if
 
-    leave_msg(scriptname, funcname)
-    return(return_array)
+  leave_msg(scriptname, funcname)
+  return(return_array)
 
 end
 
@@ -318,14 +317,14 @@ function set_symmetric_difference(array1[*],
 local funcname, scriptname, rel_compl1, rel_compl2
 begin
 
-    funcname = "set_symmetric_difference"
-    scriptname = "diag_scripts/shared/set_operators.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "set_symmetric_difference"
+  scriptname = "diag_scripts/shared/set_operators.ncl"
+  enter_msg(scriptname, funcname)
 
-    rel_compl1 = relative_complement(array1, array2)
-    rel_compl2 = relative_complement(array2, array1)
+  rel_compl1 = relative_complement(array1, array2)
+  rel_compl2 = relative_complement(array2, array1)
 
-    leave_msg(scriptname, funcname)
-    return(union(rel_compl1, rel_compl2))
+  leave_msg(scriptname, funcname)
+  return(union(rel_compl1, rel_compl2))
 
 end

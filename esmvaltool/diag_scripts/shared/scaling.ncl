@@ -53,7 +53,7 @@ begin
     ;; Check for units attribute
   if (.not.isatt(var, "units")) then
     error_msg("f", scriptname, funcname, "The input variable must " + \
-    "have a units attribute")
+              "have a units attribute")
   else
     units_from = var@units
   end if
