@@ -46,15 +46,9 @@ import shutil
 import sys
 from multiprocessing import cpu_count
 
-# Hack to make this file executable
-if __name__ == '__main__':  # noqa
-    sys.path.insert(0,
-                    os.path.dirname(
-                        os.path.dirname(os.path.abspath(__file__))))  # noqa
-
-from esmvaltool._config import configure_logging, read_config_user_file
-from esmvaltool.namelist import read_namelist_file
-from esmvaltool.version import __version__
+from ._config import configure_logging, read_config_user_file
+from .namelist import read_namelist_file
+from .version import __version__
 
 # set up logging
 if __name__ == '__main__':
