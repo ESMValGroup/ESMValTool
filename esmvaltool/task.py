@@ -28,75 +28,82 @@ def which(executable):
     return None
 
 
-def _get_resource_usage(process, start_time, header=False, children=True):
+def _get_resource_usage(process, start_time, children=True):
     """Get resource usage."""
-    if header:
-        # return header instead of resource usage statistics
-        entries = [
-            'Date and time (UTC)',
-            'Real time (s)',
-            'CPU time (s)',
-            'CPU (%)',
-            'Memory (GB)',
-            'Memory (%)',
-            'Disk read (GB)',
-            'Disk write (GB)',
-        ]
-        return '\t'.join(entries) + '\n'
+    # yield header first
+    entries = [
+        'Date and time (UTC)',
+        'Real time (s)',
+        'CPU time (s)',
+        'CPU (%)',
+        'Memory (GB)',
+        'Memory (%)',
+        'Disk read (GB)',
+        'Disk write (GB)',
+    ]
+    fmt = '{}\t' * len(entries[:-1]) + '{}\n'
+    yield fmt.format(*entries)
 
-    if children:
-        # include child processes
-        processes = process.children(recursive=True)
-        processes.append(process)
-    else:
-        processes = [process]
-
-    # compute resource usage
+    # Compute resource usage
     gigabyte = float(2**30)
-    entries = list(0. for _ in range(6))
-    for proc in processes:
-        entries[0] += proc.cpu_times().user + proc.cpu_times().system
-        entries[1] += proc.cpu_percent()
-        entries[2] += proc.memory_info().rss / gigabyte
-        entries[3] += proc.memory_percent()
-        entries[4] += proc.io_counters().read_bytes / gigabyte
-        entries[5] += proc.io_counters().write_bytes / gigabyte
-    entries.insert(0, time.time() - start_time)
+    precision = [1, 1, None, 1, None, 3, 3]
+    cache = {}
+    while process.is_running():
+        try:
+            if children:
+                # Include child processes
+                processes = process.children(recursive=True)
+                processes.append(process)
+            else:
+                processes = [process]
 
-    # round
-    for i, j in enumerate([1, 1, None, 1, None, 3, 3]):
-        entries[i] = round(entries[i], j)
+            # Update resource usage
+            for proc in cache:
+                # Set cpu percent and memory usage to 0 for old processes
+                if proc not in processes:
+                    cache[proc][1] = 0
+                    cache[proc][2] = 0
+                    cache[proc][3] = 0
+            for proc in processes:
+                # Update current processes
+                cache[proc] = [
+                    proc.cpu_times().user + proc.cpu_times().system,
+                    proc.cpu_percent(),
+                    proc.memory_info().rss / gigabyte,
+                    proc.memory_percent(),
+                    proc.io_counters().read_bytes / gigabyte,
+                    proc.io_counters().write_bytes / gigabyte,
+                ]
+        except (OSError, psutil.AccessDenied, psutil.NoSuchProcess):
+            # Try again if an error occurs because some process died
+            continue
 
-    # preprend datetime
-    entries.insert(0, datetime.datetime.utcnow())
-
-    fmt = '\t'.join(str(entry) for entry in entries) + '\n'
-    return fmt.format(*entries)
+        # Create and yield log entry
+        entries = [sum(entry) for entry in zip(*cache.values())]
+        entries.insert(0, time.time() - start_time)
+        entries = [round(entry, p) for entry, p in zip(entries, precision)]
+        entries.insert(0, datetime.datetime.utcnow())
+        yield fmt.format(*entries)
 
 
 @contextlib.contextmanager
-def resource_usage_logger(pid, filename, interval=0.1, children=True):
+def resource_usage_logger(pid, filename, interval=1, children=True):
     """Log resource usage."""
     halt = threading.Event()
 
-    def _log():
+    def _log_resource_usage():
         """Write resource usage to file."""
         process = psutil.Process(pid)
         start_time = time.time()
         with open(filename, 'w') as file:
-            file.write(_get_resource_usage(process, start_time, header=True))
-            while not halt.is_set():
-                try:
-                    txt = _get_resource_usage(
-                        process, start_time, children=children)
-                except (OSError, psutil.AccessDenied, psutil.NoSuchProcess):
-                    break
-                file.write(txt)
+            for msg in _get_resource_usage(process, start_time, children):
+                file.write(msg)
                 time.sleep(interval)
+                if halt.is_set():
+                    return
 
-    thread = threading.Thread(target=_log)
+    thread = threading.Thread(target=_log_resource_usage)
     thread.start()
-
     try:
         yield
     finally:
