@@ -9,9 +9,10 @@ import subprocess
 import yamale
 import yaml
 
-from .interface_scripts.data_finder import (
-    get_input_filelist, get_input_filename, get_output_file,
-    get_start_end_year, get_statistic_output_file)
+from .cmor.table import CMOR_TABLES
+from .data_finder import (get_input_filelist, get_input_filename,
+                          get_output_file, get_start_end_year,
+                          get_statistic_output_file)
 from .preprocessor import (DEFAULT_ORDER, MULTI_MODEL_FUNCTIONS,
                            PREPROCESSOR_FUNCTIONS, PreprocessingTask,
                            _split_settings)
@@ -19,8 +20,6 @@ from .preprocessor._derive import get_required
 from .preprocessor._download import synda_search
 from .preprocessor._io import concatenate_callback
 from .preprocessor._regrid import get_cmor_levels, get_reference_levels
-from .cmor.table import CMOR_TABLES
-
 from .task import (MODEL_KEYS, DiagnosticTask, InterfaceTask,
                    get_independent_tasks, run_tasks, which)
 from .version import __version__
