@@ -1,47 +1,47 @@
 ---
 
 models:
-#   - {model: ACCESS1-0,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#   - {model: ACCESS1-3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#   - {model: bcc-csm1-1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#   - {model: bcc-csm1-1-m,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#   - {model: BNU-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#   - {model: CanESM2,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {model: ACCESS1-0,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {model: ACCESS1-3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {model: bcc-csm1-1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {model: bcc-csm1-1-m,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {model: BNU-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {model: CanESM2,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
   - {model: CCSM4,            project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004} # latitude issue
-#### - {model: CESM1-BGC,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004} # units issue
-#   - {model: CESM1-CAM5,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#   - {model: CESM1-CAM5-1-FV2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#   - {model: CMCC-CM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#   - {model: CMCC-CMS,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#   - {model: CNRM-CM5,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#   - {model: CSIRO-Mk3-6-0,    project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#   - {model: FGOALS-g2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#   - {model: FGOALS-s2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#   - {model: FIO-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#   - {model: GFDL-CM3,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#   - {model: GFDL-ESM2G,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#   - {model: GFDL-ESM2M,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#   - {model: GISS-E2-H,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2001, end_year: 2004}
-#   - {model: GISS-E2-R,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2001, end_year: 2004}
-#   - {model: HadCM3,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#   - {model: HadGEM2-AO,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#   - {model: HadGEM2-CC,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#   - {model: HadGEM2-ES,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#   - {model: inmcm4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#   - {model: IPSL-CM5A-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#   - {model: IPSL-CM5A-MR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#   - {model: IPSL-CM5B-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#   - {model: MIROC4h,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#   - {model: MIROC5,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#   - {model: MIROC-ESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#   - {model: MIROC-ESM-CHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#   - {model: MPI-ESM-LR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#   - {model: MPI-ESM-MR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#   - {model: MRI-CGCM3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#   - {model: NorESM1-M,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#   - {model: NorESM1-ME,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {model: CESM1-BGC,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {model: CESM1-CAM5,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {model: CESM1-CAM5-1-FV2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {model: CMCC-CM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {model: CMCC-CMS,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {model: CNRM-CM5,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {model: CSIRO-Mk3-6-0,    project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {model: FGOALS-g2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {model: FGOALS-s2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {model: FIO-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {model: GFDL-CM3,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {model: GFDL-ESM2G,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {model: GFDL-ESM2M,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {model: GISS-E2-H,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2001, end_year: 2004}
+  - {model: GISS-E2-R,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2001, end_year: 2004}
+  - {model: HadCM3,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {model: HadGEM2-AO,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {model: HadGEM2-CC,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {model: HadGEM2-ES,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {model: inmcm4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {model: IPSL-CM5A-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {model: IPSL-CM5A-MR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {model: IPSL-CM5B-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {model: MIROC4h,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {model: MIROC5,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {model: MIROC-ESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {model: MIROC-ESM-CHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {model: MPI-ESM-LR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {model: MPI-ESM-MR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {model: MRI-CGCM3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {model: NorESM1-M,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  - {model: NorESM1-ME,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
 
-#   - {model: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start_year: 2001,  end_year: 2004, tier: 1}
+  - {model: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start_year: 2001,  end_year: 2004, tier: 1}
 
 preprocessors:
 
