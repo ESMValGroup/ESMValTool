@@ -9,18 +9,15 @@ import subprocess
 import yamale
 import yaml
 
+from . import preprocessor
+from .cmor.table import CMOR_TABLES
 from .interface_scripts.data_finder import (
     get_input_filelist, get_input_filename, get_output_file,
     get_start_end_year, get_statistic_output_file)
-from .preprocessor import (DEFAULT_ORDER, MULTI_MODEL_FUNCTIONS,
-                           PREPROCESSOR_FUNCTIONS, PreprocessingTask,
-                           _split_settings)
 from .preprocessor._derive import get_required
 from .preprocessor._download import synda_search
 from .preprocessor._io import concatenate_callback
 from .preprocessor._regrid import get_cmor_levels, get_reference_levels
-from .cmor.table import CMOR_TABLES
-
 from .task import (MODEL_KEYS, DiagnosticTask, InterfaceTask,
                    get_independent_tasks, run_tasks, which)
 from .version import __version__
@@ -90,13 +87,14 @@ def check_namelist(filename):
 
 def check_preprocessors(preprocessors):
     """Check preprocessors in namelist"""
-    preprocessor_functions = set(DEFAULT_ORDER)
+    preprocessor_functions = set(preprocessor.DEFAULT_ORDER)
     for name, settings in preprocessors.items():
         invalid_functions = set(settings) - preprocessor_functions
         if invalid_functions:
             raise NamelistError(
                 "Unknown function(s) {} in preprocessor {}, choose from: {}"
-                .format(invalid_functions, name, ', '.join(DEFAULT_ORDER)))
+                .format(invalid_functions, name, ', '.join(
+                    preprocessor.DEFAULT_ORDER)))
 
 
 def check_diagnostics(diagnostics):
@@ -120,11 +118,11 @@ def check_preprocessor_settings(settings):
     # in Python 3, but their replacements are not available in Python 2.
     # TODO: Use the new Python 3 inspect API
     for step in settings:
-        if step not in DEFAULT_ORDER:
+        if step not in preprocessor.DEFAULT_ORDER:
             raise NamelistError(
                 "Unknown preprocessor function '{}', choose from: {}".format(
-                    step, ', '.join(DEFAULT_ORDER)))
-        function = PREPROCESSOR_FUNCTIONS[step]
+                    step, ', '.join(preprocessor.DEFAULT_ORDER)))
+        function = getattr(preprocessor, step)
         argspec = inspect.getargspec(function)
         args = argspec.args[1:]
         # Check for invalid arguments
@@ -279,8 +277,7 @@ def _update_target_levels(variable, variables, settings, config_user):
         if variable['model'] == levels['model']:
             del settings['extract_levels']
         else:
-            filename = _model_to_file(levels['model'], variables,
-                                      config_user)
+            filename = _model_to_file(levels['model'], variables, config_user)
             coordinate = levels.get('coordinate', 'air_pressure')
             settings['extract_levels']['levels'] = get_reference_levels(
                 filename, coordinate)
@@ -446,16 +443,16 @@ def _update_multi_model_statistics(variables, settings, preproc_dir):
         stat_settings['exclude'] = {'_filename': exclude_files}
 
 
-def _get_preprocessor_settings(variables, preprocessor, config_user):
+def _get_preprocessor_settings(variables, profile, config_user):
     """Get preprocessor settings for a set of models."""
     all_settings = {}
-    preprocessor = copy.deepcopy(preprocessor)
-    _update_multi_model_statistics(variables, preprocessor,
+    profile = copy.deepcopy(profile)
+    _update_multi_model_statistics(variables, profile,
                                    config_user['preproc_dir'])
 
     for variable in variables:
         settings = _get_default_settings(variable, config_user)
-        _apply_preprocessor_settings(settings, preprocessor)
+        _apply_preprocessor_settings(settings, profile)
         # TODO: this should probably be done in _get_default_settings
         if 'derive' in settings:
             del settings['load']['constraints']
@@ -482,8 +479,9 @@ def _get_preprocessor_settings(variables, preprocessor, config_user):
 
 def _check_multi_model_settings(all_settings):
     """Check that multi model settings are identical for all models."""
-    multi_model_steps = (step for step in MULTI_MODEL_FUNCTIONS if any(
-        step in settings for settings in all_settings.values()))
+    multi_model_steps = (step for step in preprocessor.MULTI_MODEL_FUNCTIONS
+                         if any(step in settings
+                                for settings in all_settings.values()))
     for step in multi_model_steps:
         result = None
         for filename, settings in all_settings.items():
@@ -497,15 +495,13 @@ def _check_multi_model_settings(all_settings):
 
 
 def _get_single_preprocessor_task(variables,
-                                  preprocessor,
+                                  profile,
                                   config_user,
                                   ancestors=None):
     """Create preprocessor tasks for a set of models."""
     # Configure preprocessor
     all_settings = _get_preprocessor_settings(
-        variables=variables,
-        preprocessor=preprocessor,
-        config_user=config_user)
+        variables=variables, profile=profile, config_user=config_user)
 
     # Input files, used by tasks without ancestors
     input_files = None
@@ -517,7 +513,7 @@ def _get_single_preprocessor_task(variables,
 
     output_dir = os.path.dirname(variables[0]['filename'])
 
-    task = PreprocessingTask(
+    task = preprocessor.PreprocessingTask(
         settings=all_settings,
         output_dir=output_dir,
         ancestors=ancestors,
@@ -527,16 +523,16 @@ def _get_single_preprocessor_task(variables,
     return task
 
 
-def _get_preprocessor_task(variables, preprocessors, config_user):
+def _get_preprocessor_task(variables, profiles, config_user):
     """Create preprocessor task(s) for a set of models."""
     # First set up the preprocessor profile
     variable = variables[0]
     preproc_name = variable.get('preprocessor')
-    if preproc_name not in preprocessors:
+    if preproc_name not in profiles:
         raise NamelistError(
             "Unknown preprocessor {} in variable {} of diagnostic {}".format(
                 preproc_name, variable['short_name'], variable['diagnostic']))
-    preprocessor = preprocessors[variable['preprocessor']]
+    profile = profiles[variable['preprocessor']]
     logger.info("Creating preprocessor '%s' task for variable '%s'",
                 variable['preprocessor'], variable['short_name'])
 
@@ -544,9 +540,9 @@ def _get_preprocessor_task(variables, preprocessors, config_user):
     derive_tasks = []
     if variable.get('derive'):
         # Create tasks to prepare the input data for the derive step
-        derive_preprocessor, preprocessor = _split_settings(
-            preprocessor, 'derive')
-        preprocessor['derive'] = {'short_name': variable['short_name']}
+        derive_profile, profile = preprocessor.split_settings(
+            profile, 'derive')
+        profile['derive'] = {'short_name': variable['short_name']}
 
         derive_variables = {}
         for variable in variables:
@@ -579,7 +575,7 @@ def _get_preprocessor_task(variables, preprocessors, config_user):
                     derive_variables[short_name].append(variable)
 
         for variable in derive_variables.values():
-            task = _get_single_preprocessor_task(variable, derive_preprocessor,
+            task = _get_single_preprocessor_task(variable, derive_profile,
                                                  config_user)
             derive_tasks.append(task)
 
@@ -589,7 +585,7 @@ def _get_preprocessor_task(variables, preprocessors, config_user):
 
     # Create (final) preprocessor task
     task = _get_single_preprocessor_task(
-        variables, preprocessor, config_user, ancestors=derive_tasks)
+        variables, profile, config_user, ancestors=derive_tasks)
 
     return task
 
@@ -806,7 +802,7 @@ class Namelist(object):
                             variable_name)
                 task = _get_preprocessor_task(
                     variables=diagnostic['variable_collection'][variable_name],
-                    preprocessors=self._preprocessors,
+                    profiles=self._preprocessors,
                     config_user=self._cfg)
                 preproc_tasks.append(task)
 
