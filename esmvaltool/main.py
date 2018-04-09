@@ -51,11 +51,7 @@ from .namelist import read_namelist_file
 from .version import __version__
 
 # set up logging
-if __name__ == '__main__':
-    logger = logging.getLogger('ESMValTool')
-    logger.addHandler(logging.NullHandler())
-else:
-    logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 def get_args():
@@ -190,7 +186,3 @@ def run():
         sys.exit(1)
     else:
         logger.info("Run was succesful")
-
-
-if __name__ == '__main__':
-    run()
