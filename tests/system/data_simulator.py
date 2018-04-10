@@ -9,8 +9,8 @@ import numpy as np
 from dummydata.model2 import Model2
 from dummydata.model3 import Model3
 
-from esmvaltool.interface_scripts.data_finder import get_input_filename
-from esmvaltool.main import read_config_file
+from esmvaltool.data_finder import get_input_filename
+from esmvaltool._config import read_config_user_file
 from esmvaltool.namelist import read_namelist_file
 
 
@@ -51,7 +51,7 @@ def write_data_file(short_name, filename, field, start_year, end_year):
 def simulate_input_data(namelist_file, config_user_file=None):
     """Simulate data for variables defined in namelist"""
     if config_user_file:
-        user_config = read_config_file(
+        user_config = read_config_user_file(
             config_file=config_user_file, namelist_name='')
     else:
         user_config = {

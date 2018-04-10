@@ -11,9 +11,9 @@ import yaml
 
 from . import preprocessor
 from .cmor.table import CMOR_TABLES
-from .interface_scripts.data_finder import (
-    get_input_filelist, get_input_filename, get_output_file,
-    get_start_end_year, get_statistic_output_file)
+from .data_finder import (get_input_filelist, get_input_filename,
+                          get_output_file, get_start_end_year,
+                          get_statistic_output_file)
 from .preprocessor._derive import get_required
 from .preprocessor._download import synda_search
 from .preprocessor._io import concatenate_callback
@@ -626,7 +626,10 @@ class Namelist(object):
         self._cfg = config_user
         self._namelist_file = os.path.basename(namelist_file)
         self._preprocessors = raw_namelist['preprocessors']
-        self.models = raw_namelist['models']
+        if raw_namelist.get('models'):
+            self.models = raw_namelist['models']
+        else:
+            self.models = []
         self.diagnostics = self._initialize_diagnostics(
             raw_namelist['diagnostics'])
         self.tasks = self.initialize_tasks() if initialize_tasks else None
