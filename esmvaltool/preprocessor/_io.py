@@ -5,9 +5,6 @@ import shutil
 
 import iris
 
-iris.FUTURE.netcdf_promote = True
-iris.FUTURE.netcdf_no_unlimited = True
-
 logger = logging.getLogger(__name__)
 
 

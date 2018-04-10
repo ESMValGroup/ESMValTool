@@ -273,9 +273,7 @@ def _apply_overlap(cube, tx1, tx2):
     """
     logger.debug("Bounds: %s and %s", str(tx1), str(tx2))
     # slice cube on time
-    with iris.FUTURE.context(cell_datetime_objects=True):
-        cube = _slice_cube(cube, tx1, tx2)
-
+    cube = _slice_cube(cube, tx1, tx2)
     return cube
 
 
