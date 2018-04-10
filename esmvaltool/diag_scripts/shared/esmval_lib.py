@@ -21,8 +21,6 @@ class ESMValProject(object):
         self.project_info = project_info
         self.firstime = True
         self.oldvar = ""
-
-
 #        self.version = os.environ['0_ESMValTool_version']
 
     def _get_path_with_sep(self, p):
