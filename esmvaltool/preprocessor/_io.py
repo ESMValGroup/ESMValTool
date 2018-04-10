@@ -161,7 +161,13 @@ def _write_ncl_metadata(output_dir, metadata):
         if (model_specific or key in MODEL_KEYS) and key not in VARIABLE_KEYS:
             info['model_info'][key] = values
         else:
-            info['variable_info'][key] = values[0]
+            # Select a value that is filled
+            attribute_value = None
+            for value in values:
+                if value is not None:
+                    attribute_value = value
+                    break
+            info['variable_info'][key] = attribute_value
 
     short_name = info['variable_info']['short_name']
     filename = os.path.join(output_dir, short_name + '_info.ncl')
