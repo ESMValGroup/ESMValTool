@@ -131,6 +131,7 @@ It is recommended to proceed step by step, porting and testing each operation se
 
 The new backend also performs variable derivation, replacing the ``calculate`` function in the ``variable_defs`` scripts. If the namelist being portedmakes use of derived variables, the corresponding calculation must be ported from the ``./variable_defs/<variable>.ncl`` file to ``./esmvaltool/preprocessor/_derive.py``.
 
+Note that the Python library ``esmval_lib`` containing the ``ESMValProject`` class is no longer available in version 2. Most functionality has been moved to the new preprocessor. If you miss a feature, please open an issue on (github)[https://github.com/ESMValGroup/ESMValTool/issues].
 
 Move diagnostic- and variable-specific settings to the namelist
 ===============================================================
