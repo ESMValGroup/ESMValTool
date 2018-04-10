@@ -173,6 +173,6 @@ Before submitting a pull request, the code shall be cleaned to adhere to the cod
 - two-space instead of four-space indentation is now adopted for NCL as per NCL standard;
 - ``load`` statements for NCL standard libraries shall be removed: these are automatically loaded since NCL v6.4.0 (see `NCL documentation <http://www.ncl.ucar.edu/current_release.shtml#PreloadedScripts6.4.0>`_);
 - the description of diagnostic- and variable-specific settings shall be moved from the header of the diagnostic script to the main namelist, since the settings are now defined there (see above);
-- NCL ``print`` and ``printVarSummary`` statements shall be avoided and replaced by the ``info_output`` and ``debug_output`` functions;
+- NCL ``print`` and ``printVarSummary`` statements shall be avoided and replaced by the ``log_info`` and ``log_debug`` functions;
 - for error and warning statments, the ``error_msg`` function shall be used, which automatically include an exit statement.
 
