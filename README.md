@@ -32,6 +32,7 @@ Go to the directory where the repository is cloned and run `./setup.py test`. Te
 First go to the directory where the repository is cloned, e.g. `cd ESMValTool`.
 - To review if your own code follows our coding standards, run `prospector esmvaltool/diag_scripts/your_diagnostic/your_script.py`.
 - Run `./setup.py lint` to see the warnings about the code style of the entire project.
+
 We use Codacy for monitoring (Python) code quality. However, running prospector locally will generally give you quicker and sometimes more accurate results. Note that Codacy does not install dependencies, so getting a warning "Unable to import 'external_library'" is probably not a real issue.   
 
 ### Building documentation
