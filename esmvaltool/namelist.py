@@ -521,7 +521,10 @@ def _get_single_preprocessor_task(variables,
     return task
 
 
-def _get_preprocessor_task(variables, profiles, config_user):
+def _get_preprocessor_task(variables,
+                           profiles,
+                           config_user,
+                           write_ncl_interface=False):
     """Create preprocessor task(s) for a set of models."""
     # First set up the preprocessor profile
     variable = variables[0]
@@ -582,7 +585,7 @@ def _get_preprocessor_task(variables, profiles, config_user):
         _add_cmor_info(variable)
 
     # Create (final) preprocessor task
-    profile['extract_metadata'] = {'write_ncl': True}
+    profile['extract_metadata'] = {'write_ncl': write_ncl_interface}
     task = _get_single_preprocessor_task(
         variables, profile, config_user, ancestors=derive_tasks)
 
@@ -605,9 +608,24 @@ class Namelist(object):
             self.models = raw_namelist['models']
         else:
             self.models = []
+        self._support_ncl = self._need_ncl(raw_namelist['diagnostics'])
         self.diagnostics = self._initialize_diagnostics(
             raw_namelist['diagnostics'])
         self.tasks = self.initialize_tasks() if initialize_tasks else None
+
+    @staticmethod
+    def _need_ncl(raw_diagnostics):
+        if not raw_diagnostics:
+            return False
+        for diagnostic in raw_diagnostics.values():
+            if not diagnostic.get('scripts'):
+                continue
+            for script in diagnostic['scripts'].values():
+                if script.get('script', '').lower().endswith('.ncl'):
+                    logger.info("NCL script detected, checking NCL version")
+                    check_ncl_version()
+                    return True
+        return False
 
     def _initialize_diagnostics(self, raw_diagnostics):
         """Define diagnostics in namelist"""
@@ -615,7 +633,6 @@ class Namelist(object):
 
         diagnostics = {}
 
-        ncl_version_checked = False
         for name, raw_diagnostic in raw_diagnostics.items():
             diagnostic = {}
             diagnostic['name'] = name
@@ -628,13 +645,6 @@ class Namelist(object):
             diagnostic['scripts'] = self._initialize_scripts(
                 name, raw_diagnostic.get('scripts'))
             diagnostics[name] = diagnostic
-            is_ncl_script = any(diagnostic['scripts'][s].get('script', '')
-                                .lower().endswith('.ncl')
-                                for s in diagnostic['scripts'])
-            if not ncl_version_checked and is_ncl_script:
-                logger.info("NCL script detected, checking NCL version")
-                check_ncl_version()
-                ncl_version_checked = True
 
         return diagnostics
 
@@ -727,7 +737,8 @@ class Namelist(object):
                 settings[dir_name] = os.path.join(self._cfg[dir_name],
                                                   diagnostic_name, script_name)
             # Copy other settings
-            settings['exit_on_ncl_warning'] = self._cfg['exit_on_warning']
+            if self._support_ncl:
+                settings['exit_on_ncl_warning'] = self._cfg['exit_on_warning']
             for key in ('max_data_filesize', 'output_file_type', 'log_level',
                         'write_plots', 'write_netcdf'):
                 settings[key] = self._cfg[key]
@@ -781,7 +792,8 @@ class Namelist(object):
                 task = _get_preprocessor_task(
                     variables=diagnostic['variable_collection'][variable_name],
                     profiles=self._preprocessors,
-                    config_user=self._cfg)
+                    config_user=self._cfg,
+                    write_ncl_interface=self._support_ncl)
                 preproc_tasks.append(task)
             tasks.extend(preproc_tasks)
 
