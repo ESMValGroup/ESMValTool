@@ -545,7 +545,7 @@ def _get_preprocessor_task(variables,
             profile, 'derive')
         profile['derive'] = {'short_name': variable['short_name']}
 
-        derive_variables = {}
+        derive_input = {}
         for variable in variables:
             _update_cmor_table(
                 table=variable['cmor_table'],
@@ -558,26 +558,26 @@ def _get_preprocessor_task(variables,
                     drs=config_user['drs']):
                 # No need to derive, just process normally up to derive step
                 short_name = variable['short_name']
-                if short_name not in derive_variables:
-                    derive_variables[short_name] = []
-                derive_variables[short_name].append(variable)
+                if short_name not in derive_input:
+                    derive_input[short_name] = []
+                derive_input[short_name].append(variable)
             else:
                 # Process input data needed to derive variable
                 for short_name, field in get_required(variable['short_name'],
                                                       variable['field']):
-                    if short_name not in derive_variables:
-                        derive_variables[short_name] = []
+                    if short_name not in derive_input:
+                        derive_input[short_name] = []
                     variable = copy.deepcopy(variable)
                     variable['short_name'] = short_name
                     variable['field'] = field
                     variable['filename'] = get_output_file(
                         variable, config_user['preproc_dir'])
                     _add_cmor_info(variable, override=True)
-                    derive_variables[short_name].append(variable)
+                    derive_input[short_name].append(variable)
 
-        for variable in derive_variables.values():
-            task = _get_single_preprocessor_task(variable, derive_profile,
-                                                 config_user)
+        for derive_variables in derive_input.values():
+            task = _get_single_preprocessor_task(derive_variables,
+                                                 derive_profile, config_user)
             derive_tasks.append(task)
 
     # Add CMOR info
@@ -639,8 +639,8 @@ class Namelist(object):
             models = self._initialize_models(
                 name, raw_diagnostic.get('additional_models'))
             diagnostic['models'] = models
-            diagnostic['variable_collection'] = \
-                self._initialize_variable_collection(
+            diagnostic['preprocessor_output'] = \
+                self._initialize_preprocessor_output(
                     name, raw_diagnostic.get('variables'), models)
             diagnostic['scripts'] = self._initialize_scripts(
                 name, raw_diagnostic.get('scripts'))
@@ -691,7 +691,7 @@ class Namelist(object):
 
         return variables
 
-    def _initialize_variable_collection(self, diagnostic_name, raw_variables,
+    def _initialize_preprocessor_output(self, diagnostic_name, raw_variables,
                                         models):
         """Define variables in diagnostic"""
         if not raw_variables:
@@ -700,17 +700,17 @@ class Namelist(object):
         logger.debug("Populating list of variables for diagnostic %s",
                      diagnostic_name)
 
-        variable_collection = {}
+        preprocessor_output = {}
 
         for variable_name, raw_variable in raw_variables.items():
             if 'short_name' not in raw_variable:
                 raw_variable['short_name'] = variable_name
             raw_variable['diagnostic'] = diagnostic_name
             raw_variable['preprocessor'] = str(raw_variable['preprocessor'])
-            variable_collection[variable_name] = \
+            preprocessor_output[variable_name] = \
                 self._initialize_variables(raw_variable, models)
 
-        return variable_collection
+        return preprocessor_output
 
     def _initialize_scripts(self, diagnostic_name, raw_scripts):
         """Define script in diagnostic"""
@@ -786,11 +786,11 @@ class Namelist(object):
 
             # Create preprocessor tasks
             preproc_tasks = []
-            for variable_name in diagnostic['variable_collection']:
+            for variable_name in diagnostic['preprocessor_output']:
                 logger.info("Creating preprocessor tasks for variable %s",
                             variable_name)
                 task = _get_preprocessor_task(
-                    variables=diagnostic['variable_collection'][variable_name],
+                    variables=diagnostic['preprocessor_output'][variable_name],
                     profiles=self._preprocessors,
                     config_user=self._cfg,
                     write_ncl_interface=self._support_ncl)
