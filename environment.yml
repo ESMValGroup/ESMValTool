@@ -9,7 +9,7 @@ channels:
 dependencies:
 # Python packages that cannot be installed from PyPI:
 - basemap
-- iris
+- iris>=2.0.0
 - python-stratify
 # Multi language support:
 - ncl
