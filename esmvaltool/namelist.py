@@ -16,10 +16,9 @@ from .data_finder import (get_input_filelist, get_input_filename,
                           get_statistic_output_file)
 from .preprocessor._derive import get_required
 from .preprocessor._download import synda_search
-from .preprocessor._io import concatenate_callback
+from .preprocessor._io import MODEL_KEYS, concatenate_callback
 from .preprocessor._regrid import get_cmor_levels, get_reference_levels
-from .task import (MODEL_KEYS, DiagnosticTask, InterfaceTask,
-                   get_independent_tasks, run_tasks, which)
+from .task import DiagnosticTask, get_independent_tasks, run_tasks, which
 from .version import __version__
 
 logger = logging.getLogger(__name__)
@@ -311,7 +310,7 @@ def _model_to_file(model, variables, config_user):
         "Unable to find matching file for model {}".format(model))
 
 
-def _get_default_settings(variable, config_user):
+def _get_default_settings(variable, config_user, derive=False):
     """Get default preprocessor settings."""
     settings = {}
 
@@ -327,11 +326,13 @@ def _get_default_settings(variable, config_user):
         }
 
     # Configure loading
-    settings['load'] = {
-        'constraints': variable['standard_name'],
+    settings['load_cubes'] = {
         'callback': concatenate_callback,
         'filename': variable['filename'],
+        'metadata': variable,
     }
+    if not derive:
+        settings['load_cubes']['constraints'] = variable['standard_name']
 
     # Configure fixes
     fix = {
@@ -340,9 +341,10 @@ def _get_default_settings(variable, config_user):
         'short_name': variable['short_name'],
     }
     # File fixes
-    settings['fix_file'] = dict(fix)
     fix_dir = variable['filename'] + '_fixed'
-    settings['fix_file']['output_dir'] = fix_dir
+    if not derive:
+        settings['fix_file'] = dict(fix)
+        settings['fix_file']['output_dir'] = fix_dir
     # Cube fixes
     # Only supply mip if the CMOR check fixes are implemented.
     if variable.get('cmor_table'):
@@ -376,7 +378,7 @@ def _get_default_settings(variable, config_user):
         }
 
     # Configure saving cubes to file
-    settings['save'] = {}
+    settings['save_cubes'] = {}
 
     return settings
 
@@ -451,13 +453,9 @@ def _get_preprocessor_settings(variables, profile, config_user):
                                    config_user['preproc_dir'])
 
     for variable in variables:
-        settings = _get_default_settings(variable, config_user)
+        derive = 'derive' in profile
+        settings = _get_default_settings(variable, config_user, derive=derive)
         _apply_preprocessor_settings(settings, profile)
-        # TODO: this should probably be done in _get_default_settings
-        if 'derive' in settings:
-            del settings['load']['constraints']
-            del settings['fix_file']
-
         # if the target grid is a model name, replace it with a file name
         # TODO: call _update_target_grid only once per variable?
         _update_target_levels(
@@ -532,7 +530,7 @@ def _get_preprocessor_task(variables, profiles, config_user):
         raise NamelistError(
             "Unknown preprocessor {} in variable {} of diagnostic {}".format(
                 preproc_name, variable['short_name'], variable['diagnostic']))
-    profile = profiles[variable['preprocessor']]
+    profile = copy.deepcopy(profiles[variable['preprocessor']])
     logger.info("Creating preprocessor '%s' task for variable '%s'",
                 variable['preprocessor'], variable['short_name'])
 
@@ -584,34 +582,11 @@ def _get_preprocessor_task(variables, profiles, config_user):
         _add_cmor_info(variable)
 
     # Create (final) preprocessor task
+    profile['extract_metadata'] = {'write_ncl': True}
     task = _get_single_preprocessor_task(
         variables, profile, config_user, ancestors=derive_tasks)
 
     return task
-
-
-def _get_interface_tasks(variable_collection, preprocessor_tasks):
-    """Create interface tasks between preprocessor and diagnostic script"""
-    metadata = {}
-    for variable_name, variables in variable_collection.items():
-        output_dir = os.path.dirname(variables[0]['filename'])
-        if output_dir not in metadata:
-            metadata[output_dir] = {}
-        metadata[output_dir][variable_name] = variables
-
-    tasks = []
-    for output_dir in metadata:
-        settings = {
-            'metadata': metadata[output_dir],
-        }
-        ancestors = [
-            t for t in preprocessor_tasks if t.output_dir == output_dir
-        ]
-        task = InterfaceTask(
-            settings=settings, output_dir=output_dir, ancestors=ancestors)
-        tasks.append(task)
-
-    return tasks
 
 
 class Namelist(object):
@@ -808,12 +783,7 @@ class Namelist(object):
                     profiles=self._preprocessors,
                     config_user=self._cfg)
                 preproc_tasks.append(task)
-
-            # Create interface tasks
-            if_tasks = _get_interface_tasks(
-                variable_collection=diagnostic['variable_collection'],
-                preprocessor_tasks=preproc_tasks)
-            tasks.extend(if_tasks)
+            tasks.extend(preproc_tasks)
 
             # Create diagnostic tasks
             for script_name, script_cfg in diagnostic['scripts'].items():
@@ -822,7 +792,7 @@ class Namelist(object):
                 # Ancestors will be resolved after creating all tasks,
                 # unless there aren't any, in which case we set them to the
                 # preprocessor tasks.
-                ancestors = later if script_cfg['ancestors'] else if_tasks
+                ancestors = later if script_cfg['ancestors'] else preproc_tasks
                 task = DiagnosticTask(
                     script=script_cfg['script'],
                     output_dir=script_cfg['output_dir'],

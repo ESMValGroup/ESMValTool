@@ -13,12 +13,12 @@ It operates on different (time) spans:
 """
 
 import logging
+from datetime import datetime, timedelta
 from functools import reduce
 
-from datetime import datetime
-from datetime import timedelta
 import iris
 import numpy as np
+import yaml
 
 from ._io import save_cubes
 
@@ -131,6 +131,14 @@ def _put_in_cube(template_cube, cube_data, stat_name, file_name, t_axis):
         if len(template_cube.shape) == 3:
             stats_cube.add_aux_coord(template_cube.coord('air_pressure'))
     stats_cube.attributes['_filename'] = file_name
+    metadata = {'model': 'MultiModel' + stat_name.title(),
+                'filename': file_name}
+    metadata_template = yaml.safe_load(template_cube.attributes['metadata'])
+    for attr in ('short_name', 'standard_name', 'long_name', 'units', 'field',
+                 'start_year', 'end_year', 'diagnostic', 'preprocessor'):
+        if attr in metadata_template:
+            metadata[attr] = metadata_template[attr]
+    stats_cube.attributes['metadata'] = yaml.safe_dump(metadata)
     # complete metadata
     stats_cube.var_name = template_cube.var_name
     stats_cube.long_name = template_cube.long_name
@@ -348,6 +356,7 @@ def multi_model_statistics(cubes, span, filenames, exclude, statistics):
     u_type = str(selection[0].coord('time').units)
 
     # cases
+    files = []
     if span == 'overlap':
         logger.debug("Using common time overlap between "
                      "models to compute statistics.")
@@ -358,6 +367,7 @@ def multi_model_statistics(cubes, span, filenames, exclude, statistics):
             cube_of_stats = _assemble_overlap_data(selection, ovlp, stat_name,
                                                    updated_fname)
             save_cubes([cube_of_stats])
+            files.append(updated_fname)
 
     elif span == 'full':
         logger.debug("Using full time spans " "to compute statistics.")
@@ -371,5 +381,7 @@ def multi_model_statistics(cubes, span, filenames, exclude, statistics):
             cube_of_stats = _assemble_full_data(selection, stat_name,
                                                 updated_fname)
             save_cubes([cube_of_stats])
+            files.append(updated_fname)
 
+    cubes.extend(files)
     return cubes

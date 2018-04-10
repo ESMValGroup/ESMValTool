@@ -1,14 +1,13 @@
 """Preprocessor module."""
 import logging
 import os
-from collections import OrderedDict
 
 from iris.cube import Cube
 
 from ..task import AbstractTask
 from ._derive import derive
 from ._download import download
-from ._io import cleanup, load_cubes as load, save_cubes as save
+from ._io import cleanup, extract_metadata, load_cubes, save_cubes
 from ._mask import mask_fillvalues, mask_landocean
 from ._multimodel import multi_model_statistics
 from ._reformat import fix_data, fix_file, fix_metadata, cmor_check_data
@@ -26,7 +25,7 @@ __all__ = [
     # File reformatting/CMORization
     'fix_file',
     # Load cube from file
-    'load',
+    'load_cubes',
     # Derive variable
     'derive',
     # Metadata reformatting/CMORization
@@ -55,8 +54,9 @@ __all__ = [
     'multi_model_statistics',
     'cmor_check_data',
     # Save to file
-    'save',
+    'save_cubes',
     'cleanup',
+    'extract_metadata',
 ]
 
 DEFAULT_ORDER = tuple(__all__)
@@ -65,28 +65,25 @@ assert set(DEFAULT_ORDER).issubset(set(globals()))
 MULTI_MODEL_FUNCTIONS = {
     'multi_model_statistics',
     'mask_fillvalues',
+    'extract_metadata',
 }
 assert MULTI_MODEL_FUNCTIONS.issubset(set(DEFAULT_ORDER))
 
 # Preprocessor functions that take a list instead of a file/Cube as input.
-_LIST_INPUT_FUNCTIONS = {
+_LIST_INPUT_FUNCTIONS = MULTI_MODEL_FUNCTIONS | {
     'download',
-    'load',
+    'load_cubes',
     'derive',
-    'mask_fillvalues',
-    'multi_model_statistics',
-    'save',
+    'save_cubes',
     'cleanup',
 }
 assert _LIST_INPUT_FUNCTIONS.issubset(set(DEFAULT_ORDER))
 
 # Preprocessor functions that return a list instead of a file/Cube.
-_LIST_OUTPUT_FUNCTIONS = {
+_LIST_OUTPUT_FUNCTIONS = MULTI_MODEL_FUNCTIONS | {
     'download',
-    'load',
-    'mask_fillvalues',
-    'multi_model_statistics',
-    'save',
+    'load_cubes',
+    'save_cubes',
     'cleanup',
 }
 assert _LIST_OUTPUT_FUNCTIONS.issubset(set(DEFAULT_ORDER))
@@ -112,16 +109,6 @@ def _get_multi_model_settings(all_settings, step):
     for settings in all_settings.values():
         if step in settings:
             return {step: settings[step]}
-
-
-def _as_ordered_dict(settings, order):
-    """Copy settings to an OrderedDict using the specified order."""
-    ordered_settings = OrderedDict()
-    for step in order:
-        if step in settings:
-            ordered_settings[step] = settings[step]
-
-    return ordered_settings
 
 
 def _group_input(in_files, out_files):
@@ -163,15 +150,20 @@ def preprocess_multi_model(input_files, all_settings, order, debug=False):
     all_items = _group_input(input_files, all_settings)
     logger.debug("Processing %s", all_items)
 
-    # Define multi model steps
+    # List of all preprocessor steps used
+    steps = [
+        step for step in order
+        if any(step in settings for settings in all_settings.values())
+    ]
+    # Find multi model steps
     # This assumes that the multi model settings are the same for all models
     multi_model_steps = [
-        step
-        for step in DEFAULT_ORDER if (step in MULTI_MODEL_FUNCTIONS and any(
-            step in settings for settings in all_settings.values()))
+        step for step in steps if step in MULTI_MODEL_FUNCTIONS
     ]
-    final_step = object()
-    multi_model_steps.append(final_step)
+    # Append a dummy multi model step if the final step is not multi model
+    dummy_step = object()
+    if steps[-1] not in MULTI_MODEL_FUNCTIONS:
+        multi_model_steps.append(dummy_step)
 
     # Process
     for step in multi_model_steps:
@@ -180,33 +172,35 @@ def preprocess_multi_model(input_files, all_settings, order, debug=False):
         for name in all_settings:
             settings, all_settings[name] = split_settings(
                 all_settings[name], step)
-            settings = _as_ordered_dict(settings, order)
-            all_items[name] = preprocess(
-                items=all_items[name], settings=settings, debug=debug)
-        if step is not final_step:
-            # Run multi model step (all_items should be cubes by now)
+            all_items[name] = preprocess(all_items[name], settings, order,
+                                         debug)
+        if step is not dummy_step:
+            # Run multi model step
             multi_model_items = [
-                cube for name in all_items for cube in all_items[name]
+                item for name in all_items for item in all_items[name]
             ]
             all_items = {}
-            result = preprocess(
-                items=multi_model_items,
-                settings=multi_model_settings,
-                debug=debug)
-            for cube in result:
-                filename = cube.attributes['_filename']
-                if filename not in all_items:
-                    all_items[filename] = []
-                all_items[filename].append(cube)
+            result = preprocess(multi_model_items, multi_model_settings, order,
+                                debug)
+            for item in result:
+                if isinstance(item, Cube):
+                    name = item.attributes['_filename']
+                    if name not in all_items:
+                        all_items[name] = []
+                    all_items[name].append(item)
+                else:
+                    all_items[item] = [item]
 
     return [filename for name in all_items for filename in all_items[name]]
 
 
-def preprocess(items, settings, debug=False):
+def preprocess(items, settings, order, debug=False):
     """Run preprocessor"""
-    for step, args in settings.items():
+    steps = (step for step in order if step in settings)
+    for step in steps:
         logger.debug("Running preprocessor step %s", step)
         function = globals()[step]
+        args = settings[step]
 
         if step in _LIST_INPUT_FUNCTIONS:
             logger.debug("Running %s(%s, %s)", function.__name__, items, args)
@@ -226,7 +220,7 @@ def preprocess(items, settings, debug=False):
         if debug:
             logger.debug("Result %s", items)
             cubes = [item for item in items if isinstance(item, Cube)]
-            save(cubes, debug=debug, step=step)
+            save_cubes(cubes, debug=debug, step=step)
 
     return items
 
