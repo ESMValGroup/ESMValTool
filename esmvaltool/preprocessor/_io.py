@@ -17,6 +17,10 @@ logger = logging.getLogger(__name__)
 MODEL_KEYS = {
     'mip',
 }
+VARIABLE_KEYS = {
+    'reference_model',
+    'alternative_model',
+}
 
 
 def _get_attr_from_field_coord(ncfield, coord_name, attr):
@@ -153,7 +157,8 @@ def _write_ncl_metadata(output_dir, metadata):
     # model keys and keys with non-identical values will be stored
     # in model_info, the rest in variable_info
     for key, values in input_file_info.items():
-        if key in MODEL_KEYS or any(values[0] != v for v in values):
+        model_specific = any(values[0] != v for v in values)
+        if (model_specific or key in MODEL_KEYS) and key not in VARIABLE_KEYS:
             info['model_info'][key] = values
         else:
             info['variable_info'][key] = values[0]
