@@ -81,6 +81,7 @@ the standard installation procedure which assumes ``bash``). Instead, add
 the following line to your ``.cshrc``/``.tcshrc`` file: 
 
 .. code-block:: bash
+
     source <prefix>/etc/profile.d/conda.csh
 
 The ESMValTool conda environment file can also be used as a requirements list
