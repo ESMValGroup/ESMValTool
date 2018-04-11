@@ -6,15 +6,15 @@ Installing ESMValTool
 
 ESMValTool 2.0 requires a Unix(-like) operating system and Python 2.7+ or 3.6+.
 Python 2.7+ will be discontinued in the near future, so we encourage you to use
-Python 3.6+ if possible
+Python 3.6+ if possible.
 
 The ESMValTool supports three different installation methods:
 
-* Installation through Conda package manager (see https://www.continuum.io/ )
+* Installation through Conda package manager (see https://www.continuum.io/);
 
-* Deployment through a Docker container (see https://www.docker.com/ )
+* Deployment through a Docker container (see https://www.docker.com/);
 
-* From the source code available at https://github.com/ESMValGroup/ESMValTool
+* From the source code available at https://github.com/ESMValGroup/ESMValTool.
 
 The next sections will detail the procedure to install ESMValTool for each of
 this methods.
@@ -47,7 +47,7 @@ The ESMValTool source code is available on a public GitHub repository:
 https://github.com/ESMValGroup/ESMValTool
 
 The easiest way to obtain it is to clone the repository using git
-(see https://git-scm.com/ ):
+(see https://git-scm.com/):
 
 .. code-block:: bash
 
@@ -72,19 +72,18 @@ Prerequisites
 It is strongly recommended to use conda to manage ESMValTool dependencies.
 For a minimal conda installation go to https://conda.io/miniconda.html. To
 simplify the process, an environment definition file is provided within the
-repository (environment.yml in the root folder).
+repository (``environment.yml`` in the root folder).
 
-.. attention::
-    The standard conda installation has some issues with the ``csh``/``tcsh``
-    login shell. If you are using such shell, do not prepend the install
-    location (``<prefix>>``) to PATH in your ``.tcshrc`` file (as suggested by
-    the standard installation procedure which assumes ``bash``). Instead, add
-    the following line to your ``.cshrc``//``.tcshrc`` file: 
+Note that the standard conda installation has some issues with the ``csh``/``tcsh``
+login shell. If you are using such shell, do not prepend the install
+location (``<prefix>``) to PATH in your ``.tcshrc`` file (as suggested by
+the standard installation procedure which assumes ``bash``). Instead, add
+the following line to your ``.cshrc``/``.tcshrc`` file: 
 
 .. code-block:: bash
     source <prefix>/etc/profile.d/conda.csh
 
-ESMValTool's conda environment file can also be used as a requirements list
+The ESMValTool conda environment file can also be used as a requirements list
 for those cases in which a conda installation is not possible or advisable.
 From now on, we will assume that the installation is going to be done through
 conda.
@@ -97,7 +96,6 @@ To create a environment using Python 3.x
 .. code-block:: bash
 
     conda env create --file ESMValTool/environment.yml python=3
-
 
 To create a environment using Python 2.x
 
@@ -140,7 +138,6 @@ the following command:
 
     python ESMValTool/setup.py
 
-
 The next step is to check that the installation works properly.
 To do this, run the tool with --version:
 
@@ -152,7 +149,7 @@ If everything was installed properly, ESMValTool should have printed the
 version number at the console and exited.
 
 For a more complete installation verification, run the automated tests and
-confirm that no errors are reported.
+confirm that no errors are reported:
 
 .. code-block:: bash
 
