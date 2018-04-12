@@ -333,6 +333,8 @@ def _get_default_settings(variable, config_user):
         'callback': concatenate_callback,
         'filename': variable['filename'],
     }
+    # Configure merge
+    settings['concatenate'] = {}
 
     # Configure fixes
     fix = {
@@ -362,6 +364,13 @@ def _get_default_settings(variable, config_user):
         'd2': 1,
     }
 
+    # Configure CMOR metadata check
+    if variable.get('cmor_table'):
+        settings['cmor_check_metadata'] = {
+            'cmor_table': variable['cmor_table'],
+            'mip': variable['mip'],
+            'short_name': variable['short_name'],
+        }
     # Configure final CMOR data check
     if variable.get('cmor_table'):
         settings['cmor_check_data'] = {
