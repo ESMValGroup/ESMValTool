@@ -137,7 +137,7 @@ the following command:
 
 .. code-block:: bash
 
-    python ESMValTool/setup.py
+    python ESMValTool/setup.py install
 
 The next step is to check that the installation works properly.
 To do this, run the tool with --version:
