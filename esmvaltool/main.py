@@ -186,9 +186,3 @@ def run():
         sys.exit(1)
     else:
         logger.info("Run was succesful")
-
-
-if __name__ == '__main__':
-    logger = logging.getLogger('ESMValTool')
-    logger.addHandler(logging.NullHandler())
-    run()
