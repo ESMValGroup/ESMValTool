@@ -10,7 +10,7 @@ import json
 import logging
 import os
 
-from ..interface_scripts.data_finder import _CFG
+from .._config import CFG
 
 logger = logging.getLogger(__name__)
 
@@ -18,8 +18,8 @@ logger = logging.getLogger(__name__)
 def _read_cmor_tables():
     tables = {}
 
-    for table in _CFG.keys():
-        project = _CFG[table]
+    for table in CFG.keys():
+        project = CFG[table]
 
         table_path = project.get('cmor_tables', '')
         table_path = os.path.expandvars(os.path.expanduser(table_path))

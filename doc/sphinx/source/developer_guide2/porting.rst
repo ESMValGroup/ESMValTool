@@ -16,10 +16,11 @@ In ESMValTool v2.0, the main namelist (hereafter *"the namelist"*) is written in
 
 For each of the ESMValTool v1.0 namelists, a very first draft in yml format has already been created and is available in ./nml/. This can be used as a starting point, but keeping in mind that it has been created at a very early stage of v2.0 development and it will certainly need further changes.
 
-The namelist file in yml shall first be moved to the esmvaltool/ directory where the v2.0 is being developed::
+The namelist file in yml shall first be moved to the esmvaltool/ directory where the v2.0 is being developed:
 
-        mv ./nml/<namelist>.yml ./esmvaltool/namelists/<namelist>.yml
+.. code-block:: bash
 
+    mv ./nml/<namelist>.yml ./esmvaltool/namelists/<namelist>.yml
 
 This will help to keep track of which namelists have been already ported to the new version. Note that the namelist directory is now called ``namelists``.
 
@@ -29,7 +30,9 @@ The yaml namelist can now be edited and tested, starting with a few models and o
 Create a copy of the diag script in v2.0
 ========================================
 
-As for the namelist, a copy of the diagnostic script(s) to be ported shall be created in the esmvaltool/ directory, again to allow for direct comparison of the two versions within the same branch::
+As for the namelist, a copy of the diagnostic script(s) to be ported shall be created in the esmvaltool/ directory, again to allow for direct comparison of the two versions within the same branch:
+
+.. code-block:: bash
 
     cp -i ./diag_scripts/<diag>.ncl ./esmvaltool/diag_scripts/
 
@@ -133,6 +136,7 @@ It is recommended to proceed step by step, porting and testing each operation se
 
 The new backend also performs variable derivation, replacing the ``calculate`` function in the ``variable_defs`` scripts. If the namelist being portedmakes use of derived variables, the corresponding calculation must be ported from the ``./variable_defs/<variable>.ncl`` file to ``./esmvaltool/preprocessor/_derive.py``.
 
+Note that the Python library ``esmval_lib`` containing the ``ESMValProject`` class is no longer available in version 2. Most functionality has been moved to the new preprocessor. If you miss a feature, please open an issue on (github)[https://github.com/ESMValGroup/ESMValTool/issues].
 
 Move diagnostic- and variable-specific settings to the namelist
 ===============================================================
@@ -145,13 +149,17 @@ Test the namelist/diagnostic in the new version
 
 Once complete, the porting of the diagnostic script can be tested. Most of the diagnostic script allows writing the output in a NetCDF file before calling the plotting routine. This output can be used to check whether the results of v1.0 are correctly reproduced.
 
-There are two methods for comparing NetCDF files: ``cdo`` and ``ncdiff``. The first method is applied with the command::
+There are two methods for comparing NetCDF files: ``cdo`` and ``ncdiff``. The first method is applied with the command:
 
-      cdo diffv old_output.nc new_output.nc
+.. code-bloc:: bash
+
+    cdo diffv old_output.nc new_output.nc
 
 which will print a log on the stdout, reporting how many records of the file differ and the absolute/relative differences.
 
-The second method produces a NetCDF file (e.g., ``diff.nc``) with the difference between two given files::
+The second method produces a NetCDF file (e.g., ``diff.nc``) with the difference between two given files:
+
+.. code-bloc:: bash
 
     ncdiff old_output.nc new_output.nc diff.nc
 
@@ -160,6 +168,8 @@ This file can be opened with ``ncview`` to visually inspect the differences.
 In general, binary identical results cannot be expected, due to the use of different languages and algorithms in the two versions, especially for complex operations such as regridding. However, difference within machine precision shall be aimed at. At this stage, it is essential to test all models in the namelist and not just a subset of them.
 
 It is also recommended to compare the graphical output (this may be necessary if the ported diagnostic does not produce a NetCDF output). For this comparison, the PostScript format shall be chosen (it can be set in the user configuration file). Two PostScript files can be compared with standard ``diff`` command in Linux:
+
+.. code-bloc:: bash
 
    diff old_graphic.ps new_graphic.ps
 
