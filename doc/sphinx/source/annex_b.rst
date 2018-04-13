@@ -144,7 +144,7 @@ Pull requests
 
 Once your development is completely finished, go to the GitHub website of the ESMValTool repository and switch to your *FEATURE BRANCH*. You can then initiate a pull request by clicking on the button "New pull request". Select the *DEVELOPMENT BRANCH* as "base branch" and click on "Create pull request". Your pull request will then be tested, discussed and implemented into the *DEVELPOMENT BRANCH* by the ESMValTool Core Development Team.
 
-.. attention:: Before creating a pull request, please make sure all requirements listed in Section :numref:`writing` are fully met (see also checklist in :numref:`tab_checklist`).
+.. attention:: Before creating a pull request, please make sure all requirements listed in Sections :numref:`writing` and :numref:`documentation` are fully met (see also checklist in :numref:`tab_checklist`).
 
 GitHub issues
 -------------
@@ -165,6 +165,7 @@ Do-s
 * Comment all switches and parameters including a list of all possible settings/options in the header section of your code (see also Section :numref:`std_diag`).
 * Use templates for namelists (Section :numref:`std_namelist`) and diagnostics (Section :numref:`std_diag`) to help with proper documentation.
 * Keep your *FEATURE BRANCH* regularly synchronized with the *DEVELOPMENT BRANCH* (git merge).
+* Keep developments / modifications of the ESMValTool framework / backend / basic structure separate from developments of diagnostics by creating different *FEATURE BRANCHES* for these two kinds of developments. Create *FEATURE BRANCHES* for changes / modifications of the ESMValTool framework only in the *PUBLIC* repository.
 
 Don't-s
 -------
@@ -173,5 +174,5 @@ Don't-s
 * Do not develop without proper version control (see do-s above).
 * Avoid large (memory, disk space) intermediate results. Delete intermediate files/variables or see modular/functional programming style.
 * Do not use hard-coded pathnames or filenames.
-
+* Do not mix developments / modifications of the ESMValTool framework and developments / modifications of diagnotics in the same *FEATURE BRANCH*.
 

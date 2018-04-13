@@ -621,19 +621,33 @@ The following table can be used as a list of items to be done/checked when writi
 .. _tab_checklist:
 
 +---------------------------+-------------------------------------------------------+-------------------------------------+
-| diagnostic                | model data                                            | observational data                  |
+| diagnostic / namelist     | model data                                            | observational data                  |
 +===========================+=======================================================+=====================================+
 | header in diagnostic code | preprocessing (reformatting routines - if applicable) | preprocessing (reformatting script) |
 +---------------------------+-------------------------------------------------------+-------------------------------------+
 | header in namelist        | list of tools (if applicable)                         | list of tools (if applicable)       |
 +---------------------------+-------------------------------------------------------+-------------------------------------+
-| documentation of          | References                                            | header in reformatting script       |
+| documentation of          | references                                            | header in reformatting script       |
 | diagnostic (.rst file +   |                                                       | (if applicable)                     |
-| example images)           |                                                       |                                     |
+| example images, see       |                                                       |                                     |
+| Section                   |                                                       |                                     |
+| :numref:`documentation`)  |                                                       |                                     |
 +---------------------------+-------------------------------------------------------+-------------------------------------+
-| test data                 | test data                                             | references                          |
+| provenance (tagging)      | test data                                             | references                          |
+| implemented in diagnotic  |                                                       |                                     |
+| code (see Section         |                                                       |                                     |
+| :numref:`tagging`)        |                                                       |                                     |
 +---------------------------+-------------------------------------------------------+-------------------------------------+
-| *FEATURE BRANCH* updated  |                                                       | test data                           |
+| testing namelist (runs    |                                                       | test data                           |
+| diagnostic with reduced   |                                                       |                                     |
+| input data)               |                                                       |                                     |
++---------------------------+-------------------------------------------------------+-------------------------------------+
+| coding rules and          |                                                       |                                     |
+| standards (see Section    |                                                       |                                     |
+| :numref:`rules`) have     |                                                       |                                     |
+| been followed             |                                                       |                                     |
++---------------------------+-------------------------------------------------------+-------------------------------------+
+| *FEATURE BRANCH* updated  |                                                       |                                     |
 | with latest               |                                                       |                                     |
 | *DEVELOPMENT BRANCH*      |                                                       |                                     |
 +---------------------------+-------------------------------------------------------+-------------------------------------+
