@@ -26,13 +26,17 @@ def get_required(short_name, field=None):
     """Get variable short_name and field pairs required to derive variable"""
     frequency = field[2] if field else 'M'
     required = {
+        'lwcre': [
+            ('rlut', 'T2' + frequency + 's'),
+            ('rlutcs', 'T2' + frequency + 's'),
+        ],
         'lwp': [
             ('clwvi', 'T2' + frequency + 's'),
             ('clivi', 'T2' + frequency + 's'),
         ],
-        'lwcre': [
-            ('rlut', 'T2' + frequency + 's'),
-            ('rlutcs', 'T2' + frequency + 's'),
+        'swcre': [
+            ('rsut', 'T2' + frequency + 's'),
+            ('rsutcs', 'T2' + frequency + 's'),
         ],
         'toz': [
             ('tro3', 'T3' + frequency),
@@ -54,8 +58,9 @@ def derive(cubes, short_name):
 
     # Derive
     functions = {
-        'lwp': calc_lwp,
         'lwcre': calc_lwcre,
+        'lwp': calc_lwp,
+        'swcre': calc_swcre,
         'toz': calc_toz,
     }
     if short_name in functions:
@@ -65,6 +70,37 @@ def derive(cubes, short_name):
         return cube
 
     raise NotImplementedError("Don't know how to derive {}".format(short_name))
+
+
+def calc_lwcre(cubes):
+    """Compute longwave cloud radiative effect from all-sky and clear-sky flux.
+
+    Arguments
+    ----
+        cubes: cubelist containing rlut (toa_outgoing_longwave_flux) and rlutcs
+               (toa_outgoing_longwave_flux_assuming_clear_sky).
+
+    Returns
+    -------
+        Cube containing longwave cloud radiative effect.
+
+    """
+    rlut_cube = cubes.extract_strict(
+        Constraint(name='toa_outgoing_longwave_flux'))
+    rlutcs_cube = cubes.extract_strict(
+        Constraint(name='toa_outgoing_longwave_flux_assuming_clear_sky'))
+
+    assert rlut_cube.coord_dims('time') and rlutcs_cube.coord_dims('time'), \
+        'No time dimension found.'
+    lwcre = rlutcs_cube - rlut_cube
+    lwcre.units = rlut_cube.units
+
+    # Set names
+    lwcre.var_name = 'lwcre'
+    lwcre.standard_name = 'toa_longwave_cloud_radiative_effect'
+    lwcre.long_name = 'TOA Longwave Cloud Radiative Effect'
+    lwcre.attributes['positive'] = 'up'
+    return lwcre
 
 
 def calc_lwp(cubes):
@@ -112,35 +148,36 @@ def calc_lwp(cubes):
     return lwp_cube
 
 
-def calc_lwcre(cubes):
-    """Compute longwave cloud radiative effect from all-sky and clear-sky flux.
+def calc_swcre(cubes):
+    """Compute shortwave cloud radiative effect from all-sky and clear-sky
+       flux.
 
     Arguments
     ----
-        cubes: cubelist containing rlut (toa_outgoing_longwave_flux) and rlutcs
-               (toa_outgoing_longwave_flux_assuming_clear_sky).
+        cubes: cubelist containing rsut (toa_outgoing_shortwave_flux) and
+               rsutcs (toa_outgoing_shortwave_flux_assuming_clear_sky).
 
     Returns
     -------
-        Cube containing longwave cloud radiative effect.
+        Cube containing shortwave cloud radiative effect.
 
     """
-    rlut_cube = cubes.extract_strict(
-        Constraint(name='toa_outgoing_longwave_flux'))
-    rlutcs_cube = cubes.extract_strict(
-        Constraint(name='toa_outgoing_longwave_flux_assuming_clear_sky'))
+    rsut_cube = cubes.extract_strict(
+        Constraint(name='toa_outgoing_shortwave_flux'))
+    rsutcs_cube = cubes.extract_strict(
+        Constraint(name='toa_outgoing_shortwave_flux_assuming_clear_sky'))
 
-    assert rlut_cube.coord_dims('time') and rlutcs_cube.coord_dims('time'), \
+    assert rsut_cube.coord_dims('time') and rsutcs_cube.coord_dims('time'), \
         'No time dimension found.'
-    lwcre = rlutcs_cube - rlut_cube
-    lwcre.units = rlut_cube.units
+    swcre = rsutcs_cube - rsut_cube
+    swcre.units = rsut_cube.units
 
     # Set names
-    lwcre.var_name = 'lwcre'
-    lwcre.standard_name = 'toa_longwave_cloud_radiative_effect'
-    lwcre.long_name = 'TOA Longwave Cloud Radiative Effect'
-    lwcre.attributes['positive'] = 'up'
-    return lwcre
+    swcre.var_name = 'swcre'
+    swcre.standard_name = 'toa_shortwave_cloud_radiative_effect'
+    swcre.long_name = 'TOA Shortwave Cloud Radiative Effect'
+    swcre.attributes['positive'] = 'up'
+    return swcre
 
 
 def calc_toz(cubes):
