@@ -634,7 +634,7 @@ The following table can be used as a list of items to be done/checked when writi
 | :numref:`documentation`)  |                                                       |                                     |
 +---------------------------+-------------------------------------------------------+-------------------------------------+
 | provenance (tagging)      | test data                                             | references                          |
-| implemented in diagnotic  |                                                       |                                     |
+| implemented in diagnostic |                                                       |                                     |
 | code (see Section         |                                                       |                                     |
 | :numref:`tagging`)        |                                                       |                                     |
 +---------------------------+-------------------------------------------------------+-------------------------------------+
