@@ -318,6 +318,8 @@ def multi_model_statistics(cubes, span, filenames, exclude, statistics):
                                         time_unit)
             cube_of_stats = _assemble_overlap_data(selection, interval,
                                                    stat_name, filename)
+            cube_of_stats.data = np.ma.array(cube_of_stats.data,
+                                             dtype=np.dtype('float32'))
             save_cubes([cube_of_stats])
 
     elif span == 'full':
@@ -329,6 +331,8 @@ def multi_model_statistics(cubes, span, filenames, exclude, statistics):
             filename = _update_filename(filenames[stat_name], interval,
                                         time_unit)
             cube_of_stats = _assemble_full_data(selection, stat_name, filename)
+            cube_of_stats.data = np.ma.array(cube_of_stats.data,
+                                             dtype=np.dtype('float32'))
             save_cubes([cube_of_stats])
 
     return cubes
