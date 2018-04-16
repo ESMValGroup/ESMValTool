@@ -6,7 +6,7 @@ import iris
 
 
 # slice cube over a restricted time period
-def time_slice(mycube, yr1, mo1, d1, yr2, mo2, d2):
+def time_slice(mycube, yr1, mo1, day1, yr2, mo2, day2):
     """
     Function that returns a subset of the original cube (slice)
     given two dates of interest date1 and date2
@@ -19,17 +19,17 @@ def time_slice(mycube, yr1, mo1, d1, yr2, mo2, d2):
     import datetime
     time_units = mycube.coord('time').units
     if time_units.calendar == '360_day':
-        if d1 > 30:
-            d1 = 30
-        if d2 > 30:
-            d2 = 30
-    my_date1 = datetime.datetime(int(yr1), int(mo1), int(d1))
-    my_date2 = datetime.datetime(int(yr2), int(mo2), int(d2))
+        if day1 > 30:
+            day1 = 30
+        if day2 > 30:
+            day2 = 30
+    my_date1 = datetime.datetime(int(yr1), int(mo1), int(day1))
+    my_date2 = datetime.datetime(int(yr2), int(mo2), int(day2))
 
-    t1 = time_units.date2num(my_date1)
-    t2 = time_units.date2num(my_date2)
+    time1 = time_units.date2num(my_date1)
+    time2 = time_units.date2num(my_date2)
     my_constraint = iris.Constraint(time=lambda t: (
-        t1 < time_units.date2num(t.point) < t2))
+        time1 < time_units.date2num(t.point) < time2))
     cube_slice = mycube.extract(my_constraint)
     return cube_slice
 
