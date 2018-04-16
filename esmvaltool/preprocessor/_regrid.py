@@ -12,16 +12,17 @@ from __future__ import absolute_import, division, print_function
 import os
 import re
 from copy import deepcopy
-from ..cmor.table import CMOR_TABLES
 
+import six
+import numpy as np
+from numpy import ma
 import iris
 import iris.cube
 import iris.exceptions
-import numpy as np
-import six
-import stratify
 from iris.analysis import AreaWeighted, Linear, Nearest, UnstructuredNearest
-from numpy import ma
+import stratify
+
+from ..cmor.table import CMOR_TABLES
 
 # Regular expression to parse a "MxN" cell-specification.
 _CELL_SPEC = re.compile(r'''\A
