@@ -12,10 +12,10 @@ from __future__ import absolute_import, division, print_function
 import os
 import re
 from copy import deepcopy
-import six
 from ..cmor.table import CMOR_TABLES
 
 import iris
+import iris.cube
 import iris.exceptions
 import numpy as np
 import six
@@ -194,9 +194,14 @@ def regrid(src_cube, target_grid, scheme):
                 src_cube.remove_coord(coord)
 
     # Perform the horizontal regridding.
-    result = src_cube.regrid(target_grid, horizontal_schemes[scheme])
-
-    return result
+    results = iris.cube.CubeList()
+    regridder = None
+    for map_slice in src_cube.slices(['latitude', 'longitude']):
+        if not regridder:
+            regridder = horizontal_schemes[scheme].regridder(map_slice,
+                                                             target_grid)
+        results.append(regridder(map_slice))
+    return results.merge_cube()
 
 
 def _create_cube(src_cube, data, levels):
