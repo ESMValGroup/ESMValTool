@@ -332,7 +332,7 @@ def multi_model_statistics(cubes, span, filenames, exclude, statistics):
             cube_of_stats.data = np.ma.array(cube_of_stats.data,
                                              dtype=np.dtype('float32'))
             save_cubes([cube_of_stats])
-            files.append(updated_fname)
+            files.append(filename)
 
     elif span == 'full':
         logger.debug("Using full time spans " "to compute statistics.")
@@ -346,7 +346,7 @@ def multi_model_statistics(cubes, span, filenames, exclude, statistics):
             cube_of_stats.data = np.ma.array(cube_of_stats.data,
                                              dtype=np.dtype('float32'))
             save_cubes([cube_of_stats])
-            files.append(updated_fname)
+            files.append(filename)
 
     cubes.extend(files)
     return cubes
