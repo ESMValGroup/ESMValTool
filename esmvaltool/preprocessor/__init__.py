@@ -7,10 +7,11 @@ from iris.cube import Cube
 from ..task import AbstractTask
 from ._derive import derive
 from ._download import download
-from ._io import cleanup, extract_metadata, load_cubes, save_cubes
+from ._io import cleanup, extract_metadata, load_cubes, save_cubes, concatenate
 from ._mask import mask_fillvalues, mask_landocean
 from ._multimodel import multi_model_statistics
-from ._reformat import fix_data, fix_file, fix_metadata, cmor_check_data
+from ._reformat import fix_data, fix_file, fix_metadata, cmor_check_data, \
+    cmor_check_metadata
 from ._regrid import vinterp as extract_levels
 from ._regrid import regrid
 from ._time_area import area_average as average_region
@@ -30,6 +31,8 @@ __all__ = [
     'derive',
     # Metadata reformatting/CMORization
     'fix_metadata',
+    # Concatenate all cubes in one
+    'concatenate',
     # Time extraction
     'extract_time',
     # Data reformatting/CMORization
@@ -53,6 +56,7 @@ __all__ = [
     'seasonal_mean',
     'multi_model_statistics',
     'cmor_check_data',
+    'cmor_check_metadata':,
     # Save to file
     'save_cubes',
     'cleanup',
@@ -73,6 +77,7 @@ assert MULTI_MODEL_FUNCTIONS.issubset(set(DEFAULT_ORDER))
 _LIST_INPUT_FUNCTIONS = MULTI_MODEL_FUNCTIONS | {
     'download',
     'load_cubes',
+    'concatenate',
     'derive',
     'save_cubes',
     'cleanup',

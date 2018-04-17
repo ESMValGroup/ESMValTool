@@ -16,6 +16,7 @@ import logging
 from datetime import datetime, timedelta
 from functools import reduce
 
+import cf_units
 import iris
 import numpy as np
 import yaml
@@ -25,22 +26,12 @@ from ._io import save_cubes
 logger = logging.getLogger(__name__)
 
 
-def _time_pts_by_calendar(cube):
-    """Extract time points depending on calendar"""
-    # a_p is a prefactor that brings time points
-    # to 365-day calendar
-    time_units = cube.coord('time').units
-    if time_units.calendar is not None:
-        if time_units.calendar == '360_day':
-            a_p = 365. / 360.
-        else:
-            a_p = 1.
-    else:
-        logger.debug("No calendar type: assuming 365-day")
-        a_p = 1.
-    # return tpoints
-    t_points = [c * a_p for c in cube.coord('time').points]
-    return t_points
+def _get_time_offset(time_unit):
+    """Return a datetime object equivalent to tunit"""
+    # tunit e.g. 'day since 1950-01-01 00:00:00.0000000 UTC'
+    cfunit = cf_units.Unit(time_unit, calendar=cf_units.CALENDAR_STANDARD)
+    time_offset = cfunit.num2date(0)
+    return time_offset
 
 
 def _plev_fix(dataset, pl_idx):
@@ -79,7 +70,14 @@ def _compute_statistic(datas, name):
 
     # no plevs
     if len(datas[0].shape) < 3:
-        statistic = statistic_function(datas, axis=0)
+        # get all NOT fully masked data - u_data
+        # datas is per time point
+        # so we can safely NOT compute stats for single points
+        u_datas = [data for data in datas if not np.all(data.mask)]
+        if len(u_datas) > 1:
+            statistic = statistic_function(datas, axis=0)
+        else:
+            statistic.mask = True
         return statistic
 
     # plevs
@@ -147,16 +145,25 @@ def _put_in_cube(template_cube, cube_data, stat_name, file_name, t_axis):
     return stats_cube
 
 
-def _to_datetime(delta_t, unit_type):
-    """Convert to a datetime point"""
-    leap_correction = delta_t / (365. * 4.)
-    delta_t = delta_t + leap_correction
-    if unit_type == 'day since 1950-01-01 00:00:00.0000000':
-        new_date = datetime(1950, 1, 1, 0) + timedelta(np.int(delta_t))
-    elif unit_type == 'day since 1850-01-01 00:00:00.0000000':
-        new_date = datetime(1850, 1, 1, 0) + timedelta(np.int(delta_t))
-    # add more supported units here
-    return new_date
+def _datetime_to_int_days(cube):
+    """Return list of int(days) converted from cube datetime cells"""
+    time_cells = [cell.point for cell in cube.coord('time').cells()]
+    time_unit = cube.coord('time').units.name
+    time_offset = _get_time_offset(time_unit)
+
+    # extract date info
+    real_dates = []
+    for date_obj in time_cells:
+        # real_date resets the actual data point day
+        # to the 1st of the month so that there are no
+        # wrong overlap indeces
+        # NOTE: this workaround is good only
+        # for monthly data
+        real_date = datetime(date_obj.year, date_obj.month, 1, 0, 0, 0)
+        real_dates.append(real_date)
+
+    days = [(date_obj - time_offset).days for date_obj in real_dates]
+    return days
 
 
 def _get_overlap(cubes):
@@ -172,162 +179,116 @@ def _get_overlap(cubes):
     """
     all_times = []
     for cube in cubes:
-        # monthly data ONLY
-        # converts all to 365-days calendars
-        time_units = cube.coord('time').units
-        bnd1 = float(cube.coord('time').points[0])
-        bnd2 = float(cube.coord('time').points[-1])
-        if time_units.calendar is not None:
-            if time_units.calendar == '360_day':
-                bnd1 = int(bnd1 / 360.) * 365.
-                bnd2 = (int(bnd2 / 360.) + 1) * 365.
-            else:
-                bnd1 = int(bnd1 / 365.) * 365.
-                bnd2 = (int(bnd2 / 365.) + 1) * 365.
-        else:
-            logger.debug("No calendar type: assuming 365-day")
-            bnd1 = int(bnd1 / 365.) * 365.
-            bnd2 = (int(bnd2 / 365.) + 1) * 365.
-        all_times.append([bnd1, bnd2])
-    bounds = [range(int(b[0]), int(b[-1]) + 1) for b in all_times]
+        span = _datetime_to_int_days(cube)
+        start, stop = span[0], span[-1]
+        all_times.append([start, stop])
+    bounds = [range(b[0], b[-1] + 1) for b in all_times]
     time_pts = reduce(np.intersect1d, bounds)
     if len(time_pts) > 1:
         time_bounds_list = [time_pts[0], time_pts[-1]]
         return time_bounds_list
 
 
-def _slice_cube(cube, min_t, max_t):
-    """slice cube on time"""
-    fmt = '%Y-%m-%d-%H'
-    ctr = iris.Constraint(time=lambda x:
-                          min_t <=
-                          datetime.strptime(x.point.strftime(fmt),
-                                            fmt) <= max_t)
-    cube_slice = cube.extract(ctr)
-    return cube_slice
-
-
-def _slice_cube2(cube, t_1, t_2):
+def _slice_cube(cube, t_1, t_2):
     """
     Efficient slicer
 
-    Slice cube on time more memory-efficiently than
-    _slice_cube(); using this function adds virtually
-    no extra memory to the process
+    Simple cube data slicer on indices
+    of common time-data elements
     """
     time_pts = [t for t in cube.coord('time').points]
-    converted_t = _time_pts_by_calendar(cube)
+    converted_t = _datetime_to_int_days(cube)
     idxs = sorted([
         time_pts.index(ii) for ii, jj in zip(time_pts, converted_t)
         if t_1 <= jj <= t_2
     ])
-    cube_t_slice = cube.data[idxs[0]:idxs[-1] + 1]
-    return cube_t_slice
+    return [idxs[0], idxs[-1]]
 
 
 def _monthly_t(cubes):
     """Rearrange time points for monthly data"""
     # get original cubes tpoints
-    tpts = []
-    # make all 365-day calendards
-    for cube in cubes:
-        tpts.append([int(t) for t in _time_pts_by_calendar(cube)])
-
-    # convert to months for MONTHLY data
-    t_x = list(set().union(*tpts))
-    t_x = list({int((a / 365.) * 12.) for a in t_x})
-    t_x.sort()
-    # remake the time axis for roughly the 15th of the month
-    t_x0 = list({t * 365. / 12. + 15. for t in t_x})
-    t_x0.sort()
-
-    return t_x, t_x0
+    days = {day for cube in cubes for day in _datetime_to_int_days(cube)}
+    return sorted(days)
 
 
-def _full_time(cubes):
+def _full_time_slice(cubes, ndat, indices, ndatarr, t_idx):
     """Construct a contiguous collection over time"""
-    datas = []
-    # get rearranged time points
-    t_x, t_x0 = _monthly_t(cubes)
-    # loop through cubes and apply masks
-    for cube in cubes:
-        # recast time points
-        time_redone = [int(t) for t in _time_pts_by_calendar(cube)]
-        # construct new shape
-        fine_shape = tuple([len(t_x)] + list(cube.data.shape[1:]))
-        # find indices of present time points
-        oidx = [t_x.index(int((s / 365.) * 12.)) for s in time_redone]
-        # reshape data to include all possible times
-        ndat = np.ma.resize(cube.data, fine_shape)
-        # build the time mask
-        c_ones = np.ones(fine_shape, bool)
-        c_ones[oidx] = False
-        ndat.mask |= c_ones
+    for idx_cube, cube in enumerate(cubes):
+        # reset mask
+        ndat.mask = True
+        ndat[indices[idx_cube]] = cube.data
+        ndat.mask[indices[idx_cube]] = cube.data.mask
+        ndatarr[idx_cube] = ndat[t_idx]
 
-        # stitch new datas
-        datas.append(ndat)
-
-    # return datas
-    return datas, t_x0
+    # return time slice
+    return ndatarr
 
 
-def _apply_overlap(cube, tx1, tx2):
-    """
-    Slice cubes
-
-    This operation is memory-intensive;
-    do it ONLY IF you need to do it;
-    otherwise use span == constant.
-    """
-    logger.debug("Bounds: %s and %s", str(tx1), str(tx2))
-    # slice cube on time
-    with iris.FUTURE.context(cell_datetime_objects=True):
-        cube = _slice_cube(cube, tx1, tx2)
-
-    return cube
-
-
-def _assemble_overlap_data(selection, ovlp, stat_type, fname):
+def _assemble_overlap_data(cubes, ovlp, stat_type, filename):
     """Get statistical data in iris cubes for OVERLAP"""
     start, stop = ovlp
-    utype = str(selection[0].coord('time').units)
-    start_dtime, stop_dtime = [_to_datetime(t, utype) for t in (start, stop)]
-    stats_dats = np.ma.zeros(_slice_cube2(selection[0], start, stop).shape)
+    sl_1, sl_2 = _slice_cube(cubes[0], start, stop)
+    stats_dats = np.ma.zeros(cubes[0].data[sl_1:sl_2 + 1].shape)
 
     for i in range(stats_dats.shape[0]):
-        time_data = [_slice_cube2(cube, start, stop)[i] for cube in selection]
+        indices = [_slice_cube(cube, start, stop) for cube in cubes]
+        time_data = [
+            cube.data[indx[0]:indx[1] + 1][i]
+            for cube, indx in zip(cubes, indices)
+        ]
         stats_dats[i] = _compute_statistic(time_data, stat_type)
     stats_cube = _put_in_cube(
-        _apply_overlap(selection[0], start_dtime, stop_dtime),
-        stats_dats,
-        stat_type,
-        fname,
-        t_axis=None)
+        cubes[0][sl_1:sl_2 + 1], stats_dats, stat_type, filename, t_axis=None)
     return stats_cube
 
 
-def _assemble_full_data(selection, stat_type, fname):
+def _assemble_full_data(cubes, stat_type, filename):
     """Get statistical data in iris cubes for FULL"""
-    slices, time_axis = _full_time(selection)
-    stats_dats = np.ma.zeros(slices[0].shape)
+    # all times, new MONTHLY data time axis
+    time_axis = _monthly_t(cubes)
 
-    for i in range(slices[0].shape[0]):
-        time_data = [data[i] for data in slices]
+    # new big time-slice array shape
+    new_shape = [len(time_axis)] + list(cubes[0].shape[1:])
+
+    # assemble an array to hold all time data
+    # for all cubes; shape is (ncubes,(plev), lat, lon)
+    new_arr = np.ma.empty([len(cubes)] + list(new_shape[1:]))
+
+    # data array for stats computation
+    stats_dats = np.ma.zeros(new_shape)
+
+    # assemble indices list to chop new_arr on
+    indices_list = []
+
+    # empty data array to hold time slices
+    empty_arr = np.ma.empty(new_shape)
+
+    # loop through cubes and populate empty_arr with points
+    for cube in cubes:
+        time_redone = _datetime_to_int_days(cube)
+        oidx = [time_axis.index(s) for s in time_redone]
+        indices_list.append(oidx)
+    for i in range(new_shape[0]):
+        # hold time slices only
+        new_datas_array = _full_time_slice(cubes, empty_arr, indices_list,
+                                           new_arr, i)
+        # list to hold time slices
+        time_data = []
+        for j in range(len(cubes)):
+            time_data.append(new_datas_array[j])
         stats_dats[i] = _compute_statistic(time_data, stat_type)
-    stats_cube = _put_in_cube(selection[0], stats_dats, stat_type, fname,
+    stats_cube = _put_in_cube(cubes[0], stats_dats, stat_type, filename,
                               time_axis)
     return stats_cube
 
 
-def _update_fname(curr_filename, ovlp_interval, unit_type):
+def _update_filename(filename, interval, time_unit):
     """Update netCDF file names based on time properties"""
-    # BACKEND_MultiModel[stats]_[field]_[var]_[start_year]-[end_year].nc
-    froot = "_".join(curr_filename.split('_')[0:-1])
-    start, stop = ovlp_interval
-    yr_1 = str(_to_datetime(start, unit_type).year)
-    yr_2 = str(_to_datetime(stop - 1, unit_type).year)  # -1 for correct leap
-    new_file = "{}_{}-{}.nc".format(froot, yr_1, yr_2)
-    return new_file
+    start, stop = [(_get_time_offset(time_unit) + timedelta(int(ts))).year
+                   for ts in interval]
+    filename = "{}_{}-{}.nc".format(filename.rpartition('_')[0], start, stop)
+    return filename
 
 
 def multi_model_statistics(cubes, span, filenames, exclude, statistics):
@@ -348,12 +309,13 @@ def multi_model_statistics(cubes, span, filenames, exclude, statistics):
     iris.util.unify_time_units(selection)
 
     # check if we have any time overlap
-    ovlp = _get_overlap(selection)
-    if ovlp is None:
+    interval = _get_overlap(selection)
+    if interval is None:
         logger.info("Time overlap between cubes is none or a single point.")
         logger.info("check models: will not compute statistics.")
         return cubes
-    u_type = str(selection[0].coord('time').units)
+
+    time_unit = selection[0].coord('time').units.name
 
     # cases
     files = []
@@ -363,23 +325,26 @@ def multi_model_statistics(cubes, span, filenames, exclude, statistics):
 
         # assemble data
         for stat_name in statistics:
-            updated_fname = _update_fname(filenames[stat_name], ovlp, u_type)
-            cube_of_stats = _assemble_overlap_data(selection, ovlp, stat_name,
-                                                   updated_fname)
+            filename = _update_filename(filenames[stat_name], interval,
+                                        time_unit)
+            cube_of_stats = _assemble_overlap_data(selection, interval,
+                                                   stat_name, filename)
+            cube_of_stats.data = np.ma.array(cube_of_stats.data,
+                                             dtype=np.dtype('float32'))
             save_cubes([cube_of_stats])
             files.append(updated_fname)
 
     elif span == 'full':
         logger.debug("Using full time spans " "to compute statistics.")
         # assemble data
+        time_points = _monthly_t(selection)
+        interval = [min(time_points), max(time_points)]
         for stat_name in statistics:
-            fovlp = [
-                min(_monthly_t(selection)[1]),
-                max(_monthly_t(selection)[1])
-            ]
-            updated_fname = _update_fname(filenames[stat_name], fovlp, u_type)
-            cube_of_stats = _assemble_full_data(selection, stat_name,
-                                                updated_fname)
+            filename = _update_filename(filenames[stat_name], interval,
+                                        time_unit)
+            cube_of_stats = _assemble_full_data(selection, stat_name, filename)
+            cube_of_stats.data = np.ma.array(cube_of_stats.data,
+                                             dtype=np.dtype('float32'))
             save_cubes([cube_of_stats])
             files.append(updated_fname)
 

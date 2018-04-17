@@ -87,6 +87,7 @@ preprocessors:
     multi_model_statistics:
       span: overlap
       statistics: [mean, median]
+      exclude: [reference_model, alternative_model]
 
   ppNOLEV:
     regrid:
@@ -97,6 +98,7 @@ preprocessors:
     multi_model_statistics:
       span: overlap
       statistics: [mean, median]
+      exclude: [reference_model, alternative_model]
     
   ppALL:
     extract_levels:
@@ -110,6 +112,8 @@ preprocessors:
     multi_model_statistics:
       span: overlap
       statistics: [mean, median]
+      exclude: [reference_model, alternative_model]
+
 
 diagnostics:
   ta850:

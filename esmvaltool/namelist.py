@@ -333,6 +333,9 @@ def _get_default_settings(variable, config_user, derive=False):
     }
     if not derive:
         settings['load_cubes']['constraints'] = variable['standard_name']
+    # Configure merge
+    settings['concatenate'] = {}
+
 
     # Configure fixes
     fix = {
@@ -363,6 +366,13 @@ def _get_default_settings(variable, config_user, derive=False):
         'd2': 1,
     }
 
+    # Configure CMOR metadata check
+    if variable.get('cmor_table'):
+        settings['cmor_check_metadata'] = {
+            'cmor_table': variable['cmor_table'],
+            'mip': variable['mip'],
+            'short_name': variable['short_name'],
+        }
     # Configure final CMOR data check
     if variable.get('cmor_table'):
         settings['cmor_check_data'] = {
@@ -436,12 +446,14 @@ def _update_multi_model_statistics(variables, settings, preproc_dir):
         # Define models to exclude
         exclude_models = set(stat_settings.get('exclude', {}))
         for key in 'reference_model', 'alternative_model':
-            if key in variable:
+            if key in exclude_models and key in variable:
+                exclude_models.remove(key)
                 exclude_models.add(variable[key])
         exclude_files = {
             v['filename']
             for v in variables if v['model'] in exclude_models
         }
+        logger.debug('Multimodel excludes files %s', exclude_files)
         stat_settings['exclude'] = {'_filename': exclude_files}
 
 

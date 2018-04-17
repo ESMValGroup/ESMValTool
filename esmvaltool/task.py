@@ -1,11 +1,15 @@
 """ESMValtool task definition"""
+import contextlib
+import datetime
 import logging
 import os
 import pprint
 import subprocess
+import threading
 import time
 from multiprocessing import Pool, cpu_count
 
+import psutil
 import yaml
 
 logger = logging.getLogger(__name__)
@@ -22,6 +26,89 @@ def which(executable):
             return os.path.join(path, executable)
 
     return None
+
+
+def _get_resource_usage(process, start_time, children=True):
+    """Get resource usage."""
+    # yield header first
+    entries = [
+        'Date and time (UTC)',
+        'Real time (s)',
+        'CPU time (s)',
+        'CPU (%)',
+        'Memory (GB)',
+        'Memory (%)',
+        'Disk read (GB)',
+        'Disk write (GB)',
+    ]
+    fmt = '{}\t' * len(entries[:-1]) + '{}\n'
+    yield fmt.format(*entries)
+
+    # Compute resource usage
+    gigabyte = float(2**30)
+    precision = [1, 1, None, 1, None, 3, 3]
+    cache = {}
+    while process.is_running():
+        try:
+            if children:
+                # Include child processes
+                processes = process.children(recursive=True)
+                processes.append(process)
+            else:
+                processes = [process]
+
+            # Update resource usage
+            for proc in cache:
+                # Set cpu percent and memory usage to 0 for old processes
+                if proc not in processes:
+                    cache[proc][1] = 0
+                    cache[proc][2] = 0
+                    cache[proc][3] = 0
+            for proc in processes:
+                # Update current processes
+                cache[proc] = [
+                    proc.cpu_times().user + proc.cpu_times().system,
+                    proc.cpu_percent(),
+                    proc.memory_info().rss / gigabyte,
+                    proc.memory_percent(),
+                    proc.io_counters().read_bytes / gigabyte,
+                    proc.io_counters().write_bytes / gigabyte,
+                ]
+        except (OSError, psutil.AccessDenied, psutil.NoSuchProcess):
+            # Try again if an error occurs because some process died
+            continue
+
+        # Create and yield log entry
+        entries = [sum(entry) for entry in zip(*cache.values())]
+        entries.insert(0, time.time() - start_time)
+        entries = [round(entry, p) for entry, p in zip(entries, precision)]
+        entries.insert(0, datetime.datetime.utcnow())
+        yield fmt.format(*entries)
+
+
+@contextlib.contextmanager
+def resource_usage_logger(pid, filename, interval=1, children=True):
+    """Log resource usage."""
+    halt = threading.Event()
+
+    def _log_resource_usage():
+        """Write resource usage to file."""
+        process = psutil.Process(pid)
+        start_time = time.time()
+        with open(filename, 'w') as file:
+            for msg in _get_resource_usage(process, start_time, children):
+                file.write(msg)
+                time.sleep(interval)
+                if halt.is_set():
+                    return
+
+    thread = threading.Thread(target=_log_resource_usage)
+    thread.start()
+    try:
+        yield
+    finally:
+        halt.set()
+        thread.join()
 
 
 def write_ncl_settings(settings, filename, mode='wt'):
@@ -130,6 +217,8 @@ class DiagnosticTask(AbstractTask):
         self.script = script
         self.cmd = self._initialize_cmd(script)
         self.log = os.path.join(settings['run_dir'], 'log.txt')
+        self.resource_log = os.path.join(settings['run_dir'],
+                                         'resource_usage.txt')
 
     @staticmethod
     def _initialize_cmd(script):
@@ -308,7 +397,8 @@ class DiagnosticTask(AbstractTask):
         returncode = None
         last_line = ['']
 
-        with open(self.log, 'at') as log:
+        with resource_usage_logger(process.pid, self.resource_log),\
+                open(self.log, 'at') as log:
             while returncode is None:
                 returncode = process.poll()
                 txt = process.stdout.read()
@@ -322,8 +412,6 @@ class DiagnosticTask(AbstractTask):
                 if is_ncl_script:
                     self._control_ncl_execution(process, last_line + lines)
                 last_line = lines[-1:]
-
-                # TODO: log resource usage
 
                 # wait, but not long because the stdout buffer may fill up:
                 # https://docs.python.org/3.6/library/subprocess.html#subprocess.Popen.stdout

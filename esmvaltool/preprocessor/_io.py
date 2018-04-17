@@ -49,10 +49,9 @@ def concatenate_callback(raw_cube, field, _):
 
 def load_cubes(files, filename, metadata, constraints=None, callback=None):
     """Load iris cubes from files"""
-    logger.debug("Loading and concatenating:\n%s", "\n".join(files))
+    logger.debug("Loading:\n%s", "\n".join(files))
     cubes = iris.load_raw(files, constraints=constraints, callback=callback)
     iris.util.unify_time_units(cubes)
-    cubes = cubes.concatenate()
     if not cubes:
         raise Exception('Can not load cubes from {0}'.format(files))
 
@@ -61,6 +60,12 @@ def load_cubes(files, filename, metadata, constraints=None, callback=None):
         cube.attributes['metadata'] = yaml.safe_dump(metadata)
 
     return cubes
+
+
+def concatenate(cubes):
+    """Concatenate all cubes after fixing metadata"""
+    cube = iris.cube.CubeList(cubes).concatenate_cube()
+    return cube
 
 
 def _save_cubes(cubes, **args):
@@ -89,9 +94,12 @@ def save_cubes(cubes, debug=False, step=None):
         if '_filename' not in cube.attributes:
             raise ValueError("No filename specified in cube {}".format(cube))
         if debug:
-            filename = cube.attributes.get('_filename')
-            filename = os.path.splitext(filename)[0]
-            filename = os.path.join(filename, step + '.nc')
+            dirname = os.path.splitext(cube.attributes.get('_filename'))[0]
+            if os.path.exists(dirname) and os.listdir(dirname):
+                num = int(sorted(os.listdir(dirname)).pop()[:2]) + 1
+            else:
+                num = 0
+            filename = os.path.join(dirname, '{:02}_{}.nc'.format(num, step))
         else:
             filename = cube.attributes.pop('_filename')
         if filename not in paths:
