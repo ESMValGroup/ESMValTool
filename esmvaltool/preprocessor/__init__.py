@@ -56,7 +56,7 @@ __all__ = [
     'seasonal_mean',
     'multi_model_statistics',
     'cmor_check_data',
-    'cmor_check_metadata':,
+    'cmor_check_metadata',
     # Save to file
     'save_cubes',
     'cleanup',
