@@ -79,9 +79,12 @@ def save_cubes(cubes, debug=False, step=None):
         if '_filename' not in cube.attributes:
             raise ValueError("No filename specified in cube {}".format(cube))
         if debug:
-            filename = cube.attributes.get('_filename')
-            filename = os.path.splitext(filename)[0]
-            filename = os.path.join(filename, step + '.nc')
+            dirname = os.path.splitext(cube.attributes.get('_filename'))[0]
+            if os.path.exists(dirname) and os.listdir(dirname):
+                num = int(sorted(os.listdir(dirname)).pop()[:2]) + 1
+            else:
+                num = 0
+            filename = os.path.join(dirname, '{:02}_{}.nc'.format(num, step))
         else:
             filename = cube.attributes.pop('_filename')
         if filename not in paths:
