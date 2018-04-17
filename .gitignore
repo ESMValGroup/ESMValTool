@@ -4,6 +4,7 @@ c
 *.orig
 *.tmp
 config_private_BM_local.xml
+config_private.xml
 curr_trace_indent.txt
 ncl.interface
 

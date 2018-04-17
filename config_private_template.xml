@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- user defined configuration file -->
+<!-- user defined configuration file template -->
+<!-- copy this template to 'config_private.xml' and adapt path names to your system -->
 <settings>
 	<pathCollection>
 		<usrpath category="userDirectory" type="output" id="WORKPATH">
