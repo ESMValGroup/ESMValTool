@@ -3,12 +3,12 @@
 ---
 
 models:
-  - {model: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: amip,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {model: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: amip,  ensemble: r1i1p1,  start_year: 1982,  end_year: 2002}
 
 preprocessors:
   pp_aa_area:
     extract_levels:
-      levels: [40., 100., 500.]
+      levels: [1000., 500., 100., 70., 50., 30., 10.]
       scheme: nearest
 
 diagnostics:
@@ -35,6 +35,6 @@ diagnostics:
         area: Stratosphere                                                                       # name of area diagnostic
         suite1: u-ab123                                                                          # control suite
         suite2: u-ab123                                                                          # test suite
-        start: 2000/12/01                                                                        # start data in autoassess format
+        start: 1982/12/01                                                                        # start data in autoassess format
         end: 2002/12/01                                                                          # end date in autoassess format
         obs_data_dir: /group_workspaces/jasmin/ncas_cms/valeriu/autoassess_stratosphere/data     # location of obs files

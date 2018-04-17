@@ -15,10 +15,8 @@ logger = logging.getLogger(__name__)
 def get_cfg():
     """Read diagnostic script configuration from settings.yml."""
     settings_file = sys.argv[1]
-    print('settings file: ', settings_file)
     with open(settings_file) as file:
         cfg = yaml.safe_load(file)
-    print('Configuration: ', cfg)
     return cfg
 
 
@@ -52,11 +50,8 @@ def main():
         logger.info("Processing variable %s", variable_name)
         for filename, attributes in filenames.items():
             files_list.append(filename)
-            print('Filename: ', filename)
-            print('Attributes: ', attributes)
 
     cubelist = iris.load(files_list)
-    print('CUBELIST: ', cubelist)
 
     cubes_pickle_path = os.path.join(suite_data, 'cubes.pickle')
     with open(cubes_pickle_path, 'wb') as f:
@@ -76,7 +71,7 @@ def main():
     args['--ancil-dir'] = ancil_dir
     args_collection = [key + ' ' + args[key] for key in args.keys()]
     sys_call = command_call + ' ' + ' '.join(args_collection)
-    print(sys_call)
+    logger.info(sys_call)
     os.system(sys_call)
 
 if __name__ == '__main__':
