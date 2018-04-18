@@ -151,7 +151,8 @@ begin
         delete(data_all@reference)
     end if
 
-    ;; Sort models in alphabetical order (exclude MMM)
+    ;; Sort models in alphabetical order, excluding multi-model 
+    ;; mean/median which are placed at the beginning
     if (isatt(diag_script_info, "sort")) then
         if (diag_script_info@sort) then
             idx = ind(data_all&models.eq."MultiModelMean" .or. \
