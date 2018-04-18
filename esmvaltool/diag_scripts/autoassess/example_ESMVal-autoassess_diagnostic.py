@@ -1,6 +1,6 @@
 """Python example diagnostic."""
 import logging
-import os
+import inspect, os
 import sys
 
 import iris
@@ -55,7 +55,8 @@ def main():
     cubes_list_path = os.path.join(suite_data, 'cubeList.nc')
     iris.save(cubelist, cubes_list_path)
  
-    command_call = 'python ./autoassess_source/autoassess/run_area.py'
+    cwd = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+    command_call = 'python ' + os.path.join(cwd, 'autoassess_source/autoassess/run_area.py')
     args = {}
     args['--area'] = cfg['area']
     args['--suite-id1'] = cfg['suite1']
