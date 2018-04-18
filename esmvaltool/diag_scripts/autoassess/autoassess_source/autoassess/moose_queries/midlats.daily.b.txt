@@ -1,0 +1,7 @@
+begin
+    stash = 30207
+    blev = 500
+end
+begin
+    stash = (15215, 16222)
+end

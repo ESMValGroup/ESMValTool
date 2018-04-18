@@ -1,0 +1,129 @@
+Precipitation Global ann,2.61680394072,2.66113536245
+Evaporation Global ann,2.61680394072,2.66113536245
+St dev Precip: Global ann,0.03101165205,0.0530767088148
+Precipitation Land ann,2.03721261952,1.91303589073
+Precipitation Ocean ann,2.85507660601,2.9851456787
+Mean Precip: Tropics ann,2.94332651699,3.37072531257
+St dev Precip: Tropics ann,0.0555300152305,0.0842095562707
+Mean Precip: NH Extra-tropics ann,2.15795184447,1.81958133908
+St dev Precip: NH Extra-tropics ann,0.0443943100756,0.0349842703571
+Mean Precip: SH Extra-tropics ann,2.42157352543,1.98259047069
+St dev Precip: SH Extra-tropics ann,0.0317354535194,0.0522646440313
+Latent heat flux Ocean ann,84.1378410499,98.8842251401
+Mean Sfc Latent heat: Tropical Ocean ann,112.413671854,124.772653967
+Mean Sfc Latent heat: NH Extra-tropical Ocean ann,61.3225700595,73.6853288917
+Mean Sfc Latent heat: SH Extra-tropical Ocean ann,47.7409333521,59.7775017227
+Sensible heat flux Ocean ann,7.2,10.2211110161
+Mean Sfc Sensible heat: Tropical Ocean ann,8.99059779645,7.12549699463
+Mean Sfc Sensible heat: NH Extra-tropical Ocean ann,16.2422082952,21.1011089672
+Mean Sfc Sensible heat: SH Extra-tropical Ocean ann,9.26895543757,8.16739032869
+Evaporation Ocean ann,2.97,3.49286440681
+Mean Evap: Tropical Ocean ann,4.42098169972,4.42098169972
+Mean Evap: NH Extra-tropical Ocean ann,2.58492351744,2.58492351744
+Mean Evap: SH Extra-tropical Ocean ann,2.09351054108,2.09351054108
+P minus E Global ann,0.0,0.0
+P minus E Land ann,0.34303589073,0.617212619518
+P minus E Ocean ann,-0.637787800807,0.0151456786963
+Precipitation Global djf,2.61842745616,2.61437093003
+St dev Precip: Global djf,0.0428328867556,0.0626132307246
+Precipitation Land djf,1.99026686517,1.83381138428
+Precipitation Ocean djf,2.87666717227,2.95161018752
+Mean Precip: Tropics djf,2.99189490405,3.36100589053
+St dev Precip: Tropics djf,0.0732428208745,0.10974327888
+Mean Precip: NH Extra-tropics djf,2.31098725174,1.76005225737
+St dev Precip: NH Extra-tropics djf,0.0539262048905,0.0471711160899
+Mean Precip: SH Extra-tropics djf,2.17774629489,1.87218159876
+St dev Precip: SH Extra-tropics djf,0.043651213645,0.0756949771917
+Latent heat flux Ocean djf,87.2324362715,99.2164546199
+Mean Sfc Latent heat: Tropical Ocean djf,114.157879917,125.770374294
+Mean Sfc Latent heat: NH Extra-tropical Ocean djf,85.1037827835,96.1588129192
+Mean Sfc Latent heat: SH Extra-tropical Ocean djf,41.4813103424,51.0856231696
+Sensible heat flux Ocean djf,11.7970947087,12.2849475761
+Mean Sfc Sensible heat: Tropical Ocean djf,9.07858326287,7.54989728034
+Mean Sfc Sensible heat: NH Extra-tropical Ocean djf,34.4044135624,43.5153186068
+Mean Sfc Sensible heat: SH Extra-tropical Ocean djf,4.91942764973,2.86527950553
+Evaporation Ocean djf,3.5030345384,3.5030345384
+Mean Evap: Tropical Ocean djf,4.45592063808,4.45592063808
+Mean Evap: NH Extra-tropical Ocean djf,3.36454029683,3.36454029683
+Mean Evap: SH Extra-tropical Ocean djf,1.79109665524,1.79109665524
+P minus E Ocean djf,-0.626367366134,-0.551424350882
+Precipitation Global mam,2.6067204521,2.63344632295
+St dev Precip: Global mam,0.0538489599639,0.061685929636
+Precipitation Land mam,1.97322808183,1.864229796
+Precipitation Ocean mam,2.86703547404,2.96578485088
+Mean Precip: Tropics mam,2.93160971107,3.36263649828
+St dev Precip: Tropics mam,0.0898818461304,0.0844895924718
+Mean Precip: NH Extra-tropics mam,1.83676944928,1.55474321045
+St dev Precip: NH Extra-tropics mam,0.0566444202848,0.0359085642882
+Mean Precip: SH Extra-tropics mam,2.7268392121,2.18029501403
+St dev Precip: SH Extra-tropics mam,0.0590266604787,0.0867649412158
+Latent heat flux Ocean mam,82.8544882868,96.7596955792
+Mean Sfc Latent heat: Tropical Ocean mam,110.242942832,123.93062544
+Mean Sfc Latent heat: NH Extra-tropical Ocean mam,48.5766131807,59.7996997629
+Mean Sfc Latent heat: SH Extra-tropical Ocean mam,54.4932490652,64.9780709552
+Sensible heat flux Ocean mam,10.3573693289,9.87545097345
+Mean Sfc Sensible heat: Tropical Ocean mam,8.78187500241,6.66230682144
+Mean Sfc Sensible heat: NH Extra-tropical Ocean mam,13.8211168184,18.1648567795
+Mean Sfc Sensible heat: SH Extra-tropical Ocean mam,11.4955593841,10.7869074065
+Evaporation Ocean mam,3.41763230575,3.41763230575
+Mean Evap: Tropical Ocean mam,4.39255656915,4.39255656915
+Mean Evap: NH Extra-tropical Ocean mam,2.09231308837,2.09231308837
+Mean Evap: SH Extra-tropical Ocean mam,2.27681853043,2.27681853043
+P minus E Ocean mam,-0.550596831717,-0.451847454873
+Precipitation Global jja,2.63314323273,2.74604666676
+St dev Precip: Global jja,0.0371837955946,0.0819608454133
+Precipitation Land jja,2.21324157544,2.10401863417
+Precipitation Ocean jja,2.80571360845,3.0240957747
+Mean Precip: Tropics jja,2.93167098221,3.42957447241
+St dev Precip: Tropics jja,0.0542474882804,0.145281218219
+Mean Precip: NH Extra-tropics jja,2.12012594984,1.95519034077
+St dev Precip: NH Extra-tropics jja,0.0614016123058,0.0587324327021
+Mean Precip: SH Extra-tropics jja,2.54860467721,2.07069552552
+St dev Precip: SH Extra-tropics jja,0.0706161933303,0.0791986361336
+Latent heat flux Ocean jja,82.2748704168,96.1047180508
+Mean Sfc Latent heat: Tropical Ocean jja,115.342013953,127.269752546
+Mean Sfc Latent heat: NH Extra-tropical Ocean jja,32.48021869,43.5735039607
+Mean Sfc Latent heat: SH Extra-tropical Ocean jja,52.7933357743,64.5599911623
+Sensible heat flux Ocean jja,8.85743730294,8.0698267216
+Mean Sfc Sensible heat: Tropical Ocean jja,9.25199788541,7.4666274165
+Mean Sfc Sensible heat: NH Extra-tropical Ocean jja,1.28684600402,1.3044158839
+Mean Sfc Sensible heat: SH Extra-tropical Ocean jja,12.7200077945,12.9511707874
+Evaporation Ocean jja,3.39517795618,3.39517795618
+Mean Evap: Tropical Ocean jja,4.50870500045,4.50870500045
+Mean Evap: NH Extra-tropical Ocean jja,1.53492628944,1.53492628944
+Mean Evap: SH Extra-tropical Ocean jja,2.25778428059,2.25778428059
+P minus E Ocean jja,-0.58946434773,-0.371082181484
+Precipitation Global son,2.6146881559,2.65104195998
+St dev Precip: Global son,0.0412026749808,0.0758578912835
+Precipitation Land son,1.98196641001,1.85284755872
+Precipitation Ocean son,2.87480298383,2.99606275563
+Mean Precip: Tropics son,2.91910242725,3.35847623777
+St dev Precip: Tropics son,0.0769221998357,0.129646294605
+Mean Precip: NH Extra-tropics son,2.37105800791,1.98094315717
+St dev Precip: NH Extra-tropics son,0.0649646035936,0.0467119131383
+Mean Precip: SH Extra-tropics son,2.24852266758,1.79165946356
+St dev Precip: SH Extra-tropics son,0.0494604395794,0.0502263291175
+Latent heat flux Ocean son,84.1895692504,96.8158498646
+Mean Sfc Latent heat: Tropical Ocean son,109.911850762,122.119863412
+Mean Sfc Latent heat: NH Extra-tropical Ocean son,79.1296655299,87.2273188373
+Mean Sfc Latent heat: SH Extra-tropical Ocean son,42.1958382597,50.4944975126
+Sensible heat flux Ocean son,9.97571638101,9.09061199615
+Mean Sfc Sensible heat: Tropical Ocean son,8.84993503855,6.82315645829
+Mean Sfc Sensible heat: NH Extra-tropical Ocean son,16.4031093069,21.4198446215
+Mean Sfc Sensible heat: SH Extra-tropical Ocean son,8.21149062805,6.06620361542
+Evaporation Ocean son,3.41971012952,3.41971012952
+Mean Evap: Tropical Ocean son,4.32674460232,4.32674460232
+Mean Evap: NH Extra-tropical Ocean son,3.06547016519,3.06547016519
+Mean Evap: SH Extra-tropical Ocean son,1.76601356172,1.76601356172
+P minus E Ocean son,-0.544907145693,-0.423647373891
+Total runoff: NH Extra-tropical Land ann,0.575872631732,0.575872631732
+Total Runoff Land ann,0.832825334844,0.832825334844
+Total runoff: SH Extra-tropical Land ann,0.639168923852,0.639168923852
+Total runoff: Tropical Land ann,1.08369888554,1.08369888554
+Evaporation Land ann,1.42,1.57
+Latent heat flux Global ann,78.0,86.0
+Latent heat flux Land ann,39.0,51.0
+Sensible heat flux Global ann,17.0,25.0
+Total water vapour Global ann,24.2,24.2
+Total water vapour Land ann,18.5,18.5
+Total water vapour Ocean ann,26.6,26.6

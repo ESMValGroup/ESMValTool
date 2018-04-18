@@ -1,0 +1,39 @@
+PMSL DJF global
+PMSL MAM global
+PMSL JJA global
+PMSL SON global
+Precipitation DJF tropical_land
+Precipitation MAM tropical_land
+Precipitation JJA tropical_land
+Precipitation SON tropical_land
+Precipitation DJF tropical_ocean
+Precipitation MAM tropical_ocean
+Precipitation JJA tropical_ocean
+Precipitation SON tropical_ocean
+Precipitation DJF north
+Precipitation MAM north
+Precipitation JJA north
+Precipitation SON north
+Precipitation DJF south
+Precipitation MAM south
+Precipitation JJA south
+Precipitation SON south
+200 hPa horiz wind DJF global
+200 hPa horiz wind JJA global
+850 hPa horiz wind DJF global
+850 hPa horiz wind JJA global
+Z-mean U wind DJF global
+Z-mean U wind JJA global
+Z-mean V wind DJF global
+Z-mean V wind JJA global
+Z-mean merid streamfunction DJF global
+Z-mean merid streamfunction JJA global
+Precipitable water DJF global
+Precipitable water JJA global
+Z-mean relative humidity DJF global
+Z-mean relative humidity JJA global
+Z-mean air temperature DJF global
+Z-mean air temperature JJA global
+1.5m temperature DJF global
+1.5m temperature JJA global
+Overall assessment

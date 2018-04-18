@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <title>{{ title }}</title>
+        <style>
+body {font-family: Verdana, Geneva, sans-serif;}
+h1 {text-align: center;}
+h2 {text-align: center;}
+a {display: inline-block;
+    border-radius: 4px;
+    padding: 5px;
+    transition: 0.3s;}
+a:hover {box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);}
+tr:nth-child(even) {
+    background-color: #F5F5F5;
+}
+table th {background-color: #E5E5E5;
+    font-size: 1.25em;}
+.nac_plot {width: 700px;}
+#extraImages {display: none;}
+        </style>
+        <script>
+function toggleElementDisplay(id) {
+    var x = document.getElementById(id);
+    if (x.style.display === 'none') {
+        x.style.display = 'block';
+    } else if (x.style.display === 'block') {
+        x.style.display = 'none';
+    } else {
+        x.style.display = 'block';
+    }
+} 
+        </script>
+    </head>
+    <body>
+        <h1>{{ title }}</h1>
+        <hr>
+        <h1>Madden-Julian Oscillation (MJO)</h1>
+        <h1>{{ exp_suite_id }} vs. {{ ref_suite_id }} (reference)</h1>
+        <h2>Period: {{ start_date }} to {{ end_date }}</h2>
+        <hr>
+        <table align="center">
+            <tr>
+                <td>
+                    <a href="mjo/nac_plots/mjo_overview.png"> 
+                        <img class="nac_plot" 
+                             src="mjo/nac_plots/mjo_overview.png" 
+                             alt="Image missing."> 
+                    </a>
+                </td>
+            </tr>
+        </table>
+
+        <table>
+            <tr>
+                <th colspan="4">Variance</th>
+            </tr>
+            <tr>
+                <th>&nbsp;</th>
+                <th>control<br>{{ ref_suite_id }}</th>
+                <th>experiment<br>{{ exp_suite_id }}</th>
+                <th>observations</th>
+            </tr>
+            <tr>
+                <th>Nov-Apr<br>precipitation_flux</th>
+                <td>
+                    <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_precipitation_flux_Var_winter.png">
+                        <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_precipitation_flux_Var_winter.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_precipitation_flux_Var_winter.png">
+                        <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_precipitation_flux_Var_winter.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/OBS/OBS_precipitation_flux_Var_winter.png">
+                        <img src="mjo/OBS/OBS_precipitation_flux_Var_winter.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th>May-Oct<br>precipitation_flux</th>
+                <td>
+                    <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_precipitation_flux_Var_summer.png">
+                        <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_precipitation_flux_Var_summer.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_precipitation_flux_Var_summer.png">
+                        <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_precipitation_flux_Var_summer.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/OBS/OBS_precipitation_flux_Var_summer.png">
+                        <img src="mjo/OBS/OBS_precipitation_flux_Var_summer.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th>Nov-Apr<br>toa_outgoing_longwave_flux</th>
+                <td>
+                    <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_toa_outgoing_longwave_flux_Var_winter.png">
+                        <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_toa_outgoing_longwave_flux_Var_winter.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_toa_outgoing_longwave_flux_Var_winter.png">
+                        <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_toa_outgoing_longwave_flux_Var_winter.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/OBS/OBS_toa_outgoing_longwave_flux_Var_winter.png">
+                        <img src="mjo/OBS/OBS_toa_outgoing_longwave_flux_Var_winter.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th>May-Oct<br>toa_outgoing_longwave_flux</th>
+                <td>
+                    <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_toa_outgoing_longwave_flux_Var_summer.png">
+                        <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_toa_outgoing_longwave_flux_Var_summer.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_toa_outgoing_longwave_flux_Var_summer.png">
+                        <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_toa_outgoing_longwave_flux_Var_summer.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/OBS/OBS_toa_outgoing_longwave_flux_Var_summer.png">
+                        <img src="mjo/OBS/OBS_toa_outgoing_longwave_flux_Var_summer.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th>Nov-Apr<br>x_wind_850hPa</th>
+                <td>
+                    <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_850hPa_Var_winter.png">
+                        <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_850hPa_Var_winter.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_850hPa_Var_winter.png">
+                        <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_850hPa_Var_winter.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/OBS/OBS_x_wind_850hPa_Var_winter.png">
+                        <img src="mjo/OBS/OBS_x_wind_850hPa_Var_winter.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th>May-Oct<br>x_wind_850hPa</th>
+                <td>
+                    <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_850hPa_Var_summer.png">
+                        <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_850hPa_Var_summer.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_850hPa_Var_summer.png">
+                        <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_850hPa_Var_summer.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/OBS/OBS_x_wind_850hPa_Var_summer.png">
+                        <img src="mjo/OBS/OBS_x_wind_850hPa_Var_summer.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th>Nov-Apr<br>x_wind_200hPa</th>
+                <td>
+                    <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_200hPa_Var_winter.png">
+                        <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_200hPa_Var_winter.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_200hPa_Var_winter.png">
+                        <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_200hPa_Var_winter.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/OBS/OBS_x_wind_200hPa_Var_winter.png">
+                        <img src="mjo/OBS/OBS_x_wind_200hPa_Var_winter.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th>May-Oct<br>x_wind_200hPa</th>
+                <td>
+                    <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_200hPa_Var_summer.png">
+                        <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_200hPa_Var_summer.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_200hPa_Var_summer.png">
+                        <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_200hPa_Var_summer.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/OBS/OBS_x_wind_200hPa_Var_summer.png">
+                        <img src="mjo/OBS/OBS_x_wind_200hPa_Var_summer.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+            </tr>
+        </table>
+
+        <hr>
+
+        <table>
+            <tr>
+                <th colspan="4">Equatorial power spectra</th>
+            </tr>
+            <tr>
+                <th>&nbsp;</th>
+                <th>control<br>{{ ref_suite_id }}</th>
+                <th>experiment<br>{{ exp_suite_id }}</th>
+                <th>observations</th>
+            </tr>
+            <tr>
+                <th>Nov-Apr<br>precipitation_flux</th>
+                <td>
+                    <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_precipitation_flux_wavenum_freq_season_winter.png">
+                        <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_precipitation_flux_wavenum_freq_season_winter.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_precipitation_flux_wavenum_freq_season_winter.png">
+                        <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_precipitation_flux_wavenum_freq_season_winter.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/OBS/OBS_precipitation_flux_wavenum_freq_season_winter.png">
+                        <img src="mjo/OBS/OBS_precipitation_flux_wavenum_freq_season_winter.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th>May-Oct<br>precipitation_flux</th>
+                <td>
+                    <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_precipitation_flux_wavenum_freq_season_summer.png">
+                        <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_precipitation_flux_wavenum_freq_season_summer.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_precipitation_flux_wavenum_freq_season_summer.png">
+                        <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_precipitation_flux_wavenum_freq_season_summer.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/OBS/OBS_precipitation_flux_wavenum_freq_season_summer.png">
+                        <img src="mjo/OBS/OBS_precipitation_flux_wavenum_freq_season_summer.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th>Nov-Apr<br>toa_outgoing_longwave_flux</th>
+                <td>
+                    <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_toa_outgoing_longwave_flux_wavenum_freq_season_winter.png">
+                        <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_toa_outgoing_longwave_flux_wavenum_freq_season_winter.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_toa_outgoing_longwave_flux_wavenum_freq_season_winter.png">
+                        <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_toa_outgoing_longwave_flux_wavenum_freq_season_winter.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/OBS/OBS_toa_outgoing_longwave_flux_wavenum_freq_season_winter.png">
+                        <img src="mjo/OBS/OBS_toa_outgoing_longwave_flux_wavenum_freq_season_winter.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th>May-Oct<br>toa_outgoing_longwave_flux</th>
+                <td>
+                    <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_toa_outgoing_longwave_flux_wavenum_freq_season_summer.png">
+                        <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_toa_outgoing_longwave_flux_wavenum_freq_season_summer.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_toa_outgoing_longwave_flux_wavenum_freq_season_summer.png">
+                        <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_toa_outgoing_longwave_flux_wavenum_freq_season_summer.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/OBS/OBS_toa_outgoing_longwave_flux_wavenum_freq_season_summer.png">
+                        <img src="mjo/OBS/OBS_toa_outgoing_longwave_flux_wavenum_freq_season_summer.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th>Nov-Apr<br>x_wind_850hPa</th>
+                <td>
+                    <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_850hPa_wavenum_freq_season_winter.png">
+                        <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_850hPa_wavenum_freq_season_winter.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_850hPa_wavenum_freq_season_winter.png">
+                        <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_850hPa_wavenum_freq_season_winter.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/OBS/OBS_x_wind_850hPa_wavenum_freq_season_winter.png">
+                        <img src="mjo/OBS/OBS_x_wind_850hPa_wavenum_freq_season_winter.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th>May-Oct<br>x_wind_850hPa</th>
+                <td>
+                    <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_850hPa_wavenum_freq_season_summer.png">
+                        <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_850hPa_wavenum_freq_season_summer.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_850hPa_wavenum_freq_season_summer.png">
+                        <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_850hPa_wavenum_freq_season_summer.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/OBS/OBS_x_wind_850hPa_wavenum_freq_season_summer.png">
+                        <img src="mjo/OBS/OBS_x_wind_850hPa_wavenum_freq_season_summer.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th>Nov-Apr<br>x_wind_200hPa</th>
+                <td>
+                    <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_200hPa_wavenum_freq_season_winter.png">
+                        <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_200hPa_wavenum_freq_season_winter.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_200hPa_wavenum_freq_season_winter.png">
+                        <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_200hPa_wavenum_freq_season_winter.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/OBS/OBS_x_wind_200hPa_wavenum_freq_season_winter.png">
+                        <img src="mjo/OBS/OBS_x_wind_200hPa_wavenum_freq_season_winter.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th>May-Oct<br>x_wind_200hPa</th>
+                <td>
+                    <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_200hPa_wavenum_freq_season_summer.png">
+                        <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_200hPa_wavenum_freq_season_summer.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_200hPa_wavenum_freq_season_summer.png">
+                        <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_200hPa_wavenum_freq_season_summer.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/OBS/OBS_x_wind_200hPa_wavenum_freq_season_summer.png">
+                        <img src="mjo/OBS/OBS_x_wind_200hPa_wavenum_freq_season_summer.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+            </tr>
+        </table>
+
+        <hr>
+
+        <table>
+            <tr>
+                <th colspan="4">Asymmetric and symmetric power spectra</th>
+            </tr>
+            <tr>
+                <th>&nbsp;</th>
+                <th>control<br>{{ ref_suite_id }}</th>
+                <th>experiment<br>{{ exp_suite_id }}</th>
+                <th>observations</th>
+            </tr>
+            <tr>
+                <th>precipitation_flux<br>Symmetric</th>
+                <td>
+                    <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_precipitation_flux_Ratio_Spec_Sym.png">
+                        <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_precipitation_flux_Ratio_Spec_Sym.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_precipitation_flux_Ratio_Spec_Sym.png">
+                        <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_precipitation_flux_Ratio_Spec_Sym.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/OBS/OBS_precipitation_flux_Ratio_Spec_Sym.png">
+                        <img src="mjo/OBS/OBS_precipitation_flux_Ratio_Spec_Sym.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th>precipitation_flux<br>Asymmetric</th>
+                <td>
+                    <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_precipitation_flux_Ratio_Spec_Asym.png">
+                        <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_precipitation_flux_Ratio_Spec_Asym.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_precipitation_flux_Ratio_Spec_Asym.png">
+                        <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_precipitation_flux_Ratio_Spec_Asym.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/OBS/OBS_precipitation_flux_Ratio_Spec_Asym.png">
+                        <img src="mjo/OBS/OBS_precipitation_flux_Ratio_Spec_Asym.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th>toa_outgoing_longwave_flux<br>Symmetric</th>
+                <td>
+                    <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_toa_outgoing_longwave_flux_Ratio_Spec_Sym.png">
+                        <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_toa_outgoing_longwave_flux_Ratio_Spec_Sym.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_toa_outgoing_longwave_flux_Ratio_Spec_Sym.png">
+                        <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_toa_outgoing_longwave_flux_Ratio_Spec_Sym.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/OBS/OBS_toa_outgoing_longwave_flux_Ratio_Spec_Sym.png">
+                        <img src="mjo/OBS/OBS_toa_outgoing_longwave_flux_Ratio_Spec_Sym.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th>toa_outgoing_longwave_flux<br>Asymmetric</th>
+                <td>
+                    <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_toa_outgoing_longwave_flux_Ratio_Spec_Asym.png">
+                        <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_toa_outgoing_longwave_flux_Ratio_Spec_Asym.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_toa_outgoing_longwave_flux_Ratio_Spec_Asym.png">
+                        <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_toa_outgoing_longwave_flux_Ratio_Spec_Asym.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/OBS/OBS_toa_outgoing_longwave_flux_Ratio_Spec_Asym.png">
+                        <img src="mjo/OBS/OBS_toa_outgoing_longwave_flux_Ratio_Spec_Asym.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th>x_wind_850hPa<br>Symmetric</th>
+                <td>
+                    <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_850hPa_Ratio_Spec_Sym.png">
+                        <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_850hPa_Ratio_Spec_Sym.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_850hPa_Ratio_Spec_Sym.png">
+                        <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_850hPa_Ratio_Spec_Sym.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/OBS/OBS_x_wind_850hPa_Ratio_Spec_Sym.png">
+                        <img src="mjo/OBS/OBS_x_wind_850hPa_Ratio_Spec_Sym.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th>x_wind_850hPa<br>Asymmetric</th>
+                <td>
+                    <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_850hPa_Ratio_Spec_Asym.png">
+                        <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_850hPa_Ratio_Spec_Asym.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_850hPa_Ratio_Spec_Asym.png">
+                        <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_850hPa_Ratio_Spec_Asym.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/OBS/OBS_x_wind_850hPa_Ratio_Spec_Asym.png">
+                        <img src="mjo/OBS/OBS_x_wind_850hPa_Ratio_Spec_Asym.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th>x_wind_200hPa<br>Symmetric</th>
+                <td>
+                    <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_200hPa_Ratio_Spec_Sym.png">
+                        <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_200hPa_Ratio_Spec_Sym.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_200hPa_Ratio_Spec_Sym.png">
+                        <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_200hPa_Ratio_Spec_Sym.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/OBS/OBS_x_wind_200hPa_Ratio_Spec_Sym.png">
+                        <img src="mjo/OBS/OBS_x_wind_200hPa_Ratio_Spec_Sym.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th>x_wind_200hPa<br>Asymmetric</th>
+                <td>
+                    <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_200hPa_Ratio_Spec_Asym.png">
+                        <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_200hPa_Ratio_Spec_Asym.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_200hPa_Ratio_Spec_Asym.png">
+                        <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_200hPa_Ratio_Spec_Asym.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/OBS/OBS_x_wind_200hPa_Ratio_Spec_Asym.png">
+                        <img src="mjo/OBS/OBS_x_wind_200hPa_Ratio_Spec_Asym.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+            </tr>
+        </table>
+
+        <hr>
+
+        <table>
+            <tr>
+                <th colspan="4">Wheeler-Hendon Wheel</th>
+            </tr>
+            <tr>
+                <th>&nbsp;</th>
+                <th>control<br>{{ ref_suite_id }}</th>
+                <th>experiment<br>{{ exp_suite_id }}</th>
+                <th>observations</th>
+            </tr>
+            <tr>
+                <th>Nov-Apr</th>
+                <td>
+                    <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_WH04.png">
+                        <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_WH04.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_WH04.png">
+                        <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_WH04.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/OBS/OBS_WH04.png">
+                        <img src="mjo/OBS/OBS_WH04.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+            </tr>
+        </table>
+
+        <hr>
+
+        <table>
+            <tr>
+                <th colspan="4">Wheeler-Hendon Composites</th>
+            </tr>
+            <tr>
+                <th>&nbsp;</th>
+                <th>control<br>{{ ref_suite_id }}</th>
+                <th>experiment<br>{{ exp_suite_id }}</th>
+                <th>observations</th>
+            </tr>
+            <tr>
+                <th>Nov-Apr<br>precipitation_flux</th>
+                <td>
+                    <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_precipitation_flux_winter_phase_composites.png">
+                        <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_precipitation_flux_winter_phase_composites.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_precipitation_flux_winter_phase_composites.png">
+                        <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_precipitation_flux_winter_phase_composites.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/OBS/OBS_precipitation_flux_winter_phase_composites.png">
+                        <img src="mjo/OBS/OBS_precipitation_flux_winter_phase_composites.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th>May-Oct<br>precipitation_flux</th>
+                <td>
+                    <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_precipitation_flux_summer_phase_composites.png">
+                        <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_precipitation_flux_summer_phase_composites.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_precipitation_flux_summer_phase_composites.png">
+                        <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_precipitation_flux_summer_phase_composites.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/OBS/OBS_precipitation_flux_summer_phase_composites.png">
+                        <img src="mjo/OBS/OBS_precipitation_flux_summer_phase_composites.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th>Nov-Apr<br>toa_outgoing_longwave_flux</th>
+                <td>
+                    <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_toa_outgoing_longwave_flux_winter_phase_composites.png">
+                        <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_toa_outgoing_longwave_flux_winter_phase_composites.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_toa_outgoing_longwave_flux_winter_phase_composites.png">
+                        <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_toa_outgoing_longwave_flux_winter_phase_composites.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/OBS/OBS_toa_outgoing_longwave_flux_winter_phase_composites.png">
+                        <img src="mjo/OBS/OBS_toa_outgoing_longwave_flux_winter_phase_composites.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th>May-Oct<br>toa_outgoing_longwave_flux</th>
+                <td>
+                    <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_toa_outgoing_longwave_flux_summer_phase_composites.png">
+                        <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_toa_outgoing_longwave_flux_summer_phase_composites.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_toa_outgoing_longwave_flux_summer_phase_composites.png">
+                        <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_toa_outgoing_longwave_flux_summer_phase_composites.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/OBS/OBS_toa_outgoing_longwave_flux_summer_phase_composites.png">
+                        <img src="mjo/OBS/OBS_toa_outgoing_longwave_flux_summer_phase_composites.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th>Nov-Apr<br>x_wind_850hPa</th>
+                <td>
+                    <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_850hPa_winter_phase_composites.png">
+                        <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_850hPa_winter_phase_composites.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_850hPa_winter_phase_composites.png">
+                        <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_850hPa_winter_phase_composites.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/OBS/OBS_x_wind_850hPa_winter_phase_composites.png">
+                        <img src="mjo/OBS/OBS_x_wind_850hPa_winter_phase_composites.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th>May-Oct<br>x_wind_850hPa</th>
+                <td>
+                    <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_850hPa_summer_phase_composites.png">
+                        <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_850hPa_summer_phase_composites.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_850hPa_summer_phase_composites.png">
+                        <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_850hPa_summer_phase_composites.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/OBS/OBS_x_wind_850hPa_summer_phase_composites.png">
+                        <img src="mjo/OBS/OBS_x_wind_850hPa_summer_phase_composites.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th>Nov-Apr<br>x_wind_200hPa</th>
+                <td>
+                    <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_200hPa_winter_phase_composites.png">
+                        <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_200hPa_winter_phase_composites.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_200hPa_winter_phase_composites.png">
+                        <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_200hPa_winter_phase_composites.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/OBS/OBS_x_wind_200hPa_winter_phase_composites.png">
+                        <img src="mjo/OBS/OBS_x_wind_200hPa_winter_phase_composites.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th>May-Oct<br>x_wind_200hPa</th>
+                <td>
+                    <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_200hPa_summer_phase_composites.png">
+                        <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_200hPa_summer_phase_composites.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_200hPa_summer_phase_composites.png">
+                        <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_200hPa_summer_phase_composites.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+                <td>
+                    <a href="mjo/OBS/OBS_x_wind_200hPa_summer_phase_composites.png">
+                        <img src="mjo/OBS/OBS_x_wind_200hPa_summer_phase_composites.png" 
+                             alt="Image missing" 
+                             width="400">
+                    </a>
+                </td>
+            </tr>
+        </table>
+        <button onclick="toggleElementDisplay('extraImages')">Toggle extra Plots</button>
+        <div id="extraImages">
+            <table>
+                <tr>
+                    <th colspan="4">Filtered Variance</th>
+                </tr>
+                <tr>
+                    <th>&nbsp;</th>
+                    <th>control<br>{{ ref_suite_id }}</th>
+                    <th>experiment<br>{{ exp_suite_id }}</th>
+                    <th>observations</th>
+                </tr>
+                <tr>
+                    <th>Nov-Apr<br>precipitation_flux</th>
+                    <td>
+                        <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_precipitation_flux_Filt_Var_winter.png">
+                            <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_precipitation_flux_Filt_Var_winter.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                    <td>
+                        <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_precipitation_flux_Filt_Var_winter.png">
+                            <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_precipitation_flux_Filt_Var_winter.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                    <td>
+                        <a href="mjo/OBS/OBS_precipitation_flux_Filt_Var_winter.png">
+                            <img src="mjo/OBS/OBS_precipitation_flux_Filt_Var_winter.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <th>May-Oct<br>precipitation_flux</th>
+                    <td>
+                        <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_precipitation_flux_Filt_Var_summer.png">
+                            <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_precipitation_flux_Filt_Var_summer.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                    <td>
+                        <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_precipitation_flux_Filt_Var_summer.png">
+                            <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_precipitation_flux_Filt_Var_summer.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                    <td>
+                        <a href="mjo/OBS/OBS_precipitation_flux_Filt_Var_summer.png">
+                            <img src="mjo/OBS/OBS_precipitation_flux_Filt_Var_summer.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Nov-Apr<br>toa_outgoing_longwave_flux</th>
+                    <td>
+                        <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_toa_outgoing_longwave_flux_Filt_Var_winter.png">
+                            <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_toa_outgoing_longwave_flux_Filt_Var_winter.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                    <td>
+                        <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_toa_outgoing_longwave_flux_Filt_Var_winter.png">
+                            <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_toa_outgoing_longwave_flux_Filt_Var_winter.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                    <td>
+                        <a href="mjo/OBS/OBS_toa_outgoing_longwave_flux_Filt_Var_winter.png">
+                            <img src="mjo/OBS/OBS_toa_outgoing_longwave_flux_Filt_Var_winter.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <th>May-Oct<br>toa_outgoing_longwave_flux</th>
+                    <td>
+                        <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_toa_outgoing_longwave_flux_Filt_Var_summer.png">
+                            <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_toa_outgoing_longwave_flux_Filt_Var_summer.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                    <td>
+                        <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_toa_outgoing_longwave_flux_Filt_Var_summer.png">
+                            <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_toa_outgoing_longwave_flux_Filt_Var_summer.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                    <td>
+                        <a href="mjo/OBS/OBS_toa_outgoing_longwave_flux_Filt_Var_summer.png">
+                            <img src="mjo/OBS/OBS_toa_outgoing_longwave_flux_Filt_Var_summer.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Nov-Apr<br>x_wind_850hPa</th>
+                    <td>
+                        <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_850hPa_Filt_Var_winter.png">
+                            <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_850hPa_Filt_Var_winter.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                    <td>
+                        <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_850hPa_Filt_Var_winter.png">
+                            <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_850hPa_Filt_Var_winter.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                    <td>
+                        <a href="mjo/OBS/OBS_x_wind_850hPa_Filt_Var_winter.png">
+                            <img src="mjo/OBS/OBS_x_wind_850hPa_Filt_Var_winter.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <th>May-Oct<br>x_wind_850hPa</th>
+                    <td>
+                        <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_850hPa_Filt_Var_summer.png">
+                            <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_850hPa_Filt_Var_summer.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                    <td>
+                        <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_850hPa_Filt_Var_summer.png">
+                            <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_850hPa_Filt_Var_summer.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                    <td>
+                        <a href="mjo/OBS/OBS_x_wind_850hPa_Filt_Var_summer.png">
+                            <img src="mjo/OBS/OBS_x_wind_850hPa_Filt_Var_summer.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Nov-Apr<br>x_wind_200hPa</th>
+                    <td>
+                        <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_200hPa_Filt_Var_winter.png">
+                            <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_200hPa_Filt_Var_winter.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                    <td>
+                        <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_200hPa_Filt_Var_winter.png">
+                            <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_200hPa_Filt_Var_winter.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                    <td>
+                        <a href="mjo/OBS/OBS_x_wind_200hPa_Filt_Var_winter.png">
+                            <img src="mjo/OBS/OBS_x_wind_200hPa_Filt_Var_winter.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <th>May-Oct<br>x_wind_200hPa</th>
+                    <td>
+                        <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_200hPa_Filt_Var_summer.png">
+                            <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_200hPa_Filt_Var_summer.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                    <td>
+                        <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_200hPa_Filt_Var_summer.png">
+                            <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_200hPa_Filt_Var_summer.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                    <td>
+                        <a href="mjo/OBS/OBS_x_wind_200hPa_Filt_Var_summer.png">
+                            <img src="mjo/OBS/OBS_x_wind_200hPa_Filt_Var_summer.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                </tr>
+            </table>
+
+            <table>
+                <tr>
+                    <th colspan="4">Lead Lag Correlation</th>
+                </tr>
+                <tr>
+                    <th>&nbsp;</th>
+                    <th>control<br>{{ ref_suite_id }}</th>
+                    <th>experiment<br>{{ exp_suite_id }}</th>
+                    <th>observations</th>
+                </tr>
+                <tr>
+                    <th>precipitation_flux</th>
+                    <td>
+                        <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_precipitation_flux_LeadLagCorr.png">
+                            <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_precipitation_flux_LeadLagCorr.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                    <td>
+                        <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_precipitation_flux_LeadLagCorr.png">
+                            <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_precipitation_flux_LeadLagCorr.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                    <td>
+                        <a href="mjo/OBS/OBS_precipitation_flux_LeadLagCorr.png">
+                            <img src="mjo/OBS/OBS_precipitation_flux_LeadLagCorr.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <th>toa_outgoing_longwave_flux</th>
+                    <td>
+                        <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_toa_outgoing_longwave_flux_LeadLagCorr.png">
+                            <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_toa_outgoing_longwave_flux_LeadLagCorr.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                    <td>
+                        <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_toa_outgoing_longwave_flux_LeadLagCorr.png">
+                            <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_toa_outgoing_longwave_flux_LeadLagCorr.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                    <td>
+                        <a href="mjo/OBS/OBS_toa_outgoing_longwave_flux_LeadLagCorr.png">
+                            <img src="mjo/OBS/OBS_toa_outgoing_longwave_flux_LeadLagCorr.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <th>x_wind_850hPa</th>
+                    <td>
+                        <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_850hPa_LeadLagCorr.png">
+                            <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_850hPa_LeadLagCorr.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                    <td>
+                        <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_850hPa_LeadLagCorr.png">
+                            <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_850hPa_LeadLagCorr.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                    <td>
+                        <a href="mjo/OBS/OBS_x_wind_850hPa_LeadLagCorr.png">
+                            <img src="mjo/OBS/OBS_x_wind_850hPa_LeadLagCorr.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <th>x_wind_200hPa</th>
+                    <td>
+                        <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_200hPa_LeadLagCorr.png">
+                            <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_x_wind_200hPa_LeadLagCorr.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                    <td>
+                        <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_200hPa_LeadLagCorr.png">
+                            <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_x_wind_200hPa_LeadLagCorr.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                    <td>
+                        <a href="mjo/OBS/OBS_x_wind_200hPa_LeadLagCorr.png">
+                            <img src="mjo/OBS/OBS_x_wind_200hPa_LeadLagCorr.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                </tr>
+            </table>
+
+            <table>
+                <tr>
+                    <th colspan="3">MJO phase frequency</th>
+                </tr>
+                <tr>
+                    <th>control<br>{{ ref_suite_id }}</th>
+                    <th>experiment<br>{{ exp_suite_id }}</th>
+                    <th>observations</th>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_phase_freq_plot.png">
+                            <img src="mjo/{{ ref_suite_id }}/{{ ref_suite_id }}_phase_freq_plot.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                    <td>
+                        <a href="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_phase_freq_plot.png">
+                            <img src="mjo/{{ exp_suite_id }}/{{ exp_suite_id }}_phase_freq_plot.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                    <td>
+                        <a href="mjo/OBS/OBS_phase_freq_plot.png">
+                            <img src="mjo/OBS/OBS_phase_freq_plot.png" 
+                                 alt="Image missing" 
+                                 width="400">
+                        </a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>

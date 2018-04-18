@@ -7,7 +7,6 @@ import iris
 import iris.quickplot as qplt
 import matplotlib.pyplot as plt
 import yaml
-import pickle
 
 logger = logging.getLogger(__name__)
 
@@ -53,11 +52,10 @@ def main():
 
     cubelist = iris.load(files_list)
 
-    cubes_pickle_path = os.path.join(suite_data, 'cubes.pickle')
-    with open(cubes_pickle_path, 'wb') as f:
-        pickle.dump(cubelist, f)
+    cubes_list_path = os.path.join(suite_data, 'cubeList.nc')
+    iris.save(cubelist, cubes_list_path)
  
-    command_call = 'python ' + cfg['executable']
+    command_call = 'python ./autoassess_source/autoassess/run_area.py'
     args = {}
     args['--area'] = cfg['area']
     args['--suite-id1'] = cfg['suite1']

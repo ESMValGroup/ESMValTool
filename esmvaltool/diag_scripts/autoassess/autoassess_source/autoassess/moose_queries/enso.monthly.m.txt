@@ -1,0 +1,13 @@
+begin
+    lbtim = (121, 122)
+    stash = (00024, 05216)
+end
+begin
+    lbtim = (121, 122)
+    stash = 03219
+    lblev = 1
+end
+begin
+    lbtim = (621, 622)
+    stash = 16222
+end

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <title>{{ title }}</title>
+        <style>
+body {font-family: Verdana, Geneva, sans-serif;}
+h1 {text-align: center;}
+h2 {text-align: center;}
+h3 {text-align: center;}
+a {display: inline-block;
+   border-radius: 4px;
+   padding: 5px;
+   transition: 0.3s;}
+a:hover {box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);}
+tr:nth-child(even) {
+    background-color: #F5F5F5;
+}
+.nac_plot {width: 700px;}
+        </style>
+    </head>
+    <body>
+        <h1>{{ title }}</h1>
+        <hr>
+        <h1>{{ area }}</h1>
+        <h1>{{ exp_suite_id }} vs. {{ ref_suite_id }} (reference)</h1>
+        <h2>Period: {{ start_date }} to {{ end_date }}</h2>
+        <hr>
+        <table width="100%" align="center">
+            <tr>
+                <td align="center">
+                    <h3>Metrics Overview</h3>
+                    <a href="stratosphere/nac_plots/stratosphere_overview.png"> 
+                        <img class="nac_plot" 
+                             src="stratosphere/nac_plots/stratosphere_overview.png" 
+                             alt="Image missing"> 
+                    </a>
+                </td>
+            </tr>
+        </table>
+        <hr>
+        <h2>Plots comparing the runs</h2>
+        <table width="100%" align="center">
+            <tr>
+                <td align="center">
+                    <h3>QBO at 30hpa</h3>
+                    <a href="stratosphere/qbo_30hpa.png"> 
+                        <img class="nac_plot" 
+                             src="stratosphere/qbo_30hpa.png" 
+                             alt="Image missing"> 
+                    </a>
+                </td>
+                <td align="center">
+                    <h3>teq 100hpa</h3>
+                    <a href="stratosphere/teq_100hpa.png"> 
+                        <img class="nac_plot" 
+                             src="stratosphere/teq_100hpa.png" 
+                             alt="Image missing"> 
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <td align="center">
+                    <h3>Age of air in mid-latitudes</h3>
+                    <a href="stratosphere/age_midlatitudes.png"> 
+                        <img class="nac_plot" 
+                             src="stratosphere/age_midlatitudes.png" 
+                             alt="Image missing"> 
+                    </a>
+                </td>
+                <td align="center">
+                    <h3>Age of Air in tropics</h3>
+                    <a href="stratosphere/age_tropics.png"> 
+                        <img class="nac_plot" 
+                             src="stratosphere/age_tropics.png" 
+                             alt="Image missing"> 
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <td align="center">
+                    <h3>t100 vs q70</h3>
+                    <a href="stratosphere/t100_vs_q70.png"> 
+                        <img class="nac_plot" 
+                             src="stratosphere/t100_vs_q70.png" 
+                             alt="Image missing"> 
+                    </a>
+                </td>
+            </tr>
+        </table>
+        <hr>
+        <h2>Side-by-side plots comparing the runs</h2>
+        <table width="100%" align="center">
+            <tr>
+                <td><h3>{{ ref_suite_id }}</h3></td>
+                <td><h3>{{ exp_suite_id }}</h3></td>
+            </tr>
+            <tr>
+                <td align="center">
+                    <a href="stratosphere/{{ ref_suite_id }}_u_jan.png">
+                        <img class="nac_plot" 
+                             src="stratosphere/{{ ref_suite_id }}_u_jan.png" 
+                             alt="Image missing" 
+                             onmouseover="this.src='stratosphere/{{ exp_suite_id }}_u_jan.png';" 
+                             onmouseout="this.src='stratosphere/{{ ref_suite_id }}_u_jan.png';">
+                    </a>
+                </td>
+                <td align="center">
+                    <a href="stratosphere/{{ exp_suite_id }}_u_jan.png">
+                        <img class="nac_plot" 
+                             src="stratosphere/{{ exp_suite_id }}_u_jan.png" 
+                             alt="Image missing" 
+                             onmouseover="this.src='stratosphere/{{ ref_suite_id }}_u_jan.png';" 
+                             onmouseout="this.src='stratosphere/{{ exp_suite_id }}_u_jan.png';">
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <td align="center">
+                    <a href="stratosphere/{{ ref_suite_id }}_u_jul.png">
+                        <img class="nac_plot" 
+                             src="stratosphere/{{ ref_suite_id }}_u_jul.png" 
+                             alt="Image missing" 
+                             onmouseover="this.src='stratosphere/{{ exp_suite_id }}_u_jul.png';" 
+                             onmouseout="this.src='stratosphere/{{ ref_suite_id }}_u_jul.png';">
+                    </a>
+                </td>
+                <td align="center">
+                    <a href="stratosphere/{{ exp_suite_id }}_u_jul.png">
+                        <img class="nac_plot" 
+                             src="stratosphere/{{ exp_suite_id }}_u_jul.png" 
+                             alt="Image missing" 
+                             onmouseover="this.src='stratosphere/{{ ref_suite_id }}_u_jul.png';" 
+                             onmouseout="this.src='stratosphere/{{ exp_suite_id }}_u_jul.png';">
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <td align="center">
+                    <a href="stratosphere/{{ ref_suite_id }}_qbo.png">
+                        <img class="nac_plot" 
+                             src="stratosphere/{{ ref_suite_id }}_qbo.png" 
+                             alt="Image missing" 
+                             onmouseover="this.src='stratosphere/{{ exp_suite_id }}_qbo.png';" 
+                             onmouseout="this.src='stratosphere/{{ ref_suite_id }}_qbo.png';">
+                    </a>
+                </td>
+                <td align="center">
+                    <a href="stratosphere/{{ exp_suite_id }}_qbo.png">
+                        <img class="nac_plot" 
+                             src="stratosphere/{{ exp_suite_id }}_qbo.png" 
+                             alt="Image missing" 
+                             onmouseover="this.src='stratosphere/{{ ref_suite_id }}_qbo.png';" 
+                             onmouseout="this.src='stratosphere/{{ exp_suite_id }}_qbo.png';">
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <td align="center">
+                    <a href="stratosphere/{{ ref_suite_id }}_t_djf.png">
+                        <img class="nac_plot" 
+                             src="stratosphere/{{ ref_suite_id }}_t_djf.png" 
+                             alt="Image missing" 
+                             onmouseover="this.src='stratosphere/{{ exp_suite_id }}_t_djf.png';" 
+                             onmouseout="this.src='stratosphere/{{ ref_suite_id }}_t_djf.png';">
+                    </a>
+                </td>
+                <td align="center">
+                    <a href="stratosphere/{{ exp_suite_id }}_t_djf.png">
+                        <img class="nac_plot" 
+                             src="stratosphere/{{ exp_suite_id }}_t_djf.png" 
+                             alt="Image missing" 
+                             onmouseover="this.src='stratosphere/{{ ref_suite_id }}_t_djf.png';" 
+                             onmouseout="this.src='stratosphere/{{ exp_suite_id }}_t_djf.png';">
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <td align="center">
+                    <a href="stratosphere/{{ ref_suite_id }}_t_jja.png">
+                        <img class="nac_plot" 
+                             src="stratosphere/{{ ref_suite_id }}_t_jja.png" 
+                             alt="Image missing" 
+                             onmouseover="this.src='stratosphere/{{ exp_suite_id }}_t_jja.png';" 
+                             onmouseout="this.src='stratosphere/{{ ref_suite_id }}_t_jja.png';">
+                    </a>
+                </td>
+                <td align="center">
+                    <a href="stratosphere/{{ exp_suite_id }}_t_jja.png">
+                        <img class="nac_plot" 
+                             src="stratosphere/{{ exp_suite_id }}_t_jja.png" 
+                             alt="Image missing" 
+                             onmouseover="this.src='stratosphere/{{ ref_suite_id }}_t_jja.png';" 
+                             onmouseout="this.src='stratosphere/{{ exp_suite_id }}_t_jja.png';">
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </body>
+</html>

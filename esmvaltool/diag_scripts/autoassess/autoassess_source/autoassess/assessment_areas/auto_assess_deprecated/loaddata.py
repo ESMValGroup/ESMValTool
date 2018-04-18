@@ -16,10 +16,10 @@ available here: https://code.metoffice.gov.uk/doc/um/vn10.5/umdp.html
 
 import cf_units
 import os.path
-import pickle
 import re
 import datetime
 from datetime import timedelta as td
+from datetime import datetime as dd
 
 import iris
 import iris.coord_categorisation as coord_cat
@@ -279,54 +279,62 @@ def select_certain_months(cubes, lbmon):
 
 
 def extract_time_range(cubes, start, end):
-    """
-    For each cube in `cubes` keep only the data between `start` and `end`.
+    #"""
+    #For each cube in `cubes` keep only the data between `start` and `end`.
 
-    It uses the time point of the data, or if available the beginning of a time
-    period. This time point has to be at or after `start`, and
-    before or at `end`.
+    #It uses the time point of the data, or if available the beginning of a time
+    #period. This time point has to be at or after `start`, and
+    #before or at `end`.
 
-    :param CubeList cubes: Iris CubeList.
-    :param datetime.date start:
-    :param datetime.date end:
-    :returns: CubeList with Cubes that contain only data between `start` and
-        `end`.
-    :rtype: Iris CubeList
-    """
-    def make_time_range(unit, calendar):
-        """Produces a function to be used in an Iris constraint."""
-        start_time = pdt(year=start.year, month=start.month, day=start.day,
-                         hour=0, minute=0, second=0)
-        end_time = pdt(year=end.year, month=end.month, day=end.day,
-                       hour=0, minute=0, second=0)
-        #TODO it would be conceptually better to use datetime.datetime, but that
-        # does not work due to a bug in IRIS. PartialDateTime is meant to be
-        # used for periodical selections, such as 'each March'
-        #start_time = datetime.datetime(start.year, start.month, start.day, 0, 0, 0)
-        #end_time = datetime.datetime(end.year, end.month, end.day, 0, 0, 0)
-        def time_range(cell):
-            time_unit = cf_units.Unit(unit, calendar)
-            if cell.bound:
-                return start_time <= time_unit.num2date(cell.bound[0]) and \
-                                     time_unit.num2date(cell.bound[0]) <= end_time
-            else:
-                cell_point_datetime = time_unit.num2date(cell.point)
-                # set everything smaller than days to zero
-                cell_point_datetime = datetime.datetime(cell_point_datetime.year,
-                                                        cell_point_datetime.month,
-                                                        cell_point_datetime.day)
-                return start_time <= cell_point_datetime <= end_time
-        return time_range
+    #:param CubeList cubes: Iris CubeList.
+    #:param datetime.date start:
+    #:param datetime.date end:
+    #:returns: CubeList with Cubes that contain only data between `start` and
+    #    `end`.
+    #:rtype: Iris CubeList
+    #"""
+    #def make_time_range(unit, calendar):
+    #    """Produces a function to be used in an Iris constraint."""
+    #    start_time = pdt(year=start.year, month=start.month, day=start.day,
+    #                     hour=0, minute=0, second=0)
+    #    end_time = pdt(year=end.year, month=end.month, day=end.day,
+    #                   hour=0, minute=0, second=0)
+    #    #TODO it would be conceptually better to use datetime.datetime, but that
+    #    # does not work due to a bug in IRIS. PartialDateTime is meant to be
+    #    # used for periodical selections, such as 'each March'
+    #    #start_time = datetime.datetime(start.year, start.month, start.day, 0, 0, 0)
+    #    #end_time = datetime.datetime(end.year, end.month, end.day, 0, 0, 0)
+    #    def time_range(cell):
+    #        time_unit = cf_units.Unit(unit, calendar)
+    #        if cell.bound:
+    #            return start_time <= time_unit.num2date(cell.bound[0]) and \
+    #                                 time_unit.num2date(cell.bound[0]) <= end_time
+    #        else:
+    #            cell_point_datetime = time_unit.num2date(cell.point)
+    #            # set everything smaller than days to zero
+    #            cell_point_datetime = datetime.datetime(cell_point_datetime.year,
+    #                                                    cell_point_datetime.month,
+    #                                                    cell_point_datetime.day)
+    #            return start_time <= cell_point_datetime <= end_time
+    #    return time_range
 
 
-    time_ranged_cubes = iris.cube.CubeList()
+    #time_ranged_cubes = iris.cube.CubeList()
+    #for cube in cubes:
+    #    unit = cube.coord('time').units
+    #    calendar = unit.calendar
+    #    in_range = make_time_range(unit, calendar)
+    #    print(in_range)
+    #    time_range = iris.Constraint(coord_values={'time':in_range})
+
+    #    time_ranged_cubes.append(cube.extract(time_range))
+    #return time_ranged_cubes
+    time_ranged_cubes = []
+    dd_start = dd(start.year, start.month, start.day, 0, 0, 0)
+    dd_end = dd(end.year, end.month, end.day, 0, 0, 0)
     for cube in cubes:
-        unit = cube.coord('time').units
-        calendar = unit.calendar
-        in_range = make_time_range(unit, calendar)
-        time_range = iris.Constraint(coord_values={'time':in_range})
-
-        time_ranged_cubes.append(cube.extract(time_range))
+        tc = iris.Constraint(time=lambda cell: dd_start<=cell.point<=dd_end)
+        time_ranged_cubes.append(cube.extract(tc))
     return time_ranged_cubes
 
 
@@ -336,7 +344,7 @@ def load_run_ss(run_object, averaging_period, variable_name,
                 from_dt=None, to_dt=None):
     """
     DEPRECATED: Do not use for new Assessment Areas. Instead, read the
-    pickled CubeList `cubes.pickle` in the directory with the retrieved data.
+    CubeList `cubeList.nc` in the directory with the retrieved data.
 
     Select a single Cube from the data that was retrieved for a single
     Assessment Area.
@@ -371,12 +379,11 @@ def load_run_ss(run_object, averaging_period, variable_name,
     :rtype: Iris cube
     :raises: `AssertionError` if not exactly one cube is selected.
     """
-    pickle_file = 'cubes.pickle'
-    pickle_path = os.path.join(run_object['data_root'], run_object['runid'],
-                               run_object['_area'], pickle_file)
+    cubelist_file = 'cubeList.nc'
+    cubelist_path = os.path.join(run_object['data_root'], run_object['runid'],
+                               run_object['_area'], cubelist_file)
 
-    with open(pickle_path, 'r') as fh:
-        cubes = pickle.load(fh)
+    cubes = iris.load(cubelist_path)
     cubes.sort(key=lambda c: c.standard_name)
 
     return _load_run_ss(cubes, run_object, averaging_period, variable_name,

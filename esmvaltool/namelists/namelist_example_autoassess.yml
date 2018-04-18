@@ -31,7 +31,6 @@ diagnostics:
       autoassess_strato_test: &autoassess_strato_test_settings
         script: autoassess/example_ESMVal-autoassess_diagnostic.py
         title: "First autoassess diag test running stratosphere area"
-        executable: /group_workspaces/jasmin/ncas_cms/valeriu/autoassess/autoassess/run_area.py  # change as per user
         area: Stratosphere                                                                       # name of area diagnostic
         suite1: u-ab123                                                                          # control suite
         suite2: u-ab123                                                                          # test suite

@@ -1,0 +1,5 @@
+begin
+   stash = (5216, 3332)
+   lbtim = (2421, 2422)
+   lbproc = 128
+end

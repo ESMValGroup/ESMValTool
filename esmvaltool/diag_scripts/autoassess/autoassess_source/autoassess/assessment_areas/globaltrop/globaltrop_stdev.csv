@@ -1,0 +1,38 @@
+PMSL DJF global,0.159145
+PMSL MAM global,0.0360085
+PMSL JJA global,0.108746
+PMSL SON global,0.0598369
+Precipitation DJF tropical_land,0.0841573
+Precipitation MAM tropical_land,0.0296818
+Precipitation JJA tropical_land,0.0203957
+Precipitation SON tropical_land,0.0202011
+Precipitation DJF tropical_ocean,0.0348648
+Precipitation MAM tropical_ocean,0.144693
+Precipitation JJA tropical_ocean,0.102789
+Precipitation SON tropical_ocean,0.0322636
+Precipitation DJF north,0.0560408
+Precipitation MAM north,0.0231737
+Precipitation JJA north,0.00955495
+Precipitation SON north,0.0301174
+Precipitation DJF south,0.00427319
+Precipitation MAM south,0.0109745
+Precipitation JJA south,0.0151748
+Precipitation SON south,0.024605
+200 hPa horiz wind DJF global,0.111346
+200 hPa horiz wind JJA global,0.0940083
+850 hPa horiz wind DJF global,0.0429655
+850 hPa horiz wind JJA global,0.0611555
+Z-mean U wind DJF global,0.375534
+Z-mean U wind JJA global,0.237471
+Z-mean V wind DJF global,0.00816322
+Z-mean V wind JJA global,0.00997126
+Z-mean merid streamfunction DJF global,4.44693E+08
+Z-mean merid streamfunction JJA global,7.32471E+08
+Precipitable water DJF global,0.0464066
+Precipitable water JJA global,0.0242966
+Z-mean relative humidity DJF global,0.147986
+Z-mean relative humidity JJA global,0.0969596
+Z-mean air temperature DJF global,0.123118
+Z-mean air temperature JJA global,0.0839881
+1.5m temperature DJF global,0.139927
+1.5m temperature JJA global,0.0110445

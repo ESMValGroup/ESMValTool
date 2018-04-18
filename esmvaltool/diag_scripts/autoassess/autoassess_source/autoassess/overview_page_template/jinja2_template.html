@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <title>{{ title }}</title>
+        <style>
+body {font-family: Verdana, Geneva, sans-serif;}
+h1 {text-align: center;}
+h2 {text-align: center;}
+h3 {text-align: center;}
+a {display: inline-block;
+    border-radius: 4px;
+    padding: 5px;
+    transition: 0.3s;}
+a:hover {box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);}
+tr:nth-child(even) {
+    background-color: #F5F5F5;
+}
+.nac_plot {width: 700px;}
+        </style>
+    </head>
+    <body>
+        <h1>{{ title }}</h1>
+        <hr>
+
+        <h1>{{ exp_suite_id }} vs. {{ ref_suite_id }} (reference)</h1>
+        <h2>Period: {{ start_date }} to {{ end_date }}</h2>
+        <h2><a href="valnote/browser.html">Validation Note</a></h2>
+        <hr>
+        <table width="100%" align="center">
+            <tr>
+                <td align="center">
+                    <h2>Africa</h2>
+                    <a href="africa.html">
+                        <img class="nac_plot" 
+                             src="africa/nac_plots/africa_overview.png" 
+                             alt="africa/nac_plots/africa_overview.png">
+                    </a>
+                </td>
+                <td align="center">
+                    <h2>Conservation</h2>
+                    <a href="conservation.html">
+                        <img class="nac_plot" 
+                             src="conservation/nac_plots/conservation_overview.png" 
+                             alt="conservation/nac_plots/conservation_overview.png">
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <td align="center">
+                    <h2>Global Troposphere</h2>
+                    <a href="globaltrop.html">
+                        <img class="nac_plot" 
+                             src="globaltrop/nac_plots/globaltrop_overview.png" 
+                             alt="Click here. (This area does not produce metrics.)">
+                    </a>
+                </td>
+                <td align="center">
+                    <h2>Hydrocycle</h2>
+                    <a href="hydrocycle.html">
+                        <img class="nac_plot" 
+                             src="hydrocycle/nac_plots/hydrocycle_overview.png" 
+                             alt="hydrocycle/nac_plots/hydrocycle_overview.png">
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <td align="center">
+                    <h2>Land Surface</h2>
+                    <a href="land_surface.html">
+                        <img class="nac_plot" 
+                             src="land_surface/nac_plots/land_surface_overview.png" 
+                             alt="land_surface/nac_plots/land_surface_overview.png">
+                    </a>
+                </td>
+                <td align="center">
+                    <h2>Mid-Latitudes: Blocking</h2>
+                    <a href="midlats_blocking.html">
+                        <img class="nac_plot" 
+                             src="midlats/nac_plots/midlats_overview.png" 
+                             alt="midlats/nac_plots/midlats_overview.png">
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <td align="center">
+                    <h2>Mid-Latitudes: Stormtracks</h2>
+                    <a href="midlats_bpf.html">
+                        <img class="nac_plot" 
+                             src="midlats/nac_plots/stormtracks_overview.png" 
+                             alt="midlats/nac_plots/stormtracks_overview.png">
+                    </a>
+                </td>
+                <td align="center">
+                    <h2>Madden-Julian Oscillation</h2>
+                    <a href="mjo.html">
+                        <img class="nac_plot" 
+                             src="mjo/nac_plots/mjo_overview.png" 
+                             alt="mjo/nac_plots/mjo_overview.png">
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <td align="center">
+                    <h2>Monsoon</h2>
+                    <a href="monsoon.html">
+                        <img class="nac_plot" 
+                             src="monsoon/nac_plots/monsoon_overview.png" 
+                             alt="monsoon/nac_plots/monsoon_overview.png">
+                    </a>
+                </td>
+                <td align="center">
+                    <h2>Radiation Budget</h2>
+                    <a href="radiation_budget.html">
+                        <img class="nac_plot" 
+                             src="radiation_budget/nac_plots/radiation_budget_overview.png" 
+                             alt="Click here. (This area does not produce metrics.)">
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <td align="center">
+                    <h2>Stratosphere</h2>
+                    <a href="stratosphere.html">
+                        <img class="nac_plot" 
+                             src="stratosphere/nac_plots/stratosphere_overview.png" 
+                             alt="stratosphere/nac_plots/stratosphere_overview.png">
+                    </a>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>

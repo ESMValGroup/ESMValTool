@@ -1,0 +1,21 @@
+East power summer toa_outgoing_longwave_flux 
+East power summer precipitation_flux
+East power summer x_wind_200hPa
+East power summer x_wind_850hPa 
+East power winter toa_outgoing_longwave_flux 
+East power winter precipitation_flux 
+East power winter x_wind_200hPa 
+East power winter x_wind_850hPa 
+East/west power summer toa_outgoing_longwave_flux 
+East/west power summer precipitation_flux 
+East/west power summer x_wind_200hPa 
+East/west power summer x_wind_850hPa 
+East/west power winter toa_outgoing_longwave_flux 
+East/west power winter precipitation_flux 
+East/west power winter x_wind_200hPa 
+East/west power winter x_wind_850hPa 
+Lead-lag pattern corr. toa_outgoing_longwave_flux 
+Lead-lag pattern corr. x_wind_200hPa 
+Lead-lag pattern corr. x_wind_850hPa 
+Max corr RMM1 vs RMM2 
+Max corr RMM1 vs RMM2 lag (days) 

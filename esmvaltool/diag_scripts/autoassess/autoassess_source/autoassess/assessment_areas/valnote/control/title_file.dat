@@ -1,0 +1,120 @@
+# Title file
+# This file stores information on the titles used in the plots
+#
+# The top level is the type (corresponds to the type as listed in the plots_file.dat).
+# If no type is selected in plots_file.dat then the default is 4up.
+#
+# The next level down is the plot letter followed by the top title and the subtitle (colon separated).
+# The following strings are automatically replaced at run time for each plot:
+#    field = the title in plots_file.dat. If this is missing then it uses the title in the item_file.dat
+#    season = the season of the plot (DJF, MAM, JJA, SON or ANN)
+#    control = the control suite-id and name (as listed in source_file.dat)
+#    exper = the experiment suite-id and name (as listed in source_file.dat)
+#    observations = the observations name (as listed in obs_file.dat)
+#
+# Optional extra switches are avalable here
+#    layout = layout of the plots on the page XbyY where X is the number of plots
+#             in the x direction and Y the number of plots on the y direction. If
+#             omitted it keeps to a square layout 1by1, 2by2 or 3by3 depending on
+#             the number of plots requested. Used to override settings for
+#             location_dict, figsize and font_size in the define_page routine
+
+start:1up
+   a:field for season:  
+end:
+
+start:2up
+   a:field for season:control
+   b:field for season:exper
+end:
+
+start:3up
+   a:field for season:control
+   b:field for season:exper
+   c:field for season:exper minus control
+end:3up
+
+start:3up_land_sea
+   a:zonal mean field for season:all points
+   b:zonal mean field for season:land points only
+   c:zonal mean field for season:sea points only
+end:3up_land_sea
+
+start:3models
+   a:field for season:control minus observations
+   b: :exper1 minus observations
+   c: :exper2 minus observations
+   layout:1by3
+end:3models
+
+start:3models2obs
+   a:field for season:control minus observations
+   b:field for season:control minus observations
+   c: :exper1 minus observations
+   d: :exper1 minus observations
+   e: :exper2 minus observations
+   f: :exper2 minus observations
+   layout:2by3
+end:
+
+start:4up
+   a:field for season:exper
+   b:field for season:exper minus control
+   c:field for season:control minus observations
+   d:field for season:exper minus observations
+end:4up
+
+start:isccp9_model
+   a:High-top Thin Cloud for season:model
+   b:High-top Medium Cloud for season:model
+   c:High-top Thick Cloud for season:model
+   d:Mid-level-top Thin Cloud for season:model
+   e:Mid-level-top Medium Cloud for season:model
+   f:Mid-level-top Thick Cloud for season:model
+   g:Low-top Thin Cloud for season:model
+   h:Low-top Medium Cloud for season:model
+   i:Low-top Thick Cloud for season:model
+end:
+
+start:isccp9_exper_control
+   a:High-top Thin Cloud for season:exper minus control
+   b:High-top Medium Cloud for season:exper minus control
+   c:High-top Thick Cloud for season:exper minus control
+   d:Mid-level-top Thin Cloud for season:exper minus control
+   e:Mid-level-top Medium Cloud for season:exper minus control
+   f:Mid-level-top Thick Cloud for season:exper minus control
+   g:Low-top Thin Cloud for season:exper minus control
+   h:Low-top Medium Cloud for season:exper minus control
+   i:Low-top Thick Cloud for season:exper minus control
+end:
+
+start:isccp9_model_observations
+   a:High-top Thin Cloud for season:model minus observations
+   b:High-top Medium Cloud for season:model minus observations
+   c:High-top Thick Cloud for season:model minus observations
+   d:Mid-level-top Thin Cloud for season:model minus observations
+   e:Mid-level-top Medium Cloud for season:model minus observations
+   f:Mid-level-top Thick Cloud for season:model minus observations
+   g:Low-top Thin Cloud for season:model minus observations
+   h:Low-top Medium Cloud for season:model minus observations
+   i:Low-top Thick Cloud for season:model minus observations
+end:
+
+start:isccp9_multi
+   a:High-top Thin Cloud for season:exper1 minus control
+   b:High-top Thin Cloud for season:exper2 minus control
+   c:High-top Thin Cloud for season:exper3 minus control
+   d:Mid-level-top Thin Cloud for season:exper1 minus control
+   e:Mid-level-top Thin Cloud for season:exper2 minus control
+   f:Mid-level-top Thin Cloud for season:exper3 minus control
+   g:Low-top Thin Cloud for season:exper1 minus control
+   h:Low-top Thin Cloud for season:exper2 minus control
+   i:Low-top Thin Cloud for season:exper3 minus control
+end:
+
+start:4up_turbulent
+   a:field for season:exper
+   b:field for season:exper minus control
+   c:field for season:control minus CERES-EBAF & divergence
+   d:field for season:exper minus CERES-EBAF & divergence
+end:

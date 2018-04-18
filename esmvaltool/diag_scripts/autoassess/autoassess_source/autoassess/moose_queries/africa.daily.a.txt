@@ -1,0 +1,6 @@
+begin
+    mon = (5, 6, 7, 8, 9)
+    stash = 5216
+    lbtim = (121, 122)
+end
+

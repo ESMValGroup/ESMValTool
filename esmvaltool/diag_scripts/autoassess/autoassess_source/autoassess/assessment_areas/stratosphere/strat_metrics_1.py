@@ -115,12 +115,11 @@ def plot_timehgt(cube, levels, title, log=False, ax1=None):
 
 
 # Routines specific to stratosphere assessment
-
 def plot_uwind(cube, month, filename):
     '''
     Routine to plot zonal mean zonal wind on log pressure scale
     '''
-    levels = np.arange(-120, 121, 10)
+    levels = np.arange(-70, 51, 10)
     title = 'Zonal mean zonal wind ({})'.format(month)
     fig = plt.figure()
     plot_zmean(cube, levels, title, log=True)
@@ -132,7 +131,7 @@ def plot_temp(cube, season, filename):
     '''
     Routine to plot zonal mean temperature on log pressure scale
     '''
-    levels = np.arange(160, 321, 10)
+    levels = np.arange(220, 271, 10)
     title = 'Temperature ({})'.format(season)
     fig = plt.figure()
     plot_zmean(cube, levels, title, log=True)
@@ -144,7 +143,7 @@ def plot_qbo(cube, filename):
     '''
     Routine to create time-height plot of 5S-5N mean zonal mean U
     '''
-    levels = np.arange(-80, 81, 10)
+    levels = np.arange(-40, 61, 10)
     title = 'QBO'
     fig = plt.figure(figsize=(12, 6))
     plot_timehgt(cube, levels, title, log=True)
@@ -637,7 +636,7 @@ def multi_qbo_plot(runs):
 
     # If no control data then stop ...
     if not os.path.exists(cntlfile):
-        print '30hPa QBO for control absent. skipping ...'
+        print('30hPa QBO for control absent. skipping ...')
         return
 
     # Create plot
@@ -698,7 +697,7 @@ def multi_teq_plot(runs):
 
     # If no control data then stop ...
     if not os.path.exists(cntlfile):
-        print '100hPa Teq for control absent. skipping ...'
+        print('100hPa Teq for control absent. skipping ...')
         return
 
     # Set up generic plot label
@@ -818,12 +817,12 @@ def multi_t100_vs_q70_plot(runs):
 
     # If no control data then stop ...
     if not os.path.exists(t_cntl):
-        print '100hPa T for control absent. skipping ...'
+        print('100hPa T for control absent. skipping ...')
         return
 
     # If no control data then stop ...
     if not os.path.exists(q_cntl):
-        print '70hPa q for control absent. skipping ...'
+        print('70hPa q for control absent. skipping ...')
         return
 
     # Load MERRA data (currently set to pre-calculated values)

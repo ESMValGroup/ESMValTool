@@ -1,0 +1,13 @@
+begin
+    stash = (23, 510, 3395, 8223, 8229, 8230)
+end
+
+# Diurnal means
+begin
+    stash = 1201  # NET DOWN SURFACE SW FLUX: SW TS ONLY
+    lbtim = (121, 122)
+end
+begin
+    stash = 2201  # NET DOWN SURFACE LW RAD FLUX
+    lbtim = (121, 122)
+end

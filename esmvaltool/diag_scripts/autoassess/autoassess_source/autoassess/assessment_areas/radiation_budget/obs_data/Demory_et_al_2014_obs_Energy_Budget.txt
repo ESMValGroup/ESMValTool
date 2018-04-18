@@ -1,0 +1,20 @@
+                             radiation_net_toa  W m-2,        0.9
+                   toa_incoming_shortwave_flux  W m-2,      341.3
+                   toa_outgoing_shortwave_flux  W m-2,      101.9
+toa_outgoing_shortwave_flux_assuming_clear_sky  W m-2,        NaN
+                        total_sw_cloud_forcing  W m-2,        NaN
+     surface_downwelling_shortwave_flux_in_air  W m-2,      184.0
+           surface_net_downward_shortwave_flux  W m-2,      161.0
+                   upward_sw_reflected_surface  W m-2,       23.0
+                           sw_reflected_clouds  W m-2,       79.0
+                               sw_absorbed_atm  W m-2,       78.0
+                    toa_outgoing_longwave_flux  W m-2,      239.0
+ toa_outgoing_longwave_flux_assuming_clear_sky  W m-2,        NaN
+                        total_lw_cloud_forcing  W m-2,        NaN
+      surface_downwelling_longwave_flux_in_air  W m-2,      333.0
+            surface_net_downward_longwave_flux  W m-2,      -63.0
+                     upward_lw_emitted_surface  W m-2,      396.0
+                         net_surface_radiation  W m-2,       98.0
+             surface_upward_sensible_heat_flux  W m-2,       17.0
+               surface_upward_latent_heat_flux  W m-2,       80.0
+                    radiation_adsorbed_surface  W m-2,        1.0

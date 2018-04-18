@@ -1,0 +1,38 @@
+PMSL DJF,PMSL djf (v hadslp2),global
+PMSL MAM,PMSL mam (v hadslp2),global
+PMSL JJA,PMSL jja (v hadslp2),global
+PMSL SON,PMSL son (v hadslp2),global
+Precipitation DJF,Precipitation djf (v gpcp),tropical_land
+Precipitation MAM,Precipitation mam (v gpcp),tropical_land
+Precipitation JJA,Precipitation jja (v gpcp),tropical_land
+Precipitation SON,Precipitation son (v gpcp),tropical_land
+Precipitation DJF,Precipitation djf (v gpcp),tropical_ocean
+Precipitation MAM,Precipitation mam (v gpcp),tropical_ocean
+Precipitation JJA,Precipitation jja (v gpcp),tropical_ocean
+Precipitation SON,Precipitation son (v gpcp),tropical_ocean
+Precipitation DJF,Precipitation djf (v gpcp),north
+Precipitation MAM,Precipitation mam (v gpcp),north
+Precipitation JJA,Precipitation jja (v gpcp),north
+Precipitation SON,Precipitation son (v gpcp),north
+Precipitation DJF,Precipitation djf (v gpcp),south
+Precipitation MAM,Precipitation mam (v gpcp),south
+Precipitation JJA,Precipitation jja (v gpcp),south
+Precipitation SON,Precipitation son (v gpcp),south
+200 hPa horiz wind DJF,200mb winds djf (v era-interim),global
+200 hPa horiz wind JJA,200mb winds jja (v era-interim),global
+850 hPa horiz wind DJF,850mb winds djf (v era-interim),global
+850 hPa horiz wind JJA,850mb winds jja (v era-interim),global
+Z-mean U wind DJF,U wind djf (v era-interim),global
+Z-mean U wind JJA,U wind jja (v era-interim),global
+Z-mean V wind DJF,V wind djf (v era-interim),global
+Z-mean V wind JJA,V wind jja (v era-interim),global
+Z-mean merid streamfunction DJF,Stream function djf (v era-interim),global
+Z-mean merid streamfunction JJA,Stream function jja (v era-interim),global
+Precipitable water DJF,Total column water vapour djf (v ssmi),global
+Precipitable water JJA,Total column water vapour jja (v ssmi),global
+Z-mean relative humidity DJF,Relative humid djf (v era-interim),global
+Z-mean relative humidity JJA,Relative humid jja (v era-interim),global
+Z-mean air temperature DJF,Temperature djf (v era-interim),global
+Z-mean air temperature JJA,Temperature jja (v era-interim),global
+1.5m temperature DJF,1.5m temperature djf (v crutem3),global
+1.5m temperature JJA,1.5m temperature jja (v crutem3),global
