@@ -5,7 +5,7 @@ Running the ESMValTool
 
 The following section gives a brief description of the steps required by a user to run an existing diagnostic. As an example, the toy diagnostic *MyDiag* is chosen to illustrate the basic steps:
 
-1. Check/edit the "namelist configuration file" (e.g., *config_private.xml*) (see Section :numref:`nml_config`). If needed, set/change the base path names for the input data (model and observations) and the output data. Note: the use of a "namelist configuration file" is optional in order to allow for machine specific standard search paths for input (and output) data without having to change the actual namelists. Alternatively, explicit path names can be used in the namelists.
+1. Copy the template for the "namelist configuration file" (*config_private_template.xml*) to *config_private.xml* and adapt the path names within *config_private.xml* to your system structure (see Section :numref:`nml_config`). If needed, set/change the base path names for the input data (model and observations) and the output data. *config_private.xml* is ignored by version control (*.gitignore*) and should be backed up elsewhere for reuse. Note: the use of a "namelist configuration file" is optional in order to allow for machine specific standard search paths for input (and output) data without having to change the actual namelists. Alternatively, explicit path names can be used in the namelists.
 
 2. Check/edit the main namelist *nml/namelist_MyDiag.xml*:
 

@@ -798,6 +798,8 @@ The user can define base path names in a namelist configuration file and refer t
       </pathCollection>
    </settings>
 
+A version-controlled template exists (*config_private_template.xml*). The workflow for setting up a repository is to copy *config_private_template.xml* to *config_private.xml* and then to adapt the path names within *config_private.xml* to the user's system structure. *config_private.xml* is ignored by version control (*.gitignore*) and should be backed up elsewhere for reuse.
+
 Inside the namelist file the configuration file can be included in the following way:
 
 .. code-block:: xml
