@@ -78,8 +78,14 @@ The ESMValTool has the following software requirements (note that specific diagn
    .. code:: bash
 
       conda install gdal
+      
+9) install *iris*
 
-9) update all conda packages
+   .. code :: bash
+   
+      conda install iris
+
+10) update all conda packages
 
    .. code:: bash
 
