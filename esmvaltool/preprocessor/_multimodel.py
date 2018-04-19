@@ -251,7 +251,7 @@ def _assemble_overlap_data(cubes, ovlp, stat_type, filename, time_bounds):
 def _assemble_full_data(cubes, stat_type, filename, time_bounds):
     """Get statistical data in iris cubes for FULL"""
     # all times, new MONTHLY data time axis
-    time_axis = _monthly_t(cubes)
+    time_axis = [float(fl) for fl in _monthly_t(cubes)]
 
     # new big time-slice array shape
     new_shape = [len(time_axis)] + list(cubes[0].shape[1:])
