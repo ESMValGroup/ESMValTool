@@ -9,7 +9,11 @@ Prerequisites
 The ESMValTool has the following software requirements (note that specific diagnostics might require additional software packages):
 
 * Unix(-like) operating system
-* Python version 2.7.x for running the Python script main.py; most diagnostics written in Python require installation of additional Python packages such as, for instance, Geometry Engine (GEOS), scientificpython, netCDF4, cdo, geoval, cartopy, and iris.
+* NCAR Command Language (NCL 2014, http://www.ncl.ucar.edu/) version 6.4 or higher (note: NCL version 6.3 is not supported, see known issues, Part :numref:`known_issues`).
+* Common GNU utilities such as "wc", "date", "basename", and "more", which are usually part of the standard Linux distribution.
+* The statistical computing software R (https://www.r-project.org/) to run diagnostics written in R. A working installation of R and the executable Rscript in the default search path are required. In addition, the netCDF for R libraries (ncdf / ncdf4) are needed. Currently, only the diagnostics "Standardized Precipitation index (SPI)" and "Ozone and associated climate impacts (Eyring13, fig. 6)" (see Part :numref:`annex_c`) require R. More diagnostics written in R might be added in the future.
+* The sea ice diagnostics (and derived diagnostics such as, for instance, the ESA CCI namelist - see Section :numref:`nml_esacci`) require the Climate Data Operators (cdo): https://code.zmaw.de/projects/cdo. The cdo executable has to be in the default search path (callable via the command "cdo").
+* Python version 2.7.x for running the ESMValTool workflow manager main.py; most diagnostics written in Python require installation of additional Python packages such as, for instance, Geometry Engine (GEOS), scientificpython, netCDF4, cdo, geoval, cartopy, and iris.
 
 *The required Python packages can be installed with the following commands:*
 
@@ -82,11 +86,6 @@ The ESMValTool has the following software requirements (note that specific diagn
       conda update --all
 
 .. attention:: It is strongly recommended to use the Python distribution Anaconda (https://www.continuum.io/), as it allows the user to install additional Python libraries and extensions in a simple way and without modifying the installed Python distribution (i.e., without root permissions). The installation instructions for the additional Python packages listed above are given for Anaconda.
-
-* NCAR Command Language (NCL 2014, http://www.ncl.ucar.edu/) version 6.4 or higher (note: NCL version 6.3 is not supported, see known issues, Part :numref:`known_issues`).
-* The statistical computing software R (https://www.r-project.org/) to run diagnostics written in R. A working installation of R and the executable Rscript in the default search path are required. In addition, the netCDF for R libraries (ncdf / ncdf4) are needed. Currently, only the diagnostics "Standardized Precipitation index (SPI)" and "Ozone and associated climate impacts (Eyring13, fig. 6)" (see Part :numref:`annex_c`) require R. More diagnostics written in R might be added in the future.
-* The sea ice diagnostics (and derived diagnostics such as, for instance, the ESA CCI namelist - see Section :numref:`nml_esacci`) require the Climate Data Operators (cdo): https://code.zmaw.de/projects/cdo. The cdo executable has to be in the default search path (callable via the command "cdo").
-* Common GNU utilities such as "wc", "date", "basename", and "more", which are usually part of the standard Linux distribution.
 
 Obtaining the source code
 =========================
