@@ -735,7 +735,7 @@ def calc_merra(run):
     # Load data
     # VPREDOI this is a hack: I replaced MERRA with ERA-Interim data
     # which has only Air_Temperature; need to find MERRA file
-    merrafile = os.path.join(run['clim_root'], 'MERRA', 'merra_tropical_area_avg.nc')
+    merrafile = os.path.join(run['clim_root'], 'merra_tropical_area_avg.nc')
     (t,q)=iris.load_cubes(merrafile, ['air_temperature', 'air_temperature'])
     # Strip out required times
     time = iris.Constraint(time=lambda cell: run['from_monthly']
@@ -756,7 +756,7 @@ def calc_merra(run):
 
 def calc_erai(run):
     # Load data
-    eraidir = os.path.join(run['clim_root'], 'ERA-Interim')
+    eraidir = run['clim_root']
     t = iris.load_cube(os.path.join(eraidir, 'erai_t100_tropical_area_avg.nc'))
     q = iris.load_cube(os.path.join(eraidir, 'erai_q70_tropical_area_avg.nc'))
     # Strip out required times

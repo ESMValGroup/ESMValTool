@@ -63,7 +63,16 @@ def main():
     args['--suite-id2'] = cfg['suite2']
     args['--start-date'] = cfg['start']
     args['--end-date'] = cfg['end']
-    args['--obs-dir'] = cfg['obs_data_dir']
+    # this makes use of the ESMValTool data dir structure
+    # and is guarantted to have the correct obs data there
+    args['--obs-dir'] = os.path.dirname(files_list[0])
+    ##################################################################################
+    # FIXME remove this after serializing data:
+    # these files need to be conglomerates of different variable files
+    # they need to be identified by original filename and constructed here
+    os.system('cp data/MERRA/merra_tropical_area_avg.nc ' + os.path.dirname(files_list[0]))
+    os.system('cp data/ERA-Interim/*nc* ' + os.path.dirname(files_list[0]))
+    ##################################################################################
     args['--out-dir'] = cfg['plot_dir']
     args['--data-dir'] = cfg['work_dir']
     args['--tmp-dir'] = tmp_dir

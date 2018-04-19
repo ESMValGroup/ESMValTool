@@ -36,4 +36,3 @@ diagnostics:
         suite2: u-ab123                                                                          # test suite
         start: 1982/12/01                                                                        # start data in autoassess format
         end: 2002/12/01                                                                          # end date in autoassess format
-        obs_data_dir: /group_workspaces/jasmin/ncas_cms/valeriu/autoassess_stratosphere/data     # location of obs files
