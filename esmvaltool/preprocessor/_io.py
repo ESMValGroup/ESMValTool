@@ -2,13 +2,25 @@
 import logging
 import os
 import shutil
+from itertools import groupby
 
 import iris
+import yaml
+
+from ..task import write_ncl_settings
 
 iris.FUTURE.netcdf_promote = True
 iris.FUTURE.netcdf_no_unlimited = True
 
 logger = logging.getLogger(__name__)
+
+MODEL_KEYS = {
+    'mip',
+}
+VARIABLE_KEYS = {
+    'reference_model',
+    'alternative_model',
+}
 
 
 def _get_attr_from_field_coord(ncfield, coord_name, attr):
@@ -35,15 +47,18 @@ def concatenate_callback(raw_cube, field, _):
                 coord.units = units
 
 
-def load_cubes(files, filename, constraints=None, callback=None):
+def load_cubes(files, filename, metadata, constraints=None, callback=None):
     """Load iris cubes from files"""
     logger.debug("Loading:\n%s", "\n".join(files))
     cubes = iris.load_raw(files, constraints=constraints, callback=callback)
     iris.util.unify_time_units(cubes)
     if not cubes:
         raise Exception('Can not load cubes from {0}'.format(files))
+
     for cube in cubes:
         cube.attributes['_filename'] = filename
+        cube.attributes['metadata'] = yaml.safe_dump(metadata)
+
     return cubes
 
 
@@ -109,3 +124,61 @@ def cleanup(files, remove=None):
             os.remove(path)
 
     return files
+
+
+def extract_metadata(files, write_ncl=False):
+    """Extract the metadata attribute from cubes and write to file."""
+    output_files = []
+    for output_dir, filenames in groupby(files, os.path.dirname):
+        metadata = {}
+        for filename in filenames:
+            cube = iris.load_cube(filename)
+            raw_cube_metadata = cube.attributes.get('metadata')
+            if raw_cube_metadata:
+                cube_metadata = yaml.safe_load(raw_cube_metadata)
+                metadata[filename] = cube_metadata
+
+        output_filename = os.path.join(output_dir, 'metadata.yml')
+        output_files.append(output_filename)
+        with open(output_filename, 'w') as file:
+            yaml.safe_dump(metadata, file)
+        if write_ncl:
+            output_files.append(_write_ncl_metadata(output_dir, metadata))
+
+    return output_files
+
+
+def _write_ncl_metadata(output_dir, metadata):
+    """Write NCL metadata files to output_dir"""
+    variables = list(metadata.values())
+    # 'variables' is a list of dicts, but NCL does not support nested
+    # dicts, so convert to dict of lists.
+    keys = sorted({k for v in variables for k in v})
+    input_file_info = {k: [v.get(k) for v in variables] for k in keys}
+    info = {
+        'input_file_info': input_file_info,
+        'model_info': {},
+        'variable_info': {}
+    }
+
+    # Split input_file_info into model and variable properties
+    # model keys and keys with non-identical values will be stored
+    # in model_info, the rest in variable_info
+    for key, values in input_file_info.items():
+        model_specific = any(values[0] != v for v in values)
+        if (model_specific or key in MODEL_KEYS) and key not in VARIABLE_KEYS:
+            info['model_info'][key] = values
+        else:
+            # Select a value that is filled
+            attribute_value = None
+            for value in values:
+                if value is not None:
+                    attribute_value = value
+                    break
+            info['variable_info'][key] = attribute_value
+
+    short_name = info['variable_info']['short_name']
+    filename = os.path.join(output_dir, short_name + '_info.ncl')
+    write_ncl_settings(info, filename)
+
+    return filename
