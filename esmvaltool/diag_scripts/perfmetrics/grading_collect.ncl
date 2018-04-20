@@ -151,11 +151,12 @@ begin
         delete(data_all@reference)
     end if
 
-    ;; Sort models in alphabetical order (exclude MMM)
+    ;; Sort models in alphabetical order, excluding multi-model 
+    ;; mean/median which are placed at the beginning
     if (isatt(diag_script_info, "sort")) then
         if (diag_script_info@sort) then
-            idx = ind(data_all&models.eq."multi-model-median" .or. \
-                      data_all&models.eq."multi-model-mean")
+            idx = ind(data_all&models.eq."MultiModelMean" .or. \
+                      data_all&models.eq."MultiModelMedian")
             pid = sort_alphabetically(data_all&models, idx, "begin")
             if (dimsizes(dimsizes(data_all)).eq.3) then
                 data_all := data_all(:, pid, :)

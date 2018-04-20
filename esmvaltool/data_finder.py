@@ -203,9 +203,10 @@ def get_output_file(variable, preproc_dir):
     """Return the full path to the output (preprocessed) file"""
     cfg = get_project_config(variable['project'])
 
-    outfile = os.path.join(preproc_dir,
-                           '{preprocessor}_{diagnostic}'.format(**variable),
-                           replace_tags(cfg['output_file'], variable) + '.nc')
+    outfile = os.path.join(
+        preproc_dir,
+        '{diagnostic}_{preprocessor}_{short_name}'.format(**variable),
+        replace_tags(cfg['output_file'], variable) + '.nc')
 
     return outfile
 
@@ -217,7 +218,7 @@ def get_statistic_output_file(variable, statistic, preproc_dir):
 
     template = os.path.join(
         preproc_dir,
-        '{preprocessor}_{diagnostic}',
+        '{diagnostic}_{preprocessor}_{short_name}',
         'MultiModel{stat}_{field}_{short_name}_{start_year}-{end_year}.nc',
     )
 
