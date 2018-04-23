@@ -147,8 +147,10 @@ def parse_args(args):
     assert re.match(regex, args.area), regex + ' does not match ' + str(args.area)
 
     regex = '^[a-z0-9-]+$'
-    assert re.match(regex, args.suite_id1), regex + ' does not match ' + str(args.suite_id1)
-    assert re.match(regex, args.suite_id2), regex + ' does not match ' + str(args.suite_id2)
+    # VPREDOI::FIXME
+    # remove these so regex assertions that we can use model names instead
+    # assert re.match(regex, args.suite_id1), regex + ' does not match ' + str(args.suite_id1)
+    # assert re.match(regex, args.suite_id2), regex + ' does not match ' + str(args.suite_id2)
 
     # at least two years
     year, month, day = map(int, args.start_date.split('/'))

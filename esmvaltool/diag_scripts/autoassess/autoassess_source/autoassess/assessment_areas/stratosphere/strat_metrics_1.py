@@ -1,5 +1,5 @@
 '''
-Stratospheric assessment code
+Stratospheric assessment code; ESMValTool-autoassess version
 '''
 import os
 
@@ -72,7 +72,9 @@ def plot_zmean(cube, levels, title, log=False, ax1=None):
         ax1 = plt.gca()
     ax1.set_title(title)
     cf1 = iplt.contourf(cube, levels=levels, cmap=colormap, norm=normalisation)
-    add_contour_lines(cube, cf1.levels, skiplabel=2)
+    # VPREDOI::FIXME
+    # some problems with levels in py3
+    # add_contour_lines(cube, cf1.levels, skiplabel=2)
     ax1.set_xlabel('Latitude', fontsize='small')
     ax1.set_xlim(-90, 90)
     ax1.set_xticks([-90, -60, -30, 0, 30, 60, 90])
@@ -94,16 +96,17 @@ def plot_timehgt(cube, levels, title, log=False, ax1=None):
         ax1 = plt.gca()
     ax1.set_title(title)
     cf1 = iplt.contourf(cube, levels=levels, cmap=colormap, norm=normalisation)
-    add_contour_lines(cube, cf1.levels, skipline=2)
+    # VPREDOI::FIXME
+    # problem in py3 with levels
+    # add_contour_lines(cube, cf1.levels, skipline=2)
     # Convert the time unit to time_coord.points[0], i.e 2012-09-14 04:05:00
     ax1.set_xlabel('Year', fontsize='small')
     time_coord = cube.coord('time')
     new_epoch = time_coord.points[0]
     new_unit_str = 'hours since {}'
     new_unit = new_unit_str.format(time_coord.units.num2date(new_epoch))
-    # VPREDOI
-    # there is something dodgy going on here
-    # it's complaining year is out of range
+    # VPREDOI::FIXME
+    # when number of years =< 2 it fails
     ax1.xaxis.axis_date()
     ax1.xaxis.set_label(new_unit)
     ax1.xaxis.set_major_locator(mdates.YearLocator(4))
@@ -119,7 +122,7 @@ def plot_uwind(cube, month, filename):
     '''
     Routine to plot zonal mean zonal wind on log pressure scale
     '''
-    levels = np.arange(-70, 51, 10)
+    levels = np.arange(-120, 121, 10)
     title = 'Zonal mean zonal wind ({})'.format(month)
     fig = plt.figure()
     plot_zmean(cube, levels, title, log=True)
@@ -131,7 +134,7 @@ def plot_temp(cube, season, filename):
     '''
     Routine to plot zonal mean temperature on log pressure scale
     '''
-    levels = np.arange(220, 271, 10)
+    levels = np.arange(160, 321, 10)
     title = 'Temperature ({})'.format(season)
     fig = plt.figure()
     plot_zmean(cube, levels, title, log=True)
@@ -143,7 +146,7 @@ def plot_qbo(cube, filename):
     '''
     Routine to create time-height plot of 5S-5N mean zonal mean U
     '''
-    levels = np.arange(-40, 61, 10)
+    levels = np.arange(-80, 81, 10)
     title = 'QBO'
     fig = plt.figure(figsize=(12, 6))
     plot_timehgt(cube, levels, title, log=True)
@@ -536,8 +539,8 @@ def mainfunc(run):
     # coordinate in line with how a zonal mean would be described.
     # Is there a better way of doing this?
     ucube = ucube.collapsed('longitude', iris.analysis.MEAN)
-    # ESMValTool files already have bounds and months
-    # ucube.coord('latitude').guess_bounds()
+    if not ucube.coord('latitude').has_bounds():
+        ucube.coord('latitude').guess_bounds()
     # icc.add_month_number(ucube, 'time', name='month_number')
 
     # Read zonal mean T (lbproc=192) and add clim month and season to metadata
@@ -549,8 +552,8 @@ def mainfunc(run):
     # coordinate in line with how a zonal mean would be described.
     # Is there a better way of doing this?
     tcube = tcube.collapsed('longitude', iris.analysis.MEAN)
-    # ESMValTool files already have bounds and months
-    # tcube.coord('latitude').guess_bounds()
+    if not tcube.coord('latitude').has_bounds():
+        tcube.coord('latitude').guess_bounds()
     icc.add_month(tcube, 'time', name='month')
     icc.add_season(tcube, 'time', name='clim_season')
 
@@ -563,8 +566,8 @@ def mainfunc(run):
     # coordinate in line with how a zonal mean would be described.
     # Is there a better way of doing this?
     qcube = qcube.collapsed('longitude', iris.analysis.MEAN)
-    # ESMValTool files already have bounds and months
-    # qcube.coord('latitude').guess_bounds()
+    if not qcube.coord('latitude').has_bounds():
+        qcube.coord('latitude').guess_bounds()
     icc.add_month(qcube, 'time', name='month')
     icc.add_season(qcube, 'time', name='clim_season')
 
@@ -733,10 +736,10 @@ def multi_teq_plot(runs):
 
 def calc_merra(run):
     # Load data
-    # VPREDOI this is a hack: I replaced MERRA with ERA-Interim data
-    # which has only Air_Temperature; need to find MERRA file
-    merrafile = os.path.join(run['clim_root'], 'merra_tropical_area_avg.nc')
-    (t,q)=iris.load_cubes(merrafile, ['air_temperature', 'air_temperature'])
+    # VPREDOI::FIXME
+    # this is a hack: I replaced MERRA with ERA-Interim data (no MERRA data for me)
+    merrafile = os.path.join(run['clim_root'], 'ERA-Interim_tropical_area_avg.nc')
+    (t,q)=iris.load_cubes(merrafile, ['air_temperature', 'specific_humidity'])
     # Strip out required times
     time = iris.Constraint(time=lambda cell: run['from_monthly']
                                              <= cell.point <=
@@ -757,8 +760,8 @@ def calc_merra(run):
 def calc_erai(run):
     # Load data
     eraidir = run['clim_root']
-    t = iris.load_cube(os.path.join(eraidir, 'erai_t100_tropical_area_avg.nc'))
-    q = iris.load_cube(os.path.join(eraidir, 'erai_q70_tropical_area_avg.nc'))
+    eraifile = os.path.join(run['clim_root'], 'ERA-Interim_tropical_area_avg.nc')
+    (t,q)=iris.load_cubes(eraifile, ['air_temperature', 'specific_humidity'])
     # Strip out required times
     time = iris.Constraint(time=lambda cell: run['from_monthly']
                                              <= cell.point <=

@@ -1,4 +1,4 @@
-"""Python example diagnostic."""
+"""autoassess stratosphere diagnostic."""
 import logging
 import inspect, os
 import sys
@@ -35,44 +35,60 @@ def main():
     input_files = get_input_files(cfg)
     os.makedirs(cfg['plot_dir'])
     os.makedirs(cfg['work_dir'])
-    suite_loc = os.path.join(cfg['work_dir'], 'u-ab123')
-    os.makedirs(suite_loc)
-    suite_data = os.path.join(suite_loc, 'stratosphere')
-    os.makedirs(suite_data)
+    suite_loc_m1 = os.path.join(cfg['work_dir'], cfg['model1'])
+    os.makedirs(suite_loc_m1)
+    suite_loc_m2 = os.path.join(cfg['work_dir'], cfg['model2'])
+    os.makedirs(suite_loc_m2)
+    suite_data_m1 = os.path.join(suite_loc_m1, 'stratosphere')
+    os.makedirs(suite_data_m1)
+    suite_data_m2 = os.path.join(suite_loc_m2, 'stratosphere')
+    os.makedirs(suite_data_m2)
     tmp_dir = os.path.join(cfg['work_dir'], 'tmp')
     ancil_dir = os.path.join(cfg['work_dir'], 'ancil')
     os.makedirs(tmp_dir)
     os.makedirs(ancil_dir)
 
-    files_list = []
+    files_list_m1 = []
+    files_list_m2 = []
+    obs_list = []
     for variable_name, filenames in input_files.items():
         logger.info("Processing variable %s", variable_name)
+        # get model data files
         for filename, attributes in filenames.items():
-            files_list.append(filename)
+            if os.path.basename(filename).split('_')[1] == cfg['model1']:
+                files_list_m1.append(filename)
+            elif os.path.basename(filename).split('_')[1] == cfg['model2']:
+                files_list_m2.append(filename)
+        # get obs files
+        for filename, attributes in filenames.items():
+            if os.path.basename(filename).split('_')[0] == 'OBS':
+                obs_list.append(filename)
 
-    cubelist = iris.load(files_list)
+    # load cubelists
+    cubelist_m1 = iris.load(files_list_m1)
+    cubelist_m2 = iris.load(files_list_m2)
 
-    cubes_list_path = os.path.join(suite_data, 'cubeList.nc')
-    iris.save(cubelist, cubes_list_path)
+    # save to congragated files
+    cubes_list_path_m1 = os.path.join(suite_data_m1, 'cubeList.nc')
+    iris.save(cubelist_m1, cubes_list_path_m1)
+    cubes_list_path_m2 = os.path.join(suite_data_m2, 'cubeList.nc')
+    iris.save(cubelist_m2, cubes_list_path_m2)
  
     cwd = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
     command_call = 'python ' + os.path.join(cwd, 'autoassess_source/autoassess/run_area.py')
     args = {}
     args['--area'] = cfg['area']
-    args['--suite-id1'] = cfg['suite1']
-    args['--suite-id2'] = cfg['suite2']
+    args['--suite-id1'] = cfg['model1']
+    args['--suite-id2'] = cfg['model2']
     args['--start-date'] = cfg['start']
     args['--end-date'] = cfg['end']
-    # this makes use of the ESMValTool data dir structure
-    # and is guarantted to have the correct obs data there
-    args['--obs-dir'] = os.path.dirname(files_list[0])
-    ##################################################################################
-    # FIXME remove this after serializing data:
-    # these files need to be conglomerates of different variable files
-    # they need to be identified by original filename and constructed here
-    os.system('cp data/MERRA/merra_tropical_area_avg.nc ' + os.path.dirname(files_list[0]))
-    os.system('cp data/ERA-Interim/*nc* ' + os.path.dirname(files_list[0]))
-    ##################################################################################
+    args['--obs-dir'] = os.path.dirname(files_list_m1[0])
+    if cfg['obs_models'] is not None:
+        group_files = [[ofile for ofile in obs_list if os.path.basename(ofile).split('_')[1] == obs] for obs in cfg['obs_models']]
+        for obs_file_group in group_files:
+            cubes_list_obs = iris.load(obs_file_group)
+            cubes_list_obs_path = os.path.join(os.path.dirname(obs_file_group[0]), os.path.basename(obs_file_group[0]).split('_')[1] + '_tropical_area_avg.nc')
+            iris.save(cubes_list_obs, cubes_list_obs_path)
     args['--out-dir'] = cfg['plot_dir']
     args['--data-dir'] = cfg['work_dir']
     args['--tmp-dir'] = tmp_dir
