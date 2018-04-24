@@ -10,6 +10,8 @@ import yaml
 
 logger = logging.getLogger(__name__)
 
+# Diagnostic that takes two models (control_model and exp_model
+# and observational data (ERA-Interim and MERRA)
 
 def get_cfg():
     """Read diagnostic script configuration from settings.yml."""
@@ -35,9 +37,9 @@ def main():
     input_files = get_input_files(cfg)
     os.makedirs(cfg['plot_dir'])
     os.makedirs(cfg['work_dir'])
-    suite_loc_m1 = os.path.join(cfg['work_dir'], cfg['model1'])
+    suite_loc_m1 = os.path.join(cfg['work_dir'], cfg['control_model'])
     os.makedirs(suite_loc_m1)
-    suite_loc_m2 = os.path.join(cfg['work_dir'], cfg['model2'])
+    suite_loc_m2 = os.path.join(cfg['work_dir'], cfg['exp_model'])
     os.makedirs(suite_loc_m2)
     suite_data_m1 = os.path.join(suite_loc_m1, 'stratosphere')
     os.makedirs(suite_data_m1)
@@ -55,9 +57,9 @@ def main():
         logger.info("Processing variable %s", variable_name)
         # get model data files
         for filename, attributes in filenames.items():
-            if os.path.basename(filename).split('_')[1] == cfg['model1']:
+            if os.path.basename(filename).split('_')[1] == cfg['control_model']:
                 files_list_m1.append(filename)
-            elif os.path.basename(filename).split('_')[1] == cfg['model2']:
+            elif os.path.basename(filename).split('_')[1] == cfg['exp_model']:
                 files_list_m2.append(filename)
         # get obs files
         for filename, attributes in filenames.items():
@@ -78,8 +80,8 @@ def main():
     command_call = 'python ' + os.path.join(cwd, 'autoassess_source/autoassess/run_area.py')
     args = {}
     args['--area'] = cfg['area']
-    args['--suite-id1'] = cfg['model1']
-    args['--suite-id2'] = cfg['model2']
+    args['--suite-id1'] = cfg['control_model']
+    args['--suite-id2'] = cfg['exp_model']
     args['--start-date'] = cfg['start']
     args['--end-date'] = cfg['end']
     args['--obs-dir'] = os.path.dirname(files_list_m1[0])

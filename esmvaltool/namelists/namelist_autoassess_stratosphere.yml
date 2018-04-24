@@ -39,8 +39,8 @@ diagnostics:
         script: autoassess/autoassess_stratosphere.py
         title: "Autoassess Stratosphere Diagnostic Metric"
         area: Stratosphere
-        model1: MPI-ESM-LR
-        model2: MPI-ESM-MR
+        control_model: MPI-ESM-LR
+        exp_model: MPI-ESM-MR
         obs_models: [ERA-Interim]
         start: 1992/12/01
         end: 2002/12/01
