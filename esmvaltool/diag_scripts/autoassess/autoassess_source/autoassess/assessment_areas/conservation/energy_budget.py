@@ -173,10 +173,10 @@ def atmos_energy_budget(run):
         plt.suptitle(stitl1 + '\n' + stitl2, fontsize='large')
         plt.savefig(expid + '_atmospheric_energy_budget.png')
 
-    except iris.exceptions.ConstraintMismatchError, msg:
-        print msg
-        print "ERROR: Missing data!!!"
-        print "An mdi will be assigned to the energy-conservation metric."
+    except iris.exceptions.ConstraintMismatchError as msg:
+        print(msg)
+        print("ERROR: Missing data!!!")
+        print("An mdi will be assigned to the energy-conservation metric.")
         metrics['atmospheric global energy error'] = mdi
 
     return metrics
@@ -186,7 +186,7 @@ def _remove_forecast_period(cube):
     try:
         cube.remove_coord('forecast_period')
     except iris.exceptions.CoordinateNotFoundError as exc:
-        print exc
+        print(exc)
     return cube
 
 

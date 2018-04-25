@@ -14,7 +14,7 @@ from . import global_water_budget as gwb
 from ..auto_assess_deprecated.loaddata import load_run_ss
 
 import matplotlib.pyplot as plt
-from matplotlib_table import render_mpl_table
+from .matplotlib_table import render_mpl_table
 
 
 def resolution(cube):

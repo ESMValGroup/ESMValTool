@@ -45,8 +45,8 @@ def fluxes_submodel(run, stash_f, f_mult):
         fval[-1] = fval.sum()
 
     except iris.exceptions.ConstraintMismatchError:
-        print "ERROR:  Missing data!!!"
-        print "An MDI will be assigned to all water fluxes of this sub-model"
+        print("ERROR:  Missing data!!!")
+        print("An MDI will be assigned to all water fluxes of this sub-model")
         fval[:] = mdi
 
     return fval
@@ -117,8 +117,8 @@ def fluxes_ocean_submodel(expid, mesh, areas, opath, wfpath, yi, yf):
     if errf:
         fval = np.array([np.mean(pme), np.mean(r), iceberg.data, np.mean(net)])
     else:
-        print "ERROR:  Missing data!!!"
-        print "An MDI value will be assigned to all ocean water fluxes"
+        print("ERROR:  Missing data!!!")
+        print("An MDI value will be assigned to all ocean water fluxes")
         fval = np.array([mdi, mdi, mdi, mdi])
 
     return fval
