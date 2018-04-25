@@ -113,7 +113,8 @@ def save_cubes(cubes, debug=False, step=None):
         paths[filename].append(cube)
 
     for filename in paths:
-        _save_cubes(cubes=paths[filename], target=filename, fill_value=GLOBAL_FILL_VALUE)
+        _save_cubes(cubes=paths[filename], target=filename, 
+                    fill_value=GLOBAL_FILL_VALUE)
 
     return list(paths)
 
