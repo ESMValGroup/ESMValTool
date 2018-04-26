@@ -200,4 +200,5 @@ def _write_ncl_metadata(output_dir, metadata):
 
 
 class ConcatenationError(Exception):
+    """Exception class for concatenation errors"""
     pass
