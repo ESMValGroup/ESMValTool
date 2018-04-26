@@ -336,7 +336,6 @@ def _get_default_settings(variable, config_user, derive=False):
     # Configure merge
     settings['concatenate'] = {}
 
-
     # Configure fixes
     fix = {
         'project': variable['project'],
