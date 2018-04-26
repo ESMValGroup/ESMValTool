@@ -1,11 +1,46 @@
 #### summary 
 #### namelist that runs the Autoassess Stratorsphere assessment area diagnostic
-#### Version: 23 April 2018; mature state
+#### Version: 26 April 2018 
+#################
+#### Description:
+#################
+#The original stratospehre diagnostic from autoassess accepts two input UM suites; this has now been
+#changed for ESMValTool to two models; the namelist can accomodate as many pairs of models to be compared as the 
+#user needs; this is handled in the diagnostics/aa_strato/scripts: while the script is the same
+#(autoassess_stratosphere.py), the (control_model, exp_model) pair may vary accoding to the user's
+#needs. Different (start, end) dates can also be specified (in autoassess format) per run, as long as the
+#time data is within the (start_year, end_year) specified in models: section. Preprocessing is basic and just
+#extracts levels and regrids onto the reference ERA-Interim model; this is done once.
+#################
+#### CAVEATS
+#################
+# - The original autoassess diagnostic needs MERRA obs data as well; not asked for here but it should be implemented
+#at a later stage;
+# - CMIP5 models apart from MPI-ESM models throw an error at autoassess diagnostic level:
+#Traceback (most recent call last):
+#  File "/group_workspaces/jasmin/ncas_cms/valeriu/anaconda2_test/envs/esmvaltool/lib/python3.6/site-packages/ESMValTool-2.0.0-py3.6.egg/esmvaltool/diag_scripts/autoassess/autoassess_source/autoassess/run_area.py", line 295, in <module>
+#      run_area()
+#        File "/group_workspaces/jasmin/ncas_cms/valeriu/anaconda2_test/envs/esmvaltool/lib/python3.6/site-packages/ESMValTool-2.0.0-py3.6.egg/esmvaltool/diag_scripts/autoassess/autoassess_source/autoassess/run_area.py", line 267, in run_area
+#            metrics = metric_function(run_object)
+#              File "/group_workspaces/jasmin/ncas_cms/valeriu/anaconda2_test/envs/esmvaltool/lib/python3.6/site-packages/ESMValTool-2.0.0-py3.6.egg/esmvaltool/diag_scripts/autoassess/autoassess_source/autoassess/assessment_areas/stratosphere/strat_metrics_1.py", line 578, in mainfunc
+#                  qbo_metrics(run, ucube, metrics)
+#                    File "/group_workspaces/jasmin/ncas_cms/valeriu/anaconda2_test/envs/esmvaltool/lib/python3.6/site-packages/ESMValTool-2.0.0-py3.6.egg/esmvaltool/diag_scripts/autoassess/autoassess_source/autoassess/assessment_areas/stratosphere/strat_metrics_1.py", line 339, in qbo_metrics
+#                        (period, amp_west, amp_east) = calc_qbo_index(qbo30)
+#                          File "/group_workspaces/jasmin/ncas_cms/valeriu/anaconda2_test/envs/esmvaltool/lib/python3.6/site-packages/ESMValTool-2.0.0-py3.6.egg/esmvaltool/diag_scripts/autoassess/autoassess_source/autoassess/assessment_areas/stratosphere/strat_metrics_1.py", line 175, in calc_qbo_index
+#                              if (indiciesdown[0] < indiciesup[0]):
+#                              IndexError: list index out of range
+#THIS NEEDS TO BE LOOKED AT BY P.EARNSHAW
+# - there is a problem with levels plotting and hence the isobars and isotemperatures have been
+# removed from plots (fyi P.EARNSHAW)
+# - age of air has not been tested because I dont have age of air var data; the data ingestion
+# should not be a problem since it's done the same as ERA or MERRA
+###########################################################################################################
 ---
 
 models:
   - {model: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
   - {model: MPI-ESM-MR,  project: CMIP5,  mip: Amon,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
+  - {model: inmcm4,      project: CMIP5,  mip: Amon,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
 
 preprocessors:
   pp_aa_area:
@@ -35,12 +70,21 @@ diagnostics:
     additional_models:
       - {model: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 3}
     scripts:
-      autoassess_strato_test: &autoassess_strato_test_settings
+      autoassess_strato_test_1: &autoassess_strato_test_1_settings
         script: autoassess/autoassess_stratosphere.py
-        title: "Autoassess Stratosphere Diagnostic Metric"
+        title: "Autoassess Stratosphere Diagnostic Metric MPI-MPI"
         area: Stratosphere
         control_model: MPI-ESM-LR
         exp_model: MPI-ESM-MR
         obs_models: [ERA-Interim]
-        start: 1992/12/01
+        start: 1997/12/01
+        end: 2002/12/01
+      autoassess_strato_test_2: &autoassess_strato_test_2_settings
+        script: autoassess/autoassess_stratosphere.py
+        title: "Autoassess Stratosphere Diagnostic Metric MPI-INM"
+        area: Stratosphere
+        control_model: MPI-ESM-LR
+        exp_model: inmcm4
+        obs_models: [ERA-Interim]
+        start: 1997/12/01
         end: 2002/12/01

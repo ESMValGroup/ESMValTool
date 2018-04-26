@@ -1,0 +1,46 @@
+#### summary 
+#### namelist that runs the Autoassess Stratorsphere assessment area diagnostic
+#### Version: 23 April 2018; mature state
+---
+
+models:
+  - {model: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
+  - {model: MPI-ESM-MR,  project: CMIP5,  mip: Amon,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
+
+preprocessors:
+  pp_aa_area:
+    extract_levels:
+      levels: [1000., 500., 100., 70., 50., 30., 10.]
+      scheme: nearest
+    #regrid:
+    #  target_grid: ERA-Interim
+    #  scheme: linear
+
+diagnostics:
+  aa_conservation:
+    description: Autoassess test diag for Conservation.
+    variables:
+      ta:
+        preprocessor: pp_aa_area
+        mip: Amon
+        field: T3M
+      ua:
+        preprocessor: pp_aa_area
+        mip: Amon
+        field: T3M
+      hus:
+        preprocessor: pp_aa_area
+        mip: Amon
+        field: T3M
+    additional_models:
+      - {model: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 3}
+    scripts:
+      autoassess_conservation_test:
+        script: autoassess/autoassess_conservation.py
+        title: "Autoassess Conservation Diagnostic Metric"
+        area: Conservation
+        control_model: MPI-ESM-LR
+        exp_model: MPI-ESM-MR
+        obs_models: [ERA-Interim]
+        start: 1992/12/01
+        end: 2002/12/01
