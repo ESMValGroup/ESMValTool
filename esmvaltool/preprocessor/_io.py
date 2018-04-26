@@ -8,14 +8,13 @@ import traceback
 import iris
 import iris.exceptions
 import yaml
+import numpy as np
 
 from ..task import write_ncl_settings
 
-
-iris.FUTURE.netcdf_promote = True
-iris.FUTURE.netcdf_no_unlimited = True
-
 logger = logging.getLogger(__name__)
+
+GLOBAL_FILL_VALUE = 1e+20
 
 MODEL_KEYS = {
     'mip',
@@ -61,6 +60,9 @@ def load_cubes(files, filename, metadata, constraints=None, callback=None):
     for cube in cubes:
         cube.attributes['_filename'] = filename
         cube.attributes['metadata'] = yaml.safe_dump(metadata)
+        # always set fillvalue to 1e+20
+        if np.ma.is_masked(cube.data):
+            np.ma.set_fill_value(cube.data, GLOBAL_FILL_VALUE)
 
     return cubes
 
@@ -119,7 +121,8 @@ def save_cubes(cubes, debug=False, step=None):
         paths[filename].append(cube)
 
     for filename in paths:
-        _save_cubes(cubes=paths[filename], target=filename)
+        _save_cubes(cubes=paths[filename], target=filename,
+                    fill_value=GLOBAL_FILL_VALUE)
 
     return list(paths)
 
