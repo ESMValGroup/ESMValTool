@@ -1,6 +1,4 @@
-"""
-Integration tests for :func:`esmvaltool.preprocessor._io.concatenate`
-"""
+"""Integration tests for :func:`esmvaltool.preprocessor._io.concatenate`"""
 
 from __future__ import absolute_import, division, print_function
 
@@ -13,9 +11,7 @@ from esmvaltool.preprocessor import _io
 
 
 class TestConcatenate(unittest.TestCase):
-    """
-    Integration tests for :func:`esmvaltool.preprocessor._io.concatenate`
-    """
+    """Tests for :func:`esmvaltool.preprocessor._io.concatenate`"""
 
     def setUp(self):
         coord = DimCoord([1, 2], var_name='coord')
@@ -38,7 +34,7 @@ class TestConcatenate(unittest.TestCase):
         with self.assertRaises(_io.ConcatenationError):
             _io.concatenate(self.raw_cubes)
 
-    def test_fail_because_metadata_differs(self):
+    def test_fail_metadata_differs(self):
         """Test exception raised if two cubes have different metadata"""
         self.raw_cubes[0].units = 'm'
         # with self.assertRaises(_io.ConcatenationError):
