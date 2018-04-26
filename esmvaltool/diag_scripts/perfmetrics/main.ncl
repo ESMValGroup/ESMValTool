@@ -586,69 +586,13 @@ begin
         ncdf_dir = config_user_info@work_dir + "/" + \
             diag_script_info@metric + "_" + var0_new + ".nc"
 
-        ;; Start calculation
-;;DELETE        if (fileexists(ncdf_dir)) then
-;;DELETE
-;;DELETE            log_info("No recalculation!")
-;;DELETE            log_info("Reading in file = " + ncdf_dir)
-;;DELETE
-;;DELETE        else
-
-;; TO BE REMOVED ONCE AVAILABLE IN BACKEND+++
-
-        ;; Calculate multi-model mean/median
+        ;; Create separate arrays for models and observations
         if (diag_script_info@metric.eq."taylor") then
             id_remove = ref_ind
         else
             id_remove = ref_inds
         end if
-        models_only = remove_index(var_all, id_remove)
         super_array = var_all
-        if (isatt(diag_script_info, "MultiModelMedian")) then
-            if (diag_script_info@MultiModelMean) then
-                if (irank.eq.3) then
-                    median = models_only(0:0, :, :)
-                    median(0, :, :) = dim_median_n(models_only, 0)
-                end if
-                if (irank.eq.4) then
-                    median = models_only(0:0, :, :, :)
-                    median(0, :, :, :) = dim_median_n(models_only, 0)
-                end if
-                if (irank.eq.5) then
-                    median = models_only(0:0, :, :, :, :)
-                    median(0, :, :, :, :) = dim_median_n(models_only, 0)
-                end if
-                median&model = "multi-model-median"
-                super_array := array_append_record(median, super_array, 0)
-                delete(median)
-                id_remove = id_remove + 1  ; update ref model index
-            end if
-        end if
-
-        if (isatt(diag_script_info, "MultiModelMean")) then  ; FIX-ME
-            if (diag_script_info@MultiModelMean) then
-                if (irank.eq.3) then
-                    mean = models_only(0:0, :, :)
-                    mean(0, :, :) = dim_avg_n(models_only, 0)
-                end if
-                if (irank.eq.4) then
-                    mean = models_only(0:0, :, :, :)
-                    mean(0, :, :, :) = dim_avg_n(models_only, 0)
-                end if
-                if (irank.eq.5) then
-                    mean = models_only(0:0, :, :, :, :)
-                    mean(0, :, :, :, :) = dim_avg_n(models_only, 0)
-                end if
-                mean&model = "multi-model-mean"
-                super_array := array_append_record(mean, super_array, 0)
-                delete(mean)
-                id_remove = id_remove + 1  ; update ref model index
-            end if
-        end if
-        delete(models_only)
-;; TO BE REMOVED ONCE AVAILABLE IN BACKEND---
-
-        ;; Create separate arrays for models and observations
         models_only = remove_index(super_array, id_remove)
         nmodels = dimsizes(models_only&model)
         if (l_altern .and. diag_script_info@metric.ne."taylor") then

@@ -48,6 +48,7 @@ from multiprocessing import cpu_count
 
 from ._config import configure_logging, read_config_user_file
 from .namelist import read_namelist_file
+from .task import resource_usage_logger
 from .version import __version__
 
 # set up logging
@@ -87,12 +88,7 @@ def main(args):
     config_file = os.path.abspath(
         os.path.expandvars(os.path.expanduser(args.config_file)))
 
-    ####################################################
-    # Set up logging before anything else              #
-    ####################################################
-
-    # configure logging
-
+    # Read user config file
     if not os.path.exists(config_file):
         print("ERROR: config file {} does not exist".format(config_file))
 
@@ -105,6 +101,7 @@ def main(args):
               "prevent data loss".format(cfg['output_dir']))
     os.makedirs(cfg['run_dir'])
 
+    # configure logging
     log_files = configure_logging(
         output=cfg['run_dir'], console_log_level=cfg['log_level'])
 
@@ -116,7 +113,9 @@ def main(args):
 
     cfg['synda_download'] = args.synda_download
 
-    process_namelist(namelist_file=namelist_file, config_user=cfg)
+    resource_log = os.path.join(cfg['run_dir'], 'resource_usage.txt')
+    with resource_usage_logger(pid=os.getpid(), filename=resource_log):
+        process_namelist(namelist_file=namelist_file, config_user=cfg)
 
 
 def process_namelist(namelist_file, config_user):

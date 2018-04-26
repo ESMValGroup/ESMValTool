@@ -19,7 +19,10 @@ preprocessors:
       scheme: linear
     mask_fillvalues:
       threshold_fraction: 0.90
-    multi_model_statistics: false
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+      exclude: [NCEP]   
 
   preprocessor_2:
     extract_levels:
@@ -29,7 +32,9 @@ preprocessors:
       target_grid: 1x1
       scheme: nearest
     mask_fillvalues: false
-    multi_model_statistics: false
+    multi_model_statistics:
+      span: full
+      statistics: [median]
 
   preprocessor_3:
     extract_levels:
