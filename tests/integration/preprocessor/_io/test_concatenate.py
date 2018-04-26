@@ -18,17 +18,19 @@ from esmvaltool.preprocessor import _io
 class TestConcatenate(unittest.TestCase):
 
     def setUp(self):
-        coord = DimCoord([1,2], var_name='coord')
+        coord = DimCoord([1, 2], var_name='coord')
+        second_coord = coord.copy([3, 4])
         self.raw_cubes = []
-        self.raw_cubes.append(Cube([1,2], var_name='sample',
+        self.raw_cubes.append(Cube([1, 2], var_name='sample',
                                    dim_coords_and_dims=((coord, 0),)))
         self.raw_cubes.append(Cube([3, 4], var_name='sample',
-                                   dim_coords_and_dims=((coord.copy([3, 4]), 0),)))
+                                   dim_coords_and_dims=((second_coord, 0),)))
 
     def test_easy_concatenate(self):
         concatenated = _io.concatenate(self.raw_cubes)
         self.assertTrue((concatenated.coord('coord').points ==
                          np.array([1, 2, 3, 4])).all())
+
     def test_fail_with_duplicates(self):
         self.raw_cubes.append(self.raw_cubes[0].copy())
         with self.assertRaises(_io.ConcatenationError):
@@ -39,6 +41,3 @@ class TestConcatenate(unittest.TestCase):
         # with self.assertRaises(_io.ConcatenationError):
         #     _io.concatenate(self.raw_cubes)
         _io.concatenate(self.raw_cubes)
-
-
-
