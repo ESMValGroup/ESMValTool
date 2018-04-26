@@ -10,9 +10,6 @@ import numpy as np
 
 from ..task import write_ncl_settings
 
-iris.FUTURE.netcdf_promote = True
-iris.FUTURE.netcdf_no_unlimited = True
-
 logger = logging.getLogger(__name__)
 
 GLOBAL_FILL_VALUE = 1e+20
