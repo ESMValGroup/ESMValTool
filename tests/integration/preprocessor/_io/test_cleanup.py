@@ -5,10 +5,6 @@ from __future__ import absolute_import, division, print_function
 import unittest
 import os
 import tempfile
-import numpy as np
-import iris
-from iris.cube import Cube
-from iris.coords import DimCoord
 
 from esmvaltool.preprocessor import _io
 

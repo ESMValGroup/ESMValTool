@@ -38,7 +38,7 @@ class TestLoad(unittest.TestCase):
 
     def test_load_multiple(self):
         """Test loading one file"""
-        for x in range(2):
+        for num in range(2):
             cube = self._create_sample_cube()
             self._save_cube(cube)
 
@@ -58,13 +58,13 @@ class TestLoad(unittest.TestCase):
                 cube.attributes[attr] = attr
             self._save_cube(cube)
 
-        list = _io.load_cubes(self.temp_files, 'filename', None,
-                              callback=_io.concatenate_callback)
-        cube = list[0]
+        cubes = _io.load_cubes(self.temp_files, 'filename', None,
+                               callback=_io.concatenate_callback)
+        cube = cubes[0]
         self.assertTrue((cube.data == np.array([1, 2])).all())
         self.assertTrue((cube.coord('latitude').points ==
                          np.array([1, 2])).all())
-        self.assertEquals(cube.attributes['_filename'], 'filename')
+        self.assertEqual(cube.attributes['_filename'], 'filename')
         for attr in attributtes:
             self.assertTrue(attr not in cube.attributes)
 

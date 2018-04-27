@@ -63,4 +63,4 @@ class TestSave(unittest.TestCase):
         cube = self._create_sample_cube()
         del cube.attributes['_filename']
         with self.assertRaises(ValueError):
-            paths = _io.save_cubes([cube])
+            _io.save_cubes([cube])
