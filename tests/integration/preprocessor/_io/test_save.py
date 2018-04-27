@@ -41,7 +41,7 @@ class TestSave(unittest.TestCase):
         return cube
 
     def test_save(self):
-        """Test loading one file"""
+        """Test save"""
         cube = self._create_sample_cube()
         paths = _io.save_cubes([cube])
         loaded_cube = iris.load_cube(paths[0])
@@ -50,7 +50,7 @@ class TestSave(unittest.TestCase):
                          loaded_cube.coord('latitude').points).all())
 
     def test_save_debug(self):
-        """Test loading one file"""
+        """Test save on debug mode"""
         cube = self._create_sample_cube()
         paths = _io.save_cubes([cube], debug=True)
         loaded_cube = iris.load_cube(paths[0])
@@ -59,7 +59,7 @@ class TestSave(unittest.TestCase):
                          loaded_cube.coord('latitude').points).all())
 
     def test_fail_without_filename(self):
-        """Test loading one file"""
+        """Test save fails if _filename is not added"""
         cube = self._create_sample_cube()
         del cube.attributes['_filename']
         with self.assertRaises(ValueError):

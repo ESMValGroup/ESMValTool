@@ -27,11 +27,13 @@ class TestCleanup(unittest.TestCase):
                 os.rmdir(path)
 
     def test_cleanup(self):
+        """Test cleanup"""
         _io.cleanup([], self.temp_paths)
         for path in self.temp_paths:
             self.assertFalse(os.path.exists(path))
 
     def test_cleanup_when_files_removed(self):
+        """Test cleanup works even with missing files or folders"""
         self.tearDown()
         _io.cleanup([], self.temp_paths)
         for path in self.temp_paths:

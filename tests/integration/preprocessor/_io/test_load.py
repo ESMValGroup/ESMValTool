@@ -37,7 +37,7 @@ class TestLoad(unittest.TestCase):
         self.temp_files.append(temp_file)
 
     def test_load_multiple(self):
-        """Test loading one file"""
+        """Test loading multiple files"""
         for num in range(2):
             cube = self._create_sample_cube()
             self._save_cube(cube)
@@ -50,7 +50,7 @@ class TestLoad(unittest.TestCase):
         self.assertEquals(cube.attributes['_filename'], 'filename')
 
     def test_callback_remove_attributtes(self):
-        """Test loading one file"""
+        """Test callback remove unwanted attributes"""
         attributtes = ('history', 'creation_date', 'tracking_id')
         for x in range(2):
             cube = self._create_sample_cube()
@@ -69,7 +69,7 @@ class TestLoad(unittest.TestCase):
             self.assertTrue(attr not in cube.attributes)
 
     def test_callback_fix_lat_units(self):
-        """Test loading one file"""
+        """Test callback for fixing units"""
         cube = self._create_sample_cube()
         self._save_cube(cube)
 
