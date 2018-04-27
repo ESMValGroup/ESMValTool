@@ -37,6 +37,5 @@ class TestConcatenate(unittest.TestCase):
     def test_fail_metadata_differs(self):
         """Test exception raised if two cubes have different metadata"""
         self.raw_cubes[0].units = 'm'
-        # with self.assertRaises(_io.ConcatenationError):
-        #     _io.concatenate(self.raw_cubes)
-        _io.concatenate(self.raw_cubes)
+        with self.assertRaises(_io.ConcatenationError):
+            _io.concatenate(self.raw_cubes)
