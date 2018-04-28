@@ -534,8 +534,6 @@ diagnostics:
       - {model: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 3}
       - {model: NCEP,         project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 2}
     scripts:
-      cycle:
-        <<: *cycle_settings
       grading:
         <<: *grading_settings
 
@@ -602,8 +600,6 @@ diagnostics:
       - {model: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 3}
       - {model: NCEP,         project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 2}
     scripts:
-      cycle:
-        <<: *cycle_settings
       grading:
         <<: *grading_settings
 
