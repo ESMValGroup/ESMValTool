@@ -1,0 +1,35 @@
+###############################################################################
+# User's configuration file for the ESMValTool
+###############################################################################
+---
+
+# Diagnostics create plots? [true]/false
+write_plots: true
+# Diagnositcs write NetCDF files? [true]/false
+write_netcdf: true
+# Set the console log level debug, [info], warning, error
+log_level: info
+# verbosity is deprecated and will be removed in the future
+# verbosity: 1
+# Exit on warning? true/[false]
+exit_on_warning: false
+# Plot file format? [ps]/pdf/png/eps/epsi
+output_file_type: pdf
+# Destination directory
+output_dir: ./PREPROCESSOR
+# Save intermediary cubes in the preprocessor true/[false]
+save_intermediary_cubes: true
+#max_parallel_tasks: 4
+
+rootpath:
+  # Rootpath to CMIP5 data
+  CMIP5: /home/users/valeriu/ESMValTool_KIT
+  # Rootpath to OBS data
+  OBS: /home/users/valeriu/ESMValTool_KIT
+  # Default
+  default: /home/users/valeriu/ESMValTool_KIT
+
+# Directory structure for input data: [default]/BADC/DKRZ/ETHZ/etc
+# See config-developer.yml for definitions.
+drs:
+  CMIP5: default
