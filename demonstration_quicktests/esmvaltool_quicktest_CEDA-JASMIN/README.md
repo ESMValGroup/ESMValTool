@@ -1,5 +1,20 @@
 EXPLAINING THE QUICK TEST
 ==========================
+This file will tell you how to run a very quick test of ESMValTool on the CEDA-Jasmin cluster;
+you don't need to install ESMValTool nor do you need to get any data, all these are done for you
+automatically. Just get the
+
+...
+run_esmvaltool_test.sh
+...
+
+runner and source it from wherver you are on Jasmin. Follow the on-screen messages and when it's done,
+come back here and read the explanations below. You should have a fair understanding of ESMValTool after this.
+When you feel brave enough check out the documentation pages at:
+
+http://esmvaltool.readthedocs.io/en/refactoring_backend/
+
+Have fun!
 
 1. Explaining config and namelist files
 ========================================
