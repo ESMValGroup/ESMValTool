@@ -8,8 +8,11 @@ automatically. Just get the
 run_esmvaltool_test.sh
 ```
 
-runner and source it from wherver you are on Jasmin. Follow the on-screen messages and when it's done,
-come back here and read the explanations below. You should have a fair understanding of ESMValTool after this.
+runner and source it from wherver you are on Jasmin.
+
+You can either get it from the git repo or from ```/home/users/valeriu``` on Jasmin.
+Follow the on-screen messages and when it's done, come back here and read the explanations below.
+You should have a fair understanding of ESMValTool after this.
 When you feel brave enough check out the documentation pages at:
 
 [ESMValTool documentation for v2](http://esmvaltool.readthedocs.io/en/refactoring_backend/)
