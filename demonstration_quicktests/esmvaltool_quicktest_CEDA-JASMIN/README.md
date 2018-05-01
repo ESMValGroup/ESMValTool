@@ -12,7 +12,7 @@ runner and source it from wherver you are on Jasmin. Follow the on-screen messag
 come back here and read the explanations below. You should have a fair understanding of ESMValTool after this.
 When you feel brave enough check out the documentation pages at:
 
-http://esmvaltool.readthedocs.io/en/refactoring_backend/
+[ESMValTool documentation for v2](http://esmvaltool.readthedocs.io/en/refactoring_backend/)
 
 Have fun!
 
