@@ -16,8 +16,8 @@ When you feel brave enough check out the documentation pages at:
 
 Have fun!
 
-1. Explaining config and namelist files
-----------------------------------------
+**1. Explaining config and namelist files**
+-------------------------------------------
 
 Get into the directory that you ran esmvaltool and have a first look:
 (in my case the dates are different than yours, esmvaltool creates the subdirs based on timestamps so 
@@ -139,7 +139,7 @@ drwxr-sr-x 3 valeriu gws_ncas_cms 4096 May  1 12:18 work -- where the diagnostic
 
 Let's have a walk around these subdirectories! We start with ```/preproc```:
 
-2. The ```/preproc``` directory and "preprocessing" concept
+**2. The preproc directory and "preprocessing" concept**
 ------------------------------------------------------------
 
 The preproc directory contains the files that result from running the Preprocessor module. To better understand the contents of
@@ -229,8 +229,8 @@ Once all these preprocessing steps are completed succesfully, the diagnostic can
 
 Note that ALL files are there, both from CMIP simulations and OBS data; each of these will have contained the data processed according to the preprocessor steps and after all its steps have been applied ie if the last preprocessor setting was mask_fillvalues, the file e.g. ```PREPROCESSOR/namelist_20180501_111616/preproc/ta850_pp850_ta/CMIP5_MPI-ESM-MR_Amon_historical_r1i1p1_T3M_ta_2000-2002.nc``` contains ```MPI-ESM-MR``` data that has been raw loaded, metadata fixed, concatenated for time completion, time gated between 2000 and 2002 (inclusive of these years, so 3 years worth of data), ..., masked for missing values of variable ta, atmospheric montly MIP, historical experiment. This file together with the others obtained in the same manner is now ready to be passed to the diagnostic:
 
-3. Diagnostic and its settings
--------------------------------
+**3. Diagnostic and its settings**
+----------------------------------
 
 You can see the diagnostic settings in the namelist.yml:
 
@@ -263,7 +263,7 @@ diagnostics:
 
 "scripts" contains the names and directives and parameters for the diagnostic scripts: here we are running perfmetrics/main.ncl NCL diagnostic script, that wants to know what plot type, what temporal averaging, region etc. are needed.
 
-4. The diagnostic output
--------------------------
+**4. The diagnostic output**
+----------------------------
 
 The single plot this diagnostic outputs is in: ```PREPROCESSOR/namelist_20180501_111616/plots/ta850/cycle/``` and it's really basic -- the montly global mean of temperatures with OBS models as reference. Quite a bit of hoolabaloo for just such a plot :)
