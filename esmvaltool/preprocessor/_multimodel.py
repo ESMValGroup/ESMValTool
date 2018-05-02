@@ -151,7 +151,10 @@ def _put_in_cube(template_cube, cube_data, stat_name,
 
 def _datetime_to_int_days(cube):
     """Return list of int(days) converted from cube datetime cells"""
-    time_cells = [cube.coord('time').units.num2date(cell.point) for cell in cube.coord('time').cells()]
+    # FIXME replace the block when using iris 2.0
+    #time_cells = [cell.point for cell in cube.coord('time').cells()]
+    time_cells = [cube.coord('time').units.num2date(cell.point)
+                  for cell in cube.coord('time').cells()]
     time_unit = cube.coord('time').units.name
     time_offset = _get_time_offset(time_unit)
 
