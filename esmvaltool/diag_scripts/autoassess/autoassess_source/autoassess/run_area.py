@@ -20,7 +20,7 @@ from pprint import pprint
 import re
 import sys
 import tempfile
-from autoassess import create_dir
+from __init__ import create_dir
 
 # use Agg backend for non-interactive runs; this is propagated to all functions
 # called from this module
