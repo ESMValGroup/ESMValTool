@@ -59,8 +59,8 @@ def load_cubes(files, filename, metadata, constraints=None, callback=None):
         cube.attributes['_filename'] = filename
         cube.attributes['metadata'] = yaml.safe_dump(metadata)
         # always set fillvalue to 1e+20
-        if np.ma.is_masked(cube.data):
-            np.ma.set_fill_value(cube.data, GLOBAL_FILL_VALUE)
+        #if np.ma.is_masked(cube.data):
+        #    np.ma.set_fill_value(cube.data, GLOBAL_FILL_VALUE)
 
     return cubes
 
@@ -110,8 +110,7 @@ def save_cubes(cubes, debug=False, step=None):
         paths[filename].append(cube)
 
     for filename in paths:
-        _save_cubes(cubes=paths[filename], target=filename, 
-                    fill_value=GLOBAL_FILL_VALUE)
+        _save_cubes(cubes=paths[filename], target=filename)
 
     return list(paths)
 
