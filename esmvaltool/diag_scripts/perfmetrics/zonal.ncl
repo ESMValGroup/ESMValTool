@@ -80,7 +80,7 @@ begin
 
         ;; Absolute plot
         outfile = config_user_info@plot_dir + modelnames(imod) + "_" + var0 + \
-            "_zonal_" + diag_script_info@time_avg + "_Global"
+            "_zonal_" + diag_script_info@time_avg + "_Glob"
         plot_var = var_all(:, :, 0)
         plot_var@res_tiMainString = modelnames(imod)
         plot_var@res_cnLevelSelectionMode = "ExplicitLevels"
@@ -105,7 +105,7 @@ begin
         plot_var = var_all(:, :, 0) - var_ref(:, :, 0)
         outfile = config_user_info@plot_dir + modelnames(imod) + "-" + \
             modelnames(ref_ind) + "_" + var0 + "_zonal_" + \
-            diag_script_info@time_avg + "_Global"
+            diag_script_info@time_avg + "_Glob"
         plot_var@res_tiMainString = \
             modelnames(imod) + " - " + modelnames(ref_ind)
         if (isatt(diag_script_info, "t_test")) then
