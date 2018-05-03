@@ -12,9 +12,6 @@ import numpy as np
 
 from .table import CMOR_TABLES
 
-iris.FUTURE.cell_datetime_objects = True
-iris.FUTURE.netcdf_promote = True
-
 
 class CMORCheckError(Exception):
     """Exception raised when a cube does not pass the CMORCheck"""

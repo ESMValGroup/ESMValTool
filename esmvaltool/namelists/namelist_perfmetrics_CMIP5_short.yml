@@ -41,6 +41,7 @@ preprocessors:
     multi_model_statistics:
       span: overlap
       statistics: [mean, median]
+      #exclude: [GFDL-ESM2G, reference_model, NCEP]
 
   ppNOLEV:
     regrid:
@@ -64,6 +65,7 @@ preprocessors:
     multi_model_statistics:
       span: overlap
       statistics: [mean, median]
+      #exclude: [GFDL-ESM2G, reference_model, NCEP]
 
 diagnostics:
   ta850:

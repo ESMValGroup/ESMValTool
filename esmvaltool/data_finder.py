@@ -181,9 +181,11 @@ def get_input_filelist(variable, rootpath, drs):
         part1, part2 = dirname_template.split('[latestversion]')
         part2 = part2.lstrip(os.sep)
         list_versions = os.listdir(part1)
-        list_versions.sort()
-        latest = os.path.basename(list_versions[-1])
-        dirname = os.path.join(part1, latest, part2)
+        list_versions.sort(reverse=True)
+        for version in list_versions:
+            dirname = os.path.join(part1, version, part2)
+            if os.path.isdir(dirname):
+                break
     else:
         dirname = dirname_template
 
@@ -203,9 +205,10 @@ def get_output_file(variable, preproc_dir):
     """Return the full path to the output (preprocessed) file"""
     cfg = get_project_config(variable['project'])
 
-    outfile = os.path.join(preproc_dir,
-                           '{preprocessor}_{diagnostic}'.format(**variable),
-                           replace_tags(cfg['output_file'], variable) + '.nc')
+    outfile = os.path.join(
+        preproc_dir,
+        '{diagnostic}_{preprocessor}_{short_name}'.format(**variable),
+        replace_tags(cfg['output_file'], variable) + '.nc')
 
     return outfile
 
@@ -217,7 +220,7 @@ def get_statistic_output_file(variable, statistic, preproc_dir):
 
     template = os.path.join(
         preproc_dir,
-        '{preprocessor}_{diagnostic}',
+        '{diagnostic}_{preprocessor}_{short_name}',
         'MultiModel{stat}_{field}_{short_name}_{start_year}-{end_year}.nc',
     )
 
