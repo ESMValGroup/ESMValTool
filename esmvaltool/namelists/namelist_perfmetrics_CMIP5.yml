@@ -820,33 +820,33 @@ diagnostics:
 
 ### tas: NEAR-SURFACE TEMPERATURE ####################################################################################################################
 
-#   tas:
-#     description: Near-surface air temperature
-#     variables:
-#       tas:
-#         preprocessor: ppNOLEV
-#         reference_model: ERA-Interim
-#         alternative_model: NCEP
-#         mip: Amon
-#         field: T2Ms
-#     additional_models:
-#       - {model: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 3}
-#       - {model: NCEP,         project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 2}
-#     scripts:
-#       latlon: &latlon_settings
-#         script: perfmetrics/main.ncl
-#         plot_type: latlon        # Plot type ('cycle' [time], 'zonal' [plev, lat], 'latlon' [lat, lon], 'cycle_latlon' [time, lat, lon])
-#         time_avg: annualclim     # Time average ('opt' argument of time_operations.ncl)
-#         region: Global           # Selected region ('Global', 'Tropics', 'NH extratropics', 'SH extratropics')
-#         plot_diff: True          # Draw difference plots
-#         t_test: True             # Calculate t-test in difference plots
-#         conf_level: 0.95         # Confidence level for the t-test
-#         abs_levs: [240, 243, 246, 249, 252, 255, 258,
-#                    261, 264, 267, 270, 273, 276, 279,
-#                    282, 285, 288, 291, 294, 297, 300]     # Contour levels for absolute plot
-#         diff_levs: [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5] # Contour levels for difference plot
-#       grading:
-#         <<: *grading_settings
+  tas:
+    description: Near-surface air temperature
+    variables:
+      tas:
+        preprocessor: ppNOLEV
+        reference_model: ERA-Interim
+        alternative_model: NCEP
+        mip: Amon
+        field: T2Ms
+    additional_models:
+      - {model: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 3}
+      - {model: NCEP,         project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 2}
+    scripts:
+      latlon: &latlon_settings
+        script: perfmetrics/main.ncl
+        plot_type: latlon        # Plot type ('cycle' [time], 'zonal' [plev, lat], 'latlon' [lat, lon], 'cycle_latlon' [time, lat, lon])
+        time_avg: annualclim     # Time average ('opt' argument of time_operations.ncl)
+        region: Global           # Selected region ('Global', 'Tropics', 'NH extratropics', 'SH extratropics')
+        plot_diff: True          # Draw difference plots
+        t_test: True             # Calculate t-test in difference plots
+        conf_level: 0.95         # Confidence level for the t-test
+        abs_levs: [240, 243, 246, 249, 252, 255, 258,
+                   261, 264, 267, 270, 273, 276, 279,
+                   282, 285, 288, 291, 294, 297, 300]     # Contour levels for absolute plot
+        diff_levs: [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5] # Contour levels for difference plot
+      grading:
+        <<: *grading_settings
 
 ### ts: SEA-SURFACE (SKIN) TEMPERATURE ###############################################################################################################
 
