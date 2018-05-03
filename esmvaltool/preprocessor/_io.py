@@ -3,8 +3,10 @@ import logging
 import os
 import shutil
 from itertools import groupby
+import traceback
 
 import iris
+import iris.exceptions
 import yaml
 import numpy as np
 
@@ -68,8 +70,17 @@ def load_cubes(files, filename, metadata, constraints=None, callback=None):
 
 def concatenate(cubes):
     """Concatenate all cubes after fixing metadata"""
-    cube = iris.cube.CubeList(cubes).concatenate_cube()
-    return cube
+    try:
+        cube = iris.cube.CubeList(cubes).concatenate_cube()
+        return cube
+    except iris.exceptions.ConcatenateError as ex:
+        logger.error('Can not concatenate cubes: %s', ex)
+        logger.error('Differences: %s', ex.differences)
+        logger.error('Cubes:')
+        for cube in cubes:
+            logger.error(cube)
+        logger.error(traceback.format_tb(ex.__traceback__))
+        raise ConcatenationError('Can not concatenate cubes {0}'.format(cubes))
 
 
 def _save_cubes(cubes, **args):
@@ -189,3 +200,9 @@ def _write_ncl_metadata(output_dir, metadata):
     write_ncl_settings(info, filename)
 
     return filename
+
+
+class ConcatenationError(Exception):
+    """Exception class for concatenation errors"""
+
+    pass

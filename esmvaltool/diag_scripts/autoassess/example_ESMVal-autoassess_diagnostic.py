@@ -61,7 +61,7 @@ def main():
     cubes_pickle_path = os.path.join(suite_data, 'cubes.pickle')
     with open(cubes_pickle_path, 'wb') as f:
         pickle.dump(cubelist, f)
- 
+
     command_call = 'python ' + cfg['executable']
     args = {}
     args['--area'] = cfg['area']
