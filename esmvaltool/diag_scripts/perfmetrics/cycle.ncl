@@ -77,6 +77,7 @@ begin
         ;; Calculate time average
         var_avg = time_operations(var_reg, start_year, end_year, "average", \
                                   diag_script_info@time_avg, True)
+        delete(var_reg)
 
         ;; Calculate time standard deviation (with lower/upper bounds)
         if (start_year.lt.end_year) then
@@ -88,11 +89,11 @@ begin
         end if
         delete(var_reg)
 
+        ;; Write output
         var_all(imod, :, 0) = var_avg
         var_all(imod, :, 1) = var_std
         delete(var_avg)
         delete(var_std)
-
         if (config_user_info@write_netcdf.eq."True") then
             var_all@ncdf = procpath
             ncdf_outfile = ncdf_write(var_all(imod, :, :), procpath)

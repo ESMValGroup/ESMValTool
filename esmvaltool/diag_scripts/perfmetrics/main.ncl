@@ -140,6 +140,11 @@ begin
                              (/"legend_outside", "styleset", "plot_stddev"/))
     end if
 
+    if (ptye.eq."zonal" .and. region.ne."Global") then
+        error_msg("f", diag_script, "", "plot_type " + ptype + \
+                  "implemented only for region='Global'")
+    end if
+
     ;; Check valid field
     if ((ptype.eq."zonal" .and. \
          all(field_type0.ne.(/"T3M", "T2Mz"/))) .or. \
@@ -162,6 +167,8 @@ begin
     set_default_att(diag_script_info, "stippling", False)
     set_default_att(diag_script_info, "t_test", False)
     set_default_att(diag_script_info, "show_global_avg", False)
+    set_default_att(diag_script_info, "zonal_ymin", 5.)
+    set_default_att(diag_script_info, "zonal_ref_cmap", "amwg_blueyellowred")
 
     ;; Check consistency of diff plots settings
     if (diag_script_info@t_test .and. .not.diag_script_info@plot_diff) then
@@ -242,30 +249,6 @@ end
 ;;     delete(data)
 ;;     delete(rank)
 
-;;     ;; Case cycle: (model, time, stats)
-;;     if (ptype.eq."cycle") then
-;;         if (time_avg.eq."seasonalclim") then
-;;             var_all = new((/dim_MOD, 4, 2/), float)
-;;             var_all!1 = "season"
-;;             var_all&season = (/"DJF", "MAM", "JJA", "SON"/)
-;;         else if (time_avg.eq."monthlyclim") then
-;;             var_all = new((/dim_MOD, 12, 2/), float)
-;;             var_all!1 = "month"
-;;             var_all&month = (/"J", "F", "M", "A", "M", "J",\
-;;                               "J", "A", "S", "O", "N", "D"/)
-;;         else
-;;             error_msg("f", diag_script, "", "time_avg option " + time_avg + \
-;;                       " not compatible with plot_type " + ptype)
-;;         end if
-;;         end if
-;;         var_all!0 = "model"
-;;         var_all!2 = "statistic"
-;;         var_all&model = modelnames
-;;         var_all&statistic = (/"mean", "stddev"/)
-;;         if (diag_script_info@plot_diff) then
-;;             var_diff = var_all(:, :, 0)
-;;         end if
-;;     end if
 
 ;;     ;; Case cycle_latlon: (model, time, lat, lon, stats)
 ;;     if (ptype.eq."cycle_latlon") then
@@ -377,44 +360,6 @@ end
 ;;         var = read_data(imod, var0, field_type0)
 ;;         dnames = getVarDimNames(var)
 
-;;         ;; CASE: cycle ########################################################
-;;         if (ptype.eq."cycle") then
-
-;;             ;; Extract region and average over latitude and longitude
-;;             if (any(field_type0.eq.(/"T0M", "T0Ms", "T1M"/))) then
-;;                 var_reg = var
-;;             else if (any(dnames.eq."lat") .and. any(dnames.eq."lon")) then
-;;                 var_reg = area_operations(var, region(0), region(1), \
-;;                                           region(2), region(3), "average", \
-;;                                           True)
-;;             else
-;;                 error_msg("f", diag_script, "", "dimensionality not " + \
-;;                           "implemented")  ; FIXME
-;;             end if
-;;             end if
-;;             delete(var)
-
-;;             ;; Calculate time average
-;;             var_avg = time_operations(var_reg, start_year, end_year, \
-;;                                       "average", time_avg, True)
-
-;;             ;; Calculate time standard deviation (with lower/upper bounds)
-;;             if (start_year.lt.end_year) then
-;;                 var_std = time_operations(var_reg, start_year, end_year, \
-;;                                           "stddev", time_avg, True)
-;;             else
-;;                 var_std = 0.
-;;             end if
-;;             delete(var_reg)
-
-;;             ;; Assign to global array
-;;             var_all(imod, :, 0) = var_avg
-;;             var_all(imod, :, 1) = var_std
-;;             var = var_all(imod, :, :)
-;;             delete(var_avg)
-;;             delete(var_std)
-
-;;         end if
 
 ;;         ;; CASE: cycle_latlon #################################################
 ;;         if (ptype.eq."cycle_latlon") then
