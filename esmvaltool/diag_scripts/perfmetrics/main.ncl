@@ -43,19 +43,15 @@
 ;;    altitude: additional information for stations data (altitude)
 ;;    abs_levs: (min, max, spacing) contour levels for absolute plot
 ;;    diff_levs: (min, max, spacing) contour levels for difference plot
-;;
-;; Optional variable_info attributes (variable specific) FIX-ME: to be removed
-;;    zonal_ref_cmap: color table for the zonal plot
-;;    zonal_ymin: minimum pressure for the zonal plots
-;;    global_avg: attach global field average as right string on the plot
+;;    zonal_cmap (for zonal): color table (default: "amwg_blueyellowred")
+;;    zonal_ymin (for zonal): minimum pressure on the plots (default: 5. hPa)
+;;    latlon_cmap (for latlon): color table (default: "amwg_blueyellowred")
 ;;    plot_units: plotting units (if different from standard CMOR units)
 ;;
 ;; Caveats
-;;    The reference model must be specified in the main namelist in the
-;;    variables dictionary as ref_model key. An alternative model can be also
-;;    given, using a python list.
 ;;
 ;; Modification history
+;;    20180503-A_righ_ma: completely rewritten and modularized
 ;;    20171215-A_righ_ma: merged with perfmetrics_grading and
 ;;                        permetrics_taylor.ncl
 ;;    20171124-A_righ_ma: completely revised to adapt it to the new backend
@@ -140,7 +136,7 @@ begin
                              (/"legend_outside", "styleset", "plot_stddev"/))
     end if
 
-    if (ptye.eq."zonal" .and. region.ne."Global") then
+    if (ptype.eq."zonal" .and. diag_script_info@region.ne."Global") then
         error_msg("f", diag_script, "", "plot_type " + ptype + \
                   "implemented only for region='Global'")
     end if
@@ -168,7 +164,7 @@ begin
     set_default_att(diag_script_info, "t_test", False)
     set_default_att(diag_script_info, "show_global_avg", False)
     set_default_att(diag_script_info, "zonal_ymin", 5.)
-    set_default_att(diag_script_info, "zonal_ref_cmap", "amwg_blueyellowred")
+    set_default_att(diag_script_info, "zonal_cmap", "amwg_blueyellowred")
 
     ;; Check consistency of diff plots settings
     if (diag_script_info@t_test .and. .not.diag_script_info@plot_diff) then
@@ -682,10 +678,10 @@ end
 ;;     if (diag_script_info@draw_plots) then
 
 ;;         ;; Convert units for plotting (if required)
-;;         if (isatt(variable_info, "plot_units")) then
-;;             var_all = convert_units(var_all, variable_info@plot_units)
+;;         if (isatt(diag_script_info, "plot_units")) then
+;;             var_all = convert_units(var_all, diag_script_info@plot_units)
 ;;             if (diag_script_info@plot_diff) then
-;;                 var_diff = convert_units(var_diff, variable_info@plot_units)
+;;                 var_diff = convert_units(var_diff, diag_script_info@plot_units)
 ;;             end if
 ;;         end if
 
@@ -718,16 +714,16 @@ end
 ;;                 var@res_tiMainString = modelnames(imod)
 ;;                 var@res_cnLevelSelectionMode = "ExplicitLevels"
 ;;                 var@res_cnLevels = diag_script_info@abs_levs
-;;                 if (isatt(variable_info, "zonal_ymin")) then
-;;                     var@res_trYMinF = variable_info@zonal_ymin
+;;                 if (isatt(diag_script_info, "zonal_ymin")) then
+;;                     var@res_trYMinF = diag_script_info@zonal_ymin
 ;;                 else
 ;;                     var@res_trYMinF = 5.
 ;;                 end if
 ;;                 var@res_gsnLeftString = var@long_name + " [" + \
 ;;                     format_units(var@units) + "]"
 ;;                 wks = gsn_open_wks(file_type, outfile)
-;;                 if (isatt(variable_info, "zonal_ref_cmap")) then
-;;                     gsn_define_colormap(wks, variable_info@zonal_ref_cmap)
+;;                 if (isatt(diag_script_info, "zonal_cmap")) then
+;;                     gsn_define_colormap(wks, diag_script_info@zonal_cmap)
 ;;                 else
 ;;                     gsn_define_colormap(wks, "amwg_blueyellowred")
 ;;                 end if
@@ -813,8 +809,8 @@ end
 ;;                         sprintf("%5.2f", gavg) + " " + format_units(var@units)
 ;;                 end if
 ;;                 wks = gsn_open_wks(file_type, outfile)
-;;                 if (isatt(variable_info, "map_ref_cmap")) then
-;;                     gsn_define_colormap(wks, variable_info@map_ref_cmap)
+;;                 if (isatt(diag_script_info, "latlon_cmap")) then
+;;                     gsn_define_colormap(wks, diag_script_info@latlon_cmap)
 ;;                 else
 ;;                     gsn_define_colormap(wks, "amwg_blueyellowred")
 ;;                 end if

@@ -77,7 +77,6 @@ begin
         ;; Calculate time average
         var_avg = time_operations(var_reg, start_year, end_year, "average", \
                                   diag_script_info@time_avg, True)
-        delete(var_reg)
 
         ;; Calculate time standard deviation (with lower/upper bounds)
         if (start_year.lt.end_year) then
@@ -107,8 +106,8 @@ begin
     end if
 
     ;; Convert units for plotting (if required)
-    if (isatt(variable_info, "plot_units")) then
-        var_all = convert_units(var_all, variable_info@plot_units)
+    if (isatt(diag_script_info, "plot_units")) then
+        var_all = convert_units(var_all, diag_script_info@plot_units)
     end if
 
     ;; Annotation and file names
