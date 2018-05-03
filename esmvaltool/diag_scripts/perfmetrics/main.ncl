@@ -136,7 +136,8 @@ begin
                              (/"legend_outside", "styleset", "plot_stddev"/))
     end if
 
-    if (ptype.eq."zonal" .and. diag_script_info@region.ne."Global") then
+    if (ptype.eq."zonal" .or. ptype.eq."latlon" .and. \
+        diag_script_info@region.ne."Global") then
         error_msg("f", diag_script, "", "plot_type " + ptype + \
                   "implemented only for region='Global'")
     end if
