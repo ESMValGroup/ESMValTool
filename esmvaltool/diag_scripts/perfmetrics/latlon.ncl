@@ -129,6 +129,7 @@ begin
         wks = gsn_open_wks(file_type, outfile)
         gsn_merge_colormaps(wks, "temp_19lev", "gray70")
         plot = contour_map_ce(wks, plot_var, var0)
+        delete(plot_var@res_cnLevels)
 
         ;; Apply t-test (assuming different population variances)
         if (.not.diag_script_info@t_test) then
@@ -141,7 +142,8 @@ begin
         n1 = get_end_year(imod) - get_start_year(imod) + 1
         n2 = get_end_year(ref_ind) - get_start_year(ref_ind) + 1
         prob = ttest(x1, s1, n1, x2, s2, n2, True, False)
-        plot_var = 1. - prob
+        mask_var = 1. - prob
+        copy_VarCoords(plot_var, mask_var)
         delete(prob)
 
         res2 = True
@@ -152,7 +154,7 @@ begin
         res2@cnLineLabelsOn = False
         res2@gsnDraw = False
         res2@gsnFrame = False
-        plot2 = gsn_csm_contour(wks, plot_var, res2)
+        plot2 = gsn_csm_contour(wks, mask_var, res2)
         opt = True
         if (diag_script_info@stippling) then
             opt@gsnShadeFillType = "pattern"
@@ -167,10 +169,10 @@ begin
         draw(plot)
         frame(wks)
         log_info(" gv " + outfile + "." + file_type)
-        delete(plot_var@res_cnLevels)
         delete(wks)
         delete(plot)
         delete(plot2)
+        delete(mask_var)
         delete(plot_var)
 
     end do
