@@ -1,37 +1,27 @@
 ;;#############################################################################
-;; SCRIPT TO CALCULATE AND PLOT ANNUAL CYCLE FOR THE PERFORMANCE METRICS
+;; PROCEDURE FOR THE ANNUAL CYCLE PLOT OF THE PERFORMANCE METRICS
 ;; Authors: Mattia Righi (DLR, Germany) and Franziska Frank (DLR, Germany)
 ;; ESMVal project
 ;;#############################################################################
-;; Description
-;;   Calculates and (optionally) plots annual/seasonal cycles from input T3M or
-;;   T2Ms data.
-;;
-;; Required diag_script_info attributes
-;;
-;;
-;;
-;;
-;;
-;;
-;;#############################################################################
 
-procedure perfmetrics_cycle()
+procedure perfmetrics_ptype_script()
 begin
 
     ;; Define output variable
-    if (time_avg.eq."seasonalclim") then
+    modelnames = project_style(diag_script_info, "annots")
+    if (diag_script_info@time_avg.eq."seasonalclim") then
         var_all = new((/dim_MOD, 4, 2/), float)
         var_all!1 = "season"
         var_all&season = (/"DJF", "MAM", "JJA", "SON"/)
-    else if (time_avg.eq."monthlyclim") then
+    else if (diag_script_info@time_avg.eq."monthlyclim") then
         var_all = new((/dim_MOD, 12, 2/), float)
         var_all!1 = "month"
         var_all&month = (/"J", "F", "M", "A", "M", "J",\
                           "J", "A", "S", "O", "N", "D"/)
     else
-        error_msg("f", diag_script, "", "time_avg option " + time_avg + \
-                  " not compatible with plot_type " + ptype)
+        error_msg("f", diag_script, "", "time_avg option " + \
+                  diag_script_info@time_avg + \
+                  " not compatible with plot_type cycle")
     end if
     end if
     var_all!0 = "model"
@@ -43,7 +33,7 @@ begin
     var_all@var = var0
     var_all@diag_script = (/diag_script/)
     copy_VarAtts(diag_script_info, var_all)
-    var_all@ref_model = str_get_field(ref_models(0), 1, ",")
+    var_all@ref_model = variable_info@reference_model
 
     ;; Loop over models
     do imod = 0, dim_MOD - 1
@@ -71,6 +61,7 @@ begin
         dnames = getVarDimNames(var)
 
         ;; Extract region and average over latitude and longitude
+        region = select_region(diag_script_info@region)
         if (any(field_type0.eq.(/"T0M", "T0Ms", "T1M"/))) then
             var_reg = var
         else if (any(dnames.eq."lat") .and. any(dnames.eq."lon")) then
@@ -85,12 +76,13 @@ begin
 
         ;; Calculate time average
         var_avg = time_operations(var_reg, start_year, end_year, "average", \
-                                  time_avg, True)
+                                  diag_script_info@time_avg, True)
 
         ;; Calculate time standard deviation (with lower/upper bounds)
         if (start_year.lt.end_year) then
             var_std = time_operations(var_reg, start_year, end_year, \
-                                      "stddev", time_avg, True)
+                                      "stddev", diag_script_info@time_avg, \
+                                      True)
         else
             var_std = 0.
         end if
@@ -98,6 +90,8 @@ begin
 
         var_all(imod, :, 0) = var_avg
         var_all(imod, :, 1) = var_std
+        delete(var_avg)
+        delete(var_std)
 
         if (config_user_info@write_netcdf.eq."True") then
             var_all@ncdf = procpath
@@ -116,8 +110,44 @@ begin
         var_all = convert_units(var_all, variable_info@plot_units)
     end if
 
-    outfile = config_user_info@plot_dir + var0 + "_" + ptype + "_" + \
-        time_avg + "_" + region_name
+    ;; Annotation and file names
+    region_name = ""  ; priority 3
+    location = ""  ; priority 3
+    if (isatt(diag_script_info, "aux_info")) then
+        region_name = "_" + diag_script_info@aux_info  ; priority 2
+        location = " - " + diag_script_info@aux_info  ; priority 2
+    end if
+    if (isatt(diag_script_info, "location")) then
+        location = " - " + diag_script_info@location  ; priority 1
+    end if
+    if (isatt(diag_script_info, "region")) then
+        region_name = "_" + region@name  ; priority 1
+        location = " - " + diag_script_info@region
+    end if
+    if (isatt(var_all, "long_name")) then
+        varstring = var_all@long_name  ; priority 3
+    end if
+    if (isatt(var_all, "short_name")) then
+        varstring = var_all@short_name  ; priority 2
+    end if
+    if (isStrSubset(var0, "vmr").and.isStrSubset(var0, "_")) then
+        varstring = var0  ; priority 1
+    end if
+    altitude = ""  ; priority 2
+    if (any(field_type0.eq.(/"T0M", "T0Ms"/))) then
+        if (isatt(diag_script_info, "altitude")) then
+            altitude = " - " + diag_script_info@altitude  ; priority 1
+        end if
+    else
+        if (isatt(diag_script_info, "level")) then  ; FIX-ME
+            if (diag_script_info@level.ne."all") then
+                altitude = " - " + diag_script_info@level + " hPa"
+            end if
+        end if
+    end if
+    outfile = config_user_info@plot_dir + var0 + "_cycle_" + \
+        diag_script_info@time_avg + "_" + region_name
+
     wks = gsn_open_wks(file_type, outfile)
     wks@legendfile = outfile + "_legend"
     var_all@res_tiMainString = varstring
@@ -126,6 +156,7 @@ begin
     plot = cycle_plot(wks, var_all, var0)
     draw(plot)
     frame(wks)
+
     log_info(" gv " + outfile + "." + file_type)
 
 end

@@ -88,7 +88,6 @@
 
 load "interface_scripts/interface.ncl"
 
-
 load "./diag_scripts/shared/latlon.ncl"
 load "./diag_scripts/shared/statistics.ncl"
 load "./diag_scripts/shared/regridding.ncl"
@@ -120,11 +119,6 @@ begin
                      (/"E_ncep", "E_erainterim", "E_airs", \
                        "E_ceresebaf", "E_srb"/), \
                      (/"P_embrace", "P_esmval"/))
-end
-
-begin
-
-    ;; ### CHECK CONFIGURATION SETTINGS AND SET DEFAULTS ######################
 
     ;; Check required diag_script_info attributes
     exit_if_missing_atts(diag_script_info, \
@@ -132,8 +126,8 @@ begin
 
     ;; Store required attributes
     ptype = diag_script_info@plot_type
-    time_avg = diag_script_info@time_avg
-    region = select_region(diag_script_info@region)
+;;TBR    time_avg = diag_script_info@time_avg
+;;TBR    region = select_region(diag_script_info@region)
 
     if (all(ptype.ne.(/"cycle", "zonal", "latlon", "cycle_latlon"/))) then
         error_msg("f", diag_script, "", "plot_type " + ptype + " is not a " + \
@@ -188,20 +182,20 @@ begin
     end if
 
     ;; Basename of diag_script
-    diag_script_base = basename(diag_script)
+;;TBR    diag_script_base = basename(diag_script)
 
     ;; Unique names for models
-    modelnames = project_style(diag_script_info, "annots")
+;;TBR    modelnames = project_style(diag_script_info, "annots")
 
     ;; Check for reference model definition
-    ref_models = \
-        (/variable_info@reference_model, variable_info@alternative_model/)
-    if (ref_models(0).eq."None") then
+    if (variable_info@reference_model.eq."None") then
         error_msg("f", diag_script, "", "no reference model is specified")
     end if
 
     ;; Set index of the reference (and alternative) model
-    ref_inds = get_ref_model_idx(model_info, ref_models)
+    ref_inds = get_ref_model_idx(model_info, \
+                                 (/variable_info@reference_model, \
+                                   variable_info@alternative_model/))
     ref_ind = ref_inds(0)
     if (dimsizes(ref_inds).gt.1) then
         alt_ind = ref_inds(1)
@@ -220,761 +214,736 @@ begin
         file_type = "ps"
     end if
 
-    ;; ### DEFINE GLOBAL ARRAYS FOR COLLECTING MODEL DATA #####################
+    ;; Load plot-type-specific script
+    print("diag_scripts/perfmetrics/" + ptype + ".ncl")
+    loadscript("diag_scripts/perfmetrics/" + ptype + ".ncl")
 
-    ;; Read common grid from the first model
-    ;; (all models are expected to be regridded to a common grid)
-    data = read_data(0, var0, field_type0)
-    rank = dimsizes(dimsizes(data))
-    if (rank.eq.4) then
-        grid = data(0, :, :, :)  ; plev, lat, lon
-    end if
-    if (rank.eq.3) then
-        grid = data(0, :, :)  ; lat, lon
-    end if
-    delete(data)
-    delete(rank)
+end
 
-    ;; Case cycle: (model, time, stats)
-    if (ptype.eq."cycle") then
-        if (time_avg.eq."seasonalclim") then
-            var_all = new((/dim_MOD, 4, 2/), float)
-            var_all!1 = "season"
-            var_all&season = (/"DJF", "MAM", "JJA", "SON"/)
-        else if (time_avg.eq."monthlyclim") then
-            var_all = new((/dim_MOD, 12, 2/), float)
-            var_all!1 = "month"
-            var_all&month = (/"J", "F", "M", "A", "M", "J",\
-                              "J", "A", "S", "O", "N", "D"/)
-        else
-            error_msg("f", diag_script, "", "time_avg option " + time_avg + \
-                      " not compatible with plot_type " + ptype)
-        end if
-        end if
-        var_all!0 = "model"
-        var_all!2 = "statistic"
-        var_all&model = modelnames
-        var_all&statistic = (/"mean", "stddev"/)
-        if (diag_script_info@plot_diff) then
-            var_diff = var_all(:, :, 0)
-        end if
-    end if
+begin
 
-    ;; Case cycle_latlon: (model, time, lat, lon, stats)
-    if (ptype.eq."cycle_latlon") then
-        sgrid = area_operations(grid, region(0), region(1), region(2), \
-                                region(3), "extract", False)
-        if (time_avg.eq."seasonalclim") then
-            var_all = new((/dim_MOD, 4, dimsizes(sgrid&lat), \
-                          dimsizes(sgrid&lon), 2/), float)
-            var_all!1 = "season"
-            var_all&season = (/"DJF", "MAM", "JJA", "SON"/)
-        else if (time_avg.eq."monthlyclim") then
-            var_all = new((/dim_MOD, 12, dimsizes(sgrid&lat), \
-                          dimsizes(sgrid&lon), 2/), float)
-            var_all!1 = "month"
-            var_all&month = (/"J", "F", "M", "A", "M", "J",\
-                              "J", "A", "S", "O", "N", "D"/)
-        else
-            error_msg("f", diag_script, "", "time_avg option " + time_avg + \
-                      " not compatible with plot_type " + ptype)
-        end if
-        end if
-        var_all!0 = "model"
-        var_all!2 = "lat"
-        var_all!3 = "lon"
-        var_all!4 = "statistic"
-        var_all&model = modelnames
-        var_all&lat = sgrid&lat
-        var_all&lon = sgrid&lon
-        var_all&statistic = (/"mean", "stddev"/)
-        if (diag_script_info@plot_diff) then
-            var_diff = var_all(:, :, :, :, 0)
-        end if
-        delete(sgrid)
-    end if
-
-    ;; Case zonal: (model, level, lat, stats)
-    if (ptype.eq."zonal") then
-        var_all = new((/dim_MOD, dimsizes(grid&plev), \
-                      dimsizes(grid&lat), 2/), float)
-        var_all!0 = "model"
-        var_all!1 = "plev"
-        var_all!2 = "lat"
-        var_all!3 = "statistic"
-        var_all&model = modelnames
-        var_all&plev = grid&plev
-        var_all&lat = grid&lat
-        var_all&statistic = (/"mean", "stddev"/)
-        if (diag_script_info@plot_diff) then
-            var_diff = var_all(:, :, :, 0)
-        end if
-    end if
-
-    ;; Case latlon: (model, lat, lon, stats)
-    if (ptype.eq."latlon") then
-        var_all = new((/dim_MOD, dimsizes(grid&lat), \
-                      dimsizes(grid&lon), 2/), float)
-        var_all!0 = "model"
-        var_all!1 = "lat"
-        var_all!2 = "lon"
-        var_all!3 = "statistic"
-        var_all&model = modelnames
-        var_all&lat = grid&lat
-        var_all&lon = grid&lon
-        var_all&statistic = (/"mean", "stddev"/)
-        if (diag_script_info@plot_diff) then
-            var_diff = var_all(:, :, :, 0)
-        end if
-    end if
-
-    ; If needed, create array for statistically significant grid cells
-    if (diag_script_info@t_test) then
-        var_sig = var_diff
-    end if
-
-    ;; Variable rank: cycle:3, zonal/latlon:4, cycle_latlon:5
-    irank = dimsizes(dimsizes(var_all))
-
-    ;; Attach attributes
-    var_all@var = var0
-    var_all@diag_script = (/diag_script/)
-    copy_VarAtts(diag_script_info, var_all)
-    var_all@ref_model = str_get_field(ref_models(0), 1, ",")
-
-    ;; ### MAIN LOOP OVER MODELS AND DATA PROCESSING ##########################
-
-    ;; Loop over models
-    do imod = 0, dim_MOD - 1
-
-        log_debug("Processing " + modelnames(imod))
-
-        ;; Set path for saving processed data ;; FIX-ME add preproc_id
-        fullpath = config_user_info@work_dir + "/"
-        system("mkdir -p " + fullpath)
-        fname = basename(systemfunc("basename " + model_info@filename(imod)))
-        fname = fname + "_" + basename(diag_script)
-        fname = fname + "_" + diag_script_info@plot_type
-        fname = fname + "_" + diag_script_info@time_avg
-        if (isatt(diag_script_info, "level")) then
-            fname = fname + "_" + diag_script_info@level  ; FIX-ME
-        end if
-        fname = fname + "_" + str_sub_str(diag_script_info@region, " ", "")
-        procpath = fullpath + fname + ".nc"
-
-        ;; Determine start/end year
-        start_year = get_start_year(imod)
-        end_year = get_end_year(imod)
-
-        ;; Read data
-        var = read_data(imod, var0, field_type0)
-        dnames = getVarDimNames(var)
-
-        ;; CASE: cycle ########################################################
-        if (ptype.eq."cycle") then
-
-            ;; Extract region and average over latitude and longitude
-            if (any(field_type0.eq.(/"T0M", "T0Ms", "T1M"/))) then
-                var_reg = var
-            else if (any(dnames.eq."lat") .and. any(dnames.eq."lon")) then
-                var_reg = area_operations(var, region(0), region(1), \
-                                          region(2), region(3), "average", \
-                                          True)
-            else
-                error_msg("f", diag_script, "", "dimensionality not " + \
-                          "implemented")  ; FIXME
-            end if
-            end if
-            delete(var)
-
-            ;; Calculate time average
-            var_avg = time_operations(var_reg, start_year, end_year, \
-                                      "average", time_avg, True)
-
-            ;; Calculate time standard deviation (with lower/upper bounds)
-            if (start_year.lt.end_year) then
-                var_std = time_operations(var_reg, start_year, end_year, \
-                                          "stddev", time_avg, True)
-            else
-                var_std = 0.
-            end if
-            delete(var_reg)
-
-            ;; Assign to global array
-            var_all(imod, :, 0) = var_avg
-            var_all(imod, :, 1) = var_std
-            var = var_all(imod, :, :)
-            delete(var_avg)
-            delete(var_std)
-
-        end if
-
-        ;; CASE: cycle_latlon #################################################
-        if (ptype.eq."cycle_latlon") then
-
-            ;; Extract region
-            var_reg = area_operations(var, region(0), region(1), \
-                                      region(2), region(3), "extract", True)
-            delete(var)
-
-            ;; Calculate time average
-            var_avg = time_operations(var_reg, start_year, end_year, \
-                                      "average", time_avg, True)
-            delete(var_reg)
-
-            ;; Standard deviation calculation for this rank is not implemented
-            ;; yet in statistics.ncl (but is anyway not required here)
-
-            ;; Assign to global array
-            var_all(imod, :, :, :, 0) = var_avg
-            delete(var_avg)
-            var = var_all(imod, :, :, :, :)
-
-        end if
-
-        ;; CASE: zonal ########################################################
-        if (ptype.eq."zonal") then
-
-            ;; Calculate zonal mean
-            var_zon = dim_avg_Wrap(var)
-            delete(var)
-
-            ;; Calculate time average and standard deviation w.r.t.
-            ;; interannual variability
-            var_avg = time_operations(var_zon, start_year, end_year, \
-                                      "average", time_avg, True)
-            var_std = interannual_variability(var_zon, start_year, end_year, \
-                                              time_avg)
-            delete(var_zon)
-
-            ;; Assign to global array
-            var_all(imod, :, :, 0) = var_avg
-            var_all(imod, :, :, 1) = var_std
-            var = var_all(imod, :, :, :)
-            delete(var_avg)
-            delete(var_std)
-
-        end if
-
-        ;; CASE: latlon #######################################################
-        if (ptype.eq."latlon") then
-
-            ;; Calculate time average and standard deviation w.r.t.
-            ;; interannual variability
-            var_avg = time_operations(var, start_year, end_year, \
-                                      "average", time_avg, True)
-            var_std = interannual_variability(var, start_year, end_year, \
-                                              time_avg)
-            delete(var)
-
-            ;; Assign to global array
-            var_all(imod, :, :, 0) = var_avg
-            var_all(imod, :, :, 1) = var_std
-            var = var_all(imod, :, :, :)
-            delete(var_avg)
-            delete(var_std)
-        end if
-
-        ;; Optional output to NetCDF
-        if (config_user_info@write_netcdf.eq."True") then
-            var@ncdf = procpath
-            ncdf_outfile = ncdf_write(var, procpath)
-        end if
-        delete(var)
-        delete(procpath)
-
-    end do
-
-    ;; ### CALCULATE DIFFERENCES AND APPLY STATISTICAL TESTS ##################
-
-    ;; Calculate differences and apply t-test
-    if (diag_script_info@plot_diff) then
-
-        do imod = 0, dim_MOD - 1
-
-            ;; Skip the reference model as result will be zero
-            if (imod.eq.ref_ind) then
-                continue
-            end if
-
-            if (irank.eq.4) then
-
-                ;; Difference
-                var_diff(imod, :, :) = var_all(imod, :, :, 0)  ; save metadata
-                var_diff(imod, :, :) = var_all(imod, :, :, 0) - \
-                    var_all(ref_ind, :, :, 0)
-
-                ;; t-test (assuming different population variances)
-                if (diag_script_info@t_test) then
-                    x1 = var_all(imod, :, :, 0)
-                    x2 = var_all(ref_ind, :, :, 0)
-                    s1 = var_all(imod, :, :, 1) ^ 2
-                    s2 = var_all(ref_ind, :, :, 1) ^ 2
-                    n1 = get_end_year(imod) - get_start_year(imod) + 1
-                    n2 = get_end_year(ref_ind) - get_start_year(ref_ind) + 1
-                    prob = ttest(x1, s1, n1, x2, s2, n2, True, False)
-                    var_sig(imod, :, :) = 1. - prob
-                    var_diff@conf_level = diag_script_info@conf_level
-                    delete(prob)
-                end if
-
-            end if
-
-            if (irank.eq.3) then
-
-                ;; Difference
-                var_diff(imod, :) = var_all(imod, :, 0)  ; save metadata
-                var_diff(imod, :) = var_all(imod, :, 0) - \
-                    var_all(ref_ind, :, 0)
-
-                ;; t-test (assuming different population variances)
-                if (diag_script_info@t_test) then
-                    x1 = var_all(imod, :, 0)
-                    x2 = var_all(ref_ind, :, 0)
-                    s1 = var_all(imod, :, 1) ^ 2
-                    s2 = var_all(ref_ind, :, 1) ^ 2
-                    n1 = get_end_year(imod) - get_start_year(imod) + 1
-                    n2 = get_end_year(ref_ind) - get_start_year(ref_ind) + 1
-                    prob = ttest(x1, s1, n1, x2, s2, n2, True, False)
-                    var_sig(imod, :) = 1. - prob
-                    delete(prob)
-                end if
-
-            end if
-
-        end do
-    end if
-
-    ;; ### GRADING ############################################################
-
-    if (diag_script_info@calc_grading) then  ; FIX-ME loop over metrics?
-
-        ;; Annotation & file names
-        region_name = ""  ; priority 3
-        location = ""  ; priority 3
-        if(isatt(diag_script_info, "aux_info")) then
-            region_name = "_" + diag_script_info@aux_info  ; priority 2
-            location = " - " + diag_script_info@aux_info  ; priority 2
-        end if
-        if(isatt(diag_script_info, "location")) then
-            location = " - " + diag_script_info@location  ; priority 1
-        end if
-        if(isatt(diag_script_info, "region")) then
-            region_name = "_" + region@name  ; priority 1
-            location = " - " + diag_script_info@region
-        end if
-        altitude = ""  ; priority 2
-        if(any(field_type0.eq.(/"T0M", "T0Ms"/))) then
-            if(isatt(diag_script_info, "altitude")) then
-                altitude = " - " + diag_script_info@altitude  ; priority 1
-            end if
-        else
-            if(isatt(diag_script_info, "level")) then
-                altitude = " - " + diag_script_info@level + " hPa"  ; priority1
-            end if
-        end if
-
-        ;; Set variable name
-        var0_new = var0
-        var0_new = var0_new + region_name
-        if(isatt(diag_script_info, "level").and. \
-            any(field_type0.eq.(/"T3M", "T1M"/))) then
-            var0_new = var0_new + "-" + diag_script_info@level
-        end if
-
-        ;; Define grading filename
-        ncdf_dir = config_user_info@work_dir + "/" + \
-            diag_script_info@metric + "_" + var0_new + ".nc"
-
-        ;; Create separate arrays for models and observations
-        if (diag_script_info@metric.eq."taylor") then
-            id_remove = ref_ind
-        else
-            id_remove = ref_inds
-        end if
-        super_array = var_all
-        models_only = remove_index(super_array, id_remove)
-        nmodels = dimsizes(models_only&model)
-        if (l_altern .and. diag_script_info@metric.ne."taylor") then
-            if (irank.eq.3) then
-                obs_only = super_array(id_remove, :, :)
-            end if
-            if (irank.eq.4) then
-                obs_only = super_array(id_remove, :, :, :)
-            end if
-            if (irank.eq.5) then
-                obs_only = super_array(id_remove, :, :, :, :)
-            end if
-        else  ; avoid dimension reduction
-            if (irank.eq.3) then
-                obs_only = super_array(id_remove:id_remove, :, :)
-            end if
-            if (irank.eq.4) then
-                obs_only = super_array(id_remove:id_remove, :, :, :)
-            end if
-            if (irank.eq.5) then
-                obs_only = super_array(id_remove:id_remove, :, :, :, :)
-            end if
-        end if
-        nobs = dimsizes(obs_only&model)
-        delete(super_array)
-
-        ;; Define result variable
-        ;; A dummy coordinate "diagnostics" (size 1) is added to facilitate
-        ;; appending different variable in the _collect script
-        if (diag_script_info@metric.eq."taylor") then
-            grading = new((/dim_VAR, nmodels, 2/), float)
-            grading!2 = "statistic"
-            grading&statistic = (/"stddev_ratio", "correlation"/)
-        else
-            grading = new((/dim_VAR, nmodels, nobs/), float)
-            grading!2 = "reference"
-            grading&reference = obs_only&model
-        end if
-        grading!0 = "diagnostics"
-        grading!1 = "models"
-        grading&diagnostics = var0_new
-        grading&models = models_only&model
-
-        grading@ncdf_dir = ncdf_dir
-
-        ;; Loop over models, calculate metric
-        do imod = 0, nmodels - 1
-            do iobs = 0, nobs - 1
-                if (irank.eq.3) then
-                    model = models_only(imod, :, 0)
-                    obs = obs_only(iobs, :, 0)
-                end if
-                if (irank.eq.4) then
-                    model = models_only(imod, :, :, 0)
-                    obs = obs_only(iobs, :, :, 0)
-                end if
-                if (irank.eq.5) then
-                    model = models_only(imod, :, :, :, 0)
-                    obs = obs_only(iobs, :, :, :, 0)
-                end if
-                if (diag_script_info@metric.eq."taylor") then
-                    grading(0, imod, 0) = \
-                        calculate_metric(model, obs, "stddev_ratio")
-                    grading(0, imod, 1) = \
-                        calculate_metric(model, obs, "correlation")
-                else
-                    grading(0, imod, iobs) = \
-                        calculate_metric(model, obs, diag_script_info@metric)
-                end if
-            end do
-        end do
-
-        ;; Apply normalization
-        if (diag_script_info@metric.ne."taylor") then
-            do iobs = 0, nobs - 1
-                grading(:, :, iobs) = \
-                    normalize_metric(grading(:, :, iobs), \
-                                     diag_script_info@normalization)
-            end do
-        end if
-
-        ;; Reduce dimensionality if no alternative model
-        if (.not.l_altern .and. diag_script_info@metric.ne."taylor") then
-            grading := grading(:, :, 0)
-            delete(grading@reference)
-        end if
-
-        ;; Attach attributes to the results
-        grading@title = diag_script_info@metric + "metric"
-        grading@long_name = \
-            "Grading table of metric " + diag_script_info@metric
-        grading@metric = diag_script_info@metric
-        grading@diag_script = (/diag_script/)
-        grading@var = "grade"  ; FIX-ME ?
-        grading@region = location
-        grading@num_climofiles = dimsizes(model_info@model)  ; for tagging
-        do imod = 0, dimsizes(model_info@model) - 1
-            num_climo = "climofile_" + imod
-            grading@$num_climo$ = input_file_info@filename(imod)
-        end do
-
-        ;; Write NetCDF output
-        ncdf_outfile = ncdf_write(grading, grading@ncdf_dir)
-
-        ;; Write results of temporary grading list
-        temp_dir = config_user_info@work_dir + "/"
-        if (diag_script_info@metric.eq."taylor") then
-            temp_dir = temp_dir + "taylor.nc"
-        else
-            temp_dir = temp_dir + "grading.nc"
-        end if
-
-        if (fileexists(temp_dir)) then
-            temp_file = addfile(temp_dir, "r")
-            temp_list = temp_file->temp_list
-            temp_list_string = tostring(temp_list)
-            temp_list_new_string = array_append_record(temp_list_string, \
-                                                       ncdf_dir, 0)
-            temp_list_new = tochar(temp_list_new_string)
-            system("rm -f " + temp_dir)
-        else
-            ncdf_char = tochar(ncdf_dir)
-            temp_list_new = new((/1, dimsizes(ncdf_char)/), character)
-            temp_list_new(0, :) = ncdf_char
-        end if
-
-        ;; Create new file and add list
-        temp = addfile(temp_dir, "c")
-        temp->temp_list = temp_list_new
-
-    end if
-
-    ;; ### PLOTTING ###########################################################
-
-    if (diag_script_info@draw_plots) then
-
-        ;; Convert units for plotting (if required)
-        if (isatt(variable_info, "plot_units")) then
-            var_all = convert_units(var_all, variable_info@plot_units)
-            if (diag_script_info@plot_diff) then
-                var_diff = convert_units(var_diff, variable_info@plot_units)
-            end if
-        end if
-
-        ;; Plot output directory
-        output_dir = config_user_info@plot_dir
-
-        ;; Annotation and file names
-        region_name = ""  ; priority 3
-        location = ""  ; priority 3
-        if (isatt(diag_script_info, "aux_info")) then
-            region_name = "_" + diag_script_info@aux_info  ; priority 2
-            location = " - " + diag_script_info@aux_info  ; priority 2
-        end if
-        if (isatt(diag_script_info, "location")) then
-            location = " - " + diag_script_info@location  ; priority 1
-        end if
-        if (isatt(diag_script_info, "region")) then
-            region_name = "_" + region@name  ; priority 1
-            location = " - " + diag_script_info@region
-        end if
-        if (isatt(var_all, "long_name")) then
-            varstring = var_all@long_name  ; priority 3
-        end if
-        if (isatt(var_all, "short_name")) then
-            varstring = var_all@short_name  ; priority 2
-        end if
-        if (isStrSubset(var0, "vmr").and.isStrSubset(var0, "_")) then
-            varstring = var0  ; priority 1
-        end if
-        altitude = ""  ; priority 2
-        if (any(field_type0.eq.(/"T0M", "T0Ms"/))) then
-            if (isatt(diag_script_info, "altitude")) then
-                altitude = " - " + diag_script_info@altitude  ; priority 1
-            end if
-        else
-            if (isatt(diag_script_info, "level")) then  ; FIX-ME
-                if (diag_script_info@level.ne."all") then
-                    altitude = " - " + diag_script_info@level + " hPa"
-                end if
-            end if
-        end if
-
-        ;; CASE: cycle ########################################################
-        if (ptype.eq."cycle") then
-            outfile = output_dir + var0 + "_" + \
-                ptype + "_" + time_avg + "_" + region_name
-            wks = gsn_open_wks(file_type, outfile)
-            wks@legendfile = outfile + "_legend"
-            var_all@res_tiMainString = varstring
-            var_all@res_tiMainString = var_all@res_tiMainString + \
-                location + altitude
-            plot = cycle_plot(wks, var_all, var0)
-            draw(plot)
-            frame(wks)
-            log_info(" gv " + outfile + "." + file_type)
-        end if
-
-        ;; CASE: zonal ########################################################
-        if (ptype.eq."zonal") then
-            do imod = 0, dim_MOD - 1
-                outfile = output_dir + \
-                    modelnames(imod) + "_" + var0 + "_" + ptype + "_" + \
-                    time_avg + region_name
-                var = var_all(imod, :, :, 0)
-                var@res_tiMainString = modelnames(imod)
-                var@res_cnLevelSelectionMode = "ExplicitLevels"
-                var@res_cnLevels = diag_script_info@abs_levs
-                if (isatt(variable_info, "zonal_ymin")) then
-                    var@res_trYMinF = variable_info@zonal_ymin
-                else
-                    var@res_trYMinF = 5.
-                end if
-                var@res_gsnLeftString = var@long_name + " [" + \
-                    format_units(var@units) + "]"
-                wks = gsn_open_wks(file_type, outfile)
-                if (isatt(variable_info, "zonal_ref_cmap")) then
-                    gsn_define_colormap(wks, variable_info@zonal_ref_cmap)
-                else
-                    gsn_define_colormap(wks, "amwg_blueyellowred")
-                end if
-                plot = zonalmean_profile(wks, var, var0)
-                draw(plot)
-                frame(wks)
-                log_info(" gv " + outfile + "." + file_type)
-                delete(var@res_cnLevels)
-                delete(wks)
-                delete(plot)
-
-                ;; Difference plot to the reference
-                if (.not.diag_script_info@plot_diff .or. imod.eq.ref_ind) then
-                    continue
-                end if
-                var = var_diff(imod, :, :)
-                outfile = output_dir + \
-                    modelnames(imod) + "-" + modelnames(ref_ind) + "_" + \
-                    var0 + "_" + ptype + "_" + time_avg + region_name
-                var@res_tiMainString = modelnames(imod) + " - " + \
-                    modelnames(ref_ind)
-                if (isatt(diag_script_info, "conf_level")) then
-                    var@res_gsnLeftString = var@res_gsnLeftString + " - " + \
-                    sprinti("%2i", toint(100 * diag_script_info@conf_level)) \
-                    + "% c.l."
-                end if
-                var@res_cnLevelSelectionMode = "ExplicitLevels"
-                var@res_cnLevels = diag_script_info@diff_levs
-                var@res_cnMissingValFillColor = "gray70"
-                var@res_gsnSpreadColorEnd = -2
-                wks = gsn_open_wks(file_type, outfile)
-                gsn_merge_colormaps(wks, "temp_19lev", "gray70")
-                plot = zonalmean_profile(wks, var, var0)
-
-                ;; Stippling ;; FIX-ME False option not considered (see below)
-                var = var_sig(imod, :, :)
-                var@res_cnMissingValFillColor = -1
-                var@res_gsnSpreadColorEnd = -2
-                var@res_gsnDraw = False
-                var@res_gsnFrame = False
-                var@res_cnLevelSelectionMode = "ExplicitLevels"
-                var@res_cnFillColors = (/"transparent", "black"/)
-                var@res_cnLevels := diag_script_info@conf_level
-                var@res_cnInfoLabelOn = False
-                var@res_cnLinesOn = False
-                var@res_cnLineLabelsOn = False
-                var@res_lbLabelBarOn = False
-                var@res_cnFillPattern = 17
-                delete(var@long_name)
-                plot2 = zonalmean_profile(wks, var, var0)
-                overlay(plot, plot2)
-                draw(plot)
-                frame(wks)
-                log_info(" gv " + outfile + "." + file_type)
-                delete(var@res_cnLevels)
-                delete(wks)
-                delete(plot)
-                delete(plot2)
-                delete(var)
-            end do
-        end if
-
-        ;; CASE: latlon #######################################################
-        if (ptype.eq."latlon") then
-            do imod = 0, dim_MOD - 1
-                outfile = output_dir + \
-                    modelnames(imod) + "_" + var0 + "_" + ptype + "_" + \
-                    time_avg + "_" + region_name
-                var = var_all(imod, :, :, 0)
-                var@projection = diag_script_info@projection
-                var@res_cnLinesOn = False
-                var@res_cnLevelSelectionMode = "ExplicitLevels"
-                var@res_tiMainString = modelnames(imod)
-                var@res_cnLevels = diag_script_info@abs_levs
-                var@res_gsnLeftString = var@long_name + " [" + \
-                    format_units(var@units) + "]"
-
-                ;; Append global field average
-                if (diag_script_info@show_global_avg) then
-                    gavg = area_operations(var, -90., 90., 0., 360., \
-                                           "average", True)
-                    var@res_gsnRightString = \
-                        sprintf("%5.2f", gavg) + " " + format_units(var@units)
-                end if
-                wks = gsn_open_wks(file_type, outfile)
-                if (isatt(variable_info, "map_ref_cmap")) then
-                    gsn_define_colormap(wks, variable_info@map_ref_cmap)
-                else
-                    gsn_define_colormap(wks, "amwg_blueyellowred")
-                end if
-                plot = contour_map_ce(wks, var, var0)
-                draw(plot)
-                frame(wks)
-                log_info(" gv " + outfile + "." + file_type)
-                delete(var@res_cnLevels)
-                delete(wks)
-                delete(plot)
-
-                ;; Difference plot to the reference
-                if (.not.diag_script_info@plot_diff .or. imod.eq.ref_ind) then
-                    continue
-                end if
-                var = var_diff(imod, :, :)
-                outfile = output_dir + \
-                    modelnames(imod) + "-" + modelnames(ref_ind) + "_" + \
-                    var0 + "_" + ptype + "_" + time_avg + "_" + region_name
-                var@res_tiMainString = modelnames(imod) + " - " + \
-                    modelnames(ref_ind)
-                if (isatt(diag_script_info, "conf_level")) then
-                    var@res_gsnLeftString = var@res_gsnLeftString + " - " + \
-                    sprinti("%2i", toint(100 * diag_script_info@conf_level)) \
-                    + "% c.l."
-                end if
-                var@res_cnLevelSelectionMode = "ExplicitLevels"
-                var@res_cnLevels = diag_script_info@diff_levs
-                var@res_cnMissingValFillColor = "gray70"
-                var@res_gsnSpreadColorEnd = -2
-                var@projection = diag_script_info@projection
-
-                ;; Append global field averag
-                if (diag_script_info@show_global_avg) then
-                    gavg = area_operations(var, -90., 90., 0., 360., \
-                                           "average", True)
-                    var@res_gsnRightString = \
-                        sprintf("%5.2f", gavg) + " " + format_units(var@units)
-                end if
-                wks = gsn_open_wks(file_type, outfile)
-                gsn_merge_colormaps(wks, "temp_19lev", "gray70")
-                plot = contour_map_ce(wks, var, var0)
-
-                ;; Stippling/masking
-                res2 = True
-                res2@cnLevelSelectionMode = "ExplicitLevels"
-                res2@cnLevels = (/0.0, diag_script_info@conf_level, 1.0/)
-                res2@cnInfoLabelOn = False
-                res2@cnLinesOn = False
-                res2@cnLineLabelsOn = False
-                res2@gsnDraw = False
-                res2@gsnFrame = False
-                plot2 = gsn_csm_contour(wks, var_sig(imod, :, :), res2)
-                opt = True
-                if (diag_script_info@stippling) then
-                    opt@gsnShadeFillType = "pattern"
-                    opt@gsnShadeMid = 17
-                else
-                    opt@gsnShadeFillType = "color"
-                    opt@gsnShadeLow = "gray70"
-                end if
-                plot2 = gsn_contour_shade(plot2, diag_script_info@conf_level, \
-                                          999., opt)
-                overlay(plot, plot2)
-                draw(plot)
-                frame(wks)
-                log_info(" gv " + outfile + "." + file_type)
-                delete(var@res_cnLevels)
-                delete(wks)
-                delete(plot)
-                delete(plot2)
-                delete(var)
-            end do
-
-        end if
-    end if
-
+    perfmetrics_ptype_script()
     leave_msg(diag_script, "")
 
 end
+
+;;     ;; ### DEFINE GLOBAL ARRAYS FOR COLLECTING MODEL DATA #####################
+
+;;     ;; Read common grid from the first model
+;;     ;; (all models are expected to be regridded to a common grid)
+;;     data = read_data(0, var0, field_type0)
+;;     rank = dimsizes(dimsizes(data))
+;;     if (rank.eq.4) then
+;;         grid = data(0, :, :, :)  ; plev, lat, lon
+;;     end if
+;;     if (rank.eq.3) then
+;;         grid = data(0, :, :)  ; lat, lon
+;;     end if
+;;     delete(data)
+;;     delete(rank)
+
+;;     ;; Case cycle: (model, time, stats)
+;;     if (ptype.eq."cycle") then
+;;         if (time_avg.eq."seasonalclim") then
+;;             var_all = new((/dim_MOD, 4, 2/), float)
+;;             var_all!1 = "season"
+;;             var_all&season = (/"DJF", "MAM", "JJA", "SON"/)
+;;         else if (time_avg.eq."monthlyclim") then
+;;             var_all = new((/dim_MOD, 12, 2/), float)
+;;             var_all!1 = "month"
+;;             var_all&month = (/"J", "F", "M", "A", "M", "J",\
+;;                               "J", "A", "S", "O", "N", "D"/)
+;;         else
+;;             error_msg("f", diag_script, "", "time_avg option " + time_avg + \
+;;                       " not compatible with plot_type " + ptype)
+;;         end if
+;;         end if
+;;         var_all!0 = "model"
+;;         var_all!2 = "statistic"
+;;         var_all&model = modelnames
+;;         var_all&statistic = (/"mean", "stddev"/)
+;;         if (diag_script_info@plot_diff) then
+;;             var_diff = var_all(:, :, 0)
+;;         end if
+;;     end if
+
+;;     ;; Case cycle_latlon: (model, time, lat, lon, stats)
+;;     if (ptype.eq."cycle_latlon") then
+;;         sgrid = area_operations(grid, region(0), region(1), region(2), \
+;;                                 region(3), "extract", False)
+;;         if (time_avg.eq."seasonalclim") then
+;;             var_all = new((/dim_MOD, 4, dimsizes(sgrid&lat), \
+;;                           dimsizes(sgrid&lon), 2/), float)
+;;             var_all!1 = "season"
+;;             var_all&season = (/"DJF", "MAM", "JJA", "SON"/)
+;;         else if (time_avg.eq."monthlyclim") then
+;;             var_all = new((/dim_MOD, 12, dimsizes(sgrid&lat), \
+;;                           dimsizes(sgrid&lon), 2/), float)
+;;             var_all!1 = "month"
+;;             var_all&month = (/"J", "F", "M", "A", "M", "J",\
+;;                               "J", "A", "S", "O", "N", "D"/)
+;;         else
+;;             error_msg("f", diag_script, "", "time_avg option " + time_avg + \
+;;                       " not compatible with plot_type " + ptype)
+;;         end if
+;;         end if
+;;         var_all!0 = "model"
+;;         var_all!2 = "lat"
+;;         var_all!3 = "lon"
+;;         var_all!4 = "statistic"
+;;         var_all&model = modelnames
+;;         var_all&lat = sgrid&lat
+;;         var_all&lon = sgrid&lon
+;;         var_all&statistic = (/"mean", "stddev"/)
+;;         if (diag_script_info@plot_diff) then
+;;             var_diff = var_all(:, :, :, :, 0)
+;;         end if
+;;         delete(sgrid)
+;;     end if
+
+;;     ;; Case zonal: (model, level, lat, stats)
+;;     if (ptype.eq."zonal") then
+;;         var_all = new((/dim_MOD, dimsizes(grid&plev), \
+;;                       dimsizes(grid&lat), 2/), float)
+;;         var_all!0 = "model"
+;;         var_all!1 = "plev"
+;;         var_all!2 = "lat"
+;;         var_all!3 = "statistic"
+;;         var_all&model = modelnames
+;;         var_all&plev = grid&plev
+;;         var_all&lat = grid&lat
+;;         var_all&statistic = (/"mean", "stddev"/)
+;;         if (diag_script_info@plot_diff) then
+;;             var_diff = var_all(:, :, :, 0)
+;;         end if
+;;     end if
+
+;;     ;; Case latlon: (model, lat, lon, stats)
+;;     if (ptype.eq."latlon") then
+;;         var_all = new((/dim_MOD, dimsizes(grid&lat), \
+;;                       dimsizes(grid&lon), 2/), float)
+;;         var_all!0 = "model"
+;;         var_all!1 = "lat"
+;;         var_all!2 = "lon"
+;;         var_all!3 = "statistic"
+;;         var_all&model = modelnames
+;;         var_all&lat = grid&lat
+;;         var_all&lon = grid&lon
+;;         var_all&statistic = (/"mean", "stddev"/)
+;;         if (diag_script_info@plot_diff) then
+;;             var_diff = var_all(:, :, :, 0)
+;;         end if
+;;     end if
+
+;;     ; If needed, create array for statistically significant grid cells
+;;     if (diag_script_info@t_test) then
+;;         var_sig = var_diff
+;;     end if
+
+;;     ;; Variable rank: cycle:3, zonal/latlon:4, cycle_latlon:5
+;;     irank = dimsizes(dimsizes(var_all))
+
+;;     ;; Attach attributes
+;;     var_all@var = var0
+;;     var_all@diag_script = (/diag_script/)
+;;     copy_VarAtts(diag_script_info, var_all)
+;;     var_all@ref_model = variable_info@reference_model
+
+;;     ;; ### MAIN LOOP OVER MODELS AND DATA PROCESSING ##########################
+
+;;     ;; Loop over models
+;;     do imod = 0, dim_MOD - 1
+
+;;         log_debug("Processing " + modelnames(imod))
+
+;;         ;; Set path for saving processed data ;; FIX-ME add preproc_id
+;;         fullpath = config_user_info@work_dir + "/"
+;;         system("mkdir -p " + fullpath)
+;;         fname = basename(systemfunc("basename " + model_info@filename(imod)))
+;;         fname = fname + "_" + basename(diag_script)
+;;         fname = fname + "_" + diag_script_info@plot_type
+;;         fname = fname + "_" + diag_script_info@time_avg
+;;         if (isatt(diag_script_info, "level")) then
+;;             fname = fname + "_" + diag_script_info@level  ; FIX-ME
+;;         end if
+;;         fname = fname + "_" + str_sub_str(diag_script_info@region, " ", "")
+;;         procpath = fullpath + fname + ".nc"
+
+;;         ;; Determine start/end year
+;;         start_year = get_start_year(imod)
+;;         end_year = get_end_year(imod)
+
+;;         ;; Read data
+;;         var = read_data(imod, var0, field_type0)
+;;         dnames = getVarDimNames(var)
+
+;;         ;; CASE: cycle ########################################################
+;;         if (ptype.eq."cycle") then
+
+;;             ;; Extract region and average over latitude and longitude
+;;             if (any(field_type0.eq.(/"T0M", "T0Ms", "T1M"/))) then
+;;                 var_reg = var
+;;             else if (any(dnames.eq."lat") .and. any(dnames.eq."lon")) then
+;;                 var_reg = area_operations(var, region(0), region(1), \
+;;                                           region(2), region(3), "average", \
+;;                                           True)
+;;             else
+;;                 error_msg("f", diag_script, "", "dimensionality not " + \
+;;                           "implemented")  ; FIXME
+;;             end if
+;;             end if
+;;             delete(var)
+
+;;             ;; Calculate time average
+;;             var_avg = time_operations(var_reg, start_year, end_year, \
+;;                                       "average", time_avg, True)
+
+;;             ;; Calculate time standard deviation (with lower/upper bounds)
+;;             if (start_year.lt.end_year) then
+;;                 var_std = time_operations(var_reg, start_year, end_year, \
+;;                                           "stddev", time_avg, True)
+;;             else
+;;                 var_std = 0.
+;;             end if
+;;             delete(var_reg)
+
+;;             ;; Assign to global array
+;;             var_all(imod, :, 0) = var_avg
+;;             var_all(imod, :, 1) = var_std
+;;             var = var_all(imod, :, :)
+;;             delete(var_avg)
+;;             delete(var_std)
+
+;;         end if
+
+;;         ;; CASE: cycle_latlon #################################################
+;;         if (ptype.eq."cycle_latlon") then
+
+;;             ;; Extract region
+;;             var_reg = area_operations(var, region(0), region(1), \
+;;                                       region(2), region(3), "extract", True)
+;;             delete(var)
+
+;;             ;; Calculate time average
+;;             var_avg = time_operations(var_reg, start_year, end_year, \
+;;                                       "average", time_avg, True)
+;;             delete(var_reg)
+
+;;             ;; Standard deviation calculation for this rank is not implemented
+;;             ;; yet in statistics.ncl (but is anyway not required here)
+
+;;             ;; Assign to global array
+;;             var_all(imod, :, :, :, 0) = var_avg
+;;             delete(var_avg)
+;;             var = var_all(imod, :, :, :, :)
+
+;;         end if
+
+;;         ;; CASE: zonal ########################################################
+;;         if (ptype.eq."zonal") then
+
+;;             ;; Calculate zonal mean
+;;             var_zon = dim_avg_Wrap(var)
+;;             delete(var)
+
+;;             ;; Calculate time average and standard deviation w.r.t.
+;;             ;; interannual variability
+;;             var_avg = time_operations(var_zon, start_year, end_year, \
+;;                                       "average", time_avg, True)
+;;             var_std = interannual_variability(var_zon, start_year, end_year, \
+;;                                               time_avg)
+;;             delete(var_zon)
+
+;;             ;; Assign to global array
+;;             var_all(imod, :, :, 0) = var_avg
+;;             var_all(imod, :, :, 1) = var_std
+;;             var = var_all(imod, :, :, :)
+;;             delete(var_avg)
+;;             delete(var_std)
+
+;;         end if
+
+;;         ;; CASE: latlon #######################################################
+;;         if (ptype.eq."latlon") then
+
+;;             ;; Calculate time average and standard deviation w.r.t.
+;;             ;; interannual variability
+;;             var_avg = time_operations(var, start_year, end_year, \
+;;                                       "average", time_avg, True)
+;;             var_std = interannual_variability(var, start_year, end_year, \
+;;                                               time_avg)
+;;             delete(var)
+
+;;             ;; Assign to global array
+;;             var_all(imod, :, :, 0) = var_avg
+;;             var_all(imod, :, :, 1) = var_std
+;;             var = var_all(imod, :, :, :)
+;;             delete(var_avg)
+;;             delete(var_std)
+;;         end if
+
+;;         ;; Optional output to NetCDF
+;;         if (config_user_info@write_netcdf.eq."True") then
+;;             var@ncdf = procpath
+;;             ncdf_outfile = ncdf_write(var, procpath)
+;;         end if
+;;         delete(var)
+;;         delete(procpath)
+
+;;     end do
+
+;;     ;; ### CALCULATE DIFFERENCES AND APPLY STATISTICAL TESTS ##################
+
+;;     ;; Calculate differences and apply t-test
+;;     if (diag_script_info@plot_diff) then
+
+;;         do imod = 0, dim_MOD - 1
+
+;;             ;; Skip the reference model as result will be zero
+;;             if (imod.eq.ref_ind) then
+;;                 continue
+;;             end if
+
+;;             if (irank.eq.4) then
+
+;;                 ;; Difference
+;;                 var_diff(imod, :, :) = var_all(imod, :, :, 0)  ; save metadata
+;;                 var_diff(imod, :, :) = var_all(imod, :, :, 0) - \
+;;                     var_all(ref_ind, :, :, 0)
+
+;;                 ;; t-test (assuming different population variances)
+;;                 if (diag_script_info@t_test) then
+;;                     x1 = var_all(imod, :, :, 0)
+;;                     x2 = var_all(ref_ind, :, :, 0)
+;;                     s1 = var_all(imod, :, :, 1) ^ 2
+;;                     s2 = var_all(ref_ind, :, :, 1) ^ 2
+;;                     n1 = get_end_year(imod) - get_start_year(imod) + 1
+;;                     n2 = get_end_year(ref_ind) - get_start_year(ref_ind) + 1
+;;                     prob = ttest(x1, s1, n1, x2, s2, n2, True, False)
+;;                     var_sig(imod, :, :) = 1. - prob
+;;                     var_diff@conf_level = diag_script_info@conf_level
+;;                     delete(prob)
+;;                 end if
+
+;;             end if
+
+;;             if (irank.eq.3) then
+
+;;                 ;; Difference
+;;                 var_diff(imod, :) = var_all(imod, :, 0)  ; save metadata
+;;                 var_diff(imod, :) = var_all(imod, :, 0) - \
+;;                     var_all(ref_ind, :, 0)
+
+;;                 ;; t-test (assuming different population variances)
+;;                 if (diag_script_info@t_test) then
+;;                     x1 = var_all(imod, :, 0)
+;;                     x2 = var_all(ref_ind, :, 0)
+;;                     s1 = var_all(imod, :, 1) ^ 2
+;;                     s2 = var_all(ref_ind, :, 1) ^ 2
+;;                     n1 = get_end_year(imod) - get_start_year(imod) + 1
+;;                     n2 = get_end_year(ref_ind) - get_start_year(ref_ind) + 1
+;;                     prob = ttest(x1, s1, n1, x2, s2, n2, True, False)
+;;                     var_sig(imod, :) = 1. - prob
+;;                     delete(prob)
+;;                 end if
+
+;;             end if
+
+;;         end do
+;;     end if
+
+;;     ;; ### GRADING ############################################################
+
+;;     if (diag_script_info@calc_grading) then  ; FIX-ME loop over metrics?
+
+;;         ;; Annotation & file names
+;;         region_name = ""  ; priority 3
+;;         location = ""  ; priority 3
+;;         if(isatt(diag_script_info, "aux_info")) then
+;;             region_name = "_" + diag_script_info@aux_info  ; priority 2
+;;             location = " - " + diag_script_info@aux_info  ; priority 2
+;;         end if
+;;         if(isatt(diag_script_info, "location")) then
+;;             location = " - " + diag_script_info@location  ; priority 1
+;;         end if
+;;         if(isatt(diag_script_info, "region")) then
+;;             region_name = "_" + region@name  ; priority 1
+;;             location = " - " + diag_script_info@region
+;;         end if
+;;         altitude = ""  ; priority 2
+;;         if(any(field_type0.eq.(/"T0M", "T0Ms"/))) then
+;;             if(isatt(diag_script_info, "altitude")) then
+;;                 altitude = " - " + diag_script_info@altitude  ; priority 1
+;;             end if
+;;         else
+;;             if(isatt(diag_script_info, "level")) then
+;;                 altitude = " - " + diag_script_info@level + " hPa"  ; priority1
+;;             end if
+;;         end if
+
+;;         ;; Set variable name
+;;         var0_new = var0
+;;         var0_new = var0_new + region_name
+;;         if(isatt(diag_script_info, "level").and. \
+;;             any(field_type0.eq.(/"T3M", "T1M"/))) then
+;;             var0_new = var0_new + "-" + diag_script_info@level
+;;         end if
+
+;;         ;; Define grading filename
+;;         ncdf_dir = config_user_info@work_dir + "/" + \
+;;             diag_script_info@metric + "_" + var0_new + ".nc"
+
+;;         ;; Create separate arrays for models and observations
+;;         if (diag_script_info@metric.eq."taylor") then
+;;             id_remove = ref_ind
+;;         else
+;;             id_remove = ref_inds
+;;         end if
+;;         super_array = var_all
+;;         models_only = remove_index(super_array, id_remove)
+;;         nmodels = dimsizes(models_only&model)
+;;         if (l_altern .and. diag_script_info@metric.ne."taylor") then
+;;             if (irank.eq.3) then
+;;                 obs_only = super_array(id_remove, :, :)
+;;             end if
+;;             if (irank.eq.4) then
+;;                 obs_only = super_array(id_remove, :, :, :)
+;;             end if
+;;             if (irank.eq.5) then
+;;                 obs_only = super_array(id_remove, :, :, :, :)
+;;             end if
+;;         else  ; avoid dimension reduction
+;;             if (irank.eq.3) then
+;;                 obs_only = super_array(id_remove:id_remove, :, :)
+;;             end if
+;;             if (irank.eq.4) then
+;;                 obs_only = super_array(id_remove:id_remove, :, :, :)
+;;             end if
+;;             if (irank.eq.5) then
+;;                 obs_only = super_array(id_remove:id_remove, :, :, :, :)
+;;             end if
+;;         end if
+;;         nobs = dimsizes(obs_only&model)
+;;         delete(super_array)
+
+;;         ;; Define result variable
+;;         ;; A dummy coordinate "diagnostics" (size 1) is added to facilitate
+;;         ;; appending different variable in the _collect script
+;;         if (diag_script_info@metric.eq."taylor") then
+;;             grading = new((/dim_VAR, nmodels, 2/), float)
+;;             grading!2 = "statistic"
+;;             grading&statistic = (/"stddev_ratio", "correlation"/)
+;;         else
+;;             grading = new((/dim_VAR, nmodels, nobs/), float)
+;;             grading!2 = "reference"
+;;             grading&reference = obs_only&model
+;;         end if
+;;         grading!0 = "diagnostics"
+;;         grading!1 = "models"
+;;         grading&diagnostics = var0_new
+;;         grading&models = models_only&model
+
+;;         grading@ncdf_dir = ncdf_dir
+
+;;         ;; Loop over models, calculate metric
+;;         do imod = 0, nmodels - 1
+;;             do iobs = 0, nobs - 1
+;;                 if (irank.eq.3) then
+;;                     model = models_only(imod, :, 0)
+;;                     obs = obs_only(iobs, :, 0)
+;;                 end if
+;;                 if (irank.eq.4) then
+;;                     model = models_only(imod, :, :, 0)
+;;                     obs = obs_only(iobs, :, :, 0)
+;;                 end if
+;;                 if (irank.eq.5) then
+;;                     model = models_only(imod, :, :, :, 0)
+;;                     obs = obs_only(iobs, :, :, :, 0)
+;;                 end if
+;;                 if (diag_script_info@metric.eq."taylor") then
+;;                     grading(0, imod, 0) = \
+;;                         calculate_metric(model, obs, "stddev_ratio")
+;;                     grading(0, imod, 1) = \
+;;                         calculate_metric(model, obs, "correlation")
+;;                 else
+;;                     grading(0, imod, iobs) = \
+;;                         calculate_metric(model, obs, diag_script_info@metric)
+;;                 end if
+;;             end do
+;;         end do
+
+;;         ;; Apply normalization
+;;         if (diag_script_info@metric.ne."taylor") then
+;;             do iobs = 0, nobs - 1
+;;                 grading(:, :, iobs) = \
+;;                     normalize_metric(grading(:, :, iobs), \
+;;                                      diag_script_info@normalization)
+;;             end do
+;;         end if
+
+;;         ;; Reduce dimensionality if no alternative model
+;;         if (.not.l_altern .and. diag_script_info@metric.ne."taylor") then
+;;             grading := grading(:, :, 0)
+;;             delete(grading@reference)
+;;         end if
+
+;;         ;; Attach attributes to the results
+;;         grading@title = diag_script_info@metric + "metric"
+;;         grading@long_name = \
+;;             "Grading table of metric " + diag_script_info@metric
+;;         grading@metric = diag_script_info@metric
+;;         grading@diag_script = (/diag_script/)
+;;         grading@var = "grade"  ; FIX-ME ?
+;;         grading@region = location
+;;         grading@num_climofiles = dimsizes(model_info@model)  ; for tagging
+;;         do imod = 0, dimsizes(model_info@model) - 1
+;;             num_climo = "climofile_" + imod
+;;             grading@$num_climo$ = input_file_info@filename(imod)
+;;         end do
+
+;;         ;; Write NetCDF output
+;;         ncdf_outfile = ncdf_write(grading, grading@ncdf_dir)
+
+;;         ;; Write results of temporary grading list
+;;         temp_dir = config_user_info@work_dir + "/"
+;;         if (diag_script_info@metric.eq."taylor") then
+;;             temp_dir = temp_dir + "taylor.nc"
+;;         else
+;;             temp_dir = temp_dir + "grading.nc"
+;;         end if
+
+;;         if (fileexists(temp_dir)) then
+;;             temp_file = addfile(temp_dir, "r")
+;;             temp_list = temp_file->temp_list
+;;             temp_list_string = tostring(temp_list)
+;;             temp_list_new_string = array_append_record(temp_list_string, \
+;;                                                        ncdf_dir, 0)
+;;             temp_list_new = tochar(temp_list_new_string)
+;;             system("rm -f " + temp_dir)
+;;         else
+;;             ncdf_char = tochar(ncdf_dir)
+;;             temp_list_new = new((/1, dimsizes(ncdf_char)/), character)
+;;             temp_list_new(0, :) = ncdf_char
+;;         end if
+
+;;         ;; Create new file and add list
+;;         temp = addfile(temp_dir, "c")
+;;         temp->temp_list = temp_list_new
+
+;;     end if
+
+;;     ;; ### PLOTTING ###########################################################
+
+;;     if (diag_script_info@draw_plots) then
+
+;;         ;; Convert units for plotting (if required)
+;;         if (isatt(variable_info, "plot_units")) then
+;;             var_all = convert_units(var_all, variable_info@plot_units)
+;;             if (diag_script_info@plot_diff) then
+;;                 var_diff = convert_units(var_diff, variable_info@plot_units)
+;;             end if
+;;         end if
+
+;;         ;; Plot output directory
+;;         output_dir = config_user_info@plot_dir
+
+
+;;         ;; CASE: cycle ########################################################
+;;         if (ptype.eq."cycle") then
+;;             outfile = output_dir + var0 + "_" + \
+;;                 ptype + "_" + time_avg + "_" + region_name
+;;             wks = gsn_open_wks(file_type, outfile)
+;;             wks@legendfile = outfile + "_legend"
+;;             var_all@res_tiMainString = varstring
+;;             var_all@res_tiMainString = var_all@res_tiMainString + \
+;;                 location + altitude
+;;             plot = cycle_plot(wks, var_all, var0)
+;;             draw(plot)
+;;             frame(wks)
+;;             log_info(" gv " + outfile + "." + file_type)
+;;         end if
+
+;;         ;; CASE: zonal ########################################################
+;;         if (ptype.eq."zonal") then
+;;             do imod = 0, dim_MOD - 1
+;;                 outfile = output_dir + \
+;;                     modelnames(imod) + "_" + var0 + "_" + ptype + "_" + \
+;;                     time_avg + region_name
+;;                 var = var_all(imod, :, :, 0)
+;;                 var@res_tiMainString = modelnames(imod)
+;;                 var@res_cnLevelSelectionMode = "ExplicitLevels"
+;;                 var@res_cnLevels = diag_script_info@abs_levs
+;;                 if (isatt(variable_info, "zonal_ymin")) then
+;;                     var@res_trYMinF = variable_info@zonal_ymin
+;;                 else
+;;                     var@res_trYMinF = 5.
+;;                 end if
+;;                 var@res_gsnLeftString = var@long_name + " [" + \
+;;                     format_units(var@units) + "]"
+;;                 wks = gsn_open_wks(file_type, outfile)
+;;                 if (isatt(variable_info, "zonal_ref_cmap")) then
+;;                     gsn_define_colormap(wks, variable_info@zonal_ref_cmap)
+;;                 else
+;;                     gsn_define_colormap(wks, "amwg_blueyellowred")
+;;                 end if
+;;                 plot = zonalmean_profile(wks, var, var0)
+;;                 draw(plot)
+;;                 frame(wks)
+;;                 log_info(" gv " + outfile + "." + file_type)
+;;                 delete(var@res_cnLevels)
+;;                 delete(wks)
+;;                 delete(plot)
+
+;;                 ;; Difference plot to the reference
+;;                 if (.not.diag_script_info@plot_diff .or. imod.eq.ref_ind) then
+;;                     continue
+;;                 end if
+;;                 var = var_diff(imod, :, :)
+;;                 outfile = output_dir + \
+;;                     modelnames(imod) + "-" + modelnames(ref_ind) + "_" + \
+;;                     var0 + "_" + ptype + "_" + time_avg + region_name
+;;                 var@res_tiMainString = modelnames(imod) + " - " + \
+;;                     modelnames(ref_ind)
+;;                 if (isatt(diag_script_info, "conf_level")) then
+;;                     var@res_gsnLeftString = var@res_gsnLeftString + " - " + \
+;;                     sprinti("%2i", toint(100 * diag_script_info@conf_level)) \
+;;                     + "% c.l."
+;;                 end if
+;;                 var@res_cnLevelSelectionMode = "ExplicitLevels"
+;;                 var@res_cnLevels = diag_script_info@diff_levs
+;;                 var@res_cnMissingValFillColor = "gray70"
+;;                 var@res_gsnSpreadColorEnd = -2
+;;                 wks = gsn_open_wks(file_type, outfile)
+;;                 gsn_merge_colormaps(wks, "temp_19lev", "gray70")
+;;                 plot = zonalmean_profile(wks, var, var0)
+
+;;                 ;; Stippling ;; FIX-ME False option not considered (see below)
+;;                 var = var_sig(imod, :, :)
+;;                 var@res_cnMissingValFillColor = -1
+;;                 var@res_gsnSpreadColorEnd = -2
+;;                 var@res_gsnDraw = False
+;;                 var@res_gsnFrame = False
+;;                 var@res_cnLevelSelectionMode = "ExplicitLevels"
+;;                 var@res_cnFillColors = (/"transparent", "black"/)
+;;                 var@res_cnLevels := diag_script_info@conf_level
+;;                 var@res_cnInfoLabelOn = False
+;;                 var@res_cnLinesOn = False
+;;                 var@res_cnLineLabelsOn = False
+;;                 var@res_lbLabelBarOn = False
+;;                 var@res_cnFillPattern = 17
+;;                 delete(var@long_name)
+;;                 plot2 = zonalmean_profile(wks, var, var0)
+;;                 overlay(plot, plot2)
+;;                 draw(plot)
+;;                 frame(wks)
+;;                 log_info(" gv " + outfile + "." + file_type)
+;;                 delete(var@res_cnLevels)
+;;                 delete(wks)
+;;                 delete(plot)
+;;                 delete(plot2)
+;;                 delete(var)
+;;             end do
+;;         end if
+
+;;         ;; CASE: latlon #######################################################
+;;         if (ptype.eq."latlon") then
+;;             do imod = 0, dim_MOD - 1
+;;                 outfile = output_dir + \
+;;                     modelnames(imod) + "_" + var0 + "_" + ptype + "_" + \
+;;                     time_avg + "_" + region_name
+;;                 var = var_all(imod, :, :, 0)
+;;                 var@projection = diag_script_info@projection
+;;                 var@res_cnLinesOn = False
+;;                 var@res_cnLevelSelectionMode = "ExplicitLevels"
+;;                 var@res_tiMainString = modelnames(imod)
+;;                 var@res_cnLevels = diag_script_info@abs_levs
+;;                 var@res_gsnLeftString = var@long_name + " [" + \
+;;                     format_units(var@units) + "]"
+
+;;                 ;; Append global field average
+;;                 if (diag_script_info@show_global_avg) then
+;;                     gavg = area_operations(var, -90., 90., 0., 360., \
+;;                                            "average", True)
+;;                     var@res_gsnRightString = \
+;;                         sprintf("%5.2f", gavg) + " " + format_units(var@units)
+;;                 end if
+;;                 wks = gsn_open_wks(file_type, outfile)
+;;                 if (isatt(variable_info, "map_ref_cmap")) then
+;;                     gsn_define_colormap(wks, variable_info@map_ref_cmap)
+;;                 else
+;;                     gsn_define_colormap(wks, "amwg_blueyellowred")
+;;                 end if
+;;                 plot = contour_map_ce(wks, var, var0)
+;;                 draw(plot)
+;;                 frame(wks)
+;;                 log_info(" gv " + outfile + "." + file_type)
+;;                 delete(var@res_cnLevels)
+;;                 delete(wks)
+;;                 delete(plot)
+
+;;                 ;; Difference plot to the reference
+;;                 if (.not.diag_script_info@plot_diff .or. imod.eq.ref_ind) then
+;;                     continue
+;;                 end if
+;;                 var = var_diff(imod, :, :)
+;;                 outfile = output_dir + \
+;;                     modelnames(imod) + "-" + modelnames(ref_ind) + "_" + \
+;;                     var0 + "_" + ptype + "_" + time_avg + "_" + region_name
+;;                 var@res_tiMainString = modelnames(imod) + " - " + \
+;;                     modelnames(ref_ind)
+;;                 if (isatt(diag_script_info, "conf_level")) then
+;;                     var@res_gsnLeftString = var@res_gsnLeftString + " - " + \
+;;                     sprinti("%2i", toint(100 * diag_script_info@conf_level)) \
+;;                     + "% c.l."
+;;                 end if
+;;                 var@res_cnLevelSelectionMode = "ExplicitLevels"
+;;                 var@res_cnLevels = diag_script_info@diff_levs
+;;                 var@res_cnMissingValFillColor = "gray70"
+;;                 var@res_gsnSpreadColorEnd = -2
+;;                 var@projection = diag_script_info@projection
+
+;;                 ;; Append global field averag
+;;                 if (diag_script_info@show_global_avg) then
+;;                     gavg = area_operations(var, -90., 90., 0., 360., \
+;;                                            "average", True)
+;;                     var@res_gsnRightString = \
+;;                         sprintf("%5.2f", gavg) + " " + format_units(var@units)
+;;                 end if
+;;                 wks = gsn_open_wks(file_type, outfile)
+;;                 gsn_merge_colormaps(wks, "temp_19lev", "gray70")
+;;                 plot = contour_map_ce(wks, var, var0)
+
+;;                 ;; Stippling/masking
+;;                 res2 = True
+;;                 res2@cnLevelSelectionMode = "ExplicitLevels"
+;;                 res2@cnLevels = (/0.0, diag_script_info@conf_level, 1.0/)
+;;                 res2@cnInfoLabelOn = False
+;;                 res2@cnLinesOn = False
+;;                 res2@cnLineLabelsOn = False
+;;                 res2@gsnDraw = False
+;;                 res2@gsnFrame = False
+;;                 plot2 = gsn_csm_contour(wks, var_sig(imod, :, :), res2)
+;;                 opt = True
+;;                 if (diag_script_info@stippling) then
+;;                     opt@gsnShadeFillType = "pattern"
+;;                     opt@gsnShadeMid = 17
+;;                 else
+;;                     opt@gsnShadeFillType = "color"
+;;                     opt@gsnShadeLow = "gray70"
+;;                 end if
+;;                 plot2 = gsn_contour_shade(plot2, diag_script_info@conf_level, \
+;;                                           999., opt)
+;;                 overlay(plot, plot2)
+;;                 draw(plot)
+;;                 frame(wks)
+;;                 log_info(" gv " + outfile + "." + file_type)
+;;                 delete(var@res_cnLevels)
+;;                 delete(wks)
+;;                 delete(plot)
+;;                 delete(plot2)
+;;                 delete(var)
+;;             end do
+
+;;         end if
+;;     end if
+
