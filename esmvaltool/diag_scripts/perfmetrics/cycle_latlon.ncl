@@ -1,0 +1,95 @@
+;;#############################################################################
+;; PROCEDURE FOR THE CYCLE-LATLON PLOT OF THE PERFORMANCE METRICS
+;; Authors: Mattia Righi (DLR, Germany) and Franziska Frank (DLR, Germany)
+;; ESMVal project
+;;#############################################################################
+
+procedure perfmetrics_ptype_script()
+begin
+
+    ;; Start loop over models, make sure reference and alternative models are
+    ;; calculated first
+    modidx = ispan(0, dim_MOD - 1, 1)
+    if (l_altern) then
+        modidx := array_append_record(ref_ind, \
+                                      modidx(ind(modidx.ne.ref_ind .and. \
+                                                 modidx.ne.alt_ind)), 0)
+    else
+        modidx := array_append_record(ref_ind, \
+                                      modidx(ind(modidx.ne.ref_ind)), 0)
+    end if
+
+    do ii = 0, dimsizes(modidx) - 1
+        
+        imod = modidx(ii)
+
+        log_debug("Processing " + modelnames(imod))
+
+        ;; Set path for saving processed data ;; FIX-ME add preproc_id
+        fullpath = config_user_info@work_dir + "/"
+        system("mkdir -p " + fullpath)
+        fname = basename(systemfunc("basename " + model_info@filename(imod)))
+        fname = fname + "_" + basename(diag_script) + "_latlon"
+        fname = fname + "_" + diag_script_info@time_avg
+        if (isatt(diag_script_info, "level")) then
+            fname = fname + "_" + diag_script_info@level  ; FIX-ME
+        end if
+        fname = fname + "_" + str_sub_str(diag_script_info@region, " ", "")
+        procpath = fullpath + fname + ".nc"
+
+        ;; Determine start/end year
+        start_year = get_start_year(imod)
+        end_year = get_end_year(imod)
+
+        ;; Read data
+        var = read_data(imod, var0, field_type0)
+        dnames = getVarDimNames(var)
+
+        ;; Extract region
+        var_reg = area_operations(var, region(0), region(1), \
+                                  region(2), region(3), "extract", True)
+        delete(var)
+
+        ;; Calculate time average
+        var_avg = time_operations(var_reg, start_year, end_year, \
+                                  "average", time_avg, True)
+        delete(var_reg)
+
+        ;; Standard deviation calculation for this ptype is not implemented
+        ;; yet in statistics.ncl (but is anyway not required here)
+
+        ;; Write output
+        var_all = new(array_append_record(dimsizes(var_avg), 2, 0), float)
+        var_all!2 = "statistic"
+        var_all&statistic = (/"mean", "stddev"/)
+        var_all(:, :, :, 0) = var_avg
+        var_all(:, :, :, 1) = var_std
+        var_all@var = var0
+        var_all@diag_script = (/diag_script/)
+        copy_VarAtts(diag_script_info, var_all)
+        var_all@ref_model = variable_info@reference_model
+        if (config_user_info@write_netcdf.eq."True") then
+            var_all@ncdf = procpath
+            ncdf_outfile = ncdf_write(var_all, procpath)
+        end if
+
+        ;; Store reference model
+        if (imod.eq.ref_ind) then
+            var_ref = var_all
+        end if
+
+        ;; Store alternative model
+        if (l_altern) then
+            if (imod.eq.ref_alt) then
+                var_alt = var_all
+            end if
+        end if
+
+        ;; Calculate grading
+        if (.not.diag_script_info@calc_grading) then
+            continue
+        end if
+
+    end do
+
+end
