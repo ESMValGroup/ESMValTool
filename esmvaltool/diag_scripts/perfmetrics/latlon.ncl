@@ -7,9 +7,6 @@
 procedure perfmetrics_ptype_script()
 begin
 
-    ;; Define output variable
-    modelnames = project_style(diag_script_info, "annots")
-
     ;; Start loop over models, make sure reference model is calculated first
     modidx = ispan(0, dim_MOD - 1, 1)
     modidx := array_append_record(ref_ind, modidx(ind(modidx.ne.ref_ind)), 0)
@@ -146,6 +143,7 @@ begin
         copy_VarCoords(plot_var, mask_var)
         delete(prob)
 
+        ;; Mask non-significant values
         res2 = True
         res2@cnLevelSelectionMode = "ExplicitLevels"
         res2@cnLevels = (/0.0, diag_script_info@conf_level, 1.0/)
@@ -158,7 +156,7 @@ begin
         opt = True
         if (diag_script_info@stippling) then
             opt@gsnShadeFillType = "pattern"
-            opt@gsnShadeMid = 17
+            opt@gsnShadeLow = 17
         else
             opt@gsnShadeFillType = "color"
             opt@gsnShadeLow = "gray70"

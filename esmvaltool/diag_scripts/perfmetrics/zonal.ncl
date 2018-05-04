@@ -7,9 +7,6 @@
 procedure perfmetrics_ptype_script()
 begin
 
-    ;; Define output variable
-    modelnames = project_style(diag_script_info, "annots")
-
     ;; Start loop over models, make sure reference model is calculated first
     modidx = ispan(0, dim_MOD - 1, 1)
     modidx := array_append_record(ref_ind, modidx(ind(modidx.ne.ref_ind)), 0)
@@ -119,6 +116,7 @@ begin
         wks = gsn_open_wks(file_type, outfile)
         gsn_merge_colormaps(wks, "temp_19lev", "gray70")
         plot = zonalmean_profile(wks, plot_var, var0)
+        delete(plot_var@res_cnLevels)
 
         ;; Apply t-test (assuming different population variances)
         if (.not.diag_script_info@t_test) then
@@ -134,26 +132,29 @@ begin
         plot_var = 1. - prob
         delete(prob)
 
-        ;; Stippling ;; FIX-ME False option not considered (see latlon case)
+        ;; Mask non-significant values
         plot_var@res_cnMissingValFillColor = -1
-        plot_var@res_gsnSpreadColorEnd = -2
         plot_var@res_gsnDraw = False
         plot_var@res_gsnFrame = False
         plot_var@res_cnLevelSelectionMode = "ExplicitLevels"
-        plot_var@res_cnFillColors = (/"transparent", "black"/)
         plot_var@res_cnLevels := diag_script_info@conf_level
+        if (diag_script_info@stippling) then
+            plot_var@res_cnFillColors = (/"transparent", "black"/)
+            plot_var@res_cnFillPattern = 17
+        else
+            plot_var@res_cnFillColors = (/"transparent", "gray70"/)
+        end if
         plot_var@res_cnInfoLabelOn = False
         plot_var@res_cnLinesOn = False
         plot_var@res_cnLineLabelsOn = False
         plot_var@res_lbLabelBarOn = False
-        plot_var@res_cnFillPattern = 17
+        plot_var@res_gsnLeftString = ""
         delete(plot_var@long_name)
         plot2 = zonalmean_profile(wks, plot_var, var0)
         overlay(plot, plot2)
         draw(plot)
         frame(wks)
         log_info(" gv " + outfile + "." + file_type)
-        delete(plot_var@res_cnLevels)
         delete(wks)
         delete(plot)
         delete(plot2)

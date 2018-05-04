@@ -136,10 +136,10 @@ begin
                              (/"legend_outside", "styleset", "plot_stddev"/))
     end if
 
-    if (ptype.eq."zonal" .or. ptype.eq."latlon" .and. \
+    if ((ptype.eq."zonal" .or. ptype.eq."latlon") .and. \
         diag_script_info@region.ne."Global") then
         error_msg("f", diag_script, "", "plot_type " + ptype + \
-                  "implemented only for region='Global'")
+                  " implemented only for region='Global'")
     end if
 
     ;; Check valid field
@@ -190,7 +190,7 @@ begin
 ;;TBR    diag_script_base = basename(diag_script)
 
     ;; Unique names for models
-;;TBR    modelnames = project_style(diag_script_info, "annots")
+    modelnames = project_style(diag_script_info, "annots")
 
     ;; Check for reference model definition
     if (variable_info@reference_model.eq."None") then

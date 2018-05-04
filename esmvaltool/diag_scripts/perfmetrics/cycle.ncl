@@ -8,7 +8,6 @@ procedure perfmetrics_ptype_script()
 begin
 
     ;; Define output variable
-    modelnames = project_style(diag_script_info, "annots")
     if (diag_script_info@time_avg.eq."seasonalclim") then
         var_all = new((/dim_MOD, 4, 2/), float)
         var_all!1 = "season"
