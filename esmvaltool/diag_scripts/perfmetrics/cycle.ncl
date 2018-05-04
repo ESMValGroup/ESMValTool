@@ -7,7 +7,7 @@
 procedure perfmetrics_ptype_script()
 begin
 
-    ;; Define output variable
+    ;; Define output array
     if (diag_script_info@time_avg.eq."seasonalclim") then
         var_all = new((/dim_MOD, 4, 2/), float)
         var_all!1 = "season"
@@ -33,6 +33,9 @@ begin
     var_all@diag_script = (/diag_script/)
     copy_VarAtts(diag_script_info, var_all)
     var_all@ref_model = variable_info@reference_model
+
+    ;; Define region
+    region = select_region(diag_script_info@region)
 
     ;; Loop over models
     do imod = 0, dim_MOD - 1
@@ -60,7 +63,6 @@ begin
         dnames = getVarDimNames(var)
 
         ;; Extract region and average over latitude and longitude
-        region = select_region(diag_script_info@region)
         if (any(field_type0.eq.(/"T0M", "T0Ms", "T1M"/))) then
             var_reg = var
         else if (any(dnames.eq."lat") .and. any(dnames.eq."lon")) then

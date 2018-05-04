@@ -7,11 +7,10 @@
 procedure perfmetrics_ptype_script()
 begin
 
-    ;; Start loop over models, make sure reference and alternative models are
-    ;; calculated first
+    ;; Set model indexes, with reference and alternative models first
     modidx = ispan(0, dim_MOD - 1, 1)
     if (l_altern) then
-        modidx := array_append_record(ref_ind, \
+        modidx := array_append_record((/ref_ind, alt_ind/), \
                                       modidx(ind(modidx.ne.ref_ind .and. \
                                                  modidx.ne.alt_ind)), 0)
     else
@@ -19,6 +18,10 @@ begin
                                       modidx(ind(modidx.ne.ref_ind)), 0)
     end if
 
+    ;; Define region
+    region = select_region(diag_script_info@region)
+
+    ;; Loop over models
     do ii = 0, dimsizes(modidx) - 1
         
         imod = modidx(ii)
@@ -29,7 +32,7 @@ begin
         fullpath = config_user_info@work_dir + "/"
         system("mkdir -p " + fullpath)
         fname = basename(systemfunc("basename " + model_info@filename(imod)))
-        fname = fname + "_" + basename(diag_script) + "_latlon"
+        fname = fname + "_" + basename(diag_script) + "_cycle_latlon"
         fname = fname + "_" + diag_script_info@time_avg
         if (isatt(diag_script_info, "level")) then
             fname = fname + "_" + diag_script_info@level  ; FIX-ME
@@ -52,7 +55,7 @@ begin
 
         ;; Calculate time average
         var_avg = time_operations(var_reg, start_year, end_year, \
-                                  "average", time_avg, True)
+                                  "average", diag_script_info@time_avg, True)
         delete(var_reg)
 
         ;; Standard deviation calculation for this ptype is not implemented
@@ -60,10 +63,9 @@ begin
 
         ;; Write output
         var_all = new(array_append_record(dimsizes(var_avg), 2, 0), float)
-        var_all!2 = "statistic"
+        var_all!3 = "statistic"
         var_all&statistic = (/"mean", "stddev"/)
         var_all(:, :, :, 0) = var_avg
-        var_all(:, :, :, 1) = var_std
         var_all@var = var0
         var_all@diag_script = (/diag_script/)
         copy_VarAtts(diag_script_info, var_all)
@@ -80,7 +82,7 @@ begin
 
         ;; Store alternative model
         if (l_altern) then
-            if (imod.eq.ref_alt) then
+            if (imod.eq.alt_ind) then
                 var_alt = var_all
             end if
         end if

@@ -1,5 +1,5 @@
 ;;#############################################################################
-;; PROCEDURE FOR THE ZONAL PLOT OF THE PERFORMANCE METRICS
+;; PROCEDURE FOR THE LATLON PLOT OF THE PERFORMANCE METRICS
 ;; Authors: Mattia Righi (DLR, Germany) and Franziska Frank (DLR, Germany)
 ;; ESMVal project
 ;;#############################################################################
@@ -7,10 +7,11 @@
 procedure perfmetrics_ptype_script()
 begin
 
-    ;; Start loop over models, make sure reference model is calculated first
+    ;; Set model indexes, with reference model first
     modidx = ispan(0, dim_MOD - 1, 1)
     modidx := array_append_record(ref_ind, modidx(ind(modidx.ne.ref_ind)), 0)
 
+    ;; Loop over models
     do ii = 0, dimsizes(modidx) - 1
         
         imod = modidx(ii)
