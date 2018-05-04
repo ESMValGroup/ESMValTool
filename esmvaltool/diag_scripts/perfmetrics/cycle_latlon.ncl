@@ -18,9 +18,6 @@ begin
                                       modidx(ind(modidx.ne.ref_ind)), 0)
     end if
 
-    ;; Define region
-    region = select_region(diag_script_info@region)
-
     ;; Loop over models
     do ii = 0, dimsizes(modidx) - 1
         
@@ -75,6 +72,11 @@ begin
             ncdf_outfile = ncdf_write(var_all, procpath)
         end if
 
+        ;; Calculate grading
+        if (.not.diag_script_info@calc_grading) then
+            continue
+        end if
+
         ;; Store reference model
         if (imod.eq.ref_ind) then
             var_ref = var_all
@@ -88,10 +90,34 @@ begin
         end if
 
         ;; Calculate grading
-        if (.not.diag_script_info@calc_grading) then
+        locidx = ind(modelnames(imod).eq.grading&models)
+        if (ismissing(locidx)) then
             continue
+        end if
+        if (diag_script_info@metric.eq."taylor") then
+            grading(0, locidx, 0) = \
+                calculate_metric(var_all(:, :, :, 0), \
+                                 var_ref(:, :, :, 0), \
+                                 "stddev_ratio")
+            grading(0, locidx, 1) = \
+                calculate_metric(var_all(:, :, :, 0), \
+                                 var_ref(:, :, :, 0), \
+                                 "correlation")
+        else
+            grading(0, locidx, 0) = \
+                calculate_metric(var_all(:, :, :, 0), \
+                                 var_ref(:, :, :, 0), \
+                                 diag_script_info@metric)
+            if (l_altern) then
+                grading(0, locidx, 1) = \
+                    calculate_metric(var_all(:, :, :, 0), \
+                                     var_alt(:, :, :, 0), \
+                                     diag_script_info@metric)
+            end if
         end if
 
     end do
+
+
 
 end

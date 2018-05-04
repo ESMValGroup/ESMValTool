@@ -34,9 +34,6 @@ begin
     copy_VarAtts(diag_script_info, var_all)
     var_all@ref_model = variable_info@reference_model
 
-    ;; Define region
-    region = select_region(diag_script_info@region)
-
     ;; Loop over models
     do imod = 0, dim_MOD - 1
 

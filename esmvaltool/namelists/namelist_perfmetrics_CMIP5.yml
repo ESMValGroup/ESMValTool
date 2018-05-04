@@ -144,8 +144,6 @@ diagnostics:
         calc_grading: true             # Calculate grading
         metric: RMSD                   # Metric ('RMSD', 'BIAS', taylor')
         normalization: centered_median # Normalization ('mean', 'median', 'centered_median')
-        MultiModelMean: true           # Multi-model mean
-        MultiModelMedian: true         # Multi-model median
       taylor: &taylor_settings
         <<: *grading_settings
         metric: taylor                 # Metric ('RMSD', 'BIAS', taylor')
@@ -171,6 +169,7 @@ diagnostics:
         plot_diff: true          # Draw difference plots
         t_test: true             # Calculate t-test in difference plots
         conf_level: 0.95         # Confidence level for the t-test
+        stippling: true          # Mask non-significant values with stippling
         abs_levs: [200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300] # Contour levels for absolute plot
         diff_levs: [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10]               # Contour levels for difference plot
       
