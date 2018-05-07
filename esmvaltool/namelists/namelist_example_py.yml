@@ -40,4 +40,4 @@ diagnostics:
         field: T2Ms
     scripts:
       script1:
-        script: example_diagnostic.py
+        script: examples/diagnostic.py
