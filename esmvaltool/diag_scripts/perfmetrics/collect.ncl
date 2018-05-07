@@ -4,13 +4,14 @@
 ;; ESMVal project
 ;;#############################################################################
 ;; Description
-;;    Collects metrics previously calculated by perfmetrics_grading.ncl and
-;;    passes them to the portrait_plot function
+;;    Collects metrics previously calculated by main.ncl and passes them to the
+;;    portrait_plot or to the taylor function
 ;;
 ;; Required diag_script_info attributes
-;;    label_bounds: min and max of the labelbar
-;;    label_scale: bin width of the labelbar
-;;    colormap: color table of the labelbar
+;;    metric: selected metric (RMSD, BIAS or taylor)
+;;    label_bounds (for RMSD and BIAS): min and max of the labelbar
+;;    label_scale (for RMSD and BIAS): bin width of the labelbar
+;;    colormap (for RMSD and BIAS): color table of the labelbar
 ;;
 ;; Optional diag_script_info attributes
 ;;    label_lo: add lower triange for values outside range
@@ -27,6 +28,7 @@
 ;; Caveats
 ;;
 ;; Modification history
+;;    20180508-A_righ_ma: renamed and generalized
 ;;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;;                        of the code
 ;;    20150325-A_laue_ax: modified reference tags used for acknowledgements
@@ -64,8 +66,11 @@ begin
                      (/"P_embrace", "P_esmval"/))
 
     ;; List of grading files
-    input_files = diag_script_info@input_files + "/grading.nc"
+    input_files = diag_script_info@input_files + "/" + \
+        diag_script_info@metric +  ".nc"
     input_files := tostring(input_files)
+
+    print(input_files)
 
     ;; Loop over files in the list, read and append data
     do ii = 0, dimsizes(input_files) - 1
