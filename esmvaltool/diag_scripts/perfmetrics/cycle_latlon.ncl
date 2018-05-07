@@ -89,7 +89,7 @@ begin
             end if
         end if
 
-        ;; Calculate grading
+        ;; Loop over requested metrics
         do met = 0, nmetrics - 1
 
             if (diag_script_info@metric(met).eq."taylor") then
