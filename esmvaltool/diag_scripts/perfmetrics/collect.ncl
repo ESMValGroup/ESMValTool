@@ -44,6 +44,7 @@ load "interface_scripts/interface.ncl"
 
 load "./diag_scripts/shared/plot/style.ncl"
 load "./diag_scripts/shared/plot/portrait_plot.ncl"
+load "./diag_scripts/shared/plot/taylor_plot.ncl"
 
 begin
 
@@ -70,17 +71,14 @@ begin
         diag_script_info@metric +  ".nc"
     input_files := tostring(input_files)
 
-    print(input_files)
+    ;; Filter out non-existing files
+    input_files := input_files(ind(isfilepresent(input_files)))
 
     ;; Loop over files in the list, read and append data
     do ii = 0, dimsizes(input_files) - 1
 
         f = addfile(input_files(ii), "r")
         curr_file = tostring(f->temp_list)
-        if (.not.fileexists(curr_file)) then
-            error_msg("f", diag_script, "", \
-                      "cannot find grading list element:" + temp_dir)
-        end if
         data_temp = ncdf_read(curr_file, "grade")
 
         ;; Change to 3 dimensional
@@ -104,13 +102,18 @@ begin
             data_all&models = data_temp&models
         end if
 
-        ;; If model coordinates are identical
-        if (dimsizes(data_temp&models).eq.dimsizes(data_all&models)) \
-           .and. all(data_temp&models.eq.data_all&models) then
+        ;; Make sure model coordinate is consistent
+        consistent = False
+        if (dimsizes(data_temp&models).eq.dimsizes(data_all&models)) then
+            if (all(data_temp&models.eq.data_all&models)) then
+                consistent = True
+            end if
+        end if
+
+        ;; Append data
+        if (consistent) then
            data_all(ii, :, :) = (/data_temp/)
            copy_VarCoords(data_temp, data_all(ii:ii, :, :))
-
-        ;; Add current model if not already part of the model coordinate
         else
             do imod2 = 0, dimsizes(data_temp&models) - 1
                 if (.not.any(data_temp&models(imod2).eq.data_all&models)) then
@@ -152,7 +155,7 @@ begin
     delete(data_all@var)
     delete(data_all@title)
     delete(data_all@ncdf_dir)
-    if(isatt(data_all, "reference")) then
+    if (isatt(data_all, "reference")) then
         delete(data_all@reference)
     end if
 
@@ -174,38 +177,43 @@ begin
 
     ;; Attach plotting options
     copy_VarAtts(diag_script_info, data_all)
-    if(isatt(diag_script_info, "title")) then
+    if (isatt(diag_script_info, "title")) then
         data_all@res_tiMainString = diag_script_info@title
     end if
-
-    ;; Plot
-    if (config_user_info@write_plots.eq.True) then
-        ;; Create outfile directory
-        plot_dir = config_user_info@plot_dir
-        system("mkdir -p " + plot_dir)
-        if(dimsizes(data_all&diagnostics).gt.2) then
-            diags = data_all&diagnostics(0) + "_to_" + \
-                data_all&diagnostics(dimsizes(data_all&diagnostics) - 1)
-        else
-            diags = str_concat(data_all&diagnostics)
-        end if
-
-        ;; Define outfile name
-        outfile_plot = plot_dir + diags
-        if (isatt(data_all, "metric")) then
-            outfile_plot = outfile_plot + "_" + data_all@metric
-        end if
-        outfile_plot = outfile_plot + "_grading"
-
-        ;; Create workspace
-        wks = gsn_open_wks(file_type, outfile_plot)
-
-        ;; Call plotting function
-        plot = portrait_plot(wks, data_all, "grade")
-
-        log_info(" gv " + outfile_plot + "." + file_type)
-
+    if (diag_script_info@metric.eq."taylor") then
+        data_all@res_varLabels = data_all&models
+        data_all@res_caseLabels = data_all&diagnostics
     end if
+
+    ;; Create outfile directory
+    system("mkdir -p " + config_user_info@plot_dir)
+    if (dimsizes(data_all&diagnostics).gt.1) then
+        diags = data_all&diagnostics(0) + "_to_" + \
+            data_all&diagnostics(dimsizes(data_all&diagnostics) - 1)
+    else
+        diags = str_concat(data_all&diagnostics)
+    end if
+
+    ;; Define outfile name
+    outfile_plot = config_user_info@plot_dir + diags
+    if (isatt(data_all, "metric")) then
+        outfile_plot = outfile_plot + "_" + data_all@metric
+    end if
+
+    ;; Create workspace
+    wks = gsn_open_wks(file_type, outfile_plot)
+    if (diag_script_info@metric.eq."taylor") then
+        wks@legendfile = outfile_plot + "_legend"
+    end if
+
+    ;; Call plotting function
+    if (diag_script_info@metric.eq."taylor") then
+        plot  = taylor_plot(wks, data_all, "grade")
+    else
+        plot = portrait_plot(wks, data_all, "grade")
+    end if
+
+    log_info(" gv " + outfile_plot + "." + file_type)
 
     leave_msg(diag_script, "")
 

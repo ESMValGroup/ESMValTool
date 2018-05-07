@@ -331,11 +331,11 @@ begin
             ;; Reduce dimensionality if no alternative model
             if (.not.l_altern .and. diag_script_info@metric.ne."taylor") then
                 metric := metric(:, :, 0)
-                delete(grading@reference)
+                delete(metric@reference)
             end if
 
             ;; Attach attributes to the results
-            metric@title = diag_script_info@metric(met) + "metric"
+            metric@title = diag_script_info@metric(met) + " metric"
             metric@long_name = \
                 "Grading table of metric " + diag_script_info@metric(met)
             metric@metric = diag_script_info@metric(met)
