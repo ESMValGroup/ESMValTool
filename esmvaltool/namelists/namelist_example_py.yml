@@ -7,22 +7,37 @@ models:
   - {model: ERA-Interim, project: OBS,    tier: 3,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
 
 preprocessors:
-  preprocessor_1:
+
+  preprocessor1:
     extract_levels:
       levels: 85000
       scheme: nearest
     regrid:
       target_grid: ERA-Interim
       scheme: linear
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+
+  preprocessor2:
+    regrid:
+      target_grid: ERA-Interim
+      scheme: linear
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
 
 diagnostics:
-  ta_diagnostic:
-    description: Air temperature Python tutorial diagnostics.
+
+  diagnostic1:
+    description: Air temperature and precipitation Python tutorial diagnostic.
     variables:
       ta:
-        preprocessor: preprocessor_1
+        preprocessor: preprocessor1
         field: T3M
+      pr:
+        preprocessor: preprocessor2
+        field: T2Ms
     scripts:
-      test_ta:
+      script1:
         script: example_diagnostic.py
-        title: "Python example diagnostic"

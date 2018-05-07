@@ -1,62 +1,46 @@
 """Python example diagnostic."""
 import logging
 import os
-import sys
 
 import iris
-import iris.quickplot as qplt
-import matplotlib.pyplot as plt
-import yaml
 
-logger = logging.getLogger(__name__)
+from esmvaltool.diag_scripts.shared import run_diagnostic
+from esmvaltool.diag_scripts.shared.plot import example_map_plot
 
-
-def get_cfg():
-    """Read diagnostic script configuration from settings.yml."""
-    settings_file = sys.argv[1]
-    with open(settings_file) as file:
-        cfg = yaml.safe_load(file)
-    return cfg
+logger = logging.getLogger(os.path.basename(__file__))
 
 
-def get_input_files(cfg, index=0):
-    """Get a dictionary with input files from metadata.yml files."""
-    metadata_file = cfg['input_files'][index]
-    with open(metadata_file) as file:
-        metadata = yaml.safe_load(file)
-    return metadata
+def main(cfg):
+    """Compute the time average for each input model."""
+    for filename, attributes in cfg['input_data'].items():
+        logger.info("Processing variable %s from model %s",
+                    attributes['standard_name'], attributes['model'])
 
+        logger.debug("Loading %s", filename)
+        cube = iris.load_cube(filename)
 
-def plot2d(cube, filename):
-    logger.info("Creating %s", filename)
-    fig = plt.figure()
-    qplt.pcolormesh(cube)
-    plt.gca().coastlines()
-    fig.savefig(filename)
+        logger.debug("Running example computation")
+        cube = cube.collapsed('time', iris.analysis.MEAN)
 
-
-def main():
-
-    cfg = get_cfg()
-    logger.setLevel(cfg['log_level'].upper())
-
-    input_files = get_input_files(cfg)
-    os.makedirs(cfg['plot_dir'])
-
-    for variable_name, filenames in input_files.items():
-        logger.info("Processing variable %s", variable_name)
-        for filename, attributes in filenames.items():
-            plot_filename = os.path.join(
-                cfg['plot_dir'],
-                os.path.splitext(os.path.basename(filename))[0] + '.png',
+        name = os.path.splitext(os.path.basename(filename))[0] + '_mean'
+        if cfg['write_netcdf']:
+            path = os.path.join(
+                cfg['work_dir'],
+                name + '.nc',
             )
-            cube = iris.load_cube(filename)
-            cube = cube.collapsed('time', iris.analysis.MEAN)
-            plot2d(cube, plot_filename)
+            logger.debug("Saving analysis results to %s", path)
+            iris.save(cube, target=path)
+
+        if cfg['write_plots']:
+            path = os.path.join(
+                cfg['plot_dir'],
+                name + '.' + cfg['output_file_type'],
+            )
+            logger.debug("Plotting analysis results to %s", path)
+            example_map_plot(cube, filename=path)
 
 
 if __name__ == '__main__':
-    iris.FUTURE.netcdf_promote = True
-    logging.basicConfig(format="%(asctime)s [%(process)d] %(levelname)-8s "
-                        "%(name)s,%(lineno)s\t%(message)s")
-    main()
+
+    with run_diagnostic() as config:
+        main(config)
