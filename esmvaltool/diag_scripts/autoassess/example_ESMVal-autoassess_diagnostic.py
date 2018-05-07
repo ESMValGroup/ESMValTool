@@ -1,13 +1,11 @@
 """Python example diagnostic."""
 import logging
 import os
+import pickle
 import sys
 
 import iris
-import iris.quickplot as qplt
-import matplotlib.pyplot as plt
 import yaml
-import pickle
 
 logger = logging.getLogger(__name__)
 
