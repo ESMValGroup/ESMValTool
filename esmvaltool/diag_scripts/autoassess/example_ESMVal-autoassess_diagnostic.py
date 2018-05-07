@@ -79,6 +79,7 @@ def main():
     print(sys_call)
     os.system(sys_call)
 
+
 if __name__ == '__main__':
     iris.FUTURE.netcdf_promote = True
     logging.basicConfig(format="%(asctime)s [%(process)d] %(levelname)-8s "
