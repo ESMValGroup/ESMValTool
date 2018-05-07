@@ -181,9 +181,11 @@ begin
 
     ;; Check metric
     if (diag_script_info@calc_grading) then
-        exit_if_missing_atts(diag_script_info, (/"metric"/))
-        if (diag_script_info@metric.ne."taylor") then
-            exit_if_missing_atts(diag_script_info, (/"normalization"/))
+        exit_if_missing_atts(diag_script_info, (/"metric", "normalization"/))
+        if (dimsizes(diag_script_info@metric).ne.\
+            dimsizes(diag_script_info@normalization)) then
+            error_msg("f", diag_script, "", "normalization must be " + \
+                      "provided for each requested metric")
         end if
     end if
 
@@ -199,17 +201,18 @@ begin
     if (isatt(variable_info, "alternative_model")) then
         l_altern = True
         nobs = 2
-        tmp = get_ref_model_idx(model_info, \
-                                (/variable_info@reference_model, \
-                                  variable_info@alternative_model/))
-        ref_ind = tmp(0)
-        alt_ind = tmp(1)
+        ref_inds = get_ref_model_idx(model_info, \
+                                     (/variable_info@reference_model, \
+                                       variable_info@alternative_model/))
+        ref_ind = ref_inds(0)
+        alt_ind = ref_inds(1)
     else
         l_altern = False
         nobs = 1
-        tmp = get_ref_model_idx(model_info, variable_info@reference_model)
+        ref_inds = get_ref_model_idx(model_info, variable_info@reference_model)
+        ref_ind = ref_inds
     end if
-    delete(tmp)
+
 
     ;; Create output plot directory
     if (diag_script_info@draw_plots) then
@@ -257,40 +260,39 @@ begin
             var0_grade = var0_grade + "-" + diag_script_info@level ;; FIX-ME
         end if
 
-        ;; Define grading filename
-        ncdf_dir = config_user_info@work_dir + "/" + \
-            diag_script_info@metric + "_" + var0_grade + ".nc"
+        ;; Define grading arrays
+        nmetrics = dimsizes(diag_script_info@metric)
+        ncdf_dir = new(nmetrics, string)
+        nmodels = dimsizes(modelnames) - nobs
 
-        ;; Array of grades
-        if (diag_script_info@metric.eq."taylor") then
-            nmodels = dimsizes(modelnames) - 1  ;; always 1 reference model
-            grading = new((/1, nmodels, 2/), float)
-            grading!0 = "diagnostics"  ;; dummy coord. to facilitate appending
-            grading!1 = "models"
-            grading!2 = "statistic"
-            grading&diagnostics = var0_grade
-            grading&statistic = (/"stddev_ratio", "correlation"/)
-            grading&models = remove_index(modelnames, ref_ind)
-        else
-            nmodels = dimsizes(modelnames) - nobs
-            grading = new((/1, nmodels, nobs/), float)
-            grading!0 = "diagnostics"  ;; dummy coord. to facilitate appending
-            grading!1 = "models"
-            grading!2 = "reference"
-            grading&diagnostics = var0_grade
-            if (l_altern) then
-                grading&models = remove_index(modelnames, (/ref_ind, alt_ind/))
-                if (isdim(grading, "reference")) then
-                    grading&reference = modelnames((/ref_ind, alt_ind/))
-                end if
-            else
-                grading&models = remove_index(modelnames, ref_ind)
-                if (isdim(grading, "reference")) then
-                    grading&reference = modelnames(ref_ind)
-                end if
-            end if
+        grading = new((/nmetrics, 1, nmodels, nobs/), float)
+        grading!0 = "metric"
+        grading!1 = "diagnostics"  ;; dummy coord. to facilitate appending
+        grading!2 = "models"
+        grading!3 = "reference"
+        grading&diagnostics = var0_grade
+        grading&models = remove_index(modelnames, ref_inds)
+        if (isdim(grading, "reference")) then
+            grading&reference = modelnames(ref_inds)
         end if
-        grading@ncdf_dir = ncdf_dir
+
+        ;; Special case Taylor
+        if (any(diag_script_info@metric.eq."taylor")) then
+            nmodels = dimsizes(modelnames) - 1  ;; always 1 reference model
+            taylor = new((/1, nmodels, 2/), float)
+            taylor!0 = "diagnostics"  ;; dummy coord. to facilitate appending
+            taylor!1 = "models"
+            taylor!2 = "statistic"
+            taylor&diagnostics = var0_grade
+            taylor&statistic = (/"stddev_ratio", "correlation"/)
+            taylor&models = remove_index(modelnames, ref_ind)
+        end if
+
+        ;; Define grading filename
+        do met = 0, nmetrics - 1
+            ncdf_dir(met) = config_user_info@work_dir + "/" + \
+                diag_script_info@metric(met) + "_" + var0_grade + ".nc"
+        end do
 
     end if
 
@@ -302,68 +304,79 @@ end
 
 begin
 
+    ;; Call plot-type-specific script
     perfmetrics_ptype_script()
+
 
     ;; Finalize grading calculations
     if (diag_script_info@calc_grading) then
 
-        ;; Apply normalization
-        if (diag_script_info@metric.ne."taylor") then
-            do iobs = 0, nobs - 1
-                grading(:, :, iobs) = \
-                    normalize_metric(grading(:, :, iobs), \
-                                     diag_script_info@normalization)
+        do met = 0, nmetrics - 1
+
+            if (diag_script_info@metric(met).eq."taylor") then
+                metric = taylor
+            else
+                metric = grading(met, :, :, :)
+            end if
+
+            ;; Apply normalization
+            if (diag_script_info@metric(met).ne."taylor") then
+                do iobs = 0, nobs - 1
+                    metric(:, :, iobs) = \
+                        normalize_metric(metric(:, :, iobs), \
+                                         diag_script_info@normalization(met))
+                end do
+            end if
+
+            ;; Reduce dimensionality if no alternative model
+            if (.not.l_altern .and. diag_script_info@metric.ne."taylor") then
+                metric := metric(:, :, 0)
+                delete(grading@reference)
+            end if
+
+            ;; Attach attributes to the results
+            metric@title = diag_script_info@metric(met) + "metric"
+            metric@long_name = \
+                "Grading table of metric " + diag_script_info@metric(met)
+            metric@metric = diag_script_info@metric(met)
+            metric@diag_script = (/diag_script/)
+            metric@var = "grade"
+            metric@region = location
+            metric@num_climofiles = dimsizes(model_info@model) ;; FIX-ME ?
+            do imod = 0, dimsizes(model_info@model) - 1
+                num_climo = "climofile_" + imod
+                metric@$num_climo$ = input_file_info@filename(imod)
             end do
-        end if
+            metric@ncdf_dir = ncdf_dir(met)
 
-        ;; Reduce dimensionality if no alternative model
-        if (.not.l_altern .and. diag_script_info@metric.ne."taylor") then
-            grading := grading(:, :, 0)
-            delete(grading@reference)
-        end if
+            ;; Write NetCDF output
+            ncdf_outfile = ncdf_write(metric, metric@ncdf_dir)
 
-        ;; Attach attributes to the results
-        grading@title = diag_script_info@metric + "metric"
-        grading@long_name = \
-            "Grading table of metric " + diag_script_info@metric
-        grading@metric = diag_script_info@metric
-        grading@diag_script = (/diag_script/)
-        grading@var = "grade"
-        grading@region = location
-        grading@num_climofiles = dimsizes(model_info@model) ;; FIX-ME ?
-        do imod = 0, dimsizes(model_info@model) - 1
-            num_climo = "climofile_" + imod
-            grading@$num_climo$ = input_file_info@filename(imod)
+            ;; Write results of temporary grading list
+            temp_dir = config_user_info@work_dir + "/" + \
+                diag_script_info@metric(met) + ".nc"
+
+            if (fileexists(temp_dir)) then
+                temp_file = addfile(temp_dir, "r")
+                temp_list = temp_file->temp_list
+                temp_list := tostring(temp_list)
+                temp_list := array_append_record(temp_list, \
+                                                 ncdf_dir(met), 0)
+                temp_list := tochar(temp_list)
+                system("rm -f " + temp_dir)
+            else
+                ncdf_char = tochar(ncdf_dir(met))
+                temp_list = new((/1, dimsizes(ncdf_char)/), character)
+                temp_list(0, :) = ncdf_char
+            end if
+
+            ;; Create new file and add list
+            temp = addfile(temp_dir, "c")
+            temp->temp_list = temp_list
+
+            delete([/metric, temp_dir, temp_list, ncdf_char/])
+
         end do
-
-        ;; Write NetCDF output
-        ncdf_outfile = ncdf_write(grading, grading@ncdf_dir)
-
-        ;; Write results of temporary grading list
-        temp_dir = config_user_info@work_dir + "/"
-        if (diag_script_info@metric.eq."taylor") then
-            temp_dir = temp_dir + "taylor.nc"
-        else
-            temp_dir = temp_dir + "grading.nc"
-        end if
-
-        if (fileexists(temp_dir)) then
-            temp_file = addfile(temp_dir, "r")
-            temp_list = temp_file->temp_list
-            temp_list_string = tostring(temp_list)
-            temp_list_new_string = array_append_record(temp_list_string, \
-                                                       ncdf_dir, 0)
-            temp_list_new = tochar(temp_list_new_string)
-            system("rm -f " + temp_dir)
-        else
-            ncdf_char = tochar(ncdf_dir)
-            temp_list_new = new((/1, dimsizes(ncdf_char)/), character)
-            temp_list_new(0, :) = ncdf_char
-        end if
-
-        ;; Create new file and add list
-        temp = addfile(temp_dir, "c")
-        temp->temp_list = temp_list_new
 
     end if
 
