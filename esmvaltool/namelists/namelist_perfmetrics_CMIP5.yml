@@ -100,19 +100,19 @@ preprocessors:
       statistics: [mean, median]
       exclude: [reference_model, alternative_model]
     
-  ppALL:
-    extract_levels:
-      levels: ERA-Interim
-      scheme: linear
-    regrid:
-      target_grid: ERA-Interim
-      scheme: linear
-    mask_fillvalues:
-      threshold_fraction: 0.95
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean, median]
-      exclude: [reference_model, alternative_model]
+#   ppALL:
+#     extract_levels:
+#       levels: ERA-Interim
+#       scheme: linear
+#     regrid:
+#       target_grid: ERA-Interim
+#       scheme: linear
+#     mask_fillvalues:
+#       threshold_fraction: 0.95
+#     multi_model_statistics:
+#       span: overlap
+#       statistics: [mean, median]
+#       exclude: [reference_model, alternative_model]
 
 
 diagnostics:
@@ -139,40 +139,39 @@ diagnostics:
         styleset: CMIP5        # Plot style
       grading: &grading_settings
         <<: *cycle_settings
-        plot_type: cycle_latlon        # Plot type ('cycle' [time], 'zonal' [plev, lat], 'latlon' [lat, lon], 'cycle_latlon' [time, lat, lon])
-        draw_plots: false              # Do not draw plots
-        calc_grading: true             # Calculate grading
-        metric: RMSD                   # Metric ('RMSD', 'BIAS', taylor')
-        normalization: centered_median # Normalization ('mean', 'median', 'centered_median')
-      taylor: &taylor_settings
-        <<: *grading_settings
-        metric: taylor                 # Metric ('RMSD', 'BIAS', taylor')
+        plot_type: cycle_latlon                # Plot type ('cycle' [time], 'zonal' [plev, lat], 'latlon' [lat, lon], 'cycle_latlon' [time, lat, lon])
+        draw_plots: false                      # Do not draw plots
+        calc_grading: true                     # Calculate grading
+        metric: [RMSD, taylor]                 # Metric ('RMSD', 'BIAS', taylor')
+        normalization: [centered_median, none] # Normalization ('mean', 'median', 'centered_median', 'none')
 
-  taZONAL:
-    description: Air temperature zonal mean
-    variables:
-      ta:
-        preprocessor: ppALL
-        reference_model: ERA-Interim
-        alternative_model: NCEP
-        mip: Amon
-        field: T3M    
-    additional_models:
-      - {model: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 3}
-      - {model: NCEP,         project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 2}
-    scripts:
-      zonal: &zonal_settings
-        script: perfmetrics/main.ncl
-        plot_type: zonal         # Plot type ('cycle' [time], 'zonal' [plev, lat], 'latlon' [lat, lon], 'cycle_latlon' [time, lat, lon])
-        time_avg: annualclim     # Time average ('opt' argument of time_operations.ncl)
-        region: Global           # Selected region ('Global', 'Tropics', 'NH extratropics', 'SH extratropics')
-        plot_diff: true          # Draw difference plots
-        t_test: true             # Calculate t-test in difference plots
-        conf_level: 0.95         # Confidence level for the t-test
-        stippling: true          # Mask non-significant values with stippling
-        abs_levs: [200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300] # Contour levels for absolute plot
-        diff_levs: [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10]               # Contour levels for difference plot
-      
+
+#   taZONAL:
+#     description: Air temperature zonal mean
+#     variables:
+#       ta:
+#         preprocessor: ppALL
+#         reference_model: ERA-Interim
+#         alternative_model: NCEP
+#         mip: Amon
+#         field: T3M    
+#     additional_models:
+#       - {model: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 3}
+#       - {model: NCEP,         project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 2}
+#     scripts:
+#       zonal: &zonal_settings
+#         script: perfmetrics/main.ncl
+#         plot_type: zonal         # Plot type ('cycle' [time], 'zonal' [plev, lat], 'latlon' [lat, lon], 'cycle_latlon' [time, lat, lon])
+#         time_avg: annualclim     # Time average ('opt' argument of time_operations.ncl)
+#         region: Global           # Selected region ('Global', 'Tropics', 'NH extratropics', 'SH extratropics')
+#         plot_diff: true          # Draw difference plots
+#         t_test: true             # Calculate t-test in difference plots
+#         conf_level: 0.95         # Confidence level for the t-test
+#         stippling: true          # Mask non-significant values with stippling
+#         abs_levs: [200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300] # Contour levels for absolute plot
+#         diff_levs: [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10]               # Contour levels for difference plot
+
+
   tas:
     description: Near-surface air temperature
     variables:
@@ -200,22 +199,23 @@ diagnostics:
         diff_levs: [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5] # Contour levels for difference plot
       grading:
         <<: *grading_settings
+        metric: [RMSD]                   # Metric ('RMSD', 'BIAS', taylor')
+        normalization: [centered_median] # Normalization ('mean', 'median', 'centered_median', 'none')
 
-  grading_collect:
-    description: Wrapper to collect and plot previously calculated gradings
+        
+  collect:
+    description: Wrapper to collect and plot previously calculated metrics
     scripts:
-      grading_collect:
-        script: perfmetrics/grading_collect.ncl
+      RMSD:
+        script: perfmetrics/collect.ncl
         ancestors: ['*/grading']
+        metric: RMSD
         label_bounds: [-0.5, 0.5]
         label_scale: 0.1
         disp_values: false
         cm_interval: [2, 241]
         sort: true  # Sort model in alphabetic order (excluding MMM)
-
-  taylor_collect:
-    description: Wrapper to collect and plot previously calculated taylor metrics
-    scripts:
-      taylor_collect:
-        script: perfmetrics/taylor_collect.ncl
-        ancestors: ['*/taylor']
+      taylor:
+        script: perfmetrics/collect.ncl
+        ancestors: ['*/grading']
+        metric: taylor
