@@ -20,12 +20,11 @@ procedure write_header(s_open:string,
 ;;    20160713-A_laue_ax: updated ESMValTool reference
 ;;    20150630-A_laue_ax: written.
 ;;
-local namelist, version
+local funcname, scriptname, namelist, version
 begin
+
     funcname = "write_header"
-    scriptname = "interface_scripts/messaging.ncl"
-;    verbosity  = config_user_info@verbosity
-;    enter_msg(scriptname, funcname, 4)
+    scriptname = "interface_scripts/logging.ncl"
 
     ;; Namelist in use
     namelist = diag_script_info@namelist

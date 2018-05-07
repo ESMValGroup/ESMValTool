@@ -11,7 +11,7 @@ reformat_ECEARTH_main.ncl
 -------------------------
 Main script. Called from cf_convert.py.
 
-../cmor/CMOR_*.dat
+../../cmor/tables/custom/CMOR_*.dat
 ------------------
 Tables in standard CMOR format containing standard variable attributes. 
 To add another variable var, create a new CMOR_var.dat file.

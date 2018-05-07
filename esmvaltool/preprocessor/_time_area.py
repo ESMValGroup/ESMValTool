@@ -1,13 +1,19 @@
-########################################################################
-# TIME AND AREA OPERATIONS
-# V.Predoi, University of Reading, May 2017
-########################################################################
+"""
+Time and area operations on data cubes
+
+Allows for selecting data subsets using certain time bounds;
+selecting geographical regions; constructing seasonal and area
+averages; checks on data time frequencies (daily, monthly etc)
+"""
+from datetime import timedelta
 import iris
 
 
 # slice cube over a restricted time period
 def time_slice(mycube, yr1, mo1, d1, yr2, mo2, d2):
     """
+    Slice cube on time
+
     Function that returns a subset of the original cube (slice)
     given two dates of interest date1 and date2
     date1 and date2 should be given in a yr,mo,d (int)format e.g.
@@ -28,8 +34,11 @@ def time_slice(mycube, yr1, mo1, d1, yr2, mo2, d2):
 
     t1 = time_units.date2num(my_date1)
     t2 = time_units.date2num(my_date2)
+    # TODO replace the block below for when using iris 2.0
+    # my_constraint = iris.Constraint(time=lambda t: (
+    #     t1 < time_units.date2num(t.point) < t2))
     my_constraint = iris.Constraint(time=lambda t: (
-        t1 < time_units.date2num(t.point) < t2))
+        t1 < t.point < t2))
     cube_slice = mycube.extract(my_constraint)
     return cube_slice
 
@@ -37,6 +46,8 @@ def time_slice(mycube, yr1, mo1, d1, yr2, mo2, d2):
 # slice cube over a restricted area (box)
 def area_slice(mycube, long1, long2, lat1, lat2):
     """
+    Subset a cube on area
+
     Function that subsets a cube on a box (long1,long2,lat1,lat2)
     This function is a restriction of masked_cube_lonlat();
     Returns a cube
@@ -51,10 +62,7 @@ def area_slice(mycube, long1, long2, lat1, lat2):
 
 # get the time average
 def time_average(mycube):
-    """
-    Function to get the time average over MEAN;
-    Returns a cube
-    """
+    """Get the time average over MEAN; returns a cube"""
     var_mean = mycube.collapsed('time', iris.analysis.MEAN)
     return var_mean
 
@@ -62,10 +70,11 @@ def time_average(mycube):
 # get the probability a value is greater than a threshold
 def proportion_greater(mycube, coord1, threshold):
     """
-    Function that returns the probability
-    that a cetain variable coord1 (string) is greater than
-    a threshold threshold (float or string), across a cube mycube;
-    Returns a cube
+    Proportion greater
+
+    Return the probability that a cetain variable coord1 (string)
+    is greater than a threshold threshold (float or string),
+    across a cube mycube; returns a cube
     """
     thr = float(threshold)
     result = mycube.collapsed(
@@ -76,12 +85,13 @@ def proportion_greater(mycube, coord1, threshold):
 # get zonal means
 def zonal_means(mycube, coord1, mean_type):
     """
+    Get zonal means
+
     Function that returns zonal means along a coordinate coord1;
     the type of mean is controlled by mean_type variable (string):
         'mean' -> MEAN
         'stdev' -> STD_DEV
         'variance' -> VARIANCE
-
     Returns a cube
     """
     if mean_type == 'mean':
@@ -96,7 +106,8 @@ def zonal_means(mycube, coord1, mean_type):
 # get the area average
 def area_average(mycube, coord1, coord2):
     """
-    Function that determines the area average
+    Determine the area average.
+
     Can be used with coord1 and coord2 (strings,
     usually 'longitude' and 'latitude' but depends on the cube);
     Returns a cube
@@ -114,6 +125,7 @@ def area_average(mycube, coord1, coord2):
 def seasonal_mean(mycube):
     """
     Function to compute seasonal means with MEAN
+
     Chunks time in 3-month periods and computes means over them;
     Returns a cube
     """
@@ -125,6 +137,7 @@ def seasonal_mean(mycube):
                                                 iris.analysis.MEAN)
 
     def spans_three_months(time):
+        """Check for three months"""
         return (time.bound[1] - time.bound[0]) == 2160
 
     three_months_bound = iris.Constraint(time=spans_three_months)
@@ -135,6 +148,8 @@ def seasonal_mean(mycube):
 def trajectory_cube(mycube, long1, long2, lat1, lat2, plong1, plong2, plat1,
                     plat2, samplecounts):
     """
+    Build a trajectory
+
     Function that subsets a cube on a box (long1,long2,lat1,lat2)
     then creates a trajectory with waypoints (plong1,plong2,plat1, plat2),
     populates it with samplecounts number of points
@@ -161,3 +176,68 @@ def trajectory_cube(mycube, long1, long2, lat1, lat2, plong1, plong2, plat1,
     lon = wspd_subset.coord('longitude').points
     lat = wspd_subset.coord('latitude').points
     return section, lon, lat
+
+
+# set of time axis checks
+# funcs that perform checks on the time axis
+# of data cubes and validates the type of data:
+# daily, monthly, seasonal or yearly
+class NoBoundsError(ValueError):
+    """OBS files dont have bounds"""
+
+    pass
+
+
+def is_daily(cube):
+    """Test whether the time coordinate contains only daily bound periods."""
+    def is_day(bound):
+        """Count days"""
+        time_span = timedelta(days=(bound[1] - bound[0]))
+        return timedelta(days=1) == time_span
+
+    if not cube.coord('time').has_bounds():
+        raise NoBoundsError()
+    return all([is_day(bound) for bound in cube.coord('time').bounds])
+
+
+def is_monthly(cube):
+    """A month is a period of at least 28 days, up to 31 days."""
+    def is_month(bound):
+        """Count months"""
+        time_span = timedelta(days=(bound[1] - bound[0]))
+        return timedelta(days=31) >= time_span >= timedelta(days=28)
+
+    if not cube.coord('time').has_bounds():
+        raise NoBoundsError()
+    return all([is_month(bound) for bound in cube.coord('time').bounds])
+
+
+def is_seasonal(cube):
+    """
+    Check if data is seasonal
+
+    A season is a period of 3 months, i.e.
+    at least 89 days, and up to 92 days.
+    """
+    def is_season(bound):
+        """Count seasons"""
+        time_span = timedelta(days=(bound[1] - bound[0]))
+        is_seas = timedelta(days=31 + 30 + 31) >= time_span >= \
+            timedelta(days=28 + 31 + 30)
+        return is_seas
+
+    if not cube.coord('time').has_bounds():
+        raise NoBoundsError()
+    return all([is_season(bound) for bound in cube.coord('time').bounds])
+
+
+def is_yearly(cube):
+    """A year is a period of at least 360 days, up to 366 days."""
+    def is_year(bound):
+        """Count years"""
+        t_s = timedelta(days=(bound[1] - bound[0]))
+        return timedelta(days=365) == t_s or timedelta(days=360) == t_s
+
+    if not cube.coord('time').has_bounds():
+        raise NoBoundsError()
+    return all([is_year(bound) for bound in cube.coord('time').bounds])

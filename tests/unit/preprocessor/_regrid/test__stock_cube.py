@@ -36,14 +36,14 @@ class Test(tests.Test):
         [args], kwargs = call_lats
         self.assertArrayEqual(args, expected_lat_points)
         expected_lat_kwargs = dict(
-            standard_name='latitude', units='degrees_north')
+            standard_name='latitude', units='degrees_north', var_name='lat')
         self.assertEqual(kwargs, expected_lat_kwargs)
 
         # Check the longitude coordinate creation.
         [args], kwargs = call_lons
         self.assertArrayEqual(args, expected_lon_points)
         expected_lon_kwargs = dict(
-            standard_name='longitude', units='degrees_east')
+            standard_name='longitude', units='degrees_east', var_name='lon')
         self.assertEqual(kwargs, expected_lon_kwargs)
 
         # Check that the coordinate guess_bounds method has been called.

@@ -83,15 +83,13 @@ begin
 
 end
 
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 load "./reformat_scripts/constants.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity = config_user_info@verbosity
     diag_script = "reformat_obs_EANET.ncl"
-    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent(OUTDIR)) then
@@ -99,27 +97,27 @@ begin
     end if
 
     ;; Reading station list
-    info_output("Extracting stations list", verbosity, 1)
+    log_info("Extracting stations list")
     tmp = systemfunc("find " + INDIR + " -name '*.nas' " + \
                      "-exec basename {} \; | awk -F '.' '{print $1}'")
     stations = tmp(UNIQ(tmp))
     delete(tmp)
     sqsort(stations)
-    info_output(dimsizes(stations) + " stations found", verbosity, 1)
+    log_info(dimsizes(stations) + " stations found")
 
     do st = 0, dimsizes(stations) - 1
 
         ST_CODE = stations(st)
         
         cnt = st + 1
-        info_output("", verbosity, 1)
-        info_output("Processing station " + ST_CODE + " (" + cnt + " of " + \
-                    dimsizes(stations) + ")", verbosity, 1)
+        log_info("")
+        log_info("Processing station " + ST_CODE + " (" + cnt + " of " + \
+                    dimsizes(stations) + ")")
 
         ;; List of input files for this station
         FILES = systemfunc("ls " + INDIR + ST_CODE + "*.nas")
         if (all(ismissing(FILES))) then
-            info_output("  --> No data for this station", verbosity, 1)
+            log_info("  --> No data for this station")
             delete(FILES)
             continue
         end if
@@ -221,11 +219,10 @@ begin
         end do
         delete(out)
 
-        info_output("", verbosity, 1)
-        info_output("Completed!", verbosity, 1)
+        log_info("")
+        log_info("Completed!")
 
     end do
 
-    leave_msg(diag_script, "", 1)
 
 end

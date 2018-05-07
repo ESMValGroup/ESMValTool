@@ -71,15 +71,13 @@ begin
 
 end
 
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 load "./reformat_scripts/constants.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity = config_user_info@verbosity
     diag_script = "reformat_obs_CASTNET.ncl"
-    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent(OUTDIR)) then
@@ -100,7 +98,7 @@ begin
     nstats = dimsizes(st_code)
     delete(data)
 
-    info_output(nstats + " stations found", verbosity, 1)
+    log_info(nstats + " stations found")
 
     head = readAsciiHead(INFILE, 1)
 
@@ -113,7 +111,7 @@ begin
     ; Loop over variables
     do vID = 0, NVARS - 1
 
-        info_output("Processing " + VARS(vID), verbosity, 1)
+        log_info("Processing " + VARS(vID))
 
         ; Find column number for the variable
         col = ind(colnames .eq. COMPONENT(vID)) + 1
@@ -121,13 +119,13 @@ begin
         ; Flag is the next column
         flag = col + 1
 
-        info_output("  FIELD  = " + colnames(col - 1), verbosity, 1)
-        info_output("  FLAG   = " + colnames(flag - 1), verbosity, 1)
+        log_info("  FIELD  = " + colnames(col - 1))
+        log_info("  FLAG   = " + colnames(flag - 1))
 
         ; Loop over stations
         do stID = 0, nstats - 1
 
-            info_output("  Station " + st_code(stID), verbosity, 1)
+            log_info("  Station " + st_code(stID))
 
             ; Define output array
             output = new(dimsizes(timec), float)
@@ -206,7 +204,7 @@ begin
                            flags .eq. "N", values@_FillValue, values)
 
             if (all(ismissing(values))) then
-                info_output("No valid data for this station", verbosity, 1)
+                log_info("No valid data for this station")
                 delete(date1)
                 delete(date2)
                 delete(values)
@@ -363,6 +361,5 @@ begin
 
     end do  ; variables
 
-    leave_msg(diag_script, "", 1)
 
 end

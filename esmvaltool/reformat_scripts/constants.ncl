@@ -66,12 +66,11 @@ function check_time_range(time:numeric)
 ;;    20150119-A_gott_kl: defaults for YEAR1, YEAR2, FIELD.
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, verbosity, date, ntime, tt, pos, y1, y2, opt, exp_ntime
+local funcname, date, ntime, tt, pos, y1, y2, opt, exp_ntime
 begin
 
     funcname = "check_time_range"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     if(.not.isdefined("YEAR1")) then
         YEAR1 = time@YEAR1
@@ -182,7 +181,7 @@ begin
                           toint(date(:, 4)), toint(date(:, 5)), \
                           TUNITS, opt)
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(out)
 
 end
@@ -207,12 +206,11 @@ function time_attrib(coord:numeric)
 ;; Modification history
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, verbosity, tmp, cal
+local funcname, tmp, cal
 begin
 
     funcname = "time_attrib"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     if (isatt(coord, "calendar")) then
         cal = coord@calendar
@@ -233,7 +231,7 @@ begin
         delete(out_coord@_FillValue)
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(out_coord)
 
 end
@@ -258,12 +256,11 @@ function plev_attrib(coord:numeric)
 ;; Modification history
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, verbosity, out_coord
+local funcname, out_coord
 begin
 
     funcname = "plev_attrib"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     out_coord = todouble(coord)  ; this also removes attributes
     copy_VarCoords(coord, out_coord)
@@ -282,7 +279,7 @@ begin
         delete(out_coord@_FillValue)
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(out_coord)
 
 end
@@ -307,12 +304,11 @@ function lev_attrib(coord:numeric)
 ;; Modification history
 ;;    20150415-A_righ_ma: written.
 ;;
-local funcname, verbosity, out_coord
+local funcname, out_coord
 begin
 
     funcname = "lev_attrib"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     out_coord = todouble(coord)  ; this also removes attributes
     copy_VarCoords(coord, out_coord)
@@ -325,7 +321,7 @@ begin
         delete(out_coord@_FillValue)
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(out_coord)
 
 end
@@ -350,12 +346,11 @@ function lat_attrib(coord)
 ;; Modification history
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, verbosity, out_coord
+local funcname, out_coord
 begin
 
     funcname = "lat_attrib"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     out_coord = todouble(coord)  ; this also removes attributes
     copy_VarCoords(coord, out_coord)
@@ -367,7 +362,7 @@ begin
         delete(out_coord@_FillValue)
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(out_coord)
 
 end
@@ -392,12 +387,11 @@ function lon_attrib(coord)
 ;; Modification history
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, verbosity, out_coord
+local funcname, out_coord
 begin
 
     funcname = "lon_attrib"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     out_coord = todouble(coord)  ; this also removes attributes
     copy_VarCoords(coord, out_coord)
@@ -409,7 +403,7 @@ begin
         delete(out_coord@_FillValue)
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(out_coord)
 
 end
@@ -434,15 +428,14 @@ function read_cmor(name:string)
 ;; Modification history
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, verbosity, fn, data, idxu, idxd, attn, attv
+local funcname, fn, data, idxu, idxd, attn, attv
 begin
 
     funcname = "read_cmor"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Read attributes from cmor table
-    fn = "./reformat_scripts/cmor/CMOR_" + name + ".dat"
+    fn = "./cmor/tables/custom/CMOR_" + name + ".dat"
     if (.not.fileexists(fn)) then
         error_msg("fatal", "constants.ncl", funcname, \
                   "CMOR table for variable " + name + " not found")
@@ -461,7 +454,7 @@ begin
         out@$attn(ii)$ = attv(ii)
     end do
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(out)
 
 end
@@ -484,15 +477,13 @@ procedure check_units(var:numeric, name:string)
 ;; Modification history
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, verbosity, atts, data, col1, col2, std, alt, id, tmp1, tmp2, \
+local funcname, atts, data, col1, col2, std, alt, id, tmp1, tmp2, \
     ncols, alt_units, factors
 begin
 
-    verbosity = config_user_info@verbosity
     funcname = "check_units"
-    info_output("In check_units for " + name +" units are " + var@units,\
-                verbosity, 4)
-    enter_msg(scriptname, funcname, 4)
+    log_debug("In check_units for " + name +" units are " + var@units)
+    enter_msg(scriptname, funcname)
 
     ;; CMOR units
     atts = read_cmor(name)
@@ -507,8 +498,8 @@ begin
 
     ;; If units not defined assign CMOR units
     if (.not.isatt(var, "units")) then
-        info_output("No units attribute found for this variable, " + \
-                    "assigning CMOR units", verbosity, 1)
+        log_info("No units attribute found for this variable, " + \
+                    "assigning CMOR units")
         var@units = cmor_units
     end if
 
@@ -547,7 +538,7 @@ begin
             id = ind(var@units.eq.alt_units)
             ;; Rename units
             var@units = cmor_units
-            info_output("Renaming units to " + cmor_units, verbosity, 4)
+            log_debug("Renaming units to " + cmor_units)
             ;; Convert units
             if (factors(id).ne.1) then
                 var = var * factors(id)
@@ -555,8 +546,8 @@ begin
                             + alt_units(id)\
                             + "] to ["\
                             + cmor_units + "]"
-                info_output(convert_msg, verbosity, 4)
-                info_output("Conversion factor = " + factors(id), verbosity, 4)
+                log_debug(convert_msg)
+                log_debug("Conversion factor = " + factors(id))
             end if
         else
             error_msg("fatal", "constants.ncl", funcname, \
@@ -566,7 +557,7 @@ begin
 
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -592,12 +583,11 @@ function var_attrib(var:numeric, name:string)
 ;;    20161202-A_laue_ax: preserve attribute "coordinates" if present
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, verbosity, tmp, p1, p2, natt, in_units, out_units, tmp, att
+local funcname, tmp, p1, p2, natt, in_units, out_units, tmp, att
 begin
 
     funcname = "var_attrib"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Set fill value first
     if(isatt(var, "_FillValue")) then
@@ -637,7 +627,7 @@ begin
     end if
 ; A_laue_ax-
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(out)
 
 end
@@ -661,12 +651,11 @@ function define_globatt()
 ;; Modification history
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, verbosity, field, user
+local funcname, field, user
 begin
 
     funcname = "define_globatt"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Define field name
     if (isStrSubset(FIELD, "M")) then
@@ -714,7 +703,7 @@ begin
     global@host = systemfunc("echo $HOST")
     global@history = "Creation date " + systemfunc("date")
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(global)
 
 end
@@ -750,13 +739,12 @@ procedure write_output(var:numeric, name:string, filelist:string, \
 ;;                        - name of the "FIXFILE" applied (if any)
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, verbosity, w, gAtt, dim_names, ndims, dim_sizes, dim_types, \
+local funcname, w, gAtt, dim_names, ndims, dim_sizes, dim_types, \
     dim_unlim, ii, lat, lon
 begin
 
     funcname = "write_output"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Open file
     if (fileexists(OUTFILE)) then
@@ -831,7 +819,7 @@ begin
     end do
     w->$name$ = (/var/)
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -855,12 +843,11 @@ function set_size_array()
 ;; Modification history
 ;;    20130528-A_righ_ma: written.
 ;;
-local funcname, verbosity, minsize, maxsize, nbins, bin
+local funcname, minsize, maxsize, nbins, bin
 begin
 
     funcname = "set_size_array"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; Size range (0.5 nm - 10 um)
     minsize = 0.5e-9
@@ -875,7 +862,7 @@ begin
         out(ii) = out(ii - 1) * bin
     end do
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
     return(out)
 
 end

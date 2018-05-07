@@ -67,15 +67,13 @@ begin
 
 end
 
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 load "./reformat_scripts/constants.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity = config_user_info@verbosity
     diag_script = "reformat_obs_AURA-MLS-OMI.ncl"
-    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent(OUTDIR)) then
@@ -99,7 +97,7 @@ begin
     ;; Loop over variables
     do vID = 0, dimsizes(VARS) - 1
 
-        info_output("Processing " + VARS(vID), verbosity, 1)
+        log_info("Processing " + VARS(vID))
 
         ;; Loop over time
         tt = 0
@@ -122,7 +120,7 @@ begin
                     ;; Read variable
                     data  = new((/nlon, nlat/), float)
 
-                    info_output("Reading " + files, verbosity, 1)
+                    log_info("Reading " + files)
                     head = readAsciiHead(files, nhead)
                     stuff = readAsciiTable(files, 1, "string", 3)
                     stuff = str_get_cols(stuff, 1, 75)
@@ -172,8 +170,7 @@ begin
 
                 else
 
-                    info_output(" --> File missing, skipping this date", \
-                                verbosity, 1)
+                    log_info(" --> File missing, skipping this date")
 
                 end if
             end do  ; months
@@ -248,6 +245,5 @@ begin
 
     end do
 
-    leave_msg(diag_script, "", 1)
 
 end

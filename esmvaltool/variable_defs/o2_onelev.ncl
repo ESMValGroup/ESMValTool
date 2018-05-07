@@ -8,7 +8,7 @@ variable_info@MyDiag_title = "Oxygen"
 variable_info@units = "mol m-3"
 load "interface_scripts/data_handling.ncl"
 load "reformat_scripts/constants.ncl"
-load "./diag_scripts/lib/ncl/set_operators.ncl"
+load "./diag_scripts/shared/set_operators.ncl"
 undef("calculate")
 function calculate(index [1] : integer,
                    variable [1] : string,
@@ -35,7 +35,7 @@ begin
     dNames = getvardims(dum)
 
     i_j_indices = diag_script_info@models_using_i_j_indices
-    ind_r = inlist(models@name(index), i_j_indices)
+    ind_r = any(models@name(index) .eq. i_j_indices)
     if (any(ind_r .eq. True)) then
       lon_name = "i"
       lat_name = "j"

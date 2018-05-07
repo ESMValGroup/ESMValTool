@@ -61,15 +61,13 @@ begin
 
 end
 
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 load "./reformat_scripts/constants.ncl"
 load "./reformat_scripts/obs/reformat_obs_func.ncl"
 
 begin
 
-    verbosity = config_user_info@verbosity
     diag_script = "reformat_obs_INCA.ncl"
-    enter_msg(diag_script, "", 1)
 
     ;; Create output dir
     if (.not.isfilepresent(OUTDIR)) then
@@ -98,7 +96,7 @@ begin
         ;; Loop over variables
         do vID = 0, dimsizes(VARIABLES) - 1
 
-            info_output("Processing " + VARIABLES(vID), verbosity, 1)
+            log_info("Processing " + VARIABLES(vID))
 
             infile = INDIR + "prfl" + "_" + CODE(cpID) + "_" + \
                 VARIABLES(vID) + ".txt"
@@ -200,6 +198,5 @@ begin
         end do
     end do
 
-    leave_msg(diag_script, "", 1)
 
 end

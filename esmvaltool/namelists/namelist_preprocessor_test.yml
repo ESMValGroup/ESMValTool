@@ -10,58 +10,72 @@ preprocessors:
 
   preprocessor_1:
     extract_levels:
-      levels: [2000, 7000]
+      levels: ERA-Interim
+      # This also works, but allows specifying the pressure coordinate name
+      # levels: {model: ERA-Interim, coordinate: air_pressure}
       scheme: linear
     regrid:
-      target_grid: 'ERA-Interim'
+      target_grid: ERA-Interim
       scheme: linear
     mask_fillvalues:
       threshold_fraction: 0.90
-    multi_model_mean: false
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+      exclude: [NCEP]   
 
   preprocessor_2:
     extract_levels:
-      levels: 85000
+      levels: {cmor_table: CMIP6, coordinate: plev10}
       scheme: nearest
     regrid:
       target_grid: 1x1
       scheme: nearest
     mask_fillvalues: false
-    multi_model_mean: false
+    multi_model_statistics:
+      span: full
+      statistics: [median]
 
   preprocessor_3:
+    extract_levels:
+      levels: [2000, 7000]
+      scheme: nearest
+    regrid: false
+    mask_fillvalues: false
+    multi_model_statistics: false
+
+  preprocessor_4:
     extract_levels: false
     regrid: false
     mask_fillvalues: false
-    multi_model_mean: false
+    multi_model_statistics: false
 
 diagnostics:
 
-  diagnostic_1:
-    description: Preprocessor test diagnostic 1.
+  diagnostic_1: &diag
+    description: Preprocessor test diagnostic.
     variables:
       ta:
         preprocessor: preprocessor_1
         field: T3M
     additional_models:
       - {model: NCEP,        project: OBS,    tier: 2,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
-    scripts: Null
+    scripts: null
 
   diagnostic_2:
-    description: Preprocessor test diagnostic 2.
+    <<: *diag
     variables:
       ta:
         preprocessor: preprocessor_2
         field: T3M
-    additional_models:
-      - {model: NCEP,        project: OBS,    tier: 2,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
-    scripts: Null
 
-  diagnostic_3:
-    description: Preprocessor test diagnostic 3.
+  diagnostic_3_and_4:
+    description: Preprocessor test diagnostic.
     variables:
-      pr:
+      ta:
         preprocessor: preprocessor_3
+        field: T3M
+      pr:
+        preprocessor: preprocessor_4
         field: T2Ms
-    additional_models: []
-    scripts: Null
+    scripts: null

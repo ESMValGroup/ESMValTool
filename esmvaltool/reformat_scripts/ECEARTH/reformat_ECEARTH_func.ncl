@@ -17,7 +17,7 @@
 ;;#############################################################################
 
 load "interface_scripts/interface.ncl"
-load "./interface_scripts/messaging.ncl"
+load "./interface_scripts/logging.ncl"
 
 ;;#############################################################################
 undef("find_name")
@@ -44,13 +44,12 @@ function find_name(name:string, which:string)
 ;;    20141205-A_vanu_be: written.
 ;;
 local col_in, col_out, data, ecearth, fname, funcname, grid, id, scriptname, \
-    std, verbosity
+    std
 begin
 
     funcname = "find_name"
     scriptname = "reformat_scripts/ECEARTH/reformat_ECEARTH_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; read text file with names
     fname = "./reformat_scripts/" + PROJECT + "/names_" + PROJECT + \
@@ -85,7 +84,7 @@ begin
     out = col_out(id)
     out@staggergrid = grid(id)
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
     return(out)
 
@@ -109,13 +108,12 @@ procedure add_ijcoordvars(var:numeric)
 ;; Modification history
 ;;    20141205-A_vanu_be: written.
 ;;
-local dim_sizes, funcname, i, ix, iy, j, scriptname, verbosity
+local dim_sizes, funcname, i, ix, iy, j, scriptname
 begin
 
     funcname = "add_ijcoordvars"
     scriptname = "reformat_scripts/ECEARTH/reformat_ECEARTH_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; get dimension indices
     dim_sizes = dimsizes(var)
@@ -146,7 +144,7 @@ begin
     var&i = i
     var&j = j
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -171,14 +169,12 @@ procedure add_ECEARTHgrid_info(var:numeric, name:string)
 ;;
 local area, ce1, ce2, ce3, clat, clon, e1_name, e2_name, e3_name, ff, \
     files, funcname, i, j, lat, lat_name, ldims, lgrid, lgrids, lon, \
-    lon_name, lsize, nl, scriptname, tmp, vars, vdims, verbosity, vrank, \
-    vsize, w
+    lon_name, lsize, nl, scriptname, tmp, vars, vdims, vrank, vsize, w
 begin
 
     funcname = "add_ECEARTHgrid_info"
     scriptname = "reformat_scripts/ECEARTH/reformat_ECEARTH_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     nl = str_get_nl()
 
@@ -464,7 +460,7 @@ begin
     end if
     delete(w)
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -486,13 +482,12 @@ procedure convert_units(var:numeric, name:string)
 ;; Modification history
 ;;    20141205-A_vanu_be: written.
 ;;
-local atts, cmor_units, funcname, scriptname, verbosity
+local atts, cmor_units, funcname, scriptname
 begin
 
     funcname = "convert_units"
     scriptname = "reformat_scripts/ECEARTH/reformat_ECEARTH_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; get CMOR units
     atts = read_cmor(name)
@@ -516,7 +511,7 @@ begin
         var = -1 * var
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -539,13 +534,12 @@ procedure mask_land(var:numeric)
 ;;    20141205-A_vanu_be: written.
 ;;
 local flsm, funcname, i, lsm, ldims, lrank, lsize, ocean_only, scriptname, \
-    vdims, vrank, vsize, verbosity
+    vdims, vrank, vsize
 begin
 
     funcname = "mask_land"
     scriptname = "reformat_scripts/ECEARTH/reformat_ECEARTH_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     nl = str_get_nl()
     dq = str_get_dq()
@@ -614,7 +608,7 @@ begin
     ;; Copy back
     var = ocean_only
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -635,13 +629,12 @@ procedure sub_staggergrid(name:string)
 ;; Modification history
 ;;    20141205-A_vanu_be: written.
 ;;
-local funcname, scriptname, verbosity
+local funcname, scriptname
 begin
 
     funcname = "sub_staggergrid"
     scriptname = "reformat_scripts/ECEARTH/reformat_ECEARTH_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; check INFILE format
     if (.not. isStrSubset(INFILE, "_grid_*")) then
@@ -655,7 +648,7 @@ begin
     ;; Replace string
     INFILE = str_sub_str(INFILE, "_grid_*", "_grid_" + name@staggergrid)
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -679,14 +672,12 @@ procedure rename_lev(var:numeric, name:string)
 ;; Modification history
 ;;    20141205-A_vanu_be: written.
 ;;
-local ecearth, fname, funcname, grid, i, id, levname, lfound, scriptname, \
-    std, verbosity
+local ecearth, fname, funcname, grid, i, id, levname, lfound, scriptname, std
 begin
 
     funcname = "rename_lev"
     scriptname = "reformat_scripts/ECEARTH/reformat_ECEARTH_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; set name for level and file name with names
     levname = "lev"
@@ -735,7 +726,7 @@ begin
         var&$std(id)$@standard_name = "depth"
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end
 
@@ -758,13 +749,12 @@ procedure rename_time(var:numeric, name:string)
 ;; Modification history
 ;;    20141205-A_vanu_be: written.
 ;;
-local ecearth_name, funcname, i, lfound, scriptname, std_name, tmp, verbosity
+local ecearth_name, funcname, i, lfound, scriptname, std_name, tmp
 begin
 
     funcname = "reformat_time_ecearth"
     scriptname = "reformat_scripts/ECEARTH/reformat_ECEARTH_func.ncl"
-    verbosity = config_user_info@verbosity
-    enter_msg(scriptname, funcname, 4)
+    enter_msg(scriptname, funcname)
 
     ;; get time name in EC-Earth
     std_name = "time"
@@ -794,6 +784,6 @@ begin
         delete(var&$std_name$@_FillValue)
     end if
 
-    leave_msg(scriptname, funcname, 4)
+    leave_msg(scriptname, funcname)
 
 end

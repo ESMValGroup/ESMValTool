@@ -22,11 +22,18 @@ mw_O3_unit = cf_units.Unit('g mol^-1')
 Dobson_unit = cf_units.Unit('2.69e20 m^-2')
 
 
-def get_required(short_name):
-    """Get variables required to derive variable `short_name`"""
+def get_required(short_name, field=None):
+    """Get variable short_name and field pairs required to derive variable"""
+    frequency = field[2] if field else 'M'
     required = {
-        'lwp': ['clwvi', 'clivi'],
-        'toz': ['o3', 'ps'],
+        'lwp': [
+            ('clwvi', 'T2' + frequency + 's'),
+            ('clivi', 'T2' + frequency + 's'),
+        ],
+        'toz': [
+            ('tro3', 'T3' + frequency),
+            ('ps', 'T2' + frequency + 's'),
+        ],
     }
 
     if short_name in required:
@@ -37,37 +44,48 @@ def get_required(short_name):
 
 def derive(cubes, short_name):
     """Derive variable `short_name`"""
+    # Do nothing if variable is already available
+    if short_name == cubes[0].var_name:
+        return cubes[0]
+
+    # Derive
     functions = {
         'lwp': calc_lwp,
         'toz': calc_toz,
     }
-
     if short_name in functions:
-        return functions[short_name](cubes)
+        cubes = iris.cube.CubeList(cubes)
+        cube = functions[short_name](cubes)
+        cube.attributes['_filename'] = cubes[0].attributes['_filename']
+        return cube
 
     raise NotImplementedError("Don't know how to derive {}".format(short_name))
 
 
 def calc_lwp(cubes):
-    """
+    """Compute liquid water path.
+
     Liquid water path is calculated by subtracting clivi (ice water) from clwvi
     (condensed water path).
     Note: Some models output the variable "clwvi" which only contains lwp. In
     these cases, the input clwvi cube is just returned.
 
-    Args:
-        * cubes: cubelist containing clwvi_cube and clivi_cube
+    Arguments
+    ---------
+        cubes: cubelist containing clwvi_cube and clivi_cube
 
-    Returns:
+    Returns
+    -------
         Cube containing liquid water path.
+
     """
     clwvi_cube = cubes.extract_strict(
         Constraint(name='atmosphere_mass_content_of_cloud_condensed_water'))
     clivi_cube = cubes.extract_strict(
         Constraint(name='atmosphere_mass_content_of_cloud_ice'))
 
-    model = clwvi_cube.attributes['model_id']
-    project = clwvi_cube.attributes['project_id']
+    model = clwvi_cube.attributes.get('model_id')
+    project = clwvi_cube.attributes.get('project_id')
     # Should we check that the model/project_id are the same on both cubes?
 
     bad_models = [
@@ -90,18 +108,20 @@ def calc_lwp(cubes):
 
 
 def calc_toz(cubes):
-    """
-    Create total column ozone from ozone mol fraction on pressure levels.
+    """Compute total column ozone from ozone mol fraction on pressure levels.
 
     The surface pressure is used as a lower integration bound. A fixed upper
     integration bound of 100 Pa is used.
 
-    Args:
-        * cubes: cubelist containing tro3_cube (mole_fraction_of_ozone_in_air)
-                 and ps_cube (surface_air_pressure).
+    Arguments
+    ----
+        cubes: cubelist containing tro3_cube (mole_fraction_of_ozone_in_air)
+               and ps_cube (surface_air_pressure).
 
-    Returns:
+    Returns
+    -------
         Cube containing total column ozone.
+
     """
     tro3_cube = cubes.extract_strict(
         Constraint(name='mole_fraction_of_ozone_in_air'))
@@ -114,26 +134,36 @@ def calc_toz(cubes):
     toz = toz.collapsed('air_pressure', iris.analysis.SUM)
     toz.units = (tro3_cube.units * p_layer_widths.units / g_unit * mw_O3_unit /
                  mw_air_unit)
-    toz.rename('atmosphere mass content of ozone')
 
     # Convert from kg m^-2 to Dobson unit (2.69e20 m^-2 )
     toz = toz / mw_O3 * Avogadro_const
     toz.units = toz.units / mw_O3_unit * Avogadro_const_unit
     toz.convert_units(Dobson_unit)
+    toz.units = cf_units.Unit('DU')
+
+    # Set names
+    toz.var_name = 'toz'
+    toz.standard_name = (
+        'equivalent_thickness_at_stp_of_atmosphere_ozone_content')
+    toz.long_name = ' Total Ozone Column'
     return toz
 
 
 def _pressure_level_widths(tro3_cube, ps_cube, top_limit=100):
-    """
-    Create a cube with pressure level widths taking a 2D surface pressure field
-    as lower bound.
+    """Create a cube with pressure level widths.
 
-    Args:
+    This is done by taking a 2D surface pressure field as lower bound.
+
+    Arguments
+    ---------
         tro3_cube: Cube containing mole_fraction_of_ozone_in_air
         ps_cube: Surface air pressure cube.
         top_limit: Pressure in Pa.
 
-    returns: Cube of same shape as tro3_cube containing pressure level widths.
+    Returns
+    -------
+        Cube of same shape as tro3_cube containing pressure level widths.
+
     """
     assert ps_cube.units == 'Pa'
     assert tro3_cube.coord('air_pressure').units == 'Pa'
@@ -149,11 +179,11 @@ def _pressure_level_widths(tro3_cube, ps_cube, top_limit=100):
 
 
 def _create_pressure_array(tro3_cube, ps_cube, top_limit):
-    """
-    Create an array filled with the 'air_pressure' coord values from the
-    tro3_cube with the same dimensions as tro3_cube.
-    This array is then sandwiched with a 2D array containing the surface
-    pressure, and a 2D array containing the top pressure limit.
+    """Create an array filled with the 'air_pressure' coord values.
+
+    The array is created from the tro3_cube with the same dimensions
+    as tro3_cube. This array is then sandwiched with a 2D array containing
+    the surface pressure, and a 2D array containing the top pressure limit.
     """
     # create 4D array filled with pressure level values
     p_levels = tro3_cube.coord('air_pressure').points
@@ -183,7 +213,8 @@ def _create_pressure_array(tro3_cube, ps_cube, top_limit):
 
 
 def _apply_pressure_level_widths(array, air_pressure_axis=1):
-    """
+    """Compute pressure level widths.
+
     For a  1D array with pressure level columns, return a 1D  array with
     pressure level widths.
     """
@@ -192,8 +223,8 @@ def _apply_pressure_level_widths(array, air_pressure_axis=1):
 
 @numba.jit()  # ~10x faster
 def _p_level_widths(array):
-    """
-    Creates pressure level widths from an array with pressure level values.
+    """Create pressure level widths from an array with pressure level values.
+
     The array is assumed to be monotonic and the values are decreasing.
 
     The first element is the lower boundary (surface pressure), the last value
@@ -202,10 +233,10 @@ def _p_level_widths(array):
     elements less.
 
     >>> _p_level_widths(np.array([1020, 1000, 700, 500, 5]))
-    array([ 170.,  250.,  595.])
+    array([170., 250., 595.])
 
     >>> _p_level_widths(np.array([990, np.NaN, 700, 500, 5]))
-    array([   0.,  390.,  595.])
+    array([  0., 390., 595.])
     """
     surface_pressure = array[0]
     top_limit = array[-1]
