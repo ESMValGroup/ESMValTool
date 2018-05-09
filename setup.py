@@ -39,6 +39,7 @@ REQUIREMENTS = {
         'numba',
         'numpy',
         'pillow',
+        'psutil',
         'pyyaml',
         'shapely',
         'six',

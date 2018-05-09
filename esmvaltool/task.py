@@ -1,11 +1,15 @@
 """ESMValtool task definition"""
+import contextlib
+import datetime
 import logging
 import os
 import pprint
 import subprocess
+import threading
 import time
 from multiprocessing import Pool, cpu_count
 
+import psutil
 import yaml
 
 logger = logging.getLogger(__name__)
@@ -22,6 +26,89 @@ def which(executable):
             return os.path.join(path, executable)
 
     return None
+
+
+def _get_resource_usage(process, start_time, children=True):
+    """Get resource usage."""
+    # yield header first
+    entries = [
+        'Date and time (UTC)',
+        'Real time (s)',
+        'CPU time (s)',
+        'CPU (%)',
+        'Memory (GB)',
+        'Memory (%)',
+        'Disk read (GB)',
+        'Disk write (GB)',
+    ]
+    fmt = '{}\t' * len(entries[:-1]) + '{}\n'
+    yield fmt.format(*entries)
+
+    # Compute resource usage
+    gigabyte = float(2**30)
+    precision = [1, 1, None, 1, None, 3, 3]
+    cache = {}
+    while process.is_running():
+        try:
+            if children:
+                # Include child processes
+                processes = process.children(recursive=True)
+                processes.append(process)
+            else:
+                processes = [process]
+
+            # Update resource usage
+            for proc in cache:
+                # Set cpu percent and memory usage to 0 for old processes
+                if proc not in processes:
+                    cache[proc][1] = 0
+                    cache[proc][2] = 0
+                    cache[proc][3] = 0
+            for proc in processes:
+                # Update current processes
+                cache[proc] = [
+                    proc.cpu_times().user + proc.cpu_times().system,
+                    proc.cpu_percent(),
+                    proc.memory_info().rss / gigabyte,
+                    proc.memory_percent(),
+                    proc.io_counters().read_bytes / gigabyte,
+                    proc.io_counters().write_bytes / gigabyte,
+                ]
+        except (OSError, psutil.AccessDenied, psutil.NoSuchProcess):
+            # Try again if an error occurs because some process died
+            continue
+
+        # Create and yield log entry
+        entries = [sum(entry) for entry in zip(*cache.values())]
+        entries.insert(0, time.time() - start_time)
+        entries = [round(entry, p) for entry, p in zip(entries, precision)]
+        entries.insert(0, datetime.datetime.utcnow())
+        yield fmt.format(*entries)
+
+
+@contextlib.contextmanager
+def resource_usage_logger(pid, filename, interval=1, children=True):
+    """Log resource usage."""
+    halt = threading.Event()
+
+    def _log_resource_usage():
+        """Write resource usage to file."""
+        process = psutil.Process(pid)
+        start_time = time.time()
+        with open(filename, 'w') as file:
+            for msg in _get_resource_usage(process, start_time, children):
+                file.write(msg)
+                time.sleep(interval)
+                if halt.is_set():
+                    return
+
+    thread = threading.Thread(target=_log_resource_usage)
+    thread.start()
+    try:
+        yield
+    finally:
+        halt.set()
+        thread.join()
 
 
 def write_ncl_settings(settings, filename, mode='wt'):
@@ -116,109 +203,6 @@ class AbstractTask(object):
         return txt
 
 
-class InterfaceTask(AbstractTask):
-    """Task for writing the preprocessor - diagnostic task interface"""
-
-    # TODO: check if it is possible to a PreprocessorTask to implement this
-
-    def __init__(self, settings, output_dir, ancestors=None):
-        """Initialize"""
-        super(InterfaceTask, self).__init__(
-            settings=settings, output_dir=output_dir, ancestors=ancestors)
-
-    def _run(self, input_files):
-        metadata = self.settings['metadata']
-        self._metadata_sanity_check(input_files, metadata)
-        output_files = []
-        output_files.append(self.write_metadata(metadata))
-        output_files.extend(self.write_ncl_metadata(metadata))
-        return output_files
-
-    def _metadata_sanity_check(self, input_files, metadata):
-        """Check that metadata matches input_files"""
-        # This should never fail for normal users
-        files = {
-            v['filename']
-            for variables in metadata.values() for v in variables
-        }
-        input_files = set(input_files)
-        msg = []
-
-        missing = input_files - files
-        if missing:
-            msg.append("No metadata provided for input files {}"
-                       .format(missing))
-
-        too_many = files - input_files
-        if too_many:
-            msg.append("Metadata provided for non-existent input files {}"
-                       .format(too_many))
-
-        wrong_place = {
-            f
-            for f in input_files if not f.startswith(self.output_dir)
-        }
-        if wrong_place:
-            msg.append("Input files {} are not located in output_dir {}"
-                       .format(wrong_place, self.output_dir))
-
-        if msg:
-            raise ValueError('\n'.join(msg))
-
-    def write_metadata(self, metadata):
-        """Write metadata file to output_dir"""
-        meta = {}
-        for variable_name, file_list in metadata.items():
-            meta[variable_name] = {}
-            for file_metadata in file_list:
-                file_metadata = dict(file_metadata)
-                filename = file_metadata.pop('filename')
-                meta[variable_name][filename] = file_metadata
-        filename = os.path.join(self.output_dir, 'metadata.yml')
-        with open(filename, 'w') as file:
-            yaml.safe_dump(meta, file)
-        return filename
-
-    def write_ncl_metadata(self, metadata):
-        """Write NCL metadata files to output_dir"""
-        filenames = []
-        for variable_name, variables in metadata.items():
-            filename = os.path.join(self.output_dir,
-                                    variable_name + '_info.ncl')
-            filenames.append(filename)
-
-            # 'variables' is a list of dicts, but NCL does not support nested
-            # dicts, so convert to dict of lists.
-            keys = sorted({k for v in variables for k in v})
-            input_file_info = {k: [v.get(k) for v in variables] for k in keys}
-            info = {
-                'input_file_info': input_file_info,
-                'model_info': {},
-                'variable_info': {}
-            }
-
-            # Split input_file_info into model and variable properties
-            # model keys and keys with non-identical values will be stored
-            # in model_info, the rest in variable_info
-            for key, values in input_file_info.items():
-                if key in MODEL_KEYS or any(values[0] != v for v in values):
-                    info['model_info'][key] = values
-                else:
-                    info['variable_info'][key] = values[0]
-
-            write_ncl_settings(info, filename)
-
-        return filenames
-
-    def __str__(self):
-        """Get human readable description."""
-        txt = "{}:\n{}".format(
-            self.__class__.__name__,
-            super(InterfaceTask, self).str(),
-        )
-        return txt
-
-
 class DiagnosticError(Exception):
     """Error in diagnostic"""
 
@@ -233,6 +217,8 @@ class DiagnosticTask(AbstractTask):
         self.script = script
         self.cmd = self._initialize_cmd(script)
         self.log = os.path.join(settings['run_dir'], 'log.txt')
+        self.resource_log = os.path.join(settings['run_dir'],
+                                         'resource_usage.txt')
 
     @staticmethod
     def _initialize_cmd(script):
@@ -411,7 +397,8 @@ class DiagnosticTask(AbstractTask):
         returncode = None
         last_line = ['']
 
-        with open(self.log, 'at') as log:
+        with resource_usage_logger(process.pid, self.resource_log),\
+                open(self.log, 'at') as log:
             while returncode is None:
                 returncode = process.poll()
                 txt = process.stdout.read()
@@ -425,8 +412,6 @@ class DiagnosticTask(AbstractTask):
                 if is_ncl_script:
                     self._control_ncl_execution(process, last_line + lines)
                 last_line = lines[-1:]
-
-                # TODO: log resource usage
 
                 # wait, but not long because the stdout buffer may fill up:
                 # https://docs.python.org/3.6/library/subprocess.html#subprocess.Popen.stdout

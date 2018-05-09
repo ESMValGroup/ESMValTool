@@ -9,38 +9,54 @@ import os
 import re
 
 import six
-import yaml
+
+from ._config import cmip5_mip2realm_freq, cmip5_model2inst, get_project_config
 
 logger = logging.getLogger(__name__)
 
 
-def _read_config_file(cfg_file=None):
-    """Parse the developer's configuration file."""
-    if cfg_file is None:
-        cfg_file = os.path.join(
-            os.path.dirname(os.path.dirname(__file__)),
-            'config-developer.yml',
-        )
+def find_files(dirname, filename):
+    """Find files matching filename."""
+    logger.debug("Looking for files matching %s in %s", filename, dirname)
 
-    with open(cfg_file, 'r') as file:
-        cfg = yaml.safe_load(file)
+    result = []
+    for path, _, files in os.walk(dirname, followlinks=True):
+        files = fnmatch.filter(files, filename)
+        if files:
+            result.extend(os.path.join(path, f) for f in files)
 
-    return cfg
-
-
-_CFG = _read_config_file()
+    return result
 
 
-def cmip5_model2inst(model):
-    """Return the institute given the model name in CMIP5."""
-    logger.debug("Retrieving institute for CMIP5 model %s", model)
-    return _CFG['CMIP5']['institute'][model]
+def get_start_end_year(filename):
+    """Get the start and end year from a file name.
+
+    This works for filenames matching *_YYYY*-YYYY*.* or *_YYYY*.*
+    """
+    name = os.path.splitext(filename)[0]
+    dates = name.split('_')[-1].split('-')
+    if len(dates) == 1:
+        start_year = int(dates[0][:4])
+        end_year = start_year
+    elif len(dates) == 2:
+        start_year, end_year = int(dates[0][:4]), int(dates[1][:4])
+    else:
+        raise ValueError('Name {0} dates do not match a recognized '
+                         'pattern'.format(name))
+    return start_year, end_year
 
 
-def cmip5_mip2realm_freq(mip):
-    """Return realm and frequency given the mip in CMIP5."""
-    logger.debug("Retrieving realm and frequency for CMIP5 mip %s", mip)
-    return _CFG['CMIP5']['realm_frequency'][mip]
+def select_files(filenames, start_year, end_year):
+    """Select files containing data between start_year and end_year.
+
+    This works for filenames matching *_YYYY*-YYYY*.* or *_YYYY*.*
+    """
+    selection = []
+    for filename in filenames:
+        start, end = get_start_end_year(filename)
+        if start <= end_year and end >= start_year:
+            selection.append(filename)
+    return selection
 
 
 def replace_tags(path, variable):
@@ -84,24 +100,11 @@ def replace_tags(path, variable):
     return path
 
 
-def read_config_file(project, cfg_file=None):
-    """Get developer-configuration for project."""
-    logger.debug("Reading specifications for project %s from "
-                 "config-developer file", project)
-
-    if cfg_file is None:
-        cfg = _CFG
-    else:
-        cfg = read_config_file(project, cfg_file)
-
-    return cfg[project]
-
-
 def get_input_dirname_template(variable, rootpath, drs):
     """Return a template of the full path to input directory."""
     project = variable['project']
 
-    cfg = read_config_file(project)
+    cfg = get_project_config(project)
 
     # Set the rootpath
     if project in rootpath:
@@ -154,7 +157,7 @@ def get_input_filename(variable, rootpath, drs):
 
 def _get_filename(variable, drs):
     project = variable['project']
-    cfg = read_config_file(project)
+    cfg = get_project_config(project)
 
     input_file = cfg['input_file']
     _drs = drs.get(project, 'default')
@@ -178,9 +181,11 @@ def get_input_filelist(variable, rootpath, drs):
         part1, part2 = dirname_template.split('[latestversion]')
         part2 = part2.lstrip(os.sep)
         list_versions = os.listdir(part1)
-        list_versions.sort()
-        latest = os.path.basename(list_versions[-1])
-        dirname = os.path.join(part1, latest, part2)
+        list_versions.sort(reverse=True)
+        for version in list_versions:
+            dirname = os.path.join(part1, version, part2)
+            if os.path.isdir(dirname):
+                break
     else:
         dirname = dirname_template
 
@@ -198,11 +203,12 @@ def get_input_filelist(variable, rootpath, drs):
 
 def get_output_file(variable, preproc_dir):
     """Return the full path to the output (preprocessed) file"""
-    cfg = read_config_file(variable['project'])
+    cfg = get_project_config(variable['project'])
 
-    outfile = os.path.join(preproc_dir,
-                           '{preprocessor}_{diagnostic}'.format(**variable),
-                           replace_tags(cfg['output_file'], variable) + '.nc')
+    outfile = os.path.join(
+        preproc_dir,
+        '{diagnostic}_{preprocessor}_{short_name}'.format(**variable),
+        replace_tags(cfg['output_file'], variable) + '.nc')
 
     return outfile
 
@@ -214,54 +220,10 @@ def get_statistic_output_file(variable, statistic, preproc_dir):
 
     template = os.path.join(
         preproc_dir,
-        '{preprocessor}_{diagnostic}',
+        '{diagnostic}_{preprocessor}_{short_name}',
         'MultiModel{stat}_{field}_{short_name}_{start_year}-{end_year}.nc',
     )
 
     outfile = template.format(**values)
 
     return outfile
-
-
-def find_files(dirname, filename):
-    """Find files matching filename."""
-    logger.debug("Looking for files matching %s in %s", filename, dirname)
-
-    result = []
-    for path, _, files in os.walk(dirname, followlinks=True):
-        files = fnmatch.filter(files, filename)
-        if files:
-            result.extend(os.path.join(path, f) for f in files)
-
-    return result
-
-
-def get_start_end_year(filename):
-    """Get the start and end year from a file name.
-
-    This works for filenames matching *_YYYY*-YYYY*.* or *_YYYY*.*
-    """
-    name = os.path.splitext(filename)[0]
-    dates = name.split('_')[-1].split('-')
-    if len(dates) == 1:
-        start_year = int(dates[0][:4])
-        end_year = start_year
-    elif len(dates) == 2:
-        start_year, end_year = int(dates[0][:4]), int(dates[1][:4])
-    else:
-        raise ValueError('Name {0} dates do not match a recognized '
-                         'pattern'.format(name))
-    return start_year, end_year
-
-
-def select_files(filenames, start_year, end_year):
-    """Select files containing data between start_year and end_year.
-
-    This works for filenames matching *_YYYY*-YYYY*.* or *_YYYY*.*
-    """
-    selection = []
-    for filename in filenames:
-        start, end = get_start_end_year(filename)
-        if start <= end_year and end >= start_year:
-            selection.append(filename)
-    return selection

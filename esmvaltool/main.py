@@ -41,103 +41,18 @@ import datetime
 import errno
 import glob
 import logging
-import logging.config
 import os
 import shutil
 import sys
 from multiprocessing import cpu_count
 
-import yaml
-
-# Hack to make this file executable
-if __name__ == '__main__':  # noqa
-    sys.path.insert(0,
-                    os.path.dirname(
-                        os.path.dirname(os.path.abspath(__file__))))  # noqa
-
-from esmvaltool.namelist import read_namelist_file
-from esmvaltool.version import __version__
+from ._config import configure_logging, read_config_user_file
+from .namelist import read_namelist_file
+from .task import resource_usage_logger
+from .version import __version__
 
 # set up logging
-if __name__ == '__main__':
-    logger = logging.getLogger('ESMValTool')
-    logger.addHandler(logging.NullHandler())
-else:
-    logger = logging.getLogger(__name__)
-
-
-def configure_logging(cfg_file=None, output=None, console_log_level=None):
-    """Set up logging"""
-    if cfg_file is None:
-        cfg_file = os.path.join(
-            os.path.dirname(__file__), 'config-logging.yml')
-
-    if output is None:
-        output = os.getcwd()
-
-    cfg_file = os.path.abspath(cfg_file)
-    with open(cfg_file) as file_handler:
-        cfg = yaml.safe_load(file_handler)
-
-    log_files = []
-    for handler in cfg['handlers'].values():
-        if 'filename' in handler:
-            if not os.path.isabs(handler['filename']):
-                handler['filename'] = os.path.join(output, handler['filename'])
-            log_files.append(handler['filename'])
-        if console_log_level is not None and 'stream' in handler:
-            if handler['stream'] in ('ext://sys.stdout', 'ext://sys.stderr'):
-                handler['level'] = console_log_level.upper()
-
-    logging.config.dictConfig(cfg)
-
-    return log_files
-
-
-def read_config_file(config_file, namelist_name):
-    """Read config file and store settings in a dictionary."""
-    with open(config_file, 'r') as file:
-        cfg = yaml.safe_load(file)
-
-    # set defaults
-    defaults = {
-        'write_plots': True,
-        'write_netcdf': True,
-        'exit_on_warning': False,
-        'max_data_filesize': 100,
-        'output_file_type': 'ps',
-        'output_dir': './output_dir',
-        'save_intermediary_cubes': False,
-        'max_parallel_tasks': 1,
-        'run_diagnostic': True,
-        'drs': {},
-    }
-
-    for key in defaults:
-        if key not in cfg:
-            logger.warning("No %s specification in config file, "
-                           "defaulting to %s", key, defaults[key])
-            cfg[key] = defaults[key]
-
-    # expand ~ to /home/username in directory names and normalize paths
-    cfg['output_dir'] = os.path.abspath(os.path.expanduser(cfg['output_dir']))
-
-    for key in cfg['rootpath']:
-        cfg['rootpath'][key] = os.path.abspath(
-            os.path.expanduser(cfg['rootpath'][key]))
-
-    # insert a directory date_time_namelist_usertag in the output paths
-    now = datetime.datetime.utcnow().strftime("%Y%m%d_%H%M%S")
-    new_subdir = '_'.join((namelist_name, now))
-    cfg['output_dir'] = os.path.join(cfg['output_dir'], new_subdir)
-
-    # create subdirectories
-    cfg['preproc_dir'] = os.path.join(cfg['output_dir'], 'preproc')
-    cfg['work_dir'] = os.path.join(cfg['output_dir'], 'work')
-    cfg['plot_dir'] = os.path.join(cfg['output_dir'], 'plots')
-    cfg['run_dir'] = os.path.join(cfg['output_dir'], 'run')
-
-    return cfg
+logger = logging.getLogger(__name__)
 
 
 def get_args():
@@ -173,17 +88,12 @@ def main(args):
     config_file = os.path.abspath(
         os.path.expandvars(os.path.expanduser(args.config_file)))
 
-    ####################################################
-    # Set up logging before anything else              #
-    ####################################################
-
-    # configure logging
-
+    # Read user config file
     if not os.path.exists(config_file):
         print("ERROR: config file {} does not exist".format(config_file))
 
     namelist_name = os.path.splitext(os.path.basename(namelist_file))[0]
-    cfg = read_config_file(config_file, namelist_name)
+    cfg = read_config_user_file(config_file, namelist_name)
 
     # Create run dir
     if os.path.exists(cfg['run_dir']):
@@ -191,6 +101,7 @@ def main(args):
               "prevent data loss".format(cfg['output_dir']))
     os.makedirs(cfg['run_dir'])
 
+    # configure logging
     log_files = configure_logging(
         output=cfg['run_dir'], console_log_level=cfg['log_level'])
 
@@ -202,7 +113,9 @@ def main(args):
 
     cfg['synda_download'] = args.synda_download
 
-    process_namelist(namelist_file=namelist_file, config_user=cfg)
+    resource_log = os.path.join(cfg['run_dir'], 'resource_usage.txt')
+    with resource_usage_logger(pid=os.getpid(), filename=resource_log):
+        process_namelist(namelist_file=namelist_file, config_user=cfg)
 
 
 def process_namelist(namelist_file, config_user):
@@ -272,7 +185,3 @@ def run():
         sys.exit(1)
     else:
         logger.info("Run was succesful")
-
-
-if __name__ == '__main__':
-    run()
