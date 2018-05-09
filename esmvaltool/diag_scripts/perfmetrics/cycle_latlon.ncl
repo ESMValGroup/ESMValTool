@@ -89,35 +89,41 @@ begin
             end if
         end if
 
-        ;; Calculate grading
-        locidx = ind(modelnames(imod).eq.grading&models)
-        if (ismissing(locidx)) then
-            continue
-        end if
-        if (diag_script_info@metric.eq."taylor") then
-            grading(0, locidx, 0) = \
-                calculate_metric(var_all(:, :, :, 0), \
-                                 var_ref(:, :, :, 0), \
-                                 "stddev_ratio")
-            grading(0, locidx, 1) = \
-                calculate_metric(var_all(:, :, :, 0), \
-                                 var_ref(:, :, :, 0), \
-                                 "correlation")
-        else
-            grading(0, locidx, 0) = \
-                calculate_metric(var_all(:, :, :, 0), \
-                                 var_ref(:, :, :, 0), \
-                                 diag_script_info@metric)
-            if (l_altern) then
-                grading(0, locidx, 1) = \
+        ;; Loop over requested metrics
+        do met = 0, nmetrics - 1
+
+            if (diag_script_info@metric(met).eq."taylor") then
+                locidx = ind(modelnames(imod).eq.taylor&models)
+                if (ismissing(locidx)) then
+                    continue
+                end if
+                taylor(0, locidx, 0) = \
                     calculate_metric(var_all(:, :, :, 0), \
-                                     var_alt(:, :, :, 0), \
-                                     diag_script_info@metric)
+                                     var_ref(:, :, :, 0), \
+                                     "stddev_ratio")
+                taylor(0, locidx, 1) = \
+                    calculate_metric(var_all(:, :, :, 0), \
+                                     var_ref(:, :, :, 0), \
+                                     "correlation")
+            else
+                locidx = ind(modelnames(imod).eq.grading&models)
+                if (ismissing(locidx)) then
+                    continue
+                end if
+                grading(met, 0, locidx, 0) = \
+                    calculate_metric(var_all(:, :, :, 0), \
+                                     var_ref(:, :, :, 0), \
+                                     diag_script_info@metric(met))
+                if (l_altern) then
+                    grading(met, 0, locidx, 1) = \
+                        calculate_metric(var_all(:, :, :, 0), \
+                                         var_alt(:, :, :, 0), \
+                                         diag_script_info@metric(met))
+                end if
             end if
-        end if
+
+        end do
 
     end do
-
-
 
 end

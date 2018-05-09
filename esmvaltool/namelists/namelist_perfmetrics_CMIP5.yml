@@ -198,14 +198,12 @@ diagnostics:
         styleset: CMIP5        # Plot style
       grading: &grading_settings
         <<: *cycle_settings
-        plot_type: cycle_latlon        # Plot type ('cycle' [time], 'zonal' [plev, lat], 'latlon' [lat, lon], 'cycle_latlon' [time, lat, lon])
-        draw_plots: false              # Do not draw plots
-        calc_grading: true             # Calculate grading
-        metric: RMSD                   # Metric ('RMSD', 'BIAS', taylor')
-        normalization: centered_median # Normalization ('mean', 'median', 'centered_median')
-      taylor: &taylor_settings
-        <<: *grading_settings
-        metric: taylor                 # Metric ('RMSD', 'BIAS', taylor')
+        plot_type: cycle_latlon                # Plot type ('cycle' [time], 'zonal' [plev, lat], 'latlon' [lat, lon], 'cycle_latlon' [time, lat, lon])
+        draw_plots: false                      # Do not draw plots
+        calc_grading: true                     # Calculate grading
+        metric: [RMSD, taylor]                 # Metric ('RMSD', 'BIAS', taylor')
+        normalization: [centered_median, none] # Normalization ('mean', 'median', 'centered_median', 'none')
+
 
   ta200:
     description: Air temperature at 200 hPa global.
@@ -274,6 +272,9 @@ diagnostics:
         <<: *cycle_settings
       grading:
         <<: *grading_settings
+        metric: [RMSD]                   # Metric ('RMSD', 'BIAS', taylor')
+        normalization: [centered_median] # Normalization ('mean', 'median', 'centered_median', 'none')
+
 
   ta30:
     description: Air temperature at 30 hPa global.
@@ -549,6 +550,8 @@ diagnostics:
     scripts:
       grading:
         <<: *grading_settings
+        metric: [RMSD]                   # Metric ('RMSD', 'BIAS', taylor')
+        normalization: [centered_median] # Normalization ('mean', 'median', 'centered_median', 'none')
 
 
   ua200:
@@ -615,6 +618,8 @@ diagnostics:
     scripts:
       grading:
         <<: *grading_settings
+        metric: [RMSD]                   # Metric ('RMSD', 'BIAS', taylor')
+        normalization: [centered_median] # Normalization ('mean', 'median', 'centered_median', 'none')
 
 
 ### va: NORTHWARD WIND ###############################################################################################################################
@@ -682,6 +687,8 @@ diagnostics:
     scripts:
       grading:
         <<: *grading_settings
+        metric: [RMSD]                   # Metric ('RMSD', 'BIAS', taylor')
+        normalization: [centered_median] # Normalization ('mean', 'median', 'centered_median', 'none')
 
 
   va200:
@@ -747,6 +754,8 @@ diagnostics:
     scripts:
       grading:
         <<: *grading_settings
+        metric: [RMSD]                   # Metric ('RMSD', 'BIAS', taylor')
+        normalization: [centered_median] # Normalization ('mean', 'median', 'centered_median', 'none')
 
 
 ### zg: GEOPOTENTIAL HEIGHT ##########################################################################################################################
@@ -813,6 +822,8 @@ diagnostics:
     scripts:
       grading:
         <<: *grading_settings
+        metric: [RMSD]                   # Metric ('RMSD', 'BIAS', taylor')
+        normalization: [centered_median] # Normalization ('mean', 'median', 'centered_median', 'none')
 
 
 ### hus: SPECIFIC HUMIDITY ###########################################################################################################################
@@ -897,6 +908,9 @@ diagnostics:
         diff_levs: [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5] # Contour levels for difference plot
       grading:
         <<: *grading_settings
+        metric: [RMSD]                   # Metric ('RMSD', 'BIAS', taylor')
+        normalization: [centered_median] # Normalization ('mean', 'median', 'centered_median', 'none')
+       
 
 ### ts: SEA-SURFACE (SKIN) TEMPERATURE ###############################################################################################################
 
@@ -929,21 +943,19 @@ diagnostics:
 
 ### COLLECT METRICS ##################################################################################################################################
 
-  grading_collect:
-    description: Wrapper to collect and plot previously calculated gradings
+  collect:
+    description: Wrapper to collect and plot previously calculated metrics
     scripts:
-      grading_collect:
-        script: perfmetrics/grading_collect.ncl
+      RMSD:
+        script: perfmetrics/collect.ncl
         ancestors: ['*/grading']
+        metric: RMSD
         label_bounds: [-0.5, 0.5]
         label_scale: 0.1
         disp_values: false
         cm_interval: [2, 241]
         sort: true  # Sort model in alphabetic order (excluding MMM)
-
-  taylor_collect:
-    description: Wrapper to collect and plot previously calculated taylor metrics
-    scripts:
-      taylor_collect:
-        script: perfmetrics/taylor_collect.ncl
-        ancestors: ['*/taylor']
+      taylor:
+        script: perfmetrics/collect.ncl
+        ancestors: ['*/grading']
+        metric: taylor
