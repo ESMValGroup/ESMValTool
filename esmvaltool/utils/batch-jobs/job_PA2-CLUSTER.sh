@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/bash -e
 ###############################################################################
 ### BATCH SCRIPT TO RUN THE ESMVALTOOL AT THE DLR PA2-CLUSTER
 ### Author: Mattia Righi (DLR)
