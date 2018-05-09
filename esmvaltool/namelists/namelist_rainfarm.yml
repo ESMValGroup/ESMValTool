@@ -1,0 +1,51 @@
+###############################################################################
+# namelist_rainfarm.xml
+#
+# Description
+# Namelist for the RainFARM package by J. von Hardenberg (ISAC-CNR)
+#
+# Authors
+# E. Arnone (ISAC-CNR, Italy - e.arnone@isac.cnr.it)
+# J. von Hardenberg (ISAC-CNR, Italy - j.vonhardenberg@isac.cnr.it)
+# 
+# References:
+# https://github.com/jhardenberg/RainFARM.jl
+# D'Onofrio et al. 2014, J of Hydrometeorology 15, 830-843
+# Rebora et. al 2006, JHM 7, 724
+# 
+# This namelist is part of the ESMValTool
+#
+###############################################################################
+---
+
+models:
+  - {model: EC-Earth,       project: CMIP5, exp: historical, ensemble: r8i1p1, start_year: 1997, end_year: 1997}
+
+preprocessors:
+  preproc:
+    extract_levels: false
+
+diagnostics:
+  rainfarm:
+    description: RainFARM stochastic downscaling of precipitation fields
+    variables:
+      pr:
+        preprocessor: preproc
+        reference_model: "EC-Earth"
+        mip: day
+        field: T2Ds
+    scripts:
+      main:
+        script: rainfarm.r
+        # Diagnostic arguments: set FALSE to void and allow RainFARM automated setting
+        force_processing: true      # TRUE to rewrite existing output file
+        rlonlatdata: [4,13,44,53]   # Subsetting of region where calculation is to be performed. 
+                                    # The selected region needs to have equal number of longitude 
+                                    # and latitude grid points. 
+                                    # Warning: downcaling can reach very high resolution so select limited area.  
+                                    # NOTE: lon(0/360) 
+        rgrid: false #"r320x160"    # set desired regridding resolution (e.g., comparing different datasets)  
+        slope: 1.7 # spatial spectral slope       
+        nens: 2    # number of ensemble members to be calculated
+        nf:   8    # subdivisions for downscaling
+
