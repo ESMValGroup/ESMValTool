@@ -97,289 +97,283 @@ load "./diag_scripts/shared/plot/contour_maps.ncl"
 
 begin
 
-    enter_msg(diag_script, "")
-    log_info("++++++++++++++++++++++++++++++++++++++++++")
-    log_info(diag_script + " (var: " + variables(0) + ")")
-    log_info("++++++++++++++++++++++++++++++++++++++++++")
+  enter_msg(diag_script, "")
+  log_info("++++++++++++++++++++++++++++++++++++++++++")
+  log_info(diag_script + " (var: " + variables(0) + ")")
+  log_info("++++++++++++++++++++++++++++++++++++++++++")
 
-    dim_MOD = dimsizes(model_info@model)
-    dim_VAR = dimsizes(variables)
-    var0 = variables(0)
-    field_type0 = field_types(0)
+  dim_MOD = dimsizes(model_info@model)
+  dim_VAR = dimsizes(variables)
+  var0 = variables(0)
+  field_type0 = field_types(0)
 
-    ;; Write references
-    write_references(diag_script, \
-                     "A_fran_fr", \
-                     (/"A_righ_ma", "A_eyri_ve", "A_gott_kl", "A_senf_da"/), \
-                     (/"D_righi15gmd", "D_gleckler08jgr"/), \
-                     (/"E_ncep", "E_erainterim", "E_airs", \
-                       "E_ceresebaf", "E_srb"/), \
-                     (/"P_embrace", "P_esmval"/))
+  ;; Write references
+  write_references(diag_script, "A_fran_fr", \
+                   (/"A_righ_ma", "A_eyri_ve", "A_gott_kl", "A_senf_da"/), \
+                   (/"D_righi15gmd", "D_gleckler08jgr"/), \
+                   (/"E_ncep", "E_erainterim", "E_airs", "E_ceresebaf", \
+                     "E_srb"/), \
+                   (/"P_embrace", "P_esmval"/))
 
-    ;; Check required diag_script_info attributes
+  ;; Check required diag_script_info attributes
+  exit_if_missing_atts(diag_script_info, (/"plot_type", "time_avg", "region"/))
+
+  ;; Define region
+  region = select_region(diag_script_info@region)
+
+  ;; Store required attributes
+  ptype = diag_script_info@plot_type
+
+  if (all(ptype.ne.(/"cycle", "zonal", "latlon", "cycle_latlon"/))) then
+    error_msg("f", diag_script, "", "plot_type " + ptype + " is not a " + \
+              "supported plot_type in this diagnostic")
+  end if
+
+  ;; Check for plot-type specific settings
+  if (ptype.eq."cycle") then
     exit_if_missing_atts(diag_script_info, \
-                         (/"plot_type", "time_avg", "region"/))
+                         (/"legend_outside", "styleset", "plot_stddev"/))
+  end if
 
-    ;; Define region
-    region = select_region(diag_script_info@region)
+  if ((ptype.eq."zonal" .or. ptype.eq."latlon") .and. \
+      diag_script_info@region.ne."Global") then
+    error_msg("f", diag_script, "", "plot_type " + ptype + \
+              " implemented only for region='Global'")
+  end if
 
-    ;; Store required attributes
-    ptype = diag_script_info@plot_type
+  ;; Check valid field
+  if ((ptype.eq."zonal" .and. \
+      all(field_type0.ne.(/"T3M", "T2Mz"/))) .or. \
+      (ptype.eq."cycle" .and. \
+      all(field_type0.ne.(/"T3M", "T2Ms", "T1M", "T0Ms"/))) .or. \
+      (ptype.eq."latlon" .and. \
+      all(field_type0.ne.(/"T3M", "T2Ms"/))) .or. \
+      (ptype.eq."cycle_latlon" .and. \
+      all(field_type0.ne.(/"T3M", "T2Ms"/)))) then
+    error_msg("f", diag_script, "", "input field " + field_type0 + \
+              " is not compatible with plot_type " + ptype)
+  end if
 
-    if (all(ptype.ne.(/"cycle", "zonal", "latlon", "cycle_latlon"/))) then
-        error_msg("f", diag_script, "", "plot_type " + ptype + " is not a " + \
-                  "supported plot_type in this diagnostic")
+  ;; Set default values for non-required diag_script_info attributes
+  set_default_att(diag_script_info, "range_option", 0)
+  set_default_att(diag_script_info, "projection", "CylindricalEquidistant")
+  set_default_att(diag_script_info, "draw_plots", True)
+  set_default_att(diag_script_info, "plot_diff", False)
+  set_default_att(diag_script_info, "calc_grading", False)
+  set_default_att(diag_script_info, "stippling", False)
+  set_default_att(diag_script_info, "t_test", False)
+  set_default_att(diag_script_info, "show_global_avg", False)
+  set_default_att(diag_script_info, "zonal_ymin", 5.)
+  set_default_att(diag_script_info, "zonal_cmap", "amwg_blueyellowred")
+  set_default_att(diag_script_info, "latlon_cmap", "amwg_blueyellowred")
+
+  ;; Check consistency of diff plots settings
+  if (diag_script_info@t_test .and. .not.diag_script_info@plot_diff) then
+    error_msg("f", diag_script, "", "plot_diff must be True to apply t-test")
+  end if
+  if (diag_script_info@t_test .and. .not.diag_script_info@conf_level) then
+    error_msg("f", diag_script, "", \
+              "conf_level must be specified to apply t-test")
+  end if
+
+  ;; Check metric
+  if (diag_script_info@calc_grading) then
+    exit_if_missing_atts(diag_script_info, (/"metric", "normalization"/))
+    if (dimsizes(diag_script_info@metric).ne.\
+        dimsizes(diag_script_info@normalization)) then
+      error_msg("f", diag_script, "", "normalization must be " + \
+                "provided for each requested metric")
     end if
+  end if
 
-    ;; Check for plot-type specific settings
-    if (ptype.eq."cycle") then
-        exit_if_missing_atts(diag_script_info, \
-                             (/"legend_outside", "styleset", "plot_stddev"/))
+  ;; Unique names for models
+  modelnames = project_style(diag_script_info, "annots")
+
+  ;; Check for reference model definition
+  if (variable_info@reference_model.eq."None") then
+    error_msg("f", diag_script, "", "no reference model is specified")
+  end if
+
+  ;; Set index of the reference (and alternative) model
+  if (isatt(variable_info, "alternative_model")) then
+    l_altern = True
+    nobs = 2
+    ref_inds = get_ref_model_idx(model_info, \
+                                 (/variable_info@reference_model, \
+                                   variable_info@alternative_model/))
+    ref_ind = ref_inds(0)
+    alt_ind = ref_inds(1)
+  else
+    l_altern = False
+    nobs = 1
+    ref_inds = get_ref_model_idx(model_info, variable_info@reference_model)
+    ref_ind = ref_inds
+  end if
+
+  ;; Create output plot directory
+  if (diag_script_info@draw_plots) then
+    plot_dir = config_user_info@plot_dir
+    system("mkdir -p " + plot_dir)
+  end if
+
+  ;; Plot file type
+  file_type = config_user_info@output_file_type
+  if (ismissing(file_type)) then
+    file_type = "ps"
+  end if
+
+  ;; Grading settings
+  if (diag_script_info@calc_grading) then
+
+    ;; Define variable name
+    region_name = ""  ; priority 3
+    location = ""  ; priority 3
+    if(isatt(diag_script_info, "aux_info")) then
+      region_name = "_" + diag_script_info@aux_info  ; priority 2
+      location = " - " + diag_script_info@aux_info  ; priority 2
     end if
-
-    if ((ptype.eq."zonal" .or. ptype.eq."latlon") .and. \
-        diag_script_info@region.ne."Global") then
-        error_msg("f", diag_script, "", "plot_type " + ptype + \
-                  " implemented only for region='Global'")
+    if(isatt(diag_script_info, "location")) then
+      location = " - " + diag_script_info@location  ; priority 1
     end if
-
-    ;; Check valid field
-    if ((ptype.eq."zonal" .and. \
-         all(field_type0.ne.(/"T3M", "T2Mz"/))) .or. \
-        (ptype.eq."cycle" .and. \
-         all(field_type0.ne.(/"T3M", "T2Ms", "T1M", "T0Ms"/))) .or. \
-        (ptype.eq."latlon" .and. \
-         all(field_type0.ne.(/"T3M", "T2Ms"/))) .or. \
-        (ptype.eq."cycle_latlon" .and. \
-         all(field_type0.ne.(/"T3M", "T2Ms"/)))) then
-        error_msg("f", diag_script, "", "input field " + field_type0 + \
-                  " is not compatible with plot_type " + ptype)
+    if(isatt(diag_script_info, "region")) then
+      region_name = "_" + region@name  ; priority 1
+      location = " - " + diag_script_info@region
     end if
-
-    ;; Set default values for non-required diag_script_info attributes
-    set_default_att(diag_script_info, "range_option", 0)
-    set_default_att(diag_script_info, "projection", "CylindricalEquidistant")
-    set_default_att(diag_script_info, "draw_plots", True)
-    set_default_att(diag_script_info, "plot_diff", False)
-    set_default_att(diag_script_info, "calc_grading", False)
-    set_default_att(diag_script_info, "stippling", False)
-    set_default_att(diag_script_info, "t_test", False)
-    set_default_att(diag_script_info, "show_global_avg", False)
-    set_default_att(diag_script_info, "zonal_ymin", 5.)
-    set_default_att(diag_script_info, "zonal_cmap", "amwg_blueyellowred")
-    set_default_att(diag_script_info, "latlon_cmap", "amwg_blueyellowred")
-
-    ;; Check consistency of diff plots settings
-    if (diag_script_info@t_test .and. .not.diag_script_info@plot_diff) then
-        error_msg("f", diag_script, "", \
-                  "plot_diff must be True to apply t-test")
-    end if
-    if (diag_script_info@t_test .and. .not.diag_script_info@conf_level) then
-        error_msg("f", diag_script, "", \
-                  "conf_level must be specified to apply t-test")
-    end if
-
-    ;; Check metric
-    if (diag_script_info@calc_grading) then
-        exit_if_missing_atts(diag_script_info, (/"metric", "normalization"/))
-        if (dimsizes(diag_script_info@metric).ne.\
-            dimsizes(diag_script_info@normalization)) then
-            error_msg("f", diag_script, "", "normalization must be " + \
-                      "provided for each requested metric")
-        end if
-    end if
-
-    ;; Unique names for models
-    modelnames = project_style(diag_script_info, "annots")
-
-    ;; Check for reference model definition
-    if (variable_info@reference_model.eq."None") then
-        error_msg("f", diag_script, "", "no reference model is specified")
-    end if
-
-    ;; Set index of the reference (and alternative) model
-    if (isatt(variable_info, "alternative_model")) then
-        l_altern = True
-        nobs = 2
-        ref_inds = get_ref_model_idx(model_info, \
-                                     (/variable_info@reference_model, \
-                                       variable_info@alternative_model/))
-        ref_ind = ref_inds(0)
-        alt_ind = ref_inds(1)
+    altitude = ""  ; priority 2
+    if(any(field_type0.eq.(/"T0M", "T0Ms"/))) then
+      if(isatt(diag_script_info, "altitude")) then
+        altitude = " - " + diag_script_info@altitude  ; priority 1
+      end if
     else
-        l_altern = False
-        nobs = 1
-        ref_inds = get_ref_model_idx(model_info, variable_info@reference_model)
-        ref_ind = ref_inds
+      if(isatt(diag_script_info, "level")) then
+        altitude = " - " + diag_script_info@level + " hPa"  ; priority 1
+      end if
+    end if
+    var0_grade = var0
+    var0_grade = var0_grade + region_name
+    if(isatt(diag_script_info, "level").and. \
+       any(field_type0.eq.(/"T3M", "T1M"/))) then
+      var0_grade = var0_grade + "-" + diag_script_info@level  ; FIX-ME
     end if
 
+    ;; Define grading arrays
+    nmetrics = dimsizes(diag_script_info@metric)
+    ncdf_dir = new(nmetrics, string)
+    nmodels = dimsizes(modelnames) - nobs
 
-    ;; Create output plot directory
-    if (diag_script_info@draw_plots) then
-    	plot_dir = config_user_info@plot_dir
-        system("mkdir -p " + plot_dir)
+    grading = new((/nmetrics, 1, nmodels, nobs/), float)
+    grading!0 = "metric"
+    grading!1 = "diagnostics"  ; dummy coord. to facilitate appending
+    grading!2 = "models"
+    grading!3 = "reference"
+    grading&diagnostics = var0_grade
+    grading&models = remove_index(modelnames, ref_inds)
+    if (isdim(grading, "reference")) then
+      grading&reference = modelnames(ref_inds)
     end if
 
-    ;; Plot file type
-    file_type = config_user_info@output_file_type
-    if (ismissing(file_type)) then
-        file_type = "ps"
+    ;; Special case Taylor
+    if (any(diag_script_info@metric.eq."taylor")) then
+      nmodels = dimsizes(modelnames) - 1  ; always 1 reference model
+      taylor = new((/1, nmodels, 2/), float)
+      taylor!0 = "diagnostics"  ; dummy coord. to facilitate appending
+      taylor!1 = "models"
+      taylor!2 = "statistic"
+      taylor&diagnostics = var0_grade
+      taylor&statistic = (/"stddev_ratio", "correlation"/)
+      taylor&models = remove_index(modelnames, ref_ind)
     end if
 
-    ;; Grading settings
-    if (diag_script_info@calc_grading) then
+    ;; Define grading filename
+    do met = 0, nmetrics - 1
+      ncdf_dir(met) = config_user_info@work_dir + "/" + \
+        diag_script_info@metric(met) + "_" + var0_grade + ".nc"
+    end do
 
-        ;; Define variable name
-        region_name = ""  ; priority 3
-        location = ""  ; priority 3
-        if(isatt(diag_script_info, "aux_info")) then
-            region_name = "_" + diag_script_info@aux_info  ; priority 2
-            location = " - " + diag_script_info@aux_info  ; priority 2
-        end if
-        if(isatt(diag_script_info, "location")) then
-            location = " - " + diag_script_info@location  ; priority 1
-        end if
-        if(isatt(diag_script_info, "region")) then
-            region_name = "_" + region@name  ; priority 1
-            location = " - " + diag_script_info@region
-        end if
-        altitude = ""  ; priority 2
-        if(any(field_type0.eq.(/"T0M", "T0Ms"/))) then
-            if(isatt(diag_script_info, "altitude")) then
-                altitude = " - " + diag_script_info@altitude  ; priority 1
-            end if
-        else
-            if(isatt(diag_script_info, "level")) then
-                altitude = " - " + diag_script_info@level + " hPa"  ; priority1
-            end if
-        end if
-        var0_grade = var0
-        var0_grade = var0_grade + region_name
-        if(isatt(diag_script_info, "level").and. \
-            any(field_type0.eq.(/"T3M", "T1M"/))) then
-            var0_grade = var0_grade + "-" + diag_script_info@level ;; FIX-ME
-        end if
+  end if
 
-        ;; Define grading arrays
-        nmetrics = dimsizes(diag_script_info@metric)
-        ncdf_dir = new(nmetrics, string)
-        nmodels = dimsizes(modelnames) - nobs
-
-        grading = new((/nmetrics, 1, nmodels, nobs/), float)
-        grading!0 = "metric"
-        grading!1 = "diagnostics"  ;; dummy coord. to facilitate appending
-        grading!2 = "models"
-        grading!3 = "reference"
-        grading&diagnostics = var0_grade
-        grading&models = remove_index(modelnames, ref_inds)
-        if (isdim(grading, "reference")) then
-            grading&reference = modelnames(ref_inds)
-        end if
-
-        ;; Special case Taylor
-        if (any(diag_script_info@metric.eq."taylor")) then
-            nmodels = dimsizes(modelnames) - 1  ;; always 1 reference model
-            taylor = new((/1, nmodels, 2/), float)
-            taylor!0 = "diagnostics"  ;; dummy coord. to facilitate appending
-            taylor!1 = "models"
-            taylor!2 = "statistic"
-            taylor&diagnostics = var0_grade
-            taylor&statistic = (/"stddev_ratio", "correlation"/)
-            taylor&models = remove_index(modelnames, ref_ind)
-        end if
-
-        ;; Define grading filename
-        do met = 0, nmetrics - 1
-            ncdf_dir(met) = config_user_info@work_dir + "/" + \
-                diag_script_info@metric(met) + "_" + var0_grade + ".nc"
-        end do
-
-    end if
-
-    ;; Load plot-type-specific script
-    print("diag_scripts/perfmetrics/" + ptype + ".ncl")
-    loadscript("diag_scripts/perfmetrics/" + ptype + ".ncl")
+  ;; Load plot-type-specific script
+  print("diag_scripts/perfmetrics/" + ptype + ".ncl")
+  loadscript("diag_scripts/perfmetrics/" + ptype + ".ncl")
 
 end
 
 begin
 
-    ;; Call plot-type-specific script
-    perfmetrics_ptype_script()
+  ;; Call plot-type-specific script
+  perfmetrics_ptype_script()
 
+  ;; Finalize grading calculations
+  if (diag_script_info@calc_grading) then
 
-    ;; Finalize grading calculations
-    if (diag_script_info@calc_grading) then
+    do met = 0, nmetrics - 1
 
-        do met = 0, nmetrics - 1
+      if (diag_script_info@metric(met).eq."taylor") then
+        metric = taylor
+      else
+        metric = grading(met, :, :, :)
+      end if
 
-            if (diag_script_info@metric(met).eq."taylor") then
-                metric = taylor
-            else
-                metric = grading(met, :, :, :)
-            end if
-
-            ;; Apply normalization
-            if (diag_script_info@metric(met).ne."taylor") then
-                do iobs = 0, nobs - 1
-                    metric(:, :, iobs) = \
-                        normalize_metric(metric(:, :, iobs), \
-                                         diag_script_info@normalization(met))
-                end do
-            end if
-
-            ;; Reduce dimensionality if no alternative model
-            if (.not.l_altern .and. diag_script_info@metric.ne."taylor") then
-                metric := metric(:, :, 0)
-                delete(metric@reference)
-            end if
-
-            ;; Attach attributes to the results
-            metric@title = diag_script_info@metric(met) + " metric"
-            metric@long_name = \
-                "Grading table of metric " + diag_script_info@metric(met)
-            metric@metric = diag_script_info@metric(met)
-            metric@diag_script = (/diag_script/)
-            metric@var = "grade"
-            metric@region = location
-            metric@num_climofiles = dimsizes(model_info@model) ;; FIX-ME ?
-            do imod = 0, dimsizes(model_info@model) - 1
-                num_climo = "climofile_" + imod
-                metric@$num_climo$ = input_file_info@filename(imod)
-            end do
-            metric@ncdf_dir = ncdf_dir(met)
-
-            ;; Write NetCDF output
-            ncdf_outfile = ncdf_write(metric, metric@ncdf_dir)
-
-            ;; Write results of temporary grading list
-            temp_dir = config_user_info@work_dir + "/" + \
-                diag_script_info@metric(met) + ".nc"
-
-            if (fileexists(temp_dir)) then
-                temp_file = addfile(temp_dir, "r")
-                temp_list = temp_file->temp_list
-                temp_list := tostring(temp_list)
-                temp_list := array_append_record(temp_list, \
-                                                 ncdf_dir(met), 0)
-                temp_list := tochar(temp_list)
-                system("rm -f " + temp_dir)
-            else
-                ncdf_char = tochar(ncdf_dir(met))
-                temp_list = new((/1, dimsizes(ncdf_char)/), character)
-                temp_list(0, :) = ncdf_char
-            end if
-
-            ;; Create new file and add list
-            temp = addfile(temp_dir, "c")
-            temp->temp_list = temp_list
-
-            delete([/metric, temp_dir, temp_list, ncdf_char/])
-
+      ;; Apply normalization
+      if (diag_script_info@metric(met).ne."taylor") then
+        do iobs = 0, nobs - 1
+          metric(:, :, iobs) = \
+            normalize_metric(metric(:, :, iobs), \
+                             diag_script_info@normalization(met))
         end do
+      end if
 
-    end if
+      ;; Reduce dimensionality if no alternative model
+      if (.not.l_altern .and. diag_script_info@metric.ne."taylor") then
+        metric := metric(:, :, 0)
+        delete(metric@reference)
+      end if
 
-    leave_msg(diag_script, "")
+      ;; Attach attributes to the results
+      metric@title = diag_script_info@metric(met) + " metric"
+      metric@long_name = \
+        "Grading table of metric " + diag_script_info@metric(met)
+      metric@metric = diag_script_info@metric(met)
+      metric@diag_script = (/diag_script/)
+      metric@var = "grade"
+      metric@region = location
+      metric@num_climofiles = dimsizes(model_info@model)  ; FIX-ME ?
+      do imod = 0, dimsizes(model_info@model) - 1
+        num_climo = "climofile_" + imod
+        metric@$num_climo$ = input_file_info@filename(imod)
+      end do
+      metric@ncdf_dir = ncdf_dir(met)
+
+      ;; Write NetCDF output
+      ncdf_outfile = ncdf_write(metric, metric@ncdf_dir)
+
+      ;; Write results of temporary grading list
+      temp_dir = config_user_info@work_dir + "/" + \
+        diag_script_info@metric(met) + ".nc"
+
+      if (fileexists(temp_dir)) then
+        temp_file = addfile(temp_dir, "r")
+        temp_list = temp_file->temp_list
+        temp_list := tostring(temp_list)
+        temp_list := array_append_record(temp_list, ncdf_dir(met), 0)
+        temp_list := tochar(temp_list)
+        system("rm -f " + temp_dir)
+      else
+        ncdf_char = tochar(ncdf_dir(met))
+        temp_list = new((/1, dimsizes(ncdf_char)/), character)
+        temp_list(0, :) = ncdf_char
+      end if
+
+      ;; Create new file and add list
+      temp = addfile(temp_dir, "c")
+      temp->temp_list = temp_list
+
+      delete([/metric, temp_dir, temp_list, ncdf_char/])
+
+    end do
+
+  end if
+
+  leave_msg(diag_script, "")
 
 end
