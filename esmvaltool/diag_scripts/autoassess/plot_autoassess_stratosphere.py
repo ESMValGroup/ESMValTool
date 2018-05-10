@@ -21,28 +21,19 @@ def get_cfg():
     return cfg
 
 
-def get_input_files(cfg, index=0):
-    """Get a dictionary with input files from metadata.yml files."""
-    metadata_file = cfg['input_files'][index]
-    with open(metadata_file) as file:
-        metadata = yaml.safe_load(file)
-    return metadata
-
-
 def main():
 
     cfg = get_cfg()
     logger.setLevel(cfg['log_level'].upper())
 
-    input_files = get_input_files(cfg)
     plot_dir = cfg['plot_dir']
     control_model = cfg['control_model']
     exp_model = cfg['exp_model']
 
     #aa_strato/autoassess_strato_test_1/MPI-ESM-MR_vs_MPI-ESM-LR/stratosphere/MPI-ESM-LR/metrics.csv
     vsloc = exp_model + '_vs_' + control_model
-    file_exp = os.path.join(os.path.dirname(cfg['plot_dir']), cfg['diag_name'], vsloc, 'stratosphere', exp_model, 'metrics.csv')
-    file_ref = os.path.join(os.path.dirname(cfg['plot_dir']), cfg['diag_name'], vsloc, 'stratosphere', control_model, 'metrics.csv')
+    file_exp = os.path.join(os.path.dirname(os.path.dirname(cfg['plot_dir'])), cfg['diag_tag'], cfg['diag_name'], vsloc, 'stratosphere', exp_model, 'metrics.csv')
+    file_ref = os.path.join(os.path.dirname(os.path.dirname(cfg['plot_dir'])), cfg['diag_tag'], cfg['diag_name'], vsloc, 'stratosphere', control_model, 'metrics.csv')
 
     cwd = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
     plotter_script = os.path.join(cwd, 'autoassess_source/autoassess/plot_norm_ac.py')
