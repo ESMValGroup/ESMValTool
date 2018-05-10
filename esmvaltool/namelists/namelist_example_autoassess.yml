@@ -1,0 +1,40 @@
+#### summary 
+#### this is a very basic namelist that runs the stratosphere area from autoassess
+---
+
+models:
+  - {model: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: amip,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+
+preprocessors:
+  pp_aa_area:
+    extract_levels:
+      levels: [40., 100., 500.]
+      scheme: nearest
+
+diagnostics:
+  aa_strato:
+    description: Autoassess test diag for Stratosphere.
+    variables:
+      ta:
+        preprocessor: pp_aa_area
+        mip: Amon
+        field: T3M
+      ua:
+        preprocessor: pp_aa_area
+        mip: Amon
+        field: T3M
+      hus:
+        preprocessor: pp_aa_area
+        mip: Amon
+        field: T3M
+    scripts:
+      autoassess_strato_test: &autoassess_strato_test_settings
+        script: autoassess/example_ESMVal-autoassess_diagnostic.py
+        title: "First autoassess diag test running stratosphere area"
+        executable: /group_workspaces/jasmin/ncas_cms/valeriu/autoassess/autoassess/run_area.py  # change as per user
+        area: Stratosphere                                                                       # name of area diagnostic
+        suite1: u-ab123                                                                          # control suite
+        suite2: u-ab123                                                                          # test suite
+        start: 2000/12/01                                                                        # start data in autoassess format
+        end: 2002/12/01                                                                          # end date in autoassess format
+        obs_data_dir: /group_workspaces/jasmin/ncas_cms/valeriu/autoassess_stratosphere/data     # location of obs files
