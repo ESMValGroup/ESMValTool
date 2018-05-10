@@ -38,18 +38,21 @@ def main():
     plot_dir = cfg['plot_dir']
     control_model = cfg['control_model']
     exp_model = cfg['exp_model']
+
     #aa_strato/autoassess_strato_test_1/MPI-ESM-MR_vs_MPI-ESM-LR/stratosphere/MPI-ESM-LR/metrics.csv
-    vs = exp_model + '_vs_' + control_model
-    file_exp = os.path.join(cfg['plot_dir'], cfg['diag_title'], cfg['diag_name'], vs, 'stratosphere', exp_model, 'metrics.csv')
-    file_ref = os.path.join(cfg['plot_dir'], cfg['diag_title'], cfg['diag_name'], vs, 'stratosphere', ref_model, 'metrics.csv') 
+    vsloc = exp_model + '_vs_' + control_model
+    file_exp = os.path.join(os.path.dirname(cfg['plot_dir']), cfg['diag_name'], vsloc, 'stratosphere', exp_model, 'metrics.csv')
+    file_ref = os.path.join(os.path.dirname(cfg['plot_dir']), cfg['diag_name'], vsloc, 'stratosphere', control_model, 'metrics.csv')
 
     cwd = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-    command_call = 'python ' + os.path.join(cwd, 'autoassess_source/autoassess/plot_norm_ac.py')
+    plotter_script = os.path.join(cwd, 'autoassess_source/autoassess/plot_norm_ac.py')
+    os.system('chmod +x ' + plotter_script)
+    command_call = plotter_script
     args = {}
     args['--exp'] = exp_model
     args['--ref'] = control_model
-    args['--plot'] = os.path.join(cfg['plot_dir'], cfg['plot_name'])
-    args['--title'] = cfg['title']
+    args['--plot'] = os.path.join(cfg['plot_dir'], cfg['plot_name'] + '.png')
+    args['--title'] = cfg['plot_title']
     args['--file-exp'] = file_exp
     args['--file-ref'] = file_ref
     args_collection = [key + ' ' + args[key] for key in args.keys()]

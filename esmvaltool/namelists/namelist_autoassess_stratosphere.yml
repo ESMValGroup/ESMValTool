@@ -92,5 +92,6 @@ diagnostics:
         <<: *autoassess_strato_test_1_settings
         script: autoassess/plot_autoassess_stratosphere.py
         title: "Plot Stratosphere Metrics MPI-MPI"
-        plot_name: "MPI"
-        title: "MPI-ESM-LR vs -MR"
+        plot_name: "Metrics"
+        diag_name: autoassess_strato_test_1
+        plot_title: "MPI-ESM-LR_vs_MPI-ESM-MR"
