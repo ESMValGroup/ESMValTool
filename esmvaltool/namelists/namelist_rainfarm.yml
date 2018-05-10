@@ -36,7 +36,7 @@ diagnostics:
         field: T2Ds
     scripts:
       main:
-        script: rainfarm.r
+        script: rainfarm/main.r
         # Diagnostic arguments: set FALSE to void and allow RainFARM automated setting
         force_processing: true      # TRUE to rewrite existing output file
         rlonlatdata: [4,13,44,53]   # Subsetting of region where calculation is to be performed. 

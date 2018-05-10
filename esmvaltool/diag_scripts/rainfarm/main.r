@@ -40,8 +40,8 @@ rainfarm_args=list(slope=slope,nens=nens,nf=nf,weights_climo=weights_climo,varna
 rainfarm_options=list("-s","-e","-n","-w","-v","-g","-c")
 
 # get first variable and list associated to pr variable
-var0 <- names(metadata)[1]
-list0 <- get(var0,metadata)
+var0 <- "pr"
+list0 <- metadata
 
 # get name of climofile for first variable and list associated to first climofile
 climofiles <- names(list0)
@@ -49,14 +49,6 @@ climolist0 <- get(climofiles[1],list0)
 
 diag_base = climolist0$diagnostic
 print(paste(diag_base,": starting routine"))
-
-#field_type0 = climolist0$field
-#var0 <- variables[1]
-#field_type0 <- field_types[1]
-#info_output(paste0("<<<<<<<< Entering ", diag_script), verbosity, 4)
-#info_output("+++++++++++++++++++++++++++++++++++++++++++++++++", verbosity, 1)
-#info_output(paste0("plot - ", diag_script, " (var: ", variables[1], ")"), verbosity, 1)
-#info_output("+++++++++++++++++++++++++++++++++++++++++++++++++", verbosity, 1)
 
 # create working dirs if they do not exist
 work_dir=settings$work_dir
@@ -87,12 +79,10 @@ for (model_idx in c(1:(length(models_name)))) {
                       "_",paste(rlonlatdata,collapse="-"))
   inregfile <- paste0(regridding_dir,"/",inregname,".nc")
 
-  ## If needed, pre-process file regridding, selecting a limited lon/lat region of interest and adding absolute time axis 
+  ## If needed, pre-process file selecting a limited lon/lat region of interest 
   if((!file.exists(inregfile) | force_processing)) { 
-    sgrid<-""
-    if (rgrid != F) {sgrid <- paste0("-remapcon2,", rgrid)}
-    cdo_command<-paste(paste0("cdo -L -f nc -sellonlatbox,",paste(rlonlatdata,sep="",collapse=",")), 
-                       sgrid, infile, paste0(inregfile,"regtmp"))
+    cdo_command<-paste(paste0("cdo -sellonlatbox,",paste(rlonlatdata,sep="",collapse=",")), 
+                       infile, paste0(inregfile,"regtmp"))
     cdo_command2<-paste("cdo -f nc4 -copy ", paste0(inregfile,"regtmp"), inregfile)
     rm_command<-paste("rm ", paste0(inregfile,"regtmp"))
     print(paste0(diag_base,": pre-processing file: ", infile))
