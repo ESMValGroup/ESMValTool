@@ -62,6 +62,10 @@ def get_args():
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument(
+        '-v', '--version', action='version',
+        version = __version__,
+        help = "return ESMValTool's version number and exit")
+    parser.add_argument(
         '-n',
         '--namelist-file',
         help='Path to the namelist file',
