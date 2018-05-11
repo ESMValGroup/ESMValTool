@@ -5,7 +5,7 @@ import os
 import iris
 
 from esmvaltool.diag_scripts.shared import run_diagnostic
-from esmvaltool.diag_scripts.shared.plot import example_map_plot
+from esmvaltool.diag_scripts.shared.plot import quickplot
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -31,13 +31,13 @@ def main(cfg):
             logger.debug("Saving analysis results to %s", path)
             iris.save(cube, target=path)
 
-        if cfg['write_plots']:
+        if cfg['write_plots'] and cfg.get('quickplot'):
             path = os.path.join(
                 cfg['plot_dir'],
                 name + '.' + cfg['output_file_type'],
             )
             logger.debug("Plotting analysis results to %s", path)
-            example_map_plot(cube, filename=path)
+            quickplot(cube, filename=path, **cfg['quickplot'])
 
 
 if __name__ == '__main__':

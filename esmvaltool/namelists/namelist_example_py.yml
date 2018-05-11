@@ -41,3 +41,5 @@ diagnostics:
     scripts:
       script1:
         script: examples/diagnostic.py
+        quickplot:
+          plot_type: pcolormesh
