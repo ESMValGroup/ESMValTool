@@ -1,0 +1,40 @@
+package:
+  name: esmvaltool
+  version: "1.1.0"
+
+source:
+  git_rev: v1.1.0
+  git_url: https://github.com/c3s-magic/ESMValTool.git
+
+requirements:
+  run:
+  # esmvaltool
+  - python
+  - basemap
+  - iris
+  - esgf-pyclient
+  - scientificpython
+  - ncl
+  # - geoval  #TODO: no geoval conda package available, add one or install some other way?
+  # iris
+  - matplotlib 1.5.*
+  - cartopy 0.15.*
+
+  # ncl
+  - libnetcdf 4.4.1.1
+  - hdf5 1.8.17
+  - hdf4 4.2.12
+  - xorg-libsm 1.2.2
+  - icu 58.1
+  - xorg-libxrender
+  - xorg-libxext
+
+#TODO: add tests?
+#test:
+#  imports:
+#    - ?
+
+about:
+  home: https://github.com/c3s-magic/ESMValTool.git
+  license: Apache License, Version 2.0
+  license_file: LICENSE.md
