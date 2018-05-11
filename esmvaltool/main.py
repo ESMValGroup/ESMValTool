@@ -1,4 +1,3 @@
-#! /usr/bin/env python
 r"""
  ______________________________________________________________________
            _____ ____  __  ____     __    _ _____           _
@@ -62,9 +61,11 @@ def get_args():
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument(
-        '-v', '--version', action='version',
-        version = __version__,
-        help = "return ESMValTool's version number and exit")
+        '-v',
+        '--version',
+        action='version',
+        version=__version__,
+        help="return ESMValTool's version number and exit")
     parser.add_argument(
         '-n',
         '--namelist-file',
