@@ -94,13 +94,15 @@ To create a environment using Python 3.x
 
 .. code-block:: bash
 
-    conda create --file ESMValTool/environment.yml python=3
+    conda create --name esmvaltool python=3
+    conda env update --name esmvaltool --file ESMValTool/environment.yml
 
 To create a environment using Python 2.x
 
 .. code-block:: bash
 
-    conda create --file ESMValTool/environment.yml python=2
+    conda create --name esmvaltool python=2
+    conda env update --name esmvaltool --file ESMValTool/environment.yml
 
 The environment is called ``esmvaltool`` by default, but it is possible to use
 the option -n $(ENVIRONMENT_NAME) to define a custom name. If you are using the
