@@ -1,13 +1,11 @@
 """Python example diagnostic."""
 import logging
 import os
+import pickle
 import sys
 
 import iris
-import iris.quickplot as qplt
-import matplotlib.pyplot as plt
 import yaml
-import pickle
 
 logger = logging.getLogger(__name__)
 
@@ -78,6 +76,7 @@ def main():
     sys_call = command_call + ' ' + ' '.join(args_collection)
     print(sys_call)
     os.system(sys_call)
+
 
 if __name__ == '__main__':
     iris.FUTURE.netcdf_promote = True

@@ -79,7 +79,6 @@ def concatenate(cubes):
         logger.error('Cubes:')
         for cube in cubes:
             logger.error(cube)
-        logger.error(traceback.format_tb(ex.__traceback__))
         raise ConcatenationError('Can not concatenate cubes {0}'.format(cubes))
 
 
