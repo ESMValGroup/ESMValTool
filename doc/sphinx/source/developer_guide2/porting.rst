@@ -4,7 +4,7 @@
 Porting namelists and diagnostics to ESMValTool v2.0
 ****************************************************
 
-This guide summarizes the main steps to be taken in order to port an ESMValTool namelist and the corresponding diagnostic(s) from v1.0 to v2.0, hereafter also referred as the *"old"* and the *"new version"*, respectively.. The new ESMValTool version is being developed in the public git branch ``REFACTORING_backend``. An identical version of this branch is maintained in the private repository as well and kept synchronized on a hourly basis.
+This guide summarizes the main steps to be taken in order to port an ESMValTool namelist and the corresponding diagnostic(s) from v1.0 to v2.0, hereafter also referred as the *"old"* and the *"new version"*, respectively. The new ESMValTool version is being developed in the public git branch ``REFACTORING_backend``. An identical version of this branch is maintained in the private repository as well and kept synchronized on an hourly basis.
 
 Create a github issue
 =====================
