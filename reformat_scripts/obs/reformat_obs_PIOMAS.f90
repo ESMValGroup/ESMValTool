@@ -71,7 +71,7 @@ program convert_piomas
    integer :: i, j, t
    integer :: imon, iyear
 
-   double precision, dimension(1) :: time
+   double precision, dimension(1) :: time, time_ref
 
    integer status
    integer :: ncID
@@ -168,7 +168,7 @@ program convert_piomas
 
    status = NF90_PUT_ATT(ncID, TimeVarID, "standard_name", "time")
       if (status /= nf90_NoErr) call handle_err(status)
-   status = NF90_PUT_ATT(ncID, TimeVarID, "units", "day as %Y%m%d.%f")
+   status = NF90_PUT_ATT(ncID, TimeVarID, "units", "months since 1950-01-01 00:00:00")
       if (status /= nf90_NoErr) call handle_err(status)
    status = NF90_PUT_ATT(ncID, TimeVarID, "axis", "T")
       if (status /= nf90_NoErr) call handle_err(status)
@@ -298,13 +298,15 @@ program convert_piomas
          status='unknown')
 
       do imon = 1, 12
-         time = iyear * 1e4 + imon * 1e2  ! yyymmdd
+
+         time_ref = (1950 * 12) + 1  ! reference month = 195001
+         time     = (iyear * 12) + imon - time_ref ! = months since 195001
 
          read(2, rec = imon)((heff(i, j), i = 1, nx1), j = 1, ny1)
 
-         WHERE (kmt <= 0)
+         where (kmt <= 0)
             heff = fillval
-         ENDWHERE
+         endwhere
 
          status = NF90_PUT_VAR(ncID, outvarID, heff(:,:), start = (/1, 1, t/), &
             count = (/nx1, ny1, 1/))
