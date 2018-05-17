@@ -11,7 +11,8 @@ In the following, it is assumed that the user has successfully installed ESMValT
 Create a github issue
 =====================
 
-Create an issue in the public repository to keep track of your work and inform other developers. See an example `here <https://github.com/ESMValGroup/ESMValTool/issues/293>`_. Do not forget to assign it to yourself.
+Create an issue in the public repository to keep track of your work and inform other developers. See an example `here <https://github.com/ESMValGroup/ESMValTool/issues/293>`_. Use the following title for the issue: "PORTING <namelist> into v2.0".
+Do not forget to assign it to yourself.
 
 Create your own branch
 ======================
