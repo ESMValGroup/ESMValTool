@@ -8,7 +8,7 @@
 ;; Description
 ;;    Uses original grid (no regridding).
 ;;    Draws sea ice concentration color coded and a red contour line at 0.15
-;;    (extent).
+;;    (extent), or sea ice thickness color coded.
 ;;    Panels multiple plots: starts a new page after max_vert*max_hori
 ;;
 ;; Required diag_script_info attributes (diagnostics specific)
@@ -28,17 +28,18 @@
 ;;    showunits: display units in figure title
 ;;
 ;; Caveats
-;;    no masking of the apparent line of missing data between the two grid
+;;    No masking of the apparent line of missing data between the two grid
 ;;    poles yet (for a workaround, see
 ;;    http://www.ncl.ucar.edu/Applications/Scripts/ice_4.ncl).
 ;;
 ;; Modification history
-;;    20170512-A_senf_da: Added reporting
+;;    20180516-A_senf_da: Adapted to sea ice thickness (sit).
+;;    20170512-A_senf_da: Added reporting.
 ;;    20151027-A_laue_ax: Moved call to 'write_references' to the beginning
-;;                        of the code
-;;    20150605-A_vanu_be: Additional attributes for more formatting control
+;;                        of the code.
+;;    20150605-A_vanu_be: Additional attributes for more formatting control.
 ;;    20150325-A_laue_ax: Modified reference tags used for acknowledgements
-;;                        (projects, observations, etc)
+;;                        (projects, observations, etc).
 ;;    20140623-A_senf_da: res now passed to plot script as attributes of var.
 ;;    20140312-A_righ_ma: Adapted to new time_operations structure.
 ;;    20131216-A_vanu_be: Generalized a bit so it can plot other vars.
@@ -83,12 +84,12 @@ begin
     field_type0 = field_types(0)
 
     ;; References Information
-    write_references(diag_script,       \  ; script name
-                     "A_gott_kl",          \  ; authors
-                     "A_senf_da",          \  ; contributors
-                     "D_0001",            \  ; diag_references
-                     "",                \  ; obs_references
-                     (/"P_embrace", "P_climval"/))   ; proj_acknowledgements
+    write_references(diag_script,                  \  ; script name
+                     (/"A_gott_kl", "A_senf_da"/), \  ; authors
+                     "",                           \  ; contributors
+                     "D_0001",                     \  ; diag_references
+                     "",                           \  ; obs_references
+                     (/"P_embrace", "P_climval"/))    ; proj_acknowledgements
 
     do idx_mod = 0, dim_MOD - 1
         data = read_data(idx_mod, var0, field_type0)
@@ -155,22 +156,6 @@ begin
     ;; open the workstation
     wks = get_wks(0, diag_script, name_string)
 
-    ;; Set contour parameters
-    grid_min    =  0.   ; default
-    grid_max    =  1.   ; default
-    grid_step   =  0.1  ; default
-    if (isatt(diag_script_info, "grid_min")) then
-        grid_min = tofloat(diag_script_info@grid_min)
-    end if
-    if (isatt(diag_script_info, "grid_max")) then
-        grid_max = tofloat(diag_script_info@grid_max)
-    end if
-    if (isatt(diag_script_info, "grid_step")) then
-        grid_step = tofloat(diag_script_info@grid_step)
-    end if
-    nsteps = round((grid_max - grid_min) / grid_step, 3) + 1
-    cnLevels = fspan(grid_min, grid_max, nsteps)
-
     ;; Define color table
     ;; "WhiteBlue", "BlueWhiteOrangeRed", "BlueYellowRed" ;"BlWhRe"
     if (isatt(diag_script_info, "colormap")) then
@@ -234,9 +219,11 @@ begin
 
         ;; see ./interface_scripts/data_handling.ncl
         var = extract_data(imod, data, -1, 0, 0)
-        if (var@units.eq."%") then
-            var = var / 100.  ; Subsequent code works fine without rescaling
-            var@units = "%/100"  ; But annotation is hardcoded for %/100
+        if (var0.eq."sic") then
+            if (var@units.eq."%") then
+                var = var / 100.  ; Subsequent code works fine without rescaling
+                var@units = "%/100"  ; But annotation is hardcoded for %/100
+            end if
         end if
 
         ;; Show units in title (default False)
@@ -307,6 +294,26 @@ begin
 
         ;; resources to be passed to plot routine
         ; as attributes to var_ann with prefix "res_"
+        ;; Set contour parameters
+        grid_min  = 0.   ; default
+        if (var0.eq."sic") then
+            grid_max  = 1.   ; default
+            grid_step = 0.1  ; default
+        else
+            grid_max  = round(max(var_ann), 0)
+            grid_step = (grid_max - grid_min) / 10.
+        end if        
+        if (isatt(diag_script_info, "grid_min")) then
+            grid_min = tofloat(diag_script_info@grid_min)
+        end if
+        if (isatt(diag_script_info, "grid_max")) then
+            grid_max = tofloat(diag_script_info@grid_max)
+        end if
+        if (isatt(diag_script_info, "grid_step")) then
+            grid_step = tofloat(diag_script_info@grid_step)
+        end if
+        nsteps = round((grid_max - grid_min) / grid_step, 3) + 1
+        cnLevels = fspan(grid_min, grid_max, nsteps)
         var_ann@res_lbLabelBarOn          = lblBarOn    ; individual bars
         var_ann@res_cnLevelSelectionMode  = "ExplicitLevels"
         var_ann@res_cnLevels              = cnLevels

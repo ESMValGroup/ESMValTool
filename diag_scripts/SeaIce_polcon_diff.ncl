@@ -237,9 +237,11 @@ begin
                     verbosity, 2)
         ;; See ./interface_scripts/data_handling.ncl
         var_raw = extract_data(imod, data, -1, 0, 0)
-        if (var_raw@units.eq."%") then
-            var_raw = var_raw / 100.    ; Subsequent code expects %/100
-            var_raw@units = "%/100"
+        if (var0.eq."sic") then
+            if (var_raw@units.eq."%") then
+                var_raw = var_raw / 100.    ; Subsequent code expects %/100
+                var_raw@units = "%/100"
+            end if
         end if
 
         ;; Show units in title (default False)
@@ -327,7 +329,6 @@ begin
             copy_VarMeta(var_regrid, var)
             var = where(ismissing(var_ref), var_ref@_FillValue, var)
             var = where(ismissing(var_regrid), var_ref@_FillValue, var)
-
             var@long_name = "~F33~D~F~ of " + var@long_name + strUnits
             var_perc = 100. * (var_regrid - var_ref) / \
                 where(var_ref .le. 0., var_ref@_FillValue, var_ref)
@@ -343,6 +344,12 @@ begin
             grid_center =  0.0  ; default
             if (isatt(diag_script_info, "grid_min")) then
                 grid_min = tofloat(diag_script_info@grid_min)
+            else
+                if (var0.eq."sit") then
+                    error_msg("w", diag_script, "", "For sea ice thickness," + \
+                              " grid min and max values " + \
+                              " should be specified in the cfg file.")
+                end if
             end if
             if (isatt(diag_script_info, "grid_max")) then
                 grid_max = tofloat(diag_script_info@grid_max)
@@ -478,7 +485,8 @@ begin
             end do
             contrib_authors = (/"A_gott_kl", "A_senf_da"/)
             ESMValMD(plot_fname, alltags, caption, id, var0, \
-                     models@name(ind_models_shown), climofiles, diag_script, contrib_authors)
+                     models@name(ind_models_shown), climofiles, diag_script, \
+                     contrib_authors)
             delete([/ seq_num, plot_fname, id, ind_models_shown, \
                       ind_models_shown_exclref, climofiles /])
         end do
