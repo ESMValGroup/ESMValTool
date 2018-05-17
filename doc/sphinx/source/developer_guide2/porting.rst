@@ -37,7 +37,7 @@ The namelist file in yml shall first be moved to the esmvaltool/ directory where
 
 .. code-block:: bash
 
-    mv ./nml/<namelist>.yml ./esmvaltool/namelists/<namelist>.yml
+    mv ./esmvaltool/namelists/tobeported/<namelist>.yml ./esmvaltool/namelists/<namelist>.yml
 
 This will help to keep track of which namelists have been already ported to the new version. Note that the namelist directory is now called ``namelists``. Such a draft may not be available for all namelist, in this case the yml namelist must be created from scratch. It is also possible to ignore the available draft version and create a new namelist from scratch anyway if preferred.
 
