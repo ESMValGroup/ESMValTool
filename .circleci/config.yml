@@ -218,6 +218,7 @@ jobs:
             apt-get update > /logs/apt.txt 2>&1
             apt-get install -y build-essential >> /logs/apt.txt 2>&1
             conda update -y conda > /logs/build_conda.txt 2>&1
+            conda install -y conda-build >> /logs/build_conda.txt 2>&1 
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export -n base > /logs/build_environment.yml
