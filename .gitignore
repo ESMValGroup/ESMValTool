@@ -1,6 +1,3 @@
-# User config
-config-user_*.yml
-
 # Distribution / packaging
 .Python
 build/
