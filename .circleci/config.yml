@@ -217,22 +217,22 @@ jobs:
             mkdir /logs
             apt-get update > /logs/apt.txt 2>&1
             apt-get install -y build-essential >> /logs/apt.txt 2>&1
-            conda update -y conda > /logs/build_conda.txt 2>&1
-            conda install -y conda-build >> /logs/build_conda.txt 2>&1 
+            conda update -y conda > /logs/conda_base.txt 2>&1
+            conda install -y conda-build >> /logs/conda_base.txt 2>&1 
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export -n base > /logs/build_environment.yml
             # Build conda package
-            conda build . -c conda-forge -c birdhouse
+            conda build . -c conda-forge -c birdhouse > /logs/build_log.txt
             # Install Python 3 conda package
-            conda create -y --name esmvaltool3 python=3 > /logs/test_conda3.txt 2>&1
+            conda create -y --name esmvaltool3 python=3 > /logs/conda_esmvaltool3.txt 2>&1
             set +x; source activate esmvaltool3; set -x
             conda install -y esmvaltool --use-local -c conda-forge -c birdhouse
             conda env export > /logs/test_environment3.yml
             esmvaltool -h
             set +x; source deactivate; set -x 
             # Install Python 2 conda package
-            conda create -y --name esmvaltool2 python=2 > /logs/test_conda2.txt 2>&1
+            conda create -y --name esmvaltool2 python=2 > /logs/conda_esmvaltool2.txt 2>&1
             set +x; source activate esmvaltool2; set -x
             conda install -y esmvaltool --use-local -c conda-forge -c birdhouse
             conda env export > /logs/environment2.yml
