@@ -1,0 +1,39 @@
+###############################################################################
+# namelist_quantilebias.yml
+#
+# Description
+# Namelist for calculation of precipitation quantile bias
+#
+# Authors
+# E. Arnone (ISAC-CNR, Italy - e.arnone@isac.cnr.it)
+# S. Terzago (ISAC-CNR, Italy - s.terzago@isac.cnr.it)
+# J. von Hardenberg (ISAC-CNR, Italy - j.vonhardenberg@isac.cnr.it)
+# 
+# References:
+# Mehran 2014, http://onlinelibrary.wiley.com/doi/10.1002/2013JD021152/full 
+# 
+# This namelist is part of the ESMValTool
+#
+###############################################################################
+---
+
+models:
+  - {model: MPI-ESM-P,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 2005}
+
+preprocessors:
+  preproc:
+    extract_region: false
+
+diagnostics:
+  quantilebias:
+    description: namelist for calculation of precipitation quantile bias
+    variables:
+      pr:
+        preprocessor: preproc
+        reference_model: "MPI-ESM-P"
+        mip: Amon
+        field: T2Ds
+    scripts:
+      main:
+        script: quantilebias/main.r
+        perc_lev: 75
