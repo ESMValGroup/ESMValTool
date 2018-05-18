@@ -4,13 +4,16 @@
 # Build commmand:
 # conda build esmvaltool -c conda-forge -c birdhouse
 
+# Package version number
+{% set version = "2.0a0" %}
+
 package:
   name: esmvaltool
-  version: "2.0a0"
+  version: {{ version }}
 
 source:
   # Use these two lines to build a release:
-  # git_rev: v2.0a0
+  # git_rev: v{{ version }}
   # git_url: https://github.com/ESMValGroup/ESMValTool.git
   # Use this line instead of the above to test building without a release:
   path: .
