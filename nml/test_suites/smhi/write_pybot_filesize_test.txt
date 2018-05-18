@@ -1,2 +1,0 @@
-cd work/plots
-find . -type f -ls | grep -v netcdf | awk '{print "    ${fileSize} =        Get File Size        ${plot_path}/"$11;print "    ${fileSize_str} =    Convert To String    ${fileSize}";strlen=length($7);print "                         Should Match Regexp  ${fileSize_str}    ^\\\\d{"strlen-1","strlen+1"}$"}' | sed 's%/\./%/%'
