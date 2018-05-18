@@ -220,7 +220,7 @@ jobs:
             conda update -y conda > /logs/build_conda.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
-            conda env export > /logs/build_environment.yml
+            conda env export -n base > /logs/build_environment.yml
             # Build conda package
             conda build . -c conda-forge -c birdhouse
             # Install Python 3 conda package
