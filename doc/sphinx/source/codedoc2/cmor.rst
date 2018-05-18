@@ -1,10 +1,10 @@
 esmvaltool
 ==========
 
-preprocessor module
-===================
+cmor module
+-----------
 
-.. automodule:: esmvaltool.preprocessor
+.. automodule:: esmvaltool.cmor
    :show-inheritance:
    :inherited-members:
    :members:

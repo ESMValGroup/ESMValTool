@@ -1,12 +1,10 @@
-********************
-ESMValTool Code API Documentation
-********************
+esmvaltool
+==========
 
-ESMValTool is mostly used as a commandline tool. However, it is also possibly to use (parts of) EsmValTool as a
-library. This section documents the public API of ESMValTool.
+main module
+-----------
 
-.. toctree::
-   :maxdepth: 4
-
-   esmvaltool
-   preprocessor
+.. automodule:: esmvaltool.main
+   :show-inheritance:
+   :inherited-members:
+   :members:
