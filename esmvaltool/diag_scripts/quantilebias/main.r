@@ -16,7 +16,7 @@
 # Caveats
 #
 # Modification history
-#    20180511-A_arnone_e: Written for v2.0  
+#    20180518-A_arnone_e: Written for v2.0  
 #
 # ############################################################################
 
@@ -74,7 +74,6 @@ for (model_idx in c(1:(length(models_name)))) {
   print(paste0(diag_base,": pre-processing file: ", infile))
 
 ref="/work/datasets/climate/GPCP/pr/data/mon/gpcp_22.nc"                         # reference precipitation data
-#model="/work/models/cmip5/pr/hist/Amon/pr_Amon_MPI-ESM-P_historical_r1i1p1_185001-200512.nc"
 model=infile
 orog_tmp="/work/models/cmip5/fx/orog/orog_fx_EC-EARTH_historical_r0i0p0.nc"       # modificare DEM con uno osservato
 
@@ -129,7 +128,9 @@ cdo_command=paste("cdo mul tmp_qb.nc tmp_mask_orog.nc tmp_qb_landonly.nc")
 mv_command=paste("mv tmp_qb.nc ",outfile)
   print(mv_command)
   system(mv_command)
-#rm_command=paste("rm tmp*")
+  rm_command=paste("rm tmp*")
+  print(mv_command)
+  system(mv_command)
 }
 
 
