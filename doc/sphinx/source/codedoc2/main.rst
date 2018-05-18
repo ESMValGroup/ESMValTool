@@ -9,6 +9,4 @@ library. This section documents the public API of ESMValTool.
    :maxdepth: 4
 
    esmvaltool
-   interface_scripts
-   ../diag_scripts/index
-   ../plot_scripts/index
+   preprocessor
