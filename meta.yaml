@@ -9,10 +9,11 @@ package:
   version: "2.0a0"
 
 source:
-  git_rev: v2.0a0
-  git_url: https://github.com/ESMValGroup/ESMValTool.git
+  # Use these two lines to build a release:
+  # git_rev: v2.0a0
+  # git_url: https://github.com/ESMValGroup/ESMValTool.git
   # Use this line instead of the above to test building without a release:
-  # path: .
+  path: .
 
 build:
   script: python setup.py install --single-version-externally-managed --record=/tmp/record.txt
