@@ -1,9 +1,5 @@
-*~
-*.py[cod]
-build/
-test-reports/
-.coverage
-
+# User config
+config-user_*.yml
 
 # Distribution / packaging
 .Python
@@ -81,15 +77,9 @@ coverage.xml
 *.orig
 /c
 /tests/data/**
+test-reports/
 /test_bash.sh
 /python_test_out.txt
-
-# Editor Backup
-*~
-
-# Temporary folders
-work/*
-interface_data/*
 
 # Build folder
 doc/sphinx/source/diag_scripts/**
