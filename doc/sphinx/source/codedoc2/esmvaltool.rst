@@ -10,4 +10,4 @@ library. This section documents the public API of ESMValTool.
 
    cmor
    preprocessor
-   esmvaltool
+   main
