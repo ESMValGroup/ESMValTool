@@ -1,5 +1,0 @@
-./sample_File.jpg
-both
-mobile, home, flying
-This is a flying mobile home.
-#IDtest
