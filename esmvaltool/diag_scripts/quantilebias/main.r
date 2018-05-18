@@ -73,64 +73,64 @@ for (model_idx in c(1:(length(models_name)))) {
   outfile <- paste0(work_dir,"/",inregname,"_",perc_lev,"qb.nc")
   print(paste0(diag_base,": pre-processing file: ", infile))
 
-ref="/work/datasets/climate/GPCP/pr/data/mon/gpcp_22.nc"                         # reference precipitation data
-model=infile
-orog_tmp="/work/models/cmip5/fx/orog/orog_fx_EC-EARTH_historical_r0i0p0.nc"       # modificare DEM con uno osservato
+  ref="/work/datasets/climate/GPCP/pr/data/mon/gpcp_22.nc"                         # reference precipitation data
+  model=infile
+  orog_tmp="/work/models/cmip5/fx/orog/orog_fx_EC-EARTH_historical_r0i0p0.nc"       # modificare DEM con uno osservato
 
-perc=perc_lev #"75"
-print(paste0(diag_base,": ",perc," percent quantile"))
+  perc=perc_lev #"75"
+  print(paste0(diag_base,": ",perc," percent quantile"))
 
-cdo_command=paste("cdo -mulc,86400",model,"tmp_model.nc")
-  print(cdo_command)
-  system(cdo_command)
-cdo_command=paste("cdo griddes tmp_model.nc > tmp_grid")
-  print(cdo_command)
-  system(cdo_command)
-cdo_command=paste("cdo remapcon,tmp_grid ",paste0("-selyear,",year1,"/",year2),ref,"tmp_ref.nc")
-  print(cdo_command)
-  system(cdo_command)
+  cdo_command=paste("cdo -mulc,86400",model,"tmp_model.nc")
+   print(cdo_command)
+   system(cdo_command)
+  cdo_command=paste("cdo griddes tmp_model.nc > tmp_grid")
+   print(cdo_command)
+   system(cdo_command)
+  cdo_command=paste("cdo remapcon,tmp_grid ",paste0("-selyear,",year1,"/",year2),ref,"tmp_ref.nc")
+   print(cdo_command)
+   system(cdo_command)
 
-# Get (75)th percentile of reference dataaset 
-cdo_command=paste(paste0("cdo timpctl,",perc)," tmp_ref.nc  -timmin tmp_ref.nc  -timmax tmp_ref.nc  tmp_ref_perc_p.nc")
-  print(cdo_command)
-  system(cdo_command)
+  # Get (75)th percentile of reference dataaset 
+  cdo_command=paste(paste0("cdo timpctl,",perc)," tmp_ref.nc  -timmin tmp_ref.nc  -timmax tmp_ref.nc  tmp_ref_perc_p.nc")
+   print(cdo_command)
+   system(cdo_command)
 
-# Select points with monthly precipitation greater than 75th perc
-cdo_command=paste("cdo ge tmp_ref.nc  tmp_ref_perc_p.nc tmp_mask_ref.nc")
-  print(cdo_command)
-  system(cdo_command)
-cdo_command=paste("cdo ge tmp_model.nc   tmp_ref_perc_p.nc tmp_mask_model.nc")
-  print(cdo_command)
-  system(cdo_command)
+  # Select points with monthly precipitation greater than 75th perc
+  cdo_command=paste("cdo ge tmp_ref.nc  tmp_ref_perc_p.nc tmp_mask_ref.nc")
+   print(cdo_command)
+   system(cdo_command)
+  cdo_command=paste("cdo ge tmp_model.nc   tmp_ref_perc_p.nc tmp_mask_model.nc")
+   print(cdo_command)
+   system(cdo_command)
 
-# Precipitation sums
-cdo_command=paste("cdo timsum -mul tmp_mask_ref.nc tmp_ref.nc tmp_ref_sum.nc")
-  print(cdo_command)
-  system(cdo_command)
-cdo_command=paste("cdo timsum -mul tmp_mask_model.nc  tmp_model.nc tmp_model_sum.nc")
-  print(cdo_command)
-  system(cdo_command)
+  # Precipitation sums
+  cdo_command=paste("cdo timsum -mul tmp_mask_ref.nc tmp_ref.nc tmp_ref_sum.nc")
+   print(cdo_command)
+   system(cdo_command)
+  cdo_command=paste("cdo timsum -mul tmp_mask_model.nc  tmp_model.nc tmp_model_sum.nc")
+   print(cdo_command)
+   system(cdo_command)
 
-# Quantile bias
-cdo_command=paste("cdo div tmp_model_sum.nc tmp_ref_sum.nc tmp_qb.nc")
-  print(cdo_command)
-  system(cdo_command)
+  # Quantile bias
+  cdo_command=paste("cdo div tmp_model_sum.nc tmp_ref_sum.nc tmp_qb.nc")
+   print(cdo_command)
+   system(cdo_command)
 
-# Check with Mehran et al. 2014 
-cdo_command=paste("cdo remapnn,tmp_grid -gtc,5 ",orog_tmp, "tmp_mask_orog.nc")   # modificare DEM con uno osservato  &  la soglia dei 5m
-  print(cdo_command)
-  system(cdo_command)
-cdo_command=paste("cdo mul tmp_qb.nc tmp_mask_orog.nc tmp_qb_landonly.nc")
-  print(cdo_command)
-  system(cdo_command)
+  # Check with Mehran et al. 2014 
+  cdo_command=paste("cdo remapnn,tmp_grid -gtc,5 ",orog_tmp, "tmp_mask_orog.nc")   # modificare DEM con uno osservato  &  la soglia dei 5m
+   print(cdo_command)
+   system(cdo_command)
+  cdo_command=paste("cdo mul tmp_qb.nc tmp_mask_orog.nc tmp_qb_landonly.nc")
+   print(cdo_command)
+   system(cdo_command)
 
-  
-mv_command=paste("mv tmp_qb.nc ",outfile)
-  print(mv_command)
-  system(mv_command)
+  # Copy file to output destination and remove temporary files
+  mv_command=paste("mv tmp_qb.nc ",outfile)
+   print(mv_command)
+   system(mv_command)
   rm_command=paste("rm tmp*")
-  print(mv_command)
-  system(mv_command)
+   print(mv_command)
+   system(mv_command)
 }
 
 
