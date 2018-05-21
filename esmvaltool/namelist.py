@@ -816,10 +816,12 @@ class Namelist(object):
                 # unless there aren't any, in which case we set them to the
                 # preprocessor tasks.
                 ancestors = later if script_cfg['ancestors'] else preproc_tasks
+                # union all settings
+                all_settings = {**script_cfg['settings'], **self._cfg}
                 task = DiagnosticTask(
                     script=script_cfg['script'],
                     output_dir=script_cfg['output_dir'],
-                    settings=script_cfg['settings'],
+                    settings=all_settings,
                     ancestors=ancestors,
                 )
                 diagnostic_tasks[task_id] = task
@@ -844,5 +846,11 @@ class Namelist(object):
 
     def run(self):
         """Run all tasks in the namelist."""
-        run_tasks(
-            self.tasks, max_parallel_tasks=self._cfg['max_parallel_tasks'])
+        s = run_tasks(
+                self.tasks, max_parallel_tasks=self._cfg['max_parallel_tasks'])
+        if s == 0:
+            logger.info('All diagnostic tasks have run successfully!')
+            if self._cfg['purge_after_all_diags']:
+                if not self._cfg['save_intermediary_cubes']:
+                    logger.info('Cleaning up preprocessed files')
+                    os.system('rm -rf ' + self._cfg['preproc_dir'])

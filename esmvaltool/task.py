@@ -219,6 +219,7 @@ class DiagnosticTask(AbstractTask):
         self.log = os.path.join(settings['run_dir'], 'log.txt')
         self.resource_log = os.path.join(settings['run_dir'],
                                          'resource_usage.txt')
+        self.success_list = []
 
     @staticmethod
     def _initialize_cmd(script):
@@ -282,6 +283,7 @@ class DiagnosticTask(AbstractTask):
             'log_level',
             'write_plots',
             'write_netcdf',
+            'purge_after_diag',
         }
         settings = {'diag_script_info': {}, 'config_user_info': {}}
         for key, value in self.settings.items():
@@ -418,7 +420,14 @@ class DiagnosticTask(AbstractTask):
                 time.sleep(0.001)
 
         if returncode == 0:
+            if self.settings['purge_after_all_diags']:
+                if not self.settings['save_intermediary_cubes']:
+                    self.success_list.append(0)
             return [self.output_dir]
+        else:
+            if self.settings['purge_after_all_diags']:
+                if not self.settings['save_intermediary_cubes']:
+                    self.success_list.append(1)
 
         raise DiagnosticError(
             "Diagnostic script {} failed with return code {}. See the log "
@@ -432,6 +441,10 @@ class DiagnosticTask(AbstractTask):
             super(DiagnosticTask, self).str(),
         )
         return txt
+
+    def _return_success(self):
+        """Get the number of successes or fails"""
+        return self.success_list
 
 
 def get_flattened_tasks(tasks):
@@ -455,6 +468,17 @@ def run_tasks(tasks, max_parallel_tasks=None):
         _run_tasks_sequential(tasks)
     else:
         _run_tasks_parallel(tasks, max_parallel_tasks)
+    successes = []
+    for task in tasks:
+        if hasattr(task, 'success_list'):
+            if len(task.success_list) > 0:
+                successes.append(sum(task.success_list))
+
+    # check if we are actually interested in the task success
+    if len(successes) > 0:
+        return sum(successes)
+    else:
+        return -1
 
 
 def _run_tasks_sequential(tasks):

@@ -23,6 +23,7 @@ def read_config_user_file(config_file, namelist_name):
         'output_file_type': 'ps',
         'output_dir': './output_dir',
         'save_intermediary_cubes': False,
+        'purge_after_all_diags': False,
         'max_parallel_tasks': 1,
         'run_diagnostic': True,
         'drs': {},
