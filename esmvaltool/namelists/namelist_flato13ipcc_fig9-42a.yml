@@ -46,10 +46,6 @@ diagnostics:
                 preprocessor: noop
                 mip: Amon
                 field: T2M
-            # tas-degC:
-            #     preprocessor: noop
-            #     mip: Amon
-            #     field: T2M
             # rtmt:
             #     preprocessor: noop
             #     mip: Amon
@@ -60,4 +56,4 @@ diagnostics:
             # - {model: ACCESS1-0, project: CMIP5, exp: piControl , ensemble: r1i1p1, start_year:  300, end_year:  449}
         scripts:
             test:
-                script: examples/diagnostic.py
+                script: flato13ipcc/fig9-42a.py
