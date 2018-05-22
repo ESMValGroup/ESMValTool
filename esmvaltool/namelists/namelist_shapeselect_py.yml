@@ -1,0 +1,28 @@
+---
+
+models:
+  - {model: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2000}
+  - {model: ERA-Interim, project: OBS,    tier: 3,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2000}
+
+preprocessors:
+
+  preprocessor1:
+    regrid:
+      target_grid: ERA-Interim
+      scheme: linear
+
+
+diagnostics:
+
+  diagnostic1:
+    description: Extracting data for user defined shapefile.
+    variables:
+      pr:
+        preprocessor: preprocessor1
+        field: T2Ms
+    scripts:
+      script1:
+        script: catchment_selection/diagnostic_catchment_selection.py
+        shppath: './testdata/testfile.shp' # Path to shapefile
+        shpidcol: 'id' # Name of column for polygon ids
+        wgtmet: 'nearest_centroid' # Weighting method
