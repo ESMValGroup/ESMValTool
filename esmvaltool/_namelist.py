@@ -10,6 +10,7 @@ import yamale
 import yaml
 
 from . import __version__, preprocessor
+from ._task import DiagnosticTask, get_independent_tasks, run_tasks, which
 from .cmor.table import CMOR_TABLES
 from .data_finder import (get_input_filelist, get_input_filename,
                           get_output_file, get_start_end_year,
@@ -18,7 +19,6 @@ from .preprocessor._derive import get_required
 from .preprocessor._download import synda_search
 from .preprocessor._io import MODEL_KEYS, concatenate_callback
 from .preprocessor._regrid import get_cmor_levels, get_reference_levels
-from .task import DiagnosticTask, get_independent_tasks, run_tasks, which
 
 logger = logging.getLogger(__name__)
 

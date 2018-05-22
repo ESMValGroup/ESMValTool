@@ -48,7 +48,7 @@ from multiprocessing import cpu_count
 from . import __version__
 from ._config import configure_logging, read_config_user_file
 from ._namelist import read_namelist_file
-from .task import resource_usage_logger
+from ._task import resource_usage_logger
 
 # set up logging
 logger = logging.getLogger(__name__)
