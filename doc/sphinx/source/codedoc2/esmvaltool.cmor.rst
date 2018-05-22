@@ -1,13 +1,7 @@
-esmvaltool.cmor package
+esmvaltool.cmor module
 =======================
 
-Module contents
----------------
-
 .. automodule:: esmvaltool.cmor
-
-Submodules
-----------
 
 esmvaltool.cmor.check module
 ----------------------------

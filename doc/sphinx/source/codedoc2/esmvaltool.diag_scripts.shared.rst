@@ -1,13 +1,7 @@
-esmvaltool.diag\_scripts.shared package
+esmvaltool.diag\_scripts.shared module
 =======================================
 
-Module contents
----------------
-
 .. automodule:: esmvaltool.diag_scripts.shared
-
-Submodules
-----------
 
 esmvaltool.diag_scripts.shared.plot module
 ------------------------------------------

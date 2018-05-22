@@ -1,9 +1,6 @@
-esmvaltool.diag\_scripts package
+esmvaltool.diag\_scripts module
 ================================
 
 Directory containing all diagnostic scripts.
-
-Module contents
----------------
 
 .. automodule:: esmvaltool.diag_scripts
