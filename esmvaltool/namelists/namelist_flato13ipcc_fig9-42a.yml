@@ -46,7 +46,18 @@ diagnostics:
                 preprocessor: noop
                 mip: Amon
                 field: T2M
+            # tas-degC:
+            #     preprocessor: noop
+            #     mip: Amon
+            #     field: T2M
+            # rtmt:
+            #     preprocessor: noop
+            #     mip: Amon
+            #     field: T2M
+        additional_models:
         additional_models:
             - {model: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1961, end_year: 1990}
+            # - {model: ACCESS1-0, project: CMIP5, exp: piControl , ensemble: r1i1p1, start_year:  300, end_year:  449}
         scripts:
-            null
+            test:
+                script: examples/diagnostic.py
