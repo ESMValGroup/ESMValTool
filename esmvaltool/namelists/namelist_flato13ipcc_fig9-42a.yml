@@ -1,0 +1,52 @@
+###############################################################################
+# namelist_flato13ipcc.yml
+#
+# Description
+# Reproducing selected figures from IPCC AR5, chap. 9 (Flato et al., 2013):
+# 9.42a
+#
+# Authors
+# Axel Lauer (DLR, Germany - axel.lauer@dlr.de)
+# Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
+#
+# Contributors
+# Manuel Schlund (DLR, Germany - manuel.schlund@dlr.de), fig. 9.42a
+#
+# Projects
+# CRESCENDO
+# ESMVal
+#
+# Reference
+# Flato, G. et al., Evaluation of climate models, in: Climate Change 2013: the
+# Physical Science Basis, contribution of Working Group I to the Fifth
+# Assessment Report of the Intergovernmental Panel on Climate Change, edited
+# by: Stocker, T. F., Qin, D., Plattner, G.-K., Tignor, M., Allen, S. K.,
+# Boschung, J., Nauels, A., Xia, Y., Bex, V., and Midgley, P. M., Cambridge
+# University Press, Cambridge, UK and New York, NY, USA (2013)
+#
+# This namelist is part of the ESMValTool
+###############################################################################
+
+
+models:
+
+
+preprocessors:
+
+    noop:
+        {}
+
+
+diagnostics:
+
+    fig9-42a:
+        description: ECS vs. GMSAT.
+        variables:
+            tas:
+                preprocessor: noop
+                mip: Amon
+                field: T2M
+        additional_models:
+            - {model: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1961, end_year: 1990}
+        scripts:
+            null
