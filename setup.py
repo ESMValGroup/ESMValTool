@@ -214,7 +214,7 @@ with open('README.md') as readme:
         },
         entry_points={
             'console_scripts': [
-                'esmvaltool = esmvaltool.main:run',
+                'esmvaltool = esmvaltool._main:run',
             ],
         },
         cmdclass={
