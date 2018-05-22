@@ -14,7 +14,7 @@ import sys
 
 from setuptools import Command, setup
 
-from esmvaltool.version import __version__
+from esmvaltool._version import __version__
 
 PACKAGES = [
     'esmvaltool',
