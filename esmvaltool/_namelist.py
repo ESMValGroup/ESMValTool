@@ -10,11 +10,11 @@ import yamale
 import yaml
 
 from . import __version__, preprocessor
+from ._data_finder import (get_input_filelist, get_input_filename,
+                           get_output_file, get_start_end_year,
+                           get_statistic_output_file)
 from ._task import DiagnosticTask, get_independent_tasks, run_tasks, which
 from .cmor.table import CMOR_TABLES
-from .data_finder import (get_input_filelist, get_input_filename,
-                          get_output_file, get_start_end_year,
-                          get_statistic_output_file)
 from .preprocessor._derive import get_required
 from .preprocessor._download import synda_search
 from .preprocessor._io import MODEL_KEYS, concatenate_callback
