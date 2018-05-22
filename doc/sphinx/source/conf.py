@@ -29,10 +29,6 @@ sys.path.insert(0, os.path.abspath('.'))
 import process_ncl_docs2 as process_ncl_docs
 
 
-# not the best way to set the pathes, but working for autodoc ...
-
-
-
 # add custom extensions directory to python path
 #sys.path.append(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'extensions'))
 
