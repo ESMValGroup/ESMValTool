@@ -1,9 +1,9 @@
-esmvaltool.diag\_scripts.shared module
-=======================================
+Shared diagnostic script code
+=============================
 
 .. automodule:: esmvaltool.diag_scripts.shared
 
-esmvaltool.diag_scripts.shared.plot module
-------------------------------------------
+Plotting
+--------
 
 .. automodule:: esmvaltool.diag_scripts.shared.plot

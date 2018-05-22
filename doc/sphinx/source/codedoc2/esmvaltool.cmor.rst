@@ -1,19 +1,19 @@
-esmvaltool.cmor module
-=======================
+CMOR functions
+==============
 
 .. automodule:: esmvaltool.cmor
 
-esmvaltool.cmor.check module
-----------------------------
+Checking compliance
+-------------------
 
 .. automodule:: esmvaltool.cmor.check
 
-esmvaltool.cmor.fix module
---------------------------
+Fixing issues 
+-------------
 
 .. automodule:: esmvaltool.cmor.fix
 
-esmvaltool.cmor.table module
-----------------------------
+Using CMOR tables
+-----------------
 
 .. automodule:: esmvaltool.cmor.table

@@ -1,4 +1,4 @@
-esmvaltool.preprocessor module
-===============================
+Preprocessor functions
+======================
 
 .. automodule:: esmvaltool.preprocessor

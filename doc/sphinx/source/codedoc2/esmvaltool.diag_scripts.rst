@@ -1,4 +1,4 @@
-esmvaltool.diag\_scripts module
-================================
+Diagnostic scripts
+==================
 
 .. automodule:: esmvaltool.diag_scripts
