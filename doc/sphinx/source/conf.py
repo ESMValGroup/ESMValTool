@@ -56,6 +56,14 @@ extensions = [
     'sphinx.ext.napoleon',
 ]
 process_ncl_docs.create_doc_files_from_ncl()
+
+autodoc_default_flags = [
+    'members',
+    'undoc-members',
+    'inherited-members',
+    'show-inheritance',
+]
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
