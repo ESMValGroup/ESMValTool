@@ -1,2 +1,5 @@
 conda:
     file: environment.yml
+
+python:
+    pip_install: true
