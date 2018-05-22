@@ -11,7 +11,7 @@ from dummydata.model3 import Model3
 
 from esmvaltool.data_finder import get_input_filename
 from esmvaltool._config import read_config_user_file
-from esmvaltool.namelist import read_namelist_file
+from esmvaltool._namelist import read_namelist_file
 
 
 def write_data_file(short_name, filename, field, start_year, end_year):
