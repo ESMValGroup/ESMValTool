@@ -64,32 +64,35 @@ def main(cfg):
     Description
         This is the main routine of the diagnostic.
     """
-    for filename, attributes in cfg['input_data'].items():
-        logger.info("Processing variable %s from model %s",
-                    attributes['standard_name'], attributes['model'])
 
-        logger.debug("Loading %s", filename)
-        cube = iris.load_cube(filename)
+    logger.info("I'm running!")
+    logger.info(__file__)
+    # for filename, attributes in cfg['input_data'].items():
+    #     logger.info("Processing variable %s from model %s",
+    #                 attributes['standard_name'], attributes['model'])
 
-        logger.debug("Running example computation")
-        cube = cube.collapsed('time', iris.analysis.MEAN)
+    #     logger.debug("Loading %s", filename)
+    #     cube = iris.load_cube(filename)
 
-        name = os.path.splitext(os.path.basename(filename))[0] + '_mean'
-        if cfg['write_netcdf']:
-            path = os.path.join(
-                cfg['work_dir'],
-                name + '.nc',
-            )
-            logger.debug("Saving analysis results to %s", path)
-            iris.save(cube, target=path)
+    #     logger.debug("Running example computation")
+    #     cube = cube.collapsed('time', iris.analysis.MEAN)
 
-        if cfg['write_plots'] and cfg.get('quickplot'):
-            path = os.path.join(
-                cfg['plot_dir'],
-                name + '.' + cfg['output_file_type'],
-            )
-            logger.debug("Plotting analysis results to %s", path)
-            quickplot(cube, filename=path, **cfg['quickplot'])
+    #     name = os.path.splitext(os.path.basename(filename))[0] + '_mean'
+    #     if cfg['write_netcdf']:
+    #         path = os.path.join(
+    #             cfg['work_dir'],
+    #             name + '.nc',
+    #         )
+    #         logger.debug("Saving analysis results to %s", path)
+    #         iris.save(cube, target=path)
+
+    #     if cfg['write_plots'] and cfg.get('quickplot'):
+    #         path = os.path.join(
+    #             cfg['plot_dir'],
+    #             name + '.' + cfg['output_file_type'],
+    #         )
+    #         logger.debug("Plotting analysis results to %s", path)
+    #         quickplot(cube, filename=path, **cfg['quickplot'])
 
 
 if __name__ == '__main__':

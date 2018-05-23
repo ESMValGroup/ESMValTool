@@ -51,9 +51,8 @@ diagnostics:
             #     mip: Amon
             #     field: T2M
         additional_models:
-        additional_models:
-            - {model: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1961, end_year: 1990}
-            # - {model: ACCESS1-0, project: CMIP5, exp: piControl , ensemble: r1i1p1, start_year:  300, end_year:  449}
+            - {model: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1880, end_year: 2005}
+            - {model: CanESM2, project: CMIP5, exp: piControl , ensemble: r1i1p1, start_year: 2015, end_year: 2189}
         scripts:
             test:
                 script: flato13ipcc/fig9-42a.py
