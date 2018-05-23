@@ -1,7 +1,7 @@
 import logging
 import os
 
-from .version import __version__
+from ._version import __version__
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
