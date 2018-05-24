@@ -1041,7 +1041,7 @@ function eofunc_north2(eval[*]:numeric, N[1]:integer, prinfo[1]:logical)
 ;
 ; North, G.R. et al (1982): Sampling Errors in the Estimation of Empirical Orthogonal Functions.
 ; Mon. Wea. Rev., 110, 699–706.
-; doi: http://dx.doi.org/10.1175/1520-0493(1982)110<0699:SEITEO>2.0.CO;2
+; doi: https://doi.org/10.1175/1520-0493(1982)110<0699:SEITEO>2.0.CO;2
 ;
 ; Usage after 'eofunc'. Here ntim was used,  
 ;             prinfo = True
