@@ -45,11 +45,12 @@ Modification history
 """
 
 
-from esmvaltool.diag_scripts.shared import run_diagnostic
+from esmvaltool.diag_scripts.shared import *
 from esmvaltool.diag_scripts.shared.plot import quickplot
 
 import iris
 
+from collections import OrderedDict
 import logging
 import os
 
@@ -64,6 +65,44 @@ def main(cfg):
     Description
         This is the main routine of the diagnostic.
     """
+
+    ###########################################################################
+    # Variables and experiments needed for this diagnostic
+    ###########################################################################
+
+    # Variables
+    TIME = 'time'
+    DECADE = 'decade'
+    LAT = 'latitude'
+    LON = 'longitude'
+    TAS = 'air_temperature'
+    CO2MASS = 'atmosphere_mass_of_carbon_dioxide'
+    NBP = 'surface_net_downward_mass_flux_of_carbon_dioxide_expressed_as_' + \
+          'carbon_due_to_all_land_processes'
+    FGCO2 = 'surface_downward_mass_flux_of_carbon_dioxide_expressed_as_carbon'
+    CELL_AREA = 'cell_area'
+
+    VARS = OrderedDict([('TAS', 'tas'),             # Surface temperature
+                        ('CO2MASS', 'co2mass'),     # Atmospheric CO2 mass
+                        ('NBP', 'nbp'),             # Land carbon uptake
+                        ('FGCO2', 'fgco2')])        # Ocean carbon uptake
+
+    # Experiments
+    EXPS = OrderedDict([('1PCTCO2', '1pctCO2'),
+                        ('RCP85', 'rcp85'),
+                        ('RCP60', 'rcp60'),
+                        ('RCP45', 'rcp45'),
+                        ('RCP26', 'rcp26'),
+                        ('HIST', 'historical')])
+
+    x = Variables
+    print("\n\n")
+    print(x.standard_name)
+    print("\n\n")
+    for i in cfg:
+        print("{}\t{}".format(i, cfg[i]))
+        print()
+    logger.info(cfg)
 
     logger.info("I'm running!")
     logger.info(__file__)
