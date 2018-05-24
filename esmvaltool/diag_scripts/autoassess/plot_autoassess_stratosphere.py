@@ -36,7 +36,7 @@ def main():
     file_ref = os.path.join(os.path.dirname(os.path.dirname(cfg['plot_dir'])), cfg['diag_tag'], cfg['diag_name'], vsloc, 'stratosphere', control_model, 'metrics.csv')
 
     cwd = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-    plotter_script = os.path.join(cwd, 'autoassess_source/autoassess/plot_norm_ac.py')
+    plotter_script = os.path.join(cwd, 'autoassess_source/plot_norm_ac.py')
     os.system('chmod +x ' + plotter_script)
     command_call = plotter_script
     args = {}
