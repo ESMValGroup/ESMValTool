@@ -235,17 +235,17 @@ def run_area():
 
     # import area here to allow removal of areas
     if area == 'monsoon':
-        import assessment_areas.monsoon as area_package
+        import aa_areas.monsoon as area_package
     elif area == 'stratosphere':
-        import assessment_areas.stratosphere as area_package
+        import aa_areas.stratosphere as area_package
     elif area == 'hydrocycle':
-        import assessment_areas.hydrocycle as area_package
+        import aa_areas.hydrocycle as area_package
     elif area == 'conservation':
-        import assessment_areas.conservation as area_package
+        import aa_areas.conservation as area_package
     elif area == 'globaltrop':
-        import assessment_areas.globaltrop as area_package
+        import aa_areas.globaltrop as area_package
     elif area == 'land_surface':
-        import assessment_areas.land_surface as area_package
+        import aa_areas.land_surface as area_package
     else:
         raise Exception('Unknown area: ' + str(area))
 

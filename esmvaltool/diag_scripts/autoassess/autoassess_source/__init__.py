@@ -27,7 +27,7 @@ def query_template_dir():
 
 def _area_dir(area):
     """Return path to the directory of an assessment area."""
-    path = os.path.join(_ROOT, 'assessment_areas', area)
+    path = os.path.join(_ROOT, 'aa_areas', area)
     if not os.path.isdir(path):
         raise Exception('Directory {0} not found.'.format(path))
     return path
