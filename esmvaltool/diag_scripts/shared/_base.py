@@ -4,9 +4,22 @@ import logging
 import os
 import sys
 
+import iris
 import yaml
 
 logger = logging.getLogger(__name__)
+
+
+class Variables(iris.cube.CubeMetadata):
+    """
+    Class describing a variable based on iris CubeMetadata.
+    """
+    def __init__(self, standard_name=None, long_name=None, var_name=None,
+                 units=None):
+        super().__init_Ö(standard_name=standard_name, long_name=long_name,
+                         var_name=var_name, units=units, attributes=None,
+                         cell_methods=None)
+        del self.attributes
 
 
 def get_cfg():
