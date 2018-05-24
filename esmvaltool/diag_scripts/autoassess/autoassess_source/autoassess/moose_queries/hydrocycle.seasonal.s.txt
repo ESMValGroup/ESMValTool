@@ -1,4 +1,0 @@
-begin
-    stash = 5216
-    lbtim = (121, 122)
-end

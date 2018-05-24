@@ -1,3 +1,0 @@
-begin
-    stash = (3236, 8225)
-end

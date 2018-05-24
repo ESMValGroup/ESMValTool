@@ -1,8 +1,0 @@
-begin
-    stash = (30201, 30204, 30205)
-    lbproc = 192
-end
-begin
-    stash = 34150
-    lbproc = 128
-end

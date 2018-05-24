@@ -1,9 +1,0 @@
-begin
-    stash = 5216
-    lbtim = (121, 122)
-end
-begin
-    stash = 30201
-    blev = (850, 200)
-end
-
