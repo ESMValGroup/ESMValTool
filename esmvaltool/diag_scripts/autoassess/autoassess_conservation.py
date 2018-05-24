@@ -4,8 +4,6 @@ import inspect, os
 import sys
 
 import iris
-import iris.quickplot as qplt
-import matplotlib.pyplot as plt
 import yaml
 
 logger = logging.getLogger(__name__)
