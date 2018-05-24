@@ -11,6 +11,10 @@ from shapely.geometry import MultiPoint
 from shapely.geometry import shape
 from shapely.geometry.multipolygon import MultiPolygon
 from shapely.ops import nearest_points
+import numpy as np
+from copy import deepcopy
+import matplotlib.pyplot as plt
+from mpl_toolkits.basemap import Basemap
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -19,130 +23,166 @@ def main(cfg):
     """Select grid points within shapefiles."""
     for filename, attributes in cfg['input_data'].items():
         logger.info("Processing variable %s from model %s",
-                    attributes['standard_name'], attributes['model'],variables)
+                    attributes['standard_name'], attributes['model'])
         #shapeselect(filename, variables, )
-        print("hej!")
+        logger.debug("Loading %s", filename)
+        cube = iris.load_cube(filename)
+        polyid, var = shapeselect(cfg, cube)
+        name = os.path.splitext(os.path.basename(filename))[0] + '_polygon'
+        if cfg['write_csv']:
+            path = os.path.join(
+                cfg['work_dir'],
+                name + '.csv',
+            )
+            with open(path,'w') as file:
+                file.write("id time \n")
+                file.close()
+                tvar = deepcopy(var)
+                tvar = np.transpose(tvar)
+                np.savetxt(path,tvar,delimiter=',')
 
-def shapeselect(ecvfile, varname, shppath, shpidcol, ncout,
-               wgtmet='nearest_centroid'):
+        if cfg['write_netcdf']:
+            path = os.path.join(
+                cfg['work_dir'],
+                name + '.nc',
+            )
+            write_netcdf(path, polyid, var, cube, cfg['shppath'],
+                         cfg['wgtmet'])
+
+def shapeselect(cfg, cube):
     """
     Add some description here
 
     Two lines
     """
-    ecv = Dataset(ecvfile, mode='r')
-    var_in = ecv.variables[varname]
-    lat = ecv.variables['lat']
-    lon = ecv.variables['lon']
-    time = ecv.variables['time']
-
-    # --- create Multipoint object representing the netcdf grid ---
-    # if lat and lon are 1-dimensional: take all parwise combinations
-    if len(lat.shape) == 1 and len(lon.shape) == 1:
-        coord_points = [(x, y) for x in lat[:] for y in lon[:]]
+    shppath = cfg['shppath']
+    shpidcol = cfg['shpidcol']
+    wgtmet = cfg['wgtmet']
+    if ( cube.coord('latitude').ndim == 1 and
+         cube.coord('longitude').ndim == 1 ):
+        coord_points = [(x, y) for x in cube.coord('latitude').points
+                        for y in cube.coord('longitude').points]
     # if lat and lon are matrices
-    if len(lat.shape) == 2:
-        # check if lat.shape == lon.shape, issue error otherwise
-        coord_points = [(lat[x, y], lon[x, y])
-                        for x in range(lat.shape[0])
-                        for y in range(lon.shape[1])]
-
+    elif ( cube.coord('latitude').ndim == 2 and 
+           cube.coord('longitude').ndim == 2 ):
+        logger.info("Matrix coords not yet implemented with iris!")
+        raise
+    else:
+        logger.info("Unexpected error: " + 
+                    "Inconsistency between grid lon and lat dimensions")
+        raise
     points = MultiPoint(coord_points)
-
     # Import shapefile with catchments
     shp = shapefile.Reader(shppath)
     shapes = shp.shapes()
-
-    # extract field names from shapefile
     fields = shp.fields[1:]
-    # extract attribute table from shapefile
     records = shp.records()
     attr = [[records[i][j] for i in range(len(records))]
             for j in range(len(fields))]
-
-    # extract catchment id
     for shpid, xfld in enumerate(fields):
         if xfld[0] == shpidcol:
-            index_catch_id = shpid
+            index_poly_id = shpid
             break
-    # ADD CHECK AND ERROR if shpidcol not in fields
-    print(attr[index_catch_id])
-    catch_id = attr[index_catch_id]
+    else:
+        logger.info("%s not in shapefile!", shpid)
+        raise
+    poly_id = attr[index_poly_id]
 
     # --  Method: nearest_centroid ---
     if wgtmet == 'nearest_centroid':
-        # get catchments centroids
+        # get polygon centroids
         mulpol = MultiPolygon([shape(pol) for pol in shapes])
         cent = MultiPoint([pol.centroid for pol in mulpol])
-
         # find nearest point in netcdf grid for each catchment centroid
         selected_points = []
         for i in cent:
             nearest = nearest_points(i, points)
-            selected_points.append(list(nearest[1].coords)[0])
-
-        # create table of results (time x one column for each catchment)
-        var = []
+            londist = abs(cube.coord('longitude').points -
+                          list(nearest[1].coords)[0][0])
+            latdist = abs(cube.coord('latitude').points -
+                          list(nearest[1].coords)[0][1])
+            nearestGPlon = np.where(londist == np.min(londist))[0][0]
+            nearestGPlat = np.where(latdist == np.min(latdist))[0][0]
+            selected_points.append(list((nearestGPlon,nearestGPlat)))
+            # Add a check if the point is inside polygon
+            # Issue warning if outside
+            # Implement forced inside (see https://stackoverflow.com/questions/33311616/find-coordinate-of-closest-point-on-polygon-shapely/33324058 )
+        if cfg['evalplot']:
+            shape_plot(nearestGPlon, nearestGPlat, cube, cfg)
+        var = np.zeros((len(cube.coord('time').points),len(poly_id)))
+        cnt = 0
         for point in selected_points:
-            vari = var_in[:, point[0], point[1]]
-            var.append(vari)
-
+            var[:, cnt] = cube.data[:, point[0], point[1]]
+            cnt += 1
     else:
-        print('ERROR: invalid weighting method')
-        exit()
+        logger.info('ERROR: invalid weighting method %s',wgtmet)
+        raise
+    return poly_id, var
 
-    # --- Write output netcdf ---
-    # tries copy/creation netcdf
-    outnetcdf = Dataset(ncout, "w", format="NETCDF4")
 
-    # copy general attributes from original file and add prefix "orgfile"
-    # outnetcdf.setncatts(ecv.__dict__)
-    outnetcdf.setncatts({'orgfile_' + k: ecv.getncattr(k)
-                         for k in ecv.ncattrs()})
-    # add a "history" attribute with information on how the data was processed
-    outnetcdf.setncatts({'history': 'data from the original file (orgfile:' +
-                                    ecvfile + ') was processed by the catchment_selection script to produce summarized data for the cacthments provided in the shapefile ' +
-                                    shppath + ' using the weigting method ' + wgtmet})
+def shape_plot(nearestGPlon, nearestGPlat, cube, cfg):
+    """ Plot shapefiles and included grid points"""
+    map = Basemap(projection='cyl',lon_0=0)
+    map = Basemap(llcrnrlon=cube.coord('longitude').points[nearestGPlon]-10,
+                  llcrnrlat=cube.coord('latitude').points[nearestGPlat]-10,
+                  urcrnrlon=cube.coord('longitude').points[nearestGPlon]+10,
+                  urcrnrlat=cube.coord('latitude').points[nearestGPlat]+10,
+                  projection='tmerc',
+                  lat_0 = 0, lon_0 = 0)
+    map.drawmapboundary(fill_color='aqua')
+    map.fillcontinents(color='#ddaa66',lake_color='aqua')
+    map.drawcoastlines()
+    map.readshapefile(shppath[0:-4],'obj')
+    map.plot(cube.coord('longitude').points[nearestGPlon],
+             cube.coord('latitude').points[nearestGPlat],
+             marker='+', color='m', markersize=12, markeredgewidth=4)
+    #print(shape.contains_point())
+    plt.show()
+    path = os.path.join(cfg['work_dir'],'foo.png')
+    # Plot some stuff
+    #import matplotlib.pyplot as plt
+    #from mpl_toolkits.basemap import Basemap
+    # Worldmap
+    #map = Basemap(projection='cyl',lon_0=0)
+    #map.drawmapboundary(fill_color='aqua')
+    #map.fillcontinents(color='#ddaa66',lake_color='aqua')
+    #map.drawcoastlines()
+    #map.readshapefile(shppath[0:-4],'1')
+    #path = os.path.join(cfg['work_dir'],'foo.png')
+    #plt.show()
+    #map.savefig(path)
 
-    # create dimensions
-    time_out = outnetcdf.createDimension('time', len(time))
-    bnds_out = outnetcdf.createDimension('bnds', ecv.dimensions['bnds'].size)
-    catchment_id = outnetcdf.createDimension("catchment_id", len(mulpol))
 
-    # create variables and set variable attributes
-    for v_name in ('time', 'bnds', 'time_bnds'):
-        varin = ecv.variables[v_name]
-        outvar = outnetcdf.createVariable(v_name, varin.datatype,
-                                          varin.dimensions)
-        outvar.setncatts({k: varin.getncattr(k) for k in varin.ncattrs()})
-        outvar[:] = varin[:]
+def write_netcdf(path, polyid, var, cube, shppath, wgtmet):
+    """Write results to a netcdf file."""
+    ncout = Dataset(path, mode='w')
+    ncout.createDimension('time', None)
+    ncout.createDimension('polygon', len(polyid))
+    times = ncout.createVariable('time', 'f8', ('time'), zlib=True)
+    times.setncattr_string('standard_name',cube.coord('time').standard_name)
+    times.setncattr_string('long_name',cube.coord('time').long_name)
+    #if isinstance(cube.coord('time').units, str):
+    #    times.setncattr_string('units',cube.coord('time').units)
+    #else:
+    #    tunit = cube.coord('time').units
+    times.setncattr_string('calendar',cube.coord('time').units.calendar)
+    times.setncattr_string('units',cube.coord('time').units.origin)
+    polys = ncout.createVariable('polygon', 'f4', ('polygon'), zlib=True)
+    polys.setncattr_string('standard_name','polygon')
+    polys.setncattr_string('long_name','polygon')
+    polys.setncattr_string('shapefile',shppath)
+    data = ncout.createVariable(cube.var_name, 'f4', ('time', 'polygon'),
+                                zlib=True)
+    data.setncattr_string('standard_name',cube.standard_name)
+    data.setncattr_string('long_name',cube.long_name)
+    data.setncattr_string('units',cube.units.origin)
+    for key,val in cube.metadata[-2].items():
+        ncout.setncattr_string(key,val)
+    times[:] = cube.coord('time').points
+    polys[:] = polyid[:]
+    data[:] = var[:]
+    ncout.close()
 
-    # or change back to 'i4' for integer naming
-    catchment_id = outnetcdf.createVariable('catchment_id', 'i4',
-                                            'catchment_id')
-    var_out = outnetcdf.createVariable(varname, 'f4', ('time','catchment_id'))
-    var_out.setncatts({'long_name':var_in.getncattr('long_name'),
-                       'units':var_in.getncattr('units'),
-                       'missing_value':var_in.getncattr('missing_value'),
-                       '_FillValue':var_in.getncattr('_FillValue'),
-                       'standard_name':var_in.getncattr('standard_name'),
-                       'weighting_method':wgtmet})
-
-    # fill with data
-    catchment_id[:] = catch_id
-    var_out[:] = var
-
-    # Plot
-    # from mpl_toolkits.basemap import Basemap
-    # import matplotlib.pyplot as plt
-    # map = Basemap(projection='mill',lon_0=180)
-    # map.drawmapboundary(fill_color='aqua')
-    # map.fillcontinents(color='#ddaa66',lake_color='aqua')
-    # map.drawcoastlines()
-    # map.readshapefile('./data/SUBID_WWH_1_0_1_WHISTv18_simpl90m_ForVisOnly',
-    # 'SUBID')
-    # plt.savefig('cdateRef.png', bbox_inches='tight')
-    # plt.show()
 
 if __name__ == '__main__':
     with run_diagnostic() as config:
