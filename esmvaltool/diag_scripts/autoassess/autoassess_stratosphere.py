@@ -77,7 +77,7 @@ def main():
     iris.save(cubelist_m2, cubes_list_path_m2)
  
     cwd = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-    command_call = 'python ' + os.path.join(cwd, 'autoassess_source/autoassess/run_area.py')
+    command_call = 'python ' + os.path.join(cwd, 'autoassess_source/run_area.py')
     args = {}
     args['--area'] = cfg['area']
     args['--suite-id1'] = cfg['control_model']

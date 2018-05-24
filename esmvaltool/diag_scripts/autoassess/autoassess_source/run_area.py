@@ -1,5 +1,3 @@
-#!/usr/bin/env python2.7
-# -*- coding: utf-8 -*-
 """
 (C) Crown Copyright 2017, the Met Office
 
