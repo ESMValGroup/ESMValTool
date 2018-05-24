@@ -88,6 +88,14 @@ def shapeselect(cfg, cube):
         raise
     poly_id = attr[index_poly_id]
 
+    # This should be a loop over shapes instead
+    # Then we are flexible to chose new method if one fails
+    # if wgtmet == x:
+    #    try:
+    #        call method centroid_inside
+    #    exception method fail:
+    #        call method2 centroid
+    #    
     # --  Method: nearest_centroid ---
     if wgtmet == 'nearest_centroid':
         # get polygon centroids
@@ -97,6 +105,10 @@ def shapeselect(cfg, cube):
         selected_points = []
         for i in cent:
             nearest = nearest_points(i, points)
+            #nGP = points.index(nearest)
+            #nGPx = nGP / len(cube.coord['longitude'].points) #check points order!
+            #nGPy = nGP % len(cube.coord['longitude'].points) #+1?
+            # fixme: Pythagoras!!
             londist = abs(cube.coord('longitude').points -
                           list(nearest[1].coords)[0][0])
             latdist = abs(cube.coord('latitude').points -
@@ -104,6 +116,11 @@ def shapeselect(cfg, cube):
             nearestGPlon = np.where(londist == np.min(londist))[0][0]
             nearestGPlat = np.where(latdist == np.min(latdist))[0][0]
             selected_points.append(list((nearestGPlon,nearestGPlat)))
+            #print(nGP, cube.coord['longitude'].points[nGPx],
+            #      cube.coord['latitude'].points[nGPy])
+            print(nearest[1].coords[0][0], nearest[1].coords[0][1],
+                  cube.coord('longitude').points[nearestGPlon],
+                  cube.coord('latitude').points[nearestGPlat])
             # Add a check if the point is inside polygon
             # Issue warning if outside
             # Implement forced inside (see https://stackoverflow.com/questions/33311616/find-coordinate-of-closest-point-on-polygon-shapely/33324058 )
@@ -122,7 +139,8 @@ def shapeselect(cfg, cube):
 
 def shape_plot(nearestGPlon, nearestGPlat, cube, cfg):
     """ Plot shapefiles and included grid points"""
-    map = Basemap(projection='cyl',lon_0=0)
+    #map = Basemap(projection='cyl',lon_0=0)
+    # bounding box of shapes
     map = Basemap(llcrnrlon=cube.coord('longitude').points[nearestGPlon]-10,
                   llcrnrlat=cube.coord('latitude').points[nearestGPlat]-10,
                   urcrnrlon=cube.coord('longitude').points[nearestGPlon]+10,
