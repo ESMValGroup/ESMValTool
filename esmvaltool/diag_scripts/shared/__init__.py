@@ -3,7 +3,9 @@ from . import plot
 from ._base import *
 
 __all__ = [
+    'Variable',
     'Variables',
+    'Experiments',
     'get_cfg',
     'plot',
     'run_diagnostic',
