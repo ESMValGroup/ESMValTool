@@ -835,7 +835,7 @@ def missing_whitespace_around_operator(logical_line, tokens):
                 # Found a (probably) needed space
                 if need_space is not True and not need_space[1]:
                     yield (need_space[0],
-                           "E225 missing whitespace around operator")
+                           "E225 missing whitespace around operator 1")
                 need_space = False
             elif text == '>' and prev_text in ('<', '-'):
                 # Tolerate the "<>" operator, even if running Python 3
@@ -848,7 +848,7 @@ def missing_whitespace_around_operator(logical_line, tokens):
             else:
                 if need_space is True or need_space[1]:
                     # A needed trailing space was not found
-                    yield prev_end, "E225 missing whitespace around operator 1"
+                    yield prev_end, "E225 missing whitespace around operator 2"
                 elif prev_text != '**':
                     code, optype = 'E226', 'arithmetic'
                     if prev_text == '%':
@@ -878,6 +878,8 @@ def missing_whitespace_around_operator(logical_line, tokens):
                 need_space = None
             if text == '/' and prev_text in ('('):
                 continue
+            if text == '=' and prev_text == ':':
+                continue
             if text == '&':
                 continue
             if text == '|':
@@ -888,7 +890,7 @@ def missing_whitespace_around_operator(logical_line, tokens):
                 need_space = (prev_end, start != prev_end)
             elif need_space and start == prev_end:
                 # A needed opening space was not found
-                yield prev_end, "E225 missing whitespace around operator 2"
+                yield prev_end, "E225 missing whitespace around operator 3"
                 need_space = False
         prev_type = token_type
         prev_text = text
