@@ -46,8 +46,7 @@ def main(cfg):
                 cfg['work_dir'],
                 name + '.nc',
             )
-            write_netcdf(path, polyid, var, cube, cfg['shppath'],
-                         cfg['wgtmet'])
+            write_netcdf(path, polyid, var, cube, cfg)
 
 
 def shapeselect(cfg, cube):
