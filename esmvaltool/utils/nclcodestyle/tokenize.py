@@ -116,7 +116,7 @@ def maybe(*choices): return group(*choices) + '?'
 # Note: we use unicode matching for names ("\w") but ascii matching for
 # number literals.
 Whitespace = r'[ \f\t]*'
-Comment = r'#[^\r\n]*'
+Comment = r';[^\r\n]*'
 Ignore = Whitespace + any(r'\\\r?\n' + Whitespace) + maybe(Comment)
 Name = r'\w+'
 
@@ -555,8 +555,8 @@ def _tokenize(readline, encoding):
             if pos == max:
                 break
 
-            if line[pos] in '#\r\n':           # skip comments or blank lines
-                if line[pos] == '#':
+            if line[pos] in ';\r\n':           # skip comments or blank lines
+                if line[pos] == ';':
                     comment_token = line[pos:].rstrip('\r\n')
                     nl_pos = pos + len(comment_token)
                     yield TokenInfo(COMMENT, comment_token,
@@ -564,7 +564,7 @@ def _tokenize(readline, encoding):
                     yield TokenInfo(NL, line[nl_pos:],
                            (lnum, nl_pos), (lnum, len(line)), line)
                 else:
-                    yield TokenInfo((NL, COMMENT)[line[pos] == '#'], line[pos:],
+                    yield TokenInfo((NL, COMMENT)[line[pos] == ';'], line[pos:],
                            (lnum, pos), (lnum, len(line)), line)
                 continue
 
@@ -618,7 +618,7 @@ def _tokenize(readline, encoding):
                         if async_def:
                             async_def_nl = True
 
-                elif initial == '#':
+                elif initial == ';':
                     assert not token.endswith("\n")
                     if stashed:
                         yield stashed
