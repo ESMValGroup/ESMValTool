@@ -215,6 +215,7 @@ with open('README.md') as readme:
         entry_points={
             'console_scripts': [
                 'esmvaltool = esmvaltool._main:run',
+                'nclcodestyle = esmvaltool.utils.nclcodestyle.pep8:_main',
             ],
         },
         cmdclass={

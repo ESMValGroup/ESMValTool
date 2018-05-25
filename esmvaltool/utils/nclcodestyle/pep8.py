@@ -103,7 +103,6 @@ import re
 import time
 import inspect
 import keyword
-import tokenize
 from optparse import OptionParser
 from fnmatch import fnmatch
 try:
@@ -111,6 +110,8 @@ try:
     from io import TextIOWrapper
 except ImportError:
     from ConfigParser import RawConfigParser
+
+from . import tokenize
 
 DEFAULT_EXCLUDE = '.svn,CVS,.bzr,.hg,.git'
 DEFAULT_IGNORE = 'E24'
