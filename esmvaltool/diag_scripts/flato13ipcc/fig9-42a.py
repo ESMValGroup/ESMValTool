@@ -70,16 +70,11 @@ def main(cfg):
     ###########################################################################
 
     VARS = Variables(cfg)
-    EXPS = Experiments(cfg)
-    v1 = Variables(cfg, tas=Variable(1, 2, 3, 4))
-    v2 = Variables(cfg, tas=Variable(1, 2, 3, [4, 5]))
-    e1 = Experiments(cfg, 1)
+    v1 = Variables(cfg, tas=Variable(1, 2, 4))
+    v2 = Variables(cfg, tas=Variable(1, 2, "hiiii"))
     logging.info(VARS)
-    logging.info(EXPS)
-    logging.info(VARS.tas.exp)
     logging.info(VARS.short_names())
     logging.info(VARS.standard_names())
-    logging.info(EXPS.names())
 
     # for filename, attributes in cfg['input_data'].items():
     #     logger.info("Processing variable %s from model %s",
