@@ -6,7 +6,7 @@ import sys
 from netCDF4 import Dataset
 import shapefile
 from shapely.geometry import MultiPoint
-from shapely.geometry import shape
+from shapely.geometry import shape, Point
 from shapely.geometry.multipolygon import MultiPolygon
 from shapely.ops import nearest_points
 import numpy as np
@@ -120,10 +120,11 @@ def shapeselect(cfg, cube):
                   cube.coord('longitude').points[nearestgplon],
                   cube.coord('latitude').points[nearestgplat])
             # Add a check if the point is inside polygon
+            # when looping over shapes:
+            # point = Point(lon, lat)
+            # shapeX.contains(point)
             # Issue warning if outside
             # Implement forced inside (see https://stackoverflow.com/questions/33311616/find-coordinate-of-closest-point-on-polygon-shapely/33324058 )
-        if cfg['evalplot']:
-            shape_plot(nearestgplon, nearestgplat, cube, cfg)
         var = np.zeros((len(cube.coord('time').points), len(poly_id)))
         cnt = 0
         for point in selected_points:
@@ -132,43 +133,34 @@ def shapeselect(cfg, cube):
     else:
         logger.info('ERROR: invalid weighting method %s', wgtmet)
         sys.exit(1)
+    if cfg['evalplot']:
+        shape_plot(selected_points, cube, cfg)
     return poly_id, var
 
 
-def shape_plot(nearestgplon, nearestgplat, cube, cfg):
+def shape_plot(selected_points, cube, cfg):
     """Plot shapefiles and included grid points"""
     # map = Basemap(projection='cyl',lon_0=0)
     # bounding box of shapes
     shppath = cfg['shppath']
-    map = Basemap(llcrnrlon=cube.coord('longitude').points[nearestgplon] - 10,
-                  llcrnrlat=cube.coord('latitude').points[nearestgplat] - 10,
-                  urcrnrlon=cube.coord('longitude').points[nearestgplon] + 10,
-                  urcrnrlat=cube.coord('latitude').points[nearestgplat] + 10,
+    lons = []
+    lats = []
+    for point in selected_points:
+        print(point)
+        lons.append(cube.coord('longitude').points[point[0]])
+        lats.append(cube.coord('latitude').points[point[1]])
+    #map = Basemap(projection='mill',lon_0=0)
+    map = Basemap(llcrnrlon=min(lons)-10, llcrnrlat=min(lats)-10,
+                  urcrnrlon=max(lons)+15, urcrnrlat=max(lats)+1, 
                   projection='tmerc',
                   lat_0=0, lon_0=0)
-    map.drawmapboundary(fill_color='aqua')
-    map.fillcontinents(color='#ddaa66', lake_color='aqua')
+    map.drawmapboundary() # fill_color='aqua')
     map.drawcoastlines()
     map.readshapefile(shppath[0:-4], 'obj')
-    map.plot(cube.coord('longitude').points[nearestgplon],
-             cube.coord('latitude').points[nearestgplat],
-             marker='+', color='m', markersize=12, markeredgewidth=4)
-    # print(shape.contains_point())
+    map.scatter(lons,lats,30,marker='o',latlon=True)
     plt.show()
+    plt.savefig(path)
     path = os.path.join(cfg['work_dir'], 'foo.png')
-    # Plot some stuff
-    # import matplotlib.pyplot as plt
-    # from mpl_toolkits.basemap import Basemap
-    # Worldmap
-    # map = Basemap(projection='cyl',lon_0=0)
-    # map.drawmapboundary(fill_color='aqua')
-    # map.fillcontinents(color='#ddaa66',lake_color='aqua')
-    # map.drawcoastlines()
-    # map.readshapefile(shppath[0:-4],'1')
-    # path = os.path.join(cfg['work_dir'],'foo.png')
-    # plt.show()
-    # map.savefig(path)
-
 
 def write_netcdf(path, polyid, var, cube, cfg):
     """Write results to a netcdf file."""
