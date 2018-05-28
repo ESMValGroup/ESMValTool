@@ -55,7 +55,6 @@ import os
 import re
 import sys
 import time
-import tokenize
 import warnings
 import bisect
 
@@ -77,6 +76,8 @@ try:
     from io import TextIOWrapper
 except ImportError:
     from ConfigParser import RawConfigParser
+
+from . import tokenize
 
 __version__ = '2.4.0'
 
@@ -778,14 +779,14 @@ def whitespace_around_operator(logical_line):
         if '\t' in before:
             yield match.start(1), "E223 tab before operator"
         elif len(before) > 1:
-            if re.search(before + "=" + after, logical_line) != None:
+            if re.search(before + "=" + after, logical_line) is not None:
                 continue
             yield match.start(1), "E221 multiple spaces before operator"
 
         if '\t' in after:
             yield match.start(2), "E224 tab after operator"
         elif len(after) > 1:
-            if re.search(before + "=" + after, logical_line) != None:
+            if re.search(before + "=" + after, logical_line) is not None:
                 continue
             yield match.start(2), "E222 multiple spaces after operator"
 
