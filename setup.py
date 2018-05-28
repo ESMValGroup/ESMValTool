@@ -33,7 +33,6 @@ REQUIREMENTS = {
         'cdo',
         'cf_units',
         'cython',
-        'esgf-pyclient',
         'matplotlib',
         'netCDF4',
         'numba',
