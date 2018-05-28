@@ -2,17 +2,11 @@
 
 models:
   - {model: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2001}
-  - {model: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2001}
-  - {model: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2001}
-  - {model: ERA-Interim, project: OBS,    tier: 3,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2001}
+#  - {model: ERA-Interim, project: OBS,    tier: 3,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2001}
 
 preprocessors:
 
-  preprocessor1:
-    regrid:
-      target_grid: ERA-Interim
-      scheme: linear
-
+  preprocessor1: {}
 
 diagnostics:
 
@@ -25,8 +19,8 @@ diagnostics:
     scripts:
       script1:
         script: shapeselect/diag_shapeselect.py
-        shppath: '/data/proj/Fouh/FoUh/Staff/Peter.Berg/MAGIC/ESMValTool/esmvaltool/diag_scripts/shapeselect/testdata/testfile.shp' # Path to shapefile
+        shppath: '/home/a001850/WORK/git/ESMValTool/esmvaltool/diag_scripts/shapeselect/testdata/testfile.shp'
         shpidcol: 'id' # Name of column for polygon ids
         wgtmet: 'nearest_centroid' # Weighting method
-        write_csv: TRUE
-        evalplot: FALSE
+        write_csv: True
+        evalplot: True

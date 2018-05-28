@@ -27,7 +27,7 @@ def main(cfg):
                     attributes['standard_name'], attributes['model'])
         logger.debug("Loading %s", filename)
         cube = iris.load_cube(filename)
-        polyid, var = shapeselect(cfg, cube)
+        polyid, var = shapeselect(cfg, cube, filename)
         name = os.path.splitext(os.path.basename(filename))[0] + '_polygon'
         if cfg['write_csv']:
             path = os.path.join(
@@ -49,7 +49,7 @@ def main(cfg):
             write_netcdf(path, polyid, var, cube, cfg)
 
 
-def shapeselect(cfg, cube):
+def shapeselect(cfg, cube, filename):
     """
     Add some description here
 
@@ -134,33 +134,57 @@ def shapeselect(cfg, cube):
         logger.info('ERROR: invalid weighting method %s', wgtmet)
         sys.exit(1)
     if cfg['evalplot']:
-        shape_plot(selected_points, cube, cfg)
+        shape_plot(selected_points, cube, filename, cfg)
     return poly_id, var
 
 
-def shape_plot(selected_points, cube, cfg):
+def shape_plot(selected_points, cube, filename, cfg):
     """Plot shapefiles and included grid points"""
-    # map = Basemap(projection='cyl',lon_0=0)
-    # bounding box of shapes
     shppath = cfg['shppath']
     lons = []
     lats = []
-    for point in selected_points:
-        print(point)
-        lons.append(cube.coord('longitude').points[point[0]])
-        lats.append(cube.coord('latitude').points[point[1]])
-    #map = Basemap(projection='mill',lon_0=0)
-    map = Basemap(llcrnrlon=min(lons)-10, llcrnrlat=min(lats)-10,
-                  urcrnrlon=max(lons)+15, urcrnrlat=max(lats)+1, 
+    for xx, yy in selected_points:
+        lons.append(cube.coord('longitude').points[xx]) #point[0]])
+        lats.append(cube.coord('latitude').points[yy]) #point[1]])
+    print(lons)
+    print(lats)
+    # Set limits for map (This can definitely be improved!)
+    shp = shapefile.Reader(shppath)
+    llcrnrlon=shp.bbox[0]-15
+    llcrnrlat=max((shp.bbox[2]-1,-90))
+    urcrnrlon=shp.bbox[1]+15
+    urcrnrlat=min((shp.bbox[3]+1,90))
+    # Read all model points within map limits
+    if ((cube.coord('latitude').ndim == 1 and
+         cube.coord('longitude').ndim == 1)):
+        coord_points = [(x, y) for x in cube.coord('latitude').points
+                        for y in cube.coord('longitude').points]
+    elif (cube.coord('latitude').ndim == 2 and
+          cube.coord('longitude').ndim == 2):
+        logger.info("Matrix coords not yet implemented with iris!")
+        sys.exit(1)
+    else:
+        logger.info("Unexpected error: " +
+                    "Inconsistency between grid lon and lat dimensions")
+        sys.exit(1)
+    alons = []
+    alats = []
+    for lon, lat in coord_points: #points[1].coords:
+        alons.append(lon)
+        alats.append(lat)
+    map = Basemap(llcrnrlon=llcrnrlon, llcrnrlat=llcrnrlat,
+                  urcrnrlon=urcrnrlon, urcrnrlat=urcrnrlat, 
                   projection='tmerc',
                   lat_0=0, lon_0=0)
-    map.drawmapboundary() # fill_color='aqua')
+    map.drawmapboundary()
     map.drawcoastlines()
     map.readshapefile(shppath[0:-4], 'obj')
-    map.scatter(lons,lats,30,marker='o',latlon=True)
-    plt.show()
+    map.scatter(alons, alats, 3, marker='o', latlon=True, color='gray')
+    map.scatter(lons, lats, 3, marker='o', latlon=True, color='red')
+    #plt.show()
+    name = os.path.splitext(os.path.basename(filename))[0]
+    path = os.path.join(cfg['work_dir'], name + '.png',)
     plt.savefig(path)
-    path = os.path.join(cfg['work_dir'], 'foo.png')
 
 def write_netcdf(path, polyid, var, cube, cfg):
     """Write results to a netcdf file."""
