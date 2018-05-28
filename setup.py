@@ -14,7 +14,7 @@ import sys
 
 from setuptools import Command, setup
 
-from esmvaltool.version import __version__
+from esmvaltool._version import __version__
 
 PACKAGES = [
     'esmvaltool',
@@ -214,7 +214,7 @@ with open('README.md') as readme:
         },
         entry_points={
             'console_scripts': [
-                'esmvaltool = esmvaltool.main:run',
+                'esmvaltool = esmvaltool._main:run',
             ],
         },
         cmdclass={
