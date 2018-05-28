@@ -105,20 +105,11 @@ def shapeselect(cfg, cube, filename):
         selected_points = []
         for i in cent:
             nearest = nearest_points(i, points)
-            # nGP = points.index(nearest)
-            # nGPx = nGP / len(cube.coord['longitude'].points)
-            # nGPy = nGP % len(cube.coord['longitude'].points) #+1?
-            # fixme: Pythagoras!!
-            londist = abs(cube.coord('longitude').points -
-                          list(nearest[1].coords)[0][0])
-            latdist = abs(cube.coord('latitude').points -
-                          list(nearest[1].coords)[0][1])
-            nearestgplon = np.where(londist == np.min(londist))[0][0]
-            nearestgplat = np.where(latdist == np.min(latdist))[0][0]
-            selected_points.append(list((nearestgplon, nearestgplat)))
-            print(nearest[1].coords[0][0], nearest[1].coords[0][1],
-                  cube.coord('longitude').points[nearestgplon],
-                  cube.coord('latitude').points[nearestgplat])
+            nearestgplon = np.where(cube.coord('longitude').points ==
+                                    nearest[1].coords[0][1])
+            nearestgplat = np.where(cube.coord('latitude').points ==
+                                    nearest[1].coords[0][0])
+            selected_points.append(list((nearestgplon[0], nearestgplat[0])))
             # Add a check if the point is inside polygon
             # when looping over shapes:
             # point = Point(lon, lat)
@@ -128,7 +119,7 @@ def shapeselect(cfg, cube, filename):
         var = np.zeros((len(cube.coord('time').points), len(poly_id)))
         cnt = 0
         for point in selected_points:
-            var[:, cnt] = cube.data[:, point[0], point[1]]
+            var[:, cnt] = np.squeeze(cube.data[:, point[0], point[1]])
             cnt += 1
     else:
         logger.info('ERROR: invalid weighting method %s', wgtmet)
@@ -144,10 +135,8 @@ def shape_plot(selected_points, cube, filename, cfg):
     lons = []
     lats = []
     for xx, yy in selected_points:
-        lons.append(cube.coord('longitude').points[xx]) #point[0]])
-        lats.append(cube.coord('latitude').points[yy]) #point[1]])
-    print(lons)
-    print(lats)
+        lons.append(cube.coord('longitude').points[xx][0]) #point[0]])
+        lats.append(cube.coord('latitude').points[yy][0]) #point[1]])
     # Set limits for map (This can definitely be improved!)
     shp = shapefile.Reader(shppath)
     llcrnrlon=shp.bbox[0]-15
@@ -169,7 +158,7 @@ def shape_plot(selected_points, cube, filename, cfg):
         sys.exit(1)
     alons = []
     alats = []
-    for lon, lat in coord_points: #points[1].coords:
+    for lat, lon in coord_points:
         alons.append(lon)
         alats.append(lat)
     map = Basemap(llcrnrlon=llcrnrlon, llcrnrlat=llcrnrlat,
@@ -178,13 +167,13 @@ def shape_plot(selected_points, cube, filename, cfg):
                   lat_0=0, lon_0=0)
     map.drawmapboundary()
     map.drawcoastlines()
-    map.readshapefile(shppath[0:-4], 'obj')
-    map.scatter(alons, alats, 3, marker='o', latlon=True, color='gray')
-    map.scatter(lons, lats, 3, marker='o', latlon=True, color='red')
-    #plt.show()
-    name = os.path.splitext(os.path.basename(filename))[0]
-    path = os.path.join(cfg['work_dir'], name + '.png',)
-    plt.savefig(path)
+    map.readshapefile(shppath[0:-4], 'obj', color='red')
+    map.scatter(alats, alons, 3, marker='o', latlon=True, color='gray')
+    map.scatter(lats, lons, 6, marker='x', latlon=True, color='red')
+    plt.show()
+    #name = os.path.splitext(os.path.basename(filename))[0]
+    #path = os.path.join(cfg['work_dir'], name + '.png',)
+    #plt.savefig(path)
 
 def write_netcdf(path, polyid, var, cube, cfg):
     """Write results to a netcdf file."""
