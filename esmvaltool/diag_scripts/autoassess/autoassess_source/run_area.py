@@ -19,6 +19,14 @@ import re
 import sys
 import tempfile
 from __init__ import create_dir
+# handling relative imports
+if __name__ == '__main__':
+    if __package__ is None:
+        from os import path
+        sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
+        from __init__ import create_dir
+    else:
+        from .__init__ import create_dir
 
 # use Agg backend for non-interactive runs; this is propagated to all functions
 # called from this module

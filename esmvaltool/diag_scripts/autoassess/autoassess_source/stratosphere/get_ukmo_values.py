@@ -49,7 +49,7 @@ tzmean = zmean.aggregated_by('month', iris.analysis.MEAN)
 (tmean, tstrength) = mean_and_strength(tzmean)
 
 # Write out results
-print tzmean.data
-print tmean
-print tstrength
+print(tzmean.data)
+print(tmean)
+print(tstrength)
 
