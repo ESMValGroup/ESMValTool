@@ -16,18 +16,8 @@ import iris
 import iris.analysis.cartography as iac
 import iris.coord_categorisation as icc
 import iris.plot as iplt
-
-# handling relative imports
-if __name__ == '__main__':
-    if __package__ is None:
-        import sys
-        from os import path
-        sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
-        from loaddata import load_run_ss
-        from plotting import segment2list
-    else:
-        from ..loaddata import load_run_ss
-        from ..plotting import segment2list
+from ..loaddata import load_run_ss
+from ..plotting import segment2list
 
 MARKERS = 'ops*dh^v<>+xDH.,'
 
