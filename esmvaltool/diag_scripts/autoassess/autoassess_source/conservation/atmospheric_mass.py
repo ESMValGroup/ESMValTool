@@ -5,8 +5,17 @@ from matplotlib.ticker import FormatStrFormatter
 import numpy as np
 
 import iris
-from ..auto_assess_deprecated.loaddata import load_run_ss
-from ..utility.area_utils import area_average
+# handling relative imports
+if __name__ == '__main__':
+    if __package__ is None:
+        import sys
+        from os import path
+        sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
+        from loaddata import load_run_ss
+        from area_utils import area_average
+    else:
+        from ..loaddata import load_run_ss
+        from ..area_utils import area_average
 
 
 def global_atmos_mass_conservation(run):

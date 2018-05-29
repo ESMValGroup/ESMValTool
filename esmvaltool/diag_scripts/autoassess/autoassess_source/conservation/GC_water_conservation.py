@@ -10,11 +10,21 @@ import sys
 
 import iris
 
-from . import global_water_budget as gwb
-from ..auto_assess_deprecated.loaddata import load_run_ss
-
 import matplotlib.pyplot as plt
-from .matplotlib_table import render_mpl_table
+
+# handling relative imports
+if __name__ == '__main__':
+    if __package__ is None:
+        import sys
+        from os import path
+        sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
+        from loaddata import load_run_ss
+        import global_water_budget as gwb
+        from matplotlib_table import render_mpl_table
+    else:
+        from ..loaddata import load_run_ss
+        from . import global_water_budget as gwb
+        from .matplotlib_table import render_mpl_table
 
 
 def resolution(cube):

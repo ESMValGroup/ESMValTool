@@ -17,8 +17,17 @@ import iris.analysis.cartography as iac
 import iris.coord_categorisation as icc
 import iris.plot as iplt
 
-from ..auto_assess_deprecated.loaddata import load_run_ss
-from ..utility.plotting import segment2list
+# handling relative imports
+if __name__ == '__main__':
+    if __package__ is None:
+        import sys
+        from os import path
+        sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
+        from loaddata import load_run_ss
+        from plotting import segment2list
+    else:
+        from ..loaddata import load_run_ss
+        from ..plotting import segment2list
 
 MARKERS = 'ops*dh^v<>+xDH.,'
 
@@ -897,4 +906,3 @@ def multi_t100_vs_q70_plot(runs):
     ax1.legend(loc='upper right', scatterpoints=1, fontsize='medium')
     fig.savefig('t100_vs_q70.png')
     plt.close()
-

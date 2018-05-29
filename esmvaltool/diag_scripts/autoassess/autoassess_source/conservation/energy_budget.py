@@ -9,8 +9,17 @@ import cf_units
 import iris
 import iris.analysis.calculus as icalc
 
-from ..auto_assess_deprecated.loaddata import load_run_ss
-from ..utility.area_utils import area_average
+# handling relative imports
+if __name__ == '__main__':
+    if __package__ is None:
+        import sys
+        from os import path
+        sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
+        from loaddata import load_run_ss
+        from area_utils import area_average
+    else:
+        from ..loaddata import load_run_ss
+        from ..area_utils import area_average
 
 
 def atmos_energy_budget(run):

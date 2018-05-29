@@ -8,8 +8,17 @@ import os
 import iris
 import numpy as np
 
-from ..auto_assess_deprecated.loaddata import load_run_ss
-from ..utility.area_utils import area_average
+# handling relative imports
+if __name__ == '__main__':
+    if __package__ is None:
+        import sys
+        from os import path
+        sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
+        from loaddata import load_run_ss
+        from area_utils import area_average
+    else:
+        from ..loaddata import load_run_ss
+        from ..area_utils import area_average
 
 
 def fluxes_submodel(run, stash_f, f_mult):
