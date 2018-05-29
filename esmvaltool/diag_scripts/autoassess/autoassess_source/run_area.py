@@ -18,20 +18,25 @@ from pprint import pprint
 import re
 import sys
 import tempfile
-from __init__ import create_dir
-# handling relative imports
-if __name__ == '__main__':
-    if __package__ is None:
-        from os import path
-        sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
-        from __init__ import create_dir
-    else:
-        from .__init__ import create_dir
 
 # use Agg backend for non-interactive runs; this is propagated to all functions
 # called from this module
 import matplotlib
 matplotlib.use('Agg')
+
+
+def create_dir(path):
+    """
+    Make a dir
+    """
+    try:
+        os.makedirs(path)
+    except OSError:
+        if os.path.isdir(path):
+            pass
+        else:
+            raise
+
 
 def create_run_object(args, area, suite_id):
     """
@@ -205,11 +210,11 @@ def create_output_tree(out_dir, ref_suite_id, exp_suite_id, area):
     assessment_name = exp_suite_id + '_vs_' + ref_suite_id
     # make sure out_dir exists in output folder
     _out_dir = os.path.join(out_dir, assessment_name)
-    create_dir(out_dir, safe=False)
+    create_dir(out_dir)
 
     # create output folder for area
     area_out_dir = os.path.join(_out_dir, area)
-    create_dir(area_out_dir, safe=True)
+    create_dir(area_out_dir)
     return area_out_dir
 
 
@@ -280,7 +285,7 @@ def run_area():
             all_metrics.update(metrics)
 
         # write metrics to file
-        create_dir(os.path.join(area_out_dir, suite_id), safe=True)
+        create_dir(os.path.join(area_out_dir, suite_id))
         with open(os.path.join(area_out_dir, suite_id, 'metrics.csv'), 'w') as fh:
             writer = csv.writer(fh)
             for metric in all_metrics.items():
