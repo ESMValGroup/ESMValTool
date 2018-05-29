@@ -1,29 +1,20 @@
-r"""
- ______________________________________________________________________
-           _____ ____  __  ____     __    _ _____           _
-          | ____/ ___||  \/  \ \   / /_ _| |_   _|__   ___ | |
-          |  _| \___ \| |\/| |\ \ / / _` | | | |/ _ \ / _ \| |
-          | |___ ___) | |  | | \ V / (_| | | | | (_) | (_) | |
-          |_____|____/|_|  |_|  \_/ \__,_|_| |_|\___/ \___/|_|
- ______________________________________________________________________
+"""ESMValTool - Earth System Model Evaluation Tool
 
- ESMValTool - Earth System Model Evaluation Tool
- http://www.esmvaltool.org/
+http://www.esmvaltool.org
 
- CORE DEVELOPMENT TEAM AND CONTACTS:
-   Veronika Eyring (PI; DLR, Germany - veronika.eyring@dlr.de)
-   Bjoern Broetz (DLR, Germany - bjoern.broetz@dlr.de)
-   Niels Drost (NLESC, Netherlands - n.drost@esciencecenter.nl)
-   Nikolay Koldunov (AWI, Germany - nikolay.koldunov@awi.de)
-   Axel Lauer (DLR, Germany - axel.lauer@dlr.de)
-   Benjamin Mueller (LMU, Germany - b.mueller@iggf.geo.uni-muenchen.de)
-   Valeriu Predoi (URead, UK - valeriu.predoi@ncas.ac.uk)
-   Mattia Righi (DLR, Germany - mattia.righi@dlr.de)
-   Javier Vegas-Regidor (BSC, Spain - javier.vegas@bsc.es)
- ______________________________________________________________________
+CORE DEVELOPMENT TEAM AND CONTACTS:
+  Veronika Eyring (PI; DLR, Germany - veronika.eyring@dlr.de)
+  Bjoern Broetz (DLR, Germany - bjoern.broetz@dlr.de)
+  Niels Drost (NLESC, Netherlands - n.drost@esciencecenter.nl)
+  Nikolay Koldunov (AWI, Germany - nikolay.koldunov@awi.de)
+  Axel Lauer (DLR, Germany - axel.lauer@dlr.de)
+  Benjamin Mueller (LMU, Germany - b.mueller@iggf.geo.uni-muenchen.de)
+  Valeriu Predoi (URead, UK - valeriu.predoi@ncas.ac.uk)
+  Mattia Righi (DLR, Germany - mattia.righi@dlr.de)
+  Javier Vegas-Regidor (BSC, Spain - javier.vegas@bsc.es)
 
- For further help, check the doc/-folder for pdfs
- and references therein. Have fun!
+For further help, please read the documentation at
+http://esmvaltool.readthedocs.io. Have fun!
 """
 
 # ESMValTool main script
@@ -45,20 +36,31 @@ import shutil
 import sys
 from multiprocessing import cpu_count
 
+from . import __version__
 from ._config import configure_logging, read_config_user_file
-from .namelist import read_namelist_file
-from .task import resource_usage_logger
-from .version import __version__
+from ._namelist import read_namelist_file
+from ._task import resource_usage_logger
 
 # set up logging
 logger = logging.getLogger(__name__)
+
+HEADER = r"""
+______________________________________________________________________
+          _____ ____  __  ____     __    _ _____           _
+         | ____/ ___||  \/  \ \   / /_ _| |_   _|__   ___ | |
+         |  _| \___ \| |\/| |\ \ / / _` | | | |/ _ \ / _ \| |
+         | |___ ___) | |  | | \ V / (_| | | | | (_) | (_) | |
+         |_____|____/|_|  |_|  \_/ \__,_|_| |_|\___/ \___/|_|
+______________________________________________________________________
+
+""" + __doc__
 
 
 def get_args():
     """Define the `esmvaltool` command line"""
     # parse command line args
     parser = argparse.ArgumentParser(
-        description=__doc__,
+        description=HEADER,
         formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument(
         '-v',
@@ -111,7 +113,7 @@ def main(args):
         output=cfg['run_dir'], console_log_level=cfg['log_level'])
 
     # log header
-    logger.info(__doc__)
+    logger.info(HEADER)
 
     logger.info("Using config file %s", config_file)
     logger.info("Writing program log files to:\n%s", "\n".join(log_files))
