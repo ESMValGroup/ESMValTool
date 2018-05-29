@@ -15,7 +15,7 @@ import numpy as np
 import iris
 ### iris2.0 ###
 import iris.analysis as iai
-from ..loaddata import load_run_ss
+from .loaddata import load_run_ss
 from .strat_metrics_1 import weight_lat_ave
 
 # Constant for number of seconds in a 360 day calendar year

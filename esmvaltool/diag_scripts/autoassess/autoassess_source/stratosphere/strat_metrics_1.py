@@ -16,8 +16,8 @@ import iris
 import iris.analysis.cartography as iac
 import iris.coord_categorisation as icc
 import iris.plot as iplt
-from ..loaddata import load_run_ss
-from ..plotting import segment2list
+from .loaddata import load_run_ss
+from .plotting import segment2list
 
 MARKERS = 'ops*dh^v<>+xDH.,'
 
