@@ -31,8 +31,8 @@ Each "multi" function (type 2) has the following interface:
 '''
 
 # local modules
-from . import age_of_air
-from . import strat_metrics_1
+import age_of_air
+import strat_metrics_1
 
 metrics_functions = [strat_metrics_1.mainfunc, age_of_air.age_of_air]
 

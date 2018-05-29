@@ -32,9 +32,9 @@ Each "multi" function (type 2) has the following interface:
 
 # local modules
 # import in such way so no package is required
-from ..conservation import atmospheric_mass as am
-from ..conservation import energy_budget as eb
-from ..conservation import GC_water_conservation as gcwc
+import atmospheric_mass as am
+import energy_budget as eb
+import GC_water_conservation as gcwc
 
 metrics_functions = [am.global_atmos_mass_conservation,
                      eb.atmos_energy_budget,
