@@ -23,7 +23,6 @@ from datetime import datetime as dd
 
 import iris
 import iris.coord_categorisation as coord_cat
-from iris.time import PartialDateTime as pdt
 
 
 def is_daily(cube):
@@ -40,8 +39,6 @@ def is_monthly(cube):
     """A month is a period of at least 28 days, up to 31 days."""
 
     def is_month(bound):
-        # VPREDOI
-        #time_span = td(hours=(bound[1] - bound[0]))
         time_span = td(days=(bound[1] - bound[0]))
         return td(days=31) >= time_span >= td(days=28)
 
@@ -79,8 +76,8 @@ def is_time_mean(cube):
 
 def is_zonal_mean(cube):
     """Check whether a cube was averaged over longitude."""
-    for cell_method in cube.cell_methods:
-        if cell_method.method == 'mean' and 'longitude' in cell_method.coord_names:
+    for cell_met in cube.cell_methods:
+        if cell_met.method == 'mean' and 'longitude' in cell_met.coord_names:
             return True
 
 
@@ -93,8 +90,8 @@ def is_minimum_in_period(cube):
 
 def is_maximum_in_period(cube):
     """Check if cube contains maximum values during time period."""
-    for cell_method in cube.cell_methods:
-        if cell_method.method == 'maximum' and 'time' in cell_method.coord_names:
+    for cell_met in cube.cell_methods:
+        if cell_met.method == 'maximum' and 'time' in cell_met.coord_names:
             return True
 
 
@@ -244,8 +241,8 @@ def select_by_initial_meaning_period(cubes, lbtim):
         for cube in cubes:
             # select by original meaning interval (IA)
             select_meaning_interval = {1: ('1 hour', ), 6: ('6 hour', )}
-            if not select_meaning_interval[int(
-                    IA)] == cube.cell_methods[0].intervals:
+            if select_meaning_interval[int(
+                    IA)] != cube.cell_methods[0].intervals:
                 continue
 
             # select by IB
@@ -271,15 +268,21 @@ def select_certain_months(cubes, lbmon):
     :param CubeList cubes: Iris CubeList.
     :param list lbmon: List with month numbers, e.g. lbmon=[5,6,7] for Mai,
         June, and July.
-    :returns: CubeList with Cubes containing only data for the specified months.
+    :returns: CubeList with Cubes containing only data for the specified mnth.
     :rtype: CubeList
     :raises: `AssertionError` if `cubes` is not an `iris.cube.CubeList`.
     """
     # add 'month number' coordinate
     add_time_coord = {
-        'monthly':  lambda cube: coord_cat.add_month_number(cube, 'time', name='month_number'),
-        'seasonal': lambda cube: coord_cat.add_season(cube, 'time', name='clim_season'),
-        'annual':   lambda cube: coord_cat.add_season_year(cube, 'time', name='season_year')
+        'monthly': lambda cube: coord_cat.add_month_number(cube,
+                                                           'time',
+                                                           name='month_number'),
+        'seasonal': lambda cube: coord_cat.add_season(cube,
+                                                      'time',
+                                                      name='clim_season'),
+        'annual': lambda cube: coord_cat.add_season_year(cube,
+                                                         'time',
+                                                         name='season_year')
     }
     assert isinstance(cubes, iris.cube.CubeList)
 
@@ -412,8 +415,10 @@ def _load_run_ss(cubes,
                 'run_object: ' + str(run_object) + '\n' + \
                 'averaging_period: ' + averaging_period + ', ' + \
                 'variable_name' + variable_name + ', ' + \
-                'lbmon=' + str(lbmon) + ', ' + 'lbproc=' + str(lbproc) + ', ' + \
-                'lblev=' + str(lblev) + ', ' + 'lbtim=' + str(lbtim) + ', ' + \
+                'lbmon=' + str(lbmon) + ', ' + \
+                'lbproc=' + str(lbproc) + ', ' + \
+                'lblev=' + str(lblev) + ', ' + \
+                'lbtim=' + str(lbtim) + ', ' + \
                 'from_dt=' + str(from_dt) + ', ' + 'to_dt=' + str(to_dt)
 
     selected_cubes = select_by_variable_name(cubes, variable_name)
@@ -435,7 +440,6 @@ def _load_run_ss(cubes,
     if from_dt:
         start = from_dt.date()
     else:
-        #start = datetime.date.min  # 1/01/01, i.e. no constraint
         start = run_object['from_' +
                            averaging_period]  # Old AutoAssess behaviour
     assert isinstance(start, datetime.date)
@@ -443,14 +447,13 @@ def _load_run_ss(cubes,
     if to_dt:
         end = to_dt.date()
     else:
-        #end = datetime.date.max  # 9999/12/31
         end = run_object['to_' + averaging_period]  # Old AutoAssess behaviour
     assert isinstance(end, datetime.date)
 
     selected_cubes = extract_time_range(selected_cubes, start, end)
 
     assert len(selected_cubes) > 0, 'No cube found.' + arguments
-    assert selected_cubes[0] != None, 'No cube found.' + arguments
+    assert selected_cubes[0] is not None, 'No cube found.' + arguments
     assert len(selected_cubes) < 2, 'More than one cube found.' + arguments
 
     return selected_cubes[0]

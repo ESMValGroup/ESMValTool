@@ -3,23 +3,25 @@
 
 Wrapper for existing assessment areas of AutoAssess.
 
-Replicates some behaviours of the old version of AutoAssess which are all deprecated.
-All lot of this data is not required for data loading anymore, but just to not break
+Replicates some behaviours of the old version of AutoAssess
+which are all deprecated.
+All lot of this data is not required for data loading anymore,
+but just to not break
 the assessment area code.
 
 """
 
+import sys
+import os
+import os.path
 import argparse
 import csv
 import datetime
-import os
-import os.path
 from pprint import pprint
 import re
-import sys
 import tempfile
 
-# use Agg backend for non-interactive runs; this is propagated to all functions
+# use Agg backend for non-interactive runs; this is propagated to all funcs
 # called from this module
 import matplotlib
 matplotlib.use('Agg')
@@ -40,7 +42,7 @@ def create_dir(path):
 
 def create_run_object(args, area, suite_id):
     """
-    Create run object containing all necessary information for the Assessment
+    Create run object containing all necessary information for Ass
     Areas of the previous version of AutoAssess.
     Use only information provided through command line options.
 
@@ -49,19 +51,20 @@ def create_run_object(args, area, suite_id):
         run['_start_date']     - start date
         run['_end_date']       - end date
 
-        run['runid']           - name of the run (5-character UM runid, aka suite ID)
+        run['runid']           - name of the run (5-char UM runid,suite ID)
         run['data_root']       - dir with data to be assessed
         run['clim_root']       - dir for obs and climatologies
         run['ancil_root']      - directory for ancillary files
         run['nyear']           - length of the assessment period as full years
         run['start']           - start year
 
-        run['from_monthly']    - Date ranges for retrievals for different mean periods.
+        run['from_monthly']    - Date ranges for different mean periods.
         run['to_monthly']        Climatologic years:
         run['from_daily']        all from_* start on 01/12/start_year-1
         run['to_daily']          The to_* date will always be:
         run['from_annual']       1st date + nyears - mean period length
-        run['to_annual']         daily: 30/11/XX, monthly: 01/11/XX, seasonal: 01/09/XX
+        run['to_annual']         daily: 30/11/XX, monthly: 01/11/XX,
+                                 seasonal: 01/09/XX
         run['from_seasonal']     annual: 01/12/XX-1
         run['to_seasonal']
 
@@ -173,17 +176,13 @@ def parse_args(args):
                     args.area), regex + ' does not match ' + str(args.area)
 
     regex = '^[a-z0-9-]+$'
-    # VPREDOI::FIXME
-    # remove these so regex assertions that we can use model names instead
-    # assert re.match(regex, args.suite_id1), regex + ' does not match ' + str(args.suite_id1)
-    # assert re.match(regex, args.suite_id2), regex + ' does not match ' + str(args.suite_id2)
 
-    # at least two years
+    # at least ONE year
     year, month, day = map(int, args.start_date.split('/'))
     start = datetime.date(year, month, day)
     year, month, day = map(int, args.end_date.split('/'))
     end = datetime.date(year, month, day)
-    assert end.year - start.year >= 2 and \
+    assert end.year - start.year >= 1 and \
            end.month >= start.month and \
            end.day >= start.day, \
            'Assessment requires at least two years of data.'
@@ -197,8 +196,7 @@ def parse_args(args):
         args.start_date), regex + ' does not match ' + str(args.start_date)
     assert re.match(
         regex, args.end_date), regex + ' does not match ' + str(args.end_date)
-    assert args.start_date < args.end_date, 'The start date must be before the end date.'
-
+    assert args.start_date < args.end_date, 'Start must be before end.'
     regex = '^(/[a-zA-Z0-9_-]*)+$'
     assert re.match(
         regex, args.obs_dir), regex + ' does not match ' + str(args.obs_dir)

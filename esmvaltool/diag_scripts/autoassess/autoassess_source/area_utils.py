@@ -44,7 +44,7 @@ def area_average(cube,
     aggregated cube
 
     '''
-    if coords == None:
+    if coords is None:
         coords = ['latitude', 'longitude']
 
     # Make sure that aggregator is an Aggregator instance

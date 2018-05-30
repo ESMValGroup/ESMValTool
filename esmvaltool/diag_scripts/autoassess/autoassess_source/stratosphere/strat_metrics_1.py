@@ -326,7 +326,7 @@ def qbo_metrics(run, ucube, metrics):
     '''
     # TODO side effect: changes metrics without returning
     # Extract equatorial zonal mean U
-    tropics = iris.Constraint(latitude=lambda l: -5 <= l <= 5)
+    tropics = iris.Constraint(latitude=lambda lat: -5 <= lat <= 5)
     p30 = iris.Constraint(air_pressure=30.)
     qbo = weight_lat_ave(ucube.extract(tropics))
     qbo30 = qbo.extract(p30)
@@ -363,8 +363,8 @@ def tpole_metrics(run, tcube, metrics):
     t_son = t_seas_mean.extract(iris.Constraint(clim_season='son'))
 
     # Calculate area averages over polar regions at 50hPa
-    nhpole = iris.Constraint(latitude=lambda l: l >= 60, air_pressure=50.0)
-    shpole = iris.Constraint(latitude=lambda l: l <= -60, air_pressure=50.0)
+    nhpole = iris.Constraint(latitude=lambda la: la >= 60, air_pressure=50.0)
+    shpole = iris.Constraint(latitude=lambda la: la <= -60, air_pressure=50.0)
 
     djf_polave = weight_lat_ave(t_djf.extract(nhpole))
     mam_polave = weight_lat_ave(t_mam.extract(nhpole))
@@ -446,7 +446,7 @@ def t_metrics(run, tcube, metrics):
     '''
     # TODO side effect: changes metrics without returning
     # Extract 10S-10N temperature at 100hPa
-    equator = iris.Constraint(latitude=lambda l: -10 <= l <= 10)
+    equator = iris.Constraint(latitude=lambda lat: -10 <= lat <= 10)
     p100 = iris.Constraint(air_pressure=100.)
     t100 = tcube.extract(equator & p100)
 
@@ -473,7 +473,7 @@ def q_metrics(run, qcube, metrics):
     '''
     # TODO side effect: changes metrics without returning
     # Extract 10S-10N humidity at 100hPa
-    tropics = iris.Constraint(latitude=lambda l: -10 <= l <= 10)
+    tropics = iris.Constraint(latitude=lambda lat: -10 <= lat <= 10)
     p70 = iris.Constraint(air_pressure=70.)
     q70 = qcube.extract(tropics & p70)
 
@@ -533,7 +533,6 @@ def mainfunc(run):
     year_cons = dict(from_dt=run['from_monthly'], to_dt=run['to_monthly'])
 
     # Read zonal mean U (lbproc=192) and add month number to metadata
-    # ucube = load_run_ss(run, 'monthly', 'x_wind', lbproc=192, **year_cons)  # m01s30i201
     ucube = load_run_ss(
         run, 'monthly', 'eastward_wind', lbproc=192, **year_cons)
     # Although input data is a zonal mean, iris does not recognise it as such
@@ -743,14 +742,15 @@ def multi_teq_plot(runs):
 def calc_merra(run):
     # Load data
     # VPREDOI::FIXME
-    # this is a hack: I replaced MERRA with ERA-Interim data (no MERRA data for me)
+    # this is a hack
     merrafile = os.path.join(run['clim_root'],
                              'ERA-Interim_tropical_area_avg.nc')
     (t, q) = iris.load_cubes(merrafile,
                              ['air_temperature', 'specific_humidity'])
     # Strip out required times
     time = iris.Constraint(
-        time=lambda cell: run['from_monthly'] <= cell.point <= run['to_monthly']
+        time=lambda cell:
+        run['from_monthly'] <= cell.point <= run['to_monthly']
     )
     with iris.FUTURE.context(cell_datetime_objects=True):
         t = t.extract(time)
@@ -846,7 +846,7 @@ def multi_t100_vs_q70_plot(runs):
     # Load ERA-I data (currently set to pre-calculated values)
     (t_erai, q_erai) = calc_erai(run_cntl)
 
-    ### Create plot
+    # Create plot
     # Axes
     #   bottom X: temperature bias wrt MERRA
     #   left Y  : water vapour bias wrt MERRA
@@ -876,8 +876,6 @@ def multi_t100_vs_q70_plot(runs):
     # ERA-I axes
     ax2 = ax1.twiny()  # twiny gives second horizontal axis
     ay2 = ax1.twinx()  # twinx gives second vertical axis
-    #ax2.set_xlim(erai_xmin, erai_xmax)
-    #ay2.set_ylim(erai_ymin, erai_ymax)
     ax2.xaxis.set_tick_params(labelsize='small')
     ay2.yaxis.set_tick_params(labelsize='small')
     ax2.set_xlabel('T(10S-10N, 100hPa) bias wrt ERA-I (K)', fontsize='large')

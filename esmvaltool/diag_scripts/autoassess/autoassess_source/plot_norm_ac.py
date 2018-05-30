@@ -1,5 +1,3 @@
-#!/usr/bin/env python2.7
-# -*- coding: utf-8 -*-
 """
 (C) Crown Copyright 2017, the Met Office
 
@@ -8,18 +6,17 @@ Create normalised assessment criteria plot (NAC plot).
 
 from __future__ import division, print_function
 
-# use Agg backend for running without X-server
-import matplotlib as mpl
-mpl.use('Agg')
-
-import argparse
-import csv
-import errno
-import matplotlib.pyplot as plt
-import numpy as np
 import os
 import os.path
 import sys
+import argparse
+import errno
+import numpy as np
+# use Agg backend for running without X-server
+import matplotlib as mpl
+mpl.use('Agg')
+import csv
+import matplotlib.pyplot as plt
 
 # Define some colours
 BLACK = '#000000'
@@ -144,10 +141,10 @@ def write_obs_metrics(csvfile, obs, acc):
     are the observation range and must exist for any entry. The second 2 values,
     if they exist, are for the acceptable range of the metric. The observation
     metrics can either be generated through the same process as the model or
-    set as fixed reference values. Note that if the metric is a relative metric
-    (e.g. error) then the first value of a pair should always be zero. These
-    should be read in and out of two dictionary objects (one for obs and one
-    for acc) with metric name as key and a tuple of two floats as the value.
+    set as fixed reference values. Note that if the metric is a relative 
+    metric (e.g. error) then the first value of a pair should always be zero.
+    These should be read in and out of two dictionary objects (one for obs and
+    one for acc) with metric name as key and a tuple of two floats as the value.
 
     :param str csvfile: CSV file name
     :param dict obs: Dictonary of observational uncertainties
@@ -252,10 +249,10 @@ def read_obs_metrics(csvfile, required=False):
     Routine to read in observation metrics csv file
 
     An unordered list of metrics with either 2 or 4 values. The first 2 values
-    are the observation range and must exist for any entry. The second 2 values,
+    are the observation range and must exist for any entry. The second 2 value
     if they exist, are for the acceptable range of the metric. The observation
     metrics can either be generated through the same process as the model or
-    set as fixed reference values. Note that if the metric is a relative metric
+    set as fixed reference values. Note that if the metric is a relative metri
     (e.g. error) then the first value of a pair should always be zero. These
     should be read in and out of two dictionary objects (one for obs and one
     for acc) with metric name as key and a tuple of two floats as the value.
@@ -309,16 +306,6 @@ def read_obs_metrics(csvfile, required=False):
                         raise ValueError(msg)
 
     return (obs, acc)
-
-
-'''
-Metric Evaluation
------------------
-
-Refer to Documentation?
-
-ALL THESE ROUTINES ARE REGRESSION AND UNIT TESTED
-'''
 
 
 def metric_colour(test, ref=1.0, var=None, obs=None, acc=None):
@@ -402,7 +389,7 @@ def metric_colour(test, ref=1.0, var=None, obs=None, acc=None):
     return colour
 
 
-def metric_colours(test, ref={}, var={}, obs={}, acc={}):
+def metric_colours(test, ref=None, var=None, obs=None, acc=None):
     '''
     Routine to loop over metrics and generate list of colours
 
@@ -414,6 +401,16 @@ def metric_colours(test, ref={}, var={}, obs={}, acc={}):
     :returns: Dictionary of colours for test metrics
     :rtype: dict
     '''
+
+    # initialize
+    if ref is None:
+        ref = {}
+    if var is None:
+        var = {}
+    if obs is None:
+        obs = {}
+    if acc is None:
+        acc = {}
     colours = {}
 
     if ref:
@@ -457,22 +454,12 @@ def normalise(test, ref, strict=False):
     norm = {}
     for metric in test.keys():
         if metric in ref:
-            try:
+            if len(test[metric]) == 1:  # try
                 norm[metric] = test[metric] / ref[metric]
-            except:
+            else:  # except
                 norm[metric] = tuple(x / ref[metric] for x in test[metric])
 
     return norm
-
-
-'''
-Metric Plotting
----------------
-
-Refer to Documentation?
-
-ALL THESE ROUTINES ARE REGRESSION TESTED
-'''
 
 
 def plot_std(ax, metrics, data, color=STD_GREY, zorder=0):
@@ -624,10 +611,10 @@ def plot_nac(cref,
              ctests,
              ref,
              tests,
-             metrics=[],
-             var={},
-             obs={},
-             acc={},
+             metrics=None,
+             var=None,
+             obs=None,
+             acc=None,
              extend_y=False,
              title=None,
              ofile=None):
@@ -646,6 +633,16 @@ def plot_nac(cref,
     :param str title: Plot title
     :param str ofile: Plot file name
     '''
+
+    # initialize
+    if metrics is None:
+        metrics = []
+    if var is None:
+        var = {}
+    if obs is None:
+        obs = {}
+    if acc is None:
+        acc = {}
 
     # Create plot figure and axes
     (fig, ax) = plt.subplots()
@@ -666,7 +663,7 @@ def plot_nac(cref,
 
     # Plot metric data
     n_tests = []
-    for (ctest, test, marker) in zip(ctests, tests, MARKERS):
+    for (test, marker) in zip(tests, MARKERS):
 
         # Normalise test by ref
         n_test = normalise(test, ref, strict=True)
@@ -748,7 +745,7 @@ def parse_args(cli_args):
         required=True,
         help='Experiment metric files (commma separated)')
     parser.add_argument(
-        '--file-ref', required=True, help='Reference metric file'),
+        '--file-ref', required=True, help='Reference metric file')
     parser.add_argument('--file-ord', default=None, help='Metric order file')
     parser.add_argument(
         '--file-var', default=None, help='Model uncertainty metric file')

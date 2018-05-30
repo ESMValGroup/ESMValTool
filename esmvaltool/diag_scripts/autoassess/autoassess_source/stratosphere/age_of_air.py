@@ -1,22 +1,21 @@
 '''
 Stratospheric age-of-air assessment code
 '''
-import datetime
 import os
+from .loaddata import load_run_ss
+from .strat_metrics_1 import weight_lat_ave
 import warnings
+import numpy as np
+import datetime
 
 # use Agg backend for non-interactive sessions
 import matplotlib as mpl
 mpl.use('Agg')
 
 import matplotlib.pyplot as plt
-import numpy as np
 
 import iris
-### iris2.0 ###
 import iris.analysis as iai
-from .loaddata import load_run_ss
-from .strat_metrics_1 import weight_lat_ave
 
 # Constant for number of seconds in a 360 day calendar year
 # TODO Wrong if gregorian calendar!
@@ -130,12 +129,12 @@ def age_of_air(run):
         agecube.coord('level_height').convert_units('km')
 
         # Calculate area-weighted means for tropics
-        trop_cons = iris.Constraint(latitude=lambda l: -10 <= l <= 10)
+        trop_cons = iris.Constraint(latitude=lambda lat: -10 <= lat <= 10)
         diag1 = weight_lat_ave(agecube.extract(trop_cons))
         diag1.var_name = 'tropical_age_of_air'
 
         # Calculate area-weighted means for mid-latitudes
-        mlat_cons = iris.Constraint(latitude=lambda l: 35 <= l <= 45)
+        mlat_cons = iris.Constraint(latitude=lambda lat: 35 <= lat <= 45)
         diag2 = weight_lat_ave(agecube.extract(mlat_cons))
         diag2.var_name = 'midlat_age_of_air'
 

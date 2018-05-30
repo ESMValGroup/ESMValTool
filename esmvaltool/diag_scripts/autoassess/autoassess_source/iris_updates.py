@@ -121,4 +121,3 @@ def guess_bounds(coord, bound_position=0.5, bound_min=None, bound_max=None):
 
     '''
     coord.bounds = _guess_bounds(coord, bound_position, bound_min, bound_max)
-
