@@ -1,0 +1,7 @@
+# Conda build configuration
+---
+
+# Python versions
+python:
+  - 2.7
+  - 3.6

@@ -157,7 +157,7 @@ Once complete, the porting of the diagnostic script can be tested. Most of the d
 
 There are two methods for comparing NetCDF files: ``cdo`` and ``ncdiff``. The first method is applied with the command:
 
-.. code-bloc:: bash
+.. code-block:: bash
 
     cdo diffv old_output.nc new_output.nc
 
@@ -165,7 +165,7 @@ which will print a log on the stdout, reporting how many records of the file dif
 
 The second method produces a NetCDF file (e.g., ``diff.nc``) with the difference between two given files:
 
-.. code-bloc:: bash
+.. code-block:: bash
 
     ncdiff old_output.nc new_output.nc diff.nc
 
@@ -175,7 +175,7 @@ In general, binary identical results cannot be expected, due to the use of diffe
 
 It is also recommended to compare the graphical output (this may be necessary if the ported diagnostic does not produce a NetCDF output). For this comparison, the PostScript format shall be chosen (it can be set in the user configuration file). Two PostScript files can be compared with standard ``diff`` command in Linux:
 
-.. code-bloc:: bash
+.. code-block:: bash
 
    diff old_graphic.ps new_graphic.ps
 

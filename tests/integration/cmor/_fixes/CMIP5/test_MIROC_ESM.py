@@ -49,7 +49,8 @@ class TestAll(unittest.TestCase):
                 [0, 1],
                 standard_name='time',
                 units=Unit(
-                    'days since 0000-01-01 00:00:00', calendar='standard')), 0)
+                    'days since 0000-01-01 00:00:00', calendar='gregorian')),
+            0)
         self.cube.add_dim_coord(DimCoord([0, 1], long_name='AR5PL35'), 1)
 
         self.fix = allvars()
@@ -58,7 +59,7 @@ class TestAll(unittest.TestCase):
         cube = self.fix.fix_metadata(self.cube)
         time = cube.coord('time')
         self.assertEqual(time.units.origin, 'days since 1849-01-01 00:00:00')
-        self.assertEqual(time.units.calendar, 'standard')
+        self.assertEqual(time.units.calendar, 'gregorian')
 
     def test_fix_metadata_1_1(self):
         time = self.cube.coord('time')
@@ -67,7 +68,7 @@ class TestAll(unittest.TestCase):
 
         time = cube.coord('time')
         self.assertEqual(time.units.origin, 'days since 1850-01-01 00:00:00')
-        self.assertEqual(time.units.calendar, 'standard')
+        self.assertEqual(time.units.calendar, 'gregorian')
 
     def test_fix_metadata_plev(self):
         time = self.cube.coord('time')
