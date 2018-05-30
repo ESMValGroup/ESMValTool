@@ -1,6 +1,7 @@
 """autoassess stratosphere diagnostic."""
+import os
 import logging
-import inspect, os
+import inspect
 import sys
 
 import iris
@@ -25,11 +26,9 @@ def main():
     cfg = get_cfg()
     logger.setLevel(cfg['log_level'].upper())
 
-    plot_dir = cfg['plot_dir']
     control_model = cfg['control_model']
     exp_model = cfg['exp_model']
 
-    #aa_strato/autoassess_strato_test_1/MPI-ESM-MR_vs_MPI-ESM-LR/stratosphere/MPI-ESM-LR/metrics.csv
     vsloc = exp_model + '_vs_' + control_model
     file_exp = os.path.join(
         os.path.dirname(os.path.dirname(cfg['plot_dir'])), cfg['diag_tag'],

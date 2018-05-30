@@ -1,6 +1,7 @@
 """autoassess stratosphere diagnostic."""
+import os
 import logging
-import inspect, os
+import inspect
 import sys
 
 import iris

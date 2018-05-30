@@ -83,8 +83,8 @@ def is_zonal_mean(cube):
 
 def is_minimum_in_period(cube):
     """Check if cube contains minimum values during time period."""
-    for cell_method in cube.cell_methods:
-        if cell_method.method == 'minimum' and 'time' in cell_method.coord_names:
+    for cell_met in cube.cell_methods:
+        if cell_met.method == 'minimum' and 'time' in cell_met.coord_names:
             return True
 
 
@@ -274,9 +274,10 @@ def select_certain_months(cubes, lbmon):
     """
     # add 'month number' coordinate
     add_time_coord = {
-        'monthly': lambda cube: coord_cat.add_month_number(cube,
-                                                           'time',
-                                                           name='month_number'),
+        'monthly': lambda cube:
+        coord_cat.add_month_number(cube,
+                                   'time',
+                                   name='month_number'),
         'seasonal': lambda cube: coord_cat.add_season(cube,
                                                       'time',
                                                       name='clim_season'),
@@ -323,8 +324,8 @@ def extract_time_range(cubes, start, end):
     t_2 = cf_units.date2num(dd_end, time_unit, cf_units.CALENDAR_STANDARD)
     for cube in cubes:
         time_constraint = iris.Constraint(
-            time=
-            lambda t: (t_1 <= datetime_to_int_days(t.point, time_unit) <= t_2))
+            time=lambda t:
+            (t_1 <= datetime_to_int_days(t.point, time_unit) <= t_2))
         cube_slice = cube.extract(time_constraint)
         time_ranged_cubes.append(cube_slice)
     return time_ranged_cubes

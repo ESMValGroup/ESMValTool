@@ -80,7 +80,7 @@ def create_run_object(args, area, suite_id):
     """
 
     class run(dict):
-        pass  #pylint: disable=super-init-not-called
+        pass
 
     run = run()
     # added private entries required for replicating data retrieval with the
@@ -183,9 +183,9 @@ def parse_args(args):
     year, month, day = map(int, args.end_date.split('/'))
     end = datetime.date(year, month, day)
     assert end.year - start.year >= 1 and \
-           end.month >= start.month and \
-           end.day >= start.day, \
-           'Assessment requires at least two years of data.'
+        end.month >= start.month and \
+        end.day >= start.day, \
+        'Assessment requires at least two years of data.'
     # As collapsing over a single year/season/month fails.
     # Cubes also loose the DimCoord 'time' if only one time point is left.
 

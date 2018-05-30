@@ -2,6 +2,9 @@
 Stratospheric age-of-air assessment code
 '''
 import os
+import matplotlib.pyplot as plt
+import iris
+import iris.analysis as iai
 from .loaddata import load_run_ss
 from .strat_metrics_1 import weight_lat_ave
 import warnings
@@ -11,11 +14,6 @@ import datetime
 # use Agg backend for non-interactive sessions
 import matplotlib as mpl
 mpl.use('Agg')
-
-import matplotlib.pyplot as plt
-
-import iris
-import iris.analysis as iai
 
 # Constant for number of seconds in a 360 day calendar year
 # TODO Wrong if gregorian calendar!

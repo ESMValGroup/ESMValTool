@@ -158,10 +158,10 @@ def calc_qbo_index(qbo):
     '''
     Routine to calculate QBO indices
 
-    The segment of code you include scans the timeseries of U (30hPa) and looks
+    The segment of code you include scans the timeseries of U(30hPa) and looks
     for the times where this crosses the zero line.  Essentially U(30hPa)
     oscillates between positive and negative, and we're looking for a period,
-    defined as the length of time between where U becomes positive and then goes
+    defined as the length of time between where U becomes positive and then
     negative and then becomes positive again (or negative/positive/negative).
     Also, periods less than 12 months are discounted.
     '''
@@ -419,7 +419,7 @@ def teq_metrics(run, tcube, metrics):
     Routine to calculate equatorial 100hPa temperature metrics
     '''
     # Extract equatorial temperature at 100hPa
-    equator = iris.Constraint(latitude=lambda l: -2 <= l <= 2)
+    equator = iris.Constraint(latitude=lambda lat: -2 <= lat <= 2)
     p100 = iris.Constraint(air_pressure=100.)
     teq100 = tcube.extract(equator & p100)
 
@@ -774,7 +774,8 @@ def calc_erai(run):
                              ['air_temperature', 'specific_humidity'])
     # Strip out required times
     time = iris.Constraint(
-        time=lambda cell: run['from_monthly'] <= cell.point <= run['to_monthly']
+        time=lambda cell:
+        run['from_monthly'] <= cell.point <= run['to_monthly']
     )
     with iris.FUTURE.context(cell_datetime_objects=True):
         t = t.extract(time)

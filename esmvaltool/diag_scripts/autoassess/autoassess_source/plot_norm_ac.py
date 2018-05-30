@@ -10,13 +10,12 @@ import os
 import os.path
 import sys
 import argparse
-import errno
-import numpy as np
-# use Agg backend for running without X-server
-import matplotlib as mpl
-mpl.use('Agg')
 import csv
 import matplotlib.pyplot as plt
+import errno
+import numpy as np
+import matplotlib as mpl
+mpl.use('Agg')
 
 # Define some colours
 BLACK = '#000000'
@@ -137,14 +136,14 @@ def write_obs_metrics(csvfile, obs, acc):
     '''
     Routine to read in observation metrics csv file
 
-    An unordered list of metrics with either 2 or 4 values. The first 2 values
-    are the observation range and must exist for any entry. The second 2 values,
+    An unordered list of metrics with either 2 or 4 values. The first 2 vals
+    are the observation range and must exist for any entry. The second 2 vals,
     if they exist, are for the acceptable range of the metric. The observation
     metrics can either be generated through the same process as the model or
-    set as fixed reference values. Note that if the metric is a relative 
+    set as fixed reference values. Note that if the metric is a relative
     metric (e.g. error) then the first value of a pair should always be zero.
     These should be read in and out of two dictionary objects (one for obs and
-    one for acc) with metric name as key and a tuple of two floats as the value.
+    one for acc) with metric name as key and a tuple of two floats as the val.
 
     :param str csvfile: CSV file name
     :param dict obs: Dictonary of observational uncertainties
