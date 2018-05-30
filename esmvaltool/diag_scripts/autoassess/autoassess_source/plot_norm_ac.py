@@ -13,7 +13,7 @@ import os
 import os.path
 import sys
 import matplotlib as mpl
-mpl.use('Agg')
+mpl.use('Agg')  # noqa
 import matplotlib.pyplot as plt
 import argparse
 import csv
