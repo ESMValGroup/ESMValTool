@@ -23,6 +23,7 @@ MARKERS = 'ops*dh^v<>+xDH.,'
 
 # Candidates for general utility functions
 
+
 def weight_lat_ave(cube):
     '''
     Routine to calculate weighted latitudinal average
@@ -39,12 +40,12 @@ def cmap_and_norm(cmap, levels, reverse=False):
     # cmap must be a registered colourmap
     tcmap = mpl_cm.get_cmap(cmap)
     colourmap = segment2list(tcmap, levels.size, reverse=reverse)
-    normalisation = mcol.BoundaryNorm(levels, levels.size-1)
+    normalisation = mcol.BoundaryNorm(levels, levels.size - 1)
     return colourmap, normalisation
 
 
-def add_contour_lines(cube, lev, skipline=1, skiplabel=1,
-                      thick=1.5, thin=0.75):
+def add_contour_lines(cube, lev, skipline=1, skiplabel=1, thick=1.5,
+                      thin=0.75):
     '''
     Routine to add labelled contour lines to filled contour plot to highlight
     contour boundaries. Adds thicker line at zero contour and can skip contour
@@ -181,40 +182,41 @@ def calc_qbo_index(qbo):
     valsup = np.zeros(periodsmax)
     valsdown = np.zeros(periodsmin)
     for i in range(periodsmin):
-        valsdown[i] = np.amin(ufin[indiciesdown[i]:indiciesup[i+kup]])
+        valsdown[i] = np.amin(ufin[indiciesdown[i]:indiciesup[i + kup]])
     for i in range(periodsmax):
-        valsup[i] = np.amax(ufin[indiciesup[i]:indiciesdown[i+kdown]])
+        valsup[i] = np.amax(ufin[indiciesup[i]:indiciesdown[i + kdown]])
     # Calculate eastward QBO amplitude
     counter = 0
     totvals = 0
     for i in range(periodsmax):
         if (valsup[i] > 10.):
-            totvals = totvals+valsup[i]
-            counter = counter+1
+            totvals = totvals + valsup[i]
+            counter = counter + 1
     if (counter == 0):
         ampl_east = 0.
     else:
-        totvals = totvals/counter
+        totvals = totvals / counter
         ampl_east = totvals
     # Calculate westward QBO amplitude
     counter = 0
     totvals = 0
     for i in range(periodsmin):
         if (valsdown[i] < -20.):
-            totvals = totvals+valsdown[i]
-            counter = counter+1
+            totvals = totvals + valsdown[i]
+            counter = counter + 1
     if (counter == 0):
         ampl_west = 0.
     else:
-        totvals = totvals/counter
+        totvals = totvals / counter
         ampl_west = -totvals
     # Calculate QBO period, set to zero if no full oscillations in data
     period1 = 0.0
     period2 = 0.0
     if counterdown > 1:
-        period1 = (indiciesdown[counterdown-1]-indiciesdown[0])/(counterdown-1)
+        period1 = (indiciesdown[counterdown - 1] - indiciesdown[0]) / (
+            counterdown - 1)
     if counterup > 1:
-        period2 = (indiciesup[counterup-1]-indiciesup[0])/(counterup-1)
+        period2 = (indiciesup[counterup - 1] - indiciesup[0]) / (counterup - 1)
     # Pick larger oscillation period
     if period1 < period2:
         period = period2
@@ -254,8 +256,8 @@ def find_zero_crossings(array):
     # sum:    [ 0, 2]
     for i, d in enumerate(diff):
         if i < len(diff) - 1:  # not last item
-            if d != 0 and d == diff[i+1]:
-                diff[i+1] = d + diff[i+1]
+            if d != 0 and d == diff[i + 1]:
+                diff[i + 1] = d + diff[i + 1]
                 diff[i] = 0
 
     last_neg = np.argwhere(diff == 2)
@@ -390,7 +392,7 @@ def mean_and_strength(cube):
     tmean = cube.collapsed('time', iris.analysis.MEAN)
     tmax = cube.collapsed('time', iris.analysis.MAX)
     tmin = cube.collapsed('time', iris.analysis.MIN)
-    tstrength = (tmax-tmin) / 2.
+    tstrength = (tmax - tmin) / 2.
     # TODO Why take off 180.0?
     return (tmean.data - 180.0, tstrength.data)
 
@@ -409,7 +411,7 @@ def q_mean(cube):
     '''
     qmean = cube.collapsed('time', iris.analysis.MEAN)
     # TODO magic numbers
-    return ((1000000.*29./18.)*qmean.data)   # ppmv
+    return ((1000000. * 29. / 18.) * qmean.data)  # ppmv
 
 
 def teq_metrics(run, tcube, metrics):
@@ -513,8 +515,9 @@ def summary_metric(metrics):
         + metrics['100 hPa equatorial temp (annual cycle strength)']
     q_metric = metrics['70 hPa 10Sto10N wv (annual mean)']
     # TODO magic numbers
-    summary = ((pnj_metric / 4.) + (2.4 * t50_metric / 4.) + (3.1 * qbo_metric / 3.)
-               + (8.6 * teq_metric / 2.) + (18.3 * q_metric)) / 33.4
+    summary = (
+        (pnj_metric / 4.) + (2.4 * t50_metric / 4.) + (3.1 * qbo_metric / 3.) +
+        (8.6 * teq_metric / 2.) + (18.3 * q_metric)) / 33.4
 
     # Add to metrics dictionary
     metrics['Summary'] = summary
@@ -531,7 +534,8 @@ def mainfunc(run):
 
     # Read zonal mean U (lbproc=192) and add month number to metadata
     # ucube = load_run_ss(run, 'monthly', 'x_wind', lbproc=192, **year_cons)  # m01s30i201
-    ucube = load_run_ss(run, 'monthly', 'eastward_wind', lbproc=192, **year_cons)
+    ucube = load_run_ss(
+        run, 'monthly', 'eastward_wind', lbproc=192, **year_cons)
     # Although input data is a zonal mean, iris does not recognise it as such
     # and just reads it as having a single longitudinal coordinate. This
     # removes longitude as a dimension coordinate and makes it a scalar
@@ -543,8 +547,9 @@ def mainfunc(run):
     # icc.add_month_number(ucube, 'time', name='month_number')
 
     # Read zonal mean T (lbproc=192) and add clim month and season to metadata
-    tcube = load_run_ss(run, 'monthly', 'air_temperature', lbproc=192,
-                        **year_cons)  # m01s30i204
+    tcube = load_run_ss(
+        run, 'monthly', 'air_temperature', lbproc=192,
+        **year_cons)  # m01s30i204
     # Although input data is a zonal mean, iris does not recognise it as such
     # and just reads it as having a single longitudinal coordinate. This
     # removes longitude as a dimension coordinate and makes it a scalar
@@ -557,8 +562,9 @@ def mainfunc(run):
     icc.add_season(tcube, 'time', name='clim_season')
 
     # Read zonal mean q (lbproc=192) and add clim month and season to metadata
-    qcube = load_run_ss(run, 'monthly', 'specific_humidity', lbproc=192,
-                        **year_cons)  # m01s30i205
+    qcube = load_run_ss(
+        run, 'monthly', 'specific_humidity', lbproc=192,
+        **year_cons)  # m01s30i205
     # Although input data is a zonal mean, iris does not recognise it as such
     # and just reads it as having a single longitudinal coordinate. This
     # removes longitude as a dimension coordinate and makes it a scalar
@@ -695,7 +701,8 @@ def multi_teq_plot(runs):
     # Create experiment filenames
     exptfiles = dict()
     for run_expt in run_expts:
-        exptfiles[run_expt.id] = infile.format(run_expt['runid'], run_expt.period)
+        exptfiles[run_expt.id] = infile.format(run_expt['runid'],
+                                               run_expt.period)
 
     # If no control data then stop ...
     if not os.path.exists(cntlfile):
@@ -737,12 +744,14 @@ def calc_merra(run):
     # Load data
     # VPREDOI::FIXME
     # this is a hack: I replaced MERRA with ERA-Interim data (no MERRA data for me)
-    merrafile = os.path.join(run['clim_root'], 'ERA-Interim_tropical_area_avg.nc')
-    (t,q)=iris.load_cubes(merrafile, ['air_temperature', 'specific_humidity'])
+    merrafile = os.path.join(run['clim_root'],
+                             'ERA-Interim_tropical_area_avg.nc')
+    (t, q) = iris.load_cubes(merrafile,
+                             ['air_temperature', 'specific_humidity'])
     # Strip out required times
-    time = iris.Constraint(time=lambda cell: run['from_monthly']
-                                             <= cell.point <=
-                                             run['to_monthly'])
+    time = iris.Constraint(
+        time=lambda cell: run['from_monthly'] <= cell.point <= run['to_monthly']
+    )
     with iris.FUTURE.context(cell_datetime_objects=True):
         t = t.extract(time)
         q = q.extract(time)
@@ -750,21 +759,23 @@ def calc_merra(run):
     t = t.collapsed('time', iris.analysis.MEAN)
     q = q.collapsed('time', iris.analysis.MEAN)
     # Create return values
-    tmerra = t.data                        # K
+    tmerra = t.data  # K
     # TODO magic numbers
-    qmerra = ((1000000.*29./18.)*q.data)   # ppmv
+    qmerra = ((1000000. * 29. / 18.) * q.data)  # ppmv
     return tmerra, qmerra
 
 
 def calc_erai(run):
     # Load data
     eraidir = run['clim_root']
-    eraifile = os.path.join(run['clim_root'], 'ERA-Interim_tropical_area_avg.nc')
-    (t,q)=iris.load_cubes(eraifile, ['air_temperature', 'specific_humidity'])
+    eraifile = os.path.join(run['clim_root'],
+                            'ERA-Interim_tropical_area_avg.nc')
+    (t, q) = iris.load_cubes(eraifile,
+                             ['air_temperature', 'specific_humidity'])
     # Strip out required times
-    time = iris.Constraint(time=lambda cell: run['from_monthly']
-                                             <= cell.point <=
-                                             run['to_monthly'])
+    time = iris.Constraint(
+        time=lambda cell: run['from_monthly'] <= cell.point <= run['to_monthly']
+    )
     with iris.FUTURE.context(cell_datetime_objects=True):
         t = t.extract(time)
         q = q.extract(time)
@@ -772,9 +783,9 @@ def calc_erai(run):
     t = t.collapsed('time', iris.analysis.MEAN)
     q = q.collapsed('time', iris.analysis.MEAN)
     # Create return values
-    terai = t.data                        # K
+    terai = t.data  # K
     # TODO magic numbers
-    qerai = ((1000000.*29./18.)*q.data)   # ppmv
+    qerai = ((1000000. * 29. / 18.) * q.data)  # ppmv
     return terai, qerai
 
 
@@ -814,8 +825,10 @@ def multi_t100_vs_q70_plot(runs):
     t_expts = dict()
     q_expts = dict()
     for run_expt in run_expts:
-        t_expts[run_expt.id] = t_file.format(run_expt['runid'], run_expt.period)
-        q_expts[run_expt.id] = q_file.format(run_expt['runid'], run_expt.period)
+        t_expts[run_expt.id] = t_file.format(run_expt['runid'],
+                                             run_expt.period)
+        q_expts[run_expt.id] = q_file.format(run_expt['runid'],
+                                             run_expt.period)
 
     # If no control data then stop ...
     if not os.path.exists(t_cntl):
@@ -871,7 +884,13 @@ def multi_t100_vs_q70_plot(runs):
     ay2.set_ylabel('q(10S-10N, 70hPa) bias wrt ERA-I (ppmv)', fontsize='large')
 
     # Plot ideal area
-    patch = Rectangle((0.0, 0.0), 2.0, 0.2*q_merra[0, 0, 0], fc='lime', ec='None', zorder=0)
+    patch = Rectangle(
+        (0.0, 0.0),
+        2.0,
+        0.2 * q_merra[0, 0, 0],
+        fc='lime',
+        ec='None',
+        zorder=0)
     ax1.add_patch(patch)
 
     # Plot control

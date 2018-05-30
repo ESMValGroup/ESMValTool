@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 # Diagnostic that takes two models (control_model and exp_model
 # and observational data (ERA-Interim and MERRA)
 
+
 def get_cfg():
     """Read diagnostic script configuration from settings.yml."""
     settings_file = sys.argv[1]
@@ -55,7 +56,8 @@ def main():
         logger.info("Processing variable %s", variable_name)
         # get model data files
         for filename, attributes in filenames.items():
-            if os.path.basename(filename).split('_')[1] == cfg['control_model']:
+            if os.path.basename(filename).split('_')[1] == cfg[
+                    'control_model']:
                 files_list_m1.append(filename)
             elif os.path.basename(filename).split('_')[1] == cfg['exp_model']:
                 files_list_m2.append(filename)
@@ -73,9 +75,11 @@ def main():
     iris.save(cubelist_m1, cubes_list_path_m1)
     cubes_list_path_m2 = os.path.join(suite_data_m2, 'cubeList.nc')
     iris.save(cubelist_m2, cubes_list_path_m2)
- 
-    cwd = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-    command_call = 'python ' + os.path.join(cwd, 'autoassess_source/run_area.py')
+
+    cwd = os.path.dirname(
+        os.path.abspath(inspect.getfile(inspect.currentframe())))
+    command_call = 'python ' + os.path.join(cwd,
+                                            'autoassess_source/run_area.py')
     args = {}
     args['--area'] = cfg['area']
     args['--suite-id1'] = cfg['control_model']
@@ -84,10 +88,16 @@ def main():
     args['--end-date'] = cfg['end']
     args['--obs-dir'] = os.path.dirname(files_list_m1[0])
     if cfg['obs_models'] is not None:
-        group_files = [[ofile for ofile in obs_list if os.path.basename(ofile).split('_')[1] == obs] for obs in cfg['obs_models']]
+        group_files = [[
+            ofile for ofile in obs_list
+            if os.path.basename(ofile).split('_')[1] == obs
+        ] for obs in cfg['obs_models']]
         for obs_file_group in group_files:
             cubes_list_obs = iris.load(obs_file_group)
-            cubes_list_obs_path = os.path.join(os.path.dirname(obs_file_group[0]), os.path.basename(obs_file_group[0]).split('_')[1] + '_tropical_area_avg.nc')
+            cubes_list_obs_path = os.path.join(
+                os.path.dirname(obs_file_group[0]),
+                os.path.basename(obs_file_group[0]).split('_')[1] +
+                '_tropical_area_avg.nc')
             iris.save(cubes_list_obs, cubes_list_obs_path)
     args['--out-dir'] = cfg['plot_dir']
     args['--data-dir'] = cfg['work_dir']
@@ -97,6 +107,7 @@ def main():
     sys_call = command_call + ' ' + ' '.join(args_collection)
     logger.info(sys_call)
     os.system(sys_call)
+
 
 if __name__ == '__main__':
     iris.FUTURE.netcdf_promote = True

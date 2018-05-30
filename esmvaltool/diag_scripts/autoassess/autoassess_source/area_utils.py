@@ -11,8 +11,13 @@ import iris.analysis.cartography as iac
 import iris_updates as newiris
 
 
-def area_average(cube, weighted=True, mask=None, logicmask=False, coords=None,
-                 aggregator=iris.analysis.MEAN, **aggkeys):
+def area_average(cube,
+                 weighted=True,
+                 mask=None,
+                 logicmask=False,
+                 coords=None,
+                 aggregator=iris.analysis.MEAN,
+                 **aggkeys):
     '''
     Routine to calculate weighted horizontal area aggregations
 
@@ -74,8 +79,8 @@ def area_average(cube, weighted=True, mask=None, logicmask=False, coords=None,
             if not newcube.coord(coord).has_bounds():
                 # Test to make sure latitude bounds do not wrap over pole.
                 if coord in ['latitude', 'grid_latitude']:
-                    newiris.guess_bounds(newcube.coord(coord),
-                                         bound_min=-90., bound_max=90.)
+                    newiris.guess_bounds(
+                        newcube.coord(coord), bound_min=-90., bound_max=90.)
                 else:
                     newcube.coord(coord).guess_bounds()
         aggkeys['weights'] = iac.area_weights(newcube)
@@ -91,16 +96,14 @@ def area_average(cube, weighted=True, mask=None, logicmask=False, coords=None,
         # Do I really need two methods here?
         if 'weights' in aggkeys:
             if logicmask:
-                aggkeys['weights'] = ma.array(data=aggkeys['weights'],
-                                              mask=newmask.data)
+                aggkeys['weights'] = ma.array(
+                    data=aggkeys['weights'], mask=newmask.data)
             else:
                 aggkeys['weights'] *= newmask.data
         else:
             if logicmask:
-                newcube.data = ma.array(data=newcube.data,
-                                        mask=newmask.data)
+                newcube.data = ma.array(data=newcube.data, mask=newmask.data)
             else:
                 newcube.data *= newmask.data
 
     return newcube.collapsed(coords, aggregator, **aggkeys)
-

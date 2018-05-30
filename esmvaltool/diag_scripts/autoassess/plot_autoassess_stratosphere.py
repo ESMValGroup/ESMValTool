@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 # Diagnostic that takes two models (control_model and exp_model
 # and observational data (ERA-Interim and MERRA)
 
+
 def get_cfg():
     """Read diagnostic script configuration from settings.yml."""
     settings_file = sys.argv[1]
@@ -30,10 +31,15 @@ def main():
 
     #aa_strato/autoassess_strato_test_1/MPI-ESM-MR_vs_MPI-ESM-LR/stratosphere/MPI-ESM-LR/metrics.csv
     vsloc = exp_model + '_vs_' + control_model
-    file_exp = os.path.join(os.path.dirname(os.path.dirname(cfg['plot_dir'])), cfg['diag_tag'], cfg['diag_name'], vsloc, 'stratosphere', exp_model, 'metrics.csv')
-    file_ref = os.path.join(os.path.dirname(os.path.dirname(cfg['plot_dir'])), cfg['diag_tag'], cfg['diag_name'], vsloc, 'stratosphere', control_model, 'metrics.csv')
+    file_exp = os.path.join(
+        os.path.dirname(os.path.dirname(cfg['plot_dir'])), cfg['diag_tag'],
+        cfg['diag_name'], vsloc, 'stratosphere', exp_model, 'metrics.csv')
+    file_ref = os.path.join(
+        os.path.dirname(os.path.dirname(cfg['plot_dir'])), cfg['diag_tag'],
+        cfg['diag_name'], vsloc, 'stratosphere', control_model, 'metrics.csv')
 
-    cwd = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+    cwd = os.path.dirname(
+        os.path.abspath(inspect.getfile(inspect.currentframe())))
     plotter_script = os.path.join(cwd, 'autoassess_source/plot_norm_ac.py')
     os.system('chmod +x ' + plotter_script)
     command_call = plotter_script
@@ -48,6 +54,7 @@ def main():
     sys_call = command_call + ' ' + ' '.join(args_collection)
     logger.info(sys_call)
     os.system(sys_call)
+
 
 if __name__ == '__main__':
     iris.FUTURE.netcdf_promote = True

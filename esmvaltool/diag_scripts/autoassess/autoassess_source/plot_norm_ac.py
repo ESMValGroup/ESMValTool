@@ -37,8 +37,10 @@ NOOBS_GREY = '#A9A9A9'
 MARKERS = 'ops*dh^v<>+xDH.,'
 
 # Create fakelines for legend using MARKERS above
-FAKELINES = [plt.Line2D([0, 0], [0, 1], marker=marker, color=BLACK,
-                        linestyle='') for marker in MARKERS]
+FAKELINES = [
+    plt.Line2D([0, 0], [0, 1], marker=marker, color=BLACK, linestyle='')
+    for marker in MARKERS
+]
 
 # List of TODO:
 #
@@ -50,6 +52,7 @@ FAKELINES = [plt.Line2D([0, 0], [0, 1], marker=marker, color=BLACK,
 
 class CommentedFile:
     '''Class to help deal with comments in CSV files'''
+
     def __init__(self, f, commentstring="#"):
         self.f = f
         self.commentstring = commentstring
@@ -189,9 +192,8 @@ def read_order_metrics(csvfile, required=False):
                     pass  # Raise Warning
         else:
             with inf:
-                reader = csv.reader(CommentedFile(inf),
-                                    delimiter=',',
-                                    quotechar='"')
+                reader = csv.reader(
+                    CommentedFile(inf), delimiter=',', quotechar='"')
                 # TODO: Must be a better way of unpacking data that does not
                 #       rely on testing number of elements on line
                 for row in reader:
@@ -230,9 +232,8 @@ def read_model_metrics(csvfile, required=False):
                     pass  # Raise Warning
         else:
             with inf:
-                reader = csv.reader(CommentedFile(inf),
-                                    delimiter=',',
-                                    quotechar='"')
+                reader = csv.reader(
+                    CommentedFile(inf), delimiter=',', quotechar='"')
                 # TODO: Must be a better way of unpacking data that does not
                 #       rely on testing number of elements on line
                 for row in reader:
@@ -278,9 +279,8 @@ def read_obs_metrics(csvfile, required=False):
                     pass  # Raise Warning
         else:
             with inf:
-                reader = csv.reader(CommentedFile(inf),
-                                    delimiter=',',
-                                    quotechar='"')
+                reader = csv.reader(
+                    CommentedFile(inf), delimiter=',', quotechar='"')
                 # TODO: Must be a better way of unpacking data that does not
                 #       rely on testing number of elements on line
                 for row in reader:
@@ -290,12 +290,20 @@ def read_obs_metrics(csvfile, required=False):
                     #  ultimately want to remove this as all observations
                     #  should be uncertainty ranges (i.e. multiple obs sources)
                     if len(row) == 1:
-                        obs[metric] = tuple(sorted([float(row[0]), float(row[0])]))
+                        obs[metric] = tuple(
+                            sorted([float(row[0]),
+                                    float(row[0])]))
                     elif len(row) == 2:
-                        obs[metric] = tuple(sorted([float(row[0]), float(row[1])]))
+                        obs[metric] = tuple(
+                            sorted([float(row[0]),
+                                    float(row[1])]))
                     elif len(row) == 4:
-                        obs[metric] = tuple(sorted([float(row[0]), float(row[1])]))
-                        acc[metric] = tuple(sorted([float(row[2]), float(row[3])]))
+                        obs[metric] = tuple(
+                            sorted([float(row[0]),
+                                    float(row[1])]))
+                        acc[metric] = tuple(
+                            sorted([float(row[2]),
+                                    float(row[3])]))
                     else:
                         msg = "Obs metrics file is not properly configured"
                         raise ValueError(msg)
@@ -370,8 +378,8 @@ def metric_colour(test, ref=1.0, var=None, obs=None, acc=None):
         # NOTE: Don't worry here about whether reference or test are within
         #       observational uncertainty as logic for colours precludes that
         #       situation.
-        ref_err = min(abs(ref-obs[0]), abs(ref-obs[1]))
-        test_err = min(abs(test-obs[0]), abs(test-obs[1]))
+        ref_err = min(abs(ref - obs[0]), abs(ref - obs[1]))
+        test_err = min(abs(test - obs[0]), abs(test - obs[1]))
         is_test_better = (test_err <= ref_err)
 
         # Now for colour logic:
@@ -419,11 +427,12 @@ def metric_colours(test, ref={}, var={}, obs={}, acc={}):
         ref = {metric: 1.0 for metric in test.keys()}
 
     for metric in test.keys():
-        colours[metric] = metric_colour(test[metric],
-                                        ref=ref[metric],
-                                        var=var.get(metric, None),
-                                        obs=obs.get(metric, None),
-                                        acc=acc.get(metric, None))
+        colours[metric] = metric_colour(
+            test[metric],
+            ref=ref[metric],
+            var=var.get(metric, None),
+            obs=obs.get(metric, None),
+            acc=acc.get(metric, None))
 
     return colours
 
@@ -451,7 +460,7 @@ def normalise(test, ref, strict=False):
             try:
                 norm[metric] = test[metric] / ref[metric]
             except:
-                norm[metric] = tuple(x/ref[metric] for x in test[metric])
+                norm[metric] = tuple(x / ref[metric] for x in test[metric])
 
     return norm
 
@@ -478,7 +487,7 @@ def plot_std(ax, metrics, data, color=STD_GREY, zorder=0):
     '''
 
     # Extract metric data and line up with requested metrics
-    coord = [i+1 for (i, metric) in enumerate(metrics) if metric in data]
+    coord = [i + 1 for (i, metric) in enumerate(metrics) if metric in data]
     std = [data[metric] for metric in metrics if metric in data]
 
     # Convert to numpy arrays
@@ -486,8 +495,15 @@ def plot_std(ax, metrics, data, color=STD_GREY, zorder=0):
     std = np.array(std)
 
     # Create plot
-    ax.barh(coord, 2.0*std, left=1.0-std, height=1.0,
-            align='center', color=color, linewidth=0, zorder=zorder)
+    ax.barh(
+        coord,
+        2.0 * std,
+        left=1.0 - std,
+        height=1.0,
+        align='center',
+        color=color,
+        linewidth=0,
+        zorder=zorder)
 
 
 def plot_obs(ax, metrics, data, color=OBS_GREY, zorder=1):
@@ -502,7 +518,7 @@ def plot_obs(ax, metrics, data, color=OBS_GREY, zorder=1):
     '''
 
     # Extract metric data and line up with requested metrics
-    coord = [i+1 for (i, metric) in enumerate(metrics) if metric in data]
+    coord = [i + 1 for (i, metric) in enumerate(metrics) if metric in data]
     obsmin = [data[metric][0] for metric in metrics if metric in data]
     obsmax = [data[metric][1] for metric in metrics if metric in data]
 
@@ -516,8 +532,14 @@ def plot_obs(ax, metrics, data, color=OBS_GREY, zorder=1):
     err = 0.5 * (obsmax - obsmin)
 
     # Create plot
-    ax.errorbar(orig, coord, xerr=err,
-                fmt='none', ecolor=color, capsize=5, zorder=zorder)
+    ax.errorbar(
+        orig,
+        coord,
+        xerr=err,
+        fmt='none',
+        ecolor=color,
+        capsize=5,
+        zorder=zorder)
 
 
 def plot_metrics(ax, metrics, data, cols, marker, zorder=3):
@@ -533,7 +555,7 @@ def plot_metrics(ax, metrics, data, cols, marker, zorder=3):
     '''
 
     # Extract metric data and line up with requested metrics
-    coord = [i+1 for (i, metric) in enumerate(metrics) if metric in data]
+    coord = [i + 1 for (i, metric) in enumerate(metrics) if metric in data]
     pdata = [data[metric] for metric in metrics if metric in data]
     pcols = [cols[metric] for metric in metrics if metric in data]
 
@@ -543,8 +565,14 @@ def plot_metrics(ax, metrics, data, cols, marker, zorder=3):
     pcols = np.array(pcols)
 
     # Create plot
-    ax.scatter(pdata, coord, s=50, edgecolors=BLACK,
-               c=pcols, marker=marker, zorder=zorder)
+    ax.scatter(
+        pdata,
+        coord,
+        s=50,
+        edgecolors=BLACK,
+        c=pcols,
+        marker=marker,
+        zorder=zorder)
 
 
 def plot_get_limits(tests, obs, acc, extend_y=False):
@@ -592,8 +620,17 @@ def plot_get_limits(tests, obs, acc, extend_y=False):
     return (minval, maxval)
 
 
-def plot_nac(cref, ctests, ref, tests, metrics=[], var={}, obs={}, acc={},
-             extend_y=False, title=None, ofile=None):
+def plot_nac(cref,
+             ctests,
+             ref,
+             tests,
+             metrics=[],
+             var={},
+             obs={},
+             acc={},
+             extend_y=False,
+             title=None,
+             ofile=None):
     '''
     Routine to produce NAC plot
 
@@ -649,9 +686,9 @@ def plot_nac(cref, ctests, ref, tests, metrics=[], var={}, obs={}, acc={},
     # Set limits, label axes and add norm=0 & 1 lines
     ax.axvline(0.0, color=BLACK, linestyle='dotted')
     ax.axvline(1.0, color=BLACK)
-    ax.set_yticks(np.arange(len(metrics))+1)
+    ax.set_yticks(np.arange(len(metrics)) + 1)
     ax.set_yticklabels(metrics, ha='right', fontsize='x-small')
-    ax.set_ylim(len(metrics)+0.5, 0.5)
+    ax.set_ylim(len(metrics) + 0.5, 0.5)
     ax.set_xlim(limits)
     ax.set_xlabel('Normalised Assessment Criteria', fontsize='small')
     ax.tick_params(axis='x', labelsize='small')
@@ -659,9 +696,14 @@ def plot_nac(cref, ctests, ref, tests, metrics=[], var={}, obs={}, acc={},
         ax.set_title(title)
 
     # Add plot legend
-    legend = ax.legend(FAKELINES[0:len(ctests)], ctests,
-                       bbox_to_anchor=(1, 1), loc=2, numpoints=1,
-                       fancybox=True, fontsize='small')
+    legend = ax.legend(
+        FAKELINES[0:len(ctests)],
+        ctests,
+        bbox_to_anchor=(1, 1),
+        loc=2,
+        numpoints=1,
+        fancybox=True,
+        fontsize='small')
     legend.set_title('Vs %s' % cref, prop={'size': 'small'})
 
     # Display or produce file
@@ -671,7 +713,7 @@ def plot_nac(cref, ctests, ref, tests, metrics=[], var={}, obs={}, acc={},
         if not os.path.isdir(odir):
             os.makedirs(odir)
         # Note that bbox_inches only works for png plots
-        plt.savefig(ofile, bbox_extra_artists=(legend,), bbox_inches='tight')
+        plt.savefig(ofile, bbox_extra_artists=(legend, ), bbox_inches='tight')
     else:
         # Need the following to attempt to display legend in frame
         # TODO: Is there a better way of doing this?
@@ -693,28 +735,31 @@ def parse_args(cli_args):
     # Parse command line arguments
     parser = argparse.ArgumentParser(
         description=__doc__,
-        formatter_class=argparse.RawDescriptionHelpFormatter
-    )
+        formatter_class=argparse.RawDescriptionHelpFormatter)
 
-    parser.add_argument('--exp', required=True,
-                        help='Test experiment names (commma separated)')
-    parser.add_argument('--ref', required=True,
-                        help='Reference experiment name')
-    parser.add_argument('--file-exp', required=True,
-                        help='Experiment metric files (commma separated)')
-    parser.add_argument('--file-ref', required=True,
-                        help='Reference metric file'),
-    parser.add_argument('--file-ord', default=None,
-                        help='Metric order file')
-    parser.add_argument('--file-var', default=None,
-                        help='Model uncertainty metric file')
-    parser.add_argument('--file-obs', default=None,
-                        help='Observations metric file')
-    parser.add_argument('--plot', default=None,
-                        help='Plot file to be created')
-    parser.add_argument('--title', default=None,
-                        help='Plot title')
-    parser.add_argument('--exty', default=False, action='store_true',
+    parser.add_argument(
+        '--exp',
+        required=True,
+        help='Test experiment names (commma separated)')
+    parser.add_argument(
+        '--ref', required=True, help='Reference experiment name')
+    parser.add_argument(
+        '--file-exp',
+        required=True,
+        help='Experiment metric files (commma separated)')
+    parser.add_argument(
+        '--file-ref', required=True, help='Reference metric file'),
+    parser.add_argument('--file-ord', default=None, help='Metric order file')
+    parser.add_argument(
+        '--file-var', default=None, help='Model uncertainty metric file')
+    parser.add_argument(
+        '--file-obs', default=None, help='Observations metric file')
+    parser.add_argument('--plot', default=None, help='Plot file to be created')
+    parser.add_argument('--title', default=None, help='Plot title')
+    parser.add_argument(
+        '--exty',
+        default=False,
+        action='store_true',
         help='Extend y axis to include observation uncertainties')
 
     # Return parsed args
@@ -743,9 +788,18 @@ def main():
     (obs, acc) = read_obs_metrics(args.file_obs)
 
     # Produce plot
-    plot_nac(args.ref, expt_names, ref, tests, metrics=metrics,
-             var=var, obs=obs, acc=acc, extend_y=args.exty,
-             title=args.title, ofile=args.plot)
+    plot_nac(
+        args.ref,
+        expt_names,
+        ref,
+        tests,
+        metrics=metrics,
+        var=var,
+        obs=obs,
+        acc=acc,
+        extend_y=args.exty,
+        title=args.title,
+        ofile=args.plot)
 
 
 if __name__ == '__main__':

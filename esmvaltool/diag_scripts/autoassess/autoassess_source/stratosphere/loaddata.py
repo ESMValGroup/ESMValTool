@@ -28,6 +28,7 @@ from iris.time import PartialDateTime as pdt
 
 def is_daily(cube):
     """Test whether the time coordinate contains only daily bound periods."""
+
     def is_day(bound):
         time_span = td(hours=(bound[1] - bound[0]))
         return td(days=1) == time_span
@@ -37,6 +38,7 @@ def is_daily(cube):
 
 def is_monthly(cube):
     """A month is a period of at least 28 days, up to 31 days."""
+
     def is_month(bound):
         # VPREDOI
         #time_span = td(hours=(bound[1] - bound[0]))
@@ -50,15 +52,17 @@ def is_seasonal(cube):
     """
     A season is a period of 3 months, i.e. at least 89 days, and up to 92 days.
     """
+
     def is_season(bound):
         time_span = td(hours=(bound[1] - bound[0]))
-        return td(days=31+30+31) >= time_span >= td(days=28+31+30)
+        return td(days=31 + 30 + 31) >= time_span >= td(days=28 + 31 + 30)
 
     return all([is_season(bound) for bound in cube.coord('time').bounds])
 
 
 def is_yearly(cube):
     """A year is a period of at least 360 days, up to 366 days."""
+
     def is_year(bound):
         time_span = td(hours=(bound[1] - bound[0]))
         return td(days=365) == time_span or td(days=360) == time_span
@@ -124,11 +128,15 @@ def select_by_averaging_period(cubes, averaging_period):
     :raises: `AssertionError` if `cubes` is not a `list`.
     """
     assert isinstance(cubes, list)
-    select_period = {'daily': is_daily,
-                     'monthly': is_monthly,
-                     'seasonal': is_seasonal,
-                     'annual': is_yearly}
-    selected_cubes = [cube for cube in cubes if select_period[averaging_period](cube)]
+    select_period = {
+        'daily': is_daily,
+        'monthly': is_monthly,
+        'seasonal': is_seasonal,
+        'annual': is_yearly
+    }
+    selected_cubes = [
+        cube for cube in cubes if select_period[averaging_period](cube)
+    ]
     return iris.cube.CubeList(selected_cubes)
 
 
@@ -142,7 +150,8 @@ def select_by_pressure_level(cubes, lblev):
     :rtype: CubeList
     """
     pressure_level = iris.Constraint(pressure=lblev)
-    return cubes.extract(pressure_level)  # CubeList.extract returns always CubeList
+    return cubes.extract(
+        pressure_level)  # CubeList.extract returns always CubeList
 
 
 def select_by_processing(cubes, lbproc):
@@ -160,10 +169,12 @@ def select_by_processing(cubes, lbproc):
     assert lbproc != 0
 
     # bits are used to indicate processing
-    select_processing = {64:  is_zonal_mean,
-                         128: is_time_mean,
-                         4096: is_minimum_in_period,
-                         8192: is_maximum_in_period}
+    select_processing = {
+        64: is_zonal_mean,
+        128: is_time_mean,
+        4096: is_minimum_in_period,
+        8192: is_maximum_in_period
+    }
     selected_cubes = []
     for cube in cubes:
         missing_method = False
@@ -232,9 +243,9 @@ def select_by_initial_meaning_period(cubes, lbtim):
 
         for cube in cubes:
             # select by original meaning interval (IA)
-            select_meaning_interval = {1: ('1 hour',),
-                                       6: ('6 hour',)}
-            if not select_meaning_interval[int(IA)] == cube.cell_methods[0].intervals:
+            select_meaning_interval = {1: ('1 hour', ), 6: ('6 hour', )}
+            if not select_meaning_interval[int(
+                    IA)] == cube.cell_methods[0].intervals:
                 continue
 
             # select by IB
@@ -244,8 +255,10 @@ def select_by_initial_meaning_period(cubes, lbtim):
 
             # select calendar (IC)
             # see cf_units.CALENDARS for possible cube calendars
-            select_calendar = {1: 'gregorian',  # TODO does iris distinguish between
-                               2: '360_day'}    # proleptic_greorian and gregorian?
+            select_calendar = {
+                1: 'gregorian',  # TODO does iris distinguish between
+                2: '360_day'
+            }  # proleptic_greorian and gregorian?
             if select_calendar[int(IC)] == cube.coord('time').units.calendar:
                 selected_cubes.append(cube)
     return selected_cubes
@@ -275,7 +288,8 @@ def select_certain_months(cubes, lbmon):
 
     # filter by month number
     month_constraint = iris.Constraint(month_number=lbmon)
-    return cubes.extract(month_constraint)  # CubeList.extract returns always CubeList
+    return cubes.extract(
+        month_constraint)  # CubeList.extract returns always CubeList
 
 
 def get_time_offset(time_unit):
@@ -289,8 +303,7 @@ def get_time_offset(time_unit):
 def datetime_to_int_days(date_obj, tunit):
     """Return time point converted from cube datetime cell"""
     time_offset = get_time_offset(tunit)
-    real_date = dd(date_obj.year,
-                   date_obj.month, date_obj.day, 0, 0, 0)
+    real_date = dd(date_obj.year, date_obj.month, date_obj.day, 0, 0, 0)
 
     days = (real_date - time_offset).days
     return days
@@ -302,25 +315,27 @@ def extract_time_range(cubes, start, end):
     iris.util.unify_time_units(cubes)
     time_unit = cubes[0].coord('time').units.name
     dd_start = dd(start.year, start.month, start.day, 0, 0, 0)
-    t_1 = cf_units.date2num(dd_start,
-                            time_unit,
-                            cf_units.CALENDAR_STANDARD)
+    t_1 = cf_units.date2num(dd_start, time_unit, cf_units.CALENDAR_STANDARD)
     dd_end = dd(end.year, end.month, end.day, 0, 0, 0)
-    t_2 = cf_units.date2num(dd_end,
-                            time_unit,
-                            cf_units.CALENDAR_STANDARD)
+    t_2 = cf_units.date2num(dd_end, time_unit, cf_units.CALENDAR_STANDARD)
     for cube in cubes:
-        time_constraint = iris.Constraint(time=lambda t: (
-            t_1 <= datetime_to_int_days(t.point, time_unit) <= t_2))
+        time_constraint = iris.Constraint(
+            time=
+            lambda t: (t_1 <= datetime_to_int_days(t.point, time_unit) <= t_2))
         cube_slice = cube.extract(time_constraint)
         time_ranged_cubes.append(cube_slice)
     return time_ranged_cubes
 
 
-
-def load_run_ss(run_object, averaging_period, variable_name,
-                lbmon=None, lbproc=None, lblev=None, lbtim=None,
-                from_dt=None, to_dt=None):
+def load_run_ss(run_object,
+                averaging_period,
+                variable_name,
+                lbmon=None,
+                lbproc=None,
+                lblev=None,
+                lbtim=None,
+                from_dt=None,
+                to_dt=None):
     """
     DEPRECATED: Do not use for new Assessment Areas. Instead, read the
     CubeList `cubeList.nc` in the directory with the retrieved data.
@@ -360,19 +375,34 @@ def load_run_ss(run_object, averaging_period, variable_name,
     """
     cubelist_file = 'cubeList.nc'
     cubelist_path = os.path.join(run_object['data_root'], run_object['runid'],
-                               run_object['_area'], cubelist_file)
+                                 run_object['_area'], cubelist_file)
 
     cubes = iris.load(cubelist_path)
     cubes.sort(key=lambda c: c.standard_name)
 
-    return _load_run_ss(cubes, run_object, averaging_period, variable_name,
-                        lbmon=lbmon, lbproc=lbproc, lblev=lblev, lbtim=lbtim,
-                        from_dt=from_dt, to_dt=to_dt)
+    return _load_run_ss(
+        cubes,
+        run_object,
+        averaging_period,
+        variable_name,
+        lbmon=lbmon,
+        lbproc=lbproc,
+        lblev=lblev,
+        lbtim=lbtim,
+        from_dt=from_dt,
+        to_dt=to_dt)
 
 
-def _load_run_ss(cubes, run_object, averaging_period, variable_name,
-                 lbmon=None, lbproc=None, lblev=None, lbtim=None,
-                 from_dt=None, to_dt=None):
+def _load_run_ss(cubes,
+                 run_object,
+                 averaging_period,
+                 variable_name,
+                 lbmon=None,
+                 lbproc=None,
+                 lblev=None,
+                 lbtim=None,
+                 from_dt=None,
+                 to_dt=None):
     """
     Select a single Cube from the given cubes.
 
@@ -389,12 +419,14 @@ def _load_run_ss(cubes, run_object, averaging_period, variable_name,
     selected_cubes = select_by_variable_name(cubes, variable_name)
 
     if averaging_period in ['daily', 'monthly', 'seasonal', 'annual']:
-        selected_cubes = select_by_averaging_period(selected_cubes, averaging_period)
+        selected_cubes = select_by_averaging_period(selected_cubes,
+                                                    averaging_period)
     if lblev:
         selected_cubes = select_by_pressure_level(selected_cubes, lblev)
 
     if lbtim:
-        selected_cubes = select_by_initial_meaning_period(selected_cubes, lbtim)
+        selected_cubes = select_by_initial_meaning_period(
+            selected_cubes, lbtim)
 
     if lbmon:
         selected_cubes = select_certain_months(selected_cubes, lbmon)
@@ -404,7 +436,8 @@ def _load_run_ss(cubes, run_object, averaging_period, variable_name,
         start = from_dt.date()
     else:
         #start = datetime.date.min  # 1/01/01, i.e. no constraint
-        start = run_object['from_' + averaging_period]  # Old AutoAssess behaviour
+        start = run_object['from_' +
+                           averaging_period]  # Old AutoAssess behaviour
     assert isinstance(start, datetime.date)
 
     if to_dt:
@@ -421,4 +454,3 @@ def _load_run_ss(cubes, run_object, averaging_period, variable_name,
     assert len(selected_cubes) < 2, 'More than one cube found.' + arguments
 
     return selected_cubes[0]
-

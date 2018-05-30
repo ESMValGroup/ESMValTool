@@ -20,38 +20,52 @@ from .strat_metrics_1 import weight_lat_ave
 
 # Constant for number of seconds in a 360 day calendar year
 # TODO Wrong if gregorian calendar!
-RSECS_PER_360DAY_YEAR = float(60*60*24*360)
-
+RSECS_PER_360DAY_YEAR = float(60 * 60 * 24 * 360)
 
 # TODO what is the source of the reference data???
 # Diag 1
 # SF6 based data
-AGE_YRS = [0.25, 0.43, 0.80, 1.36, 1.67, 2.25, 2.46, 2.83, 3.06, 3.23,
-           3.59, 3.85, 4.06, 4.03, 4.11, 4.07, 3.95]
-ZSF6_KM = [17.0, 18.0, 19.0, 20.0, 21.0, 22.0, 23.0, 24.0, 25.0, 26.0,
-           27.0, 28.0, 29.0, 30.0, 31.0, 32.0, 33.0]
+AGE_YRS = [
+    0.25, 0.43, 0.80, 1.36, 1.67, 2.25, 2.46, 2.83, 3.06, 3.23, 3.59, 3.85,
+    4.06, 4.03, 4.11, 4.07, 3.95
+]
+ZSF6_KM = [
+    17.0, 18.0, 19.0, 20.0, 21.0, 22.0, 23.0, 24.0, 25.0, 26.0, 27.0, 28.0,
+    29.0, 30.0, 31.0, 32.0, 33.0
+]
 # CO2 based data
-AGE_YRS2 = [0.37, 0.39, 0.59, 0.44, 0.54, 1.24, 1.62, 2.04, 2.61, 2.77,
-            2.82, 3.13, 3.47, 3.50, 3.40, 3.53, 3.92, 3.73]
-ZCO2_KM = [16.0, 17.0, 18.0, 19.0, 20.0, 21.0, 22.0, 23.0, 24.0, 25.0,
-           26.0, 27.0, 28.0, 29.0, 30.0, 31.0, 32.0, 33.0]
+AGE_YRS2 = [
+    0.37, 0.39, 0.59, 0.44, 0.54, 1.24, 1.62, 2.04, 2.61, 2.77, 2.82, 3.13,
+    3.47, 3.50, 3.40, 3.53, 3.92, 3.73
+]
+ZCO2_KM = [
+    16.0, 17.0, 18.0, 19.0, 20.0, 21.0, 22.0, 23.0, 24.0, 25.0, 26.0, 27.0,
+    28.0, 29.0, 30.0, 31.0, 32.0, 33.0
+]
 
 # Diag 2
 # SF6 based data
-AGE2_YRS = [-0.19, -0.01, 0.18, 0.36, 0.50, 0.77, 1.12, 1.52, 1.95,
-            2.50, 3.10, 3.66, 4.02, 4.40, 4.68, 4.87, 4.95, 5.01,
-            5.10, 5.16, 5.23, 5.32, 5.40, 5.19, 5.57, 5.90]
-Z2_KM = [10.16, 11.09, 12.06, 13.08, 14.05, 15.05, 16.07, 17.06, 18.05,
-         18.99, 20.03, 21.04, 22.05, 23.03, 24.03, 25.04, 26.03, 27.01,
-         27.97, 29.01, 30.03, 31.09, 31.98, 32.68, 34.13, 40.10]
+AGE2_YRS = [
+    -0.19, -0.01, 0.18, 0.36, 0.50, 0.77, 1.12, 1.52, 1.95, 2.50, 3.10, 3.66,
+    4.02, 4.40, 4.68, 4.87, 4.95, 5.01, 5.10, 5.16, 5.23, 5.32, 5.40, 5.19,
+    5.57, 5.90
+]
+Z2_KM = [
+    10.16, 11.09, 12.06, 13.08, 14.05, 15.05, 16.07, 17.06, 18.05, 18.99,
+    20.03, 21.04, 22.05, 23.03, 24.03, 25.04, 26.03, 27.01, 27.97, 29.01,
+    30.03, 31.09, 31.98, 32.68, 34.13, 40.10
+]
 # CO2 based data
-AGE2_YRS2 = [-0.36, 0.59, 0.78, 0.67, 0.79, 0.98, 1.25, 1.49, 1.88,
-             2.42, 3.03, 3.71, 4.16, 4.48, 4.56, 4.71, 4.75, 4.85,
-             4.78, 4.79, 4.75, 4.82, 4.74, 4.93, 4.78, 4.80]
-Z2_KM2 = [10.18, 11.06, 11.90, 13.02, 14.04, 15.04, 16.08, 17.07,
-          18.03, 19.06, 20.09, 21.11, 22.04, 23.03, 23.98, 25.01,
-          26.00, 26.98, 27.91, 28.93, 30.01, 31.10, 32.10, 33.01,
-          33.99, 35.07]
+AGE2_YRS2 = [
+    -0.36, 0.59, 0.78, 0.67, 0.79, 0.98, 1.25, 1.49, 1.88, 2.42, 3.03, 3.71,
+    4.16, 4.48, 4.56, 4.71, 4.75, 4.85, 4.78, 4.79, 4.75, 4.82, 4.74, 4.93,
+    4.78, 4.80
+]
+Z2_KM2 = [
+    10.18, 11.06, 11.90, 13.02, 14.04, 15.04, 16.08, 17.07, 18.03, 19.06,
+    20.09, 21.11, 22.04, 23.03, 23.98, 25.01, 26.00, 26.98, 27.91, 28.93,
+    30.01, 31.10, 32.10, 33.01, 33.99, 35.07
+]
 
 
 def calculate_analysis_years(run):
@@ -71,7 +85,7 @@ def calculate_analysis_years(run):
     else:
         raise ValueError()
 
-    analysis_start_dt = datetime.datetime(analysis_start_year-1, 12, 1)
+    analysis_start_dt = datetime.datetime(analysis_start_year - 1, 12, 1)
     analysis_end_dt = datetime.datetime(analysis_end_year, 11, 1)
 
     return analysis_start_dt, analysis_end_dt
@@ -93,8 +107,8 @@ def age_of_air(run):
         # Set up to only run for 5 year period
         analysis_start_dt, analysis_end_dt = calculate_analysis_years(run)
         print(analysis_start_dt, analysis_end_dt)
-        constraint = dict(from_dt=analysis_start_dt, to_dt=analysis_end_dt,
-                          lbproc=128)
+        constraint = dict(
+            from_dt=analysis_start_dt, to_dt=analysis_end_dt, lbproc=128)
         # Calculate age of air metrics if appropriate diagnostic available
         with warnings.catch_warnings():
             warnings.filterwarnings('ignore', '.*orography.*', UserWarning)
@@ -178,10 +192,10 @@ def multi_age_plot(runs):
     run_expts = runs[1:]
 
     # Set up constraints to deal with loading data
-    trop_cons = iris.Constraint(cube_func=lambda c:
-                                c.var_name == 'tropical_age_of_air')
-    midl_cons = iris.Constraint(cube_func=lambda c:
-                                c.var_name == 'midlat_age_of_air')
+    trop_cons = iris.Constraint(
+        cube_func=lambda c: c.var_name == 'tropical_age_of_air')
+    midl_cons = iris.Constraint(
+        cube_func=lambda c: c.var_name == 'midlat_age_of_air')
 
     # Set up generic input file name
     infile = '{0}_age_of_air_{1}.nc'
@@ -191,7 +205,8 @@ def multi_age_plot(runs):
     # Create experiment filenames
     exptfiles = dict()
     for run_expt in run_expts:
-        exptfiles[run_expt.id] = infile.format(run_expt['runid'], run_expt.period)
+        exptfiles[run_expt.id] = infile.format(run_expt['runid'],
+                                               run_expt.period)
 
     # If no control data then stop ...
     if not os.path.exists(cntlfile):
@@ -202,10 +217,20 @@ def multi_age_plot(runs):
     fig = plt.figure()
     ax1 = plt.gca()
     # Plot OBS
-    plt.plot(AGE_YRS, ZSF6_KM, linestyle='-', marker='s',
-             color='black', label='SF6 obs')
-    plt.plot(AGE_YRS2, ZCO2_KM, linestyle='-', marker='D',
-             color='black', label='CO2 obs')
+    plt.plot(
+        AGE_YRS,
+        ZSF6_KM,
+        linestyle='-',
+        marker='s',
+        color='black',
+        label='SF6 obs')
+    plt.plot(
+        AGE_YRS2,
+        ZCO2_KM,
+        linestyle='-',
+        marker='D',
+        color='black',
+        label='CO2 obs')
     # Plot control
     diag = iris.load_cube(cntlfile, trop_cons)
     levs = diag.coord('level_height').points
@@ -229,10 +254,20 @@ def multi_age_plot(runs):
     fig = plt.figure()
     ax1 = plt.gca()
     # Plot OBS
-    plt.plot(AGE2_YRS, Z2_KM, linestyle='-', marker='s',
-             color='black', label='SF6 obs')
-    plt.plot(AGE2_YRS2, Z2_KM2, linestyle='-', marker='D',
-             color='black', label='CO2 obs')
+    plt.plot(
+        AGE2_YRS,
+        Z2_KM,
+        linestyle='-',
+        marker='s',
+        color='black',
+        label='SF6 obs')
+    plt.plot(
+        AGE2_YRS2,
+        Z2_KM2,
+        linestyle='-',
+        marker='D',
+        color='black',
+        label='CO2 obs')
     # Plot control
     diag = iris.load_cube(cntlfile, midl_cons)
     levs = diag.coord('level_height').points
@@ -251,4 +286,3 @@ def multi_age_plot(runs):
     ax1.legend(loc='upper left')
     fig.savefig('age_midlatitudes.png')
     plt.close()
-
