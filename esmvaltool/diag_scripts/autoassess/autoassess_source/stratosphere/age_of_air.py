@@ -11,10 +11,6 @@ import warnings
 import numpy as np
 import datetime
 
-# use Agg backend for non-interactive sessions
-import matplotlib as mpl
-mpl.use('Agg')
-
 # Constant for number of seconds in a 360 day calendar year
 # TODO Wrong if gregorian calendar!
 RSECS_PER_360DAY_YEAR = float(60 * 60 * 24 * 360)

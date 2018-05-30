@@ -17,8 +17,6 @@ import csv
 import matplotlib.pyplot as plt
 import errno
 import numpy as np
-import matplotlib as mpl
-mpl.use('Agg')
 
 # Define some colours
 BLACK = '#000000'
@@ -456,9 +454,11 @@ def normalise(test, ref, strict=False):
     norm = {}
     for metric in test.keys():
         if metric in ref:
-            if len(test[metric]) == 1:  # try
+            if_float = isinstance(test[metric], float)
+            if_int = isinstance(test[metric], int)
+            if if_float or if_int:
                 norm[metric] = test[metric] / ref[metric]
-            else:  # except
+            else:
                 norm[metric] = tuple(x / ref[metric] for x in test[metric])
 
     return norm
