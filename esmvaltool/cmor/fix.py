@@ -15,7 +15,7 @@ def fix_metadata(cube, short_name, project, model, cmor_table=None, mip=None):
     """Apply fixes to the metadata of the cube."""
     for fix in Fix.get_fixes(
             project=project, model=model, variable=short_name):
-        fix.fix_metadata(cube)
+        cube = fix.fix_metadata(cube)
     if cmor_table and mip:
         checker = _get_cmor_checker(
             table=cmor_table,
@@ -31,7 +31,7 @@ def fix_data(cube, short_name, project, model, cmor_table=None, mip=None):
     """Apply fixes to the data of the cube."""
     for fix in Fix.get_fixes(
             project=project, model=model, variable=short_name):
-        fix.fix_data(cube)
+        cube = fix.fix_data(cube)
     if cmor_table and mip:
         checker = _get_cmor_checker(
             table=cmor_table,

@@ -9,7 +9,7 @@ channels:
 dependencies:
 # Python packages that cannot be installed from PyPI:
 - basemap
-- iris
+- iris=1.13
 - python-stratify
 - nc_time_axis # needed by autoassess
 # Multi language support:

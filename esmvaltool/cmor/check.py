@@ -12,9 +12,6 @@ import numpy as np
 
 from .table import CMOR_TABLES
 
-iris.FUTURE.cell_datetime_objects = True
-iris.FUTURE.netcdf_promote = True
-
 
 class CMORCheckError(Exception):
     """Exception raised when a cube does not pass the CMORCheck"""
@@ -388,8 +385,7 @@ class CMORCheck(object):
                 cf_units.Unit(
                     'days since 1950-01-01 00:00:00',
                     calendar=coord.units.calendar))
-            simplified_cal = self._simplify_calendars(coord.units.calendar)
-            coord.units = cf_units.Unit(coord.units.name, simplified_cal)
+            coord.units = cf_units.Unit(coord.units.name, coord.units.calendar)
 
         tol = 0.001
         intervals = {
@@ -421,22 +417,6 @@ class CMORCheck(object):
                 msg = '{}: Frequency {} does not match input data'
                 self.report_error(msg, var_name, self.frequency)
                 break
-
-    CALENDARS = [
-        ['standard', 'gregorian'],
-        ['proleptic_gregorian'],
-        ['noleap', '365_day'],
-        ['all_leap', '366_day'],
-        ['360_day'],
-        ['julian'],
-        ['none'],
-    ]
-
-    @staticmethod
-    def _simplify_calendars(calendar):
-        for calendar_type in CMORCheck.CALENDARS:
-            if calendar in calendar_type:
-                return calendar_type[0]
 
     def has_errors(self):
         """
