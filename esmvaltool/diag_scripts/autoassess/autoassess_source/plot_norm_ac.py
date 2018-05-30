@@ -12,9 +12,10 @@ from __future__ import division, print_function
 import os
 import os.path
 import sys
+import matplotlib as mpl
+import matplotlib.pyplot as plt
 import argparse
 import csv
-import matplotlib.pyplot as plt
 import errno
 import numpy as np
 

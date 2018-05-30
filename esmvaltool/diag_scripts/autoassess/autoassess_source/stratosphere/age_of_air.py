@@ -2,6 +2,7 @@
 Stratospheric age-of-air assessment code
 '''
 import os
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import iris
 import iris.analysis as iai
