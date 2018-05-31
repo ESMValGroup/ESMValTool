@@ -1,0 +1,111 @@
+###############################################################################
+# namelist_GlobalOcean.xml
+# 
+# Description
+# Diagnostics to support the evaluation of ocean biogeochemical cycles at
+# global scales.  Implemented routines produce time series lines and contour
+# plots (for climatological distributions or inter-annual or inter-seasonal
+# variability) using either 2-D (surface) or 3-D (depth-resolving) ocean
+# variables
+# 
+# Authors
+# Oliver Andrews (UEA, UK)
+# Clare Enright (UEA, UK)
+# 
+# Project
+# EMBRACE
+# 
+# Reference
+# Bakker, D. C. E. et al., Earth Syst. Sci. Data, 6, 69-90,
+# doi:10.5194/essd-6-69-2014 (2014)
+# Bianchi, D. et al., Global Biogeochem. Cy., 26, GB2009,
+# doi:10.1029/2011GB004209 (2012)
+# Jones, S. D. et al., J. Adv. Model Earth Syst., in press (2015).
+# Key, R. M. et al.,Global Biogeochem. Cy., 18, GB4031, doi:10.109/2004GB002247
+# (2004)
+# Roedenbeck, C. et al., Ocean Sci., 9, 193-216, doi:10.5194/os-9-193-2013
+# (2013)
+# Takahashi, T. et al., Mar. Chem., 164, 95–125,
+# doi:10.1016/j.marchem.2014.06.004 (2014)
+# 
+# This namelist is part of the ESMValTool
+###############################################################################
+---
+
+models:
+# working models
+  - {model: CanESM2,      project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+  - {model: GISS-E2-H,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+  - {model: HadGEM2-AO,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+  - {model: HadCM3,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+  - {model: CanCM4,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+#  - {model: CSIRO-Mk3-6-0,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+
+# Errors:
+# HADGem2 Has a lat coordinate greater than 90. FFS.
+#  - {model: HadGEM2-CC,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004} 
+#  - {model: HadGEM2-ES,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004} 
+
+# Unstructured grids                 
+#  - {model: MPI-ESM-LR,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2003}
+#  - {model: MPI-ESM-MR,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+#  - {model: ACCESS1-0,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}  
+#  - {model: ACCESS1-3,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+# Time array error: (no mean)
+#  - {model: MIROC-ESM,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+#  - {model: MIROC-ESM-CHEM,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+  
+# Models with 1D lat:
+#FGOALS-g2
+#GISS-E2-H
+#CanESM2
+#MIROC-ESM-CHEM
+#HadGEM2-AO
+#MIROC-ESM
+#HadCM3
+#GISS-E2-R
+#HadGEM2-ES
+#CanCM4
+#HadGEM2-CC
+#CSIRO-Mk3-6-0
+ 
+  
+preprocessors:
+  preprocessor1:
+#    fix_data: True
+#    fix_metadata: True
+#    mask_landocean: False
+    regrid:
+      target_grid: 1x1
+#      scheme: unstructured_nearest
+      scheme: linear
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+
+diagnostics:
+  diagnostic1:
+    description: Time series for SST
+    variables:       
+      tos:
+        preprocessor: preprocessor1      
+        field: TO2Ms
+#      thetao:
+#        preprocessor: preprocessor2      
+#        field: TO3M
+        
+#  diagnostic2:
+#    description: Time series for SST
+#    variables:
+#      thetao:
+#        preprocessor: preprocessor2      
+#        field: thetao       
+    scripts:
+      ocean_test_1: &autoassess_strato_test_1_settings
+        script: examples/oceandiagnostic.py
+      
+
+
+
+
+
