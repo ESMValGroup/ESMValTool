@@ -3,6 +3,7 @@ import os
 import logging
 import inspect
 import sys
+import subprocess
 
 import iris
 import yaml
@@ -21,12 +22,15 @@ def get_cfg():
     return cfg
 
 
-def get_input_files(cfg, index=0):
-    """Get a dictionary with input files from metadata.yml files."""
-    metadata_file = cfg['input_files'][index]
-    with open(metadata_file) as file:
-        metadata = yaml.safe_load(file)
-    return metadata
+def get_input_files(cfg):
+    """Get a dictionary list from metadata.yml files."""
+    metadata_files = cfg['input_files']
+    metadatas = []
+    for metadata_file in metadata_files:
+        with open(metadata_file) as file:
+            metadata = yaml.safe_load(file)
+            metadatas.append(metadata)
+    return metadatas
 
 
 def main():
@@ -35,37 +39,49 @@ def main():
     logger.setLevel(cfg['log_level'].upper())
 
     input_files = get_input_files(cfg)
-    os.makedirs(cfg['plot_dir'])
-    os.makedirs(cfg['work_dir'])
+    if not os.path.exists(cfg['plot_dir']):
+        os.makedirs(cfg['plot_dir'])
+    if not os.path.exists(cfg['work_dir']):
+        os.makedirs(cfg['work_dir'])
     suite_loc_m1 = os.path.join(cfg['work_dir'], cfg['control_model'])
-    os.makedirs(suite_loc_m1)
+    if not os.path.exists(suite_loc_m1):
+        os.makedirs(suite_loc_m1)
     suite_loc_m2 = os.path.join(cfg['work_dir'], cfg['exp_model'])
-    os.makedirs(suite_loc_m2)
+    if not os.path.exists(suite_loc_m2):
+        os.makedirs(suite_loc_m2)
     suite_data_m1 = os.path.join(suite_loc_m1, 'stratosphere')
-    os.makedirs(suite_data_m1)
+    if not os.path.exists(suite_data_m1):
+        os.makedirs(suite_data_m1)
     suite_data_m2 = os.path.join(suite_loc_m2, 'stratosphere')
-    os.makedirs(suite_data_m2)
+    if not os.path.exists(suite_data_m2):
+        os.makedirs(suite_data_m2)
     tmp_dir = os.path.join(cfg['work_dir'], 'tmp')
     ancil_dir = os.path.join(cfg['work_dir'], 'ancil')
-    os.makedirs(tmp_dir)
-    os.makedirs(ancil_dir)
+    if not os.path.exists(tmp_dir):
+        os.makedirs(tmp_dir)
+    if not os.path.exists(ancil_dir):
+        os.makedirs(ancil_dir)
 
     files_list_m1 = []
     files_list_m2 = []
     obs_list = []
-    for variable_name, filenames in input_files.items():
-        logger.info("Processing variable %s", variable_name)
-        # get model data files
-        for filename, attributes in filenames.items():
-            if os.path.basename(filename).split('_')[1] == cfg[
+    for input_file in input_files:
+        for variable_name, filenames in input_file.items():
+            logger.info("Processing variable %s", variable_name)
+            base_file = os.path.basename(filenames['filename'])
+            fullpath_file = filenames['filename']
+            if base_file.split('_')[1] == cfg[
                     'control_model']:
-                files_list_m1.append(filename)
-            elif os.path.basename(filename).split('_')[1] == cfg['exp_model']:
-                files_list_m2.append(filename)
-        # get obs files
-        for filename, attributes in filenames.items():
-            if os.path.basename(filename).split('_')[0] == 'OBS':
-                obs_list.append(filename)
+                files_list_m1.append(fullpath_file)
+            elif base_file.split('_')[1] == cfg['exp_model']:
+                files_list_m2.append(fullpath_file)
+            elif base_file.split('_')[0] == 'OBS':
+                obs_list.append(fullpath_file)
+
+    # spell out the files used
+    logger.info("Files for control model: %s", files_list_m1)
+    logger.info("Files for exp model: %s", files_list_m2)
+    logger.info("Files for obs model: %s", obs_list)
 
     # load cubelists
     cubelist_m1 = iris.load(files_list_m1)
@@ -76,6 +92,8 @@ def main():
     iris.save(cubelist_m1, cubes_list_path_m1)
     cubes_list_path_m2 = os.path.join(suite_data_m2, 'cubeList.nc')
     iris.save(cubelist_m2, cubes_list_path_m2)
+    logger.info("Saved control data cube: %s", cubes_list_path_m1)
+    logger.info("Saved exp data cube: %s", cubes_list_path_m2)
 
     cwd = os.path.dirname(
         os.path.abspath(inspect.getfile(inspect.currentframe())))
@@ -107,7 +125,11 @@ def main():
     args_collection = [key + ' ' + args[key] for key in args.keys()]
     sys_call = command_call + ' ' + ' '.join(args_collection)
     logger.info(sys_call)
-    os.system(sys_call)
+    # run the thing
+    proc = subprocess.Popen(sys_call, stdout=subprocess.PIPE, shell=True)
+    (out, err) = proc.communicate()
+    logger.info("Diagnostic output: %s", out)
+    logger.info("Diagnostic error: %s", err)
 
 
 if __name__ == '__main__':

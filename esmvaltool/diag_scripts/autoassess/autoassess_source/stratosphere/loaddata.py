@@ -306,10 +306,12 @@ def get_time_offset(time_unit):
 
 def datetime_to_int_days(date_obj, tunit):
     """Return time point converted from cube datetime cell"""
-    time_offset = get_time_offset(tunit)
-    real_date = dd(date_obj.year, date_obj.month, date_obj.day, 0, 0, 0)
-
-    days = (real_date - time_offset).days
+    if float(iris.__version__.split('.')[0]) >= 2.0:
+        time_offset = get_time_offset(tunit)
+        real_date = dd(date_obj.year, date_obj.month, date_obj.day, 0, 0, 0)
+        days = (real_date - time_offset).days
+    else:
+        days = date_obj
     return days
 
 
