@@ -1,57 +1,57 @@
-;;#############################################################################
-;; GENERAL-PURPOSE AUXILIARY NCL ROUTINES
-;;#############################################################################
-;; Please consider using of extending existing routines before adding new ones.
-;; Check the header of each routine for documentation.
-;;
-;; Contents:
-;;    procedure copy_VarCoords_l1
-;;    procedure check_min_max_models
-;;    function tstep
-;;    function get_ncdf_name
-;;    function get_ncdf_dir
-;;    function ncdf_read
-;;    function ncdf_write
-;;    function ncdf_att
-;;    function ncdf_define
-;;    function att2var_default
-;;    function att2var
-;;    function bname
-;;    function basename
-;;    function extract_years
-;;    function extend_var_at
-;;    function copy_CoordNames_n
-;;    function empty_str
-;;    function write_info
-;;    function remove_index
-;;    procedure set_default_att
-;;    function filter_attrs
-;;    procedure write_ignore_warnings
-;;    function get_ref_model_idx
-;;
-;;#############################################################################
+; #############################################################################
+; GENERAL-PURPOSE AUXILIARY NCL ROUTINES
+; #############################################################################
+; Please consider using of extending existing routines before adding new ones.
+; Check the header of each routine for documentation.
+;
+; Contents:
+;    procedure copy_VarCoords_l1
+;    procedure check_min_max_models
+;    function tstep
+;    function get_ncdf_name
+;    function get_ncdf_dir
+;    function ncdf_read
+;    function ncdf_write
+;    function ncdf_att
+;    function ncdf_define
+;    function att2var_default
+;    function att2var
+;    function bname
+;    function basename
+;    function extract_years
+;    function extend_var_at
+;    function copy_CoordNames_n
+;    function empty_str
+;    function write_info
+;    function remove_index
+;    procedure set_default_att
+;    function filter_attrs
+;    procedure write_ignore_warnings
+;    function get_ref_model_idx
+;
+; #############################################################################
 
 undef("copy_VarCoords_l1")
 procedure copy_VarCoords_l1(var_from,
                             var_to)
-;;
-;; Arguments
-;;    var_from: An array of any dimensionality.
-;;              Must have named dimensions and coordinate variables.
-;;    var_to: An array of any dimensionality.
-;;
-;; Description
-;;    This procedure copies all named dimensions and coordinate variables
-;;    from one variable to another except for the leftmost dimension.
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;    20140703-A_gott_kl: Written for use with mymm in time_operations
-;;                        (diag_scripts/shared/statistics.ncl).
-;;
+;
+; Arguments
+;    var_from: An array of any dimensionality.
+;              Must have named dimensions and coordinate variables.
+;    var_to: An array of any dimensionality.
+;
+; Description
+;    This procedure copies all named dimensions and coordinate variables
+;    from one variable to another except for the leftmost dimension.
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20140703-A_gott_kl: Written for use with mymm in time_operations
+;                        (diag_scripts/shared/statistics.ncl).
+;
 local funcname, scriptname, dims_from, dims, rank_from, rank, dimdiff, idimdiff
 begin
 
@@ -66,7 +66,7 @@ begin
 
   if(rank.gt.1) then
 
-    ;; Check input
+    ; Check input
     if(rank_from.ne.rank) then  ; check rank
       error_msg("f", scriptname, funcname, \
                 "var_from and var_to must have same rank")
@@ -82,7 +82,7 @@ begin
       end if
     end if
 
-    ;; Loop over dimensions
+    ; Loop over dimensions
     do i = 1, rank - 1
       var_to!i = dims_from(i)
       var_to&$dims_from(i)$ = var_from&$dims_from(i)$
@@ -98,29 +98,29 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("check_min_max_models")
 procedure check_min_max_models(no_models[1]:integer,
                                min_no_models[1]:integer,
                                max_no_models[1]:integer,
                                diag_script[1])
-;;
-;; Arguments
-;;    no_models: number of models.
-;;    min_no_models: minimum no of models required for this diagnostic script.
-;;    max_no_models: maximum no of models required for this diagnostic script.
-;;    diag_script: name of diagnostic script.
-;;
-;; Description
-;;    Checks if sufficient number of models are present for the given
-;;    diagnostic, tries to abort with a intelligible message.
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;
+;
+; Arguments
+;    no_models: number of models.
+;    min_no_models: minimum no of models required for this diagnostic script.
+;    max_no_models: maximum no of models required for this diagnostic script.
+;    diag_script: name of diagnostic script.
+;
+; Description
+;    Checks if sufficient number of models are present for the given
+;    diagnostic, tries to abort with a intelligible message.
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;
 local funcname, scriptname
 begin
 
@@ -144,27 +144,27 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("tstep")
 function tstep(utc:numeric)
-;;
-;; Arguments
-;;    utc: UTC time as returned by cd_calendar
-;;         (dimsizes(time) x 6, with y,m,d,h,m,s).
-;;
-;; Return value
-;;    "yea"=yearly, "sea"=seasonal, "mon"=monthly, "d"=daily, "h", "m", "s".
-;;
-;; Description
-;;    Determines time step size in given UTC time axis.
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;    20140211-A_gott_kl: written.
-;;
+;
+; Arguments
+;    utc: UTC time as returned by cd_calendar
+;         (dimsizes(time) x 6, with y,m,d,h,m,s).
+;
+; Return value
+;    "yea"=yearly, "sea"=seasonal, "mon"=monthly, "d"=daily, "h", "m", "s".
+;
+; Description
+;    Determines time step size in given UTC time axis.
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20140211-A_gott_kl: written.
+;
 local funcname, scriptname, t, dt, nt, y, m, d, h, n, s, option, units
 begin
 
@@ -172,7 +172,7 @@ begin
   scriptname = "interface_scripts/auxiliary.ncl"
   enter_msg(scriptname, funcname)
 
-  ;; extract vectors
+  ; extract vectors
   y = toint(utc(:, 0))
   m = toint(utc(:, 1))
   d = toint(utc(:, 2))
@@ -180,17 +180,17 @@ begin
   n = toint(utc(:, 4))  ; minutes
   s = toint(utc(:, 5))
 
-  ;; convert to seconds after y(0)-01-01 00:00:00
+  ; convert to seconds after y(0)-01-01 00:00:00
   units = "seconds after " + tostring(y(0)) + "-01-01 00:00:00"
   option = 0
   option@calendar = "standard"
   t = cd_inv_calendar(y, m, d, h, n, s, units, option)
 
-  ;; create vector of tstep lengths
+  ; create vector of tstep lengths
   nt = dimsizes(t)
   dt = tolong(t(1:nt - 1)) - tolong(t(0:nt - 2))
 
-  ;; check mean dt
+  ; check mean dt
   mdt = avg(dt)
   if (mdt.eq.1) then
     result = "s"
@@ -217,7 +217,7 @@ begin
   end if
   end if
 
-  ;; check if all dt match the result
+  ; check if all dt match the result
   check_flag = False
   if (result.eq."s" .or. result.eq."m" .or. \
       result.eq."h" .or. result.eq."d") then
@@ -250,25 +250,25 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("get_ncdf_name")
 function get_ncdf_name(var[1]:string)
-;;
-;; Arguments
-;;    var: variable name.
-;;
-;; Return value
-;;    A string with the full outfile name (incl. path)
-;;    work_dir + var + ".nc".
-;;
-;; Description
-;;    Fetches work_dir via other scripts.
-;;
-;; References
-;;
-;; Modification history
-;;    20131108-A_gott_kl: written.
-;;
+;
+; Arguments
+;    var: variable name.
+;
+; Return value
+;    A string with the full outfile name (incl. path)
+;    work_dir + var + ".nc".
+;
+; Description
+;    Fetches work_dir via other scripts.
+;
+; References
+;
+; Modification history
+;    20131108-A_gott_kl: written.
+;
 local funcname, scriptname, work_dir, diag_script, output_dir, ncdf_dir
 begin
 
@@ -276,13 +276,13 @@ begin
   scriptname = "interface_scripts/auxiliary.ncl"
   enter_msg(scriptname, funcname)
 
-  ;; Collect parts of outfile name
+  ; Collect parts of outfile name
   work_dir = config_user_info@work_dir + "/"
 
-  ;; Create work dir
+  ; Create work dir
   system("mkdir -p " + work_dir)
 
-  ;; Assemble final name
+  ; Assemble final name
   outfile = work_dir + var + ".nc"
 
   leave_msg(scriptname, funcname)
@@ -290,29 +290,29 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("get_ncdf_dir")
 function get_ncdf_dir(work_dir[1]:string,
                       subfolder[1]:string)
-;;
-;; Arguments
-;;    work_dir: root path for intermediate files: expected to end with a slash.
-;;    subfolder: subfolder for diag_script.
-;;
-;; Return value
-;;    A string with the full path for netCDF output.
-;;
-;; Description
-;;    Concatenates/generates work_dir + subfolder.
-;;
-;; Caveats
-;;    diag_script may need to be extended by other contributing scripts.
-;;
-;; References
-;;
-;; Modification history
-;;    20131108-A_gott_kl: written.
-;;
+;
+; Arguments
+;    work_dir: root path for intermediate files: expected to end with a slash.
+;    subfolder: subfolder for diag_script.
+;
+; Return value
+;    A string with the full path for netCDF output.
+;
+; Description
+;    Concatenates/generates work_dir + subfolder.
+;
+; Caveats
+;    diag_script may need to be extended by other contributing scripts.
+;
+; References
+;
+; Modification history
+;    20131108-A_gott_kl: written.
+;
 local funcname, scriptname, work_dir, subfolder, ncdf_dir
 begin
 
@@ -330,44 +330,44 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("ncdf_read")
 function ncdf_read(infile, varname)
-;;
-;; Arguments
-;;    infile: full path & name of the netCDF file to be read.
-;;
-;; Return value
-;;    Data with metadata:
-;;        if varname="dummy" AND only one var in file: return that var
-;;        if varname="default" AND only one var in file: return that var
-;;        if varname="dummy" AND more than one var in file: exit
-;;        if varname="default" AND more than one var in file: exit
-;;        if varname=var AND varname exists in file: return var varname
-;;        if varname=var AND varname does not exist: exit
-;;
-;; Description
-;;    http://www.ncl.ucar.edu/Applications/r-support.shtml
-;;
-;; Caveats
-;;    A variable is considered a coordinate variable, if it has the same name
-;;    as first dimension (not sure if this is a satisfactory criterion).
-;;    The netCDF format does not support data type "logical" and converts True
-;;    (logical) to 1 (integer), False (logical) to 0 (integer), see
-;;    http://www.ncl.ucar.edu/Support/talk_archives/2009/0367.html
-;;    A workaround could be to convert logical data to string before writing to
-;;    netCDF, and adjust reading routine accordingly.
-;;    Currently ncdf_read interprets variable attributes of type "integer" and
-;;    dimsizes = 1 & value 0 or 1 as logicals.
-;;    If a named coordinate was converted to a character array in ncdf_write it
-;;    is converted back to string and appended to the main variable. It only
-;;    works if the variable has an attribute named_coordinate equal 1.
-;;
-;; References
-;;
-;; Modification history
-;;    20131111-A_gott_kl: written.
-;;
+;
+; Arguments
+;    infile: full path & name of the netCDF file to be read.
+;
+; Return value
+;    Data with metadata:
+;        if varname="dummy" AND only one var in file: return that var
+;        if varname="default" AND only one var in file: return that var
+;        if varname="dummy" AND more than one var in file: exit
+;        if varname="default" AND more than one var in file: exit
+;        if varname=var AND varname exists in file: return var varname
+;        if varname=var AND varname does not exist: exit
+;
+; Description
+;    http://www.ncl.ucar.edu/Applications/r-support.shtml
+;
+; Caveats
+;    A variable is considered a coordinate variable, if it has the same name
+;    as first dimension (not sure if this is a satisfactory criterion).
+;    The netCDF format does not support data type "logical" and converts True
+;    (logical) to 1 (integer), False (logical) to 0 (integer), see
+;    http://www.ncl.ucar.edu/Support/talk_archives/2009/0367.html
+;    A workaround could be to convert logical data to string before writing to
+;    netCDF, and adjust reading routine accordingly.
+;    Currently ncdf_read interprets variable attributes of type "integer" and
+;    dimsizes = 1 & value 0 or 1 as logicals.
+;    If a named coordinate was converted to a character array in ncdf_write it
+;    is converted back to string and appended to the main variable. It only
+;    works if the variable has an attribute named_coordinate equal 1.
+;
+; References
+;
+; Modification history
+;    20131111-A_gott_kl: written.
+;
 local funcname, scriptname, data, infile, ncdf, varname, i, ivar, nvar, \
   vdims, var, atts, temp, defaults
 begin
@@ -376,14 +376,14 @@ begin
   scriptname = "interface_scripts/auxiliary.ncl"
   enter_msg(scriptname, funcname)
 
-  ;; Open file for reading
+  ; Open file for reading
   if (fileexists(infile)) then
     ncdf = addfile(infile, "r")
   else
     error_msg("f", scriptname, funcname, infile + " does not exist")
   end if
 
-  ;; Determine (number of) variables, exclusive coordinates
+  ; Determine (number of) variables, exclusive coordinates
   vNames = getfilevarnames(ncdf)
   nvar = new(dimsizes(vNames), integer)
   nvar(:) = 1  ; used for flagging non-coordinate vars
@@ -396,7 +396,7 @@ begin
   end do
   var = vNames(ind(nvar .eq. 1))  ; non-coordinate vars
 
-  ;; Cases for reading
+  ; Cases for reading
   defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
   if (any(varname .eq. defaults)) then  ; allow synonyms
     varname = "dummy"  ; unify
@@ -419,7 +419,7 @@ begin
   end if
   end if
 
-  ;; Convert attributes to type logical, if they meet above conditions
+  ; Convert attributes to type logical, if they meet above conditions
   atts = getvaratts(data)
   do i = 0, dimsizes(atts) - 1
     if (typeof(data@$atts(i)$) .eq. "integer" .and. \
@@ -434,7 +434,7 @@ begin
     end if
   end do
 
-  ;; Converts named coordinates back to strings and append them to the data
+  ; Converts named coordinates back to strings and append them to the data
   coord_ind = ind(nvar.eq.0)
   do j = 0, dimsizes(vNames(coord_ind)) - 1
     new_coord = ncdf->$vNames(coord_ind(j))$
@@ -450,48 +450,48 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("ncdf_write")
 function ncdf_write(data,
                     outfile_in)
-;;
-;; Arguments
-;;    data: data with metadata (attributes) to be written to a netCDF file.
-;;    outfile_in: full path & name of the netCDF file to be written. It may
-;;                may contain an attribute "existing" with the values
-;;                "overwrite" (default) / "append" / "rename"
-;;                default is used for "default", "dummy" or non-string values.
-;; Return value
-;;    A string with the outfile.
-;;
-;; Description
-;;    Creates or modifies outfile, adding a single variable. All attributes of
-;;    "data" are added to the variable in the netCDF file. It may rename an
-;;    existing file to keep it.
-;;    Two options for netCDF output, one disabled (see "Option"), change if
-;;    needed.
-;;    If data has coordinates which are named with strings, these names are
-;;    converted to characeter arrays and the coordinates are appended as two
-;;    dimensional variables.
-;;
-;; Caveats
-;;    Appending not tested.
-;;    netCDF does not support data type "logical" and converts True (logical)
-;;    to 1 (integer), False (logical) to 0 (integer).
-;;    A workaround could be to convert logical data to string before writing to
-;;    netCDF, and adjust reading routine accordingly.
-;;    Currently ncdf_read interprets variable attributes of type "integer" and
-;;    dimsizes = 1 & value 0 or 1 as logicals.
-;;
-;; References
-;;    http://www.ncl.ucar.edu/Document/Manuals/Ref_Manual/
-;;      NclFormatSupport.shtml#NetCDF
-;;    http://www.ncl.ucar.edu/Applications/o-netcdf.shtml
-;;    http://www.ncl.ucar.edu/Support/talk_archives/2009/0367.html
-;;
-;; Modification history
-;;    20131107-A_gott_kl: written.
-;;
+;
+; Arguments
+;    data: data with metadata (attributes) to be written to a netCDF file.
+;    outfile_in: full path & name of the netCDF file to be written. It may
+;                may contain an attribute "existing" with the values
+;                "overwrite" (default) / "append" / "rename"
+;                default is used for "default", "dummy" or non-string values.
+; Return value
+;    A string with the outfile.
+;
+; Description
+;    Creates or modifies outfile, adding a single variable. All attributes of
+;    "data" are added to the variable in the netCDF file. It may rename an
+;    existing file to keep it.
+;    Two options for netCDF output, one disabled (see "Option"), change if
+;    needed.
+;    If data has coordinates which are named with strings, these names are
+;    converted to characeter arrays and the coordinates are appended as two
+;    dimensional variables.
+;
+; Caveats
+;    Appending not tested.
+;    netCDF does not support data type "logical" and converts True (logical)
+;    to 1 (integer), False (logical) to 0 (integer).
+;    A workaround could be to convert logical data to string before writing to
+;    netCDF, and adjust reading routine accordingly.
+;    Currently ncdf_read interprets variable attributes of type "integer" and
+;    dimsizes = 1 & value 0 or 1 as logicals.
+;
+; References
+;    http://www.ncl.ucar.edu/Document/Manuals/Ref_Manual/
+;      NclFormatSupport.shtml#NetCDF
+;    http://www.ncl.ucar.edu/Applications/o-netcdf.shtml
+;    http://www.ncl.ucar.edu/Support/talk_archives/2009/0367.html
+;
+; Modification history
+;    20131107-A_gott_kl: written.
+;
 local funcname, scriptname, data, outfile, outfile_in, ncdf, varname
 begin
 
@@ -499,10 +499,10 @@ begin
   scriptname = "interface_scripts/auxiliary.ncl"
   enter_msg(scriptname, funcname)
 
-  ;; Retrieve special attributes
+  ; Retrieve special attributes
   varname = att2var(data, "var")
 
-  ;; Determine outfile
+  ; Determine outfile
   defaulting = (/"default", "dummy"/)
   if (typeof(outfile_in) .ne. "string" .or. \
       .not.ismissing(ind(defaulting .eq. outfile_in))) then
@@ -511,14 +511,14 @@ begin
     outfile = outfile_in
   end if
 
-  ;; Determine mode for dealing with existing files
+  ; Determine mode for dealing with existing files
   if (isatt(outfile, "existing")) then
     existing = outfile@existing
   else
     existing = "overwrite"   ; Default
   end if
 
-  ;; Open outfile (see NCL documentation for "addfile")
+  ; Open outfile (see NCL documentation for "addfile")
   if (fileexists(outfile)) then  ; Outfile already exists
     if (existing .eq. "rename") then
       sysdate = systemfunc("date +%Y%m%d%H%M%S")
@@ -536,15 +536,15 @@ begin
     ncdf = addfile(outfile, "c")
   end if
 
-  ;; Write to netCDF
-  ;; Option 1: q&d
+  ; Write to netCDF
+  ; Option 1: q&d
 ;    ncdf->$varname$ = data
-  ;; Option 2: write with explicit file definition
+  ; Option 2: write with explicit file definition
   dimNames = getvardims(data)
   ncdf = ncdf_define(ncdf, data)
   do i = 0, dimsizes(dimNames) - 1
     if (typeof(data&$dimNames(i)$).eq."string") then
-      ;; Convert string array to two dimensional character array
+      ; Convert string array to two dimensional character array
       char_array = stringtochar(data&$dimNames(i)$)
       ncdf->$dimNames(i)$ = (/char_array/)
       delete(char_array)
@@ -561,30 +561,30 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("ncdf_att")
 function ncdf_att(infile[1],
                   att[1]:string)
-;;
-;; Arguments
-;;    infile: full path & name of the netCDF file to be read OR a file
-;;            variable already created by addfile(...).
-;;    att: attribute to be read.
-;;
-;; Return value
-;;    Contents of attribute att (could be any type supported by netCDF).
-;;
-;; Description
-;;    Checks existence of att in infile, then retrieves contents.
-;;
-;; Caveats
-;;    str_infile does not resolve the file name for a file variable.
-;;
-;; References
-;;
-;; Modification history
-;;    20140131-A_gott_kl: written.
-;;
+;
+; Arguments
+;    infile: full path & name of the netCDF file to be read OR a file
+;            variable already created by addfile(...).
+;    att: attribute to be read.
+;
+; Return value
+;    Contents of attribute att (could be any type supported by netCDF).
+;
+; Description
+;    Checks existence of att in infile, then retrieves contents.
+;
+; Caveats
+;    str_infile does not resolve the file name for a file variable.
+;
+; References
+;
+; Modification history
+;    20140131-A_gott_kl: written.
+;
 local funcname, scriptname, f, file_atts, i, result
 begin
 
@@ -616,28 +616,28 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("ncdf_define")
 function ncdf_define(ncdf, data)
-;;
-;; Arguments
-;;    ncdf: file specified.
-;;    data: data with metadata (attributes).
-;;
-;; Return value
-;;    Modifies the file specifier "ncdf".
-;;
-;; Description
-;;
-;; Caveats
-;;    No unlimited dimensions supported (yet).
-;;
-;; References
-;;    http://www.ncl.ucar.edu/Applications/method_2.shtml
-;;
-;; Modification history
-;;    20131112-A_gott_kl: written.
-;;
+;
+; Arguments
+;    ncdf: file specified.
+;    data: data with metadata (attributes).
+;
+; Return value
+;    Modifies the file specifier "ncdf".
+;
+; Description
+;
+; Caveats
+;    No unlimited dimensions supported (yet).
+;
+; References
+;    http://www.ncl.ucar.edu/Applications/method_2.shtml
+;
+; Modification history
+;    20131112-A_gott_kl: written.
+;
 local funcname, scriptname, data, diag_script, var, fAtt, dimNames, dimSzs, \
   dimUnlim
 begin
@@ -649,19 +649,19 @@ begin
   diag_script = att2var(data, "diag_script")
   var = att2var(data, "var")
 
-  ;; Explicitly declare file definition mode. Improve efficiency.
+  ; Explicitly declare file definition mode. Improve efficiency.
   setfileoption(ncdf, "DefineMode", True)
 
-  ;; Create global attributes of the file
+  ; Create global attributes of the file
   fAtt               = True  ; assign file attributes
   fAtt@creation_date = systemfunc("date")
   fAtt@created_by    = "ESMValTool, " + diag_script
 
   fileattdef(ncdf, fAtt)   ; copy file attributes
 
-  ;; Predefine the coordinate variables and their dimensionality
-  ;; Note: to get an UNLIMITED record dimension, we set the dimensionality
-  ;; to -1 (or the actual size) and set the dimension name to True.
+  ; Predefine the coordinate variables and their dimensionality
+  ; Note: to get an UNLIMITED record dimension, we set the dimensionality
+  ; to -1 (or the actual size) and set the dimension name to True.
   dimNames = getvardims(data)
   dim_dim = dimsizes(dimNames)
   dimSzs = new(dimsizes(dimNames), long)
@@ -674,9 +674,9 @@ begin
 
   do ii = 0, dim_dim - 1
     if (typeof(data&$dimNames(ii)$).eq."string") then
-      ;; Add necessary infomation to the dim* arrays
+      ; Add necessary infomation to the dim* arrays
       dim_coord = dimsizes(stringtochar(data&$dimNames(ii)$))
-      ;; If coordinate has length 1
+      ; If coordinate has length 1
       if (dimsizes(dim_coord).eq.1) then
         dimc = dim_coord(0)
       else
@@ -686,7 +686,7 @@ begin
       new_dimUnlim = array_append_record(dimUnlim, False, 0)
       new_dimNames = array_append_record(dimNames, dimNames(ii) + "_char", 0)
 
-       ;; Delete and reattach to previous variable
+       ; Delete and reattach to previous variable
       delete([/dimSzs, dimUnlim, dimNames/])
       dimSzs = new_dimSzs
       dimUnlim = new_dimUnlim
@@ -698,10 +698,10 @@ begin
   end do
 
   filedimdef(ncdf, dimNames, dimSzs, dimUnlim)
-  ;; Predefine the the dimensionality of the variables to be written out
+  ; Predefine the the dimensionality of the variables to be written out
   do i = 0, dim_dim - 1
     if (typeof(data&$dimNames(i)$).eq."string") then
-      ;; Attach second dimension (character array) to variable
+      ; Attach second dimension (character array) to variable
       filevardef(ncdf, dimNames(i), "character", \
                  (/getvardims(data&$dimNames(i)$), \
                  dimNames(dim_dim + jj - 1)/))
@@ -714,16 +714,16 @@ begin
   end do
   filevardef(ncdf, var, typeof(data), getvardims(data))
 
-  ;; Copy attributes associated with each variable to the file
+  ; Copy attributes associated with each variable to the file
   do i = 0, dim_dim - 1
-    ;; No attribute assignment to variable if no attributes are available
+    ; No attribute assignment to variable if no attributes are available
     if (.not.(all(ismissing(getvaratts(data&$dimNames(i)$))))) then
         filevarattdef(ncdf, dimNames(i), data&$dimNames(i)$)
     end if
   end do
   filevarattdef(ncdf, var, data)
 
-  ;; Explicitly exit file definition mode. **NOT REQUIRED**
+  ; Explicitly exit file definition mode. **NOT REQUIRED**
   setfileoption(ncdf, "DefineMode", False)
 
   leave_msg(scriptname, funcname)
@@ -731,37 +731,37 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("att2var_default")
 function att2var_default(data,
                          meta[1]:string,
                          default,
                          option)
-;;
-;; Arguments
-;;    data: variable of any type with plot specific metadata.
-;;    meta: string specifying the requested attribute
-;;          "var", "res_" and "diag_file" get special treatment.
-;;    default: variable of any type.
-;;    option: not used yet.
-;;
-;; Return value
-;;    Requested attribute of data is returned as variable.
-;;    See function  att2var for details on 'magic' strings.
-;;    Those get special treatment and may trigger a crash, if missing.
-;;    Default is returned if (non magic) data@meta is missing
-;;
-;; Description
-;;    Puts attributes of data into individual variables,
-;;    and returns default if the requested attribute is missing
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;    20140403-A_GoKl: written.
-;;
+;
+; Arguments
+;    data: variable of any type with plot specific metadata.
+;    meta: string specifying the requested attribute
+;          "var", "res_" and "diag_file" get special treatment.
+;    default: variable of any type.
+;    option: not used yet.
+;
+; Return value
+;    Requested attribute of data is returned as variable.
+;    See function  att2var for details on 'magic' strings.
+;    Those get special treatment and may trigger a crash, if missing.
+;    Default is returned if (non magic) data@meta is missing
+;
+; Description
+;    Puts attributes of data into individual variables,
+;    and returns default if the requested attribute is missing
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20140403-A_GoKl: written.
+;
 local funcname, scriptname, data, meta, result, default, option
 begin
 
@@ -783,35 +783,35 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("att2var")
 function att2var(data,
                  meta[1]:string)
-;;
-;; Arguments
-;;    data: variable of any type with plot specific metadata.
-;;    meta: string specifying the requested attribute, "var", "res_" and
-;;          "diag_file" get special treatment.
-;;
-;; Return value
-;;    Requested attribute of data is returned as variable:
-;;      var (string): name string, with "var_" attached as attributes
-;;                    (without prefix).
-;;      diag_file (string): name bases of registred scripts, joined into one
-;;                          string.
-;;      res (logical): attributes needed for plotting.
-;;      other attributes (any type): as requested by meta.
-;;
-;; Description
-;;    Puts attributes of data into individual variables.
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;    20131107-A_gott_kl: written.
-;;
+;
+; Arguments
+;    data: variable of any type with plot specific metadata.
+;    meta: string specifying the requested attribute, "var", "res_" and
+;          "diag_file" get special treatment.
+;
+; Return value
+;    Requested attribute of data is returned as variable:
+;      var (string): name string, with "var_" attached as attributes
+;                    (without prefix).
+;      diag_file (string): name bases of registred scripts, joined into one
+;                          string.
+;      res (logical): attributes needed for plotting.
+;      other attributes (any type): as requested by meta.
+;
+; Description
+;    Puts attributes of data into individual variables.
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20131107-A_gott_kl: written.
+;
 local funcname, scriptname, data, meta, result, temp, atts, att, iatt
 begin
 
@@ -819,7 +819,7 @@ begin
   scriptname = "interface_scripts/auxiliary.ncl"
   enter_msg(scriptname, funcname)
 
-  ;; Attribute "var"
+  ; Attribute "var"
   if (meta .eq. "var")
     if (isatt(data, meta)) then
       result = data@$meta$
@@ -827,9 +827,9 @@ begin
       do iatt = 0, dimsizes(atts) - 1
         att = atts(iatt)
         if (isStrSubset(att, "var_")) then
-          ;; Remove prefix "var_"
+          ; Remove prefix "var_"
           temp = str_get_cols(att, 4, strlen(att))
-          ;; Assign contents to variable "var"
+          ; Assign contents to variable "var"
           result@$temp$ = data@$att$
         end if
       end do
@@ -838,34 +838,34 @@ begin
                 " requires variable attribute " + meta)
     end if
 
-  ;; Attribute "diag_script"
+  ; Attribute "diag_script"
   else if (meta .eq. "diag_script")
     if (isatt(data, meta)) then
       base = bname(data@$meta$)
-      ;; Join names of all contributing scripts
+      ; Join names of all contributing scripts
       result = str_join(base, "__")
     else
       error_msg("f", scriptname, funcname, get_script_name() + \
                 " requires variable attribute " + meta)
     end if
 
-  ;; Attribute "res_"
-  ;; DEBUG info: different attribute types are not anticipated
-  ;; -> check this if it crashes
+  ; Attribute "res_"
+  ; DEBUG info: different attribute types are not anticipated
+  ; -> check this if it crashes
   else if (meta .eq. "res_")
     result = True
     atts = getvaratts(data)
     do iatt = 0, dimsizes(atts) - 1
       att = atts(iatt)
       if (isStrSubset(att, "res_")) then
-        ;; Remove prefix "res_"
+        ; Remove prefix "res_"
         temp = str_get_cols(att, 4, strlen(att))
-        ;; Assign contents to variable "res"
+        ; Assign contents to variable "res"
         result@$temp$ = data@$att$
       end if
     end do
 
-  ;; Optional/generic attributes
+  ; Optional/generic attributes
   else
     if (isatt(data, meta)) then
       result = data@$meta$
@@ -883,26 +883,26 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("bname")
 function bname(a:string)
-;;
-;; Arguments
-;;    a: (array of) file name strings to analyse.
-;;
-;; Return value
-;;    An array of strings, without paths and suffixes.
-;;
-;; Description
-;;    Strips paths and suffixes from file names.
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;    20131106-A_gott_kl: written.
-;;
+;
+; Arguments
+;    a: (array of) file name strings to analyse.
+;
+; Return value
+;    An array of strings, without paths and suffixes.
+;
+; Description
+;    Strips paths and suffixes from file names.
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20131106-A_gott_kl: written.
+;
 local funcname, scriptname, a, i, b, rm_prefix, rm_suffix
 begin
 
@@ -923,26 +923,26 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("basename")
 function basename(name[1]:string)
-;;
-;; Arguments
-;;    name: input string.
-;;
-;; Return value
-;;    A string.
-;;
-;; Description
-;;    Removes the suffix from the string 'name' and returns the string.
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;    20130419-A_gott_kl: written.
-;;
+;
+; Arguments
+;    name: input string.
+;
+; Return value
+;    A string.
+;
+; Description
+;    Removes the suffix from the string 'name' and returns the string.
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20130419-A_gott_kl: written.
+;
 local funcname, scriptname, suffix
 begin
 
@@ -958,24 +958,24 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("extract_years")
 function extract_years(data,
                        startYr,
                        endYr)
-;;
-;; Arguments
-;;
-;; Return value
-;;
-;; Description
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;
+;
+; Arguments
+;
+; Return value
+;
+; Description
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;
 local funcname, scriptname, data_new, tim, t_utc, t_utc_yr, idx_t
 begin
 
@@ -1007,30 +1007,30 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("extend_var_at")
 function extend_var_at(var,
                        coord:integer,
                        index:integer)
-;;
-;; Arguments
-;;    var : array of variables to be extended .
-;;    coord : index of coordinate to be extended.
-;;    index : index where additional entry is created.
-;;
-;; Return value
-;;    An array with an extra dimension.
-;;
-;; Description
-;;    Adds to var in coord at index a new empty entry by retaining metadata.
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;    20130419-A_gott_kl: written.
-;;
+;
+; Arguments
+;    var : array of variables to be extended .
+;    coord : index of coordinate to be extended.
+;    index : index where additional entry is created.
+;
+; Return value
+;    An array with an extra dimension.
+;
+; Description
+;    Adds to var in coord at index a new empty entry by retaining metadata.
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20130419-A_gott_kl: written.
+;
 local funcname, scriptname, var, coord, index, var_new, var_dim, \
   var_dim_plus, rank
 begin
@@ -1043,14 +1043,14 @@ begin
   var_dim_plus = var_dim
   var_dim_plus(coord) = var_dim(coord) + 1
 
-  ;; Define new variables  with one more entry for diagnostics
+  ; Define new variables  with one more entry for diagnostics
   rank = dimsizes(var_dim)
   var_temp = new((/var_dim_plus/), typeof(var))
 
-  ;; Name cooridnates
+  ; Name cooridnates
   var_new = copy_CoordNames_n(var, var_temp, coord)
 
-  ;; Copy old entries
+  ; Copy old entries
   if (rank.eq.1) then
     if (index - 1.ge.0) then
       var_new(:index - 1) = var(:index - 1)
@@ -1110,31 +1110,31 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("copy_CoordNames_n")
 function copy_CoordNames_n(var_from,
                            var_to,
                            n)
-;;
-;; Arguments
-;;    var_from: an array of any dimensionality. Must have named dimensions and
-;;              coordinate variables.
-;;    var_to: an array of any dimensionality.
-;;    n: index of coordinate which is not to be copied.
-;;
-;; Return value
-;;    An array with the same dimensionality of var_from.
-;;
-;; Description
+;
+; Arguments
+;    var_from: an array of any dimensionality. Must have named dimensions and
+;              coordinate variables.
+;    var_to: an array of any dimensionality.
+;    n: index of coordinate which is not to be copied.
+;
+; Return value
+;    An array with the same dimensionality of var_from.
+;
+; Description
 ;:    Copies all named dimensions and corrdinate variables except the n-th one.
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;    20130419-A_gott_kl: written.
-;;
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20130419-A_gott_kl: written.
+;
 local funcname, scriptname, var_from, var_to, n, rank
 begin
 
@@ -1164,26 +1164,26 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("empty_str")
 function empty_str(nn[1]:integer)
-;;
-;; Arguments
-;;     nn: length of the returned string.
-;;
-;; Return value
-;;     An empty string of length nn.
-;;
-;; Description
-;;     Returns an empty string of length nn (useful for text formatting).
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;     20140228-A_righ_ma: written.
-;;
+;
+; Arguments
+;     nn: length of the returned string.
+;
+; Return value
+;     An empty string of length nn.
+;
+; Description
+;     Returns an empty string of length nn (useful for text formatting).
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;     20140228-A_righ_ma: written.
+;
 local funcname, scriptname, ii
 begin
 
@@ -1201,26 +1201,26 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("write_info")
 function write_info(display[1]:logical)
-;;
-;; Arguments
-;;    display: logical with attributes listing the items to put in the infobox
-;;
-;; Return value
-;;    A string to write to plot.
-;;
-;; Description
-;;    Read the attributes in displayinfo and returns them in a formatted
-;;    string.
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;
+;
+; Arguments
+;    display: logical with attributes listing the items to put in the infobox
+;
+; Return value
+;    A string to write to plot.
+;
+; Description
+;    Read the attributes in displayinfo and returns them in a formatted
+;    string.
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;
 local funcname, scriptname, infobox, info_id
 begin
 
@@ -1237,7 +1237,7 @@ begin
     if (any(info_tag .eq. exceptions)) then
       continue
     end if
-    ;; ~C~ = new line
+    ; ~C~ = new line
     infobox = infobox + info_tag + ": " + display@$info_tag$ + "~C~"
   end do
 
@@ -1246,26 +1246,26 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("remove_index")
 function remove_index(array,
                       idx:integer)
-;;
-;; Arguments
-;;    array: an array of any type
-;;    index: the index(es) to be removed.
-;;
-;; Description
-;;    Remove the selected index(es) from the array's dimension 0.
-;;
-;; Caveats
-;;    Only ranking upto 5 is supported.
-;;
-;; References
-;;
-;; Modification history
-;;    20160704-A_righ_ma: written.
-;;
+;
+; Arguments
+;    array: an array of any type
+;    index: the index(es) to be removed.
+;
+; Description
+;    Remove the selected index(es) from the array's dimension 0.
+;
+; Caveats
+;    Only ranking upto 5 is supported.
+;
+; References
+;
+; Modification history
+;    20160704-A_righ_ma: written.
+;
 local funcname, scriptname, dsize, rank, iarr
 begin
 
@@ -1307,26 +1307,26 @@ begin
 end
 
 
-;;#############################################################################
+; #############################################################################
 undef("set_default_att")
 procedure set_default_att(info:logical,
                           att:string,
                           default)
-;;
-;; Arguments
-;;    info: a logical containing all attributes (usually diag_script_info)
-;;    att: the attribute to be checked for
-;;    value: the default value to be assigned if the attribute is not present
-;;
-;; Description
-;;    Check for a given attribute and assign the given default value if not
-;;    present
-;;
-;; References
-;;
-;; Modification history
-;;    20171214-A_righ_ma: written.
-;;
+;
+; Arguments
+;    info: a logical containing all attributes (usually diag_script_info)
+;    att: the attribute to be checked for
+;    value: the default value to be assigned if the attribute is not present
+;
+; Description
+;    Check for a given attribute and assign the given default value if not
+;    present
+;
+; References
+;
+; Modification history
+;    20171214-A_righ_ma: written.
+;
 local funcname, scriptname
 begin
 
@@ -1342,25 +1342,25 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("filter_attrs")
 function filter_attrs(source[1]:logical,\
                       target[1]:logical,\
                       lb_prefix[1]:string)
-;;
-;; Arguments
-;;
-;; Description
-;;    Copy over certain attributes if they have a specified prefix,
-;;    the prefix is removed on the target attribute
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;    20150630-A_eval_ma: written.
-;;
+;
+; Arguments
+;
+; Description
+;    Copy over certain attributes if they have a specified prefix,
+;    the prefix is removed on the target attribute
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20150630-A_eval_ma: written.
+;
 local funcname, scriptname, source_attrs, att_idx, prefix_removed
 begin
 
@@ -1382,24 +1382,24 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("write_ignore_warnings")
 procedure write_ignore_warnings(warnings[*]:string,
                                 warn_file_str[1]:string)
-;;
-;; Arguments
-;;
-;; Description
-;;    Write a file with warnings that will be disregarded by the Pyhton
-;;    launcher.
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;    20150630-A_eval_ma: written.
-;;
+;
+; Arguments
+;
+; Description
+;    Write a file with warnings that will be disregarded by the Pyhton
+;    launcher.
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20150630-A_eval_ma: written.
+;
 local funcname, scriptname, idx_warn
 begin
 
@@ -1418,25 +1418,25 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("get_ref_model_idx")
 function get_ref_model_idx(models[1]:logical,\
                            model_ref_name:string)
-;;
-;; Arguments
-;;    models: list of all models
-;;    model_ref_name: reference model name, possibly two, separated by comma
-;;
-;; Description
-;;    Fetches the reference model index in model_info@model
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;    20171208-A_righ_ma: rewritten for the new backend
-;;
+;
+; Arguments
+;    models: list of all models
+;    model_ref_name: reference model name, possibly two, separated by comma
+;
+; Description
+;    Fetches the reference model index in model_info@model
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20171208-A_righ_ma: rewritten for the new backend
+;
 local funcname, scriptname, nrefs, idx_ref
 begin
 

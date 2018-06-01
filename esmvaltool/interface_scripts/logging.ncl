@@ -1,49 +1,49 @@
-;;#############################################################################
-;; GENERAL ROUTINES FOR HANDLING LOG OUTPUT
-;;#############################################################################
-;; Please consider using of extending existing routines before adding new ones.
-;; Check the header of each routine for documentation.
-;;
-;; Contents:
-;;    procedure log_info
-;;    procedure log_debug
-;;    procedure enter_msg
-;;    procedure leave_msg
-;;    procedure error_msg
-;;    procedure tool_stop
-;;    procedure exit_if_missing_atts
-;;    procedure write_filelist
-;;    procedure write_references
-;;    procedure inquire_and_save_fileinfo
-;;
-;;#############################################################################
+; #############################################################################
+; GENERAL ROUTINES FOR HANDLING LOG OUTPUT
+; #############################################################################
+; Please consider using of extending existing routines before adding new ones.
+; Check the header of each routine for documentation.
+;
+; Contents:
+;    procedure log_info
+;    procedure log_debug
+;    procedure enter_msg
+;    procedure leave_msg
+;    procedure error_msg
+;    procedure tool_stop
+;    procedure exit_if_missing_atts
+;    procedure write_filelist
+;    procedure write_references
+;    procedure inquire_and_save_fileinfo
+;
+; #############################################################################
 MASTER_REFS = "../doc/MASTER_authors-refs-acknow.txt"
 
 gOldVar = ""
 gOldDiag = ""
 load "./interface_scripts/write_header.ncl"
 
-;; WARNING: no other interface_scripts shall be loaded here, to avoid nested
-;;          loops (since they will try to load logging.ncl themselves).
+; WARNING: no other interface_scripts shall be loaded here, to avoid nested
+;          loops (since they will try to load logging.ncl themselves).
 
-;;#############################################################################
+; #############################################################################
 undef("log_info")
 procedure log_info(output_string[*]:string)
-;;
-;; Arguments
-;;    output_string: the text to be output as message on screen
-;;
-;; Description
-;;    Write an info message to the log file. If the input is an array, each
-;;    element will be written on different lines.
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;    20180202-A_righ_ma: written to replace info_output.
-;;
+;
+; Arguments
+;    output_string: the text to be output as message on screen
+;
+; Description
+;    Write an info message to the log file. If the input is an array, each
+;    element will be written on different lines.
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20180202-A_righ_ma: written to replace info_output.
+;
 local nn, ii
 begin
 
@@ -60,25 +60,25 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("log_debug")
 procedure log_debug(output_string[*]:string)
-;;
-;; Arguments
-;;    output_string: the text to be output as message on screen
-;;
-;; Description
-;;    Write a debug message to the log file (only if log_level = debug in
-;;    config-user.yml). If the input is an array, each element will be
-;;    written on different lines.
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;    20180202-A_righ_ma: written to replace info_output.
-;;
+;
+; Arguments
+;    output_string: the text to be output as message on screen
+;
+; Description
+;    Write a debug message to the log file (only if log_level = debug in
+;    config-user.yml). If the input is an array, each element will be
+;    written on different lines.
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20180202-A_righ_ma: written to replace info_output.
+;
 local nn, ii
 begin
 
@@ -95,26 +95,26 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("enter_msg")
 procedure enter_msg(script[1]:string,
                     func[1]:string)
-;;
-;; Arguments
-;;    script: name of the ncl script file from where this function is called.
-;;    func: name of the function or procedure calling this function.
-;;
-;; Description
-;;    Print an enter message to the log file (debug mode only).
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;    20180202_A_righ_ma: removed required verbosity.
-;;    20150319-A_righ_ma: written.
-;;
+;
+; Arguments
+;    script: name of the ncl script file from where this function is called.
+;    func: name of the function or procedure calling this function.
+;
+; Description
+;    Print an enter message to the log file (debug mode only).
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20180202_A_righ_ma: removed required verbosity.
+;    20150319-A_righ_ma: written.
+;
 begin
 
   if (func.eq."") then
@@ -125,26 +125,26 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("leave_msg")
 procedure leave_msg(script[1]:string,
                     func[1]:string)
-;;
-;; Arguments
-;;    script: name of the ncl script file from where this function is called.
-;;    func: name of the function or procedure calling this function.
-;;
-;; Description
-;;    Print a leave message to the log file (debug mode only).
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;    20180202_A_righ_ma: removed required verbosity.
-;;    20150319-A_righ_ma: written.
-;;
+;
+; Arguments
+;    script: name of the ncl script file from where this function is called.
+;    func: name of the function or procedure calling this function.
+;
+; Description
+;    Print a leave message to the log file (debug mode only).
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20180202_A_righ_ma: removed required verbosity.
+;    20150319-A_righ_ma: written.
+;
 begin
 
   if (func.eq."") then
@@ -155,36 +155,36 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("error_msg")
 procedure error_msg(type[1]:string,
                     script[1]:string,
                     func[1]:string,
                     msg:string)
-;;
-;; Arguments
-;;    type: type of message, "f" for fatal, "w" for warning.
-;;    script: name of the ncl script file from where this function is called.
-;;    func: name of the function or procedure calling this function.
-;;    msg: actual error message.
-;;
-;; Description
-;;    Write an error/warning message to the log file.
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;    20150924-A_laue_ax: added type "error" (treated as "fatal")
-;;    20140929-A_righ_ma: written.
-;;
+;
+; Arguments
+;    type: type of message, "f" for fatal, "w" for warning.
+;    script: name of the ncl script file from where this function is called.
+;    func: name of the function or procedure calling this function.
+;    msg: actual error message.
+;
+; Description
+;    Write an error/warning message to the log file.
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20150924-A_laue_ax: added type "error" (treated as "fatal")
+;    20140929-A_righ_ma: written.
+;
 local nn, ii, msg_level, msg_origin
 begin
 
   nn = dimsizes(msg)
 
-  ;; Determine which message level we're at (fatal/warning)
+  ; Determine which message level we're at (fatal/warning)
   if (type .eq. "f" .or. type .eq. "fatal") then
     msg_level = "fatal"
   else if (any(type.eq.(/"w", "warning", "error"/))) then
@@ -196,44 +196,44 @@ begin
   end if
   end if
 
-  ;; Determine origin of message
+  ; Determine origin of message
   if (func .ne. "") then
     msg_origin = func + " (" + script + "), "
   else
     msg_origin = script + ", "
   end if
 
-  ;; Write error/warning message
+  ; Write error/warning message
   do ii = 0, nn - 1
     log_info(msg_level + ": in " + msg_origin + msg(ii))
   end do
 
-  ;; Exit if fatal
+  ; Exit if fatal
   if (msg_level .eq. "fatal") then
     status_exit(1)
   end if
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("tool_stop")
 procedure tool_stop()
-;;
-;; Arguments
-;;
-;; Description
-;;    Forces the tool execution to stop at any point of an ncl script.
-;;    For dubugging purposes only.
-;;
-;; Caveats
-;;    This should not be used for the standard exit-on-error. See the function
-;;    error_msg in logging.ncl instead.
-;;
-;; References
-;;
-;; Modification history
-;;    20150521-A_righ_ma: written.
-;;
+;
+; Arguments
+;
+; Description
+;    Forces the tool execution to stop at any point of an ncl script.
+;    For dubugging purposes only.
+;
+; Caveats
+;    This should not be used for the standard exit-on-error. See the function
+;    error_msg in logging.ncl instead.
+;
+; References
+;
+; Modification history
+;    20150521-A_righ_ma: written.
+;
 begin
 
   print("fatal: tool stop forced by the user")
@@ -241,29 +241,29 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("exit_if_missing_atts")
 procedure exit_if_missing_atts(in[1], \
                                reqatts[*]:string)
-;;
-;; Arguments
-;;    in: a logical or file variable to be checked for given attributes
-;;    reqatts: an array of strings with the required attributes of the variable
-;;
-;; Description
-;;    Check that the given variable contains the given list of attributes.
-;;    This function shall be used at the beginning of each diag_script to
-;;    check that diag_script_info contains the required attributes.
-;;    It can also be used for checking attributes in observations files, when
-;;    these are read directly in the diag_script (e.g. Emmons.ncl).
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;    20141002-A_righ_ma: written.
-;;
+;
+; Arguments
+;    in: a logical or file variable to be checked for given attributes
+;    reqatts: an array of strings with the required attributes of the variable
+;
+; Description
+;    Check that the given variable contains the given list of attributes.
+;    This function shall be used at the beginning of each diag_script to
+;    check that diag_script_info contains the required attributes.
+;    It can also be used for checking attributes in observations files, when
+;    these are read directly in the diag_script (e.g. Emmons.ncl).
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20141002-A_righ_ma: written.
+;
 local funcname, scriptname
 begin
 
@@ -280,7 +280,7 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("write_filelist")
 procedure write_filelist(script:string,
                          variable:string,
@@ -292,38 +292,38 @@ procedure write_filelist(script:string,
                          sourcereflist:string,
                          sourcetidlist:string,
                          version:string)
-;;
-;; Arguments
-;;    script: name of the diagnostic script for which the input files are
-;;            written to the log file
-;;    variable: name of variable
-;;    model: name of model
-;;    filelist: list of filenames processed to produce the file to be written
-;;    sourcefilelist: list of filenames processed to produce the input files
-;;                    of the file to be written (e.g., input files used to
-;;                    produce preproc files then used to process a derived
-;;                    variable)
-;;    fixfile: filename of a FIXFILE applied to process the data to be written
-;;             (if applicable)
-;;    sourcefixfile: filename of a FIXFILE applied to the files in
-;;                   sourcefilelist (if applicable)
-;;    sourcereflist: references from original source files (if available)
-;;    sourcetidlist: tracking_id(s) of original source files (if available)
-;;    version: version of the ESMValTool
-;;
-;; Description
-;;    Save the following details to the log file
-;;        - ESMValTtool version
-;;        - list of input files processed
-;;        - name of the "FIXFILE" applied (if any)
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;    20150630-A_laue_ax: written.
-;;
+;
+; Arguments
+;    script: name of the diagnostic script for which the input files are
+;            written to the log file
+;    variable: name of variable
+;    model: name of model
+;    filelist: list of filenames processed to produce the file to be written
+;    sourcefilelist: list of filenames processed to produce the input files
+;                    of the file to be written (e.g., input files used to
+;                    produce preproc files then used to process a derived
+;                    variable)
+;    fixfile: filename of a FIXFILE applied to process the data to be written
+;             (if applicable)
+;    sourcefixfile: filename of a FIXFILE applied to the files in
+;                   sourcefilelist (if applicable)
+;    sourcereflist: references from original source files (if available)
+;    sourcetidlist: tracking_id(s) of original source files (if available)
+;    version: version of the ESMValTool
+;
+; Description
+;    Save the following details to the log file
+;        - ESMValTtool version
+;        - list of input files processed
+;        - name of the "FIXFILE" applied (if any)
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20150630-A_laue_ax: written.
+;
 local funcname, scriptname, output_refs, hline
 begin
 
@@ -338,19 +338,19 @@ begin
   hline = "-------------------------"
   hline = hline + hline + hline
 
-  ;; Output refs file
+  ; Output refs file
   output_refs = config_user_info@run_dir + "/references-acknowledgements.txt"
 
   s_open  = "echo " + str_get_dq
   s_close = str_get_dq + " >> " + output_refs
 
-  ;; If first time (empty output_refs) write header
+  ; If first time (empty output_refs) write header
   if (toint(systemfunc("wc -c < " + output_refs)) .eq. 0) then
     write_header(s_open, hline, s_close)
   end if
 
   if (script.ne.gOldDiag) then
-    ;; Add script name
+    ; Add script name
     system(s_open + "PREPROCESSING/REFORMATTING (ESMValTool v" + \
            version + "):" + s_close)
     system("echo " + " >> " + output_refs)
@@ -420,7 +420,7 @@ begin
   leave_msg(scriptname, funcname)
 end
 
-;;#############################################################################
+; #############################################################################
 undef("write_references")
 procedure write_references(script[1]:string,
                            auth:string,
@@ -428,30 +428,30 @@ procedure write_references(script[1]:string,
                            diag:string,
                            obs:string,
                            proj:string)
-;;
-;; Arguments
-;;    script: name of the diagnostic script for which reference are written
-;;    auth: list of authors tags (A_YyXx)
-;;    contr: list of cotributors tags (A_YyXx)
-;;    diag: list of references for the diag_scripte diagnostics (DNNN)
-;;    obs: list of references for the observations (ONNN)
-;;    proj: list of projects to be acknowledged (PNNN)
-;;
-;; Description
-;;    Write references and acknowledgments in the log file
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;    20151028-A_laue_ax: moved writing of diagnostic section header to
-;;                        separate routine (write_diag_header) for easier
-;;                        use with Python routines
-;;    20150630-A_laue_ax: moved writing of header to separate routine
-;;                        (write_header)
-;;    20121128-A_righ_ma: written.
-;;
+;
+; Arguments
+;    script: name of the diagnostic script for which reference are written
+;    auth: list of authors tags (A_YyXx)
+;    contr: list of cotributors tags (A_YyXx)
+;    diag: list of references for the diag_scripte diagnostics (DNNN)
+;    obs: list of references for the observations (ONNN)
+;    proj: list of projects to be acknowledged (PNNN)
+;
+; Description
+;    Write references and acknowledgments in the log file
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20151028-A_laue_ax: moved writing of diagnostic section header to
+;                        separate routine (write_diag_header) for easier
+;                        use with Python routines
+;    20150630-A_laue_ax: moved writing of header to separate routine
+;                        (write_header)
+;    20121128-A_righ_ma: written.
+;
 local funcname, scriptname, master_refs, output_refs, hline, pos, str
 begin
 
@@ -464,21 +464,21 @@ begin
   hline = hline + hline + hline
   hline_dble = hline_dble + hline_dble + hline_dble
 
-  ;; Master refs file
+  ; Master refs file
   master_refs = MASTER_REFS
 
-  ;; Output refs file
+  ; Output refs file
   output_refs = config_user_info@run_dir + "/references-acknowledgements.txt"
 
   s_open  = "echo " + str_get_dq
   s_close = str_get_dq + " >> " + output_refs
 
-  ;; If first time (empty output_refs) write header
+  ; If first time (empty output_refs) write header
   if (.not. fileexists(output_refs)) then
     write_header(s_open, hline, s_close)
   end if
 
-  ;; write diagnostic header
+  ; write diagnostic header
   write_diag_header(s_open, hline_dble, s_close, master_refs, output_refs, \
                     auth, contr, diag, obs, proj, script)
 
@@ -486,27 +486,27 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("inquire_and_save_fileinfo")
 procedure inquire_and_save_fileinfo(filename:string,
                                     model:string,
                                     variable:string)
-;;
-;; Arguments
-;;    filename: file name of input file (netCDF)
-;;    model: name of model
-;;    variable: name of variable
-;;
-;; Description
-;;    Read attributes from given file and write info to the log file
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;    20151028-A_laue_ax: written.
-;;
+;
+; Arguments
+;    filename: file name of input file (netCDF)
+;    model: name of model
+;    variable: name of variable
+;
+; Description
+;    Read attributes from given file and write info to the log file
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20151028-A_laue_ax: written.
+;
 begin
   fid = addfile(filename, "r")
 
@@ -539,12 +539,12 @@ begin
     sourcereflist  = ""  ; list of references
     sourcetidlist  = ""  ; list of tracking_ids
   else
-    ;; Now we check whether the files read (i.e., all names in "filelist")
-    ;; contain attribute(s) "infile_????". If so, we read these attributes
-    ;; and store them in "sourcefilelist". sourcefilelist then contains
-    ;; a list of original source files from which the files in "filelist"
-    ;; have originally been created, e.g., the original CMIP5 files or the
-    ;; original observational files.
+    ; Now we check whether the files read (i.e., all names in "filelist")
+    ; contain attribute(s) "infile_????". If so, we read these attributes
+    ; and store them in "sourcefilelist". sourcefilelist then contains
+    ; a list of original source files from which the files in "filelist"
+    ; have originally been created, e.g., the original CMIP5 files or the
+    ; original observational files.
 
     sourcefilelist    = new(dimsizes(filelist), string)
     sourcefilelist(0) = ""
@@ -574,8 +574,8 @@ begin
       end if
     end do
 
-    ;; Check for possible references and/or tracking_ids in the original
-    ;; source files.
+    ; Check for possible references and/or tracking_ids in the original
+    ; source files.
 
     if (ns.gt.0) then
       ns = ns - 1
@@ -584,15 +584,15 @@ begin
         if (isfilepresent(sourcefilelist(i))) then
           sfile = addfile(sourcefilelist(i), "r")
 
-          ;; check for tracking_id
+          ; check for tracking_id
           if (isatt(sfile, "tracking_id")) then
             sourcetidlist(i) = sfile@tracking_id
           end if
 
-          ;; check for references
+          ; check for references
           if (isatt(sfile, "reference")) then
-            ;; check if reference is already in list;
-            ;; if reference is already in list, do not add again
+            ; check if reference is already in list;
+            ; if reference is already in list, do not add again
             newref = True
             do j = 0, nr - 1
               if (sourcereflist(j).eq.sfile@reference) then
@@ -601,17 +601,17 @@ begin
               end if
             end do
 
-            ;; reference was not found in list --> add to list
+            ; reference was not found in list --> add to list
             if (newref) then
               sourcereflist(nr) = sfile@reference
               nr = nr + 1
             end if
           end if
 
-          ;; if the source files contain derived variables they might contain
-          ;; lists of source files as well
-          ;; ---> check for source files of source files and (if any found)
-          ;;      add them to the list of files to be written to the log-file
+          ; if the source files contain derived variables they might contain
+          ; lists of source files as well
+          ; ---> check for source files of source files and (if any found)
+          ;      add them to the list of files to be written to the log-file
           nss = 1
           do while ((ns + nss).lt.dimsizes(sourcefilelist))
             att = sprinti("infile_%04d", nss - 1)
@@ -635,7 +635,7 @@ begin
     end if  ; if ns > 0
   end if
 
-  ;; Write information on processed files to log-file
+  ; Write information on processed files to log-file
   write_filelist(diag_script, variable, model, filelist(0:n - 1), \
                  sourcefilelist(0:ns), fixfile, sourcefixfile,  \
                  sourcereflist(0:nr), sourcetidlist(0:ns), version)

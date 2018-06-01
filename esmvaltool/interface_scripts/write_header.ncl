@@ -1,35 +1,35 @@
-;;#############################################################################
+; #############################################################################
 undef("write_header")
 procedure write_header(s_open:string,
                        hline:string,
                        s_close:string)
-;;
-;; Arguments
-;;    s_open: 1st part of system command line to add text to log file
-;;    hline: separator (horizontal line)
-;;    s_close: 2nd part of system command line to add text to log file
-;;
-;; Description
-;;    Writes header of the log file
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;    20160713-A_laue_ax: updated ESMValTool reference
-;;    20150630-A_laue_ax: written.
-;;
+;
+; Arguments
+;    s_open: 1st part of system command line to add text to log file
+;    hline: separator (horizontal line)
+;    s_close: 2nd part of system command line to add text to log file
+;
+; Description
+;    Writes header of the log file
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20160713-A_laue_ax: updated ESMValTool reference
+;    20150630-A_laue_ax: written.
+;
 local funcname, scriptname, namelist, version
 begin
 
   funcname = "write_header"
   scriptname = "interface_scripts/logging.ncl"
 
-  ;; Namelist in use
+  ; Namelist in use
   namelist = diag_script_info@namelist
 
-  ;; ESMValTool version
+  ; ESMValTool version
   version = diag_script_info@version
 
   dq = "\" + str_get_dq()
@@ -73,7 +73,7 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("write_diag_header")
 procedure write_diag_header(s_open:string,
                             hline:string,
@@ -86,45 +86,45 @@ procedure write_diag_header(s_open:string,
                             obs:string,
                             proj:string,
                             script:string)
-;;
-;; Arguments
-;;    s_open:      1st part of system command line to add text to log file
-;;    hline:       separator (horizontal line)
-;;    s_close:     2nd part of system command line to add text to log file
-;;    master_ref:  file name of the master reference file
-;;                 (i.e. MASTER_authors-refs-acknow.txt)
-;;    output_refs: filename of log file
-;;    auth:        list of authors
-;;    contr:       list of contributors
-;;    diag:        list of references for diagnostic
-;;    obs:         list of references for observations
-;;    proj:        list of project acknowledgements
-;;    script:      name of diagnostic script
-;;
-;; Description
-;;    Writes diagnostic header section to the log file
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;    20151028-A_laue_ax: written.
-;;
+;
+; Arguments
+;    s_open:      1st part of system command line to add text to log file
+;    hline:       separator (horizontal line)
+;    s_close:     2nd part of system command line to add text to log file
+;    master_ref:  file name of the master reference file
+;                 (i.e. MASTER_authors-refs-acknow.txt)
+;    output_refs: filename of log file
+;    auth:        list of authors
+;    contr:       list of contributors
+;    diag:        list of references for diagnostic
+;    obs:         list of references for observations
+;    proj:        list of project acknowledgements
+;    script:      name of diagnostic script
+;
+; Description
+;    Writes diagnostic header section to the log file
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20151028-A_laue_ax: written.
+;
 begin
 
-  ;; D*** entries that shall not be extended by "Please cite "
+  ; D*** entries that shall not be extended by "Please cite "
   stand_alone_entries = (/"D000", "D003", "D004"/)
 
-  ;; Add script name
+  ; Add script name
   system(s_open + hline + s_close)
   system(s_open + "=== " + script + " ===" + s_close)
   system("echo " + " >> " + output_refs)
 
-  ;; Read master refs file
+  ; Read master refs file
   data = readAsciiTable(master_refs, 1, "string", 0)
 
-  ;; Author list
+  ; Author list
   if (all(auth.ne."")) then
     system(s_open + "AUTHOR(S): " + s_close)
     do ii = 0, dimsizes(auth) - 1
@@ -136,7 +136,7 @@ begin
     system("echo " + " >> " + output_refs)
   end if
 
-  ;; Contributor list
+  ; Contributor list
   if (all(contr.ne."")) then
     system(s_open + "CONTRIBUTOR(S): " + s_close)
     do ii = 0, dimsizes(contr) - 1
@@ -148,7 +148,7 @@ begin
     system("echo " + " >> " + output_refs)
   end if
 
-  ;; Diagnostic reference list
+  ; Diagnostic reference list
   if (all(diag.ne."")) then
     system(s_open + "REFERENCE(S) FOR THIS DIAGNOSTIC: " + s_close)
     do ii = 0, dimsizes(diag) - 1
@@ -163,7 +163,7 @@ begin
     system("echo " + " >> " + output_refs)
   end if
 
-  ;; Observations reference list
+  ; Observations reference list
   if (all(obs.ne."")) then
     system(s_open + "REFERENCE(S) FOR THE OBSERVATIONS: " + s_close)
     do ii = 0, dimsizes(obs) - 1
@@ -175,7 +175,7 @@ begin
     system("echo " + " >> " + output_refs)
   end if
 
-  ;; Projects reference list
+  ; Projects reference list
   if (all(proj.ne."")) then
     system(s_open + "ACKNOWLEDGEMENTS FOR THE PROJECTS: " + s_close)
     do ii = 0, dimsizes(proj) - 1
