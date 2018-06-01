@@ -2,6 +2,7 @@
 Stratospheric assessment code; ESMValTool-autoassess version
 '''
 import os
+import sys
 
 import matplotlib as mpl
 import matplotlib.cm as mpl_cm
@@ -44,23 +45,6 @@ def cmap_and_norm(cmap, levels, reverse=False):
     return colourmap, normalisation
 
 
-def add_contour_lines(cube, lev, skipline=1, skiplabel=1, thick=1.5,
-                      thin=0.75):
-    '''
-    Routine to add labelled contour lines to filled contour plot to highlight
-    contour boundaries. Adds thicker line at zero contour and can skip contour
-    lines if necessary.
-    '''
-    levels = lev[::skipline]
-    # This sets up contour line widths to be thick for zero and thin otherwise
-    lwid = thick * np.ones_like(levels)
-    lwid[levels.nonzero()] = thin
-    # Plot line contours - black lines gives solid for +ve and dashed for -ve
-    cl1 = iplt.contour(cube, colors='k', linewidths=lwid, levels=levels)
-    # Set to label every line with appropriate string size and formatting
-    plt.clabel(cl1, levels[::skiplabel], inline=1, fontsize=6, fmt='%1.0f')
-
-
 def plot_zmean(cube, levels, title, log=False, ax1=None):
     '''
     Routine to plot zonal mean fields as latitude-pressure contours with given
@@ -72,15 +56,15 @@ def plot_zmean(cube, levels, title, log=False, ax1=None):
         ax1 = plt.gca()
     ax1.set_title(title)
     cf1 = iplt.contourf(cube, levels=levels, cmap=colormap, norm=normalisation)
-    # VPREDOI::FIXME
-    # some problems with levels in py3
-    # add_contour_lines(cube, cf1.levels, skiplabel=2)
+    lwid = 1. * np.ones_like(levels)
+    cl1 = iplt.contour(cube, colors='k', linewidths=lwid, levels=levels)
+    plt.clabel(cl1, cl1.levels, inline=1, fontsize=6, fmt='%1.0f')
     ax1.set_xlabel('Latitude', fontsize='small')
     ax1.set_xlim(-90, 90)
     ax1.set_xticks([-90, -60, -30, 0, 30, 60, 90])
     ax1.xaxis.set_major_formatter(LATITUDE_FORMATTER)
-    ax1.set_ylabel('Pressure (hPa)', fontsize='small')
-    ax1.set_ylim(1000, 0.1)
+    ax1.set_ylabel('Pressure (Pa)', fontsize='small')
+    ax1.set_ylim(100000., 1000.)
     if log:
         ax1.set_yscale("log")
 
@@ -96,23 +80,20 @@ def plot_timehgt(cube, levels, title, log=False, ax1=None):
         ax1 = plt.gca()
     ax1.set_title(title)
     cf1 = iplt.contourf(cube, levels=levels, cmap=colormap, norm=normalisation)
-    # VPREDOI::FIXME
-    # problem in py3 with levels
-    # add_contour_lines(cube, cf1.levels, skipline=2)
-    # Convert the time unit to time_coord.points[0], i.e 2012-09-14 04:05:00
+    lwid = 1. * np.ones_like(levels)
+    cl1 = iplt.contour(cube, colors='k', linewidths=lwid, levels=levels)
+    plt.clabel(cl1, cl1.levels, inline=1, fontsize=6, fmt='%1.0f')
     ax1.set_xlabel('Year', fontsize='small')
     time_coord = cube.coord('time')
     new_epoch = time_coord.points[0]
     new_unit_str = 'hours since {}'
     new_unit = new_unit_str.format(time_coord.units.num2date(new_epoch))
-    # VPREDOI::FIXME
-    # when number of years =< 2 it fails
     ax1.xaxis.axis_date()
     ax1.xaxis.set_label(new_unit)
     ax1.xaxis.set_major_locator(mdates.YearLocator(4))
     ax1.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
-    ax1.set_ylabel('Pressure (hPa)', fontsize='small')
-    ax1.set_ylim(1000, 0.1)
+    ax1.set_ylabel('Pressure (Pa)', fontsize='small')
+    ax1.set_ylim(100000., 1000.)
     if log:
         ax1.set_yscale("log")
 
@@ -188,8 +169,9 @@ def calc_qbo_index(qbo):
     # Calculate eastward QBO amplitude
     counter = 0
     totvals = 0
+    # valsup limit was initially hardcoded to +10.0
     for i in range(periodsmax):
-        if (valsup[i] > 10.):
+        if (valsup[i] > 0.):
             totvals = totvals + valsup[i]
             counter = counter + 1
     if (counter == 0):
@@ -201,7 +183,8 @@ def calc_qbo_index(qbo):
     counter = 0
     totvals = 0
     for i in range(periodsmin):
-        if (valsdown[i] < -20.):
+        # valdown limit was initially hardcoded to -20.0
+        if (valsdown[i] < 0.):
             totvals = totvals + valsdown[i]
             counter = counter + 1
     if (counter == 0):
@@ -273,7 +256,7 @@ def pnj_strength(cube, winter=True):
     for nh/sh in winter and sh/nh in summer repsectively.
     '''
     # Extract regions of interest
-    notrop = iris.Constraint(air_pressure=lambda p: p < 80.0)
+    notrop = iris.Constraint(air_pressure=lambda p: p < 8000.0)
     nh_cons = iris.Constraint(latitude=lambda l: l > 0)
     sh_cons = iris.Constraint(latitude=lambda l: l < 0)
     nh_tmp = cube.extract(notrop & nh_cons)
@@ -326,9 +309,11 @@ def qbo_metrics(run, ucube, metrics):
     '''
     # TODO side effect: changes metrics without returning
     # Extract equatorial zonal mean U
-    tropics = iris.Constraint(latitude=lambda lat: -5 <= lat <= 5)
-    p30 = iris.Constraint(air_pressure=30.)
-    qbo = weight_lat_ave(ucube.extract(tropics))
+    # tropics = iris.Constraint(latitude=lambda lat: -5 <= lat <= 5)
+    p30 = iris.Constraint(air_pressure=3000.)
+    # qbo = weight_lat_ave(ucube.extract(tropics))
+    # qbo30 = qbo.extract(p30)
+    qbo = weight_lat_ave(ucube)
     qbo30 = qbo.extract(p30)
 
     # write results to current working directory
@@ -363,8 +348,8 @@ def tpole_metrics(run, tcube, metrics):
     t_son = t_seas_mean.extract(iris.Constraint(clim_season='son'))
 
     # Calculate area averages over polar regions at 50hPa
-    nhpole = iris.Constraint(latitude=lambda la: la >= 60, air_pressure=50.0)
-    shpole = iris.Constraint(latitude=lambda la: la <= -60, air_pressure=50.0)
+    nhpole = iris.Constraint(latitude=lambda la: la >= 60, air_pressure=5000.0)
+    shpole = iris.Constraint(latitude=lambda la: la <= -60, air_pressure=5000.0)
 
     djf_polave = weight_lat_ave(t_djf.extract(nhpole))
     mam_polave = weight_lat_ave(t_mam.extract(nhpole))
@@ -420,7 +405,7 @@ def teq_metrics(run, tcube, metrics):
     '''
     # Extract equatorial temperature at 100hPa
     equator = iris.Constraint(latitude=lambda lat: -2 <= lat <= 2)
-    p100 = iris.Constraint(air_pressure=100.)
+    p100 = iris.Constraint(air_pressure=10000.)
     teq100 = tcube.extract(equator & p100)
 
     # Calculate area-weighted global monthly means from multi-annual data
@@ -447,7 +432,7 @@ def t_metrics(run, tcube, metrics):
     # TODO side effect: changes metrics without returning
     # Extract 10S-10N temperature at 100hPa
     equator = iris.Constraint(latitude=lambda lat: -10 <= lat <= 10)
-    p100 = iris.Constraint(air_pressure=100.)
+    p100 = iris.Constraint(air_pressure=10000.)
     t100 = tcube.extract(equator & p100)
 
     # Calculate area-weighted global monthly means from multi-annual data
@@ -474,7 +459,7 @@ def q_metrics(run, qcube, metrics):
     # TODO side effect: changes metrics without returning
     # Extract 10S-10N humidity at 100hPa
     tropics = iris.Constraint(latitude=lambda lat: -10 <= lat <= 10)
-    p70 = iris.Constraint(air_pressure=70.)
+    p70 = iris.Constraint(air_pressure=7000.)
     q70 = qcube.extract(tropics & p70)
 
     # Calculate area-weighted global monthly means from multi-annual data
@@ -543,7 +528,10 @@ def mainfunc(run):
     ucube = ucube.collapsed('longitude', iris.analysis.MEAN)
     if not ucube.coord('latitude').has_bounds():
         ucube.coord('latitude').guess_bounds()
-    # icc.add_month_number(ucube, 'time', name='month_number')
+    # check for month_number
+    aux_coord_names = [aux_coord.var_name for aux_coord in ucube.aux_coords]
+    if 'month_number' not in aux_coord_names:
+        icc.add_month_number(ucube, 'time', name='month_number')
 
     # Read zonal mean T (lbproc=192) and add clim month and season to metadata
     tcube = load_run_ss(
@@ -557,8 +545,11 @@ def mainfunc(run):
     tcube = tcube.collapsed('longitude', iris.analysis.MEAN)
     if not tcube.coord('latitude').has_bounds():
         tcube.coord('latitude').guess_bounds()
-    icc.add_month(tcube, 'time', name='month')
-    icc.add_season(tcube, 'time', name='clim_season')
+    aux_coord_names = [aux_coord.var_name for aux_coord in tcube.aux_coords]
+    if 'month' not in aux_coord_names:
+        icc.add_month(tcube, 'time', name='month')
+    if 'clim_season' not in aux_coord_names:
+        icc.add_season(tcube, 'time', name='clim_season')
 
     # Read zonal mean q (lbproc=192) and add clim month and season to metadata
     qcube = load_run_ss(
@@ -572,8 +563,11 @@ def mainfunc(run):
     qcube = qcube.collapsed('longitude', iris.analysis.MEAN)
     if not qcube.coord('latitude').has_bounds():
         qcube.coord('latitude').guess_bounds()
-    icc.add_month(qcube, 'time', name='month')
-    icc.add_season(qcube, 'time', name='clim_season')
+    aux_coord_names = [aux_coord.var_name for aux_coord in qcube.aux_coords]
+    if 'month' not in aux_coord_names:
+        icc.add_month(qcube, 'time', name='month')
+    if 'clim_season' not in aux_coord_names:
+        icc.add_season(qcube, 'time', name='clim_season')
 
     # Calculate PNJ metrics
     pnj_metrics(run, ucube, metrics)

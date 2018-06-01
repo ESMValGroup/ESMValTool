@@ -4,6 +4,7 @@ import logging
 import inspect
 import sys
 import subprocess
+import numpy as np
 
 import iris
 import yaml
@@ -12,6 +13,19 @@ logger = logging.getLogger(__name__)
 
 # Diagnostic that takes two models (control_model and exp_model
 # and observational data (ERA-Interim and MERRA)
+
+
+def _check_p30(cubelist):
+    """Check for plev = 30hPa"""
+    p30 = iris.Constraint(air_pressure=3000.)
+    for cube in cubelist:
+        qbo30 = cube.extract(p30)
+        # extract the masked array and check for missing data
+        qbo30.data = np.ma.array(qbo30.data)
+        if np.all(qbo30.data.mask):
+            logger.info('Cube metadata:', qbo30.metadata)
+            logger.error('All data is masked at 30hPa! Exiting.')
+            sys.exit(1)
 
 
 def get_cfg():
@@ -34,7 +48,7 @@ def get_input_files(cfg):
 
 
 def main():
-
+    """Execute the stratosphere area"""
     cfg = get_cfg()
     logger.setLevel(cfg['log_level'].upper())
 
@@ -86,6 +100,12 @@ def main():
     # load cubelists
     cubelist_m1 = iris.load(files_list_m1)
     cubelist_m2 = iris.load(files_list_m2)
+
+    # STRATOSPHERE computes QBO at 30hPa
+    # go through cubes and make sure they have 30hPa levels
+    # that have at least one unmasked value
+    _check_p30(cubelist_m1)
+    _check_p30(cubelist_m2)
 
     # save to congragated files
     cubes_list_path_m1 = os.path.join(suite_data_m1, 'cubeList.nc')

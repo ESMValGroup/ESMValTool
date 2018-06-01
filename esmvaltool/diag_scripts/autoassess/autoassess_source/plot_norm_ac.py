@@ -459,7 +459,11 @@ def normalise(test, ref, strict=False):
             if_float = isinstance(test[metric], float)
             if_int = isinstance(test[metric], int)
             if if_float or if_int:
-                norm[metric] = test[metric] / ref[metric]
+                if ref[metric] != 0:
+                    norm[metric] = test[metric] / ref[metric]
+                else:
+                    ref[metric] = 1.e-20
+                    norm[metric] = test[metric] / ref[metric]
             else:
                 norm[metric] = tuple(x / ref[metric] for x in test[metric])
 

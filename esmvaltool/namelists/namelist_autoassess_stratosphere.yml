@@ -1,6 +1,6 @@
 #### summary 
 #### namelist that runs the Autoassess Stratorsphere assessment area diagnostic
-#### Version: 26 April 2018 
+#### Version: 1 June 2018 
 #################
 #### Description:
 #################
@@ -15,25 +15,7 @@
 #### CAVEATS
 #################
 # - The original autoassess diagnostic needs MERRA obs data as well; not asked for here but it should be implemented
-#at a later stage;
-# - CMIP5 models apart from MPI-ESM models throw an error at autoassess diagnostic level:
-#Traceback (most recent call last):
-#  File "/group_workspaces/jasmin/ncas_cms/valeriu/anaconda2_test/envs/esmvaltool/lib/python3.6/site-packages/ESMValTool-2.0.0-py3.6.egg/esmvaltool/diag_scripts/autoassess/autoassess_source/autoassess/run_area.py", line 295, in <module>
-#      run_area()
-#        File "/group_workspaces/jasmin/ncas_cms/valeriu/anaconda2_test/envs/esmvaltool/lib/python3.6/site-packages/ESMValTool-2.0.0-py3.6.egg/esmvaltool/diag_scripts/autoassess/autoassess_source/autoassess/run_area.py", line 267, in run_area
-#            metrics = metric_function(run_object)
-#              File "/group_workspaces/jasmin/ncas_cms/valeriu/anaconda2_test/envs/esmvaltool/lib/python3.6/site-packages/ESMValTool-2.0.0-py3.6.egg/esmvaltool/diag_scripts/autoassess/autoassess_source/autoassess/assessment_areas/stratosphere/strat_metrics_1.py", line 578, in mainfunc
-#                  qbo_metrics(run, ucube, metrics)
-#                    File "/group_workspaces/jasmin/ncas_cms/valeriu/anaconda2_test/envs/esmvaltool/lib/python3.6/site-packages/ESMValTool-2.0.0-py3.6.egg/esmvaltool/diag_scripts/autoassess/autoassess_source/autoassess/assessment_areas/stratosphere/strat_metrics_1.py", line 339, in qbo_metrics
-#                        (period, amp_west, amp_east) = calc_qbo_index(qbo30)
-#                          File "/group_workspaces/jasmin/ncas_cms/valeriu/anaconda2_test/envs/esmvaltool/lib/python3.6/site-packages/ESMValTool-2.0.0-py3.6.egg/esmvaltool/diag_scripts/autoassess/autoassess_source/autoassess/assessment_areas/stratosphere/strat_metrics_1.py", line 175, in calc_qbo_index
-#                              if (indiciesdown[0] < indiciesup[0]):
-#                              IndexError: list index out of range
-#THIS NEEDS TO BE LOOKED AT BY P.EARNSHAW
-# - there is a problem with levels plotting and hence the isobars and isotemperatures have been
-# removed from plots (fyi P.EARNSHAW)
-# - age of air has not been tested because I dont have age of air var data; the data ingestion
-# should not be a problem since it's done the same as ERA or MERRA
+# at a later stage;
 ###########################################################################################################
 ---
 
@@ -45,7 +27,7 @@ models:
 preprocessors:
   pp_aa_area:
     extract_levels:
-      levels: [1000., 500., 100., 70., 50., 30., 10.]
+      levels: [100000., 50000., 10000., 7000., 5000., 3000., 1000.]
       scheme: nearest
     regrid:
       target_grid: ERA-Interim
