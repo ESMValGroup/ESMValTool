@@ -569,7 +569,7 @@ def continued_indentation(logical_line, tokens, indent_level, hang_closing,
     indent_next = logical_line.endswith(':')
 
     row = depth = 0
-    valid_hangs = (4,) if indent_char != '\t' else (4, 8)
+    valid_hangs = (2,) if indent_char != '\t' else (2, 4)
     # remember how many brackets were opened on each line
     parens = [0] * nrows
     # relative indents of physical lines
