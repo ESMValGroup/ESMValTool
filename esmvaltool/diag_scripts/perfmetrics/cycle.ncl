@@ -1,13 +1,13 @@
-;;#############################################################################
-;; PROCEDURE FOR THE ANNUAL CYCLE PLOT OF THE PERFORMANCE METRICS
-;; Authors: Mattia Righi (DLR, Germany) and Franziska Frank (DLR, Germany)
-;; ESMVal project
-;;#############################################################################
+; #############################################################################
+; PROCEDURE FOR THE ANNUAL CYCLE PLOT OF THE PERFORMANCE METRICS
+; Authors: Mattia Righi (DLR, Germany) and Franziska Frank (DLR, Germany)
+; ESMVal project
+; #############################################################################
 
 procedure perfmetrics_ptype_script()
 begin
 
-  ;; Define output array
+  ; Define output array
   if (diag_script_info@time_avg.eq."seasonalclim") then
     var_all = new((/dim_MOD, 4, 2/), float)
     var_all!1 = "season"
@@ -28,18 +28,18 @@ begin
   var_all&model = modelnames
   var_all&statistic = (/"mean", "stddev"/)
 
-  ;; Attach attributes
+  ; Attach attributes
   var_all@var = var0
   var_all@diag_script = (/diag_script/)
   copy_VarAtts(diag_script_info, var_all)
   var_all@ref_model = variable_info@reference_model
 
-  ;; Loop over models
+  ; Loop over models
   do imod = 0, dim_MOD - 1
 
     log_debug("Processing " + modelnames(imod))
 
-    ;; Set path for saving processed data ;; FIX-ME add preproc_id
+    ; Set path for saving processed data ; FIX-ME add preproc_id
     fullpath = config_user_info@work_dir + "/"
     system("mkdir -p " + fullpath)
     fname = basename(systemfunc("basename " + model_info@filename(imod)))
@@ -51,15 +51,15 @@ begin
     fname = fname + "_" + str_sub_str(diag_script_info@region, " ", "")
     procpath = fullpath + fname + ".nc"
 
-    ;; Determine start/end year
+    ; Determine start/end year
     start_year = get_start_year(imod)
     end_year = get_end_year(imod)
 
-    ;; Read data
+    ; Read data
     var = read_data(imod, var0, field_type0)
     dnames = getVarDimNames(var)
 
-    ;; Extract region and average over latitude and longitude
+    ; Extract region and average over latitude and longitude
     if (any(field_type0.eq.(/"T0M", "T0Ms", "T1M"/))) then
       var_reg = var
     else if (any(dnames.eq."lat") .and. any(dnames.eq."lon")) then
@@ -71,11 +71,11 @@ begin
     end if
     delete(var)
 
-    ;; Calculate time average
+    ; Calculate time average
     var_avg = time_operations(var_reg, start_year, end_year, "average", \
                               diag_script_info@time_avg, True)
 
-    ;; Calculate time standard deviation (with lower/upper bounds)
+    ; Calculate time standard deviation (with lower/upper bounds)
     if (start_year.lt.end_year) then
       var_std = time_operations(var_reg, start_year, end_year, "stddev", \
                                 diag_script_info@time_avg, True)
@@ -84,7 +84,7 @@ begin
     end if
     delete(var_reg)
 
-    ;; Write output
+    ; Write output
     var_all(imod, :, 0) = var_avg
     var_all(imod, :, 1) = var_std
     delete(var_avg)
@@ -96,17 +96,17 @@ begin
 
   end do
 
-  ;; Plotting
+  ; Plotting
   if (.not.diag_script_info@draw_plots) then
     return
   end if
 
-  ;; Convert units for plotting (if required)
+  ; Convert units for plotting (if required)
   if (isatt(diag_script_info, "plot_units")) then
     var_all = convert_units(var_all, diag_script_info@plot_units)
   end if
 
-  ;; Annotation and file names
+  ; Annotation and file names
   region_name = ""  ; priority 3
   location = ""  ; priority 3
   if (isatt(diag_script_info, "aux_info")) then

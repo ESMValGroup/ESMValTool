@@ -1,24 +1,24 @@
-;;#############################################################################
-;; PROCEDURE FOR THE LATLON PLOT OF THE PERFORMANCE METRICS
-;; Authors: Mattia Righi (DLR, Germany) and Franziska Frank (DLR, Germany)
-;; ESMVal project
-;;#############################################################################
+; #############################################################################
+; PROCEDURE FOR THE LATLON PLOT OF THE PERFORMANCE METRICS
+; Authors: Mattia Righi (DLR, Germany) and Franziska Frank (DLR, Germany)
+; ESMVal project
+; #############################################################################
 
 procedure perfmetrics_ptype_script()
 begin
 
-  ;; Set model indexes, with reference model first
+  ; Set model indexes, with reference model first
   modidx = ispan(0, dim_MOD - 1, 1)
   modidx := array_append_record(ref_ind, modidx(ind(modidx.ne.ref_ind)), 0)
 
-  ;; Loop over models
+  ; Loop over models
   do ii = 0, dimsizes(modidx) - 1
 
     imod = modidx(ii)
 
     log_debug("Processing " + modelnames(imod))
 
-    ;; Set path for saving processed data
+    ; Set path for saving processed data
     fullpath = config_user_info@work_dir + "/"
     system("mkdir -p " + fullpath)
     fname = basename(systemfunc("basename " + model_info@filename(imod)))
@@ -26,22 +26,22 @@ begin
     fname = fname + "_" + diag_script_info@time_avg
     procpath = fullpath + fname + "_Global.nc"
 
-    ;; Determine start/end year
+    ; Determine start/end year
     start_year = get_start_year(imod)
     end_year = get_end_year(imod)
 
-    ;; Read data
+    ; Read data
     var = read_data(imod, var0, field_type0)
     dnames = getVarDimNames(var)
 
-    ;; Calculate time average and standard dev. w.r.t. interannual variablity
+    ; Calculate time average and standard dev. w.r.t. interannual variablity
     var_avg = time_operations(var, start_year, end_year, "average", \
                               diag_script_info@time_avg, True)
     var_std = interannual_variability(var, start_year, end_year, \
                                       diag_script_info@time_avg)
     delete(var)
 
-    ;; Write output
+    ; Write output
     var_all = new(array_append_record(dimsizes(var_avg), 2, 0), float)
     var_all!2 = "statistic"
     var_all&statistic = (/"mean", "stddev"/)
@@ -56,22 +56,22 @@ begin
       ncdf_outfile = ncdf_write(var_all, procpath)
     end if
 
-    ;; Store reference model
+    ; Store reference model
     if (imod.eq.ref_ind) then
       var_ref = var_all
     end if
 
-    ;; Plotting
+    ; Plotting
     if (.not.diag_script_info@draw_plots) then
       continue
     end if
 
-    ;; Convert units for plotting (if required)
+    ; Convert units for plotting (if required)
     if (isatt(diag_script_info, "plot_units")) then
       var_all = convert_units(var_all, diag_script_info@plot_units)
     end if
 
-    ;; Absolute plot
+    ; Absolute plot
     outfile = config_user_info@plot_dir + modelnames(imod) + "_" + var0 + \
       "_latlon_" + diag_script_info@time_avg + "_Glob"
     plot_var = var_all(:, :, 0)
@@ -97,7 +97,7 @@ begin
     delete(wks)
     delete(plot)
 
-    ;; Difference plot to the reference
+    ; Difference plot to the reference
     if (.not.diag_script_info@plot_diff .or. imod.eq.ref_ind) then
       continue
     end if
@@ -125,7 +125,7 @@ begin
     plot = contour_map_ce(wks, plot_var, var0)
     delete(plot_var@res_cnLevels)
 
-    ;; Apply t-test (assuming different population variances)
+    ; Apply t-test (assuming different population variances)
     if (.not.diag_script_info@t_test) then
       continue
     end if
@@ -140,7 +140,7 @@ begin
     copy_VarCoords(plot_var, mask_var)
     delete(prob)
 
-    ;; Mask non-significant values
+    ; Mask non-significant values
     res2 = True
     res2@cnLevelSelectionMode = "ExplicitLevels"
     res2@cnLevels = (/0.0, diag_script_info@conf_level, 1.0/)
