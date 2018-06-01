@@ -2,22 +2,19 @@
 
 name: esmvaltool
 channels:
-- conda-forge
-
-# ESMVALTOOL DEPENDENCIES
+  - conda-forge
 
 dependencies:
-# Python packages that cannot be installed from PyPI:
-- basemap
-- iris
-- python-stratify
-- nc_time_axis # needed by autoassess
-# Multi language support:
-- ncl
-- libgdal=2.2.3  # Temporarily pin libgdal to get NCL working
-# TODO: add R, julia
+  # Python packages that cannot be installed from PyPI:
+  - basemap
+  - iris=1.13
+  - python-stratify
+  # Multi language support:
+  - ncl
+  - libgdal=2.2.3  # Temporarily pin libgdal to get NCL working
+  # TODO: add R, julia
 
-- pip:
-  # TODO: include dummydata in esmvaltool repository and move to setup.py
-  # dummydata fetched from github as a zip file, contains latest version
-  - https://github.com/ESMValGroup/dummydata/archive/dev.zip
+  - pip:
+      # TODO: include dummydata in esmvaltool repository and move to setup.py
+      # dummydata fetched from github as a zip file, contains latest version
+      - https://github.com/ESMValGroup/dummydata/archive/dev.zip
