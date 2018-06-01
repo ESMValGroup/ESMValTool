@@ -686,7 +686,7 @@ begin
       new_dimUnlim = array_append_record(dimUnlim, False, 0)
       new_dimNames = array_append_record(dimNames, dimNames(ii) + "_char", 0)
 
-       ; Delete and reattach to previous variable
+      ; Delete and reattach to previous variable
       delete([/dimSzs, dimUnlim, dimNames/])
       dimSzs = new_dimSzs
       dimUnlim = new_dimUnlim

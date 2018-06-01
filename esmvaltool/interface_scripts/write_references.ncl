@@ -1,10 +1,10 @@
-;#######################################################################
+; #######################################################################
 ; This code reads references information from the master file and
 ; writes it to the reference/acknowledgement output file.
 ; This is a stand-alone version of the function "write_references"
 ; (interface_scripts/logging.ncl) called by Python to write the
 ; reference/acknowledgement output file.
-;#######################################################################
+; #######################################################################
 
 ; definition of functions write_header and write_diag_header
 load "./interface_scripts/write_header.ncl"
