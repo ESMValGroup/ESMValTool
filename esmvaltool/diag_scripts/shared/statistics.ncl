@@ -860,7 +860,7 @@ begin
   do idx = 1, dimsizes(season_monthly_indices) - 1
     tmp = array_append_record(seasonal_selection_ind, \
                               ind(months % 12.eq. \
-                              season_monthly_indices(idx)), 0)
+                                  season_monthly_indices(idx)), 0)
     delete(seasonal_selection_ind)
     seasonal_selection_ind = tmp
     delete(tmp)

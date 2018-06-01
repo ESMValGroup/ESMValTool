@@ -603,7 +603,7 @@ begin
       local_model = rect2rect_interp(model, ref)
     end if
     local_ref = ref
-     ; Copy meta data
+    ; Copy meta data
     difference = local_ref
   end if
   dimmodel = dimsizes(local_model)

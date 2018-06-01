@@ -21,7 +21,7 @@ load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/constants.ncl"
 load "./interface_scripts/data_handling.ncl"
 load "./interface_scripts/logging.ncl"
-;load "./reformat_scripts/obs/reformat_obs_func.ncl"  ; write_nc ; FIX-ME
+; load "./reformat_scripts/obs/reformat_obs_func.ncl"  ; write_nc ; FIX-ME
 
 ; #############################################################################
 undef("roi")
@@ -844,14 +844,14 @@ begin
   field_out      = addfile(regfile_in_tmp, "w")
   field_out->lat = lat
   field_out->lon = lon
-    
+
   ; Call 'CDO remapdis' with system call
   quote = inttochar(34)
   system("ncatted -a coordinates," + var + ",c,c," + quote + \
-         "lon lat" + quote + " " + regfile_in_tmp )
+         "lon lat" + quote + " " + regfile_in_tmp)
   system("cdo -s remapdis," + dst_grid + " -selname," + \
-         var + " " + regfile_in_tmp + " " + regfile_out_tmp )
-    
+         var + " " + regfile_in_tmp + " " + regfile_out_tmp)
+
   ; Read regridded field and return it
   var_reg = ncdf_read(regfile_out_tmp, var)
   return(var_reg)
