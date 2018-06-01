@@ -1,4 +1,4 @@
-:"""ESMValtool task definition"""
+"""ESMValtool task definition"""
 import contextlib
 import datetime
 import logging
