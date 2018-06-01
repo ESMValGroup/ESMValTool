@@ -1,25 +1,25 @@
-;;#############################################################################
-;; GENERAL ROUTINES FOR STATISTICS
-;;#############################################################################
-;; Please consider using of extending existing routines before adding new ones.
-;; Check the header of each routine for documentation.
-;;
-;; Contents:
-;;    function dim_stddev_wgt_Wrap
-;;    function time_operations
-;;    function calc_season_index
-;;    function extract_season
-;;    function month_to_season_extended
-;;    function coswgt_areaave
-;;    function coswgt_arearmse
-;;    function coswgt_pattern_cor
-;;    function interannual_variability
-;;    function calculate_metric
-;;    function normalize_metric
-;;    function distrib_stats
-;;    function lognormal_dist
-;;
-;;#############################################################################
+; #############################################################################
+; GENERAL ROUTINES FOR STATISTICS
+; #############################################################################
+; Please consider using of extending existing routines before adding new ones.
+; Check the header of each routine for documentation.
+;
+; Contents:
+;    function dim_stddev_wgt_Wrap
+;    function time_operations
+;    function calc_season_index
+;    function extract_season
+;    function month_to_season_extended
+;    function coswgt_areaave
+;    function coswgt_arearmse
+;    function coswgt_pattern_cor
+;    function interannual_variability
+;    function calculate_metric
+;    function normalize_metric
+;    function distrib_stats
+;    function lognormal_dist
+;
+; #############################################################################
 
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/logging.ncl"
@@ -27,38 +27,38 @@ load "./interface_scripts/logging.ncl"
 load "./diag_scripts/shared/latlon.ncl"
 load "./diag_scripts/shared/regridding.ncl"
 
-;;#############################################################################
+; #############################################################################
 undef("dim_stddev_wgt_Wrap")
 function dim_stddev_wgt_Wrap(field[*]:numeric,
                              ww[*]:numeric,
                              opt[1]:integer)
-;;
-;; Arguments
-;;    field: a one-dimensional numeric array.
-;;    ww: a one-dimensional numeric array of the same size of field.
-;;    opt: a scalar, it has the same meaning as in the corresponding NCL
-;;    function dim_avg_wgt_Wrap
-;;
-;; Return value
-;;    A float or a double depending on the type of input
-;;
-;; Description
-;;    Calculates the (unbiased) weighted standard deviation consistently with
-;;    the NCL function dim_std_dev (i.e. it divides by N-1 instead of N). For
-;;    the weighted case this means applying a correction factor:
-;;      sum(w_i)/[sum(w_i)^2 - sum(w_i^2)]
-;;    Missing values are ignored.
-;;
-;; Caveats
-;;
-;; References
-;;    en.wikipedia.org/wiki/Weighted_arithmetic_mean#Weighted_sample_variance
-;;
-;; Modification history
-;;    20150511-A_laue_ax: modified routine "calculate_metric":
-;;                        added "no weigth" (nowgt) option
-;;    20141215-A_righ_ma: written.
-;;
+;
+; Arguments
+;    field: a one-dimensional numeric array.
+;    ww: a one-dimensional numeric array of the same size of field.
+;    opt: a scalar, it has the same meaning as in the corresponding NCL
+;    function dim_avg_wgt_Wrap
+;
+; Return value
+;    A float or a double depending on the type of input
+;
+; Description
+;    Calculates the (unbiased) weighted standard deviation consistently with
+;    the NCL function dim_std_dev (i.e. it divides by N-1 instead of N). For
+;    the weighted case this means applying a correction factor:
+;      sum(w_i)/[sum(w_i)^2 - sum(w_i^2)]
+;    Missing values are ignored.
+;
+; Caveats
+;
+; References
+;    en.wikipedia.org/wiki/Weighted_arithmetic_mean#Weighted_sample_variance
+;
+; Modification history
+;    20150511-A_laue_ax: modified routine "calculate_metric":
+;                        added "no weigth" (nowgt) option
+;    20141215-A_righ_ma: written.
+;
 local funcname, scriptname, wavg, wgt, v1, v2, d2, arg
 begin
 
@@ -67,7 +67,7 @@ begin
 
   enter_msg(scriptname, funcname)
 
-  ;; Copy to local
+  ; Copy to local
   wgt = ww
   wgt@_FillValue = default_fillvalue(typeof(wgt))
 
@@ -76,10 +76,10 @@ begin
               "only 1 element, cannot calculate standard deviation")
   end if
 
-  ;; Calculate weighted mean
+  ; Calculate weighted mean
   wavg = dim_avg_wgt_Wrap(field, ww, opt)
 
-  ;; Filter missing values
+  ; Filter missing values
   if (.not.all(ismissing(field))) then
     v1 = sum(where(ismissing(field), wgt@_FillValue, wgt))
     v2 = sum(where(ismissing(field), wgt@_FillValue, wgt) ^ 2)
@@ -90,7 +90,7 @@ begin
     return(out)
   end if
 
-  ;; Calculate weighted standard deviation
+  ; Calculate weighted standard deviation
   d2 = (field - wavg) ^ 2
   arg = dim_sum_wgt_Wrap(d2, ww, opt)
   out = sqrt(v1 / (v1 ^ 2 - v2) * arg)
@@ -100,7 +100,7 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("time_operations")
 function time_operations(field:numeric,
                          y1[1]:integer,
@@ -108,53 +108,53 @@ function time_operations(field:numeric,
                          oper[1]:string,
                          opt[1]:string,
                          l_wgt[1]:logical)
-;;
-;; Arguments
-;;    field: a numeric array of rank 1 to 4, first dimension must be time.
-;;    y1: start year of the time period to be averaged (-1 for full range).
-;;    y2: end year of the time period to be averaged (-1 for full range).
-;;    oper: type of operations:
-;;            "extract": no average, just extract selected period.
-;;            "average": average.
-;;            "stddev": (unbiased) standard deviation.
-;;    opt: operation options (has no effect is oper = extract):
-;;           "annualclim": annual climatology.
-;;           "seasonalclim": seasonal climatology for the standard seasons DJF,
-;;                           MAM, JJA, SON.
-;;           "monthlyclim": monthly climatology jan-dec.
-;;                For monthly input data only! Apply mymm first, if necessary.
-;;           "mymm": multi year monthly mean
-;;           "yearly": time average over every year in [y1:y2].
-;;           [month strings]: climatology of selected (consecutive) months
-;;                            (e.g., "MAM", "SONDJ").
-;;           [1, 12]: climatology of the selected month ("1"=Jan, "2"=Feb, ...,
-;;                    "12"=Dec).
-;;    l_wgt: if True, calculate weighted average, with days-per-month as
-;;           weights (has no effect is opt = "extract").
-;;
-;; Return value
-;;    An array of the same rank as field or of rank-1, depending on oper/opt.
-;;
-;; Description
-;;    Performs differnt types of time average, standard deviation or extraction
-;;    of a selected time period. Weighted average (with days-per-month as
-;;    weights) can be optionally applied.
-;;
-;; Caveats
-;;    The weighted standard deviation is not yet implmented for all cases
-;;    The weighted standard deviation is calculated using the unbiased
-;;    estimator, c
-;;    This should take into account missing values and exclude the w_i for
-;;    which the field contains only missing values. This feature is not
-;;    implemented yet.
-;;
-;; References
-;;
-;; Modification history
-;;    20140703-A_gott_kl: added option "mymm".
-;;    20140312-A_righ_ma: extended with standard deviation.
-;;    20140109-A_righ_ma: written.
-;;
+;
+; Arguments
+;    field: a numeric array of rank 1 to 4, first dimension must be time.
+;    y1: start year of the time period to be averaged (-1 for full range).
+;    y2: end year of the time period to be averaged (-1 for full range).
+;    oper: type of operations:
+;            "extract": no average, just extract selected period.
+;            "average": average.
+;            "stddev": (unbiased) standard deviation.
+;    opt: operation options (has no effect is oper = extract):
+;           "annualclim": annual climatology.
+;           "seasonalclim": seasonal climatology for the standard seasons DJF,
+;                           MAM, JJA, SON.
+;           "monthlyclim": monthly climatology jan-dec.
+;                For monthly input data only! Apply mymm first, if necessary.
+;           "mymm": multi year monthly mean
+;           "yearly": time average over every year in [y1:y2].
+;           [month strings]: climatology of selected (consecutive) months
+;                            (e.g., "MAM", "SONDJ").
+;           [1, 12]: climatology of the selected month ("1"=Jan, "2"=Feb, ...,
+;                    "12"=Dec).
+;    l_wgt: if True, calculate weighted average, with days-per-month as
+;           weights (has no effect is opt = "extract").
+;
+; Return value
+;    An array of the same rank as field or of rank-1, depending on oper/opt.
+;
+; Description
+;    Performs differnt types of time average, standard deviation or extraction
+;    of a selected time period. Weighted average (with days-per-month as
+;    weights) can be optionally applied.
+;
+; Caveats
+;    The weighted standard deviation is not yet implmented for all cases
+;    The weighted standard deviation is calculated using the unbiased
+;    estimator, c
+;    This should take into account missing values and exclude the w_i for
+;    which the field contains only missing values. This feature is not
+;    implemented yet.
+;
+; References
+;
+; Modification history
+;    20140703-A_gott_kl: added option "mymm".
+;    20140312-A_righ_ma: extended with standard deviation.
+;    20140109-A_righ_ma: written.
+;
 local funcname, scriptname, monthstr, date, year, month, idx1, idx2, loc_y1, \
   loc_y2, rank, subfield, weights, idx, idx_win, idx_spr, idx_sum, idx_aut, \
   mm, idx_1st, idx_arr, p1, p2, d2, arg, v1, v2, ym_in, years, nyear, ym, \
@@ -166,38 +166,38 @@ begin
 
   enter_msg(scriptname, funcname)
 
-  ;; Check arguments
+  ; Check arguments
   if (all(oper.ne.(/"extract", "average", "stddev"/))) then
     error_msg("f", scriptname, funcname, "unrecognized operation " + oper)
   end if
 
-  ;; Check for time dimension
+  ; Check for time dimension
   if (field!0.ne."time") then
     error_msg("f", scriptname, funcname, "the first dimension " + \
               "of input is not time")
   end if
 
-  ;; Check for calendar attribute
+  ; Check for calendar attribute
   if (.not.isatt(field&time, "calendar")) then
     error_msg("f", scriptname, funcname, "time dimension of " + \
               "input must have a calendar attribute")
   end if
 
-  ;; Define months string
+  ; Define months string
   monthstr = "JFMAMJJASOND"
   monthstr = monthstr + monthstr
 
-  ;; Define flags
+  ; Define flags
   l_ext = oper.eq."extract"
   l_avg = oper.eq."average"
   l_std = oper.eq."stddev"
 
-  ;; Calculate date from time coordinate
+  ; Calculate date from time coordinate
   date := cd_calendar(field&time, 0)
   year := date(:, 0)
   month := date(:, 1)
 
-  ;; Determine indexes for the requested time range
+  ; Determine indexes for the requested time range
   if (y1.eq.-1) then
     idx1 = 0
     loc_y1 = toint(min(date(:, 0)))
@@ -220,7 +220,7 @@ begin
   delete(year)
   delete(month)
 
-  ;; Extract requested time range
+  ; Extract requested time range
   rank = dimsizes(dimsizes(field))
   if (rank.eq.4) then
     subfield = field(idx1:idx2, :, :, :)
@@ -235,13 +235,13 @@ begin
     subfield = field(idx1:idx2)
   end if
 
-  ;; Re-calculate date for subfield
+  ; Re-calculate date for subfield
   date := cd_calendar(subfield&time, 0)
   year := date(:, 0)
   month := date(:, 1)
   rank := dimsizes(dimsizes(subfield))
 
-  ;; Define weights as days-per-month
+  ; Define weights as days-per-month
   if (l_wgt) then
     weights = days_in_month(toint(year), toint(month))
   else
@@ -249,15 +249,15 @@ begin
     weights = 1.
   end if
 
-  ;; Extract only
+  ; Extract only
   if (l_ext .and. opt.eq."") then
     leave_msg(scriptname, funcname)
     return(subfield)
   end if
 
-  ;; Calculate time average/standard deviation according to the opt argument
+  ; Calculate time average/standard deviation according to the opt argument
 
-  ;; Multi-year average
+  ; Multi-year average
   if (opt.eq."annualclim") then
     if (l_avg) then
       out = dim_avg_wgt_n_Wrap(subfield, weights, 1, 0)
@@ -269,7 +269,7 @@ begin
     return(out)
   end if
 
-  ;; Year average
+  ; Year average
   if (opt.eq."yearly") then
     ny = loc_y2 - loc_y1 + 1
     if (rank.eq.4) then
@@ -335,7 +335,7 @@ begin
     return(out)
   end if
 
-  ;; Season average
+  ; Season average
   if (opt.eq."seasonalclim") then
     idx_win = ind(month.eq.1.or.month.eq.2.or.month.eq.12)
     idx_spr = ind(month.eq.3.or.month.eq.4.or.month.eq.5)
@@ -412,7 +412,7 @@ begin
     return(out)
   end if
 
-  ;; Annual cycle
+  ; Annual cycle
   if (opt.eq."monthlyclim") then
     if (rank.eq.4) then
       out = subfield(0:11, :, :, :)  ; Copy metadata
@@ -470,15 +470,15 @@ begin
     return(out)
   end if
 
-  ;; Multi year monthly mean
-  ;;   Output 12 months for each year that occurs in variable "year".
-  ;;   Months without an input value are set to missing.
+  ; Multi year monthly mean
+  ;   Output 12 months for each year that occurs in variable "year".
+  ;   Months without an input value are set to missing.
   if (opt.eq."mymm") then
 
-    ;; Concatenate year and month of input field
+    ; Concatenate year and month of input field
     ym_in = 100 * toint(year) + toint(month)
 
-    ;; Init target field
+    ; Init target field
     years = ispan(toint(min(year)), toint(max(year)), 1)
     nyear = dimsizes(years)
     ym = new(nyear * 12, integer)
@@ -509,7 +509,7 @@ begin
     out!0 = "time"
     out&time = timec
 
-    ;; Determine FillValue
+    ; Determine FillValue
     if(isatt(subfield, "_FillValue")) then
       FillValue = subfield@_FillValue
     else
@@ -517,7 +517,7 @@ begin
     end if
     out@_FillValue = FillValue
 
-    ;; Fill target field
+    ; Fill target field
     if(rank.eq.4) then
       do i = 0, dimsizes(ym) - 1
         index = ind(ym_in.eq.ym(i))
@@ -611,7 +611,7 @@ begin
     return(out)
   end if
 
-  ;; Months string (at least 2 consecutive months): define indexes
+  ; Months string (at least 2 consecutive months): define indexes
   if (.not.ismissing(str_match_ind_ic(monthstr, opt)).and. \
       strlen(opt).ge.2.and.strlen(opt).le.12) then
     idx_1st =  str_index_of_substr(monthstr, str_upper(opt), 1)
@@ -635,12 +635,12 @@ begin
     delete(idx_arr)
   end if
 
-  ;; Specific-month average: define indexes
+  ; Specific-month average: define indexes
   if (any(opt.eq.tostring(ispan(1, 12, 1)))) then
     idx = ind(month.eq.toint(opt))
   end if
 
-  ;; Extract or average over the above indexes
+  ; Extract or average over the above indexes
   if (isdefined("idx")) then
     if (rank.eq.4) then
       if (l_ext) then
@@ -711,27 +711,27 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("calc_season_index")
 function calc_season_index(season[1]:string)
-;;
-;; Arguments
-;;    season: the season in upper case.
-;;
-;; Return value
-;;    The indices to the months in season, e.g. "JFM" returns (/0, 1, 2/).
-;;
-;; Description
-;;    Given the "season", i.e., any substring from "JFMAMJJASOND", retrieves
-;;    the corresponding indices. Crashes if given substring is not unique or
-;;    does not exist.
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;
+;
+; Arguments
+;    season: the season in upper case.
+;
+; Return value
+;    The indices to the months in season, e.g. "JFM" returns (/0, 1, 2/).
+;
+; Description
+;    Given the "season", i.e., any substring from "JFMAMJJASOND", retrieves
+;    the corresponding indices. Crashes if given substring is not unique or
+;    does not exist.
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;
 local funcname, scriptname, current_search_set, DEBUG, i, indices, months, \
   start_index, strIndex, stringmonths, string_search_set, subStringLength
 begin
@@ -743,13 +743,13 @@ begin
 
   DEBUG = False
 
-  ;; The months with a wrap around of six months
-  ;; (so we can find "DJF", etc..)
+  ; The months with a wrap around of six months
+  ; (so we can find "DJF", etc..)
   stringmonths = "JFMAMJJASONDJFMAMJ"
   months = stringtochar(stringmonths)
 
-  ;; Loop using twelve months at a time from 'stringmonths', i.e, first
-  ;; iteration uses Jan   -> Dec, next iteration uses April -> March, ...
+  ; Loop using twelve months at a time from 'stringmonths', i.e, first
+  ; iteration uses Jan   -> Dec, next iteration uses April -> March, ...
   do start_index = 0, 6, 3
     current_search_set = months(start_index:start_index + 11)
     string_search_set = charactertostring(current_search_set)
@@ -762,26 +762,26 @@ begin
       error_msg("f", scriptname, funcname, "strIndex = " + strIndex)
     end if
 
-    ;; Exit immediately if our substring 'season' is not unique
-    ;; (e.g., season="J")
+    ; Exit immediately if our substring 'season' is not unique
+    ; (e.g., season="J")
     if (dimsizes(strIndex) .gt. 1) then
       error_msg("f", scriptname, funcname, "multiple occurences of substring")
     end if
 
-    ;; If there is no match, grab a new set of twelve months
-    ;; from the wrap-around 'stringmonths'
+    ; If there is no match, grab a new set of twelve months
+    ; from the wrap-around 'stringmonths'
     if (ismissing(strIndex)) then
       continue
     end if
     break
   end do
 
-  ;; Exit if there is no match
+  ; Exit if there is no match
   if (ismissing(strIndex)) then
     error_msg("f", scriptname, funcname, "could not find substring")
   end if
 
-  ;; Compute the indices for the requested season
+  ; Compute the indices for the requested season
   subStringLength = sizeof(stringtochar(season)) - 1
   if (DEBUG) then
     error_msg("f", scriptname, funcname, "subStringLength = " + \
@@ -793,7 +793,7 @@ begin
     error_msg("f", scriptname, funcname, "indices=" + indices)
   end if
 
-  ;; Subtract indices larger than 11 (i.e., we have a wrap around case)
+  ; Subtract indices larger than 11 (i.e., we have a wrap around case)
   do i = 0, dimsizes(indices) - 1
     if (indices(i) .gt. 11) then
       indices(i) = indices(i) - 12
@@ -805,28 +805,28 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("extract_season")
 function extract_season(data:numeric,
                         season[1]:string)
-;;
-;; Arguments
-;;    data: a numeric field with time dimension.
-;;    season:  the season in upper case.
-;;
-;; Return value
-;;    The temporal subset of indata defined by the 'season' string.
-;;
-;; Description
-;;    Given the "season", i.e., any substring from "JFMAMJJASOND", retrieves
-;;    the corresponding months from data.
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;
+;
+; Arguments
+;    data: a numeric field with time dimension.
+;    season:  the season in upper case.
+;
+; Return value
+;    The temporal subset of indata defined by the 'season' string.
+;
+; Description
+;    Given the "season", i.e., any substring from "JFMAMJJASOND", retrieves
+;    the corresponding months from data.
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;
 local funcname, scriptname, idx, subset_selection, months, newtime, \
   seasonal_selection_ind, season_monthly_indices, sizes, start_of_year, \
   tmp, local_indata, ndims
@@ -841,7 +841,7 @@ begin
   months = tointeger(cd_convert(data&time, "months since 1850-01-01 00:00"))
 
   local_data = data
-  ;; Ensure first month is January
+  ; Ensure first month is January
   if (months(0) % 12 .ne. 0) then
     start_of_year = ind(tointeger(months) % 12 .eq. 0)
     sizes = dimsizes(local_data&time)
@@ -855,7 +855,7 @@ begin
   end if
   months = months - min(months)
 
-  ;; Extract the given months
+  ; Extract the given months
   seasonal_selection_ind = ind(months % 12 .eq. season_monthly_indices(0))
   do idx = 1, dimsizes(season_monthly_indices) - 1
     tmp = array_append_record(seasonal_selection_ind, \
@@ -891,28 +891,28 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("month_to_season_extended")
 function month_to_season_extended(indata:float,
                                   season[1]:string)
-;;
-;; Arguments
-;;    indata: a [lat][lon][time] or.
-;;            a [lat][lon][plev|[time] array
-;;    season: compute the average for this season.
-;;
-;; Return value
-;;    An array with the seasonal average for each year.
-;;
-;; Description
-;;    For each year in the input data, averages indata over the given season.
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;
+;
+; Arguments
+;    indata: a [lat][lon][time] or.
+;            a [lat][lon][plev|[time] array
+;    season: compute the average for this season.
+;
+; Return value
+;    An array with the seasonal average for each year.
+;
+; Description
+;    For each year in the input data, averages indata over the given season.
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;
 local funcname, scriptname, season_indices, dim_season_indices, \
   runaveragedata, start_index, averagedata, dim
 begin
@@ -931,8 +931,8 @@ begin
   season_indices = calc_season_index(season)
   dim_season_indices = dimsizes(season_indices)
 
-  ;; Compute average over 'dim_season_indices' number of months with the help
-  ;; of a running average
+  ; Compute average over 'dim_season_indices' number of months with the help
+  ; of a running average
   if (dimsizes(indata_size) .eq. 3) then
     runaveragedata = \
       runave_Wrap(indata({lat|:}, {lon|:}, time|:), dim_season_indices, 0)
@@ -947,16 +947,16 @@ begin
   end if
   end if
 
-  ;; By picking the correct 'start_index' in the running average array we
-  ;; will retrieve the average over the indicated season
-  ;; (see runave-documentation for details)
+  ; By picking the correct 'start_index' in the running average array we
+  ; will retrieve the average over the indicated season
+  ; (see runave-documentation for details)
   if (dim_season_indices % 2 .eq. 0) then
     start_index = season_indices(0) + (dim_season_indices - 2) / 2
   else
     start_index = season_indices(0) + (dim_season_indices - 1) / 2
   end if
 
-  ;; Extract seasonal average for every year
+  ; Extract seasonal average for every year
   if (dimsizes(indata_size) .eq. 3) then
     averagedata = (/runaveragedata(time|start_index::12, lat|:, lon|:)/)
   else if(dimsizes(indata_size) .eq. 4) then
@@ -994,26 +994,26 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("coswgt_areaave")
 function coswgt_areaave(field:numeric)
-;;
-;; Arguments
-;;    field: numeric field.
-;;
-;; Return value
-;;    The area average using cosine lat weights.
-;;
-;; Description
-;;    Computes the area average using cosine lat weights and lon weights=1.
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;    20131209-A_eval_ma: written.
-;;
+;
+; Arguments
+;    field: numeric field.
+;
+; Return value
+;    The area average using cosine lat weights.
+;
+; Description
+;    Computes the area average using cosine lat weights and lon weights=1.
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20131209-A_eval_ma: written.
+;
 local funcname, scriptname, lat, wgt_lat, lon, lon_size, wgt_lon, ave
 begin
 
@@ -1037,28 +1037,28 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("coswgt_arearmse")
 function coswgt_arearmse(field1:numeric,
                          field2:numeric)
-;;
-;; Arguments
-;;    field1: numeric field
-;;    field2: numeric field
-;;
-;; Return value
-;;    Area rmse average using cosine lat weights.
-;;
-;; Description
-;;    Computes area rmse areage using cosine lat weights and lon weights=1.
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history:
-;;    20131209-A_eval_ma: written.
-;;
+;
+; Arguments
+;    field1: numeric field
+;    field2: numeric field
+;
+; Return value
+;    Area rmse average using cosine lat weights.
+;
+; Description
+;    Computes area rmse areage using cosine lat weights and lon weights=1.
+;
+; Caveats
+;
+; References
+;
+; Modification history:
+;    20131209-A_eval_ma: written.
+;
 local funcname, scriptname, lat, wgt_lat, lon, lon_size, wgt_lon, rmse, \
   local_field1, local_field2
 begin
@@ -1094,27 +1094,27 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("coswgt_pattern_cor")
 function coswgt_pattern_cor(field1:numeric,
                             field2:numeric)
-;;
-;; Arguments
-;;    field1: numeric field.
-;;    field2: numeric field.
-;;
-;; Return value
-;;    Pattern correlation cosine lat weights.
-;;
-;; Description
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history:
-;;    20140115-A_eval_ma: written.
-;;
+;
+; Arguments
+;    field1: numeric field.
+;    field2: numeric field.
+;
+; Return value
+;    Pattern correlation cosine lat weights.
+;
+; Description
+;
+; Caveats
+;
+; References
+;
+; Modification history:
+;    20140115-A_eval_ma: written.
+;
 local funcname, scriptname, lat, wgt_lat, lon, lon_size, wgt_lon, \
   pattern_correlation, local_field1, local_field2
 begin
@@ -1150,43 +1150,43 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("interannual_variability")
 function interannual_variability(field: numeric,
                                  y1[1]: integer,
                                  y2[1]: integer,
                                  opt[1]: string)
-;;
-;; Arguments
-;;    field: a numeric array of rank 1 to 4, first dimension must be time.
-;;    y1: start year of the time period to be averaged (-1 for full range).
-;;    y2: end year of the time period to be averaged (-1 for full range).
-;;    opt: operation options (same as time_operations):
-;;           "annualclim": annual climatology.
-;;           "seasonalclim": seasonal climatology for the standard seasons DJF,
-;;                           MAM, JJA, SON.
-;;           "monthlyclim": monthly climatology jan-dec.
-;;           [month strings]: climatology of selected (consecutive) months
-;;                            (e.g. "MAM", "SONDJ").
-;;           [1, 12]: climatology of the selected month ("1"=Jan, "2"=Feb, ...,
-;;                    "12"=Dec).
-;;
-;; Return value
-;;    An array of the same rank as field or of rank-1, depending on opt.
-;;
-;; Description
-;;    Calculates the standard deviation with respect to interannual
-;;    variability, to be used as input for statistical tests.
-;;
-;; Caveats
-;;    The standard deviation is not weighted, being w.r.t. interannual
-;;    variability for which all years have the same weight.
-;;
-;; Reference
-;;
-;; Modification history
-;;    20140314-A_righ_ma: written.
-;;
+;
+; Arguments
+;    field: a numeric array of rank 1 to 4, first dimension must be time.
+;    y1: start year of the time period to be averaged (-1 for full range).
+;    y2: end year of the time period to be averaged (-1 for full range).
+;    opt: operation options (same as time_operations):
+;           "annualclim": annual climatology.
+;           "seasonalclim": seasonal climatology for the standard seasons DJF,
+;                           MAM, JJA, SON.
+;           "monthlyclim": monthly climatology jan-dec.
+;           [month strings]: climatology of selected (consecutive) months
+;                            (e.g. "MAM", "SONDJ").
+;           [1, 12]: climatology of the selected month ("1"=Jan, "2"=Feb, ...,
+;                    "12"=Dec).
+;
+; Return value
+;    An array of the same rank as field or of rank-1, depending on opt.
+;
+; Description
+;    Calculates the standard deviation with respect to interannual
+;    variability, to be used as input for statistical tests.
+;
+; Caveats
+;    The standard deviation is not weighted, being w.r.t. interannual
+;    variability for which all years have the same weight.
+;
+; Reference
+;
+; Modification history
+;    20140314-A_righ_ma: written.
+;
 local funcname, scriptname, monthstr, rank, field_avg, field_djf, field_mam, \
   field_jja, field_son, field_avg_djf, field_avg_mam, field_avg_jja, \
   field_avg_son
@@ -1197,26 +1197,26 @@ begin
 
   enter_msg(scriptname, funcname)
 
-  ;; Check for time dimension
+  ; Check for time dimension
   if (field!0.ne."time") then
     error_msg("f", scriptname, funcname, "the first dimension " + \
               "of input is not time")
   end if
 
-  ;; Check for calendar attribute
+  ; Check for calendar attribute
   if (.not.isatt(field&time, "calendar")) then
     error_msg("f", scriptname, funcname, "time dimension of " + \
               "input must have a calendar attribute")
   end if
 
-  ;; Define months string
+  ; Define months string
   monthstr = "JFMAMJJASOND"
   monthstr = monthstr + monthstr
 
-  ;; Define rank
+  ; Define rank
   rank = dimsizes(dimsizes(field))
 
-  ;; Annual climatology
+  ; Annual climatology
   if (opt.eq."annualclim") then
     field_avg = time_operations(field, y1, y2, "average", "yearly", True)
     out = dim_stddev_n_Wrap(field_avg, 0)
@@ -1224,7 +1224,7 @@ begin
     return(out)
   end if
 
-  ;; Seasonal climatology
+  ; Seasonal climatology
   if (opt.eq."seasonalclim") then
     field_djf = time_operations(field, y1, y2, "extract", "DJF", True)
     field_mam = time_operations(field, y1, y2, "extract", "MAM", True)
@@ -1271,14 +1271,14 @@ begin
     return(out)
   end if
 
-  ;; Monthly climatology
+  ; Monthly climatology
   if (opt.eq."monthlyclim") then
     out = time_operations(field, y1, y2, "stddev", opt, True)
     leave_msg(scriptname, funcname)
     return(out)
   end if
 
-  ;; Month string
+  ; Month string
   if (.not.ismissing(str_match_ind_ic(monthstr, opt)).and. \
       strlen(opt).ge.2.and.strlen(opt).le.12) then
     field_ext = time_operations(field, y1, y2, "extract", opt, True)
@@ -1292,7 +1292,7 @@ begin
     return(out)
   end if
 
-  ;; Specific-month
+  ; Specific-month
   if (any(opt.eq.tostring(ispan(1, 12, 1)))) then
     out = time_operations(field, y1, y2, "stddev", opt, True)
     leave_msg(scriptname, funcname)
@@ -1303,36 +1303,36 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("calculate_metric")
 function calculate_metric(var:numeric,
                           ref:numeric,
                           metric:string)
-;;
-;; Arguments
-;;    var: a 1-D or 2-D numerical array.
-;;    ref: a numerical array of the same dimensionality of var.
-;;    metric: a string with the metric to calculate:
-;;             "RMSD": root-mean square difference.
-;;             "RMSDxy": root-mean square difference for each grid cell.
-;;             "BIAS": mean bias.
-;;             "stddev_ratio": ratio of standard deviations of var and ref
-;;                             (to be used in Taylor diagram).
-;;             "correlation": pattern correlation for var and ref
-;;                            (to be used in Taylor diagram).
-;;
-;; Return value
-;;    A scalar float representing the calculated grading metric.
-;;
-;; Description
-;;    Calculate a grading metrics given two input variables of the same
-;;    dimensionality.
-;;
-;; Modification history
-;;    20140313-A_righ_ma: implemented weights calculation within the function,
-;;                     depending on dimensionality.
-;;    20140120-A_fran_fr: written.
-;;
+;
+; Arguments
+;    var: a 1-D or 2-D numerical array.
+;    ref: a numerical array of the same dimensionality of var.
+;    metric: a string with the metric to calculate:
+;             "RMSD": root-mean square difference.
+;             "RMSDxy": root-mean square difference for each grid cell.
+;             "BIAS": mean bias.
+;             "stddev_ratio": ratio of standard deviations of var and ref
+;                             (to be used in Taylor diagram).
+;             "correlation": pattern correlation for var and ref
+;                            (to be used in Taylor diagram).
+;
+; Return value
+;    A scalar float representing the calculated grading metric.
+;
+; Description
+;    Calculate a grading metrics given two input variables of the same
+;    dimensionality.
+;
+; Modification history
+;    20140313-A_righ_ma: implemented weights calculation within the function,
+;                     depending on dimensionality.
+;    20140120-A_fran_fr: written.
+;
 local funcname, scriptname, dims_var, dims_ref, ii, dim_names, mdays, sdays, \
   weights, var1d, ref1d, wgt1d, avg_var, avg_ref, p1, p2, p3, var3d, wgt3d, \
   tmean_m, tmean_o, tmp_m, tmp_o
@@ -1343,7 +1343,7 @@ begin
 
   enter_msg(scriptname, funcname)
 
-  ;; Check for dimensions consistency
+  ; Check for dimensions consistency
   dims_var = dimsizes(var)
   dims_ref = dimsizes(ref)
   if (dimsizes(dims_var).ne.dimsizes(dims_ref)) then
@@ -1362,37 +1362,37 @@ begin
   mdays = (/31, 28.25, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31/)
   sdays = (/92, 92, 91, 90.25/)
 
-  ;; Calculate weights for time case
+  ; Calculate weights for time case
   if (dimsizes(dim_names).eq.1) then
 
-    ;; Monthly climatology
+    ; Monthly climatology
     if (dim_names.eq."month" .and. dims_var.eq.12) then
       weights = mdays
     end if
 
-    ;; Seasonal climatology
+    ; Seasonal climatology
     if (dim_names.eq."season" .and. dims_var.eq.4) then
       weights = sdays
     end if
 
   end if
 
-  ;; Calculate weights for lat-lon case
+  ; Calculate weights for lat-lon case
   if (dimsizes(dim_names).eq.2) then
     if (dim_names(0).eq."lat" .and. dim_names(1).eq."lon") then
       weights = map_area(var&lat, var&lon)
     end if
   end if
 
-  ;; Calculate weights for time-lat-lon case
+  ; Calculate weights for time-lat-lon case
   if (dimsizes(dim_names).eq.3) then
 
-    ;; Monthly climatology
+    ; Monthly climatology
     if (dim_names(0).eq."month" .and. dims_var(0).eq.12) then
       time_weights = mdays
     end if
 
-    ;; Seasonal climatology
+    ; Seasonal climatology
     if (dim_names(0).eq."season" .and. dims_var(0).eq.4) then
       time_weights = sdays
     end if
@@ -1409,41 +1409,41 @@ begin
     end if
   end if
 
-  ;; Other cases not implemented yet
+  ; Other cases not implemented yet
   if (.not.isdefined("weights")) then
     error_msg("f", scriptname, funcname, "weighting for this " + \
               "variable dimensionality not yet implemented")
   end if
 
-  ;; Convert to 1-D arrays
+  ; Convert to 1-D arrays
   var1d = ndtooned(var)
   ref1d = ndtooned(ref)
   wgt1d = ndtooned(weights)
 
-  ;; optional: no weights --> reset weights
+  ; optional: no weights --> reset weights
   if (isStrSubset(metric, "nowgt")) then
     wgt1d = 1.0
   end if
 
-  ;; Calculate weighted averages
+  ; Calculate weighted averages
   avg_var = dim_avg_wgt_Wrap(var1d, wgt1d, 1)
   avg_ref = dim_avg_wgt_Wrap(ref1d, wgt1d, 1)
 
-  ;; RMSD
+  ; RMSD
   if (metric.eq."RMSD") then
     out = sqrt(dim_avg_wgt_Wrap((var1d - ref1d) ^ 2, wgt1d, 1))
     leave_msg(scriptname, funcname)
     return(out)
   end if
 
-  ;; BIAS
+  ; BIAS
   if (metric.eq."BIAS") then
     out = dim_avg_wgt_Wrap((var1d - ref1d), wgt1d, 1)
     leave_msg(scriptname, funcname)
     return(out)
   end if
 
-  ;; Ratio of standard deviations
+  ; Ratio of standard deviations
   if (isStrSubset(metric, "stddev_ratio")) then
     out = sqrt(dim_sum_wgt_Wrap((var1d - avg_var) ^ 2, wgt1d, 1)) / \
       sqrt(dim_sum_wgt_Wrap((ref1d - avg_ref) ^ 2, wgt1d, 1))
@@ -1451,7 +1451,7 @@ begin
     return(out)
   end if
 
-  ;; Pattern correlation
+  ; Pattern correlation
   if (isStrSubset(metric, "correlation")) then
     p1 = dim_sum_wgt_Wrap((var1d - avg_var) * (ref1d - avg_ref), wgt1d, 1)
     p2 = sqrt(dim_sum_wgt_Wrap((var1d - avg_var) ^ 2, wgt1d, 1))
@@ -1465,37 +1465,37 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("normalize_metric")
 function normalize_metric(var:numeric,
                           opt:string)
-;;
-;; Arguments
-;;    var: numerical array.
-;;    opt: option determining the used normalization:
-;;           "max": normalization with max error.
-;;           "mean": normalization with mean.
-;;           "median": normalization with median.
-;;           "stddev_mean": normalization with substracting the mean and
-;;                          dividing by the standard deviation.
-;;           "centered_median": substracting and dividing by the median.
-;;
-;;
-;; Return value
-;;    A numerical array of the same dimensionality as var.
-;;
-;; Description
-;;    Normalizes an array of metrics according to opt.
-;;
-;; Caveats
-;;    Treatment of missing values not explicitely specified (yet).
-;;
-;; Reference
-;;
-;; Modification history
-;;    20140609-A_righ_ma: absolute value added to "mean" normalization.
-;;    20140120-A_fran_fr: written.
-;;
+;
+; Arguments
+;    var: numerical array.
+;    opt: option determining the used normalization:
+;           "max": normalization with max error.
+;           "mean": normalization with mean.
+;           "median": normalization with median.
+;           "stddev_mean": normalization with substracting the mean and
+;                          dividing by the standard deviation.
+;           "centered_median": substracting and dividing by the median.
+;
+;
+; Return value
+;    A numerical array of the same dimensionality as var.
+;
+; Description
+;    Normalizes an array of metrics according to opt.
+;
+; Caveats
+;    Treatment of missing values not explicitely specified (yet).
+;
+; Reference
+;
+; Modification history
+;    20140609-A_righ_ma: absolute value added to "mean" normalization.
+;    20140120-A_fran_fr: written.
+;
 local funcname, scriptname, val_var, norm, stdv, p1
 begin
 
@@ -1543,36 +1543,36 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("distrib_stats")
 function distrib_stats(var[*]:numeric,
                        opt:string)
-;;
-;; Arguments
-;;    var: a one-dimensional input array.
-;;    opt: type of statistic:
-;;           "N": number of elements.
-;;           "mean": mean.
-;;           "median": median.
-;;           "min": minimum.
-;;           "max": maximum.
-;;           "stddev": standard deviation.
-;;           [value]: percentile (a value between 0 and 100).
-;;
-;; Return value
-;;    A scalar value.
-;;
-;; Description
-;;    Calculates the relevant statistics for an input one-dimensional
-;;    distribution. Missing values are ignored.
-;;
-;; Caveats
-;;
-;; Reference
-;;
-;; Modification history
-;;    20140526-A_righ_ma: written.
-;;
+;
+; Arguments
+;    var: a one-dimensional input array.
+;    opt: type of statistic:
+;           "N": number of elements.
+;           "mean": mean.
+;           "median": median.
+;           "min": minimum.
+;           "max": maximum.
+;           "stddev": standard deviation.
+;           [value]: percentile (a value between 0 and 100).
+;
+; Return value
+;    A scalar value.
+;
+; Description
+;    Calculates the relevant statistics for an input one-dimensional
+;    distribution. Missing values are ignored.
+;
+; Caveats
+;
+; Reference
+;
+; Modification history
+;    20140526-A_righ_ma: written.
+;
 local funcname, scriptname, lvar, nsize, idx
 begin
 
@@ -1581,58 +1581,58 @@ begin
 
   enter_msg(scriptname, funcname)
 
-  ;; Check input
+  ; Check input
   if (all(ismissing(var))) then
     error_msg("f", scriptname, funcname, "the input array " + \
               "contains only missing values")
   end if
 
-  ;; Exclude missing values
+  ; Exclude missing values
   lvar = var(ind(.not.ismissing(var)))
 
-  ;; Number of elements
+  ; Number of elements
   if (opt.eq."N") then
     out = dimsizes(lvar)
     leave_msg(scriptname, funcname)
     return(out)
   end if
 
-  ;; Minimum
+  ; Minimum
   if (opt.eq."min") then
     out = min(lvar)
     leave_msg(scriptname, funcname)
     return(out)
   end if
 
-  ;; Maximum
+  ; Maximum
   if (opt.eq."max") then
     out = max(lvar)
     leave_msg(scriptname, funcname)
     return(out)
   end if
 
-  ;; Mean
+  ; Mean
   if (opt.eq."mean") then
     out = dim_avg(lvar)
     leave_msg(scriptname, funcname)
     return(out)
   end if
 
-  ;; Standard deviation
+  ; Standard deviation
   if (opt.eq."stddev") then
     out = dim_stddev(lvar)
     leave_msg(scriptname, funcname)
     return(out)
   end if
 
-  ;; Median
+  ; Median
   if (opt.eq."median") then
     out = dim_median(lvar)
     leave_msg(scriptname, funcname)
     return(out)
   end if
 
-  ;; Percentiles
+  ; Percentiles
   if (toint(opt).gt.0 .and. toint(opt).lt.100) then
     qsort(lvar)  ; sort
     nsize = dimsizes(lvar) / 100.
@@ -1648,37 +1648,37 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("lognormal_dist")
 function lognormal_dist(nn:numeric,
                         dg:numeric,
                         sig[1]:numeric,
                         darr[*]:numeric)
-;;
-;; Arguments
-;;    nn: particle number concentration, can be a scalar or 1-D array.
-;;    dg: median diameter, same dimensionality of nn
-;;    sig: geometric standard deviation, a scalar
-;;    darr: array of diameters.
-;;
-;; Return value
-;;    An array of type float, with the same dimensionality of nn, plus the darr
-;;    dimension on the right, and with the same units of nn.
-;;
-;; Description
-;;    Calculate a lognormal distribution given the three paramters and an array
-;;    of diameters.
-;;
-;; Caveats
-;;    dg and darr must have the same units.
-;;
-;; Reference
-;;    Seinfeld and Pandis, Atmospheric chemistry and physics, JohnWiley & Sons,
-;;    New York, US, 1998.
-;;
-;; Modification history
-;;    20130528-A_righ_ma: written.
-;;
+;
+; Arguments
+;    nn: particle number concentration, can be a scalar or 1-D array.
+;    dg: median diameter, same dimensionality of nn
+;    sig: geometric standard deviation, a scalar
+;    darr: array of diameters.
+;
+; Return value
+;    An array of type float, with the same dimensionality of nn, plus the darr
+;    dimension on the right, and with the same units of nn.
+;
+; Description
+;    Calculate a lognormal distribution given the three paramters and an array
+;    of diameters.
+;
+; Caveats
+;    dg and darr must have the same units.
+;
+; Reference
+;    Seinfeld and Pandis, Atmospheric chemistry and physics, JohnWiley & Sons,
+;    New York, US, 1998.
+;
+; Modification history
+;    20130528-A_righ_ma: written.
+;
 local funcname, scriptname, pi, sqrt2pi, dd, ee
 begin
 
@@ -1694,14 +1694,14 @@ begin
 
   rank = dimsizes(nn)
 
-  ;; Define output array
+  ; Define output array
   if (rank.eq.1) then
     out = new(dimsizes(darr), double)
   else
     out = new(array_append_record(dimsizes(nn), dimsizes(darr), 0), double)
   end if
 
-  ;; Loop over diameter array and calculate size distribution
+  ; Loop over diameter array and calculate size distribution
   pi = 2. * acos(0)
   sqrt2pi = sqrt(2. * pi)
   do dd = 0, dimsizes(darr) - 1

@@ -1,45 +1,45 @@
-;;#############################################################################
-;; GENERAL ROUTINES FOR UNIT CONVERSION
-;;#############################################################################
-;; Please consider using of extending existing routines before adding new ones.
-;; Check the header of each routine for documentation.
-;;
-;; Contents:
-;;    function convert_units
-;;
-;;#############################################################################
+; #############################################################################
+; GENERAL ROUTINES FOR UNIT CONVERSION
+; #############################################################################
+; Please consider using of extending existing routines before adding new ones.
+; Check the header of each routine for documentation.
+;
+; Contents:
+;    function convert_units
+;
+; #############################################################################
 
 load "./interface_scripts/logging.ncl"
 
-;;#############################################################################
+; #############################################################################
 undef("convert_units")
 function convert_units(var:numeric,
                        units_to[1]:string)
-;;
-;; Arguments
-;;    var: a numeric field on any dimensionality, it must have a units
-;;         attribute.
-;;    units_to: a string, specifying the units to be converted to.
-;;
-;; Return value
-;;    A numeric field of the same dimensionality of var.
-;;
-;; Description
-;;    Converts units of var from the one specified by the units attribute to
-;;    the one given by the units_to argument. An error message is issued if
-;;    the requested unit conversion is not available.
-;;
-;; Caveats
-;;    This function shall be used to perform unit conversion before plotting.
-;;    For unit conversion to be performed before data processing within the
-;;    diagnostic (e.g., non-linear conversions), it is recommended to use
+;
+; Arguments
+;    var: a numeric field on any dimensionality, it must have a units
+;         attribute.
+;    units_to: a string, specifying the units to be converted to.
+;
+; Return value
+;    A numeric field of the same dimensionality of var.
+;
+; Description
+;    Converts units of var from the one specified by the units attribute to
+;    the one given by the units_to argument. An error message is issued if
+;    the requested unit conversion is not available.
+;
+; Caveats
+;    This function shall be used to perform unit conversion before plotting.
+;    For unit conversion to be performed before data processing within the
+;    diagnostic (e.g., non-linear conversions), it is recommended to use
 ;     variable_defs.
-;;
-;; References
-;;
-;; Modification history:
-;;    20150216-A_righ_ma: written.
-;;
+;
+; References
+;
+; Modification history:
+;    20150216-A_righ_ma: written.
+;
 local funcname, scriptname
 begin
 
@@ -47,10 +47,10 @@ begin
   scriptname = "diag_scripts/shared/scaling.ncl"
   enter_msg(scriptname, funcname)
 
-  ;; Define output (copy metadata)
+  ; Define output (copy metadata)
   out = var
 
-    ;; Check for units attribute
+    ; Check for units attribute
   if (.not.isatt(var, "units")) then
     error_msg("f", scriptname, funcname, "The input variable must " + \
               "have a units attribute")
