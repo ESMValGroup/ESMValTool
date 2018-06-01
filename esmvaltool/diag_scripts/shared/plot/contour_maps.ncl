@@ -1,17 +1,17 @@
-;;#############################################################################
-;; PLOT SCRIPTS FOR CONTOUR PLOTS
-;;#############################################################################
-;; Please consider using or extending existing routines before adding new ones.
-;; Check the header of each routine for documentation.
-;;
-;; Contents:
-;;
-;;    function contour_map
-;;    function contour_map_polar
-;;    function contour_map_ce
-;;    procedure add_markers_to_map
-;;
-;;#############################################################################
+; #############################################################################
+; PLOT SCRIPTS FOR CONTOUR PLOTS
+; #############################################################################
+; Please consider using or extending existing routines before adding new ones.
+; Check the header of each routine for documentation.
+;
+; Contents:
+;
+;    function contour_map
+;    function contour_map_polar
+;    function contour_map_ce
+;    procedure add_markers_to_map
+;
+; #############################################################################
 
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/logging.ncl"
@@ -20,40 +20,40 @@ load "./diag_scripts/shared/set_operators.ncl"
 
 load "./diag_scripts/shared/plot/aux_plotting.ncl"
 
-;;#############################################################################
+; #############################################################################
 undef("contour_map")
 function contour_map(wks_in[1],
                      source,
                      varname[1]: string)
-;;
-;; Arguments
-;;    wks_in: workstations (graphic object or default will be used).
-;;    source: data to be plotted or a NetCDF filename with data.
-;;    varname: variable name in the file.
-;;
-;; Source prototype
-;;    source[*,*]
-;;    source!0 = lat
-;;    source!1 = lon
-;;
-;; Return value
-;;    A graphic variable.
-;;
-;; Description
-;;    Wrapper for gsn_csm_contour_map.
-;;    Opens default wks, if not provided as argument of type "graphic".
-;;    Defines default resources, which are overridden by argument res.
-;;    Creates plot, according to wks & res.
-;;
-;; Caveats
-;;    Selection of defaults for res almost arbitrary
-;;    Please check results of all scripts that use this routine if modifying
-;;    the defaults!
-;;    Input via netCDF not yet implemented
-;;
-;; Modification history
-;;    20131104-A_gott_kl: written.
-;;
+;
+; Arguments
+;    wks_in: workstations (graphic object or default will be used).
+;    source: data to be plotted or a NetCDF filename with data.
+;    varname: variable name in the file.
+;
+; Source prototype
+;    source[*,*]
+;    source!0 = lat
+;    source!1 = lon
+;
+; Return value
+;    A graphic variable.
+;
+; Description
+;    Wrapper for gsn_csm_contour_map.
+;    Opens default wks, if not provided as argument of type "graphic".
+;    Defines default resources, which are overridden by argument res.
+;    Creates plot, according to wks & res.
+;
+; Caveats
+;    Selection of defaults for res almost arbitrary
+;    Please check results of all scripts that use this routine if modifying
+;    the defaults!
+;    Input via netCDF not yet implemented
+;
+; Modification history
+;    20131104-A_gott_kl: written.
+;
 local funcname, data, defaults, diag_script, var, wks, res, res_new
 begin
 
@@ -61,31 +61,31 @@ begin
     scriptname = "diag_scripts/shared/plot/contour_maps.ncl"
     enter_msg(scriptname, funcname)
 
-    ;; Get data, either directly or via netCDF file
+    ; Get data, either directly or via netCDF file
     if(typeof(source) .eq. "string") then
-        ;; Function in ~/interface_scripts/auxiliary.ncl
+        ; Function in ~/interface_scripts/auxiliary.ncl
         data = ncdf_read(source, varname)
     else
         data = source
         copy_VarMeta(source, data)
     end if
 
-    ;; Retrieve basic metadata from data
+    ; Retrieve basic metadata from data
     defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
     if(any(varname .eq.  defaults)) then  ; Use default
-        ;; Function in ~/interface_scripts/auxiliary.ncl
+        ; Function in ~/interface_scripts/auxiliary.ncl
         var = att2var(data, "var")
     else                               ; Use explicitly given name
         var = varname
         diag_script = att2var(data, "diag_script")  ; A_laue_ax: added line for cloud diagnostics
     end if
-    ;; Function in ~/interface_scripts/auxiliary.ncl
+    ; Function in ~/interface_scripts/auxiliary.ncl
     diag_script = att2var(data, "diag_script")
 
-    ;; Check if a valid wks has been provided, otherwise invoke default
+    ; Check if a valid wks has been provided, otherwise invoke default
     wks = get_wks(wks_in, diag_script, var)  ; Function in aux_plotting.ncl
 
-    ;; Set default resources
+    ; Set default resources
     res = True
     res@gsnDraw           = True  ; Draw
     res@gsnFrame          = True  ; Advance frame
@@ -100,15 +100,15 @@ begin
         res@gsnRightString    = res@gsnRightString + " in " + var@units
     end if
 
-    ;; Override defaults with "res_" attributes of "data"
-    ;; Function in ~/interface_scripts/auxiliary.ncl
+    ; Override defaults with "res_" attributes of "data"
+    ; Function in ~/interface_scripts/auxiliary.ncl
     res_new = att2var(data, "res_")
     copy_VarMeta(res_new, res)
 
-    ;; Create plot
+    ; Create plot
     map = gsn_csm_contour_map(wks, data, res)
 
-    ;; outfile name
+    ; outfile name
     if (isatt(wks, "fullname")) then
         map@outfile = wks@fullname
     else
@@ -130,42 +130,42 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("contour_map_polar")
 function contour_map_polar(wks_in[1],
                            source,
                            varname[1]: string)
-;;
-;; Arguments
-;;    wks_in: workstations (graphic object or default will be used).
-;;    source: data to be plotted or a NetCDF filename with data.
-;;    varname: variable name in the file.
-;;
-;; Source prototype
-;;    source[*,*]
-;;    source!0 = lat
-;;    source!1 = lon
-;;
-;; Return value
-;;    A graphic variable.
-;;
-;; Description
-;;    Wrapper for gsn_csm_contour_map_polar.
-;;    Opens default wks, if not provided as argument of type "graphic".
-;;    Defines default resources, which are overridden by argument res_in.
-;;    Creates plot according to wks & res, unless res_in@gsnDraw is set
-;;      to 'False' in your diag_script (to enable panelling, for example).
-;;
-;; Caveats
-;;    Selection of defaults for res almost arbitrary
-;;    Please check results of all scripts that use this routine if modifying
-;;    the defaults!
-;;    Input via netCDF not yet implemented
-;;
-;; Modification history
-;;    20140623-A_senf_da: now takes res as attributes of source.
-;;    20131218-A_senf_da: written.
-;;
+;
+; Arguments
+;    wks_in: workstations (graphic object or default will be used).
+;    source: data to be plotted or a NetCDF filename with data.
+;    varname: variable name in the file.
+;
+; Source prototype
+;    source[*,*]
+;    source!0 = lat
+;    source!1 = lon
+;
+; Return value
+;    A graphic variable.
+;
+; Description
+;    Wrapper for gsn_csm_contour_map_polar.
+;    Opens default wks, if not provided as argument of type "graphic".
+;    Defines default resources, which are overridden by argument res_in.
+;    Creates plot according to wks & res, unless res_in@gsnDraw is set
+;      to 'False' in your diag_script (to enable panelling, for example).
+;
+; Caveats
+;    Selection of defaults for res almost arbitrary
+;    Please check results of all scripts that use this routine if modifying
+;    the defaults!
+;    Input via netCDF not yet implemented
+;
+; Modification history
+;    20140623-A_senf_da: now takes res as attributes of source.
+;    20131218-A_senf_da: written.
+;
 local funcname, data, defaults, var, diag_script, wks, res, res_in, res1
 begin
 
@@ -173,7 +173,7 @@ begin
     scriptname = "diag_scripts/shared/plot/contour_maps.ncl"
     enter_msg(scriptname, funcname)
 
-    ;; Get data, either directly or via netCDF file
+    ; Get data, either directly or via netCDF file
     if(typeof(source) .eq. "string") then
         ; Function in ./interface_scripts/auxiliary.ncl
         data = ncdf_read(source, varname)
@@ -182,10 +182,10 @@ begin
         copy_VarMeta(source, data)
     end if
 
-    ;; Retrieve basic metadata from data
+    ; Retrieve basic metadata from data
     defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
     if(any(varname .eq. defaults)) then  ; Use default
-        ;; Function in ./interface_scripts/auxiliary.ncl
+        ; Function in ./interface_scripts/auxiliary.ncl
         var = att2var(data, "var")
     else  ; Use explicitely given name
         var = varname
@@ -197,10 +197,10 @@ begin
                   "has to be passed as attribute of source")
     end if
 
-    ;; Check if a valid wks has been provided, otherwise invoke default
+    ; Check if a valid wks has been provided, otherwise invoke default
     wks = get_wks(wks_in, diag_script, var)
 
-    ;; Set default resources
+    ; Set default resources
     res              = True
     res@gsnDraw      = True  ; Draw
     res@gsnFrame     = True  ; Advance frame
@@ -217,7 +217,7 @@ begin
         res@gsnRightString = res@gsnRightString + " in " + var@units
     end if
 
-    ;; Specify the hemisphere
+    ; Specify the hemisphere
     if (diag_script_info@region .eq. "Antarctic") then
         res@gsnPolar          = "SH"
         res@mpMaxLatF         = diag_script_info@max_lat  ; Default is 0
@@ -234,7 +234,7 @@ begin
     end if
     end if
 
-    ;; Override defaults with res_in set in diag_script
+    ; Override defaults with res_in set in diag_script
     ; Function in ~/interface_scripts/auxiliary.ncl
     res_in = att2var(data, "res_")
     copy_VarMeta(res_in, res)
@@ -268,42 +268,42 @@ begin
 
 end 
 
-;;#############################################################################
+; #############################################################################
 undef("contour_map_ce")
 function contour_map_ce(wks_in[1],
                         source,
                         varname[1]: string)
-;;
-;; Arguments
-;;    wks_in: workstations (graphic object or default will be used).
-;;    source: data to be plotted or a NetCDF filename with data.
-;;    varname: variable name in the file.
-;;
-;; Source prototype
-;;    source[*,*]
-;;    source!0 = lat
-;;    source!1 = lon
-;;
-;; Return value
-;;    A graphic variable.
-;;
-;; Description
-;;    Wrapper for gsn_csm_contour_map_ce.
-;;    Opens default wks, if not provided as argument of type "graphic".
-;;    Defines default resources, which are overridden by argument res.
-;;    Creates plot, according to wks & res.
-;;
-;; Caveats
-;;    Selection of defaults for res almost arbitrary
-;;    Please check results of all scripts that use this routine if modifying
-;;    the defaults!
-;;    Input via netCDF not yet implemented
-;;
-;; Modification history
-;;    20161220-A_laue_ax: added option to specificy plotting projection
-;;                        (via attribute data@projection)
-;;    20140228-A_righ_ma: written.
-;;
+;
+; Arguments
+;    wks_in: workstations (graphic object or default will be used).
+;    source: data to be plotted or a NetCDF filename with data.
+;    varname: variable name in the file.
+;
+; Source prototype
+;    source[*,*]
+;    source!0 = lat
+;    source!1 = lon
+;
+; Return value
+;    A graphic variable.
+;
+; Description
+;    Wrapper for gsn_csm_contour_map_ce.
+;    Opens default wks, if not provided as argument of type "graphic".
+;    Defines default resources, which are overridden by argument res.
+;    Creates plot, according to wks & res.
+;
+; Caveats
+;    Selection of defaults for res almost arbitrary
+;    Please check results of all scripts that use this routine if modifying
+;    the defaults!
+;    Input via netCDF not yet implemented
+;
+; Modification history
+;    20161220-A_laue_ax: added option to specificy plotting projection
+;                        (via attribute data@projection)
+;    20140228-A_righ_ma: written.
+;
 local data, var, wks, res
 begin
 
@@ -311,14 +311,14 @@ begin
     scriptname = "diag_scripts/shared/plot/contour_maps.ncl"
     enter_msg(scriptname, funcname)
 
-    ;; Get data, either directly or via netCDF
+    ; Get data, either directly or via netCDF
     if (typeof(source).eq."string") then
         data = ncdf_read(source, varname)
     else
         data = source
     end if
 
-    ;; Retrieve basic metadata from data
+    ; Retrieve basic metadata from data
     defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
     if (any(varname.eq.defaults)) then
         var = att2var(data, "var")
@@ -326,10 +326,10 @@ begin
         var = varname
     end if
 
-    ;; Check if a valid wks has been provided, otherwise invoke default
+    ; Check if a valid wks has been provided, otherwise invoke default
     wks = get_wks(wks_in, diag_script, var)
 
-    ;; Default resources
+    ; Default resources
     res = True
     res@gsnDraw = False
     res@gsnFrame = False
@@ -348,18 +348,18 @@ begin
     res@gsnCenterString = ""
     res@gsnRightString = ""
 
-    ;; Set right label
+    ; Set right label
     if (isatt(data, "time_avg")) then
         res@gsnRightString = data@time_avg
     else
         res@gsnRightString = ""
     end if
 
-    ;; Override defaults with "res_" attributes of "data"
+    ; Override defaults with "res_" attributes of "data"
     res_new = att2var(data, "res_")
     copy_VarMeta(res_new, res)
 
-    ;; Create plot
+    ; Create plot
     if (isatt(data, "projection")) then
         res@mpProjection = data@projection
         if (res@mpProjection.eq."Robinson") then
@@ -379,27 +379,27 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("add_markers_to_map")
 procedure add_markers_to_map(wks_in[1], plot[1]: graphic, lat[*]: numeric, \
                              lon[*]: numeric, data[*]: numeric)
-;;
-;; Arguments
-;;    wks_in: input workstation.
-;;    plot: a graphic object representing a contour plot.
-;;    lat: an array of latitude positions for the marker.
-;;    lon: an array of longitude positions for the marker.
-;;    data: an array of values to be overlaid as colored markers.
-;;
-;; Description
-;;    Overlays markers to an existing map plot, using the same color coding of
-;;    the associated labelbar.
-;;
-;; Caveats
-;;
-;; Modification history:
-;;    20140214-A_righ_ma: written.
-;;
+;
+; Arguments
+;    wks_in: input workstation.
+;    plot: a graphic object representing a contour plot.
+;    lat: an array of latitude positions for the marker.
+;    lon: an array of longitude positions for the marker.
+;    data: an array of values to be overlaid as colored markers.
+;
+; Description
+;    Overlays markers to an existing map plot, using the same color coding of
+;    the associated labelbar.
+;
+; Caveats
+;
+; Modification history:
+;    20140214-A_righ_ma: written.
+;
 local funcname, class_name, views, cn_levels, lb_colors, cmap, colors, \
     loc_res, ndata, mfill, mbord, ii, idx, str
 begin
@@ -408,7 +408,7 @@ begin
     scriptname = "diag_scripts/shared/plot/contour_maps.ncl"
     enter_msg(scriptname, funcname)
 
-    ;; Check data consistency
+    ; Check data consistency
     if (dimsizes(lat).ne.dimsizes(lon) .or. \
         dimsizes(data).ne.dimsizes(lon) .or. \
         dimsizes(data).ne.dimsizes(lat)) then
@@ -416,7 +416,7 @@ begin
                   "consistent")
     end if
 
-    ;; Check that the input plot is a contour plot and extract attributes
+    ; Check that the input plot is a contour plot and extract attributes
     class_name = NhlClassName(plot)
     if(class_name.eq."mapPlotClass") then
         if(isatt(plot, "contour")) then
@@ -430,17 +430,17 @@ begin
                   "a contour plot")
     end if
 
-    ;; Extract labelbar colors
+    ; Extract labelbar colors
     labelbar = views(ind(NhlClassName(views).eq."labelBarClass"))
     getvalues labelbar
         "lbFillColors" : lb_colors
     end getvalues
 
-    ;; Extract associated colormap
+    ; Extract associated colormap
     cmap = gsn_retrieve_colormap(wks_in)
     colors = cmap(lb_colors, :)
 
-    ;; Set marker resources
+    ; Set marker resources
     loc_res = True
     loc_res@gsMarkerThicknessF = 1.5
     loc_res@gsMarkerSizeF      = 0.015
@@ -448,29 +448,29 @@ begin
     mfill = new(ndata, graphic)
     mbord = new(ndata, graphic)
 
-    ;; Loop over input data and add marker to the plot
+    ; Loop over input data and add marker to the plot
     do ii = 0, ndata - 1
         if (.not.ismissing(data(ii))) then
 
-            ;; Find value-color correspondance
+            ; Find value-color correspondance
             idx = min(ind(data(ii).lt.cn_levels))
             if (ismissing(idx)) then
                 idx = dimsizes(cn_levels)
             end if
 
-            ;; Filled dot
+            ; Filled dot
             loc_res@gsMarkerIndex = 16
             loc_res@gsMarkerColor = colors(idx, :)
             mfill = gsn_add_polymarker(wks_in, plot, lon(ii), lat(ii), loc_res)
             delete(loc_res@gsMarkerColor)
 
-            ;; Hollow dot (as border)
+            ; Hollow dot (as border)
             loc_res@gsMarkerIndex = 4
             loc_res@gsMarkerColor = "black"
             mbord = gsn_add_polymarker(wks_in, plot, lon(ii), lat(ii), loc_res)
             delete(loc_res@gsMarkerColor)
 
-            ;; Append graphics as plot attributes
+            ; Append graphics as plot attributes
             str = unique_string("mfill")
             plot@$str$ = mfill
             str = unique_string("mbord")

@@ -1,21 +1,21 @@
-;;#############################################################################
-;; GENERAL ROUTINES FOR PLOT STYLE MANAGEMENT
-;;#############################################################################
-;; Please consider using of extending existing routines before adding new ones.
-;; Check the header of each routine for documentation.
-;;
-;; Contents:
-;;    function unique_labels_min
-;;    function unique_labels_all
-;;    function project_style
-;;    function place_debuginfo
-;;    procedure place_description
-;;    function gsnColorRange
-;;    function format_units
-;;    function set_log_ticks
-;;    function sort_alphabetically
-;;
-;;#############################################################################
+; #############################################################################
+; GENERAL ROUTINES FOR PLOT STYLE MANAGEMENT
+; #############################################################################
+; Please consider using of extending existing routines before adding new ones.
+; Check the header of each routine for documentation.
+;
+; Contents:
+;    function unique_labels_min
+;    function unique_labels_all
+;    function project_style
+;    function place_debuginfo
+;    procedure place_description
+;    function gsnColorRange
+;    function format_units
+;    function set_log_ticks
+;    function sort_alphabetically
+;
+; #############################################################################
 
 
 load "./interface_scripts/auxiliary.ncl"
@@ -23,30 +23,30 @@ load "./interface_scripts/logging.ncl"
 
 load "./diag_scripts/shared/set_operators.ncl"
 
-;;#############################################################################
+; #############################################################################
 undef("unique_labels_min")
 function unique_labels_min(prio: string)
-;;
-;; Arguments
-;;    prio: string vector with attribute names (model_info@*), ordered by
-;;          priority for annotation (starting with highest).
-;;
-;; Return value
-;;    A vector (string) with one element for each model_info@model -> each label
-;;    contains the least possible attribute strings.
-;;
-;; Description
-;;    Builds the vector by looping over model_info@model.
-;;    Adds "_attribute" to non-unique labels, until prio is exhausted.
-;;
-;; Caveats
-;;     Uses model_info@*, which is available here anyway.
-;;
-;; References
-;;
-;; Modification history
-;;    20130422-A_gott_kl: written.
-;;
+;
+; Arguments
+;    prio: string vector with attribute names (model_info@*), ordered by
+;          priority for annotation (starting with highest).
+;
+; Return value
+;    A vector (string) with one element for each model_info@model -> each label
+;    contains the least possible attribute strings.
+;
+; Description
+;    Builds the vector by looping over model_info@model.
+;    Adds "_attribute" to non-unique labels, until prio is exhausted.
+;
+; Caveats
+;     Uses model_info@*, which is available here anyway.
+;
+; References
+;
+; Modification history
+;    20130422-A_gott_kl: written.
+;
 local funcname, scriptname, prio, result, unique, iprio, index
 begin
 
@@ -84,30 +84,30 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("unique_labels_all")
 function unique_labels_all(prio:string)
-;;
-;; Arguments
-;;    prio: string vector with attribute names (model_info@*), ordered by
-;;          priority for annotation (starting with highest)
-;;
-;; Description
-;;    Builds the vector by looping over model_info@model.
-;;    Adds "_attribute" until prio is exhausted or until labels are unique.
-;;
-;; Return value
-;;    A vector (string) with one element for each model_info@model -> all labels
-;;    contain the same (least possible) number of attribute strings.
-;;
-;; Caveats
-;;    Uses model_info@*, which is available here anyway.
-;;
-;; References
-;;
-;; Modification history
-;;    20130422-A_gott_kl: written.
-;;
+;
+; Arguments
+;    prio: string vector with attribute names (model_info@*), ordered by
+;          priority for annotation (starting with highest)
+;
+; Description
+;    Builds the vector by looping over model_info@model.
+;    Adds "_attribute" until prio is exhausted or until labels are unique.
+;
+; Return value
+;    A vector (string) with one element for each model_info@model -> all labels
+;    contain the same (least possible) number of attribute strings.
+;
+; Caveats
+;    Uses model_info@*, which is available here anyway.
+;
+; References
+;
+; Modification history
+;    20130422-A_gott_kl: written.
+;
 local funcname, scriptname, prio, result, unique, iprio, index
 begin
 
@@ -144,47 +144,47 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("project_style")
 function project_style(info, flag)
-;;
-;; Arguments
-;;    info: info array, as defined in ./variable_defs.
-;;    flag: string determining the type of array requested:
-;;            "annots": annotation strings.
-;;            "colors": colors (named colors, RGB or RGBA codes)
-;;            "dashes": line dash patterns.
-;;            "thicks": line thicknesses.
-;;            "markers": marker indexes.
+;
+; Arguments
+;    info: info array, as defined in ./variable_defs.
+;    flag: string determining the type of array requested:
+;            "annots": annotation strings.
+;            "colors": colors (named colors, RGB or RGBA codes)
+;            "dashes": line dash patterns.
+;            "thicks": line thicknesses.
+;            "markers": marker indexes.
 ;,            "avgstd": average/standard deviation flags (0 = takes part in
-;;                      the calculation of mean and standard deviation, 1 =
-;;                      does not take part; usually 0 is for models and 1 for
-;;                      observations and reanalyses).
-;;
-;; Return value
-;;    An array of the same size of model_info@model, with the stlye information for
-;;    the given flag. The type depends on the flag.
-;;
-;; Description
-;;    Retruns style informations (annotations, colors, line dash patterns, line
-;;    thicknesses, marker indexes and avgstd flat) based on a given styleset.
-;;    The styleset is determined based on the following priority list:
-;;      1st: style information for the given flag explicitely set as
-;;           diag_script_info@$flag$
-;;      2nd: styleset explicitely set as diag_script_info@styleset
-;;      3rd: styleset not defined, set to DEFAULT
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;    20150512-A_righ_ma: modified to read style info from external style
-;;                        files, instead of using hard-coded values in the
-;;                        code. Functionalities of the project_styleset and
-;;                        project_style_<styleset> functions porteed here.
-;;    20130419-A_gott_kl: written.
-;;
+;                      the calculation of mean and standard deviation, 1 =
+;                      does not take part; usually 0 is for models and 1 for
+;                      observations and reanalyses).
+;
+; Return value
+;    An array of the same size of model_info@model, with the stlye information for
+;    the given flag. The type depends on the flag.
+;
+; Description
+;    Retruns style informations (annotations, colors, line dash patterns, line
+;    thicknesses, marker indexes and avgstd flat) based on a given styleset.
+;    The styleset is determined based on the following priority list:
+;      1st: style information for the given flag explicitely set as
+;           diag_script_info@$flag$
+;      2nd: styleset explicitely set as diag_script_info@styleset
+;      3rd: styleset not defined, set to DEFAULT
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20150512-A_righ_ma: modified to read style info from external style
+;                        files, instead of using hard-coded values in the
+;                        code. Functionalities of the project_styleset and
+;                        project_style_<styleset> functions porteed here.
+;    20130419-A_gott_kl: written.
+;
 local funcname, scriptname, result, info, flag, styleset, stylefile, tmp, sty
 begin
 
@@ -192,28 +192,28 @@ begin
     scriptname = "diag_scripts/shared/plot/style.ncl"
     enter_msg(scriptname, funcname)
 
-    ;; Check for the available dictonary keys to be used for the annotations
-    ;; (see get_dict_key in projects.py)
+    ; Check for the available dictonary keys to be used for the annotations
+    ; (see get_dict_key in projects.py)
     dkeys = (/"model", "ensemble", "case_name", "exp", "mip", "realm"/)
     tmp = isatt(model_info, dkeys)
     l_dkeys = dkeys(ind(tmp))
     delete(tmp)
 
-    ;; Style information for this flag available as diag_script_info@$flag$
+    ; Style information for this flag available as diag_script_info@$flag$
     if (isatt(info, flag)) then
         result = info@$flag$
         leave_msg(scriptname, funcname)
         return(result)
     end if
 
-    ;; Use diag_script_info@styleset or set to DEFAULT
+    ; Use diag_script_info@styleset or set to DEFAULT
     if (isatt(info, "styleset")) then
         styleset = diag_script_info@styleset
     else
         styleset = "DEFAULT"
     end if
 
-    ;; Styleset defined, search for corresponding style file
+    ; Styleset defined, search for corresponding style file
     styleset = str_lower(styleset)
     stylefile = "./diag_scripts/shared/plot/styles/" + styleset + ".style"
     if (.not.fileexists(stylefile)) then
@@ -225,21 +225,21 @@ begin
     sty = tmp(:, 0)
     delete(tmp)
 
-    ;; Model annotations, return unique model names based on dict keys
+    ; Model annotations, return unique model names based on dict keys
     if (flag.eq."annots") then
         result = unique_labels_min(l_dkeys)
         leave_msg(scriptname, funcname)
         return(result)
     end if
 
-    ;; Read model names
+    ; Read model names
     modelsinfile = str_squeeze(str_get_field(sty, 1, "|"))
 
-    ;; Set flag names
+    ; Set flag names
     flagnames = (/"annots", "colors", "dashes", "thicks", "markers", "avgstd"/)
     colid = ispan(1, dimsizes(flagnames), 1)
 
-    ;; Read column
+    ; Read column
     col = ind(flag.eq.flagnames) + 1
     if (ismissing(col)) then
         error_msg("f", scriptname, funcname, "flag " + flag + " not allowed")
@@ -250,17 +250,17 @@ begin
     do ii = 0, nmodels - 1
         row = ind(model_info@model(ii).eq.modelsinfile)
 
-        ;; Multiple entries, raise error
+        ; Multiple entries, raise error
         if (dimsizes(row).gt.1) then
             error_msg("f", scriptname, funcname, "Multiple entries for " + \
                       "model" + model_info@model(ii) + " in style file " + \
                       stylefile)
         end if
 
-        ;; Missing model
+        ; Missing model
         if (ismissing(row)) then
 
-            ;; Search for "default"
+            ; Search for "default"
             row  = ind("default".eq.modelsinfile)
             if (.not.ismissing(row)) then
                 log_debug("Model " + model_info@model(ii) + " not found in " + \
@@ -269,7 +269,7 @@ begin
                 continue
             end if
 
-            ;; Search for wildcards "*"
+            ; Search for wildcards "*"
             rows = ind("*".eq.modelsinfile)
             if (all(ismissing(rows))) then
                 error_msg("f", scriptname, funcname, "Model " + \
@@ -291,12 +291,12 @@ begin
         column(ii) = str_squeeze(str_get_field(sty(row), col, "|"))
     end do
 
-    ;; Colors: normalize to 1 and covert to string
+    ; Colors: normalize to 1 and covert to string
     if (flag.eq."colors") then
         result = column
         do ii = 0, dimsizes(result) - 1
             nc = str_fields_count(column(ii), ",")
-            ;; Named color
+            ; Named color
             if (nc.eq.1) then
                 result(ii) = column(ii)
             else if (nc.eq.3) then
@@ -330,14 +330,14 @@ begin
         return(result)
     end if
 
-    ;; Line dash patterns, marker indexes, avgstd flag: convert to integer
+    ; Line dash patterns, marker indexes, avgstd flag: convert to integer
     if (any(flag.eq.(/"dashes", "markers", "avgstd"/))) then
         result = toint(column)
         leave_msg(scriptname, funcname)
         return(result)
     end if
 
-    ;; Line thicknesses: convert to float
+    ; Line thicknesses: convert to float
     if (flag.eq."thicks") then
         result = tofloat(column)
         leave_msg(scriptname, funcname)
@@ -346,25 +346,25 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("project_style_GO")
 function project_style_GO(flag:string)
-;;
-;; Arguments:
-;;    flag = string determining the type of array requested
-;; Return value: array of dimsizes(model_info@model)
-;;  * Definition of plot attributes; Returns arrays of dimsizes(model_info@model)
-;;  * flag = "colors": returns an array of colors (either RGB triples or named colors)
-;;  * flag = "dashes": returns an array of dash styles (integer numbers)
-;;  * flag = "thicks": returns an array of line thicknesses (numeric)
-;;  * flag = "annots": returns an array of annotation strings
-;;  * flag = "avgstd": returns an array of flags
-;;                     0 -> (model) takes part in calculation of mean & stddev
-;;                     1 -> (obs/reanalysis) takes not part in calculation of mean & stddev
-;; Description:
-;;    * Definition of plot attributes: type depending on flag
-;; Modification history:
-;;    * 20130419 written (Klaus-Dirk.Gottschaldt@dlr.de)
+;
+; Arguments:
+;    flag = string determining the type of array requested
+; Return value: array of dimsizes(model_info@model)
+;  * Definition of plot attributes; Returns arrays of dimsizes(model_info@model)
+;  * flag = "colors": returns an array of colors (either RGB triples or named colors)
+;  * flag = "dashes": returns an array of dash styles (integer numbers)
+;  * flag = "thicks": returns an array of line thicknesses (numeric)
+;  * flag = "annots": returns an array of annotation strings
+;  * flag = "avgstd": returns an array of flags
+;                     0 -> (model) takes part in calculation of mean & stddev
+;                     1 -> (obs/reanalysis) takes not part in calculation of mean & stddev
+; Description:
+;    * Definition of plot attributes: type depending on flag
+; Modification history:
+;    * 20130419 written (Klaus-Dirk.Gottschaldt@dlr.de)
 ;
 local result, modelstyles, flag
 begin
@@ -373,7 +373,7 @@ begin
     scriptname = "diag_scripts/shared/plot/style.ncl"
     enter_msg(scriptname, funcname)
 
-    ;; define (/model, color, dash, thickness, avgstd/) for each model
+    ; define (/model, color, dash, thickness, avgstd/) for each model
     modelstyles = (/ (/"PlankTOM5",     "(/0.6,     0.,      0.0078/)",          "0",  "1",  "0"/), \
                     (/"PlankTOM10",   "(/0.7686,  0.4745,  0./)",          "1",  "1",  "0"/), \
                     (/"medusa",    "(/0.5960,  0.9843,  0.5960/)",   "1",  "1",  "0"/), \
@@ -383,7 +383,7 @@ begin
                     (/"model_mean",     "(/0.6,     0.,       0.0078/)",         "0",  "3",  "1"/), \  ; others
                     (/"unknown",        "black",                                 "0",  "1",  "0"/)/)
 
-    ;; assign plot attributes (see function select_style in style_auxiliary.ncl)
+    ; assign plot attributes (see function select_style in style_auxiliary.ncl)
     if (flag .eq. "colors") then
         result = select_style(modelstyles, 1, model_info@model)
     else if (flag .eq. "dashes") then
@@ -407,30 +407,30 @@ begin
     return(result)
 end
 
-;;#############################################################################
+; #############################################################################
 undef("place_debuginfo")
 function place_debuginfo(wks[1]:graphic,
                          debugstring[1]:string,
                          res[1]:logical,
                          plot[1]:graphic)
-;;
-;; Arguments
-;;     wks: current workstation.
-;;     debugstring: string to attach.
-;;     res: resource settings for display box.
-;;     plot: graphic object to draw text onto
-;;
-;; Return value
-;;
-;; Description
-;;    Places the text string debugstring onto wks.
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;
+;
+; Arguments
+;     wks: current workstation.
+;     debugstring: string to attach.
+;     res: resource settings for display box.
+;     plot: graphic object to draw text onto
+;
+; Return value
+;
+; Description
+;    Places the text string debugstring onto wks.
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;
 local i, txvpWidth, txvpHeight, tx, x, y, parent_width, parent_height, \
     annoid, mvxf, mvyf, debugstring
 begin
@@ -446,7 +446,7 @@ begin
     res@txFuncCode            = "~"
     res@txPerimOn             = True
 
-    ;; First debugstring
+    ; First debugstring
     tx = gsn_create_text(wks, debugstring, res)
     getvalues tx
         "vpWidthF" : txvpWidth
@@ -469,28 +469,28 @@ begin
     return(annoid)
 end
 
-;;#############################################################################
+; #############################################################################
 undef("place_description")
 procedure place_description(wks[1]:graphic,
                             description[1]:string,
                             y_ndc_coord[1]:float)
-;;
-;; Arguments
-;;    wks: current workstation
-;;    description: string to attach
-;;    y_ndc_coord: vertical placement in ndc space (-1 for default)
-;;
-;; Return value
-;;
-;; Description
-;;     Places the text strings in array debugboxes onto wks
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;
+;
+; Arguments
+;    wks: current workstation
+;    description: string to attach
+;    y_ndc_coord: vertical placement in ndc space (-1 for default)
+;
+; Return value
+;
+; Description
+;     Places the text strings in array debugboxes onto wks
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;
 local tx, txvpWidth, txvpHeight, parent_x, parent_y, amres, wks_dummy, \
     annoid, txres, y_ndc_coord
 begin
@@ -520,7 +520,7 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("gsnColorRange")
 function gsnColorRange(lower:numeric,
                        upper:numeric,
@@ -528,33 +528,33 @@ function gsnColorRange(lower:numeric,
                        center:numeric,
                        color_end:integer,
                        center_color:integer)
-;;
-;; Arguments
-;;    lower: cnMinLevelValF.
-;;    upper: cnMaxLevelValF.
-;;    step: cnLevelSpacingF.
-;;    center: The numerical value the colormap is centered on. For
-;;            anomalies or trends, it's common to use 0.0, so blue means cold
-;;            or cooling and red means warm or warming.
-;;    color_end: The number of colors in colormap (ex. 97 for BlRe, 253 for
-;;               BlueRed).
-;;    center_color = Color value on the left of the "center" value (see above).
-;;
-;; Description
-;;    Sets the gsnSpreadXXX resources necessary to correctly span a two-color
-;;    colortable.
-;;
-;; Return value
-;;    A logical variable with the start and end colors as attributes.
-;;
-;; Caveats
-;;
-;; References
-;;    http://www.ncl.ucar.edu/Applications/Scripts/contoursym_4.ncl
-;;
-;; Modification history
-;;    20130422-A_gott_kl: written.
-;;
+;
+; Arguments
+;    lower: cnMinLevelValF.
+;    upper: cnMaxLevelValF.
+;    step: cnLevelSpacingF.
+;    center: The numerical value the colormap is centered on. For
+;            anomalies or trends, it's common to use 0.0, so blue means cold
+;            or cooling and red means warm or warming.
+;    color_end: The number of colors in colormap (ex. 97 for BlRe, 253 for
+;               BlueRed).
+;    center_color = Color value on the left of the "center" value (see above).
+;
+; Description
+;    Sets the gsnSpreadXXX resources necessary to correctly span a two-color
+;    colortable.
+;
+; Return value
+;    A logical variable with the start and end colors as attributes.
+;
+; Caveats
+;
+; References
+;    http://www.ncl.ucar.edu/Applications/Scripts/contoursym_4.ncl
+;
+; Modification history
+;    20130422-A_gott_kl: written.
+;
 local funcname, scriptname, nboxes_left, nboxes_right, ncolors_left, \
     ncolors_right, output, color_start
 begin
@@ -565,24 +565,24 @@ begin
 
     color_start = 2  ; All of the color maps begin with 2.
 
-    ;; Calculate the number of color bar boxes to the left and right of
-    ;; the "center" value.
+    ; Calculate the number of color bar boxes to the left and right of
+    ; the "center" value.
     nboxes_left  = (center - (lower - step)) / step
     nboxes_right = ((upper + step) - center) / step
 
-    ;; Calculate the number of colors in the map on
-    ;; the left and right hand sides.
+    ; Calculate the number of colors in the map on
+    ; the left and right hand sides.
     ncolors_left = (center_color - color_start + 1)
     ncolors_right = (color_end - center_color)
 
     output = True
-    ;; Either the lower or upper extent of the color map will be adjusted. If
-    ;; the magnitude of the lower limit is less than the magnitude of the
-    ;; upper limit, then the lower limit has to be "moved in" towards the
-    ;; center color. Oppositely, the upper limit will be moved. If both the
-    ;; lower and upper numerical values are the same, then pass back 2 as the
-    ;; lower extent and color_end (number of colors) as the upper extent (use
-    ;; the whole map in other words).
+    ; Either the lower or upper extent of the color map will be adjusted. If
+    ; the magnitude of the lower limit is less than the magnitude of the
+    ; upper limit, then the lower limit has to be "moved in" towards the
+    ; center color. Oppositely, the upper limit will be moved. If both the
+    ; lower and upper numerical values are the same, then pass back 2 as the
+    ; lower extent and color_end (number of colors) as the upper extent (use
+    ; the whole map in other words).
     if (abs(lower) .lt. abs(upper)) then
         output@ColorStart = round(center_color \
                                   - (ncolors_right / nboxes_right) \
@@ -603,28 +603,28 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("format_units")
 function format_units(str[1]: string)
-;;
-;; Arguments
-;;    str: a string.
-;;
-;; Return value
-;;    A string.
-;;
-;; Description
-;;    Reformats units string to properly display superscripts
-;;    (e.g. m^2 --> m~S1~2)
-;;
-;; Caveats
-;;    Currently convering only very few cases, to be extended.
-;;
-;; References
-;;
-;; Modification history
-;;    20140320-A_righ_ma: written.
-;;
+;
+; Arguments
+;    str: a string.
+;
+; Return value
+;    A string.
+;
+; Description
+;    Reformats units string to properly display superscripts
+;    (e.g. m^2 --> m~S1~2)
+;
+; Caveats
+;    Currently convering only very few cases, to be extended.
+;
+; References
+;
+; Modification history
+;    20140320-A_righ_ma: written.
+;
 local funcname, scriptname, loc_str
 begin
 
@@ -632,7 +632,7 @@ begin
     scriptname = "diag_scripts/shared/plot/style.ncl"
     enter_msg(scriptname, funcname)
 
-    ;; Create a local copy
+    ; Create a local copy
     loc_str = str
 
     if (isStrSubset(loc_str, "-STP")) then
@@ -655,33 +655,33 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("set_log_ticks")
 function set_log_ticks(fmin[1]:numeric,
                        fmax[1]:numeric,
                        opt[1]:string)
-;;
-;; Arguments
-;;    fmin: the minimum axis value (as specified by trXMinF or trYMinF)
-;;    fmax: the maximum axis value (as specified by trXMaxF or trYMaxF)
-;;    opt: "major" or "minor", to return major or minor ticks.
-;;
-;; Return value
-;;    An array of tickmark values, to be used in trXBValues, trYLValues and
-;;    trXBLabels, trYLLabels
-;;
-;; Description
-;;    Since NCL only allows for exponential notation in plots with logarithmic
-;;    axes, this function creates an explicit sets of tickmarks with float
-;;    notation.
-;;
-;; Caveats
-;;
-;; References
-;;
-;; Modification history
-;;    20141003-A_righ_ma: written.
-;;
+;
+; Arguments
+;    fmin: the minimum axis value (as specified by trXMinF or trYMinF)
+;    fmax: the maximum axis value (as specified by trXMaxF or trYMaxF)
+;    opt: "major" or "minor", to return major or minor ticks.
+;
+; Return value
+;    An array of tickmark values, to be used in trXBValues, trYLValues and
+;    trXBLabels, trYLLabels
+;
+; Description
+;    Since NCL only allows for exponential notation in plots with logarithmic
+;    axes, this function creates an explicit sets of tickmarks with float
+;    notation.
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20141003-A_righ_ma: written.
+;
 local funcname, scriptname, omin, omax, rmin, rmax, om, tmp, arr
 begin
 
@@ -689,13 +689,13 @@ begin
     scriptname = "diag_scripts/shared/plot/style.ncl"
     enter_msg(scriptname, funcname)
 
-    ;; Find order of magnitude of min
+    ; Find order of magnitude of min
     omin = toint(log10(fmin))
     if (fmin.lt.1) then
         omin = omin - 1
     end if
 
-    ;; Find order of magnitude of max
+    ; Find order of magnitude of max
     omax = toint(log10(fmax))
     if (fmax.lt.1) then
         omax = omax - 1
@@ -730,60 +730,60 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("sort_alphabetically")
 function sort_alphabetically(orig_names[*], idx_exclude, dest_exclude)
-;;
-;; Arguments
-;;    orig_names: the array of model names prior to sorting
-;;    idx_exclude: the index(es) to be excluded from sorting, -1 to include
-;;                 everything
-;;    dest_exclude: the position where to put the excluded values after
-;;                  sorting ("begin" or "end")
-;;
-;; Return value
-;;    An integer array of the sime size of orig_names, with the permutation
-;;    index to be used to sort the array in alphabetical order.
-;;
-;; Description
-;;    Given an array of model names, this function returns the permutation
-;;    indexes which can be used to sort the array in alphabetical order.
-;;    Certain elements of the array can be excluded from the sorting and
-;;    placed either at the beginning or at the end of the sorted array (e.g.,
-;;    for sorting model alphabetically but leaving observations at the end,
-;;    or multi-model mean at the beginning).
-;;    The function itself does NOT perform any sorting, it just returns the
-;;    permutation indexes. These have to be applied to both the data AND
-;;    the model coordinate to get consistent results.
-;;    For example:
-;;
-;;        data(models|:, lat|:, lon|:)
-;;        pid = sort_alphabetically(data&models, -1, "")
-;;        sorted_data = data(pid, :, :)
-;;        sorted_data&models = data&models(pid)
-;;
-;; Caveats
-;;    Overwriting the original data can lead to incorrect results:
-;;        data = data(pid, :, :)          ; THIS IS WRONG!
-;;        data&models = data&models(pid)  ; THIS IS WRONG!
-;;
-;; References
-;;
-;; Modification history
-;;    20151028-A_righ:ma: written.
-;;
+;
+; Arguments
+;    orig_names: the array of model names prior to sorting
+;    idx_exclude: the index(es) to be excluded from sorting, -1 to include
+;                 everything
+;    dest_exclude: the position where to put the excluded values after
+;                  sorting ("begin" or "end")
+;
+; Return value
+;    An integer array of the sime size of orig_names, with the permutation
+;    index to be used to sort the array in alphabetical order.
+;
+; Description
+;    Given an array of model names, this function returns the permutation
+;    indexes which can be used to sort the array in alphabetical order.
+;    Certain elements of the array can be excluded from the sorting and
+;    placed either at the beginning or at the end of the sorted array (e.g.,
+;    for sorting model alphabetically but leaving observations at the end,
+;    or multi-model mean at the beginning).
+;    The function itself does NOT perform any sorting, it just returns the
+;    permutation indexes. These have to be applied to both the data AND
+;    the model coordinate to get consistent results.
+;    For example:
+;
+;        data(models|:, lat|:, lon|:)
+;        pid = sort_alphabetically(data&models, -1, "")
+;        sorted_data = data(pid, :, :)
+;        sorted_data&models = data&models(pid)
+;
+; Caveats
+;    Overwriting the original data can lead to incorrect results:
+;        data = data(pid, :, :)          ; THIS IS WRONG!
+;        data&models = data&models(pid)  ; THIS IS WRONG!
+;
+; References
+;
+; Modification history
+;    20151028-A_righ:ma: written.
+;
 begin
 
     funcname = "sort_alphabetically"
     scriptname = "diag_scripts/shared/plot/style.ncl"
     enter_msg(scriptname, funcname)
 
-    ;; Create a local copy of input names and set to upper case
+    ; Create a local copy of input names and set to upper case
     loc_names = str_upper(orig_names)
     loc_names@_FillValue = default_fillvalue(typeof(loc_names))
     nn = dimsizes(loc_names)
 
-    ;; Check if there are entries to be excluded
+    ; Check if there are entries to be excluded
     if (all(ismissing(idx_exclude))) then
         l_excl = False
     else if (all(idx_exclude.lt.0)) then
@@ -813,7 +813,7 @@ begin
         sqsort(reord_names)
     end if
 
-    ;; Calculate permutation indexes
+    ; Calculate permutation indexes
     perm_idx = new(nn, integer)
     do ii = 0, nn - 1
         perm_idx(ii) = ind(reord_names(ii).eq.loc_names)

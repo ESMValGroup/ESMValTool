@@ -1,20 +1,20 @@
-;;#############################################################################
-;; PLOT SCRIPTS FOR XY LINE PLOTS
-;;#############################################################################
-;; Please consider using or extending existing routines before adding new ones.
-;; Check the header of each routine for documentation.
-;;
-;; Contents:
-;;
-;;    function profile_plev
-;;    function aerosol_profile
-;;    function aerosol_sizedist
-;;    procedure xy_line
-;;    function timeseries_station
-;;    function cycle_plot
-;;    function errorbar_plot
-;;
-;;#############################################################################
+; #############################################################################
+; PLOT SCRIPTS FOR XY LINE PLOTS
+; #############################################################################
+; Please consider using or extending existing routines before adding new ones.
+; Check the header of each routine for documentation.
+;
+; Contents:
+;
+;    function profile_plev
+;    function aerosol_profile
+;    function aerosol_sizedist
+;    procedure xy_line
+;    function timeseries_station
+;    function cycle_plot
+;    function errorbar_plot
+;
+; #############################################################################
 
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/logging.ncl"
@@ -23,47 +23,47 @@ load "./diag_scripts/shared/set_operators.ncl"
 
 load "./diag_scripts/shared/plot/aux_plotting.ncl"
 
-;;#############################################################################
+; #############################################################################
 undef("profile_plev")
 function profile_plev(wks_in[1],
                       source,
                       varname[1]: string)
-;;
-;; Arguments
-;;    wks_in: workstations (graphic object or default will be used).
-;;    source: data to be plotted or a NetCDF filename:
-;;            Must have "plev" dimension & can have "models", "quantity".
-;;              @ptop: controls pressure axis range (Default: full range).
-;;              @pbot: controls pressure axis range (Default: full range).
-;;              @zoom: controls x axis range (Default: "yes").
-;;              @font: font type to use
-;;              @Refmodel: reference model (Default: first in models dimension)
-;;              @long_name: long variable name (Default: var)
-;;              @short_name: short variable name (Default: var)
-;;              @units: variable units (Default: missing)
-;;    varname: variable name, needed for netCDF files with multiple variables
-;;
-;; Source prototype
-;;
-;; Return value
-;;    A graphic variable.
-;;
-;; Description
-;;    Creates a plot of profile(s) with vertical pressure axis.
-;;    Adds percentiles or stddev of first model (if available) as whiskers.
-;;    Opens default wks, if not provided as argument of type "graphic".
-;;    Defines default ressources, which are overridden by argument res.
-;;    Creates plot, according to wks & res.
-;;
-;; Caveats
-;;    Treatment of coordinate "quantity" not very general yet.
-;;    Selection of defaults for res almost arbitrary.
-;;    Please check results of all scripts that use this routine if
-;;    modifying the defaults!
-;;
-;; Modification history
-;;    20140214-A_gott_kl: written.
-;;
+;
+; Arguments
+;    wks_in: workstations (graphic object or default will be used).
+;    source: data to be plotted or a NetCDF filename:
+;            Must have "plev" dimension & can have "models", "quantity".
+;              @ptop: controls pressure axis range (Default: full range).
+;              @pbot: controls pressure axis range (Default: full range).
+;              @zoom: controls x axis range (Default: "yes").
+;              @font: font type to use
+;              @Refmodel: reference model (Default: first in models dimension)
+;              @long_name: long variable name (Default: var)
+;              @short_name: short variable name (Default: var)
+;              @units: variable units (Default: missing)
+;    varname: variable name, needed for netCDF files with multiple variables
+;
+; Source prototype
+;
+; Return value
+;    A graphic variable.
+;
+; Description
+;    Creates a plot of profile(s) with vertical pressure axis.
+;    Adds percentiles or stddev of first model (if available) as whiskers.
+;    Opens default wks, if not provided as argument of type "graphic".
+;    Defines default ressources, which are overridden by argument res.
+;    Creates plot, according to wks & res.
+;
+; Caveats
+;    Treatment of coordinate "quantity" not very general yet.
+;    Selection of defaults for res almost arbitrary.
+;    Please check results of all scripts that use this routine if
+;    modifying the defaults!
+;
+; Modification history
+;    20140214-A_gott_kl: written.
+;
 local funcname, scriptname, diag_script, data, var, font, font_size_fac, \
   i_ref, FuncCode, i_N, i_mean, i_stddev, i_min, i_max, i_5, i_25, \
   i_median, i_75, i_95, target, i_quantity, data2plot, i_plev, ymin, ymax, \
@@ -76,13 +76,13 @@ begin
   scriptname = "diag_scripts/shared/plot/xy_line.ncl"
   enter_msg(scriptname, funcname)
 
-  ;; Set hardcoded parameters
+  ; Set hardcoded parameters
   border = 0.04  ; factor to extent y- & x-range (except @ top)
   font_size_fac = 1.5  ; factor to change all font sizes
                        ; (relative to NCL defaults)
   i_ref = 0  ; hardcode first model as reference -> generalize, if needed
 
-  ;; Get data, either directly or via netCDF file
+  ; Get data, either directly or via netCDF file
   if (typeof(source) .eq. "string") then
     data = ncdf_read(source, varname)  ; can deal with defaults
   else
@@ -90,7 +90,7 @@ begin
     copy_VarMeta(source, data)
   end if
 
-  ;; Retrieve some metadata from data
+  ; Retrieve some metadata from data
   defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
   if (any(varname .eq. defaults)) then  ; Use default
     var = att2var(data, "var")
@@ -112,7 +112,7 @@ begin
     delete(temp)
   end if
 
-  ;; Position of reference model
+  ; Position of reference model
   if (isdim(data, "models")) then
     Refmodel = att2var_default(data, "Refmodel", "missing", 0)
     if (Refmodel.ne."missing") then
@@ -130,7 +130,7 @@ begin
     end if
   end if
 
-  ;; determine handling of legend
+  ; determine handling of legend
   legend = att2var(data, "legend")  ; mode for legend: inline/separate/none
   valid_legends = (/"inline", "separate"/)
   if (any(legend .eq. valid_legends)) then
@@ -142,7 +142,7 @@ begin
     legend = "none"
   end if
 
-  ;; Check if a valid wks has been provided, otherwise invoke default
+  ; Check if a valid wks has been provided, otherwise invoke default
   wks = get_wks(wks_in, diag_script, var)  ; Function in aux_plotting.ncl
 
   if (isdim(data, "quantity")) then
@@ -157,7 +157,7 @@ begin
     i_75     = ind(data&quantity.eq."75")
     i_95     = ind(data&quantity.eq."95")
     if (ismissing(i_mean)) then
-      ;; "median" is evaluated and plotted, if no "mean" is there
+      ; "median" is evaluated and plotted, if no "mean" is there
       target = "median"  ; 2nd priority
       i_quantity = (/i_5, i_25, i_median, i_75, i_95/)
     else
@@ -166,8 +166,8 @@ begin
     end if
   end if
 
-  ;; Extract data to plot & check for missing values
-  ;; in preparation to determine vertical range
+  ; Extract data to plot & check for missing values
+  ; in preparation to determine vertical range
   if (isdim(data, "quantity") .and. isdim(data, "models")) then
     data2plot = data(models|:, plev|:, quantity|i_quantity)
     if (target.eq."mean") then  ; mean +/- stddev
@@ -192,7 +192,7 @@ begin
   end if
   end if
 
-  ;; y-axis range
+  ; y-axis range
   if (ptop.ne."full") then
     if (ptop .eq. "auto") then
       ymin = min(data2plot&plev(i_plev))
@@ -214,8 +214,8 @@ begin
   delete(i_plev)  ; update i_plev
   i_plev = ind(data2plot&plev.ge.ymin .and. data2plot&plev.le.ymax)
 
-  ;; Determine min & max values of x-axis, and arrow positions
-  ;; to indicate cutoff.
+  ; Determine min & max values of x-axis, and arrow positions
+  ; to indicate cutoff.
   if (isdim(data, "quantity") .and. isdim(data, "models")) then
     if (zoom.eq."yes") then
       if (isatt(zoom, "range")) then
@@ -280,8 +280,8 @@ begin
   end if
   end if
 
-  ;; Get default style parameters (diag_scripts/shared/plot/style.ncl)
-  ;; NOTE: These may or may not contain the reference model
+  ; Get default style parameters (diag_scripts/shared/plot/style.ncl)
+  ; NOTE: These may or may not contain the reference model
   if (.not.isatt(diag_script_info, "styleset")) then
     diag_script_info@styleset = "DEFAULT"
   end if
@@ -291,7 +291,7 @@ begin
   annots = project_style(diag_script_info, "annots")
   avgstd = project_style(diag_script_info, "avgstd")
 
-  ;; Set default ressources
+  ; Set default ressources
   res = True
   res@gsnDraw           = True  ; Draw
   res@gsnFrame          = False  ; Advance frame
@@ -323,24 +323,24 @@ begin
   res@trXMinF           = xmin - border * (xmax - xmin)
   res@trXMaxF           = xmax + border * (xmax - xmin)
   res@trYMaxF           = ymax + border * (ymax - ymin)
-  ;; Do not limit top to show models reaching higher
-  ;; One or more model lines are cut at res@trYMinF
-  ;;     for some mysterious reason -> do not consider border here.
+  ; Do not limit top to show models reaching higher
+  ; One or more model lines are cut at res@trYMinF
+  ;     for some mysterious reason -> do not consider border here.
   res@trYMinF           = ymin  ; - border * (ymax - ymin)
 
-  ;; Styles
+  ; Styles
   res@xyLineColors      = colors
   res@xyLineThicknesses = thicks
   res@xyDashPatterns    = dashes
 
-  ;; tiXAxisString
+  ; tiXAxisString
   res@tiXAxisString = short_name
   if (isatt(data, "units")) then
     res@tiXAxisString = \
       res@tiXAxisString + " [" + format_units(data@units) + "]"
   end if
 
-  ;; inline legend
+  ; inline legend
   if (legend.eq."inline") then
     lgLabels = data&models
     res@pmLegendDisplayMode    = "Always"  ; turn on legend
@@ -360,29 +360,29 @@ begin
       abs(res@pmLegendOrthogonalPosF) * font_size_fac
   end if
 
-  ;; Override defaults with "res_" attributes of "data"
-  ;; Function in ~/interface_scripts/auxiliary.ncl
+  ; Override defaults with "res_" attributes of "data"
+  ; Function in ~/interface_scripts/auxiliary.ncl
   res_new = att2var(data, "res_")
   copy_VarMeta(res_new, res)
 
-  ;; resources for whiskers
+  ; resources for whiskers
   res_whiskers                   = True
   res_whiskers@gsLineColor       = res@xyLineColors(i_ref)
   res_whiskers@gsLineDashPattern = res@xyDashPatterns(i_ref)
   res_whiskers@gsLineThicknessF  = res@xyLineThicknesses(i_ref) / 2.
 
-  ;; resources for arrow heads & refresh markers
+  ; resources for arrow heads & refresh markers
   res_markers               = True
   res_markers@gsMarkerSizeF = 0.001 * res@xyLineThicknesses(i_ref)
   res_markers@gsMarkerColor = res@xyLineColors(i_ref)
 
-  ;; Plotting
+  ; Plotting
   if (isdim(data, "quantity") .and. isdim(data, "models")) then
 
-    ;; mean / median
+    ; mean / median
     plot = gsn_csm_xy(wks, data2plot(:, :, 2), data2plot&plev, res)
 
-    ;; sdtddev / 25%-75% (limit for blank border)
+    ; sdtddev / 25%-75% (limit for blank border)
     left = where(data2plot(i_ref, :, 1).lt.xmin, xmin, \
                  data2plot(i_ref, :, 1))
     right = where(data2plot(i_ref, :, 3).gt.xmax, xmax, \
@@ -390,7 +390,7 @@ begin
     horizontal_whiskers(wks, plot, res_whiskers, left, right, \
                         data2plot&plev)
 
-    ;; min-max / 5%-95% (limit for blank border)
+    ; min-max / 5%-95% (limit for blank border)
     res_whiskers@gsLineDashPattern(:) = 2
     res_whiskers@gsLineThicknessF  = res@xyLineThicknesses(i_ref) / 4.
     left = where(data2plot(i_ref, :, 0).lt.xmin, xmin, \
@@ -401,7 +401,7 @@ begin
                         data2plot&plev)
     delete([/left, right/])
 
-    ;; arrow heads for cut off whiskers due to zooming
+    ; arrow heads for cut off whiskers due to zooming
     if (.not. all(ismissing(ixmin))) then
       res_markers@gsMarkerIndex = 10  ; left arrow head
       add_markers(wks, plot, res_markers, \
@@ -413,23 +413,23 @@ begin
                   xmax, data2plot&plev(ixmax))
     end if
 
-    ;; refresh mean / median with markers
+    ; refresh mean / median with markers
     res_markers@gsMarkerIndex = 16  ; solid circle
     add_markers(wks, plot, res_markers, \
                 data2plot(i_ref, :, 2), data2plot&plev)
 
     else if (isdim(data, "quantity") .and. .not.isdim(data, "models")) then
 
-      ;; mean / median
+      ; mean / median
       plot = gsn_csm_xy(wks, data2plot(:, 2), data2plot&plev, res)
 
-      ;; sdtddev / 25%-75% (limit for blank border)
+      ; sdtddev / 25%-75% (limit for blank border)
       left = where(data2plot(:, 1).lt.xmin, xmin, data2plot(:, 1))
       right = where(data2plot(:, 3).gt.xmax, xmax, data2plot(:, 3))
       horizontal_whiskers(wks, plot, res_whiskers, left, right, \
                           data2plot&plev)
 
-      ;; min-max / 5%-95% (limit for blank border)
+      ; min-max / 5%-95% (limit for blank border)
       res_whiskers@gsLineDashPattern(:) = 2
       res_whiskers@gsLineThicknessF  = res@xyLineThicknesses(i_ref) / 4.
       left = where(data2plot(:, 0).lt.xmin, xmin, data2plot(:, 0))
@@ -438,7 +438,7 @@ begin
                           data2plot&plev)
       delete([/left, right/])
 
-      ;; arrow heads for cut off whiskers due to zooming
+      ; arrow heads for cut off whiskers due to zooming
       if (.not. all(ismissing(ixmin))) then
         res_markers@gsMarkerIndex = 10  ; left arrow head
         add_markers(wks, plot, res_markers, xmin, data2plot&plev(ixmin))
@@ -448,23 +448,23 @@ begin
         add_markers(wks, plot, res_markers, xmax, data2plot&plev(ixmax))
       end if
 
-      ;; refresh mean / median with markers
+      ; refresh mean / median with markers
       res_markers@gsMarkerIndex = 16  ; solid circle
       add_markers(wks, plot, res_markers, data2plot(:, 2), data2plot&plev)
 
     else
 
-      ;; plot everything, if there is no "quantity" coordinate
+      ; plot everything, if there is no "quantity" coordinate
       plot = gsn_csm_xy(wks, data2plot, data2plot&plev, res)
 
-      ;; refresh mean / median with markers
+      ; refresh mean / median with markers
       res_markers@gsMarkerIndex = 16  ; solid circle
       add_markers(wks, plot, res_markers, data2plot, data2plot&plev)
 
     end if
   end if
 
-  ;; outfile name
+  ; outfile name
   if (isatt(wks, "fullname")) then
     plot@outfile = wks@fullname
   else
@@ -473,7 +473,7 @@ begin
               "consider to use get_wks to open wks")
   end if
 
-  ;; confirmation of operation
+  ; confirmation of operation
   if (isatt(res, "gsnDraw")) then
     if (res@gsnDraw .eq. True) then
       log_info("Wrote " + plot@outfile)
@@ -487,46 +487,46 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("aerosol_profile")
 function aerosol_profile(wks_in[1],
                          source_m,
                          source_o,
                          varname[1])
-;;
-;; Arguments
-;;    wks_in: workstations (graphic object or default will be used).
-;;    source_m: model data to be plotted or a NetCDF filename with data.
-;;    source_o: observations data to be plotted or a NetCDF filename with data.
-;;    varname: variable name in the file.
-;;
-;; Source_m prototype
-;;    source[*][*][*]
-;;    source!0 = model
-;;    source!1 = statistic
-;;    source!2 = plev
-;;
-;; Source_o prototype
-;;    source[*][*][*]
-;;    source!0 = case
-;;    source!1 = statistic
-;;    source!2 = plev
-;;
-;; Return value
-;;    A graphic variable.
-;;
-;; Description
-;;    Creates a plot of vertical profile (level vs. data)
-;;    Plots median, mean or both depending on availability of obervations.
-;;
-;; Caveats
-;;
-;; Modification history
-;;    20161013_A_righ_ma: moved size distributions to a separate routine.
-;;    20140917-A_righ_ma: renamed to aerosol_profile and extended for plotting
-;;                        size distributions.
-;;    20140705-A_righ_ma: written.
-;;
+;
+; Arguments
+;    wks_in: workstations (graphic object or default will be used).
+;    source_m: model data to be plotted or a NetCDF filename with data.
+;    source_o: observations data to be plotted or a NetCDF filename with data.
+;    varname: variable name in the file.
+;
+; Source_m prototype
+;    source[*][*][*]
+;    source!0 = model
+;    source!1 = statistic
+;    source!2 = plev
+;
+; Source_o prototype
+;    source[*][*][*]
+;    source!0 = case
+;    source!1 = statistic
+;    source!2 = plev
+;
+; Return value
+;    A graphic variable.
+;
+; Description
+;    Creates a plot of vertical profile (level vs. data)
+;    Plots median, mean or both depending on availability of obervations.
+;
+; Caveats
+;
+; Modification history
+;    20161013_A_righ_ma: moved size distributions to a separate routine.
+;    20140917-A_righ_ma: renamed to aerosol_profile and extended for plotting
+;                        size distributions.
+;    20140705-A_righ_ma: written.
+;
 local funcname, scriptname, tmp, colors, annots, res, res_new
 begin
 
@@ -534,7 +534,7 @@ begin
   scriptname = "diag_scripts/shared/plot/xy_line.ncl"
   enter_msg(scriptname, funcname)
 
-  ;; Get model data, either directly or via netCDF file
+  ; Get model data, either directly or via netCDF file
   if (typeof(source_m) .eq. "string") then
     model = ncdf_read(source_m, varname)
   else
@@ -542,7 +542,7 @@ begin
     copy_VarMeta(source_m, model)
   end if
 
-  ;; Get observational data, either directly or via netCDF file
+  ; Get observational data, either directly or via netCDF file
   if (typeof(source_o) .eq. "string") then
     obser = ncdf_read(source_o, varname)
   else
@@ -550,7 +550,7 @@ begin
     copy_VarMeta(source_o, obser)
   end if
 
-  ;; Retrieve basic metadata from data
+  ; Retrieve basic metadata from data
   defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
   if (any(varname .eq. defaults)) then
     var = att2var(model, "var")
@@ -558,22 +558,22 @@ begin
     var = varname
   end if
 
-  ;; Check if a valid wks has been provided, otherwise invoke default
+  ; Check if a valid wks has been provided, otherwise invoke default
   wks = get_wks(wks_in, diag_script, var)
 
-  ;; Define line colors (first color is used for the observations)
+  ; Define line colors (first color is used for the observations)
   colors = project_style(diag_script_info, "colors")
   annots = project_style(diag_script_info, "annots")
   gsn_define_colormap(wks, array_append_record((/"white", "black"/), \
                       colors, 0))
 
-  ;; Define markers and dashes for median and mean
+  ; Define markers and dashes for median and mean
   marker_mean = 16
   dash_median = 0
   dash_mean = 1
   dash_stddev = 2
 
-  ;; Resources
+  ; Resources
   res = True
   res@gsnDraw = False
   res@gsnFrame = False
@@ -587,35 +587,35 @@ begin
   res@tiYAxisString = "Pressure [" + format_units(model&plev@units) + "]"
   res@gsnCenterStringFontHeightF = 0.015
 
-  ;; Lines
+  ; Lines
   resL = True
   resL@gsLineThicknessF = 2.0
   resL@gsLineDashSegLenF = 0.25
 
-  ;; Markers
+  ; Markers
   resM = True
 
-  ;; Polygons
+  ; Polygons
   resP = True
 
-  ;; Text
+  ; Text
   resT = True
   resT@txFont = 21
 
-  ;; Markers
+  ; Markers
   resM = True
 
-  ;; Override defaults with "res_" attributes of "data"
+  ; Override defaults with "res_" attributes of "data"
   res_new = att2var(model, "res_")
   copy_VarMeta(res_new, res)
 
-  ;; Set number of models
+  ; Set number of models
   nmodels = dimsizes(annots)
 
-  ;; Set number of cases
+  ; Set number of cases
   ncases = dimsizes(obser&case)
 
-  ;; Set the index for the various statistics
+  ; Set the index for the various statistics
   i_N      = ind(model&statistic.eq."N")
   i_mean   = ind(model&statistic.eq."mean")
   i_stddev = ind(model&statistic.eq."stddev")
@@ -629,7 +629,7 @@ begin
   i_90     = ind(model&statistic.eq."90")
   i_95     = ind(model&statistic.eq."95")
 
-  ;; Set plot ranges
+  ; Set plot ranges
   modelmin = min((/min(model(:, i_mean, :)), min(model(:, i_median, :))/))
   modelmax = max((/max(model(:, i_mean, :)), max(model(:, i_median, :))/))
   obsermin = min((/min(obser(:, i_mean, :)), min(obser(:, i_median, :))/))
@@ -638,20 +638,20 @@ begin
   res@tmYLMode = "Explicit"
   res@trYReverse = True
 
-  ;; Set X-axis labels
+  ; Set X-axis labels
   res@trXMinF = min((/modelmin, obsermin/)) / 2.
   res@trXMaxF = 2 * max((/modelmax, obsermax/))
   res@tmXBValues = set_log_ticks(res@trXMinF, res@trXMaxF, "major")
   res@tmXBLabels = res@tmXBValues
   res@tmXBMinorValues = set_log_ticks(res@trXMinF, res@trXMaxF, "minor")
 
-  ;; Set Y-axis labels
+  ; Set Y-axis labels
   res@trYMinF = 100
   res@trYMaxF = 1050
   res@tmYLValues = ispan(100, 1000, 100)
   res@tmYLLabels = res@tmYLValues
 
-  ;; Check available statistics in the observations
+  ; Check available statistics in the observations
   l_median = .not.(all(ismissing(obser(:, i_median, :))))
   l_median25 = l_median .and. \
     .not.(all(ismissing(obser(:, i_25, :)))) .and. \
@@ -666,24 +666,24 @@ begin
   l_stddev = .not.(all(ismissing(obser(:, i_stddev, :))))
   l_both = l_median.and.l_mean
 
-  ;; If both 10-90 and 5-95 are available, priority to 10-90
+  ; If both 10-90 and 5-95 are available, priority to 10-90
   if (l_median10.and.l_median5) then
     l_median5 = False
   end if
 
-  ;; Check if this is a summary plot
+  ; Check if this is a summary plot
   l_summary = False
   if (ncases.gt.1) then
     l_summary = True
     l_stddev = False
-    ;; Only one stat and priority to median
+    ; Only one stat and priority to median
     l_both = False
     if (l_median) then
       l_mean = False
     end if
   end if
 
-  ;; Set title for median only
+  ; Set title for median only
   if (l_median.and..not.l_both) then
     res@gsnCenterString = "Median (lines), 25-75% percentiles (shades)"
     if (l_median10) then
@@ -700,7 +700,7 @@ begin
     end if
   end if
 
-  ;; Set titles for mean only
+  ; Set titles for mean only
   if (l_mean.and..not.l_both) then
     if (l_stddev) then
       res@gsnCenterString = "            " + \
@@ -716,7 +716,7 @@ begin
     end if
   end if
 
-  ;; Set titles for both median and mean
+  ; Set titles for both median and mean
   if (l_both) then
     res@gsnCenterString =  "           " + \
       "Median and 25-75% percentiles " + \
@@ -740,11 +740,11 @@ begin
     end if
   end if
 
-  ;; Draw a blank plot function, lines are dots are added below for
-  ;; better controlling the draw order
+  ; Draw a blank plot function, lines are dots are added below for
+  ; better controlling the draw order
   plot = gsn_csm_blank_plot(wks, res)
 
-  ;; Draw percentiles as shaded areas
+  ; Draw percentiles as shaded areas
   if (l_median) then
     shade_flag_m = (/l_median5, l_median10, l_median/)
     shade_flag_o = (/l_median5, l_median10, l_median25/)
@@ -754,7 +754,7 @@ begin
     shade_name = (/"5_95", "10_90", "25_75"/)
     do shID = 0, dimsizes(shade_flag_m) - 1
 
-      ;; Model
+      ; Model
       if (shade_flag_m(shID)) then
         resP@gsFillOpacityF = shade_opac(shID)
         g_obj = new(nmodels, graphic)
@@ -785,7 +785,7 @@ begin
         delete(str)
       end if
 
-      ;; Observations
+      ; Observations
       if (shade_flag_o(shID).and..not.l_summary) then
         resP@gsFillColor = "black"
         g_obj = new(ncases, graphic)
@@ -817,10 +817,10 @@ begin
     end do
   end if
 
-  ;; Draw median as solid lines
+  ; Draw median as solid lines
   if (l_median) then
 
-    ;; Model
+    ; Model
     g_obj = new(nmodels, graphic)
     do ii = 0, nmodels - 1
       resL@gsLineColor = colors(ii)
@@ -841,7 +841,7 @@ begin
     plot@model_median = g_obj
     delete(g_obj)
 
-    ;; Observations
+    ; Observations
     if (l_summary) then
       resM@gsMarkerColor = "black"
       resM@gsMarkerIndex = 5
@@ -873,11 +873,11 @@ begin
 
   end if
 
-  ;; Draw mean and standard deviation as dashed/dotted (model) and dots/bars
-  ;; (observations)
+  ; Draw mean and standard deviation as dashed/dotted (model) and dots/bars
+  ; (observations)
   if (l_mean) then
 
-    ;; Model mean and std. dev.
+    ; Model mean and std. dev.
     g_obj = new(nmodels, graphic)
     do ii = 0, nmodels - 1
       resL@gsLineColor = colors(ii)
@@ -918,7 +918,7 @@ begin
     plot@model_stddev = g_obj
     delete(g_obj)
 
-    ;; Observations mean (dots or lines, depending on standard deviation)
+    ; Observations mean (dots or lines, depending on standard deviation)
     if (l_stddev) then
       resM@gsMarkerColor = "black"
       resM@gsMarkerIndex = marker_mean
@@ -949,7 +949,7 @@ begin
     plot@obser_mean = g_obj
     delete(g_obj)
 
-    ;; Observations std. dev.
+    ; Observations std. dev.
     if (l_stddev) then
       resL@gsLineColor = "black"
       resL@gsLineDashPattern = 0
@@ -974,7 +974,7 @@ begin
   end if
   draw(plot)
 
-  ;; Append legend
+  ; Append legend
   xpos = 0.21
   resT@txJust = "CenterLeft"
   ypos = 0.78
@@ -993,43 +993,43 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("aerosol_sizedist")
 function aerosol_sizedist(wks_in[1],
                           source_m,
                           source_o,
                           varname[1])
-;;
-;; Arguments
-;;    wks_in: workstations (graphic object or default will be used).
-;;    source_m: model data to be plotted or a NetCDF filename with data.
-;;    source_o: observations data to be plotted or a NetCDF filename with data.
-;;    varname: variable name in the file.
-;;
-;; Source_m prototype
-;;    source[*][*][*]
-;;    source!0 = model
-;;    source!1 = statistic
-;;    source!2 = plev
-;;
-;; Source_o prototype
-;;    source[*][*][*]
-;;    source!0 = case
-;;    source!1 = statistic
-;;    source!2 = plev
-;;
-;; Return value
-;;    A graphic variable.
-;;
-;; Description
-;;    Creates a size distribution plot (data vs. diameter).
-;;    Plots median, mean or both depending on availability of obervations.
-;;
-;; Caveats
-;;
-;; Modification history
-;;    20161013-A_righ_ma: written based on aerosol_profile.
-;;
+;
+; Arguments
+;    wks_in: workstations (graphic object or default will be used).
+;    source_m: model data to be plotted or a NetCDF filename with data.
+;    source_o: observations data to be plotted or a NetCDF filename with data.
+;    varname: variable name in the file.
+;
+; Source_m prototype
+;    source[*][*][*]
+;    source!0 = model
+;    source!1 = statistic
+;    source!2 = plev
+;
+; Source_o prototype
+;    source[*][*][*]
+;    source!0 = case
+;    source!1 = statistic
+;    source!2 = plev
+;
+; Return value
+;    A graphic variable.
+;
+; Description
+;    Creates a size distribution plot (data vs. diameter).
+;    Plots median, mean or both depending on availability of obervations.
+;
+; Caveats
+;
+; Modification history
+;    20161013-A_righ_ma: written based on aerosol_profile.
+;
 local funcname, scriptname, tmp, colors, annots, res, res_new
 begin
 
@@ -1037,7 +1037,7 @@ begin
   scriptname = "diag_scripts/shared/plot/xy_line.ncl"
   enter_msg(scriptname, funcname)
 
-  ;; Get model data, either directly or via netCDF file
+  ; Get model data, either directly or via netCDF file
   if (typeof(source_m) .eq. "string") then
     model = ncdf_read(source_m, varname)
   else
@@ -1045,7 +1045,7 @@ begin
     copy_VarMeta(source_m, model)
   end if
 
-  ;; Get observational data, either directly or via netCDF file
+  ; Get observational data, either directly or via netCDF file
   if (typeof(source_o) .eq. "string") then
     obser = ncdf_read(source_o, varname)
   else
@@ -1053,7 +1053,7 @@ begin
     copy_VarMeta(source_o, obser)
   end if
 
-  ;; Retrieve basic metadata from data
+  ; Retrieve basic metadata from data
   defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
   if (any(varname .eq. defaults)) then
     var = att2var(model, "var")
@@ -1061,22 +1061,22 @@ begin
     var = varname
   end if
 
-  ;; Check if a valid wks has been provided, otherwise invoke default
+  ; Check if a valid wks has been provided, otherwise invoke default
   wks = get_wks(wks_in, diag_script, var)
 
-  ;; Define line colors (first color is used for the observations)
+  ; Define line colors (first color is used for the observations)
   colors = project_style(diag_script_info, "colors")
   annots = project_style(diag_script_info, "annots")
   gsn_define_colormap(wks, array_append_record((/"white", "black"/), \
                       colors, 0))
 
-  ;; Define markers and dashes for median and mean
+  ; Define markers and dashes for median and mean
   marker_mean = 16
   dash_median = 0
   dash_mean = 1
   dash_stddev = 2
 
-  ;; Resources
+  ; Resources
   res = True
   res@gsnDraw = False
   res@gsnFrame = False
@@ -1090,36 +1090,36 @@ begin
   res@tiXAxisString = "Diameter [" + format_units(model&diam@units) + "]"
   res@gsnCenterStringFontHeightF = 0.015
 
-  ;; Lines
+  ; Lines
   resL = True
   resL@gsLineThicknessF = 2.0
   resL@gsLineDashSegLenF = 0.25
 
-  ;; Markers
+  ; Markers
   resM = True
   resM@gsMarkerSizeF = 0.01
 
-  ;; Polygons
+  ; Polygons
   resP = True
 
-  ;; Text
+  ; Text
   resT = True
   resT@txFont = 21
 
-  ;; Markers
+  ; Markers
   resM = True
 
-  ;; Override defaults with "res_" attributes of "data"
+  ; Override defaults with "res_" attributes of "data"
   res_new = att2var(model, "res_")
   copy_VarMeta(res_new, res)
 
-  ;; Set number of models
+  ; Set number of models
   nmodels = dimsizes(annots)
 
-  ;; Set number of cases
+  ; Set number of cases
   ncases = dimsizes(obser&case)
 
-  ;; Set the index for the various statistics
+  ; Set the index for the various statistics
   i_N      = ind(model&statistic.eq."N")
   i_mean   = ind(model&statistic.eq."mean")
   i_stddev = ind(model&statistic.eq."stddev")
@@ -1133,7 +1133,7 @@ begin
   i_90     = ind(model&statistic.eq."90")
   i_95     = ind(model&statistic.eq."95")
 
-  ;; Set plot ranges
+  ; Set plot ranges
   modelmin = min((/min(model(:, i_mean, :)), min(model(:, i_median, :))/))
   modelmax = max((/max(model(:, i_mean, :)), max(model(:, i_median, :))/))
   obsermin = min((/min(obser(:, i_mean, :)), min(obser(:, i_median, :))/))
@@ -1141,21 +1141,21 @@ begin
   res@tmXBMode = "Explicit"
   res@tmYLMode = "Explicit"
 
-  ;; Set X-axis labels
+  ; Set X-axis labels
   res@trXMinF = 0.001
   res@trXMaxF = 10.
   res@tmXBValues = set_log_ticks(res@trXMinF, res@trXMaxF, "major")
   res@tmXBLabels = res@tmXBValues
   res@tmXBMinorValues = set_log_ticks(res@trXMinF, res@trXMaxF, "minor")
 
-  ;; Set Y-axis labels
+  ; Set Y-axis labels
   res@trYMaxF = 2 * max((/modelmax, obsermax/))
   res@trYMinF = res@trYMaxF / 1.e5
   res@tmYLValues = set_log_ticks(res@trYMinF, res@trYMaxF, "major")
   res@tmYLLabels = res@tmYLValues
   res@tmYLMinorValues = set_log_ticks(res@trYMinF, res@trYMaxF, "minor")
 
-  ;; Check available statistics in the observations
+  ; Check available statistics in the observations
   l_median = .not.(all(ismissing(obser(:, i_median, :))))
   l_median25 = l_median .and. \
     .not.(all(ismissing(obser(:, i_25, :)))) .and. \
@@ -1170,12 +1170,12 @@ begin
   l_stddev = .not.(all(ismissing(obser(:, i_stddev, :))))
   l_both = l_median.and.l_mean
 
-  ;; If both 10-90 and 5-95 are available, priority to 10-90
+  ; If both 10-90 and 5-95 are available, priority to 10-90
   if (l_median10.and.l_median5) then
     l_median5 = False
   end if
 
-  ;; Set title for median only
+  ; Set title for median only
   if (l_median.and..not.l_both) then
     res@gsnCenterString = "Median (lines), 25-75% percentiles (shades)"
     if (l_median10) then
@@ -1188,7 +1188,7 @@ begin
     end if
   end if
 
-  ;; Set titles for mean only
+  ; Set titles for mean only
   if (l_mean.and..not.l_both) then
     if (l_stddev) then
       res@gsnCenterString = "            " + \
@@ -1200,7 +1200,7 @@ begin
     end if
   end if
 
-  ;; Set titles for both median and mean
+  ; Set titles for both median and mean
   if (l_both) then
     res@gsnCenterString =  "           " + \
       "Median and 25-75% percentiles " + \
@@ -1224,11 +1224,11 @@ begin
     end if
   end if
 
-  ;; Draw a blank plot function, lines are dots are added below for
-  ;; better controlling the draw order
+  ; Draw a blank plot function, lines are dots are added below for
+  ; better controlling the draw order
   plot = gsn_csm_blank_plot(wks, res)
 
-  ;; Draw percentiles as shaded areas
+  ; Draw percentiles as shaded areas
   if (l_median) then
     shade_flag_m = (/l_median5, l_median10, l_median/)
     shade_flag_o = (/l_median5, l_median10, l_median25/)
@@ -1238,7 +1238,7 @@ begin
     shade_name = (/"5_95", "10_90", "25_75"/)
     do shID = 0, dimsizes(shade_flag_m) - 1
 
-      ;; Model
+      ; Model
       if (shade_flag_m(shID)) then
         resP@gsFillOpacityF = shade_opac(shID)
         g_obj = new(nmodels, graphic)
@@ -1269,7 +1269,7 @@ begin
         delete(str)
       end if
 
-      ;; Observations
+      ; Observations
       if (shade_flag_o(shID)) then
         resP@gsFillColor = "black"
         g_obj = new(ncases, graphic)
@@ -1302,10 +1302,10 @@ begin
     end do
   end if
 
-  ;; Draw median as solid lines
+  ; Draw median as solid lines
   if (l_median) then
 
-    ;; Model
+    ; Model
     g_obj = new(nmodels, graphic)
     do ii = 0, nmodels - 1
       resL@gsLineColor = colors(ii)
@@ -1326,7 +1326,7 @@ begin
     plot@model_median = g_obj
     delete(g_obj)
 
-    ;; Observations
+    ; Observations
     resL@gsLineColor = "black"
     g_obj = new(ncases, graphic)
     do ii = 0, ncases - 1
@@ -1348,11 +1348,11 @@ begin
 
   end if
 
-  ;; Draw mean and standard deviation as dashed/dotted (model) and dots/bars
-  ;; (observations)
+  ; Draw mean and standard deviation as dashed/dotted (model) and dots/bars
+  ; (observations)
   if (l_mean) then
 
-    ;; Model
+    ; Model
     g_obj = new(nmodels, graphic)
     do ii = 0, nmodels - 1
       resL@gsLineColor = colors(ii)
@@ -1393,7 +1393,7 @@ begin
     plot@model_stddev = g_obj
     delete(g_obj)
 
-        ;; Observations (dots or lines, depending on standard deviation)
+        ; Observations (dots or lines, depending on standard deviation)
     if (l_stddev) then
       resM@gsMarkerColor = "black"
       resM@gsMarkerIndex = marker_mean
@@ -1423,7 +1423,7 @@ begin
     plot@obser_mean = g_obj
     delete(g_obj)
 
-    ;; Observations
+    ; Observations
     if (l_stddev) then
       resL@gsLineColor = "black"
       resL@gsLineDashPattern = 0
@@ -1448,7 +1448,7 @@ begin
   end if
   draw(plot)
 
-  ;; Append legend
+  ; Append legend
   xpos = 0.79
   resT@txJust = "CenterRight"
   ypos = 0.78
@@ -1468,7 +1468,7 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("xy_line")
 procedure xy_line(wks[1],
                   source,
@@ -1476,30 +1476,30 @@ procedure xy_line(wks[1],
                   source_stddev,
                   res_in : logical,
                   debuginfo[1] : logical)
-;;
-;; Arguments:
-;;    wks: workstation, must be passed - no default used yet!
-;;    source: data to be plotted (no netCDF input possible yet)
-;;    source_x: x-axis of array to be plotted (e.g. source&time, ... )
-;;    source_stddev: standard deviation of input, needed if
-;;                   diag_script_info@multi_model_mean is set to "y"
-;;    res_in: diag_script-specific resources passed from diag_script
-;;    debuginfo: description about diagnostic rendered onto plot
-;;
-;; Source prototype
-;;
-;; Description
-;;    Defines default ressources, which are overridden by argument res.
-;;    Creates an xy-plot, according to wks & res.
-;;    Adds multi model mean and standard deviation if
-;;    diag_script_info@multi_model_mean is set to "y".
-;;
-;; Caveats
-;;
-;; Modification history
-;;    20150511_A_senf_da: modified legend
-;;    20140109-A_senf_da: written.
-;;
+;
+; Arguments:
+;    wks: workstation, must be passed - no default used yet!
+;    source: data to be plotted (no netCDF input possible yet)
+;    source_x: x-axis of array to be plotted (e.g. source&time, ... )
+;    source_stddev: standard deviation of input, needed if
+;                   diag_script_info@multi_model_mean is set to "y"
+;    res_in: diag_script-specific resources passed from diag_script
+;    debuginfo: description about diagnostic rendered onto plot
+;
+; Source prototype
+;
+; Description
+;    Defines default ressources, which are overridden by argument res.
+;    Creates an xy-plot, according to wks & res.
+;    Adds multi model mean and standard deviation if
+;    diag_script_info@multi_model_mean is set to "y".
+;
+; Caveats
+;
+; Modification history
+;    20150511_A_senf_da: modified legend
+;    20140109-A_senf_da: written.
+;
 local funcname, scriptname, res, res_in, res_stddev, source, source_x, \
   source_stddev, wks, wks_in, colors, colors_mm, dashes, dashes_mm, thicks, \
   thicks_mm, annots, annots_mm, avgstd, avgstd_mm, temp, plot, \
@@ -1511,32 +1511,32 @@ begin
   scriptname = "diag_scripts/shared/plot/xy_line.ncl"
   enter_msg(scriptname, funcname)
 
-  ;; Select colors and other plotting attributes
-  ;; (see ./diag_scripts/shared/plot/style.ncl)
+  ; Select colors and other plotting attributes
+  ; (see ./diag_scripts/shared/plot/style.ncl)
   colors = project_style(diag_script_info, "colors")
   dashes = project_style(diag_script_info, "dashes")
   thicks = project_style(diag_script_info, "thicks")
   annots = project_style(diag_script_info, "annots")
   avgstd = project_style(diag_script_info, "avgstd")
 
-  ;; Select colors and other plotting attributes for multi-model mean
+  ; Select colors and other plotting attributes for multi-model mean
   if (diag_script_info@multi_model_mean .eq. "y") then
-    ;; Project_style evaluates metadata of variable "models"
+    ; Project_style evaluates metadata of variable "models"
     temp = models
 
-    ;; -> keep original "models" in "temp" and restore later
+    ; -> keep original "models" in "temp" and restore later
     copy_VarMeta(models, temp)
     delete(models)
 
-     ;; Use "models" to pass on attribute names
+     ; Use "models" to pass on attribute names
     models = getvaratts(temp)  ; use "models" to pass on attribute names
     do i = 0, dimsizes(models) - 1
-      ;; Define all original attributes again, but empty
+      ; Define all original attributes again, but empty
       models@$models(i)$ = ""
     end do
     models@name = "model_mean"
 
-    ;; See ./diag_scripts/shared/plot/style.ncl
+    ; See ./diag_scripts/shared/plot/style.ncl
     colors_mmm = project_style(diag_script_info, "colors")
     dashes_mmm = project_style(diag_script_info, "dashes")
     thicks_mmm = project_style(diag_script_info, "thicks")
@@ -1548,7 +1548,7 @@ begin
     delete(temp)
   end if
 
-  ;; Highlight ESA OBS
+  ; Highlight ESA OBS
   do i = 0, dimsizes(models@name) - 1
     if (models@name(i).eq."ESACCI-SSMI") then
       thicks(i) = 5 * thicks(i)
@@ -1568,7 +1568,7 @@ begin
     end if
   end do
 
-  ;; Set/copy resources
+  ; Set/copy resources
   res                   = True
   res@xyLineColors      = colors  ; change line color
   res@xyLineThicknesses = thicks  ; make 2nd lines thicker
@@ -1584,23 +1584,23 @@ begin
   res@trYMaxF  = max(source) + 0.05 * (max(source) - min(source))
   copy_VarMeta(res_in, res)  ; copy passed resources
 
-  ;; Plot
+  ; Plot
   plot = gsn_csm_xy(wks, source_x, source, res)
 
-  ;; Add multi model mean and stddev
+  ; Add multi model mean and stddev
   if (diag_script_info@multi_model_mean .eq. "y") then
-      ;; Stddev
+      ; Stddev
     res_stddev = True
     copy_VarMeta(res, res_stddev)
     res_stddev@gsnXYFillColors = "LightGrey"
     delete(res_stddev@xyLineColors)
 
-    ;; We don't want the line, so make it transparent.
+    ; We don't want the line, so make it transparent.
     res_stddev@xyLineColor     = -1
     shading_plot  = gsn_csm_xy(wks, source_x, source_stddev(2:3, :), \
                                res_stddev)
     overlay(plot, shading_plot)
-    ;; mmm
+    ; mmm
     delete([/res@xyLineThicknesses, res@xyLineColors, res@xyDashPatterns/])
     res@xyLineThicknesses = thicks_mmm
     res@xyLineColors      = colors_mmm
@@ -1609,7 +1609,7 @@ begin
     overlay(plot, mmm)
   end if
 
-  ;; Resources for a customized legend.
+  ; Resources for a customized legend.
   lgres                     = True
   lgres@lgMonoLineThickness = False
   lgres@lgLabelFontHeightF  = .08      ; legend label font thickness
@@ -1645,24 +1645,24 @@ begin
   nitems = dimsizes(labels)
   lgres@lgItemOrder = ispan(nitems - 1, 0, 1)
 
-  ;; Create legend
+  ; Create legend
   lbid = gsn_create_legend(wks, nitems, labels, lgres)
 
-  ;; Add legend at the correct position
-  ;; Point (0, 0) is the dead center of the plot. Point (0, .5) is center,
-  ;; flush bottom. Point (0.5, 0.5) is flush bottom, flush right.
+  ; Add legend at the correct position
+  ; Point (0, 0) is the dead center of the plot. Point (0, .5) is center,
+  ; flush bottom. Point (0.5, 0.5) is flush bottom, flush right.
   amres                  = True
   amres@amJust           = "TopRight"  ; reference corner of box
   amres@amParallelPosF   =  0.5        ; Move legend to +right, -left
   amres@amOrthogonalPosF = -0.5        ; +down, -up
 
-  ;; Draw and frame
+  ; Draw and frame
   psres = True
   psres@gsnDraw = False
   psres@gsnFrame = False
   maximize_output(wks, psres)
 
-  ;; Get plot size
+  ; Get plot size
   getvalues plot
     "vpXF"      : vpx
     "vpYF"      : vpy
@@ -1681,14 +1681,14 @@ begin
   bres@tmYLBorderOn = False
   bres@tmYRBorderOn = False
 
-  ;; Create a blank plot with the same size as plot, attach legend
+  ; Create a blank plot with the same size as plot, attach legend
   bres@vpXF      = vpx
   bres@vpYF      = vpy
   bres@vpWidthF  = vpw
   bres@vpHeightF = vph
   blank_plot = gsn_csm_blank_plot(wks, bres)
 
-  ;; Add legend to plot
+  ; Add legend to plot
   if (isatt(diag_script_info, "xy_line_legend")) then
     if (diag_script_info@xy_line_legend .ne. False) then
       annoid = gsn_add_annotation(blank_plot, lbid, amres)
@@ -1697,7 +1697,7 @@ begin
     annoid = gsn_add_annotation(blank_plot, lbid, amres)
   end if
 
-  ;; Put legend into an extra file
+  ; Put legend into an extra file
   if (isatt(source, "legend_outside")) then
     if (source@legend_outside) then
       lg_outfile = wks@legendfile
@@ -1709,7 +1709,7 @@ begin
     end if
   end if
 
-  ;; Create another blank plot to make sure plot border thickness is even
+  ; Create another blank plot to make sure plot border thickness is even
   bres@tmXBBorderOn = True
   bres@tmXTBorderOn = True
   bres@tmYLBorderOn = True
@@ -1717,17 +1717,17 @@ begin
   bres@tmBorderThicknessF = 3
   blank_plot2 = gsn_csm_blank_plot(wks, bres)
 
-  ;; Draw first plot with the actual values (+ grid lines if
-  ;; tmXMajorGrid/gsnYRefLine are set)
+  ; Draw first plot with the actual values (+ grid lines if
+  ; tmXMajorGrid/gsnYRefLine are set)
   draw(plot)
 
-  ;; Draw second plot with legend on top of previous plot. This
-  ;; is, as far as I know, the only way to draw the legend on top
-  ;; of the grid lines
+  ; Draw second plot with legend on top of previous plot. This
+  ; is, as far as I know, the only way to draw the legend on top
+  ; of the grid lines
   draw(blank_plot)
 
-  ;; Redraw plot borders since the legend may (partially) cover some
-  ;; of the borders drawn in the first 'plot'
+  ; Redraw plot borders since the legend may (partially) cover some
+  ; of the borders drawn in the first 'plot'
   draw(blank_plot2)
   if (debuginfo) then
     txres = True
@@ -1740,7 +1740,7 @@ begin
 
   frame(wks)
 
-  ;; outfile name
+  ; outfile name
   if (isatt(wks, "fullname")) then
     outfile = wks@fullname
   else
@@ -1756,33 +1756,33 @@ undef("timeseries_station")
 function timeseries_station(wks_in[1],
                             source,
                             varname[1]: string)
-;;
-;; Arguments
-;;    wks_in: workstations (graphic object or default will be used).
-;;    source: data to be plotted or a NetCDF filename with data.
-;;              @stname: station name
-;;              @stlat: station latitude
-;;              @stlon: station longitude
-;;              @stalt: station altitude
-;;    varname: variable name, needed for netCDF files with multiple variables
-;;
-;; Source prototype
-;;    source[*][*]
-;;    source!0 = model
-;;    source!1 = time or year
-;;
-;; Return value
-;;    A graphic variable.
-;;
-;; Description
-;;    Creates a time series plot for station data.
-;;
-;; Caveats:
-;;    Selection of defaults for res almost arbitrary.
-;;
-;; Modification history:
-;;    20140325_righ_ma: written.
-;;
+;
+; Arguments
+;    wks_in: workstations (graphic object or default will be used).
+;    source: data to be plotted or a NetCDF filename with data.
+;              @stname: station name
+;              @stlat: station latitude
+;              @stlon: station longitude
+;              @stalt: station altitude
+;    varname: variable name, needed for netCDF files with multiple variables
+;
+; Source prototype
+;    source[*][*]
+;    source!0 = model
+;    source!1 = time or year
+;
+; Return value
+;    A graphic variable.
+;
+; Description
+;    Creates a time series plot for station data.
+;
+; Caveats:
+;    Selection of defaults for res almost arbitrary.
+;
+; Modification history:
+;    20140325_righ_ma: written.
+;
 local funcname, scriptname
 begin
 
@@ -1790,7 +1790,7 @@ begin
   scriptname = "diag_scripts/shared/plot/xy_line.ncl"
   enter_msg(scriptname, funcname)
 
-  ;; Get data, either directly or via netCDF file
+  ; Get data, either directly or via netCDF file
   if (typeof(source) .eq. "string") then
     data = ncdf_read(source, varname)
   else
@@ -1798,7 +1798,7 @@ begin
     copy_VarMeta(source, data)
   end if
 
-  ;; Retrieve basic metadata from data
+  ; Retrieve basic metadata from data
   defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
   if (any(varname .eq. defaults)) then
     var = att2var(data, "var")
@@ -1806,10 +1806,10 @@ begin
     var = varname
   end if
 
-  ;; Check if a valid wks has been provided, otherwise invoke default
+  ; Check if a valid wks has been provided, otherwise invoke default
   wks_out = get_wks(wks_in, diag_script, var)
 
-  ;; Default resources
+  ; Default resources
   res = True
   res@gsnDraw             = False
   res@gsnFrame            = False
@@ -1841,15 +1841,15 @@ begin
     res@gsnCenterString = data@long_name
   end if
 
-  ;; Override defaults with "res_" attributes of "data"
+  ; Override defaults with "res_" attributes of "data"
   res_new = att2var(data, "res_")
   copy_VarMeta(res_new, res)
 
-  ;; Plot
+  ; Plot
   dimnames = getvardims(data)
   plot = gsn_csm_xy(wks_out, data&$dimnames(1)$, data, res)
 
-  ;; Append legend
+  ; Append legend
   resT = True
   resT@txFont = 21
   resT@txFontColor = "black"
@@ -1870,7 +1870,7 @@ begin
     end do
   end if
 
-  ;; Append station info
+  ; Append station info
   resT@txJust = "CenterRight"
   xpos = 0.785
   ypos = 0.785
@@ -1912,36 +1912,36 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("cycle_plot")
 function cycle_plot(wks_in[1],
                     source,
                     varname[1] : string)
-;;
-;; Arguments
-;;    wks_in: workstations (graphic object or default will be used).
-;;    source: data to be plotted or a NetCDF filename with data.
-;;    varname: variable name in the file.
-;;
-;; Source prototype
-;;    source(*, *, 2)
-;;    source!0 = model
-;;    source!1 = month or season
-;;    source!2 = statistic
-;;    source@legend_outside = draw a legend withing the plot or in a separate
-;;                            file
-;;
-;; Return value
-;;    A graphic variable.
-;;
-;; Description
-;;    Draw an annual or seasonal cycle plot.
-;;
-;; Caveats
-;;
-;; Modification history
-;;    20131206-A_fran_fr: written.
-;;
+;
+; Arguments
+;    wks_in: workstations (graphic object or default will be used).
+;    source: data to be plotted or a NetCDF filename with data.
+;    varname: variable name in the file.
+;
+; Source prototype
+;    source(*, *, 2)
+;    source!0 = model
+;    source!1 = month or season
+;    source!2 = statistic
+;    source@legend_outside = draw a legend withing the plot or in a separate
+;                            file
+;
+; Return value
+;    A graphic variable.
+;
+; Description
+;    Draw an annual or seasonal cycle plot.
+;
+; Caveats
+;
+; Modification history
+;    20131206-A_fran_fr: written.
+;
 local funcname, scriptname, wks_out, wks_in, data, source, res, atts, base, \
   varname
 begin
@@ -1950,7 +1950,7 @@ begin
   scriptname = "diag_scripts/shared/plot/xy_line.ncl"
   enter_msg(scriptname, funcname)
 
-  ;; Get data, either directly or via netCDF file
+  ; Get data, either directly or via netCDF file
   if (typeof(source) .eq. "string") then
     data = ncdf_read(source, varname)
   else
@@ -1958,7 +1958,7 @@ begin
     copy_VarMeta(source, data)
   end if
 
-  ;; Retrieve basic metadata from data
+  ; Retrieve basic metadata from data
   defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
   if (any(varname .eq. defaults)) then
     var = att2var(data, "var")
@@ -1971,18 +1971,18 @@ begin
     diag_script_info@styleset = "DEFAULT"
   end if
 
-  ;; Select colors and other plotting attributes from the project style files
-  ;; See ./diag_scripts/shared/plot/style.ncl
+  ; Select colors and other plotting attributes from the project style files
+  ; See ./diag_scripts/shared/plot/style.ncl
   colors = project_style(diag_script_info, "colors")
   dashes = project_style(diag_script_info, "dashes")
   thicks = project_style(diag_script_info, "thicks")
   annots = project_style(diag_script_info, "annots")
   avgstd = project_style(diag_script_info, "avgstd")
 
-  ;; Check if a valid wks has been provided, otherwise invoke default
+  ; Check if a valid wks has been provided, otherwise invoke default
   wks_out = get_wks(wks_in, diag_script, var)
 
-  ;; Define default plot resources
+  ; Define default plot resources
   res                  = True
   res@gsnDraw          = False
   res@gsnFrame         = False
@@ -2022,24 +2022,24 @@ begin
     res@tiYAxisString = varname
   end if
 
-  ;; Override defaults with "res_" attributes of "data"
+  ; Override defaults with "res_" attributes of "data"
   res_new = att2var(data, "res_")
   copy_VarMeta(res_new, res)
 
-  ;; Create plot
+  ; Create plot
   plot = gsn_csm_xy(wks_out, x_axis_num, data(:, :, 0), res)
   plot@outfile = wks_out@name
 
-  ;; Add standard deviation
+  ; Add standard deviation
   if (isatt(data, "plot_stddev")) then
     if (.not.(data@plot_stddev.eq."none")) then
 
-      ;; Stddev
+      ; Stddev
       res_stddev = True
       res_stddev@tfPolyDrawOrder = "Predraw"
       res_stddev@gsFillOpacityF = 0.15
 
-      ;; Assign edges of polygons, second round reverted
+      ; Assign edges of polygons, second round reverted
       data_new = new((/dimsizes(data&model), 2 * dimsizes(x_axis)/), float)
       data_new(:, 0:dimsizes(x_axis) - 1) = data(:, :, 0)
       data_new(:, 0:dimsizes(x_axis) - 1) = data(:, :, 0) + data(:, :, 1)
@@ -2056,10 +2056,10 @@ begin
             ((data@plot_stddev.eq."ref_model").and.\
             (any(data@ref_model.eq.annots(imod))))) then
           if (dimsizes(dimsizes(colors)).eq.2) then
-            ;; Assign model corresponding color (RGB arrays)
+            ; Assign model corresponding color (RGB arrays)
             res_stddev@gsFillColor = colors(imod, :)
           else
-            ;; Assign model corresponding color (String arrays)
+            ; Assign model corresponding color (String arrays)
             res_stddev@gsFillColor = colors(imod)
           end if
           shading(imod) = \
@@ -2078,7 +2078,7 @@ begin
 
     lg_outfile = wks_out@legendfile
 
-    ;; Attach line styles
+    ; Attach line styles
     styles = True
     styles@colors = colors
     styles@dashes = dashes
@@ -2089,7 +2089,7 @@ begin
 
     nitems = dimsizes(annots)
 
-    ;; Resources for a customized legend
+    ; Resources for a customized legend
     lgres                    = True
     lgres@lgMonoLineThickness = False
     lgres@lgLabelFontHeightF = 0.08
@@ -2101,19 +2101,19 @@ begin
     lgres@lgDashIndexes      = dashes(::-1)
     lgres@lgLineThicknesses  = thicks(::-1) + 0.5
 
-    ;; Create legends within plot
+    ; Create legends within plot
     lbid_ta = gsn_create_legend(wks_out, nitems, annots(::-1), lgres)
 
-    ;; Add legend at the correct position
-    ;; Point (0, 0) is the dead center of the plot. Point (0, .5)
-    ;; is center, flush bottom. Point (0.5, 0.5) is flush bottom,
-    ;; flush right.
+    ; Add legend at the correct position
+    ; Point (0, 0) is the dead center of the plot. Point (0, .5)
+    ; is center, flush bottom. Point (0.5, 0.5) is flush bottom,
+    ; flush right.
     amres                  = True
     amres@amJust           = "TopRight"  ; reference corner of box
     amres@amParallelPosF   = 0.5         ; Move legend to +right, -left
     amres@amOrthogonalPosF = -0.5        ; +down, -up
 
-    ;; Add legend to plot
+    ; Add legend to plot
     annoid = gsn_add_annotation(plot, lbid_ta, amres)
     plot@annoid = annoid
 
@@ -2124,34 +2124,34 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("errorbar_plot")
 function errorbar_plot(wks_in[1],
                        source,
                        varname[1]:string)
-;;
-;; Arguments
-;;    wks_in: workstations (graphic object or default will be used).
-;;    source: data to be plotted or a NetCDF filename with data.
-;;    varname: variable name in the file.
-;;
-;; Source prototype
-;;
-;; Return value
-;;    A graphic variable.
-;;
-;; Description
-;;    source = (2, npoints)
-;;    source(0, :) = mean
-;;    source(1, :) = standard deviation
-;;    source!0 = statistic
-;;    source!1 = model
-;;
-;; Caveats
-;;
-;; Modification history
-;;    20151105-A_righ_ma: written.
-;;
+;
+; Arguments
+;    wks_in: workstations (graphic object or default will be used).
+;    source: data to be plotted or a NetCDF filename with data.
+;    varname: variable name in the file.
+;
+; Source prototype
+;
+; Return value
+;    A graphic variable.
+;
+; Description
+;    source = (2, npoints)
+;    source(0, :) = mean
+;    source(1, :) = standard deviation
+;    source!0 = statistic
+;    source!1 = model
+;
+; Caveats
+;
+; Modification history
+;    20151105-A_righ_ma: written.
+;
 local funcname, scriptname, data, defaults, var, wks, res, ren_new, resL, \
   error_bar
 begin
@@ -2160,7 +2160,7 @@ begin
   scriptname = "diag_scripts/shared/plot/xy_line.ncl"
   enter_msg(scriptname, funcname)
 
-  ;; Get data, either directly or via netCDF file
+  ; Get data, either directly or via netCDF file
   if (typeof(source) .eq. "string") then
     data = ncdf_read(source, varname)
   else
@@ -2168,7 +2168,7 @@ begin
     copy_VarMeta(source, data)
   end if
 
-  ;; Retrieve basic metadata from data
+  ; Retrieve basic metadata from data
   defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
   if (any(varname .eq. defaults)) then
     var = att2var(data, "var")
@@ -2177,10 +2177,10 @@ begin
     var = varname
   end if
 
-  ;; Check if a valid wks has been provided, otherwise invoke default
+  ; Check if a valid wks has been provided, otherwise invoke default
   wks = get_wks(wks_in, diag_script, var)
 
-  ;; Default resources
+  ; Default resources
   res = True
   res@gsnFrame = False
   res@gsnDraw = False
@@ -2209,14 +2209,14 @@ begin
   res@tmXBLabelAngleF = 45.
   res@tmXBLabelJust = "CenterRight"
 
-  ;; Override defaults with "res_" attributes of "data"
+  ; Override defaults with "res_" attributes of "data"
   res_new = att2var(data, "res_")
   copy_VarMeta(res_new, res)
 
-  ;; Draw plot
+  ; Draw plot
   plot = gsn_csm_y(wks, data(0, :), res)
 
-  ;; Draw errorbars
+  ; Draw errorbars
   resL = True
   resL@gsLineThicknessF = 1.
   error_bar = new(dimsizes(data&model), graphic)

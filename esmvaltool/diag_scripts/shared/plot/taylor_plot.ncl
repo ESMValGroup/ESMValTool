@@ -1,14 +1,14 @@
-;;#############################################################################
-;; TAYLOR DIAGRAM ROUTINES
-;;#############################################################################
-;; Please consider using of extending existing routines before adding new ones.
-;; Check the header of each routine for documentation.
-;;
-;; Contents:
-;;
-;;    function taylor_plot
-;;
-;;#############################################################################
+; #############################################################################
+; TAYLOR DIAGRAM ROUTINES
+; #############################################################################
+; Please consider using of extending existing routines before adding new ones.
+; Check the header of each routine for documentation.
+;
+; Contents:
+;
+;    function taylor_plot
+;
+; #############################################################################
 
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/logging.ncl"
@@ -24,35 +24,35 @@ undef("taylor_plot")
 function taylor_plot(wks_in[1],
                      source,
                      varname[1]: string)
-;;
-;; Arguments
-;;    wks_in: workstations (graphic object or default will be used).
-;;    source: data to be plotted or a NetCDF filename with data.
-;;    varname: variable name in the file.
-;;
-;; Source prototype:
-;;    source = (ndiag, nmod, statistic)
-;;    source(:,:,0) = normalized standard deviation
-;;    source(:,:,1) = correlation
-;;    source!0 = diagnostics
-;;    source!1 = models
-;;    source!2 = statistic
-;;
-;; Return value:
-;;    A graphic variable.
-;;
-;; Caveats
-;;    The taylor plot is drawn in two different ways, depending on ndiag:
-;;      ndiag = 1: models are drawn with different colors and markers, a 
-;;                 separate legend file is created.
-;;      ndiag > 1: variables are drawn with different colors, models are
-;;                 marked with a numbers. Two legends are drawn within the
-;;                 plot frame: one for the variables (markers) and one for the
-;;                 models (numbers).
-;;
-;; Modification history:
-;;    20150505-A_righ_ma: written based on the original NCL code.
-;;
+;
+; Arguments
+;    wks_in: workstations (graphic object or default will be used).
+;    source: data to be plotted or a NetCDF filename with data.
+;    varname: variable name in the file.
+;
+; Source prototype:
+;    source = (ndiag, nmod, statistic)
+;    source(:,:,0) = normalized standard deviation
+;    source(:,:,1) = correlation
+;    source!0 = diagnostics
+;    source!1 = models
+;    source!2 = statistic
+;
+; Return value:
+;    A graphic variable.
+;
+; Caveats
+;    The taylor plot is drawn in two different ways, depending on ndiag:
+;      ndiag = 1: models are drawn with different colors and markers, a 
+;                 separate legend file is created.
+;      ndiag > 1: variables are drawn with different colors, models are
+;                 marked with a numbers. Two legends are drawn within the
+;                 plot frame: one for the variables (markers) and one for the
+;                 models (numbers).
+;
+; Modification history:
+;    20150505-A_righ_ma: written based on the original NCL code.
+;
 local funcname, scriptname
 begin
 
@@ -60,7 +60,7 @@ begin
     scriptname = "diag_scripts/shared/plot/taylor_plot.ncl"
     enter_msg(scriptname, funcname)
 
-    ;; Get data, either directly or via netCDF file
+    ; Get data, either directly or via netCDF file
     if(typeof(source) .eq. "string") then
         data = ncdf_read(source, varname)
     else
@@ -68,10 +68,10 @@ begin
         copy_VarMeta(source, data)
     end if
 
-    ;; Use -999 as fill value (easier to display as text)
+    ; Use -999 as fill value (easier to display as text)
     data@_FillValue = -999.
 
-    ;; Retrieve basic metadata from data
+    ; Retrieve basic metadata from data
     defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
     if (any(varname .eq.  defaults)) then
         grade = att2var(data, "var")
@@ -80,35 +80,35 @@ begin
         grade = varname
     end if
 
-    ;; Check if a valid wks has been provided, otherwise invoke default
+    ; Check if a valid wks has been provided, otherwise invoke default
     wks = get_wks(wks_in, diag_script, varname)
 
-    ;; Set main quantities
+    ; Set main quantities
     RATIO      = data(:, :, 0)
     CC         = data(:, :, 1)
     dimR = dimsizes(RATIO)
     ndiags = dimR(0)  ; # of diagnostics
     nmodels = dimR(1)  ; # of models
 
-    ;; Select plot-type: single variable or multiple variable
+    ; Select plot-type: single variable or multiple variable
     if (ndiags.eq.1) then
         singlediag = True
     else
         singlediag = False
     end if
 
-    ;; Set default colors
+    ; Set default colors
     default_colors = (/"red", "blue", "green", "darkorange", "cyan", \
                        "magenta", "black"/)
     default_markers = (/16, 4, 6, 7, 5, 2, 3, 12/)
 
-    ;; Default resources
+    ; Default resources
     res                 = True
     res@gsnDraw         = False
     res@gsnFrame        = False
     res@txFontHeightF   = 0.018
 
-    ;; One diagnostics, single legend for models using markers and colors
+    ; One diagnostics, single legend for models using markers and colors
     if (singlediag) then
         if (nmodels.gt.dimsizes(default_colors) * \
             dimsizes(default_markers)) then
@@ -129,8 +129,8 @@ begin
                 ii = ii + 1
             end do
         end do
-    ;; Multiple diagnostics, one legend for model (with numbers) and one
-    ;; legend for variable (with colors)
+    ; Multiple diagnostics, one legend for model (with numbers) and one
+    ; legend for variable (with colors)
     else
         if (ndiags.gt.dimsizes(default_colors)) then
             error_msg("f", "taylor_plot.ncl", "taylor_plot", \
@@ -142,11 +142,11 @@ begin
         colors = default_colors(0:ndiags - 1)
     end if
 
-    ;; Override defaults with "res_" attributes of "data"
+    ; Override defaults with "res_" attributes of "data"
     res_new = att2var(data, "res_")
     copy_VarMeta(res_new, res)
 
-    ;; Set coordinates for plotting
+    ; Set coordinates for plotting
     X = new((/ndiags, nmodels/), typeof(RATIO))
     Y = new((/ndiags, nmodels/), typeof(RATIO))
 
@@ -161,7 +161,7 @@ begin
     xyMax = 1.65
     xyMax_Panel = xyMax + 0.10
 
-    ;; Create base plot
+    ; Create base plot
     resXY = True
     resXY@gsnDraw = False
     resXY@gsnFrame = False
@@ -170,7 +170,7 @@ begin
     resXY@tiYAxisString = "Normalized standard deviation"
     resXY@tiYAxisFontHeightF = res@txFontHeightF
 
-    ;; Set X-axis labels
+    ; Set X-axis labels
     resXY@tmXBMode = "Explicit"
     resXY@tmXBValues = (/0.0, 0.25, 0.50, 0.75, 1.00, 1.25, 1.5/)
     resXY@tmXBLabels = (/"", "0.25", "0.50", "0.75", "REF", "1.25", "1.50"/)
@@ -179,7 +179,7 @@ begin
     resXY@tmXBMinorOn = False
     resXY@trXMaxF = xyMax_Panel
 
-    ;; Set Y-axis labels
+    ; Set Y-axis labels
     resXY@tmYLMode = "Manual"
     resXY@tmYLMinorOn = False
     resXY@tmYLMajorLengthF  = resXY@tmXBMajorLengthF
@@ -194,7 +194,7 @@ begin
     resXY@tmXTBorderOn = False
     resXY@tmXTOn = False
 
-    ;; Set correlation axis
+    ; Set correlation axis
     resXY@xyLineThicknessF = 2.
     npts = 200
     xx = fspan(xyMin, xyMax, npts)
@@ -205,16 +205,16 @@ begin
     rad = 4. * atan(1.0) / 180.
     angC = acos(cLabels) / rad
 
-    ;; Set title (only if ndiag = 1)
+    ; Set title (only if ndiag = 1)
     if (singlediag) then
         resXY@tiMainFont = 22
         resXY@tiMainString = data&diagnostics(0)
     end if
 
-    ;; Draw plot
+    ; Draw plot
     taylor  = gsn_xy(wks, xx, yy, resXY)
 
-    ;; Draw X and Y axes
+    ; Draw X and Y axes
     resL  = True
     resL@gsLineThicknessF  = resXY@xyLineThicknessF
     resL@gsLineDashPattern = 0
@@ -223,7 +223,7 @@ begin
     taylor@$unique_string("dum")$ = dum0
     taylor@$unique_string("dum")$ = dum1
 
-    ;; Draw stddev ratio lines
+    ; Draw stddev ratio lines
     xx = fspan(xyMin, xyOne, npts)
     yy = sqrt(xyOne - xx^2)
     resL@gsLineDashPattern = 1
@@ -245,13 +245,13 @@ begin
     delete(xx)
     delete(yy)
 
-    ;; Get style info from taylor, use for correlation axis
+    ; Get style info from taylor, use for correlation axis
     getvalues taylor
         "tmYLLabelFont"        : tmYLLabelFont
         "tmYLLabelFontHeightF" : tmYLLabelFontHeightF
     end getvalues
 
-    ;; Draw correlation labels and ticks
+    ; Draw correlation labels and ticks
     radC = xyMax
     xC = radC * cos(angC * rad)
     yC = radC * sin(angC * rad)
@@ -304,7 +304,7 @@ begin
     end do
     taylor@$unique_string("dum")$ = dum7
 
-    ;; Draw radial lines
+    ; Draw radial lines
     RL = (/0.6, 0.9/)
     angRL = acos(RL) / rad
 
@@ -321,7 +321,7 @@ begin
     end do
     taylor@$unique_string("dum")$ = dum8
 
-    ;; Draw concentric about REF on X-axis
+    ; Draw concentric about REF on X-axis
     resCC                    = True
     resCC@xyLineThicknessF   = 1.
     resCC@xyLineDashPattern  = 2
@@ -354,7 +354,7 @@ begin
     delete(yy)
     taylor@$unique_string("dum")$ = dum9
 
-    ;; Add markers
+    ; Add markers
     resM = True
     resM@gsMarkerThicknessF = 1.
     resM@gsMarkerSizeF = 0.015
@@ -393,7 +393,7 @@ begin
         taylor@$unique_string("dum")$ = dum11
     end if
 
-    ;; Add legend
+    ; Add legend
     resLG  = True
     resLG@lgMarkerColors = colors
     resLG@lgMarkerIndexes = markers
@@ -404,7 +404,7 @@ begin
     resLG@lgItemType = "Markers"
     resLG@lgJustification = "TopRight"
     if (singlediag) then
-        ;; Models (as separate file)
+        ; Models (as separate file)
         styles = True
         styles@colors = colors
         styles@markers = markers
@@ -417,7 +417,7 @@ begin
         lg_outfile = wks@legendfile
         create_legend_lines(data&models, styles, lg_outfile, "markers")
     else
-        ;; Diagnostics
+        ; Diagnostics
         resLG@vpHeightF = 0.030 * ndiags
         resLG@lgItemOrder = ispan(ndiags - 1, 0, 1)
         lbid = gsn_create_legend(wks, ndiags, data&diagnostics, resLG)
@@ -426,7 +426,7 @@ begin
         amres@amOrthogonalPosF = -0.45
         annoid1 = gsn_add_annotation(taylor, lbid, amres)
 
-        ;; Models
+        ; Models
         resT@txJust = "CenterLeft"
         resT@txFontHeightF = 0.015
         dum12 = new(nmodels, graphic)

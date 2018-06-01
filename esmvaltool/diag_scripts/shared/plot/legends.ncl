@@ -19,33 +19,33 @@ undef("legend_lines")  ; *************************************************
 function legend_lines(wks_in[1], \
                       source, \
                       varname[1] : string) 
-;;
-;; Arguments:
-;;     wks_in: workstation ("graphic" object or default will be used)
-;;     source: * data to be plotted, either passed directly or via netCDF file
-;;             * legend styles and strings are passed as attributes data@  
-;;     varname: variable name, needed for netCDF files with multiple variables
-;;
-;;     The following attributes of the input data are evaluated:
-;;     source@diag_script: name(s) of the calling script(s) 
-;;     source@colors: vector of colors  
-;;     source@thicks: vector of line thicknesses
-;;     source@dashes: vector of dash styles
-;;     source@annots: vector of label strings
-;;     source@nrow: number of rows (optional)
-;;     source@ncol: number of columns (optional)
-;;
-;; Returns:
-;;      wks : Workstation with legend
-;;
-;; Description:
-;;    * creates an extra plot with a legend, specified by labels and line styles. 
-;;      It will be saved in the outfile directory and returned as a workstation 
-;;
-;; Modification history:
-;;    * 20140326 A_gott_kl: written (Klaus-Dirk.Gottschaldt@dlr.de), 
-;;                          based on code by F. Frank
-;;
+;
+; Arguments:
+;     wks_in: workstation ("graphic" object or default will be used)
+;     source: * data to be plotted, either passed directly or via netCDF file
+;             * legend styles and strings are passed as attributes data@  
+;     varname: variable name, needed for netCDF files with multiple variables
+;
+;     The following attributes of the input data are evaluated:
+;     source@diag_script: name(s) of the calling script(s) 
+;     source@colors: vector of colors  
+;     source@thicks: vector of line thicknesses
+;     source@dashes: vector of dash styles
+;     source@annots: vector of label strings
+;     source@nrow: number of rows (optional)
+;     source@ncol: number of columns (optional)
+;
+; Returns:
+;      wks : Workstation with legend
+;
+; Description:
+;    * creates an extra plot with a legend, specified by labels and line styles. 
+;      It will be saved in the outfile directory and returned as a workstation 
+;
+; Modification history:
+;    * 20140326 A_gott_kl: written (Klaus-Dirk.Gottschaldt@dlr.de), 
+;                          based on code by F. Frank
+;
 local data, defaults, var, diag_script, colors, annots, dashes, thicks  
 begin
 
@@ -53,16 +53,16 @@ begin
     scriptname = "diag_scripts/shared/plot/legends.ncl"
     enter_msg(scriptname, funcname)
 
-    ;; Get data, either directly or via netCDF file
+    ; Get data, either directly or via netCDF file
     if(typeof(source) .eq. "string") then
-        ;; Function in ~/interface_scripts/auxiliary.ncl
+        ; Function in ~/interface_scripts/auxiliary.ncl
         data = ncdf_read(source, varname)  ; can deal with defaults
     else
         data = source
         copy_VarMeta(source, data)
     end if
 
-    ;; Retrieve basic metadata from data
+    ; Retrieve basic metadata from data
     defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
     if(any(varname .eq. defaults)) then  ; Use default
         var = att2var(data, "var")      ; interface_scripts/auxiliary.ncl
@@ -75,16 +75,16 @@ begin
     dashes = att2var(data, "dashes")
     annots = att2var(data, "annots")
 
-    ;; Attributes for polyline and text
+    ; Attributes for polyline and text
     gsres = True
     txres = True
     copy_VarAtt_sel(data, txres, (/"tx"/)) 
    ; txres@txAngleF = -90.0
   
-    ;; Determine dimensions of plot
+    ; Determine dimensions of plot
     dim_LAB = dimsizes(annots)
 
-    ;; Columns & rows
+    ; Columns & rows
     if(isatt(data, "ncol") .and. isatt(data, "nrow")) then
         col = data@ncol
         row = data@nrow 
@@ -110,7 +110,7 @@ begin
     end if
     end if
 
-    ;; Determines anchor points of lines and labels
+    ; Determines anchor points of lines and labels
     xleg = new((/col/), float)
     yleg = new((/row/), float)
 
@@ -124,7 +124,7 @@ begin
         yleg(j) = yleg(j - 1) - 1. / row
     end do
 
-    ;; Attributes of workstation
+    ; Attributes of workstation
 ;    file_type = True 
 ;    file_type@wkOrientation = "portrait"
 ;    file_type@wkPaperHeightF = 4. * col
@@ -135,22 +135,22 @@ begin
 ;txres@txFontHeightF = absFontH / (1.5 * row)
 ;    txres@txFontAspectF = 12. * (1. / row)
 
-    ;; Check if a valid wks has been provided, otherwise invoke default
-    ;; attributes of file_type will be used by get_wks
+    ; Check if a valid wks has been provided, otherwise invoke default
+    ; attributes of file_type will be used by get_wks
     wks_legend = get_wks(wks_in, diag_script, var+"_legend")  ; Function in aux_plotting.ncl
 
-    ;; Loop over rows (nrow) and columns (col) to draw lines and text
+    ; Loop over rows (nrow) and columns (col) to draw lines and text
     i = 0
     do r = 0, row - 1
         do c = 0, col - 1
             if i.lt.(dim_LAB) then
 
-                ;; Set line color and other optional styles
+                ; Set line color and other optional styles
                 gsres@gsLineColor = colors(i)
                 gsres@gsLineDashPattern = dashes(i)
                 gsres@gsLineThicknessF = thicks(i)
         
-                ;; Draw line and add text
+                ; Draw line and add text
                 gsn_polyline_ndc(wks_legend, (/yleg(r), yleg(r)/), \
                                  (/xleg(c), xleg(c) - 0.05/), gsres)
                 gsn_text_ndc(wks_legend, annots(i), yleg(r), \
@@ -161,10 +161,10 @@ begin
         end do
     end do
 
-    ;; Advance frame
+    ; Advance frame
     frame(wks_legend)
 
-    ;; outfile name
+    ; outfile name
 ;    if (isatt(wks_legend, "fullname")) then
 ;        plot@outfile = wks_legend@fullname
 ;    else
@@ -180,35 +180,35 @@ begin
 
 end
 
-;; *************************************************
+; *************************************************
 undef("legend_markers") 
 function legend_markers(wks_in[1], \
                       source, \
                       varname[1] : string) 
-;;
-;; Arguments:
-;;     wks: workstation ("graphic" object or default will be used)
-;;     source: * data to be plotted, either passed directly or via netCDF file
-;;             * legend styles and strings are passed as attributes data@  
-;;     varname: variable name, needed for netCDF files with multiple variables
-;;
-;;     The following attributes of the input data are evaluated:
-;;     source@diag_script: name(s) of the calling script(s) 
-;;     source@colors: vector of colors  
-;;     source@annots: vector of label strings
-;;     source@nrow: number of rows (optional)
-;;     source@ncol: number of columns (optional)
-;;
-;; Returns:
-;;      wks : Workstation with legend
-;;
-;; Description:
-;;    * creates an extra plot with a legend, specified by labels and line styles. 
-;;      It will be saved in the outfile directory and returned as a workstation 
-;;
-;; Modification history:
-;;    * 20140326 A_wenz_sa: written based on legend_lines
-;;
+;
+; Arguments:
+;     wks: workstation ("graphic" object or default will be used)
+;     source: * data to be plotted, either passed directly or via netCDF file
+;             * legend styles and strings are passed as attributes data@  
+;     varname: variable name, needed for netCDF files with multiple variables
+;
+;     The following attributes of the input data are evaluated:
+;     source@diag_script: name(s) of the calling script(s) 
+;     source@colors: vector of colors  
+;     source@annots: vector of label strings
+;     source@nrow: number of rows (optional)
+;     source@ncol: number of columns (optional)
+;
+; Returns:
+;      wks : Workstation with legend
+;
+; Description:
+;    * creates an extra plot with a legend, specified by labels and line styles. 
+;      It will be saved in the outfile directory and returned as a workstation 
+;
+; Modification history:
+;    * 20140326 A_wenz_sa: written based on legend_lines
+;
 local data, defaults, var, diag_script, colors, annots, dashes, thicks  
 begin
 
@@ -216,16 +216,16 @@ begin
     scriptname = "diag_scripts/shared/plot/legends.ncl"
     enter_msg(scriptname, funcname)
 
-    ;; Get data, either directly or via netCDF file
+    ; Get data, either directly or via netCDF file
     if(typeof(source) .eq. "string") then
-        ;; Function in ~/interface_scripts/auxiliary.ncl
+        ; Function in ~/interface_scripts/auxiliary.ncl
         data = ncdf_read(source, varname)  ; can deal with defaults
     else
         data = source
         copy_VarMeta(source, data)
     end if
 
-    ;; Retrieve basic metadata from data
+    ; Retrieve basic metadata from data
     defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
     if(any(varname .eq. defaults)) then  ; Use default
         var = att2var(data, "var")      ; interface_scripts/auxiliary.ncl
@@ -237,16 +237,16 @@ begin
     thicks = att2var(data, "thicks")
     annots = att2var(data, "annots")
 
-    ;; Attributes for polyline and text
+    ; Attributes for polyline and text
     gsres = True
     txres = True
     copy_VarAtt_sel(data, txres, (/"tx"/)) 
    ; txres@txAngleF = -90.0
   
-    ;; Determine dimensions of plot
+    ; Determine dimensions of plot
     dim_LAB = dimsizes(annots)
 
-    ;; Columns & rows
+    ; Columns & rows
     if(isatt(data, "ncol") .and. isatt(data, "nrow")) then
         col = data@ncol
         row = data@nrow 
@@ -272,7 +272,7 @@ begin
     end if
     end if
 
-    ;; Determines anchor points of lines and labels
+    ; Determines anchor points of lines and labels
     xleg = new((/col/), float)
     yleg = new((/row/), float)
 
@@ -286,23 +286,23 @@ begin
         yleg(j) = yleg(j - 1) - 1. / row
     end do
 
-    ;; Check if a valid wks has been provided, otherwise invoke default
-    ;; attributes of file_type will be used by get_wks
+    ; Check if a valid wks has been provided, otherwise invoke default
+    ; attributes of file_type will be used by get_wks
     wks_legend = get_wks(wks_in, diag_script, var+"_legend")  ; Function in aux_plotting.ncl
 
-    ;; Loop over rows (nrow) and columns (col) to draw lines and text
+    ; Loop over rows (nrow) and columns (col) to draw lines and text
     i = 0
     do r = 0, row - 1
         do c = 0, col - 1
             if i.lt.(dim_LAB) then
 
-                ;; Set marker color and other optional styles
+                ; Set marker color and other optional styles
                 gsres@gsMarkerColor      = colors(i)
                 gsres@gsMarkerIndex      = thicks(i)
                 gsres@gsMarkerSizeF      = 0.015
                 gsres@gsMarkerThicknessF = 2
         
-                ;; Draw marker and add text
+                ; Draw marker and add text
                 gsn_polymarker_ndc(wks_legend, (/yleg(r), yleg(r)/), \
                                  (/xleg(c), xleg(c) - 0.05/), gsres)
                 gsn_text_ndc(wks_legend, annots(i), yleg(r), \
@@ -313,7 +313,7 @@ begin
         end do
     end do
 
-    ;; Advance frame
+    ; Advance frame
     frame(wks_legend)
 
     ;log_info(" Wrote " + wks_legend@fullname)

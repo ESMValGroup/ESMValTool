@@ -1,11 +1,11 @@
-;;#############################################################################
-;; PLOTS SCRIPTS FOR PORTRAIT PLOTS
-;;#############################################################################
-;; Please consider using or extending existing routines before adding new ones.
-;; Check the header of each routine for documentation.
-;;
-;;    function portrait_plot
-;;#############################################################################
+; #############################################################################
+; PLOTS SCRIPTS FOR PORTRAIT PLOTS
+; #############################################################################
+; Please consider using or extending existing routines before adding new ones.
+; Check the header of each routine for documentation.
+;
+;    function portrait_plot
+; #############################################################################
 
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/logging.ncl"
@@ -20,34 +20,34 @@ undef("portrait_plot")
 function portrait_plot(wks_in[1],
                        source,
                        varname[1]: string)
-;;
-;; Arguments
-;;    wks_in: workstations (graphic object or default will be used).
-;;    source: data to be plotted or a NetCDF filename with data.
-;;    varname: variable name in the file.
-;;
-;; Source prototype:
-;;    source = (ndiag, nmod)
-;;    source!0 = diagnostics
-;;    source!1 = models
-;;
-;;    source = (ndiag, nmod, nref)
-;;    source(:,:,0) = reference model
-;;    source(:,:,1) = alternative model (optional)
-;;    source!0 = diagnostics
-;;    source!1 = models
-;;
-;; Return value:
-;;    A graphic variable.
-;;
-;; Caveats
-;;
-;; Modification history:
-;;    20151027-A_righ_ma: added option for displaying rankings.
-;;    20140605-A_righ_ma: modified with flexible plot shapes.
-;;    20140204-A_fran_fr: extended.
-;;    20140114-A_righ_ma: written.
-;;
+;
+; Arguments
+;    wks_in: workstations (graphic object or default will be used).
+;    source: data to be plotted or a NetCDF filename with data.
+;    varname: variable name in the file.
+;
+; Source prototype:
+;    source = (ndiag, nmod)
+;    source!0 = diagnostics
+;    source!1 = models
+;
+;    source = (ndiag, nmod, nref)
+;    source(:,:,0) = reference model
+;    source(:,:,1) = alternative model (optional)
+;    source!0 = diagnostics
+;    source!1 = models
+;
+; Return value:
+;    A graphic variable.
+;
+; Caveats
+;
+; Modification history:
+;    20151027-A_righ_ma: added option for displaying rankings.
+;    20140605-A_righ_ma: modified with flexible plot shapes.
+;    20140204-A_fran_fr: extended.
+;    20140114-A_righ_ma: written.
+;
 local funcname, scriptname, wks, wks_in, data, source, res, atts, \
     base, varname
 begin
@@ -56,7 +56,7 @@ begin
     scriptname = "diag_scripts/shared/plot/portrait_plot.ncl"
     enter_msg(scriptname, funcname)
 
-    ;; Get data, either directly or via netCDF file
+    ; Get data, either directly or via netCDF file
     if(typeof(source) .eq. "string") then
         data = ncdf_read(source, varname)
     else
@@ -64,10 +64,10 @@ begin
         copy_VarMeta(source, data)
     end if
 
-    ;; Use -999 as fill value (easier to display as text)
+    ; Use -999 as fill value (easier to display as text)
     data@_FillValue = -999.
 
-    ;; Retrieve basic metadata from data
+    ; Retrieve basic metadata from data
     defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
     if (any(varname .eq.  defaults)) then
         grade = att2var(data, "var")
@@ -76,10 +76,10 @@ begin
         grade = varname
     end if
 
-    ;; Check if a valid wks has been provided, otherwise invoke default
+    ; Check if a valid wks has been provided, otherwise invoke default
     wks = get_wks(wks_in, diag_script, grade)
 
-    ;; Check source dimensionality
+    ; Check source dimensionality
     grade_dim = dimsizes(data)
     ndiag = grade_dim(0)
     nmod = grade_dim(1)
@@ -109,10 +109,10 @@ begin
     end if
     end if
 
-    ;; Set levels
+    ; Set levels
     if (isatt(data, "label_bounds")) then
 
-        ;; User provided
+        ; User provided
         chars = tochar(tostring( \
             abs(data@label_bounds(1) - round(data@label_bounds(1), 1)) * 100))
         five = tochar("5")
@@ -127,7 +127,7 @@ begin
 
     else
 
-        ;; Flexible in regard to the range of the data values
+        ; Flexible in regard to the range of the data values
         bound  = max(abs(data(:, :, 0)))
         if all(ismissing(data)) then
             delete(bound)
@@ -145,7 +145,7 @@ begin
 
     end if
 
-    ;; Label scale
+    ; Label scale
     if (isatt(data, "label_scale")) then
         scale = data@label_scale
     else
@@ -156,7 +156,7 @@ begin
         end if
     end if
 
-    ;; Set levels
+    ; Set levels
     if (isatt(data, "label_lo")) then
         label_lo = data@label_lo
     else
@@ -175,7 +175,7 @@ begin
     end do
     levels = round(100. * levels, 0) / 100.
 
-    ;; Display metrics value on the plot
+    ; Display metrics value on the plot
     flag_values = False
     if (isatt(data, "disp_values")) then
         if (data@disp_values) then
@@ -184,7 +184,7 @@ begin
         end if
     end if
 
-    ;; Diplay model rankings on the plot
+    ; Diplay model rankings on the plot
     flag_ranks = False
     if (isatt(data, "disp_rankings")) then
         if (data@disp_rankings) then
@@ -194,7 +194,7 @@ begin
         end if
     end if
 
-    ;; Set a colormap
+    ; Set a colormap
     if (isatt(data, "colormap")) then
         gsn_define_colormap(wks, data@colormap)
     else
@@ -214,7 +214,7 @@ begin
     ncmap = dimsizes(cmap(:, 0))
     delete(tmp)
 
-    ;; Sample colormap and extract colors
+    ; Sample colormap and extract colors
     if (label_lo.and.label_hi) then  ; 2 more colors for the triangles
         pos = new((/nlevels + 1/), float)
     end if
@@ -231,14 +231,14 @@ begin
     end do
     delete([/cmap, ncmap/])
 
-    ;; Reverse order if required
+    ; Reverse order if required
     if (isatt(data, "cm_reverse")) then
         if (data@cm_reverse) then
             pos = pos(::-1)
         end if
     end if
 
-    ;; Default resources
+    ; Default resources
     res = True
     res@gsnDraw  = False
     res@gsnFrame = False
@@ -252,7 +252,7 @@ begin
     res@trYMinF = 0.
     res@trYMaxF = 1.0
 
-    ;; Set plot aspect depending on ndiag and nmod: longst dimension on y-axis
+    ; Set plot aspect depending on ndiag and nmod: longst dimension on y-axis
     xbsize = 1. / nmod
     ybsize = 1. / ndiag
     if (ndiag.ge.nmod) then
@@ -278,7 +278,7 @@ begin
     end if
     res@vpYF = 0.2 + res@vpHeightF
 
-    ;; Title
+    ; Title
     res@tiMainFontHeightF = 0.020
     if (isatt(data, "metric")) then
         res@tiMainString = data@metric
@@ -291,26 +291,26 @@ begin
         end if
     end if
 
-    ;; Override defaults with "res_" attributes of "data"
+    ; Override defaults with "res_" attributes of "data"
     res_new = att2var(data, "res_")
     copy_VarMeta(res_new, res)
 
-    ;; Draw a blank plot, polygons will be added below
+    ; Draw a blank plot, polygons will be added below
     plot = gsn_blank_plot(wks, res)
 
-    ;; Text resources
+    ; Text resources
     resTxt = True
     resTxt@txFontHeightF = 0.010
     resTxt@txJust = "CenterCenter"
 
-    ;; Polygons resources
+    ; Polygons resources
     resPol = True
     resPol@gsLineThicknessF = 0.5
     resPol@gsEdgesOn   = True
     resPol@gsLineColor = "black"
     poly = new((/ndiag, nmod, nref/), graphic)
 
-    ;; Calculate rankings
+    ; Calculate rankings
     if (flag_ranks) then
         if (.not.isatt(data, "rank_order")) then
             error_msg("f", scriptname, funcname, \
@@ -338,14 +338,14 @@ begin
         end do
     end if
 
-    ;; Draw polygons
+    ; Draw polygons
     do idiag = 0, ndiag - 1
 
-        ;; Set triangle or square
-        ;;  - draw a square if only 1 reference model is available or if the
-        ;;    alternative model contains only missing values
-        ;;  - draw a triangle if an alternative reference is available and
-        ;;    contains valid values
+        ; Set triangle or square
+        ;  - draw a square if only 1 reference model is available or if the
+        ;    alternative model contains only missing values
+        ;  - draw a triangle if an alternative reference is available and
+        ;    contains valid values
         l_square = True
         if (nref.gt.1) then
             if (.not.all(ismissing(data(idiag, :, 1)))) then
@@ -355,7 +355,7 @@ begin
 
         do imod = 0, nmod - 1
 
-            ;; Find corresponding color for primary reference
+            ; Find corresponding color for primary reference
             curr = data(idiag, imod, 0)
             if (ismissing(curr)) then
                 resPol@gsFillColor = 0
@@ -413,7 +413,7 @@ begin
 
             else
 
-                ;; Primary reference => lower triangle
+                ; Primary reference => lower triangle
                 xx = (/imod * xbsize, (imod + 1) * xbsize, \
                       (imod + 1) * xbsize, imod * xbsize/)
                 yy = (/idiag * ybsize, idiag * ybsize, (idiag + 1) * ybsize, \
@@ -442,7 +442,7 @@ begin
                 delete(xx)
                 delete(yy)
 
-                ;; Find corresponding color for alternative reference
+                ; Find corresponding color for alternative reference
                 curr = data(idiag, imod, 1)
                 if (ismissing(curr)) then
                     resPol@gsFillColor = 0
@@ -470,7 +470,7 @@ begin
                     resPol@gsFillColor = round(pos(lidx), 3)
                 end if
 
-                ;; Alternative reference => upper triangle
+                ; Alternative reference => upper triangle
                 xx = (/imod * xbsize, (imod + 1) * xbsize, \
                       imod * xbsize, imod * xbsize/)
                 yy = (/idiag * ybsize, (idiag + 1) * ybsize, \
@@ -512,7 +512,7 @@ begin
         res@text_v = text_r
     end if
 
-    ;; Add legend text for the diagnostics
+    ; Add legend text for the diagnostics
     if(isatt(diag_script_info, "scale_font")) then
         scale_font = diag_script_info@scale_font
     else
@@ -529,7 +529,7 @@ begin
         ypos = ypos + step
     end do
 
-    ;; Add text for the models
+    ; Add text for the models
     resTxt@txAngleF = 90.
     step = res@vpWidthF / nmod
     resTxt@txJust = "CenterRight"
@@ -540,7 +540,7 @@ begin
         xpos = xpos + step
     end do
 
-    ;; Draw a labelbar
+    ; Draw a labelbar
     resTxt@txFontHeightF = 0.015 * scale_font
     resTxt@txAngleF = 0.
     resTxt@txJust = "CenterLeft"

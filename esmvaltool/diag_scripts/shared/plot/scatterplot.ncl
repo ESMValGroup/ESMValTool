@@ -1,14 +1,14 @@
-;;#############################################################################
-;; PLOT SCRIPTS FOR SCATTER PLOTS
-;;#############################################################################
-;; Please consider using or extending existing routines before adding new ones.
-;; Check the header of each routine for documentation.
-;;
-;;    function scatterplot
-;;    function scatterplot3D
-;;    function scatterplot_markers
-;;
-;;#############################################################################
+; #############################################################################
+; PLOT SCRIPTS FOR SCATTER PLOTS
+; #############################################################################
+; Please consider using or extending existing routines before adding new ones.
+; Check the header of each routine for documentation.
+;
+;    function scatterplot
+;    function scatterplot3D
+;    function scatterplot_markers
+;
+; #############################################################################
 
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/logging.ncl"
@@ -16,43 +16,43 @@ load "./interface_scripts/logging.ncl"
 load "./diag_scripts/shared/plot/style.ncl"
 load "./diag_scripts/shared/plot/aux_plotting.ncl"
 
-;;#############################################################################
+; #############################################################################
 undef("scatterplot")
 function scatterplot(wks_in[1],
                      source,
                      varname[1]: string,
                      reflines: logical,
                      stats: logical)
-;;
-;; Arguments
-;;    wks_in: workstation ("graphic" object or default will be used).
-;;    source: data to be plotted (see source prototype above) or a NetCDF
-;;            filename with data.
-;;    varname: variable name in the file.
-;;    logmode: if true, log scale will be used on both axes.
-;;    reflines: show/hide reference lines (1:1 and +/- factor 2).
-;;    stats: show/hide summary of statistical values on the plot.
-;;
-;; Source prototype
-;;    source = (2, npoints)
-;;    source(0, :) = x-axis values
-;;    source(1, :) = y-axis values
-;;    source!0 = models
-;;
-;; Return value
-;;    A graphic object.
-;;
-;; Description
-;;    Creates a scatter plot and optionally adds lines for the factor-2 range
-;;    and statistical information.
-;;
-;; Caveats
-;;    Linear axes are used as default, log axis can be optionally provided by
-;;    the calling diag_script.
-;;
-;; Modification history
-;;    20140228-A_righ_ma: written.
-;;
+;
+; Arguments
+;    wks_in: workstation ("graphic" object or default will be used).
+;    source: data to be plotted (see source prototype above) or a NetCDF
+;            filename with data.
+;    varname: variable name in the file.
+;    logmode: if true, log scale will be used on both axes.
+;    reflines: show/hide reference lines (1:1 and +/- factor 2).
+;    stats: show/hide summary of statistical values on the plot.
+;
+; Source prototype
+;    source = (2, npoints)
+;    source(0, :) = x-axis values
+;    source(1, :) = y-axis values
+;    source!0 = models
+;
+; Return value
+;    A graphic object.
+;
+; Description
+;    Creates a scatter plot and optionally adds lines for the factor-2 range
+;    and statistical information.
+;
+; Caveats
+;    Linear axes are used as default, log axis can be optionally provided by
+;    the calling diag_script.
+;
+; Modification history
+;    20140228-A_righ_ma: written.
+;
 local funcname, scriptname, scattermode, loc_res, resL, linec, lineh, linel, \
     resT, nstats, st, text, step, xpos, ypos, ii, tmp, ratio, fac2p, str
 begin
@@ -61,21 +61,21 @@ begin
     scriptname = "diag_scripts/shared/plot/scatterplot.ncl"
     enter_msg(scriptname, funcname)
 
-    ;; Get data, either directly or via netCDF
+    ; Get data, either directly or via netCDF
     if (typeof(source).eq."string") then
         data = ncdf_read(source, varname)
     else
         data = source
     end if
 
-    ;; Style options
+    ; Style options
     colors  = project_style(diag_script_info, "colors")
 
-    ;; Define x and y points
+    ; Define x and y points
     xpts = data(0, :)
     ypts = data(1, :)
 
-    ;; Retrieve basic metadata from data
+    ; Retrieve basic metadata from data
     defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
     if (any(varname.eq.defaults)) then
         var = att2var(data, "var")
@@ -83,12 +83,12 @@ begin
         var = varname
     end if
 
-    ;; Check if a valid wks has been provided, otherwise invoke default
+    ; Check if a valid wks has been provided, otherwise invoke default
     wks = get_wks(wks_in, diag_script, var)
     gsn_define_colormap(wks, array_append_record((/"white", "black"/), \
                         colors, 0))
 
-    ;; Default resources
+    ; Default resources
     res = True
     res@gsnDraw = False
     res@gsnFrame = False
@@ -127,14 +127,14 @@ begin
     res@trYMinF = res@trXMinF
     res@trYMaxF = res@trXMaxF
 
-    ;; Override defaults with "res_" attributes of "data"
+    ; Override defaults with "res_" attributes of "data"
     res_new = att2var(data, "res_")
     copy_VarMeta(res_new, res)
 
-    ;; Create plot
+    ; Create plot
     plot = gsn_csm_xy(wks, xpts, ypts, res)
 
-    ;; Add reference lines
+    ; Add reference lines
     if (reflines) then
 
         resL = True
@@ -173,7 +173,7 @@ begin
 
     end if
 
-    ;; Add legend with statistical values
+    ; Add legend with statistical values
     if (stats) then
 
         resT               = True
@@ -184,7 +184,7 @@ begin
         st = new(nstats, string)
         text = new(nstats, graphic)
 
-        ;; Define labels horizontal position
+        ; Define labels horizontal position
         if (diag_script_info@scatter_log) then
             step = (log10(res@trYMaxF) - log10(res@trYMinF)) / 20.
             xpos = 10 ^ (log10(res@trYMinF) + step)
@@ -193,7 +193,7 @@ begin
             xpos = res@trYMinF + step
         end if
 
-        ;; Define labels vertical position
+        ; Define labels vertical position
         ypos = new(nstats, float)
         do ii = 0, nstats - 1
             if (diag_script_info@scatter_log) then
@@ -205,7 +205,7 @@ begin
             end if
         end do
 
-        ;; Define substrings for labeling
+        ; Define substrings for labeling
         x_substr = "~B" + strlen(res@tiXAxisString) + "~" + \
             res@tiXAxisString + \
             empty_str(strlen(res@tiXAxisString) + 2)
@@ -214,38 +214,38 @@ begin
             res@tiYAxisString + \
             empty_str(strlen(res@tiYAxisString) + 2)
 
-        ;; Number of points
+        ; Number of points
         st(0) = "N~B3~pts     = " + \
             sprintf("%5.0f", num(.not. ismissing(xpts)))
 
-        ;; x-pts average +/- stddev
+        ; x-pts average +/- stddev
         st(1) = res@tiXAxisString + " = " + \
             sprintf("%4.2f", avg(xpts)) + " ~F18~S~F21~ " + \
             sprintf("%4.2f", stddev(xpts))
 
-        ;; y-pts average +/- stddev
+        ; y-pts average +/- stddev
         st(2) = res@tiYAxisString + " = " + \
             sprintf("%4.2f", avg(ypts)) + " ~F18~S~F21~ " + \
             sprintf("%4.2f", stddev(ypts))
 
-        ;; Ratio of the averages
+        ; Ratio of the averages
         st(3) = res@tiYAxisString + " / " + res@tiXAxisString + " = " + \
             sprintf("%4.2f", avg(ypts) / avg(xpts))
 
-        ;; Fraction of model points within factor 2 of the observations
+        ; Fraction of model points within factor 2 of the observations
         ratio = xpts / ypts
         fac2p = tofloat(num(ratio .ge. 0.5 .and. ratio .le. 2.0)) \
             / tofloat(num(.not. ismissing(ratio))) * 100
         st(4) = "FAC2 = " + sprintf("%4.2f", fac2p) + "%"
 
-        ;; Root-mean-square error
+        ; Root-mean-square error
         st(5) = "RMSE = " + sprintf("%5.2f", dim_rmsd(xpts, ypts))
 
-        ;; Correlation coefficient
+        ; Correlation coefficient
         corr = escorc(xpts, ypts)
         st(6) = "R~S1~2  = " + sprintf("%3.2f", corr)
 
-        ;; Add labels
+        ; Add labels
         do ii = 0, nstats - 1
             text(ii) = gsn_add_text(wks_in, plot, st(ii), xpos, ypos(ii), resT)
             str = "text" + ii
@@ -259,40 +259,40 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("scatterplot3D")
 function scatterplot3D(wks_in[1],
                        source,
                        varname[1]:string,
                        levels[*]:numeric)
-;;
-;; Arguments
-;;    wks_in: workstation ("graphic" object or default will be used).
-;;    source: data to be plotted (see source prototype above) or a NetCDF
-;;            filename with data.
-;;    varname: variable name in the file.
-;;    levels: levels for the color coding of the third dimension.
-;;
-;; Source prototype
-;;    source = (3, npoints)
-;;    source(0, :) = x-axis values
-;;    source(1, :) = y-axis values
-;;    source(2, :) = z-axis values
-;;    source!0 = statistic
-;;    source!1 = models
-;;
-;; Return value
-;;    A graphic object.
-;;
-;; Description
-;;    Creates a 3D scatter plot using color coded markers as third dimension
-;;    and statistical information.
-;;
-;; Caveats
-;;
-;; Modification history
-;;    20151103-A_righ_ma: written.
-;;
+;
+; Arguments
+;    wks_in: workstation ("graphic" object or default will be used).
+;    source: data to be plotted (see source prototype above) or a NetCDF
+;            filename with data.
+;    varname: variable name in the file.
+;    levels: levels for the color coding of the third dimension.
+;
+; Source prototype
+;    source = (3, npoints)
+;    source(0, :) = x-axis values
+;    source(1, :) = y-axis values
+;    source(2, :) = z-axis values
+;    source!0 = statistic
+;    source!1 = models
+;
+; Return value
+;    A graphic object.
+;
+; Description
+;    Creates a 3D scatter plot using color coded markers as third dimension
+;    and statistical information.
+;
+; Caveats
+;
+; Modification history
+;    20151103-A_righ_ma: written.
+;
 local funcname, scriptname, data, xpts, ypts, zpts, defaults, var, wks, res, \
     res_new, colors, ncolors, resM, markers, resT, labels, imod, idx, xp, yp, \
     xb, yb, resB, lbid, resA, annoid
@@ -302,19 +302,19 @@ begin
     scriptname = "diag_scripts/shared/plot/scatterplot.ncl"
     enter_msg(scriptname, funcname)
 
-    ;; Get data, either directly or via netCDF
+    ; Get data, either directly or via netCDF
     if (typeof(source).eq."string") then
         data = ncdf_read(source, varname)
     else
         data = source
     end if
 
-    ;; Define x and y points
+    ; Define x and y points
     xpts = data(0, :)
     ypts = data(1, :)
     zpts = data(2, :)
 
-    ;; Retrieve basic metadata from data
+    ; Retrieve basic metadata from data
     defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
     if (any(varname.eq.defaults)) then
         var = att2var(data, "var")
@@ -322,10 +322,10 @@ begin
         var = varname
     end if
 
-    ;; Check if a valid wks has been provided, otherwise invoke default
+    ; Check if a valid wks has been provided, otherwise invoke default
     wks = get_wks(wks_in, diag_script, var)
 
-    ;; Create a 2D scatter plot
+    ; Create a 2D scatter plot
     res = True
     res@gsnDraw = False
     res@gsnFrame = False
@@ -350,21 +350,21 @@ begin
             " [" + format_units(data@units(1)) + "]"
     end if
 
-    ;; Override defaults with "res_" attributes of "data"
+    ; Override defaults with "res_" attributes of "data"
     res_new = att2var(data, "res_")
     copy_VarMeta(res_new, res)
 
-    ;; Create plot
+    ; Create plot
     plot = gsn_csm_xy(wks, (/xpts, xpts/), (/ypts, ypts/), res)
 
-    ;; Get nice spacing through color map for marker colors
+    ; Get nice spacing through color map for marker colors
     getvalues wks
         "wkColorMapLen" : clen  ; # of colors in color map
     end getvalues
     colors = round(fspan(2, clen - 1, dimsizes(levels) - 1), 3)
     ncolors = dimsizes(colors)
 
-    ;; Add color-coded markers and text
+    ; Add color-coded markers and text
     resM = True
     resM@gsMarkerSizeF = 0.015
     resM@gsMarkerIndex = 16
@@ -377,7 +377,7 @@ begin
 
     do imod = 0, dimsizes(data(0, :)) - 1
 
-        ;; Use a black marker for the reference model (i.e., MVI = 0)
+        ; Use a black marker for the reference model (i.e., MVI = 0)
         if (zpts(imod).ne.0) then
             idx = max(ind(zpts(imod).ge.levels))
             resM@gsMarkerColor = colors(idx)
@@ -390,7 +390,7 @@ begin
         str = "mark" + imod
         plot@$str$ = markers(imod)
 
-        ;; Draw text label (right or left justified depending on the position)
+        ; Draw text label (right or left justified depending on the position)
         xp = xpts(imod)
         yp = ypts(imod)
         xb = 0.  ; initialize
@@ -410,7 +410,7 @@ begin
 
     end do
 
-    ;; Add legend
+    ; Add legend
     resB                    = True
     resB@lbAutoManage       = False
     resB@lbFillColors       = colors
@@ -438,37 +438,37 @@ begin
 
 end
 
-;;#############################################################################
+; #############################################################################
 undef("scatterplot_markers")
 function scatterplot_markers(wks_in[1],
                              source,
                              varname[1])
-;;
-;; Arguments
-;;    wks_in: workstation ("graphic" object or default will be used).
-;;    source: data to be plotted (see source prototype above) or a NetCDF
-;;            filename with data.
-;;    varname: variable name in the file.
-;;
-;; Source prototype
-;;    source = (2, npoints)
-;;    source(0, :) = x-axis values
-;;    source(1, :) = y-axis values
-;;    source!0 = statistic
-;;    source!1 = model
-;;
-;; Return value
-;;    A graphic object.
-;;
-;; Description
-;;    Creates a scatter plot using different markers/colors for each point,
-;;    according to the given styleset (default is used if not specified).
-;;
-;; Caveats
-;;
-;; Modification history
-;;    20151105_righ_ma: written.
-;;
+;
+; Arguments
+;    wks_in: workstation ("graphic" object or default will be used).
+;    source: data to be plotted (see source prototype above) or a NetCDF
+;            filename with data.
+;    varname: variable name in the file.
+;
+; Source prototype
+;    source = (2, npoints)
+;    source(0, :) = x-axis values
+;    source(1, :) = y-axis values
+;    source!0 = statistic
+;    source!1 = model
+;
+; Return value
+;    A graphic object.
+;
+; Description
+;    Creates a scatter plot using different markers/colors for each point,
+;    according to the given styleset (default is used if not specified).
+;
+; Caveats
+;
+; Modification history
+;    20151105_righ_ma: written.
+;
 local funcname, scriptname, data, xpts, ypts, defaults, var, wks, annots, \
     colors, markers, res, res_new, lg_outfile, styles, lgres
 begin
@@ -477,18 +477,18 @@ begin
     scriptname = "diag_scripts/shared/plot/scatterplot.ncl"
     enter_msg(scriptname, funcname)
 
-    ;; Get data, either directly or via netCDF
+    ; Get data, either directly or via netCDF
     if (typeof(source).eq."string") then
         data = ncdf_read(source, varname)
     else
         data = source
     end if
 
-    ;; Define x and y points (extra dimension for markers/colors specification)
+    ; Define x and y points (extra dimension for markers/colors specification)
     xpts = data(0, :)
     ypts = data(1, :)
 
-    ;; Retrieve basic metadata from data
+    ; Retrieve basic metadata from data
     defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
     if (any(varname.eq.defaults)) then
         var = att2var(data, "var")
@@ -496,15 +496,15 @@ begin
         var = varname
     end if
 
-    ;; Check if a valid wks has been provided, otherwise invoke default
+    ; Check if a valid wks has been provided, otherwise invoke default
     wks = get_wks(wks_in, diag_script, var)
 
-    ;; Define style
+    ; Define style
     annots = project_style(diag_script_info, "annots")
     colors  = project_style(diag_script_info, "colors")
     markers = project_style(diag_script_info, "markers")
 
-    ;; Create a 2D scatter plot
+    ; Create a 2D scatter plot
     res = True
     res@gsnDraw = False
     res@gsnFrame = False
@@ -526,11 +526,11 @@ begin
             " [" + format_units(data@units(1)) + "]"
     end if
 
-    ;; Override defaults with "res_" attributes of "data"
+    ; Override defaults with "res_" attributes of "data"
     res_new = att2var(data, "res_")
     copy_VarMeta(res_new, res)
 
-    ;; Create plot
+    ; Create plot
     plot = gsn_csm_xy(wks, transpose((/xpts, xpts/)), \
                       transpose((/ypts, ypts/)), res)
 

@@ -277,9 +277,9 @@ begin
            rxy@tiMainFontHeightF = 0.0225         ; default  0.025              
       end if
   end if
-;;if (rOpts .and. isatt(rOpts,"gsnCenterString")) then
-;;    rxy@gsnCenterString  = rOpts@gsnCenterString      ; only gsn_csm_xy
-;;end if
+;if (rOpts .and. isatt(rOpts,"gsnCenterString")) then
+;    rxy@gsnCenterString  = rOpts@gsnCenterString      ; only gsn_csm_xy
+;end if
 
   taylor  = gsn_xy(wks,xx,yy,rxy)                 ; Create and draw XY plot.
 
@@ -449,7 +449,7 @@ begin
   txRes@txAngleF      = 0.0 
   txRes@txFontHeightF = FontHeightF*0.50          ; bit smaller
 
-;;dum0 = gsn_add_text(wks,taylor,"OBSERVED",1.00,0.075,txRes)
+;dum0 = gsn_add_text(wks,taylor,"OBSERVED",1.00,0.075,txRes)
 
   plRes               = True
   plRes@gsLineThicknessF = 2.
