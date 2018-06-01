@@ -59,18 +59,16 @@ def main(cfg):
     files_list_m1 = []
     files_list_m2 = []
     obs_list = []
-    for variable_name, filenames in cfg['input_data'].items():
-        logger.info("Processing variable %s", variable_name)
-        for filename in filenames.keys():
-            base_file = os.path.basename(filename)
-            fullpath_file = filename
-            if base_file.split('_')[1] == cfg[
-                    'control_model']:
-                files_list_m1.append(fullpath_file)
-            elif base_file.split('_')[1] == cfg['exp_model']:
-                files_list_m2.append(fullpath_file)
-            elif base_file.split('_')[0] == 'OBS':
-                obs_list.append(fullpath_file)
+    for filename, attributes in cfg['input_data'].items():
+        base_file = os.path.basename(filename)
+        fullpath_file = filename
+        if base_file.split('_')[1] == cfg[
+                'control_model']:
+            files_list_m1.append(fullpath_file)
+        elif base_file.split('_')[1] == cfg['exp_model']:
+            files_list_m2.append(fullpath_file)
+        elif base_file.split('_')[0] == 'OBS':
+            obs_list.append(fullpath_file)
 
     # spell out the files used
     logger.info("Files for control model: %s", files_list_m1)
