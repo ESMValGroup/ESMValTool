@@ -503,8 +503,9 @@ def _get_cmor_checker(table,
                       automatic_fixes=False):
     """Get a CMOR checker/fixer."""
     if table not in CMOR_TABLES:
-        raise NotImplementedError("No CMOR checker implemented for table {}"
-                                  .format(table))
+        raise NotImplementedError("No CMOR checker implemented for table {}."
+                                  "\nThe following options are available: {}"
+                                  .format(table,', '.join(CMOR_TABLES)))
 
     cmor_table = CMOR_TABLES[table]
     var_info = cmor_table.get_variable(mip, short_name)
