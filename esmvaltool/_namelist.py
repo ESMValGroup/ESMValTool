@@ -128,7 +128,9 @@ def check_preprocessor_settings(settings):
         if invalid_args:
             raise NamelistError(
                 "Invalid argument(s): {} encountered for preprocessor "
-                "function {}".format(', '.join(invalid_args), step))
+                "function {}. \nValid arguments are: [{}]".format(
+                ', '.join(invalid_args), step, ', '.join(args)))
+                                
         # Check for missing arguments
         defaults = argspec.defaults
         end = None if defaults is None else -len(defaults)
