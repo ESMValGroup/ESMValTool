@@ -30,18 +30,6 @@ def _check_p30(cubelist):
             sys.exit(1)
 
 
-
-def get_input_files(cfg):
-    """Get a dictionary list from metadata.yml files."""
-    metadata_files = cfg['input_files']
-    metadatas = []
-    for metadata_file in metadata_files:
-        with open(metadata_file) as file:
-            metadata = yaml.safe_load(file)
-            metadatas.append(metadata)
-    return metadatas
-
-
 def main(cfg):
     """Execute the stratosphere area"""
     logger.setLevel(cfg['log_level'].upper())
