@@ -9,6 +9,8 @@ import numpy as np
 import iris
 import yaml
 
+from esmvaltool.diag_scripts.shared import run_diagnostic
+
 logger = logging.getLogger(__name__)
 
 # Diagnostic that takes two models (control_model and exp_model
@@ -28,13 +30,6 @@ def _check_p30(cubelist):
             sys.exit(1)
 
 
-def get_cfg():
-    """Read diagnostic script configuration from settings.yml."""
-    settings_file = sys.argv[1]
-    with open(settings_file) as file:
-        cfg = yaml.safe_load(file)
-    return cfg
-
 
 def get_input_files(cfg):
     """Get a dictionary list from metadata.yml files."""
@@ -47,12 +42,9 @@ def get_input_files(cfg):
     return metadatas
 
 
-def main():
+def main(cfg):
     """Execute the stratosphere area"""
-    cfg = get_cfg()
     logger.setLevel(cfg['log_level'].upper())
-
-    input_files = get_input_files(cfg)
     if not os.path.exists(cfg['plot_dir']):
         os.makedirs(cfg['plot_dir'])
     if not os.path.exists(cfg['work_dir']):
@@ -79,11 +71,11 @@ def main():
     files_list_m1 = []
     files_list_m2 = []
     obs_list = []
-    for input_file in input_files:
-        for variable_name, filenames in input_file.items():
-            logger.info("Processing variable %s", variable_name)
-            base_file = os.path.basename(filenames['filename'])
-            fullpath_file = filenames['filename']
+    for variable_name, filenames in cfg['input_data'].items():
+        logger.info("Processing variable %s", variable_name)
+        for filename in filenames.keys():
+            base_file = os.path.basename(filename)
+            fullpath_file = filename
             if base_file.split('_')[1] == cfg[
                     'control_model']:
                 files_list_m1.append(fullpath_file)
@@ -153,7 +145,6 @@ def main():
 
 
 if __name__ == '__main__':
-    iris.FUTURE.netcdf_promote = True
-    logging.basicConfig(format="%(asctime)s [%(process)d] %(levelname)-8s "
-                        "%(name)s,%(lineno)s\t%(message)s")
-    main()
+
+    with run_diagnostic() as config:
+        main(config)

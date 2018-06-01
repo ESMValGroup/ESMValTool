@@ -86,3 +86,15 @@ diagnostics:
         diag_tag: aa_strato
         diag_name: autoassess_strato_test_1
         plot_title: "MPI-ESM-LR_vs_MPI-ESM-MR"
+      plot_strato_test_2: &plot_strato_test_2_settings
+        <<: *autoassess_strato_test_2_settings
+        control_model: MPI-ESM-LR
+        exp_model: inmcm4
+        obs_models: [ERA-Interim]
+        script: autoassess/plot_autoassess_stratosphere.py
+        ancestors: ['*/autoassess_strato_test_2']
+        title: "Plot Stratosphere Metrics MPI-MPI"
+        plot_name: "Metrics"
+        diag_tag: aa_strato
+        diag_name: autoassess_strato_test_2
+        plot_title: "MPI-ESM-LR_vs_inmcm4"
