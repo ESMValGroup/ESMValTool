@@ -91,8 +91,8 @@ def check_preprocessors(preprocessors):
         if invalid_functions:
             raise NamelistError(
                 "Unknown function(s) {} in preprocessor {}, choose from: {}"
-                .format(invalid_functions, name, ', '.join(
-                    preprocessor.DEFAULT_ORDER)))
+                .format(invalid_functions, name,
+                        ', '.join(preprocessor.DEFAULT_ORDER)))
 
 
 def check_diagnostics(diagnostics):
@@ -120,6 +120,7 @@ def check_preprocessor_settings(settings):
             raise NamelistError(
                 "Unknown preprocessor function '{}', choose from: {}".format(
                     step, ', '.join(preprocessor.DEFAULT_ORDER)))
+
         function = getattr(preprocessor, step)
         argspec = inspect.getargspec(function)
         args = argspec.args[1:]
@@ -129,8 +130,8 @@ def check_preprocessor_settings(settings):
             raise NamelistError(
                 "Invalid argument(s): {} encountered for preprocessor "
                 "function {}. \nValid arguments are: [{}]".format(
-                ', '.join(invalid_args), step, ', '.join(args)))
-                                
+                    ', '.join(invalid_args), step, ', '.join(args)))
+
         # Check for missing arguments
         defaults = argspec.defaults
         end = None if defaults is None else -len(defaults)
@@ -143,8 +144,9 @@ def check_preprocessor_settings(settings):
         try:
             inspect.getcallargs(function, None, **settings[step])
         except TypeError:
-            logger.error("Wrong preprocessor function arguments in "
-                         "function '%s'", step)
+            logger.error(
+                "Wrong preprocessor function arguments in "
+                "function '%s'", step)
             raise
 
 
