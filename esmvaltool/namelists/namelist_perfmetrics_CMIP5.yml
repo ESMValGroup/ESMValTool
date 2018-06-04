@@ -105,7 +105,18 @@ preprocessors:
       span: overlap
       statistics: [mean, median]
       exclude: [reference_model, alternative_model]
-    
+
+  ppNOLEVrad:
+    regrid:
+      target_grid: CERES-EBAF
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+      exclude: [reference_model] 
+
   ppALL:
     extract_levels:
       levels: ERA-Interim
@@ -929,7 +940,7 @@ diagnostics:
     description: Shortwave cloud radiative effect
     variables:
       swcre:
-        preprocessor: ppNOLEV
+        preprocessor: ppNOLEVrad
         reference_model: CERES-EBAF
         mip: Amon
         field: T2Ms
@@ -981,9 +992,7 @@ diagnostics:
         diff_levs: [-30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30] # Contour levels for difference plot
       grading:
         <<: *grading_settings
-        
-  grading_collect:
-    description: Wrapper to collect and plot previously calculated gradings
+
 
 ### od550aer: AEROSOL OPTICAL DEPTH AT 550 nm ########################################################################################################
 
