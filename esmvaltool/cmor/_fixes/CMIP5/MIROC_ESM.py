@@ -121,3 +121,6 @@ class allvars(Fix):
             pass
 
         return cube
+        
+class tos(allvars): pass
+   

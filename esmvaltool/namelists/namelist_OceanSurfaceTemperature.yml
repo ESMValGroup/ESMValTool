@@ -1,5 +1,5 @@
 ###############################################################################
-# namelist_GlobalOcean.xml
+# namelist_GlobalOcean.yml
 # 
 # Description
 # Diagnostics to support the evaluation of ocean biogeochemical cycles at
@@ -9,11 +9,12 @@
 # variables
 # 
 # Authors
+# Lee de Mora (PML, UK)
 # Oliver Andrews (UEA, UK)
 # Clare Enright (UEA, UK)
 # 
 # Project
-# EMBRACE
+# EMBRACE, UKESM
 # 
 # Reference
 # Bakker, D. C. E. et al., Earth Syst. Sci. Data, 6, 69-90,
@@ -39,42 +40,47 @@ models:
   - {model: HadGEM2-AO,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
   - {model: HadCM3,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
   - {model: CanCM4,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-#  - {model: CSIRO-Mk3-6-0,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+  - {model: CSIRO-Mk3-6-0,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+###
+  - {model: HadGEM2-CC,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004} 
+  - {model: HadGEM2-ES,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004} 
 
-# Errors:
-# HADGem2 Has a lat coordinate greater than 90. FFS.
-#  - {model: HadGEM2-CC,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004} 
-#  - {model: HadGEM2-ES,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004} 
+# models with Errors (right now):
+  
+###
+# Problem with times
+#  - {model: MIROC-ESM,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+#  - {model: MIROC-ESM-CHEM,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+  
 
 # Unstructured grids                 
 #  - {model: MPI-ESM-LR,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2003}
 #  - {model: MPI-ESM-MR,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
 #  - {model: ACCESS1-0,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}  
 #  - {model: ACCESS1-3,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-# Time array error: (no mean)
-#  - {model: MIROC-ESM,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-#  - {model: MIROC-ESM-CHEM,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+
   
-# Models with 1D lat:
-#FGOALS-g2
-#GISS-E2-H
-#CanESM2
-#MIROC-ESM-CHEM
-#HadGEM2-AO
-#MIROC-ESM
-#HadCM3
-#GISS-E2-R
-#HadGEM2-ES
-#CanCM4
-#HadGEM2-CC
-#CSIRO-Mk3-6-0
  
   
 preprocessors:
   preprocessor1:
-#    fix_data: True
-#    fix_metadata: True
-#    mask_landocean: False
+    fix_metadata: 
+     model: HadGEM2-CC
+     project: CMIP5
+     short_name: tos
+     cmor_table: CMIP5     
+    fix_metadata: 
+     model: HadGEM2-ES
+     project: CMIP5
+     short_name: tos
+     cmor_table: CMIP5  
+#    fix_metadata: 
+#     model: MIROC-ESM
+#     project: CMIP5
+#     short_name: tos
+#     cmor_table: CMIP5  
+               
+               
     regrid:
       target_grid: 1x1
 #      scheme: unstructured_nearest

@@ -76,7 +76,7 @@ def loadCubeAndSavePng(cfg,md, fn, plotType = 'Mean'):
         cube.convert_units('celsius')            
         
         print('Attempting to take time mean in iris.')
-        
+        multiModel = md['model'].find('MultiModel')>-1        
         if plotType == 'Mean':
                 cube = cube.collapsed('time', iris.analysis.MEAN)               
                 qplt.contourf(cube, 25)
@@ -89,7 +89,11 @@ def loadCubeAndSavePng(cfg,md, fn, plotType = 'Mean'):
                 coords = ['longitude', 'latitude']
                 cube = cube.collapsed(coords, iris.analysis.MEAN, weights=weights,)
 
-                qplt.plot(cube,)
+                if multiModel: 
+                    qplt.plot(cube,label = md['model'],ls=':')                    
+                else:
+                    qplt.plot(cube,label = md['model'])
+                                    
                 plt.legend(loc='best')
                 
         try:    path = get_image_path(cfg, md, suffix=plotType, image_extention = 'png',)
@@ -122,12 +126,17 @@ def multiModelTimeSeries(cfg,metadata, plotType = 'WeightedMean'):
             cube = iris.load_cube(fn)
             cube.convert_units('celsius')
         
+            multiModel = metadata[fn]['model'].find('MultiModel')>-1
+            
             if plotType == 'WeightedMean':
                 weights =  iris.analysis.cartography.area_weights(cube, normalize=False)
                 coords = ['longitude', 'latitude']
                 cube = cube.collapsed(coords, iris.analysis.MEAN, weights=weights,)
 
-                qplt.plot(cube,label = metadata[fn]['model'])
+                if multiModel: 
+                    qplt.plot(cube,label = metadata[fn]['model'],ls=':')                    
+                else:
+                    qplt.plot(cube,label = metadata[fn]['model'])
                 plt.legend(loc='best')
            
                 
@@ -144,8 +153,7 @@ def main():
     #####
     # This part sends debug statements to stdout
     logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
-     
-    cfg, settings_file = get_cfg()
+         cfg, settings_file = get_cfg()
     #logger.setLevel(cfg['log_level'].upper())          
     
     input_files = get_input_files(cfg)
@@ -154,7 +162,6 @@ def main():
     print('CFG:\tContents:')
     for k in cfg.keys(): 
         print('CFG:\t',k,'\t',cfg[k])
-
 
     for i,metadatafilename in enumerate(cfg['input_files']):
         print('\n\metadata filename:',metadatafilename,)
@@ -187,8 +194,8 @@ def main():
 
             
 
-cfg, settings = get_cfg()
-metadata = get_input_files(cfg)
+#cfg, settings = get_cfg()
+#metadata = get_input_files(cfg)
 
 if __name__ == '__main__':
     main()
