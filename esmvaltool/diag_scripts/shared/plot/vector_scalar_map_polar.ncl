@@ -58,79 +58,78 @@ function vector_scalar_map_polar(wks_in[1],
 ;    20141016-A_vanu_be: adapted from contour_map_polar.ncl.
 ;
 local areaplot, datac, datau, datav, funcname, scriptname, sourcec, sourceu, \
-    sourcev, res, loc_res, varnamec, varnameu, varnamev, wks_in
+  sourcev, res, loc_res, varnamec, varnameu, varnamev, wks_in
 begin
 
-    funcname = "vector_scalar_map_polar"
-    scriptname = "diag_scripts/shared/plot/vector_scalar_map_polar.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "vector_scalar_map_polar"
+  scriptname = "diag_scripts/shared/plot/vector_scalar_map_polar.ncl"
+  enter_msg(scriptname, funcname)
 
-    ; Get data, either directly or via netCDF file
-    if(typeof(sourceu) .eq. "string") then
-        datau = ncdf_read(sourceu, varnameu)
+  ; Get data, either directly or via netCDF file
+  if (typeof(sourceu) .eq. "string") then
+    datau = ncdf_read(sourceu, varnameu)
+  else
+    datau = sourceu
+    copy_VarMeta(sourceu, datau)
+  end if
+  if (typeof(sourcev) .eq. "string") then
+    datav = ncdf_read(sourcev, varnamev)
+  else
+    datav = sourcev
+    copy_VarMeta(sourcev, datav)
+  end if
+  if (typeof(sourcec) .eq. "string") then
+    datac = ncdf_read(sourcec, varnamec)
+  else
+    datac = sourcec
+    copy_VarMeta(sourcec, datac)
+  end if
+
+  ; additional plot resources to be added to res from diag_script
+  loc_res                       = True
+  loc_res                       = res
+  loc_res@gsnDraw               = False
+  loc_res@gsnFrame              = False       ; Don't advance frame.
+  loc_res@gsnLeftStringOrthogonalPosF = 0.1   ; shift the string up a bit
+  loc_res@cnFillOn              = True        ; Turn on color
+  loc_res@lbLabelBarOn          = False       ; Turn on later in panel
+  loc_res@vcVectorDrawOrder     = "PostDraw"  ; draw vectors last
+
+  ; specify the hemisphere
+  if (diag_script_info@region .eq. "Antarctic") then
+    loc_res@gsnPolar          = "SH"
+    if (isatt(diag_script_info, "max_lat")) then
+      loc_res@mpMaxLatF     = diag_script_info@max_lat
     else
-        datau = sourceu
-        copy_VarMeta(sourceu, datau)
+      loc_res@mpMaxLatF     = 0.0
     end if
-    if(typeof(sourcev) .eq. "string") then
-        datav = ncdf_read(sourcev, varnamev)
+  else if (diag_script_info@region .eq. "Arctic")
+    loc_res@gsnPolarNH        = True
+    if (isatt(diag_script_info, "min_lat")) then
+      loc_res@mpMinLatF     = diag_script_info@min_lat
     else
-        datav = sourcev
-        copy_VarMeta(sourcev, datav)
+      loc_res@mpMinLatF     = 0.0
     end if
-    if(typeof(sourcec) .eq. "string") then
-        datac = ncdf_read(sourcec, varnamec)
-    else
-        datac = sourcec
-        copy_VarMeta(sourcec, datac)
-    end if
+  else
+    error_msg("f", "vector_scalar_map_polar.ncl", funcname, \
+              "no (valid) region selection: " + \
+              diag_script_info@region)
+  end if
+  end if
 
-    ; additional plot resources to be added to res from diag_script
-    loc_res                       = True
-    loc_res                       = res
-    loc_res@gsnDraw               = False
-    loc_res@gsnFrame              = False       ; Don't advance frame.
-    loc_res@gsnLeftStringOrthogonalPosF = 0.1   ; shift the string up a bit
-    loc_res@cnFillOn              = True        ; Turn on color
-    loc_res@lbLabelBarOn          = False       ; Turn on later in panel
-    loc_res@vcVectorDrawOrder     = "PostDraw"  ; draw vectors last
+  ; Draw plot
+  areaplot = \
+    gsn_csm_vector_scalar_map_polar(wks_in, datau, datav, datac, loc_res)
 
-    ; specify the hemisphere
-    if (diag_script_info@region .eq. "Antarctic") then
-        loc_res@gsnPolar          = "SH"
-        if (isatt(diag_script_info, "max_lat")) then
-            loc_res@mpMaxLatF     = diag_script_info@max_lat
-        else
-            loc_res@mpMaxLatF     = 0.0
-        end if
-    else if (diag_script_info@region .eq. "Arctic")
-        loc_res@gsnPolarNH        = True
-        if (isatt(diag_script_info, "min_lat")) then
-            loc_res@mpMinLatF     = diag_script_info@min_lat
-        else
-            loc_res@mpMinLatF     = 0.0
-        end if
-    else
-        error_msg("f", "vector_scalar_map_polar.ncl", funcname, \
-                  "no (valid) region selection: " + \
-                  diag_script_info@region)
-    end if
-    end if
+  ; outfile name
+  if (isatt(wks_in, "fullname")) then
+    outfile = wks_in@fullname
+  else
+    outfile = wks_in@name
+  end if
+  log_info(" Wrote " + outfile)
 
-    ; Draw plot
-    areaplot = gsn_csm_vector_scalar_map_polar(wks_in, \
-                                               datau, datav, datac, \
-                                               loc_res)
-
-    ; outfile name
-    if (isatt(wks_in, "fullname")) then
-        outfile = wks_in@fullname
-    else
-        outfile = wks_in@name
-    end if
-    log_info(" Wrote " + outfile)
-
-    leave_msg(scriptname, funcname)
-    return(areaplot)
+  leave_msg(scriptname, funcname)
+  return(areaplot)
 
 end

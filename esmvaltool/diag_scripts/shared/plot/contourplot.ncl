@@ -47,76 +47,76 @@ function contourplot(wks_in[1],
 ;    20131217-A_vanu_be: written, largely copied from countour_map.ncl
 ;
 local data, defaults, diag_script, funcname, res, res_new, scriptname, \
-    source, varname, wks, wks_in
+  source, varname, wks, wks_in
 begin
 
-    funcname = "contourplot"
-    scriptname = "diag_scripts/shared/plot/contourplot.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "contourplot"
+  scriptname = "diag_scripts/shared/plot/contourplot.ncl"
+  enter_msg(scriptname, funcname)
 
-    ; Get data, either directly or via netCDF file
-    if(typeof(source) .eq. "string") then
-        data = ncdf_read(source, varname)
-    else
-        data = source
-        copy_VarMeta(source, data)
+  ; Get data, either directly or via netCDF file
+  if(typeof(source) .eq. "string") then
+    data = ncdf_read(source, varname)
+  else
+    data = source
+    copy_VarMeta(source, data)
+  end if
+
+  ; Retrieve basic metadata from data
+  defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
+  if (any(varname .eq. defaults)) then
+    ; Use default
+    var = att2var(data, "var")
+  else
+    ; Use explicitly given name
+    var = varname
+  end if
+  diag_script = att2var(data, "diag_script")
+
+  ; Check if a valid wks has been provided, otherwise invoke default
+  wks = get_wks(wks_in, diag_script, var)
+
+  ; Set default resources
+  res = True
+  res@gsnDraw            = True                        ; Draw
+  res@gsnFrame           = True                        ; Advance frame
+  res@cnFillPalette      = "ncl_default"               ; Set colormap
+  res@tiMainString       = "Output of " + diag_script  ; Main title
+  res@gsnLeftString      = ""                          ; Annotation
+  res@trYReverse         = False                       ; reverse the Y-axis?
+  if (isatt(var, "long_name")) then
+    res@gsnRightString = var@long_name
+  else
+    res@gsnRightString = var
+  end if
+  if (isatt(var, "units")) then
+    res@gsnRightString = res@gsnRightString + " in " + var@units
+  end if
+
+  ; Override defaults with "res_" attributes of "data"
+  res_new = att2var(data, "res_")
+  copy_VarMeta(res_new, res)
+
+  ; Create plot
+  plot = gsn_csm_contour(wks, data, res)
+
+  if (isatt(wks, "fullname")) then
+    plot@outfile = wks@fullname
+  else
+    plot@outfile = wks@name
+    error_msg("w", "contourplot.ncl", funcname, "wks@fullname " + \
+              "missing, consider to use get_wks to open wks")
+  end if
+
+  if (isatt(res, "gsnDraw")) then
+    if (res@gsnDraw .eq. True) then
+      log_info(" Wrote " + plot@outfile)
     end if
+  else
+    log_info(" Wrote " + plot@outfile)
+  end if
 
-    ; Retrieve basic metadata from data
-    defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
-    if(any(varname .eq. defaults)) then
-        ; Use default
-        var = att2var(data, "var")
-    else
-        ; Use explicitly given name
-        var = varname
-    end if
-    diag_script = att2var(data, "diag_script")
-
-    ; Check if a valid wks has been provided, otherwise invoke default
-    wks = get_wks(wks_in, diag_script, var)
-
-    ; Set default resources
-    res = True
-    res@gsnDraw            = True                        ; Draw
-    res@gsnFrame           = True                        ; Advance frame
-    res@cnFillPalette      = "ncl_default"               ; Set colormap
-    res@tiMainString       = "Output of " + diag_script  ; Main title
-    res@gsnLeftString      = ""                          ; Annotation
-    res@trYReverse         = False                       ; reverse the Y-axis?
-    if(isatt(var, "long_name")) then
-        res@gsnRightString = var@long_name
-    else
-        res@gsnRightString = var
-    end if
-    if(isatt(var, "units")) then
-        res@gsnRightString = res@gsnRightString + " in " + var@units
-    end if
-
-    ; Override defaults with "res_" attributes of "data"
-    res_new = att2var(data, "res_")
-    copy_VarMeta(res_new, res)
-
-    ; Create plot
-    plot = gsn_csm_contour(wks, data, res)
-
-    if (isatt(wks, "fullname")) then
-        plot@outfile = wks@fullname
-    else
-        plot@outfile = wks@name
-        error_msg("w", "contourplot.ncl", funcname, "wks@fullname " + \
-                  "missing, consider to use get_wks to open wks")
-    end if
-
-    if(isatt(res, "gsnDraw")) then
-        if(res@gsnDraw .eq. True) then
-            log_info(" Wrote " + plot@outfile)
-        end if
-    else
-        log_info(" Wrote " + plot@outfile)
-    end if
-
-    leave_msg(scriptname, funcname)
-    return(plot)
+  leave_msg(scriptname, funcname)
+  return(plot)
 
 end

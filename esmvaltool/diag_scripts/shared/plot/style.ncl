@@ -50,37 +50,35 @@ function unique_labels_min(prio: string)
 local funcname, scriptname, prio, result, unique, iprio, index
 begin
 
-    funcname = "unique_labels_min"
-    scriptname = "diag_scripts/shared/plot/style.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "unique_labels_min"
+  scriptname = "diag_scripts/shared/plot/style.ncl"
+  enter_msg(scriptname, funcname)
 
-    result = model_info@$prio(0)$  ; Start with highest priority
-    unique = result(UNIQ(result))
-    iprio = 1  ; counter for while loop (must not exceed dimsizes(prio))
-    do while (dimsizes(unique) .ne. dimsizes(result))
-        if (iprio .eq. dimsizes(prio)) then
-            error_msg("w", scriptname, funcname, "Add more attributes to " + \
-                      "prio to make labels unique! Continuing with " + \
-                      "non-unique labels.")
-            delete(unique)  ; Reset
-            unique = result
-        else
-            do i = 0, dimsizes(unique) - 1  ; loop over different(sic!) labels
-                index = ind(result .eq. unique(i))
-                if (dimsizes(index) .gt. 1) then  ; More than one occurence
-                    result(index) = result(index) + "_" + \
-                        model_info@$prio(iprio)$(index)
-                end if
-                delete(index)
-            end do  ; Different labels
-            delete(unique)  ; Reset
-            unique = result(UNIQ(result))
-            iprio = iprio + 1
-        end if  ; iprio
-    end do  ; while
+  result = model_info@$prio(0)$  ; Start with highest priority
+  unique = result(UNIQ(result))
+  iprio = 1  ; counter for while loop (must not exceed dimsizes(prio))
+  do while (dimsizes(unique) .ne. dimsizes(result))
+    if (iprio .eq. dimsizes(prio)) then
+      error_msg("w", scriptname, funcname, "Add more attributes to prio " + \
+                "to make labels unique! Continuing with non-unique labels.")
+      delete(unique)  ; Reset
+      unique = result
+    else
+      do i = 0, dimsizes(unique) - 1  ; loop over different(sic!) labels
+        index = ind(result .eq. unique(i))
+        if (dimsizes(index) .gt. 1) then  ; More than one occurence
+          result(index) = result(index) + "_" + model_info@$prio(iprio)$(index)
+        end if
+        delete(index)
+      end do  ; Different labels
+      delete(unique)  ; Reset
+      unique = result(UNIQ(result))
+      iprio = iprio + 1
+    end if  ; iprio
+  end do  ; while
 
-    leave_msg(scriptname, funcname)
-    return(result)
+  leave_msg(scriptname, funcname)
+  return(result)
 
 end
 
@@ -111,36 +109,35 @@ function unique_labels_all(prio:string)
 local funcname, scriptname, prio, result, unique, iprio, index
 begin
 
-    funcname = "unique_labels_all"
-    scriptname = "diag_scripts/shared/plot/style.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "unique_labels_all"
+  scriptname = "diag_scripts/shared/plot/style.ncl"
+  enter_msg(scriptname, funcname)
 
-    result = model_info@$prio(0)$  ; Start with highest priority
-    unique = result(UNIQ(result))
-    iprio = 1  ; counter for while loop (must not exceed dimsizes(prio))
-    do while (dimsizes(unique) .ne. dimsizes(result))
-        if (iprio .eq. dimsizes(prio)) then
-            error_msg("w", scriptname, funcname, "Add more attributes to " + \
-                      "prio to make labels unique! Continuing with " + \
-                      "non-unique labels.")
-            delete(unique)  ; Reset
-            unique = result
-        else
-            do i = 0, dimsizes(unique) - 1  ; loop over different(sic!) labels
-                index = ind(result .eq. unique(i))
-                if (dimsizes(index) .gt. 1) then  ; More than one occurence
-                    result = result + "_" + model_info@$prio(iprio)$
-                end if
-                delete(index)
-            end do  ; Different labels
-            delete(unique)  ; Reset
-            unique = result(UNIQ(result))
-            iprio = iprio + 1
-        end if  ; iprio
-    end do  ; while
+  result = model_info@$prio(0)$  ; Start with highest priority
+  unique = result(UNIQ(result))
+  iprio = 1  ; counter for while loop (must not exceed dimsizes(prio))
+  do while (dimsizes(unique) .ne. dimsizes(result))
+    if (iprio .eq. dimsizes(prio)) then
+      error_msg("w", scriptname, funcname, "Add more attributes to prio " + \
+                "to make labels unique! Continuing with non-unique labels.")
+      delete(unique)  ; Reset
+      unique = result
+    else
+      do i = 0, dimsizes(unique) - 1  ; loop over different(sic!) labels
+        index = ind(result .eq. unique(i))
+        if (dimsizes(index) .gt. 1) then  ; More than one occurence
+          result = result + "_" + model_info@$prio(iprio)$
+        end if
+        delete(index)
+      end do  ; Different labels
+      delete(unique)  ; Reset
+      unique = result(UNIQ(result))
+      iprio = iprio + 1
+    end if  ; iprio
+  end do  ; while
 
-    leave_msg(scriptname, funcname)
-    return(result)
+  leave_msg(scriptname, funcname)
+  return(result)
 
 end
 
@@ -188,161 +185,160 @@ function project_style(info, flag)
 local funcname, scriptname, result, info, flag, styleset, stylefile, tmp, sty
 begin
 
-    funcname = "project_style"
-    scriptname = "diag_scripts/shared/plot/style.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "project_style"
+  scriptname = "diag_scripts/shared/plot/style.ncl"
+  enter_msg(scriptname, funcname)
 
-    ; Check for the available dictonary keys to be used for the annotations
-    ; (see get_dict_key in projects.py)
-    dkeys = (/"model", "ensemble", "case_name", "exp", "mip", "realm"/)
-    tmp = isatt(model_info, dkeys)
-    l_dkeys = dkeys(ind(tmp))
-    delete(tmp)
+  ; Check for the available dictonary keys to be used for the annotations
+  ; (see get_dict_key in projects.py)
+  dkeys = (/"model", "ensemble", "case_name", "exp", "mip", "realm"/)
+  tmp = isatt(model_info, dkeys)
+  l_dkeys = dkeys(ind(tmp))
+  delete(tmp)
 
-    ; Style information for this flag available as diag_script_info@$flag$
-    if (isatt(info, flag)) then
-        result = info@$flag$
-        leave_msg(scriptname, funcname)
-        return(result)
+  ; Style information for this flag available as diag_script_info@$flag$
+  if (isatt(info, flag)) then
+    result = info@$flag$
+    leave_msg(scriptname, funcname)
+    return(result)
+  end if
+
+  ; Use diag_script_info@styleset or set to DEFAULT
+  if (isatt(info, "styleset")) then
+    styleset = diag_script_info@styleset
+  else
+    styleset = "DEFAULT"
+  end if
+
+  ; Styleset defined, search for corresponding style file
+  styleset = str_lower(styleset)
+  stylefile = "./diag_scripts/shared/plot/styles/" + styleset + ".style"
+  if (.not.fileexists(stylefile)) then
+    error_msg("f", scriptname, funcname, \
+              "style file " + stylefile + " not found")
+  end if
+  tmp = readAsciiTable(stylefile, 1, "string", \
+                       dimsizes(readAsciiHead(stylefile, "MODEL NAME")) + 1)
+  sty = tmp(:, 0)
+  delete(tmp)
+
+  ; Model annotations, return unique model names based on dict keys
+  if (flag.eq."annots") then
+    result = unique_labels_min(l_dkeys)
+    leave_msg(scriptname, funcname)
+    return(result)
+  end if
+
+  ; Read model names
+  modelsinfile = str_squeeze(str_get_field(sty, 1, "|"))
+
+  ; Set flag names
+  flagnames = (/"annots", "colors", "dashes", "thicks", "markers", "avgstd"/)
+  colid = ispan(1, dimsizes(flagnames), 1)
+
+  ; Read column
+  col = ind(flag.eq.flagnames) + 1
+  if (ismissing(col)) then
+    error_msg("f", scriptname, funcname, "flag " + flag + " not allowed")
+  end if
+  nmodels = dimsizes(model_info@model)
+  column = new(nmodels, string)
+  wildcard_cnt = 0
+  do ii = 0, nmodels - 1
+    row = ind(model_info@model(ii).eq.modelsinfile)
+
+    ; Multiple entries, raise error
+    if (dimsizes(row).gt.1) then
+      error_msg("f", scriptname, funcname, "Multiple entries for model" + \
+                model_info@model(ii) + " in style file " + stylefile)
     end if
 
-    ; Use diag_script_info@styleset or set to DEFAULT
-    if (isatt(info, "styleset")) then
-        styleset = diag_script_info@styleset
-    else
-        styleset = "DEFAULT"
-    end if
+    ; Missing model
+    if (ismissing(row)) then
 
-    ; Styleset defined, search for corresponding style file
-    styleset = str_lower(styleset)
-    stylefile = "./diag_scripts/shared/plot/styles/" + styleset + ".style"
-    if (.not.fileexists(stylefile)) then
-        error_msg("f", scriptname, funcname, \
-                  "style file " + stylefile + " not found")
-    end if
-    tmp = readAsciiTable(stylefile, 1, "string", \
-                         dimsizes(readAsciiHead(stylefile, "MODEL NAME")) + 1)
-    sty = tmp(:, 0)
-    delete(tmp)
-
-    ; Model annotations, return unique model names based on dict keys
-    if (flag.eq."annots") then
-        result = unique_labels_min(l_dkeys)
-        leave_msg(scriptname, funcname)
-        return(result)
-    end if
-
-    ; Read model names
-    modelsinfile = str_squeeze(str_get_field(sty, 1, "|"))
-
-    ; Set flag names
-    flagnames = (/"annots", "colors", "dashes", "thicks", "markers", "avgstd"/)
-    colid = ispan(1, dimsizes(flagnames), 1)
-
-    ; Read column
-    col = ind(flag.eq.flagnames) + 1
-    if (ismissing(col)) then
-        error_msg("f", scriptname, funcname, "flag " + flag + " not allowed")
-    end if
-    nmodels = dimsizes(model_info@model)
-    column = new(nmodels, string)
-    wildcard_cnt = 0
-    do ii = 0, nmodels - 1
-        row = ind(model_info@model(ii).eq.modelsinfile)
-
-        ; Multiple entries, raise error
-        if (dimsizes(row).gt.1) then
-            error_msg("f", scriptname, funcname, "Multiple entries for " + \
-                      "model" + model_info@model(ii) + " in style file " + \
-                      stylefile)
-        end if
-
-        ; Missing model
-        if (ismissing(row)) then
-
-            ; Search for "default"
-            row  = ind("default".eq.modelsinfile)
-            if (.not.ismissing(row)) then
-                log_debug("Model " + model_info@model(ii) + " not found in " \
-                          + stylefile + ", using default")
-                column(ii) = str_squeeze(str_get_field(sty(row), col, "|"))
-                continue
-            end if
-
-            ; Search for wildcards "*"
-            rows = ind("*".eq.modelsinfile)
-            if (all(ismissing(rows))) then
-                error_msg("f", scriptname, funcname, "Model " + \
-                          model_info@model(ii) + " not found in " + stylefile)
-            end if
-            if (wildcard_cnt.ge.dimsizes(rows)) then
-                error_msg("f", scriptname, funcname, "the style file " + \
-                          stylefile + " contains too few wildcard (*) " + \
-                          "entries (" + wildcard_cnt + "), please add more")
-            end if
-            log_debug("Model " + model_info@model(ii) + " not found in " + \
-                      stylefile + ", using wildcard")
-            row = rows(wildcard_cnt)
-            wildcard_cnt = wildcard_cnt + 1
-            column(ii) = str_squeeze(str_get_field(sty(row), col, "|"))
-            continue
-
-        end if
+      ; Search for "default"
+      row  = ind("default".eq.modelsinfile)
+      if (.not.ismissing(row)) then
+        log_debug("Model " + model_info@model(ii) + " not found in " + \
+                  stylefile + ", using default")
         column(ii) = str_squeeze(str_get_field(sty(row), col, "|"))
+        continue
+      end if
+
+      ; Search for wildcards "*"
+      rows = ind("*".eq.modelsinfile)
+      if (all(ismissing(rows))) then
+        error_msg("f", scriptname, funcname, "Model " + \
+                  model_info@model(ii) + " not found in stylefile" + \
+                  stylefile)
+      end if
+      if (wildcard_cnt.ge.dimsizes(rows)) then
+        error_msg("f", scriptname, funcname, "style file " + stylefile + \
+                  " contains too few wildcard (*) " + "entries (" + \
+                  wildcard_cnt + "), please add more")
+      end if
+      log_debug("Model " + model_info@model(ii) + " not found in " + \
+                stylefile + ", using wildcard")
+      row = rows(wildcard_cnt)
+      wildcard_cnt = wildcard_cnt + 1
+      column(ii) = str_squeeze(str_get_field(sty(row), col, "|"))
+      continue
+
+    end if
+    column(ii) = str_squeeze(str_get_field(sty(row), col, "|"))
+  end do
+
+  ; Colors: normalize to 1 and covert to string
+  if (flag.eq."colors") then
+    result = column
+    do ii = 0, dimsizes(result) - 1
+      nc = str_fields_count(column(ii), ",")
+      ; Named color
+      if (nc.eq.1) then
+        result(ii) = column(ii)
+      else if (nc.eq.3) then
+        c1 = tofloat(str_get_field(column(ii), 1, ",")) / 255.
+        c2 = tofloat(str_get_field(column(ii), 2, ",")) / 255.
+        c3 = tofloat(str_get_field(column(ii), 3, ",")) / 255.
+        result(ii) = "(/" + \
+          sprintf("%7.5f", c1) + "," + \
+          sprintf("%7.5f", c2) + "," + \
+          sprintf("%7.5f", c3) + "/)"
+      else if (nc.eq.4) then
+        c1 = tofloat(str_get_field(column(ii), 1, ",")) / 255.
+        c2 = tofloat(str_get_field(column(ii), 2, ",")) / 255.
+        c3 = tofloat(str_get_field(column(ii), 3, ",")) / 255.
+        c3 = tofloat(str_get_field(column(ii), 4, ","))
+        result(ii) = "(/" + \
+          sprintf("%7.5f", c1) + "," + \
+          sprintf("%7.5f", c2) + "," + \
+          sprintf("%7.5f", c3) + "," + \
+          sprintf("%7.5f", c4) + "/)"
+      else
+        error_msg("f", scriptname, funcname, \
+                  "Invalid definition of color for model " + \
+                  model_info@model(ii) + ", check style file " + stylefile)
+      end if
+      end if
+      end if
     end do
+    leave_msg(scriptname, funcname)
+    return(result)
+  end if
 
-    ; Colors: normalize to 1 and covert to string
-    if (flag.eq."colors") then
-        result = column
-        do ii = 0, dimsizes(result) - 1
-            nc = str_fields_count(column(ii), ",")
-            ; Named color
-            if (nc.eq.1) then
-                result(ii) = column(ii)
-            else if (nc.eq.3) then
-                c1 = tofloat(str_get_field(column(ii), 1, ",")) / 255.
-                c2 = tofloat(str_get_field(column(ii), 2, ",")) / 255.
-                c3 = tofloat(str_get_field(column(ii), 3, ",")) / 255.
-                result(ii) = "(/" + \
-                  sprintf("%7.5f", c1) + "," + \
-                  sprintf("%7.5f", c2) + "," + \
-                  sprintf("%7.5f", c3) + "/)"
-            else if (nc.eq.4) then
-                c1 = tofloat(str_get_field(column(ii), 1, ",")) / 255.
-                c2 = tofloat(str_get_field(column(ii), 2, ",")) / 255.
-                c3 = tofloat(str_get_field(column(ii), 3, ",")) / 255.
-                c3 = tofloat(str_get_field(column(ii), 4, ","))
-                result(ii) = "(/" + \
-                  sprintf("%7.5f", c1) + "," + \
-                  sprintf("%7.5f", c2) + "," + \
-                  sprintf("%7.5f", c3) + "," + \
-                  sprintf("%7.5f", c4) + "/)"
-            else
-                error_msg("f", scriptname, funcname, \
-                          "Invalid definition of color for model " + \
-                          model_info@model(ii) + ", check style file " + \
-                          stylefile)
-            end if
-            end if
-            end if
-        end do
-        leave_msg(scriptname, funcname)
-        return(result)
-    end if
+  ; Line dash patterns, marker indexes, avgstd flag: convert to integer
+  if (any(flag.eq.(/"dashes", "markers", "avgstd"/))) then
+    result = toint(column)
+    leave_msg(scriptname, funcname)
+    return(result)
+  end if
 
-    ; Line dash patterns, marker indexes, avgstd flag: convert to integer
-    if (any(flag.eq.(/"dashes", "markers", "avgstd"/))) then
-        result = toint(column)
-        leave_msg(scriptname, funcname)
-        return(result)
-    end if
-
-    ; Line thicknesses: convert to float
-    if (flag.eq."thicks") then
-        result = tofloat(column)
-        leave_msg(scriptname, funcname)
-        return(result)
-    end if
+  ; Line thicknesses: convert to float
+  if (flag.eq."thicks") then
+    result = tofloat(column)
+    leave_msg(scriptname, funcname)
+    return(result)
+  end if
 
 end
 
@@ -369,43 +365,44 @@ function project_style_GO(flag:string)  ; FiX-ME move to style-file
 local result, modelstyles, flag
 begin
 
-    funcname = "project_style_GO"
-    scriptname = "diag_scripts/shared/plot/style.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "project_style_GO"
+  scriptname = "diag_scripts/shared/plot/style.ncl"
+  enter_msg(scriptname, funcname)
 
-    ; define (/model, color, dash, thickness, avgstd/) for each model
-    modelstyles = \
-      (/(/"PlankTOM5",  "(/0.6,     0.,      0.0078/)",  "0",  "1",  "0"/), \
-        (/"PlankTOM10", "(/0.7686,  0.4745,  0./)",      "1",  "1",  "0"/), \
-        (/"medusa",     "(/0.5960,  0.9843,  0.5960/)",  "1",  "1",  "0"/), \
-        (/"hadocc",     "(/0.9372,  0.3333,  0.0588/)",  "1",  "1",  "0"/), \
-        (/"ersem",      "(/0.0588,  0.3333,  0.9372/)",  "1",  "1",  "0"/), \
-        (/"ref",        "(/0.,      0.3098,  0./)",      "0",  "1",  "0"/), \
-        (/"model_mean", "(/0.6,     0.,       0.0078/)", "0",  "3",  "1"/), \
-        (/"unknown",    "black",                         "0",  "1",  "0"/)/)
+  ; define (/model, color, dash, thickness, avgstd/) for each model
+  modelstyles = \
+    (/(/"PlankTOM5",  "(/0.6,     0.,      0.0078/)",  "0",  "1",  "0"/), \
+      (/"PlankTOM10", "(/0.7686,  0.4745,  0./)",      "1",  "1",  "0"/), \
+      (/"medusa",     "(/0.5960,  0.9843,  0.5960/)",  "1",  "1",  "0"/), \
+      (/"hadocc",     "(/0.9372,  0.3333,  0.0588/)",  "1",  "1",  "0"/), \
+      (/"ersem",      "(/0.0588,  0.3333,  0.9372/)",  "1",  "1",  "0"/), \
+      (/"ref",        "(/0.,      0.3098,  0./)",      "0",  "1",  "0"/), \
+      (/"model_mean", "(/0.6,     0.,       0.0078/)", "0",  "3",  "1"/), \
+      (/"unknown",    "black",                         "0",  "1",  "0"/)/)
 
-    ; assign plot attributes (see function select_style in style_auxiliary.ncl)
-    if (flag .eq. "colors") then
-        result = select_style(modelstyles, 1, model_info@model)
-    else if (flag .eq. "dashes") then
-        result = select_style(modelstyles, 2, model_info@model)
-    else if (flag .eq. "thicks") then
-        result = toint(select_style(modelstyles, 3, model_info@model))
-    else if (flag .eq. "annots") then
-        result = unique_labels_min((/"model", "ensemble", "exp"/))
-    else if (flag .eq. "avgstd") then
-        result = toint(select_style(modelstyles, 4, model_info@model))
-    else
-        print("fatal: (project_style_CMIP5) flag " + flag + " not allowed.")
-        status_exit(1)
-    end if
-    end if
-    end if
-    end if
-    end if
+  ; assign plot attributes (see function select_style in style_auxiliary.ncl)
+  if (flag .eq. "colors") then
+    result = select_style(modelstyles, 1, model_info@model)
+  else if (flag .eq. "dashes") then
+    result = select_style(modelstyles, 2, model_info@model)
+  else if (flag .eq. "thicks") then
+    result = toint(select_style(modelstyles, 3, model_info@model))
+  else if (flag .eq. "annots") then
+    result = unique_labels_min((/"model", "ensemble", "exp"/))
+  else if (flag .eq. "avgstd") then
+    result = toint(select_style(modelstyles, 4, model_info@model))
+  else
+    print("fatal: (project_style_CMIP5) flag " + flag + " not allowed.")
+    status_exit(1)
+  end if
+  end if
+  end if
+  end if
+  end if
 
-    leave_msg(scriptname, funcname)
-    return(result)
+  leave_msg(scriptname, funcname)
+  return(result)
+
 end
 
 ; #############################################################################
@@ -433,41 +430,42 @@ function place_debuginfo(wks[1]:graphic,
 ; Modification history
 ;
 local i, txvpWidth, txvpHeight, tx, x, y, parent_width, parent_height, \
-    annoid, mvxf, mvyf, debugstring
+  annoid, mvxf, mvyf, debugstring
 begin
 
-    funcname = "place_debuginfo"
-    scriptname = "diag_scripts/shared/plot/style.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "place_debuginfo"
+  scriptname = "diag_scripts/shared/plot/style.ncl"
+  enter_msg(scriptname, funcname)
 
-    res@gsnDraw               = False
-    res@gsnFrame              = False
-    res@txFontHeightF         = 0.012
-    res@txBackgroundFillColor = 0
-    res@txFuncCode            = "~"
-    res@txPerimOn             = True
+  res@gsnDraw               = False
+  res@gsnFrame              = False
+  res@txFontHeightF         = 0.012
+  res@txBackgroundFillColor = 0
+  res@txFuncCode            = "~"
+  res@txPerimOn             = True
 
-    ; First debugstring
-    tx = gsn_create_text(wks, debugstring, res)
-    getvalues tx
-        "vpWidthF" : txvpWidth
-        "vpHeightF" : txvpHeight
-    end getvalues
-    getvalues plot
-        "vpWidthF" : parent_width
-        "vpHeightF" : parent_height
-    end getvalues
-    mvxf = txvpWidth / parent_width
-    mvyf = txvpHeight / parent_height
+  ; First debugstring
+  tx = gsn_create_text(wks, debugstring, res)
+  getvalues tx
+    "vpWidthF" : txvpWidth
+    "vpHeightF" : txvpHeight
+  end getvalues
+  getvalues plot
+    "vpWidthF" : parent_width
+    "vpHeightF" : parent_height
+  end getvalues
+  mvxf = txvpWidth / parent_width
+  mvyf = txvpHeight / parent_height
 
-    amres = True
-    amres@amZone           = 2
-    amres@amSide           = "Right"
-    amres@amParallelPosF   = mvyf / 2
-    amres@amOrthogonalPosF = -mvxf
-    annoid = gsn_add_annotation(plot, tx, amres)
-    leave_msg(scriptname, funcname)
-    return(annoid)
+  amres = True
+  amres@amZone           = 2
+  amres@amSide           = "Right"
+  amres@amParallelPosF   = mvyf / 2
+  amres@amOrthogonalPosF = -mvxf
+  annoid = gsn_add_annotation(plot, tx, amres)
+  leave_msg(scriptname, funcname)
+  return(annoid)
+
 end
 
 ; #############################################################################
@@ -493,31 +491,31 @@ procedure place_description(wks[1]:graphic,
 ; Modification history
 ;
 local tx, txvpWidth, txvpHeight, parent_x, parent_y, amres, wks_dummy, \
-    annoid, txres, y_ndc_coord
+  annoid, txres, y_ndc_coord
 begin
 
-    funcname = "place_description"
-    scriptname = "diag_scripts/shared/plot/style.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "place_description"
+  scriptname = "diag_scripts/shared/plot/style.ncl"
+  enter_msg(scriptname, funcname)
 
-    wks_dummy = gsn_open_wks("png", "dummy.png")
-    txres = True
-    txres@gsnDraw               = True
-    txres@gsnFrame              = False
-    txres@txFontHeightF         = 0.012
-    txres@txBackgroundFillColor = 0
-    txres@txPerimOn             = True
-    tx = gsn_create_text(wks_dummy, description, txres)
-    getvalues tx
-        "vpWidthF" : txvpWidth
-        "vpHeightF" : txvpHeight
-    end getvalues
+  wks_dummy = gsn_open_wks("png", "dummy.png")
+  txres = True
+  txres@gsnDraw               = True
+  txres@gsnFrame              = False
+  txres@txFontHeightF         = 0.012
+  txres@txBackgroundFillColor = 0
+  txres@txPerimOn             = True
+  tx = gsn_create_text(wks_dummy, description, txres)
+  getvalues tx
+    "vpWidthF" : txvpWidth
+    "vpHeightF" : txvpHeight
+  end getvalues
 
-    if (y_ndc_coord .lt. 0) then
-        y_ndc_coord = 0.8
-    end if
-    gsn_text_ndc(wks, description, txvpWidth / 2, y_ndc_coord, txres)
-    leave_msg(scriptname, funcname)
+  if (y_ndc_coord .lt. 0) then
+    y_ndc_coord = 0.8
+  end if
+  gsn_text_ndc(wks, description, txvpWidth / 2, y_ndc_coord, txres)
+  leave_msg(scriptname, funcname)
 
 end
 
@@ -557,50 +555,51 @@ function gsnColorRange(lower:numeric,
 ;    20130422-A_gott_kl: written.
 ;
 local funcname, scriptname, nboxes_left, nboxes_right, ncolors_left, \
-    ncolors_right, output, color_start
+  ncolors_right, output, color_start
 begin
 
-    funcname = "gsnColorRange"
-    scriptname = "diag_scripts/shared/plot/style.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "gsnColorRange"
+  scriptname = "diag_scripts/shared/plot/style.ncl"
+  enter_msg(scriptname, funcname)
 
-    color_start = 2  ; All of the color maps begin with 2.
+  color_start = 2  ; All of the color maps begin with 2.
 
-    ; Calculate the number of color bar boxes to the left and right of
-    ; the "center" value.
-    nboxes_left  = (center - (lower - step)) / step
-    nboxes_right = ((upper + step) - center) / step
+  ; Calculate the number of color bar boxes to the left and right of
+  ; the "center" value.
+  nboxes_left  = (center - (lower - step)) / step
+  nboxes_right = ((upper + step) - center) / step
 
-    ; Calculate the number of colors in the map on
-    ; the left and right hand sides.
-    ncolors_left = (center_color - color_start + 1)
-    ncolors_right = (color_end - center_color)
+  ; Calculate the number of colors in the map on
+  ; the left and right hand sides.
+  ncolors_left = (center_color - color_start + 1)
+  ncolors_right = (color_end - center_color)
 
-    output = True
-    ; Either the lower or upper extent of the color map will be adjusted. If
-    ; the magnitude of the lower limit is less than the magnitude of the
-    ; upper limit, then the lower limit has to be "moved in" towards the
-    ; center color. Oppositely, the upper limit will be moved. If both the
-    ; lower and upper numerical values are the same, then pass back 2 as the
-    ; lower extent and color_end (number of colors) as the upper extent (use
-    ; the whole map in other words).
-    if (abs(lower) .lt. abs(upper)) then
-        output@ColorStart = round(center_color \
-                                  - (ncolors_right / nboxes_right) \
-                                  * nboxes_left, 3)
-        output@ColorEnd   = color_end
-    else if (abs(lower) .gt. abs(upper)) then
-        output@ColorStart = 2
-        output@ColorEnd   = round(center_color + (ncolors_left / nboxes_left) \
-                                  * nboxes_right, 3)
-    else
-        output@ColorStart = 2
-        output@ColorEnd   = color_end
-    end if
-    end if
+  output = True
+  ; Either the lower or upper extent of the color map will be adjusted. If
+  ; the magnitude of the lower limit is less than the magnitude of the
+  ; upper limit, then the lower limit has to be "moved in" towards the
+  ; center color. Oppositely, the upper limit will be moved. If both the
+  ; lower and upper numerical values are the same, then pass back 2 as the
+  ; lower extent and color_end (number of colors) as the upper extent (use
+  ; the whole map in other words).
+  if (abs(lower) .lt. abs(upper)) then
+    output@ColorStart = \
+      round(center_color - (ncolors_right / nboxes_right) * \
+            nboxes_left, 3)
+      output@ColorEnd   = color_end
+  else if (abs(lower) .gt. abs(upper)) then
+    output@ColorStart = 2
+    output@ColorEnd = \
+      round(center_color + (ncolors_left / nboxes_left) * \
+            nboxes_right, 3)
+  else
+    output@ColorStart = 2
+    output@ColorEnd   = color_end
+  end if
+  end if
 
-    leave_msg(scriptname, funcname)
-    return(output)
+  leave_msg(scriptname, funcname)
+  return(output)
 
 end
 
@@ -629,30 +628,30 @@ function format_units(str[1]: string)
 local funcname, scriptname, loc_str
 begin
 
-    funcname = "format_units"
-    scriptname = "diag_scripts/shared/plot/style.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "format_units"
+  scriptname = "diag_scripts/shared/plot/style.ncl"
+  enter_msg(scriptname, funcname)
 
-    ; Create a local copy
-    loc_str = str
+  ; Create a local copy
+  loc_str = str
 
-    if (isStrSubset(loc_str, "-STP")) then
-        loc_str = str_sub_str(loc_str, "-STP", "")
-        loc_str = str_sub_str(loc_str, "-1", "~S2~-1~B3~STP    ")
-        loc_str = str_sub_str(loc_str, "-2", "~S2~-2~B3~STP    ")
-        loc_str = str_sub_str(loc_str, "-3", "~S2~-3~B3~STP    ")
-    else
-        loc_str = str_sub_str(loc_str, "-1", "~S2~-1  ")
-        loc_str = str_sub_str(loc_str, "-2", "~S2~-2  ")
-        loc_str = str_sub_str(loc_str, "-3", "~S2~-3  ")
-    end if
+  if (isStrSubset(loc_str, "-STP")) then
+    loc_str = str_sub_str(loc_str, "-STP", "")
+    loc_str = str_sub_str(loc_str, "-1", "~S2~-1~B3~STP    ")
+    loc_str = str_sub_str(loc_str, "-2", "~S2~-2~B3~STP    ")
+    loc_str = str_sub_str(loc_str, "-3", "~S2~-3~B3~STP    ")
+  else
+    loc_str = str_sub_str(loc_str, "-1", "~S2~-1  ")
+    loc_str = str_sub_str(loc_str, "-2", "~S2~-2  ")
+    loc_str = str_sub_str(loc_str, "-3", "~S2~-3  ")
+  end if
 
-    if (isStrSubset(loc_str, "umol").or.isStrSubset(loc_str, "ug")) then
-        loc_str = str_sub_str(loc_str, "u", "~F33~m~F21~")
-    end if
+  if (isStrSubset(loc_str, "umol").or.isStrSubset(loc_str, "ug")) then
+    loc_str = str_sub_str(loc_str, "u", "~F33~m~F21~")
+  end if
 
-    leave_msg(scriptname, funcname)
-    return(loc_str)
+  leave_msg(scriptname, funcname)
+  return(loc_str)
 
 end
 
@@ -686,48 +685,48 @@ function set_log_ticks(fmin[1]:numeric,
 local funcname, scriptname, omin, omax, rmin, rmax, om, tmp, arr
 begin
 
-    funcname = "set_log_ticks"
-    scriptname = "diag_scripts/shared/plot/style.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "set_log_ticks"
+  scriptname = "diag_scripts/shared/plot/style.ncl"
+  enter_msg(scriptname, funcname)
 
-    ; Find order of magnitude of min
-    omin = toint(log10(fmin))
-    if (fmin.lt.1) then
-        omin = omin - 1
-    end if
+  ; Find order of magnitude of min
+  omin = toint(log10(fmin))
+  if (fmin.lt.1) then
+    omin = omin - 1
+  end if
 
-    ; Find order of magnitude of max
-    omax = toint(log10(fmax))
-    if (fmax.lt.1) then
-        omax = omax - 1
-    end if
+  ; Find order of magnitude of max
+  omax = toint(log10(fmax))
+  if (fmax.lt.1) then
+    omax = omax - 1
+  end if
 
-    if (opt.eq."major") then
-        out = 10 ^ ispan(omin + 1, omax, 1)
-        leave_msg(scriptname, funcname)
-        return(out)
-    end if
+  if (opt.eq."major") then
+    out = 10 ^ ispan(omin + 1, omax, 1)
+    leave_msg(scriptname, funcname)
+    return(out)
+  end if
 
-    if (opt.eq."minor") then
-        rmin = (toint(fmin / 10 ^ omin) + 1) * 10 ^ omin
-        rmax = (toint(fmax / 10 ^ omax)) * 10 ^ omax
-        do om = omin, omax
-            step = ispan(1, 9, 1) * 10 ^ om
-            if (isdefined("arr")) then
-                tmp = array_append_record(arr, step, 0)
-                delete(arr)
-                arr = tmp
-                delete(tmp)
-            else
-                arr = step
-            end if
-        end do
-        out = arr(ind(arr.ge.rmin .and. arr.le.rmax))
-        leave_msg(scriptname, funcname)
-        return(out)
-    end if
+  if (opt.eq."minor") then
+    rmin = (toint(fmin / 10 ^ omin) + 1) * 10 ^ omin
+    rmax = (toint(fmax / 10 ^ omax)) * 10 ^ omax
+    do om = omin, omax
+      step = ispan(1, 9, 1) * 10 ^ om
+      if (isdefined("arr")) then
+        tmp = array_append_record(arr, step, 0)
+        delete(arr)
+        arr = tmp
+        delete(tmp)
+      else
+        arr = step
+      end if
+    end do
+    out = arr(ind(arr.ge.rmin .and. arr.le.rmax))
+    leave_msg(scriptname, funcname)
+    return(out)
+  end if
 
-    error_msg("f", scriptname, funcname, "Unrecognized option " + opt)
+  error_msg("f", scriptname, funcname, "Unrecognized option " + opt)
 
 end
 
@@ -775,53 +774,52 @@ function sort_alphabetically(orig_names[*], idx_exclude, dest_exclude)
 ;
 begin
 
-    funcname = "sort_alphabetically"
-    scriptname = "diag_scripts/shared/plot/style.ncl"
-    enter_msg(scriptname, funcname)
+  funcname = "sort_alphabetically"
+  scriptname = "diag_scripts/shared/plot/style.ncl"
+  enter_msg(scriptname, funcname)
 
-    ; Create a local copy of input names and set to upper case
-    loc_names = str_upper(orig_names)
-    loc_names@_FillValue = default_fillvalue(typeof(loc_names))
-    nn = dimsizes(loc_names)
+  ; Create a local copy of input names and set to upper case
+  loc_names = str_upper(orig_names)
+  loc_names@_FillValue = default_fillvalue(typeof(loc_names))
+  nn = dimsizes(loc_names)
 
-    ; Check if there are entries to be excluded
-    if (all(ismissing(idx_exclude))) then
-        l_excl = False
-    else if (all(idx_exclude.lt.0)) then
-        l_excl = False
+  ; Check if there are entries to be excluded
+  if (all(ismissing(idx_exclude))) then
+    l_excl = False
+  else if (all(idx_exclude.lt.0)) then
+    l_excl = False
+  else
+    l_excl = True
+  end if
+  end if
+
+  if (l_excl) then  ; exclude given entries
+    sub_names = loc_names
+    sub_names(idx_exclude) = sub_names@_FillValue
+    exc_names = loc_names(idx_exclude)
+    inc_names = sub_names(ind(.not.ismissing(sub_names)))
+    sqsort(inc_names)
+    if (dest_exclude.eq."begin") then
+      reord_names = array_append_record(exc_names, inc_names, 0)
+    else if (dest_exclude.eq."end") then
+      reord_names = array_append_record(inc_names, exc_names, 0)
     else
-        l_excl = True
+      error_msg("f", scriptname, funcname, "unrecognized option" + \
+                dest_exclude)
     end if
     end if
+  else  ; consider all
+    reord_names = loc_names
+    sqsort(reord_names)
+  end if
 
-    if (l_excl) then  ; exclude given entries
-        sub_names = loc_names
-        sub_names(idx_exclude) = sub_names@_FillValue
-        exc_names = loc_names(idx_exclude)
-        inc_names = sub_names(ind(.not.ismissing(sub_names)))
-        sqsort(inc_names)
-        if (dest_exclude.eq."begin") then
-            reord_names = array_append_record(exc_names, inc_names, 0)
-        else if (dest_exclude.eq."end") then
-            reord_names = array_append_record(inc_names, exc_names, 0)
-        else
-            error_msg("f", scriptname, funcname, "unrecognized option" + \
-                      dest_exclude)
-        end if
-        end if
-    else  ; consider all
-        reord_names = loc_names
-        sqsort(reord_names)
-    end if
+  ; Calculate permutation indexes
+  perm_idx = new(nn, integer)
+  do ii = 0, nn - 1
+    perm_idx(ii) = ind(reord_names(ii).eq.loc_names)
+  end do
 
-    ; Calculate permutation indexes
-    perm_idx = new(nn, integer)
-    do ii = 0, nn - 1
-        perm_idx(ii) = ind(reord_names(ii).eq.loc_names)
-    end do
-
-    enter_msg(scriptname, funcname)
+  enter_msg(scriptname, funcname)
     return(perm_idx)
-
 
 end
