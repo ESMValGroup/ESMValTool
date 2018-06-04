@@ -167,12 +167,14 @@ def check_variable(variable, required_keys):
                 variable.get('diagnostic')))
 
 
-def check_data_availability(input_files, start_year, end_year):
+def check_data_availability(input_files, variable):
     """Check if the required input data is available"""
     if not input_files:
-        raise NamelistError("No input files found")
+        raise NamelistError("No input files found for variable {}"
+                            .format(variable))
 
-    required_years = set(range(start_year, end_year + 1))
+    required_years = set(
+        range(variable['start_year'], variable['end_year'] + 1))
     available_years = set()
     for filename in input_files:
         start, end = get_start_end_year(filename)
@@ -404,9 +406,10 @@ def _get_input_files(variable, config_user):
     if config_user['synda_download'] and not input_files:
         input_files = synda_search(variable)
 
-    logger.info("Using input files:\n%s", '\n'.join(input_files))
-    check_data_availability(input_files, variable['start_year'],
-                            variable['end_year'])
+    logger.info("Using input files for variable %s of model %s:\n%s",
+                variable['short_name'], variable['model'],
+                '\n'.join(input_files))
+    check_data_availability(input_files, variable)
 
     return input_files
 
