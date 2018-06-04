@@ -4,7 +4,17 @@ models:
 
 preprocessors:
 
-  preprocessor: {}
+  ppNOLEVrad:
+    regrid:
+      target_grid: CERES-EBAF
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+      exclude: [reference_model] 
+  
  
 diagnostics:
 
@@ -12,7 +22,7 @@ diagnostics:
     description: Test variable derivation
     variables:
       swcre:
-        preprocessor: preprocessor
+        preprocessor: ppNOLEVrad
         mip: Amon
         field: T2Ms
         derive: true
