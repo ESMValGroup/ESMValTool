@@ -105,18 +105,22 @@ def loadCubeAndSavePng(cfg, md, fn, plotType='Mean'):
 
         if multiModel:
             qplt.plot(cube, label=md['model'], ls=':')
-            path = folder(cfg['plot_dir']) + os.path.basename(fn).replace(
-                '.nc', '_' + plotType + '.png')
         else:
             qplt.plot(cube, label=md['model'])
-            path = get_image_path(
-                cfg,
-                md,
-                suffix=plotType,
-                image_extention='png',
-            )
         plt.legend(loc='best')
 
+    if multiModel:
+        path = folder(cfg['plot_dir']) + os.path.basename(fn).replace(
+            '.nc', '_' + plotType + '.png')
+    else:
+        path = get_image_path(
+            cfg,
+            md,
+            suffix=plotType,
+            image_extention='png',
+        )
+            
+            
     plt.title(md['model'] + ' ' + md['long_name'])
 
     if cfg['write_plots']:

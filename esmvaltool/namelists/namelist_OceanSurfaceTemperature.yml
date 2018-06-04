@@ -36,17 +36,19 @@
 models:
 # working models
   - {model: CanESM2,      project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-  - {model: GISS-E2-H,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+#  - {model: GISS-E2-H,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
   - {model: HadGEM2-AO,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-  - {model: HadCM3,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-  - {model: CanCM4,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-  - {model: CSIRO-Mk3-6-0,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-###
-# Problem with 
-  - {model: HadGEM2-CC,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004} 
-  - {model: HadGEM2-ES,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004} 
+#  - {model: HadCM3,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+#  - {model: CanCM4,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+#  - {model: CSIRO-Mk3-6-0,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
 
+#####
 # models with Errors (right now):
+
+# Problem with latitude > 90.
+#  - {model: HadGEM2-CC,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004} 
+#  - {model: HadGEM2-ES,    project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004} 
+
   
 ###
 # Problem with times
@@ -70,11 +72,13 @@ preprocessors:
       project: CMIP5
       short_name: tos
       cmor_table: CMIP5     
+      
     fix_metadata: 
       model: HadGEM2-ES
       project: CMIP5
       short_name: tos
       cmor_table: CMIP5  
+      
     fix_metadata: 
       model: MIROC-ESM
       project: CMIP5
@@ -84,8 +88,8 @@ preprocessors:
                
     regrid:
       target_grid: 1x1
-#      scheme: unstructured_nearest
       scheme: linear
+#      scheme: unstructured_nearest
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
