@@ -24,7 +24,7 @@
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/logging.ncl"
 
-;##############################################################################
+; #############################################################################
 undef("create_legend_lines")
 procedure create_legend_lines(labels:string, \
                               styles, \

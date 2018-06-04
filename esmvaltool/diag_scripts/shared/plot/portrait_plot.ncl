@@ -14,7 +14,7 @@ load "./diag_scripts/shared/set_operators.ncl"
 load "./diag_scripts/shared/plot/aux_plotting.ncl"
 
 
-;##############################################################################
+; #############################################################################
 
 undef("portrait_plot")
 function portrait_plot(wks_in[1],
@@ -388,14 +388,14 @@ begin
                 yy = (/idiag * ybsize, idiag * ybsize, (idiag + 1) * ybsize, \
                       (idiag + 1) * ybsize, idiag * ybsize/)
                 poly(idiag, imod, 0) = \
-                    gsn_add_polygon(wks, plot, xx, yy, resPol)
+                  gsn_add_polygon(wks, plot, xx, yy, resPol)
                 if (flag_values) then
                     xt = (xx(0) + xx(1)) / 2.
                     yt = (yy(1) + yy(2)) / 2
                     text_v(idiag, imod, 0) = \
-                        gsn_add_text(wks, plot, \
-                                     sprintf("%4.2f", data(idiag, imod, 0)), \
-                                     xt, yt, resTxt)
+                      gsn_add_text(wks, plot, \
+                                   sprintf("%4.2f", data(idiag, imod, 0)), \
+                                   xt, yt, resTxt)
                     delete(xt)
                     delete(yt)
                 end if
@@ -403,8 +403,8 @@ begin
                     xt = (xx(0) + xx(1)) / 2.
                     yt = (yy(1) + yy(2)) / 2.
                     text_r(idiag, imod, 0) = \
-                        gsn_add_text(wks, plot, "#" + ranks(idiag, imod, 0), \
-                                     xt, yt, resTxt)
+                      gsn_add_text(wks, plot, "#" + ranks(idiag, imod, 0), \
+                                   xt, yt, resTxt)
                     delete(xt)
                     delete(yt)
                 end if
@@ -419,14 +419,14 @@ begin
                 yy = (/idiag * ybsize, idiag * ybsize, (idiag + 1) * ybsize, \
                       idiag * ybsize/)
                 poly(idiag, imod, 0) = \
-                    gsn_add_polygon(wks, plot, xx, yy, resPol)
+                  gsn_add_polygon(wks, plot, xx, yy, resPol)
                 if (flag_values) then
                     xt = sum(xx(0:2)) / 3.
                     yt = sum(yy(0:2)) / 3.
                     text_v(idiag, imod, 0) = \
-                        gsn_add_text(wks, plot, \
-                                     sprintf("%4.2f", data(idiag, imod, 0)), \
-                                     xt, yt, resTxt)
+                      gsn_add_text(wks, plot, \
+                                   sprintf("%4.2f", data(idiag, imod, 0)), \
+                                   xt, yt, resTxt)
                     delete(xt)
                     delete(yt)
                 end if
@@ -434,8 +434,8 @@ begin
                     xt = sum(xx(0:2)) / 3.
                     yt = sum(yy(0:2)) / 3.
                     text_r(idiag, imod, 0) = \
-                        gsn_add_text(wks, plot, "#" + ranks(idiag, imod, 0), \
-                                     xt, yt, resTxt)
+                      gsn_add_text(wks, plot, "#" + ranks(idiag, imod, 0), \
+                                   xt, yt, resTxt)
                     delete(xt)
                     delete(yt)
                 end if
@@ -476,14 +476,14 @@ begin
                 yy = (/idiag * ybsize, (idiag + 1) * ybsize, \
                       (idiag + 1) * ybsize, idiag * ybsize/)
                 poly(idiag, imod, 1) = \
-                    gsn_add_polygon(wks, plot, xx, yy, resPol)
+                  gsn_add_polygon(wks, plot, xx, yy, resPol)
                 if (flag_values) then
                     xt = sum(xx(0:2)) / 3.
                     yt = sum(yy(0:2)) / 3.
                     text_v(idiag, imod, 1) = \
-                        gsn_add_text(wks, plot, \
-                                     sprintf("%4.2f", data(idiag, imod, 1)), \
-                                     xt, yt, resTxt)
+                      gsn_add_text(wks, plot, \
+                                   sprintf("%4.2f", data(idiag, imod, 1)), \
+                                   xt, yt, resTxt)
                     delete(xt)
                     delete(yt)
                 end if
@@ -491,8 +491,8 @@ begin
                     xt = sum(xx(0:2)) / 3.
                     yt = sum(yy(0:2)) / 3.
                     text_r(idiag, imod, 1) = \
-                        gsn_add_text(wks, plot, "#" + ranks(idiag, imod, 1), \
-                                     xt, yt, resTxt)
+                      gsn_add_text(wks, plot, "#" + ranks(idiag, imod, 1), \
+                                   xt, yt, resTxt)
                     delete(xt)
                     delete(yt)
                 end if

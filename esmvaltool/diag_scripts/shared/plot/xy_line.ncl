@@ -78,8 +78,7 @@ begin
 
   ; Set hardcoded parameters
   border = 0.04  ; factor to extent y- & x-range (except @ top)
-  font_size_fac = 1.5  ; factor to change all font sizes
-                       ; (relative to NCL defaults)
+  font_size_fac = 1.5  ; factor to change all font sizes (w.r.t. to defaults)
   i_ref = 0  ; hardcode first model as reference -> generalize, if needed
 
   ; Get data, either directly or via netCDF file
@@ -1528,7 +1527,7 @@ begin
     copy_VarMeta(models, temp)
     delete(models)
 
-     ; Use "models" to pass on attribute names
+    ; Use "models" to pass on attribute names
     models = getvaratts(temp)  ; use "models" to pass on attribute names
     do i = 0, dimsizes(models) - 1
       ; Define all original attributes again, but empty
@@ -1751,7 +1750,7 @@ begin
 
 end
 
-;##############################################################################
+; #############################################################################
 undef("timeseries_station")
 function timeseries_station(wks_in[1],
                             source,
@@ -1864,7 +1863,7 @@ begin
       resL@gsLineThicknessF = res@xyLineThicknesses(mID)
       resL@gsLineDashPattern = res@xyDashPatterns(mID)
       gsn_polyline_ndc(wks_out, (/xpos, xpos + 0.045/), \
-                      (/ypos, ypos/), resL)
+                       (/ypos, ypos/), resL)
       gsn_text_ndc(wks_out, data&model(mID), xpos + 0.055, ypos, resT)
       ypos = ypos - 0.022
     end do

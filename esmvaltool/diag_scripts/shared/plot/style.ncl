@@ -156,14 +156,14 @@ function project_style(info, flag)
 ;            "dashes": line dash patterns.
 ;            "thicks": line thicknesses.
 ;            "markers": marker indexes.
-;,            "avgstd": average/standard deviation flags (0 = takes part in
+;            "avgstd": average/standard deviation flags (0 = takes part in
 ;                      the calculation of mean and standard deviation, 1 =
 ;                      does not take part; usually 0 is for models and 1 for
 ;                      observations and reanalyses).
 ;
 ; Return value
-;    An array of the same size of model_info@model, with the stlye information for
-;    the given flag. The type depends on the flag.
+;    An array of the same size of model_info@model, with the stlye information
+;    for the given flag. The type depends on the flag.
 ;
 ; Description
 ;    Retruns style informations (annotations, colors, line dash patterns, line
@@ -263,8 +263,8 @@ begin
             ; Search for "default"
             row  = ind("default".eq.modelsinfile)
             if (.not.ismissing(row)) then
-                log_debug("Model " + model_info@model(ii) + " not found in " + \
-                          stylefile + ", using default")
+                log_debug("Model " + model_info@model(ii) + " not found in " \
+                          + stylefile + ", using default")
                 column(ii) = str_squeeze(str_get_field(sty(row), col, "|"))
                 continue
             end if
@@ -304,19 +304,19 @@ begin
                 c2 = tofloat(str_get_field(column(ii), 2, ",")) / 255.
                 c3 = tofloat(str_get_field(column(ii), 3, ",")) / 255.
                 result(ii) = "(/" + \
-                    sprintf("%7.5f", c1) + "," + \
-                    sprintf("%7.5f", c2) + "," + \
-                    sprintf("%7.5f", c3) + "/)"
+                  sprintf("%7.5f", c1) + "," + \
+                  sprintf("%7.5f", c2) + "," + \
+                  sprintf("%7.5f", c3) + "/)"
             else if (nc.eq.4) then
                 c1 = tofloat(str_get_field(column(ii), 1, ",")) / 255.
                 c2 = tofloat(str_get_field(column(ii), 2, ",")) / 255.
                 c3 = tofloat(str_get_field(column(ii), 3, ",")) / 255.
                 c3 = tofloat(str_get_field(column(ii), 4, ","))
                 result(ii) = "(/" + \
-                    sprintf("%7.5f", c1) + "," + \
-                    sprintf("%7.5f", c2) + "," + \
-                    sprintf("%7.5f", c3) + "," + \
-                    sprintf("%7.5f", c4) + "/)"
+                  sprintf("%7.5f", c1) + "," + \
+                  sprintf("%7.5f", c2) + "," + \
+                  sprintf("%7.5f", c3) + "," + \
+                  sprintf("%7.5f", c4) + "/)"
             else
                 error_msg("f", scriptname, funcname, \
                           "Invalid definition of color for model " + \
@@ -348,19 +348,19 @@ end
 
 ; #############################################################################
 undef("project_style_GO")
-function project_style_GO(flag:string)
+function project_style_GO(flag:string)  ; FiX-ME move to style-file
 ;
 ; Arguments:
 ;    flag = string determining the type of array requested
 ; Return value: array of dimsizes(model_info@model)
-;  * Definition of plot attributes; Returns arrays of dimsizes(model_info@model)
-;  * flag = "colors": returns an array of colors (either RGB triples or named colors)
+;  * Definition of plot attribs; Returns arrays of dimsizes(model_info@model)
+;  * flag = "colors": returns an array of colors (either RGB or named colors)
 ;  * flag = "dashes": returns an array of dash styles (integer numbers)
 ;  * flag = "thicks": returns an array of line thicknesses (numeric)
 ;  * flag = "annots": returns an array of annotation strings
 ;  * flag = "avgstd": returns an array of flags
 ;                     0 -> (model) takes part in calculation of mean & stddev
-;                     1 -> (obs/reanalysis) takes not part in calculation of mean & stddev
+;                     1 -> (obs/reanalysis) does not take part
 ; Description:
 ;    * Definition of plot attributes: type depending on flag
 ; Modification history:
@@ -374,14 +374,15 @@ begin
     enter_msg(scriptname, funcname)
 
     ; define (/model, color, dash, thickness, avgstd/) for each model
-    modelstyles = (/ (/"PlankTOM5",     "(/0.6,     0.,      0.0078/)",          "0",  "1",  "0"/), \
-                    (/"PlankTOM10",   "(/0.7686,  0.4745,  0./)",          "1",  "1",  "0"/), \
-                    (/"medusa",    "(/0.5960,  0.9843,  0.5960/)",   "1",  "1",  "0"/), \
-                    (/"hadocc",   "(/0.9372,  0.3333,  0.0588/)",          "1",  "1",  "0"/), \
-                   (/"ersem",  "(/0.0588,  0.3333,      0.9372/)" ,          "1",  "1",  "0"/), \
-                  (/"ref",         "(/0.,      0.3098,  0./)",              "0",  "1",  "0"/), \
-                    (/"model_mean",     "(/0.6,     0.,       0.0078/)",         "0",  "3",  "1"/), \  ; others
-                    (/"unknown",        "black",                                 "0",  "1",  "0"/)/)
+    modelstyles = \
+      (/(/"PlankTOM5",  "(/0.6,     0.,      0.0078/)",  "0",  "1",  "0"/), \
+        (/"PlankTOM10", "(/0.7686,  0.4745,  0./)",      "1",  "1",  "0"/), \
+        (/"medusa",     "(/0.5960,  0.9843,  0.5960/)",  "1",  "1",  "0"/), \
+        (/"hadocc",     "(/0.9372,  0.3333,  0.0588/)",  "1",  "1",  "0"/), \
+        (/"ersem",      "(/0.0588,  0.3333,  0.9372/)",  "1",  "1",  "0"/), \
+        (/"ref",        "(/0.,      0.3098,  0./)",      "0",  "1",  "0"/), \
+        (/"model_mean", "(/0.6,     0.,       0.0078/)", "0",  "3",  "1"/), \
+        (/"unknown",    "black",                         "0",  "1",  "0"/)/)
 
     ; assign plot attributes (see function select_style in style_auxiliary.ncl)
     if (flag .eq. "colors") then

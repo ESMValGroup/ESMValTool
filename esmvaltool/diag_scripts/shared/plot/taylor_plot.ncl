@@ -18,7 +18,7 @@ load "./diag_scripts/shared/set_operators.ncl"
 load "./diag_scripts/shared/plot/aux_plotting.ncl"
 
 
-;##############################################################################
+; #############################################################################
 
 undef("taylor_plot")
 function taylor_plot(wks_in[1],
@@ -43,7 +43,7 @@ function taylor_plot(wks_in[1],
 ;
 ; Caveats
 ;    The taylor plot is drawn in two different ways, depending on ndiag:
-;      ndiag = 1: models are drawn with different colors and markers, a 
+;      ndiag = 1: models are drawn with different colors and markers, a
 ;                 separate legend file is created.
 ;      ndiag > 1: variables are drawn with different colors, models are
 ;                 marked with a numbers. Two legends are drawn within the
@@ -198,7 +198,7 @@ begin
     resXY@xyLineThicknessF = 2.
     npts = 200
     xx = fspan(xyMin, xyMax, npts)
-    yy = sqrt(xyMax^2 - xx^2)
+    yy = sqrt(xyMax ^ 2 - xx ^ 2)
     sLabels = (/"0.0", "0.1", "0.2", "0.3", "0.4", "0.5", "0.6", \
                 "0.7", "0.8", "0.9", "0.95", "0.99", "1.0"/)
     cLabels = stringtofloat(sLabels)
@@ -225,7 +225,7 @@ begin
 
     ; Draw stddev ratio lines
     xx = fspan(xyMin, xyOne, npts)
-    yy = sqrt(xyOne - xx^2)
+    yy = sqrt(xyOne - xx ^ 2)
     resL@gsLineDashPattern = 1
     resL@gsLineColor = "LightGray"
     dum2 = gsn_add_polyline(wks, taylor, xx, yy, resL)  ; REF
@@ -236,10 +236,10 @@ begin
     nStnRad = dimsizes(StnRad)
     dum3  = new(nStnRad, graphic)
     do ii = 0, nStnRad - 1
-        rr = StnRad(ii)
-        xx = fspan(xyMin, rr, npts)
-        yy = sqrt(rr^2 - xx^2)
-        dum3(ii) = gsn_add_polyline(wks, taylor, xx, yy, resL)
+      rr = StnRad(ii)
+      xx = fspan(xyMin, rr, npts)
+      yy = sqrt(rr ^ 2 - xx ^ 2)
+      dum3(ii) = gsn_add_polyline(wks, taylor, xx, yy, resL)
     end do
     taylor@$unique_string("dum")$ = dum3
     delete(xx)
@@ -341,12 +341,12 @@ begin
         if (ii.eq.3) then
             n3 = floattointeger(0.77 * npts)
             dum9(ii - 1) = \
-                gsn_add_polyline(wks, taylor, xx(0:n3), yy(0:n3), resCC)
+              gsn_add_polyline(wks, taylor, xx(0:n3), yy(0:n3), resCC)
         end if
         if (ii.eq.4) then
             n4 = floattointeger(0.61 * npts)
             dum9(ii - 1) = \
-                gsn_add_polyline(wks, taylor, xx(0:n4), yy(0:n4), resCC)
+              gsn_add_polyline(wks, taylor, xx(0:n4), yy(0:n4), resCC)
         end if
     end do
     delete(ang)
@@ -382,11 +382,11 @@ begin
             resPT@txFontColor = resM@gsMarkerColor
             do idm = 0, nmodels - 1
                 dum10(idd * nmodels + idm) = \
-                    gsn_add_polymarker(wks, taylor, \
-                                       X(idd, idm), Y(idd, idm), resM)
+                  gsn_add_polymarker(wks, taylor, \
+                                     X(idd, idm), Y(idd, idm), resM)
                 dum11(idd * nmodels + idm) = \
-                    gsn_add_text(wks, taylor, idm + 1, X(idd, idm), \
-                                 Y(idd, idm) + markerTxYOffset, resPT)
+                  gsn_add_text(wks, taylor, idm + 1, X(idd, idm), \
+                               Y(idd, idm) + markerTxYOffset, resPT)
             end do
         end do
         taylor@$unique_string("dum")$ = dum10
