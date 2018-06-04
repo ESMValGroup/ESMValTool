@@ -4,13 +4,17 @@ import logging
 import os
 import sys
 from netCDF4 import Dataset
-import shapefile
+import fiona
+from shapely.geometry import shape, mapping, Point, Polygon, MultiPolygon
 from shapely.geometry import MultiPoint
-from shapely.geometry import shape, Point
-from shapely.geometry.multipolygon import MultiPolygon
+import shapefile
+#from shapely.geometry import MultiPoint
+#from shapely.geometry import shape, Point
+#from shapely.geometry.multipolygon import MultiPolygon
 from shapely.ops import nearest_points
 import numpy as np
 
+from matplotlib import pyplot as p 
 import matplotlib.pyplot as plt
 from mpl_toolkits.basemap import Basemap
 import iris
@@ -27,26 +31,174 @@ def main(cfg):
                     attributes['standard_name'], attributes['model'])
         logger.debug("Loading %s", filename)
         cube = iris.load_cube(filename)
-        polyid, var = shapeselect(cfg, cube, filename)
+        #polyid, var = 
+        shapeselect2(cfg, cube, filename)
         name = os.path.splitext(os.path.basename(filename))[0] + '_polygon'
-        if cfg['write_csv']:
-            path = os.path.join(
-                cfg['work_dir'],
-                name + '.csv',
-            )
-            with open(path, 'w') as file:
-                file.write("id time \n")
-                file.close()
-                tvar = deepcopy(var)
-                tvar = np.transpose(tvar)
-                np.savetxt(path, tvar, delimiter=',')
+        #if cfg['write_csv']:
+        #    path = os.path.join(
+        #        cfg['work_dir'],
+        #        name + '.csv',
+        #    )
+        #    with open(path, 'w') as file:
+        #        file.write("id time \n")
+        #        file.close()
+        #        tvar = deepcopy(var)
+        #        tvar = np.transpose(tvar)
+        #        np.savetxt(path, tvar, delimiter=',')
 
-        if cfg['write_netcdf']:
-            path = os.path.join(
+        #if cfg['write_netcdf']:
+        #    path = os.path.join(
+        #        cfg['work_dir'],
+        #        name + '.nc',
+        #    )
+        #    write_netcdf(path, polyid, var, cube, cfg)
+
+def shapeselect2(cfg, cube, filename):
+    """ New solution with fiona! """
+    shppath = cfg['shppath']
+    #shpidcol = cfg['shpidcol']
+    wgtmet = cfg['wgtmet']
+    if ((cube.coord('latitude').ndim == 1 and
+         cube.coord('longitude').ndim == 1)):
+        coordpoints = [(x, y) for x in cube.coord('latitude').points
+                  for y in cube.coord('longitude').points]
+    else:
+        logger.info("Support for 2-d coords not yet implemented!")
+        sys.exit(1)
+    points = MultiPoint(coordpoints)
+    if cfg['evalplot']:
+        # Set limits for map (This can definitely be improved!)
+        shap = shapefile.Reader(shppath)
+        llcrnrlon=shap.bbox[0]-1
+        llcrnrlat=max((shap.bbox[2]-1,-90))
+        urcrnrlon=shap.bbox[1]+1
+        urcrnrlat=min((shap.bbox[3]+1,90))
+        #import cartopy.crs as ccrs
+        #ax = p.axes(projection=ccrs.Mollweide())
+        #ax.coastlines()
+        alons = []
+        alats = []
+        for lat, lon in coordpoints:
+            #if ( lat > llcrnrlat and lat < urcrnrlat
+            #     and lon > llcrnrlon and lon < urcrnrlon ):
+            if ( lat > 45 and lat < 53
+                 and lon > 3 and lon < 14 ):
+                alons.append(lon)
+                alats.append(lat)
+        #map = Basemap(llcrnrlon=5,llcrnrlat=55,urcrnrlon=15,urcrnrlat=73,projection='tmerc',lat_0=0, lon_0=0)
+        #map = Basemap(llcrnrlon=llcrnrlon, llcrnrlat=llcrnrlat,
+        #              urcrnrlon=urcrnrlon, urcrnrlat=urcrnrlat, 
+        #              projection='tmerc',
+        #              lat_0=0, lon_0=0)
+        #map.drawmapboundary()
+        #map.drawcoastlines()
+        #map.readshapefile(shppath[0:-4], 'obj', color='red')
+        #map.scatter(alats, alons, 3, marker='o', latlon=True, color='red')
+        cols = ['go', 'bo', 'co']
+        cnt=0
+        for shapp in shap.shapeRecords():
+            xm = [i[0] for i in shapp.shape.points[:]]
+            ym = [i[1] for i in shapp.shape.points[:]]
+            p.plot(xm, ym)
+            p.plot(alons, alats, 'ro', markersize = 2)
+            cnt += 1
+        #p.set_xlabel('xlabel')
+        p.xlabel('Longitude')
+        p.ylabel('Latitude')
+        #p.title()
+    with fiona.open(shppath) as shp:
+        gpx = []
+        gpy = []
+        cnt = -1
+        for multipol in shp:
+            cnt += 1
+            multi = shape(multipol['geometry'])
+            if wgtmet == 'mean_inside':
+                pth = 'o'
+                gpx, gpy = mean_inside(gpx, gpy, points, multi, cube, cfg)
+                if cfg['evalplot']:
+                    #map.scatter(cube.coord('longitude').points[gpx],
+                    #            cube.coord('latitude').points[gpy],
+                    #            6, marker='+', latlon=True,
+                    #            color='blue')
+                    p.plot(cube.coord('longitude').points[gpx],
+                           cube.coord('latitude').points[gpy],
+                           'bo',markersize=6)#, marker='+')
+                if len(gpx) == 0:
+                    gpx, gpy = representative(gpx, gpy, points, multi, cube,
+                                              cfg)
+            elif wgtmet == 'representative':
+                pth = 'x'
+                gpx, gpy = representative(gpx, gpy, points, multi, cube, cfg)
+                if cfg['evalplot']:
+                    #map.scatter(cube.coord('longitude').points[gpx],
+                    #            cube.coord('latitude').points[gpy],
+                    #            6, marker='+', latlon=True,
+                    #            color='blue')
+                    p.plot(cube.coord('longitude').points[gpx],
+                           cube.coord('latitude').points[gpy],
+                           'g', marker='+')
+        name = os.path.splitext(os.path.basename(filename))[0]
+        path = os.path.join(
                 cfg['work_dir'],
-                name + '.nc',
+                name + '.png',
             )
-            write_netcdf(path, polyid, var, cube, cfg)
+        #plt.savefig(path)
+        p.show()
+        # select points and calc mean of all points at each timestep of cube
+
+
+def mean_inside(gpx, gpy, points, multi, cube, cfg):
+    for i, point in enumerate(points):
+        if point.within(multi):
+            if point.x < 0 and np.min(cube.coord('longitude').points) >= 0:
+                addx = 360.
+            else:
+                addx = 0.
+            x, y = best_match(cube.coord('longitude').points,
+                              cube.coord('latitude').points,
+                              point.x + addx, point.y)
+            gpx.append(x)
+            gpy.append(y)
+            #gpx.append(np.where(cube.coord('longitude').points ==
+            #                    point.x))
+            #gpy.append(np.where(cube.coord('latitude').points ==
+            #                    point.y))
+    return gpx, gpy
+
+def representative(gpx, gpy, points, multi, cube, cfg):
+    reprpoint = multi.representative_point()
+    nearest = nearest_points(reprpoint, points)
+    npx = nearest[1].coords[0][0]
+    npy = nearest[1].coords[0][1]
+    if npx < 0 and np.min(cube.coord('longitude').points) >= 0:
+        npx = npx + 360.
+    print(reprpoint.x, reprpoint.y, npx, npy)
+    #gpx.append(np.where(cube.coord('longitude').points == npx)[0][0])
+    #gpy.append(np.where(cube.coord('latitude').points == npy)[0][0])
+    x, y = best_match(cube.coord('longitude').points,
+                      cube.coord('latitude').points,
+                      npx, npy)
+    gpx.append(x)
+    gpy.append(y)
+    return gpx, gpy
+
+def best_match(xx, yy, px, py):
+    """ Identifies the grid points in 2-d with minimum distance. """
+    if xx.shape != 2 or yy.shape != 2:
+        x = deepcopy(xx)
+        y = deepcopy(yy)
+        xx = np.zeros((len(x),len(y)))
+        yy = np.zeros((len(x),len(y)))
+        for i in range(0,len(y)):
+            xx[:,i] = x
+        for j in range(0,len(x)):
+            yy[j,:] = y
+    distance = ( (xx - px)**2 + (yy - py)**2 )**0.5
+    ind = np.unravel_index(np.argmin(distance, axis=None), distance.shape)
+    print(np.min(distance), distance[ind[0],ind[1]])
+    print(xx[ind[0],ind[1]],yy[ind[0],ind[1]], px, py)
+    return ind[0], ind[1]
 
 
 def shapeselect(cfg, cube, filename):
@@ -104,12 +256,22 @@ def shapeselect(cfg, cube, filename):
         # find nearest point in netcdf grid for each catchment centroid
         selected_points = []
         for i in cent:
+            #if i.coords[0] < -180 or i.coords[0] > 360:
+            #    print('Shape file is likely not defined in lon-lat.')
+            #    print('Conversion is not yet implemented. Aborting!')
+            #    sys.exit(1)
             nearest = nearest_points(i, points)
             nearestgplon = np.where(cube.coord('longitude').points ==
                                     nearest[1].coords[0][1])
             nearestgplat = np.where(cube.coord('latitude').points ==
                                     nearest[1].coords[0][0])
             selected_points.append(list((nearestgplon[0], nearestgplat[0])))
+            print(nearest[1].coords[0][1], nearest[1].coords[0][0],
+                  nearest[0].coords[0][1], nearest[0].coords[0][0],
+                  nearestgplon[0], nearestgplat[0],
+                  cube.coord('longitude').points[nearestgplon[0]],
+                  cube.coord('latitude').points[nearestgplat[0]]
+                 )
             # Add a check if the point is inside polygon
             # when looping over shapes:
             # point = Point(lon, lat)
@@ -119,6 +281,7 @@ def shapeselect(cfg, cube, filename):
         var = np.zeros((len(cube.coord('time').points), len(poly_id)))
         cnt = 0
         for point in selected_points:
+            print(point[0],point[1])
             var[:, cnt] = np.squeeze(cube.data[:, point[0], point[1]])
             cnt += 1
     else:
@@ -131,6 +294,7 @@ def shapeselect(cfg, cube, filename):
 
 def shape_plot(selected_points, cube, filename, cfg):
     """Plot shapefiles and included grid points"""
+    print('plot1')
     shppath = cfg['shppath']
     lons = []
     lats = []
@@ -143,6 +307,7 @@ def shape_plot(selected_points, cube, filename, cfg):
     llcrnrlat=max((shp.bbox[2]-1,-90))
     urcrnrlon=shp.bbox[1]+15
     urcrnrlat=min((shp.bbox[3]+1,90))
+    print('plot2')
     # Read all model points within map limits
     if ((cube.coord('latitude').ndim == 1 and
          cube.coord('longitude').ndim == 1)):
@@ -161,16 +326,19 @@ def shape_plot(selected_points, cube, filename, cfg):
     for lat, lon in coord_points:
         alons.append(lon)
         alats.append(lat)
+    print('plot3')
     map = Basemap(llcrnrlon=llcrnrlon, llcrnrlat=llcrnrlat,
                   urcrnrlon=urcrnrlon, urcrnrlat=urcrnrlat, 
                   projection='tmerc',
                   lat_0=0, lon_0=0)
     map.drawmapboundary()
     map.drawcoastlines()
-    map.readshapefile(shppath[0:-4], 'obj', color='red')
+    #map.readshapefile(shppath[0:-4], 'obj', color='red')
     map.scatter(alats, alons, 3, marker='o', latlon=True, color='gray')
     map.scatter(lats, lons, 6, marker='x', latlon=True, color='red')
-    plt.show()
+    print('plot4')
+
+    #plt.show()
     #name = os.path.splitext(os.path.basename(filename))[0]
     #path = os.path.join(cfg['work_dir'], name + '.png',)
     #plt.savefig(path)
