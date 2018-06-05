@@ -1,0 +1,145 @@
+###############################################################################
+# namelist_GlobalOcean.yml
+# 
+# Description
+# Diagnostics to support the evaluation of ocean biogeochemical cycles at
+# global scales.  Implemented routines produce time series lines and contour
+# plots (for climatological distributions or inter-annual or inter-seasonal
+# variability) using either 2-D (surface) or 3-D (depth-resolving) ocean
+# variables
+# 
+# Authors
+# Lee de Mora (PML, UK)
+# Oliver Andrews (UEA, UK)
+# Clare Enright (UEA, UK)
+# 
+# Project
+# EMBRACE, UKESM
+# 
+# Reference
+# Bakker, D. C. E. et al., Earth Syst. Sci. Data, 6, 69-90,
+# doi:10.5194/essd-6-69-2014 (2014)
+# Bianchi, D. et al., Global Biogeochem. Cy., 26, GB2009,
+# doi:10.1029/2011GB004209 (2012)
+# Jones, S. D. et al., J. Adv. Model Earth Syst., in press (2015).
+# Key, R. M. et al.,Global Biogeochem. Cy., 18, GB4031, doi:10.109/2004GB002247
+# (2004)
+# Roedenbeck, C. et al., Ocean Sci., 9, 193-216, doi:10.5194/os-9-193-2013
+# (2013)
+# Takahashi, T. et al., Mar. Chem., 164, 95–125,
+# doi:10.1016/j.marchem.2014.06.004 (2014)
+# 
+# This namelist is part of the ESMValTool
+###############################################################################
+---
+
+models:
+# working models
+  - {model: CanESM2,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
+#  - {model: GISS-E2-H,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
+#  - {model: HadGEM2-AO,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
+#  - {model: HadCM3,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
+#  - {model: CanCM4,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
+#  - {model: CSIRO-Mk3-6-0,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
+
+#####
+# models with Errors (right now):
+
+# Problem with latitude > 90.
+#  - {model: HadGEM2-CC,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004} 
+#  - {model: HadGEM2-ES,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004} 
+
+  
+###
+# Problem with times
+#  - {model: MIROC-ESM,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
+#  - {model: MIROC-ESM-CHEM,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
+  
+
+# Unstructured grids                 
+#  - {model: MPI-ESM-LR,  project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2003}
+#  - {model: MPI-ESM-MR,  project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
+#  - {model: ACCESS1-0,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}  
+#  - {model: ACCESS1-3,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
+
+  
+ 
+  
+preprocessors:
+  preprocessor1:
+    fix_metadata: 
+#      model: HadGEM2-CC
+#      project: CMIP5
+#      short_name: tos
+#      cmor_table: CMIP5     
+      
+#    fix_metadata: 
+#      model: HadGEM2-ES
+#      project: CMIP5
+#      short_name: tos
+#      cmor_table: CMIP5  
+      
+#    fix_metadata: 
+#      model: MIROC-ESM
+#      project: CMIP5
+#      short_name: tos
+#      cmor_table: CMIP5  
+               
+               
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+#      scheme: unstructured_nearest
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean ]
+
+    extract_levels:
+      levels: [-1. ,1.]
+      scheme: linear  
+  preprocessor2:
+#    extract_levels:
+#      levels: [1. , 1000.]
+#      scheme: linear              
+#    regrid:
+#      target_grid: 1x1
+#      scheme: linear
+#      scheme: unstructured_nearest
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean ]
+
+
+diagnostics:
+  diagnostic1:
+    description: Time series for SST
+    variables:       
+#      tos: # Temperature ocean surface
+#        preprocessor: preprocessor1      
+#        field: TO2Ms
+#      sos: # Salinity ocean surface
+#        preprocessor: preprocessor1      
+#        field: TO2Ms  
+      chl: # chlorophyll
+        preprocessor: preprocessor1      
+        field: TO3Y
+              
+#      thetao:
+#        preprocessor: preprocessor2
+#        field: TO3M
+        
+#  diagnostic2:
+#    description: Time series for SST
+#    variables:
+#      thetao:
+#        preprocessor: preprocessor2      
+#        field: thetao       
+    scripts:
+      ocean_test_1: &autoassess_strato_test_1_settings
+        script: examples/oceandiagnostic.py
+      
+
+
+
+
+
