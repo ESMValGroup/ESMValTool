@@ -1,0 +1,6 @@
+atmos. dry mass drift: 1/log!D10!N(e-folding time/years),     0.166667
+atmospheric global energy error,     0.100000
+global net water flux TRIP,    0.0100000
+global net water flux land snow,    0.0100000
+global net water flux soil moisture,    0.0100000
+global net water flux into atmosphere,    0.0100000
