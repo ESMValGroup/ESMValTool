@@ -47,6 +47,30 @@ def get_input_files(cfg, index=0):
     return metadata
 
 
+def sensibleUnits(cube,name):
+    """
+    Convert the cubes into some friendlier units for the range of 
+    values typically seen in BGC.
+    """
+    
+    new_units = ''
+    
+    if name in ['tos','thetao']:
+        new_units = 'celsius'
+        
+    if name in ['no3',]:
+        new_units = 'mmol m-3'
+
+    if name in ['chl',]:
+        new_units = 'mg m-3'
+    
+    if new_units:
+        logger.info(' '.join(["Changing units from ",str(cube.units),'to', new_units]))
+        cube.convert_units(new_units)
+        
+    return cube
+        
+
 def get_image_path(cfg,
                    md,
                    prefix='',
@@ -75,14 +99,23 @@ def get_image_path(cfg,
 
 def loadCubeAndSavePng(cfg, md, fn, plotType='Mean'):
     """
-        This function makes a simplee plot for an indivudual model.
+        This function makes a simply plot for an indivudual model.
         The cfg is the opened global config,
         md is the metadata dictionairy (for the individual model file).
+        plotTypes: 
+            Mean: the temporal mean of the entire time range
+            WeightedMean: time series of the weighted global mean
+            
         """
 
     cube = iris.load_cube(fn)
-    cube.convert_units('celsius')
+    
+    cube = sensibleUnits(cube, md['short_name'])
 
+
+    print('loadCubeAndSavePng:', md['model'],'data: ',
+         cube.data.min(),cube.data.mean(),cube.data.max())
+    
     print('Attempting to take time mean in iris.')
     multiModel = md['model'].find('MultiModel') > -1
     if plotType == 'Mean':
@@ -147,8 +180,11 @@ def multiModelTimeSeries(cfg, metadata, plotType='WeightedMean'):
         # print('Varbiable name:', key)
         print('metadata[fn]:', metadata[fn])
         cube = iris.load_cube(fn)
-        cube.convert_units('celsius')
+        cube = sensibleUnits(cube, metadata[fn]['short_name'])
 
+        print('multiModelTimeSeries:', metadata[fn]['model'],'data: ',
+              cube.data.min(),cube.data.mean(),cube.data.max())
+                  
         multiModel = metadata[fn]['model'].find('MultiModel') > -1
 
         if plotType == 'WeightedMean':
@@ -188,12 +224,9 @@ def main(cfg):
     #####
     # This part sends debug statements to stdout
     logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
-    # cfg, settings_file = get_cfg()
-    # logger.setLevel(cfg['log_level'].upper())
 
     input_files = get_input_files(cfg)
 
-    # print('CFG:\tsettings_file\t',settings_file)
     print('cfg:\tContents:')
     for k in cfg.keys():
         print('CFG:\t', k, '\t', cfg[k])
@@ -203,6 +236,7 @@ def main(cfg):
             '\nmetadata filename:',
             metadatafilename,
         )
+        
         metadata = get_input_files(cfg, index=i)
 
         #######
