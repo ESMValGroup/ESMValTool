@@ -35,7 +35,7 @@
 
 models:
 # working models
-  - {model: CanESM2,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
+#  - {model: CanESM2,       project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
 #  - {model: GISS-E2-H,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
 #  - {model: HadGEM2-AO,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
 #  - {model: HadCM3,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
@@ -46,15 +46,14 @@ models:
 # models with Errors (right now):
 
 # Problem with latitude > 90.
-#  - {model: HadGEM2-CC,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004} 
-#  - {model: HadGEM2-ES,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004} 
+  - {model: HadGEM2-CC,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004} 
+  - {model: HadGEM2-ES,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004} 
 
   
 ###
 # Problem with times
 #  - {model: MIROC-ESM,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
 #  - {model: MIROC-ESM-CHEM,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
-  
 
 # Unstructured grids                 
 #  - {model: MPI-ESM-LR,  project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2003}
@@ -63,7 +62,6 @@ models:
 #  - {model: ACCESS1-3,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
 
   
- 
   
 preprocessors:
   preprocessor1:
@@ -85,7 +83,12 @@ preprocessors:
 #      short_name: tos
 #      cmor_table: CMIP5  
                
-               
+#    fix_metadata: 
+#      model: CanESM2
+#      project: CMIP5
+#      short_name: chl
+#      cmor_table: CMIP5  
+
     regrid:
       target_grid: 1x1
       scheme: linear
@@ -95,45 +98,35 @@ preprocessors:
       statistics: [mean ]
 
     extract_levels:
-      levels: [-1. ,1.]
-      scheme: linear  
-  preprocessor2:
-#    extract_levels:
-#      levels: [1. , 1000.]
-#      scheme: linear              
-#    regrid:
-#      target_grid: 1x1
-#      scheme: linear
-#      scheme: unstructured_nearest
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean ]
-
-
+      levels: 0. 
+      scheme: nearest_extrap
+      
+      
 diagnostics:
   diagnostic1:
-    description: Time series for SST
+    description: Annual surface BGC values
     variables:       
+#      Note that physical metrics do not exist in Oyr fields, only BGC.
 #      tos: # Temperature ocean surface
 #        preprocessor: preprocessor1      
 #        field: TO2Ms
 #      sos: # Salinity ocean surface
 #        preprocessor: preprocessor1      
 #        field: TO2Ms  
+
       chl: # chlorophyll
         preprocessor: preprocessor1      
         field: TO3Y
-              
-#      thetao:
-#        preprocessor: preprocessor2
-#        field: TO3M
-        
-#  diagnostic2:
-#    description: Time series for SST
-#    variables:
-#      thetao:
+
+      no3: # nitrate
+        preprocessor: preprocessor1      
+        field: TO3Y
+
+#	Oxygen doesn't work.            
+#      o2: # oxy
 #        preprocessor: preprocessor2      
-#        field: thetao       
+#        field: TO3Y
+              
     scripts:
       ocean_test_1: &autoassess_strato_test_1_settings
         script: examples/oceandiagnostic.py
