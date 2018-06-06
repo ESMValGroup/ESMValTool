@@ -14,20 +14,6 @@ from esmvaltool.diag_scripts.shared import run_diagnostic
 logger = logging.getLogger(__name__)
 
 # Diagnostic that takes two models (control_model and exp_model
-# and observational data (ERA-Interim and MERRA)
-
-
-def _check_p30(cubelist):
-    """Check for plev = 30hPa"""
-    p30 = iris.Constraint(air_pressure=3000.)
-    for cube in cubelist:
-        qbo30 = cube.extract(p30)
-        # extract the masked array and check for missing data
-        qbo30.data = np.ma.array(qbo30.data)
-        if np.all(qbo30.data.mask):
-            logger.info('Cube metadata:', qbo30.metadata)
-            logger.error('All data is masked at 30hPa! Exiting.')
-            sys.exit(1)
 
 
 def main(cfg):
@@ -55,6 +41,28 @@ def main(cfg):
         os.makedirs(tmp_dir)
     if not os.path.exists(ancil_dir):
         os.makedirs(ancil_dir)
+    # make the masks and conservation dirs
+    masks_dir = os.path.join(ancil_dir, 'masks')
+    cons_dir = os.path.join(ancil_dir, 'conservation')
+    if not os.path.exists(masks_dir):
+        os.makedirs(masks_dir)
+    if not os.path.exists(cons_dir):
+        os.makedirs(cons_dir)
+    # grab the masks and place them in the called dirs
+    # /masks/qrparm.landfrac_n240.0.pp
+    # /conservation/glacialmask_n240.0.pp 
+    # NEED TO FIGURE OUT WHERE TO STORE
+    # THESE TYPE OF FILES IN BASE DIR(S)
+    # for now I am moving some dummy files
+    base_mask = cfg['landocean_masks']
+    cp1 = 'cp ' + os.path.join(base_mask, 'qrparm.landfrac_n240.0.pp') \
+          + ' ' + masks_dir
+    cp2 = 'cp ' + os.path.join(base_mask, 'glacialmask_n240.0.pp') \
+          + ' ' + cons_dir
+    proc = subprocess.Popen(cp1, stdout=subprocess.PIPE, shell=True)
+    (out, err) = proc.communicate()
+    proc = subprocess.Popen(cp2, stdout=subprocess.PIPE, shell=True)
+    (out, err) = proc.communicate()
 
     files_list_m1 = []
     files_list_m2 = []
@@ -78,12 +86,6 @@ def main(cfg):
     # load cubelists
     cubelist_m1 = iris.load(files_list_m1)
     cubelist_m2 = iris.load(files_list_m2)
-
-    # STRATOSPHERE computes QBO at 30hPa
-    # go through cubes and make sure they have 30hPa levels
-    # that have at least one unmasked value
-    _check_p30(cubelist_m1)
-    _check_p30(cubelist_m2)
 
     # save to congragated files
     cubes_list_path_m1 = os.path.join(suite_data_m1, 'cubeList.nc')

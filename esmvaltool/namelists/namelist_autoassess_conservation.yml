@@ -1,21 +1,16 @@
 #### summary 
 #### namelist that runs the Autoassess Conservation assessment area diagnostic
-#### Version: 1 June 2018 
+#### Version: 6 June 2018 (D-Day)
 #################
 #### Description:
 #################
-#The original stratospehre diagnostic from autoassess accepts two input UM suites; this has now been
-#changed for ESMValTool to two models; the namelist can accomodate as many pairs of models to be compared as the 
-#user needs; this is handled in the diagnostics/aa_strato/scripts: while the script is the same
-#(autoassess_conservation.py), the (control_model, exp_model) pair may vary accoding to the user's
-#needs. Different (start, end) dates can also be specified (in autoassess format) per run, as long as the
-#time data is within the (start_year, end_year) specified in models: section. Preprocessing is basic and just
-#extracts levels and regrids onto the reference ERA-Interim model; this is done once.
-#################
-#### CAVEATS
-#################
-# - The original autoassess diagnostic needs MERRA obs data as well; not asked for here but it should be implemented
-# at a later stage;
+# The original conservation diagnostic from autoassess accepts two input UM suites; this has now been
+# changed for ESMValTool to two models; the namelist can accomodate as many pairs of models to be compared as the 
+# user needs; this is handled in the diagnostics//scripts: while the script is the same
+# (autoassess_conservation.py), the (control_model, exp_model) pair may vary accoding to the user's
+# needs. Different (start, end) dates can also be specified (in autoassess format: YYYY/MM/DD) per run, as long as the
+# time data is within the (start_year, end_year) specified in models: section. Preprocessing is basic; 
+# regridding only at the moment; this is done once.
 ###########################################################################################################
 ---
 
@@ -34,7 +29,7 @@ preprocessors:
       scheme: linear
 
 diagnostics:
-  aa_strato:
+  aa_cons:
     description: Autoassess test diag for Conservation.
     variables:
       ta:
@@ -52,7 +47,7 @@ diagnostics:
     additional_models:
       - {model: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 3}
     scripts:
-      autoassess_strato_test_1: &autoassess_strato_test_1_settings
+      autoassess_cons_test_1: &autoassess_cons_test_1_settings
         script: autoassess/autoassess_conservation.py
         title: "Autoassess Conservation Diagnostic Metric MPI-MPI"
         area: Conservation
@@ -61,7 +56,8 @@ diagnostics:
         obs_models: [ERA-Interim]
         start: 1997/12/01
         end: 2002/12/01
-      autoassess_strato_test_2: &autoassess_strato_test_2_settings
+        landocean_masks: '/home/users/valeriu/base_masks_autoassess' 
+      autoassess_cons_test_2: &autoassess_cons_test_2_settings
         script: autoassess/autoassess_conservation.py
         title: "Autoassess Conservation Diagnostic Metric MPI-INM"
         area: Conservation
@@ -70,31 +66,32 @@ diagnostics:
         obs_models: [ERA-Interim]
         start: 1997/12/01
         end: 2002/12/01
+        landocean_masks: '/home/users/valeriu/base_masks_autoassess'
 
   plot_standard:
     description: Wrapper to collect and plot previously calculated metrics
     scripts:
-      plot_strato_test_1: &plot_strato_test_1_settings
-        <<: *autoassess_strato_test_1_settings
+      plot_cons_test_1: &plot_cons_test_1_settings
+        <<: *autoassess_cons_test_1_settings
         control_model: MPI-ESM-LR
         exp_model: MPI-ESM-MR
         obs_models: [ERA-Interim]
         script: autoassess/plot_autoassess_conservation.py
-        ancestors: ['*/autoassess_strato_test_1']
+        ancestors: ['*/autoassess_cons_test_1']
         title: "Plot Conservation Metrics MPI-MPI"
         plot_name: "Metrics"
-        diag_tag: aa_strato
-        diag_name: autoassess_strato_test_1
+        diag_tag: aa_cons
+        diag_name: autoassess_cons_test_1
         plot_title: "MPI-ESM-LR_vs_MPI-ESM-MR"
-      plot_strato_test_2: &plot_strato_test_2_settings
-        <<: *autoassess_strato_test_2_settings
+      plot_cons_test_2: &plot_cons_test_2_settings
+        <<: *autoassess_cons_test_2_settings
         control_model: MPI-ESM-LR
         exp_model: inmcm4
         obs_models: [ERA-Interim]
         script: autoassess/plot_autoassess_conservation.py
-        ancestors: ['*/autoassess_strato_test_2']
+        ancestors: ['*/autoassess_cons_test_2']
         title: "Plot Conservation Metrics MPI-MPI"
         plot_name: "Metrics"
-        diag_tag: aa_strato
-        diag_name: autoassess_strato_test_2
+        diag_tag: aa_cons
+        diag_name: autoassess_cons_test_2
         plot_title: "MPI-ESM-LR_vs_inmcm4"

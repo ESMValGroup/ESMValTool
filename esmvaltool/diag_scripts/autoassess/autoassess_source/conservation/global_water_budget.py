@@ -21,10 +21,6 @@ def fluxes_submodel(run, stash_f, f_mult):
     f_mult multiplicative factors to achieve that.
     Use also f_mult to multiply fields by fractional masks, etc.
     '''
-    # VPREDOI
-    # print out the needed stashes
-    print('global_water_budget needs stashes:')
-    print(stash_f)
     # Initialize array of global budgets with zeros:
     fval = np.zeros(len(stash_f)+1, dtype=np.float)
 
