@@ -52,8 +52,17 @@ def area_slice(mycube, long1, long2, lat1, lat2):
     This function is a restriction of masked_cube_lonlat();
     Returns a cube
     """
-    sublon = iris.Constraint(
-        longitude=lambda cell: float(long1) <= cell <= float(long2))
+    # Converts Negative longitudes to 0 -> 360. standard
+    if long1 < 0.: long1 += 360.
+    if long2 < 0.: long2 += 360.   
+     
+    if long2 < long1: 
+        # if you want to look at a region both sides of the zero longitude ie, such as the Atlantic Ocean!
+        sublon = iris.Constraint(
+            longitude=lambda cell: not ((float(long1) >= cell) * (cell >= float(long2))) )
+    else:
+        sublon = iris.Constraint(
+            longitude=lambda cell: float(long1) <= cell <= float(long2))
     sublat = iris.Constraint(
         latitude=lambda cell: float(lat1) <= cell <= float(lat2))
     region_subset = mycube.extract(sublon & sublat)
