@@ -3,7 +3,7 @@ import logging
 import os
 import subprocess
 
-from ..data_finder import get_start_end_year, select_files
+from .._data_finder import get_start_end_year, select_files
 
 logger = logging.getLogger(__name__)
 
