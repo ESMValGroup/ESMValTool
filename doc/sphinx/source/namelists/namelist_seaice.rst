@@ -5,13 +5,14 @@ Sea ice
 Overview
 --------
 
-The sea ice diagnostics cover sea ice extent and concentration, but work is
-underway to include other variables and processes in future releases of the
-ESMValTool. Current diagnostics include time series of September (Arctic) and
-March (Antarctic) sea ice extent calculated as the total area (km\ :sup:`2`\) of grid
-cells with sea ice concentrations (sic) of at least 15%. Also included are the
-seasonal cycle of sea ice extent, polar stereographic contour and polar
-contour difference plots of Arctic and Antarctic sea ice concentrations.
+The sea ice diagnostics cover sea ice extent, concentration, and thickness.
+Work is underway to include other variables and processes in future releases
+of the ESMValTool. Current diagnostics include time series of Arctic and
+Antarctic sea ice area and extent (calculated as the total area (km\ :sup:`2`\)
+of grid cells with sea ice concentrations (sic) of at least 15%). Also included
+are the seasonal cycle of sea ice extent, and polar stereographic contour and
+polar contour difference plots of Arctic and Antarctic sea ice concentration
+and sea ice thickness.
 
 
 
@@ -34,16 +35,15 @@ Diagnostics are stored in diag_scripts/
           (multi-year monthly mean values).
 
 	* SeaIce_polcon.ncl: polar stereographic plots of sea ice
-          concentration (= sea ice area fraction) and extent (grid cells with
-          a sea ice concentration of at least 15%) for individual models or
-          observational data sets, for Arctic and Antarctic regions with
-          flexible paneling of the individual plots. The edges of sea ice
-          extent can be highlighted via an optional red line.
+          concentration (= sea ice area fraction) and sea ice thickness for
+          individual models or observational data sets, for Arctic and Antarctic
+          regions with flexible paneling of the individual plots. The edges of
+          sea ice extent can be highlighted via an optional red line.
 
 	* SeaIce_polcon_diff.ncl: polar stereographic plots of sea ice area
-          concentration difference between individual models and reference
-          data (e.g., an observational data set) for both Arctic and Antarctic
-          with flexible paneling of the individual plots. All data are
+          concentration and thickness difference between individual models and
+          reference data (e.g., an observational data set) for both Arctic and
+          Antarctic with flexible paneling of the individual plots. All data are
           regridded to a common grid (1°x1°) before comparison.
 
 
@@ -121,7 +121,7 @@ Variables
 ---------
 
 	* sic (sea ice, monthly mean, longitude latitude time)
-
+	* sit (sea ice, monthly mean, longitude latitude time)
 
 
 Observations and reformat scripts
@@ -137,6 +137,9 @@ Observations and reformat scripts
 
 	  *Reformat script:* reformat_scripts/obs/reformat_obs_HadISST.ncl
 
+	* Pan-Arctic Ice Ocean Modelling and Assimilation System (PIOMAS)
+
+	  *Reformat script:* reformat_scripts/obs/reformat_obs_PIOMAS.f90
 
 
 
