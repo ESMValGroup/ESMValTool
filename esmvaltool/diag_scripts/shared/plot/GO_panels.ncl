@@ -1,27 +1,27 @@
-;;#############################################################################
-;; GENERAL ROUTINES FOR GO PLOTTING
-;;#############################################################################
-;; Please consider using or extending existing routines before adding new ones.
-;; Check the header of each routine for documentation.      
-;;
-;; Contents:
-;;    function  get_title_suffix
-;;    procedure remove_attrs
-;;    procedure plot_two_by_one
-;;    procedure plot_three_by_one_diff
-;;    procedure two_by_one
-;;    procedure three_by_one_diff
-;;    procedure plot_three_by_one_vector
-;;    procedure three_by_one_vector
-;;    procedure plot_multipanel
-;;    procedure multipanel
-;;    procedure plot_multipanel_vector
-;;    procedure multipanel_vector
-;;    procedure seasonal_plot
-;;    procedure xy_plot_wrapper
-;;    procedure ts_line_wrapper
-;;
-;;#############################################################################
+; #############################################################################
+; GENERAL ROUTINES FOR GO PLOTTING
+; #############################################################################
+; Please consider using or extending existing routines before adding new ones.
+; Check the header of each routine for documentation.      
+;
+; Contents:
+;    function  get_title_suffix
+;    procedure remove_attrs
+;    procedure plot_two_by_one
+;    procedure plot_three_by_one_diff
+;    procedure two_by_one
+;    procedure three_by_one_diff
+;    procedure plot_three_by_one_vector
+;    procedure three_by_one_vector
+;    procedure plot_multipanel
+;    procedure multipanel
+;    procedure plot_multipanel_vector
+;    procedure multipanel_vector
+;    procedure seasonal_plot
+;    procedure xy_plot_wrapper
+;    procedure ts_line_wrapper
+;
+; #############################################################################
 
 load "./interface_scripts/auxiliary.ncl"
 load "./interface_scripts/logging.ncl"
@@ -92,9 +92,9 @@ begin
     remove_attrs(plot_settings, (/"idx"/))
     plot_settings@idx = plot_settings@idx_ref
 
-    ;; -------------------------------------
-    ;; Plot model entry (first plot)
-    ;; -------------------------------------
+    ; -------------------------------------
+    ; Plot model entry (first plot)
+    ; -------------------------------------
     main_title_prefix = ""  ; model_info@model(idx_mod)
     main_title_suffix = ""
     res = panel_two_by_one(res, 0)  ; Update resource for second plot
@@ -121,9 +121,9 @@ begin
                            res)
     delete(statistics)
 
-    ;; ---------------------------------------
-    ;; Plot model entry (second plot)
-    ;; ---------------------------------------
+    ; ---------------------------------------
+    ; Plot model entry (second plot)
+    ; ---------------------------------------
     main_title_prefix = ""
     main_title_suffix = ""
     res = panel_two_by_one(res, 1)  ; Update resource for third plot
@@ -199,9 +199,9 @@ begin
     dummy_array = (/1e+20/)
     dummy_array@_FillValue = 1e+20
 
-    ;; -------------------------------------
-    ;; Plot reference plot (top plot)
-    ;; -------------------------------------
+    ; -------------------------------------
+    ; Plot reference plot (top plot)
+    ; -------------------------------------
     if (isatt(res, "cnLevels")) then
         delete(res@cnLevels)
     end if
@@ -233,9 +233,9 @@ begin
 
     three_by_one_labelbar(wks, plot_ref, plot_settings)
 
-    ;; -------------------------------------
-    ;; Plot model entry (middle plot)
-    ;; -------------------------------------
+    ; -------------------------------------
+    ; Plot model entry (middle plot)
+    ; -------------------------------------
     main_title_prefix = "(2) " + di@season + "-" + storage_name + " of "
     res = panel_three_by_one(res, 1)  ; Update resource for second plot
 
@@ -261,9 +261,9 @@ begin
                           res)
     delete(statistics)
 
-    ;; ---------------------------------------
-    ;; Plot reference model diff (bottom plot)
-    ;; ---------------------------------------
+    ; ---------------------------------------
+    ; Plot reference model diff (bottom plot)
+    ; ---------------------------------------
     main_title = "(2) - (1)"
     main_title_suffix = ""
     res = panel_three_by_one(res, 2)  ; Update resource for third plot
@@ -271,8 +271,8 @@ begin
     cn_levels_string = str_sub_str("cn_levels_" + storage_name + "_diff_basic", "-", "_")
     res@cnLevels = di@$cn_levels_string$
     res@cnFillPalette = "BlWhRe"
-    ;; Plot mean of differences of first and second data set, first
-    ;; interpolate to the reference data set grid (conservative interpolation)
+    ; Plot mean of differences of first and second data set, first
+    ; interpolate to the reference data set grid (conservative interpolation)
     diff_model_ref = get_model_minus_ref(curr, ref)
     plot_settings@type = "diff"
     plot_settings@skip_default_title = True
@@ -290,7 +290,7 @@ begin
     delete(statistics)
     delete(diff_model_ref)
     plot_settings@skip_default_title = False
-    ;;;; remove the light_centered colour palette for climatological plots (OA)
+    ; remove the light_centered colour palette for climatological plots (OA)
     delete(res@cnFillPalette)
     if (debuginfo) then
         txres@txFuncCode = "~"
@@ -337,7 +337,7 @@ begin
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     field_type0 = field_types(0)
-    ;; Handle the case when using two variables
+    ; Handle the case when using two variables
     if (dimsizes(variables) .gt. 1) then
         var1 = variables(1)
         field_type1 = field_types(1)
@@ -346,19 +346,19 @@ begin
         field_type1 = ""
     end if
 
-    ;; 'output_file_type' if fetched from ncl.interface
+    ; 'output_file_type' if fetched from ncl.interface
     if (.not. isdefined("output_file_type")) then
         output_file_type = "ps"
     end if
 
-    ;; Output dir
-    ;; 'plot_dir' if fetched from ncl.interface
+    ; Output dir
+    ; 'plot_dir' if fetched from ncl.interface
     diag_script_base = basename(plot_settings@diag_script)
     output_dir = config_user_info@plot_dir
 
-    ;; --------------------------------
-    ;; Static resources for these plots
-    ;; --------------------------------
+    ; --------------------------------
+    ; Static resources for these plots
+    ; --------------------------------
     res@cnFillOn = True
     res@cnLinesOn = False
     res@cnMissingValFillColor = "Background"
@@ -367,9 +367,9 @@ begin
     res@gsnDraw = False
     res@gsnAddCyclic = False
     do idx_mod = 0, dim_MOD - 1
-        ;; ----------------------------------------
-        ;; Define output workstation
-        ;; ----------------------------------------
+        ; ----------------------------------------
+        ; Define output workstation
+        ; ----------------------------------------
         aux_title_info = di@season + "-" + storage_name1 + "-" + storage_name2
         output_filename = interface_get_figure_filename(diag_script_base,\
                                                         var0 + var1,\
@@ -391,7 +391,7 @@ begin
         frame(wks)  ; Workstation output
         delete(wks)
 
-        ;; Debug version
+        ; Debug version
         if (debuginfo) then
             aux_title_info = di@season + "-" + storage_name1 + "-" + storage_name2 + "-debug"
             output_filename = interface_get_figure_filename(diag_script_base,\
@@ -445,7 +445,7 @@ begin
     dim_VAR = dimsizes(variables)
     var0 = variables(0)
     field_type0 = field_types(0)
-    ;; Handle the case when using two variables
+    ; Handle the case when using two variables
     if (dimsizes(variables) .gt. 1) then
         var1 = variables(1)
         field_type1 = field_types(1)
@@ -454,19 +454,19 @@ begin
         field_type1 = ""
     end if
 
-    ;; 'output_file_type' if fetched from ncl.interface
+    ; 'output_file_type' if fetched from ncl.interface
     if (.not. isdefined("output_file_type")) then
         output_file_type = "ps"
     end if
 
-    ;; Output dir
-    ;; 'plot_dir' if fetched from ncl.interface
+    ; Output dir
+    ; 'plot_dir' if fetched from ncl.interface
     diag_script_base = basename(plot_settings@diag_script)
     output_dir = config_user_info@plot_dir
 
-    ;; --------------------------------
-    ;; Static resources for these plots
-    ;; --------------------------------
+    ; --------------------------------
+    ; Static resources for these plots
+    ; --------------------------------
     res@cnFillOn = True
     res@cnLinesOn = False
     res@cnMissingValFillColor = "Background"
@@ -483,9 +483,9 @@ begin
             continue
         end if
 
-        ;; ----------------------------------------
-        ;; Define output workstation
-        ;; ----------------------------------------
+        ; ----------------------------------------
+        ; Define output workstation
+        ; ----------------------------------------
         aux_title_info = di@season + "-" + storage_name
         output_filename = interface_get_figure_filename(diag_script_base,\
                                                         var0 + var1,\
@@ -507,7 +507,7 @@ begin
         frame(wks)  ; Workstation output
         delete(wks)
 
-        ;; Debug version
+        ; Debug version
         if (debuginfo) then
             aux_title_info = di@season + "-" + storage_name + "-debug"
             output_filename = interface_get_figure_filename(diag_script_base,\
@@ -555,9 +555,9 @@ begin
         delete(res@cnLevels)
     end if
 
-    ;; ------------------------------
-    ;; Plot reference plot (top plot)
-    ;; ------------------------------
+    ; ------------------------------
+    ; Plot reference plot (top plot)
+    ; ------------------------------
     cn_levels_string = str_sub_str("cn_levels_" + storage_name + "_basic", "-", "_")
     res@cnLevels = di@$cn_levels_string$
 
@@ -603,9 +603,9 @@ begin
     end if
     three_by_one_labelbar(wks, plot_ref, plot_settings@lb_units)
 
-    ;; -------------------------------------
-    ;; Plot model entry plot (middle plot)
-    ;; -------------------------------------
+    ; -------------------------------------
+    ; Plot model entry plot (middle plot)
+    ; -------------------------------------
     main_title_prefix = "(2) " + di@season + "-" + storage_name + " of "
     res = panel_three_by_one(res, 1)  ; Update resource for second plot
 
@@ -624,7 +624,7 @@ begin
     end if
     plot_settings@idx = idx_mod
 
-    ;; Interpolate to reference grid for pattern correlation calculation
+    ; Interpolate to reference grid for pattern correlation calculation
     diff_model_ref = get_model_minus_ref(speed, speed_ref)
 
     statistics = True
@@ -653,11 +653,11 @@ begin
         overlay(plot, plot_v)
     end if
 
-    ;; --------------------------------------------
-    ;; Plot model reference diff plot (bottom plot)
-    ;; --------------------------------------------
-    ;; Plot mean of differnces of first and second data set, first
-    ;; interpolate to the reference data set grid (bilinear interpolation)
+    ; --------------------------------------------
+    ; Plot model reference diff plot (bottom plot)
+    ; --------------------------------------------
+    ; Plot mean of differnces of first and second data set, first
+    ; interpolate to the reference data set grid (bilinear interpolation)
 
     diff_model_ref = get_model_minus_ref(speed, speed_ref)
     diff_model_ua_ref = get_model_minus_ref(ua, ua_ref)
@@ -746,19 +746,19 @@ begin
     field_type0 = field_types(0)
     field_type1 = field_types(1)
 
-    ;; 'output_file_type' if fetched from ncl.interface
+    ; 'output_file_type' if fetched from ncl.interface
     if (.not. isdefined("output_file_type")) then
         output_file_type = "ps"
     end if
 
-    ;; Output dir
-    ;; 'plot_dir' if fetched from ncl.interface
+    ; Output dir
+    ; 'plot_dir' if fetched from ncl.interface
     diag_script_base = basename(plot_settings@diag_script)
     output_dir = config_user_info@plot_dir
 
-    ;; --------------------------------
-    ;; Static resources for these plots
-    ;; --------------------------------
+    ; --------------------------------
+    ; Static resources for these plots
+    ; --------------------------------
     res@mpFillOn = False
     res@cnFillOn = True
     res@cnLinesOn = False
@@ -771,7 +771,7 @@ begin
     txres = True
     txres@txFuncCode = "~"
 
-    ;; Fetch reference plot
+    ; Fetch reference plot
     storage_record = str_join((/storage_name, "ua", sprinti("%i", plot_settings@idx_ref(0))/), str_vault_sep)
     ua_ref = retrieve_from_vault(storage_vault, storage_record)
 
@@ -786,9 +786,9 @@ begin
             continue
         end if
 
-        ;; -------------------------
-        ;; Define output workstation
-        ;; -------------------------
+        ; -------------------------
+        ; Define output workstation
+        ; -------------------------
         aux_title_info = di@season + "-" + storage_name
         output_filename = interface_get_figure_filename(diag_script_base,\
                                                         var0 + var1,\
@@ -812,7 +812,7 @@ begin
         frame(wks)
         delete(wks)
 
-        ;; Debug version
+        ; Debug version
         if (debuginfo) then
             aux_title_info = di@season + "-" + storage_name + "-debug"
             output_filename = interface_get_figure_filename(diag_script_base,\
@@ -860,7 +860,7 @@ procedure plot_multipanel(cols[*]:integer,
                           type_specifier[1]:string,
                           no_figures_on_this_page[1]:integer)
 begin
-    ;; Update position, labelbar and title
+    ; Update position, labelbar and title
     curr_figure_pos = figure_panel_placement(curr_idx)
     res = panel_n_by_cols(res, curr_figure_pos, rows, cols, figures_per_page(curr_page))
 
@@ -873,11 +873,11 @@ begin
     main_title_prefix = ""
     main_title_suffix = ""
 
-    ;; Fetch reference plot
+    ; Fetch reference plot
     storage_record = str_join((/storage_name, sprinti("%i", plot_settings@idx_ref(0))/), str_vault_sep)
     ref = retrieve_from_vault(storage_vault, storage_record)
 
-    ;; Reference plot
+    ; Reference plot
     if (isatt(plot_settings, "idx")) then
         delete(plot_settings@idx)
     end if
@@ -907,7 +907,7 @@ begin
     idx_fig = figure_panel_placement(curr_idx)
     plot_array(idx_fig) = plot_ref
 
-    ;; Skip past the reference plot
+    ; Skip past the reference plot
     curr_idx = curr_idx + 1
 
     lbres = True
@@ -924,21 +924,21 @@ begin
     delete(res@cnLevels)
     cn_levels_string = str_sub_str("cn_levels_" + storage_name + type_specifier + "_basic", "-", "_")
     res@cnLevels = di@$cn_levels_string$
-    ;; -----------------------------
-    ;; Create the non-reference plots
-    ;; -----------------------------
+    ; -----------------------------
+    ; Create the non-reference plots
+    ; -----------------------------
     do curr_fig = 1, figures_per_page(curr_page) - 1
 
         main_title_prefix = ""
         idx_mod = model_panel_placement(curr_idx)
         idx_fig = figure_panel_placement(curr_idx)
 
-        ;; Skip reference models
+        ; Skip reference models
         if any((idx_mod .eq. plot_settings@idx_ref)) then
             continue
         end if
 
-        ;; Update placement and labelbar colors
+        ; Update placement and labelbar colors
         res = panel_n_by_cols(res,\
                               figure_panel_placement(curr_idx),\
                               rows,\
@@ -981,7 +981,7 @@ begin
 
         plot_array(idx_fig) = plot
 
-        ;; Update index to point to next field
+        ; Update index to point to next field
         curr_idx = curr_idx + 1
         delete(curr)
         delete(statistics)
@@ -990,14 +990,14 @@ begin
 
     plottype_lbres = False
 
-    ;; ---------------------------------------------------------
-    ;; Create an blank plot for shared labelbar placement (mean)
-    ;; ---------------------------------------------------------
+    ; ---------------------------------------------------------
+    ; Create an blank plot for shared labelbar placement (mean)
+    ; ---------------------------------------------------------
     blank_plot = add_blank_plot_title(wks,\
                                       di@season + "-" + plot_settings@type + plot_settings@part_of_header,\
                                       rows,\
                                       cols)
-    ;; Create shared labelbar
+    ; Create shared labelbar
     n_by_cols_labelbar(wks,\
                        blank_plot,\
                        plot_array(no_figures_on_this_page - 1),\
@@ -1006,9 +1006,9 @@ begin
                        plot_settings@lb_units,\
                        plottype_lbres)
 
-    ;;---------------------
-    ;; Draw mean value plot
-    ;;---------------------
+    ;---------------------
+    ; Draw mean value plot
+    ;---------------------
     if (debuginfo) then
         drawNDCGrid(wks)
     end if
@@ -1068,19 +1068,19 @@ begin
         field_type1 = ""
     end if
 
-    ;; 'output_file_type' if fetched from ncl.interface
+    ; 'output_file_type' if fetched from ncl.interface
     if (.not. isdefined("output_file_type")) then
         output_file_type = "ps"
     end if
 
-    ;; Output dir
-    ;; 'plot_dir' if fetched from ncl.interface
+    ; Output dir
+    ; 'plot_dir' if fetched from ncl.interface
     diag_script_base = basename(plot_settings@diag_script)
     output_dir = config_user_info@plot_dir
 
-    ;; --------------------------------
-    ;; Static resources for these plots
-    ;; --------------------------------
+    ; --------------------------------
+    ; Static resources for these plots
+    ; --------------------------------
     res@cnFillOn = True
     res@cnLinesOn = False
     res@cnLevelSelectionMode = "ExplicitLevels"
@@ -1091,17 +1091,17 @@ begin
     res@lbLabelBarOn = False
     res@gsnAddCyclic = False
 
-    ;; --------------------------------------
-    ;; Compute the layout of paneled figures
-    ;; --------------------------------------
+    ; --------------------------------------
+    ; Compute the layout of paneled figures
+    ; --------------------------------------
     figures_per_page = get_figures_per_page(dim_MOD,\
                                             max_figures_pp,\
                                             min_figures_pp)
 
-    ;; Which model goes where across all pages
+    ; Which model goes where across all pages
     model_panel_placement = new((/sum(figures_per_page)/), integer)
 
-    ;; Which model goes where on each page?
+    ; Which model goes where on each page?
     figure_panel_placement = new((/sum(figures_per_page)/), integer)
     place_models_on_pages(model_info,\
                           plot_settings@idx_ref,\
@@ -1109,8 +1109,8 @@ begin
                           model_panel_placement,\
                           figure_panel_placement)
 
-    ;; Output dir
-    ;; 'plot_dir' is fetched from ncl.interface
+    ; Output dir
+    ; 'plot_dir' is fetched from ncl.interface
     diag_script_base = basename(diag_script)
     output_dir = config_user_info@plot_dir
 
@@ -1120,32 +1120,32 @@ begin
         type_specifier = ""
     end if
 
-    ;; ---------------------------
-    ;; Loop over all output pages
-    ;; ---------------------------
+    ; ---------------------------
+    ; Loop over all output pages
+    ; ---------------------------
     curr_idx = 0
     curr_idx_debug = 0
     total_no_of_pages = dimsizes(figures_per_page)
 
     do curr_page = 0, total_no_of_pages - 1
-        ;;---------------------------
-        ;; Plot arrays for gsn_panels
-        ;;---------------------------
+        ;---------------------------
+        ; Plot arrays for gsn_panels
+        ;---------------------------
         plot_array = new((/max_figures_pp/), graphic)
 
         no_figures_on_this_page = figures_per_page(curr_page)
 
-        ;; Create a string to add to the figure output\
-            ;; filename for mulitple pages
+        ; Create a string to add to the figure output\
+            ; filename for mulitple pages
             if (total_no_of_pages .gt. 1) then
                 page_no = "-page" + sprinti("%i", curr_page)
             else
                 page_no = ""
             end if
 
-        ;; -----------------------------------
-        ;; Define output workstation for plots
-        ;; -----------------------------------
+        ; -----------------------------------
+        ; Define output workstation for plots
+        ; -----------------------------------
         idx_mod = -1  ; No specific model defined
         aux_title_info = di@season + "-" + storage_name + type_specifier + page_no
         output_filename = interface_get_figure_filename(diag_script_base,\
@@ -1232,7 +1232,7 @@ procedure plot_multipanel_vector(cols[*]:integer,
                                  type_specifier[1]:string,
                                  no_figures_on_this_page[1]:integer)
 begin
-    ;; Update position, labelbar and title
+    ; Update position, labelbar and title
     curr_figure_pos = figure_panel_placement(curr_idx)
     res = panel_n_by_cols(res, curr_figure_pos, rows, cols, figures_per_page(curr_page))
 
@@ -1245,7 +1245,7 @@ begin
     main_title_prefix = ""
     main_title_suffix = ""
 
-    ;; Fetch reference plot
+    ; Fetch reference plot
     storage_record = str_join((/"mean", "ua", sprinti("%i", plot_settings@idx_ref(0))/), str_vault_sep)
     ua_ref = retrieve_from_vault(storage_vault, storage_record)
 
@@ -1303,7 +1303,7 @@ begin
     idx_fig = figure_panel_placement(curr_idx)
     plot_array(idx_fig) = plot_ref
 
-    ;; Skip past the reference plot
+    ; Skip past the reference plot
     curr_idx = curr_idx + 1
 
     lbres = True
@@ -1319,16 +1319,16 @@ begin
         main_title_suffix = ""
     end if
 
-    ;; ------------------------------
-    ;; Create the non-reference plots
-    ;; ------------------------------
+    ; ------------------------------
+    ; Create the non-reference plots
+    ; ------------------------------
     do curr_fig = 1, figures_per_page(curr_page) - 1
 
         main_title_prefix = ""
         idx_mod = model_panel_placement(curr_idx)
         idx_fig = figure_panel_placement(curr_idx)
 
-        ;; Update placement and labelbar colors
+        ; Update placement and labelbar colors
         res = panel_n_by_cols(res, figure_panel_placement(curr_idx), rows, cols, figures_per_page(curr_page))
 
         storage_record = str_join((/"mean", "ua", sprinti("%i", idx_mod)/), str_vault_sep)
@@ -1343,12 +1343,12 @@ begin
         statistics = True
         statistics = compute_stat((/"yrs"/), valid_statistics, speed, dummy_array)
         if (plot_settings@type .eq. "diff") then
-            ;; Plot mean of differences of first and second data set, first
-            ;; interpolate to the reference data set grid (bilinear interpolation)
+            ; Plot mean of differences of first and second data set, first
+            ; interpolate to the reference data set grid (bilinear interpolation)
 
             statistics = compute_stat((/"rmse"/), valid_statistics, speed, speed_ref)
 
-            ;; ua/va/speed field interpolation
+            ; ua/va/speed field interpolation
             diff_model_ref = get_model_minus_ref(speed, speed_ref)
             diff_model_ua_ref = get_model_minus_ref(ua, ua_ref)
             diff_model_va_ref = get_model_minus_ref(va, va_ref)
@@ -1405,7 +1405,7 @@ begin
 
         plot_array(idx_fig) = plot
 
-        ;; Update index to point to next field
+        ; Update index to point to next field
         curr_idx = curr_idx + 1
         delete(ua)
         delete(va)
@@ -1415,14 +1415,14 @@ begin
 
     plottype_lbres = False
 
-    ;; ---------------------------------------------------------
-    ;; Create an blank plot for shared labelbar placement (mean)
-    ;; ---------------------------------------------------------
+    ; ---------------------------------------------------------
+    ; Create an blank plot for shared labelbar placement (mean)
+    ; ---------------------------------------------------------
     blank_plot = add_blank_plot_title(wks,\
                                       di@season + "-" + plot_settings@type + plot_settings@part_of_header,\
                                       rows,\
                                       cols)
-    ;; Create shared labelbar
+    ; Create shared labelbar
     n_by_cols_labelbar(wks,\
                        blank_plot,\
                        plot_array(no_figures_on_this_page - 1),\
@@ -1431,9 +1431,9 @@ begin
                        plot_settings@lb_units,\
                        plottype_lbres)
 
-    ;;---------------------
-    ;; Draw mean value plot
-    ;;---------------------
+    ;---------------------
+    ; Draw mean value plot
+    ;---------------------
     if (debuginfo) then
         drawNDCGrid(wks)
     end if
@@ -1489,19 +1489,19 @@ begin
         field_type1 = ""
     end if
 
-    ;; 'output_file_type' if fetched from ncl.interface
+    ; 'output_file_type' if fetched from ncl.interface
     if (.not. isdefined("output_file_type")) then
         output_file_type = "ps"
     end if
 
-    ;; Output dir
-    ;; 'plot_dir' if fetched from ncl.interface
+    ; Output dir
+    ; 'plot_dir' if fetched from ncl.interface
     diag_script_base = basename(plot_settings@diag_script)
     output_dir = config_user_info@plot_dir
 
-    ;; --------------------------------
-    ;; Static resources for these plots
-    ;; --------------------------------
+    ; --------------------------------
+    ; Static resources for these plots
+    ; --------------------------------
     res@mpFillOn = False
     res@cnFillOn = True
     res@cnLinesOn = False
@@ -1513,17 +1513,17 @@ begin
     res@lbLabelBarOn = False
     res@gsnAddCyclic = False
 
-    ;; --------------------------------------
-    ;; Compute the layout of paneled figures
-    ;; --------------------------------------
+    ; --------------------------------------
+    ; Compute the layout of paneled figures
+    ; --------------------------------------
     figures_per_page = get_figures_per_page(dim_MOD,\
                                             max_figures_pp,\
                                             min_figures_pp)
 
-    ;; Which model goes where across all pages
+    ; Which model goes where across all pages
     model_panel_placement = new((/sum(figures_per_page)/), integer)
 
-    ;; Which model goes where on each page?
+    ; Which model goes where on each page?
     figure_panel_placement = new((/sum(figures_per_page)/), integer)
     place_models_on_pages(model_info,\
                           plot_settings@idx_ref,\
@@ -1531,8 +1531,8 @@ begin
                           model_panel_placement,\
                           figure_panel_placement)
 
-    ;; Output dir
-    ;; 'plot_dir' is fetched from ncl.interface
+    ; Output dir
+    ; 'plot_dir' is fetched from ncl.interface
     diag_script_base = basename(diag_script)
     output_dir = config_user_info@plot_dir
 
@@ -1542,32 +1542,32 @@ begin
         type_specifier = ""
     end if
 
-    ;; ---------------------------
-    ;; Loop over all output pages
-    ;; ---------------------------
+    ; ---------------------------
+    ; Loop over all output pages
+    ; ---------------------------
     curr_idx = 0
     curr_idx_debug = 0
     total_no_of_pages = dimsizes(figures_per_page)
 
     do curr_page = 0, total_no_of_pages - 1
-        ;;---------------------------
-        ;; Plot arrays for gsn_panels
-        ;;---------------------------
+        ;---------------------------
+        ; Plot arrays for gsn_panels
+        ;---------------------------
         plot_array = new((/max_figures_pp/), graphic)
 
         no_figures_on_this_page = figures_per_page(curr_page)
 
-        ;; Create a string to add to the figure output\
-            ;; filename for mulitple pages
+        ; Create a string to add to the figure output\
+            ; filename for mulitple pages
             if (total_no_of_pages .gt. 1) then
                 page_no = "-page" + sprinti("%i", curr_page)
             else
                 page_no = ""
             end if
 
-        ;; -----------------------------------
-        ;; Define output workstation for plots
-        ;; -----------------------------------
+        ; -----------------------------------
+        ; Define output workstation for plots
+        ; -----------------------------------
         idx_mod = -1  ; No specific model defined
         aux_title_info = di@season + "-" + storage_name + type_specifier + page_no
         output_filename = interface_get_figure_filename(diag_script_base,\
@@ -1674,12 +1674,12 @@ begin
     precip_seasonal_minY = min(precip)
     precip_seasonal_spreadY = precip_seasonal_maxY - precip_seasonal_minY
 
-    ;; Plot arrays for gsn_plots
+    ; Plot arrays for gsn_plots
     plot_array  = new((/dim_MOD/), graphic)
 
-    ;;--------------------------------
-    ;; General resources for all plot
-    ;;--------------------------------
+    ;--------------------------------
+    ; General resources for all plot
+    ;--------------------------------
     res                       = True
     res@gsnDraw               = False
     res@gsnFrame              = False
@@ -1687,12 +1687,12 @@ begin
     res@gsnXYBarChartBarWidth = 0.15  ; change bar widths
     res@gsnYRefLine           = 0.    ; reference line
 
-    ;; Specific plot resource for plot iii)
+    ; Specific plot resource for plot iii)
     if (plot_settings@type .eq. "iav") then
         res@tmXBFormat = "4f"
         xaxis = di@years
     else
-        ;; Set months on x-axis for plots i) and ii)
+        ; Set months on x-axis for plots i) and ii)
         res@tmXBMode      = "Explicit"       ; Define your own tick mark labels.
         res@tmXBMinorOn   = False            ; No minor tick marks.
         res@tmXBValues    = ispan(0, 11, 1)  ; Location to put tick mark labels
@@ -1701,7 +1701,7 @@ begin
         res@tmXBLabelFont = 25            ; Change font of labels.
         res@tmXBLabelFontHeightF = 0.015  ; Change font height of labels.
 
-        ;; Add some margins
+        ; Add some margins
         res@trXMinF = -1
         res@trXMaxF = 12
 
@@ -1710,14 +1710,14 @@ begin
 
     labels = new(dim_MOD, string)
 
-    ;; Output dir
-    ;; 'plot_dir' if fetched from ncl.interface
+    ; Output dir
+    ; 'plot_dir' if fetched from ncl.interface
     diag_script_base = basename(diag_script)
     output_dir = config_user_info@plot_dir
 
-    ;;-----------------------------------------------
-    ;; Define output workstation for seasonal anomaly
-    ;;-----------------------------------------------
+    ;-----------------------------------------------
+    ; Define output workstation for seasonal anomaly
+    ;-----------------------------------------------
     idx_mod = -1  ; No specific model defined
     aux_filename_info = plot_settings@aux_filename_info
     output_filename = interface_get_figure_filename(diag_script_base,\
@@ -1728,20 +1728,20 @@ begin
     output_file_path = output_dir + output_filename
     wks = gsn_open_wks(output_file_type, output_file_path)
 
-    ;;----------
-    ;; Plot loop
-    ;;----------
+    ;----------
+    ; Plot loop
+    ;----------
     do idx_mod = 0, dim_MOD - 1
         labels(idx_mod) = model_info@model(idx_mod)
         res@gsnXYBarChartColors = di@colors_seasonal(idx_mod)
 
-        ;; Shift plot to the right and draw/redraw
+        ; Shift plot to the right and draw/redraw
         res@vpXF = 0.2 + idx_mod * 0.005
 
         res@trYMinF = precip_seasonal_minY - precip_seasonal_spreadY * 0.05
         res@trYMaxF = precip_seasonal_maxY + precip_seasonal_spreadY * 0.05
 
-        ;; Set strings for titles and axis for plot i) and ii)
+        ; Set strings for titles and axis for plot i) and ii)
         res@tiMainString = set_string_once(plot_settings@title_string, idx_mod)
         res@tiYAxisString = set_string_once(plot_settings@yaxis_string, idx_mod)
         res@gsnLeftString = set_string_once(plot_settings@left_plot_subheader, idx_mod)
@@ -1756,11 +1756,11 @@ begin
                                          precip(idx_mod, :),\
                                          res)
 
-        ;; Remove borders such that next plot only draws the actual "bars"
+        ; Remove borders such that next plot only draws the actual "bars"
         res = remove_figure_borders(res)
     end do  ; idx_mod = 0, dim_MOD - 1
 
-    ;; Label bar resources
+    ; Label bar resources
     lbres                   = True             ; labelbar only resources
     lbres@vpWidthF          = 0.30             ; labelbar width
     lbres@vpHeightF         = 0.024 * dim_MOD  ; labelbar height
@@ -1774,7 +1774,7 @@ begin
     lbres@lbPerimColor      = "black"
     labelbar = gsn_create_labelbar(wks, dim_MOD, labels, lbres)
 
-    ;; Place annotations
+    ; Place annotations
     amres                = True
     amres@amZone         = 3
     amres@amSide         = "Right"
@@ -1782,7 +1782,7 @@ begin
     amres@amOrthogonalPosF = -0.25
     am_labelbar_id = gsn_add_annotation(plot_array(dim_MOD - 1), labelbar, amres)
 
-    ;; If requested, add a text info box and/or debug info box to each plot
+    ; If requested, add a text info box and/or debug info box to each plot
     txres            = True
     txres@txFuncCode = "~"
 
@@ -1838,12 +1838,12 @@ begin
     values = retrieve_from_vault(storage_vault, storage_record)
     units = values@units
 
-    ;; 'plot_dir' if fetched from ncl.interface
+    ; 'plot_dir' if fetched from ncl.interface
     diag_script_base = basename(diag_script)
     output_dir = config_user_info@plot_dir
-    ;;-----------------------------------------------
-    ;; Define output workstation for xy plot
-    ;;-----------------------------------------------
+    ;-----------------------------------------------
+    ; Define output workstation for xy plot
+    ;-----------------------------------------------
     idx_mod = -1  ; No specific model defined
     aux_filename_info = plot_settings@aux_filename_info
     output_filename = interface_get_figure_filename(diag_script_base,\
@@ -1867,31 +1867,31 @@ begin
 
     values&month@units = "Multi-year monthly mean"
 
-    ;; Select colors and other plotting attributes
-    ;; See ./diag_scripts/shared/plot/style.ncl
+    ; Select colors and other plotting attributes
+    ; See ./diag_scripts/shared/plot/style.ncl
     colors = project_style(diag_script_info, "colors")
     dashes = project_style(diag_script_info, "dashes")
     thicks = project_style(diag_script_info, "thicks")
     annots = project_style(diag_script_info, "annots")
     avgstd = project_style(diag_script_info, "avgstd")
-    ;; Select colors and other plotting attributes for multi-model mean
+    ; Select colors and other plotting attributes for multi-model mean
     if (diag_script_info@multi_model_mean .eq. "y") then
-        ;; project_style evaluates metadata of variable "models"
+        ; project_style evaluates metadata of variable "models"
         temp = models
 
-        ;; -> keep original "models" in "temp" and restore later
+        ; -> keep original "models" in "temp" and restore later
         copy_VarMeta(models, temp)
         delete(models)
 
-        ;; Use "models" to pass on attribute names
+        ; Use "models" to pass on attribute names
         models = getvaratts(temp)
         do i = 0, dimsizes(models) - 1
-            ;; Define all original attributes again, but empty
+            ; Define all original attributes again, but empty
             model_info@$models(i)$ = ""
         end do
         model_info@model = "model_mean"
 
-        ;; See ./diag_scripts/shared/plot/style.ncl
+        ; See ./diag_scripts/shared/plot/style.ncl
         colors_mmm = project_style(diag_script_info, "colors")
         dashes_mmm = project_style(diag_script_info, "dashes")
         thicks_mmm = project_style(diag_script_info, "thicks")
@@ -1903,15 +1903,15 @@ begin
         delete(temp)
     end if
 
-    ;; Calculate standard deviation of models
+    ; Calculate standard deviation of models
     if (di@multi_model_mean .ne. "y") then
-        ;; define anyway, because fields are needed as parameters for xy_line
+        ; define anyway, because fields are needed as parameters for xy_line
         values_stddev  = 0
     else
-        ;; Mean, stddev, -1 * stddev, +1 * stddev
+        ; Mean, stddev, -1 * stddev, +1 * stddev
         values_stddev = new((/4, 12/), float)
-        ;; See ./diag_scripts/shared/plot/style.ncl for which data shall be
-        ;; included in the statistics
+        ; See ./diag_scripts/shared/plot/style.ncl for which data shall be
+        ; included in the statistics
         temp = ind(avgstd .eq. 0)
         do imon = 0, 11
             values_stddev(0, imon) = \
@@ -1926,7 +1926,7 @@ begin
         delete(temp)
     end if
 
-    ;; Min and max values on x-axis
+    ; Min and max values on x-axis
     res = True
     res@tmXTOn = False
     res@tmYROn = True
@@ -1989,12 +1989,12 @@ print(storage_vault)
     values = retrieve_from_vault(storage_vault, storage_record)
     units = values@units
 
-    ;; 'plot_dir' if fetched from ncl.interface
+    ; 'plot_dir' if fetched from ncl.interface
     diag_script_base = basename(diag_script)
     output_dir = config_user_info@plot_dir
-    ;;-----------------------------------------------
-    ;; Define output workstation for xy plot
-    ;;-----------------------------------------------
+    ;-----------------------------------------------
+    ; Define output workstation for xy plot
+    ;-----------------------------------------------
     idx_mod = -1  ; No specific model defined
     aux_filename_info = plot_settings@aux_filename_info
     output_filename = interface_get_figure_filename(diag_script_base,\
@@ -2016,15 +2016,15 @@ print(storage_vault)
         wks_debug = gsn_open_wks(output_file_type, output_file_path)
     end if
 
-    ;; Determine time range
+    ; Determine time range
     start_year = min(stringtoint(model_info@start_year))
     end_year = max(stringtoint(model_info@end_year))
 
-    ;; Select attributes
+    ; Select attributes
     annots = project_style(diag_script_info, "annots")
     avgstd = project_style(diag_script_info, "avgstd")
 
-    ;; Prepare calculation of standard deviation of models
+    ; Prepare calculation of standard deviation of models
     if (diag_script_info@multi_model_mean .eq. "y") then
         values_stddev = new((/4, end_year - start_year + 1/), float)
         val_area_stddev = new((/4, end_year - start_year + 1/), float)
@@ -2033,13 +2033,13 @@ print(storage_vault)
         val_area_stddev = 0
     end if
 
-    ;; Calculate standard deviation of models
+    ; Calculate standard deviation of models
     if (diag_script_info@multi_model_mean .eq. "y") then
-        ;; See style_$project$.ncl for which data shall
-        ;; be included in the statistics
+        ; See style_$project$.ncl for which data shall
+        ; be included in the statistics
         temp = ind(avgstd .eq. 0)
         do imonth = 0, dimsizes(values&years) - 1
-           ;; For extent
+           ; For extent
             values_stddev(0, imonth) = \
                 dim_avg_n_Wrap(values(temp, imonth), (/0/))
             values_stddev(1, imonth) = \
