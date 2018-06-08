@@ -14,9 +14,12 @@ from ._reformat import fix_data, fix_file, fix_metadata, cmor_check_data, \
     cmor_check_metadata
 from ._regrid import vinterp as extract_levels
 from ._regrid import regrid
+from ._time_area import volume_average as average_volume
 from ._time_area import area_average as average_region
 from ._time_area import area_slice as extract_region
 from ._time_area import time_slice as extract_time
+from ._time_area import volume_slice as extract_volume
+
 from ._time_area import seasonal_mean
 
 logger = logging.getLogger(__name__)
@@ -47,8 +50,10 @@ __all__ = [
     'mask_fillvalues',
     # Region selection
     'extract_region',
+    'extract_volume',
     # Grid-point operations
     'average_region',
+    'average_volume',    
     # 'average_zone': average_zone,
     # 'cross_section': cross_section,
     # Time operations
