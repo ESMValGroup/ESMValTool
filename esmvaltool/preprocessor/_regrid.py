@@ -54,7 +54,7 @@ horizontal_schemes = dict(
     unstructured_nearest=UnstructuredNearest())
 
 # Supported vertical interpolation schemes.
-vertical_schemes = ['linear', 'nearest', 'nearest_extrap']
+vertical_schemes = ['linear', 'nearest', 'nearest_extrap','linear_extrap']
 
 
 def _stock_cube(spec):
@@ -330,6 +330,10 @@ def vinterp(src_cube, levels, scheme):
         scheme = 'nearest'
         extrap_scheme = 'nearest'
 
+    if scheme == 'linear_extrap':
+        scheme = 'linear'
+        extrap_scheme = 'nearest'
+        
     # Ensure we have a non-scalar array of levels.
     levels = np.array(levels, ndmin=1)
 
