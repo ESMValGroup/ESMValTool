@@ -126,8 +126,8 @@ def get_input_dirname_template(variable, rootpath, drs):
     elif _drs in input_dir:
         try:
             insts = cmip5_model2inst(variable['model'])
-        except:
-            KeyError
+        except KeyError as msg:
+            logger.debug('CMIP5 model2inst: %s', msg)
             insts = 0
             pass
         dirs2 = []
