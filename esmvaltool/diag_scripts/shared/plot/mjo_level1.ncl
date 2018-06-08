@@ -1,19 +1,19 @@
-;;#############################################################################
-;; GENERAL ROUTINES FOR STATISTICS
-;;#############################################################################
-;; Please consider using or extending existing routines before adding new
-;; ones.
-;; Check the header of each routine for documentation.      
-;;
-;; Contents:
-;;    function pr_u850_mean_plot
-;;    function mjo_xcor_lag_plot
-;;    function mjo_pr_ua_vari_plot
-;;    function mjo_unvari_eof_plot
-;;
-;;#############################################################################
+; #############################################################################
+; GENERAL ROUTINES FOR STATISTICS
+; #############################################################################
+; Please consider using or extending existing routines before adding new
+; ones.
+; Check the header of each routine for documentation.      
+;
+; Contents:
+;    function pr_u850_mean_plot
+;    function mjo_xcor_lag_plot
+;    function mjo_pr_ua_vari_plot
+;    function mjo_unvari_eof_plot
+;
+; #############################################################################
 
-;; Temporary file updated by Python on the fly
+; Temporary file updated by Python on the fly
 
 
 load "./interface_scripts/auxiliary.ncl"
@@ -37,7 +37,7 @@ function pr_u850_mean_plot(wks[1]:graphic,\
 ;   carry switches for the plot routine behaviour.
 local res1, res2, plot
 begin
-    ;; common resources for global contour plots
+    ; common resources for global contour plots
     res1 = True
     res1@gsnDraw = False                ; don't draw
     res1@gsnFrame = False               ; don't advance frame
@@ -79,13 +79,13 @@ begin
         res1@gsnRightString = opt@gsnRightString
     end if
 
-    ;;************************************************
-    ;; resource list for second (contour only) data array
-    ;;************************************************
+    ;************************************************
+    ; resource list for second (contour only) data array
+    ;************************************************
     res2 = True
     res2@gsnContourZeroLineThicknessF = 2.   ; doubles thickness of zero contour
 
-    ;; Sets negative contours to dash pattern 1
+    ; Sets negative contours to dash pattern 1
     res2@gsnContourNegLineDashPattern = 2
     res2@cnLineColor = "Black"               ; color of second contours
     res2@cnLineThicknessF = 1.
@@ -147,9 +147,9 @@ begin
         res1@gsnRightString = opt@gsnRightString
     end if
 
-    ;;************************************************
-    ;; resource list for second data array
-    ;;************************************************
+    ;************************************************
+    ; resource list for second data array
+    ;************************************************
     res2 = True              ; U
     res2@gsnDraw = False
     res2@gsnFrame = False
@@ -191,9 +191,9 @@ function mjo_pr_ua_vari_plot(wks[1]    : graphic,\
                               di[1]    : logical)
 local res1, res2, plot
 begin
-    ;;************************************************
-    ;; resource list for first (color) data array
-    ;;************************************************
+    ;************************************************
+    ; resource list for first (color) data array
+    ;************************************************
     res1 = True
     res1@gsnDraw = False   ; don't draw
     res1@gsnFrame = False  ; don't advance frame
@@ -235,13 +235,13 @@ begin
         res1@gsnRightString = opt@gsnRightString
     end if
 
-    ;;************************************************
-    ;; resource list for second (contour only) data array
-    ;;************************************************
+    ;************************************************
+    ; resource list for second (contour only) data array
+    ;************************************************
     res2 = True
     res2@gsnContourZeroLineThicknessF = 2.   ; doubles thickness of zero contour
 
-    ;; Sets negative contours to dash pattern 1
+    ; Sets negative contours to dash pattern 1
     res2@gsnContourNegLineDashPattern = 2
     res2@cnLineColor = "Black"               ; color of second contours
     res2@cnLineThicknessF = 1.
@@ -266,7 +266,7 @@ function mjo_unvari_eof_plot(wks[1]    : graphic, \
                               di[1]    : logical)
 local res, lot
 begin
-    ;; EOF patterns
+    ; EOF patterns
     res = True
     res@gsnDraw = False                 ; don't draw yet
     res@gsnFrame = False                ; don't advance frame yet

@@ -1,0 +1,68 @@
+# Conda build recipe
+---
+
+# Build commmand:
+# conda build esmvaltool -c conda-forge -c birdhouse
+
+# Package version number
+{% set version = "2.0a0" %}
+
+package:
+  name: esmvaltool
+  version: {{ version }}
+
+source:
+  # Use these two lines to build a release:
+  # git_rev: v{{ version }}
+  # git_url: https://github.com/ESMValGroup/ESMValTool.git
+  # Use this line instead of the above to test building without a release:
+  path: .
+
+build:
+  # Increment the build number when building a new conda package of the same
+  # esmvaltool version, reset to 0 when building a new version.
+  number: 0
+  script: python setup.py install --single-version-externally-managed --record=/tmp/record.txt
+
+requirements:
+  build:
+    - git
+    - python {{ python }}
+    # Normally installed via pip:
+    - setuptools_scm
+  run:
+    # esmvaltool
+    - python
+    - basemap
+    - iris=1.13
+    - python-stratify
+    # Normally installed via pip:
+    - cartopy
+    - cf_units
+    - cython
+    - matplotlib
+    - netCDF4
+    - numba
+    - numpy
+    - pillow
+    - psutil
+    - python-cdo
+    - pyyaml
+    - shapely
+    - six
+    - yamale  # in birdhouse channel
+    # Multi language support:
+    - ncl
+    - libgdal=2.2.3  # Temporarily pin libgdal to get NCL working
+    # TODO: add R, julia
+test:
+  # TODO: add unit tests? This seems to require installing the tests
+  imports:
+    - esmvaltool
+  commands:
+    - esmvaltool -h
+
+about:
+  home: https://www.esmvaltool.org
+  license: Apache License, Version 2.0
+  license_file: LICENSE

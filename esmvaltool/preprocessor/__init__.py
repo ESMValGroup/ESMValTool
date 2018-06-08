@@ -4,7 +4,7 @@ import os
 
 from iris.cube import Cube
 
-from ..task import AbstractTask
+from .._task import AbstractTask
 from ._derive import derive
 from ._download import download
 from ._io import cleanup, extract_metadata, load_cubes, save_cubes, concatenate
