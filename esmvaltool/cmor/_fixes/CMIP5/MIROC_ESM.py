@@ -121,3 +121,27 @@ class allvars(Fix):
             pass
 
         return cube
+
+
+class tos(allvars):
+    def fix_metadata(self, cube):
+        """
+        Fix metadata
+
+        Fixes errors in time units.
+
+        Parameters
+        ----------
+        cube: iris.cube.Cube
+
+        Returns
+        -------
+        iris.cube.Cube
+
+        """
+        time = cube.coord('time')
+        calendar = time.units.calendar
+        if time.units.origin == 'days since 1850-1-1':
+            time.units = cf_units.Unit(
+                'days since 1850-1-1 00:00:00', calendar=calendar)
+        return cube

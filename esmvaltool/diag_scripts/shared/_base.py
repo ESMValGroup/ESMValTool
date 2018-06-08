@@ -44,8 +44,10 @@ def run_diagnostic():
 
     # Create output directories
     if cfg['write_netcdf']:
-        os.makedirs(cfg['work_dir'])
+        if not os.path.exists(cfg['work_dir']):
+            os.makedirs(cfg['work_dir'])
     if cfg['write_plots']:
-        os.makedirs(cfg['plot_dir'])
+        if not os.path.exists(cfg['plot_dir']):    
+            os.makedirs(cfg['plot_dir'])
 
     yield cfg

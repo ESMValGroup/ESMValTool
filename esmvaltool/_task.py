@@ -422,7 +422,7 @@ class DiagnosticTask(AbstractTask):
 
         raise DiagnosticError(
             "Diagnostic script {} failed with return code {}. See the log "
-            "in {}.".format(self.script, returncode, self.log))
+            "in {}".format(self.script, returncode, self.log))
 
     def __str__(self):
         """Get human readable description."""

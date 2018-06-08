@@ -52,13 +52,52 @@ def area_slice(mycube, long1, long2, lat1, lat2):
     This function is a restriction of masked_cube_lonlat();
     Returns a cube
     """
-    sublon = iris.Constraint(
-        longitude=lambda cell: float(long1) <= cell <= float(long2))
+    
+    # Converts Negative longitudes to 0 -> 360. standard
+    if long1 < 0.: long1 += 360.
+    if long2 < 0.: long2 += 360.   
+    
+    if long2 < long1: 
+        # if you want to look at a region both sides of the zero longitude ie, such as the Atlantic Ocean!
+        sublon = iris.Constraint(
+            longitude=lambda cell: not ((float(long1) >= cell) * (cell >= float(long2))) )
+    else:
+        sublon = iris.Constraint(
+            longitude=lambda cell: float(long1) <= cell <= float(long2))
     sublat = iris.Constraint(
         latitude=lambda cell: float(lat1) <= cell <= float(lat2))
     region_subset = mycube.extract(sublon & sublat)
     return region_subset
 
+# slice cube over a restricted area (box)
+def volume_slice(mycube, long1, long2, lat1, lat2, z1,z2):
+    """
+    Subset a cube on volume
+
+    Function that subsets a cube on a box (long1,long2,lat1,lat2,z1,z2)
+    This function is a restriction of masked_cube_lonlat();
+    Returns a cube
+    """
+    
+    # Converts Negative longitudes to 0 -> 360. standard
+    if long1 < 0.: long1 += 360.
+    if long2 < 0.: long2 += 360.   
+    
+    if long2 < long1: 
+        # if you want to look at a region both sides of the zero longitude ie, such as the Atlantic Ocean!
+        sublon = iris.Constraint(
+            longitude=lambda cell: not ((float(long1) >= cell) * (cell >= float(long2))) )
+    else:
+        sublon = iris.Constraint(
+            longitude=lambda cell: float(long1) <= cell <= float(long2))
+    sublat = iris.Constraint(
+        latitude=lambda cell: float(lat1) <= cell <= float(lat2))
+    subz = iris.Constraint(
+        latitude=lambda cell: float(z1) <= cell <= float(z2))
+                
+    region_subset = mycube.extract(sublon & sublat & subz)
+    return region_subset
+    
 
 # get the time average
 def time_average(mycube):
@@ -113,12 +152,39 @@ def area_average(mycube, coord1, coord2):
     Returns a cube
     """
     import iris.analysis.cartography
-    mycube.coord(coord1).guess_bounds()
-    mycube.coord(coord2).guess_bounds()
+#    mycube.coord(coord1).guess_bounds() # CMOR ised data should already have bounds?
+#    mycube.coord(coord2).guess_bounds()
     grid_areas = iris.analysis.cartography.area_weights(mycube)
     result = mycube.collapsed(
         [coord1, coord2], iris.analysis.MEAN, weights=grid_areas)
     return result
+
+# get the volume average
+def volume_average(mycube, coordz, coord1, coord2, ):
+    """
+    Determine the area average.
+
+    Can be used with coord1 and coord2 (strings,
+    usually 'longitude' and 'latitude' but depends on the cube);
+    
+    Returns a cube
+    """
+    import iris.analysis.cartography
+#    mycube.coord(coord1).guess_bounds() # CMOR ised data should already have bounds?
+#    mycube.coord(coord2).guess_bounds()
+
+    depth = mycube.coord(coordz)
+    thickness = depth.bounds[:,1] - depth.bounds[:,0] # 1D
+    
+    area = iris.analysis.cartography.area_weights(mycube)
+    if area.ndim == 4 and thickness.ndim ==1:
+        grid_volume =  area * thickness[None,:,None,None]
+    else:
+        grid_volume =  area * thickness
+    result = mycube.collapsed( [coordz, coord1, coord2], iris.analysis.MEAN, weights=grid_volume)
+    
+    return result
+    
 
 
 # get the seasonal mean
