@@ -99,7 +99,7 @@ def replace_tags(path, variable, j):
             path = path.replace('[' + tag + ']', replacewith)
         else:
             path = [path.replace('[' + tag + ']', dkrz_place)
-                for dkrz_place in replacewith][j]
+                    for dkrz_place in replacewith][j]
     return path
 
 
@@ -220,7 +220,8 @@ def get_input_filelist(variable, rootpath, drs):
         files = find_files(dirname, filename_glob)
 
         # Select files within the required time interval
-        files = select_files(files, variable['start_year'], variable['end_year'])
+        files = select_files(files, variable['start_year'],
+                             variable['end_year'])
         all_files.append(files)
 
     files = list(set([fi for sfi in all_files for fi in sfi]))
