@@ -201,12 +201,15 @@ def get_input_filelist(variable, rootpath, drs):
         if '[latestversion]' in dirname_template:
             part1, part2 = dirname_template.split('[latestversion]')
             part2 = part2.lstrip(os.sep)
-            list_versions = os.listdir(part1)
-            list_versions.sort(reverse=True)
-            for version in list_versions:
-                dirname = os.path.join(part1, version, part2)
-                if os.path.isdir(dirname):
-                    break
+            if os.path.exists(part1):
+                list_versions = os.listdir(part1)
+                list_versions.sort(reverse=True)
+                for version in list_versions:
+                    dirname = os.path.join(part1, version, part2)
+                    if os.path.isdir(dirname):
+                        break
+            else:
+                dirname = ''
         else:
             dirname = dirname_template
 
@@ -221,6 +224,7 @@ def get_input_filelist(variable, rootpath, drs):
         all_files.append(files)
 
     files = list(set([fi for sfi in all_files for fi in sfi]))
+    files = [fi for fi in files if os.path.isfile(fi)]
 
     return files
 
